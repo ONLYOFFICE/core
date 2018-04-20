@@ -135,7 +135,14 @@ namespace OOX
 			}
 			else
 			{
-				oRels.Registration( pPair->first, pExt );
+				if (pExt.IsInit())
+				{
+					oRels.Registration( pPair->first, pExt );
+				}
+				else if ((pMedia.IsInit()) && (pMedia->IsExternal()))
+				{
+					oRels.Registration( pPair->first, pMedia->type(), pMedia->filename().GetPath(), true);
+				}
 			}
 		}
 	}

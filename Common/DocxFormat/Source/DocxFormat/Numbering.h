@@ -59,9 +59,9 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:legacy"),       m_oLegacy );
-				oNode.ReadAttributeBase( _T("w:legacyIndent"), m_oLegacyIndent );
-				oNode.ReadAttributeBase( _T("w:legacySpace"),  m_oLegacySpace );
+				XmlMacroReadAttributeBase( oNode, _T("w:legacy"),       m_oLegacy );
+				XmlMacroReadAttributeBase( oNode, _T("w:legacyIndent"), m_oLegacyIndent );
+				XmlMacroReadAttributeBase( oNode, _T("w:legacySpace"),  m_oLegacySpace );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -115,8 +115,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:null"), m_oNull );
-				oNode.ReadAttributeBase( _T("w:val"),  m_sVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:null"), m_oNull );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),  m_sVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -173,7 +173,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -221,7 +221,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -280,9 +280,9 @@ namespace OOX
 				if ( _T("w:lvl") != oNode.GetName() )
 					return;
 
-				oNode.ReadAttributeBase( _T("w:ilvl"),      m_oIlvl );
-				oNode.ReadAttributeBase( _T("w:tentative"), m_oTentative );
-				oNode.ReadAttributeBase( _T("w:tplc"),      m_oTplc );
+				XmlMacroReadAttributeBase( oNode, _T("w:ilvl"),      m_oIlvl );
+				XmlMacroReadAttributeBase( oNode, _T("w:tentative"), m_oTentative );
+				XmlMacroReadAttributeBase( oNode, _T("w:tplc"),      m_oTplc );
 
 				XmlUtils::CXmlNode oChild;
 				
@@ -419,7 +419,7 @@ namespace OOX
 				if ( _T("w:abstractNum") != oNode.GetName() )
 					return;
 
-				oNode.ReadAttributeBase( _T("w:abstractNumId"), m_oAbstractNumId );
+				XmlMacroReadAttributeBase( oNode, _T("w:abstractNumId"), m_oAbstractNumId );
 
 				XmlUtils::CXmlNode oChild;
 				
@@ -544,7 +544,7 @@ namespace OOX
 				if ( _T("w:lvlOverride") != oNode.GetName() )
 					return;
 
-				oNode.ReadAttributeBase( _T("w:ilvl"), m_oIlvl );
+				XmlMacroReadAttributeBase( oNode, _T("w:ilvl"), m_oIlvl );
 
 				XmlUtils::CXmlNode oChild;
 				
@@ -634,7 +634,7 @@ namespace OOX
 				if ( _T("w:num") != oNode.GetName() )
 					return;
 
-				oNode.ReadAttributeBase( _T("w:numId"), m_oNumId );
+				XmlMacroReadAttributeBase( oNode, _T("w:numId"), m_oNumId );
 
 				XmlUtils::CXmlNode oChild;
 				
@@ -737,7 +737,7 @@ namespace OOX
 		public:
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:numPicBulletId"), m_oNumPicBulletId );
+				XmlMacroReadAttributeBase( oNode, _T("w:numPicBulletId"), m_oNumPicBulletId );
 
 				XmlUtils::CXmlNode oChild;
 				

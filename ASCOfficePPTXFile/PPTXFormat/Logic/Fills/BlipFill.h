@@ -40,6 +40,7 @@
 #include "Stretch.h"
 #include "../Effects/AlphaModFix.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 namespace PPTX
 {
@@ -113,8 +114,8 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-				node.ReadAttributeBase(L"dpi", dpi);
-				node.ReadAttributeBase(L"rotWithShape", rotWithShape);
+				XmlMacroReadAttributeBase(node, L"dpi", dpi);
+				XmlMacroReadAttributeBase(node, L"rotWithShape", rotWithShape);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))

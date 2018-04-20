@@ -52,10 +52,8 @@
 #define _USE_LIBXML2_READER_
 #define LIBXML_READER_ENABLED
 #include "../DesktopEditor/xml/include/xmlutils.h"
-
 #include "../DesktopEditor/graphics/IRenderer.h"
-
-class CApplicationFonts;
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 
 class CDjVuFileImplementation
 {
@@ -63,11 +61,11 @@ private:
 
 	std::wstring     m_wsTempDirectory;
 	GP<DjVuDocument> m_pDoc;
-    CApplicationFonts* m_pApplicationFonts;
+    NSFonts::IApplicationFonts* m_pApplicationFonts;
 
 public:
 
-    CDjVuFileImplementation(CApplicationFonts* pFonts);
+    CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts);
 	~CDjVuFileImplementation();
 
 	bool         LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions = L"");

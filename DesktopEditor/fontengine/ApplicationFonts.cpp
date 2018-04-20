@@ -39,544 +39,179 @@
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-///////////////////////////////////////////////////////////////////////////////////
-CFontSelectFormat::CFontSelectFormat()
+namespace NSFonts
 {
-	wsName = NULL;
-	wsAltName = NULL;
-
-	wsFamilyClass = NULL;
-	sFamilyClass = NULL;
-
-	bBold = NULL;
-	bItalic = NULL;
-
-	bFixedWidth = NULL;
-
-	pPanose = NULL;
-
-	ulRange1 = NULL;
-	ulRange2 = NULL;
-	ulRange3 = NULL;
-	ulRange4 = NULL;
-	ulCodeRange1 = NULL;
-	ulCodeRange2 = NULL;
-
-	usWeight = NULL;
-	usWidth = NULL;
-
-	nFontFormat = NULL;
-	unCharset = NULL;
-
-	shAvgCharWidth = NULL;
-	shAscent = NULL;
-	shDescent = NULL;
-	shLineGap = NULL;
-	shXHeight = NULL;
-	shCapHeight = NULL;
-}
-
-CFontSelectFormat::~CFontSelectFormat()
-{
-	Destroy();
-}
-
-void CFontSelectFormat::CreateDuplicate(CFontSelectFormat& oFormat)
-{
-	oFormat.Destroy();
-
-	if (NULL != wsName)
-		oFormat.wsName = new std::wstring(*wsName);
-
-	if (NULL != wsAltName)
-		oFormat.wsAltName = new std::wstring(*wsAltName);
-
-	if (NULL != wsFamilyClass)
-		oFormat.wsFamilyClass = new std::wstring(*wsFamilyClass);
-
-	if (NULL != sFamilyClass)
-		oFormat.sFamilyClass = new SHORT(*sFamilyClass);
-	
-	if (NULL != bBold)
-		oFormat.bBold = new INT(*bBold);
-	if (NULL != bItalic)
-		oFormat.bItalic = new INT(*bItalic);
-
-	if (NULL != bFixedWidth)
-		oFormat.bFixedWidth = new INT(*bFixedWidth);
-
-	if (NULL != pPanose)
-	{
-		oFormat.pPanose = new BYTE[10];
-		memcpy( (void*)oFormat.pPanose , (const void *)pPanose, 10 );
-	}
-	
-	if (NULL != ulRange1)
-		oFormat.ulRange1 = new ULONG(*ulRange1);
-	if (NULL != ulRange2)
-		oFormat.ulRange2 = new ULONG(*ulRange2);
-	if (NULL != ulRange3)
-		oFormat.ulRange3 = new ULONG(*ulRange3);
-	if (NULL != ulRange4)
-		oFormat.ulRange4 = new ULONG(*ulRange4);
-	if (NULL != ulCodeRange1)
-		oFormat.ulCodeRange1 = new ULONG(*ulCodeRange1);
-	if (NULL != ulCodeRange2)
-		oFormat.ulCodeRange2 = new ULONG(*ulCodeRange2);
-
-	if (NULL != usWeight)
-		oFormat.usWeight = new USHORT(*usWeight);
-	if (NULL != usWidth)
-		oFormat.usWidth = new USHORT(*usWidth);
-
-	if (NULL != nFontFormat)
-		oFormat.nFontFormat = new int(*nFontFormat);
-
-	if (NULL != unCharset)
-		oFormat.unCharset = new BYTE(*unCharset);
-
-	if (NULL != shAvgCharWidth)
-		oFormat.shAvgCharWidth = new SHORT(*shAvgCharWidth);
-	if (NULL != shAscent)
-		oFormat.shAscent = new SHORT(*shAscent);
-	if (NULL != shDescent)
-		oFormat.shDescent = new SHORT(*shDescent);
-	if (NULL != shLineGap)
-		oFormat.shLineGap = new SHORT(*shLineGap);
-	if (NULL != shXHeight)
-		oFormat.shXHeight = new SHORT(*shXHeight);
-	if (NULL != shCapHeight)
-		oFormat.shCapHeight = new SHORT(*shCapHeight);
-}
-
-void CFontSelectFormat::Destroy()
-{
-	RELEASEOBJECT(wsName);
-	RELEASEOBJECT(wsAltName);
-
-	RELEASEOBJECT(wsFamilyClass);
-	RELEASEOBJECT(sFamilyClass);
-
-	RELEASEOBJECT(bBold);
-	RELEASEOBJECT(bItalic);
-
-	RELEASEOBJECT(bFixedWidth);
-
-	RELEASEARRAYOBJECTS(pPanose);
-
-	RELEASEOBJECT(ulRange1);
-	RELEASEOBJECT(ulRange2);
-	RELEASEOBJECT(ulRange3);
-	RELEASEOBJECT(ulRange4);
-	RELEASEOBJECT(ulCodeRange1);
-	RELEASEOBJECT(ulCodeRange2);
-
-	RELEASEOBJECT(usWeight);
-	RELEASEOBJECT(usWidth);
-
-	RELEASEOBJECT(nFontFormat);
-	RELEASEOBJECT(unCharset);
-
-	RELEASEOBJECT(shAvgCharWidth);
-	RELEASEOBJECT(shAscent);
-	RELEASEOBJECT(shDescent);
-	RELEASEOBJECT(shLineGap);
-	RELEASEOBJECT(shXHeight);
-	RELEASEOBJECT(shCapHeight);
-}
-
-void CFontSelectFormat::Destroy2()
-{
-    RELEASEOBJECT(wsName);
-    RELEASEOBJECT(wsAltName);
-
-    RELEASEOBJECT(wsFamilyClass);
-    RELEASEOBJECT(sFamilyClass);
-
-    RELEASEOBJECT(bFixedWidth);
-
-    RELEASEARRAYOBJECTS(pPanose);
-
-    RELEASEOBJECT(ulRange1);
-    RELEASEOBJECT(ulRange2);
-    RELEASEOBJECT(ulRange3);
-    RELEASEOBJECT(ulRange4);
-    RELEASEOBJECT(ulCodeRange1);
-    RELEASEOBJECT(ulCodeRange2);
-
-    RELEASEOBJECT(usWeight);
-    RELEASEOBJECT(usWidth);
-
-    RELEASEOBJECT(nFontFormat);
-    RELEASEOBJECT(unCharset);
-
-    RELEASEOBJECT(shAvgCharWidth);
-    RELEASEOBJECT(shAscent);
-    RELEASEOBJECT(shDescent);
-    RELEASEOBJECT(shLineGap);
-    RELEASEOBJECT(shXHeight);
-    RELEASEOBJECT(shCapHeight);
-}
-
-///////////////////////////////////////////////////////////////////////////////////
-CFontInfo::CFontInfo(const std::wstring& wsFontName, 
-	const std::wstring& wsStyle, 
-	const std::wstring& wsFontPath, 
-	long lIndex,
-    INT bBold,
-    INT bItalic,
-    INT bFixedWidth,
-	BYTE* pPanose, 
-    ULONG ulRange1,
-    ULONG ulRange2,
-    ULONG ulRange3,
-	ULONG ulRange4, 
-	ULONG ulCodeRange1, 
-	ULONG ulCodeRange2, 
-	USHORT usWeigth, 
-	USHORT usWidth, 
-	SHORT sFamilyClass, 
-	EFontFormat eFormat, 
-	SHORT shAvgCharWidth, 
-	SHORT shAscent, 
-	SHORT shDescent, 
-	SHORT shLineGap, 
-	SHORT shXHeight, 
-	SHORT shCapHeight)
-{
-	m_wsFontName = wsFontName;
-	m_wsFontPath = wsFontPath;
-	m_wsStyle    = wsStyle;
-	m_lIndex     = lIndex;
-
-	m_bBold      = bBold;
-	m_bItalic    = bItalic;
-
-	m_bIsFixed   = bFixedWidth;
-	
-	if ( pPanose )
-		memcpy( (void*)m_aPanose, (const void *)pPanose, 10 );
-	else
-		memset( (void*)m_aPanose, 0x00, 10 );
-
-	m_ulUnicodeRange1  = ulRange1;
-	m_ulUnicodeRange2  = ulRange2;
-	m_ulUnicodeRange3  = ulRange3;
-	m_ulUnicodeRange4  = ulRange4;
-	m_ulCodePageRange1 = ulCodeRange1;
-	m_ulCodePageRange2 = ulCodeRange2;
-	m_usWeigth         = usWeigth;         
-	m_usWidth          = usWidth;	
-
-	m_sFamilyClass     = sFamilyClass;
-
-	m_eFontFormat      = eFormat;
-
-	m_shAvgCharWidth   = shAvgCharWidth;
-	m_shAscent         = shAscent;
-	m_shDescent        = shDescent;
-	m_shLineGap        = shLineGap;
-	m_shXHeight        = shXHeight;
-	m_shCapHeight      = shCapHeight;
-}
-CFontInfo::~CFontInfo()
-{
-}
-
-INT CFontInfo::Equals(const CFontInfo *pFontInfo)
-{
-	return (m_wsFontName == pFontInfo->m_wsFontName && 
-		m_wsStyle == pFontInfo->m_wsStyle && 
-		m_wsFontPath == pFontInfo->m_wsFontPath && 
-		m_bItalic == pFontInfo->m_bItalic && 
-		m_bBold == pFontInfo->m_bBold);
-}
-
-CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
-{
-	// name		
-    int lLen = *((int*)pBuffer);
-    pBuffer += sizeof(int);
-
-    int len2 = lLen >> 1;
-	wchar_t* sName = new wchar_t[len2 + 1];
-    for (int i = 0; i < len2; ++i)
+    CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir)
     {
-        sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
-        if (sName[i] == wchar_t('\\'))
-            sName[i] = wchar_t('/');
-        if (0 == sName[i])
+        // name
+        int lLen = *((int*)pBuffer);
+        pBuffer += sizeof(int);
+
+        int len2 = lLen >> 1;
+        wchar_t* sName = new wchar_t[len2 + 1];
+        for (int i = 0; i < len2; ++i)
         {
-            len2 = i;
-            break;
+            sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
+            if (sName[i] == wchar_t('\\'))
+                sName[i] = wchar_t('/');
+            if (0 == sName[i])
+            {
+                len2 = i;
+                break;
+            }
         }
-    }
-	sName[len2] = 0;
+        sName[len2] = 0;
 
-	std::wstring strName(sName, len2);
-	pBuffer += lLen;
-
-	RELEASEARRAYOBJECTS(sName);
-
-	// path
-    lLen = *((int*)pBuffer);
-    pBuffer += sizeof(int);
-
-	len2 = lLen >> 1;
-	sName = new wchar_t[len2 + 1];
-    for (int i = 0; i < len2; ++i)
-    {
-        sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
-        if (sName[i] == wchar_t('\\'))
-            sName[i] = wchar_t('/');
-        if (0 == sName[i])
-        {
-            len2 = i;
-            break;
-        }
-    }
-	sName[len2] = 0;
-
-	std::wstring strPath(sName, len2);
-    pBuffer += lLen;
-
-	RELEASEARRAYOBJECTS(sName);
-
-	// index
-    LONG lIndex = *((int*)pBuffer);
-    pBuffer += sizeof(int);
-
-	// italic
-    INT bItalic = *((INT*)pBuffer);
-    pBuffer += sizeof(INT);
-
-	// bold
-    INT bBold = *((INT*)pBuffer);
-    pBuffer += sizeof(INT);
-
-	// FixedWidth
-    INT bFixedWidth = *((INT*)pBuffer);
-    pBuffer += sizeof(INT);
-
-	// Panose
-    lLen = *((int*)pBuffer); // должно быть равно 10
-    pBuffer += sizeof(int);
-
-	BYTE pPanose[10];
-	memcpy( (void *)pPanose, (const void *)pBuffer, 10 );
-	pBuffer += lLen;
-
-	// ulUnicodeRange1
-    UINT ulRange1 = *((UINT*)pBuffer);
-    pBuffer += sizeof(UINT);
-
-	// ulUnicodeRange2
-    UINT ulRange2 = *((UINT*)pBuffer);
-    pBuffer += sizeof(UINT);
-
-	// ulUnicodeRange3
-    UINT ulRange3 = *((UINT*)pBuffer);
-    pBuffer += sizeof(UINT);
-
-	// ulUnicodeRange4
-    UINT ulRange4 = *((UINT*)pBuffer);
-    pBuffer += sizeof(UINT);
-
-	// ulCodePageRange1
-    UINT ulCodeRange1 = *((UINT*)pBuffer);
-    pBuffer += sizeof(UINT);
-
-	// ulCodePageRange2
-    ULONG ulCodeRange2 = *((UINT*)pBuffer);
-    pBuffer += sizeof(UINT);
-
-	// usWeightClass
-	USHORT usWeight = *((USHORT*)pBuffer);
-	pBuffer += sizeof(USHORT);
-
-	// usWidthClass
-	USHORT usWidth = *((USHORT*)pBuffer);
-	pBuffer += sizeof(USHORT);
-
-	// sFamilyClass
-	SHORT sFamilyClass = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-	// FontFormat
-	SHORT sFormat = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-	// AvgCharWidth
-	SHORT shAvgCharWidth = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-	// Ascent
-	SHORT shAscent = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-	// Descent
-	SHORT shDescent = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-	// LineGap
-	SHORT shLineGap = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-	// XHeight
-	SHORT shXHeight = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-	// CapHeight
-	SHORT shCapHeight = *((SHORT*)pBuffer);
-	pBuffer += sizeof(SHORT);
-
-        if (strPath.find(wchar_t('/')) == std::wstring::npos && strPath.find(wchar_t('\\')) == std::wstring::npos)
-            strPath = strDir + strPath;
-
-	CFontInfo* pInfo = new CFontInfo(strName,
-		L"",
-		strPath,
-		lIndex, 
-		bBold, 
-		bItalic, 
-		bFixedWidth, 
-		(BYTE*)pPanose, 
-		ulRange1, 
-		ulRange2, 
-		ulRange3, 
-		ulRange4, 
-		ulCodeRange1, 
-		ulCodeRange2, 
-		usWeight, 
-		usWidth, 
-		sFamilyClass, 
-		(EFontFormat)sFormat, 
-		shAvgCharWidth, 
-		shAscent, 
-		shDescent, 
-		shLineGap, 
-		shXHeight, 
-		shCapHeight );
-
-	return pInfo;		
-}
-
-LONG CFontInfo::GetBufferLen(std::wstring strDirectory, bool bIsOnlyFileName)
-{
-    std::wstring sPath = m_wsFontPath;
-    if (0 != strDirectory.length())
-    {
-        if (0 == sPath.find(strDirectory))
-        {
-            sPath = sPath.substr(strDirectory.length());
-        }
-    }
-    else if (bIsOnlyFileName)
-    {
-        size_t pos1 = sPath.find_last_of(wchar_t('/'));
-        size_t pos2 = sPath.find_last_of(wchar_t('\\'));
-
-        size_t pos = std::wstring::npos;
-        if (pos1 != std::wstring::npos)
-            pos = pos1;
-
-        if (pos2 != std::wstring::npos)
-        {
-            if (pos == std::wstring::npos)
-                pos = pos2;
-            else if (pos2 > pos)
-                pos = pos2;
-        }
-
-        if (pos != std::wstring::npos)
-        {
-            sPath = sPath.substr(pos + 1);
-        }
-    }
-    //return 4 * g_lSizeofLONG + 3 * g_lSizeofBOOL + (m_wsFontName.GetLength() + sPath.GetLength() + 2) * g_lSizeofWCHAR + 2 * g_lSizeofUSHORT + 6 * g_lSizeofULONG + 10 + 8 * g_lSizeofSHORT;
-    if (2 == sizeof(wchar_t))
-    {
-        return 4 * 4 + 3 * 4 + (m_wsFontName.length() + sPath.length() + 2) * 2 + 2 * 2 + 6 * 4 + 10 + 8 * 2;
-    }
-
-    NSFile::CStringUtf16 s1;
-    NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(m_wsFontName.c_str(), m_wsFontName.length(), s1);
-
-    NSFile::CStringUtf16 s2;
-    NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(sPath.c_str(), sPath.length(), s2);
-
-    return 4 * 4 + 3 * 4 + (s1.Length + s2.Length + 2) * 2 + 2 * 2 + 6 * 4 + 10 + 8 * 2;
-}
-void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnlyFileName)
-{
-    // name
-    int lLen = 0;
-
-    if (2 == sizeof(wchar_t))
-    {
-        lLen = (m_wsFontName.length() + 1) * 2;
-
-        *((int*)(pBuffer))	= lLen;
-        pBuffer += 4;
-
-        memcpy(pBuffer, m_wsFontName.c_str(), lLen);
+        std::wstring strName(sName, len2);
         pBuffer += lLen;
 
+        RELEASEARRAYOBJECTS(sName);
+
         // path
-        std::wstring sPath = m_wsFontPath;
-        if (0 != strDirectory.length())
+        lLen = *((int*)pBuffer);
+        pBuffer += sizeof(int);
+
+        len2 = lLen >> 1;
+        sName = new wchar_t[len2 + 1];
+        for (int i = 0; i < len2; ++i)
         {
-            if (0 == sPath.find(strDirectory))
+            sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
+            if (sName[i] == wchar_t('\\'))
+                sName[i] = wchar_t('/');
+            if (0 == sName[i])
             {
-                sPath = sPath.substr(strDirectory.length());
+                len2 = i;
+                break;
             }
         }
-        else if (bIsOnlyFileName)
-        {
-            size_t pos1 = sPath.find_last_of(wchar_t('/'));
-            size_t pos2 = sPath.find_last_of(wchar_t('\\'));
+        sName[len2] = 0;
 
-            size_t pos = std::wstring::npos;
-            if (pos1 != std::wstring::npos)
-                pos = pos1;
+        std::wstring strPath(sName, len2);
+        pBuffer += lLen;
 
-            if (pos2 != std::wstring::npos)
-            {
-                if (pos == std::wstring::npos)
-                    pos = pos2;
-                else if (pos2 > pos)
-                    pos = pos2;
-            }
+        RELEASEARRAYOBJECTS(sName);
 
-            if (pos != std::wstring::npos)
-            {
-                sPath = sPath.substr(pos + 1);
-            }
-        }
+        // index
+        LONG lIndex = *((int*)pBuffer);
+        pBuffer += sizeof(int);
 
-        lLen = (sPath.length() + 1) * 2;
-
-        *((INT*)(pBuffer))	= lLen;
+        // italic
+        INT bItalic = *((INT*)pBuffer);
         pBuffer += sizeof(INT);
 
-        memcpy(pBuffer, sPath.c_str(), lLen);
+        // bold
+        INT bBold = *((INT*)pBuffer);
+        pBuffer += sizeof(INT);
+
+        // FixedWidth
+        INT bFixedWidth = *((INT*)pBuffer);
+        pBuffer += sizeof(INT);
+
+        // Panose
+        lLen = *((int*)pBuffer); // должно быть равно 10
+        pBuffer += sizeof(int);
+
+        BYTE pPanose[10];
+        memcpy( (void *)pPanose, (const void *)pBuffer, 10 );
         pBuffer += lLen;
+
+        // ulUnicodeRange1
+        UINT ulRange1 = *((UINT*)pBuffer);
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange2
+        UINT ulRange2 = *((UINT*)pBuffer);
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange3
+        UINT ulRange3 = *((UINT*)pBuffer);
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange4
+        UINT ulRange4 = *((UINT*)pBuffer);
+        pBuffer += sizeof(UINT);
+
+        // ulCodePageRange1
+        UINT ulCodeRange1 = *((UINT*)pBuffer);
+        pBuffer += sizeof(UINT);
+
+        // ulCodePageRange2
+        ULONG ulCodeRange2 = *((UINT*)pBuffer);
+        pBuffer += sizeof(UINT);
+
+        // usWeightClass
+        USHORT usWeight = *((USHORT*)pBuffer);
+        pBuffer += sizeof(USHORT);
+
+        // usWidthClass
+        USHORT usWidth = *((USHORT*)pBuffer);
+        pBuffer += sizeof(USHORT);
+
+        // sFamilyClass
+        SHORT sFamilyClass = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+        // FontFormat
+        SHORT sFormat = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+        // AvgCharWidth
+        SHORT shAvgCharWidth = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+        // Ascent
+        SHORT shAscent = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+        // Descent
+        SHORT shDescent = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+        // LineGap
+        SHORT shLineGap = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+        // XHeight
+        SHORT shXHeight = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+        // CapHeight
+        SHORT shCapHeight = *((SHORT*)pBuffer);
+        pBuffer += sizeof(SHORT);
+
+            if (strPath.find(wchar_t('/')) == std::wstring::npos && strPath.find(wchar_t('\\')) == std::wstring::npos)
+                strPath = strDir + strPath;
+
+        CFontInfo* pInfo = new CFontInfo(strName,
+            L"",
+            strPath,
+            lIndex,
+            bBold,
+            bItalic,
+            bFixedWidth,
+            (BYTE*)pPanose,
+            ulRange1,
+            ulRange2,
+            ulRange3,
+            ulRange4,
+            ulCodeRange1,
+            ulCodeRange2,
+            usWeight,
+            usWidth,
+            sFamilyClass,
+            (EFontFormat)sFormat,
+            shAvgCharWidth,
+            shAscent,
+            shDescent,
+            shLineGap,
+            shXHeight,
+            shCapHeight );
+
+        return pInfo;
     }
-    else
+    LONG GetBufferLen(CFontInfo* pInfo, std::wstring strDirectory, bool bIsOnlyFileName)
     {
-        NSFile::CStringUtf16 s1;
-        NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(m_wsFontName.c_str(), m_wsFontName.length(), s1);
-
-        lLen = s1.Length + 2;
-
-        *((int*)(pBuffer))	= lLen;
-        pBuffer += 4;
-
-        memcpy(pBuffer, s1.Data, lLen);
-        pBuffer += lLen;
-
-        // path
-        std::wstring sPath = m_wsFontPath;
+        std::wstring sPath = pInfo->m_wsFontPath;
         if (0 != strDirectory.length())
         {
             if (0 == sPath.find(strDirectory))
@@ -606,107 +241,342 @@ void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnly
                 sPath = sPath.substr(pos + 1);
             }
         }
+        //return 4 * g_lSizeofLONG + 3 * g_lSizeofBOOL + (m_wsFontName.GetLength() + sPath.GetLength() + 2) * g_lSizeofWCHAR + 2 * g_lSizeofUSHORT + 6 * g_lSizeofULONG + 10 + 8 * g_lSizeofSHORT;
+        if (2 == sizeof(wchar_t))
+        {
+            return 4 * 4 + 3 * 4 + (pInfo->m_wsFontName.length() + sPath.length() + 2) * 2 + 2 * 2 + 6 * 4 + 10 + 8 * 2;
+        }
+
+        NSFile::CStringUtf16 s1;
+        NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(pInfo->m_wsFontName.c_str(), pInfo->m_wsFontName.length(), s1);
 
         NSFile::CStringUtf16 s2;
         NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(sPath.c_str(), sPath.length(), s2);
 
-        lLen = s2.Length + 2;
+        return 4 * 4 + 3 * 4 + (s1.Length + s2.Length + 2) * 2 + 2 * 2 + 6 * 4 + 10 + 8 * 2;
+    }
+
+    void ToBuffer(CFontInfo* pInfo, BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnlyFileName)
+    {
+        // name
+        int lLen = 0;
+
+        if (2 == sizeof(wchar_t))
+        {
+            lLen = (pInfo->m_wsFontName.length() + 1) * 2;
+
+            *((int*)(pBuffer))	= lLen;
+            pBuffer += 4;
+
+            memcpy(pBuffer, pInfo->m_wsFontName.c_str(), lLen);
+            pBuffer += lLen;
+
+            // path
+            std::wstring sPath = pInfo->m_wsFontPath;
+            if (0 != strDirectory.length())
+            {
+                if (0 == sPath.find(strDirectory))
+                {
+                    sPath = sPath.substr(strDirectory.length());
+                }
+            }
+            else if (bIsOnlyFileName)
+            {
+                size_t pos1 = sPath.find_last_of(wchar_t('/'));
+                size_t pos2 = sPath.find_last_of(wchar_t('\\'));
+
+                size_t pos = std::wstring::npos;
+                if (pos1 != std::wstring::npos)
+                    pos = pos1;
+
+                if (pos2 != std::wstring::npos)
+                {
+                    if (pos == std::wstring::npos)
+                        pos = pos2;
+                    else if (pos2 > pos)
+                        pos = pos2;
+                }
+
+                if (pos != std::wstring::npos)
+                {
+                    sPath = sPath.substr(pos + 1);
+                }
+            }
+
+            lLen = (sPath.length() + 1) * 2;
+
+            *((INT*)(pBuffer))	= lLen;
+            pBuffer += sizeof(INT);
+
+            memcpy(pBuffer, sPath.c_str(), lLen);
+            pBuffer += lLen;
+        }
+        else
+        {
+            NSFile::CStringUtf16 s1;
+            NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(pInfo->m_wsFontName.c_str(), pInfo->m_wsFontName.length(), s1);
+
+            lLen = s1.Length + 2;
+
+            *((int*)(pBuffer))	= lLen;
+            pBuffer += 4;
+
+            memcpy(pBuffer, s1.Data, lLen);
+            pBuffer += lLen;
+
+            // path
+            std::wstring sPath = pInfo->m_wsFontPath;
+            if (0 != strDirectory.length())
+            {
+                if (0 == sPath.find(strDirectory))
+                {
+                    sPath = sPath.substr(strDirectory.length());
+                }
+            }
+            else if (bIsOnlyFileName)
+            {
+                size_t pos1 = sPath.find_last_of(wchar_t('/'));
+                size_t pos2 = sPath.find_last_of(wchar_t('\\'));
+
+                size_t pos = std::wstring::npos;
+                if (pos1 != std::wstring::npos)
+                    pos = pos1;
+
+                if (pos2 != std::wstring::npos)
+                {
+                    if (pos == std::wstring::npos)
+                        pos = pos2;
+                    else if (pos2 > pos)
+                        pos = pos2;
+                }
+
+                if (pos != std::wstring::npos)
+                {
+                    sPath = sPath.substr(pos + 1);
+                }
+            }
+
+            NSFile::CStringUtf16 s2;
+            NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(sPath.c_str(), sPath.length(), s2);
+
+            lLen = s2.Length + 2;
+
+            *((INT*)(pBuffer))	= lLen;
+            pBuffer += sizeof(INT);
+
+            memcpy(pBuffer, s2.Data, lLen);
+            pBuffer += lLen;
+        }
+
+        // index
+        *((INT*)(pBuffer))	= (INT)pInfo->m_lIndex;
+        pBuffer += sizeof(INT);
+
+        // italic
+        *((INT*)(pBuffer))	= pInfo->m_bItalic;
+        pBuffer += sizeof(INT);
+
+        // bold
+        *((INT*)(pBuffer))	= pInfo->m_bBold;
+        pBuffer += sizeof(INT);
+
+        // FixedWidth
+        *((INT*)pBuffer) = pInfo->m_bIsFixed;
+        pBuffer += sizeof(INT);
+
+        // Panose
+        lLen = 10;
 
         *((INT*)(pBuffer))	= lLen;
         pBuffer += sizeof(INT);
 
-        memcpy(pBuffer, s2.Data, lLen);
+        memcpy( (void *)pBuffer, (const void *)pInfo->m_aPanose, lLen );
         pBuffer += lLen;
+
+        // ulUnicodeRange1
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange1;
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange2
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange2;
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange3
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange3;
+        pBuffer += sizeof(UINT);
+
+        // ulUnicodeRange4
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulUnicodeRange4;
+        pBuffer += sizeof(UINT);
+
+        // ulCodePageRange1
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange1;
+        pBuffer += sizeof(UINT);
+
+        // ulCodePageRange2
+        *((UINT*)pBuffer) = (UINT)pInfo->m_ulCodePageRange2;
+        pBuffer += sizeof(UINT);
+
+        // usWeightClass
+        *((USHORT*)pBuffer) = pInfo->m_usWeigth;
+        pBuffer += sizeof(USHORT);
+
+        // usWidthClass
+        *((USHORT*)pBuffer) = pInfo->m_usWidth;
+        pBuffer += sizeof(USHORT);
+
+        // sFamilyClass
+        *((SHORT*)pBuffer) = pInfo->m_sFamilyClass;
+        pBuffer += sizeof(SHORT);
+
+        // FontFormat
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_eFontFormat;
+        pBuffer += sizeof(SHORT);
+
+        // AvgCharWidth
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAvgCharWidth;
+        pBuffer += sizeof(SHORT);
+
+        // Ascent
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shAscent;
+        pBuffer += sizeof(SHORT);
+
+        // Descent
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shDescent;
+        pBuffer += sizeof(SHORT);
+
+        // LineGap
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shLineGap;
+        pBuffer += sizeof(SHORT);
+
+        // XHeight
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shXHeight;
+        pBuffer += sizeof(SHORT);
+
+        // CapHeight
+        *((SHORT*)pBuffer) = (SHORT)pInfo->m_shCapHeight;
+        pBuffer += sizeof(SHORT);
+    }
+}
+
+namespace NSCharsets
+{
+    static int GetDefaultCharset(INT bUseDefCharset = TRUE)
+    {
+        if ( !bUseDefCharset )
+            return UNKNOWN_CHARSET;
+
+        /*
+        LOCALESIGNATURE LocSig;
+        GetLocaleInfo( GetSystemDefaultLCID(), LOCALE_FONTSIGNATURE, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(TCHAR) );
+
+        if ( LocSig.lsCsbDefault[0] & 1 )
+            return 0;
+        else if ( LocSig.lsCsbDefault[0] & 2 )
+            return 238;
+        else if ( LocSig.lsCsbDefault[0] & 4 )
+            return 204;
+        else if ( LocSig.lsCsbDefault[0] & 8 )
+            return 161;
+        else if ( LocSig.lsCsbDefault[0] & 16 )
+            return 162;
+        else if ( LocSig.lsCsbDefault[0] & 32 )
+            return 177;
+        else if ( LocSig.lsCsbDefault[0] & 64 )
+            return 178;
+        else if ( LocSig.lsCsbDefault[0] & 128 )
+            return 186;
+        else if ( LocSig.lsCsbDefault[0] & 256 )
+            return 163;
+        else if ( LocSig.lsCsbDefault[0] & 0x10000 )
+            return 222;
+        else if ( LocSig.lsCsbDefault[0] & 0x20000 )
+            return 128;
+        else if ( LocSig.lsCsbDefault[0] & 0x40000 )
+            return 134;
+        else if ( LocSig.lsCsbDefault[0] & 0x80000 )
+            return 129;
+        else if ( LocSig.lsCsbDefault[0] & 0x100000 )
+            return 136;
+        else if ( LocSig.lsCsbDefault[0] & 0x200000 )
+            return 130;
+        else if ( LocSig.lsCsbDefault[0] & 0x20000000 )
+            return 77;
+        else if ( LocSig.lsCsbDefault[0] & 0x40000000 )
+            return 255;
+        else if ( LocSig.lsCsbDefault[0] & 0x80000000 )
+            return 2;
+        */
+
+        return 0;
     }
 
-    // index
-    *((INT*)(pBuffer))	= (INT)m_lIndex;
-    pBuffer += sizeof(INT);
+    static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit, unsigned int *punLongIndex)
+    {
+        // Данная функция возвращает параметры, которые нужно посылать на вход
+        // функции AVSFontManager::IsUnicodeRangeAvailable
 
-    // italic
-    *((INT*)(pBuffer))	= m_bItalic;
-    pBuffer += sizeof(INT);
 
-    // bold
-    *((INT*)(pBuffer))	= m_bBold;
-    pBuffer += sizeof(INT);
+        // Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+        // http://msdn.microsoft.com/en-us/library/cc194829.aspx
 
-    // FixedWidth
-    *((INT*)pBuffer) = m_bIsFixed;
-    pBuffer += sizeof(INT);
+        //  Charset Name       Charset Value(hex)  Codepage number
+        //  ------------------------------------------------------
+        //
+        //  DEFAULT_CHARSET           1 (x01)
+        //  SYMBOL_CHARSET            2 (x02)
+        //  OEM_CHARSET             255 (xFF)
+        //  ANSI_CHARSET              0 (x00)            1252
+        //  RUSSIAN_CHARSET         204 (xCC)            1251
+        //  EASTEUROPE_CHARSET      238 (xEE)            1250
+        //  GREEK_CHARSET           161 (xA1)            1253
+        //  TURKISH_CHARSET         162 (xA2)            1254
+        //  BALTIC_CHARSET          186 (xBA)            1257
+        //  HEBREW_CHARSET          177 (xB1)            1255
+        //  ARABIC _CHARSET         178 (xB2)            1256
+        //  SHIFTJIS_CHARSET        128 (x80)             932
+        //  HANGEUL_CHARSET         129 (x81)             949
+        //  GB2313_CHARSET          134 (x86)             936
+        //  CHINESEBIG5_CHARSET     136 (x88)             950
+        //  THAI_CHARSET            222 (xDE)             874
+        //  JOHAB_CHARSET	        130 (x82)            1361
+        //  VIETNAMESE_CHARSET      163 (xA3)            1258
+        //  MAC_CHARSET              77 (x4D)
 
-    // Panose
-    lLen = 10;
+        // Соответсвие CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
 
-    *((INT*)(pBuffer))	= lLen;
-    pBuffer += sizeof(INT);
+        if ( punLongIndex )
+            *punLongIndex = 4;
 
-    memcpy( (void *)pBuffer, (const void *)m_aPanose, lLen );
-    pBuffer += lLen;
+        if ( unCharset == 1 )
+            unCharset = GetDefaultCharset();
 
-    // ulUnicodeRange1
-    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange1;
-    pBuffer += sizeof(UINT);
-
-    // ulUnicodeRange2
-    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange2;
-    pBuffer += sizeof(UINT);
-
-    // ulUnicodeRange3
-    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange3;
-    pBuffer += sizeof(UINT);
-
-    // ulUnicodeRange4
-    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange4;
-    pBuffer += sizeof(UINT);
-
-    // ulCodePageRange1
-    *((UINT*)pBuffer) = (UINT)m_ulCodePageRange1;
-    pBuffer += sizeof(UINT);
-
-    // ulCodePageRange2
-    *((UINT*)pBuffer) = (UINT)m_ulCodePageRange2;
-    pBuffer += sizeof(UINT);
-
-    // usWeightClass
-    *((USHORT*)pBuffer) = m_usWeigth;
-    pBuffer += sizeof(USHORT);
-
-    // usWidthClass
-    *((USHORT*)pBuffer) = m_usWidth;
-    pBuffer += sizeof(USHORT);
-
-    // sFamilyClass
-    *((SHORT*)pBuffer) = m_sFamilyClass;
-    pBuffer += sizeof(SHORT);
-
-    // FontFormat
-    *((SHORT*)pBuffer) = (SHORT)m_eFontFormat;
-    pBuffer += sizeof(SHORT);
-
-    // AvgCharWidth
-    *((SHORT*)pBuffer) = (SHORT)m_shAvgCharWidth;
-    pBuffer += sizeof(SHORT);
-
-    // Ascent
-    *((SHORT*)pBuffer) = (SHORT)m_shAscent;
-    pBuffer += sizeof(SHORT);
-
-    // Descent
-    *((SHORT*)pBuffer) = (SHORT)m_shDescent;
-    pBuffer += sizeof(SHORT);
-
-    // LineGap
-    *((SHORT*)pBuffer) = (SHORT)m_shLineGap;
-    pBuffer += sizeof(SHORT);
-
-    // XHeight
-    *((SHORT*)pBuffer) = (SHORT)m_shXHeight;
-    pBuffer += sizeof(SHORT);
-
-    // CapHeight
-    *((SHORT*)pBuffer) = (SHORT)m_shCapHeight;
-    pBuffer += sizeof(SHORT);
+        if ( pulBit )
+        {
+            switch( unCharset )
+            {
+            case 0x00: *pulBit =  0; break;
+            case 0xEE: *pulBit =  1; break;
+            case 0xCC: *pulBit =  2; break;
+            case 0xA1: *pulBit =  3; break;
+            case 0xA2: *pulBit =  4; break;
+            case 0xB1: *pulBit =  5; break;
+            case 0xB2: *pulBit =  6; break;
+            case 0xBA: *pulBit =  7; break;
+            case 0xA3: *pulBit =  8; break;
+            case 0xDE: *pulBit = 16; break;
+            case 0x80: *pulBit = 17; break;
+            case 0x86: *pulBit = 18; break;
+            case 0x81: *pulBit = 19; break;
+            case 0x88: *pulBit = 20; break;
+            case 0x82: *pulBit = 21; break;
+            case 0x4D: *pulBit = 29; break;
+            case 0x02: *pulBit = 31; break;
+            case 0xFF: *pulBit = 30; break;
+            default:   *pulBit =  0; break;
+            }
+        }
+    }
 }
 
 #ifdef BUILD_FONT_NAMES_DICTIONARY
@@ -716,22 +586,22 @@ void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnly
 #include "internal/internal.h"
 #include "internal/tttypes.h"
 
-void CFontInfo::ReadNames(FT_Face pFace)
+void ReadNames(NSFonts::CFontInfo* pInfo, FT_Face pFace)
 {
     TT_Face pTT_Face = (TT_Face)(pFace);
 
-    names.clear();
+    pInfo->names.clear();
     if (NULL != pTT_Face)
     {
         for (int i = 0; i < pTT_Face->utf16_len; ++i)
         {
             std::wstring s(pTT_Face->utf16_names[i]);
 
-            if (s == m_wsFontName)
+            if (s == pInfo->m_wsFontName)
                 continue;
 
             bool bIsPresent = false;
-            for (std::vector<std::wstring>::iterator i = names.begin(); i != names.end(); i++)
+            for (std::vector<std::wstring>::iterator i = pInfo->names.begin(); i != pInfo->names.end(); i++)
             {
                 if (*i == s)
                 {
@@ -741,132 +611,13 @@ void CFontInfo::ReadNames(FT_Face pFace)
             }
 
             if (!bIsPresent)
-                names.push_back(s);
+                pInfo->names.push_back(s);
         }
     }
 }
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////
-namespace NSCharsets
-{
-	static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit, unsigned int *punLongIndex)
-	{
-		// Данная функция возвращает параметры, которые нужно посылать на вход 
-		// функции AVSFontManager::IsUnicodeRangeAvailable
-
-
-		// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
-		// http://msdn.microsoft.com/en-us/library/cc194829.aspx
-
-		//  Charset Name       Charset Value(hex)  Codepage number
-		//  ------------------------------------------------------
-		//
-		//  DEFAULT_CHARSET           1 (x01)
-		//  SYMBOL_CHARSET            2 (x02)
-		//  OEM_CHARSET             255 (xFF)
-		//  ANSI_CHARSET              0 (x00)            1252
-		//  RUSSIAN_CHARSET         204 (xCC)            1251
-		//  EASTEUROPE_CHARSET      238 (xEE)            1250
-		//  GREEK_CHARSET           161 (xA1)            1253
-		//  TURKISH_CHARSET         162 (xA2)            1254
-		//  BALTIC_CHARSET          186 (xBA)            1257
-		//  HEBREW_CHARSET          177 (xB1)            1255
-		//  ARABIC _CHARSET         178 (xB2)            1256
-		//  SHIFTJIS_CHARSET        128 (x80)             932
-		//  HANGEUL_CHARSET         129 (x81)             949
-		//  GB2313_CHARSET          134 (x86)             936
-		//  CHINESEBIG5_CHARSET     136 (x88)             950
-		//  THAI_CHARSET            222 (xDE)             874	
-		//  JOHAB_CHARSET	        130 (x82)            1361
-		//  VIETNAMESE_CHARSET      163 (xA3)            1258
-		//  MAC_CHARSET              77 (x4D)            
-
-		// Соответсвие CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
-
-		if ( punLongIndex )
-			*punLongIndex = 4;
-
-		if ( unCharset == 1 )
-			unCharset = GetDefaultCharset();
-		
-		if ( pulBit )
-		{
-			switch( unCharset )
-			{
-			case 0x00: *pulBit =  0; break;
-			case 0xEE: *pulBit =  1; break;
-			case 0xCC: *pulBit =  2; break;
-			case 0xA1: *pulBit =  3; break;
-			case 0xA2: *pulBit =  4; break;
-			case 0xB1: *pulBit =  5; break;
-			case 0xB2: *pulBit =  6; break;
-			case 0xBA: *pulBit =  7; break;
-			case 0xA3: *pulBit =  8; break;
-			case 0xDE: *pulBit = 16; break;
-			case 0x80: *pulBit = 17; break;
-			case 0x86: *pulBit = 18; break;
-			case 0x81: *pulBit = 19; break;
-			case 0x88: *pulBit = 20; break;
-			case 0x82: *pulBit = 21; break;
-			case 0x4D: *pulBit = 29; break;
-			case 0x02: *pulBit = 31; break;
-			case 0xFF: *pulBit = 30; break;
-			default:   *pulBit =  0; break;
-			}
-		}
-	}
-    static int  GetDefaultCharset(INT bUseDefCharset)
-	{
-		if ( !bUseDefCharset )
-			return UNKNOWN_CHARSET;
-
-		/*
-		LOCALESIGNATURE LocSig;
-		GetLocaleInfo( GetSystemDefaultLCID(), LOCALE_FONTSIGNATURE, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(TCHAR) );
-
-		if ( LocSig.lsCsbDefault[0] & 1 )
-			return 0;
-		else if ( LocSig.lsCsbDefault[0] & 2 )
-			return 238;
-		else if ( LocSig.lsCsbDefault[0] & 4 )
-			return 204;
-		else if ( LocSig.lsCsbDefault[0] & 8 )
-			return 161;
-		else if ( LocSig.lsCsbDefault[0] & 16 )
-			return 162;
-		else if ( LocSig.lsCsbDefault[0] & 32 )
-			return 177;
-		else if ( LocSig.lsCsbDefault[0] & 64 )
-			return 178;
-		else if ( LocSig.lsCsbDefault[0] & 128 )
-			return 186;
-		else if ( LocSig.lsCsbDefault[0] & 256 )
-			return 163;
-		else if ( LocSig.lsCsbDefault[0] & 0x10000 )
-			return 222;
-		else if ( LocSig.lsCsbDefault[0] & 0x20000 )
-			return 128;
-		else if ( LocSig.lsCsbDefault[0] & 0x40000 )
-			return 134;
-		else if ( LocSig.lsCsbDefault[0] & 0x80000 )
-			return 129;
-		else if ( LocSig.lsCsbDefault[0] & 0x100000 )
-			return 136;
-		else if ( LocSig.lsCsbDefault[0] & 0x200000 )
-			return 130;
-		else if ( LocSig.lsCsbDefault[0] & 0x20000000 )
-			return 77;
-		else if ( LocSig.lsCsbDefault[0] & 0x40000000 )
-			return 255;
-		else if ( LocSig.lsCsbDefault[0] & 0x80000000 )
-			return 2;
-		*/
-
-		return 0;
-	}
-}
-
 int CFontList::GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset)
 {
 	// Penalty = 65000 (это самый весомый параметр)
@@ -1160,22 +911,22 @@ EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 	std::string wsFormat( FT_Get_X11_Font_Format( pFace ) );
 
 	if ( "Windows FNT" == wsFormat )
-		return fontWindowsFNT;
+        return fontWindowsFNT;
 	else if ( "TrueType" == wsFormat ) 
-		return fontTrueType;
+        return fontTrueType;
 	else if ( "CFF" == wsFormat )
-		return fontOpenType;
+        return fontOpenType;
 
-	return fontUnknown;
+    return fontUnknown;
 }
 
 void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory, bool bIsOnlyFileName)
 {
     LONG lDataSize = sizeof(INT);
-    size_t nFontsCount = (size_t)m_pList.GetCount();
-    for (size_t i = 0; i < nFontsCount; ++i)
+    size_t nFontsCount = (size_t)m_pList.size();
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
-        lDataSize += m_pList[i]->GetBufferLen(strDirectory, bIsOnlyFileName);
+        lDataSize += NSFonts::GetBufferLen(*iter, strDirectory, bIsOnlyFileName);
     }
 
     BYTE* pData = new BYTE[lDataSize];
@@ -1184,18 +935,18 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     *(INT*)pDataMem = (INT)nFontsCount;
     pDataMem += sizeof(INT);
 
-    for (size_t i = 0; i < nFontsCount; ++i)
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
-        m_pList[i]->ToBuffer(pDataMem, strDirectory, bIsOnlyFileName);
+        NSFonts::ToBuffer(*iter, pDataMem, strDirectory, bIsOnlyFileName);
     }
 
     *pDstData = pData;
     *pLen = lDataSize;
 }
 
-CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse)
+NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse)
 {
-	int nFontsCount = m_pList.GetCount();
+    int nFontsCount = m_pList.size();
 	if (0 == nFontsCount)
 		return NULL;
 
@@ -1206,7 +957,7 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 	}
 
 	int nMinIndex   = 0; // Номер шрифта в списке с минимальным весом
-	int nMinPenalty = 0; // Минимальный вес
+    int nMinPenalty = -1; // Минимальный вес
 
 	int nDefPenalty = 2147483647;
 
@@ -1220,10 +971,11 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 		}
 	}
 
-	for ( int nIndex = 0; nIndex < nFontsCount; ++nIndex )
+    NSFonts::CFontInfo* pInfoMin = NULL;
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
 	{
 		int nCurPenalty = 0;
-		CFontInfo* pInfo = m_pList[nIndex];
+        NSFonts::CFontInfo* pInfo = *iter;
 
 		if ( NULL != oSelect.pPanose )
 		{
@@ -1301,20 +1053,15 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 		if ( NULL != oSelect.shCapHeight )
 			nCurPenalty += GetCapHeightPenalty( pInfo->m_shCapHeight, *oSelect.shCapHeight );
 
-		if ( 0 == nIndex )
+        if ( nMinPenalty < 0 )
 		{
-			nMinIndex   = 0;
+            pInfoMin   = pInfo;
 			nMinPenalty = nCurPenalty;
 		}
 		else if ( nCurPenalty < nMinPenalty )
 		{
-			nMinIndex   = nIndex;
+            pInfoMin   = pInfo;
 			nMinPenalty = nCurPenalty;
-		}
-
-		if ( -1 != m_lDefIndex && nIndex == m_lDefIndex )
-		{
-			nDefPenalty = nCurPenalty;
 		}
 
 		// Нашелся шрифт, удовлетворяющий всем параметрам, дальше искать нет смысла
@@ -1322,45 +1069,19 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 			break;
 	}
 
-	if ( -1 != m_lDefIndex && nDefPenalty == nMinPenalty )
-		nMinIndex = m_lDefIndex;
-
-	return m_pList[nMinIndex];
+    return pInfoMin;
 }
 
-CArray<CFontInfo*> CFontList::GetAllByName(const std::wstring& strFontName)
+std::vector<NSFonts::CFontInfo*> CFontList::GetAllByName(const std::wstring& strFontName)
 {
-	CArray<CFontInfo*> aRes;
-	for ( int nIndex = 0; nIndex < m_pList.GetCount(); ++nIndex )
+    std::vector<NSFonts::CFontInfo*> aRes;
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
 	{
-		CFontInfo* pInfo = m_pList[nIndex];
-		if(pInfo->m_wsFontName == strFontName)
-			aRes.Add(pInfo);
+        NSFonts::CFontInfo* pInfo = *iter;
+        if (pInfo->m_wsFontName == strFontName)
+            aRes.push_back(pInfo);
 	}
 	return aRes;
-}
-void CFontList::SetDefaultFont(std::wstring& sName)
-{
-	m_lDefIndex = -1;
-	int nStyleMin = 100;
-	for ( int nIndex = 0; nIndex < m_pList.GetCount(); ++nIndex )
-	{
-		CFontInfo* pInfo = m_pList[nIndex];
-		if (pInfo->m_wsFontName == sName)
-		{
-			int nStyle = 0;
-			if (pInfo->m_bBold)
-				nStyle |= 2;
-			if (pInfo->m_bItalic)
-				nStyle |= 1;
-
-			if (nStyle < nStyleMin)
-			{
-				m_lDefIndex = nIndex;
-				nStyleMin = nStyle;
-			}
-		}
-	}
 }
 
 void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
@@ -1594,7 +1315,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
             }
 #endif
 
-			CFontInfo* pFontInfo = new CFontInfo( wsFamilyName,
+            NSFonts::CFontInfo* pFontInfo = new NSFonts::CFontInfo( wsFamilyName,
 				wsStyleName, 
 				oArray[nIndex], 
 				nIndexFace, 
@@ -1620,7 +1341,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 				shCapHeight );
 
 #ifdef BUILD_FONT_NAMES_DICTIONARY
-            pFontInfo->ReadNames(pFace);
+            ReadNames(pFontInfo, pFace);
 #endif
 
 			Add(pFontInfo);
@@ -1653,8 +1374,6 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 	BYTE* pBuffer = new BYTE[dwLen1];
 	oFile.ReadFile(pBuffer, dwLen1, dwLen2);
 
-	m_lDefIndex = -1;
-
 	BYTE* _pBuffer = pBuffer;
 
     int lCount = *((int*)_pBuffer);
@@ -1662,7 +1381,7 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 
     for (int nIndex = 0; nIndex < lCount; ++nIndex)
 	{
-		CFontInfo *pFontInfo = CFontInfo::FromBuffer(_pBuffer, strDirectory);
+        NSFonts::CFontInfo *pFontInfo = NSFonts::FromBuffer(_pBuffer, strDirectory);
 		Add(pFontInfo);
 	}
 
@@ -1671,19 +1390,19 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 	return true;
 }
 
-void CFontList::Add(CFontInfo* pInfo)
+void CFontList::Add(NSFonts::CFontInfo* pInfo)
 {
-	int nCount = m_pList.GetCount();
+    int nCount = m_pList.size();
 	for ( int nIndex = 0; nIndex < nCount; ++nIndex ) 
 	{
-		if (m_pList[nIndex]->Equals(pInfo))
+        if (m_pList[nIndex]->IsEquals(pInfo))
 		{
 			RELEASEOBJECT(pInfo);
 			return;
 		}
 	}
 
-	m_pList.Add(pInfo);
+    m_pList.push_back(pInfo);
 }
 
 // ApplicationFonts
@@ -1695,15 +1414,15 @@ CApplicationFonts::~CApplicationFonts()
 {
 }
 
-CFontsCache* CApplicationFonts::GetCache()
+NSFonts::IFontsCache* CApplicationFonts::GetCache()
 {
 	return &m_oCache;
 }
-CFontList* CApplicationFonts::GetList()
+NSFonts::IFontList* CApplicationFonts::GetList()
 {
 	return &m_oList;
 }
-CApplicationFontStreams* CApplicationFonts::GetStreams()
+NSFonts::IApplicationFontStreams* CApplicationFonts::GetStreams()
 {
 	return &m_oStreams;
 }
@@ -1746,7 +1465,7 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
 	m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }
 
-CFontManager* CApplicationFonts::GenerateFontManager()
+NSFonts::IFontManager* CApplicationFonts::GenerateFontManager()
 {
 	CFontManager* pManager = new CFontManager();
 	pManager->m_pApplication = this;
@@ -1908,89 +1627,92 @@ void CApplicationFonts::InitFromReg()
 
 #endif
 
-// Symbols
-class CApplicationFontsSymbols_Private
+namespace NSFonts
 {
-public:
-	FT_Library m_library;
-	FT_Parameter* m_params;
-	BYTE* m_pData;
+    // Symbols
+    class CApplicationFontsSymbols_Private
+    {
+    public:
+        FT_Library m_library;
+        FT_Parameter* m_params;
+        BYTE* m_pData;
 
-	CApplicationFontsSymbols_Private()
-	{
-		m_library = NULL;
-		m_pData = NULL;
-		m_params = NULL;
+        CApplicationFontsSymbols_Private()
+        {
+            m_library = NULL;
+            m_pData = NULL;
+            m_params = NULL;
 
-		if (FT_Init_FreeType(&m_library))
-			return;
+            if (FT_Init_FreeType(&m_library))
+                return;
 
-		m_params = (FT_Parameter *)::malloc( sizeof(FT_Parameter) * 4 );
-		m_params[0].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 'f' );
-		m_params[0].data = NULL;
-		m_params[1].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 's' );
-		m_params[1].data = NULL;
-		m_params[2].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_FAMILY;
-		m_params[2].data = NULL;
-		m_params[3].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_SUBFAMILY;
-		m_params[3].data = NULL;
+            m_params = (FT_Parameter *)::malloc( sizeof(FT_Parameter) * 4 );
+            m_params[0].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 'f' );
+            m_params[0].data = NULL;
+            m_params[1].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 's' );
+            m_params[1].data = NULL;
+            m_params[2].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_FAMILY;
+            m_params[2].data = NULL;
+            m_params[3].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_SUBFAMILY;
+            m_params[3].data = NULL;
 
-		int nSize = 100000000;
-		m_pData = new BYTE[nSize];
-	}
-	~CApplicationFontsSymbols_Private()
-	{
-		RELEASEARRAYOBJECTS(m_pData);
+            int nSize = 100000000;
+            m_pData = new BYTE[nSize];
+        }
+        ~CApplicationFontsSymbols_Private()
+        {
+            RELEASEARRAYOBJECTS(m_pData);
 
-		if (m_params)
-			::free( m_params );
+            if (m_params)
+                ::free( m_params );
 
-		if (m_library)
-			FT_Done_FreeType(m_library);
-	}
-};
+            if (m_library)
+                FT_Done_FreeType(m_library);
+        }
+    };
 
-CApplicationFontsSymbols::CApplicationFontsSymbols()
-{
-	m_internal = new CApplicationFontsSymbols_Private();
-}
-CApplicationFontsSymbols::~CApplicationFontsSymbols()
-{
-	RELEASEOBJECT(m_internal);
-}
+    CApplicationFontsSymbols::CApplicationFontsSymbols()
+    {
+        m_internal = new CApplicationFontsSymbols_Private();
+    }
+    CApplicationFontsSymbols::~CApplicationFontsSymbols()
+    {
+        RELEASEOBJECT(m_internal);
+    }
 
-void CApplicationFontsSymbols::CheckSymbols(const std::wstring& sFile, const int& nFaceIndex, CApplicationFontsSymbolsChecker* pChecker)
-{
-	CFontStream oStream;
-	if (!oStream.CreateFromFile(sFile, m_internal->m_pData))
-		return;;
+    void CApplicationFontsSymbols::CheckSymbols(const std::wstring& sFile, const int& nFaceIndex, CApplicationFontsSymbolsChecker* pChecker)
+    {
+        CFontStream oStream;
+        if (!oStream.CreateFromFile(sFile, m_internal->m_pData))
+            return;;
 
-	FT_Open_Args oOpenArgs;
-	oOpenArgs.flags			= FT_OPEN_MEMORY | FT_OPEN_PARAMS;
-	oOpenArgs.memory_base	= oStream.m_pData;
-	oOpenArgs.memory_size	= oStream.m_lSize;
+        FT_Open_Args oOpenArgs;
+        oOpenArgs.flags			= FT_OPEN_MEMORY | FT_OPEN_PARAMS;
+        oOpenArgs.memory_base	= oStream.m_pData;
+        oOpenArgs.memory_size	= oStream.m_lSize;
 
-	oOpenArgs.num_params = 4;
-	oOpenArgs.params     = m_internal->m_params;
+        oOpenArgs.num_params = 4;
+        oOpenArgs.params     = m_internal->m_params;
 
-	FT_Face pFace = NULL;
-	if (FT_Open_Face(m_internal->m_library, &oOpenArgs, nFaceIndex, &pFace))
-		return;
+        FT_Face pFace = NULL;
+        if (FT_Open_Face(m_internal->m_library, &oOpenArgs, nFaceIndex, &pFace))
+            return;
 
-	for (int nCharMap = 0; nCharMap < pFace->num_charmaps; nCharMap++)
-	{
-		FT_Set_Charmap(pFace, pFace->charmaps[nCharMap]);
+        for (int nCharMap = 0; nCharMap < pFace->num_charmaps; nCharMap++)
+        {
+            FT_Set_Charmap(pFace, pFace->charmaps[nCharMap]);
 
-		FT_UInt indexG;
-		FT_ULong character = FT_Get_First_Char(pFace, &indexG);
+            FT_UInt indexG;
+            FT_ULong character = FT_Get_First_Char(pFace, &indexG);
 
-		while (indexG)
-		{
-			pChecker->Check((int)character, indexG);
-			character = FT_Get_Next_Char(pFace, character, &indexG);
-		}
-	}
+            while (indexG)
+            {
+                pChecker->Check((int)character, indexG);
+                character = FT_Get_Next_Char(pFace, character, &indexG);
+            }
+        }
 
-	FT_Done_Face( pFace );
+        FT_Done_Face( pFace );
+    }
 }
 //

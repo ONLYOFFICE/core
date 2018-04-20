@@ -55,33 +55,33 @@ namespace PPTX
 				XmlUtils::CXmlNode oNodeBy;
 				if (node.GetNode(_T("p:by"), oNodeBy))
 				{
-					oNodeBy.ReadAttributeBase(L"x", byX);
-					oNodeBy.ReadAttributeBase(L"y", byY);
+                    XmlMacroReadAttributeBase(oNodeBy, L"x", byX);
+                    XmlMacroReadAttributeBase(oNodeBy, L"y", byY);
 				}
 				XmlUtils::CXmlNode oNodeFrom;
 				if (node.GetNode(_T("p:from"), oNodeFrom))
 				{
-					oNodeFrom.ReadAttributeBase(L"x", fromX);
-					oNodeFrom.ReadAttributeBase(L"y", fromY);
+                    XmlMacroReadAttributeBase(oNodeFrom, L"x", fromX);
+                    XmlMacroReadAttributeBase(oNodeFrom, L"y", fromY);
 				}
 				XmlUtils::CXmlNode oNodeTo;
 				if (node.GetNode(_T("p:to"), oNodeTo))
 				{
-					oNodeTo.ReadAttributeBase(L"x", toX);
-					oNodeTo.ReadAttributeBase(L"y", toY);
+                    XmlMacroReadAttributeBase(oNodeTo, L"x", toX);
+                    XmlMacroReadAttributeBase(oNodeTo, L"y", toY);
 				}
 				XmlUtils::CXmlNode oNodeCtr;
 				if (node.GetNode(_T("p:rCtr"), oNodeCtr))
-				{
-					oNodeCtr.ReadAttributeBase(L"x", rCtrX);
-					oNodeCtr.ReadAttributeBase(L"y", rCtrY);
+                {
+                    XmlMacroReadAttributeBase(oNodeCtr, L"x", rCtrX);
+                    XmlMacroReadAttributeBase(oNodeCtr, L"y", rCtrY);
 				}
 
-				node.ReadAttributeBase(L"path", path);
-				node.ReadAttributeBase(L"ptsTypes", ptsTypes);
-				node.ReadAttributeBase(L"rAng", rAng);
-				node.ReadAttributeBase(L"origin", origin);
-				node.ReadAttributeBase(L"pathEditMode", pathEditMode);
+                XmlMacroReadAttributeBase(node, L"path", path);
+                XmlMacroReadAttributeBase(node, L"ptsTypes", ptsTypes);
+                XmlMacroReadAttributeBase(node, L"rAng", rAng);
+                XmlMacroReadAttributeBase(node, L"origin", origin);
+                XmlMacroReadAttributeBase(node, L"pathEditMode", pathEditMode);
 
 				FillParentPointersForChilds();
 			}

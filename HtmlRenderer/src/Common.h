@@ -37,9 +37,9 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/graphics/Matrix.h"
 #include "../../DesktopEditor/graphics/structures.h"
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace NSHtmlRenderer
 {
@@ -253,12 +253,7 @@ namespace NSHtmlRenderer
 
     inline bool IsEqualMain(const Aggplus::CMatrix* pMatrix, const Aggplus::CMatrix* pMatrix2)
     {
-        if (fabs(pMatrix->m_agg_mtx.sx  - pMatrix2->m_agg_mtx.sx) < 0.001 &&
-            fabs(pMatrix->m_agg_mtx.sy  - pMatrix2->m_agg_mtx.sy) < 0.001 &&
-            fabs(pMatrix->m_agg_mtx.shx - pMatrix2->m_agg_mtx.shx) < 0.001 &&
-            fabs(pMatrix->m_agg_mtx.shy - pMatrix2->m_agg_mtx.shy) < 0.001)
-            return true;
-        return false;
+        return Aggplus::CMatrix::IsEqual(pMatrix, pMatrix2, 0.001, true);
     }
 
     const double c_ag_Inch_to_MM	= 25.4;

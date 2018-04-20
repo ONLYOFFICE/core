@@ -53,12 +53,12 @@ namespace PPTX
 				x	= oPos.ReadAttributeBase(L"x");
 				y	= oPos.ReadAttributeBase(L"y");
 
-				node.ReadAttributeBase(L"gdRefX", gdRefX);
-				node.ReadAttributeBase(L"gdRefY", gdRefY);
-				node.ReadAttributeBase(L"maxX", maxX);
-				node.ReadAttributeBase(L"maxY", maxY);
-				node.ReadAttributeBase(L"minX", minX);
-				node.ReadAttributeBase(L"minY", minY);
+				XmlMacroReadAttributeBase(node, L"gdRefX", gdRefX);
+				XmlMacroReadAttributeBase(node, L"gdRefY", gdRefY);
+				XmlMacroReadAttributeBase(node, L"maxX", maxX);
+				XmlMacroReadAttributeBase(node, L"maxY", maxY);
+				XmlMacroReadAttributeBase(node, L"minX", minX);
+				XmlMacroReadAttributeBase(node, L"minY", minY);
 			}
 			virtual OOX::EElementType getType() const
 			{

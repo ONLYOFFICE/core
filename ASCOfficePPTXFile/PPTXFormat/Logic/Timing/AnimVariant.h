@@ -53,15 +53,15 @@ namespace PPTX
 				XmlUtils::CXmlNode oNode;
 
 				if (node.GetNode(_T("p:boolVal"), oNode))
-					oNode.ReadAttributeBase(L"val", boolVal);
+                    XmlMacroReadAttributeBase(oNode, L"val", boolVal)
 				else if (node.GetNode(_T("p:intVal"), oNode))
-					oNode.ReadAttributeBase(L"val", intVal);
+                    XmlMacroReadAttributeBase(oNode, L"val", intVal)
 				else if (node.GetNode(_T("p:fltVal"), oNode))
-					oNode.ReadAttributeBase(L"val", fltVal);
+                    XmlMacroReadAttributeBase(oNode, L"val", fltVal)
 				else if (node.GetNode(_T("p:clrVal"), oNode))
 					clrVal.GetColorFrom(oNode);
 				else if (node.GetNode(_T("p:strVal"), oNode))
-					oNode.ReadAttributeBase(L"val", strVal);
+                    XmlMacroReadAttributeBase(oNode, L"val", strVal)
 
 				FillParentPointersForChilds();
 			}

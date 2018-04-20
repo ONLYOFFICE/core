@@ -48,7 +48,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"fullScrn", fullScrn);
+                XmlMacroReadAttributeBase(node, L"fullScrn", fullScrn);
 				cMediaNode	= node.ReadNode(_T("cMediaNode"));
 
 				FillParentPointersForChilds();

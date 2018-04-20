@@ -33,11 +33,7 @@
 
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
-
 #include "FontCutter.h"
-
-
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace NSFontCutter
 {
@@ -45,8 +41,8 @@ namespace NSFontCutter
 	{
 	public:		
 		std::map<std::wstring, std::wstring> m_mapPicks;
-		CApplicationFonts m_oApplicationFonts;
-		CFontManager* m_pFontManager;
+		NSFonts::IApplicationFonts* m_pApplicationFonts;
+		NSFonts::IFontManager* m_pFontManager;
 
 		std::wstring m_strFontsDir;
 
@@ -57,6 +53,7 @@ namespace NSFontCutter
 	public:
 		CFontDstManager() : m_mapPicks()
 		{
+			m_pApplicationFonts = NSFonts::NSApplication::Create();
 			m_strFontsDir = _T("");
 
 			m_pFontManager = NULL;
@@ -65,21 +62,16 @@ namespace NSFontCutter
 		~CFontDstManager()
 		{
 			RELEASEOBJECT(m_pFontManager);
+			RELEASEOBJECT(m_pApplicationFonts);
 		}
 
 		void Init(const std::wstring& strDir)
 		{
 			if(strDir.empty())
-				m_oApplicationFonts.Initialize();
+				m_pApplicationFonts->Initialize();
 			else
-				m_oApplicationFonts.InitializeFromFolder(strDir);
-			CFontList* pFontList = m_oApplicationFonts.GetList();
-			if(NULL != pFontList)
-			{
-				std::wstring sDefaultFont(_T("Arial"));
-				pFontList->SetDefaultFont(sDefaultFont);
-			}
-			m_pFontManager = m_oApplicationFonts.GenerateFontManager();
+				m_pApplicationFonts->InitializeFromFolder(strDir);
+			m_pFontManager = m_pApplicationFonts->GenerateFontManager();
 		}
 
 		std::wstring GetTypefacePickByName(const std::wstring& strTypeface)
@@ -108,11 +100,11 @@ namespace NSFontCutter
 
 			std::wstring sInputSave = sFind;
 
-			CFontSelectFormat oFontSelectFormat;
+			NSFonts::CFontSelectFormat oFontSelectFormat;
 			oFontSelectFormat.wsName = new std::wstring(sFind);
 
 			//oFontSelectFormat.
-			CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+			NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 			std::wstring sRes = _T("Arial");
 			if(NULL != pFontInfo)
 			{
@@ -150,7 +142,7 @@ public:
 		return S_OK;
 	}
 	
-	CFontManager* get_FontManager()
+	NSFonts::IFontManager* get_FontManager()
 	{
 		return m_oPicker.m_pFontManager;
 	}

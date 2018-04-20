@@ -83,8 +83,8 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				prst	= node.GetAttribute(_T("prst"));
-				node.ReadAttributeBase(L"fov", fov);
-				node.ReadAttributeBase(L"zoom", zoom);
+				XmlMacroReadAttributeBase(node, L"fov", fov);
+				XmlMacroReadAttributeBase(node, L"zoom", zoom);
 
                 std::wstring sRotNodeName = _T("a:rot");
                 rot		= node.ReadNode(sRotNodeName);

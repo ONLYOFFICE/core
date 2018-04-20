@@ -67,7 +67,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 
 	COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 	pFontPicker->Init(m_sFontDir);
-	CFontManager* pFontManager = pFontPicker->get_FontManager();
+    NSFonts::IFontManager* pFontManager = pFontPicker->get_FontManager();
 	DocWrapper::FontProcessor fp;
 	fp.setFontManager(pFontManager);
 	

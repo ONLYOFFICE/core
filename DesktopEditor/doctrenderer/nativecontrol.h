@@ -32,14 +32,29 @@
 #ifndef NATIVECONTROL
 #define NATIVECONTROL
 
-#include "memorystream.h"
 #include <map>
-#include "../fontengine/ApplicationFonts.h"
 #include <iostream>
+
+#include "../graphics/pro/Fonts.h"
 #include "../../graphics/Timer.h"
 #include "../../common/Directory.h"
-#include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../common/Array.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+
+#include "memorystream.h"
 #include "../../fontengine/application_generate_fonts_common.h"
+
+#if defined(CreateDirectory)
+#undef CreateDirectory
+#endif
+
+#if defined(GetTempPath)
+#undef GetTempPath
+#endif
+
+#if defined(CreateFile)
+#undef CreateFile
+#endif
 
 class CZipWorker
 {
@@ -372,18 +387,17 @@ public:
     {
         if (0 == m_map_fonts.size())
         {
-            CApplicationFonts oApplication;
+            NSFonts::IApplicationFonts* pApplication = NSFonts::NSApplication::Create();
             if (m_strFontsDirectory == L"")
-                oApplication.Initialize();
+                pApplication->Initialize();
             else
-                oApplication.InitializeFromFolder(m_strFontsDirectory);
+                pApplication->InitializeFromFolder(m_strFontsDirectory);
 
-            CArray<CFontInfo*>* pFonts = oApplication.GetList()->GetFonts();
+            std::vector<NSFonts::CFontInfo*>* pFonts = pApplication->GetList()->GetFonts();
 
-            int nCount = pFonts->GetCount();
-            for (int nIndex = 0; nIndex < nCount; ++nIndex)
+            for (std::vector<NSFonts::CFontInfo*>::iterator i = pFonts->begin(); i < pFonts->end(); i++)
             {
-                CFontInfo* pCurrent = pFonts->operator [](nIndex);
+                NSFonts::CFontInfo* pCurrent = *i;
 
                 size_t pos1 = pCurrent->m_wsFontPath.find_last_of(wchar_t('/'));
                 size_t pos2 = pCurrent->m_wsFontPath.find_last_of(wchar_t('\\'));
@@ -410,13 +424,17 @@ public:
                 }
             }
 
-            CFontSelectFormat oFormat;
+            NSFonts::CFontSelectFormat oFormat;
             oFormat.wsName = new std::wstring(L"Arial");
 
             m_sDefaultFont = L"";
-            CFontInfo* pInfo = oApplication.GenerateFontManager()->GetFontInfoByParams(oFormat);
+            NSFonts::IFontManager* pManager = pApplication->GenerateFontManager();
+            NSFonts::CFontInfo* pInfo = pManager->GetFontInfoByParams(oFormat);
             if (NULL != pInfo)
                 m_sDefaultFont = pInfo->m_wsFontPath;
+
+            RELEASEINTERFACE(pManager);
+            RELEASEOBJECT(pApplication);
         }
     }
 };

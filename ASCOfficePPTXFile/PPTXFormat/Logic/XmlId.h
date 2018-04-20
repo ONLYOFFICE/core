@@ -53,8 +53,8 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"r:id", rid);
-				node.ReadAttributeBase(L"id", id);
+				XmlMacroReadAttributeBase(node, L"r:id", rid);
+				XmlMacroReadAttributeBase(node, L"id", id);
 			}
 			virtual std::wstring toXML() const
 			{

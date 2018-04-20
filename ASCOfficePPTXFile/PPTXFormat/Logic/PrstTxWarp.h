@@ -101,8 +101,10 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"prst", prst);
-				node.ReadNode(_T("a:avLst")).LoadArray(_T("a:gd"), avLst);
+				XmlMacroReadAttributeBase(node, L"prst", prst);
+
+				XmlUtils::CXmlNode nodeList = node.ReadNode(_T("a:avLst"));
+				XmlMacroLoadArray(nodeList, _T("a:gd"), avLst, Gd);
 
 				FillParentPointersForChilds();
 			}

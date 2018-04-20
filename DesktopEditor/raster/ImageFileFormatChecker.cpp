@@ -52,6 +52,16 @@ typedef struct ___tagBITMAPINFOHEADER {
     DWORD      biClrImportant;
 } ___BITMAPINFOHEADER;
 
+CImageFileFormatChecker::CImageFileFormatChecker()
+{
+    eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+}
+CImageFileFormatChecker::CImageFileFormatChecker(std::wstring sFileName)
+{
+    eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    isImageFile(sFileName);
+}
+
 //bmp ( http://ru.wikipedia.org/wiki/BMP )
 bool CImageFileFormatChecker::isBmpFile(BYTE* pBuffer,DWORD dwBytes)
 {

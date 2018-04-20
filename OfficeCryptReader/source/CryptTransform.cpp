@@ -284,7 +284,38 @@ _buf GenerateAgileKey(_buf & salt, _buf & password, _buf & blockKey, int hashSiz
 
 	return _buf(pHashBuf.ptr, pHashBuf.size);
 }
+_buf GenerateOdfKey(_buf & salt, _buf & password, _buf & blockKey, int hashSize, int spin, CRYPT_METHOD::_hashAlgorithm algorithm, int block_index = 0)
+{
+	_buf pHashBuf = HashAppend(salt, password, algorithm);
 
+	for (int i = 0; i < spin; i++)
+	{
+        _buf iterator((unsigned char*)&i, 4, false);
+        pHashBuf = HashAppend(iterator, pHashBuf, algorithm);
+	}
+
+	pHashBuf = HashAppend(pHashBuf, blockKey, algorithm);
+
+	CorrectHashSize(pHashBuf, hashSize, 0x36);
+
+	return _buf(pHashBuf.ptr, pHashBuf.size);
+	//unsigned char *out = NULL;
+	//SecByteBlock derived(hashSize);
+
+	//PKCS5_PBKDF2_HMAC<SHA256> pbkdf2;
+
+	//pbkdf2.DeriveKey(
+	//					derived.data(), 
+	//					derived.size(), 
+	//					0, 
+	//					password.ptr, password.size, 
+	//					salt.ptr, salt.size,
+	//					spin);
+ //  
+
+	//return _buf(derived.data(), derived.size());
+}
+    
 _buf GenerateHashKey(_buf & salt, _buf & password, int hashSize, int spin, CRYPT_METHOD::_hashAlgorithm algorithm, int block_index = 0)
 {
 	_buf block	((unsigned char*)&block_index, 4, false);
@@ -469,7 +500,7 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 		_buf pValueBlockKey ((unsigned char*)encrVerifierHashValueBlockKey, 8);		
 		
 		_buf verifierInputKey	= GenerateAgileKey( pSalt, pPassword, pInputBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm );
-		_buf verifierHashKey	= GenerateAgileKey(pSalt, pPassword, pValueBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
+		_buf verifierHashKey	= GenerateAgileKey( pSalt, pPassword, pValueBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm );
 		
 //--------------------------------------------
 		_buf decryptedVerifierHashInputBytes;		
@@ -919,41 +950,39 @@ ODFDecryptor::~ODFDecryptor()
 
 bool ODFDecryptor::SetPassword(std::wstring _password)
 {
-//	bVerify		= false;
-//	password	= _password;
-//
-//	if (password.empty()) return false;
-//	
-//	_buf pPassword		(password);
-//	_buf pSalt			(cryptData.saltValue);
-//	_buf empty			(NULL, 0, false);
-//
-//	_buf pEncVerInput	(cryptData.encryptedVerifierInput);
-//	_buf pEncVerValue	(cryptData.encryptedVerifierValue);
-//	
-//	_buf verifierKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm);		
-//	CorrectHashSize(verifierKey, cryptData.keySize, 0);
-//	if (cryptData.keySize == 5)
-//		CorrectHashSize(verifierKey, 16, 0); //40-bit crypt key !!!
-//
-//	if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
-//	{
-//		rc4Decryption.SetKey(verifierKey.ptr, verifierKey.size);
-//	}
-////--------------------------------------------
-//	_buf decryptedVerifierHashInputBytes;		
-//	DecryptCipher(verifierKey, pSalt, pEncVerInput, decryptedVerifierHashInputBytes, cryptData.cipherAlgorithm);
-//
-////--------------------------------------------
-//	_buf hashBuf = HashAppend(decryptedVerifierHashInputBytes, empty, cryptData.hashAlgorithm);
-////--------------------------------------------
-//	
-//	_buf decryptedVerifierHashBytes;		
-//	DecryptCipher(verifierKey, pSalt, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
-//
-//	bVerify	= (decryptedVerifierHashBytes==hashBuf);
+	bVerify		= false;
+	password	= _password;
 
-	return bVerify;
+	if (password.empty()) return false;
+	
+	_buf pPassword		(password);
+	_buf pSalt			(cryptData.saltValue);
+	_buf empty			(NULL, 0, false);
+
+	_buf pEncVerInput	(cryptData.input);
+	_buf pEncVerValue	(cryptData.checksum);
+	
+	_buf pIvi	(cryptData.initializationVector);
+	_buf hashBufIvi = HashAppend(pIvi, empty, cryptData.hashAlgorithm);
+
+	//_buf verifierKey1 = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.checksum_hashAlgorithm);		
+	_buf verifierKey = GenerateOdfKey(pSalt, pPassword, pIvi, cryptData.hashSize, cryptData.spinCount, cryptData.checksum_hashAlgorithm);		
+	CorrectHashSize(verifierKey, cryptData.keySize, 0);//??
+
+////--------------------------------------------
+	_buf decryptedVerifierHashInputBytes;		
+	DecryptCipher(verifierKey, pIvi, pEncVerInput, decryptedVerifierHashInputBytes, cryptData.cipherAlgorithm);
+
+//--------------------------------------------
+	_buf hashBuf = HashAppend(decryptedVerifierHashInputBytes, empty, cryptData.hashAlgorithm);
+//--------------------------------------------
+	
+	_buf decryptedVerifierHashBytes;		
+	DecryptCipher(verifierKey, pIvi, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
+
+	bVerify	= (decryptedVerifierHashBytes==hashBuf);
+
+	return true;
 }
 
 bool ODFDecryptor::IsVerify()
@@ -985,14 +1014,17 @@ void ODFDecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& d
 	_buf pPassword	(password);
 	_buf pSalt		(cryptData.saltValue);
 	_buf empty		(NULL, 0, false);
+	_buf start		(cryptData.initializationVector);
 
-	_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm, start_iv_block);
+	_buf hashKey = GenerateOdfKey(pSalt, pPassword, start, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm, start_iv_block);
 	CorrectHashSize(hashKey, cryptData.keySize, 0);
 	
 	_buf pInp(data_inp, size, false);
 	_buf pOut(data_out, size, false);
+	
+	_buf ivi(cryptData.initializationVector);
 
-	DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
+	DecryptCipher(hashKey, ivi, pInp, pOut, cryptData.cipherAlgorithm);
 }
 
 

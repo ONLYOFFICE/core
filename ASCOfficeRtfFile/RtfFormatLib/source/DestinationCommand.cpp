@@ -54,9 +54,29 @@ void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 		POLE::Storage * storageIn = new POLE::Storage(sOle2Name.c_str());			
 		if ( (storageIn) && (storageIn->open(false, false))) //storage in storage
 		{
-			//test package stream??? xls ole -> xlsx ole 
-			bResult = true;
-			storageIn->close();
+			POLE::Stream stream(storageIn, L"Package");
+			if (false == stream.fail())
+			{//test package stream??? xls ole -> xlsx ole 
+
+				POLE::uint64 size = stream.size();
+				unsigned char* data = new unsigned char[size];
+				stream.read(data, size);
+				storageIn->close();
+
+				NSFile::CFileBinary file;
+				
+				file.CreateFileW(sOle2Name);
+				file.WriteFile(data, size);
+				file.CloseFile();
+
+				delete []data;
+				bResult = true;
+			}
+			else
+			{//уже ole2
+				storageIn->close();
+				bResult = true;
+			}
 		}
 		delete storageIn;
 		

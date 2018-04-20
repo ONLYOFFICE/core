@@ -97,14 +97,14 @@ namespace PPTX
                 std::wstring sSndNodeName = _T("snd");
                 snd	= node.ReadNodeNoNS(sSndNodeName);
 
-				node.ReadAttributeBase(L"r:id", id);
-				node.ReadAttributeBase(L"invalidUrl", invalidUrl);
-				node.ReadAttributeBase(L"action", action);
-				node.ReadAttributeBase(L"tgtFrame", tgtFrame);
-				node.ReadAttributeBase(L"tooltip", tooltip);
-				node.ReadAttributeBase(L"history", history);
-				node.ReadAttributeBase(L"highlightClick", highlightClick);
-				node.ReadAttributeBase(L"endSnd", endSnd);
+				XmlMacroReadAttributeBase(node, L"r:id", id);
+				XmlMacroReadAttributeBase(node, L"invalidUrl", invalidUrl);
+				XmlMacroReadAttributeBase(node, L"action", action);
+				XmlMacroReadAttributeBase(node, L"tgtFrame", tgtFrame);
+				XmlMacroReadAttributeBase(node, L"tooltip", tooltip);
+				XmlMacroReadAttributeBase(node, L"history", history);
+				XmlMacroReadAttributeBase(node, L"highlightClick", highlightClick);
+				XmlMacroReadAttributeBase(node, L"endSnd", endSnd);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;

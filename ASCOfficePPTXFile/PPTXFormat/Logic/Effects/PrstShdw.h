@@ -96,8 +96,8 @@ namespace PPTX
 			{
 				Color.GetColorFrom(node);
 				prst	= node.GetAttribute(L"prst");
-				node.ReadAttributeBase(L"dir", dir);
-				node.ReadAttributeBase(L"dist", dist);
+				XmlMacroReadAttributeBase(node, L"dir", dir);
+				XmlMacroReadAttributeBase(node, L"dist", dist);
 
 				FillParentPointersForChilds();
 			}

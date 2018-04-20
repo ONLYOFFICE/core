@@ -149,7 +149,7 @@ namespace PPTX
 		{
 			m_name = node.GetName();
 
-			node.ReadAttributeBase(L"useBgFill", attrUseBgFill);
+            XmlMacroReadAttributeBase(node,L"useBgFill", attrUseBgFill);
 
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))

@@ -1657,13 +1657,13 @@ namespace OOX
 				if ( _T("o:OLEObject") != oNode.GetName() )
 					return;
 
-				oNode.ReadAttributeBase( _T("DrawAspect"), m_oDrawAspect );
-				oNode.ReadAttributeBase( _T("r:id"), m_oId );
-				oNode.ReadAttributeBase( _T("ObjectID"), m_sObjectId );
-				oNode.ReadAttributeBase( _T("ProgID"), m_sProgId );
-				oNode.ReadAttributeBase( _T("ShapeID"), m_sShapeId );
-				oNode.ReadAttributeBase( _T("Type"), m_oType );
-				oNode.ReadAttributeBase( _T("UpdateMode"), m_oUpdateMode );
+				XmlMacroReadAttributeBase( oNode, _T("DrawAspect"), m_oDrawAspect );
+				XmlMacroReadAttributeBase( oNode, _T("r:id"), m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("ObjectID"), m_sObjectId );
+				XmlMacroReadAttributeBase( oNode, _T("ProgID"), m_sProgId );
+				XmlMacroReadAttributeBase( oNode, _T("ShapeID"), m_sShapeId );
+				XmlMacroReadAttributeBase( oNode, _T("Type"), m_oType );
+				XmlMacroReadAttributeBase( oNode, _T("UpdateMode"), m_oUpdateMode );
 
 				//todo FieldCodes, LinkType, LockedField
 			}
@@ -2180,19 +2180,19 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase(L"o:addlxml", m_sAddXml);
-				oNode.ReadAttributeBase(L"allowcomments", m_oAllowComments);
-				oNode.ReadAttributeBase(L"v:ext", m_oExt);
-				oNode.ReadAttributeBase(L"id", m_oId);
-				oNode.ReadAttributeBase(L"issignatureline", m_oIsSignatureLine);
-				oNode.ReadAttributeBase(L"provid", m_oProvId);
-				oNode.ReadAttributeBase(L"showsigndate", m_oShowSignDate);
-				oNode.ReadAttributeBase(L"o:signinginstructions", m_sSigningInstructions);
-				oNode.ReadAttributeBase(L"signinginstructionsset", m_oSigningInstructionsSet);
-				oNode.ReadAttributeBase(L"o:sigprovurl", m_sSigProvUrl);
-				oNode.ReadAttributeBase(L"o:suggestedsigner", m_sSuggestedSigner);
-				oNode.ReadAttributeBase(L"o:suggestedsigner2", m_sSuggestedSigner2);
-				oNode.ReadAttributeBase(L"o:suggestedsigneremail", m_sSuggestedSignerEmail);
+				XmlMacroReadAttributeBase(oNode, L"o:addlxml", m_sAddXml);
+				XmlMacroReadAttributeBase(oNode, L"allowcomments", m_oAllowComments);
+				XmlMacroReadAttributeBase(oNode, L"v:ext", m_oExt);
+				XmlMacroReadAttributeBase(oNode, L"id", m_oId);
+				XmlMacroReadAttributeBase(oNode, L"issignatureline", m_oIsSignatureLine);
+				XmlMacroReadAttributeBase(oNode, L"provid", m_oProvId);
+				XmlMacroReadAttributeBase(oNode, L"showsigndate", m_oShowSignDate);
+				XmlMacroReadAttributeBase(oNode, L"o:signinginstructions", m_sSigningInstructions);
+				XmlMacroReadAttributeBase(oNode, L"signinginstructionsset", m_oSigningInstructionsSet);
+				XmlMacroReadAttributeBase(oNode, L"o:sigprovurl", m_sSigProvUrl);
+				XmlMacroReadAttributeBase(oNode, L"o:suggestedsigner", m_sSuggestedSigner);
+				XmlMacroReadAttributeBase(oNode, L"o:suggestedsigner2", m_sSuggestedSigner2);
+				XmlMacroReadAttributeBase(oNode, L"o:suggestedsigneremail", m_sSuggestedSignerEmail);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

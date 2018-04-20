@@ -33,13 +33,10 @@
 #include "Streams.h"
 #include "Document.h"
 
-#include "../../DesktopEditor/raster/JBig2/source/Encoder/jbig2enc.h"
-#include "../../DesktopEditor/raster/JBig2/source/LeptonLib/allheaders.h"
-
 // TODO: write JPG from Photoshop...
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
-#include "../../DesktopEditor/cximage/CxImage/ximage.h"
+
 namespace NSImageReSaver
 {
     static void CorrectImage(const wchar_t* wsFileName, BYTE*& pBuffer, int& nBufferSize, unsigned int& unWidth, unsigned int& unHeight)
@@ -73,25 +70,15 @@ namespace NSImageReSaver
         if (!oFrame.OpenFile(wsFileName))
             return;
 
-        int nImageW = oFrame.get_Width();
-        int nImageH = oFrame.get_Height();
-        BYTE* pData = oFrame.get_Data();
-        int nStride = 4 * nImageW;
-
-        CxImage oCxImage;
-        if (!oCxImage.CreateFromArray(pData, nImageW, nImageH, 32, nStride, (oFrame.get_Stride() >= 0) ? true : false))
-            return;
-
-        oCxImage.SetJpegQualityF(85.0f);
-
-        if (!oCxImage.Encode(pBuffer, nBufferSize, CXIMAGE_FORMAT_JPG))
+        oFrame.SetJpegQuality(85.0);
+        if (!oFrame.Encode(pBuffer, nBufferSize, _CXIMAGE_FORMAT_JPG))
             return;
 
         if (!pBuffer || !nBufferSize)
             return;
 
-        unWidth = (unsigned int)nImageW;
-        unHeight = (unsigned int)nImageH;
+        unWidth = (unsigned int)oFrame.get_Width();
+        unHeight = (unsigned int)oFrame.get_Height();
     }
 }
 
@@ -386,7 +373,7 @@ namespace PdfWriter
 		pParams->Add("JBIG2Globals", pJbig2Global);
 		Add("DecodeParms", pDecodeParams);
 	}
-	void CImageDict::LoadBW(Pix* pPix, unsigned int unWidth, unsigned int unHeight)
+    void CImageDict::LoadBW(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight)
 	{
 		SetStream(m_pXref, new CMemoryStream());
 		CJbig2Global* pJbig2Global = m_pDocument->GetJbig2Global();
@@ -406,7 +393,7 @@ namespace PdfWriter
 		pParams->Add("JBIG2Globals", pJbig2Global);
 		Add("DecodeParms", pDecodeParams);
 	}
-	void CImageDict::LoadMask(Pix* pPix, unsigned int unWidth, unsigned int unHeight)
+    void CImageDict::LoadMask(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight)
 	{
 		CImageDict* pMask = new CImageDict(m_pXref, m_pDocument);
 		if (!pMask)
@@ -438,19 +425,18 @@ namespace PdfWriter
 	CJbig2Global::CJbig2Global(CXref* pXref) : CDictObject(pXref)
 	{
 		m_pXref = pXref;
-		m_pContext = jbig2_init(0.85, 0.5, -1, -1, false, -1);
+        m_pContext.Init(0.85, 0.5, -1, -1, false, -1);
 	}
 	CJbig2Global::~CJbig2Global()
 	{
-		if (m_pContext)
-			jbig2_destroy(m_pContext);
+        m_pContext.Destroy();
 	}
 	void CJbig2Global::FlushStreams()
 	{
 		CStream* pStream = GetStream();
 
 		int nLen = 0;
-		BYTE* pBuffer = jbig2_pages_complete(m_pContext, &nLen);
+        BYTE* pBuffer = m_pContext.PagesComplete(&nLen);
 
 		if (pBuffer)
 		{
@@ -460,7 +446,7 @@ namespace PdfWriter
 
 		for (int nIndex = 0, nCount = m_vImages.size(); nIndex < nCount; nIndex++)
 		{
-			pBuffer = jbig2_produce_page(m_pContext, nIndex, -1, -1, &nLen);
+            pBuffer = m_pContext.ProducePage(nIndex, -1, -1, &nLen);
 			if (pBuffer)
 			{
 				pStream = m_vImages.at(nIndex);
@@ -472,16 +458,15 @@ namespace PdfWriter
 			}
 		}
 
-		jbig2_destroy(m_pContext);
-		m_pContext = NULL;
+        m_pContext.Destroy();
 	}
 	void CJbig2Global::AddImage(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride, CStream* pImageStream)
 	{
-		if (!m_pContext)
+        if (!m_pContext.IsInit())
 			return;
 
-		Pix* pPix = pixCreate(unWidth, unHeight, 1);
-		if (!pPix)
+        NSImages::CPixJbig2 pPix;
+        if (!pPix.Create(unWidth, unHeight, 1))
 			return;
 
 		BYTE* pLine = (BYTE*)pImage;
@@ -491,7 +476,7 @@ namespace PdfWriter
 			BYTE* pCur = pLine;
 			for (unsigned int unX = 0; unX < unWidth; unX++)
 			{
-				pixSetPixel(pPix, unX, unY, pCur[0] & (1 << nBit));
+                pPix.SetPixel(unX, unY, pCur[0] & (1 << nBit));
 				nBit++;
 
 				if (8 == nBit)
@@ -502,16 +487,16 @@ namespace PdfWriter
 			}
 		}
 
-		jbig2_add_page(m_pContext, pPix);
-		pixDestroy(&pPix);
+        m_pContext.AddPage(&pPix);
+        pPix.Destroy();
 		m_vImages.push_back(pImageStream);
 	}
-	void CJbig2Global::AddImage(Pix* pPix, CStream* pImageStream)
+    void CJbig2Global::AddImage(NSImages::CPixJbig2* pPix, CStream* pImageStream)
 	{
-		if (!m_pContext)
+        if (!m_pContext.IsInit())
 			return;
 
-		jbig2_add_page(m_pContext, pPix);
+        m_pContext.AddPage(pPix);
 		m_vImages.push_back(pImageStream);
 	}
 	int  CJbig2Global::GetImagesCount()

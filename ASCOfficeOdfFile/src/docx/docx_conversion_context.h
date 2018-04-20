@@ -47,7 +47,7 @@
 #include "oox_conversion_context.h"
 #include "oox_chart_context.h"
 
-class CApplicationFonts;
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore { 
 
@@ -758,7 +758,7 @@ private:
 
     package::docx_document		* output_document_;
     odf_reader::odf_document	* odf_document_;
-    CApplicationFonts			* applicationFonts_;
+    NSFonts::IApplicationFonts	* applicationFonts_;
 
 	std::vector<odf_reader::_property>		settings_properties_;
 

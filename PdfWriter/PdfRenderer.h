@@ -33,9 +33,12 @@
 #define _PDF_WRITER_PDFRENDERER_H
 
 #include "../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Image.h"
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <math.h>
 
 #ifndef PDFWRITER_USE_DYNAMIC_LIBRARY
 #define PDFWRITER_DECL_EXPORT
@@ -43,8 +46,6 @@
 #include "../DesktopEditor/common/base_export.h"
 #define PDFWRITER_DECL_EXPORT Q_DECL_EXPORT
 #endif
-
-struct Pix;
 
 namespace PdfWriter
 {
@@ -62,16 +63,13 @@ namespace Aggplus
 	class CImage;
 }
 
-class CFontManager;
-class CApplicationFonts;
-
 class CRendererCommandBase;
 class CRendererTextCommand;
 
 class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 {
 public:
-	CPdfRenderer(CApplicationFonts* pAppFonts);
+	CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts);
 	~CPdfRenderer();
 	void         SaveToFile(const std::wstring& wsPath);
 	void         SetTempFolder(const std::wstring& wsPath);
@@ -214,13 +212,13 @@ public:
 	//----------------------------------------------------------------------------------------
 	HRESULT CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
 	HRESULT PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
-	HRESULT DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+	HRESULT DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 	HRESULT EnableBrushRect(const LONG& lEnable);
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
 	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
 	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
-	HRESULT DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 
 private:
 
@@ -1535,8 +1533,8 @@ private:
 
 private:
 
-	CApplicationFonts*           m_pAppFonts;
-	CFontManager*                m_pFontManager;
+	NSFonts::IApplicationFonts*  m_pAppFonts;
+	NSFonts::IFontManager*       m_pFontManager;
 	std::wstring                 m_wsTempFolder;
 	std::wstring                 m_wsThemesPlace;
 								 

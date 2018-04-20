@@ -50,10 +50,10 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"advClick", advClick);
-				node.ReadAttributeBase(L"advTm",	advTm);
-				node.ReadAttributeBase(L"p14:dur",	dur);	
-				node.ReadAttributeBase(L"spd",		spd);
+                XmlMacroReadAttributeBase(node, L"advClick", advClick);
+                XmlMacroReadAttributeBase(node, L"advTm",	advTm);
+                XmlMacroReadAttributeBase(node, L"p14:dur",	dur);
+                XmlMacroReadAttributeBase(node, L"spd",		spd);
 
 				XmlUtils::CXmlNodes oNodes;
 				

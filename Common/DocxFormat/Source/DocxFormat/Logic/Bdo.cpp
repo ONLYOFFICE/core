@@ -58,7 +58,7 @@ namespace OOX
 
 		void    CBdo::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+            XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )

@@ -20,15 +20,8 @@ include(../../../Common/base.pri)
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES += UNICODE _UNICODE \
-         _USE_LIBXML2_READER_ \
-        LIBXML_READER_ENABLED \
         DONT_WRITE_EMBEDDED_FONTS \
         AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-
-
-INCLUDEPATH += \
-    ../../../DesktopEditor/freetype-2.5.2/include \
-    ../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
 LIBS += $$DESTDIR -lUnicodeConverter

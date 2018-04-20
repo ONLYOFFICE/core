@@ -50,9 +50,9 @@ namespace PPTX
 			{
 				cBhvr	= node.ReadNode(_T("p:cBhvr"));
 
-				node.ReadAttributeBase(L"by", by);
-				node.ReadAttributeBase(L"from", from);
-				node.ReadAttributeBase(L"to", to);
+                XmlMacroReadAttributeBase(node, L"by", by);
+                XmlMacroReadAttributeBase(node, L"from", from);
+                XmlMacroReadAttributeBase(node, L"to", to);
 
 				FillParentPointersForChilds();
 			}

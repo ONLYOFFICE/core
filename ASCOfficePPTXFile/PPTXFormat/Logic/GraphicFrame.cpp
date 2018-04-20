@@ -300,7 +300,7 @@ namespace PPTX
 					}
 					else if (L"legacyDrawing" == strName)
 					{
-						oNode.ReadAttributeBase(L"spid", vmlSpid);
+                        XmlMacroReadAttributeBase(oNode, L"spid", vmlSpid);
 						result = true;
 					}
 					else
@@ -760,6 +760,7 @@ namespace PPTX
 			if (file.CreateFileW(olePic->blipFill.blip->oleFilepathImage))
 			{
 				file.WriteFile(binImagePngChartReplacement, 6171);
+				//file.WriteFile(binImageWmfChartReplacement, 2274);
 				file.CloseFile();
 			}
 

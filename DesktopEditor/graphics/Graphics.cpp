@@ -477,7 +477,7 @@ namespace Aggplus
 	Status CGraphics::CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op)
 	{
         Aggplus::CMatrix m;
-        return InternalClip(pPath, (m_bIntegerGrid || pPath->m_pTransform != NULL) ? &m : &m_oFullTransform, op);
+        return InternalClip(pPath, (m_bIntegerGrid || pPath->m_internal->m_pTransform != NULL) ? &m : &m_oFullTransform, op);
 	}
 
     Status CGraphics::InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op)
@@ -504,7 +504,7 @@ namespace Aggplus
 
 		pManager->LoadString1(strText, 0, 0);
 
-		TBBox oBox = pManager->MeasureString();
+        TBBox oBox = pManager->MeasureString();
 
 		*lWidth		= (double)oBox.fMaxX - oBox.fMinX;
 		*lHeight	= (double)oBox.fMaxY - oBox.fMinY;
@@ -601,7 +601,7 @@ namespace Aggplus
 		}
 
 		double dWidth		 = pPen->Size;
-		double dWidthMinSize = 1.0 / sqrt(m_oCoordTransform.m_agg_mtx.determinant());
+		double dWidthMinSize = 1.0 / sqrt(m_oCoordTransform.m_internal->m_agg_mtx.determinant());
 
 		if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
 		{
@@ -610,7 +610,7 @@ namespace Aggplus
 		
 		double dblMiterLimit = pPen->MiterLimit;
 		
-		agg::path_storage path_copy(pPath->m_agg_ps);
+		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
 		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
 				
 		conv_crv_type c_c_path(path_copy);
@@ -618,7 +618,7 @@ namespace Aggplus
 		c_c_path.approximation_method(agg::curve_inc);
 		DashStyle eStyle = (DashStyle)pPen->DashStyle;
 
-		agg::trans_affine* pAffine = &m_oFullTransform.m_agg_mtx;
+		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
 		if (m_bIntegerGrid)
 			pAffine = new agg::trans_affine();
 		 
@@ -750,7 +750,7 @@ namespace Aggplus
 
 		double dblMiterLimit = 0.5;
 		
-		agg::path_storage path_copy(pPath->m_agg_ps);
+		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
 		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
 				
 		conv_crv_type c_c_path(path_copy);
@@ -772,7 +772,7 @@ namespace Aggplus
 			typedef agg::conv_transform<Path_Conv_StrokeN> transStroke;
 
 			CMatrix oM;
-			transStroke trans(pgN, oM.m_agg_mtx);
+			transStroke trans(pgN, oM.m_internal->m_agg_mtx);
 			m_rasterizer.get_rasterizer().add_path(trans);
 		}
 		else
@@ -808,7 +808,7 @@ namespace Aggplus
 			pgD.miter_limit(dblMiterLimit);
 			pgD.width(dWidth);
 
-			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, m_oFullTransform.m_agg_mtx);
+			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, m_oFullTransform.m_internal->m_agg_mtx);
 			m_rasterizer.get_rasterizer().add_path(trans);
 		}
 
@@ -851,13 +851,13 @@ namespace Aggplus
 
 		m_rasterizer.get_rasterizer().reset();
 
-		agg::path_storage p2(pPath->m_agg_ps);
+		agg::path_storage p2(pPath->m_internal->m_agg_ps);
 		typedef agg::conv_transform<agg::path_storage> trans_type;
 
 		trans_type* ptrans			= NULL;
 		agg::trans_affine* paffine	= NULL;
 		if (!m_bIntegerGrid)
-			ptrans = new trans_type(p2, m_oFullTransform.m_agg_mtx);
+			ptrans = new trans_type(p2, m_oFullTransform.m_internal->m_agg_mtx);
 		else
 		{
 			paffine = new agg::trans_affine();
@@ -869,7 +869,7 @@ namespace Aggplus
 		 
 		m_rasterizer.get_rasterizer().add_path(c_c_path);
 
-		m_rasterizer.get_rasterizer().filling_rule(pPath->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+		m_rasterizer.get_rasterizer().filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 		if (pBrush->GetType() == Aggplus::BrushTypeTextureFill)
 		{
@@ -1015,8 +1015,7 @@ namespace Aggplus
 
 		while (TRUE)
 		{
-			TGlyph* pGlyph = NULL;
-			float fX = 0, fY = 0;
+            TGlyph* pGlyph = NULL;
 
 			bRes = pFont->GetNextChar2(pGlyph, fX, fY);
 
@@ -1061,7 +1060,6 @@ namespace Aggplus
         while (TRUE)
         {
             TGlyph* pGlyph = NULL;
-            float fX = 0, fY = 0;
 
             bRes = pFont->GetNextChar2(pGlyph, fX, fY);
 
@@ -1106,8 +1104,7 @@ namespace Aggplus
 
 		while (TRUE)
 		{
-			TGlyph* pGlyph = NULL;
-			float fX = 0, fY = 0;
+            TGlyph* pGlyph = NULL;
 
 			bRes = pFont->GetNextChar2(pGlyph, fX, fY);
 
@@ -1127,12 +1124,6 @@ namespace Aggplus
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;
 
-		double mass[6];
-		m_oTransform.GetElements(mass);
-
-		double _x = x;
-		double _y = y;
-
 		Aggplus::CGraphicsPath oPath;
 		oPath.AddString(strText, pFont, x, y);
 
@@ -1144,12 +1135,6 @@ namespace Aggplus
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;
-
-		double mass[6];
-		m_oTransform.GetElements(mass);
-
-		double _x = x;
-		double _y = y;
 
 		Aggplus::CGraphicsPath oPath;
 		oPath.AddStringC(lText, pFont, x, y);
@@ -1284,7 +1269,7 @@ namespace Aggplus
 		typedef agg::my_span_gradient<agg::rgba8> gradient_span_gen;
 		gradient_span_gen span_gen;
 
-		span_gen.SetDirection(rect, (double)pBrush->GetAngle(), oMatrix.m_agg_mtx);
+		span_gen.SetDirection(rect, (double)pBrush->GetAngle(), oMatrix.m_internal->m_agg_mtx);
 
 		agg::rgba8* pSubColors = NULL;
 		float* pSubBlends = NULL;
@@ -1362,7 +1347,7 @@ namespace Aggplus
 		typedef agg::my_span_path_gradient<agg::rgba8> gradient_span_gen;
 		gradient_span_gen span_gen;
 
-		span_gen.SetDirection(rect, oMatrix.m_agg_mtx);
+		span_gen.SetDirection(rect, oMatrix.m_internal->m_agg_mtx);
 
 		agg::rgba8* pSubColors = NULL;
 		float* pSubBlends = NULL;
@@ -1468,7 +1453,7 @@ namespace Aggplus
 		BYTE* pPattern = new BYTE[HATCH_TX_SIZE * HATCH_TX_SIZE * 4];
 		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);
 
-		agg::trans_affine mtx_Work(m_oTransform.m_agg_mtx);
+		agg::trans_affine mtx_Work(m_oTransform.m_internal->m_agg_mtx);
 		mtx_Work.invert();
 
 		span_alloc_type				span_allocator; 
@@ -1513,8 +1498,8 @@ namespace Aggplus
 		typedef agg::image_accessor_clip<pixfmt> img_source_type;
 		typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
 		typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-		agg::trans_affine mtx_Work(mImgMtx.m_agg_mtx);
-		mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
+		agg::trans_affine mtx_Work(mImgMtx.m_internal->m_agg_mtx);
+		mtx_Work.multiply(m_oFullTransform.m_internal->m_agg_mtx);
 		mtx_Work.invert();
 		interpolator_type_linear interpolator(mtx_Work);
 		{
@@ -1555,7 +1540,7 @@ namespace Aggplus
             //double dScaleX = 270.0 / dwImgWidth;
             //double dScaleY = 190.0 / dwImgHeight;
 
-            agg::trans_affine mtx_Work(mImgMtx.m_agg_mtx);
+            agg::trans_affine mtx_Work(mImgMtx.m_internal->m_agg_mtx);
             //mtx_Work.scale(dScaleX, dScaleY);
 
             //mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
@@ -1607,7 +1592,7 @@ namespace Aggplus
             //double dScaleX = 270.0 / dwImgWidth;
             //double dScaleY = 190.0 / dwImgHeight;
 
-            agg::trans_affine mtx_Work(mImgMtx.m_agg_mtx);
+            agg::trans_affine mtx_Work(mImgMtx.m_internal->m_agg_mtx);
             //mtx_Work.scale(dScaleX, dScaleY);
 
             //mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
@@ -1652,9 +1637,9 @@ namespace Aggplus
     template<class ColorSpacePix>
     void CGraphics::DoFillPathTextureClampSz3(const CMatrix &matrix, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, Aggplus::WrapMode wrapmode, BYTE Alpha)
     {
-        agg::trans_affine mtx_Work( matrix.m_agg_mtx );
+        agg::trans_affine mtx_Work( matrix.m_internal->m_agg_mtx );
         
-        agg::trans_affine coords = m_oCoordTransform.m_agg_mtx;
+        agg::trans_affine coords = m_oCoordTransform.m_internal->m_agg_mtx;
         coords.invert();
         mtx_Work.premultiply(coords);
         

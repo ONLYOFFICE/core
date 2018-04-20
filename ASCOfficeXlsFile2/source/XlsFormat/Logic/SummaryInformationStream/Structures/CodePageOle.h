@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "Property.h"
-#include "../../../Binary/BinSmartPointers.h"
 #include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace OLEPS
@@ -40,10 +39,11 @@ namespace OLEPS
 class PropertyCodePage : public Property
 {
 public:
-    PropertyCodePage(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyCodePage(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type), code_page(0)
+	{
+	}
+	virtual bool Read(XLS::CFStreamPtr stream);
 	
-	unsigned int Type;
-
 	static const unsigned short DefaultCodePage = 1250;	
 	unsigned short code_page;
 };
@@ -52,17 +52,26 @@ typedef boost::shared_ptr<PropertyCodePage> PropertyCodePagePtr;
 class PropertyStr : public Property
 {
 public:
-    PropertyStr(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyStr(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_) : Property(prop_type, value_type)
+	{
+		code_page = code_page_;
+	}
+	
+	virtual bool Read(XLS::CFStreamPtr stream);
 	
 	std::wstring value;
+	unsigned short code_page;
 };
 typedef boost::shared_ptr<PropertyStr> PropertyStrPtr;
 //-----------------------------------------------------------------------------------------
 class PropertyDTM : public Property
 {
 public:
-    PropertyDTM(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyDTM(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
+	{
+	}
 	
+	virtual bool Read(XLS::CFStreamPtr stream);
 	std::wstring value;
 };
 typedef boost::shared_ptr<PropertyDTM> PropertyDTMPtr;
@@ -70,7 +79,10 @@ typedef boost::shared_ptr<PropertyDTM> PropertyDTMPtr;
 class PropertyInt : public Property
 {
 public:
-    PropertyInt(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyInt(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
+	{
+	}
+	virtual bool Read(XLS::CFStreamPtr stream);
 	
 	_UINT32			value;
 };
@@ -79,7 +91,10 @@ typedef boost::shared_ptr<PropertyInt> PropertyIntPtr;
 class PropertyBool : public Property
 {
 public:
-    PropertyBool(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyBool(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
+	{
+	}
+	virtual bool Read(XLS::CFStreamPtr stream);
 	
 	bool value;
 };

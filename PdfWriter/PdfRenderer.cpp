@@ -29,6 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
+
 #include "PdfRenderer.h"
 
 #include "Src/Document.h"
@@ -41,16 +44,22 @@
 #include "../DesktopEditor/graphics/structures.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../DesktopEditor/cximage/CxImage/ximage.h"
-#include "../DesktopEditor/fontengine/ApplicationFonts.h"
-#include "../DesktopEditor/fontengine/FontManager.h"
-#include "../DesktopEditor/raster/Metafile/MetaFile.h"
-
-#include "../DesktopEditor/common/File.h"
-#include "../DesktopEditor/common/Directory.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Image.h"
 
 #include "OnlineOfficeBinToPdf.h"
 
+#if defined(GetTempPath)
+#undef GetTempPath
+#endif
+
+#if defined(CreateFile)
+#undef CreateFile
+#endif
+
+#if defined(CreateDirectory)
+#undef CreateDirectory
+#endif
 
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
@@ -471,13 +480,13 @@ void CPdfRenderer::CCommandManager::SetTransform(const double& m11, const double
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts) : m_oCommandManager(this)
+CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts) : m_oCommandManager(this)
 {
 	m_pAppFonts = pAppFonts;
 
 	// Создаем менеджер шрифтов с собственным кэшем
 	m_pFontManager = pAppFonts->GenerateFontManager();
-	CFontsCache* pMeasurerCache = new CFontsCache();
+    NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 
@@ -1340,12 +1349,14 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
 	{
 		// TODO: Реализовать отрисовку метафайлов по-нормальному
-		MetaFile::CMetaFile oMeta(m_pAppFonts);
-		oMeta.LoadFromFile(wsImagePath.c_str());
+        MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
+        pMeta->LoadFromFile(wsImagePath.c_str());
 
 		double dNewW = std::max(10.0, dW) / 25.4 * 300;
 		std::wstring wsTempFile = GetTempFile();
-		oMeta.ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+        pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+        RELEASEOBJECT(pMeta);
 
 		pAggImage = new Aggplus::CImage(wsTempFile);
 	}
@@ -1431,7 +1442,7 @@ HRESULT CPdfRenderer::PathCommandTextPdf(const std::wstring& bsUnicodeText, cons
 {
 	return S_OK;
 }
-HRESULT CPdfRenderer::DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CPdfRenderer::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	m_oCommandManager.Flush();
 
@@ -1442,7 +1453,7 @@ HRESULT CPdfRenderer::DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWid
 	UpdateTransform();
 	
 	CImageDict* pPdfImage = m_pDocument->CreateImage();
-	pPdfImage->LoadBW(pImageBuffer, unWidth, unHeight);
+    pPdfImage->LoadBW(pImageBuffer, unWidth, unHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 
 	m_pPage->GrRestore();
@@ -1465,7 +1476,7 @@ HRESULT CPdfRenderer::SetRadialGradient(const double& dX0, const double& dY0, co
 	m_oBrush.SetRadialGradientPattern(dX0, dY0, dR0, dX1, dY1, dR1);
 	return S_OK;
 }
-HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	m_oCommandManager.Flush();
 
@@ -1475,7 +1486,7 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer,
 	m_pPage->GrSave();
 	UpdateTransform();
 	CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
-	pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
+    pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	return S_OK;
@@ -1510,15 +1521,13 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 		}
 	}
 
-	CxImage oCxImage;
-	if (!oCxImage.CreateFromArray(pData, nImageW, nImageH, 32, nStride, (pImage->GetStride() >= 0) ? true : false))
-		return NULL;
-
-	oCxImage.SetJpegQualityF(85.0f);
+    CBgraFrame oFrame;
+    oFrame.FromImage(pImage);
+    oFrame.SetJpegQuality(85.0);
 
 	BYTE* pBuffer = NULL;
 	int nBufferSize = 0;
-	if (!oCxImage.Encode(pBuffer, nBufferSize, bJpeg ? CXIMAGE_FORMAT_JPG : CXIMAGE_FORMAT_JP2))
+    if (!oFrame.Encode(pBuffer, nBufferSize, bJpeg ? _CXIMAGE_FORMAT_JPG : _CXIMAGE_FORMAT_JP2))
 		return NULL;
 
 	if (!pBuffer || !nBufferSize)
@@ -1611,11 +1620,11 @@ void CPdfRenderer::UpdateFont()
 
 		if (!bFind)
 		{
-			CFontSelectFormat oFontSelect;
+            NSFonts::CFontSelectFormat oFontSelect;
 			oFontSelect.wsName = new std::wstring(m_oFont.GetName());
 			oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
 			oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
-			CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+            NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
 
 			wsFontPath = pFontInfo->m_wsFontPath;
 			lFaceIndex = pFontInfo->m_lIndex;
@@ -1636,7 +1645,7 @@ void CPdfRenderer::UpdateFont()
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
 			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
 
-		CFontFile* pFontFile = m_pFontManager->m_pFont;
+        NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 		if (pFontFile)
 		{
 			if (!pFontFile->IsItalic() && m_oFont.IsItalic())
@@ -1745,8 +1754,8 @@ void CPdfRenderer::UpdateBrush()
 		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
-			MetaFile::CMetaFile oMeta(m_pAppFonts);
-			oMeta.LoadFromFile(wsTexturePath.c_str());
+            MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
+            pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
@@ -1754,7 +1763,9 @@ void CPdfRenderer::UpdateBrush()
 			double dNewW = std::max(10.0, dR - dL) / 72 * 300;
 
 			std::wstring wsTempFile = GetTempFile();
-			oMeta.ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+            pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+            RELEASEOBJECT(pMeta);
 
 			Aggplus::CImage oImage(wsTempFile);
 			nImageW = abs((int)oImage.GetWidth());

@@ -48,8 +48,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"orient", orient);
-				node.ReadAttributeBase(L"pos", pos);
+                XmlMacroReadAttributeBase(node, L"orient", orient);
+                XmlMacroReadAttributeBase(node, L"pos", pos);
 				
 				Normalize();
 			}

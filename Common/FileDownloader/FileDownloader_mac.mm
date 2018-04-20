@@ -1,4 +1,4 @@
-﻿#include "FileDownloader.h"
+﻿#include "FileDownloader_private.h"
 
 #if _IOS
     #import <Foundation/Foundation.h>
@@ -67,7 +67,7 @@ public :
     }
 };
 
-CFileDownloader::CFileDownloader(std::wstring sFileUrl, bool bDelete)
+CFileDownloader_private::CFileDownloader_private(std::wstring sFileUrl, bool bDelete)
 {
     m_pInternal = new CFileDownloaderBaseCocoa(sFileUrl, bDelete);
 }

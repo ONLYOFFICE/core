@@ -33,13 +33,14 @@
 #define _BUILD_IMAGE_H_
 
 #include "AggPlusEnums.h"
-#include <string>
 #include "IRenderer.h"
+
+#include "config.h"
 
 namespace Aggplus
 {
 
-class CImage : public IGrObject
+class GRAPHICS_DECL CImage : public IGrObject
 {
 public:
 	friend class CGraphics;
@@ -62,7 +63,7 @@ public:
 	bool SaveFile(const std::wstring& strFileName, UINT nFileType);
 	void Destroy();
 
-public:	
+protected:
 	Status m_Status;
 	
 	DWORD m_dwWidth;
@@ -88,7 +89,7 @@ public:
 	UINT* Reserved;
 };
 
-class CBitmap : public CImage
+class GRAPHICS_DECL CBitmap : public CImage
 {
 public:
 	CBitmap(LONG width, LONG height, PixelFormat format = PixelFormat32bppARGB);	

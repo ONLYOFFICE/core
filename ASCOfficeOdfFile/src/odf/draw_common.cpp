@@ -51,20 +51,21 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 #include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace _image_file_
 {
-    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, CApplicationFonts	* appFonts)
+    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, NSFonts::IApplicationFonts* appFonts)
 	{
 		CBgraFrame image;
-		MetaFile::CMetaFile meta_file(appFonts);
+        MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
 
-		if ( meta_file.LoadFromFile(fileName))
+        bool bRet = false;
+        if ( meta_file->LoadFromFile(fileName))
 		{
 			double dX = 0, dY = 0, dW = 0, dH = 0;
-			meta_file.GetBounds(&dX, &dY, &dW, &dH);
+            meta_file->GetBounds(&dX, &dY, &dW, &dH);
 			
 			Width  = dW;
 			Height = dH;
@@ -74,13 +75,13 @@ namespace _image_file_
 			Width  = image.get_Width();
 			Height = image.get_Height();
 
-			return true;
+            bRet = true;
 		}
 
-
-		return false;
+        RELEASEOBJECT(meta_file);
+        return bRet;
 	}
-};
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace cpdoccore { 
 
@@ -98,7 +99,7 @@ int get_value_emu(double pt)
 {
     return static_cast<int>((pt* 360000 * 2.54) / 72);
 } 
-bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, CApplicationFonts	* appFonts)
+bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts	* appFonts)
 {
     memset(clip_rect, 0, 4*sizeof(double));
 

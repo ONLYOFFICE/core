@@ -40,12 +40,17 @@
 
 namespace MetaFile
 {
-	CMetaFile::CMetaFile(CApplicationFonts *pAppFonts)
+	IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts)
 	{
-		m_pAppFonts = pAppFonts;
+		return new CMetaFile(pAppFonts);
+	}
+
+	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
+	{
+		m_pAppFonts = (CApplicationFonts*)pAppFonts;
 
 		// Создаем менеджер шрифтов с собственным кэшем
-		m_pFontManager = pAppFonts->GenerateFontManager();
+		m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
@@ -61,7 +66,7 @@ namespace MetaFile
 		Close();
 		RELEASEINTERFACE(m_pFontManager);
 	}
-	CFontManager* CMetaFile::get_FontManager()
+	NSFonts::IFontManager* CMetaFile::get_FontManager()
 	{
 		return m_pFontManager;
 	}
@@ -71,7 +76,7 @@ namespace MetaFile
 		//       FontManager, потому что сейчас в нем кэш без ограничения.
 		//------------------------------------------------------
 		RELEASEINTERFACE(m_pFontManager);
-		m_pFontManager = m_pAppFonts->GenerateFontManager();
+		m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
@@ -204,7 +209,7 @@ namespace MetaFile
 	};
 	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
-		CFontManager *pFontManager = m_pAppFonts->GenerateFontManager();
+		CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
 		CFontsCache* pFontCache = new CFontsCache();
 		pFontCache->SetStreams(m_pAppFonts->GetStreams());
 		pFontManager->SetOwnerCache(pFontCache);

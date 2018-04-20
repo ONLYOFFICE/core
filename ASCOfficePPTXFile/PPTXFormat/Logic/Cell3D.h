@@ -78,7 +78,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"prstMaterial", prstMaterial);
+				XmlMacroReadAttributeBase(node, L"prstMaterial", prstMaterial);
 
 				bevel		= node.ReadNodeNoNS(_T("bevel"));
 				lightRig	= node.ReadNodeNoNS(_T("lightRig"));

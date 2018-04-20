@@ -16,17 +16,9 @@ include($$PWD/../../Common/3dParty/boost/boost.pri)
 
 DEFINES += UNICODE \
 	_UNICODE \
-	USE_AVSOFFICESTUDIO_XMLUTILS \
 	SOLUTION_ASCOFFICEDOCXFILE2 \
-        #DISABLE_FILE_DOWNLOADER \
-	_USE_LIBXML2_READER_ \
-        LIBXML_READER_ENABLED \
-        DONT_WRITE_EMBEDDED_FONTS
-
-
-INCLUDEPATH += \
-    ../../DesktopEditor/freetype-2.5.2/include \
-    ../../DesktopEditor/xml/libxml2/include \
+	#DISABLE_FILE_DOWNLOADER \
+	DONT_WRITE_EMBEDDED_FONTS
 
 
 SOURCES += \

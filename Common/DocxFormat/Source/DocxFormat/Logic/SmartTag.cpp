@@ -61,8 +61,8 @@ namespace OOX
 
 		void    CSmartTag::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:element"),      m_sElement );
-			oNode.ReadAttributeBase( _T("w:uri"), m_sUri );
+            XmlMacroReadAttributeBase( oNode, _T("w:element"),      m_sElement );
+            XmlMacroReadAttributeBase( oNode, _T("w:uri"), m_sUri );
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )

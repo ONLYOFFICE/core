@@ -51,15 +51,26 @@ std::wstring OOXDocumentWriter::CreateXmlStart()
 
 	//пишем document.xml
 	std::wstring sResult = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n";
-	sResult += L"<w:document";
-	sResult += L" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"";
-	sResult += L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"";
-	sResult += L" xmlns:v=\"urn:schemas-microsoft-com:vml\"";
-	sResult += L" xmlns:o=\"urn:schemas-microsoft-com:office:office\"";
-	sResult += L" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"";
-	sResult += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
-	sResult += L" xmlns:w10=\"urn:schemas-microsoft-com:office:word\"";
-	sResult += L" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"";
+	sResult += L"<w:document ";
+	
+	sResult += L"xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+mc:Ignorable=\"w14 wp14\"";
 	sResult += L">";
 
 	if (m_oDocument.m_pBackground)

@@ -16,11 +16,7 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)
 
-include(../Qt_build/graphics/project/graphics_fonts.pri)
-include(../xml/build/qt/libxml2.pri)
-
-CONFIG += build_all_zlib build_zlib_as_sources
-include(../../OfficeUtils/OfficeUtils.pri)
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
 include(../../Common/3dParty/v8/v8.pri)
 
@@ -44,23 +40,3 @@ HEADERS += doctrenderer.h \
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED
 DEFINES += BUIDLER_OPEN_BASE64_ENABLED
-
-HEADERS += ../../Common/FileDownloader/FileDownloader.h
-core_windows {
-    SOURCES += \
-        ../../Common/FileDownloader/FileDownloader_win.cpp
-
-    LIBS += -lurlmon
-}
-core_linux {
-    SOURCES += \
-        ../../Common/FileDownloader/FileDownloader_curl.cpp
-
-    LIBS += -lcurl
-}
-core_mac {
-    OBJECTIVE_SOURCES += \
-        ../../Common/FileDownloader/FileDownloader_mac.mm
-
-    LIBS += -framework AppKit
-}

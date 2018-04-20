@@ -34,9 +34,8 @@
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
-#include "../DesktopEditor/fontengine/FontManager.h"
-#include "../DesktopEditor/fontengine/ApplicationFonts.h"
-#include "../DesktopEditor/graphics/GraphicsRenderer.h"
+#include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "../DesktopEditor/raster/BgraFrame.h"
 #include "../PdfWriter/PdfRenderer.h"
 
 #include "../OfficeUtils/src/OfficeUtils.h"
@@ -46,13 +45,13 @@ using namespace XPS;
 class CXpsFile_Private
 {
 public:
-    CApplicationFonts* m_pAppFonts;
-    CFontManager*      m_pFontManager;
+    NSFonts::IApplicationFonts* m_pAppFonts;
+    NSFonts::IFontManager*      m_pFontManager;
     std::wstring       m_wsTempFolder;
     XPS::CDocument*    m_pDocument;
 
 public:
-    CXpsFile_Private(CApplicationFonts* pAppFonts)
+    CXpsFile_Private(NSFonts::IApplicationFonts* pAppFonts)
     {
         m_pDocument = NULL;
 
@@ -60,7 +59,7 @@ public:
 
         // Создаем менеджер шрифтов с собственным кэшем
         m_pFontManager = pAppFonts->GenerateFontManager();
-        CFontsCache* pMeasurerCache = new CFontsCache();
+        NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
         pMeasurerCache->SetStreams(pAppFonts->GetStreams());
         m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(16);
@@ -72,7 +71,7 @@ public:
     }
 };
 
-CXpsFile::CXpsFile(CApplicationFonts* pAppFonts)
+CXpsFile::CXpsFile(NSFonts::IApplicationFonts* pAppFonts)
 {
     m_pInternal = new CXpsFile_Private(pAppFonts);
     SetTempDirectory(NSFile::CFileBinary::GetTempPath());
@@ -159,13 +158,13 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 }
 void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 {
-    CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-	CFontsCache* pFontCache = new CFontsCache();
+    NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
+    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
     pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
 	pFontManager->SetOwnerCache(pFontCache);
 
-	CGraphicsRenderer oRenderer;
-	oRenderer.SetFontManager(pFontManager);
+    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+    pRenderer->SetFontManager(pFontManager);
 
 	double dPageDpiX, dPageDpiY;
 	double dWidth, dHeight;
@@ -185,16 +184,17 @@ void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, in
 	oFrame.put_Height(nHeight);
 	oFrame.put_Stride(-4 * nWidth);
 
-	oRenderer.CreateFromBgraFrame(&oFrame);
-	oRenderer.SetSwapRGB(false);
-	oRenderer.put_Width(dWidth);
-	oRenderer.put_Height(dHeight);
+    pRenderer->CreateFromBgraFrame(&oFrame);
+    pRenderer->SetSwapRGB(false);
+    pRenderer->put_Width(dWidth);
+    pRenderer->put_Height(dHeight);
 
 	bool bBreak = false;
-	DrawPageOnRenderer(&oRenderer, nPageIndex, &bBreak);
+    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
 
 	oFrame.SaveFile(wsDstPath, nImageType);
 	RELEASEINTERFACE(pFontManager);
+    RELEASEOBJECT(pRenderer);
 }
 void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 {

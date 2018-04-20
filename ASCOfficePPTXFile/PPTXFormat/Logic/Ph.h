@@ -66,11 +66,11 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"hasCustomPrompt", hasCustomPrompt);
-				node.ReadAttributeBase(L"idx", idx);
-				node.ReadAttributeBase(L"orient", orient);
-				node.ReadAttributeBase(L"sz", sz);
-				node.ReadAttributeBase(L"type", type);
+				XmlMacroReadAttributeBase(node, L"hasCustomPrompt", hasCustomPrompt);
+				XmlMacroReadAttributeBase(node, L"idx", idx);
+				XmlMacroReadAttributeBase(node, L"orient", orient);
+				XmlMacroReadAttributeBase(node, L"sz", sz);
+				XmlMacroReadAttributeBase(node, L"type", type);
 			}
 			virtual std::wstring toXML() const
 			{

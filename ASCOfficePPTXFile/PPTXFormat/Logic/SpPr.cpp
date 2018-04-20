@@ -119,7 +119,7 @@ namespace PPTX
 			Fill.GetFillFrom(node);
 			EffectList.GetEffectListFrom(node);
 
-			node.ReadAttributeBase(L"bwMode", bwMode);
+            XmlMacroReadAttributeBase(node,L"bwMode", bwMode);
 
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))

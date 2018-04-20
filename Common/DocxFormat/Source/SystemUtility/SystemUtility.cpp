@@ -199,7 +199,7 @@ namespace OOX
     bool CSystemUtility::CreateFile(const std::wstring& strFileName)
     {
 #if defined(_WIN32) || defined (_WIN64)
-        HANDLE hResult = ::CreateFile(strFileName.c_str(), GENERIC_READ, 0, NULL, 
+        HANDLE hResult = ::CreateFileW(strFileName.c_str(), GENERIC_READ, 0, NULL,
             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
         if (hResult == INVALID_HANDLE_VALUE)

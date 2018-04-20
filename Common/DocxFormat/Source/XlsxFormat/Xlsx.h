@@ -36,7 +36,7 @@
 #include "../Base/SmartPtr.h"
 #include "../DocxFormat/IFileContainer.h"
 
-#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 

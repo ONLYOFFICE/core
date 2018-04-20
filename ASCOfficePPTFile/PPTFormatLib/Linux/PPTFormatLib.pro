@@ -21,21 +21,10 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
         _UNICODE \
-        _USE_LIBXML2_READER_ \
-        LIBXML_READER_ENABLED \
         _PRESENTATION_WRITER_ \
         _SVG_CONVERT_TO_IMAGE_  \
         DONT_WRITE_EMBEDDED_FONTS
         #DISABLE_FILE_DOWNLOADER
-
-
-INCLUDEPATH += \
-    ../../../DesktopEditor/freetype-2.5.2/include \
-    ../../../DesktopEditor/xml/libxml2/include
-
-core_windows {
-    INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
-}
 
 HEADERS += \
     ../PPTFormatLib.h \
@@ -185,17 +174,4 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp
-
-core_windows {
-    SOURCES += \
-        ../../../Common/FileDownloader/FileDownloader_win.cpp
-}
-core_linux {
-    SOURCES += \
-        ../../../Common/FileDownloader/FileDownloader_curl.cpp
-}
-core_mac {
-    OBJECTIVE_SOURCES += \
-        ../../../Common/FileDownloader/FileDownloader_mac.mm
-}
 

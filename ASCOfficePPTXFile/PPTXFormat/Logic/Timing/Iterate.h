@@ -48,14 +48,14 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"type", type);
-				node.ReadAttributeBase(L"backwards", backwards);
+                XmlMacroReadAttributeBase(node, L"type", type);
+                XmlMacroReadAttributeBase(node, L"backwards", backwards);
 
 				XmlUtils::CXmlNode oNode;			
 				if (node.GetNode(_T("p:tmAbs"), oNode))
-					oNode.ReadAttributeBase(L"val", tmAbs);
+                    XmlMacroReadAttributeBase(oNode, L"val", tmAbs)
 				else if (node.GetNode(_T("p:tmPct"), oNode))
-					oNode.ReadAttributeBase(L"val", tmPct);
+                    XmlMacroReadAttributeBase(oNode, L"val", tmPct)
 
 				FillParentPointersForChilds();
 			}

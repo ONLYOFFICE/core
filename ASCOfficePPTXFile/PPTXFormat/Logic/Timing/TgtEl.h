@@ -54,9 +54,9 @@ namespace PPTX
 					inkTgt = oNode.ReadAttributeBase(L"spid");
 				else if(node.GetNode(_T("p:sndTgt"), oNode))
 				{
-					oNode.ReadAttributeBase(L"embed", embed);
-					oNode.ReadAttributeBase(L"name", name);
-					oNode.ReadAttributeBase(L"builtIn", builtIn);
+                    XmlMacroReadAttributeBase(oNode, L"embed", embed);
+                    XmlMacroReadAttributeBase(oNode, L"name", name);
+                    XmlMacroReadAttributeBase(oNode, L"builtIn", builtIn);
 				}
 				else if(node.GetNode(_T("p:spTgt"), oNode))
 					spTgt = oNode;

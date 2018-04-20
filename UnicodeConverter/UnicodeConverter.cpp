@@ -87,19 +87,33 @@ namespace NSUnicodeConverter
             if (U_SUCCESS(status))
             {
                 int32_t nUCharCapacity = (int32_t)nInputLen;// UTF-16 uses 2 code-points per char
-                UChar* pUChar = (UChar*)malloc(nUCharCapacity * sizeof(UChar));
-                const UChar* pUCharStart = pUChar;
-                int32_t nUCharLength = 0;
-                u_strFromWCS(pUChar, nUCharCapacity, &nUCharLength, sInput, nInputLen, &status);
-                if (U_SUCCESS(status))
+
+                UChar* pUChar = new UChar[nUCharCapacity * sizeof(UChar)];
+                if (pUChar)
                 {
-                    const UChar* pUCharLimit = pUCharStart + nUCharLength;
-                    sRes.resize(nUCharLength * ucnv_getMaxCharSize(conv));// UTF-16 uses 2 code-points per char
-                    char *sResStart = &sRes[0];
-                    char *sResCur = sResStart;
-                    const char *sResLimit = sResCur + sRes.size();
-                    ucnv_fromUnicode(conv, &sResCur, sResLimit, &pUCharStart, pUCharLimit, NULL, TRUE, &status);
-                    sRes.resize(sResCur - sResStart);
+                    const UChar* pUCharStart = pUChar;
+                    int32_t nUCharLength = 0;
+
+                    u_strFromWCS(pUChar, nUCharCapacity, &nUCharLength, sInput, nInputLen, &status);
+                    if (U_SUCCESS(status))
+                    {
+                        const UChar* pUCharLimit = pUCharStart + nUCharLength;
+                        sRes.resize(nUCharLength * ucnv_getMaxCharSize(conv));// UTF-16 uses 2 code-points per char
+                        char *sResStart = &sRes[0];
+                        char *sResCur = sResStart;
+                        const char *sResLimit = sResCur + sRes.size();
+
+                        ucnv_fromUnicode(conv, &sResCur, sResLimit, &pUCharStart, pUCharLimit, NULL, TRUE, &status);
+                        if (U_SUCCESS(status))
+                        {
+                            sRes.resize(sResCur - sResStart);
+                        }
+                        else
+                        {
+                            sRes.clear();
+                        }
+                    }
+                    delete []pUCharStart;
                 }
                 ucnv_close(conv);
             }
@@ -134,18 +148,31 @@ namespace NSUnicodeConverter
                     const char* sourceLimit = source + nInputLen;
 
                     unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
-                    UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
-                    UChar* target = targetStart;
-                    UChar* targetLimit = target + uBufSize;
 
-                    ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
-                    if (U_SUCCESS(status))
-                    {
-                        unsigned int nTargetSize = target - targetStart;
-                        sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
-                        int32_t nResLen = 0;
-                        u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
-                        sRes.resize(nResLen);
+                    UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
+                    if (targetStart)
+                        {
+                        UChar* target = targetStart;
+                        UChar* targetLimit = target + uBufSize;
+
+                        ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                        if (U_SUCCESS(status))
+                        {
+                            unsigned int nTargetSize = target - targetStart;
+                            sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
+                            int32_t nResLen = 0;
+
+                            u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                            if (U_SUCCESS(status))
+                            {
+                                sRes.resize(nResLen);
+                            }
+                            else
+                            {
+                                sRes.clear();
+                            }
+                        }
+                        delete []targetStart;
                     }
                     ucnv_close(conv);
                 }
@@ -175,18 +202,31 @@ namespace NSUnicodeConverter
                     const char* sourceLimit = source + nInputLen;
 
                     unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
-                    UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
-                    UChar* target = targetStart;
-                    UChar* targetLimit = target + uBufSize;
-
-                    ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
-                    if (U_SUCCESS(status))
+                    
+                    UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
+                    if (targetStart)
                     {
-                        unsigned int nTargetSize = target - targetStart;
-                        sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
-                        int32_t nResLen = 0;
-                        u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
-                        sRes.resize(nResLen);
+                        UChar* target = targetStart;
+                        UChar* targetLimit = target + uBufSize;
+
+                        ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                        if (U_SUCCESS(status))
+                        {
+                            unsigned int nTargetSize = target - targetStart;
+                            sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
+                            int32_t nResLen = 0;
+
+                            u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                            if (U_SUCCESS(status))
+                            {
+                                sRes.resize(nResLen);
+                            }
+                            else
+                            {
+                                sRes.clear();
+                            }
+                        }
+                        delete []targetStart;
                     }
                     ucnv_close(conv);
                 }
@@ -217,19 +257,32 @@ namespace NSUnicodeConverter
                     const char* sourceLimit = source + nInputLen;
 
                     unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
-                    UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
-                    UChar* target = targetStart;
-                    UChar* targetLimit = target + uBufSize;
 
-                    ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
-                    if (U_SUCCESS(status))
+                    UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
+                    if (targetStart)
                     {
-                        unsigned int nTargetSize = target - targetStart;
-                        sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
-                        int32_t nResLen = 0;
-                        u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
-                        sRes.resize(nResLen);
-                    }
+                        UChar* target = targetStart;
+                        UChar* targetLimit = target + uBufSize;
+
+                        ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                        if (U_SUCCESS(status))
+                        {
+                            unsigned int nTargetSize = target - targetStart;
+                            sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
+                            int32_t nResLen = 0;
+
+                            u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                            if (U_SUCCESS(status))
+                            {
+                                sRes.resize(nResLen);
+                            }
+                            else
+                            {
+                                sRes.clear();
+                            }
+                        }
+                        delete []targetStart;
+                     }
                     ucnv_close(conv);
                 }
             }
@@ -253,18 +306,31 @@ namespace NSUnicodeConverter
                     const char* sourceLimit = source + nInputLen;
 
                     unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
-                    UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
-                    UChar* target = targetStart;
-                    UChar* targetLimit = target + uBufSize;
 
-                    ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
-                    if (U_SUCCESS(status))
+                    UChar* targetStart = new UChar[uBufSize * sizeof(UChar)];
+                    if (targetStart)
                     {
-                        unsigned int nTargetSize = target - targetStart;
-                        sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
-                        int32_t nResLen = 0;
-                        u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
-                        sRes.resize(nResLen);
+                        UChar* target = targetStart;
+                        UChar* targetLimit = target + uBufSize;
+
+                        ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                        if (U_SUCCESS(status))
+                        {
+                            unsigned int nTargetSize = target - targetStart;
+                            sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
+                            int32_t nResLen = 0;
+
+                            u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                            if (U_SUCCESS(status))
+                            {
+                                sRes.resize(nResLen);
+                            }
+                            else
+                            {
+                                sRes.clear();
+                            }
+                        }
+                        delete []targetStart;
                     }
                     ucnv_close(conv);
                 }

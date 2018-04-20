@@ -233,11 +233,11 @@ namespace PdfReader
 		else
 			m_wsCMapDirectory = L"";
 	}
-	void               GlobalParams::SetFontManager(CFontManager* pFontManager)
+    void               GlobalParams::SetFontManager(NSFonts::IFontManager* pFontManager)
 	{
 		m_pFontManager = pFontManager;
 	}
-	CFontManager*      GlobalParams::GetFontManager() const
+    NSFonts::IFontManager*      GlobalParams::GetFontManager() const
 	{
 		return m_pFontManager;
 	}

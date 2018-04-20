@@ -34,7 +34,7 @@
 
 #include "Common.h"
 #include <vector>
-#include "../../DesktopEditor/graphics/GraphicsRenderer.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 
 namespace NSHtmlRenderer
 {
@@ -347,7 +347,7 @@ namespace NSHtmlRenderer
     class CThumbnails
 	{
 	private:
-        CGraphicsRenderer*	m_pRenderer;
+        NSGraphics::IGraphicsRenderer*	m_pRenderer;
         CBgraFrame*         m_pFrame;
 
 		LONG	m_lWidth;
@@ -427,7 +427,7 @@ namespace NSHtmlRenderer
 			// теперь на всякий случай (сбросить все состояния) - пересоздадим рендерер
 			RELEASEINTERFACE(m_pRenderer);
 
-            m_pRenderer = new CGraphicsRenderer();
+            m_pRenderer = NSGraphics::Create();
             m_pRenderer->CreateFromBgraFrame(m_pFrame);
 		}
 

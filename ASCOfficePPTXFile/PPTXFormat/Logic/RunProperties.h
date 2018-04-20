@@ -359,25 +359,25 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"altLang", altLang);
-				node.ReadAttributeBase(L"b", b);
-				node.ReadAttributeBase(L"bmk", bmk);
-				node.ReadAttributeBase(L"cap", cap);
-				node.ReadAttributeBase(L"dirty", dirty);
-				node.ReadAttributeBase(L"err", err);
-				node.ReadAttributeBase(L"i", i);
-				node.ReadAttributeBase(L"kern", kern);
-				node.ReadAttributeBase(L"kumimoji", kumimoji);
-				node.ReadAttributeBase(L"lang", lang);
-				node.ReadAttributeBase(L"noProof", noProof);
-				node.ReadAttributeBase(L"normalizeH", normalizeH);
-				node.ReadAttributeBase(L"smtClean", smtClean);
-				node.ReadAttributeBase(L"smtId", altLang);
-				node.ReadAttributeBase(L"strike", strike);
-				node.ReadAttributeBase(L"sz", sz);
-				node.ReadAttributeBase(L"u", u);
-				node.ReadAttributeBase(L"baseline", baseline);
-				node.ReadAttributeBase(L"spc", spc);
+				XmlMacroReadAttributeBase(node, L"altLang", altLang);
+				XmlMacroReadAttributeBase(node, L"b", b);
+				XmlMacroReadAttributeBase(node, L"bmk", bmk);
+				XmlMacroReadAttributeBase(node, L"cap", cap);
+				XmlMacroReadAttributeBase(node, L"dirty", dirty);
+				XmlMacroReadAttributeBase(node, L"err", err);
+				XmlMacroReadAttributeBase(node, L"i", i);
+				XmlMacroReadAttributeBase(node, L"kern", kern);
+				XmlMacroReadAttributeBase(node, L"kumimoji", kumimoji);
+				XmlMacroReadAttributeBase(node, L"lang", lang);
+				XmlMacroReadAttributeBase(node, L"noProof", noProof);
+				XmlMacroReadAttributeBase(node, L"normalizeH", normalizeH);
+				XmlMacroReadAttributeBase(node, L"smtClean", smtClean);
+				XmlMacroReadAttributeBase(node, L"smtId", altLang);
+				XmlMacroReadAttributeBase(node, L"strike", strike);
+				XmlMacroReadAttributeBase(node, L"sz", sz);
+				XmlMacroReadAttributeBase(node, L"u", u);
+				XmlMacroReadAttributeBase(node, L"baseline", baseline);
+				XmlMacroReadAttributeBase(node, L"spc", spc);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(L"*", oNodes))

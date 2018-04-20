@@ -114,9 +114,9 @@ namespace PPTX
 				id		= node.ReadAttributeInt(L"id");
 				name	= node.GetAttribute(L"name");
 				
-				node.ReadAttributeBase(L"descr", descr);
-				node.ReadAttributeBase(L"hidden", hidden);
-				node.ReadAttributeBase(L"title", title);
+				XmlMacroReadAttributeBase(node, L"descr", descr);
+				XmlMacroReadAttributeBase(node, L"hidden", hidden);
+				XmlMacroReadAttributeBase(node, L"title", title);
 
 				hlinkClick = node.ReadNode(_T("a:hlinkClick"));
 				hlinkHover = node.ReadNode(_T("a:hlinkHover"));

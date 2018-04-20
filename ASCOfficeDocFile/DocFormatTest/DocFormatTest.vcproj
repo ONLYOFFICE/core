@@ -342,6 +342,10 @@
 			Name="Common"
 			>
 			<File
+				RelativePath="..\..\DesktopEditor\common\Base64.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
 				>
 			</File>
@@ -370,6 +374,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\DesktopEditor\common\Directory.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
 				>
 				<FileConfiguration
@@ -382,11 +390,35 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\DesktopEditor\common\File.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FileDownloader\FileDownloader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
 				>
 			</File>
 			<File
+				RelativePath="..\..\DesktopEditor\common\Path.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\common\String.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\common\StringBuilder.cpp"
 				>
 			</File>
 			<File
@@ -443,10 +475,6 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
-			>
-		</File>
-		<File
 			RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
 			>
 		</File>
@@ -455,7 +483,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\UnicodeConverter.lib"
+			RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 			>
 		</File>
 		<File

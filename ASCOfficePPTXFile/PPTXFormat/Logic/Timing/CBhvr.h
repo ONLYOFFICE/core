@@ -54,14 +54,14 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"accumulate", accumulate);
-				node.ReadAttributeBase(L"additive", additive);
-				node.ReadAttributeBase(L"by", by);
-				node.ReadAttributeBase(L"from", from);
-				node.ReadAttributeBase(L"override", override_);
-				node.ReadAttributeBase(L"rctx", rctx);
-				node.ReadAttributeBase(L"to", to);
-				node.ReadAttributeBase(L"xfrmType", xfrmType);
+                XmlMacroReadAttributeBase(node, L"accumulate", accumulate);
+                XmlMacroReadAttributeBase(node, L"additive", additive);
+                XmlMacroReadAttributeBase(node, L"by", by);
+                XmlMacroReadAttributeBase(node, L"from", from);
+                XmlMacroReadAttributeBase(node, L"override", override_);
+                XmlMacroReadAttributeBase(node, L"rctx", rctx);
+                XmlMacroReadAttributeBase(node, L"to", to);
+                XmlMacroReadAttributeBase(node, L"xfrmType", xfrmType);
 
 				cTn			= node.ReadNode(_T("p:cTn"));
 				tgtEl		= node.ReadNode(_T("p:tgtEl"));

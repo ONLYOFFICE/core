@@ -34,46 +34,61 @@
 #include <Binary/CFStream.h>
 #include <Auxiliary/HelpFunc.h>
 
+#include <../../../UnicodeConverter/UnicodeConverter.h>
+
 namespace OLEPS
 {
-unsigned short code_page_ = 0;
 
-PropertyCodePage::PropertyCodePage(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
-	: Property(prop_type)
+bool PropertyCodePage::Read (XLS::CFStreamPtr stream)
 {
-	code_page = 0;
 	if (value_type == Property::VT_I2)
 	{
 		*stream >> code_page;
 	}
-	code_page_ = code_page;
+	return true;
 }
-PropertyStr::PropertyStr(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
-	: Property(prop_type)
+bool PropertyStr::Read (XLS::CFStreamPtr stream)
 {
 	if (value_type == Property::VT_LPSTR)
 	{
-		_UINT32 size;
+		_INT32 size;
 		*stream >> size;
 
 		if (size > 0)
 		{
 			char *s = new char[size];
-			stream->read(s,size);
+			stream->read(s, size);
+			
+			for (_INT32 i = size - 1; i >= 0; i--)
+			{
+				if ( s[i] == 0 ) size--;
+			}
+
 			try
 			{
-				value  = STR::toStdWString(s, size, code_page_);
+				std::string sCodePage;
+				std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
+				if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
+				{
+					sCodePage = pFind->second;
+				}
+
+				if (!sCodePage.empty() && size > 0)
+				{
+					NSUnicodeConverter::CUnicodeConverter oConverter;
+					value = oConverter.toUnicode(s, size, sCodePage.c_str());
+				}			
 			}
 			catch(...)
 			{
-				value  = STR::toStdWStringSystem(std::string(s, size), code_page_);
+				value  = size > 0 ? STR::toStdWStringSystem(std::string(s, size), code_page) : L"";
 			}
 			delete []s;
 		}
 	}
+	return true;
 }
-PropertyDTM::PropertyDTM(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
-	: Property(prop_type)
+bool PropertyDTM::Read (XLS::CFStreamPtr stream)
 {
 	_UINT32 dwLowDateTime = 0, dwHighDateTime = 0;
 	if (value_type == Property::VT_FILETIME)
@@ -81,18 +96,18 @@ PropertyDTM::PropertyDTM(unsigned int prop_type, const unsigned short value_type
 		*stream >> dwLowDateTime >> dwHighDateTime;
 	}
 	//todoooo
+	return true;
 }
-PropertyInt::PropertyInt(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
-	: Property(prop_type)
+bool PropertyInt::Read (XLS::CFStreamPtr stream)
 {
 	value = 0;
 	if (value_type == Property::VT_I4)
 	{
 		*stream >> value;
 	}
+	return true;
 }
-PropertyBool::PropertyBool(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
-	: Property(prop_type)
+bool PropertyBool::Read (XLS::CFStreamPtr stream)
 {
 	value = false;
 	if (value_type == Property::VT_BOOL)
@@ -103,5 +118,6 @@ PropertyBool::PropertyBool(unsigned int prop_type, const unsigned short value_ty
 		if (v != 0)
 			value = true;
 	}
+	return true;
 }
 } // namespace OLEPS

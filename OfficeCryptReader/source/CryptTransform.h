@@ -54,7 +54,8 @@ namespace CRYPT_METHOD
 		RC4,
 		AES_CBC,
 		AES_CFB,
-		AES_ECB
+		AES_ECB,
+		Blowfish
 	};
 }
 namespace CRYPT
@@ -117,7 +118,11 @@ struct _odfCryptData
 
 	std::string saltValue;
 	std::string initializationVector;
-	std::string checksumData;
+	
+	std::string						input;
+	std::string						checksum;
+	int								checksum_size = 1024;
+	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
 };
 //---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 

@@ -21,14 +21,9 @@ include($$PWD/../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
             _UNICODE \
-            _USE_LIBXML2_READER_ \
-            LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += ../include
-INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
-INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
-INCLUDEPATH += ../../DesktopEditor/xml/build/qt
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG

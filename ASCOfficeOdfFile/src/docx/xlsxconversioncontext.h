@@ -54,7 +54,10 @@
 
 #include "mediaitems.h"
 
-class CApplicationFonts;
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore {
 
@@ -194,7 +197,7 @@ private:
     const odf_reader::office_element	*spreadsheet_;
     odf_reader::odf_document			*odf_document_;
 
-    CApplicationFonts					*applicationFonts_;
+    NSFonts::IApplicationFonts			*applicationFonts_;
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;

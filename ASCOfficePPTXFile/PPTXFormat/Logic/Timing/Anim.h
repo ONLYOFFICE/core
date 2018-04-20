@@ -51,11 +51,11 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"by", by);
-				node.ReadAttributeBase(L"from", from);
-				node.ReadAttributeBase(L"to", to);
-				node.ReadAttributeBase(L"calcmode", calcmode);
-				node.ReadAttributeBase(L"valueType", valueType);
+                XmlMacroReadAttributeBase(node, L"by", by);
+                XmlMacroReadAttributeBase(node, L"from", from);
+                XmlMacroReadAttributeBase(node, L"to", to);
+                XmlMacroReadAttributeBase(node, L"calcmode", calcmode);
+                XmlMacroReadAttributeBase(node, L"valueType", valueType);
 
 				cBhvr		= node.ReadNode(_T("p:cBhvr"));
 				tavLst		= node.ReadNode(_T("p:tavLst"));

@@ -38,7 +38,7 @@
 
 #include "mediaitems.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 
@@ -46,17 +46,19 @@ namespace cpdoccore {
 namespace oox {
 namespace package {
 
-static void ConvertSvmToImage(std::wstring &file_svm, std::wstring &file_png, CApplicationFonts *pAppFonts)
+static void ConvertSvmToImage(std::wstring &file_svm, std::wstring &file_png, NSFonts::IApplicationFonts *pAppFonts)
 {
-	MetaFile::CMetaFile oMetaFile(pAppFonts);
+    MetaFile::IMetaFile* pMetaFile = MetaFile::Create(pAppFonts);
 
-	if (oMetaFile.LoadFromFile(file_svm.c_str()))
+    if (pMetaFile->LoadFromFile(file_svm.c_str()))
 	{
 		double w, h, x, y;
-		oMetaFile.GetBounds(&x, &y, &w, &h);
-		oMetaFile.ConvertToRaster(file_png.c_str(), 4, w);
-		oMetaFile.Close();
+        pMetaFile->GetBounds(&x, &y, &w, &h);
+        pMetaFile->ConvertToRaster(file_png.c_str(), 4, w);
+        pMetaFile->Close();
 	}
+
+    RELEASEOBJECT(pMetaFile);
 }
 
 static std::wstring get_mime_type(const std::wstring & extension)
@@ -331,7 +333,7 @@ void docProps_files::write(const std::wstring & RootPath)
 ////////////
 
 
-media::media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts) : mediaitems_(_Mediaitems), appFonts_(pAppFonts)
+media::media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts) : mediaitems_(_Mediaitems), appFonts_(pAppFonts)
 {    
 }
 

@@ -35,7 +35,10 @@
 #include <cpdoccore/CPNoncopyable.h>
 #include "pptx_comments.h"
 
-class CApplicationFonts;
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore { 
 namespace oox {
@@ -214,7 +217,7 @@ public:
 	void add_notes		(slide_content_ptr sheet);
 	void add_notesMaster(slide_content_ptr sheet);
 	
-	void set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);    
+    void set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
     void add_charts(chart_content_ptr chart);
     void add_theme (pptx_xml_theme_ptr theme);
 

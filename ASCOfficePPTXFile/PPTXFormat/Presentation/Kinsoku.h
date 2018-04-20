@@ -50,7 +50,7 @@ namespace PPTX
 				invalEndChars	= node.GetAttribute(_T("invalEndChars"));
 				invalStChars	= node.GetAttribute(_T("invalStChars"));
 
-				node.ReadAttributeBase(L"lang", lang);
+				XmlMacroReadAttributeBase(node, L"lang", lang);
 			}
 			virtual std::wstring toXML() const
 			{

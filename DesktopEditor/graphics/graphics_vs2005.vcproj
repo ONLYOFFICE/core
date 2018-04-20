@@ -356,6 +356,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BaseThread.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Brush.cpp"
 				>
 			</File>
@@ -380,11 +384,39 @@
 				>
 			</File>
 			<File
+				RelativePath=".\pro\lepton_lib_all.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Matrix.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\MetafileToGraphicsRenderer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MetafileToRenderer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\pro\pro_Fonts.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\pro\pro_Graphics.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\pro\pro_Image.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TemporaryCS.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Timer.cpp"
 				>
 			</File>
 		</Filter>

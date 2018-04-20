@@ -32,12 +32,15 @@
 #include "ZipUtilsCP.h"
 #include <memory>
 #include <algorithm>
-#include "CSLocker.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
 
 #if _IOS
     #import <Foundation/Foundation.h>
+#endif
+
+#if !defined(_WIN32) && !defined (_WIN64)
+#include <unistd.h>
 #endif
 
 #define WRITEBUFFERSIZE 8192

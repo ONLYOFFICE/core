@@ -51,14 +51,14 @@ namespace PPTX
 				if (node.GetNode(_T("p:charRg"), oNode))
 				{
 					charRg = true;
-					oNode.ReadAttributeBase(L"st", st);
-					oNode.ReadAttributeBase(L"end", end);
+                    XmlMacroReadAttributeBase(oNode, L"st", st);
+                    XmlMacroReadAttributeBase(oNode, L"end", end);
 				}
 				else if(node.GetNode(_T("p:pRg"), oNode))
 				{
 					charRg = false;
-					oNode.ReadAttributeBase(L"st", st);
-					oNode.ReadAttributeBase(L"end", end);
+                    XmlMacroReadAttributeBase(oNode, L"st", st);
+                    XmlMacroReadAttributeBase(oNode, L"end", end);
 				}
 				else
 				{

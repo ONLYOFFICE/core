@@ -62,11 +62,11 @@ namespace OOX
 		{
 			m_oParagraphProperty = NULL;
 
-			oNode.ReadAttributeBase( _T("w:rsidDel"),      m_oRsidDel );
-			oNode.ReadAttributeBase( _T("w:rsidP"),        m_oRsidP );
-			oNode.ReadAttributeBase( _T("w:rsidR"),        m_oRsidR );
-			oNode.ReadAttributeBase( _T("w:rsidRDefault"), m_oRsidRDefault );
-			oNode.ReadAttributeBase( _T("w:rsidRPr"),      m_oRsidRPr );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidDel"),      m_oRsidDel );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidP"),        m_oRsidP );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidR"),        m_oRsidR );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidRDefault"), m_oRsidRDefault );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidRPr"),      m_oRsidRPr );
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )

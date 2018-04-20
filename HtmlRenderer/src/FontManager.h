@@ -65,7 +65,7 @@ namespace NSHtmlRenderer
 				return;
 
 			double dSize = m_pFont->Size;
-			double dSizeFont = dSize * ((m_pTransform->m_agg_mtx.sx + m_pTransform->m_agg_mtx.sy) / 2);
+            double dSizeFont = dSize * ((m_pTransform->sx() + m_pTransform->sy()) / 2);
 
 			m_pFont->Size = dSizeFont;
 
@@ -99,7 +99,7 @@ namespace NSHtmlRenderer
 
         inline void CalculateSpace()
 		{
-            LONG lGid = m_pManager->m_bStringGID;
+            LONG lGid = m_pManager->GetStringGID();
             m_pManager->SetStringGID(FALSE);
 			
             m_pManager->LoadString1(L" ", 0, 0);

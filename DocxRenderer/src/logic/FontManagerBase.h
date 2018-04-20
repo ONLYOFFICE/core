@@ -2,7 +2,7 @@
 #define DOCX_RENDERER_FMB_H
 
 #include "Common.h"
-#include "../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace NSFontManager
 {

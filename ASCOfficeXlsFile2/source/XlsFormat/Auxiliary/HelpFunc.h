@@ -87,10 +87,10 @@ namespace STR
 	const size_t		hex_str2int	(const std::wstring& hex);
 	const size_t		hex_str2int	(const std::wstring::const_iterator& it_begin, const std::wstring::const_iterator& it_end);
 
-    const std::string	toStdString	(std::wstring wide_string, const unsigned int code_page);
-    const std::wstring	toStdWString(std::string ansi_string, const unsigned int code_page);
-    const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page);
-    const std::wstring	toStdWStringSystem(std::string ansi_string, const unsigned int code_page);
+	std::string		toStdString	(std::wstring wide_string, const unsigned int code_page);
+	std::wstring	toStdWString(std::string ansi_string, const unsigned int code_page);
+	std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page);
+	std::wstring	toStdWStringSystem(std::string ansi_string, const unsigned int code_page);
 };
 
 namespace XMLSTUFF

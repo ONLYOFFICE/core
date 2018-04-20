@@ -72,7 +72,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("ds:uri"), m_sUri );
+				XmlMacroReadAttributeBase( oNode, _T("ds:uri"), m_sUri );
 			}
 			virtual std::wstring      toXML() const
 			{

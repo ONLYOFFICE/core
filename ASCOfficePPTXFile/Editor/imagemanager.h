@@ -45,17 +45,19 @@ using namespace NSFontCutter;
 #include "../../Common/FileDownloader/FileDownloader.h"
 #endif 
 
+#include <list>
 #include "WMFToImageConverter.h"
+#include "../../HtmlRenderer/include/ASCSVGWriter.h"
+
 #include "../../Common/MediaFormatDefine.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/Image.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../HtmlRenderer/include/ASCSVGWriter.h"
-#include <list>
+
 
 namespace NSShapeImageGen
 {
@@ -174,7 +176,7 @@ namespace NSShapeImageGen
 		CCalculatorCRC32					m_oCRC;
 		LONG								m_lDstFormat;
 		NSWMFToImageConverter::CImageExt	m_oImageExt;
-		CFontManager*						m_pFontManager;
+        NSFonts::IFontManager*				m_pFontManager;
 
 		CMediaManager()
 		{
@@ -312,7 +314,7 @@ namespace NSShapeImageGen
             
             return GenerateMediaID(strFile, L"");
         }
-		void SetFontManager(CFontManager* pFontManager)
+        void SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
@@ -332,7 +334,7 @@ namespace NSShapeImageGen
 			if (20 > oFile.GetFileSize())
 				return false;
 
-			ULONG64 max_size = 3 * 1024 * 1024; // 4 Mb
+            ULONG max_size = 3 * 1024 * 1024; // 4 Mb
 			if (max_size < oFile.GetFileSize())
 				return false;
 
@@ -517,11 +519,11 @@ namespace NSShapeImageGen
 					OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
                     CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
 
-					::MetaFile::CMetaFile oMetafile(m_pFontManager->m_pApplication);
-					if (oMetafile.LoadFromFile(strFileName.c_str()))
+                    ::MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pFontManager->GetApplication());
+                    if (pMetafile->LoadFromFile(strFileName.c_str()))
 					{
 						double x = 0, y = 0, w = 0, h = 0;
-						oMetafile.GetBounds(&x, &y, &w, &h);
+                        pMetafile->GetBounds(&x, &y, &w, &h);
 
 						double _max = (w >= h) ? w : h;
 						double dKoef = 100000.0 / _max;
@@ -533,7 +535,7 @@ namespace NSShapeImageGen
 						oWriterSVG.SetFontManager(m_pFontManager);
 						oWriterSVG.put_Width(WW);
 						oWriterSVG.put_Height(HH);
-						oMetafile.DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+                        pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
 
 						bool bIsRaster = true;
 						oWriterSVG.IsRaster(&bIsRaster);
@@ -567,7 +569,7 @@ namespace NSShapeImageGen
 							}
 
 							std::wstring strSaveItem = strSaveItemWE + L".png";
-							oMetafile.ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
+                            pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
 
 							bool bIsSuccess = NSFile::CFileBinary::Exists(strSaveItem);
 							if (bIsSuccess)
@@ -587,6 +589,7 @@ namespace NSShapeImageGen
 							return oInfo;
 						}
 					}
+                    RELEASEOBJECT(pMetafile);
 				}
 
 				SaveImage(strFileName, oInfo, lWidth, lHeight);

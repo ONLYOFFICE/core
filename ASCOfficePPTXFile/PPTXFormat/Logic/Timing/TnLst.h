@@ -59,7 +59,7 @@ namespace PPTX
 			{
 				name = XmlUtils::GetNameNoNS(node.GetName());
 				
-				node.LoadArray(_T("*"), list);
+                XmlMacroLoadArray(node, _T("*"), list, TimeNodeBase);
 				FillParentPointersForChilds();
 			}
 

@@ -70,8 +70,8 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-			oNode.ReadAttributeBase(L"lastView", attrLastView);
-			oNode.ReadAttributeBase(L"showComments", attrShowComments);
+            XmlMacroReadAttributeBase(oNode, L"lastView", attrLastView);
+            XmlMacroReadAttributeBase(oNode, L"showComments", attrShowComments);
 
 			
 			GridSpacing = oNode.ReadNode(_T("p:gridSpacing"));

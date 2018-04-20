@@ -67,7 +67,7 @@ namespace NSHtmlRenderer
         m_pFontManager = NULL;
         if (bIsInitializeFonts)
         {
-            m_pFontManager = new CFontManager();
+            m_pFontManager = NSFonts::NSFontManager::Create();
             m_pFontManager->Initialize();
         }
 
@@ -925,7 +925,7 @@ namespace NSHtmlRenderer
 		return S_OK;
 	}
 	// --------------------------------------------------------------------------------------------
-	void CASCSVGWriter::SetFontManager(CFontManager* pFontManager)
+    void CASCSVGWriter::SetFontManager(NSFonts::IFontManager* pFontManager)
 	{
 		if(NULL != pFontManager)
 		{
@@ -1026,10 +1026,10 @@ namespace NSHtmlRenderer
 			m_pFontManager->LoadFontFromFile(m_pFont->Path, (float)dSizeFont, m_dDpiX, m_dDpiY, 0);
 		}
 
-		if (bIsTransform && NULL != m_pFontManager->m_pFont)
+        if (bIsTransform && NULL != m_pFontManager->GetFile())
 		{
-			m_pFontManager->m_pFont->SetFontMatrix(m_dTextScale, 0, 0, m_dTextScale, 0, 0);
-			m_pFontManager->m_pFont->CheckTextMatrix();
+            m_pFontManager->GetFile()->SetFontMatrix(m_dTextScale, 0, 0, m_dTextScale, 0, 0);
+            m_pFontManager->GetFile()->CheckTextMatrix();
 		}
 
 		*m_pInstalledFont = *m_pFont;

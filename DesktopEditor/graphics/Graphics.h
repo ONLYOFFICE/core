@@ -68,6 +68,7 @@
 #include "Clip.h"
 #include "Brush.h"
 #include "Image.h"
+#include "../fontengine/FontManager.h"
 
 #include <vector>
 

@@ -52,10 +52,10 @@ namespace PPTX
 				cTn			= node.ReadNode(_T("p:cTn"));
 				tgtEl		= node.ReadNode(_T("p:tgtEl"));
 
-				node.ReadAttributeBase(L"mute", mute);
-				node.ReadAttributeBase(L"numSld", numSld);
-				node.ReadAttributeBase(L"showWhenStopped", showWhenStopped);
-				node.ReadAttributeBase(L"vol", vol);
+                XmlMacroReadAttributeBase(node, L"mute", mute);
+                XmlMacroReadAttributeBase(node, L"numSld", numSld);
+                XmlMacroReadAttributeBase(node, L"showWhenStopped", showWhenStopped);
+                XmlMacroReadAttributeBase(node, L"vol", vol);
 
 				Normalize();
 

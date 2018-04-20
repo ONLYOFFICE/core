@@ -71,7 +71,7 @@ namespace PPTX
 			{
 				name		= XmlUtils::GetNameNoNS(node.GetName());
 				link		= node.GetAttribute(_T("r:link"));
-				node.ReadAttributeBase(L"contentType", contentType);
+				XmlMacroReadAttributeBase(node, L"contentType", contentType);
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{

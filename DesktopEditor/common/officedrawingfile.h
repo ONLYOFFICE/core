@@ -34,8 +34,6 @@
 
 #include <string>
 class IRenderer;
-class CApplicationFonts;
-class CFontManager;
 class IOfficeDrawingFile
 {
 public:

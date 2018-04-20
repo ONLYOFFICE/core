@@ -34,6 +34,30 @@
 
 namespace XmlUtils
 {
+    IXmlDOMDocument::IXmlDOMDocument()
+    {
+        m_lRef = 1;
+    }
+    IXmlDOMDocument::~IXmlDOMDocument()
+    {
+    }
+
+    unsigned int IXmlDOMDocument::AddRef()
+    {
+        ++m_lRef;
+        return m_lRef;
+    }
+    unsigned int IXmlDOMDocument::Release()
+    {
+        unsigned int lReturn = --m_lRef;
+        if (0 == m_lRef)
+            delete this;
+        return lReturn;
+    }
+}
+
+namespace XmlUtils
+{
 	CXmlLiteReader::CXmlLiteReader()
 	{
 		m_pInternal = new CXmlLiteReader_Private();
@@ -163,4 +187,17 @@ namespace XmlUtils
 	{
 		return m_pInternal->IsEmptyElement();
 	}
+
+    std::wstring CXmlLiteReader::GetNamespacePrefix()
+    {
+        return m_pInternal->GetNamespacePrefix();
+    }
+    XmlNodeType CXmlLiteReader::GetNodeType()
+    {
+        return m_pInternal->GetNodeType();
+    }
+    bool CXmlLiteReader::IsDefaultAttribute()
+    {
+        return m_pInternal->IsDefaultAttribute();
+    }
 }

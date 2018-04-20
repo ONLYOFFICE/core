@@ -48,8 +48,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"tm", tm);
-				node.ReadAttributeBase(L"fmla", fmla);
+                XmlMacroReadAttributeBase(node, L"tm", tm);
+                XmlMacroReadAttributeBase(node, L"fmla", fmla);
 			
 				val		= node.ReadNodeNoNS(_T("val"));
 

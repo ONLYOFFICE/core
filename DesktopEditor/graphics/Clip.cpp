@@ -89,7 +89,7 @@ namespace Aggplus
 		m_rasterizer.reset();
 
 		typedef agg::conv_transform<agg::path_storage> trans_type;
-		trans_type trans(pPath->m_agg_ps, pMatrix->m_agg_mtx);
+		trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
 
 		typedef agg::conv_curve<trans_type> conv_crv_type;
 		conv_crv_type c_c_path(trans);
@@ -157,7 +157,7 @@ namespace Aggplus
 		m_rasterizer.reset();
 
 		typedef agg::conv_transform<agg::path_storage> trans_type;
-		trans_type trans(pPath->m_agg_ps, pMatrix->m_agg_mtx);
+		trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
 
 		typedef agg::conv_curve<trans_type> conv_crv_type;
 		conv_crv_type c_c_path(trans);
@@ -206,13 +206,13 @@ namespace Aggplus
 		m_rasterizer.reset();
 
 		typedef agg::conv_transform<agg::path_storage> trans_type;
-		trans_type trans(pPath->m_agg_ps, pMatrix->m_agg_mtx);
+		trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
 
 		typedef agg::conv_curve<trans_type> conv_crv_type;
 		conv_crv_type c_c_path(trans);
 			 
 		m_rasterizer.add_path(c_c_path);
-        m_rasterizer.filling_rule(pPath->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+		m_rasterizer.filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 		m_bIsClip = true;
 		m_bIsClip2 = false;
@@ -229,13 +229,13 @@ namespace Aggplus
 			agg::rasterizer_scanline_aa<> rasterizer;
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;
-			trans_type trans(pPath->m_agg_ps, pMatrix->m_agg_mtx);
+			trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
 
 			typedef agg::conv_curve<trans_type> conv_crv_type;
 			conv_crv_type c_c_path(trans);
 				 
 			rasterizer.add_path(c_c_path);
-			rasterizer.filling_rule(pPath->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+			rasterizer.filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 			scanline_type sl1; 
 			scanline_type sl2;
@@ -251,13 +251,13 @@ namespace Aggplus
 			agg::rasterizer_scanline_aa<> rasterizer;
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;
-			trans_type trans(pPath->m_agg_ps, pMatrix->m_agg_mtx);
+			trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
 
 			typedef agg::conv_curve<trans_type> conv_crv_type;
 			conv_crv_type c_c_path(trans);
 				 
 			rasterizer.add_path(c_c_path);
-			rasterizer.filling_rule(pPath->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+			rasterizer.filling_rule(pPath->m_internal->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 			scanline_type sl1; 
 			scanline_type sl2;

@@ -35,6 +35,45 @@
 
 namespace XmlUtils
 {
+    std::wstring GetNameNoNS(const std::wstring & strNodeName)
+    {
+        int nFind = (int)strNodeName.find(L":");
+        if (-1 == nFind)
+            return strNodeName;
+        return strNodeName.substr(nFind + 1);
+    }
+    std::wstring GetNamespace(const std::wstring& strNodeName)
+    {
+        int nFind = (int)strNodeName.find(L":");
+        if (-1 == nFind)
+            return L"";
+        return strNodeName.substr(0, nFind);
+    }
+}
+
+namespace XmlUtils
+{
+    class CXmlNodeBase : public IXmlDOMDocument
+    {
+    public:
+        IXmlDOMDocument* m_pDocument;
+
+        std::map<std::string, std::string> m_attributes;
+        std::vector<CXmlNodeBase*> m_nodes;
+        std::wstring m_sText;
+        std::wstring m_sName;
+
+    public:
+        CXmlNodeBase();
+        ~CXmlNodeBase();
+
+        void AddRefDoc();
+        void ReleaseDoc();
+
+        std::wstring GetXml();
+        void GetXml(NSStringUtils::CStringBuilder& oWriter);
+    };
+
 	CXmlNodeBase::CXmlNodeBase()
 	{
 		m_pDocument = NULL;
@@ -108,6 +147,9 @@ namespace XmlUtils
 	CXmlNodes::CXmlNodes() : m_nodes()
 	{
 	}
+    CXmlNodes::~CXmlNodes()
+    {
+    }
 	bool CXmlNodes::IsValid()
 	{
 		return true;
@@ -451,6 +493,38 @@ namespace XmlUtils
 		else 
 			return 0;
 	}
+    void CXmlNode::GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(UTF8_TO_U(p->first));
+            values.push_back(UTF8_TO_U(p->second));
+        }
+    }
+    void CXmlNode::GetAllAttributes(std::vector<std::string>& names, std::vector<std::string>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(p->first);
+            values.push_back(p->second);
+        }
+    }
+    void CXmlNode::GetAllAttributes(std::list<std::wstring>& names, std::list<std::wstring>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(UTF8_TO_U(p->first));
+            values.push_back(UTF8_TO_U(p->second));
+        }
+    }
+    void CXmlNode::GetAllAttributes(std::list<std::string>& names, std::list<std::string>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(p->first);
+            values.push_back(p->second);
+        }
+    }
 	bool CXmlNode::GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput)
 	{
 		bool bRes = false;
@@ -756,7 +830,7 @@ namespace XmlUtils
 		NSStringUtils::CStringBuilder oWriter;
 		m_pBase->GetXml(oWriter);
 		return oWriter.GetData();
-	}
+	}    
 
 	void CXmlNode::SetBase(CXmlNodeBase* pBase)
 	{
@@ -767,18 +841,118 @@ namespace XmlUtils
 		if (NULL != pBaseOld)
 			pBaseOld->Release();
 	}
-	std::wstring CXmlNode::GetNamespace(const std::wstring& strNodeName)
-	{
-		int nFind = strNodeName.find(wchar_t(':'));
-		if (-1 == nFind)
-			return L"";
-		return strNodeName.substr(0, nFind);
-	}
-	std::wstring CXmlNode::GetNameNoNS(const std::wstring& strNodeName)
-	{
-		int nFind = strNodeName.find(wchar_t(':'));
-		if (-1 == nFind)
-			return strNodeName;
-		return strNodeName.substr(nFind + 1);
-	}
+    std::wstring CXmlNode::GetNamespace(const std::wstring& strNodeName)
+    {
+        int nFind = strNodeName.find(wchar_t(':'));
+        if (-1 == nFind)
+            return L"";
+        return strNodeName.substr(0, nFind);
+    }
+    std::wstring CXmlNode::GetNameNoNS(const std::wstring& strNodeName)
+    {
+        int nFind = strNodeName.find(wchar_t(':'));
+        if (-1 == nFind)
+            return strNodeName;
+        return strNodeName.substr(nFind + 1);
+    }
+}
+
+namespace XmlUtils
+{
+    CXmlWriter::CXmlWriter()
+    {
+    }
+
+    std::wstring CXmlWriter::GetXmlString()
+    {
+        return m_str;
+    }
+    void CXmlWriter::SetXmlString(const std::wstring& strValue)
+    {
+        m_str = strValue;
+    }
+
+    bool CXmlWriter::SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
+    {
+        return NSFile::CFileBinary::SaveToFile(strFilePath, m_str);
+    }
+    void CXmlWriter::WriteString(const std::wstring& strValue)
+    {
+        m_str += strValue;
+    }
+    void CXmlWriter::WriteInteger(int Value)
+    {
+        m_str += std::to_wstring(Value);
+    }
+    void CXmlWriter::WriteDouble(double Value)
+    {
+        m_str += std::to_wstring(Value);
+    }
+    void CXmlWriter::WriteBoolean(bool Value)
+    {
+        if (Value)
+            m_str += (L"true");
+        else
+            m_str += (L"false");
+    }
+    void CXmlWriter::WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed)
+    {
+        m_str += (L"<") + strNodeName;
+
+        if (!bAttributed)
+            m_str += (L">");
+    }
+    void CXmlWriter::WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode, bool bEndNode)
+    {
+        if (bEmptyNode)
+        {
+            if (bEndNode)
+                m_str += (L" />");
+            else
+                m_str += (L">");
+        }
+        else
+            m_str += (L"</") + strNodeName + (L">");
+    }
+    void CXmlWriter::WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue)
+    {
+        if (strNodeValue.empty())
+            m_str += L"<" + strNodeName + L"/>";
+        else
+            m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
+    }
+    void CXmlWriter::WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
+    {
+        WriteNodeBegin(strNodeName);
+        WriteString(strTextBeforeValue);
+        WriteInteger(nValue);
+        WriteString(strTextAfterValue);
+        WriteNodeEnd(strNodeName);
+    }
+    void CXmlWriter::WriteNode(const std::wstring& strNodeName, double dValue)
+    {
+        WriteNodeBegin(strNodeName);
+        WriteDouble(dValue);
+        WriteNodeEnd(strNodeName);
+    }
+    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
+    {
+        m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
+    }
+    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
+    {
+        WriteString(L" " + strAttributeName + L"=");
+        WriteString(L"\"");
+        WriteString(strTextBeforeValue);
+        WriteInteger(nValue);
+        WriteString(strTextAfterValue);
+        WriteString(L"\"");
+    }
+    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, double dValue)
+    {
+        WriteString(L" " + strAttributeName + L"=");
+        WriteString(L"\"");
+        WriteDouble(dValue);
+        WriteString(L"\"");
+    }
 }

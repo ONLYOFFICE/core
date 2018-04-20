@@ -63,9 +63,9 @@ namespace PPTX
 				else if ( _T("a:sym") == m_name )
 					m_eType = OOX::et_a_sym;
 
-				node.ReadAttributeBase(L"charset", charset);
-				node.ReadAttributeBase(L"panose", panose);
-				node.ReadAttributeBase(L"pitchFamily", pitchFamily);
+				XmlMacroReadAttributeBase(node, L"charset", charset);
+				XmlMacroReadAttributeBase(node, L"panose", panose);
+				XmlMacroReadAttributeBase(node, L"pitchFamily", pitchFamily);
 
 				typeface = node.GetAttribute(_T("typeface"));
 			}

@@ -190,8 +190,8 @@ namespace NSHtmlRenderer
             };
 
         protected:
-            CApplicationFonts m_oApplicationFonts;
-            CFontManager*	m_pManager;
+            NSFonts::IApplicationFonts* m_pApplicationFonts;
+            NSFonts::IFontManager* m_pManager;
             std::wstring	m_strDefaultFont;
 
         public:
@@ -214,11 +214,12 @@ namespace NSHtmlRenderer
             bool							m_bIsUseFontWidth;
 
         public:
-            CFontManagerBase() : m_oFont(), m_mapFontPathToProperties(), m_oApplicationFonts()
+            CFontManagerBase() : m_oFont(), m_mapFontPathToProperties()
             {
-                m_oApplicationFonts.Initialize();
-                m_oApplicationFonts.GetCache()->SetCacheSize(16);
-                m_pManager = m_oApplicationFonts.GenerateFontManager();
+                m_pApplicationFonts = NSFonts::NSApplication::Create();
+                m_pApplicationFonts->Initialize();
+                m_pApplicationFonts->GetCache()->SetCacheSize(16);
+                m_pManager = m_pApplicationFonts->GenerateFontManager();
 
                 SetDefaultFont(L"Arial");
 
@@ -235,6 +236,7 @@ namespace NSHtmlRenderer
             virtual ~CFontManagerBase()
             {
                 RELEASEOBJECT(m_pManager);
+                RELEASEOBJECT(m_pApplicationFonts);
             }
 
             inline void ClearPickUps()
@@ -349,10 +351,10 @@ namespace NSHtmlRenderer
             void LoadFontMetrics()
             {
                 m_pManager->AfterLoad();
-                m_oFont.m_dAscent = m_pManager->m_lAscender;
-                m_oFont.m_dDescent = m_pManager->m_lDescender;
-                m_oFont.m_dLineSpacing = m_pManager->m_lLineHeight;
-                m_oFont.m_dEmHeight = m_pManager->m_lUnits_Per_Em;
+                m_oFont.m_dAscent = m_pManager->GetAscender();
+                m_oFont.m_dDescent = m_pManager->GetDescender();
+                m_oFont.m_dLineSpacing = m_pManager->GetLineHeight();
+                m_oFont.m_dEmHeight = m_pManager->GetUnitsPerEm();
 
                 m_oFont.m_dBaselineOffsetDOCX = (c_dPtToMM * m_oFont.m_dDescent * m_oFont.m_oFont.Size / m_oFont.m_dEmHeight);
 
@@ -414,14 +416,14 @@ namespace NSHtmlRenderer
                 if (m_oFont.m_oFont.Name.empty())
                 {
                     // FamilyName
-                    m_oFont.m_oProperties.m_strFamilyName = DeletePdfPrefix(m_pManager->m_sName);
+                    m_oFont.m_oProperties.m_strFamilyName = DeletePdfPrefix(m_pManager->GetName());
                 }
                 else
                 {
                     m_oFont.m_oProperties.m_strFamilyName = m_oFont.m_oFont.Name;
                 }
 
-                CFontFile* pFontFile = m_pManager->m_pFont;
+                NSFonts::IFontFile* pFontFile = m_pManager->GetFile();
                 if (!pFontFile)
                     return;
 
@@ -1555,7 +1557,7 @@ namespace NSHtmlRenderer
                     CheckRanges(dwR1, dwR2, dwR3, dwR4, lRangeNum, lRange);
                 }
 
-                CFontSelectFormat oFormat;
+                NSFonts::CFontSelectFormat oFormat;
                 oFormat.wsName = new std::wstring(m_oFont.m_oProperties.m_strFamilyName);
                 oFormat.pPanose = new BYTE[10];
                 memcpy(oFormat.pPanose, m_oFont.m_oProperties.m_strPANOSE, 10);
@@ -1576,7 +1578,7 @@ namespace NSHtmlRenderer
                 if (0 != dwCodePage2)
                     oFormat.ulCodeRange2 = new ULONG(dwCodePage2);
 
-                CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
+                NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
                 oPick.m_strPickFont = pInfo->m_wsFontName;
                 oPick.m_lPickStyle	= m_oFont.m_oFont.GetStyle();
                 m_strCurrentPickFont = oPick.m_strPickFont;
@@ -1592,7 +1594,7 @@ namespace NSHtmlRenderer
             }
             inline LONG GetStringGid()
             {
-                return m_pManager->m_bStringGID;
+                return m_pManager->GetStringGID();
             }
 
             inline wchar_t* GetUnicodeString(wchar_t* bsText)
@@ -1616,12 +1618,12 @@ namespace NSHtmlRenderer
 
             std::wstring GetFontPath(NSStructures::CFont* pFont)
             {
-                CFontSelectFormat oFormat;
+                NSFonts::CFontSelectFormat oFormat;
                 oFormat.bBold = new INT(pFont->Bold);
                 oFormat.bItalic = new INT(pFont->Italic);
                 oFormat.wsName = new std::wstring(pFont->Name);
 
-                CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
+                NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
                 return pInfo->m_wsFontPath;
             }
         };

@@ -75,9 +75,9 @@ namespace PPTX
 			{
 				m_name	= XmlUtils::GetNameNoNS(node.GetName());
 				
-				node.ReadAttributeBase(L"w", w);
-				node.ReadAttributeBase(L"h", h);
-				node.ReadAttributeBase(L"prst", prst);
+				XmlMacroReadAttributeBase(node, L"w", w);
+				XmlMacroReadAttributeBase(node, L"h", h);
+				XmlMacroReadAttributeBase(node, L"prst", prst);
 			}
 
 			virtual std::wstring toXML() const

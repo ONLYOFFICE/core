@@ -66,9 +66,9 @@ namespace PPTX
 			{
 				XmlUtils::CXmlNode oNode;
 				if (node.GetNode(_T("a:tblGrid"), oNode))
-					oNode.LoadArray(_T("a:gridCol"), TableCols);
+					XmlMacroLoadArray(oNode, _T("a:gridCol"), TableCols, TableCol);
 
-				node.LoadArray(_T("a:tr"), TableRows);
+				XmlMacroLoadArray(node, _T("a:tr"), TableRows, TableRow);
 
                 tableProperties = node.ReadNode(_T("a:tblPr"));
 

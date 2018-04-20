@@ -41,11 +41,11 @@
 
 #include "../Crypt/Decryptor.h"
 
-class XlsConverter;
-class CApplicationFonts;
+#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
 
+class XlsConverter;
 namespace XLS
-{;
+{
 
 class BaseObject;
 typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
@@ -155,7 +155,7 @@ public:
 	std::vector<_sheet_info>		sheets_info;
 
 	std::pair<float, float>			defaultDigitFontSize;
-    CApplicationFonts				*applicationFonts;
+    NSFonts::IApplicationFonts*     applicationFonts;
 	std::wstring					fontsDirectory;
 
 	std::wstring					tempDirectory;

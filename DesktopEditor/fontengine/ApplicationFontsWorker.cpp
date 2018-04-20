@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -34,6 +34,9 @@
 #include "../common/File.h"
 #include "../common/Directory.h"
 #include "./MemoryStream.h"
+#include "./../graphics/pro/Fonts.h"
+
+using namespace NSFonts;
 
 namespace NSFontsApplication
 {
@@ -348,19 +351,20 @@ namespace NSFontsApplication
     {
         std::vector<std::wstring> arrNames;
         
-        CArray<CFontInfo*>* pList = applicationFonts.GetList()->GetFonts();
+        std::vector<NSFonts::CFontInfo*>* pList = applicationFonts.GetList()->GetFonts();
         
 #ifdef _IOS
         
-        int nOldCount = pList->GetCount();
-        for (int i = 0; i < nOldCount; i++)
+        size_t nOldCount = pList->size();
+        for (size_t i = 0; i < nOldCount; i++)
         {
             CFontInfo* pInfo = pList->operator [](i);
             
             if (pInfo->m_wsFontName.find(L".") == 0)
             {
+                pList->erase(pList->begin() + i);
                 // странные шрифты какие-то есть в ios
-                pList->RemoveAt(i);
+                //pList->RemoveAt(i);
                 i--;
                 nOldCount--;
                 continue;
@@ -369,7 +373,7 @@ namespace NSFontsApplication
         
 #endif
         
-        int nCount = pList->GetCount();
+        size_t nCount = pList->size();
         
         // сначала строим массив всех файлов шрифтов
         std::map<std::wstring, LONG> mapFontFiles;

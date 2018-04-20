@@ -47,6 +47,9 @@
 		17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFC2C31BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp */; };
 		698AF5051C0766200080D889 /* unicode_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 698AF5031C0766200080D889 /* unicode_util.cpp */; };
 		7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */; };
+		8ABC65A3208A1EFA00E96FFE /* pro_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */; };
+		8ABC65A5208A1F1B00E96FFE /* pro_Fonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */; };
+		8ABC65A7208A1F3A00E96FFE /* MetafileToRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -118,6 +121,10 @@
 		7C560F6F1AA71A91000E5860 /* libPdfWriter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPdfWriter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AscEditorPDFPrinter.h; sourceTree = "<group>"; };
 		7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AscEditorPDFPrinter.mm; sourceTree = "<group>"; };
+		8ABC65A1208A1EF400E96FFE /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Image.h; path = ../../graphics/pro/Image.h; sourceTree = "<group>"; };
+		8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Image.cpp; path = ../../graphics/pro/pro_Image.cpp; sourceTree = "<group>"; };
+		8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Fonts.cpp; path = ../../graphics/pro/pro_Fonts.cpp; sourceTree = "<group>"; };
+		8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetafileToRenderer.cpp; path = ../../graphics/MetafileToRenderer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +163,7 @@
 				176E573C1BB0057700276C19 /* BgraFrame.h */,
 				176E573D1BB0057700276C19 /* ImageFileFormatChecker.cpp */,
 				176E573E1BB0057700276C19 /* ImageFileFormatChecker.h */,
+				8ABC65A1208A1EF400E96FFE /* Image.h */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -192,6 +200,8 @@
 				176285CB1BAAFC3B00AEDA07 /* Encrypt.h */,
 				176285CC1BAAFC3B00AEDA07 /* EncryptDictionary.cpp */,
 				176285CD1BAAFC3B00AEDA07 /* EncryptDictionary.h */,
+				8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */,
+				8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */,
 				176285CE1BAAFC3B00AEDA07 /* Font.cpp */,
 				176285CF1BAAFC3B00AEDA07 /* Font.h */,
 				176285D01BAAFC3B00AEDA07 /* Font14.cpp */,
@@ -206,6 +216,7 @@
 				176285D91BAAFC3B00AEDA07 /* Image.h */,
 				176285DA1BAAFC3B00AEDA07 /* Info.cpp */,
 				176285DB1BAAFC3B00AEDA07 /* Info.h */,
+				8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */,
 				176285DC1BAAFC3B00AEDA07 /* Objects.cpp */,
 				176285DD1BAAFC3B00AEDA07 /* Objects.h */,
 				176285DE1BAAFC3B00AEDA07 /* Outline.cpp */,
@@ -308,10 +319,13 @@
 				176285FA1BAAFC3B00AEDA07 /* Pages.cpp in Sources */,
 				17FFC2C21BAB15CE00D91F59 /* PdfRenderer.cpp in Sources */,
 				176285F51BAAFC3B00AEDA07 /* GState.cpp in Sources */,
+				8ABC65A7208A1F3A00E96FFE /* MetafileToRenderer.cpp in Sources */,
 				176285ED1BAAFC3B00AEDA07 /* Destination.cpp in Sources */,
 				17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */,
 				176285FE1BAAFC3B00AEDA07 /* Utils.cpp in Sources */,
+				8ABC65A3208A1EFA00E96FFE /* pro_Image.cpp in Sources */,
 				7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */,
+				8ABC65A5208A1F1B00E96FFE /* pro_Fonts.cpp in Sources */,
 				698AF5051C0766200080D889 /* unicode_util.cpp in Sources */,
 				176285F81BAAFC3B00AEDA07 /* Objects.cpp in Sources */,
 				176285F91BAAFC3B00AEDA07 /* Outline.cpp in Sources */,

@@ -437,7 +437,10 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		odt_context->text_context()->set_KeepNextParagraph(false);
 	}
 //---------------------------------------------------------------------------------------------------------------------
-	current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
+	if (false == current_font_size.empty())
+	{
+		current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
+	}
 
 	bool bStyled			= false;
 	bool bStartNewParagraph = !odt_context->text_context()->get_KeepNextParagraph();
@@ -2112,7 +2115,7 @@ void DocxConverter::convert(ComplexTypes::Word::CTblWidth *oox_size, _CP_OPT(odf
 	//tblwidthNil  = 2,
 	//tblwidthPct  = 3
 }
-void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::style_text_properties * text_properties)
+void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::style_text_properties * text_properties, bool is_list_styles)
 {
 	if (oox_run_pr		== NULL) return;
 	if (text_properties == NULL) return;
@@ -2120,7 +2123,20 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oRStyle.IsInit() && oox_run_pr->m_oRStyle->m_sVal.IsInit())
 	{
 		std::wstring style_name = *oox_run_pr->m_oRStyle->m_sVal;
-		odt_context->styles_context()->last_state()->set_parent_style_name(style_name);
+
+		odf_writer::odf_style_state_ptr style_state;
+		//if (is_list_styles)
+		//{
+		//	style_state = odt_context->styles_context()->lists_styles()->last_state();
+		//}
+		//else
+		{
+			style_state = odt_context->styles_context()->last_state();
+		}
+		if (style_state)
+		{
+			style_state->set_parent_style_name(style_name);
+		}
 		
 		odf_writer::style_text_properties  parent_text_properties;
 		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Text, &parent_text_properties.content_);
@@ -3233,7 +3249,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 		odf_writer::odf_style_context* styles_context = odf_context()->page_layout_context()->get_local_styles_context();
 		
 		odf_writer::style_text_properties *text_props = odt_context->styles_context()->lists_styles().get_text_properties();
-		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props);
+		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props, true);
 
 		//create text style for symbols list НА ЛОКАЛЬНОМ контексте - иначе пересечение имен стилей (todoo вытащить генерацию имен в общую часть)
 		styles_context->create_style(L"", odf_types::style_family::Text, false, true, -1);					

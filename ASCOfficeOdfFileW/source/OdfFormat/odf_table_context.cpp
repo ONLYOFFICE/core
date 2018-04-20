@@ -342,6 +342,16 @@ void odf_table_context::change_current_column_width(double width)
 	int index = impl_->current_table().current_column ;
 	if (index < 0) return;
 
+	while(index >= impl_->current_table().columns.size())
+	{
+		office_element_ptr elm;
+		create_element(L"table", L"table-column", elm, impl_->odf_context_);
+
+		impl_->styles_context()->create_style(L"", style_family::TableColumn, true, false, -1);
+
+		add_column(elm, true);
+
+	}
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns[index].style_elm.get());
 
 	if (style_ == NULL) return;
@@ -527,7 +537,11 @@ void odf_table_context::set_cell_row_span_restart()
 		cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = sz;
 	}
 	state.spanned_row_cell.clear();
-	state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+
+	if (false == impl_->current_table().cells.empty())
+	{
+		state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+	}
 
 }
 

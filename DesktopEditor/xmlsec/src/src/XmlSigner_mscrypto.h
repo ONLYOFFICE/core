@@ -375,20 +375,20 @@ public:
     }
 
 public:
-    virtual bool ShowSelectDialog()
+    virtual int ShowSelectDialog()
     {
         m_store = CertOpenSystemStoreA(NULL, "MY");
         if (!m_store)
-            return false;
+            return 0;
 
         m_context = CryptUIDlgSelectCertificateFromStore(m_store, NULL, NULL, NULL, CRYPTUI_SELECT_LOCATION_COLUMN, 0, NULL);
         if (!m_context)
         {
             CertCloseStore(m_store, 0);
             m_store = NULL;
-            return false;
+            return 0;
         }
-        return true;
+        return 1;
     }
 
 private:

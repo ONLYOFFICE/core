@@ -44,9 +44,6 @@ void X509_FREE(X509*& cert)
 
 class CCertificate_openssl_private
 {
-protected:
-    ICertificateSelectDialogOpenSsl* m_pDialog;
-
     X509*           m_cert;
     EVP_PKEY*       m_key;
 
@@ -59,8 +56,6 @@ public:
 public:
     CCertificate_openssl_private()
     {
-        m_pDialog = NULL;
-
         m_cert = NULL;
         m_key = NULL;
 
@@ -117,18 +112,25 @@ public:
             return L"";
 
         X509_NAME* name = X509_get_issuer_name(m_cert);
-        char buffer[1024];
-        memset(buffer, 0, 1025);
+        char buffer[10000];
+        memset(buffer, 0, 10000);
 
-        X509_NAME_oneline(name, buffer, 1024);
+        X509_NAME_oneline(name, buffer, 10000);
 
         std::string sName(buffer);
         std::wstring sNameW = UTF8_TO_U(sName);
 
         std::wstring::size_type pos = sNameW.find(L"CN=");
         if (std::wstring::npos != pos)
+        {
             sNameW = sNameW.substr(pos + 3);
+            pos = sNameW.find(L"/");
 
+            if (std::wstring::npos != pos)
+            {
+                sNameW = sNameW.substr(0, pos);
+            }
+        }
         return sNameW;
     }
 
@@ -347,22 +349,9 @@ public:
     }
 
 public:
-    bool ShowSelectDialog()
+    int ShowSelectDialog()
     {
-        if (!m_pDialog)
-            return false;
-
-        bool bResult = m_pDialog->ShowSelectDialog();
-
-        std::wstring sKeyPath = m_pDialog->GetKeyPath();
-        std::wstring sKeyPasswordW = m_pDialog->GetKeyPassword();
-        std::string sKeyPassword = U_TO_UTF8(sKeyPasswordW);
-
-        std::wstring sCertPath = m_pDialog->GetCertificatePath();
-        std::wstring sCertPasswordW = m_pDialog->GetCertificatePassword();
-        std::string sCertPassword = U_TO_UTF8(sCertPasswordW);
-
-        return FromFiles(sKeyPath, sKeyPassword, sCertPath, sCertPassword);
+        return -1;
     }
 
     bool FromFiles(const std::wstring& sKeyPath, const std::string& sKeyPassword, const std::wstring& certPath, const std::string& certPassword)
@@ -429,14 +418,7 @@ public:
 
     int ShowCertificate()
     {
-        if (m_pDialog)
-            return m_pDialog->ShowCertificate(m_pBase);
-        return 1;
-    }
-
-    void SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog)
-    {
-        m_pDialog = pDialog;
+        return -1;
     }
 
     int VerifySelf()
@@ -787,7 +769,7 @@ bool CCertificate_openssl::LoadFromBase64Data(const std::string& data)
     return m_internal->LoadFromBase64Data(data);
 }
 
-bool CCertificate_openssl::ShowSelectDialog()
+int CCertificate_openssl::ShowSelectDialog()
 {
     return m_internal->ShowSelectDialog();
 }
@@ -807,17 +789,15 @@ bool CCertificate_openssl::FromId(const std::string& id)
     return m_internal->FromKey(id);
 }
 
-void CCertificate_openssl::SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog)
+namespace NSOpenSSL
 {
-    return m_internal->SetOpenSslDialog(pDialog);
-}
+    int LoadKey(std::wstring file, std::string password)
+    {
+        return CCertificate_openssl_private::LoadKey(file, password, NULL);
+    }
 
-int ICertificateSelectDialogOpenSsl::LoadKey(std::wstring file, std::string password)
-{
-    return CCertificate_openssl_private::LoadKey(file, password, NULL);
-}
-
-int ICertificateSelectDialogOpenSsl::LoadCert(std::wstring file, std::string password)
-{
-    return CCertificate_openssl_private::LoadCert(file, password, NULL);
+    int LoadCert(std::wstring file, std::string password)
+    {
+        return CCertificate_openssl_private::LoadCert(file, password, NULL);
+    }
 }

@@ -15,31 +15,11 @@
 #define OPEN_SSL_WARNING_PASS       4
 #define OPEN_SSL_WARNING_NOVERIFY   8
 
-class ICertificate;
-class Q_DECL_EXPORT ICertificateSelectDialogOpenSsl
+namespace NSOpenSSL
 {
-public:
-    ICertificateSelectDialogOpenSsl()
-    {
-    }
-    virtual ~ICertificateSelectDialogOpenSsl()
-    {
-    }
-
-public:
-    virtual std::wstring GetCertificatePath() = 0;
-    virtual std::wstring GetCertificatePassword() = 0;
-
-    virtual std::wstring GetKeyPath() = 0;
-    virtual std::wstring GetKeyPassword() = 0;
-
-    virtual bool ShowSelectDialog() = 0;
-    virtual int ShowCertificate(ICertificate* pCert) = 0;
-
-    static int LoadKey(std::wstring file, std::string password);
-    static int LoadCert(std::wstring file, std::string password);
-    static void SetOpenSslDialogApplication(ICertificateSelectDialogOpenSsl* pDialog);
-};
+    Q_DECL_EXPORT int LoadKey(std::wstring file, std::string password);
+    Q_DECL_EXPORT int LoadCert(std::wstring file, std::string password);
+}
 
 class Q_DECL_EXPORT CCertificateInfo
 {
@@ -126,15 +106,15 @@ public:
     virtual bool LoadFromBase64Data(const std::string& data)                            = 0;    
 
 public:
-    virtual bool ShowSelectDialog()             = 0;
+    virtual int ShowSelectDialog()              = 0;
     virtual int ShowCertificate()               = 0;
-
-    virtual void SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog) {}
 
     static CCertificateInfo GetDefault();
     static ICertificate* GetById(const std::string& id);
 
     virtual CCertificateInfo GetInfo();
+
+    virtual bool FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword);
 
 public:
     static int GetOOXMLHashAlg(const std::string& sAlg);

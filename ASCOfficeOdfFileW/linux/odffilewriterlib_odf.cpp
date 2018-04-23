@@ -101,3 +101,4 @@
 #include "../source/OdfFormat/style_presentation.cpp"
 #include "../source/OdfFormat/office_scripts.cpp"
 #include "../source/OdfFormat/office_event_listeners.cpp"
+#include "../source/utils.cpp"

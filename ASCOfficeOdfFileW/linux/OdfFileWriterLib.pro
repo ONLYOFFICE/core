@@ -37,6 +37,7 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
+    ../source/utils.cpp \
     ../source/OdfFormat/abstract_xml.cpp \
     ../source/OdfFormat/calcext_elements.cpp \
     ../source/OdfFormat/draw_base.cpp \

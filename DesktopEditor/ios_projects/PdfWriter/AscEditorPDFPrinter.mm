@@ -43,10 +43,10 @@ bool CAscEditorPDFPrinter::Print(std::string strBase64, std::wstring strDstFile)
     }
     
     oFonts.InitializeFromArrayFiles(fonts);
-    pFontManager = oFonts.GenerateFontManager();
+    pFontManager = (CFontManager*)oFonts.GenerateFontManager();
     
     oFonts.InitializeFromFolder(m_strFontsDirectory);
-    pFontManager = oFonts.GenerateFontManager();
+    pFontManager = (CFontManager*)oFonts.GenerateFontManager();
     
     CPdfRenderer oRender(&oFonts);
     oRender.SetTempFolder(GetTempPath());

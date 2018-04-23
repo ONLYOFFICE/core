@@ -33,7 +33,6 @@
 #include <fstream>
 #include <time.h>
 #include "errno.h"
-#include <time.h>
 
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
     #include <wchar.h>
@@ -46,7 +45,16 @@
 #endif
 
 #ifdef _IOS
-#include <unistd.h>
+    #include <unistd.h>
+
+    #ifdef __OBJC__
+        #import <CoreFoundation/CoreFoundation.h>
+    #else
+        #include <objc/objc.h>
+    #endif
+
+    #import <Foundation/Foundation.h>
+
 #endif
 
 #ifdef _MAC
@@ -572,41 +580,39 @@ namespace NSFile
     }
 
 #ifdef _IOS
-
-    #import <Foundation/Foundation.h>
-
+    
     static const char* fileSystemRepresentation(const std::wstring& sFileName)
     {
         NSString *path = [[NSString alloc] initWithBytes:(char*)sFileName.data()
                                                   length:sFileName.size()* sizeof(wchar_t)
                                                 encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE)];
-
+        
         return (const char*)[path fileSystemRepresentation];
     }
-
+    
     bool CFileBinary::OpenFile(const std::wstring& sFileName, bool bRewrite)
     {
         m_pFile = fopen(fileSystemRepresentation(sFileName), bRewrite ? "rb+" : "rb");
-
+        
         if (NULL == m_pFile) {
 #if DEBUG
-        //    printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
+            //    printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
 #endif
             return false;
         }
-
+        
         fseek(m_pFile, 0, SEEK_END);
         m_lFileSize = ftell(m_pFile);
         fseek(m_pFile, 0, SEEK_SET);
-
+        
         m_lFilePosition = 0;
-
+        
         if (0 < sFileName.length())
         {
             if (((wchar_t)'/') == sFileName.c_str()[sFileName.length() - 1])
                 m_lFileSize = 0x7FFFFFFF;
         }
-
+        
         unsigned int err = 0x7FFFFFFF;
         unsigned int cur = (unsigned int)m_lFileSize;
         if (err == cur)
@@ -614,7 +620,7 @@ namespace NSFile
             CloseFile();
             return false;
         }
-
+        
         return true;
     }
 
@@ -632,7 +638,6 @@ namespace NSFile
         m_lFilePosition = 0;
         return true;
     }
-}
 
 #else
 

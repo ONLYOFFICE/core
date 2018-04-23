@@ -1139,54 +1139,54 @@ namespace NExtractTools
     int bin2image (const std::wstring &sTFileDir, BYTE* pBuffer, LONG lBufferLen, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)
     {
         long nRes = 0;
-        CApplicationFonts oApplicationFonts;
-        initApplicationFonts(oApplicationFonts, params);
-        NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-        imageWriter.wsHtmlPlace = sTFileDir;
-        imageWriter.wsThemesPlace = sThemeDir;
-        imageWriter.wsTempDir = sTemp;
-        imageWriter.appFonts = &oApplicationFonts;
-        if(NULL != params.m_oThumbnail)
-        {
-            InputParamsThumbnail* oThumbnail = params.m_oThumbnail;
-            if(NULL != oThumbnail->format)
-            {
-                imageWriter.m_nRasterFormat = *oThumbnail->format;
-            }
-            if(NULL != oThumbnail->aspect)
-            {
-                imageWriter.m_nSaveType = *oThumbnail->aspect;
-            }
-            if(NULL != oThumbnail->first)
-            {
-                imageWriter.m_bIsOnlyFirst = *oThumbnail->first;
-            }
-            if(NULL != oThumbnail->width)
-            {
-                imageWriter.m_nRasterW = *oThumbnail->width;
-            }
-            if(NULL != oThumbnail->height)
-            {
-                imageWriter.m_nRasterH = *oThumbnail->height;
-            }
-        }
-        std::wstring sThumbnailDir;
-        if(imageWriter.m_bIsOnlyFirst)
-        {
-            imageWriter.m_sFileName = sTo;
-        }
-        else
-        {
-            sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
-            NSDirectory::CreateDirectory(sThumbnailDir);
-            imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.m_nRasterFormat);
-        }
-        nRes = imageWriter.ConvertBuffer(pBuffer, lBufferLen) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        if(!imageWriter.m_bIsOnlyFirst)
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
+//        CApplicationFonts oApplicationFonts;
+//        initApplicationFonts(oApplicationFonts, params);
+//        NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+//        imageWriter.wsHtmlPlace = sTFileDir;
+//        imageWriter.wsThemesPlace = sThemeDir;
+//        imageWriter.wsTempDir = sTemp;
+//        imageWriter.appFonts = &oApplicationFonts;
+//        if(NULL != params.m_oThumbnail)
+//        {
+//            InputParamsThumbnail* oThumbnail = params.m_oThumbnail;
+//            if(NULL != oThumbnail->format)
+//            {
+//                imageWriter.m_nRasterFormat = *oThumbnail->format;
+//            }
+//            if(NULL != oThumbnail->aspect)
+//            {
+//                imageWriter.m_nSaveType = *oThumbnail->aspect;
+//            }
+//            if(NULL != oThumbnail->first)
+//            {
+//                imageWriter.m_bIsOnlyFirst = *oThumbnail->first;
+//            }
+//            if(NULL != oThumbnail->width)
+//            {
+//                imageWriter.m_nRasterW = *oThumbnail->width;
+//            }
+//            if(NULL != oThumbnail->height)
+//            {
+//                imageWriter.m_nRasterH = *oThumbnail->height;
+//            }
+//        }
+//        std::wstring sThumbnailDir;
+//        if(imageWriter.m_bIsOnlyFirst)
+//        {
+//            imageWriter.m_sFileName = sTo;
+//        }
+//        else
+//        {
+//            sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
+//            NSDirectory::CreateDirectory(sThumbnailDir);
+//            imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.m_nRasterFormat);
+//        }
+//        nRes = imageWriter.ConvertBuffer(pBuffer, lBufferLen) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+//        if(!imageWriter.m_bIsOnlyFirst)
+//        {
+//            COfficeUtils oCOfficeUtils(NULL);
+//            nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+//        }
         return nRes;
     }
     int bin2imageBase64 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)

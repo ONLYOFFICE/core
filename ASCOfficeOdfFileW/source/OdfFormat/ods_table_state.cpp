@@ -245,7 +245,7 @@ void ods_table_state::end_headers()
 	current_level_.pop_back();
 }
 
-void ods_table_state::add_column(office_element_ptr & elm, short repeated,office_element_ptr & style_elm)
+void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated,office_element_ptr & style_elm)
 {
 	current_level_.back()->add_child_element(elm);
 
@@ -254,7 +254,7 @@ void ods_table_state::add_column(office_element_ptr & elm, short repeated,office
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_column_width_ , (short)current_level_.size()};
+	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_column_width_ , (unsigned int)current_level_.size()};
   
 	if (repeated > 10000)repeated = 1024;//????
 
@@ -331,7 +331,7 @@ void ods_table_state::set_table_dimension(int col, int row)
 	if (dimension_row < row)		dimension_row = row + 1;
 }
 
-void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_element_ptr & style_elm)
+void ods_table_state::add_row(office_element_ptr & elm, unsigned int repeated, office_element_ptr & style_elm)
 {
     current_table_column_	= 0; 
     current_table_row_		+= repeated;
@@ -343,7 +343,7 @@ void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_e
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_row_height_ , (short)current_level_.size()};
+	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_row_height_ , (unsigned int)current_level_.size()};
   
     rows_.push_back(state);
 
@@ -355,6 +355,16 @@ void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_e
 
 	row_default_cell_style_name_ = L"";
 
+}
+void ods_table_state::add_row_repeated()
+{
+	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
+	if (row == NULL)return;
+
+	unsigned int t = rows_.back().repeated;
+	rows_.back().repeated++;
+	current_table_row_++;
+	row->table_table_row_attlist_.table_number_rows_repeated_ = rows_.back().repeated;
 }
 void ods_table_state::set_row_hidden(bool Val)
 {
@@ -409,7 +419,7 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 	}
 	return -1;
 }
-int ods_table_state::is_cell_comment(int col, int row, short repeate_col)
+int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
 	for (size_t i = 0; i < comments_.size(); i++)
 	{
@@ -440,6 +450,11 @@ int ods_table_state::current_column() const
 int ods_table_state::current_row() const
 {
     return current_table_row_;
+}
+
+unsigned int ods_table_state::get_last_row_repeated ()
+{
+	return rows_.empty() ? 1 : rows_.back().repeated;
 }
 
 void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
@@ -760,7 +775,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 			if (row2-row1 >0)moving_type = 2;
 			if (col2-col1 >0)moving_type = 1;
 		}
-		ods_shared_formula_state state = {(short)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
+		ods_shared_formula_state state = {(unsigned int)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
 		shared_formulas_.push_back(state);
 		
 		cell->table_table_cell_attlist_.table_formula_ = odf_formula;
@@ -1043,7 +1058,7 @@ void ods_table_state::end_cell()
 	}
 }
 
-void ods_table_state::add_default_cell( short repeated)
+void ods_table_state::add_default_cell( unsigned int repeated)
 {
     int comment_idx = is_cell_comment(current_table_column_ + 1 , current_table_row_, repeated);
 	if (comment_idx  >= 0 && repeated > 1)

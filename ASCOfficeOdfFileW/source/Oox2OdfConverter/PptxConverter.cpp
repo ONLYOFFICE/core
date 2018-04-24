@@ -954,7 +954,9 @@ void PptxConverter::convert(PPTX::Logic::TableCell *oox_table_cell, int numCol)
 		covered = true; 
 
 	if (oox_table_cell->CellProperties.IsInit())
+	{
 		styled = (oox_table_cell->CellProperties->is_empty == false);
+	}
 	
 	odp_context->slide_context()->start_table_cell(numCol, covered, styled);
 	
@@ -1193,8 +1195,8 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
 {
 	if (!oox_table_cell_pr)	return false;
 	
-	odf_writer::style_table_cell_properties *odf_cell_props = odp_context->styles_context()->last_state()->get_table_cell_properties();
-	odf_writer::style_paragraph_properties *odf_para_props	= odp_context->styles_context()->last_state(odf_types::style_family::TableCell)->get_paragraph_properties();
+	odf_writer::style_table_cell_properties *odf_cell_props = odp_context->slide_context()->get_styles_context()->last_state()->get_table_cell_properties();
+	odf_writer::style_paragraph_properties *odf_para_props	= odp_context->slide_context()->get_styles_context()->last_state(odf_types::style_family::TableCell)->get_paragraph_properties();
 	
 	if (!odf_para_props)	return false;
 

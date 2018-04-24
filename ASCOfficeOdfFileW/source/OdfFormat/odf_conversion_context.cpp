@@ -43,7 +43,7 @@
 
 #include "style_paragraph_properties.h"
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 
 namespace cpdoccore { 
@@ -60,7 +60,7 @@ odf_conversion_context::odf_conversion_context(_office_type_document type_, pack
 	output_document_	= outputDocument;
 	current_object_		= 0;
 
-    applicationFonts_	= NSFonts::NSApplication::Create();
+    applicationFonts_	= new CApplicationFonts();
 
 }
 odf_conversion_context::~odf_conversion_context()

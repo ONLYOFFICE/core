@@ -43,10 +43,7 @@
 
 #include "mediaitems.h"
 
-namespace NSFonts
-{
-    class IApplicationFonts;
-}
+class CApplicationFonts;
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -90,7 +87,7 @@ public:
 	virtual void	end_document();
 	
     package::odf_document   *output_document_;
-    NSFonts::IApplicationFonts       *applicationFonts_;
+    CApplicationFonts       *applicationFonts_;
 
 
 	virtual odf_drawing_context		* drawing_context()		= 0;

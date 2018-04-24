@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
 #include "XlsxConverter.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
@@ -308,16 +307,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		ods_context->start_rows();
 			for (size_t row = 0 ; row < oox_sheet->m_oSheetData->m_arrItems.size(); row++)
 			{
-				OOX::Spreadsheet::CRow *prev = row > 1 ? oox_sheet->m_oSheetData->m_arrItems[row - 1] : NULL;
-
-				convert(oox_sheet->m_oSheetData->m_arrItems[row], prev);
+				convert(oox_sheet->m_oSheetData->m_arrItems[row]);
 				
-				if ( row > 1)
-				{//предпоследнюю оставляем для сравнения
-					if ( oox_sheet->m_oSheetData->m_arrItems[row - 1] )
-						delete oox_sheet->m_oSheetData->m_arrItems[row - 1];
-					oox_sheet->m_oSheetData->m_arrItems[row - 1] = NULL;
-				}
+				if ( oox_sheet->m_oSheetData->m_arrItems[row] )
+					delete oox_sheet->m_oSheetData->m_arrItems[row];
+				oox_sheet->m_oSheetData->m_arrItems[row] = NULL;
 			}
 		ods_context->end_rows();
 		oox_sheet->m_oSheetData.reset();
@@ -495,120 +489,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::CRow *oox_row_prev)
+void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 {
 	if (oox_row == NULL)return;
-
-	if (oox_row_prev)
-	{
-		if (oox_row_prev->m_arrItems.empty() && 
-			oox_row->m_arrItems.empty())
-		{
-			bool bEqual = true;
-
-			if (oox_row->m_oCollapsed.IsInit())
-			{
-				if (oox_row_prev->m_oCollapsed.IsInit())
-				{
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oCustomFormat.IsInit())
-			{
-				if (oox_row_prev->m_oCustomFormat.IsInit())
-				{
-					if (oox_row->m_oCustomFormat->GetValue() != oox_row_prev->m_oCustomFormat->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oCustomHeight.IsInit())
-			{
-				if (oox_row_prev->m_oCustomHeight.IsInit())
-				{
-					if (oox_row->m_oCustomHeight->GetValue() != oox_row_prev->m_oCustomHeight->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}			
-			if (bEqual && oox_row->m_oHidden.IsInit())
-			{
-				if (oox_row_prev->m_oHidden.IsInit())
-				{
-					if (oox_row->m_oHidden->GetValue() != oox_row_prev->m_oHidden->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oHt.IsInit())
-			{
-				if (oox_row_prev->m_oHt.IsInit())
-				{
-					if (oox_row->m_oHt->GetValue() != oox_row_prev->m_oHt->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oOutlineLevel.IsInit())
-			{
-				if (oox_row_prev->m_oOutlineLevel.IsInit())
-				{
-					if (oox_row->m_oOutlineLevel->GetValue() != oox_row_prev->m_oOutlineLevel->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oPh.IsInit())
-			{
-				if (oox_row_prev->m_oPh.IsInit())
-				{
-					if (oox_row->m_oPh->GetValue() != oox_row_prev->m_oPh->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oR.IsInit())
-			{
-				if (oox_row_prev->m_oR.IsInit())
-				{
-					if (oox_row->m_oR->GetValue() != oox_row_prev->m_oR->GetValue() + 1) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oS.IsInit())
-			{
-				if (oox_row_prev->m_oS.IsInit())
-				{
-					if (oox_row->m_oS->GetValue() != oox_row_prev->m_oS->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oThickBot.IsInit())
-			{
-				if (oox_row_prev->m_oThickBot.IsInit())
-				{
-					if (oox_row->m_oThickBot->GetValue() != oox_row_prev->m_oThickBot->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oThickTop.IsInit())
-			{
-				if (oox_row_prev->m_oThickTop.IsInit())
-				{
-					if (oox_row->m_oThickTop->GetValue() != oox_row_prev->m_oThickTop->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-			if (bEqual && oox_row->m_oDyDescent.IsInit())
-			{
-				if (oox_row_prev->m_oDyDescent.IsInit())
-				{
-					if (oox_row->m_oDyDescent->GetValue() != oox_row_prev->m_oDyDescent->GetValue()) bEqual = false;
-				}
-				else bEqual = false;
-			}
-
-			if (bEqual)
-			{
-				ods_context->add_row_repeated();
-				return;
-			}
-		}
-	}
 
 	int row_number = oox_row->m_oR.IsInit() ? oox_row->m_oR->GetValue() : -1;
 
@@ -622,7 +505,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 		level = oox_row->m_oOutlineLevel->GetValue();
 	}
 
-	ods_context->start_row(row_number, 1, level,_default);
+	ods_context->start_row(row_number,1,level,_default);
 	
 	if (oox_row->m_oHidden.IsInit())		ods_context->current_table().set_row_hidden(true);
 	if (oox_row->m_oCollapsed.IsInit())		ods_context->current_table().set_row_hidden(true);

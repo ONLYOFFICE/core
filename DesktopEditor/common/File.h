@@ -62,6 +62,8 @@
     #define MAX_PATH 1024
 #endif
 
+std::wstring CorrectPathW(const std::wstring& path);
+
 namespace NSFile
 {
 	#define WriteUtf16_WCHAR(code, p)				\

@@ -89,9 +89,10 @@ class table_table_row_attlist
 public:
 	table_table_row_attlist() : table_number_rows_repeated_(1){}
 
-	unsigned int							table_number_rows_repeated_; // default 1    
-	_CP_OPT(std::wstring)					table_style_name_;
-    _CP_OPT(std::wstring)					table_default_cell_style_name_;
+	unsigned int table_number_rows_repeated_; // default 1
+    
+	_CP_OPT(std::wstring)			table_style_name_;
+    _CP_OPT(std::wstring)			table_default_cell_style_name_;
     _CP_OPT(odf_types::table_visibility)	table_visibility_; // default Visible
 
 	void serialize(CP_ATTR_NODE);    

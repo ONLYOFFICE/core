@@ -437,7 +437,10 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		odt_context->text_context()->set_KeepNextParagraph(false);
 	}
 //---------------------------------------------------------------------------------------------------------------------
-	current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
+	if (false == current_font_size.empty())
+	{
+		current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
+	}
 
 	bool bStyled			= false;
 	bool bStartNewParagraph = !odt_context->text_context()->get_KeepNextParagraph();
@@ -1267,58 +1270,11 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	}
 	if (oox_paragraph_pr->m_oShd.IsInit())
 	{
-		int type_shading = 100; //solid
-		if (oox_paragraph_pr->m_oShd->m_oVal.IsInit())
-		{
-            switch(oox_paragraph_pr->m_oShd->m_oVal->GetValue())
-			{
-			case SimpleTypes::shdClear                 : type_shading = 0;	break;
-			case SimpleTypes::shdNil                   : type_shading = 0;	break;
-			case SimpleTypes::shdPct10                 : type_shading = 10;	break;;
-			case SimpleTypes::shdPct12                 : type_shading = 12;	break;
-			case SimpleTypes::shdPct15                 : type_shading = 15;	break;
-			case SimpleTypes::shdPct20                 : type_shading = 20;	break;
-			case SimpleTypes::shdPct25                 : type_shading = 25;	break;
-			case SimpleTypes::shdPct30                 : type_shading = 30;	break;
-			case SimpleTypes::shdPct35                 : type_shading = 35;	break;
-			case SimpleTypes::shdPct37                 : type_shading = 37;	break;
-			case SimpleTypes::shdPct40                 : type_shading = 40;	break;
-			case SimpleTypes::shdPct45                 : type_shading = 45;	break;
-			case SimpleTypes::shdPct5                  : type_shading = 5;	break;
-			case SimpleTypes::shdPct55                 : type_shading = 55;	break;
-			case SimpleTypes::shdPct60                 : type_shading = 60;	break;
-			case SimpleTypes::shdPct62                 : type_shading = 62;	break;
-			case SimpleTypes::shdPct65                 : type_shading = 65;	break;
-			case SimpleTypes::shdPct70                 : type_shading = 70;	break;
-			case SimpleTypes::shdPct75                 : type_shading = 75;	break;
-			case SimpleTypes::shdPct80                 : type_shading = 80;	break;
-			case SimpleTypes::shdPct85                 : type_shading = 85;	break;
-			case SimpleTypes::shdPct87                 : type_shading = 87;	break;
-			case SimpleTypes::shdPct90                 : type_shading = 90;	break;
-			case SimpleTypes::shdPct95                 : type_shading = 95;	break;
-			case SimpleTypes::shdSolid                 : type_shading = 100;break;
-			//case SimpleTypes::shdDiagCross             : type_shading = 2;	break;
-			//case SimpleTypes::shdDiagStripe            : type_shading = 3;	break;
-			//case SimpleTypes::shdHorzCross             : type_shading = 4;	break;
-			//case SimpleTypes::shdHorzStripe            : type_shading = 6;	break;
-			//case SimpleTypes::shdReverseDiagStripe     : type_shading = 7;	break;
-			//case SimpleTypes::shdThinDiagCross         : type_shading = 8;	break;
-			//case SimpleTypes::shdThinDiagStripe        : type_shading = 9;	break;
-			//case SimpleTypes::shdThinHorzCross         : type_shading = 10;	break;
-			//case SimpleTypes::shdThinHorzStripe        : type_shading = 11;	break;
-			//case SimpleTypes::shdThinReverseDiagStripe : type_shading = 12;	break;
-			//case SimpleTypes::shdThinVertStripe        : type_shading = 13;	break;
-			//case SimpleTypes::shdVertStripe            : type_shading = 14;	break;
-			}
-		}
-		if (type_shading != 0)
-		{
-			_CP_OPT(odf_types::color) odf_color;
-			convert(oox_paragraph_pr->m_oShd->m_oFill.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeFill.GetPointer(),
-				oox_paragraph_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
-			if (odf_color)
-				paragraph_properties->content_.fo_background_color_ = *odf_color;
-		}
+		_CP_OPT(odf_types::color) odf_color;
+		convert(oox_paragraph_pr->m_oShd->m_oFill.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeFill.GetPointer(),
+			oox_paragraph_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
+		if (odf_color)
+			paragraph_properties->content_.fo_background_color_ = *odf_color;
 	}
 	if (oox_paragraph_pr->m_oTextDirection.IsInit() && oox_paragraph_pr->m_oTextDirection->m_oVal.IsInit())
 	{
@@ -2159,7 +2115,7 @@ void DocxConverter::convert(ComplexTypes::Word::CTblWidth *oox_size, _CP_OPT(odf
 	//tblwidthNil  = 2,
 	//tblwidthPct  = 3
 }
-void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::style_text_properties * text_properties)
+void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::style_text_properties * text_properties, bool is_list_styles)
 {
 	if (oox_run_pr		== NULL) return;
 	if (text_properties == NULL) return;
@@ -2167,7 +2123,20 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oRStyle.IsInit() && oox_run_pr->m_oRStyle->m_sVal.IsInit())
 	{
 		std::wstring style_name = *oox_run_pr->m_oRStyle->m_sVal;
-		odt_context->styles_context()->last_state()->set_parent_style_name(style_name);
+
+		odf_writer::odf_style_state_ptr style_state;
+		//if (is_list_styles)
+		//{
+		//	style_state = odt_context->styles_context()->lists_styles()->last_state();
+		//}
+		//else
+		{
+			style_state = odt_context->styles_context()->last_state();
+		}
+		if (style_state)
+		{
+			style_state->set_parent_style_name(style_name);
+		}
 		
 		odf_writer::style_text_properties  parent_text_properties;
 		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Text, &parent_text_properties.content_);
@@ -3280,7 +3249,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 		odf_writer::odf_style_context* styles_context = odf_context()->page_layout_context()->get_local_styles_context();
 		
 		odf_writer::style_text_properties *text_props = odt_context->styles_context()->lists_styles().get_text_properties();
-		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props);
+		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props, true);
 
 		//create text style for symbols list НА ЛОКАЛЬНОМ контексте - иначе пересечение имен стилей (todoo вытащить генерацию имен в общую часть)
 		styles_context->create_style(L"", odf_types::style_family::Text, false, true, -1);					

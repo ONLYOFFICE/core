@@ -29,12 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#ifndef min
-//#define min(a,b) ((a) < (b) ? (a) : (b))
-//#endif
-//#ifndef max
-//#define max(a,b) ((a) > (b) ? (a) : (b))
-//#endif
+
 
 #include <boost/regex.hpp>
 
@@ -65,7 +60,7 @@ namespace odf_writer {
 namespace utils
 {
 
-double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, NSFonts::IApplicationFonts *appFonts)
+double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, CApplicationFonts *appFonts)
 {
     double appr_px = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
 	
@@ -205,7 +200,7 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
 	{
-        size_t count = text.length();
+        int count = (int)text.length();
 		drop_cap_state_.characters += count;
 		
 		style_text_properties * props = text_context()->get_text_properties();
@@ -989,7 +984,7 @@ void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragrap
 	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->content_.style_drop_cap_, this);
 }
 
-void odt_conversion_context::set_drop_cap_lines(size_t lines)
+void odt_conversion_context::set_drop_cap_lines(int lines)
 {
 	if (!drop_cap_state_.enabled) return;
 	if (!drop_cap_state_.paragraph_properties) return;

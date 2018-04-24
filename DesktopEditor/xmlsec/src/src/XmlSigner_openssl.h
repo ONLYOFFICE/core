@@ -42,8 +42,8 @@ public:
     virtual bool LoadFromBase64Data(const std::string& data);
 
 public:
-    virtual int ShowSelectDialog();
-    virtual int ShowCertificate();
+    virtual int ShowSelectDialog(void* parent = NULL);
+    virtual int ShowCertificate(void* parent = NULL);
 
     virtual bool FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword);
     bool FromId(const std::string& id);

@@ -769,12 +769,12 @@ bool CCertificate_openssl::LoadFromBase64Data(const std::string& data)
     return m_internal->LoadFromBase64Data(data);
 }
 
-int CCertificate_openssl::ShowSelectDialog()
+int CCertificate_openssl::ShowSelectDialog(void* parent)
 {
     return m_internal->ShowSelectDialog();
 }
 
-int CCertificate_openssl::ShowCertificate()
+int CCertificate_openssl::ShowCertificate(void* parent)
 {
     return m_internal->ShowCertificate();
 }

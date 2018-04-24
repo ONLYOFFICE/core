@@ -106,8 +106,8 @@ public:
     virtual bool LoadFromBase64Data(const std::string& data)                            = 0;    
 
 public:
-    virtual int ShowSelectDialog()              = 0;
-    virtual int ShowCertificate()               = 0;
+    virtual int ShowSelectDialog(void* parent = NULL)   = 0;
+    virtual int ShowCertificate(void* parent = NULL)    = 0;
 
     static CCertificateInfo GetDefault();
     static ICertificate* GetById(const std::string& id);

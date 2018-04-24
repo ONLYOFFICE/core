@@ -609,6 +609,8 @@ public:
                     sFile = m_arSignaturesFiles.at(i);
                     m_arSignatures.erase(m_arSignatures.begin() + i);
                     delete pSignature;
+                    --i;
+                    --nCountSignatures;
                 }                
             }
 

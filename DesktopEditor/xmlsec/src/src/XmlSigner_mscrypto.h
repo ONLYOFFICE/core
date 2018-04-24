@@ -369,19 +369,19 @@ public:
         return true;
     }
 
-    virtual int ShowCertificate()
+    virtual int ShowCertificate(void* parent = NULL)
     {
-        return (int)CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, m_context, NULL, NULL, 0, NULL);
+        return (int)CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, m_context, (NULL == parent) ? NULL : (*((HWND*)parent)), NULL, 0, NULL);
     }
 
 public:
-    virtual int ShowSelectDialog()
+    virtual int ShowSelectDialog(void* parent = NULL)
     {
         m_store = CertOpenSystemStoreA(NULL, "MY");
         if (!m_store)
             return 0;
 
-        m_context = CryptUIDlgSelectCertificateFromStore(m_store, NULL, NULL, NULL, CRYPTUI_SELECT_LOCATION_COLUMN, 0, NULL);
+        m_context = CryptUIDlgSelectCertificateFromStore(m_store, (NULL == parent) ? NULL : (*((HWND*)parent)), NULL, NULL, CRYPTUI_SELECT_LOCATION_COLUMN, 0, NULL);
         if (!m_context)
         {
             CertCloseStore(m_store, 0);

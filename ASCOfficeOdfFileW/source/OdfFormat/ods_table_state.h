@@ -159,16 +159,17 @@ namespace utils
 };
 struct ods_element_state
 {
-	office_element_ptr	elm;
+	office_element_ptr elm;
 	
-    unsigned int		repeated;
-	std::wstring		style_name;
-	office_element_ptr	style_elm;
+    unsigned int repeated;
+	std::wstring style_name;
+	office_element_ptr style_elm;
 
-	double				size;
-    unsigned int		level;
+	double size;
+
+    unsigned int level;
 	
-	std::wstring		cell_style_name;
+	std::wstring cell_style_name;
 };
 
 struct ods_cell_state : ods_element_state
@@ -176,8 +177,8 @@ struct ods_cell_state : ods_element_state
     int col;
     int row;
 
-    int hyperlink_idx;
-    int comment_idx;
+    unsigned int hyperlink_idx;
+    unsigned int comment_idx;
 	
 	bool empty;
 };
@@ -200,7 +201,7 @@ struct ods_comment_state
 };
 struct ods_shared_formula_state
 {
-	int index;
+	unsigned int index;
 	std::wstring formula;
 	std::wstring ref;
 
@@ -320,7 +321,7 @@ public:
 	bool	is_cell_comment		();
     int		is_cell_comment		(int col, int row, unsigned int repeate_col = 1);
 	int		is_row_comment		(int row, int repeate_row = 1);
-	
+
 	unsigned int get_last_row_repeated ();
 
 	ods_hyperlink_state & current_hyperlink();

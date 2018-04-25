@@ -110,7 +110,7 @@ public:
 	void set_master_page_name(std::wstring master_name);
 
 	void start_drop_cap			(style_paragraph_properties * paragraph_properties);
-		void set_drop_cap_lines	(size_t lines);
+		void set_drop_cap_lines	(int lines);
 		void set_drop_cap_margin(bool val);
 	void end_drop_cap			();
 	bool in_drop_cap			() {return drop_cap_state_.enabled;}
@@ -221,8 +221,8 @@ private:
 		style_paragraph_properties	*paragraph_properties = NULL;
 		office_element_ptr			text_properties;
 
-		size_t	lines = 0;
-		size_t	characters = 0;
+		int		lines = 0;
+		int		characters = 0;
 		bool	inline_style = false;
 		double	characters_size_pt = 0;
 	}drop_cap_state_;

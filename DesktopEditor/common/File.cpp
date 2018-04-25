@@ -67,6 +67,39 @@
 
 #include "File.h"
 
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+	#include <wchar.h>
+	#include <windows.h>
+
+	std::wstring CorrectPathW(const std::wstring& path)
+	{
+		int len = (int)path.length();
+		if (2 > len)
+			return path;
+
+		const wchar_t* path_str = path.c_str();
+		if (path_str[0] == '\\' || path_str[1] == '/')
+			return path;
+
+		// local files: '\\?\' prefix
+		// server files: '\\?\UNC\' prefix <== TODO!
+		int nLen = GetFullPathNameW(path_str, 0, 0, 0);
+		wchar_t* pBuf = new wchar_t[(4 + nLen) * sizeof(wchar_t)];
+
+		pBuf[0] = L'\\', pBuf[1] = L'\\',  pBuf[2] = L'?', pBuf[3] = L'\\';
+		GetFullPathNameW(path_str, nLen, pBuf + 4, NULL);
+
+		std::wstring retPath(pBuf);
+		delete [] pBuf;
+		return retPath;
+	}
+#else
+	std::wstring CorrectPathW(const std::wstring& path)
+	{
+		return path;
+	}
+#endif
+
 namespace NSFile
 {
     std::wstring CUtf8Converter::GetUnicodeFromCharPtr(const char* pData, LONG lCount, INT bIsUtf8)

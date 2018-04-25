@@ -2,14 +2,17 @@
 #include "./XmlSigner_mscrypto.h"
 #define CCertificate CCertificate_mscrypto
 
-int ICertificateSelectDialogOpenSsl::LoadKey(std::wstring file, std::string password)
+namespace NSOpenSSL
 {
-    return 0;
-}
+    int LoadKey(std::wstring file, std::string password)
+    {
+        return 0;
+    }
 
-int ICertificateSelectDialogOpenSsl::LoadCert(std::wstring file, std::string password)
-{
-    return 0;
+    int LoadCert(std::wstring file, std::string password)
+    {
+        return 0;
+    }
 }
 
 #endif
@@ -26,16 +29,6 @@ int ICertificateSelectDialogOpenSsl::LoadCert(std::wstring file, std::string pas
 #define CCertificate CCertificate_openssl
 #endif
 
-namespace
-{
-    ICertificateSelectDialogOpenSsl* g_application_openssl_gialog = NULL;
-}
-
-void ICertificateSelectDialogOpenSsl::SetOpenSslDialogApplication(ICertificateSelectDialogOpenSsl* pDialog)
-{
-    g_application_openssl_gialog = pDialog;
-}
-
 int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)
 {
     if ("http://www.w3.org/2000/09/xmldsig#rsa-sha1" == sAlg ||
@@ -48,7 +41,6 @@ int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)
 ICertificate* ICertificate::CreateInstance()
 {
     ICertificate* pCert = new CCertificate();
-    pCert->SetOpenSslDialog(g_application_openssl_gialog);
     return pCert;
 }
 
@@ -60,6 +52,11 @@ CCertificateInfo ICertificate::GetInfo()
     info.SetId(GetId());
     info.SetRawBase64(GetCertificateBase64());
     return info;
+}
+
+bool ICertificate::FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
+{
+    return false;
 }
 
 CCertificateInfo ICertificate::GetDefault()

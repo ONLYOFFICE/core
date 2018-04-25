@@ -51,7 +51,6 @@
 #include "paragraph_elements.h"
 #include "odf_settings_context.h"
 
-
 namespace cpdoccore { 
 
 	using namespace odf_types;

@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
 #include "XlsxConverter.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
@@ -308,16 +307,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		ods_context->start_rows();
 			for (size_t row = 0 ; row < oox_sheet->m_oSheetData->m_arrItems.size(); row++)
 			{
-				OOX::Spreadsheet::CRow *prev = row > 1 ? oox_sheet->m_oSheetData->m_arrItems[row - 1] : NULL;
-
-				convert(oox_sheet->m_oSheetData->m_arrItems[row], prev);
+				convert(oox_sheet->m_oSheetData->m_arrItems[row]);
 				
-				if ( row > 1)
-				{//предпоследнюю оставляем для сравнения
-					if ( oox_sheet->m_oSheetData->m_arrItems[row - 1] )
-						delete oox_sheet->m_oSheetData->m_arrItems[row - 1];
-					oox_sheet->m_oSheetData->m_arrItems[row - 1] = NULL;
-				}
+				if ( oox_sheet->m_oSheetData->m_arrItems[row] )
+					delete oox_sheet->m_oSheetData->m_arrItems[row];
+				oox_sheet->m_oSheetData->m_arrItems[row] = NULL;
 			}
 		ods_context->end_rows();
 		oox_sheet->m_oSheetData.reset();
@@ -622,7 +616,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 		level = oox_row->m_oOutlineLevel->GetValue();
 	}
 
-	ods_context->start_row(row_number, 1, level,_default);
+	ods_context->start_row(row_number,1,level,_default);
 	
 	if (oox_row->m_oHidden.IsInit())		ods_context->current_table().set_row_hidden(true);
 	if (oox_row->m_oCollapsed.IsInit())		ods_context->current_table().set_row_hidden(true);

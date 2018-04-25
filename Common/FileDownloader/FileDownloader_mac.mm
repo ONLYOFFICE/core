@@ -1,4 +1,4 @@
-﻿#include "FileDownloader.h"
+#include "FileDownloader.h"
 
 #if _IOS
     #import <Foundation/Foundation.h>
@@ -28,9 +28,12 @@ public :
 
     virtual int DownloadFile()
     {
-        m_sFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DWD");
-        if (NSFile::CFileBinary::Exists(m_sFilePath))
-            NSFile::CFileBinary::Remove(m_sFilePath);
+        if (m_sFilePath.empty())
+        {
+            m_sFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DWD");
+            if (NSFile::CFileBinary::Exists(m_sFilePath))
+                NSFile::CFileBinary::Remove(m_sFilePath);
+        }
 
         NSString* stringURL = StringWToNSString(m_sFileUrl);
         NSURL  *url = [NSURL URLWithString:stringURL];

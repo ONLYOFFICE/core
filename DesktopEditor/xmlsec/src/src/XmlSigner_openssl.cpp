@@ -354,8 +354,10 @@ public:
         return -1;
     }
 
-    bool FromFiles(const std::wstring& sKeyPath, const std::string& sKeyPassword, const std::wstring& certPath, const std::string& certPassword)
+    bool FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
     {
+        std::wstring sKeyPath = keyPath;
+        std::string sKeyPassword = keyPassword;
         std::wstring sCertPath = certPath;
         std::string sCertPassword = certPassword;
 
@@ -363,6 +365,11 @@ public:
         {
             sCertPath = sKeyPath;
             sCertPassword = sKeyPassword;
+        }
+        else if (sKeyPath.empty())
+        {
+            sKeyPath = sCertPath;
+            sKeyPassword = sCertPassword;
         }
 
         int nErr = LoadKey(sKeyPath, sKeyPassword, &m_key);
@@ -423,6 +430,8 @@ public:
 
     int VerifySelf()
     {
+        return OPEN_SSL_WARNING_OK;
+
         if (NULL == m_cert)
             return OPEN_SSL_WARNING_NOVERIFY;
 

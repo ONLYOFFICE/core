@@ -37,6 +37,7 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
@@ -267,6 +268,10 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	}
 	if (oox_picture->oleObject.IsInit())
 	{
+		if (pathImage.empty() && oox_picture->blipFill.blip.IsInit())
+		{
+			pathImage = oox_picture->blipFill.blip->oleFilepathImage;
+		}
 		std::wstring pathOle;
 		
 		if (oox_picture->oleObject->m_oId.IsInit())
@@ -283,6 +288,58 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			{
 				odf_context()->drawing_context()->set_program(*oox_picture->oleObject->m_sProgId);
 			}
+			
+			if (pathImage.empty() && oox_picture->oleObject->m_sShapeId.IsInit())
+			{
+				PPTX::Slide			*pSlide			= dynamic_cast<PPTX::Slide*>(current_document());
+				PPTX::SlideMaster	*pSlideMaster	= dynamic_cast<PPTX::SlideMaster*>(current_document());
+				
+				OOX::CVmlDrawing *pVml = pSlide ? pSlide->Vml.operator->() : (pSlideMaster ? pSlideMaster->Vml.operator->() : NULL);
+				
+				if (pVml)
+				{	
+					std::wstring sShapeId = oox_picture->oleObject->m_sShapeId.get();
+                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(sShapeId);
+
+                    if (pVml->m_mapShapes.end() != pFind)
+					{
+						OOX::Vml::CVmlCommonElements* pShape = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pFind->second.pElement);
+
+						if (pShape)
+						{						
+                            for(size_t i = 0; i < pShape->m_arrItems.size(); ++i)
+							{
+                                OOX::WritingElement* pChildElemShape = pShape->m_arrItems[i];
+
+								if(OOX::et_v_imagedata == pChildElemShape->getType())
+								{
+									OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
+														
+									std::wstring sIdImageFileCache;
+
+									if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+									else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+																		
+									if (!sIdImageFileCache.empty())
+									{
+										//ищем физический файл ( rId относительно vml_drawing)									
+										smart_ptr<OOX::File> pFile = pVml->Find(sIdImageFileCache);
+										
+										if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
+										{
+											OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+											
+											pathImage = pImageFileCache->filename().GetPath();
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+
 			odf_ref_image = bEmbedded ? odf_context()->add_imageobject(pathImage) : pathImage; 			
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 
@@ -1973,24 +2030,26 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 	if (!oox_run) return;
 	bool styled = false;
 
+	odf_writer::odf_text_context* text_context = odf_context()->text_context();
+
 	if (oox_run->rPr.IsInit())
 	{
-		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		odf_writer::style_text_properties * text_properties = text_context->get_text_properties();
 		
 		if (!text_properties)
 		{
-			odf_context()->styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);	
-			text_properties = odf_context()->styles_context()->last_state()->get_text_properties();
+			text_context->get_styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);	
+			text_properties = text_context->get_styles_context()->last_state()->get_text_properties();
 			styled = true;
 		}
 		convert(oox_run->rPr.GetPointer(), text_properties);
 	}
 	
-	odf_context()->text_context()->start_span(styled);	
+	text_context->start_span(styled);	
 
 	if ((oox_run->rPr.IsInit()) && (oox_run->rPr->hlinkClick.IsInit()) && (oox_run->rPr->hlinkClick->id.IsInit()))
 	{
-		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		odf_writer::style_text_properties * text_properties = text_context->get_text_properties();
 		
 		if (!text_properties->content_.fo_color_)
 		{
@@ -2010,13 +2069,13 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
 		
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
-		odf_context()->text_context()->add_hyperlink(hlink, oox_run->GetText());
+		text_context->add_hyperlink(hlink, oox_run->GetText());
 	}
 	else
 	{
-		odf_context()->text_context()->add_text_content( oox_run->GetText());
+		text_context->add_text_content( oox_run->GetText());
 	}
-	odf_context()->text_context()->end_span();
+	text_context->end_span();
 }
 void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 {

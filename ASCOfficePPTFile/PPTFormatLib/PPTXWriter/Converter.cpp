@@ -284,7 +284,7 @@ void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
 		CP_XML_NODE(L"Properties")
 		{
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties");
-			CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypess");
+			CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes");
 
 			CP_XML_NODE(L"TotalTime")
 			{

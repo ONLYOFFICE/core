@@ -455,30 +455,37 @@ public:
 	}
 	static int convertDateTime (std::wstring & dt_)
 	{
+		int result = 0;
+		
 		if ( dt_.empty() ) return PROP_DEF;
 
 		std::string dt(dt_.begin(), dt_.end());
 
-		boost::posix_time::ptime date_time_;
+		try
+		{
+			boost::posix_time::ptime date_time_;
 
-		boost::posix_time::time_input_facet *tif = new boost::posix_time::time_input_facet;
-		tif->set_iso_extended_format();
-		std::istringstream strm(dt);
-		strm.imbue(std::locale(std::locale::classic(), tif));
-		strm >> date_time_;
+			boost::posix_time::time_input_facet *tif = new boost::posix_time::time_input_facet;
+			tif->set_iso_extended_format();
+			std::istringstream strm(dt);
+			strm.imbue(std::locale(std::locale::classic(), tif));
+			strm >> date_time_;
 
-		short	Min		= date_time_.time_of_day().minutes();	
-		short	Hour	= date_time_.time_of_day().hours();		
-		short	Day		= date_time_.date().day();	
-		short	Month	= date_time_.date().month().as_number();
-		int		Year	= date_time_.date().year() - 1900;	
+			short	Min		= date_time_.time_of_day().minutes();	
+			short	Hour	= date_time_.time_of_day().hours();		
+			short	Day		= date_time_.date().day();	
+			short	Month	= date_time_.date().month().as_number();
+			int		Year	= date_time_.date().year() - 1900;	
 
-		int result = 0;
-		SETBITS(result, 0 , 5,  Min);
-		SETBITS(result, 6 , 10, Hour);
-		SETBITS(result, 11, 15, Day);
-		SETBITS(result, 16, 19, Month);
-		SETBITS(result, 20, 28, Year);
+			SETBITS(result, 0 , 5,  Min);
+			SETBITS(result, 6 , 10, Hour);
+			SETBITS(result, 11, 15, Day);
+			SETBITS(result, 16, 19, Month);
+			SETBITS(result, 20, 28, Year);
+		}
+		catch(...)
+		{
+		}
 
 		return result;
 	}

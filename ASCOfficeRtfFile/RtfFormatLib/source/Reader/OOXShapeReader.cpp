@@ -407,59 +407,62 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
 					}
 				}
-				int nCropedWidthGoal = pOutput->m_oPicture->m_nWidthGoal;
-				if( PROP_DEF != nCropedWidthGoal )
+				if (pOutput->m_oPicture)
 				{
-					//делаем crop
-					if( image_data->m_oCropLeft.IsInit() )
+					int nCropedWidthGoal = pOutput->m_oPicture->m_nWidthGoal;
+					if( PROP_DEF != nCropedWidthGoal )
 					{
-						float nCropLeft = image_data->m_oCropLeft->GetValue();
-						//pOutput->m_oPicture->m_nCropL = nCropLeft * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
-						pOutput->m_oPicture->m_nCropL = (int)(nCropLeft * pOutput->m_oPicture->m_nWidthGoal);
-						pOutput->m_nCropFromLeft = (int)(nCropLeft * 65536);
-						nCropedWidthGoal -= pOutput->m_oPicture->m_nCropL;
+						//делаем crop
+						if( image_data->m_oCropLeft.IsInit() )
+						{
+							float nCropLeft = image_data->m_oCropLeft->GetValue();
+							//pOutput->m_oPicture->m_nCropL = nCropLeft * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
+							pOutput->m_oPicture->m_nCropL = (int)(nCropLeft * pOutput->m_oPicture->m_nWidthGoal);
+							pOutput->m_nCropFromLeft = (int)(nCropLeft * 65536);
+							nCropedWidthGoal -= pOutput->m_oPicture->m_nCropL;
+						}
+						if( image_data->m_oCropRight.IsInit())
+						{
+							float nCropRight =image_data->m_oCropRight->GetValue();
+							//pOutput->m_oPicture->m_nCropR = nCropRight * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
+							pOutput->m_oPicture->m_nCropR = (int)(nCropRight * pOutput->m_oPicture->m_nWidthGoal);
+							pOutput->m_nCropFromRight = (int)(nCropRight * 65536);
+							nCropedWidthGoal -= pOutput->m_oPicture->m_nCropR;
+						}
 					}
-					if( image_data->m_oCropRight.IsInit())
+					int nCropedHeightGoal = pOutput->m_oPicture->m_nHeightGoal;
+					if( PROP_DEF != nCropedHeightGoal )
 					{
-						float nCropRight =image_data->m_oCropRight->GetValue();
-						//pOutput->m_oPicture->m_nCropR = nCropRight * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
-						pOutput->m_oPicture->m_nCropR = (int)(nCropRight * pOutput->m_oPicture->m_nWidthGoal);
-						pOutput->m_nCropFromRight = (int)(nCropRight * 65536);
-						nCropedWidthGoal -= pOutput->m_oPicture->m_nCropR;
+						if( image_data->m_oCropTop.IsInit() )
+						{
+							float nCropTop = image_data->m_oCropTop->GetValue();
+							//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
+							pOutput->m_oPicture->m_nCropT = (int)(nCropTop * pOutput->m_oPicture->m_nHeightGoal);
+							pOutput->m_nCropFromTop = (int)(nCropTop * 65536);
+							nCropedHeightGoal -= pOutput->m_oPicture->m_nCropT;
+						}
+						if( image_data->m_oCropBottom.IsInit())
+						{
+							float nCropBottom = image_data->m_oCropBottom->GetValue();
+							//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
+							pOutput->m_oPicture->m_nCropB = (int)(nCropBottom * pOutput->m_oPicture->m_nHeightGoal);
+							pOutput->m_nCropFromBottom = (int)(nCropBottom * 65536);
+							nCropedHeightGoal -= pOutput->m_oPicture->m_nCropB;
+						}
 					}
-				}
-				int nCropedHeightGoal = pOutput->m_oPicture->m_nHeightGoal;
-				if( PROP_DEF != nCropedHeightGoal )
-				{
-					if( image_data->m_oCropTop.IsInit() )
+					//устанавливаем scale
+					if( PROP_DEF != pOutput->m_nLeft && PROP_DEF != pOutput->m_nRight && PROP_DEF != nCropedWidthGoal && 0 != nCropedWidthGoal )
 					{
-						float nCropTop = image_data->m_oCropTop->GetValue();
-						//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
-						pOutput->m_oPicture->m_nCropT = (int)(nCropTop * pOutput->m_oPicture->m_nHeightGoal);
-						pOutput->m_nCropFromTop = (int)(nCropTop * 65536);
-						nCropedHeightGoal -= pOutput->m_oPicture->m_nCropT;
+						int nWidth = pOutput->m_nRight - pOutput->m_nLeft;
+						double dNewScale = 100 * ( 1.0 * nWidth / nCropedWidthGoal );
+						pOutput->m_oPicture->m_dScaleX = dNewScale;
 					}
-					if( image_data->m_oCropBottom.IsInit())
+					if( PROP_DEF != pOutput->m_nTop && PROP_DEF != pOutput->m_nBottom && PROP_DEF != nCropedHeightGoal && 0 != nCropedHeightGoal )
 					{
-						float nCropBottom = image_data->m_oCropBottom->GetValue();
-						//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
-						pOutput->m_oPicture->m_nCropB = (int)(nCropBottom * pOutput->m_oPicture->m_nHeightGoal);
-						pOutput->m_nCropFromBottom = (int)(nCropBottom * 65536);
-						nCropedHeightGoal -= pOutput->m_oPicture->m_nCropB;
+						int nHeight = pOutput->m_nBottom - pOutput->m_nTop;
+						double dNewScale = 100 * ( 1.0 * nHeight / nCropedHeightGoal );
+						pOutput->m_oPicture->m_dScaleY = dNewScale;
 					}
-				}
-				//устанавливаем scale
-				if( PROP_DEF != pOutput->m_nLeft && PROP_DEF != pOutput->m_nRight && PROP_DEF != nCropedWidthGoal && 0 != nCropedWidthGoal )
-				{
-					int nWidth = pOutput->m_nRight - pOutput->m_nLeft;
-					double dNewScale = 100 * ( 1.0 * nWidth / nCropedWidthGoal );
-					pOutput->m_oPicture->m_dScaleX = dNewScale;
-				}
-				if( PROP_DEF != pOutput->m_nTop && PROP_DEF != pOutput->m_nBottom && PROP_DEF != nCropedHeightGoal && 0 != nCropedHeightGoal )
-				{
-					int nHeight = pOutput->m_nBottom - pOutput->m_nTop;
-					double dNewScale = 100 * ( 1.0 * nHeight / nCropedHeightGoal );
-					pOutput->m_oPicture->m_dScaleY = dNewScale;
 				}
 			}break;
 			case OOX::et_wd_wrap:

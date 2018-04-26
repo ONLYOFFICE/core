@@ -1,55 +1,64 @@
 SET SCRIPTPATH=%~dp0
 CD /D %~dp0
 
-SET platform=win_32
+SET ICU_MAJOR_VER=60
+SET ICU_MINOR_VER=2
+
+SET build_platform=win_32
 if defined ProgramFiles(x86) (
-	SET platform=win_64
+	SET build_platform=win_64
 )
 
 if defined TARGET (
-	SET platform=%TARGET%
+	SET build_platform=%TARGET%
 )
 
-if not exist "%platform%" (
-	md "%platform%"
+if "%build_platform%" == "win_32" (
+  SET MACHINE=x86
 )
 
-if not exist "%platform%\build" (
-	md "%platform%\build"
+if "%build_platform%" == "win_64" (
+  SET MACHINE=x64
 )
 
-if "%platform%" == "win_64" (
-	SET URL=http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-Win64-msvc10.zip
+if not exist "%build_platform%" (
+	md "%build_platform%"
+)
+
+if not exist "%build_platform%\build" (
+	md "%build_platform%\build"
+)
+
+cd "%SCRIPTPATH%%build_platform%"
+
+if exist "%SCRIPTPATH%%build_platform%\icu\" (
+	echo "icu already exported"
 ) else (
-	SET URL=http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-Win32-msvc10.zip
+	svn export http://source.icu-project.org/repos/icu/tags/release-%ICU_MAJOR_VER%-%ICU_MINOR_VER%/icu4c ./icu
 )
 
-if exist "%SCRIPTPATH%%platform%\icu.zip" (
-    echo "icu already downloaded"
+SET VC=%ProgramFiles%\Microsoft Visual Studio 14.0\VC
+SET VC64=%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC
+if exist %VC64% (
+	SET VC=%VC64%
+)
+
+call "%VC%\vcvarsall.bat" %MACHINE%
+
+if "%build_platform%" == "win_64" (
+MSBuild.exe icu\source\allinone\allinone.sln /p:Configuration=Release /p:PlatformToolset=v140 /p:Platform="X64"
 ) else (
-    Powershell.exe Invoke-WebRequest -OutFile %platform%\icu.zip -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox "%URL%"
+MSBuild.exe icu\source\allinone\allinone.sln /p:Configuration=Release /p:PlatformToolset=v140 /p:Platform="Win32"
 )
 
-SET UNSIP_PROGRAMM="C:\Program Files\7-Zip\7z.exe"
-SET UNSIP_PROGRAMM2="C:\Program Files (x86)\7-Zip\7z.exe"
-if exist %UNSIP_PROGRAMM2% (
-	SET UNSIP_PROGRAMM=%UNSIP_PROGRAMM2%
-)
-
-if exist "%SCRIPTPATH%%platform%\icu\" (
-	echo "icu already extracted"
+if "%build_platform%" == "win_64" (
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\bin64\icudt%ICU_MAJOR_VER%.dll" "%SCRIPTPATH%%build_platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\bin64\icuuc%ICU_MAJOR_VER%.dll" "%SCRIPTPATH%%build_platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\lib64\icudt.lib" "%SCRIPTPATH%%build_platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\lib64\icuuc.lib" "%SCRIPTPATH%%build_platform%\build\"
 ) else (
-    call %UNSIP_PROGRAMM% x "%SCRIPTPATH%%platform%\icu.zip" -o"%SCRIPTPATH%%platform%\"
-)
-
-if "%platform%" == "win_64" (
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin64\icudt55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin64\icuuc55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib64\icudt.lib" "%SCRIPTPATH%%platform%\build\"
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib64\icuuc.lib" "%SCRIPTPATH%%platform%\build\"
-) else (
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin\icudt55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin\icuuc55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib\icudt.lib" "%SCRIPTPATH%%platform%\build\"
-XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib\icuuc.lib" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\bin\icudt%ICU_MAJOR_VER%.dll" "%SCRIPTPATH%%build_platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\bin\icuuc%ICU_MAJOR_VER%.dll" "%SCRIPTPATH%%build_platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\lib\icudt.lib" "%SCRIPTPATH%%build_platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%build_platform%\icu\lib\icuuc.lib" "%SCRIPTPATH%%build_platform%\build\"
 )

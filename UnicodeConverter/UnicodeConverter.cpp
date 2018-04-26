@@ -31,7 +31,8 @@
  */
 #include "./UnicodeConverter.h"
 
-#include "unicode/utypes.h"   /* Basic ICU data types */
+#include "unicode/utypes.h"
+#include "unicode/ustring.h"
 #include "unicode/ucnv.h"     /* C   Converter API    */
 
 #include "../DesktopEditor/common/File.h"

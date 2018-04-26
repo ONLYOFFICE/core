@@ -43,6 +43,29 @@
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 	#include <wchar.h>
 	#include <windows.h>
+
+	static std::wstring CorrectPathW(const std::wstring& path)
+	{
+		int len = (int)path.length();
+		if (2 > len)
+			return path;
+
+		const wchar_t* path_str = path.c_str();
+		if (path_str[0] == '\\' || path_str[1] == '/')
+			return path;
+
+		// local files: '\\?\' prefix
+		// server files: '\\?\UNC\' prefix <== TODO!
+		int nLen = GetFullPathNameW(path_str, 0, 0, 0);
+		wchar_t* pBuf = new wchar_t[(4 + nLen) * sizeof(wchar_t)];
+
+		pBuf[0] = L'\\', pBuf[1] = L'\\',  pBuf[2] = L'?', pBuf[3] = L'\\';
+		GetFullPathNameW(path_str, nLen, pBuf + 4, NULL);
+
+		std::wstring retPath(pBuf);
+		delete [] pBuf;
+		return retPath;
+	}
 #endif
 
 #define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), (LONG)val.length())
@@ -629,7 +652,8 @@ namespace NSFile
 		bool OpenFile(const std::wstring& sFileName, bool bRewrite = false)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			if ( 0 != _wfopen_s(&m_pFile, sFileName.c_str(), bRewrite ? L"rb+" : L"rb")) 
+			std::wstring sFileNameW = CorrectPathW(sFileName);
+			if ( 0 != _wfopen_s(&m_pFile, sFileNameW.c_str(), bRewrite ? L"rb+" : L"rb"))
 				return false;
 #else
 			BYTE* pUtf8 = NULL;
@@ -668,8 +692,9 @@ namespace NSFile
 		bool CreateFileW(const std::wstring& sFileName)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			 if ( 0 != _wfopen_s(&m_pFile, sFileName.c_str(), L"wb"))
-				 return false;
+			std::wstring sFileNameW = CorrectPathW(sFileName);
+			if ( 0 != _wfopen_s(&m_pFile, sFileNameW.c_str(), L"wb"))
+				return false;
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
@@ -879,8 +904,10 @@ namespace NSFile
 			}
 
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			src.open(strSrc.c_str(), std::ios::binary);
-			dst.open(strDst.c_str(), std::ios::binary);
+			std::wstring sS = CorrectPathW(strSrc);
+			std::wstring sD = CorrectPathW(strDst);
+			src.open(sS.c_str(), std::ios::binary);
+			dst.open(sD.c_str(), std::ios::binary);
 #else
 			BYTE* pUtf8Src = NULL;
 			LONG lLenSrc = 0;
@@ -913,7 +940,8 @@ namespace NSFile
 		static bool Remove(const std::wstring& strFileName)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			int nRes = _wremove(strFileName.c_str());
+			std::wstring strFileNameW = CorrectPathW(strFileName);
+			int nRes = _wremove(strFileNameW.c_str());
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
@@ -938,7 +966,8 @@ namespace NSFile
 			bool bIsSuccess = false;
 
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			HANDLE hFile = ::CreateFileW( sPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
+			std::wstring sPathW = CorrectPathW(sPath);
+			HANDLE hFile = ::CreateFileW( sPathW.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
 											NULL, OPEN_EXISTING,
 											FILE_ATTRIBUTE_NORMAL, NULL );
 			if ( hFile == INVALID_HANDLE_VALUE )
@@ -1091,7 +1120,8 @@ namespace NSFile
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 			FILE* pFile = NULL;
-			_wfopen_s(&pFile, sFileName.c_str(), sMode.c_str());
+			std::wstring sFileNameW = CorrectPathW(sFileName);
+			_wfopen_s(&pFile, sFileNameW.c_str(), sMode.c_str());
 
 			return pFile;
 #else

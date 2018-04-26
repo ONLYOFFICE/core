@@ -129,6 +129,11 @@ namespace PPTX2EditorAdvanced
 		for (size_t nNote = 0; nNote < nCountNoteMasters; ++nNote)
 		{
 			smart_ptr<PPTX::NotesMaster> noteMaster = ((*presentation)[presentation->notesMasterIdLst[nNote].rid.get()]).smart_dynamic_cast<PPTX::NotesMaster>();
+			if (false == noteMaster.IsInit())
+			{
+				// такого быть не должно
+				continue;
+			}
 			size_t pPointerNM = (size_t)(noteMaster.operator ->()); 
 
 			std::map<size_t, LONG>::const_iterator pSearchNM = pCommon->notesMasters.find(pPointerNM);

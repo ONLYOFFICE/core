@@ -1191,7 +1191,7 @@ namespace NSBinPptxRW
                 std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 		m_pWriter->WriteString(s);
 	}
-	void CRelsGenerator::StartNotesMaster(int nIndexTheme)
+	void CRelsGenerator::StartThemeNotesMaster(int nIndexTheme)
 	{
 		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
@@ -1280,6 +1280,12 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
+	void CRelsGenerator::WriteNotesMaster()
+	{
+		std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
+		m_pWriter->WriteString(strRels0);			
+	}
 	void CRelsGenerator::WritePresentationComments(int nComment)
 	{
 		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) +
@@ -1288,14 +1294,8 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
-	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsNotesMaster, bool bIsVbaProject, bool bIsJsaProject)
+	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsVbaProject, bool bIsJsaProject)
 	{
- 		if (bIsNotesMaster)
-		{
-			std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-					L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
-			m_pWriter->WriteString(strRels0);			
-		}
         std::wstring strRels1 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\" />";
         std::wstring strRels2 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
@@ -1325,10 +1325,6 @@ namespace NSBinPptxRW
 					L"\" Type=\"" + OOX::FileTypes::JsaProject.RelationType() + L"\" Target=\"" + OOX::FileTypes::JsaProject.DefaultFileName().GetPath() + L"\"/>";
 			m_pWriter->WriteString(strRels5);
 		}
-	}
-	int CRelsGenerator::GetNextId()
-	{
-		return m_lNextRelsID;
 	}
 	void CRelsGenerator::CloseRels()
 	{

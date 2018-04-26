@@ -574,7 +574,7 @@ namespace NSBinPptxRW
 					m_arNotesMasters.push_back(elm);
 					
 					m_oReader.m_pRels->Clear();
-					m_oReader.m_pRels->StartNotesMaster(m_arSlideMasters_Theme.size());
+					m_oReader.m_pRels->StartThemeNotesMaster(m_arSlideMasters_Theme.size());
 					
 					bNotesMasterPresent = true;
 					if (lCount > 0)
@@ -798,7 +798,7 @@ namespace NSBinPptxRW
 				m_oReader.m_pRels->WriteMasters(nCountMasters);
 				m_oReader.m_pRels->WriteThemes(nCountThemes);
 
-				int nCurrentRels = m_oReader.m_pRels->GetNextId();
+				size_t nCurrentRels = m_oReader.m_pRels->m_lNextRelsID;
 
 				m_oPresentation.sldIdLst.clear();
 				for (LONG i = 0; i < nCountSlides; ++i)
@@ -808,10 +808,8 @@ namespace NSBinPptxRW
                     std::wstring sId = std::to_wstring(256 + i);
 
 					m_oPresentation.sldIdLst[i].id = sId;
-					m_oPresentation.sldIdLst[i].rid = (size_t)nCurrentRels;
-					++nCurrentRels;
+					m_oPresentation.sldIdLst[i].rid = nCurrentRels++;
 				}
-
 				m_oReader.m_pRels->WriteSlides(nCountSlides);
 
 				m_oPresentation.notesMasterIdLst.clear();
@@ -819,8 +817,8 @@ namespace NSBinPptxRW
 				{
 					m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:notesMasterId"));
 
-					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
-					++nCurrentRels;
+					m_oPresentation.notesMasterIdLst[0].rid = m_oReader.m_pRels->m_lNextRelsID;
+					m_oReader.m_pRels->WriteNotesMaster();
 				}
 				if (m_oPresentation.comments.is_init())
 				{
@@ -841,7 +839,7 @@ namespace NSBinPptxRW
 					++nComment;
 				}
 
-				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent, m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
+				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
 				m_oReader.m_pRels->CloseRels();
 
 				oXmlWriter.ClearNoAttack();

@@ -451,19 +451,7 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\graphics.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\kernel.lib"
-			>
-		</File>
-		<File
 			RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\UnicodeConverter.lib"
 			>
 		</File>
 	</Files>

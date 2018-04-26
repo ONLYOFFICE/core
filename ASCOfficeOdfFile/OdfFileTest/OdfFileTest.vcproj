@@ -338,10 +338,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\DesktopEditor\common\Base64.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\OfficeFileFormatChecker.h"
 				>
 			</File>
@@ -361,27 +357,7 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\common\String.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
-				>
-			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\build\lib\win_32\graphics.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\kernel.lib"
-			>
-		</File>
 		<File
 			RelativePath="OdfFileTest.cpp"
 			>
@@ -393,6 +369,10 @@
 					UsePrecompiledHeader="0"
 				/>
 			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
+			>
 		</File>
 	</Files>
 	<Globals>

@@ -67,7 +67,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&#x0D;&#x0A;Rpcrt4.lib"
 				LinkIncremental="2"
-				IgnoreDefaultLibraryNames="MSVCRTD.lib"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -334,83 +334,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\DesktopEditor\common\Base64.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\common\Directory.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\common\File.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\FileDownloader\FileDownloader.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\common\Path.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Common\3dParty\pole\pole.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\common\String.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\common\StringBuilder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -490,14 +414,6 @@
 				</File>
 			</Filter>
 		</Filter>
-		<File
-			RelativePath="..\..\build\lib\win_32\graphics.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\lib\win_32\kernel.lib"
-			>
-		</File>
 		<File
 			RelativePath=".\OdfFileWTest.cpp"
 			>

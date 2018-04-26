@@ -145,17 +145,15 @@ namespace OOX
 
 				int nCurDepth = oReader.GetDepth();
 				
-				int index = 0;
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("sheet") == sName )
+					if ( _T("sheet") == sName ) 
 					{
 						CSheet* pSheet = new CSheet( oReader );
 						
 						m_arrItems.push_back( pSheet );
-						mapSheets.insert(std::make_pair(index++, pSheet));
 					}
 
 				}
@@ -170,8 +168,6 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-		public:
-			std::map<int, OOX::Spreadsheet::CSheet*> mapSheets;
 		};
 	} //Spreadsheet
 } // namespace OOX

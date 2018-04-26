@@ -1027,11 +1027,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 	{
 		int	table_id = oox_book_views->m_oActiveTab->GetValue();
 
-		std::map<int, OOX::Spreadsheet::CSheet*>::iterator pFind = Workbook->m_oSheets->mapSheets.find(table_id);
-
-		if (pFind != Workbook->m_oSheets->mapSheets.end())
+		if (table_id >= 0 && table_id < Workbook->m_oSheets->m_arrItems.size())
 		{
-			ods_context->settings_context()->add_property(L"ActiveTable", L"string", pFind->second->m_oName.get2());
+			ods_context->settings_context()->add_property(L"ActiveTable", L"string", 
+				Workbook->m_oSheets->m_arrItems[table_id]->m_oName.get2());
 		}
 	}
 	if (oox_book_views->m_oShowSheetTabs.IsInit())

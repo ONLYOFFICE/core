@@ -63,7 +63,7 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std
 HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const std::wstring& _outputFile, bool bSorted, short level)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-    std::wstring name = CorrectPathW(_name);
+    std::wstring name = _name;//CorrectPathW(_name);
     std::wstring outputFile = CorrectPathW(_outputFile);
 #else
     std::wstring name = _name;

@@ -857,7 +857,7 @@ namespace NSFile
 		static bool Exists(const std::wstring&  strFileName)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			std::wstring sFileNameW = CorrectPathW(sFileName);
+			std::wstring sFileNameW = CorrectPathW(strFileName);
 			FILE* pFile = NULL;
 			if ( 0 != _wfopen_s( &pFile, sFileNameW.c_str(), L"rb"))
 				return false;

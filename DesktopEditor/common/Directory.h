@@ -314,7 +314,7 @@ namespace NSDirectory
 	static bool Exists(const std::wstring& strDirectory)
 	{
 #if defined(_WIN32) || defined (_WIN64)
-		std::wstring sDirectoryW = CorrectPathW(strDirectory);
+		std::wstring strDirectoryW = CorrectPathW(strDirectory);
 		DWORD dwAttrib = ::GetFileAttributesW(strDirectoryW.c_str());
 		return (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif __linux__

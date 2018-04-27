@@ -17,6 +17,8 @@ namespace NSOpenSSL
 
 #endif
 
+#include "../../../common/File.h"
+
 #if defined(_LINUX) && !defined(_MAC)
 #include "./XmlSigner_openssl.h"
 #define XML_CERTIFICATE_USE_OPENSSL
@@ -35,7 +37,76 @@ int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)
         "http://www.w3.org/2000/09/xmldsig#sha1" == sAlg)
         return OOXML_HASH_ALG_SHA1;
 
+    /*
+    if ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha224" == sAlg ||
+        "http://www.w3.org/2001/04/xmldsig-more#sha224" == sAlg)
+        return OOXML_HASH_ALG_SHA224;
+    */
+
+    if ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" == sAlg ||
+        "http://www.w3.org/2001/04/xmldsig-more#sha256" == sAlg ||
+        "http://www.w3.org/2001/04/xmlenc#sha256" == sAlg)
+        return OOXML_HASH_ALG_SHA256;
+
+    if ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384" == sAlg ||
+        "http://www.w3.org/2001/04/xmldsig-more#sha384" == sAlg)
+        return OOXML_HASH_ALG_SHA384;
+
+    if ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512" == sAlg ||
+        "http://www.w3.org/2001/04/xmldsig-more#sha512" == sAlg ||
+        "http://www.w3.org/2001/04/xmlenc#sha512" == sAlg)
+        return OOXML_HASH_ALG_SHA512;
+
     return OOXML_HASH_ALG_INVALID;
+}
+
+std::string ICertificate::GetDigestMethodA(const int& nAlg)
+{
+    switch (nAlg)
+    {
+    case OOXML_HASH_ALG_SHA1:
+        return "http://www.w3.org/2000/09/xmldsig#sha1";
+    case OOXML_HASH_ALG_SHA224:
+        return "http://www.w3.org/2001/04/xmldsig-more#sha224";
+    case OOXML_HASH_ALG_SHA256:
+        return "http://www.w3.org/2001/04/xmlenc#sha256";
+    case OOXML_HASH_ALG_SHA384:
+        return "http://www.w3.org/2001/04/xmldsig-more#sha384";
+    case OOXML_HASH_ALG_SHA512:
+        return "http://www.w3.org/2001/04/xmlenc#sha512";
+    default:
+        break;
+    }
+    return "http://www.w3.org/2000/09/xmldsig#sha1";
+}
+std::wstring ICertificate::GetDigestMethod(const int& nAlg)
+{
+    std::string sTmp = GetDigestMethodA(nAlg);
+    return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sTmp);
+}
+std::string ICertificate::GetSignatureMethodA(const int& nAlg)
+{
+    switch (nAlg)
+    {
+    case OOXML_HASH_ALG_SHA1:
+        return "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
+    case OOXML_HASH_ALG_SHA224:
+        return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha224";
+    case OOXML_HASH_ALG_SHA256:
+        return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+    case OOXML_HASH_ALG_SHA384:
+        return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384";
+    case OOXML_HASH_ALG_SHA512:
+        return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512";
+    default:
+        break;
+    }
+    return "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
+}
+std::wstring ICertificate::GetSignatureMethod(const int& nAlg)
+{
+    std::string sTmp = GetSignatureMethodA(nAlg);
+    return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sTmp);
 }
 
 ICertificate* ICertificate::CreateInstance()

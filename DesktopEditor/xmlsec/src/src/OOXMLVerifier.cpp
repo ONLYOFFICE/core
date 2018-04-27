@@ -252,7 +252,9 @@ public:
                 return;
         }
 
-        // 5) Check signature
+        // 5) Check sert digest! (TODO:)
+
+        // 6) Check signature
         CXmlStackNamespaces stack(m_node);
         CXmlStackNamespaces stackRes = stack.GetById("SignedInfo", true);
         std::string sXml = stackRes.GetXml();

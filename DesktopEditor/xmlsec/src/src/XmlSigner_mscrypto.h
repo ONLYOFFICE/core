@@ -22,6 +22,8 @@ protected:
     BYTE*           m_rawData;
     int             m_rawDataLen;
 
+    int             m_alg;
+
 public:
     CCertificate_mscrypto() : ICertificate()
     {
@@ -32,6 +34,7 @@ public:
         m_rawDataLen = 0;
 
         m_release = false;
+        m_alg = OOXML_HASH_ALG_INVALID;
     }
     CCertificate_mscrypto(PCCERT_CONTEXT ctx) : ICertificate()
     {
@@ -42,6 +45,8 @@ public:
         m_rawDataLen = 0;
 
         m_release = false;
+
+        GetHashAlgs();
     }
 
     virtual ~CCertificate_mscrypto()
@@ -101,7 +106,7 @@ public:
 
     virtual std::string GetCertificateHash()
     {
-        return GetHash(m_context->pbCertEncoded, (unsigned int)m_context->cbCertEncoded, OOXML_HASH_ALG_SHA1);
+        return GetHash(m_context->pbCertEncoded, (unsigned int)m_context->cbCertEncoded, GetHashAlg());
     }
 
     virtual std::string GetDate()
@@ -136,7 +141,62 @@ public:
         return OPEN_SSL_WARNING_OK;
     }
 
+    std::vector<int> GetHashAlgs()
+    {
+        std::vector<int> algs;
+        if (!m_context || !m_context->pCertInfo)
+            return algs;
+
+        std::string sAlg(m_context->pCertInfo->SignatureAlgorithm.pszObjId);
+
+        if ("1.2.840.113549.1.1.5" == sAlg)
+            algs.push_back(OOXML_HASH_ALG_SHA1);
+        else if ("1.2.840.113549.1.1.11" == sAlg)
+            algs.push_back(OOXML_HASH_ALG_SHA256);
+        else if ("1.2.840.113549.1.1.12" == sAlg)
+            algs.push_back(OOXML_HASH_ALG_SHA384);
+        else if ("1.2.840.113549.1.1.13" == sAlg)
+            algs.push_back(OOXML_HASH_ALG_SHA512);
+        else
+            algs.push_back(OOXML_HASH_ALG_SHA1);
+
+        if (algs.empty())
+            m_alg = OOXML_HASH_ALG_SHA1;
+        else
+            m_alg = algs[0];
+
+        return algs;
+    }
+    int GetHashAlg()
+    {
+        if (m_alg == OOXML_HASH_ALG_INVALID)
+            GetHashAlgs();
+        return m_alg;
+    }
+
 public:
+    PCRYPT_KEY_PROV_INFO GetProviderInfo()
+    {
+        LPBYTE pInfoData = NULL;
+        DWORD dwInfoDataLength = 0;
+
+        if (!CertGetCertificateContextProperty(m_context, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwInfoDataLength))
+            return NULL;
+
+        if (dwInfoDataLength > 0)
+        {
+            pInfoData = (LPBYTE)malloc(dwInfoDataLength * sizeof(BYTE));
+
+            if (!CertGetCertificateContextProperty(m_context, CERT_KEY_PROV_INFO_PROP_ID, pInfoData, &dwInfoDataLength))
+            {
+                free(pInfoData);
+                return NULL;
+            }
+        }
+
+        return (PCRYPT_KEY_PROV_INFO)pInfoData;
+    }
+
     virtual std::string Sign(const std::string& sXml)
     {
         BOOL bResult = TRUE;
@@ -144,16 +204,46 @@ public:
         HCRYPTHASH  hHash = NULL;
 
         HCRYPTPROV hCryptProv = NULL;
-        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+        bResult = CryptAcquireCertificatePrivateKey(m_context, CRYPT_ACQUIRE_COMPARE_KEY_FLAG, NULL, &hCryptProv, &dwKeySpec, NULL);
 
         if (!bResult)
             return "";
 
-        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        int nAlg = GetHashAlg();
+        bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
         if (!bResult)
         {
+            PCRYPT_KEY_PROV_INFO info = GetProviderInfo();
+
             CryptReleaseContext(hCryptProv, 0);
-            return "";
+            if (!CryptAcquireContextW(&hCryptProv, info->pwszContainerName, info->pwszProvName, info->dwProvType, 0))
+            {
+                CryptReleaseContext(hCryptProv, 0);
+                free(info);
+                return "";
+            }
+
+            bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
+            if (!bResult)
+            {
+                CryptReleaseContext(hCryptProv, 0);
+                if (!CryptAcquireContextW(&hCryptProv, info->pwszContainerName, NULL, PROV_RSA_AES, 0))
+                {
+                    CryptReleaseContext(hCryptProv, 0);
+                    free(info);
+                    return "";
+                }
+
+                bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
+            }
+
+            free(info);
+
+            if (!bResult)
+            {
+                CryptReleaseContext(hCryptProv, 0);
+                return "";
+            }
         }
 
         bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
@@ -223,10 +313,23 @@ public:
 
         HCRYPTPROV hCryptProv = NULL;
 
-        bResult = (NULL != m_context) ? CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL) : FALSE;
+        bResult = FALSE;//(NULL != m_context) ? CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL) : FALSE;
+
+        DWORD dwProvType = PROV_RSA_FULL;
+        switch (nAlg)
+        {
+            case OOXML_HASH_ALG_SHA256:
+            case OOXML_HASH_ALG_SHA512:
+            {
+                dwProvType = PROV_RSA_AES;
+                break;
+            }
+            default:
+                break;
+        }
 
         if (!bResult)
-            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, (nAlg == OOXML_HASH_ALG_SHA256) ? PROV_RSA_AES : PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, dwProvType, CRYPT_VERIFYCONTEXT);
 
         if (!bResult)
             return "";
@@ -308,10 +411,23 @@ public:
         HCRYPTKEY hPubKey = NULL;
 
         HCRYPTPROV hCryptProv = NULL;
-        BOOL bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+        BOOL bResult = FALSE;//CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+
+        DWORD dwProvType = PROV_RSA_FULL;
+        switch (nAlg)
+        {
+            case OOXML_HASH_ALG_SHA256:
+            case OOXML_HASH_ALG_SHA512:
+            {
+                dwProvType = PROV_RSA_AES;
+                break;
+            }
+            default:
+                break;
+        }
 
         if (!bResult)
-            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, dwProvType, CRYPT_VERIFYCONTEXT);
 
         if (!bResult)
             return false;
@@ -365,7 +481,7 @@ public:
             m_rawDataLen = 0;
             return false;
         }
-
+        GetHashAlgs();
         return true;
     }
 
@@ -388,6 +504,7 @@ public:
             m_store = NULL;
             return 0;
         }
+        GetHashAlgs();
         return 1;
     }
 
@@ -406,6 +523,12 @@ private:
             return CALG_SHA1;
         case OOXML_HASH_ALG_SHA256:
             return CALG_SHA_256;
+        case OOXML_HASH_ALG_SHA384:
+            return CALG_SHA_384;
+        case OOXML_HASH_ALG_SHA512:
+            return CALG_SHA_512;
+        case OOXML_HASH_ALG_SHA224:
+            return CALG_SHA1;
         default:
             return CALG_SHA1;
         }

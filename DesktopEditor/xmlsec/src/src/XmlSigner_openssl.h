@@ -41,6 +41,9 @@ public:
 
     virtual bool LoadFromBase64Data(const std::string& data);
 
+    virtual std::vector<int> GetHashAlgs();
+    virtual int GetHashAlg();
+
 public:
     virtual int ShowSelectDialog(void* parent = NULL);
     virtual int ShowCertificate(void* parent = NULL);

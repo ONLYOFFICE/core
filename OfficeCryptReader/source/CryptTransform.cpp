@@ -46,9 +46,13 @@
 #include "../../Common/3dParty/cryptopp/filters.h"
 #include "../../Common/3dParty/cryptopp/osrng.h"
 #include "../../Common/3dParty/cryptopp/hex.h"
+#include "../../Common/3dParty/cryptopp/blowfish.h"
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
+
+#include "../../DesktopEditor/common/File.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
 static const unsigned char encrVerifierHashValueBlockKey[8]			= { 0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e };
@@ -284,36 +288,18 @@ _buf GenerateAgileKey(_buf & salt, _buf & password, _buf & blockKey, int hashSiz
 
 	return _buf(pHashBuf.ptr, pHashBuf.size);
 }
-_buf GenerateOdfKey(_buf & salt, _buf & password, _buf & blockKey, int hashSize, int spin, CRYPT_METHOD::_hashAlgorithm algorithm, int block_index = 0)
+_buf GenerateOdfKey(_buf & pSalt, _buf & pPassword, int keySize, int spin, CRYPT_METHOD::_hashAlgorithm algorithm)
 {
-	_buf pHashBuf = HashAppend(salt, password, algorithm);
+	_buf pKey		(keySize);
+	_buf empty		(NULL, 0, false);
 
-	for (int i = 0; i < spin; i++)
-	{
-        _buf iterator((unsigned char*)&i, 4, false);
-        pHashBuf = HashAppend(iterator, pHashBuf, algorithm);
-	}
+	_buf pPassword_hash = HashAppend(pPassword, empty, algorithm);
 
-	pHashBuf = HashAppend(pHashBuf, blockKey, algorithm);
+	PKCS5_PBKDF2_HMAC<SHA1> pbkdf;
+		
+	pbkdf.DeriveKey(pKey.ptr, pKey.size, 0, pPassword_hash.ptr, pPassword_hash.size, pSalt.ptr, pSalt.size, spin);
 
-	CorrectHashSize(pHashBuf, hashSize, 0x36);
-
-	return _buf(pHashBuf.ptr, pHashBuf.size);
-	//unsigned char *out = NULL;
-	//SecByteBlock derived(hashSize);
-
-	//PKCS5_PBKDF2_HMAC<SHA256> pbkdf2;
-
-	//pbkdf2.DeriveKey(
-	//					derived.data(), 
-	//					derived.size(), 
-	//					0, 
-	//					password.ptr, password.size, 
-	//					salt.ptr, salt.size,
-	//					spin);
- //  
-
-	//return _buf(derived.data(), derived.size());
+	return _buf(pKey.ptr, pKey.size);
 }
     
 _buf GenerateHashKey(_buf & salt, _buf & password, int hashSize, int spin, CRYPT_METHOD::_hashAlgorithm algorithm, int block_index = 0)
@@ -433,6 +419,11 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 	else if (algorithm == CRYPT_METHOD::RC4)
 	{
 		rc4Decryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
+	}
+	else if (algorithm == CRYPT_METHOD::Blowfish_CFB)
+	{
+		CFB_Mode<Blowfish>::Decryption decryption(key.ptr, key.size, iv.ptr);
+		decryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
 	}
 	else //AES
 	{
@@ -951,36 +942,22 @@ ODFDecryptor::~ODFDecryptor()
 bool ODFDecryptor::SetPassword(std::wstring _password)
 {
 	bVerify		= false;
-	password	= _password;
+
+	wpassword	= _password;
+	password	= NSFile::CUtf8Converter::GetUtf8StringFromUnicode(_password);
 
 	if (password.empty()) return false;
-	
-	_buf pPassword		(password);
-	_buf pSalt			(cryptData.saltValue);
+
 	_buf empty			(NULL, 0, false);
-
-	_buf pEncVerInput	(cryptData.input);
-	_buf pEncVerValue	(cryptData.checksum);
+	_buf pInput			(cryptData.checksum_input);
+	_buf pChecksum		(cryptData.checksum);
+	_buf pOutput		(pInput.size);
 	
-	_buf pIvi	(cryptData.initializationVector);
-	_buf hashBufIvi = HashAppend(pIvi, empty, cryptData.hashAlgorithm);
+	Decrypt(pInput.ptr, pInput.size, pOutput.ptr, cryptData.checksum_size);
 
-	//_buf verifierKey1 = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.checksum_hashAlgorithm);		
-	_buf verifierKey = GenerateOdfKey(pSalt, pPassword, pIvi, cryptData.hashSize, cryptData.spinCount, cryptData.checksum_hashAlgorithm);		
-	CorrectHashSize(verifierKey, cryptData.keySize, 0);//??
+	_buf pOutputHash = HashAppend(pOutput, empty, cryptData.checksum_hashAlgorithm);
 
-////--------------------------------------------
-	_buf decryptedVerifierHashInputBytes;		
-	DecryptCipher(verifierKey, pIvi, pEncVerInput, decryptedVerifierHashInputBytes, cryptData.cipherAlgorithm);
-
-//--------------------------------------------
-	_buf hashBuf = HashAppend(decryptedVerifierHashInputBytes, empty, cryptData.hashAlgorithm);
-//--------------------------------------------
-	
-	_buf decryptedVerifierHashBytes;		
-	DecryptCipher(verifierKey, pIvi, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
-
-	bVerify	= (decryptedVerifierHashBytes==hashBuf);
+	bVerify	= (pChecksum == pOutputHash);
 
 	return true;
 }
@@ -995,36 +972,55 @@ void ODFDecryptor::SetCryptData(_odfCryptData	& data)
 	cryptData = data;
 }
 void ODFDecryptor::Decrypt(char* data, const size_t size, const unsigned long start_iv_block)
-{
-	if (!bVerify) return;
+{//without deflate
+	//if (!bVerify) return;
 	
-	unsigned char* data_out = NULL;
-	Decrypt((unsigned char*)data, size, data_out, start_iv_block);
+	_buf pPassword	(wpassword);
+	_buf pSalt		(cryptData.saltValue);
+	_buf ivi		(cryptData.initializationVector);
+	_buf empty		(NULL, 0, false);
 	
-	if (data_out)
-	{
-		memcpy(data, data_out, size);
-		delete []data_out;
-	}
+	_buf pKey = GenerateOdfKey(pSalt, pPassword, cryptData.keySize, cryptData.spinCount, cryptData.start_hashAlgorithm);
+
+	_buf pInp((unsigned char*)data, size, false);
+	_buf pOut(size);	
+
+	DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm);
+
+	memcpy(data, pOut.ptr, size);
 }
-void ODFDecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& data_out, unsigned long start_iv_block)
+
+void ODFDecryptor::Decrypt(unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out)
 {
-	data_out = new unsigned char[size];
-	
+	//if (!bVerify)
+	//{
+	//	size_out = 0;
+	//	return;
+	//}
+	if (size_out < 1) size_out = size_inp;
+
 	_buf pPassword	(password);
 	_buf pSalt		(cryptData.saltValue);
+	_buf ivi		(cryptData.initializationVector);
 	_buf empty		(NULL, 0, false);
-	_buf start		(cryptData.initializationVector);
-
-	_buf hashKey = GenerateOdfKey(pSalt, pPassword, start, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm, start_iv_block);
-	CorrectHashSize(hashKey, cryptData.keySize, 0);
 	
-	_buf pInp(data_inp, size, false);
-	_buf pOut(data_out, size, false);
-	
-	_buf ivi(cryptData.initializationVector);
+	_buf pKey = GenerateOdfKey(pSalt, pPassword, cryptData.keySize, cryptData.spinCount, cryptData.start_hashAlgorithm);
 
-	DecryptCipher(hashKey, ivi, pInp, pOut, cryptData.cipherAlgorithm);
+	_buf pInp(data_inp, size_inp, false);
+	_buf pOut(size_inp);	
+
+	DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm);
+
+	data_out = new unsigned char[size_out];
+		
+	CInflate inflate;
+	inflate.SetOut(data_out, size_out);
+	inflate.SetIn(pOut.ptr, pOut.size);
+	
+	inflate.Init2();
+	
+	int nRes = inflate.Process(DEFLATE_FINISH);
+	inflate.End();
 }
 
 

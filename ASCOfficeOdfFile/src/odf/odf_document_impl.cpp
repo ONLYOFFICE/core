@@ -297,13 +297,10 @@ std::string DecodeBase64(const std::wstring & value1)
 	}
 	return result;
 }
-bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr element, int size )
+bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr element, int file_size )
 {
 	manifest_encryption_data* encryption_data = dynamic_cast<manifest_encryption_data*>(element.get());
 	if (!encryption_data) return false;
-
-	//std::wstring checksum_;
-	//std::wstring checksum_type_;
 
 	manifest_algorithm*				algorithm = dynamic_cast<manifest_algorithm*>(encryption_data->algorithm_.get());
 	manifest_key_derivation*		key_derivation = dynamic_cast<manifest_key_derivation*>(encryption_data->key_derivation_.get());
@@ -312,86 +309,82 @@ bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::
 	CRYPT::ODFDecryptor		decryptor;
 	CRYPT::_odfCryptData	cryptData;
 	
-	cryptData.saltValue	= DecodeBase64(key_derivation->salt_);	
-	cryptData.saltSize	= cryptData.saltValue.length(); 
-	cryptData.spinCount = key_derivation->iteration_count_;		
-//------------------------------------------------------------------------------------------
-	if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"sha"))
+	if (key_derivation)
 	{
-		if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"512"))
-		{
-			cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
-			cryptData.hashSize = 40; //320 bit
-		}
-		if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"256"))
-		{
-			cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
-			cryptData.hashSize = 40; //320 bit
-		}
-		else
-		{
-			cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
-			cryptData.hashSize = 20; //160 bit
-		}
-	}
-	else
-	{
-		cryptData.hashAlgorithm = CRYPT_METHOD::MD5;  //????
-		cryptData.hashSize = 16; //128 bit
+		cryptData.saltValue	= DecodeBase64(key_derivation->salt_);	
+		cryptData.saltSize	= cryptData.saltValue.length(); 
+		cryptData.spinCount = key_derivation->iteration_count_;	
+		cryptData.keySize	= key_derivation->key_size_;	
 	}
 //------------------------------------------------------------------------------------------
-	cryptData.initializationVector = DecodeBase64(algorithm->initialisation_vector_);
+	if (start_key_generation)
+	{
+		cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA1; 
+		cryptData.start_hashSize = 0x14; //128 bit
 
-	if (std::wstring::npos != algorithm->algorithm_name.find(L"aes"))
-	{
-		if (std::wstring::npos != algorithm->algorithm_name.find(L"cbc"))
-			cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
-		else
-			cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_ECB;//??
-
-		if (std::wstring::npos != algorithm->algorithm_name.find(L"512"))
-			cryptData.keySize = 512 /8;	
-		else if (std::wstring::npos != algorithm->algorithm_name.find(L"256"))
-			cryptData.keySize = 256 /8;	
-		else
-			cryptData.keySize = 128 /8;	//??
-	}
-	else if (std::wstring::npos != algorithm->algorithm_name.find(L"blowfish"))
-	{
-		cryptData.cipherAlgorithm	= CRYPT_METHOD::Blowfish;//CFB
+		if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"sha"))
+		{
+			if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"512"))
+			{
+				cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA512;
+				cryptData.start_hashSize = 0x40; //320 bit
+			}
+			if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"256"))
+			{
+				cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA256;
+				cryptData.start_hashSize = 0x20; //320 bit
+			}
+		}
 	}
 //------------------------------------------------------------------------------------------
-	cryptData.checksum = DecodeBase64(encryption_data->checksum_);
-	if (std::wstring::npos != encryption_data->checksum_type_.find(L"sha"))
+	if (algorithm)
 	{
-		if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"512"))
+		cryptData.initializationVector = DecodeBase64(algorithm->initialisation_vector_);
+
+		if (std::wstring::npos != algorithm->algorithm_name_.find(L"aes"))
 		{
-			cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA512;
+			if (std::wstring::npos != algorithm->algorithm_name_.find(L"cbc"))
+				cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
+			else
+				cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_ECB;//??
 		}
-		if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"256"))
+		else if (std::wstring::npos != algorithm->algorithm_name_.find(L"blowfish"))
 		{
-			cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
-		}
-		else
-		{
-			cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+			cryptData.cipherAlgorithm	= CRYPT_METHOD::Blowfish_CFB;
 		}
 	}
-	else
+//------------------------------------------------------------------------------------------
+	if (encryption_data)
 	{
-		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::MD5;  //????
-	}
-	size_t nPosChecksumSize = encryption_data->checksum_type_.find(L"-");
-	if (std::wstring::npos != nPosChecksumSize)
-	{
-		std::wstring strSize = encryption_data->checksum_type_.substr(nPosChecksumSize + 1);
-		if (strSize == L"1k")
+		cryptData.checksum = DecodeBase64(encryption_data->checksum_);
+
+		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+		if (std::wstring::npos != encryption_data->checksum_type_.find(L"sha"))
 		{
-			cryptData.checksum_size = 1024;
+			if (std::wstring::npos != encryption_data->checksum_type_.find(L"512"))
+			{
+				cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA512;
+			}
+			if (std::wstring::npos != encryption_data->checksum_type_.find(L"256"))
+			{
+				cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+			}
 		}
-		else
+
+		size_t nPosChecksumSize = encryption_data->checksum_type_.find(L"-");
+		if (std::wstring::npos == nPosChecksumSize)
+			nPosChecksumSize = encryption_data->checksum_type_.find(L"/");
+		if (std::wstring::npos != nPosChecksumSize)
 		{
-			//???
+			std::wstring strSize = encryption_data->checksum_type_.substr(nPosChecksumSize + 1);
+			if (strSize == L"1k")
+			{
+				cryptData.checksum_size = 1024;
+			}
+			else
+			{
+				//???
+			}
 		}
 	}
 
@@ -401,14 +394,14 @@ bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::
 		return false;
 
 	DWORD dwSizeRead = 0;
-	_UINT64 lengthData, lengthRead = file_inp.GetFileSize();
+	_UINT64 lengthRead = file_inp.GetFileSize();
 
 	unsigned char* data		= new unsigned char[lengthRead];
 	unsigned char* data_out	= NULL;
 	
 	file_inp.ReadFile(data, lengthRead, dwSizeRead); 
 	
-	cryptData.input = std::string((char*)data, cryptData.checksum_size) ;
+	cryptData.checksum_input = std::string((char*)data, cryptData.checksum_size) ;
 //------------------------------------------------------------------------------------------
 
 	decryptor.SetCryptData(cryptData);
@@ -418,26 +411,21 @@ bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::
 		return false;
 	}
 //------------------------------------------------------------------------------------------------------------
-
-	int readData = dwSizeRead;// - 8; 
-	lengthData = *((_UINT64*)data);
-
-	bool result = false;
-	decryptor.Decrypt(data /*+ 8*/, readData, data_out, 0);//todoo сделать покусочное чтение декриптование
-
+	decryptor.Decrypt(data, dwSizeRead, data_out, file_size);
+	delete []data;
+	
 	if (data_out)
 	{
 		NSFile::CFileBinary file_out;
         file_out.CreateFileW(dstPath);
-		file_out.WriteFile(data_out, lengthData);
+		file_out.WriteFile(data_out, file_size);
 		file_out.CloseFile();
-
-		delete []data_out;
-		result = true;
+		
+		delete []data_out;	
+		return true;
 	}
-	
-	delete []data;
-	return result;
+
+	return false;
 }
 const std::wstring & odf_document::Impl::get_temp_folder() const 
 {

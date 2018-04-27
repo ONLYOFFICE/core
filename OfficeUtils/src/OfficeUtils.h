@@ -121,6 +121,7 @@ public:
     void ClearFuncs();
 
     void Init();
+    void Init2();
     int Process(int flush);
     void End();
 };

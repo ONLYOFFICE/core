@@ -55,7 +55,7 @@ namespace CRYPT_METHOD
 		AES_CBC,
 		AES_CFB,
 		AES_ECB,
-		Blowfish
+		Blowfish_CFB
 	};
 }
 namespace CRYPT
@@ -109,20 +109,20 @@ struct _ecmaCryptData
 struct _odfCryptData
 {
 	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm = CRYPT_METHOD::AES_CBC;
-	CRYPT_METHOD::_hashAlgorithm	hashAlgorithm = CRYPT_METHOD::SHA1;
+	
+	CRYPT_METHOD::_hashAlgorithm	start_hashAlgorithm = CRYPT_METHOD::SHA256;
+	int								start_hashSize		= 0x20;
 
 	int			spinCount	= 100000;
-	int			keySize		= 0x10;
-	int			hashSize	= 0x14;
+	int			keySize		= 0x20;
 	int			saltSize	= 0x10;
-
 	std::string saltValue;
 	std::string initializationVector;
 	
-	std::string						input;
+	std::string						checksum_input;
 	std::string						checksum;
 	int								checksum_size = 1024;
-	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
 };
 //---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 
@@ -182,17 +182,19 @@ public:
 	
 	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos, const size_t block_size){}
 	virtual void Decrypt (char* data, const size_t size, const unsigned long start_iv_block);
+	//without deflate
 	
 	virtual bool SetPassword (std::wstring password);
 	virtual bool IsVerify();
 
 	void SetCryptData(_odfCryptData &data);
 	
-	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out, unsigned long start_iv_block);
+	void Decrypt (unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out);
 
 private:
 
-	std::wstring	password;
+	std::wstring	wpassword; 
+	std::string		password; //utf8
 	_odfCryptData	cryptData;
 	bool			bVerify;
 };

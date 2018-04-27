@@ -253,7 +253,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	std::wstring algorithm_name;
+	std::wstring algorithm_name_;
 	std::wstring initialisation_vector_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(manifest_algorithm);

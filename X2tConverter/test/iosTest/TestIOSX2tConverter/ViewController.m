@@ -208,8 +208,8 @@
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
-        conv.delimiter = [X2tConverter delimiters].firstObject;
-        conv.encoding = [NSNumber numberWithInteger:46];
+        conv.delimiter = @(4);
+        conv.encoding = @(46);
         int result = [conv sdk_csv2xlst_bin:fullFileName nsTo:fullFileNameTo nsFontPath:fontsPath];
         if (result != 0) {
             NSLog(@"ERROR OPEN CSV : %d",result);

@@ -207,7 +207,7 @@ void manifest_key_derivation::add_attributes( const xml::attributes_wc_ptr & Att
 {
     CP_APPLY_ATTR(L"manifest:key-derivation-name", key_derivation_name_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:key-size", key_size_, 16);
-    CP_APPLY_ATTR(L"manifest:iteration-count", iteration_count_, 100000);
+    CP_APPLY_ATTR(L"manifest:iteration-count", iteration_count_, 1024);
     CP_APPLY_ATTR(L"manifest:salt", salt_, std::wstring(L""));
 	
 	size_t nFind = key_derivation_name_.find(L"#");	

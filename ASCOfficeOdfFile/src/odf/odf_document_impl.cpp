@@ -148,8 +148,8 @@ odf_document::Impl::Impl(xml::sax * Reader, const std::wstring & tempPath):
 	}
 }
 
-odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & tempPath, const std::wstring & Password, const ProgressCallback* CallBack) : 
-			context_(new odf_read_context()), pCallBack(CallBack), bUserStopConvert (0), bError(false)
+odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* callBack) : 
+			context_(new odf_read_context()), pCallBack(callBack), bUserStopConvert (0), bError(false)
 {
 	office_mime_type_ = 0;
 
@@ -178,12 +178,12 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & temp
 
 		if (false == map_encryptions_.empty())
 		{
-			if (Password.empty()) return;
+			if (password.empty()) return;
 
 			//decrypt files
 			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
 
-			bError = !decrypt_folder(base_folder_, tmp_folder_);
+			bError = !decrypt_folder(password, base_folder_, tmp_folder_);
 
 			if (bError)
 				return;
@@ -248,7 +248,7 @@ odf_document::Impl::~Impl()
 		NSDirectory::DeleteDirectory(tmp_folder_);
 }
 
-bool odf_document::Impl::decrypt_folder (const std::wstring & srcPath, const std::wstring & dstPath)
+bool odf_document::Impl::decrypt_folder (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath)
 {
 	std::vector<std::wstring> arFiles		= NSDirectory::GetFiles(srcPath, false);
 	std::vector<std::wstring> arDirectories	= NSDirectory::GetDirectories(srcPath);
@@ -261,7 +261,7 @@ bool odf_document::Impl::decrypt_folder (const std::wstring & srcPath, const std
 		std::map<std::wstring, std::pair<office_element_ptr, int>>::iterator pFind = map_encryptions_.find(arFiles[i]);
 		if ( pFind != map_encryptions_.end() )
 		{
-			result = decrypt_file(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
+			result = decrypt_file(password, arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
 			
 			if (false == result)
 				break;
@@ -277,7 +277,7 @@ bool odf_document::Impl::decrypt_folder (const std::wstring & srcPath, const std
 		
 		NSDirectory::CreateDirectory(dstPath + FILE_SEPARATOR_STR + sDirName);
 
-		result = decrypt_folder(arDirectories[i], dstPath + FILE_SEPARATOR_STR + sDirName);
+		result = decrypt_folder(password, arDirectories[i], dstPath + FILE_SEPARATOR_STR + sDirName);
 	}
 	return result;
 }
@@ -297,7 +297,7 @@ std::string DecodeBase64(const std::wstring & value1)
 	}
 	return result;
 }
-bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr element, int file_size )
+bool odf_document::Impl::decrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr element, int file_size )
 {
 	manifest_encryption_data* encryption_data = dynamic_cast<manifest_encryption_data*>(element.get());
 	if (!encryption_data) return false;
@@ -312,29 +312,24 @@ bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::
 	if (key_derivation)
 	{
 		cryptData.saltValue	= DecodeBase64(key_derivation->salt_);	
-		cryptData.saltSize	= cryptData.saltValue.length(); 
 		cryptData.spinCount = key_derivation->iteration_count_;	
 		cryptData.keySize	= key_derivation->key_size_;	
 	}
 //------------------------------------------------------------------------------------------
 	if (start_key_generation)
 	{
-		cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA1; 
-		cryptData.start_hashSize = 0x14; //128 bit
-
 		if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"sha"))
 		{
 			if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"512"))
 			{
 				cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA512;
-				cryptData.start_hashSize = 0x40; //320 bit
 			}
 			if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"256"))
 			{
 				cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA256;
-				cryptData.start_hashSize = 0x20; //320 bit
 			}
 		}
+		cryptData.start_hashSize = start_key_generation->key_size_;
 	}
 //------------------------------------------------------------------------------------------
 	if (algorithm)
@@ -401,20 +396,14 @@ bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::
 	
 	file_inp.ReadFile(data, lengthRead, dwSizeRead); 
 	
-	cryptData.checksum_input = std::string((char*)data, cryptData.checksum_size) ;
 //------------------------------------------------------------------------------------------
-
 	decryptor.SetCryptData(cryptData);
 	
-	if (!decryptor.SetPassword(L"password"))
-	{
-		return false;
-	}
-//------------------------------------------------------------------------------------------------------------
-	decryptor.Decrypt(data, dwSizeRead, data_out, file_size);
+	bool result = decryptor.Decrypt(password, data, dwSizeRead, data_out, file_size);
 	delete []data;
+//------------------------------------------------------------------------------------------------------------
 	
-	if (data_out)
+	if (result && data_out)
 	{
 		NSFile::CFileBinary file_out;
         file_out.CreateFileW(dstPath);
@@ -422,10 +411,10 @@ bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::
 		file_out.CloseFile();
 		
 		delete []data_out;	
-		return true;
+		return result;
 	}
 
-	return false;
+	return result;
 }
 const std::wstring & odf_document::Impl::get_temp_folder() const 
 {

@@ -110,19 +110,18 @@ struct _odfCryptData
 {
 	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm = CRYPT_METHOD::AES_CBC;
 	
-	CRYPT_METHOD::_hashAlgorithm	start_hashAlgorithm = CRYPT_METHOD::SHA256;
-	int								start_hashSize		= 0x20;
+	CRYPT_METHOD::_hashAlgorithm	start_hashAlgorithm = CRYPT_METHOD::SHA1;
+	int								start_hashSize		= 20;
 
-	int			spinCount	= 100000;
-	int			keySize		= 0x20;
-	int			saltSize	= 0x10;
+	int			spinCount	= 1024;
+	int			keySize		= 16;
+
 	std::string saltValue;
 	std::string initializationVector;
 	
-	std::string						checksum_input;
 	std::string						checksum;
 	int								checksum_size = 1024;
-	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
 };
 //---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 
@@ -172,29 +171,17 @@ private:
 	bool			bVerify;
 };
 
-class ODFDecryptor : public Decryptor
+class ODFDecryptor
 {
 public:
 	ODFDecryptor();
 	virtual ~ODFDecryptor();
 
-	virtual void Init(const unsigned long val) {}
-	
-	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos, const size_t block_size){}
-	virtual void Decrypt (char* data, const size_t size, const unsigned long start_iv_block);
-	//without deflate
-	
-	virtual bool SetPassword (std::wstring password);
-	virtual bool IsVerify();
-
 	void SetCryptData(_odfCryptData &data);
 	
-	void Decrypt (unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out);
+	bool Decrypt (const std::wstring &wpassword, unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out);
 
 private:
-
-	std::wstring	wpassword; 
-	std::string		password; //utf8
 	_odfCryptData	cryptData;
 	bool			bVerify;
 };

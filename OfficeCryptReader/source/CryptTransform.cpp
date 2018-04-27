@@ -47,12 +47,12 @@
 #include "../../Common/3dParty/cryptopp/osrng.h"
 #include "../../Common/3dParty/cryptopp/hex.h"
 #include "../../Common/3dParty/cryptopp/blowfish.h"
+#include "../../Common/3dParty/cryptopp/zinflate.h"
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../DesktopEditor/common/File.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
 
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
 static const unsigned char encrVerifierHashValueBlockKey[8]			= { 0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e };
@@ -939,65 +939,16 @@ ODFDecryptor::~ODFDecryptor()
 {
 }
 
-bool ODFDecryptor::SetPassword(std::wstring _password)
-{
-	bVerify		= false;
-
-	wpassword	= _password;
-	password	= NSFile::CUtf8Converter::GetUtf8StringFromUnicode(_password);
-
-	if (password.empty()) return false;
-
-	_buf empty			(NULL, 0, false);
-	_buf pInput			(cryptData.checksum_input);
-	_buf pChecksum		(cryptData.checksum);
-	_buf pOutput		(pInput.size);
-	
-	Decrypt(pInput.ptr, pInput.size, pOutput.ptr, cryptData.checksum_size);
-
-	_buf pOutputHash = HashAppend(pOutput, empty, cryptData.checksum_hashAlgorithm);
-
-	bVerify	= (pChecksum == pOutputHash);
-
-	return true;
-}
-
-bool ODFDecryptor::IsVerify()
-{
-	return bVerify;
-}
-
 void ODFDecryptor::SetCryptData(_odfCryptData	& data)
 {
 	cryptData = data;
 }
-void ODFDecryptor::Decrypt(char* data, const size_t size, const unsigned long start_iv_block)
-{//without deflate
-	//if (!bVerify) return;
-	
-	_buf pPassword	(wpassword);
-	_buf pSalt		(cryptData.saltValue);
-	_buf ivi		(cryptData.initializationVector);
-	_buf empty		(NULL, 0, false);
-	
-	_buf pKey = GenerateOdfKey(pSalt, pPassword, cryptData.keySize, cryptData.spinCount, cryptData.start_hashAlgorithm);
 
-	_buf pInp((unsigned char*)data, size, false);
-	_buf pOut(size);	
-
-	DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm);
-
-	memcpy(data, pOut.ptr, size);
-}
-
-void ODFDecryptor::Decrypt(unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out)
+bool ODFDecryptor::Decrypt(const std::wstring &wpassword, unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out)
 {
-	//if (!bVerify)
-	//{
-	//	size_out = 0;
-	//	return;
-	//}
-	if (size_out < 1) size_out = size_inp;
+	bVerify = false;
+
+	std::string password = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wpassword);
 
 	_buf pPassword	(password);
 	_buf pSalt		(cryptData.saltValue);
@@ -1009,18 +960,32 @@ void ODFDecryptor::Decrypt(unsigned char* data_inp, int size_inp, unsigned char*
 	_buf pInp(data_inp, size_inp, false);
 	_buf pOut(size_inp);	
 
-	DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm);
+	if (false == DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm))
+		return false;
 
-	data_out = new unsigned char[size_out];
+	try
+	{
+		data_out = new unsigned char[size_out];
+
+		Inflator inflator(new ArraySink( data_out, size_out));
+
+		inflator.Put(pOut.ptr, pOut.size);
+		inflator.MessageEnd();
 		
-	CInflate inflate;
-	inflate.SetOut(data_out, size_out);
-	inflate.SetIn(pOut.ptr, pOut.size);
-	
-	inflate.Init2();
-	
-	int nRes = inflate.Process(DEFLATE_FINISH);
-	inflate.End();
+		bVerify = true;
+	}
+	catch(...)
+	{
+		return false;
+	}
+	//_buf pChecksum		(cryptData.checksum);
+	//_buf pOutputLimit	(data_out, cryptData.checksum_size, false);
+
+	//_buf pOutputHash = HashAppend(pOutputLimit, empty, cryptData.checksum_hashAlgorithm);
+
+	//bVerify	= (pChecksum == pOutputHash);
+
+	return bVerify;
 }
 
 

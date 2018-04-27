@@ -401,10 +401,10 @@ namespace NSBinPptxRW
 	{
 	private:
 		CStringWriter*								m_pWriter;
-		int											m_lNextRelsID;
 		std::map<std::wstring, _relsGeneratorInfo>	m_mapImages;
 		std::map<std::wstring, int>					m_mapLinks;
 	public:
+		size_t										m_lNextRelsID;
 		CImageManager2*								m_pManager;
 
 		CRelsGenerator(CImageManager2* pManager = NULL);
@@ -418,19 +418,20 @@ namespace NSBinPptxRW
 		void StartLayout (int nIndexTheme);
 		void StartSlide (int nIndexSlide, int nIndexLayout, int nIndexNotes);
 		void StartNotes	(int nIndexSlide);
-		void StartNotesMaster(int nIndexTheme);
+		void StartThemeNotesMaster(int nIndexTheme);
 		
 		void WriteMasters (int nCount);
 		void WriteThemes (int nCount);
 		void WriteSlides (int nCount);
+		void WriteNotesMaster();
+
 		void WriteSlideComments	(int nComment);
 		void WritePresentationComments	(int nComment);
 		int WriteChart (int nChartNumber, _INT32 lDocType);
 		int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
-		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsNotesMaster = false, bool bIsVbaProject = false, bool bIsJsaProject = false  );
-		int GetNextId ();
+		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsVbaProject = false, bool bIsJsaProject = false  );
 		void CloseRels ();
 
 		void AddRels (const std::wstring& strRels);

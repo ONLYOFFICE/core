@@ -164,6 +164,7 @@ void manifest_encryption_data::add_attributes( const xml::attributes_wc_ptr & At
 	{
 		checksum_type_ = checksum_type_.substr(nFind + 1);
 	}
+	checksum_type_ = XmlUtils::GetLower(checksum_type_);
 }
 void manifest_encryption_data::add_child_element(cpdoccore::xml::sax *Reader, const std::wstring &Ns, const std::wstring &Name)
 {
@@ -187,14 +188,15 @@ const wchar_t * manifest_algorithm::name = L"algorithm";
 
 void manifest_algorithm::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"manifest:algorithm-name", algorithm_name, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:algorithm-name", algorithm_name_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:initialisation-vector", initialisation_vector_, std::wstring(L""));
 
-	size_t nFind = algorithm_name.find(L"#");
+	size_t nFind = algorithm_name_.find(L"#");
 	if (nFind != std::wstring::npos)
 	{
-		algorithm_name = algorithm_name.substr(nFind + 1);
+		algorithm_name_ = algorithm_name_.substr(nFind + 1);
 	}
+	algorithm_name_ = XmlUtils::GetLower(algorithm_name_);
 }
 // manifest:key-derivation
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,7 +207,7 @@ void manifest_key_derivation::add_attributes( const xml::attributes_wc_ptr & Att
 {
     CP_APPLY_ATTR(L"manifest:key-derivation-name", key_derivation_name_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:key-size", key_size_, 16);
-    CP_APPLY_ATTR(L"manifest:iteration-count", iteration_count_, 100000);
+    CP_APPLY_ATTR(L"manifest:iteration-count", iteration_count_, 1024);
     CP_APPLY_ATTR(L"manifest:salt", salt_, std::wstring(L""));
 	
 	size_t nFind = key_derivation_name_.find(L"#");	
@@ -213,6 +215,7 @@ void manifest_key_derivation::add_attributes( const xml::attributes_wc_ptr & Att
 	{
 		key_derivation_name_ = key_derivation_name_.substr(nFind + 1);
 	}
+	key_derivation_name_ = XmlUtils::GetLower(key_derivation_name_);
 }
 // manifest:start-key-generation
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,6 +232,7 @@ void manifest_start_key_generation::add_attributes( const xml::attributes_wc_ptr
 	{
 		start_key_generation_name_ = start_key_generation_name_.substr(nFind + 1);
 	}
+	start_key_generation_name_ = XmlUtils::GetLower(start_key_generation_name_);
 }
 }
 }

@@ -97,8 +97,8 @@ private:
 	void parse_manifests(office_element *element);
     void parse_settings	(office_element *element);
 
-	bool decrypt_folder (const std::wstring & srcPath, const std::wstring & dstPath);
-	bool decrypt_file (const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr data, int size );
+	bool decrypt_folder (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
+	bool decrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr data, int size );
 
     content_xml_t_ptr content_xml_;
     content_xml_t_ptr styles_xml_;

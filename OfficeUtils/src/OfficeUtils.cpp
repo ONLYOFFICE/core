@@ -282,7 +282,10 @@ void CInflate::Init()
 {
     inflateInit(&m_internal->m_stream);
 }
-
+void CInflate::Init2()
+{
+    inflateInit2(&m_internal->m_stream,-MAX_WBITS);
+}
 int CInflate::Process(int flush)
 {
     return inflate(&m_internal->m_stream, flush);

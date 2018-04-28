@@ -70,10 +70,15 @@ public:
 	int				size;
 //-----------------------------------------------------------------------------------
 	_buf()													: ptr(NULL), size(0), 	bDelete(true){}
-	_buf(int sz)											: ptr(NULL), size(0), 	bDelete(true)
+	_buf(int sz, bool zero_set = false)						: ptr(NULL), size(0), 	bDelete(true)
 	{
 		ptr = new unsigned char [sz]; 
 		size = sz; 
+		
+		if (ptr && zero_set)
+		{
+			memset(ptr, 0, size);
+		}
 	}
 	_buf(unsigned char * buf, int sz, bool bDelete_ = true ): ptr(NULL), size(0), 	bDelete(true)
 	{
@@ -673,8 +678,7 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 		_buf pDecryptedKey;
 		DecryptCipher( agileKey, pSalt, pKeyValue, pDecryptedKey, cryptData.cipherAlgorithm);  
 
-		_buf iv(cryptData.blockSize);
-		memset( iv.ptr, 0x00, cryptData.blockSize );
+		_buf iv(cryptData.blockSize, true);
 
 		int i = start_iv_block, sz = 4096, pos = 0;//aes block size = 4096
 
@@ -882,8 +886,7 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 	////??? pEncryptedKey == pKeyValue;
 
 //-------------------------------------------------------------------------------------------------
-	_buf iv(cryptData.blockSize);
-	memset( iv.ptr, 0x00, cryptData.blockSize );
+	_buf iv(cryptData.blockSize, true);
 
 	int i = 0, sz = 4096, enc_size = 0;
 
@@ -963,28 +966,28 @@ bool ODFDecryptor::Decrypt(const std::wstring &wpassword, unsigned char* data_in
 	if (false == DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm))
 		return false;
 
+	_buf pChecksum	(cryptData.checksum);
+	
+	_buf pOutLimit(pOut.ptr, (std::min)(cryptData.checksum_size, pOut.size), false);
+	_buf pOutHash = HashAppend(pOutLimit, empty, cryptData.checksum_hashAlgorithm);
+
+	bVerify	= (pChecksum == pOutHash);
 	try
 	{
-		data_out = new unsigned char[size_out];
+		if (bVerify)
+		{
+			data_out = new unsigned char[size_out];
 
-		Inflator inflator(new ArraySink( data_out, size_out));
+			Inflator inflator(new ArraySink( data_out, size_out));
 
-		inflator.Put(pOut.ptr, pOut.size);
-		inflator.MessageEnd();
-		
-		bVerify = true;
+			inflator.Put(pOut.ptr, pOut.size);
+			inflator.MessageEnd();
+		}
 	}
 	catch(...)
 	{
 		return false;
 	}
-	//_buf pChecksum		(cryptData.checksum);
-	//_buf pOutputLimit	(data_out, cryptData.checksum_size, false);
-
-	//_buf pOutputHash = HashAppend(pOutputLimit, empty, cryptData.checksum_hashAlgorithm);
-
-	//bVerify	= (pChecksum == pOutputHash);
-
 	return bVerify;
 }
 

@@ -56,9 +56,9 @@ public:
     void Resume();
     void Stop();
 
-    inline int IsSuspended();
-    inline int IsRunned();
-    inline int GetError();
+    int IsSuspended();
+    int IsRunned();
+    int GetError();
 
     int GetPriority();
 

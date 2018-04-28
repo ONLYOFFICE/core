@@ -80,15 +80,15 @@ void CFileDownloader::Stop()
     return m_pInternal->Stop();
 }
 
-inline int CFileDownloader::IsSuspended()
+int CFileDownloader::IsSuspended()
 {
     return m_pInternal->IsSuspended();
 }
-inline int CFileDownloader::IsRunned()
+int CFileDownloader::IsRunned()
 {
     return m_pInternal->IsRunned();
 }
-inline int CFileDownloader::GetError()
+int CFileDownloader::GetError()
 {
     return m_pInternal->GetError();
 }

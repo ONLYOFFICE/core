@@ -119,7 +119,6 @@
 		8ABAB6E5209385E800AD7C8A /* fipsalgt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB639209385D800AD7C8A /* fipsalgt.cpp */; };
 		8ABAB6E6209385E800AD7C8A /* sha.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB63A209385D900AD7C8A /* sha.cpp */; };
 		8ABAB6E7209385E800AD7C8A /* cpu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB63C209385D900AD7C8A /* cpu.cpp */; };
-		8ABAB6E8209385E800AD7C8A /* adhoc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB63D209385D900AD7C8A /* adhoc.cpp */; };
 		8ABAB6E9209385E800AD7C8A /* rng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB643209385DC00AD7C8A /* rng.cpp */; };
 		8ABAB6EA209385E800AD7C8A /* gfpcrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB647209385DD00AD7C8A /* gfpcrypt.cpp */; };
 		8ABAB6EB209385E800AD7C8A /* bfinit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB648209385DD00AD7C8A /* bfinit.cpp */; };
@@ -213,7 +212,6 @@
 		8ABAB591209385B500AD7C8A /* nr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nr.h; path = ../../../Common/3dParty/cryptopp/nr.h; sourceTree = "<group>"; };
 		8ABAB592209385B500AD7C8A /* cmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmac.h; path = ../../../Common/3dParty/cryptopp/cmac.h; sourceTree = "<group>"; };
 		8ABAB593209385B500AD7C8A /* gfpcrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gfpcrypt.h; path = ../../../Common/3dParty/cryptopp/gfpcrypt.h; sourceTree = "<group>"; };
-		8ABAB594209385B500AD7C8A /* Readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Readme.txt; path = ../../../Common/3dParty/cryptopp/Readme.txt; sourceTree = "<group>"; };
 		8ABAB595209385B600AD7C8A /* rc5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rc5.cpp; path = ../../../Common/3dParty/cryptopp/rc5.cpp; sourceTree = "<group>"; };
 		8ABAB596209385B600AD7C8A /* rc2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rc2.h; path = ../../../Common/3dParty/cryptopp/rc2.h; sourceTree = "<group>"; };
 		8ABAB597209385B600AD7C8A /* mars.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mars.cpp; path = ../../../Common/3dParty/cryptopp/mars.cpp; sourceTree = "<group>"; };
@@ -334,7 +332,6 @@
 		8ABAB60A209385CF00AD7C8A /* vmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vmac.h; path = ../../../Common/3dParty/cryptopp/vmac.h; sourceTree = "<group>"; };
 		8ABAB60B209385CF00AD7C8A /* salsa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = salsa.cpp; path = ../../../Common/3dParty/cryptopp/salsa.cpp; sourceTree = "<group>"; };
 		8ABAB60C209385CF00AD7C8A /* vmac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vmac.cpp; path = ../../../Common/3dParty/cryptopp/vmac.cpp; sourceTree = "<group>"; };
-		8ABAB60D209385D000AD7C8A /* Install.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Install.txt; path = ../../../Common/3dParty/cryptopp/Install.txt; sourceTree = "<group>"; };
 		8ABAB60E209385D000AD7C8A /* safer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = safer.h; path = ../../../Common/3dParty/cryptopp/safer.h; sourceTree = "<group>"; };
 		8ABAB60F209385D000AD7C8A /* modes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = modes.cpp; path = ../../../Common/3dParty/cryptopp/modes.cpp; sourceTree = "<group>"; };
 		8ABAB610209385D000AD7C8A /* polynomi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polynomi.cpp; path = ../../../Common/3dParty/cryptopp/polynomi.cpp; sourceTree = "<group>"; };
@@ -382,7 +379,6 @@
 		8ABAB63A209385D900AD7C8A /* sha.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sha.cpp; path = ../../../Common/3dParty/cryptopp/sha.cpp; sourceTree = "<group>"; };
 		8ABAB63B209385D900AD7C8A /* eccrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = eccrypto.h; path = ../../../Common/3dParty/cryptopp/eccrypto.h; sourceTree = "<group>"; };
 		8ABAB63C209385D900AD7C8A /* cpu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cpu.cpp; path = ../../../Common/3dParty/cryptopp/cpu.cpp; sourceTree = "<group>"; };
-		8ABAB63D209385D900AD7C8A /* adhoc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = adhoc.cpp; path = ../../../Common/3dParty/cryptopp/adhoc.cpp; sourceTree = "<group>"; };
 		8ABAB63E209385D900AD7C8A /* iterhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iterhash.h; path = ../../../Common/3dParty/cryptopp/iterhash.h; sourceTree = "<group>"; };
 		8ABAB63F209385D900AD7C8A /* stdcpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stdcpp.h; path = ../../../Common/3dParty/cryptopp/stdcpp.h; sourceTree = "<group>"; };
 		8ABAB640209385DA00AD7C8A /* xtrcrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xtrcrypt.h; path = ../../../Common/3dParty/cryptopp/xtrcrypt.h; sourceTree = "<group>"; };
@@ -461,7 +457,6 @@
 			children = (
 				8ABAB5AC209385BB00AD7C8A /* 3way.cpp */,
 				8ABAB57E209385B000AD7C8A /* 3way.h */,
-				8ABAB63D209385D900AD7C8A /* adhoc.cpp */,
 				8ABAB5F1209385CA00AD7C8A /* adler32.cpp */,
 				8ABAB660209385E200AD7C8A /* adler32.h */,
 				8ABAB572209385AE00AD7C8A /* aes.h */,
@@ -583,7 +578,6 @@
 				8ABAB65A209385E100AD7C8A /* ida.h */,
 				8ABAB603209385CE00AD7C8A /* idea.cpp */,
 				8ABAB5C2209385BF00AD7C8A /* idea.h */,
-				8ABAB60D209385D000AD7C8A /* Install.txt */,
 				8ABAB59C209385B700AD7C8A /* integer.cpp */,
 				8ABAB599209385B700AD7C8A /* integer.h */,
 				8ABAB627209385D500AD7C8A /* iterhash.cpp */,
@@ -653,7 +647,6 @@
 				8ABAB5DB209385C500AD7C8A /* rdrand.cpp */,
 				8ABAB5C4209385C000AD7C8A /* rdrand.h */,
 				8ABAB661209385E200AD7C8A /* rdtables.cpp */,
-				8ABAB594209385B500AD7C8A /* Readme.txt */,
 				8ABAB5FB209385CC00AD7C8A /* regtest.cpp */,
 				8ABAB56F209385AE00AD7C8A /* resource.h */,
 				8ABAB62A209385D500AD7C8A /* rijndael.cpp */,
@@ -952,7 +945,6 @@
 				8ABAB69F209385E800AD7C8A /* default.cpp in Sources */,
 				8ABAB6A4209385E800AD7C8A /* wait.cpp in Sources */,
 				8ABAB6E3209385E800AD7C8A /* xtr.cpp in Sources */,
-				8ABAB6E8209385E800AD7C8A /* adhoc.cpp in Sources */,
 				8ABAB6A6209385E800AD7C8A /* squaretb.cpp in Sources */,
 				8ABAB67F209385E800AD7C8A /* elgamal.cpp in Sources */,
 				8ABAB6F0209385E800AD7C8A /* tiger.cpp in Sources */,

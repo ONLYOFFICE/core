@@ -11,6 +11,80 @@
 #include "../../../common/File.h"
 #include "../../../common/BigInteger.h"
 
+#ifdef MS_CRYPTO_PRIVATE
+namespace NSMSCryptoPrivate
+{
+    typedef BOOL (WINAPI * PFNCCERTDISPLAYPROC) (
+      _In_ PCCERT_CONTEXT pCertContext,
+      _In_ HWND           hWndSelCertDlg,
+      _In_ void           *pvCallbackData
+    );
+
+    typedef struct _CRYPTUI_SELECTCERTIFICATE_STRUCT {
+      DWORD               dwSize;
+      HWND                hwndParent;
+      DWORD               dwFlags;
+      LPCTSTR             szTitle;
+      DWORD               dwDontUseColumn;
+      LPCTSTR             szDisplayString;
+      PFNCFILTERPROC      pFilterCallback;
+      PFNCCERTDISPLAYPROC pDisplayCallback;
+      void                *pvCallbackData;
+      DWORD               cDisplayStores;
+      HCERTSTORE          *rghDisplayStores;
+      DWORD               cStores;
+      HCERTSTORE          *rghStores;
+      DWORD               cPropSheetPages;
+      LPCPROPSHEETPAGE    rgPropSheetPages;
+      HCERTSTORE          hSelectedCertStore;
+    } CRYPTUI_SELECTCERTIFICATE_STRUCT, *PCRYPTUI_SELECTCERTIFICATE_STRUCT;
+
+    typedef PCCERT_CONTEXT (WINAPI * _CryptUIDlgSelectCertificate) (
+      _In_ PCRYPTUI_SELECTCERTIFICATE_STRUCT pcsc
+    );
+
+    class CCertificate_mscrypto_methods
+    {
+    public:
+        HINSTANCE m_instance;
+        _CryptUIDlgSelectCertificate CryptUIDlgSelectCertificate_internal;
+
+        CCertificate_mscrypto_methods()
+        {
+            CryptUIDlgSelectCertificate_internal = NULL;
+            m_instance = LoadLibraryA("Cryptui.dll");
+
+            if (m_instance)
+            {
+                CryptUIDlgSelectCertificate_internal = (_CryptUIDlgSelectCertificate)GetProcAddress(m_instance, "CryptUIDlgSelectCertificate");
+            }
+        }
+        ~CCertificate_mscrypto_methods()
+        {
+            if (m_instance)
+                FreeLibrary(m_instance);
+        }
+
+        PCCERT_CONTEXT ShowSelectCertificate(HWND* parent)
+        {
+            if (!CryptUIDlgSelectCertificate_internal)
+                return NULL;
+
+            CRYPTUI_SELECTCERTIFICATE_STRUCT info;
+            memset(&info, 0, sizeof(info));
+            info.hSelectedCertStore = CertOpenSystemStoreA(NULL, "MY");
+
+            PCCERT_CONTEXT ctx = CryptUIDlgSelectCertificate_internal(&info);
+
+            if (info.hSelectedCertStore != NULL)
+                CertCloseStore(info.hSelectedCertStore, 0);
+
+            return ctx;
+        }
+    };
+}
+#endif
+
 class CCertificate_mscrypto : public ICertificate
 {
 public:
@@ -165,6 +239,7 @@ public:
         else
             m_alg = algs[0];
 
+        m_alg = OOXML_HASH_ALG_SHA1;
         return algs;
     }
     int GetHashAlg()
@@ -493,6 +568,17 @@ public:
 public:
     virtual int ShowSelectDialog(void* parent = NULL)
     {
+#ifdef MS_CRYPTO_PRIVATE
+        NSMSCryptoPrivate::CCertificate_mscrypto_methods methods;
+        m_context = methods.ShowSelectCertificate((HWND*)parent);
+
+        if (m_context)
+        {
+            GetHashAlgs();
+            return 1;
+        }
+#endif
+
         m_store = CertOpenSystemStoreA(NULL, "MY");
         if (!m_store)
             return 0;
@@ -504,6 +590,7 @@ public:
             m_store = NULL;
             return 0;
         }
+
         GetHashAlgs();
         return 1;
     }

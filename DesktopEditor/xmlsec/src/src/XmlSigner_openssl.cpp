@@ -171,6 +171,7 @@ public:
         if (NULL == m_cert)
             return "";
 
+#if 0
         BIO* bio = BIO_new(BIO_s_mem());
         PEM_write_bio_X509_AUX(bio, m_cert);
 
@@ -191,6 +192,27 @@ public:
         string_replace(sReturn, "\n", "");
 
         BIO_free(bio);
+        return sReturn;
+#endif
+
+        BIO* bio = BIO_new(BIO_s_mem());
+
+        i2d_X509_bio(bio, m_cert);
+        BIO_flush(bio);
+
+        BYTE* data = NULL;
+        int size = (int)BIO_get_mem_data(bio, &data);
+
+        char* dataDst = NULL;
+        int lenDst = 0;
+        NSFile::CBase64Converter::Encode(data, size, dataDst, lenDst);
+
+        std::string sReturn(dataDst);
+
+        RELEASEARRAYOBJECTS(dataDst);
+
+        BIO_free(bio);
+
         return sReturn;
     }
 

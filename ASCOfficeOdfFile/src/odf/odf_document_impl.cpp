@@ -395,7 +395,7 @@ bool odf_document::Impl::decrypt_file (const std::wstring &password, const std::
 	unsigned char* data_out	= NULL;
 	
 	file_inp.ReadFile(data, lengthRead, dwSizeRead); 
-	
+	file_inp.CloseFile();
 //------------------------------------------------------------------------------------------
 	decryptor.SetCryptData(cryptData);
 	

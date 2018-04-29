@@ -48,6 +48,7 @@
 #include "../../Common/3dParty/cryptopp/hex.h"
 #include "../../Common/3dParty/cryptopp/blowfish.h"
 #include "../../Common/3dParty/cryptopp/zinflate.h"
+#include "../../Common/3dParty/cryptopp/zdeflate.h"
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
@@ -938,20 +939,16 @@ ODFDecryptor::ODFDecryptor()
 	bVerify = false;
 }
 
-ODFDecryptor::~ODFDecryptor()
-{
-}
-
 void ODFDecryptor::SetCryptData(_odfCryptData	& data)
 {
 	cryptData = data;
 }
 
-bool ODFDecryptor::Decrypt(const std::wstring &wpassword, unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out)
+bool ODFDecryptor::Decrypt(const std::wstring & wspassword, unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out)
 {
 	bVerify = false;
 
-	std::string password = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wpassword);
+	std::string password = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wspassword);
 
 	_buf pPassword	(password);
 	_buf pSalt		(cryptData.saltValue);
@@ -978,7 +975,7 @@ bool ODFDecryptor::Decrypt(const std::wstring &wpassword, unsigned char* data_in
 		{
 			data_out = new unsigned char[size_out];
 
-			Inflator inflator(new ArraySink( data_out, size_out));
+			Inflator inflator(new ArraySink(data_out, size_out));
 
 			inflator.Put(pOut.ptr, pOut.size);
 			inflator.MessageEnd();
@@ -992,4 +989,68 @@ bool ODFDecryptor::Decrypt(const std::wstring &wpassword, unsigned char* data_in
 }
 
 
+//-----------------------------------------------------------------------------------------------------------
+int ODFEncryptor::Encrypt (const std::wstring & wspassword, unsigned char* data, int  size, unsigned char*& data_out)
+{
+	std::string password = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wspassword);
+
+//---------
+	CryptoPP::RandomPool prng;
+	
+	//сгенерить соль
+	CryptoPP::SecByteBlock seed_salt(16);
+	CryptoPP::OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
+	prng.IncorporateEntropy(seed_salt, seed_salt.size());
+
+	cryptData.saltValue = std::string((char*)seed_salt.data(), seed_salt.size());
+	
+	//сгенерить стартовый
+	CryptoPP::SecByteBlock start_vector(cryptData.start_hashSize);
+	CryptoPP::OS_GenerateRandomBlock(false, start_vector, start_vector.size());
+	prng.IncorporateEntropy(start_vector, start_vector.size());
+
+	cryptData.initializationVector = std::string((char*)start_vector.data(), start_vector.size());
+
+//--------
+	_buf data_deflate(size);
+	ArraySink *sink = new ArraySink(data_deflate.ptr, data_deflate.size);
+
+	Deflator deflator(sink);
+
+	deflator.Put(data, size);
+	deflator.MessageEnd();
+
+	data_deflate.size = sink->TotalPutLength();
+//---------
+	_buf pPassword	(password);
+	_buf pSalt		(cryptData.saltValue);
+	_buf ivi		(cryptData.initializationVector);
+	_buf empty		(NULL, 0, false);
+
+	_buf pOutLimit(data_deflate.ptr, (std::min)(cryptData.checksum_size, data_deflate.size), false);
+	_buf pChecksum = HashAppend(pOutLimit, empty, cryptData.checksum_hashAlgorithm);
+
+	cryptData.checksum = std::string((char*)pChecksum.ptr, pChecksum.size);
+//---------
+	
+	int size_out = data_deflate.size;
+	data_out = new unsigned char[size_out]; 	
+	_buf pOut (data_out, size_out, false);
+	
+	_buf pKey = GenerateOdfKey(pSalt, pPassword, cryptData.keySize, cryptData.spinCount, cryptData.start_hashAlgorithm);
+
+	EncryptCipher(pKey,  ivi, data_deflate, pOut, cryptData.cipherAlgorithm);
+
+	return size_out;
+}
+
+void ODFEncryptor::SetCryptData(_odfCryptData	&data)
+{
+	cryptData = data;
+}
+
+void ODFEncryptor::GetCryptData(_odfCryptData &data)
+{
+	data = cryptData;
+}
 }

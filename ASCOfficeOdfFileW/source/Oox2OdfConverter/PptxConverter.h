@@ -114,9 +114,8 @@ namespace Oox2Odf
 		~PptxConverter();
 
 		virtual void convertDocument();
-		virtual void write(const std::wstring & path);
 		
- 		virtual OOX::IFileContainer						*current_document();
+		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual PPTX::Theme								*oox_theme();
 		virtual PPTX::Logic::ClrMap						*oox_clrMap();
@@ -163,7 +162,6 @@ private:
 
 		PPTX::Document									*pptx_document;
 		PPTX::Presentation								*presentation;
-		cpdoccore::odf_writer::package::odf_document	*output_document;
 		
 		PPTX::Theme										*current_theme;		
 		PPTX::TableStyles								*current_tableStyles;

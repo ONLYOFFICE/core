@@ -135,9 +135,8 @@ namespace Oox2Odf
 		~XlsxConverter();
 
 		virtual void convertDocument();
-		virtual void write(const std::wstring & path);
 		
- 		virtual OOX::IFileContainer						*current_document();
+		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual PPTX::Theme								*oox_theme();
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);
@@ -149,8 +148,6 @@ namespace Oox2Odf
 		OOX::IFileContainer						*xlsx_current_container; 
 		
 		odf_writer::ods_conversion_context		*ods_context;
-
-		odf_writer::package::odf_document		*output_document;
 
 		void convert_sheets();
 		void convert_styles();		

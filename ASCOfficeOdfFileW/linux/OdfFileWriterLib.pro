@@ -38,6 +38,7 @@ SOURCES += \
 core_debug {
 SOURCES += \
     ../source/utils.cpp \
+    ../source/OdfFormat/office_document.cpp \
     ../source/OdfFormat/abstract_xml.cpp \
     ../source/OdfFormat/calcext_elements.cpp \
     ../source/OdfFormat/draw_base.cpp \
@@ -115,6 +116,7 @@ SOURCES += \
     ../source/Oox2OdfConverter/PptxConverter.cpp
 
 HEADERS += \
+    ../source/OdfFormat/office_document.h \
     ../source/OdfFormat/abstract_xml.h \
     ../source/OdfFormat/calcext_elements.h \
     ../source/OdfFormat/draw_base.h \

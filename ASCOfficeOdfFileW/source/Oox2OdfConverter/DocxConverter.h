@@ -144,9 +144,8 @@ namespace Oox2Odf
 		~DocxConverter();
 
 		virtual void convertDocument();
-		virtual void write(const std::wstring & path);
 		
- 		virtual OOX::IFileContainer						*current_document();
+		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();
 		virtual PPTX::Theme								*oox_theme();
 		virtual PPTX::Logic::ClrMap						*oox_clrMap();
@@ -165,7 +164,6 @@ namespace Oox2Odf
 			bool							bContinue = false;
 		}												*current_section_properties;
 		OOX::CDocx										*docx_document;
-		cpdoccore::odf_writer::package::odf_document	*output_document;
 		
 		odf_writer::odt_conversion_context				*odt_context;
         OOX::Logic::CSectionProperty					*last_section_properties;

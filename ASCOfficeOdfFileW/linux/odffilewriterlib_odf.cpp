@@ -37,6 +37,7 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
+#include "../source/OdfFormat/office_document.cpp"
 #include "../source/OdfFormat/calcext_elements.cpp"
 #include "../source/OdfFormat/draw_base.cpp"
 #include "../source/OdfFormat/draw_frame.cpp"

@@ -366,10 +366,10 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		if (oox_picture->blipFill.srcRect.IsInit() && Width > 0 && Height >0 )
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->l.get_value_or(L"0")) * Width	/100.	/currentSystemDPI,
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->t.get_value_or(L"0")) * Height	/100.	/currentSystemDPI,
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->r.get_value_or(L"0")) * Width	/100.	/currentSystemDPI, 
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->b.get_value_or(L"0")) * Height	/100.	/currentSystemDPI);
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->l.get_value_or(L"0")) * Width	/100.	/ 96.,
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->t.get_value_or(L"0")) * Height	/100.	/ 96.,
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->r.get_value_or(L"0")) * Width	/100.	/ 96., 
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->b.get_value_or(L"0")) * Height	/100.	/ 96.);
 		}		
 
 		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
@@ -972,10 +972,10 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 		if (oox_bitmap_fill->srcRect.IsInit() && Width > 0  && Height > 0)//часть изображения
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
-				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 ) /100. * Width / currentSystemDPI,
-                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 ) /100. * Height/ currentSystemDPI,
-                (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) /100. * Width / currentSystemDPI,
-                (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) /100. * Height/ currentSystemDPI);
+				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 ) /100. * Width / 96.,
+                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 ) /100. * Height/ 96.,
+                (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) /100. * Width / 96.,
+                (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) /100. * Height/ 96.);
 		}
 		if (oox_bitmap_fill->tile.IsInit())
 		{

@@ -97,7 +97,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", NULL);
 
 	converter.convert();
-	converter.write(dstTempPath);
+	converter.write(dstTempPath, srcTempPath, L"password");
 
 	NSDirectory::DeleteDirectory(srcTempPath);
 

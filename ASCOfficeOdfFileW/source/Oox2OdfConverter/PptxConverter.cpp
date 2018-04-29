@@ -122,14 +122,6 @@ PptxConverter::~PptxConverter()
 	if (pptx_document)		delete pptx_document;	pptx_document	= NULL;
 	if (output_document)	delete output_document;	output_document = NULL;
 }
-void PptxConverter::write(const std::wstring & path)
-{
-	if (!output_document)return;
-
-	output_document->write(path);
-		
-	if (UpdateProgress(1000000))return;
-}
 odf_writer::odf_conversion_context* PptxConverter::odf_context()
 {
 	return odp_context;

@@ -126,14 +126,6 @@ DocxConverter::~DocxConverter()
 	if (docx_document)		delete docx_document;	docx_document	= NULL;
 	if (output_document)	delete output_document;	output_document = NULL;
 }
-void DocxConverter::write(const std::wstring & path)
-{
-	if (!output_document)return;
-
-	output_document->write(path);
-		
-	if (UpdateProgress(1000000))return;
-}
 odf_writer::odf_conversion_context* DocxConverter::odf_context()
 {
 	return odt_context;

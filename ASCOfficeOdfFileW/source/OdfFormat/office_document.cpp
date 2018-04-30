@@ -86,8 +86,7 @@ void manifest_encryption_data::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			CP_XML_ATTR(L"manifest:checksum-type", L"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0#" + 
-														checksum_type_); 
+			CP_XML_ATTR(L"manifest:checksum-type", checksum_type_); 
 			CP_XML_ATTR(L"manifest:checksum", checksum_); 
 
 			if (algorithm_)				algorithm_->serialize(CP_XML_STREAM());
@@ -107,7 +106,7 @@ void manifest_algorithm::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {      
-			CP_XML_ATTR(L"manifest:algorithm-name", L"http://www.w3.org/2001/04/xmlenc#" + algorithm_name_);
+			CP_XML_ATTR(L"manifest:algorithm-name", algorithm_name_);
 			CP_XML_ATTR(L"manifest:initialisation-vector", initialisation_vector_);
 		}
 	}
@@ -142,8 +141,7 @@ void manifest_start_key_generation::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 
-			CP_XML_ATTR(L"manifest:start-key-generation-name", L"http://www.w3.org/2000/09/xmldsig#" + 
-																				start_key_generation_name_);
+			CP_XML_ATTR(L"manifest:start-key-generation-name", start_key_generation_name_);
 			CP_XML_ATTR(L"manifest:key-size", key_size_);
 		}
 	}

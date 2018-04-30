@@ -71,7 +71,7 @@ namespace odf_writer
 					{
 						CryptoPP::RandomPool prng;
 						
-						CryptoPP::SecByteBlock padding(780);
+						CryptoPP::SecByteBlock padding(1024);
 						CryptoPP::OS_GenerateRandomBlock(false, padding, padding.size());
 						prng.IncorporateEntropy(padding, padding.size());
 
@@ -299,6 +299,8 @@ namespace odf_writer
 		}
 		void odf_document::write_manifest(const std::wstring & RootPath)
 		{
+			if (mimetype_)	
+				mimetype_->write(RootPath);
 			if (manifest_)	
 				manifest_->write(RootPath);
 		}

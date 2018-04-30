@@ -369,6 +369,11 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 		rc4Encryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
 
 	}
+	else if (algorithm == CRYPT_METHOD::Blowfish_CFB)
+	{
+		CFB_Mode<Blowfish>::Encryption encryption(key.ptr, key.size, iv.ptr);
+		encryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
+	}
 	else //AES
 	{
 		StreamTransformation *modeEncryption = NULL;
@@ -759,9 +764,9 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 	_buf pInputBlockKey ((unsigned char*)encrVerifierHashInputBlockKey, 8);
 	_buf pValueBlockKey ((unsigned char*)encrVerifierHashValueBlockKey, 8);
 	
-	_buf pSalt			(seed_salt.m_ptr, seed_salt.m_size);
-	_buf pDataSalt		(seed_datasalt.m_ptr, seed_datasalt.m_size);
-	_buf pDecryptedKey	(seed_key.m_ptr, seed_key.m_size);
+	_buf pSalt			(seed_salt.data(), seed_salt.size());
+	_buf pDataSalt		(seed_datasalt.data(), seed_datasalt.size());
+	_buf pDecryptedKey	(seed_key.data(), seed_key.size());
 	
 //------------------------------------------------------------------------------------------------
 	_buf agileKey = GenerateAgileKey( pSalt, pPassword, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
@@ -770,7 +775,7 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 	EncryptCipher( agileKey, pSalt, pDecryptedKey, pKeyValue, cryptData.cipherAlgorithm);  
 	
 //--------------------------------------------
-	_buf decryptedVerifierHashInputBytes(seed_verify.m_ptr, seed_verify.m_size);
+	_buf decryptedVerifierHashInputBytes(seed_verify.data(), seed_verify.size());
 	_buf verifierInputKey = GenerateAgileKey( pSalt, pPassword, pInputBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm );
 	
 	_buf pEncVerInput;
@@ -834,7 +839,7 @@ void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 	CryptoPP::OS_GenerateRandomBlock(false, seed, seed.size());
 	prng.IncorporateEntropy(seed, seed.size());
 	
-	_buf pSaltHmac(seed.m_ptr, seed.m_size);
+	_buf pSaltHmac(seed.data(), seed.size());
 
 	std::string sData((char*)data, size);
 	_buf hmac = Hmac(pSaltHmac, cryptData.hashAlgorithm, sData);
@@ -876,15 +881,8 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 //------------------------------------------------------------------------------------------------
 	_buf agileKey = GenerateAgileKey( pSalt, pPassword, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
 
-	//тут нужно именно дешифрованый генерить  - пока их файла берем
 	_buf pDecryptedKey;
 	DecryptCipher( agileKey, pSalt, pKeyValue, pDecryptedKey, cryptData.cipherAlgorithm);  
-
-	////зашифровать ключь
-	//_buf pEncryptedKey;
-	//EncryptCipher( agileKey, pSalt, pDecryptedKey, pEncryptedKey, cryptData.cipherAlgorithm);  
-
-	////??? pEncryptedKey == pKeyValue;
 
 //-------------------------------------------------------------------------------------------------
 	_buf iv(cryptData.blockSize, true);
@@ -960,8 +958,18 @@ bool ODFDecryptor::Decrypt(const std::wstring & wspassword, unsigned char* data_
 	_buf pInp(data_inp, size_inp, false);
 	_buf pOut(size_inp);	
 
-	if (false == DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm))
+	bool bPadding = false;
+	
+	if ((cryptData.cipherAlgorithm == CRYPT_METHOD::AES_CBC) && (size_inp % PADDING_SIZE != 0))
+	{
+		bPadding = true;
+	}
+
+	if (false == DecryptCipher(pKey, ivi, pInp, pOut, cryptData.cipherAlgorithm, bPadding ? StreamTransformationFilter::ONE_AND_ZEROS_PADDING : 
+																							StreamTransformationFilter::NO_PADDING))
+	{
 		return false;
+	}
 
 	_buf pChecksum	(cryptData.checksum);
 	
@@ -973,9 +981,9 @@ bool ODFDecryptor::Decrypt(const std::wstring & wspassword, unsigned char* data_
 	{
 		if (bVerify)
 		{
-			data_out = new unsigned char[size_out];
+			data_out = new unsigned char[size_out + 1024];
 
-			Inflator inflator(new ArraySink(data_out, size_out));
+			Inflator inflator(new ArraySink(data_out, size_out + 1024));
 
 			inflator.Put(pOut.ptr, pOut.size);
 			inflator.MessageEnd();
@@ -1005,15 +1013,15 @@ int ODFEncryptor::Encrypt (const std::wstring & wspassword, unsigned char* data,
 	cryptData.saltValue = std::string((char*)seed_salt.data(), seed_salt.size());
 	
 	//сгенерить стартовый
-	CryptoPP::SecByteBlock start_vector(cryptData.start_hashSize);
+	CryptoPP::SecByteBlock start_vector(16);
 	CryptoPP::OS_GenerateRandomBlock(false, start_vector, start_vector.size());
 	prng.IncorporateEntropy(start_vector, start_vector.size());
 
 	cryptData.initializationVector = std::string((char*)start_vector.data(), start_vector.size());
 
-//--------
-	_buf data_deflate(size);
-	ArraySink *sink = new ArraySink(data_deflate.ptr, data_deflate.size);
+//-------------------------------------
+	_buf data_deflate(size + 1024); 
+	ArraySink *sink = new ArraySink(data_deflate.ptr, data_deflate.size + 1024);
 
 	Deflator deflator(sink);
 
@@ -1034,14 +1042,21 @@ int ODFEncryptor::Encrypt (const std::wstring & wspassword, unsigned char* data,
 //---------
 	
 	int size_out = data_deflate.size;
+
+	bool bPadding = (cryptData.cipherAlgorithm == CRYPT_METHOD::AES_CBC);
+	
+	if (bPadding && (size_out % PADDING_SIZE != 0))
+		size_out = (size_out / PADDING_SIZE + 1) * PADDING_SIZE;
+
 	data_out = new unsigned char[size_out]; 	
 	_buf pOut (data_out, size_out, false);
 	
 	_buf pKey = GenerateOdfKey(pSalt, pPassword, cryptData.keySize, cryptData.spinCount, cryptData.start_hashAlgorithm);
+	
+	EncryptCipher(pKey,  ivi, data_deflate, pOut, cryptData.cipherAlgorithm, bPadding ? StreamTransformationFilter::ONE_AND_ZEROS_PADDING :
+																						StreamTransformationFilter::NO_PADDING);
 
-	EncryptCipher(pKey,  ivi, data_deflate, pOut, cryptData.cipherAlgorithm);
-
-	return size_out;
+	return pOut.size;
 }
 
 void ODFEncryptor::SetCryptData(_odfCryptData	&data)

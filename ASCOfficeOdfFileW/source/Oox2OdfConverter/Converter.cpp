@@ -64,6 +64,7 @@
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #define PROGRESSEVENT_ID	0
 
@@ -175,6 +176,19 @@ bool OoxConverter::encrypt_document (const std::wstring &password, const std::ws
 
 		std::wstring inp_file_name = srcPath + FILE_SEPARATOR_STR + rels->relationships_[i].target_;
 		std::wstring out_file_name = dstPath + FILE_SEPARATOR_STR + rels->relationships_[i].target_;
+
+		if (std::wstring::npos != rels->relationships_[i].target_.find(L"/"))
+		{
+			std::vector<std::wstring> refs;
+			boost::algorithm::split(refs, rels->relationships_[i].target_, boost::algorithm::is_any_of(L"/"), boost::algorithm::token_compress_on);
+
+			std::wstring folder = dstPath;
+			for (size_t j = 0; j < refs.size() - 1; j++)
+			{
+				folder += FILE_SEPARATOR_STR + refs[j];
+				NSDirectory::CreateDirectory(folder);
+			}
+		}
 		
 		encrypt_file(password, inp_file_name, out_file_name, rels->relationships_[i].encryption_, rels->relationships_[i].size_);
 	}
@@ -183,7 +197,9 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 {
 	CRYPT::ODFEncryptor		encryptor;
 	CRYPT::_odfCryptData	cryptData;
-
+//-----------------------
+//aes
+	cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
 	cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
 	cryptData.start_hashSize		= 32;
 
@@ -192,7 +208,18 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 
 	cryptData.checksum_size = 1024;
 	cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+//-----------------------
+//blowfish
+	//cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
+	//cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
+	//cryptData.start_hashSize		= 20;
 
+	//cryptData.spinCount	= 1024;
+	//cryptData.keySize	= 16;
+
+	//cryptData.checksum_size = 1024;
+	//cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+//-----------------------
 	NSFile::CFileBinary file;
 
 	if (false == file.OpenFile(srcPath))
@@ -248,8 +275,9 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 	{
 		switch(cryptData.start_hashAlgorithm)
 		{
-		case CRYPT_METHOD::SHA256: start_key_generation->start_key_generation_name_ = L"sha256"; break;
-		case CRYPT_METHOD::SHA512: start_key_generation->start_key_generation_name_ = L"sha512"; break;
+		case CRYPT_METHOD::SHA1:	start_key_generation->start_key_generation_name_ = L"SHA1"; break;
+		case CRYPT_METHOD::SHA256:	start_key_generation->start_key_generation_name_ = L"http://www.w3.org/2000/09/xmldsig#sha256"; break;
+		case CRYPT_METHOD::SHA512:	start_key_generation->start_key_generation_name_ = L"http://www.w3.org/2000/09/xmldsig#sha512"; break;
 		}
 		start_key_generation->key_size_ = cryptData.start_hashSize;
 	}
@@ -260,8 +288,8 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 
 		switch(cryptData.cipherAlgorithm)
 		{		
-		case CRYPT_METHOD::AES_CBC:			algorithm->algorithm_name_ = L"aes256-cbc"; break;
-		case CRYPT_METHOD::Blowfish_CFB:	algorithm->algorithm_name_ = L"Blowfish"; break;
+		case CRYPT_METHOD::AES_CBC:			algorithm->algorithm_name_ = L"http://www.w3.org/2001/04/xmlenc#aes256-cbc"; break;
+		case CRYPT_METHOD::Blowfish_CFB:	algorithm->algorithm_name_ = L"Blowfish CFB"; break;
 		}
 	}
 //------------------------------------------------------------------------------------------
@@ -271,11 +299,17 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 
 		switch(cryptData.checksum_hashAlgorithm)
 		{	
-		case CRYPT_METHOD::SHA256: encryption_data->checksum_type_ = L"sha256"; break;
-		case CRYPT_METHOD::SHA512: encryption_data->checksum_type_ = L"sha512"; break;
+		case CRYPT_METHOD::SHA1:	encryption_data->checksum_type_ = L"SHA1"; break;
+		case CRYPT_METHOD::SHA256:	encryption_data->checksum_type_ = L"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0#sha256"; break;
+		case CRYPT_METHOD::SHA512:	encryption_data->checksum_type_ = L"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0#sha512"; break;
 		}
 		if (cryptData.checksum_size == 1024)
-			encryption_data->checksum_type_ += L"-1k";
+		{
+			if (cryptData.checksum_hashAlgorithm == CRYPT_METHOD::SHA1)
+				encryption_data->checksum_type_ += L"/1K";
+			else
+				encryption_data->checksum_type_ += L"-1k";
+		}
 	}
 //------------------------------------------------------------------------------------------
 	std::wstringstream strm;

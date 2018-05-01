@@ -1101,7 +1101,7 @@ void odf_drawing_context::end_frame()
 /////////////////////
 void odf_drawing_context::start_element(office_element_ptr elm, office_element_ptr  style_elm)
 {
-  size_t level = impl_->current_level_.size();
+    size_t level = impl_->current_level_.size();
 	
 	if (impl_->current_level_.size() > 0 && elm)
 		impl_->current_level_.back()->add_child_element(elm);

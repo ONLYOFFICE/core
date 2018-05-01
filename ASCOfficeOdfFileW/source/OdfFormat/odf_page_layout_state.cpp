@@ -135,7 +135,7 @@ void odf_master_state::add_header(office_element_ptr & elm)
 ///////////////////////////////////////////////////////////////////////////////
 odf_layout_state::odf_layout_state(office_element_ptr & layout_elm )
 {        
-  size_t level = 0;
+    size_t level = 0;
 	odf_element_state state = {layout_elm,L"",office_element_ptr(),level};
 	
 	elements_.push_back(state);

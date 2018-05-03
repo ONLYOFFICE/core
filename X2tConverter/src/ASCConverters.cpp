@@ -1866,13 +1866,15 @@ namespace NExtractTools
        std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
        NSDirectory::CreateDirectory(sTempUnpackedODP);
 
-       Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(),  NULL);
+		std::wstring password = params.getSavePassword();
+		
+		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(),  NULL);
 
        int nRes = 0;
        try
        {
            converter.convert();
-           converter.write(sTempUnpackedODP);
+           converter.write(sTempUnpackedODP, sTemp, password);
 
            COfficeUtils oCOfficeUtils(NULL);
            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -2431,16 +2433,16 @@ namespace NExtractTools
 	// docx dir -> odt
 	int docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
    {
-       std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + _T("odt_unpacked");
+       std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODT);
 
-       Oox2Odf::Converter converter(sDocxDir, _T("text"), params.getFontPath(),  NULL);
+       Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(),  NULL);
 
        int nRes = 0;
        try
        {
            converter.convert();
-           converter.write(sTempUnpackedODT);
+           converter.write(sTempUnpackedODT, sTemp, password);
 
            COfficeUtils oCOfficeUtils(NULL);
            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -2453,7 +2455,7 @@ namespace NExtractTools
 	// xlsx -> ods
 	int xlsx2ods (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
    {
-        std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+        std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + L"xlsx_unpacked";
 
         NSDirectory::CreateDirectory(sTempUnpackedXLSX);
 
@@ -2467,15 +2469,15 @@ namespace NExtractTools
 
 	int xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
-       std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + _T("ods_unpacked");
+       std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODS);
 
        try
        {
-           Oox2Odf::Converter converter(sXlsxDir, _T("spreadsheet"),params.getFontPath(), NULL);
+           Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), NULL);
 
            converter.convert();
-           converter.write(sTempUnpackedODS);
+           converter.write(sTempUnpackedODS, sTemp, password);
 
            COfficeUtils oCOfficeUtils(NULL);
            int nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;

@@ -64,6 +64,11 @@ namespace cpdoccore
 		class style_table_column_properties;
 		class style_chart_properties;
 		class style_drawing_page_properties;
+
+		namespace package
+		{
+			class odf_document;
+		}
 	}
 }
 namespace OOX
@@ -337,31 +342,33 @@ namespace Oox2Odf
 	{
 public:
 		virtual void convertDocument() = 0;
-		virtual void write(const std::wstring & path) = 0;
+		
+		void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password);
 		
 		OoxConverter(const ProgressCallback* CallBack = NULL){
 																oox_current_child_document = NULL; 
 																
 																pCallBack = CallBack;
 																bUserStopConvert = 0;
-																currentSystemDPI = getSystemDPI();
 															 }
 
         void set_fonts_directory (const std::wstring & fontsPath);
 		
 		const	ProgressCallback* pCallBack;
 		short	bUserStopConvert;
-		bool	UpdateProgress(long nComplete);
+		bool	UpdateProgress(long nComplete);	
 
-		double	currentSystemDPI;
-		double	getSystemDPI();
-	
+		bool encrypt_document (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
+		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);
+
 //.......................................................................................................................
- 		virtual OOX::IFileContainer								*current_document() = 0;
+		virtual OOX::IFileContainer								*current_document() = 0;
 		virtual cpdoccore::odf_writer::odf_conversion_context	*odf_context()	= 0;		
 		virtual PPTX::Theme										*oox_theme()	= 0;
 		virtual PPTX::Logic::ClrMap								*oox_clrMap()	{return NULL;}
        
+		cpdoccore::odf_writer::package::odf_document		*output_document;
+
 				std::wstring								find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type);
 		virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
 		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;

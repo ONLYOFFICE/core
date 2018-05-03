@@ -84,15 +84,6 @@ XlsxConverter::~XlsxConverter()
 	if (xlsx_document)		delete xlsx_document;	xlsx_document	= NULL;
 	if (output_document)	delete output_document;	output_document = NULL;
 }
-void XlsxConverter::write(const std::wstring & path)
-{
-	if (!output_document)return;
-	output_document->write(path);
-
-	delete output_document; output_document = NULL;
-
-	if (UpdateProgress(1000000))return;
-}
 odf_writer::odf_conversion_context* XlsxConverter::odf_context()
 {
 	return ods_context;

@@ -175,7 +175,7 @@ class ODFDecryptor
 {
 public:
 	ODFDecryptor();
-	virtual ~ODFDecryptor();
+	virtual ~ODFDecryptor(){}
 
 	void SetCryptData(_odfCryptData &data);
 	
@@ -185,5 +185,20 @@ private:
 	_odfCryptData	cryptData;
 	bool			bVerify;
 };
+class ODFEncryptor 
+{
+public:
+	ODFEncryptor(){}
+	virtual ~ODFEncryptor(){}
+	
+	void SetCryptData(_odfCryptData &data);
+	void GetCryptData(_odfCryptData &data);
+
+	int Encrypt (const std::wstring &password, unsigned char* data, int  size, unsigned char*& data_out);
+
+private:
+	_odfCryptData	cryptData;
+};
+
 
 }

@@ -1806,7 +1806,7 @@ namespace PdfReader
 		int     GetFlag(int nPathIndex)
 		{
 			if (nPathIndex < 0 || nPathIndex >= m_nPathsCount)
-				return NULL;
+				return 0;
 
 			return m_pFlags[nPathIndex];
 		}

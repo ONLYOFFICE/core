@@ -53,7 +53,7 @@ namespace DocFileFormat
 	/*========================================================================================================*/
 
 	FormattedDiskPageCHPX::FormattedDiskPageCHPX( POLE::Stream* wordStream, int offset, int nWordVersion ):
-																FormattedDiskPage(), rgb(NULL), grpchpxSize(NULL), grpchpx(NULL) 
+																FormattedDiskPage(), rgb(NULL), grpchpxSize(), grpchpx(NULL) 
 	{
 		Type = Character;
 		WordStream = wordStream;

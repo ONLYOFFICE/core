@@ -81,8 +81,8 @@ static const char JP2K_IMAGE_DATA[12] = {
 };
 
 #else
-static const char JP2K_CODESTREAM[4] = { 0xff, 0x4f, 0xff, 0x51 };
-static const char JP2K_IMAGE_DATA[12] = { 0x00, 0x00, 0x00, 0x0C,
+static const unsigned char JP2K_CODESTREAM[4] = { 0xff, 0x4f, 0xff, 0x51 };
+static const unsigned char JP2K_IMAGE_DATA[12] = { 0x00, 0x00, 0x00, 0x0C,
     0x6A, 0x50, 0x20, 0x20,
     0x0D, 0x0A, 0x87, 0x0A };
 #endif
@@ -655,8 +655,8 @@ l_uint16  twobytepw;
     }
 
         /* Check for both types of jp2k file */
-    if (strncmp((const char *)buf, JP2K_CODESTREAM, 4) == 0 ||
-        strncmp((const char *)buf, JP2K_IMAGE_DATA, 12) == 0) {
+    if (strncmp((const char *)buf, (const char *)JP2K_CODESTREAM, 4) == 0 ||
+        strncmp((const char *)buf, (const char *)JP2K_IMAGE_DATA, 12) == 0) {
         *pformat = IFF_JP2;
         return 0;
     }

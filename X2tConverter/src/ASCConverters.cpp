@@ -2447,7 +2447,7 @@ namespace NExtractTools
 			converter.write(sTempUnpackedODT, sTemp, password);
 
 			COfficeUtils oCOfficeUtils(NULL);
-			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo, false, password.empty() ? -1 : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
        }catch(...)
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
@@ -3881,7 +3881,7 @@ namespace NExtractTools
 			if (SUCCEEDED_X2T(nRes))
 			{
 				COfficeUtils oCOfficeUtils(NULL);
-				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			}
 		}
 		return nRes;
@@ -3904,7 +3904,7 @@ namespace NExtractTools
 			if (SUCCEEDED_X2T(nRes))
 			{
 				COfficeUtils oCOfficeUtils(NULL);
-				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			}
 		}
 		return nRes;

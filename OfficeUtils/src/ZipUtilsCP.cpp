@@ -522,7 +522,7 @@ int oneZipFile(zipFile & zf, zip_fileinfo & zi, std::wstring & file_name, std::w
 	}
 	return 0;
 }
-int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted, int compressionLevel )
+int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted, int method, int compressionLevel )
 { 
 	if ( ( dir != NULL ) && ( outputFile != NULL ) )
 	{
@@ -608,7 +608,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 				file = NSSystemPath::Combine(szText, cFileName);
 				zipFileName = zipDir + cFileName;
 
-				oneZipFile(zf, zi, file, zipFileName, Z_DEFLATED, compressionLevel);
+                oneZipFile(zf, zi, file, zipFileName, method, compressionLevel);
 
 				if ( progress != NULL )
 				{
@@ -641,7 +641,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 
   /*========================================================================================================*/
 
-  int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int compressionLevel )
+  int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int method, int compressionLevel )
   { 
 	int err = -1;
 
@@ -695,7 +695,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 					zipFileName = wstring( inputFileName.begin(), inputFileName.end() );
 				}
 				std::string zipFileNameA = codepage_issue_fixToOEM(zipFileName);
-				err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, compressionLevel );
+                err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zi, NULL, 0, NULL, 0, NULL, method, compressionLevel );
 				err = zipWriteInFileInZip( zf, pData, dwSizeRead );
 				err = zipCloseFileInZip( zf );
 				err = zipClose( zf, NULL );

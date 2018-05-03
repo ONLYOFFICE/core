@@ -52,12 +52,12 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& zipFile, const std:
 }
 
 
-HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& name, const std::wstring& outputFile, bool bSorted, short level)
+HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& name, const std::wstring& outputFile, bool bSorted, int method, short level)
 {
 	HRESULT result = S_FALSE;
 	if(NSDirectory::Exists(name))
 	{
-		if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, level ) == 0 )
+        if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, method, level ) == 0 )
 		{
 			result = S_OK;
 		}
@@ -68,7 +68,7 @@ HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& name, const st
 	}
 	else if(NSFile::CFileBinary::Exists(name))
 	{
-		if ( ZLibZipUtils::ZipFile( name.c_str(), outputFile.c_str(), level ) == 0 )
+        if ( ZLibZipUtils::ZipFile( name.c_str(), outputFile.c_str(), method, level ) == 0 )
 		{
 			result = S_OK;
 		}

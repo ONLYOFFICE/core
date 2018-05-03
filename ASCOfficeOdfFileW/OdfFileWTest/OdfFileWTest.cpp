@@ -96,14 +96,16 @@ HRESULT convert_single(std::wstring srcFileName)
 
 	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", NULL);
 
+	std::wstring sPassword = L"password";
+	
 	converter.convert();
-	converter.write(dstTempPath, srcTempPath, L"password");
+	converter.write(dstTempPath, srcTempPath, sPassword);
 
 	NSDirectory::DeleteDirectory(srcTempPath);
 
 	if (hr != S_OK)  return hr;
    
-	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1))
+	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), false, sPassword.empty() ? Z_DEFLATED : 0))
         return hr;
 	
 	NSDirectory::DeleteDirectory(dstTempPath);

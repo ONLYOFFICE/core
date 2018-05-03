@@ -1877,7 +1877,7 @@ namespace NExtractTools
            converter.write(sTempUnpackedODP, sTemp, password);
 
            COfficeUtils oCOfficeUtils(NULL);
-           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
        }catch(...)
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
@@ -2441,11 +2441,13 @@ namespace NExtractTools
        int nRes = 0;
        try
        {
-           converter.convert();
-           converter.write(sTempUnpackedODT, sTemp, password);
+			std::wstring password = params.getSavePassword();
+			
+			converter.convert();
+			converter.write(sTempUnpackedODT, sTemp, password);
 
-           COfficeUtils oCOfficeUtils(NULL);
-           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo, false, password.empty() ? -1 : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
        }catch(...)
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
@@ -2476,11 +2478,13 @@ namespace NExtractTools
        {
            Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), NULL);
 
-           converter.convert();
-           converter.write(sTempUnpackedODS, sTemp, password);
+			std::wstring password = params.getSavePassword();
+			
+			converter.convert();
+			converter.write(sTempUnpackedODS, sTemp, password);
 
-           COfficeUtils oCOfficeUtils(NULL);
-           int nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			COfficeUtils oCOfficeUtils(NULL);
+			int nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
            return nRes;
        }catch(...)

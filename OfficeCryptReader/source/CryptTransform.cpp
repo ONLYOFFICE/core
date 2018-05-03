@@ -54,7 +54,6 @@
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../DesktopEditor/common/File.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
 
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
 static const unsigned char encrVerifierHashValueBlockKey[8]			= { 0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e };
@@ -1009,7 +1008,6 @@ bool ODFDecryptor::Decrypt(const std::wstring & wspassword, unsigned char* data_
 	return bVerify;
 }
 
-
 //-----------------------------------------------------------------------------------------------------------
 int ODFEncryptor::Encrypt (const std::wstring & wspassword, unsigned char* data, int  size, unsigned char*& data_out)
 {
@@ -1025,22 +1023,9 @@ int ODFEncryptor::Encrypt (const std::wstring & wspassword, unsigned char* data,
 	_buf data_deflate(size + 1024); 
 	ArraySink *sink = new ArraySink(data_deflate.ptr, data_deflate.size + 1024);
 
-	Deflator deflator(sink, Deflator::DEFAULT_DEFLATE_LEVEL, Deflator::DEFAULT_LOG2_WINDOW_SIZE, false);
-
-	deflator.Put(data, size);
-	deflator.MessageEnd();
-
+	Deflator deflator(sink, Deflator::DEFAULT_DEFLATE_LEVEL, Deflator::DEFAULT_LOG2_WINDOW_SIZE, true);
+	deflator.Put2(data, size, 1, true);
 	data_deflate.size = sink->TotalPutLength();
-	//CDeflate deflate;
-
-	//deflate.SetIn(data, size);
-	//deflate.SetOut(data_deflate.ptr, data_deflate.size);
-
-	//deflate.Init(DEFLATE_DEFAULT_COMPRESSION, -1);
-	//deflate.Process(true);
-	//deflate.End();
-	//
-	//data_deflate.size = deflate.GetAvailOut();
 //---------	
 	_buf pOutLimit(data_deflate.ptr, (std::min)(cryptData.checksum_size, data_deflate.size), false);
 	_buf pChecksum = HashAppend(pOutLimit, empty, cryptData.checksum_hashAlgorithm);

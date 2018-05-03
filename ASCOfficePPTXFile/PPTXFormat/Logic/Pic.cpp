@@ -423,7 +423,7 @@ namespace PPTX
 							pContentTypes->Write(sDstEmbeddedTemp);
 
 							COfficeUtils oOfficeUtils(NULL);
-							oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sDocxFilename, -1);
+							oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sDocxFilename, true);
 
 							pReader->m_pRels->CloseRels();
 							delete pReader->m_pRels;
@@ -477,7 +477,7 @@ namespace PPTX
 							oXlsx.Write(sDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
 							COfficeUtils oOfficeUtils(NULL);
-							oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, -1);
+							oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
 							pReader->m_pRels->CloseRels();
 							delete pReader->m_pRels;

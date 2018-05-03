@@ -7511,7 +7511,7 @@ public:
 				oXlsx.Write(strDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
 				COfficeUtils oOfficeUtils(NULL);
-				oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, -1);
+				oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
 				std::wstring sEmbWorksheetRelsName = L"embeddings/" + sXlsxFilename;
                 std::wstring bstrEmbWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();

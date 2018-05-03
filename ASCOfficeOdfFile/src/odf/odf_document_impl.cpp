@@ -306,7 +306,6 @@ bool odf_document::Impl::decrypt_file (const std::wstring &password, const std::
 	manifest_key_derivation*		key_derivation = dynamic_cast<manifest_key_derivation*>(encryption_data->key_derivation_.get());
 	manifest_start_key_generation*	start_key_generation = dynamic_cast<manifest_start_key_generation*>(encryption_data->start_key_generation_.get());
 
-	CRYPT::ODFDecryptor		decryptor;
 	CRYPT::_odfCryptData	cryptData;
 	
 	if (key_derivation)
@@ -397,23 +396,22 @@ bool odf_document::Impl::decrypt_file (const std::wstring &password, const std::
 	file_inp.ReadFile(data, lengthRead, dwSizeRead); 
 	file_inp.CloseFile();
 //------------------------------------------------------------------------------------------
+	CRYPT::ODFDecryptor decryptor;
 	decryptor.SetCryptData(cryptData);
 	
 	bool result = decryptor.Decrypt(password, data, dwSizeRead, data_out, file_size);
 	delete []data;
+
 //------------------------------------------------------------------------------------------------------------
-	
 	if (result && data_out)
 	{
 		NSFile::CFileBinary file_out;
         file_out.CreateFileW(dstPath);
 		file_out.WriteFile(data_out, file_size);
 		file_out.CloseFile();
-		
-		delete []data_out;	
-		return result;
+	
+		delete []data_out;			
 	}
-
 	return result;
 }
 const std::wstring & odf_document::Impl::get_temp_folder() const 

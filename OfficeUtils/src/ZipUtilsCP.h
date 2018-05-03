@@ -54,8 +54,8 @@ using namespace std;
 
 namespace ZLibZipUtils
 {
-  int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted = false , int compressionLevel = -1);
-  int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int compressionLevel = -1 );
+  int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted = false, int method = Z_DEFLATED, int compressionLevel = -1);
+  int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int method = Z_DEFLATED, int compressionLevel = -1 );
   bool ClearDirectory( const WCHAR* dir, bool delDir = false );
   int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password = NULL, bool opt_extract_without_path = false, bool clearOutputDirectory = false );
   int UncompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize );

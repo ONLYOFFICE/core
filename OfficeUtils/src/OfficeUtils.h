@@ -35,6 +35,10 @@
 #include "OfficeUtilsCommon.h"
 #include "../../Common/kernel_config.h"
 
+#ifndef Z_DEFLATED
+    #define Z_DEFLATED 8
+#endif
+
 class KERNEL_DECL COfficeUtils
 {
 private:
@@ -43,7 +47,7 @@ public:
 	COfficeUtils(OnProgressCallback* bCallback = NULL);
 
 	HRESULT ExtractToDirectory		(const std::wstring& zipFile, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
-	HRESULT CompressFileOrDirectory	(const std::wstring& name, const std::wstring& outputFile, bool bSorted = false, short level = -1);
+    HRESULT CompressFileOrDirectory	(const std::wstring& name, const std::wstring& outputFile, bool bSorted = false, int method = Z_DEFLATED, short level = -1);
 	
 	HRESULT Uncompress	(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize);
 	HRESULT Compress	(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize, short level = -1);

@@ -3364,8 +3364,8 @@ namespace PdfReader
 					int nIndex = 4 * (nX + nY * nWidth);
 					pImageStream->GetPixel(unPixel);
 
-					int nNearestY = std::min((int)(nY / dScaleHeight), nMaskHeight - 1);
-					int nNearestX = std::min((int)(nX / dScaleWidth), nMaskWidth - 1);
+					int nNearestY = (std::min)((int)(nY / dScaleHeight), nMaskHeight - 1);
+					int nNearestX = (std::min)((int)(nX / dScaleWidth), nMaskWidth - 1);
 					unMask = pMaskBuffer[nNearestY * nMaskWidth + nNearestX];
 
 					GrRGB oRGB;
@@ -3497,8 +3497,8 @@ namespace PdfReader
 					}
 					delete pSMaskStream;
 
-					int nMaxW = std::max(nWidth, nMaskWidth);
-					int nMaxH = std::max(nHeight, nMaskHeight);
+					int nMaxW = (std::max)(nWidth, nMaskWidth);
+					int nMaxH = (std::max)(nHeight, nMaskHeight);
 					if (nWidth != nMaxW || nHeight != nMaxH)
 					{
 						unsigned char* pImageBuffer = pBufferPtr;

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A9C42D4209B3E110039DC18 /* sse-simd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9C42D3209B3E100039DC18 /* sse-simd.cpp */; };
 		8ABAB53420937FE200AD7C8A /* ECMACryptFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB52F20937FE200AD7C8A /* ECMACryptFile.cpp */; };
 		8ABAB53520937FE200AD7C8A /* CryptTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB53120937FE200AD7C8A /* CryptTransform.cpp */; };
 		8ABAB67A209385E800AD7C8A /* trdlocal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB562209385AD00AD7C8A /* trdlocal.cpp */; };
@@ -84,7 +85,6 @@
 		8ABAB6C2209385E800AD7C8A /* hrtimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB5F6209385CB00AD7C8A /* hrtimer.cpp */; };
 		8ABAB6C3209385E800AD7C8A /* zlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB5F8209385CC00AD7C8A /* zlib.cpp */; };
 		8ABAB6C4209385E800AD7C8A /* pssr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB5F9209385CC00AD7C8A /* pssr.cpp */; };
-		8ABAB6C5209385E800AD7C8A /* regtest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB5FB209385CC00AD7C8A /* regtest.cpp */; };
 		8ABAB6C6209385E800AD7C8A /* nbtheory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB5FF209385CD00AD7C8A /* nbtheory.cpp */; };
 		8ABAB6C7209385E800AD7C8A /* blumshub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB600209385CD00AD7C8A /* blumshub.cpp */; };
 		8ABAB6C8209385E800AD7C8A /* hex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABAB601209385CD00AD7C8A /* hex.cpp */; };
@@ -157,6 +157,7 @@
 
 /* Begin PBXFileReference section */
 		69880EE01F4D79BC00E4C541 /* libOfficeCryptReader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOfficeCryptReader.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A9C42D3209B3E100039DC18 /* sse-simd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "sse-simd.cpp"; path = "../../../Common/3dParty/cryptopp/sse-simd.cpp"; sourceTree = "<group>"; };
 		8ABAB52F20937FE200AD7C8A /* ECMACryptFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ECMACryptFile.cpp; sourceTree = "<group>"; };
 		8ABAB53020937FE200AD7C8A /* ECMACryptFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECMACryptFile.h; sourceTree = "<group>"; };
 		8ABAB53120937FE200AD7C8A /* CryptTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CryptTransform.cpp; sourceTree = "<group>"; };
@@ -314,7 +315,6 @@
 		8ABAB5F8209385CC00AD7C8A /* zlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zlib.cpp; path = ../../../Common/3dParty/cryptopp/zlib.cpp; sourceTree = "<group>"; };
 		8ABAB5F9209385CC00AD7C8A /* pssr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pssr.cpp; path = ../../../Common/3dParty/cryptopp/pssr.cpp; sourceTree = "<group>"; };
 		8ABAB5FA209385CC00AD7C8A /* serpentp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = serpentp.h; path = ../../../Common/3dParty/cryptopp/serpentp.h; sourceTree = "<group>"; };
-		8ABAB5FB209385CC00AD7C8A /* regtest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = regtest.cpp; path = ../../../Common/3dParty/cryptopp/regtest.cpp; sourceTree = "<group>"; };
 		8ABAB5FC209385CC00AD7C8A /* hmqv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hmqv.h; path = ../../../Common/3dParty/cryptopp/hmqv.h; sourceTree = "<group>"; };
 		8ABAB5FD209385CD00AD7C8A /* strciphr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strciphr.h; path = ../../../Common/3dParty/cryptopp/strciphr.h; sourceTree = "<group>"; };
 		8ABAB5FE209385CD00AD7C8A /* dh2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dh2.h; path = ../../../Common/3dParty/cryptopp/dh2.h; sourceTree = "<group>"; };
@@ -647,7 +647,6 @@
 				8ABAB5DB209385C500AD7C8A /* rdrand.cpp */,
 				8ABAB5C4209385C000AD7C8A /* rdrand.h */,
 				8ABAB661209385E200AD7C8A /* rdtables.cpp */,
-				8ABAB5FB209385CC00AD7C8A /* regtest.cpp */,
 				8ABAB56F209385AE00AD7C8A /* resource.h */,
 				8ABAB62A209385D500AD7C8A /* rijndael.cpp */,
 				8ABAB64F209385DE00AD7C8A /* rijndael.h */,
@@ -696,6 +695,7 @@
 				8ABAB63F209385D900AD7C8A /* stdcpp.h */,
 				8ABAB571209385AE00AD7C8A /* strciphr.cpp */,
 				8ABAB5FD209385CD00AD7C8A /* strciphr.h */,
+				8A9C42D3209B3E100039DC18 /* sse-simd.cpp */,
 				8ABAB5DD209385C500AD7C8A /* tea.cpp */,
 				8ABAB5A7209385BA00AD7C8A /* tea.h */,
 				8ABAB584209385B200AD7C8A /* test.cpp */,
@@ -871,7 +871,6 @@
 				8ABAB6F4209385E800AD7C8A /* dh2.cpp in Sources */,
 				8ABAB6C4209385E800AD7C8A /* pssr.cpp in Sources */,
 				8ABAB67B209385E800AD7C8A /* simple.cpp in Sources */,
-				8ABAB6C5209385E800AD7C8A /* regtest.cpp in Sources */,
 				8ABAB6B1209385E800AD7C8A /* gcm.cpp in Sources */,
 				8ABAB694209385E800AD7C8A /* filters.cpp in Sources */,
 				8ABAB6F6209385E800AD7C8A /* marss.cpp in Sources */,
@@ -889,6 +888,7 @@
 				8ABAB696209385E800AD7C8A /* rc2.cpp in Sources */,
 				8ABAB6CC209385E800AD7C8A /* chacha.cpp in Sources */,
 				8ABAB6D8209385E800AD7C8A /* hmac.cpp in Sources */,
+				8A9C42D4209B3E110039DC18 /* sse-simd.cpp in Sources */,
 				8ABAB6DF209385E800AD7C8A /* wake.cpp in Sources */,
 				8ABAB6C8209385E800AD7C8A /* hex.cpp in Sources */,
 				8ABAB6E5209385E800AD7C8A /* fipsalgt.cpp in Sources */,

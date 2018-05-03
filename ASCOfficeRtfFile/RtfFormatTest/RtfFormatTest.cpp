@@ -64,7 +64,7 @@ HRESULT convert_single(std::wstring srcFileName)
 		// rtf->docx
 		rtfConvert.ConvertRtfToOOX(srcFileName, dstTempPath);
 		
-		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))
+		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), true))
 			return S_FALSE;
 	}
 	else

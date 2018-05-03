@@ -74,7 +74,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	if (hr == S_OK) 
 	{
 		COfficeUtils oCOfficeUtils(NULL);
-		hr = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1);
+		hr = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), true);
 	}
 	
 	NSDirectory::DeleteDirectory(dstTempPath);

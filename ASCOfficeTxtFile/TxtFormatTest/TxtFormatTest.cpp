@@ -71,7 +71,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (S_OK != txtFile.txt_LoadFromFile(srcFileName, dstTempPath, sXMLOptions))	
 			return 2;
 		
-		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))
+		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), true))
 			return S_FALSE;
 	}
 	else

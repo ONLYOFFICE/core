@@ -46,7 +46,9 @@ public:
         m_date = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(date);
 
         m_signed_info.WriteString("<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>");
-        m_signed_info.WriteString("<SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>");
+        m_signed_info.WriteString("<SignatureMethod Algorithm=\"");
+        m_signed_info.WriteString(ICertificate::GetSignatureMethodA(m_certificate->GetHashAlg()));
+        m_signed_info.WriteString("\"/>");
     }
     ~COOXMLSigner_private()
     {
@@ -55,9 +57,9 @@ public:
     std::wstring GetReference(const std::wstring& file, const std::wstring& content_type)
     {
         std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
-        sXml += L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>";
+        sXml += (L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>");
         sXml += L"<DigestValue>";
-        std::string sTmp = m_certificate->GetHash(m_sFolder + file, OOXML_HASH_ALG_SHA1);
+        std::string sTmp = m_certificate->GetHash(m_sFolder + file, m_certificate->GetHashAlg());
         sXml += UTF8_TO_U(sTmp);
         sXml += L"</DigestValue>";
         sXml += L"</Reference>";
@@ -68,7 +70,7 @@ public:
     {
         std::string sXmlSigned = U_TO_UTF8(xml);
         sXmlSigned = CXmlCanonicalizator::Execute(sXmlSigned, XML_C14N_1_0);
-        return m_certificate->GetHash(sXmlSigned, OOXML_HASH_ALG_SHA1);
+        return m_certificate->GetHash(sXmlSigned, m_certificate->GetHashAlg());
     }
 
     std::string GetReferenceMain(const std::wstring& xml, const std::wstring& id, const bool& isCannon = true)
@@ -87,7 +89,7 @@ public:
         if (isCannon)
             sRet = "<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>";
 
-        sRet += ("<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>" + sHash + "</DigestValue>");
+        sRet += ("<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethodA(m_certificate->GetHashAlg()) + "\"/><DigestValue>" + sHash + "</DigestValue>");
 
         return sRet;
     }
@@ -144,7 +146,7 @@ public:
         builder.WriteString(file);
         builder.WriteString(L"?ContentType=application/vnd.openxmlformats-package.relationships+xml\">");
         builder.WriteString(oRels.GetTransforms());
-        builder.WriteString(L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>");
+        builder.WriteString(L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/><DigestValue>");
 
         std::wstring sXml = oRels.GetXml();
         std::string sHash = GetHashXml(sXml);
@@ -489,13 +491,16 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         std::string sKeyA = m_certificate->GetNumber();
         std::wstring sKey = UTF8_TO_U(sKeyA);
 
+        std::string sCertHA = m_certificate->GetCertificateHash();
+        std::wstring sCertHW = UTF8_TO_U(sCertHA);
+
         std::wstring sXml = (L"<xd:SignedSignatureProperties>\
 <xd:SigningTime>" + m_date + L"</xd:SigningTime>\
 <xd:SigningCertificate>\
 <xd:Cert>\
 <xd:CertDigest>\
-<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
-<DigestValue>MJJT2Y0iMxaPGVXBmOLb9bY60pA=</DigestValue>\
+<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>\
+<DigestValue>" + sCertHW + L"</DigestValue>\
 </xd:CertDigest>\
 <xd:IssuerSerial>\
 <X509IssuerName>CN=" + sName + L"</X509IssuerName>\
@@ -516,8 +521,8 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
 
         m_signed_info.WriteString("<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">");
         m_signed_info.WriteString("<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>");
-        m_signed_info.WriteString("<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>");
-        m_signed_info.WriteString(m_certificate->GetHash(sXmlTmp, OOXML_HASH_ALG_SHA1));
+        m_signed_info.WriteString("<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethodA(m_certificate->GetHashAlg()) + "\"/><DigestValue>");
+        m_signed_info.WriteString(m_certificate->GetHash(sXmlTmp, m_certificate->GetHashAlg()));
         m_signed_info.WriteString("</DigestValue></Reference>");
 
         return (L"<Object><xd:QualifyingProperties xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Target=\"#idPackageSignature\">\

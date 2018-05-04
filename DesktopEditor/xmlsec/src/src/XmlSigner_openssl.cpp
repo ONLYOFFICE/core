@@ -17,6 +17,36 @@
 #include <openssl/evp.h>
 #include <openssl/conf.h>
 
+const EVP_MD* Get_EVP_MD(int nAlg)
+{
+    switch (nAlg)
+    {
+        case OOXML_HASH_ALG_SHA1:
+        {
+            return EVP_sha1();
+        }
+        case OOXML_HASH_ALG_SHA224:
+        {
+            return EVP_sha224();
+        }
+        case OOXML_HASH_ALG_SHA256:
+        {
+            return EVP_sha256();
+        }
+        case OOXML_HASH_ALG_SHA384:
+        {
+            return EVP_sha384();
+        }
+        case OOXML_HASH_ALG_SHA512:
+        {
+            return EVP_sha512();
+        }
+    default:
+        break;
+    }
+    return EVP_sha1();
+}
+
 void BIO_FREE(BIO*& bio)
 {
     if (bio)
@@ -49,6 +79,8 @@ class CCertificate_openssl_private
 
     std::string     m_separator;
     std::string     m_id;
+
+    int m_alg;
 
 public:
     ICertificate* m_pBase;
@@ -139,6 +171,7 @@ public:
         if (NULL == m_cert)
             return "";
 
+#if 0
         BIO* bio = BIO_new(BIO_s_mem());
         PEM_write_bio_X509_AUX(bio, m_cert);
 
@@ -160,6 +193,27 @@ public:
 
         BIO_free(bio);
         return sReturn;
+#endif
+
+        BIO* bio = BIO_new(BIO_s_mem());
+
+        i2d_X509_bio(bio, m_cert);
+        BIO_flush(bio);
+
+        BYTE* data = NULL;
+        int size = (int)BIO_get_mem_data(bio, &data);
+
+        char* dataDst = NULL;
+        int lenDst = 0;
+        NSFile::CBase64Converter::Encode(data, size, dataDst, lenDst);
+
+        std::string sReturn(dataDst);
+
+        RELEASEARRAYOBJECTS(dataDst);
+
+        BIO_free(bio);
+
+        return sReturn;
     }
 
     std::string GetCertificateHash()
@@ -169,7 +223,7 @@ public:
         int nLen = 0;
         if (NSFile::CBase64Converter::Decode(sBase64.c_str(), (int)sBase64.length(), pData, nLen))
         {
-            std::string sHash = GetHash(pData, (unsigned int)nLen, OOXML_HASH_ALG_SHA1);
+            std::string sHash = GetHash(pData, (unsigned int)nLen, GetHashAlg());
             RELEASEARRAYOBJECTS(pData);
             return sHash;
         }
@@ -211,11 +265,11 @@ public:
         return GetNumber();
     }
 
-public:
+public:     
     std::string Sign(const std::string& sXml)
     {
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
-        const EVP_MD* pDigest = EVP_sha1();
+        const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());
 
         int n1 = EVP_SignInit(pCtx, pDigest);
         n1 = n1;
@@ -243,35 +297,63 @@ public:
 
     std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
     {
-        if (nAlg == OOXML_HASH_ALG_SHA1)
+        int nBufLen = 0;
+        unsigned char* pBufData = NULL;
+
+        switch (nAlg)
         {
-            unsigned char obuf[20];
-            SHA1(pData, (size_t)nSize, obuf);
-
-            char* pBase64_hash = NULL;
-            int nBase64Len_hash = 0;
-            NSFile::CBase64Converter::Encode(obuf, 20, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NOCRLF);
-
-            std::string sReturn(pBase64_hash, nBase64Len_hash);
-            delete [] pBase64_hash;
-
-            return sReturn;
+            case OOXML_HASH_ALG_SHA1:
+            {
+                nBufLen = 20;
+                pBufData = new unsigned char[nBufLen];
+                SHA1(pData, (size_t)nSize, pBufData);
+                break;
+            }
+            case OOXML_HASH_ALG_SHA224:
+            {
+                nBufLen = 28;
+                pBufData = new unsigned char[nBufLen];
+                SHA224(pData, (size_t)nSize, pBufData);
+                break;
+            }
+            case OOXML_HASH_ALG_SHA256:
+            {
+                nBufLen = 32;
+                pBufData = new unsigned char[nBufLen];
+                SHA256(pData, (size_t)nSize, pBufData);
+                break;
+            }
+            case OOXML_HASH_ALG_SHA384:
+            {
+                nBufLen = 48;
+                pBufData = new unsigned char[nBufLen];
+                SHA384(pData, (size_t)nSize, pBufData);
+                break;
+            }
+            case OOXML_HASH_ALG_SHA512:
+            {
+                nBufLen = 64;
+                pBufData = new unsigned char[nBufLen];
+                SHA512(pData, (size_t)nSize, pBufData);
+                break;
+            }
+        default:
+            break;
         }
-        else if (nAlg == OOXML_HASH_ALG_SHA256)
-        {
-            unsigned char obuf[32];
-            SHA256(pData, (size_t)nSize, obuf);
 
-            char* pBase64_hash = NULL;
-            int nBase64Len_hash = 0;
-            NSFile::CBase64Converter::Encode(obuf, 32, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NOCRLF);
+        if (0 == nBufLen)
+            return "";
 
-            std::string sReturn(pBase64_hash, nBase64Len_hash);
-            delete [] pBase64_hash;
+        char* pBase64_hash = NULL;
+        int nBase64Len_hash = 0;
+        NSFile::CBase64Converter::Encode(pBufData, nBufLen, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
-            return sReturn;
-        }
-        return "";
+        std::string sReturn(pBase64_hash, nBase64Len_hash);
+        delete [] pBase64_hash;
+
+        delete [] pBufData;
+
+        return sReturn;
     }
 
     std::string GetHash(const std::string& sXml, int nAlg)
@@ -297,7 +379,7 @@ public:
     bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
-        const EVP_MD* pDigest = EVP_sha1();
+        const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());
 
         int n1 = EVP_VerifyInit(pCtx, pDigest);
         n1 = n1;
@@ -348,14 +430,39 @@ public:
         return false;
     }
 
+    std::vector<int> GetHashAlgs()
+    {
+        std::vector<int> algs;
+        if (!m_cert)
+            return algs;
+
+        // TODO:
+        // Check algs in cert
+
+        if (algs.empty())
+            m_alg = OOXML_HASH_ALG_SHA1;
+        else
+            m_alg = algs[0];
+
+        return algs;
+    }
+    int GetHashAlg()
+    {
+        if (m_alg == OOXML_HASH_ALG_INVALID)
+            GetHashAlgs();
+        return m_alg;
+    }
+
 public:
     int ShowSelectDialog()
     {
         return -1;
     }
 
-    bool FromFiles(const std::wstring& sKeyPath, const std::string& sKeyPassword, const std::wstring& certPath, const std::string& certPassword)
+    bool FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
     {
+        std::wstring sKeyPath = keyPath;
+        std::string sKeyPassword = keyPassword;
         std::wstring sCertPath = certPath;
         std::string sCertPassword = certPassword;
 
@@ -363,6 +470,11 @@ public:
         {
             sCertPath = sKeyPath;
             sCertPassword = sKeyPassword;
+        }
+        else if (sKeyPath.empty())
+        {
+            sKeyPath = sCertPath;
+            sKeyPassword = sCertPassword;
         }
 
         int nErr = LoadKey(sKeyPath, sKeyPassword, &m_key);
@@ -383,6 +495,7 @@ public:
         m_id += m_separator;
         m_id += sCertPassword;
 
+        GetHashAlgs();
         return true;
     }
 
@@ -423,6 +536,8 @@ public:
 
     int VerifySelf()
     {
+        return OPEN_SSL_WARNING_OK;
+
         if (NULL == m_cert)
             return OPEN_SSL_WARNING_NOVERIFY;
 
@@ -769,12 +884,12 @@ bool CCertificate_openssl::LoadFromBase64Data(const std::string& data)
     return m_internal->LoadFromBase64Data(data);
 }
 
-int CCertificate_openssl::ShowSelectDialog()
+int CCertificate_openssl::ShowSelectDialog(void* parent)
 {
     return m_internal->ShowSelectDialog();
 }
 
-int CCertificate_openssl::ShowCertificate()
+int CCertificate_openssl::ShowCertificate(void* parent)
 {
     return m_internal->ShowCertificate();
 }
@@ -787,6 +902,15 @@ bool CCertificate_openssl::FromFiles(const std::wstring& keyPath, const std::str
 bool CCertificate_openssl::FromId(const std::string& id)
 {
     return m_internal->FromKey(id);
+}
+
+std::vector<int> CCertificate_openssl::GetHashAlgs()
+{
+    return m_internal->GetHashAlgs();
+}
+int CCertificate_openssl::GetHashAlg()
+{
+    return m_internal->GetHashAlg();
 }
 
 namespace NSOpenSSL

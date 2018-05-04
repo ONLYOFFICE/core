@@ -72,10 +72,14 @@ namespace DocFileFormat
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
 
+					unsigned short index_author = atrdPre10->GetAuthorIndex();
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
                     m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
-                    m_pXmlWriter->WriteAttribute( L"w:author",
-						FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ) ));
+					if (index_author < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
+					{
+						m_pXmlWriter->WriteAttribute( L"w:author",
+							FormatUtils::XmlEncode(m_document->AnnotationOwners->at( index_author ) ));
+					}
                     m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->GetUserInitials());
 
 					//!!!TODO!!!

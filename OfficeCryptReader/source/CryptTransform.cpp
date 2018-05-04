@@ -190,31 +190,32 @@ _buf Hmac(_buf &  buf, CRYPT_METHOD::_hashAlgorithm algorithm, std::string & pla
 	std::string mac;
 	if (algorithm == CRYPT_METHOD::SHA1)
 	{
-		CryptoPP::HMAC<CryptoPP::SHA1> hmac(buf.ptr, buf.size);
-		CryptoPP::StringSource(plain, true, 
-					new CryptoPP::HashFilter(hmac,
-						new CryptoPP::StringSink(mac)
+        HMAC<SHA1> hmac(buf.ptr, buf.size);
+        StringSource *s = new StringSource(plain, true,
+                    new HashFilter(hmac,
+                        new StringSink(mac)
 					) // HashFilter      
 				); // StringSource
+        delete s;
 
 	}
 	else if (algorithm == CRYPT_METHOD::SHA256)
 	{
-		CryptoPP::HMAC<CryptoPP::SHA256> hmac(buf.ptr, buf.size);
-		CryptoPP::StringSource(plain, true, 
-					new CryptoPP::HashFilter(hmac,
-						new CryptoPP::StringSink(mac)
+        HMAC<SHA256> hmac(buf.ptr, buf.size);
+        StringSource(plain, true,
+                    new HashFilter(hmac,
+                        new StringSink(mac)
 					) // HashFilter      
 				); // StringSource
 
 	}
 	else if (algorithm == CRYPT_METHOD::SHA512)
 	{
-		CryptoPP::HMAC<CryptoPP::SHA512> hmac(buf.ptr, buf.size);
+        HMAC<SHA512> hmac(buf.ptr, buf.size);
 		
-		CryptoPP::StringSource(plain, true, 
-					new CryptoPP::HashFilter(hmac,
-						new CryptoPP::StringSink(mac)
+        StringSource(plain, true,
+                    new HashFilter(hmac,
+                        new StringSink(mac)
 					) // HashFilter      
 				); // StringSource
 
@@ -736,25 +737,25 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 	password = _password;
 
 //---------
-	CryptoPP::RandomPool prng;
+    RandomPool prng;
 	
 	//сгенерить соль
-	CryptoPP::SecByteBlock seed_salt(cryptData.saltSize);
-	CryptoPP::OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
+    SecByteBlock seed_salt(cryptData.saltSize);
+    OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
 	prng.IncorporateEntropy(seed_salt, seed_salt.size());
 	
-	CryptoPP::SecByteBlock seed_datasalt(cryptData.saltSize);
-	CryptoPP::OS_GenerateRandomBlock(false, seed_datasalt, seed_datasalt.size());
+    SecByteBlock seed_datasalt(cryptData.saltSize);
+    OS_GenerateRandomBlock(false, seed_datasalt, seed_datasalt.size());
 	prng.IncorporateEntropy(seed_datasalt, seed_datasalt.size());
 
 	//сгенерить ключ
-	CryptoPP::SecByteBlock seed_key(cryptData.keySize);
-	CryptoPP::OS_GenerateRandomBlock(false, seed_key, seed_key.size());
+    SecByteBlock seed_key(cryptData.keySize);
+    OS_GenerateRandomBlock(false, seed_key, seed_key.size());
 	prng.IncorporateEntropy(seed_key, seed_key.size());
 
 	//сгенерить проверочный
-	CryptoPP::SecByteBlock seed_verify(cryptData.saltSize);
-	CryptoPP::OS_GenerateRandomBlock(false, seed_verify, seed_verify.size());
+    SecByteBlock seed_verify(cryptData.saltSize);
+    OS_GenerateRandomBlock(false, seed_verify, seed_verify.size());
 	prng.IncorporateEntropy(seed_verify, seed_verify.size());
 //---------
 	_buf pPassword		(password);
@@ -833,10 +834,10 @@ void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 	CorrectHashSize(iv2, cryptData.blockSize, 0x36);
 
 //----
-	CryptoPP::RandomPool prng;
-	CryptoPP::SecByteBlock seed(cryptData.hashSize);
+    RandomPool prng;
+    SecByteBlock seed(cryptData.hashSize);
 
-	CryptoPP::OS_GenerateRandomBlock(false, seed, seed.size());
+    OS_GenerateRandomBlock(false, seed, seed.size());
 	prng.IncorporateEntropy(seed, seed.size());
 	
 	_buf pSaltHmac(seed.data(), seed.size());
@@ -1069,12 +1070,12 @@ void ODFEncryptor::SetCryptData(_odfCryptData	&data)
 {
 	cryptData = data;
 
-	CryptoPP::RandomPool prng;
+    RandomPool prng;
 	
 	if (cryptData.saltValue.empty())
 	{
-		CryptoPP::SecByteBlock seed_salt(16);
-		CryptoPP::OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
+        SecByteBlock seed_salt(16);
+        OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
 		prng.IncorporateEntropy(seed_salt, seed_salt.size());
 
 		cryptData.saltValue = std::string((char*)seed_salt.data(), seed_salt.size());
@@ -1082,8 +1083,8 @@ void ODFEncryptor::SetCryptData(_odfCryptData	&data)
 	
 	if (cryptData.initializationVector.empty())
 	{
-		CryptoPP::SecByteBlock start_vector(16);
-		CryptoPP::OS_GenerateRandomBlock(false, start_vector, start_vector.size());
+        SecByteBlock start_vector(16);
+        OS_GenerateRandomBlock(false, start_vector, start_vector.size());
 		prng.IncorporateEntropy(start_vector, start_vector.size());
 
 		cryptData.initializationVector = std::string((char*)start_vector.data(), start_vector.size());

@@ -160,7 +160,31 @@ HEADERS += \
     ../zdeflate.h \
     ../zinflate.h \
     ../zlib.h \
-    ../blake2.h
+    ../blake2.h \
+    ../tweetnacl.h \
+    ../trap.h \
+    ../threefish.h \
+    ../speck.h \
+    ../sm4.h \
+    ../sm3.h \
+    ../siphash.h \
+    ../simon.h \
+    ../scrypt.h \
+    ../ppc-simd.h \
+    ../poly1305.h \
+    ../padlkrng.h \
+    ../ossig.h \
+    ../naclite.h \
+    ../keccak.h \
+    ../kalyna.h \
+    ../hmqv.h \
+    ../hashfwd.h \
+    ../fhmqv.h \
+    ../ecpoint.h \
+    ../drbg.h \
+    ../chacha.h \
+    ../aria.h \
+    ../adv-simd.h
 
 SOURCES += \
     ../3way.cpp \
@@ -247,10 +271,7 @@ SOURCES += \
     ../rc5.cpp \
     ../rc6.cpp \
     ../rdrand.cpp \
-    ../dll.cpp \
-    ../dlltest.cpp \
     ../rdtables.cpp \
-    ../regtest.cpp \
     ../rijndael.cpp \
     ../ripemd.cpp \
     ../rng.cpp \
@@ -294,5 +315,38 @@ SOURCES += \
     ../zdeflate.cpp \
     ../zinflate.cpp \
     ../zlib.cpp \
-    ../cpu.cpp
-
+    ../cpu.cpp \
+    ../validat4.cpp \
+    ../validat0.cpp \
+    ../tweetnacl.cpp \
+    ../threefish.cpp \
+    ../sse-simd.cpp \
+    ../speck-simd.cpp \
+    ../speck.cpp \
+    ../sm4.cpp \
+    ../sm3.cpp \
+    ../simon-simd.cpp \
+    ../simon.cpp \
+    ../shacal2-simd.cpp \
+    ../sha-simd.cpp \
+    ../scrypt.cpp \
+    ../rijndael-simd.cpp \
+    ../regtest3.cpp \
+    ../regtest2.cpp \
+    ../regtest1.cpp \
+    ../ppc-simd.cpp \
+    ../poly1305.cpp \
+    ../padlkrng.cpp \
+    ../neon-simd.cpp \
+    ../keccak.cpp \
+    ../kalynatab.cpp \
+    ../kalyna.cpp \
+    ../gcm-simd.cpp \
+    ../crc-simd.cpp \
+    ../chacha.cpp \
+    ../blake2-simd.cpp \
+    ../blake2.cpp \
+    ../bench1.cpp \
+    ../ariatab.cpp \
+    ../aria-simd.cpp \
+    ../aria.cpp

@@ -245,8 +245,14 @@ bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage
 				return true;
    return false;
 }
-bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
+bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 {
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+    std::wstring fileName = CorrectPathW(_fileName);
+#else
+    std::wstring fileName = _fileName;
+#endif
+
     //приоритет как оказывается важен
     //Metamorphic Manual for windows 28415.doc
 	POLE::Storage storage(fileName.c_str());

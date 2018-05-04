@@ -57,14 +57,17 @@
 		// local files: '\\?\' prefix
 		// server files: '\\?\UNC\' prefix <== TODO!
 		int nLen = GetFullPathNameW(path_str, 0, 0, 0);
-		wchar_t* pBuf = new wchar_t[(4 + nLen) * sizeof(wchar_t)];
+		if (2 > nLen)
+			return path;
 
-		pBuf[0] = L'\\', pBuf[1] = L'\\',  pBuf[2] = L'?', pBuf[3] = L'\\';
-		GetFullPathNameW(path_str, nLen, pBuf + 4, NULL);
+		wchar_t* pBuf = new wchar_t[nLen * sizeof(wchar_t)];
+		GetFullPathNameW(path_str, nLen, pBuf, NULL);
+		if (pBuf[0] == '\\' || pBuf[1] == '/')
+			return path;
 
 		std::wstring retPath(pBuf);
 		delete [] pBuf;
-		return retPath;
+		return L"\\\\?\\" + retPath;
 	}
 #endif
 
@@ -854,8 +857,9 @@ namespace NSFile
 		static bool Exists(const std::wstring&  strFileName)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+			std::wstring sFileNameW = CorrectPathW(strFileName);
 			FILE* pFile = NULL;
-			if ( 0 != _wfopen_s( &pFile, strFileName.c_str(), L"rb"))
+			if ( 0 != _wfopen_s( &pFile, sFileNameW.c_str(), L"rb"))
 				return false;
 #else
 			BYTE* pUtf8 = NULL;

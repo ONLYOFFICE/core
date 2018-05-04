@@ -199,7 +199,7 @@ namespace CSVReader
 
 		WCHAR *pEndPtr;
         double dValue = wcstod(sText.c_str(), &pEndPtr);
-		if (NULL != *pEndPtr)
+		if (0 != *pEndPtr)
 		{
 			// Не число
 			pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);

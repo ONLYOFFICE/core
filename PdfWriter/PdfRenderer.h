@@ -342,7 +342,7 @@ private:
 		}
 		inline void   SetAlpha(const LONG& lAlpha)
 		{
-            m_nAlpha = (BYTE)std::max(0, std::min(255, (int)lAlpha));
+            m_nAlpha = (BYTE)(std::max)(0, (std::min)(255, (int)lAlpha));
 		}
 		inline double GetSize()
 		{
@@ -572,7 +572,7 @@ private:
 		}
 		inline void         SetAlpha1(const LONG& lAlpha)
 		{
-            m_nAlpha1 = (BYTE)std::max(0, std::min(255, (int)lAlpha));
+            m_nAlpha1 = (BYTE)(std::max)(0, (std::min)(255, (int)lAlpha));
 		}
 		inline LONG         GetAlpha2()
 		{
@@ -580,7 +580,7 @@ private:
 		}
 		inline void         SetAlpha2(const LONG& lAlpha)
 		{
-            m_nAlpha2 = (BYTE)std::max(0, std::min(255, (int)lAlpha));
+            m_nAlpha2 = (BYTE)(std::max)(0, (std::min)(255, (int)lAlpha));
 		}
 		inline std::wstring GetTexturePath()
 		{
@@ -604,7 +604,7 @@ private:
 		}
 		inline void         SetTextureAlpha(const LONG& lAlpha)
 		{
-            m_nTextureAlpha = (BYTE)std::max(0, std::min(255, (int)lAlpha));
+            m_nTextureAlpha = (BYTE)(std::max)(0, (std::min)(255, (int)lAlpha));
 		}
 		inline double       GetLinearAngle()
 		{
@@ -979,10 +979,10 @@ private:
 				TColor oColor1 = lColor1;
 				TColor oColor2 = lColor2;
 
-                BYTE r = (BYTE)std::max(0, std::min(255, (int)(oColor1.r + (oColor2.r - oColor1.r) / dDiff * (dDstPoint - dPoint1))));
-                BYTE g = (BYTE)std::max(0, std::min(255, (int)(oColor1.g + (oColor2.g - oColor1.g) / dDiff * (dDstPoint - dPoint1))));
-                BYTE b = (BYTE)std::max(0, std::min(255, (int)(oColor1.b + (oColor2.b - oColor1.b) / dDiff * (dDstPoint - dPoint1))));
-                BYTE a = (BYTE)std::max(0, std::min(255, (int)(oColor1.a + (oColor2.a - oColor1.a) / dDiff * (dDstPoint - dPoint1))));
+                BYTE r = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.r + (oColor2.r - oColor1.r) / dDiff * (dDstPoint - dPoint1))));
+                BYTE g = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.g + (oColor2.g - oColor1.g) / dDiff * (dDstPoint - dPoint1))));
+                BYTE b = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.b + (oColor2.b - oColor1.b) / dDiff * (dDstPoint - dPoint1))));
+                BYTE a = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.a + (oColor2.a - oColor1.a) / dDiff * (dDstPoint - dPoint1))));
 
 				TColor oResColor;
 				oResColor.Set(r, g, b, a);

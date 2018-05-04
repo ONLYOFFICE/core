@@ -63,11 +63,10 @@ SerArPtr SerAr::createSerAr(const unsigned char type)
 		return SerArPtr(new SerStr);
 		break;
 	default:
-		// EXCEPT::RT::WrongBiffRecord("Unsupported type of SerAr.", "SerAr container");
 		break;
 	}
     
-    return NULL; // TODO: need fixed
+    return SerArPtr(); 
 }
 
 

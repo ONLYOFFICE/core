@@ -191,12 +191,11 @@ _buf Hmac(_buf &  buf, CRYPT_METHOD::_hashAlgorithm algorithm, std::string & pla
 	if (algorithm == CRYPT_METHOD::SHA1)
 	{
         HMAC<SHA1> hmac(buf.ptr, buf.size);
-        StringSource *s = new StringSource(plain, true,
+        StringSource(plain, true,
                     new HashFilter(hmac,
                         new StringSink(mac)
 					) // HashFilter      
-				); // StringSource
-        delete s;
+                ); // StringSource
 
 	}
 	else if (algorithm == CRYPT_METHOD::SHA256)

@@ -405,7 +405,8 @@ public:
 
 		if (Header.FormatID == 2)
 		{
-			if (Header.OLEVersion > 0x00000500)
+			if (Header.OLEVersion & 0x00000500 ||
+				Header.OLEVersion & 0x00010001)
 			{
 				stream >> Header.ClassName;
 			}

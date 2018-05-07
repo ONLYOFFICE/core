@@ -40,8 +40,8 @@
 	#pragma comment(lib, "gdiplus.lib")
 #endif
 
-#include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../ASCOfficeOdfFile/src/docx/measuredigits.h"
+#include "../../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../../ASCOfficeOdfFile/src/docx/measuredigits.h"
 
 #ifndef min
 #define min(a,b) ((a) < (b) ? (a) : (b))

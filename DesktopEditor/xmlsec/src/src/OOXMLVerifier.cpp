@@ -252,7 +252,9 @@ public:
                 return;
         }
 
-        // 5) Check signature
+        // 5) Check sert digest! (TODO:)
+
+        // 6) Check signature
         CXmlStackNamespaces stack(m_node);
         CXmlStackNamespaces stackRes = stack.GetById("SignedInfo", true);
         std::string sXml = stackRes.GetXml();
@@ -609,6 +611,8 @@ public:
                     sFile = m_arSignaturesFiles.at(i);
                     m_arSignatures.erase(m_arSignatures.begin() + i);
                     delete pSignature;
+                    --i;
+                    --nCountSignatures;
                 }                
             }
 
@@ -688,6 +692,41 @@ public:
             }
             sXml += L"</Relationships>";
             NSFile::CFileBinary::SaveToFile(m_sFolder + L"/_rels/.rels", sXml);
+        }
+        else
+        {
+            std::wstring sFileFound = sFile.substr(m_sFolder.length());
+            std::wstring::size_type posRemove = sFileFound.find(L"/_xmlsignatures/");
+            if (std::wstring::npos != posRemove)
+                sFileFound = sFileFound.substr(posRemove + 16);
+
+            std::wstring sOriginRels = m_sFolder + L"/_xmlsignatures/_rels/origin.sigs.rels";
+
+            XmlUtils::CXmlNode oRels;
+            if (!oRels.FromXmlFile(sOriginRels))
+                return;
+
+            sXml = L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+            XmlUtils::CXmlNodes oNodes;
+            if (oRels.GetNodes(L"*", oNodes))
+            {
+                int nCount = oNodes.GetCount();
+
+                for (int i = 0; i < nCount; ++i)
+                {
+                    XmlUtils::CXmlNode oNode;
+                    oNodes.GetAt(i, oNode);
+
+                    if (L"Relationship" == oNode.GetName() &&
+                        L"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature" == oNode.GetAttribute(L"Type") &&
+                        sFileFound == oNode.GetAttribute(L"Target"))
+                        continue;
+
+                    sXml += oNode.GetXml();
+                }
+            }
+            sXml += L"</Relationships>";
+            NSFile::CFileBinary::SaveToFile(sOriginRels, sXml);
         }
     }
 };

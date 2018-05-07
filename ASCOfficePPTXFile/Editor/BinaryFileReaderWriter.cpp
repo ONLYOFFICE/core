@@ -1289,7 +1289,7 @@ namespace NSBinPptxRW
 	void CRelsGenerator::WritePresentationComments(int nComment)
 	{
 		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) +
-			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments\" Target=\"comments/comment" +
+			L"\" Type=\"http://schemas.onlyoffice.com/comments\" Target=\"comments/comment" +
 			std::to_wstring(nComment) + L".xml\"/>";
 
 		m_pWriter->WriteString(strRels);

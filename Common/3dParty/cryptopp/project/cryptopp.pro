@@ -11,6 +11,9 @@ PWD_ROOT_DIR = $$PWD
 
 include(../../../../Common/base.pri)
 
+core_linux {
+    DEFINES -= NDEBUG
+}
 core_mac {
     DEFINES -= MAC
 }
@@ -46,7 +49,6 @@ HEADERS += \
     ../config.h \
     ../cpu.h \
     ../crc.h \
-    ../cryptlib.h \
     ../default.h \
     ../des.h \
     ../dh.h \
@@ -160,21 +162,54 @@ HEADERS += \
     ../zdeflate.h \
     ../zinflate.h \
     ../zlib.h \
-    ../blake2.h
+    ../blake2.h \
+    ../tweetnacl.h \
+    ../trap.h \
+    ../threefish.h \
+    ../speck.h \
+    ../sm4.h \
+    ../sm3.h \
+    ../siphash.h \
+    ../simon.h \
+    ../scrypt.h \
+    ../ppc-simd.h \
+    ../poly1305.h \
+    ../padlkrng.h \
+    ../ossig.h \
+    ../naclite.h \
+    ../keccak.h \
+    ../kalyna.h \
+    ../hmqv.h \
+    ../hashfwd.h \
+    ../fhmqv.h \
+    ../ecpoint.h \
+    ../drbg.h \
+    ../chacha.h \
+    ../aria.h \
+    ../adv-simd.h \
+    ../cryptlib.h
 
+# List cryptlib.cpp first, then cpu.cpp, then integer.cpp to tame C++ static initialization problems.
 SOURCES += \
+    ../cryptlib.cpp \
+    ../cpu.cpp \
+    ../integer.cpp \
     ../3way.cpp \
-     ../adler32.cpp \
+    ../adler32.cpp \
     ../algebra.cpp \
     ../algparam.cpp \
     ../arc4.cpp \
+    ../aria-simd.cpp \
+    ../aria.cpp \
+    ../ariatab.cpp \
     ../asn.cpp \
     ../authenc.cpp \
     ../base32.cpp \
     ../base64.cpp \
     ../basecode.cpp \
-    ../bench2.cpp \
     ../bfinit.cpp \
+    ../blake2-simd.cpp \
+    ../blake2.cpp \
     ../blowfish.cpp \
     ../blumshub.cpp \
     ../camellia.cpp \
@@ -182,16 +217,17 @@ SOURCES += \
     ../casts.cpp \
     ../cbcmac.cpp \
     ../ccm.cpp \
+    ../chacha.cpp \
     ../channels.cpp \
     ../cmac.cpp \
+    ../crc-simd.cpp \
     ../crc.cpp \
-    ../cryptlib.cpp \
-    ../datatest.cpp \
     ../default.cpp \
     ../des.cpp \
     ../dessp.cpp \
     ../dh.cpp \
     ../dh2.cpp \
+    ../dll.cpp \
     ../dsa.cpp \
     ../eax.cpp \
     ../ec2n.cpp \
@@ -204,12 +240,12 @@ SOURCES += \
     ../files.cpp \
     ../filters.cpp \
     ../fips140.cpp \
-    ../fipsalgt.cpp \
     ../fipstest.cpp \
+    ../gcm-simd.cpp \
     ../gcm.cpp \
+    ../gf256.cpp \
     ../gf2_32.cpp \
     ../gf2n.cpp \
-    ../gf256.cpp \
     ../gfpcrypt.cpp \
     ../gost.cpp \
     ../gzip.cpp \
@@ -218,8 +254,10 @@ SOURCES += \
     ../hrtimer.cpp \
     ../ida.cpp \
     ../idea.cpp \
-    ../integer.cpp \
     ../iterhash.cpp \
+    ../kalyna.cpp \
+    ../kalynatab.cpp \
+    ../keccak.cpp \
     ../luc.cpp \
     ../mars.cpp \
     ../marss.cpp \
@@ -231,12 +269,13 @@ SOURCES += \
     ../mqueue.cpp \
     ../mqv.cpp \
     ../nbtheory.cpp \
+    ../neon-simd.cpp \
     ../network.cpp \
     ../oaep.cpp \
     ../osrng.cpp \
     ../panama.cpp \
-    ../pch.cpp \
     ../pkcspad.cpp \
+    ../poly1305.cpp \
     ../polynomi.cpp \
     ../pssr.cpp \
     ../pubkey.cpp \
@@ -247,10 +286,7 @@ SOURCES += \
     ../rc5.cpp \
     ../rc6.cpp \
     ../rdrand.cpp \
-    ../dll.cpp \
-    ../dlltest.cpp \
     ../rdtables.cpp \
-    ../regtest.cpp \
     ../rijndael.cpp \
     ../ripemd.cpp \
     ../rng.cpp \
@@ -261,38 +297,34 @@ SOURCES += \
     ../seal.cpp \
     ../seed.cpp \
     ../serpent.cpp \
+    ../sha-simd.cpp \
     ../sha.cpp \
     ../sha3.cpp \
+    ../shacal2-simd.cpp \
     ../shacal2.cpp \
     ../shark.cpp \
     ../sharkbox.cpp \
-    ../simple.cpp \
     ../skipjack.cpp \
     ../socketft.cpp \
     ../sosemanuk.cpp \
     ../square.cpp \
     ../squaretb.cpp \
+    ../sse-simd.cpp \
     ../strciphr.cpp \
     ../tea.cpp \
-    ../test.cpp \
     ../tftables.cpp \
+    ../threefish.cpp \
     ../tiger.cpp \
     ../tigertab.cpp \
     ../trdlocal.cpp \
     ../ttmac.cpp \
     ../twofish.cpp \
-    ../validat1.cpp \
-    ../validat2.cpp \
-    ../validat3.cpp \
     ../vmac.cpp \
     ../wait.cpp \
     ../wake.cpp \
     ../whrlpool.cpp \
-    ../winpipes.cpp \
     ../xtr.cpp \
     ../xtrcrypt.cpp \
     ../zdeflate.cpp \
     ../zinflate.cpp \
-    ../zlib.cpp \
-    ../cpu.cpp
-
+    ../zlib.cpp

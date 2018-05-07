@@ -8,6 +8,9 @@
 #define OOXML_HASH_ALG_SHA1         0
 #define OOXML_HASH_ALG_INVALID      1
 #define OOXML_HASH_ALG_SHA256       2
+#define OOXML_HASH_ALG_SHA224       3
+#define OOXML_HASH_ALG_SHA384       4
+#define OOXML_HASH_ALG_SHA512       5
 
 #define OPEN_SSL_WARNING_OK         0
 #define OPEN_SSL_WARNING_ERR        1
@@ -103,11 +106,14 @@ public:
     virtual std::string GetHash(const std::wstring& sXmlFile, int nAlg)                 = 0;
     virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)  = 0;
 
-    virtual bool LoadFromBase64Data(const std::string& data)                            = 0;    
+    virtual bool LoadFromBase64Data(const std::string& data)                            = 0;
+
+    virtual std::vector<int> GetHashAlgs()                                              = 0;
+    virtual int GetHashAlg()                                                            = 0;
 
 public:
-    virtual int ShowSelectDialog()              = 0;
-    virtual int ShowCertificate()               = 0;
+    virtual int ShowSelectDialog(void* parent = NULL)   = 0;
+    virtual int ShowCertificate(void* parent = NULL)    = 0;
 
     static CCertificateInfo GetDefault();
     static ICertificate* GetById(const std::string& id);
@@ -118,7 +124,12 @@ public:
 
 public:
     static int GetOOXMLHashAlg(const std::string& sAlg);
-    static ICertificate* CreateInstance();    
+    static std::string GetDigestMethodA(const int& nAlg);
+    static std::wstring GetDigestMethod(const int& nAlg);
+    static std::string GetSignatureMethodA(const int& nAlg);
+    static std::wstring GetSignatureMethod(const int& nAlg);
+
+    static ICertificate* CreateInstance();
 };
 
 #endif // _XML_SERTIFICATE_BASE_H_

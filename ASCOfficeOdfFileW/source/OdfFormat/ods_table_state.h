@@ -156,18 +156,23 @@ namespace utils
 		row = getRowAdderssInv(strRow)+1;
 
 	}
-};
+}
 struct ods_element_state
 {
-	office_element_ptr elm;
+    ods_element_state(){}
+    ods_element_state(office_element_ptr &elm_, unsigned int repeated_, const std::wstring &style_name_, office_element_ptr &style_elm_, double size_, size_t level_)
+        : elm(elm_), repeated(repeated_), style_name(style_name_), style_elm(style_elm_), size(size_), level(level_)
+    {}
+
+    office_element_ptr elm;
 	
-    unsigned int repeated;
+    unsigned int repeated = 1;
 	std::wstring style_name;
 	office_element_ptr style_elm;
 
-	double size;
+    double size = 0;
 
-    unsigned int level;
+    size_t level = 1;
 	
 	std::wstring cell_style_name;
 };
@@ -177,10 +182,10 @@ struct ods_cell_state : ods_element_state
     int col;
     int row;
 
-    unsigned int hyperlink_idx;
-    unsigned int comment_idx;
+    int hyperlink_idx = -1;
+    int comment_idx = -1;
 	
-	bool empty;
+    bool empty = true;
 };
 
 struct ods_hyperlink_state

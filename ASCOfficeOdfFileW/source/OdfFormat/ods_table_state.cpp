@@ -254,7 +254,7 @@ void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_column_width_ , (unsigned int)current_level_.size()};
+    ods_element_state state(elm, repeated, style_name, style_elm, defaut_column_width_, current_level_.size());
   
 	if (repeated > 10000)repeated = 1024;//????
 
@@ -343,7 +343,7 @@ void ods_table_state::add_row(office_element_ptr & elm, unsigned int repeated, o
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_row_height_ , (unsigned int)current_level_.size()};
+    ods_element_state state(elm, repeated, style_name, style_elm, defaut_row_height_ , current_level_.size());
   
     rows_.push_back(state);
 
@@ -515,7 +515,7 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	
 	state.empty = true;
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
-	state.row = current_table_row_;  state.col =current_table_column_ + 1; 
+    state.row = current_table_row_;  state.col = current_table_column_ + 1;
 
 	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
 	state.comment_idx	= is_cell_comment(state.col, state.row);
@@ -1046,7 +1046,7 @@ void ods_table_state::end_cell()
 {
 	if ( cells_size_  <1)return;
 
-	if (cells_.back().comment_idx >=0)
+    if (cells_.back().comment_idx >= 0)
 	{
 		office_element_ptr & comm_elm = comments_[cells_.back().comment_idx].elm;
 		cells_.back().elm->add_child_element(comm_elm);
@@ -1086,7 +1086,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 	
 	state.empty = true;
 	state.elm = default_cell_elm;  state.repeated = repeated; 
-	state.row=current_table_row_;  state.col =current_table_column_+1; 
+    state.row=current_table_row_;  state.col =current_table_column_+ 1;
 	state.hyperlink_idx = is_cell_hyperlink(state.col, current_table_row_);
 	state.comment_idx = comment_idx;
 	

@@ -159,7 +159,7 @@ namespace CSVWriter
 				OOX::Spreadsheet::CSheet *pSheet = NULL;
 				if (lActiveSheet >= 0 && lActiveSheet < oXlsx.m_pWorkbook->m_oSheets->m_arrItems.size())
 				{
-					oXlsx.m_pWorkbook->m_oSheets->m_arrItems[lActiveSheet];
+					pSheet =  oXlsx.m_pWorkbook->m_oSheets->m_arrItems[lActiveSheet];
 				}
 				else
 				{

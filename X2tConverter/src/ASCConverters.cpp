@@ -1079,7 +1079,7 @@ namespace NExtractTools
            std::wstring sMediaPath;
            std::wstring sEmbedPath;
 
-           nRes = m_oCXlsxSerializer.loadFromFile (sResultXlstDir, sCSV, sXMLOptions, sMediaPath, sEmbedPath);
+           nRes = m_oCXlsxSerializer.loadFromFile (sResultXlstFileEditor, sCSV, sXMLOptions, sMediaPath, sEmbedPath);
        }
 
        return nRes;

@@ -1146,9 +1146,8 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 	if( PROP_DEF != m_nZOrderRelative && PROP_DEF != nZIndex)
 	{
-		//берем большое значение чтобы сделать строго выше или ниже текста		
-		if( 0 == m_nZOrderRelative )	nZIndex += 10000;
-		else							nZIndex -= 10000;
+		if( 0 == m_nZOrderRelative )	nZIndex = abs(nZIndex);
+		else							nZIndex = -abs(nZIndex);
 	}
 	if (PROP_DEF != nZIndex)
         sStyle += L"z-index:" + std::to_wstring(nZIndex) + L";";

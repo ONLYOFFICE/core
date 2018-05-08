@@ -62,6 +62,8 @@ namespace NSUnicodeConverter
 
         std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, const char* converterName);
         std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, int nCodePage);
+
+        std::string SASLprepToUtf8(const std::wstring &sSrc);
     private:
         CUnicodeConverter_Private* m_pInternal;
 	};

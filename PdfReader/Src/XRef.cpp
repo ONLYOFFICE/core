@@ -921,16 +921,11 @@ namespace PdfReader
 	void XRef::SetEncryption(int nPermissionFlags, bool bOwnerPassword, unsigned char *sDecryptKey, int nKeyLength, int nEncryptVersion, CryptAlgorithm eEncryptAlgorithm)
 	{
 		m_bEncrypted = true;
+		
 		m_nPermissionFlags = nPermissionFlags;
 		m_bOwnerPassword = bOwnerPassword;
-		if (nKeyLength <= 16)
-		{
-			m_nKeyLength = nKeyLength;
-		}
-		else
-		{
-			m_nKeyLength = 16;
-		}
+		m_nKeyLength = nKeyLength;
+
 		for (int nIndex = 0; nIndex < m_nKeyLength; ++nIndex)
 		{
 			m_arrDecryptKey[nIndex] = sDecryptKey[nIndex];

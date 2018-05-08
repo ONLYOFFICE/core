@@ -55,7 +55,7 @@ namespace PdfReader
 	{
 	public:
 
-		PDFDoc(GlobalParams *pGlobalParams, const wchar_t* wsFileName, StringExt *seOwnerPassword = NULL, StringExt *seUserPassword = NULL);
+		PDFDoc(GlobalParams *pGlobalParams, const std::wstring &wsFileName, const std::wstring &ownerPassword, const std::wstring &userPassword);
 		~PDFDoc();
 
 		// Нормально ли открылся PDF файл?
@@ -63,7 +63,6 @@ namespace PdfReader
 		{
 			return m_bValid;
 		}
-
 
 		// Получаем код ошибки, если PDF файл не открылся.
 		EError GetErrorCode()
@@ -217,11 +216,9 @@ namespace PdfReader
 
 	private:
 
-		bool Setup(StringExt *seOwnerPassword, StringExt *seUserPassword);
+		bool Setup(const std::wstring &ownerPassword, const std::wstring &userPasswordd);
 		void CheckHeader();
-		bool CheckEncryption(StringExt *seOwnerPassword, StringExt *seUserPassword);
-
-	private:
+		bool CheckEncryption(const std::wstring &ownerPassword, const std::wstring &userPassword);
 
 		std::wstring   m_wsFileName;  // Имя исходного файла.
 		FILE*          m_pFile;       // Указатель на файловый поток

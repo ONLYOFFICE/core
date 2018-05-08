@@ -157,7 +157,10 @@ namespace PdfReader
 		{
 			return m_sData;
 		}
-
+		unsigned char *GetUBuffer()
+		{
+			return (unsigned char*)m_sData;
+		}
 		std::wstring GetWString()
 		{
 			return NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)m_sData, m_nLength);

@@ -59,7 +59,7 @@ namespace PdfReader
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// PDFDoc
 	//-------------------------------------------------------------------------------------------------------------------------------
-	PDFDoc::PDFDoc(GlobalParams *pGlobalParams, const wchar_t* wsFileName, StringExt *seOwnerPassword, StringExt *seUserPassword)
+	PDFDoc::PDFDoc(GlobalParams *pGlobalParams, const std::wstring &wsFileName, const std::wstring &ownerPassword, const std::wstring &userPassword)
 	{
 		m_pGlobalParams = pGlobalParams;
 
@@ -129,9 +129,9 @@ namespace PdfReader
 		if (!m_pStream)
 			m_bValid = false;
 
-		m_bValid = Setup(seOwnerPassword, seUserPassword);
+		m_bValid = Setup(ownerPassword, userPassword);
 	}
-	bool PDFDoc::Setup(StringExt *seOwnerPassword, StringExt *seUserPassword)
+	bool PDFDoc::Setup(const std::wstring &ownerPassword, const std::wstring &userPassword)
 	{
 		m_pStream->Reset();
 
@@ -148,7 +148,7 @@ namespace PdfReader
 		}
 
 		// Проверяем зашифрован ли документ
-		if (!CheckEncryption(seOwnerPassword, seUserPassword))
+		if (!CheckEncryption(ownerPassword, userPassword))
 		{
 			m_eErrorCode = errorEncrypted;
 			return false;
@@ -238,7 +238,7 @@ namespace PdfReader
 			// TO DO: Error "Unsupported PDF version"
 		}
 	}
-	bool PDFDoc::CheckEncryption(StringExt *ownerPassword, StringExt *userPassword)
+	bool PDFDoc::CheckEncryption(const std::wstring &ownerPassword, const std::wstring &userPassword)
 	{
 		bool bEncrypted = false;
 		bool bResult = true;

@@ -57,19 +57,10 @@ namespace PdfReader
 		// Возвращаемые значения: 
 		// True, если документ может быть открыт( либо он вообще не зашифрован, либо пароль верный)
 		// False, в противном случае ( документ зашрифован, а пароль неверный).
-		bool CheckEncryption(StringExt *seOwnerPassword, StringExt *seUserPassword);
-
-		// Для "Batch mode", т.е. когда пароли заданы и проверяются без пользователя. 
-		virtual void *MakeAuthData(StringExt *ownerPassword, StringExt *userPassword) = 0;
-
-		// Для запроса пароля от пользователя.
-		virtual void *GetAuthData() = 0;
-
-		// Освобождаем память выделенную функциями MakeAuthData или GetAuthData.
-		virtual void FreeAuthData(void *pAuthData) = 0;
+		bool CheckEncryption(const std::wstring &ownerPassword, const std::wstring &userPassword);
 
 		// Пытаемся авторизоваться.
-		virtual bool Authorize(void *pAuthData) = 0;
+		virtual bool Authorize(const std::wstring &ownerPassword, const std::wstring &userPassword) = 0;
 
 		// Считываем различные параметры.
 		virtual int            GetPermissionFlags()   = 0;
@@ -92,13 +83,12 @@ namespace PdfReader
 	{
 	public:
 
+		friend class Decrypt;
+
 		StandardSecurityHandler(PDFDoc *pDocument, Object *pEncryptDict);
 		virtual ~StandardSecurityHandler();
 
-		virtual void *MakeAuthData(StringExt *seOwnerPassword, StringExt *seUserPassword);
-		virtual void *GetAuthData();
-		virtual void FreeAuthData(void *pAuthData);
-		virtual bool Authorize(void *pAuthData);
+		virtual bool Authorize(const std::wstring &ownerPassword, const std::wstring &userPassword);
 		virtual int GetPermissionFlags()
 		{
 			return m_nPermissionFlags;
@@ -125,10 +115,11 @@ namespace PdfReader
 		}
 
 	private:
+		bool          m_bValid;
 
 		int            m_nPermissionFlags;
 		bool           m_bOwnerPasswordValid;
-		unsigned char  m_sFileKey[16];
+		unsigned char  m_sFileKey[32];
 		int            m_nFileKeyLength;
 		int            m_nEncryptVersion;
 		int            m_nEncryptRevision;
@@ -139,7 +130,9 @@ namespace PdfReader
 		StringExt     *m_seUserKey;
 		StringExt     *m_seFileID;
 
-		bool          m_bValid;
+		StringExt     *m_seOwnerEncryptionKey;
+		StringExt     *m_seUserEncryptionKey;
+		StringExt     *m_sePermsValue;
 	};
 }
 

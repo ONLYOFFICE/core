@@ -15,6 +15,7 @@ CONFIG += core_static_link_libstd
 CONFIG += core_x2t
 include(../../../Common/base.pri)
 include(../../../Common/3dParty/icu/icu.pri)
+include(../../../Common/3dParty/curl/curl.pri)
 
 core_windows {
     QMAKE_LFLAGS += /INCREMENTAL:NO
@@ -155,7 +156,6 @@ core_windows {
 core_linux {
     LIBS += -lz
     LIBS += -lxml2
-    LIBS += -lcurl
 }
 
 mac {

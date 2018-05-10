@@ -23,6 +23,7 @@ CONFIG += build_all_zlib build_zlib_as_sources
 include(../../OfficeUtils/OfficeUtils.pri)
 
 include(../../Common/3dParty/v8/v8.pri)
+include(../../Common/3dParty/curl/curl.pri)
 
 SOURCES += \
     memorystream.cpp \
@@ -55,8 +56,6 @@ core_windows {
 core_linux {
     SOURCES += \
         ../../Common/FileDownloader/FileDownloader_curl.cpp
-
-    LIBS += -lcurl
 }
 core_mac {
     OBJECTIVE_SOURCES += \

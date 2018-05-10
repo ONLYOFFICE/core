@@ -464,7 +464,7 @@ namespace NSCommon
                     NSFonts::IFontFile* pFile = pManager->GetFile();
 
                     if (pFile)
-                        bIsSymbol = pFile->IsSymbolic(true);
+                        bIsSymbol = pFile->IsSymbolic(false);
 
                     std::wstring sFontName = pPair->second.m_sName;
 

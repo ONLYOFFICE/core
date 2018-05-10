@@ -75,6 +75,7 @@ LICENSEMANAGER := $(LIBDIR)/$(LIB_PREFIX)LicenceManager$(LIB_EXT)
 OOXMLSIGNATURE := $(LIBDIR)/$(LIB_PREFIX)ooxmlsignature$(LIB_EXT)
 HUNSPELL := $(LIBDIR)/$(LIB_PREFIX)hunspell$(SHARED_EXT)
 KERNEL := $(LIBDIR)/$(LIB_PREFIX)kernel$(SHARED_EXT)
+CRYPTOPP := $(LIBDIR)/$(LIB_PREFIX)cryptopp$(LIB_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -94,6 +95,7 @@ TARGETS += $(LICENSEMANAGER)
 TARGETS += $(OOXMLSIGNATURE)
 TARGETS += $(HUNSPELL)
 TARGETS += $(KERNEL)
+TARGETS += $(CRYPTOPP)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
@@ -113,6 +115,7 @@ LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
 OOXMLSIGNATURE_PRO := $(abspath DesktopEditor/xmlsec/src/ooxmlsignature.pro)
 HUNSPELL_PRO := $(abspath DesktopEditor/hunspell-1.3.3/src/qt/hunspell.pro)
 KERNEL_PRO := $(abspath Common/kernel.pro)
+CRYPTOPP_PRO := $(abspath Common/3dParty/cryptopp/project/cryptopp.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -144,6 +147,7 @@ QT_PROJ += LICENSEMANAGER
 QT_PROJ += OOXMLSIGNATURE
 QT_PROJ += HUNSPELL
 QT_PROJ += KERNEL
+QT_PROJ += CRYPTOPP
 
 X2T_DEP += $(PDFWRITER)
 X2T_DEP += $(GRAPHICS)
@@ -155,6 +159,7 @@ X2T_DEP += $(XPSFILE)
 X2T_DEP += $(HTMLFILE)
 X2T_DEP += $(UNICODECONVERTER)
 X2T_DEP += $(KERNEL)
+X2T_DEP += $(CRYPTOPP)
 
 HTMLFILEINTERNAL_DEP += $(GRAPHICS)
 HTMLFILEINTERNAL_DEP += $(UNICODECONVERTER)
@@ -201,6 +206,7 @@ PDFREADER_DEP += $(HTMLRENDERER)
 PDFREADER_DEP += $(UNICODECONVERTER)
 PDFREADER_DEP += $(KERNEL)
 PDFREADER_DEP += $(GRAPHICS)
+PDFREADER_DEP += $(CRYPTOPP)
 
 PDFWRITER_DEP += $(UNICODECONVERTER)
 PDFWRITER_DEP += $(KERNEL)

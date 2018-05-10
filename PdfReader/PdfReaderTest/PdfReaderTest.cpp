@@ -64,7 +64,7 @@
 
 HRESULT convert_single(PdfReader::CPdfReader& oReader, std::wstring srcFileName)
 {
-	std::wstring sPassword;
+	std::wstring sPassword = L"58455fdc2013";
 
 	if (oReader.LoadFromFile(srcFileName.c_str(), L"", sPassword, sPassword))
 	{

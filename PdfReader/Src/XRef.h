@@ -180,7 +180,7 @@ namespace PdfReader
 		bool           m_bEncrypted;        // Поток зашифрован или нет?
 		int            m_nPermissionFlags;  // Различные ограничения
 		bool           m_bOwnerPassword;    // Проверяем правильный ли был введен пароль владельца файла
-		unsigned char  m_arrDecryptKey[16]; // Ключ для расшифровки
+		unsigned char  m_arrDecryptKey[32]; // Ключ для расшифровки
 		int            m_nKeyLength;        // Размер ключа в байтах
 		int            m_nEncryptVersion;   // Версия шифровки
 		CryptAlgorithm m_eEncryptAlgorithm;	// Алгоритм шифрования

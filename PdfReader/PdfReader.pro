@@ -19,6 +19,9 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
+DEFINES += CRYPTOPP_DISABLE_ASM
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+
 core_windows {
 
 LIBS += -lgdi32 \

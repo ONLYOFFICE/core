@@ -105,9 +105,9 @@ namespace PdfReader
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
 	{
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
-		//------------------------------------------------------
+// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
+//       FontManager, потому что сейчас в нем кэш без ограничения.
+//------------------------------------------------------
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
         m_pInternal->m_pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
         NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
@@ -115,30 +115,18 @@ namespace PdfReader
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
         m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
-		//------------------------------------------------------
+//------------------------------------------------------
 
         if (m_pInternal->m_pPDFDocument)
             delete m_pInternal->m_pPDFDocument;
 
-		StringExt *seOwner = NULL, *seUser = NULL;
-        if (!wsOwnerPassword.empty())
-            seOwner = new StringExt(wsOwnerPassword.c_str());
-        if (!wsUserPassword.empty())
-            seUser = new StringExt(wsUserPassword.c_str());
-
         m_eError = errorNone;
-        m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, wsSrcPath.c_str(), seOwner, seUser);
+        m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, wsSrcPath, wsOwnerPassword, wsUserPassword);
 
         if (m_pInternal->m_pPDFDocument)
             m_eError = m_pInternal->m_pPDFDocument->GetErrorCode();
         else
             m_eError = errorMemory;
-
-		if (seUser)
-			delete seUser;
-
-		if (seOwner)
-			delete seOwner;
 
         if (!m_pInternal->m_pPDFDocument || !m_pInternal->m_pPDFDocument->CheckValidation())
 		{

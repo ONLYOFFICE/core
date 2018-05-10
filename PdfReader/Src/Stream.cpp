@@ -795,6 +795,14 @@ namespace PdfReader
 		if (m_bNeedFree)
 			MemUtilsFree(m_sBuffer);
 	}
+	char* MemoryStream::getCurrent()
+	{
+		return m_pBufferPointer;
+	}
+	unsigned int MemoryStream::getCurrentLength()
+	{
+		return (m_pBufferEnd - m_pBufferPointer);
+	}
 
 	Stream *MemoryStream::MakeSubStream(unsigned int unStart, bool bLimited, unsigned int unLength, Object *pDict)
 	{

@@ -70,7 +70,8 @@ namespace PdfReader
 	enum CryptAlgorithm
 	{
 		cryptRC4,
-		cryptAES
+		cryptAES128,
+		cryptAES256
 	};
 
 	//------------------------------------------------------------------------
@@ -424,6 +425,9 @@ namespace PdfReader
 			return m_unStart;
 		}
 		virtual void SetStartPos(int delta);
+
+		char* getCurrent();
+		unsigned int getCurrentLength();
 
 	private:
 

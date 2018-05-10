@@ -34,6 +34,7 @@
 #include "unicode/utypes.h"
 #include "unicode/ustring.h"
 #include "unicode/ucnv.h"     /* C   Converter API    */
+#include "unicode/usprep.h"
 
 #include "../DesktopEditor/common/File.h"
 
@@ -77,6 +78,67 @@ namespace NSUnicodeConverter
         }
         ~CUnicodeConverter_Private()
         {
+        }
+
+        std::string SASLprepToUtf8(const wchar_t* sInput, const unsigned int& nInputLen)
+        {
+            std::string sRes;
+            UErrorCode status = U_ZERO_ERROR;
+
+            int32_t nUCharCapacity = (int32_t)nInputLen;// UTF-16 uses 2 code-points per char
+
+            UChar* pUChar = new UChar[nUCharCapacity * sizeof(UChar)];
+            if (pUChar)
+            {
+                const UChar* pUCharStart = pUChar;
+                int32_t nUCharLength = 0;
+
+                u_strFromWCS(pUChar, nUCharCapacity, &nUCharLength, sInput, nInputLen, &status);
+                if (U_SUCCESS(status))
+                {
+                    UStringPrepProfile *profile = usprep_openByType(USPREP_RFC4013_SASLPREP, &status);
+
+                    UParseError parseError;
+
+                    int32_t nOutputLen = nUCharLength * 2;
+                    if (U_SUCCESS(status))
+                    {
+                        UChar* pOutput = new UChar[nOutputLen * sizeof(UChar)];
+                        nOutputLen = usprep_prepare(profile, pUCharStart, nUCharLength, pOutput, nInputLen, 0, &parseError, &status );
+
+						if (U_SUCCESS(status))
+						{
+                            UConverter* conv = ucnv_open("UTF-8", &status);
+                            if (U_SUCCESS(status))
+                            {
+                                const UChar* pOutputLimit = pOutput + nOutputLen;
+                                const UChar* pOutputStart = pOutput;
+                                sRes.resize(nOutputLen * ucnv_getMaxCharSize(conv));// UTF-16 uses 2 code-points per char
+
+                                char *sResStart = &sRes[0];
+                                char *sResCur = sResStart;
+                                const char *sResLimit = sResCur + sRes.size();
+
+                                ucnv_fromUnicode(conv, &sResCur, sResLimit, &pOutputStart, pOutputLimit, NULL, TRUE, &status);
+                                if (U_SUCCESS(status))
+                                {
+                                    sRes.resize(sResCur - sResStart);
+                                }
+                                else
+                                {
+                                    sRes.clear();
+                                }
+                                ucnv_close(conv);
+                            }
+                        }
+                        delete []pOutput;
+                        usprep_close(profile);
+                    }
+
+                }
+                delete []pUChar;
+            }
+            return sRes;
         }
 
         std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName)
@@ -391,5 +453,9 @@ namespace NSUnicodeConverter
     std::wstring CUnicodeConverter::toUnicodeExact(const char* sInput, const unsigned int& nInputLen, int nCodePage)
     {
         return m_pInternal->toUnicodeExact(sInput, nInputLen, nCodePage);
+    }
+    std::string CUnicodeConverter::SASLprepToUtf8(const std::wstring &sSrc)
+    {
+        return m_pInternal->SASLprepToUtf8(sSrc.c_str(), sSrc.length());
     }
 }

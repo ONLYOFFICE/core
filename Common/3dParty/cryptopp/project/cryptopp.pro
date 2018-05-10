@@ -19,7 +19,7 @@ core_mac {
 }
 
 core_windows {
-    DEFINES -= UNICODE
+    DEFINES -= UNICODE _UNICODE
 }
 
 DEFINES += CRYPTOPP_DISABLE_ASM

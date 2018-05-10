@@ -262,7 +262,14 @@ extern int g_nCurFormatVersion;
 		Style_RowPr = 15,
 		Style_CellPr = 16,
 		Style_TblStylePr = 17,
-		Style_Link = 18
+		Style_Link = 18,
+		Style_CustomStyle = 19,
+		Style_Aliases = 20,
+		Style_AutoRedefine = 21,
+		Style_Locked = 22,
+		Style_Personal = 23,
+		Style_PersonalCompose = 24,
+		Style_PersonalReply = 25
 	};}
 	namespace c_oSerProp_tblStylePrType{enum c_oSerProp_tblStylePrType
 	{

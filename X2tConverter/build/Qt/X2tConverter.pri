@@ -125,6 +125,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 #BOOST
 CONFIG += core_boost_regex
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
+include($$PWD/../../../Common/3dParty/curl/curl.pri)
 
 core_windows {
     LIBS += -lAdvapi32

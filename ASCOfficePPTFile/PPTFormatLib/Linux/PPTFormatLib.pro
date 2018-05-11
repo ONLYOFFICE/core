@@ -15,6 +15,7 @@ PWD_ROOT_DIR = $$PWD
 
 CONFIG += core_x2t
 include(../../../Common/base.pri)
+include(../../../Common/3dParty/curl/curl.pri)
 
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)

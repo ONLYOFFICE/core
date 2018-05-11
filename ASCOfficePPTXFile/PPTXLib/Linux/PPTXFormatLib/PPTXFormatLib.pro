@@ -15,7 +15,6 @@ PWD_ROOT_DIR = $$PWD
 
 CONFIG += core_x2t
 include(../../../../Common/base.pri)
-include(../../../../Common/3dParty/curl/curl.pri)
 
 core_windows {
     QMAKE_CXXFLAGS_RELEASE += -Ob0

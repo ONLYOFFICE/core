@@ -47,7 +47,9 @@ Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReade
 }
 int Binary_HdrFtrTableReader::Read()
 {
-	return ReadTable(&Binary_HdrFtrTableReader::ReadHdrFtrContent, this);
+	int res = c_oSerConstants::ReadOk;
+	READ_TABLE_DEF(res, this->ReadHdrFtrContent, NULL);
+	return res;
 }
 int Binary_HdrFtrTableReader::ReadHdrFtrContent(BYTE type, long length, void* poResult)
 {

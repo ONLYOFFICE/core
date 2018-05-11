@@ -153,6 +153,16 @@ public:
 		stCurPos += nRealLen + nCurPosShift;\
 	}\
 }
+#define READ_TABLE_DEF(res, fReadFunction, arg) {\
+	res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+	if(c_oSerConstants::ReadOk != res)\
+		return res;\
+	long stLen = m_oBufferedStream.GetLong();\
+	res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+	if(c_oSerConstants::ReadOk != res)\
+		return res;\
+	READ1_DEF(stLen, res, fReadFunction, arg);\
+}
 #define READ1_TRACKREV(type, length, poResult) \
 	if(c_oSerProp_RevisionType::Author == type)\
 	{\
@@ -171,32 +181,16 @@ public:
         poResult->UserId = m_oBufferedStream.GetString3(length);\
     }
 
-template <typename CallbackType > class Binary_CommonReader
+	class Binary_CommonReader
 	{
 	protected:
 		NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
-		typedef int (CallbackType::*funcArg)(BYTE type, long length, void* arg);
 	public:
 		Binary_CommonReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_oBufferedStream(poBufferedStream)
 		{
 		}
-		int ReadTable(funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
-		{
-			int res = c_oSerConstants::ReadOk;
-			//stLen
-			res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
-			if(c_oSerConstants::ReadOk != res)
-				return res;
-			long stLen = m_oBufferedStream.GetLong();
-			//Смотрим есть ли данные под всю таблицу в дальнейшем спокойно пользуемся get функциями
-			res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
-			if(c_oSerConstants::ReadOk != res)
-				return res;
-			READ1_DEF(stLen, res, (((CallbackType*)poFuncObj)->*fReadFunction), arg);
-			return res;
-		}
 	};
-class Binary_CommonReader2 : public Binary_CommonReader<Binary_CommonReader2>
+class Binary_CommonReader2 : public Binary_CommonReader
 {
 public:
 	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream):Binary_CommonReader(poBufferedStream)
@@ -282,7 +276,7 @@ private:
 		return res;
 	}
 };
-class Binary_VbaProjectTableReader : public Binary_CommonReader<Binary_VbaProjectTableReader>
+class Binary_VbaProjectTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&	m_oFileWriter;
 
@@ -296,7 +290,7 @@ public:
     int Read ();
 };
 
-class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableReader>
+class Binary_HdrFtrTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&	m_oFileWriter;
 	CComments*				m_pComments;
@@ -313,7 +307,7 @@ public:
     int ReadHdrFtrItem		(BYTE type, long length, void* poResult);
 	int ReadHdrFtrItemContent(BYTE type, long length, void* poResult);
 };
-class Binary_rPrReader : public Binary_CommonReader<Binary_rPrReader>
+class Binary_rPrReader : public Binary_CommonReader
 {
 protected:
 	Binary_CommonReader2 oBinary_CommonReader2;
@@ -634,7 +628,7 @@ public:
 		return res;
 	};
 };
-class Binary_pPrReader : public Binary_CommonReader<Binary_pPrReader>
+class Binary_pPrReader : public Binary_CommonReader
 {
 private:
 	Writers::FontTableWriter& m_oFontTableWriter;
@@ -1676,7 +1670,7 @@ public:
 		return res;
 	}
 };
-class Binary_tblPrReader : public Binary_CommonReader<Binary_tblPrReader>
+class Binary_tblPrReader : public Binary_CommonReader
 {
 protected:
 	Binary_pPrReader oBinary_pPrReader;
@@ -2438,7 +2432,7 @@ public:
 		return res;
 	}
 };
-class Binary_NumberingTableReader : public Binary_CommonReader<Binary_NumberingTableReader>
+class Binary_NumberingTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_rPrReader oBinary_rPrReader;
@@ -2453,7 +2447,8 @@ public:
 	}
 	int Read()
 	{
-		int res = ReadTable(&Binary_NumberingTableReader::ReadNumberingContent, this);
+		int res = c_oSerConstants::ReadOk;
+		READ_TABLE_DEF(res, this->ReadNumberingContent, NULL);
 		for(size_t i = 0; i < m_aDocANums.size(); ++i)
 		{
 			docANum* pdocANum = m_aDocANums[i];
@@ -2661,7 +2656,7 @@ public:
 		return res;
 	}
 };
-class BinaryStyleTableReader : public Binary_CommonReader<BinaryStyleTableReader>
+class BinaryStyleTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader			oBinary_pPrReader;
 	Binary_rPrReader			oBinary_rPrReader;
@@ -2675,7 +2670,9 @@ public:
 	}
 	int Read()
 	{
-		return ReadTable(&BinaryStyleTableReader::ReadStyleTableContent, this);
+		int res = c_oSerConstants::ReadOk;
+		READ_TABLE_DEF(res, this->ReadStyleTableContent, NULL);
+		return res;
 	};
 	int ReadStyleTableContent(BYTE type, long length, void* poResult)
 	{
@@ -2971,7 +2968,7 @@ public:
 		return res;
 	}	
 };
-class Binary_OtherTableReader : public Binary_CommonReader<Binary_OtherTableReader>
+class Binary_OtherTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter& m_oFileWriter;
     std::wstring m_sFileInDir;
@@ -2982,7 +2979,9 @@ public:
 	}
 	int Read()
 	{
-		return ReadTable(&Binary_OtherTableReader::ReadOtherContent, this);
+		int res = c_oSerConstants::ReadOk;
+		READ_TABLE_DEF(res, this->ReadOtherContent, NULL);
+		return res;
 	}
 	int ReadOtherContent(BYTE type, long length, void* poResult)
 	{
@@ -3047,7 +3046,7 @@ public:
 		return res;
 	}
 };
-class Binary_CommentsTableReader : public Binary_CommonReader<Binary_CommentsTableReader>
+class Binary_CommentsTableReader : public Binary_CommonReader
 {
 public:
 	CComments m_oComments;
@@ -3057,7 +3056,9 @@ public:
 	}
 	int Read()
 	{
-		return ReadTable(&Binary_CommentsTableReader::ReadComments, this);
+		int res = c_oSerConstants::ReadOk;
+		READ_TABLE_DEF(res, this->ReadComments, NULL);
+		return res;
 	};
 	int ReadComments(BYTE type, long length, void* poResult)
 	{
@@ -3137,7 +3138,7 @@ public:
 		return res;
 	};
 };
-class Binary_SettingsTableReader : public Binary_CommonReader<Binary_SettingsTableReader>
+class Binary_SettingsTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader m_oBinary_pPrReader;
 	Writers::SettingWriter& m_oSettingWriter;
@@ -3149,7 +3150,9 @@ public:
 	}
 	int Read()
 	{
-		return ReadTable(&Binary_SettingsTableReader::ReadSettings, this);
+		int res = c_oSerConstants::ReadOk;
+		READ_TABLE_DEF(res, this->ReadSettings, NULL);
+		return res;
 	};
 	int ReadSettings(BYTE type, long length, void* poResult)
 	{
@@ -3662,7 +3665,7 @@ public:
 		return res;
 	};
 };
-class Binary_DocumentTableReader : public Binary_CommonReader<Binary_DocumentTableReader>
+class Binary_DocumentTableReader : public Binary_CommonReader
 {
 private:
     Binary_CommonReader2            oBinary_CommonReader2;
@@ -3704,7 +3707,9 @@ public:
 	}
 	int Read()
 	{
-		return ReadTable(&Binary_DocumentTableReader::ReadDocumentContent, this);
+		int res = c_oSerConstants::ReadOk;
+		READ_TABLE_DEF(res, this->ReadDocumentContent, NULL);
+		return res;
     }
 	XmlUtils::CStringWriter& GetRunStringWriter()
 	{
@@ -8151,7 +8156,7 @@ public:
 		return res;
 	}
 };
-class Binary_NotesTableReader : public Binary_CommonReader<Binary_NotesTableReader>
+class Binary_NotesTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&					m_oFileWriter;
 	CComments*								m_pComments;
@@ -8180,7 +8185,8 @@ public:
 		}
 		Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, *pContentWriter, m_pComments);
 
-		int res = ReadTable(&Binary_NotesTableReader::ReadNotes, this, &oBinary_DocumentTableReader);
+		int res = c_oSerConstants::ReadOk;
+		READ_TABLE_DEF(res, this->ReadNotes, &oBinary_DocumentTableReader);
 
 		OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + L"word" +
 																			FILE_SEPARATOR_STR + L"_rels"+

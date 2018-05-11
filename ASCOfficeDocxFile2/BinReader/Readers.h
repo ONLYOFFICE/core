@@ -118,6 +118,41 @@ public:
 		stCurPos += length + 5;\
 	}\
 }
+#define READ2_DEF(stLen, res, fReadFunction, arg) {\
+	long stCurPos = 0;\
+	while(stCurPos < stLen)\
+	{\
+		BYTE type = m_oBufferedStream.GetUChar();\
+		long lenType =  m_oBufferedStream.GetUChar();\
+		int nCurPosShift = 2;\
+		int nRealLen;\
+		switch(lenType)\
+		{\
+		case c_oSerPropLenType::Null:		nRealLen = 0;break;\
+		case c_oSerPropLenType::Byte:		nRealLen = 1;break;\
+		case c_oSerPropLenType::Short:		nRealLen = 2;break;\
+		case c_oSerPropLenType::Three:		nRealLen = 3;break;\
+		case c_oSerPropLenType::Long:\
+		case c_oSerPropLenType::Double:		nRealLen = 4;break;\
+		case c_oSerPropLenType::Variable:\
+			nRealLen = m_oBufferedStream.GetLong();\
+			nCurPosShift += 4;\
+			break;\
+		case c_oSerPropLenType::Double64:	nRealLen = 8;break;\
+		case c_oSerPropLenType::Long64:		nRealLen = 8;break;\
+		default:return c_oSerConstants::ErrorUnknown;\
+		}\
+		res = fReadFunction(type, nRealLen, arg);\
+		if(res == c_oSerConstants::ReadUnknown)\
+		{\
+			m_oBufferedStream.GetPointer(nRealLen);\
+			res = c_oSerConstants::ReadOk;\
+		}\
+		else if(res != c_oSerConstants::ReadOk)\
+			return res;\
+		stCurPos += nRealLen + nCurPosShift;\
+	}\
+}
 #define READ1_TRACKREV(type, length, poResult) \
 	if(c_oSerProp_RevisionType::Author == type)\
 	{\
@@ -160,45 +195,6 @@ template <typename CallbackType > class Binary_CommonReader
 			READ1_DEF(stLen, res, (((CallbackType*)poFuncObj)->*fReadFunction), arg);
 			return res;
 		}
-		int Read2(long stLen, funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
-		{
-			int res = c_oSerConstants::ReadOk;
-			long stCurPos = 0;
-			while(stCurPos < stLen)
-			{
-				//stItem
-				BYTE type = m_oBufferedStream.GetUChar();
-				long lenType =  m_oBufferedStream.GetUChar();
-				int nCurPosShift = 2;
-				int nRealLen;
-				switch(lenType)
-				{
-				case c_oSerPropLenType::Null:		nRealLen = 0;break;
-				case c_oSerPropLenType::Byte:		nRealLen = 1;break;
-				case c_oSerPropLenType::Short:		nRealLen = 2;break;
-				case c_oSerPropLenType::Three:		nRealLen = 3;break;
-				case c_oSerPropLenType::Long:
-				case c_oSerPropLenType::Double:		nRealLen = 4;break;
-				case c_oSerPropLenType::Variable:
-					nRealLen = m_oBufferedStream.GetLong();
-					nCurPosShift += 4;
-					break;
-				case c_oSerPropLenType::Double64:	nRealLen = 8;break;
-				case c_oSerPropLenType::Long64:		nRealLen = 8;break;
-				default:return c_oSerConstants::ErrorUnknown;
-				}
-				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, nRealLen, arg);
-				if(res == c_oSerConstants::ReadUnknown)
-				{
-					m_oBufferedStream.GetPointer(nRealLen);
-					res = c_oSerConstants::ReadOk;
-				}
-				else if(res != c_oSerConstants::ReadOk)
-					return res;
-				stCurPos += nRealLen + nCurPosShift;
-			}
-			return res;
-		}
 	};
 class Binary_CommonReader2 : public Binary_CommonReader<Binary_CommonReader2>
 {
@@ -214,9 +210,10 @@ public:
 		oRGB.B = m_oBufferedStream.GetUChar();
 		return oRGB;
 	}
-	void ReadThemeColor(int length, CThemeColor& oCThemeColor)
+	int ReadThemeColor(int length, CThemeColor& oCThemeColor)
 	{
-		Read2(length, &Binary_CommonReader2::_ReadThemeColor, this, &oCThemeColor);
+		int res = c_oSerConstants::ReadOk;
+		READ2_DEF(length, res, this->_ReadThemeColor, &oCThemeColor);
 	}
 	int _ReadThemeColor(BYTE type, long length, void* poResult)
 	{
@@ -245,17 +242,12 @@ public:
 		}
 		return res;
 	}
-	int ReadShdOut(long length, Shd* shd)
-	{
-		return  Read2(length, &Binary_CommonReader2::ReadShd, this, shd);
-	}
 	template<typename T> int ReadTrackRevision(long length, T* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
 		READ1_DEF(length, res, this->ReadTrackRevisionInner, poResult);
 		return res;
 	}
-private:
 	int ReadShd(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -280,6 +272,7 @@ private:
 		}
 		return res;
 	};
+private:
 	template<typename T> int ReadTrackRevisionInner(BYTE type, long length, T* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -331,7 +324,9 @@ public:
 	}
 	int Read(long stLen, void* poResult)
 	{
-		return Read2(stLen, &Binary_rPrReader::ReadContent, this, poResult);
+		int res = c_oSerConstants::ReadOk;
+		READ2_DEF(stLen, res, this->ReadContent, poResult);
+		return res;
 	};
 	int ReadContent(BYTE type, long length, void* poResult)
 	{
@@ -449,7 +444,7 @@ public:
 		case c_oSerProp_rPrType::Shd:
 			{
 				Shd oShd;
-				oBinary_CommonReader2.ReadShdOut(length, &oShd);
+				READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 				orPr->bShd = true;
 				orPr->Shd = oShd.ToString();
 				break;
@@ -662,7 +657,9 @@ public:
 	}
 	int Read(long stLen, void* poResult)
 	{
-		return Read2(stLen, &Binary_pPrReader::ReadContent, this, poResult);
+		int res = c_oSerConstants::ReadOk;
+		READ2_DEF(stLen, res, this->ReadContent, poResult);
+		return res;
 	};
 	int ReadContent( BYTE type, long length, void* poResult)
 	{
@@ -681,7 +678,7 @@ public:
 		case c_oSerProp_pPrType::Ind:
 			{
 				XmlUtils::CStringWriter oTempWriter;
-				res = Read2(length, &Binary_pPrReader::ReadInd, this, &oTempWriter);
+				READ2_DEF(length, res, this->ReadInd, &oTempWriter);
 				if(oTempWriter.GetCurSize() > 0)
 				{
                     pCStringWriter->WriteString(std::wstring(L"<w:ind"));
@@ -729,7 +726,7 @@ public:
 		case c_oSerProp_pPrType::Spacing:
 			{
 				Spacing oSpacing;
-				res = Read2(length, &Binary_pPrReader::ReadSpacing, this, &oSpacing);
+				READ2_DEF(length, res, this->ReadSpacing, &oSpacing);
 				if(oSpacing.bLine || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
 				{
                     pCStringWriter->WriteString(std::wstring(L"<w:spacing"));
@@ -796,7 +793,7 @@ public:
 		case c_oSerProp_pPrType::Shd:
 			{
 				Shd oShd;
-				oBinary_CommonReader2.ReadShdOut(length, &oShd);
+				READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 				pCStringWriter->WriteString(oShd.ToString());
 				break;
 			}
@@ -815,7 +812,7 @@ public:
 		case c_oSerProp_pPrType::Tab:
 			{
 				Tabs oTabs;
-				res = Read2(length, &Binary_pPrReader::ReadTabs, this, &oTabs);
+				READ2_DEF(length, res, this->ReadTabs, &oTabs);
 				size_t nLen = oTabs.m_aTabs.size();
 				if(nLen > 0)
 				{
@@ -862,14 +859,13 @@ public:
 		case c_oSerProp_pPrType::numPr:
             {
                 pCStringWriter->WriteString(std::wstring(L"<w:numPr>"));
-                res = Read2(length, &Binary_pPrReader::ReadNumPr, this, poResult);
+				READ2_DEF(length, res, this->ReadNumPr, poResult);
                 pCStringWriter->WriteString(std::wstring(L"</w:numPr>"));
             }break;
 		case c_oSerProp_pPrType::pPr_rPr:
 			{
 				rPr orPr(m_oFontTableWriter.m_mapFonts);
 				res = oBinary_rPrReader.Read(length, &orPr);
-				//Read2(length, &Binary_pPrReader::ReadNumPr, this, &orPr);
 				if(orPr.IsNoEmpty())
 				orPr.Write(pCStringWriter);
 				
@@ -888,7 +884,7 @@ public:
 		case c_oSerProp_pPrType::FramePr:
 			{
 				CFramePr oFramePr;
-				res = Read2(length, &Binary_pPrReader::ReadFramePr, this, &oFramePr);
+				READ2_DEF(length, res, this->ReadFramePr, &oFramePr);
                 if(false == oFramePr.IsEmpty())
 					oFramePr.Write(*pCStringWriter);				
             }break;
@@ -1014,7 +1010,7 @@ public:
 		if(c_oSerProp_pPrType::Tab_Item == type)
 		{
 			Tab oTabItem;
-			res = Read2(length, &Binary_pPrReader::ReadTabItem, this, &oTabItem);
+			READ2_DEF(length, res, this->ReadTabItem, &oTabItem);
 			poTabs->m_aTabs.push_back(oTabItem);
 		}
 		else
@@ -1073,37 +1069,37 @@ public:
 		if( c_oSerBordersType::left == type )
 		{
 			pdocBorders->bLeft = true;
-			res = Read2(length, &Binary_pPrReader::ReadBorder, this, &pdocBorders->oLeft);
+			READ2_DEF(length, res, this->ReadBorder, &pdocBorders->oLeft);
 		}
 		else if( c_oSerBordersType::top == type )
 		{
 			pdocBorders->bTop = true;
-			res = Read2(length, &Binary_pPrReader::ReadBorder, this, &pdocBorders->oTop);
+			READ2_DEF(length, res, this->ReadBorder, &pdocBorders->oTop);
 		}
 		else if( c_oSerBordersType::right == type )
 		{
 			pdocBorders->bRight = true;
-			res = Read2(length, &Binary_pPrReader::ReadBorder, this, &pdocBorders->oRight);
+			READ2_DEF(length, res, this->ReadBorder, &pdocBorders->oRight);
 		}
 		else if( c_oSerBordersType::bottom == type )
 		{
 			pdocBorders->bBottom = true;
-			res = Read2(length, &Binary_pPrReader::ReadBorder, this, &pdocBorders->oBottom);
+			READ2_DEF(length, res, this->ReadBorder, &pdocBorders->oBottom);
 		}
 		else if( c_oSerBordersType::insideV == type )
 		{
 			pdocBorders->bInsideV = true;
-			res = Read2(length, &Binary_pPrReader::ReadBorder, this, &pdocBorders->oInsideV);
+			READ2_DEF(length, res, this->ReadBorder, &pdocBorders->oInsideV);
 		}
 		else if( c_oSerBordersType::insideH == type )
 		{
 			pdocBorders->bInsideH = true;
-			res = Read2(length, &Binary_pPrReader::ReadBorder, this, &pdocBorders->oInsideH);
+			READ2_DEF(length, res, this->ReadBorder, &pdocBorders->oInsideH);
 		}
 		else if( c_oSerBordersType::between == type )
 		{
 			pdocBorders->bBetween = true;
-			res = Read2(length, &Binary_pPrReader::ReadBorder, this, &pdocBorders->oBetween);
+			READ2_DEF(length, res, this->ReadBorder, &pdocBorders->oBetween);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1226,15 +1222,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSerProp_secPrType::pgSz == type )
 		{
-			res = Read2(length, &Binary_pPrReader::Read_pgSz, this, poResult);
+			READ2_DEF(length, res, this->Read_pgSz, poResult);
 		}
 		else if( c_oSerProp_secPrType::pgMar == type )
 		{
-			res = Read2(length, &Binary_pPrReader::Read_pgMar, this, poResult);
+			READ2_DEF(length, res, this->Read_pgMar, poResult);
 		}
 		else if( c_oSerProp_secPrType::setting == type )
 		{
-			res = Read2(length, &Binary_pPrReader::Read_pgSetting, this, poResult);
+			READ2_DEF(length, res, this->Read_pgSetting, poResult);
 		}
 		else if( c_oSerProp_secPrType::headers == type )
 		{
@@ -1590,22 +1586,22 @@ public:
 		else if( c_oSerPageBorders::Bottom == type )
 		{
 			pPageBorders->m_oBottom.Init();
-			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oBottom.GetPointer());
+			READ2_DEF(length, res, this->ReadPageBorder, pPageBorders->m_oBottom.GetPointer());
 		}
 		else if( c_oSerPageBorders::Left == type )
 		{
 			pPageBorders->m_oLeft.Init();
-			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oLeft.GetPointer());
+			READ2_DEF(length, res, this->ReadPageBorder, pPageBorders->m_oLeft.GetPointer());
 		}
 		else if( c_oSerPageBorders::Right == type )
 		{
 			pPageBorders->m_oRight.Init();
-			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oRight.GetPointer());
+			READ2_DEF(length, res, this->ReadPageBorder, pPageBorders->m_oRight.GetPointer());
 		}
 		else if( c_oSerPageBorders::Top == type )
 		{
 			pPageBorders->m_oTop.Init();
-			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oTop.GetPointer());
+			READ2_DEF(length, res, this->ReadPageBorder, pPageBorders->m_oTop.GetPointer());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1727,7 +1723,7 @@ public:
 		else if( c_oSerProp_tblPrType::TableW == type )
 		{
 			docW odocW;
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &odocW);
+			READ2_DEF(length, res, this->ReadW, &odocW);
             pWiterTblPr->TableW = odocW.Write(std::wstring(_T("w:tblW")));
 		}
 		else if( c_oSerProp_tblPrType::TableCellMar == type )
@@ -1757,14 +1753,14 @@ public:
 		else if( c_oSerProp_tblPrType::Shd == type )
 		{
 			Shd oShd;
-			oBinary_CommonReader2.ReadShdOut(length, &oShd);
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 			pWiterTblPr->Shd = oShd.ToString();
 			m_sCurTableShd = pWiterTblPr->Shd;
 		}
 		else if( c_oSerProp_tblPrType::tblpPr == type )
 		{
 			XmlUtils::CStringWriter oTempWriter;
-			res = Read2(length, &Binary_tblPrReader::Read_tblpPr, this, &oTempWriter);
+			READ2_DEF(length, res, this->Read_tblpPr, &oTempWriter);
             pWiterTblPr->tblpPr += L"<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"";
             pWiterTblPr->tblpPr += oTempWriter.GetData();
             pWiterTblPr->tblpPr += L"/>";
@@ -1772,7 +1768,7 @@ public:
 		else if( c_oSerProp_tblPrType::tblpPr2 == type )
 		{
 			XmlUtils::CStringWriter oTempWriter;
-			res = Read2(length, &Binary_tblPrReader::Read_tblpPr2, this, &oTempWriter);
+			READ2_DEF(length, res, this->Read_tblpPr2, &oTempWriter);
             pWiterTblPr->tblpPr += L"<w:tblpPr";
             pWiterTblPr->tblpPr += oTempWriter.GetData();
             pWiterTblPr->tblpPr += L"/>";
@@ -1865,25 +1861,25 @@ public:
 		if( c_oSerMarginsType::left == type )
 		{
 			docW oLeft;
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oLeft);
+			READ2_DEF(length, res, this->ReadW, &oLeft);
             oLeft.Write(*pCStringWriter, std::wstring(_T("w:left")));
 		}
 		else if( c_oSerMarginsType::top == type )
 		{
 			docW oTop;
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oTop);
+			READ2_DEF(length, res, this->ReadW, &oTop);
             oTop.Write(*pCStringWriter, std::wstring(_T("w:top")));
 		}
 		else if( c_oSerMarginsType::right == type )
 		{
 			docW oRight;
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oRight);
+			READ2_DEF(length, res, this->ReadW, &oRight);
             oRight.Write(*pCStringWriter, std::wstring(_T("w:right")));
 		}
 		else if( c_oSerMarginsType::bottom == type )
 		{
 			docW oBottom;
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oBottom);
+			READ2_DEF(length, res, this->ReadW, &oBottom);
             oBottom.Write(*pCStringWriter, std::wstring(_T("w:bottom")));
 		}
 		else
@@ -1910,7 +1906,7 @@ public:
 		else if( c_oSer_tblpPrType::Paddings == type )
 		{
 			PaddingsToWrite oPaddings;
-			res = Read2(length, &Binary_tblPrReader::ReadPaddings, this, &oPaddings);
+			READ2_DEF(length, res, this->ReadPaddings, &oPaddings);
 			if(oPaddings.bLeft)
 			{
 				double dLeft = oPaddings.Left;
@@ -2017,16 +2013,12 @@ public:
 		}
 		else if( c_oSer_tblpPrType2::Paddings == type )
 		{
-			res = Read2(length, &Binary_tblPrReader::ReadPaddings2, this, poResult);
+			READ2_DEF(length, res, this->ReadPaddings2, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
-	int Read_RowPrOut(long length, XmlUtils::CStringWriter* pCStringWriter)
-	{
-		return Read2(length, &Binary_tblPrReader::Read_RowPr, this, pCStringWriter);
-	}
 	int Read_RowPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -2042,7 +2034,7 @@ public:
 		else if( c_oSerProp_rowPrType::After == type )
 		{
 			rowPrAfterBefore orowPrAfterBefore(_T("After"));
-			res = Read2(length, &Binary_tblPrReader::ReadAfter, this, &orowPrAfterBefore);
+			READ2_DEF(length, res, this->ReadAfter, &orowPrAfterBefore);
 			if(true == orowPrAfterBefore.bGridAfter && orowPrAfterBefore.nGridAfter > 0 && false == orowPrAfterBefore.oAfterWidth.bW)
 			{
 				//ищем по tblGrid
@@ -2063,7 +2055,7 @@ public:
 		else if( c_oSerProp_rowPrType::Before == type )
 		{
 			rowPrAfterBefore orowPrAfterBefore(_T("Before"));
-			res = Read2(length, &Binary_tblPrReader::ReadBefore, this, &orowPrAfterBefore);
+			READ2_DEF(length, res, this->ReadBefore, &orowPrAfterBefore);
 			if(true == orowPrAfterBefore.bGridAfter && orowPrAfterBefore.nGridAfter > 0 && false == orowPrAfterBefore.oAfterWidth.bW)
 			{
 				//ищем по tblGrid
@@ -2102,7 +2094,7 @@ public:
 		else if( c_oSerProp_rowPrType::Height == type )
 		{
 			RowHeight val;
-			res = Read2(length, &Binary_tblPrReader::ReadHeight, this, &val);
+			READ2_DEF(length, res, this->ReadHeight, &val);
            
 			pCStringWriter->WriteString(L"<w:trHeight w:val=\"" + std::to_wstring(val.nHeight) + L"\"");
 			
@@ -2154,7 +2146,7 @@ public:
 		}
 		else if( c_oSerProp_rowPrType::WAfter == type )
 		{
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &orowPrAfterBefore->oAfterWidth);
+			READ2_DEF(length, res, this->ReadW, &orowPrAfterBefore->oAfterWidth);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2171,7 +2163,7 @@ public:
 		}
 		else if( c_oSerProp_rowPrType::WBefore == type )
 		{
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &orowPrAfterBefore->oAfterWidth);
+			READ2_DEF(length, res, this->ReadW, &orowPrAfterBefore->oAfterWidth);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2196,10 +2188,6 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
-	int Read_CellPrOut(long length, XmlUtils::CStringWriter* pCStringWriter)
-	{
-		return Read2(length, &Binary_tblPrReader::Read_CellPr, this, pCStringWriter);
-	}
 	int Read_CellPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -2216,7 +2204,7 @@ public:
 		{
 			bCellShd = true;
 			Shd oShd;
-			oBinary_CommonReader2.ReadShdOut(length, &oShd);
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 			pCStringWriter->WriteString(oShd.ToString());
 		}
 		else if( c_oSerProp_cellPrType::TableCellBorders == type )
@@ -2244,7 +2232,7 @@ public:
 		else if( c_oSerProp_cellPrType::TableCellW == type )
 		{
 			docW oW;
-			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oW);
+			READ2_DEF(length, res, this->ReadW, &oW);
             oW.Write(*pCStringWriter, std::wstring(_T("w:tcW")));
 		}
 		else if( c_oSerProp_cellPrType::VAlign == type )
@@ -2326,10 +2314,6 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
-	int ReadPaddingsOut(long length, PaddingsToWrite* oPaddings)
-	{
-		return Read2(length, &Binary_tblPrReader::ReadPaddings, this, oPaddings);
-	}
 	int ReadPaddings(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -2433,7 +2417,7 @@ public:
 		else if (c_oSerProp_RevisionType::tblPrChange == type)
 		{
 			pTrackRevision->trPr = new XmlUtils::CStringWriter();
-			res = Read_RowPrOut(length, pTrackRevision->trPr);
+			READ2_DEF(length, res, this->Read_RowPr, pTrackRevision->trPr);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2447,7 +2431,7 @@ public:
 		else if (c_oSerProp_RevisionType::tcPrChange == type)
 		{
 			pTrackRevision->tcPr = new XmlUtils::CStringWriter();
-			res = Read_CellPrOut(length, pTrackRevision->tcPr);
+			READ2_DEF(length, res, this->Read_CellPr, pTrackRevision->tcPr);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2506,7 +2490,7 @@ public:
 		if ( c_oSerNumTypes::Num == type )
 		{
 			docNum* pdocNum = new docNum();
-			res = Read2(length, &Binary_NumberingTableReader::ReadNum, this, pdocNum);
+			READ2_DEF(length, res, this->ReadNum, pdocNum);
 			if(pdocNum->bAId && pdocNum->bId)
 				m_mapANumToNum[pdocNum->AId] = pdocNum->Id;
 			m_aDocNums.push_back(pdocNum);
@@ -2578,7 +2562,7 @@ public:
 		if ( c_oSerNumTypes::Lvl == type )
 		{
 			docLvl* odocLvl = new docLvl();
-			res = Read2(length, &Binary_NumberingTableReader::ReadLevel, this, odocLvl);
+			READ2_DEF(length, res, this->ReadLevel, odocLvl);
 			odocANum->Lvls.push_back(odocLvl);
 		}
 		else
@@ -2832,14 +2816,14 @@ public:
 		else if(c_oSer_sts::Style_RowPr == type)
 		{
 			XmlUtils::CStringWriter oTempWriter;
-			oBinary_tblPrReader.Read_RowPrOut(length, &oTempWriter);
+			READ2_DEF(length, res, oBinary_tblPrReader.Read_RowPr, &oTempWriter);
             std::wstring sRowPr = oTempWriter.GetData();
 			odocStyle->RowPr = sRowPr;
 		}
 		else if(c_oSer_sts::Style_CellPr == type)
 		{
 			XmlUtils::CStringWriter oTempWriter;
-			oBinary_tblPrReader.Read_CellPrOut(length, &oTempWriter);
+			READ2_DEF(length, res, oBinary_tblPrReader.Read_CellPr, &oTempWriter);
             std::wstring sCellPr = oTempWriter.GetData();
 			odocStyle->CellPr = sCellPr;
 		}
@@ -2962,7 +2946,7 @@ public:
 		else if(c_oSerProp_tblStylePrType::TrPr == type)
 		{
 			XmlUtils::CStringWriter oTempWriter;
-			oBinary_tblPrReader.Read_RowPrOut(length, &oTempWriter);
+			READ2_DEF(length, res, oBinary_tblPrReader.Read_RowPr, &oTempWriter);
 
             if(oTempWriter.GetCurSize() > 0)
 			{
@@ -2974,7 +2958,7 @@ public:
 		else if(c_oSerProp_tblStylePrType::TcPr == type)
 		{
 			XmlUtils::CStringWriter oTempWriter;
-			oBinary_tblPrReader.Read_CellPrOut(length, &oTempWriter);
+			READ2_DEF(length, res, oBinary_tblPrReader.Read_CellPr, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
                 ptblStylePr->Writer.WriteString(std::wstring(_T("<w:tcPr>")));
@@ -3173,7 +3157,7 @@ public:
 		if ( c_oSer_SettingsType::ClrSchemeMapping == type )
 		{
 			int aSchemeMapping[] = { 0, 1, 2, 3, 4, 5, 10, 11, 8, 9, 6, 7 };
-			res = Read2(length, &Binary_SettingsTableReader::ReadClrSchemeMapping, this, aSchemeMapping);
+			READ2_DEF(length, res, this->ReadClrSchemeMapping, aSchemeMapping);
             std::wstring sSchemeMapping = _T("<w:clrSchemeMapping");
 			for(int i = 0; i < 12; ++i)
 			{
@@ -3338,67 +3322,67 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_MathPrType::BrkBin == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathBrkBin, this, poResult);
+			READ2_DEF(length, res, this->ReadMathBrkBin, poResult);
 		}
 		else if ( c_oSer_MathPrType::BrkBinSub == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathBrkBinSub, this, poResult);
+			READ2_DEF(length, res, this->ReadMathBrkBinSub, poResult);
 		}
 		else if ( c_oSer_MathPrType::DefJc == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathDefJc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathDefJc, poResult);
 		}
 		else if ( c_oSer_MathPrType::DispDef == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathDispDef, this, poResult);
+			READ2_DEF(length, res, this->ReadMathDispDef, poResult);
 		}
 		else if ( c_oSer_MathPrType::InterSp == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathInterSp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathInterSp, poResult);
 		}
 		else if ( c_oSer_MathPrType::IntLim == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathIntLim, this, poResult);
+			READ2_DEF(length, res, this->ReadMathIntLim, poResult);
 		}
 		else if ( c_oSer_MathPrType::IntraSp == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathIntraSp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathIntraSp, poResult);
 		}
 		else if ( c_oSer_MathPrType::LMargin == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathLMargin, this, poResult);
+			READ2_DEF(length, res, this->ReadMathLMargin, poResult);
 		}
 		else if ( c_oSer_MathPrType::MathFont == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathMathFont, this, poResult);
+			READ2_DEF(length, res, this->ReadMathMathFont, poResult);
 		}
 		else if ( c_oSer_MathPrType::NaryLim == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathNaryLim, this, poResult);
+			READ2_DEF(length, res, this->ReadMathNaryLim, poResult);
 		}
 		else if ( c_oSer_MathPrType::PostSp == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathPostSp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathPostSp, poResult);
 		}
 		else if ( c_oSer_MathPrType::PreSp == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathPreSp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathPreSp, poResult);
 		}
 		else if ( c_oSer_MathPrType::RMargin == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathRMargin, this, poResult);
+			READ2_DEF(length, res, this->ReadMathRMargin, poResult);
 		}
 		else if ( c_oSer_MathPrType::SmallFrac == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathSmallFrac, this, poResult);
+			READ2_DEF(length, res, this->ReadMathSmallFrac, poResult);
 		}
 		else if ( c_oSer_MathPrType::WrapIndent == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathWrapIndent, this, poResult);
+			READ2_DEF(length, res, this->ReadMathWrapIndent, poResult);
 		}
 		else if ( c_oSer_MathPrType::WrapRight == type )
 		{
-			res = Read2(length, &Binary_SettingsTableReader::ReadMathWrapRight, this, poResult);
+			READ2_DEF(length, res, this->ReadMathWrapRight, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3774,7 +3758,7 @@ public:
         else if ( c_oSerParType::Background == type )
         {
             Background oBackground;
-            res = Read2(length, &Binary_DocumentTableReader::Read_Background, this, &oBackground);
+			READ2_DEF(length, res, this->Read_Background, &oBackground);
             m_oDocumentWriter.m_oBackground.WriteString(oBackground.Write());
         }
 		else if ( c_oSerParType::BookmarkStart == type )
@@ -4640,7 +4624,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Chr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathChr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathChr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{			
@@ -4691,7 +4675,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::ArgSz == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathArgSz, this, poResult);
+			READ2_DEF(length, res, this->ReadMathArgSz, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4746,7 +4730,7 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::Pos == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathPos, this, poResult);
+			READ2_DEF(length, res, this->ReadMathPos, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4822,35 +4806,35 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::HideBot == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathHideBot, this, poResult);
+			READ2_DEF(length, res, this->ReadMathHideBot, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::HideLeft == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathHideLeft, this, poResult);
+			READ2_DEF(length, res, this->ReadMathHideLeft, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::HideRight == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathHideRight, this, poResult);
+			READ2_DEF(length, res, this->ReadMathHideRight, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::HideTop == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathHideTop, this, poResult);
+			READ2_DEF(length, res, this->ReadMathHideTop, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::StrikeBLTR == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathStrikeBLTR, this, poResult);
+			READ2_DEF(length, res, this->ReadMathStrikeBLTR, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::StrikeH == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathStrikeH, this, poResult);
+			READ2_DEF(length, res, this->ReadMathStrikeH, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::StrikeTLBR == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathStrikeTLBR, this, poResult);
+			READ2_DEF(length, res, this->ReadMathStrikeTLBR, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::StrikeV == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathStrikeV, this, poResult);
+			READ2_DEF(length, res, this->ReadMathStrikeV, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4880,11 +4864,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Aln == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathAln, this, poResult);
+			READ2_DEF(length, res, this->ReadMathAln, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Brk == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathBrk, this, poResult);
+			READ2_DEF(length, res, this->ReadMathBrk, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{		
@@ -4894,15 +4878,15 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::Diff == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathDiff, this, poResult);
+			READ2_DEF(length, res, this->ReadMathDiff, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::NoBreak == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathNoBreak, this, poResult);
+			READ2_DEF(length, res, this->ReadMathNoBreak, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::OpEmu == type )
 		{		
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathOpEmu, this, poResult);
+			READ2_DEF(length, res, this->ReadMathOpEmu, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5127,11 +5111,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Column == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathLong, this, poResult);			
+			READ2_DEF(length, res, this->ReadMathLong, poResult);
 		}	
 		else if ( c_oSer_OMathBottomNodesType::BegChr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathBegChr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathBegChr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
@@ -5141,19 +5125,19 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::EndChr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathEndChr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathEndChr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Grow == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathGrow, this, poResult);
+			READ2_DEF(length, res, this->ReadMathGrow, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::SepChr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathSepChr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathSepChr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Shp == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathShp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathShp, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5199,11 +5183,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Row == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathLong, this, poResult);			
+			READ2_DEF(length, res, this->ReadMathLong, poResult);
 		}	
 		else if ( c_oSer_OMathBottomNodesType::BaseJc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathBaseJc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathBaseJc, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
@@ -5213,19 +5197,19 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::MaxDist == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathMaxDist, this, poResult);
+			READ2_DEF(length, res, this->ReadMathMaxDist, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::ObjDist == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathObjDist, this, poResult);
+			READ2_DEF(length, res, this->ReadMathObjDist, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::RSp == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathRSp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathRSp, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::RSpRule == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathRSpRule, this, poResult);
+			READ2_DEF(length, res, this->ReadMathRSpRule, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5267,7 +5251,7 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::Type == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathType, this, poResult);
+			READ2_DEF(length, res, this->ReadMathType, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5335,7 +5319,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Chr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathChr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathChr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
@@ -5345,11 +5329,11 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::Pos == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathPos, this, poResult);
+			READ2_DEF(length, res, this->ReadMathPos, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::VertJc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathVertJc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathVertJc, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5651,11 +5635,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Count == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathCount, this, poResult);
+			READ2_DEF(length, res, this->ReadMathCount, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::McJc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathMcJc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathMcJc, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5679,27 +5663,27 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Row == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathLong, this, poResult);
+			READ2_DEF(length, res, this->ReadMathLong, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Column == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathLong, this, poResult);
+			READ2_DEF(length, res, this->ReadMathLong, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::BaseJc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathBaseJc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathBaseJc, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CGp == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathCGp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathCGp, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CGpRule == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathCGpRule, this, poResult);
+			READ2_DEF(length, res, this->ReadMathCGpRule, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CSp == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathCSp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathCSp, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
@@ -5715,15 +5699,15 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::PlcHide == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathPlcHide, this, poResult);
+			READ2_DEF(length, res, this->ReadMathPlcHide, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::RSp == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathRSp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathRSp, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::RSpRule == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathRSpRule, this, poResult);
+			READ2_DEF(length, res, this->ReadMathRSpRule, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5778,7 +5762,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Chr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathChr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathChr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
@@ -5788,19 +5772,19 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::Grow == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathGrow, this, poResult);
+			READ2_DEF(length, res, this->ReadMathGrow, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::LimLoc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathLimLoc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathLimLoc, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::SubHide == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathSubHide, this, poResult);
+			READ2_DEF(length, res, this->ReadMathSubHide, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::SupHide == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathSupHide, this, poResult);
+			READ2_DEF(length, res, this->ReadMathSupHide, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5894,7 +5878,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::MJc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathMJc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathMJc, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5947,23 +5931,23 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::Show == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathShow, this, poResult);
+			READ2_DEF(length, res, this->ReadMathShow, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Transp == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathTransp, this, poResult);
+			READ2_DEF(length, res, this->ReadMathTransp, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::ZeroAsc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathZeroAsc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathZeroAsc, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::ZeroDesc == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathZeroDesc, this, poResult);
+			READ2_DEF(length, res, this->ReadMathZeroDesc, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::ZeroWid == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathZeroWid, this, poResult);
+			READ2_DEF(length, res, this->ReadMathZeroWid, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6031,7 +6015,7 @@ public:
 		{
             GetRunStringWriter().WriteString(std::wstring(_T("<m:t>")));
 
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathText, this, poResult);
+			READ2_DEF(length, res, this->ReadMathText, poResult);
 
             GetRunStringWriter().WriteString(std::wstring(_T("</m:t>")));
 		}
@@ -6140,7 +6124,7 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::DegHide == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathDegHide, this, poResult);
+			READ2_DEF(length, res, this->ReadMathDegHide, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6151,27 +6135,27 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::Aln == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathAln, this, poResult);
+			READ2_DEF(length, res, this->ReadMathAln, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Brk == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathBrk, this, poResult);
+			READ2_DEF(length, res, this->ReadMathBrk, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Lit == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathLit, this, poResult);
+			READ2_DEF(length, res, this->ReadMathLit, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Nor == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathNor, this, poResult);
+			READ2_DEF(length, res, this->ReadMathNor, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Scr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathScr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathScr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::Sty == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathSty, this, poResult);
+			READ2_DEF(length, res, this->ReadMathSty, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6408,7 +6392,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::AlnScr == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadMathAlnScr, this, poResult);
+			READ2_DEF(length, res, this->ReadMathAlnScr, poResult);
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
@@ -6769,7 +6753,7 @@ public:
 		else if(c_oSerRunType::image == type)
 		{
 			docImg odocImg(m_oFileWriter.getNextDocPr());
-			res = Read2(length, &Binary_DocumentTableReader::ReadImage, this, &odocImg);
+			READ2_DEF(length, res, this->ReadImage, &odocImg);
 			if(odocImg.MediaId >= 0 && odocImg.MediaId < m_oMediaWriter.nImageCount)
 			{
                 std::wstring sNewImgName = m_oMediaWriter.m_aImageNames[odocImg.MediaId];
@@ -6790,7 +6774,7 @@ public:
 		else if(c_oSerRunType::pptxDrawing == type)
 		{
 			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
-			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
+			READ2_DEF(length, res, this->ReadPptxDrawing, &oCDrawingProperty);
 
 			if(oCDrawingProperty.IsChart())
 			{
@@ -6979,7 +6963,7 @@ public:
 		}
 		else if(c_oSerRunType::pptxDrawing == type) 
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
+			READ2_DEF(length, res, this->ReadPptxDrawing, &oCDrawingProperty);
 
             if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
             {
@@ -7014,7 +6998,7 @@ public:
 		{
 			oBinary_tblPrReader.m_aCurTblGrid.clear();
             pCStringWriter->WriteString(std::wstring(_T("<w:tblGrid>")));
-			res = Read2(length, &Binary_DocumentTableReader::Read_tblGrid, this, poResult);
+			READ2_DEF(length, res, this->Read_tblGrid, poResult);
             pCStringWriter->WriteString(std::wstring(_T("</w:tblGrid>")));
 		}
 		else if( c_oSerDocTableType::Content == type )
@@ -7059,7 +7043,7 @@ public:
 		{
 			oBinary_tblPrReader.m_aCurTblGrid.clear();
 			pTrackRevision->tblGridChange = new XmlUtils::CStringWriter();
-			res = Read2(length, &Binary_DocumentTableReader::Read_tblGrid, this, pTrackRevision->tblGridChange);
+			READ2_DEF(length, res, this->Read_tblGrid, pTrackRevision->tblGridChange);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7103,7 +7087,7 @@ public:
 		if( c_oSerDocTableType::Row_Pr == type )
 		{
             pCStringWriter->WriteString(std::wstring(_T("<w:trPr>")));
-			oBinary_tblPrReader.Read_RowPrOut(length, pCStringWriter);
+			READ2_DEF(length, res, oBinary_tblPrReader.Read_RowPr, pCStringWriter);
             pCStringWriter->WriteString(std::wstring(_T("</w:trPr>")));
 		}
 		else if( c_oSerDocTableType::Row_Content == type )
@@ -7153,7 +7137,7 @@ public:
 		{
             pCStringWriter->WriteString(std::wstring(_T("<w:tcPr>")));
 			oBinary_tblPrReader.bCellShd = false;
-			oBinary_tblPrReader.Read_CellPrOut(length, pCStringWriter);
+			READ2_DEF(length, res, oBinary_tblPrReader.Read_CellPr, pCStringWriter);
             if(false == oBinary_tblPrReader.bCellShd && !oBinary_tblPrReader.m_sCurTableShd.empty())
 			{
 				pCStringWriter->WriteString(oBinary_tblPrReader.m_sCurTableShd);
@@ -7217,7 +7201,7 @@ public:
 		else if ( c_oSerImageType::Padding == type )
 		{
 			odocImg->bPaddings = true;
-			oBinary_tblPrReader.ReadPaddingsOut(length, &odocImg->Paddings);
+			READ2_DEF(length, res, oBinary_tblPrReader.ReadPaddings, &odocImg->Paddings);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7243,7 +7227,7 @@ public:
         else if( c_oSerBackgroundType::pptxDrawing == type )
         {
 			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
-			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
+			READ2_DEF(length, res, this->ReadPptxDrawing, &oCDrawingProperty);
 
 			if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 			{
@@ -7411,34 +7395,34 @@ public:
 		}
 		else if ( c_oSerImageType2::EffectExtent == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadEffectExtent, this, poResult);
+			READ2_DEF(length, res, this->ReadEffectExtent, poResult);
 		}
 		else if ( c_oSerImageType2::Extent == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadExtent, this, poResult);
+			READ2_DEF(length, res, this->ReadExtent, poResult);
 		}
 		else if ( c_oSerImageType2::PositionH == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadPositionH, this, poResult);
+			READ2_DEF(length, res, this->ReadPositionH, poResult);
 		}
 		else if ( c_oSerImageType2::PositionV == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadPositionV, this, poResult);
+			READ2_DEF(length, res, this->ReadPositionV, poResult);
 		}
 		else if ( c_oSerImageType2::SimplePos == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadSimplePos, this, poResult);
+			READ2_DEF(length, res, this->ReadSimplePos, poResult);
 		}
 		else if ( c_oSerImageType2::SizeRelH == type )
 		{
 			OOX::Drawing::CSizeRelH oSizeRelH;
-			res = Read2(length, &Binary_DocumentTableReader::ReadSizeRelH, this, &oSizeRelH);
+			READ2_DEF(length, res, this->ReadSizeRelH, &oSizeRelH);
 			pDrawingProperty->sSizeRelH = oSizeRelH.toXML();
 		}
 		else if ( c_oSerImageType2::SizeRelV == type )
 		{
 			OOX::Drawing::CSizeRelV oSizeRelV;
-			res = Read2(length, &Binary_DocumentTableReader::ReadSizeRelV, this, &oSizeRelV);
+			READ2_DEF(length, res, this->ReadSizeRelV, &oSizeRelV);
 			pDrawingProperty->sSizeRelV = oSizeRelV.toXML();
 		}
 		else if ( c_oSerImageType2::WrapNone == type )
@@ -7452,33 +7436,33 @@ public:
 			pDrawingProperty->bDrawingPropertyWrap = true;
 			pDrawingProperty->DrawingPropertyWrap.bWrappingType = true;
 			pDrawingProperty->DrawingPropertyWrap.WrappingType = type;
-			res = Read2(length, &Binary_DocumentTableReader::ReadEmptyWrap, this, poResult);
+			READ2_DEF(length, res, this->ReadEmptyWrap, poResult);
 		}
 		else if ( c_oSerImageType2::WrapThrough == type )
 		{
 			pDrawingProperty->bDrawingPropertyWrap = true;
 			pDrawingProperty->DrawingPropertyWrap.bWrappingType = true;
 			pDrawingProperty->DrawingPropertyWrap.WrappingType = type;
-			res = Read2(length, &Binary_DocumentTableReader::ReadWrapThroughTight, this, &pDrawingProperty->DrawingPropertyWrap);
+			READ2_DEF(length, res, this->ReadWrapThroughTight, &pDrawingProperty->DrawingPropertyWrap);
 		}
 		else if ( c_oSerImageType2::WrapTight == type )
 		{
 			pDrawingProperty->bDrawingPropertyWrap = true;
 			pDrawingProperty->DrawingPropertyWrap.bWrappingType = true;
 			pDrawingProperty->DrawingPropertyWrap.WrappingType = type;
-			res = Read2(length, &Binary_DocumentTableReader::ReadWrapThroughTight, this, &pDrawingProperty->DrawingPropertyWrap);
+			READ2_DEF(length, res, this->ReadWrapThroughTight, &pDrawingProperty->DrawingPropertyWrap);
 		}
 		else if ( c_oSerImageType2::WrapTopAndBottom == type )
 		{
 			pDrawingProperty->bDrawingPropertyWrap = true;
 			pDrawingProperty->DrawingPropertyWrap.bWrappingType = true;
 			pDrawingProperty->DrawingPropertyWrap.WrappingType = type;
-			res = Read2(length, &Binary_DocumentTableReader::ReadEmptyWrap, this, poResult);
+			READ2_DEF(length, res, this->ReadEmptyWrap, poResult);
 		}
 		else if ( c_oSerImageType2::GraphicFramePr == type )
 		{
 			PPTX::Logic::CNvGraphicFramePr oGraphicFramePr(L"wp");
-			res = Read2(length, &Binary_DocumentTableReader::ReadCNvGraphicFramePr, this, &oGraphicFramePr);
+			READ2_DEF(length, res, this->ReadCNvGraphicFramePr, &oGraphicFramePr);
 			pDrawingProperty->sGraphicFramePr = oGraphicFramePr.toXML();
 		}
 		else if ( c_oSerImageType2::DocPr == type )
@@ -7786,7 +7770,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSerWrapThroughTight::WrapPolygon == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadWrapPolygon, this, poResult);
+			READ2_DEF(length, res, this->ReadWrapPolygon, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7804,11 +7788,11 @@ public:
 		else if ( c_oSerWrapPolygon::Start == type )
 		{
 			pDrawingPropertyWrap->bStart = true;
-			res = Read2(length, &Binary_DocumentTableReader::ReadPolygonPoint, this, &pDrawingPropertyWrap->Start);
+			READ2_DEF(length, res, this->ReadPolygonPoint, &pDrawingPropertyWrap->Start);
 		}
 		else if ( c_oSerWrapPolygon::ALineTo == type )
 		{
-			res = Read2(length, &Binary_DocumentTableReader::ReadLineTo, this, poResult);
+			READ2_DEF(length, res, this->ReadLineTo, poResult);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7821,7 +7805,7 @@ public:
 		if ( c_oSerWrapPolygon::LineTo == type )
 		{
 			CDrawingPropertyWrapPoint* pWrapPoint = new CDrawingPropertyWrapPoint();
-			res = Read2(length, &Binary_DocumentTableReader::ReadPolygonPoint, this, pWrapPoint);
+			READ2_DEF(length, res, this->ReadPolygonPoint, pWrapPoint);
 			pDrawingPropertyWrap->Points.push_back(pWrapPoint);
 		}
 		else

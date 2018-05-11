@@ -19,6 +19,7 @@ include(../../Common/base.pri)
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
 include(../../Common/3dParty/v8/v8.pri)
+include(../../Common/3dParty/curl/curl.pri)
 
 SOURCES += \
     memorystream.cpp \

@@ -541,7 +541,7 @@ namespace NSCommon
                     
                     if (pManager->GetFile())
                     {
-                        bIsSymbol = pManager->GetFile()->IsSymbolic(true);
+                        bIsSymbol = pManager->GetFile()->IsSymbolic(false);
                     }
                     
                     if (bIsSymbol)

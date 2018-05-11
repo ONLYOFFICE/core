@@ -2590,6 +2590,48 @@ namespace BinDocxRW
 				WriteTblStylePr(style.m_arrTblStylePr);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(style.m_oCustomStyle.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_CustomStyle);
+				m_oBcw.m_oStream.WriteBOOL(style.m_oCustomStyle->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(style.m_oAliases.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_Aliases);
+				m_oBcw.m_oStream.WriteStringW3(style.m_oAliases->m_sVal.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(style.m_oAutoRedefine.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_AutoRedefine);
+				m_oBcw.m_oStream.WriteBOOL(style.m_oAutoRedefine->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(style.m_oLocked.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_Locked);
+				m_oBcw.m_oStream.WriteBOOL(style.m_oLocked->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(style.m_oPersonal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_Personal);
+				m_oBcw.m_oStream.WriteBOOL(style.m_oPersonal->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(style.m_oPersonalCompose.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_PersonalCompose);
+				m_oBcw.m_oStream.WriteBOOL(style.m_oPersonalCompose->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(style.m_oPersonalReply.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_PersonalReply);
+				m_oBcw.m_oStream.WriteBOOL(style.m_oPersonalReply->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 		}
 		void WriteTblStylePr(const std::vector<OOX::Logic::CTableStyleProperties*>& aProperties)
 		{

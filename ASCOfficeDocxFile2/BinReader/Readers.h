@@ -2865,6 +2865,40 @@ public:
 		{
 			res = Read1(length, &BinaryStyleTableReader::ReadTblStylePr, this, odocStyle);
 		}
+		else if(c_oSer_sts::Style_CustomStyle == type)
+		{
+			odocStyle->bCustom = true;
+			odocStyle->Custom = m_oBufferedStream.GetBool();
+		}
+		else if(c_oSer_sts::Style_Aliases == type)
+		{
+			odocStyle->Aliases = m_oBufferedStream.GetString3(length);
+		}
+		else if(c_oSer_sts::Style_AutoRedefine == type)
+		{
+			odocStyle->bautoRedefine = true;
+			odocStyle->autoRedefine = m_oBufferedStream.GetBool();
+		}
+		else if(c_oSer_sts::Style_Locked == type)
+		{
+			odocStyle->blocked = true;
+			odocStyle->locked = m_oBufferedStream.GetBool();
+		}
+		else if(c_oSer_sts::Style_Personal == type)
+		{
+			odocStyle->bpersonal = true;
+			odocStyle->personal = m_oBufferedStream.GetBool();
+		}
+		else if(c_oSer_sts::Style_PersonalCompose == type)
+		{
+			odocStyle->bpersonalCompose = true;
+			odocStyle->personalCompose = m_oBufferedStream.GetBool();
+		}
+		else if(c_oSer_sts::Style_PersonalReply == type)
+		{
+			odocStyle->bpersonalReply = true;
+			odocStyle->personalReply = m_oBufferedStream.GetBool();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

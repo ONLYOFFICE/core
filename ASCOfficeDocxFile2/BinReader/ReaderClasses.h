@@ -780,7 +780,9 @@ public:
     std::wstring Name;
     std::wstring Id;
 	BYTE byteType;
-	bool bDefault;
+	bool Default;
+	bool Custom;
+	std::wstring Aliases;
     std::wstring BasedOn;
     std::wstring NextId;
 	std::wstring Link;
@@ -789,6 +791,11 @@ public:
 	bool hidden;
 	bool semiHidden;
 	bool unhideWhenUsed;
+	bool autoRedefine;
+	bool locked;
+	bool personal;
+	bool personalCompose;
+	bool personalReply;
     std::wstring TextPr;
     std::wstring ParaPr;
     std::wstring TablePr;
@@ -796,22 +803,36 @@ public:
     std::wstring CellPr;
     std::vector<std::wstring> TblStylePr;
 
+	bool bDefault;
+	bool bCustom;
 	bool bqFormat;
 	bool buiPriority;
 	bool bhidden;
 	bool bsemiHidden;
 	bool bunhideWhenUsed;
+	bool bautoRedefine;
+	bool blocked;
+	bool bpersonal;
+	bool bpersonalCompose;
+	bool bpersonalReply;
+
 public:
 	docStyle()
 	{
 		byteType = styletype_Paragraph;
 		bDefault = false;
+		bCustom = false;
 
 		bqFormat = false;
 		buiPriority = false;
 		bhidden = false;
 		bsemiHidden = false;
 		bunhideWhenUsed = false;
+		bautoRedefine = false;
+		blocked = false;
+		bpersonal = false;
+		bpersonalCompose = false;
+		bpersonalReply = false;
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
@@ -827,10 +848,35 @@ public:
 		{
             std::wstring sStyle = L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + Id + L"\"";
 			if(bDefault)
-                sStyle += L" w:default=\"1\"";
+			{
+				if(Default)
+					sStyle += L" w:default=\"1\"";
+				else
+					sStyle += L" w:default=\"0\"";
+			}
+			if(bCustom)
+			{
+				if(Custom)
+					sStyle += L" w:customStyle=\"1\"";
+				else
+					sStyle += L" w:customStyle=\"0\"";
+			}
 
             sStyle += L">";
             pCStringWriter->WriteString(sStyle);
+			if(!Aliases.empty())
+			{
+				pCStringWriter->WriteString(L"<w:aliases w:val=\"");
+				pCStringWriter->WriteEncodeXmlString(Aliases);
+				pCStringWriter->WriteString(L"\"/>");
+			}
+			if(bautoRedefine)
+			{
+				if(autoRedefine)
+					pCStringWriter->WriteString(L"<w:autoRedefine/>");
+				else
+					pCStringWriter->WriteString(L"<w:autoRedefine val=\"false\"/>");
+			}
             if(!Name.empty())
 			{
                 pCStringWriter->WriteString(L"<w:name w:val=\"" + Name + L"\"/>");
@@ -843,11 +889,39 @@ public:
 			{
                 pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
 			}
+			if(bpersonal)
+			{
+				if(personal)
+					pCStringWriter->WriteString(L"<w:personal/>");
+				else
+					pCStringWriter->WriteString(L"<w:personal val=\"false\"/>");
+			}
+			if(bpersonalCompose)
+			{
+				if(personalCompose)
+					pCStringWriter->WriteString(L"<w:personalCompose/>");
+				else
+					pCStringWriter->WriteString(L"<w:personalCompose val=\"false\"/>");
+			}
+			if(bpersonalReply)
+			{
+				if(personalReply)
+					pCStringWriter->WriteString(L"<w:personalReply/>");
+				else
+					pCStringWriter->WriteString(L"<w:personalReply val=\"false\"/>");
+			}
 			if(!Link.empty())
 			{
 				pCStringWriter->WriteString(L"<w:link w:val=\"");
 				pCStringWriter->WriteEncodeXmlString(Link);
 				pCStringWriter->WriteString(L"\"/>");
+			}
+			if(blocked)
+			{
+				if(locked)
+					pCStringWriter->WriteString(L"<w:locked/>");
+				else
+					pCStringWriter->WriteString(L"<w:locked val=\"false\"/>");
 			}
 			if(bqFormat)
 			{

@@ -41,7 +41,7 @@
 #include "../../Common/3dParty/cryptopp/arc4.h"
 #include "../../Common/3dParty/cryptopp/filters.h"
 
-#include "../../DesktopEditor/Common/File.h"
+#include "../../DesktopEditor/common/File.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 namespace PdfReader
 {

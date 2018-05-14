@@ -140,16 +140,17 @@ public:
 			break;\
 		case c_oSerPropLenType::Double64:	nRealLen = 8;break;\
 		case c_oSerPropLenType::Long64:		nRealLen = 8;break;\
-		default:return c_oSerConstants::ErrorUnknown;\
+		default:res = c_oSerConstants::ErrorUnknown;break;\
 		}\
-		res = fReadFunction(type, nRealLen, arg);\
+		if(res == c_oSerConstants::ReadOk)\
+			res = fReadFunction(type, nRealLen, arg);\
 		if(res == c_oSerConstants::ReadUnknown)\
 		{\
 			m_oBufferedStream.GetPointer(nRealLen);\
 			res = c_oSerConstants::ReadOk;\
 		}\
 		else if(res != c_oSerConstants::ReadOk)\
-			return res;\
+			break;\
 		stCurPos += nRealLen + nCurPosShift;\
 	}\
 }
@@ -204,7 +205,7 @@ public:
 		oRGB.B = m_oBufferedStream.GetUChar();
 		return oRGB;
 	}
-	int ReadThemeColor(int length, CThemeColor& oCThemeColor)
+	void ReadThemeColor(int length, CThemeColor& oCThemeColor)
 	{
 		int res = c_oSerConstants::ReadOk;
 		READ2_DEF(length, res, this->_ReadThemeColor, &oCThemeColor);

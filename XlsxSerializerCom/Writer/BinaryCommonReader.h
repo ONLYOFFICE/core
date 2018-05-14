@@ -36,6 +36,42 @@
 #include "../../XlsxSerializerCom/Common/BinReaderWriterDefines.h"
 
 namespace BinXlsxRW {
+
+	#define READ2_DEF(stLen, res, fReadFunction, arg) {\
+		long stCurPos = 0;\
+		while(stCurPos < stLen)\
+		{\
+			BYTE type = m_oBufferedStream.GetUChar();\
+			long lenType =  m_oBufferedStream.GetUChar();\
+			int nCurPosShift = 2;\
+			int nRealLen;\
+			switch(lenType)\
+			{\
+			case c_oSerPropLenType::Null: nRealLen = 0;break;\
+			case c_oSerPropLenType::Byte: nRealLen = 1;break;\
+			case c_oSerPropLenType::Short: nRealLen = 2;break;\
+			case c_oSerPropLenType::Three: nRealLen = 3;break;\
+			case c_oSerPropLenType::Long: nRealLen = 4;break;\
+			case c_oSerPropLenType::Double: nRealLen = 8;break;\
+			case c_oSerPropLenType::Variable:\
+				nRealLen = m_oBufferedStream.GetLong();\
+				nCurPosShift += 4;\
+				break;\
+			default:res = c_oSerConstants::ErrorUnknown;break;\
+			}\
+			if(res == c_oSerConstants::ReadOk)\
+				res = fReadFunction(type, nRealLen, arg);\
+			if(res == c_oSerConstants::ReadUnknown)\
+			{\
+				m_oBufferedStream.GetPointer(nRealLen);\
+				res = c_oSerConstants::ReadOk;\
+			}\
+			else if(res != c_oSerConstants::ReadOk)\
+				break;\
+			stCurPos += nRealLen + nCurPosShift;\
+		}\
+	}\
+
 	template <typename CallbackType >
 	class Binary_CommonReader
 	{
@@ -87,43 +123,6 @@ namespace BinXlsxRW {
 				else if(res != c_oSerConstants::ReadOk)
 					return res;
 				stCurPos += length + 5;
-			}
-			return res;
-		}
-		int Read2(long stLen, funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
-		{
-			int res = c_oSerConstants::ReadOk;
-			long stCurPos = 0;
-			while(stCurPos < stLen)
-			{
-				//stItem
-				BYTE type = m_oBufferedStream.GetUChar();
-				long lenType =  m_oBufferedStream.GetUChar();
-				int nCurPosShift = 2;
-				int nRealLen;
-				switch(lenType)
-				{
-				case c_oSerPropLenType::Null: nRealLen = 0;break;
-				case c_oSerPropLenType::Byte: nRealLen = 1;break;
-				case c_oSerPropLenType::Short: nRealLen = 2;break;
-				case c_oSerPropLenType::Three: nRealLen = 3;break;
-				case c_oSerPropLenType::Long: nRealLen = 4;break;
-				case c_oSerPropLenType::Double: nRealLen = 8;break;
-				case c_oSerPropLenType::Variable:
-					nRealLen = m_oBufferedStream.GetLong();
-					nCurPosShift += 4;
-					break;
-				default:return c_oSerConstants::ErrorUnknown;
-				}
-				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, nRealLen, arg);
-				if(res == c_oSerConstants::ReadUnknown)
-				{
-					m_oBufferedStream.GetPointer(nRealLen);
-					res = c_oSerConstants::ReadOk;
-				}
-				else if(res != c_oSerConstants::ReadOk)
-					return res;
-				stCurPos += nRealLen + nCurPosShift;
 			}
 			return res;
 		}

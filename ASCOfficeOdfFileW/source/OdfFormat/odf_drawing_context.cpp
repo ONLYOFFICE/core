@@ -1055,7 +1055,10 @@ bool odf_drawing_context::isLineShape()
 	case 48:	//SimpleTypes::shapetypeCurvedConnector3:
 	case 49:	//SimpleTypes::shapetypeCurvedConnector4:
 	case 50:	//SimpleTypes::shapetypeCurvedConnector5:
-		return true;	
+		return true;
+	case 1000:
+		if (impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_.get_value_or(draw_fill(draw_fill::solid)).get_type() == draw_fill::none)
+			return true;
 	default:
 		return false;
 	}

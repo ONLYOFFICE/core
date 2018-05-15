@@ -149,7 +149,7 @@ namespace BinXlsxRW
 			return res;
 		}
 	};
-	class BinaryTableReader : public Binary_CommonReader<BinaryTableReader>
+	class BinaryTableReader : public Binary_CommonReader
 	{
 		public:
 		BinaryTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream):Binary_CommonReader(oBufferedStream)
@@ -697,7 +697,7 @@ namespace BinXlsxRW
 			return res;
 		}
 	};
-	class BinarySharedStringTableReader : public Binary_CommonReader<BinarySharedStringTableReader>
+	class BinarySharedStringTableReader : public Binary_CommonReader
 	{
 		OOX::Spreadsheet::CSharedStrings& m_oSharedStrings;
 		Binary_CommonReader2 m_oBcr;
@@ -707,7 +707,8 @@ namespace BinXlsxRW
 		}
 		int Read()
 		{
-			int res = ReadTable(&BinarySharedStringTableReader::ReadSharedStringTableContent, this);
+			int res = c_oSerConstants::ReadOk;
+			READ_TABLE_DEF(res, this->ReadSharedStringTableContent, this);
 			
 			m_oSharedStrings.m_oCount.Init();
 			m_oSharedStrings.m_oCount->SetValue((unsigned int)m_oSharedStrings.m_nCount);
@@ -843,7 +844,7 @@ namespace BinXlsxRW
 			return m_oBcr.ReadColor(type, length, poResult);
 		}
 	};
-	class BinaryStyleTableReader : public Binary_CommonReader<BinaryStyleTableReader>
+	class BinaryStyleTableReader : public Binary_CommonReader
 	{
 		OOX::Spreadsheet::CStyles& m_oStyles;
 		Binary_CommonReader2 m_oBcr;
@@ -853,7 +854,9 @@ namespace BinXlsxRW
 		}
 		int Read()
 		{
-			return ReadTable(&BinaryStyleTableReader::ReadStyleTableContent, this);
+			int res = c_oSerConstants::ReadOk;
+			READ_TABLE_DEF(res, this->ReadStyleTableContent, this);
+			return res;
 		};
 		int ReadStyleTableContent(BYTE type, long length, void* poResult)
 		{
@@ -1525,7 +1528,7 @@ namespace BinXlsxRW
 			return res;
 		}
 	};
-	class BinaryWorkbookTableReader : public Binary_CommonReader<BinaryWorkbookTableReader>
+	class BinaryWorkbookTableReader : public Binary_CommonReader
 	{
 		OOX::Spreadsheet::CWorkbook									& m_oWorkbook;
         boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>	& m_mapPivotCacheDefinitions;
@@ -1538,7 +1541,9 @@ namespace BinXlsxRW
 		}
 		int Read()
 		{
-			return ReadTable(&BinaryWorkbookTableReader::ReadWorkbookTableContent, this);
+			int res = c_oSerConstants::ReadOk;
+			READ_TABLE_DEF(res, this->ReadWorkbookTableContent, this);
+			return res;
         }
 		int ReadWorkbookTableContent(BYTE type, long length, void* poResult)
 		{
@@ -2251,7 +2256,7 @@ namespace BinXlsxRW
 			return res;
 		}
 	};
-	class BinaryCommentReader : public Binary_CommonReader<BinaryCommentReader>
+	class BinaryCommentReader : public Binary_CommonReader
 	{
 		OOX::Spreadsheet::CWorksheet* m_pCurWorksheet;
 	public:
@@ -2489,7 +2494,7 @@ namespace BinXlsxRW
 			oSi.m_arrItems.push_back(pRun);
 		}
 	};
-	class BinaryWorksheetsTableReader : public Binary_CommonReader<BinaryWorksheetsTableReader>
+	class BinaryWorksheetsTableReader : public Binary_CommonReader
 	{
 		Binary_CommonReader2				m_oBcr2;
 
@@ -2531,7 +2536,9 @@ namespace BinXlsxRW
 		int Read()
 		{
 			m_oWorkbook.m_oSheets.Init();
-			return ReadTable(&BinaryWorksheetsTableReader::ReadWorksheetsTableContent, this);
+			int res = c_oSerConstants::ReadOk;
+			READ_TABLE_DEF(res, this->ReadWorksheetsTableContent, this);
+			return res;
         }
 		int ReadWorksheetsTableContent(BYTE type, long length, void* poResult)
 		{
@@ -4242,7 +4249,7 @@ namespace BinXlsxRW
 			oSi.m_arrItems.push_back(pRun);
 		}
 	};
-	class BinaryOtherTableReader : public Binary_CommonReader<BinaryOtherTableReader>
+	class BinaryOtherTableReader : public Binary_CommonReader
 	{
         boost::unordered_map<long, ImageObject*>&     m_mapMedia;
         const std::wstring&                         m_sFileInDir;
@@ -4264,7 +4271,9 @@ namespace BinXlsxRW
 		}
 		int Read()
 		{
-			return ReadTable(&BinaryOtherTableReader::ReadOtherTableContent, this);
+			int res = c_oSerConstants::ReadOk;
+			READ_TABLE_DEF(res, this->ReadOtherTableContent, this);
+			return res;
         }
 		int ReadOtherTableContent(BYTE type, long length, void* poResult)
 		{

@@ -37,6 +37,16 @@
 
 namespace BinXlsxRW {
 
+	#define READ_TABLE_DEF(res, fReadFunction, arg) {\
+		res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+		if (c_oSerConstants::ReadOk == res) {\
+			long stLen = m_oBufferedStream.GetLong();\
+			res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+			if (c_oSerConstants::ReadOk == res) {\
+				READ1_DEF(stLen, res, fReadFunction, arg);\
+			}\
+		}\
+	}
 	#define READ1_DEF(stLen, res, fReadFunction, arg) {\
 		long stCurPos = 0;\
 		long start_pos = m_oBufferedStream.GetPos();\
@@ -97,30 +107,13 @@ namespace BinXlsxRW {
 		}\
 	}
 
-	template <typename CallbackType >
 	class Binary_CommonReader
 	{
 	protected:
 		NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
-		typedef int (CallbackType::*funcArg)(BYTE type, long length, void* arg);
 	public:
 		Binary_CommonReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_oBufferedStream(poBufferedStream)
 		{
-		}
-		int ReadTable(funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
-		{
-			int res = c_oSerConstants::ReadOk;
-			//stLen
-			res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
-			if(c_oSerConstants::ReadOk != res)
-				return res;
-			long stLen = m_oBufferedStream.GetLong();
-			//Смотрим есть ли данные под всю таблицу в дальнейшем спокойно пользуемся get функциями
-			res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
-			if(c_oSerConstants::ReadOk != res)
-				return res;
-			READ1_DEF(stLen, res, (((CallbackType*)poFuncObj)->*fReadFunction), arg);
-			return res;
 		}
 	};
 }

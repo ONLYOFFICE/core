@@ -156,13 +156,13 @@ public:
 }
 #define READ_TABLE_DEF(res, fReadFunction, arg) {\
 	res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
-	if(c_oSerConstants::ReadOk != res)\
-		return res;\
-	long stLen = m_oBufferedStream.GetLong();\
-	res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
-	if(c_oSerConstants::ReadOk != res)\
-		return res;\
-	READ1_DEF(stLen, res, fReadFunction, arg);\
+	if (c_oSerConstants::ReadOk == res) {\
+		long stLen = m_oBufferedStream.GetLong();\
+		res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+		if (c_oSerConstants::ReadOk == res) {\
+			READ1_DEF(stLen, res, fReadFunction, arg);\
+		}\
+	}\
 }
 #define READ1_TRACKREV(type, length, poResult) \
 	if(c_oSerProp_RevisionType::Author == type)\

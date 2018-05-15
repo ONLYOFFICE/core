@@ -37,6 +37,31 @@
 
 namespace BinXlsxRW {
 
+	#define READ1_DEF(stLen, res, fReadFunction, arg) {\
+		long stCurPos = 0;\
+		long start_pos = m_oBufferedStream.GetPos();\
+		while(stCurPos < stLen)\
+		{\
+			BYTE type = m_oBufferedStream.GetUChar();\
+			ULONG length = m_oBufferedStream.GetULong();\
+			if (length + stCurPos > stLen)\
+			{\
+				m_oBufferedStream.Seek(start_pos + stLen);\
+				res = c_oSerConstants::ReadOk;\
+				break;\
+			}\
+			res = fReadFunction(type, length, arg);\
+			if(res == c_oSerConstants::ReadUnknown)\
+			{\
+				m_oBufferedStream.GetPointer(length);\
+				res = c_oSerConstants::ReadOk;\
+			}\
+			else if(res != c_oSerConstants::ReadOk)\
+				break;\
+			stCurPos += length + 5;\
+		}\
+	}
+
 	#define READ2_DEF(stLen, res, fReadFunction, arg) {\
 		long stCurPos = 0;\
 		while(stCurPos < stLen)\
@@ -70,7 +95,7 @@ namespace BinXlsxRW {
 				break;\
 			stCurPos += nRealLen + nCurPosShift;\
 		}\
-	}\
+	}
 
 	template <typename CallbackType >
 	class Binary_CommonReader
@@ -94,36 +119,7 @@ namespace BinXlsxRW {
 			res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
-			return Read1(stLen, fReadFunction, poFuncObj, arg);
-		}
-		int Read1(long stLen, funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
-		{
-			int res = c_oSerConstants::ReadOk;
-			long stCurPos = 0;
-
-			long start_pos = m_oBufferedStream.GetPos();
-			while(stCurPos < stLen)
-			{
-				//stItem
-				BYTE type = m_oBufferedStream.GetUChar();
-
-                ULONG length = m_oBufferedStream.GetULong();
-
-				if (length + stCurPos > stLen)
-				{
-					m_oBufferedStream.Seek(start_pos + stLen);
-					return c_oSerConstants::ReadOk;
-				} 
-				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, length, arg);
-				if(res == c_oSerConstants::ReadUnknown)
-				{
-					m_oBufferedStream.GetPointer(length);
-					res = c_oSerConstants::ReadOk;
-				}
-				else if(res != c_oSerConstants::ReadOk)
-					return res;
-				stCurPos += length + 5;
-			}
+			READ1_DEF(stLen, res, (((CallbackType*)poFuncObj)->*fReadFunction), arg);
 			return res;
 		}
 	};

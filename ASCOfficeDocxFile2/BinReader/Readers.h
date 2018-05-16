@@ -102,65 +102,65 @@ public:
 };
 
 #define READ1_DEF(stLen, res, fReadFunction, arg) {\
-	long stCurPos = 0;\
-	while(stCurPos < stLen)\
+	long read1defCurPos = 0;\
+	while(read1defCurPos < stLen)\
 	{\
-		BYTE type = m_oBufferedStream.GetUChar();\
-		long length =  m_oBufferedStream.GetLong();\
-		res = fReadFunction(type, length, arg);\
+		BYTE read1defType = m_oBufferedStream.GetUChar();\
+		long read1defLength =  m_oBufferedStream.GetLong();\
+		res = fReadFunction(read1defType, read1defLength, arg);\
 		if(res == c_oSerConstants::ReadUnknown)\
 		{\
-			m_oBufferedStream.GetPointer(length);\
+			m_oBufferedStream.GetPointer(read1defLength);\
 			res = c_oSerConstants::ReadOk;\
 		}\
 		else if(res != c_oSerConstants::ReadOk)\
 			break;\
-		stCurPos += length + 5;\
+		read1defCurPos += read1defLength + 5;\
 	}\
 }
 #define READ2_DEF(stLen, res, fReadFunction, arg) {\
-	long stCurPos = 0;\
-	while(stCurPos < stLen)\
+	long read2defCurPos = 0;\
+	while(read2defCurPos < stLen)\
 	{\
-		BYTE type = m_oBufferedStream.GetUChar();\
-		long lenType =  m_oBufferedStream.GetUChar();\
-		int nCurPosShift = 2;\
-		int nRealLen;\
-		switch(lenType)\
+		BYTE read2defType = m_oBufferedStream.GetUChar();\
+		long read2defLenType =  m_oBufferedStream.GetUChar();\
+		int read2defCurPosShift = 2;\
+		int read2defRealLen;\
+		switch(read2defLenType)\
 		{\
-		case c_oSerPropLenType::Null:		nRealLen = 0;break;\
-		case c_oSerPropLenType::Byte:		nRealLen = 1;break;\
-		case c_oSerPropLenType::Short:		nRealLen = 2;break;\
-		case c_oSerPropLenType::Three:		nRealLen = 3;break;\
+		case c_oSerPropLenType::Null:		read2defRealLen = 0;break;\
+		case c_oSerPropLenType::Byte:		read2defRealLen = 1;break;\
+		case c_oSerPropLenType::Short:		read2defRealLen = 2;break;\
+		case c_oSerPropLenType::Three:		read2defRealLen = 3;break;\
 		case c_oSerPropLenType::Long:\
-		case c_oSerPropLenType::Double:		nRealLen = 4;break;\
+		case c_oSerPropLenType::Double:		read2defRealLen = 4;break;\
 		case c_oSerPropLenType::Variable:\
-			nRealLen = m_oBufferedStream.GetLong();\
-			nCurPosShift += 4;\
+			read2defRealLen = m_oBufferedStream.GetLong();\
+			read2defCurPosShift += 4;\
 			break;\
-		case c_oSerPropLenType::Double64:	nRealLen = 8;break;\
-		case c_oSerPropLenType::Long64:		nRealLen = 8;break;\
+		case c_oSerPropLenType::Double64:	read2defRealLen = 8;break;\
+		case c_oSerPropLenType::Long64:		read2defRealLen = 8;break;\
 		default:res = c_oSerConstants::ErrorUnknown;break;\
 		}\
 		if(res == c_oSerConstants::ReadOk)\
-			res = fReadFunction(type, nRealLen, arg);\
+			res = fReadFunction(read2defType, read2defRealLen, arg);\
 		if(res == c_oSerConstants::ReadUnknown)\
 		{\
-			m_oBufferedStream.GetPointer(nRealLen);\
+			m_oBufferedStream.GetPointer(read2defRealLen);\
 			res = c_oSerConstants::ReadOk;\
 		}\
 		else if(res != c_oSerConstants::ReadOk)\
 			break;\
-		stCurPos += nRealLen + nCurPosShift;\
+		read2defCurPos += read2defRealLen + read2defCurPosShift;\
 	}\
 }
 #define READ_TABLE_DEF(res, fReadFunction, arg) {\
 	res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
 	if (c_oSerConstants::ReadOk == res) {\
-		long stLen = m_oBufferedStream.GetLong();\
-		res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+		long readtabledefLen = m_oBufferedStream.GetLong();\
+		res = m_oBufferedStream.Peek(readtabledefLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
 		if (c_oSerConstants::ReadOk == res) {\
-			READ1_DEF(stLen, res, fReadFunction, arg);\
+			READ1_DEF(readtabledefLen, res, fReadFunction, arg);\
 		}\
 	}\
 }

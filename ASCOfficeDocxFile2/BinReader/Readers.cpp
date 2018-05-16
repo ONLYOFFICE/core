@@ -47,7 +47,9 @@ Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReade
 }
 int Binary_HdrFtrTableReader::Read()
 {
-	return ReadTable(&Binary_HdrFtrTableReader::ReadHdrFtrContent, this);
+	int res = c_oSerConstants::ReadOk;
+	READ_TABLE_DEF(res, this->ReadHdrFtrContent, NULL);
+	return res;
 }
 int Binary_HdrFtrTableReader::ReadHdrFtrContent(BYTE type, long length, void* poResult)
 {
@@ -55,7 +57,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrContent(BYTE type, long length, void* po
 	if ( c_oSerHdrFtrTypes::Header == type || c_oSerHdrFtrTypes::Footer == type )
 	{
 		nCurType = type;
-		res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrFEO, this, poResult);
+		READ1_DEF(length, res, this->ReadHdrFtrFEO, poResult);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -67,7 +69,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrFEO(BYTE type, long length, void* poResu
 	if ( c_oSerHdrFtrTypes::HdrFtr_First == type || c_oSerHdrFtrTypes::HdrFtr_Even == type || c_oSerHdrFtrTypes::HdrFtr_Odd == type )
 	{
 		nCurHeaderType = type;
-		res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItem, this, poResult);
+		READ1_DEF(length, res, this->ReadHdrFtrItem, poResult);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -99,7 +101,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			}
 			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, m_pComments);
-			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItemContent, this, &oBinary_DocumentTableReader);
+			READ1_DEF(length, res, this->ReadHdrFtrItemContent, &oBinary_DocumentTableReader);
 
             OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + L"word" + 
 																				FILE_SEPARATOR_STR + L"_rels"+ 

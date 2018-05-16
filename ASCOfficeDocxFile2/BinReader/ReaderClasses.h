@@ -1667,7 +1667,6 @@ public:
 };
 class CComment{
 private:
-    typedef std::wstring (*funcArg)(CComment* pComment);
 	IdCounter& m_oParaIdCounter;
 	IdCounter& m_oFormatIdCounter;
 public:
@@ -1728,13 +1727,13 @@ public:
 		}
 		return sRes;
 	}
-    std::wstring writeTemplates(funcArg fReadFunction)
+	std::wstring writeTemplates(bool isExt)
 	{
         std::wstring sRes;
-        sRes += (fReadFunction(this));
+		sRes += isExt ? writeContentExt(this) : writeContent(this);
 		
 		for(size_t i = 0; i < replies.size(); ++i)
-            sRes += (fReadFunction(replies[i]));
+			sRes += isExt ? writeContentExt(replies[i]) : writeContent(replies[i]);
 		return sRes;
 	}
     static std::wstring writeRef(CComment* pComment, const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter)
@@ -1926,7 +1925,7 @@ public:
         std::wstring sRes;
         for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-            sRes += (it->second->writeTemplates(CComment::writeContent));
+			sRes += it->second->writeTemplates(false);
 		}
 		return sRes;
 	}
@@ -1935,7 +1934,7 @@ public:
         std::wstring sRes;
         for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-            sRes += (it->second->writeTemplates(CComment::writeContentExt));
+			sRes += it->second->writeTemplates(true);
 		}
 		return sRes;
 	}

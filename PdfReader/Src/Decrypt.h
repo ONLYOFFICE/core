@@ -53,6 +53,7 @@ namespace PdfReader
 
 	private:
 
+		static bool MakeFileKey3(const std::string &sPassword, unsigned char *pHash, int nHashSize, unsigned char *pHash2 = NULL, int nHashSize2 = 0);
 		static bool MakeFileKey2(StandardSecurityHandler *handler, const std::string &userPassword);
 	};
 

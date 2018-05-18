@@ -901,6 +901,25 @@ void OoxConverter::convert(PPTX::Logic::Path2D *oox_geom_path)
 	
 	odf_context()->drawing_context()->set_viewBox(oox_geom_path->w.get_value_or(0), oox_geom_path->h.get_value_or(0));
 
+	if (oox_geom_path->fill.IsInit())
+	{
+		odf_context()->drawing_context()->start_area_properties();
+		switch(oox_geom_path->fill->GetBYTECode())
+		{
+		case 0://darken
+		case 1://darkenLess
+		case 2://lighten
+		case 3://lightenLess
+			break;
+		case 4:
+			odf_context()->drawing_context()->set_no_fill();
+			break;
+		case 5:
+		default:
+			break;
+		}
+		odf_context()->drawing_context()->end_area_properties();
+	}
 	for (size_t i = 0 ; i < oox_geom_path->Paths.size(); i++)
 	{
 		if (oox_geom_path->Paths[i].Path2D.is<PPTX::Logic::PathBase>())

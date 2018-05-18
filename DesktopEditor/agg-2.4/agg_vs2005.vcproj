@@ -51,7 +51,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;AGG_BMP_ALPHA_BLEND;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				StructMemberAlignment="0"
 				EnableEnhancedInstructionSet="0"
 				PrecompiledHeaderFile=""

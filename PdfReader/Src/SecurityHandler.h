@@ -52,11 +52,6 @@ namespace PdfReader
 		SecurityHandler(PDFDoc *pDocument);
 		virtual ~SecurityHandler();
 
-		// Проверяем шифрованный ли документ. Если документ шифрованный, тогда сначала продуем использовать <seOwnerPassword> и 
-		// <seUserPassword>. Если оба пароля не подходят, тогда запрашиваем пароль у пользователя (не более 3-х раз). 
-		// Возвращаемые значения: 
-		// True, если документ может быть открыт( либо он вообще не зашифрован, либо пароль верный)
-		// False, в противном случае ( документ зашрифован, а пароль неверный).
 		bool CheckEncryption(const std::wstring &ownerPassword, const std::wstring &userPassword);
 
 		// Пытаемся авторизоваться.

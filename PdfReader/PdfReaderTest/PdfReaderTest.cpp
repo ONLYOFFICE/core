@@ -53,19 +53,19 @@
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/CryptoPPLib.lib")
 	#else
 		#pragma comment(lib, "../../build/lib/win_32/HtmlRenderer.lib")
 		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/CryptoPPLib.lib")
 	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-HRESULT convert_single(PdfReader::CPdfReader& oReader, std::wstring srcFileName)
+HRESULT convert_single(PdfReader::CPdfReader& oReader, const std::wstring & srcFileName, const std::wstring & sPassword)
 {
-	std::wstring sPassword = L"58455fdc2013";
-
 	if (oReader.LoadFromFile(srcFileName.c_str(), L"", sPassword, sPassword))
 	{
 		int nPagesCount = oReader.GetPagesCount();
@@ -99,7 +99,7 @@ HRESULT convert_single(PdfReader::CPdfReader& oReader, std::wstring srcFileName)
 	
 	return S_FALSE;
 }
-HRESULT convert_directory(PdfReader::CPdfReader& oReader, std::wstring pathName)
+HRESULT convert_directory(PdfReader::CPdfReader& oReader, std::wstring pathName, const std::wstring & sPassword)
 {
 	HRESULT hr = S_OK;
 
@@ -107,7 +107,7 @@ HRESULT convert_directory(PdfReader::CPdfReader& oReader, std::wstring pathName)
 
 	for (size_t i = 0; i < arFiles.size(); i++)
 	{
-		hr = convert_single(oReader, arFiles[i]);
+		hr = convert_single(oReader, arFiles[i], sPassword);
 
 		printf("%d of %d %S \tresult = %d\n", i + 1, arFiles.size(), arFiles[i].c_str(), hr);
 
@@ -124,14 +124,17 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	PdfReader::CPdfReader oPdfReader(pApplicationFonts);
 
-	HRESULT hr = -1;
+	HRESULT hr = S_FALSE;
+
+	std::wstring sPassword = argc > 2 ? argv[2] : L"";
+
 	if (NSFile::CFileBinary::Exists(argv[1]))
 	{	
-		hr = convert_single(oPdfReader, argv[1]);
+		hr = convert_single(oPdfReader, argv[1], sPassword);
 	}
 	else if (NSDirectory::Exists(argv[1]))
 	{
-		hr = convert_directory(oPdfReader, argv[1]);
+		hr = convert_directory(oPdfReader, argv[1], sPassword);
 	}	
 	return hr;
 }

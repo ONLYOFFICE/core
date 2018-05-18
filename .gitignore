@@ -13,6 +13,11 @@ Common/3dParty/cef/win_32
 Common/3dParty/cef/linux_64
 Common/3dParty/cef/linux_32
 Common/3dParty/cef/mac_64
+Common/3dParty/curl/win_64
+Common/3dParty/curl/win_32
+Common/3dParty/curl/linux_64
+Common/3dParty/curl/linux_32
+Common/3dParty/curl/mac_64
 Common/3dParty/v8/v8
 Common/3dParty/v8/depot_tools
 Common/3dParty/v8/win_64
@@ -40,6 +45,8 @@ ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_i.c
 ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_p.c
 ASCOfficeXlsFile2/win32/dlldata.c
 OfficeUtils/win32/OfficeUtilsLib/OfficeUtilsLib/ReadMe.txt
+X2tConverter/**/Makefile.*
+*.7z
 *.obj
 *.pdb
 *.tlb

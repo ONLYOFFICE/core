@@ -54,20 +54,49 @@ namespace PdfReader
 		CryptoPP::SecByteBlock buffer(hash.DigestSize());
 		hash.Final(buffer);
 
-		memcpy(sDigest, buffer.BytePtr(), buffer.SizeInBytes());
+		memcpy(sDigest, buffer.BytePtr(), buffer.size());
 		return;
 	}
-	static void SHA256(unsigned char *sMessage, int nMessageLen, unsigned char *sDigest)
+	static int SHA(int type, unsigned char *sMessage, int nMessageLen, unsigned char *sDigest)
 	{
-		CryptoPP::SHA256 hash;
-		
-		hash.Update( sMessage, nMessageLen);
+		int res = 0;
+		switch(type)
+		{
+			case 0:
+			case 256:
+			{
+				CryptoPP::SHA256 hash;			
+				hash.Update( sMessage, nMessageLen > 0 ? nMessageLen : hash.DigestSize());
 
-		CryptoPP::SecByteBlock buffer(hash.DigestSize());
-		hash.Final(buffer);
+				CryptoPP::SecByteBlock buffer(res = hash.DigestSize());
+				hash.Final(buffer);
 
-		memcpy(sDigest, buffer.BytePtr(), buffer.SizeInBytes());
-		return;
+				memcpy(sDigest, buffer.BytePtr(), buffer.size());
+			}break;
+			case 1:
+			case 384:
+			{
+				CryptoPP::SHA384 hash;			
+				hash.Update( sMessage, nMessageLen > 0 ? nMessageLen : hash.DigestSize());
+
+				CryptoPP::SecByteBlock buffer(res = hash.DigestSize());
+				hash.Final(buffer);
+
+				memcpy(sDigest, buffer.BytePtr(), buffer.size());
+			}break;
+			case 2:
+			case 512:
+			{
+				CryptoPP::SHA512 hash;			
+				hash.Update( sMessage, nMessageLen > 0 ? nMessageLen : hash.DigestSize());
+
+				CryptoPP::SecByteBlock buffer(res = hash.DigestSize());
+				hash.Final(buffer);
+
+				memcpy(sDigest, buffer.BytePtr(), buffer.size());
+			}break;
+		}
+		return res;
 	}
 	static unsigned char passwordPad[32] =
 	{
@@ -150,21 +179,31 @@ namespace PdfReader
 			std::string sUserPassword = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsUserPassword);
 			return MakeFileKey2(handler, sUserPassword);
 		}
-		else if ( handler->m_nEncryptRevision == 5 )
+		else
 		{
+			bool bValidate = false;
+			unsigned char empty[16];
+
 			NSUnicodeConverter::CUnicodeConverter conv;
 			std::string sUserPassword = conv.SASLprepToUtf8(wsUserPassword);
-			int len = sUserPassword.length() < 127 ?  sUserPassword.length() : 127;
+			
+			if (sUserPassword.length() > 127)
+				sUserPassword = sUserPassword.substr(0, 127);
 			
 			CryptoPP::SHA256 hash;
 
-			hash.Update( (unsigned char*) sUserPassword.c_str(), len);
+			hash.Update( (unsigned char*) sUserPassword.c_str(), sUserPassword.length());
 			hash.Update( handler->m_seUserKey->GetUBuffer() + 32, 8);
 
 			CryptoPP::SecByteBlock buffer(hash.DigestSize());
 			hash.Final(buffer);
 
-			bool bValidate = (0 == memcmp(buffer.BytePtr(), handler->m_seUserKey->GetUBuffer(), 32));
+			if ( handler->m_nEncryptRevision > 5 )
+			{
+				MakeFileKey3(sUserPassword, buffer.BytePtr(), buffer.size());
+			}
+
+			bValidate = (0 == memcmp(buffer.BytePtr(), handler->m_seUserKey->GetUBuffer(), 32));
 
 			if (bValidate)
 			{
@@ -174,9 +213,14 @@ namespace PdfReader
 				CryptoPP::SecByteBlock buffer(hash.DigestSize());
 				hash.Final(buffer);
 
-				CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.SizeInBytes());
-				unsigned char* empty[16] = {};
-				CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, (unsigned char*)empty );
+				if ( handler->m_nEncryptRevision > 5 )
+				{
+					MakeFileKey3(sUserPassword, buffer.BytePtr(), buffer.size());
+				}
+
+				memset(empty, 0, 16);
+				CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.size());
+				CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, empty );
 
 				CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::ArraySink( (unsigned char*)handler->m_sFileKey, 32), CryptoPP::StreamTransformationFilter::NO_PADDING );
 				stfDecryptor.Put( handler->m_seUserEncryptionKey->GetUBuffer(), 32);
@@ -185,6 +229,8 @@ namespace PdfReader
 			else
 			{
 				std::string sOwnerPassword = conv.SASLprepToUtf8(wsOwnerPassword);
+				if (sOwnerPassword.length() > 127)
+					sOwnerPassword = sOwnerPassword.substr(0, 127);
 				
 				hash.Update( (unsigned char*) sOwnerPassword.c_str(), sOwnerPassword.length());
 				hash.Update( handler->m_seOwnerKey->GetUBuffer() + 32, 8);
@@ -192,6 +238,11 @@ namespace PdfReader
 
 				CryptoPP::SecByteBlock buffer(hash.DigestSize());
 				hash.Final(buffer);
+
+				if ( handler->m_nEncryptRevision > 5 )
+				{
+					MakeFileKey3(sOwnerPassword, buffer.BytePtr(), buffer.size(), handler->m_seUserKey->GetUBuffer(), 48);
+				}
 
 				bValidate = (0 == memcmp(buffer.BytePtr(), handler->m_seOwnerKey->GetUBuffer(), 32));
 
@@ -203,10 +254,14 @@ namespace PdfReader
 
 					CryptoPP::SecByteBlock buffer(hash.DigestSize());
 					hash.Final(buffer);
-					
-					CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.SizeInBytes());
-					unsigned char* empty[16] = {};
-					CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, (unsigned char*)empty );
+
+					if ( handler->m_nEncryptRevision > 5 )
+					{
+						MakeFileKey3(sOwnerPassword, buffer.BytePtr(), buffer.size(), handler->m_seUserKey->GetUBuffer(), 48);
+					}
+					memset(empty, 0, 16);					
+					CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.size());
+					CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, empty );
 
 					CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::ArraySink( (unsigned char*)handler->m_sFileKey, 32), CryptoPP::StreamTransformationFilter::NO_PADDING );
 					stfDecryptor.Put(handler->m_seOwnerEncryptionKey->GetUBuffer(), 32);
@@ -216,9 +271,62 @@ namespace PdfReader
 			handler->m_bOwnerPasswordValid = bValidate;
 			return bValidate;
 		}
-		else if ( handler->m_nEncryptRevision == 6 )
+	}
+
+	bool Decrypt::MakeFileKey3(const std::string &sPassword, unsigned char *pHash, int nHashSize, unsigned char *pHash2, int nHashSize2)
+	{
+		if (!pHash) return false;
+	
+		int size = 64 * (sPassword.length() + 64 + nHashSize2); // max
+				
+		unsigned char K[64];	//max size sha
+		unsigned char *K1 = new unsigned char[size];
+		unsigned char *E = new unsigned char[size];
+
+		int hash_size = nHashSize;
+		memcpy(K, pHash, nHashSize);
+				
+		int iteration = 0;			
+		
+		while( (iteration < 64) || (iteration < E[size - 1] + 32))
 		{
+			CryptoPP::SecByteBlock key(K, 16), iv(K + 16, 16);
+
+			size = 0;
+			for (int i = 0; i < 64; i++)
+			{
+				memcpy(K1 + size, sPassword.c_str(), sPassword.length()); size += sPassword.length();
+				memcpy(K1 + size, K, hash_size); size += hash_size;
+				if (pHash2)
+				{
+					memcpy(K1 + size, pHash2, nHashSize2);	size += nHashSize2;
+				}
+			}
+			CryptoPP::AES::Encryption aesEncryption(key, key.size());
+			CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, iv);
+			
+			CryptoPP::StreamTransformationFilter stfEncryption(cbcEncryption, new CryptoPP::ArraySink( E, size), CryptoPP::StreamTransformationFilter::NO_PADDING);
+		 
+			stfEncryption.Put( K1, size);
+			stfEncryption.MessageEnd();
+//----------------------------------------------------------
+			int E_mod_3 = 0;
+            for (unsigned int i = 0; i < 16; ++i)
+            {
+                E_mod_3 += E[i];
+            }
+            E_mod_3 %= 3;
+
+			hash_size = SHA(E_mod_3, E, size, K);
+
+			iteration++;
 		}
+
+		delete []K1;
+		delete []E;
+
+		memcpy (pHash, K, 32); // pHash - from sha256
+		return true;
 	}
 
 	bool Decrypt::MakeFileKey2(StandardSecurityHandler *handler, const std::string &sUserPassword)

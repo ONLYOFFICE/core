@@ -67,6 +67,7 @@ public:
 		is3D_			= false;
 		type_			= 0;
 		dispBlanksAs_	= L"zero";
+		varyColors_		= true;
 	}
 	~oox_chart(){}
  
@@ -99,6 +100,7 @@ public:
 
 	int								type_;
 	bool							is3D_;
+	bool							varyColors_;
 	std::wstring					dispBlanksAs_;
 	std::vector<int>				axisId_;	//	axId (Axis ID) §21.2.2.9
 	std::wstring					grouping_;	//	clustered | percentStacked | stacked | standard 

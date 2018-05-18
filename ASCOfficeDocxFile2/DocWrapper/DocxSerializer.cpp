@@ -341,7 +341,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& o
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
 	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_pCurFileWriter->m_pComments);
-	int res = oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
+	oBinary_DocumentTableReader.ReadDocumentContentOut(nLength);
 
     sOutputXml = oTempContentWriter.m_oContent.GetData();
 	return true;
@@ -433,13 +433,13 @@ bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBi
 	if(OOX::et_m_oMathPara == eType)
 	{
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMathPara>")));
-		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathOMathPara, &oBinary_DocumentTableReader, NULL);
+		oBinary_DocumentTableReader.ReadMathOMathParaOut(nLength);
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMathPara>")));
 	}
 	else if(OOX::et_m_oMath == eType)
 	{
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMath>")));
-		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathArg, &oBinary_DocumentTableReader, NULL);
+		oBinary_DocumentTableReader.ReadMathArgOut(nLength);
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMath>")));
 	}
 

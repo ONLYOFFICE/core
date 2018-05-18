@@ -759,7 +759,7 @@ namespace NSDoctRenderer
 
             if (!bIsEqual || bIsCheckSystemFonts)
             {
-                NSFonts::IApplicationFonts* pApplicationF;
+                NSFonts::IApplicationFonts* pApplicationF = NSFonts::NSApplication::Create();
                 std::vector<std::wstring> strFontsW_Cur = pApplicationF->GetSetupFontFiles();
 
                 if (strFonts.size() != strFontsW_Cur.size())

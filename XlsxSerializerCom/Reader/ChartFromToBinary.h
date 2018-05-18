@@ -58,7 +58,7 @@ namespace BinXlsxRW
 		int								nThemeOverrideCount;
 	};
 
-	class BinaryChartReader : public Binary_CommonReader<BinaryChartReader>
+	class BinaryChartReader : public Binary_CommonReader
 	{
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		SaveParams&						m_oSaveParams;

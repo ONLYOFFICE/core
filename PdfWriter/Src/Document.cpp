@@ -81,7 +81,7 @@ namespace PdfWriter
 	{
 		Close();
 	}
-	bool              CDocument::CreateNew()
+    bool CDocument::CreateNew()
 	{
 		Close();
 
@@ -109,7 +109,7 @@ namespace PdfWriter
 			return false;
 
 		m_pInfo->SetCreationTime();
-		m_pInfo->SetInfo(InfoProducer, "Ascensio System SIA Copyright (c) 2015");
+		m_pInfo->SetInfo(InfoProducer, "Ascensio System SIA Copyright (c) 2018");
 
 		m_nCurPageNum = -1;
 
@@ -122,7 +122,7 @@ namespace PdfWriter
 
 		return true;
 	}
-	void              CDocument::Close()
+    void CDocument::Close()
 	{
 		// Все объекты удаляются внутри CXref
 		RELEASEOBJECT(m_pXref);
@@ -151,11 +151,13 @@ namespace PdfWriter
 		m_vFreeTypeFonts.clear();
 		if (m_pFreeTypeLibrary)
 		{
+#ifndef	TEST_PDFWRITER_LIB
 			FT_Done_FreeType(m_pFreeTypeLibrary);
 			m_pFreeTypeLibrary = NULL;
+#endif
 		}
 	}
-	bool              CDocument::SaveToFile(const std::wstring& wsPath)
+    bool CDocument::SaveToFile(const std::wstring& wsPath)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, true))
@@ -169,7 +171,7 @@ namespace PdfWriter
 
 		return true;
 	}
-	void              CDocument::SaveToStream(CStream* pStream)
+    void CDocument::SaveToStream(CStream* pStream)
 	{
 		unsigned long nRet = OK;
 
@@ -190,7 +192,7 @@ namespace PdfWriter
 
 		m_pXref->WriteToStream(pStream, pEncrypt);
 	}
-	void              CDocument::PrepareEncryption()
+    void CDocument::PrepareEncryption()
 	{
 		CEncrypt* pEncrypt = m_pEncryptDict->GetEncrypt();
 		if (!pEncrypt)
@@ -207,18 +209,10 @@ namespace PdfWriter
 		else
 			pID->Clear();
 
-		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, ID_LEN));
-		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, ID_LEN));
+        pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
+        pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
 	}
-	void              CDocument::SetEncryptionMode(EEncryptMode eMode, unsigned int unKeyLen)
-	{
-		if (!m_bEncrypt)
-			return;
-
-		CEncrypt* pEncrypt = m_pEncryptDict->GetEncrypt();
-		pEncrypt->SetMode(eMode, unKeyLen);
-	}
-	void              CDocument::SetPassword(const char* sOwnerPassword, const char* sUserPassword)
+    void CDocument::SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword)
 	{
 		if (!m_pEncryptDict)
 			m_pEncryptDict = new CEncryptDict(m_pXref);
@@ -226,11 +220,12 @@ namespace PdfWriter
 		if (!m_pEncryptDict)
 			return;
 
-		m_pEncryptDict->SetPassword(sOwnerPassword, sUserPassword);
-		m_pTrailer->Add("Encrypt", m_pEncryptDict);
+        m_pEncryptDict->SetPasswords(wsOwnerPassword, wsUserPassword);
+
+        m_pTrailer->Add("Encrypt", m_pEncryptDict);
 		m_bEncrypt = true;
 	}
-	CPage*            CDocument::AddPage()
+    CPage* CDocument::AddPage()
 	{
 		CPage* pPage = new CPage(m_pXref, m_pPageTree, this);
 		m_pPageTree->AddPage(pPage);
@@ -246,7 +241,7 @@ namespace PdfWriter
 		m_nCurPageNum++;
 		return pPage;
 	}
-	void              CDocument::SetPermission(unsigned int unPermission)
+    void CDocument::SetPermission(unsigned int unPermission)
 	{
 		if (!m_bEncrypt)
 			return;
@@ -254,11 +249,11 @@ namespace PdfWriter
 		CEncrypt* pEncrypt = m_pEncryptDict->GetEncrypt();
 		pEncrypt->SetPermission(unPermission);
 	}
-	void              CDocument::SetCompressionMode(unsigned int unMode)
+    void CDocument::SetCompressionMode(unsigned int unMode)
 	{
 		m_unCompressMode = unMode;
 	}
-	void              CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
+    void CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
 		CDictObject* pPageLabel = CreatePageLabel(eStyle, unFirstPage, sPrefix);
 		if (!pPageLabel)
@@ -266,7 +261,7 @@ namespace PdfWriter
 
 		m_pCatalog->AddPageLabel(m_nCurPageNum, pPageLabel);
 	}
-	void              CDocument::AddPageLabel(unsigned int unPageNum, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
+    void CDocument::AddPageLabel(unsigned int unPageNum, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
 		CDictObject* pPageLabel = CreatePageLabel(eStyle, unFirstPage, sPrefix);
 		if (!pPageLabel)
@@ -274,7 +269,7 @@ namespace PdfWriter
 
 		m_pCatalog->AddPageLabel(unPageNum, pPageLabel);
 	}
-	CDictObject*      CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
+    CDictObject* CDocument::CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
 		CDictObject* pLabel = new CDictObject();
 		if (!pLabel)
@@ -298,7 +293,7 @@ namespace PdfWriter
 
 		return pLabel;
 	}
-	COutline*         CDocument::CreateOutline(COutline* pParent, const char* sTitle)
+    COutline* CDocument::CreateOutline(COutline* pParent, const char* sTitle)
 	{
 		if (!pParent)
 		{
@@ -316,7 +311,7 @@ namespace PdfWriter
 
 		return new COutline(pParent, sTitle, m_pXref);
 	}
-	CDestination*     CDocument::CreateDestination(unsigned int unPageIndex)
+    CDestination* CDocument::CreateDestination(unsigned int unPageIndex)
 	{
 		if (unPageIndex >= m_vPages.size())
 			return NULL;
@@ -324,7 +319,7 @@ namespace PdfWriter
 		CPage* pPage = m_vPages.at(unPageIndex);
 		return new CDestination(pPage, m_pXref);
 	}
-	CExtGrState*      CDocument::FindExtGrState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
+    CExtGrState* CDocument::FindExtGrState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vExtGrStates.size(); unIndex < unCount; unIndex++)
@@ -348,7 +343,7 @@ namespace PdfWriter
 
 		return NULL;
 	}
-	CExtGrState*      CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
+    CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
 
@@ -376,7 +371,7 @@ namespace PdfWriter
 
 		return pExtGrState;
 	}
-	CExtGrState*      CDocument::GetStrokeAlpha(double dAlpha)
+    CExtGrState* CDocument::GetStrokeAlpha(double dAlpha)
 	{
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vStrokeAlpha.size(); unIndex < unCount; unIndex++)
@@ -395,7 +390,7 @@ namespace PdfWriter
 		m_vStrokeAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
-	CExtGrState*      CDocument::GetFillAlpha(double dAlpha)
+    CExtGrState* CDocument::GetFillAlpha(double dAlpha)
 	{
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vFillAlpha.size(); unIndex < unCount; unIndex++)
@@ -414,7 +409,7 @@ namespace PdfWriter
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
-	CAnnotation*      CDocument::CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText)
+    CAnnotation* CDocument::CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText)
 	{
 		CAnnotation* pAnnot = new CTextAnnotation(m_pXref, oRect, sText);
 		if (pAnnot)
@@ -425,7 +420,7 @@ namespace PdfWriter
 
 	    return pAnnot;
 	}
-	CAnnotation*      CDocument::CreateLinkAnnot(unsigned int unPageNum, TRect oRect, CDestination* pDest)
+    CAnnotation* CDocument::CreateLinkAnnot(unsigned int unPageNum, TRect oRect, CDestination* pDest)
 	{
 		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
 	    
@@ -437,7 +432,7 @@ namespace PdfWriter
 	
 	    return pAnnot;
 	}	
-	CAnnotation*      CDocument::CreateUriLinkAnnot(unsigned int unPageNum, TRect oRect, const char* sUri)
+    CAnnotation* CDocument::CreateUriLinkAnnot(unsigned int unPageNum, TRect oRect, const char* sUri)
 	{
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUri);
 	
@@ -449,11 +444,11 @@ namespace PdfWriter
 
 		return pAnnot;
 	}
-	CImageDict*       CDocument::CreateImage()
+    CImageDict* CDocument::CreateImage()
 	{
 		return new CImageDict(m_pXref, this);
 	}
-	CFont14*          CDocument::CreateFont14(EStandard14Fonts eType)
+    CFont14* CDocument::CreateFont14(EStandard14Fonts eType)
 	{
 		return new CFont14(m_pXref, this, eType);
 	}
@@ -473,7 +468,7 @@ namespace PdfWriter
 		m_vTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}
-	char*             CDocument::GetTTFontTag()
+    char* CDocument::GetTTFontTag()
 	{
 		if (0 == m_sTTFontTag[0])
 		{
@@ -493,7 +488,7 @@ namespace PdfWriter
 
 		return m_sTTFontTag;
 	}
-	void              CDocument::AddFreeTypeFont(CFontCidTrueType* pFont)
+    void CDocument::AddFreeTypeFont(CFontCidTrueType* pFont)
 	{
 		for (int nIndex = 0, nCount = m_vFreeTypeFonts.size(); nIndex < nCount; nIndex++)
 		{
@@ -521,14 +516,15 @@ namespace PdfWriter
 			m_vFreeTypeFonts.erase(m_vFreeTypeFonts.begin() + MAX_OPENED_FT_FACES, m_vFreeTypeFonts.end());
 		}
 	}
-	FT_Library        CDocument::GetFreeTypeLibrary()
+    FT_Library CDocument::GetFreeTypeLibrary()
 	{
+#ifndef	TEST_PDFWRITER_LIB
 		if (!m_pFreeTypeLibrary)
 			FT_Init_FreeType(&m_pFreeTypeLibrary);
-
+#endif
 		return m_pFreeTypeLibrary;
 	}
-	CJbig2Global*     CDocument::GetJbig2Global()
+    CJbig2Global* CDocument::GetJbig2Global()
 	{
 		if (m_pJbig2 && m_pJbig2->GetImagesCount() > 4)
 		{
@@ -542,7 +538,7 @@ namespace PdfWriter
 
 		return m_pJbig2;
 	}
-	CShading*         CDocument::CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
+    CShading* CDocument::CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
 	{
 		pExtGrState = NULL;
 
@@ -632,7 +628,7 @@ namespace PdfWriter
 
 		return pColorShading;
 	}
-	CShading*         CDocument::CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount)
+    CShading* CDocument::CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount)
 	{
 		for (int nIndex = 0, nShadingsCount = m_vShadings.size(); nIndex < nShadingsCount; nIndex++)
 		{
@@ -655,7 +651,7 @@ namespace PdfWriter
 
 		return pShading;
 	}
-	CShading*         CDocument::CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount)
+    CShading* CDocument::CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount)
 	{
 		for (int nIndex = 0, nShadingsCount = m_vShadings.size(); nIndex < nShadingsCount; nIndex++)
 		{
@@ -710,12 +706,12 @@ namespace PdfWriter
 
 		return CreateImageTilePattern(dW, dH, pImage, NULL, imagetilepatterntype_Default);
 	}
-	CShading*         CDocument::CreateAxialShading(CPage* pPage, double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
+    CShading* CDocument::CreateAxialShading(CPage* pPage, double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
 	{
 		double pPattern[] ={ dX0, dY0, dX1, dY1 };
 		return CreateShading(pPage, pPattern, true, pColors, pAlphas, pPoints, nCount, pExtGrState);
 	}
-	CShading*         CDocument::CreateRadialShading(CPage* pPage, double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
+    CShading* CDocument::CreateRadialShading(CPage* pPage, double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
 	{
 		double pPattern[] ={ dX0, dY0, dR0, dX1, dY1, dR1 };
 		return CreateShading(pPage, pPattern, false, pColors, pAlphas, pPoints, nCount, pExtGrState);

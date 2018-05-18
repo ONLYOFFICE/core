@@ -17,6 +17,9 @@ DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
+DEFINES += CRYPTOPP_DISABLE_ASM
+LIBS += -lCryptoPPLib
+
 DEFINES += NOMINMAX
 
 core_windows {

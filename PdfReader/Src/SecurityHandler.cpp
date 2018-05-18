@@ -205,7 +205,6 @@ namespace PdfReader
 		}
 		else
 		{
-			// TO DO: Error "Weird encryption info"
 		}
 
 		oFileID.Free();

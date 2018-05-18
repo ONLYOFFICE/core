@@ -52,11 +52,6 @@
 
 namespace PdfWriter
 {
-	enum EEncryptMode
-	{
-		encryptmode_R2 = 2,
-		encryptmode_R3 = 3
-	};
 	struct TRect
 	{
 		TRect()

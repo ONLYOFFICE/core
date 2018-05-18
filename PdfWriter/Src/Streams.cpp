@@ -113,7 +113,7 @@ namespace PdfWriter
 
 		return (unsigned short)((nChar0 << 8) | nChar1);
 	}
-	void           CStream::Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum)
+    void CStream::Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum)
 	{
 		Write(pBuffer, unSize);
 		if (bCalcCheckSum)
@@ -123,20 +123,20 @@ namespace PdfWriter
 			m_unCheckSum = oCRC.m_nCRC32;
 		}
 	}
-	void           CStream::WriteChar(char nChar)
+    void CStream::WriteChar(char nChar)
 	{
 		Write((BYTE*)&nChar, 1);
 	}
-	void           CStream::WriteStr(const char* sString)
+    void CStream::WriteStr(const char* sString)
 	{
 		unsigned int nLen = StrLen(sString, -1);
 		Write((BYTE*)sString, nLen);
 	}
-	void           CStream::WriteUChar(unsigned char unValue)
+    void CStream::WriteUChar(unsigned char unValue)
 	{
 		Write(&unValue, 1);
 	}
-	void           CStream::WriteInt(int nValue)
+    void CStream::WriteInt(int nValue)
 	{
 		//int nLen = 0;
 		//const char* sString = NSFastIntToString::GetString(fabs(nValue), nLen);
@@ -155,11 +155,11 @@ namespace PdfWriter
 			return WriteStr(pBuffer);
 		//}
 	}
-	void           CStream::WriteUInt(unsigned int unValue)
+    void CStream::WriteUInt(unsigned int unValue)
 	{
 		WriteInt((int)unValue);
 	}
-	void           CStream::WriteHex(int nValue, int nLen)
+    void CStream::WriteHex(int nValue, int nLen)
 	{
 		if (2 == nLen)	
 			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
@@ -169,14 +169,14 @@ namespace PdfWriter
 			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
 		}
 	}
-	void           CStream::WriteReal(float fValue)
+    void CStream::WriteReal(float fValue)
 	{
 		char pBuffer[32];
 		memset(pBuffer, 0x00, 32);
 		FtoA(pBuffer, fValue, pBuffer + 31);
 		return WriteStr(pBuffer);
 	}
-	void           CStream::WriteReal(double dValue)
+    void CStream::WriteReal(double dValue)
 	{
 		//int nIVal = (int)dValue;
 		//int nFVal = (int)(fabs(dValue - nIVal) * 10000);
@@ -236,7 +236,7 @@ namespace PdfWriter
 		FtoA(pBuffer, dValue, pBuffer + 31);
 		return WriteStr(pBuffer);
 	}
-	void           CStream::WriteEscapeName(const char* sValue)
+    void CStream::WriteEscapeName(const char* sValue)
 	{
 		char sTmpChar[LIMIT_MAX_NAME_LEN * 3 + 2];
 
@@ -281,7 +281,7 @@ namespace PdfWriter
 
 		Write((BYTE*)sTmpChar, StrLen(sTmpChar, -1));
 	}
-	void           CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen)
+    void CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen)
 	{
 		if (!unLen || !sText)
 			return;
@@ -325,7 +325,7 @@ namespace PdfWriter
 
 		Write((BYTE*)sBuf, nIndex);
 	}
-	void           CStream::WriteBinary(const BYTE* pData, unsigned int unLen, CEncrypt* pEncrypt)
+    void CStream::WriteBinary(const BYTE* pData, unsigned int unLen, CEncrypt* pEncrypt)
 	{
 		char sBuf[TEXT_DEFAULT_LEN];
 
@@ -338,7 +338,7 @@ namespace PdfWriter
 		{
 			pBuf = new BYTE[unLen];
 			bDelete = true;
-			pEncrypt->CryptBuf(pData, pBuf, unLen);
+            pEncrypt->CryptBuf(pData, pBuf, unLen, true);
 			pBuffer = pBuf;
 		}
 		else
@@ -359,7 +359,7 @@ namespace PdfWriter
 		if (bDelete)
 			delete[] pBuf;
 	}
-	void           CStream::WriteStreamWithDeflate(CStream* pStream, CEncrypt* pEncrypt)
+    void CStream::WriteStreamWithDeflate(CStream* pStream, CEncrypt* pEncrypt)
 	{
 		unsigned long nRet = OK;
 
@@ -394,7 +394,7 @@ namespace PdfWriter
 				{
 					if (pEncrypt)
 					{
-						pEncrypt->CryptBuf(otbuf, ebuf, DEFLATE_BUF_SIZ);
+                        pEncrypt->CryptBuf(otbuf, ebuf, DEFLATE_BUF_SIZ, false);
 						Write(ebuf, DEFLATE_BUF_SIZ);
 					}
 					else
@@ -423,7 +423,7 @@ namespace PdfWriter
                 unsigned int osize = DEFLATE_BUF_SIZ - ZStream.GetAvailOut();
 				if (pEncrypt)
 				{
-					pEncrypt->CryptBuf(otbuf, ebuf, osize);
+                    pEncrypt->CryptBuf(otbuf, ebuf, osize, true);
 					Write(ebuf, osize);
 				}
 				else
@@ -438,7 +438,7 @@ namespace PdfWriter
 
         ZStream.End();
 	}
-	void           CStream::WriteStream(CStream* pStream, unsigned int unFilter, CEncrypt *pEncrypt)
+    void CStream::WriteStream(CStream* pStream, unsigned int unFilter, CEncrypt *pEncrypt)
 	{
 		if (pStream->Size() <= 0)
 			return;
@@ -464,7 +464,7 @@ namespace PdfWriter
 
 			if (pEncrypt)
 			{
-				pEncrypt->CryptBuf(pBuf, pEBuf, unSize);
+                pEncrypt->CryptBuf(pBuf, pEBuf, unSize, pStream->IsEof());
 				Write(pEBuf, unSize);
 			}
 			else
@@ -473,29 +473,29 @@ namespace PdfWriter
 			}
 		}
 	}
-	void           CStream::Write(CNullObject* pNull)
+    void CStream::Write(CNullObject* pNull)
 	{
 	}
-	void           CStream::Write(CBoolObject* pBool)
+    void CStream::Write(CBoolObject* pBool)
 	{
 		if (pBool->Get())
 			WriteStr("true");
 		else
 			WriteStr("false");
 	}
-	void           CStream::Write(CNumberObject* pNumber)
+    void CStream::Write(CNumberObject* pNumber)
 	{
 		WriteInt(pNumber->Get());
 	}
-	void           CStream::Write(CRealObject* pReal)
+    void CStream::Write(CRealObject* pReal)
 	{
 		WriteReal(pReal->Get());
 	}
-	void           CStream::Write(CNameObject* pName)
+    void CStream::Write(CNameObject* pName)
 	{
 		WriteEscapeName(pName->Get());
 	}
-	void           CStream::Write(CStringObject* pString, CEncrypt* pEncrypt)
+    void CStream::Write(CStringObject* pString, CEncrypt* pEncrypt)
 	{
 		if (pEncrypt)
 			pEncrypt->Reset();
@@ -512,7 +512,7 @@ namespace PdfWriter
 			WriteEscapeText(pString->GetString(), pString->GetLength());
 		}
 	}
-	void           CStream::Write(CBinaryObject* pBinary, CEncrypt* pEncrypt)
+    void CStream::Write(CBinaryObject* pBinary, CEncrypt* pEncrypt)
 	{
 		unsigned int unLen  = pBinary->GetLength();
 		BYTE*        pValue = pBinary->GetValue();
@@ -527,7 +527,7 @@ namespace PdfWriter
 		WriteBinary(pValue, unLen, pEncrypt);
 		WriteChar('>');
 	}
-	void           CStream::Write(CArrayObject* pArray, CEncrypt* pEncrypt)
+    void CStream::Write(CArrayObject* pArray, CEncrypt* pEncrypt)
 	{
 		WriteStr("[ ");
 		for (int nIndex = 0, nCount = pArray->GetCount(); nIndex < nCount; nIndex++)
@@ -538,7 +538,7 @@ namespace PdfWriter
 		}
 		WriteChar(']');
 	}
-	void           CStream::Write(CDictObject* pDict, CEncrypt* pEncrypt)
+    void CStream::Write(CDictObject* pDict, CEncrypt* pEncrypt)
 	{
 		WriteStr("<<\012");
 
@@ -637,7 +637,7 @@ namespace PdfWriter
 
 		pDict->AfterWrite();
 	}
-	void           CStream::Write(CObjectBase* pObject, CEncrypt* pEncrypt)
+    void CStream::Write(CObjectBase* pObject, CEncrypt* pEncrypt)
 	{
 		if (pObject)
 		{

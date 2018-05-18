@@ -81,7 +81,7 @@ namespace PdfWriter
 
 		return (const char*)pString->GetString();
 	}
-	void        CInfoDict::SetInfo(EInfoType eType, const TDate& oDate)
+	void CInfoDict::SetInfo(EInfoType eType, const TDate& oDate)
 	{
 		char sTemp[DATE_TIME_STR_LEN + 1];
 		char* pTemp = NULL;
@@ -151,7 +151,7 @@ namespace PdfWriter
 
 		Add(sName, new CStringObject(sTemp));
 	}
-	void        CInfoDict::SetCreationTime()
+	void CInfoDict::SetCreationTime()
 	{
 		time_t oTime = time(0);
 		struct tm* oNow = localtime(&oTime);

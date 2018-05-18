@@ -90,8 +90,7 @@ namespace PdfWriter
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath);
 			              
-		void              SetEncryptionMode(EEncryptMode eMode, unsigned int unKeyLen = 0);
-		void              SetPassword(const char* sOwnerPassword, const char* sUserPassword);
+        void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void              SetPermission(unsigned int unPermission);
 		void              SetCompressionMode(unsigned int unMode);
 			              

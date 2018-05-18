@@ -139,7 +139,6 @@ SOURCES += $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftbbox.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftlcdfil.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftmm.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftotval.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftobjs.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftpatent.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftpfr.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftsynth.c \

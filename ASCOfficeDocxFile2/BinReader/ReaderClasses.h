@@ -1311,6 +1311,7 @@ public:
 class docLvl
 {
 public:
+	long ILvl;
 	long Format;
 	BYTE Jc;
 	std::vector<docLvlText*> Text;
@@ -1321,6 +1322,7 @@ public:
 	XmlUtils::CStringWriter TextPr;
     std::wstring PStyle;
 
+	bool bILvl;
 	bool bFormat;
 	bool bJc;
 	bool bText;
@@ -1332,6 +1334,7 @@ public:
 	bool bPStyle;
 	docLvl()
 	{
+		bILvl = false;
 		bFormat = false;
 		bJc = false;
 		bText = false;
@@ -1349,9 +1352,14 @@ public:
 			delete Text[i];
 		}
 	}
-	void Write(XmlUtils::CStringWriter& oWriter, int index)
+	void Write(XmlUtils::CStringWriter& oWriter)
 	{
-        oWriter.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(index) + L"\">");
+		oWriter.WriteString(L"<w:lvl");
+		if(bILvl)
+		{
+			oWriter.WriteString(L" w:ilvl=\"" + std::to_wstring(ILvl) + L"\"");
+		}
+		oWriter.WriteString(L">");
 		if(bStart)
 		{
             oWriter.WriteString(L"<w:start w:val=\"" + std::to_wstring(Start) + L"\"/>");
@@ -1448,6 +1456,48 @@ public:
         oWriter.WriteString(L"</w:lvl>");
 	}
 };
+class docLvlOverride
+{
+public:
+	long ILvl;
+	long StartOverride;
+	docLvl* Lvl;
+
+	bool bILvl;
+	bool bStartOverride;
+	docLvlOverride()
+	{
+		bILvl = false;
+		bStartOverride = false;
+		Lvl = NULL;
+	}
+	~docLvlOverride()
+	{
+		RELEASEOBJECT(Lvl);
+	}
+	void Write(XmlUtils::CStringWriter& oWriter)
+	{
+		oWriter.WriteString(L"<w:lvlOverride");
+		if (bILvl)
+		{
+			oWriter.WriteString(L" w:ilvl=\"");
+			oWriter.WriteString(std::to_wstring(ILvl));
+			oWriter.WriteString(L"\"");
+		}
+		oWriter.WriteString(L">");
+		if (bStartOverride)
+		{
+			oWriter.WriteString(L"<w:startOverride w:val=\"");
+			oWriter.WriteString(std::to_wstring(StartOverride));
+			oWriter.WriteString(L"\"/>");
+		}
+		if(NULL != Lvl)
+		{
+			Lvl->Write(oWriter);
+		}
+		oWriter.WriteString(L"</w:lvlOverride>");
+	}
+};
 class docANum
 {
 public:
@@ -1485,7 +1535,7 @@ public:
 			}
 			for(int i = 0, length = (int)Lvls.size(); i < length; ++i)
 			{
-				Lvls[i]->Write(oWriterANum, i);
+				Lvls[i]->Write(oWriterANum);
 			}
             oWriterANum.WriteString(L"</w:abstractNum>");
 		}
@@ -1496,6 +1546,7 @@ class docNum
 public:
 	long AId;
 	long Id;
+	std::vector<docLvlOverride*> LvlOverrides;
 
 	bool bAId;
 	bool bId;
@@ -1504,12 +1555,21 @@ public:
 		bAId = false;
 		bId = false;
 	}
+	~docNum()
+	{
+		for(size_t i = 0; i < LvlOverrides.size(); ++i){
+			RELEASEOBJECT(LvlOverrides[i]);
+		}
+	}
 	void Write(XmlUtils::CStringWriter& oWriterNumList)
 	{
 		if(bAId && bId)
 		{
-            oWriterNumList.WriteString(L"<w:num w:numId=\"" + std::to_wstring(Id) + L"\"><w:abstractNumId w:val=\"" +
-                                       std::to_wstring(AId) + L"\"/></w:num>");
+            oWriterNumList.WriteString(L"<w:num w:numId=\"" + std::to_wstring(Id) + L"\"><w:abstractNumId w:val=\"" + std::to_wstring(AId) + L"\"/>");
+			for(size_t i = 0; i < LvlOverrides.size(); ++i){
+				LvlOverrides[i]->Write(oWriterNumList);
+			}
+			oWriterNumList.WriteString(L"</w:num>");
 		}
 	}
 };

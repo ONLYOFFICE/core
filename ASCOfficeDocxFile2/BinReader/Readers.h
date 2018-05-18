@@ -2509,6 +2509,35 @@ public:
 			odocNum->bId = true;
 			odocNum->Id = m_oBufferedStream.GetLong();
 		}
+		else if ( c_oSerNumTypes::Num_LvlOverride == type )
+		{
+			docLvlOverride* lvlOverride = new docLvlOverride();
+			READ1_DEF(length, res, this->ReadLvlOverride, lvlOverride);
+			odocNum->LvlOverrides.push_back(lvlOverride);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadLvlOverride(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		docLvlOverride* lvlOverride = static_cast<docLvlOverride*>(poResult);
+		if (c_oSerNumTypes::ILvl == type)
+		{
+			lvlOverride->bILvl = true;
+			lvlOverride->ILvl = m_oBufferedStream.GetLong();
+		}
+		else if (c_oSerNumTypes::StartOverride == type)
+		{
+			lvlOverride->bStartOverride = true;
+			lvlOverride->StartOverride = m_oBufferedStream.GetLong();
+		}
+		else if (c_oSerNumTypes::Lvl == type)
+		{
+			lvlOverride->Lvl = new docLvl();
+			READ2_DEF(length, res, this->ReadLevel, lvlOverride->Lvl);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -2558,6 +2587,7 @@ public:
 		if ( c_oSerNumTypes::Lvl == type )
 		{
 			docLvl* odocLvl = new docLvl();
+			odocLvl->ILvl = odocANum->Lvls.size();
 			READ2_DEF(length, res, this->ReadLevel, odocLvl);
 			odocANum->Lvls.push_back(odocLvl);
 		}
@@ -2618,6 +2648,11 @@ public:
 			res = oBinary_rPrReader.Read(length, &orPr);
 			if(orPr.IsNoEmpty())
 				orPr.Write(&odocLvl->TextPr);
+		}
+		else if ( c_oSerNumTypes::ILvl == type )
+		{
+			odocLvl->bILvl = true;
+			odocLvl->ILvl = m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

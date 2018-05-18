@@ -1125,9 +1125,16 @@ namespace NExtractTools
 	{
         NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
-        CPdfRenderer pdfWriter(pApplicationFonts);
+        
+		CPdfRenderer pdfWriter(pApplicationFonts);
+		
 		pdfWriter.SetTempFolder(sTemp);
 		pdfWriter.SetThemesPlace(sThemeDir);
+		
+		std::wstring password = params.getSavePassword();
+		if (false == password.empty())
+			pdfWriter.SetPassword(password);
+		
 		int nReg = (bPaid == false) ? 0 : 1;
         int nRet = 0;
 		if (params.getIsNoBase64())
@@ -1258,10 +1265,17 @@ namespace NExtractTools
        {
            NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
            initApplicationFonts(pApplicationFonts, params);
-           CPdfRenderer pdfWriter(pApplicationFonts);
-           pdfWriter.SetTempFolder(sTemp);
-           pdfWriter.SetThemesPlace(sThemeDir);
-           int nReg = (bPaid == false) ? 0 : 1;
+          
+		   CPdfRenderer pdfWriter(pApplicationFonts);
+           
+			pdfWriter.SetTempFolder(sTemp);
+			pdfWriter.SetThemesPlace(sThemeDir);
+			
+			std::wstring password = params.getSavePassword();
+			if (false == password.empty())
+				pdfWriter.SetPassword(password);
+          
+		   int nReg = (bPaid == false) ? 0 : 1;
            nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
            RELEASEOBJECT(pApplicationFonts);
        }
@@ -3653,12 +3667,14 @@ namespace NExtractTools
            }
            else
            {
-               CPdfRenderer pdfWriter(pApplicationFonts);
-               pdfWriter.SetTempFolder(sTemp);
-               IOfficeDrawingFile* pReader = NULL;
-               nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
-               pdfWriter.SaveToFile(sTo);
-               RELEASEOBJECT(pReader);
+				CPdfRenderer pdfWriter(pApplicationFonts);
+				pdfWriter.SetTempFolder(sTemp);
+				pdfWriter.SetTempFolder(sTemp);
+              
+				IOfficeDrawingFile* pReader = NULL;
+				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
+				pdfWriter.SaveToFile(sTo);
+				RELEASEOBJECT(pReader);
            }
        }
        else if(0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))

@@ -525,6 +525,13 @@ CPdfRenderer::~CPdfRenderer()
 	if (L"" != m_wsTempFolder)
 		NSDirectory::DeleteDirectory(m_wsTempFolder);
 }
+void CPdfRenderer::SetPassword(const std::wstring& wsPassword)
+{
+    if (!IsValid())
+        return;
+
+    m_pDocument->SetPasswords(wsPassword, wsPassword);
+}
 void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
 	if (!IsValid())

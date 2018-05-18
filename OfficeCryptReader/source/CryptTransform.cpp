@@ -978,15 +978,6 @@ bool ODFDecryptor::Decrypt(const std::wstring & wspassword, unsigned char* data_
 
 	bVerify	= (pChecksum == pOutHash);
 
-// test encrypt chipher - good !!;
-	//ODFEncryptor encryptor;
-
-	//encryptor.SetCryptData(this->cryptData);
-	//data_out = new unsigned char[pOut.size];
-	//
-	//encryptor.Encrypt(wspassword,  pOut.ptr, pOut.size, data_out);
-	
-
 	try
 	{
 		if (bVerify)
@@ -1042,26 +1033,9 @@ int ODFEncryptor::Encrypt (const std::wstring & wspassword, unsigned char* data,
 	data_out = new unsigned char[size_out]; 	
 	
 	_buf pOut (data_out, size_out, false);	
-	//_buf pOut (size_out);		
 
 	EncryptCipher(pKey,  ivi, data_deflate, pOut, cryptData.cipherAlgorithm, bPadding ? StreamTransformationFilter::W3C_PADDING :
 																						StreamTransformationFilter::NO_PADDING);
-
-	//int sz = 16, size_all = 0;
-	//while (true)
-	//{
-	//	if (size_all >= size_out)
-	//		break;
-
-	//	_buf pInp(data_deflate.ptr + size_all, (std::min)(sz, data_deflate.size - size_all), false);
-	//	_buf pOut1(data_out + size_all, sz, false);
-	//	
-	//	EncryptCipher(pKey,  ivi, pInp, pOut1, cryptData.cipherAlgorithm, bPadding ? StreamTransformationFilter::W3C_PADDING :
-	//																				StreamTransformationFilter::NO_PADDING);
-
-	//	size_all += sz;
-
-	//}
 	return size_out;
 }
 

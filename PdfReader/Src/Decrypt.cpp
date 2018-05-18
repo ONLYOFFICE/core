@@ -54,7 +54,7 @@ namespace PdfReader
 		CryptoPP::SecByteBlock buffer(hash.DigestSize());
 		hash.Final(buffer);
 
-		memcpy(sDigest, buffer.BytePtr(), buffer.SizeInBytes());
+		memcpy(sDigest, buffer.BytePtr(), buffer.size());
 		return;
 	}
 	static int SHA(int type, unsigned char *sMessage, int nMessageLen, unsigned char *sDigest)
@@ -71,7 +71,7 @@ namespace PdfReader
 				CryptoPP::SecByteBlock buffer(res = hash.DigestSize());
 				hash.Final(buffer);
 
-				memcpy(sDigest, buffer.BytePtr(), buffer.SizeInBytes());
+				memcpy(sDigest, buffer.BytePtr(), buffer.size());
 			}break;
 			case 1:
 			case 384:
@@ -82,7 +82,7 @@ namespace PdfReader
 				CryptoPP::SecByteBlock buffer(res = hash.DigestSize());
 				hash.Final(buffer);
 
-				memcpy(sDigest, buffer.BytePtr(), buffer.SizeInBytes());
+				memcpy(sDigest, buffer.BytePtr(), buffer.size());
 			}break;
 			case 2:
 			case 512:
@@ -93,7 +93,7 @@ namespace PdfReader
 				CryptoPP::SecByteBlock buffer(res = hash.DigestSize());
 				hash.Final(buffer);
 
-				memcpy(sDigest, buffer.BytePtr(), buffer.SizeInBytes());
+				memcpy(sDigest, buffer.BytePtr(), buffer.size());
 			}break;
 		}
 		return res;
@@ -182,14 +182,17 @@ namespace PdfReader
 		else
 		{
 			bool bValidate = false;
+			unsigned char empty[16];
 
 			NSUnicodeConverter::CUnicodeConverter conv;
 			std::string sUserPassword = conv.SASLprepToUtf8(wsUserPassword);
-			int len = sUserPassword.length() < 127 ?  sUserPassword.length() : 127;
+			
+			if (sUserPassword.length() > 127)
+				sUserPassword = sUserPassword.substr(0, 127);
 			
 			CryptoPP::SHA256 hash;
 
-			hash.Update( (unsigned char*) sUserPassword.c_str(), len);
+			hash.Update( (unsigned char*) sUserPassword.c_str(), sUserPassword.length());
 			hash.Update( handler->m_seUserKey->GetUBuffer() + 32, 8);
 
 			CryptoPP::SecByteBlock buffer(hash.DigestSize());
@@ -197,7 +200,7 @@ namespace PdfReader
 
 			if ( handler->m_nEncryptRevision > 5 )
 			{
-				MakeFileKey3(sUserPassword, buffer.BytePtr(), buffer.SizeInBytes());
+				MakeFileKey3(sUserPassword, buffer.BytePtr(), buffer.size());
 			}
 
 			bValidate = (0 == memcmp(buffer.BytePtr(), handler->m_seUserKey->GetUBuffer(), 32));
@@ -212,11 +215,11 @@ namespace PdfReader
 
 				if ( handler->m_nEncryptRevision > 5 )
 				{
-					MakeFileKey3(sUserPassword, buffer.BytePtr(), buffer.SizeInBytes());
+					MakeFileKey3(sUserPassword, buffer.BytePtr(), buffer.size());
 				}
 
-				CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.SizeInBytes());
-				unsigned char empty[16] = {};
+				memset(empty, 0, 16);
+				CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.size());
 				CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, empty );
 
 				CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::ArraySink( (unsigned char*)handler->m_sFileKey, 32), CryptoPP::StreamTransformationFilter::NO_PADDING );
@@ -226,6 +229,8 @@ namespace PdfReader
 			else
 			{
 				std::string sOwnerPassword = conv.SASLprepToUtf8(wsOwnerPassword);
+				if (sOwnerPassword.length() > 127)
+					sOwnerPassword = sOwnerPassword.substr(0, 127);
 				
 				hash.Update( (unsigned char*) sOwnerPassword.c_str(), sOwnerPassword.length());
 				hash.Update( handler->m_seOwnerKey->GetUBuffer() + 32, 8);
@@ -236,7 +241,7 @@ namespace PdfReader
 
 				if ( handler->m_nEncryptRevision > 5 )
 				{
-					MakeFileKey3(sOwnerPassword, buffer.BytePtr(), buffer.SizeInBytes(), handler->m_seUserKey->GetUBuffer(), 48);
+					MakeFileKey3(sOwnerPassword, buffer.BytePtr(), buffer.size(), handler->m_seUserKey->GetUBuffer(), 48);
 				}
 
 				bValidate = (0 == memcmp(buffer.BytePtr(), handler->m_seOwnerKey->GetUBuffer(), 32));
@@ -252,11 +257,10 @@ namespace PdfReader
 
 					if ( handler->m_nEncryptRevision > 5 )
 					{
-						MakeFileKey3(sOwnerPassword, buffer.BytePtr(), buffer.SizeInBytes(), handler->m_seUserKey->GetUBuffer(), 48);
+						MakeFileKey3(sOwnerPassword, buffer.BytePtr(), buffer.size(), handler->m_seUserKey->GetUBuffer(), 48);
 					}
-					
-					CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.SizeInBytes());
-					unsigned char empty[16] = {};
+					memset(empty, 0, 16);					
+					CryptoPP::AES::Decryption aesDecryption(buffer.BytePtr(), buffer.size());
 					CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, empty );
 
 					CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::ArraySink( (unsigned char*)handler->m_sFileKey, 32), CryptoPP::StreamTransformationFilter::NO_PADDING );
@@ -273,8 +277,7 @@ namespace PdfReader
 	{
 		if (!pHash) return false;
 	
-		int len = sPassword.length() < 127 ?  sPassword.length() : 127;
-		int size = 64 * (len + 64 + nHashSize2); // max
+		int size = 64 * (sPassword.length() + 64 + nHashSize2); // max
 				
 		unsigned char K[64];	//max size sha
 		unsigned char *K1 = new unsigned char[size];
@@ -292,19 +295,19 @@ namespace PdfReader
 			size = 0;
 			for (int i = 0; i < 64; i++)
 			{
-				memcpy(K1 + size, sPassword.c_str(), len);	size += len;
-				memcpy(K1 + size, K, hash_size);			size += hash_size;
+				memcpy(K1 + size, sPassword.c_str(), sPassword.length()); size += sPassword.length();
+				memcpy(K1 + size, K, hash_size); size += hash_size;
 				if (pHash2)
 				{
 					memcpy(K1 + size, pHash2, nHashSize2);	size += nHashSize2;
 				}
 			}
+			CryptoPP::AES::Encryption aesEncryption(key, key.size());
+			CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, iv);
 			
-			CryptoPP::CBC_Mode< CryptoPP::AES >::Encryption encryption;
-			encryption.SetKeyWithIV( key, key.size(), iv );
-
-			CryptoPP::StreamTransformationFilter stfEncryption(encryption, new CryptoPP::ArraySink( E, size), CryptoPP::StreamTransformationFilter::NO_PADDING );
-			stfEncryption.Put2(K1, size, 1, true);
+			CryptoPP::StreamTransformationFilter stfEncryption(cbcEncryption, new CryptoPP::ArraySink( E, size), CryptoPP::StreamTransformationFilter::NO_PADDING);
+		 
+			stfEncryption.Put( K1, size);
 			stfEncryption.MessageEnd();
 //----------------------------------------------------------
 			int E_mod_3 = 0;

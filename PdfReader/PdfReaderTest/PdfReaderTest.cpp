@@ -53,11 +53,13 @@
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/CryptoPPLib.lib")
 	#else
 		#pragma comment(lib, "../../build/lib/win_32/HtmlRenderer.lib")
 		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/CryptoPPLib.lib")
 	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif

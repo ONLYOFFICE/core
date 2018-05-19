@@ -39,11 +39,10 @@
 #include <boost/regex.h>
 
 #include <cpdoccore/xml/xmlchar.h>
-
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/odf/odf_document.h>
 
 #include "serialize_elements.h"
-#include <cpdoccore/odf/odf_document.h>
 
 #include "style_graphic_properties.h"
 
@@ -53,8 +52,10 @@
 #include "odf_document_impl.h"
 
 #include "calcs_styles.h"
-#include "../docx/pptx_drawing.h"
 #include "chart_build_oox.h"
+
+#include "../docx/pptx_drawing.h"
+#include "../docx/xlsx_package.h"
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
@@ -257,13 +258,13 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 {
     try 
 	{
-        std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+		std::wstring tempPath	= Context.root()->get_temp_folder();
+		std::wstring odfPath	= Context.root()->get_folder();
+        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 		
 		if (!odf_document_ && !href.empty())
 		{			
-			std::wstring tempPath	= Context.root()->get_temp_folder();
-			std::wstring folderPath = Context.root()->get_folder();
-			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+			std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
 
 			// normalize path ???? todooo
 			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
@@ -282,7 +283,30 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 
 		process_build_object process_build_object_(objectBuild, odf_document_->odf_context() );
 		contentSubDoc->accept(process_build_object_); 
+		
+		if (objectBuild.table_table_)
+		{
+			oox::xlsx_conversion_context xlsx_context(odf_document_.get());
+			cpdoccore::oox::package::xlsx_document outputXlsx;
 
+			xlsx_context.set_output_document (&outputXlsx);
+
+			xlsx_context.start_document();
+				objectBuild.table_table_->xlsx_convert(xlsx_context);
+			xlsx_context.end_document();
+			
+			std::wstring href_folder = tempPath + FILE_SEPARATOR_STR + L"temp_xlsx";
+			NSDirectory::CreateDirectory(href_folder);
+			outputXlsx.write(href_folder);
+
+			std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems().count_object + 1) + L".xlsx";
+			
+			COfficeUtils oCOfficeUtils(NULL);
+			if (S_OK == oCOfficeUtils.CompressFileOrDirectory(href_folder, odfPath + FILE_SEPARATOR_STR + href, true))
+			{				
+				objectBuild.embeddedData = href;
+			}
+		}
 //---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1)//диаграмма
 		{		

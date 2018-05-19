@@ -33,19 +33,19 @@
 
 #include "../odf/datatypes/stylefamily.h"
 #include "../odf/datatypes/length.h"
+#include "../odf/datatypes/noteclass.h"
 
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
 #include <list>
 
-#include "hyperlinks.h"
-#include "mediaitems.h"
-#include "headers_footers.h"
 #include "docx_table_context.h"
-#include "../odf/datatypes/noteclass.h"
-
 #include "oox_conversion_context.h"
 #include "oox_chart_context.h"
+
+#include "headers_footers.h"
+#include "hyperlinks.h"
+#include "mediaitems.h"
 
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
@@ -117,8 +117,6 @@ private:
     std::wstring name(const std::wstring & Name, odf_types::style_family::type Type);
     
     size_t count_;
-    //boost::unordered_map<std::wstring, std::wstring> map_;
-
 	std::multimap<std::wstring, std::wstring> map_;
 };
 
@@ -591,9 +589,6 @@ public:
     hyperlinks::_ref	last_hyperlink	();
     void				dump_hyperlinks	(rels & Rels, hyperlinks::_type_place type);
 
-    std::wstring add_mediaitem(const std::wstring & uri, RelsType type, bool & isInternal, std::wstring & ref);
-    
-	void dump_mediaitems		(rels & Rels);
     void dump_headers_footers	(rels & Rels) const;
     void dump_notes				(rels & Rels) const;
 	
@@ -677,6 +672,7 @@ public:
 
     styles_map			* get_style_map()			{ return &styles_map_; }
 
+	mediaitems			& get_mediaitems()			{return mediaitems_;}
     styles_context		& get_styles_context()		{ return styles_context_; }
     drawing_context		& get_drawing_context()		{ return drawing_context_; } 	
 	comments_context	& get_comments_context()	{ return comments_context_; }

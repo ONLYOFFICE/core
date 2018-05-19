@@ -120,6 +120,7 @@ public:
 		office_text_			(NULL),
 		office_math_			(NULL),
 		office_spreadsheet_		(NULL),
+		table_table_			(NULL),
 		baseRef_				(ref),
 		baseFontHeight_			(12)
     {
@@ -164,6 +165,7 @@ public:
 	office_text					*office_text_;
  	office_math					*office_math_;
  	office_spreadsheet			*office_spreadsheet_;
+	table_table					*table_table_;
 
 	int							baseFontHeight_;
 	std::wstring				baseRef_; 
@@ -203,6 +205,7 @@ public:
 	std::vector<_cell>			cash_values;
 	std::map<std::wstring, _cell>cash_pivot;
 
+	std::wstring				embeddedData;
 //---------------------------------------
 	std::wstring				target_table_;
 	std::wstring				table_name_;
@@ -234,48 +237,45 @@ class process_build_object
 		public visitor<office_math>,
 		public visitor<office_spreadsheet>,
 
-		public const_visitor<chart_chart>,
+		public visitor<chart_chart>,
 
-		public const_visitor<chart_title>,
-		public const_visitor<chart_subtitle>,
-		public const_visitor<chart_footer>,
-		public const_visitor<chart_legend>,
+		public visitor<chart_title>,
+		public visitor<chart_subtitle>,
+		public visitor<chart_footer>,
+		public visitor<chart_legend>,
 
-		public const_visitor<chart_plot_area>,
+		public visitor<chart_plot_area>,
 	    
-		public const_visitor<chart_axis>,
-		public const_visitor<chart_categories>,
-		public const_visitor<chart_grid>,
+		public visitor<chart_axis>,
+		public visitor<chart_categories>,
+		public visitor<chart_grid>,
 
-		public const_visitor<chart_series>,
-		public const_visitor<chart_domain>,
-		public const_visitor<chart_data_point>,
-		public const_visitor<chart_mean_value>,
-		public const_visitor<chart_regression_curve>,
-		public const_visitor<chart_equation>,
-		public const_visitor<chart_error_indicator>,
-		public const_visitor<chart_wall>,
-		public const_visitor<chart_floor>,
+		public visitor<chart_series>,
+		public visitor<chart_domain>,
+		public visitor<chart_data_point>,
+		public visitor<chart_mean_value>,
+		public visitor<chart_regression_curve>,
+		public visitor<chart_equation>,
+		public visitor<chart_error_indicator>,
+		public visitor<chart_wall>,
+		public visitor<chart_floor>,
 
-		public const_visitor<table_table>,
+		public visitor<table_table>,
 	    
-		public const_visitor<table_table_row_group>,
-		public const_visitor<table_rows_no_group>,
-		public const_visitor<table_table_header_rows>,
-		public const_visitor<table_table_rows>,
-		public const_visitor<table_table_row>,
-
-		public visitor<table_table_rows>,
+		public visitor<table_table_row_group>,
+		public visitor<table_rows_no_group>,
 		public visitor<table_table_header_rows>,
+		public visitor<table_table_rows>,
+		public visitor<table_table_row>,
 
-		public const_visitor<table_table_cell>,
-		public const_visitor<table_covered_table_cell>,    
+		public visitor<table_table_cell>,
+		public visitor<table_covered_table_cell>,    
 
-		public const_visitor<table_table_column_group>,
+		public visitor<table_table_column_group>,
 		public visitor<table_table_header_columns>,
 		public visitor<table_table_columns>,
-		public const_visitor<table_table_column>,
-		public const_visitor<table_columns_no_group>
+		public visitor<table_table_column>,
+		public visitor<table_columns_no_group>
 {
 public:
 
@@ -303,44 +303,39 @@ public:
 	virtual void visit(office_math					& val);
     virtual void visit(office_spreadsheet			& val);   
 
-	virtual void visit(const chart_chart			& val);
-	virtual void visit(const chart_title			& val);
-    virtual void visit(const chart_subtitle			& val);
-    virtual void visit(const chart_footer			& val);
-    virtual void visit(const chart_legend			& val);
-    virtual void visit(const chart_plot_area& val);
-    virtual void visit(const chart_axis				& val);
-	virtual void visit(const chart_series			& val);
-    virtual void visit(const chart_domain			& val);
-	virtual void visit(const chart_data_point		& val);
-	virtual void visit(const chart_mean_value		& val);
-	virtual void visit(const chart_error_indicator	& val);
-	virtual void visit(const chart_regression_curve & val);
- 	virtual void visit(const chart_equation			& val);
-	virtual void visit(const chart_categories		& val);
-	virtual void visit(const chart_grid				& val);
-    virtual void visit(const chart_wall				& val);
-    virtual void visit(const chart_floor			& val);   
-	virtual void visit(const table_table			& val);
+	virtual void visit(chart_chart			& val);
+	virtual void visit(chart_title			& val);
+    virtual void visit(chart_subtitle		& val);
+    virtual void visit(chart_footer			& val);
+    virtual void visit(chart_legend			& val);
+    virtual void visit(chart_plot_area& val);
+    virtual void visit(chart_axis			& val);
+	virtual void visit(chart_series			& val);
+    virtual void visit(chart_domain			& val);
+	virtual void visit(chart_data_point		& val);
+	virtual void visit(chart_mean_value		& val);
+	virtual void visit(chart_error_indicator	& val);
+	virtual void visit(chart_regression_curve	& val);
+ 	virtual void visit(chart_equation			& val);
+	virtual void visit(chart_categories		& val);
+	virtual void visit(chart_grid			& val);
+    virtual void visit(chart_wall			& val);
+    virtual void visit(chart_floor			& val);   
+	virtual void visit(table_table			& val);
 
-	virtual void visit(const table_table_rows		& val);
-	virtual void visit(const table_rows_no_group	& val);
- 	virtual void visit(const table_table_row_group	& val);
-	virtual void visit(const table_table_header_rows& val);
-	virtual void visit(table_table_header_rows		& val);
+	virtual void visit(table_table_rows			& val);
+	virtual void visit(table_table_row			& val);
+	virtual void visit(table_rows_no_group		& val);
+ 	virtual void visit(table_table_row_group	& val);
+	virtual void visit(table_table_header_rows	& val);
 
-	virtual void visit(table_table_rows				& val);
-	virtual void visit(const table_table_row		& val);
-
-	virtual void visit(const table_columns_no_group	& val);
+	virtual void visit(table_columns_no_group		& val);
 	virtual void visit(table_table_header_columns	& val);
-	virtual void visit(table_table_columns			& val);
-	virtual void visit(const table_table_column_group& val);
-    virtual void visit(const table_table_column		& val);   
-	
- 
-	virtual void visit(const table_table_cell& val);
- 	virtual void visit(const table_covered_table_cell& val);
+	virtual void visit(table_table_columns		& val);
+	virtual void visit(table_table_column_group	& val);
+    virtual void visit(table_table_column		& val);  
+	virtual void visit(table_table_cell			& val);
+	virtual void visit(table_covered_table_cell	& val);
 
 private:
     bool stop_;

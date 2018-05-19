@@ -67,7 +67,6 @@ std::wstring office_binary_data::write_to(const std::wstring & path)
 {
 	std::wstring result;
 
-	NSFile::CBase64Converter base64;
 	int nLength = 0;
 	unsigned char *pData = NULL;
 

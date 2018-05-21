@@ -115,7 +115,7 @@ HRESULT convert_single(std::wstring srcFileName)
 
 	if (nResult == 0)
 	{   
-		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), true))
+		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath, dstPath, true))
 			nResult = -2;
 	}
 	

@@ -35,16 +35,17 @@
 
 #include <ctime>
 
+#include "../../Common/3dParty/cryptopp/md5.h"
+#include "../../UnicodeConverter/UnicodeConverter.h"
+
 namespace PdfWriter
 {
-	//----------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
 	// CEncryptDict
 	//----------------------------------------------------------------------------------------
 	CEncryptDict::CEncryptDict(CXref* pXref)
 	{
 		m_pEncrypt = new CEncrypt();
-		if (m_pEncrypt)
-			m_pEncrypt->Init();
 
 		pXref->Add(this);
 	}
@@ -55,11 +56,10 @@ namespace PdfWriter
 	}
 	void CEncryptDict::CreateId(CInfoDict* pInfo, CXref* pXref)
 	{
-		CMd5 oMd5;
-		oMd5.Init();
+        CryptoPP::MD5 hash;
 
 		std::time_t oTime = time(0);
-		oMd5.Update((BYTE*)&oTime, sizeof(oTime));
+        hash.Update( (BYTE*)&oTime, sizeof(oTime));
 
 		// Создаем идентификатор файла по элементам библиотеки Info.
 		if (pInfo)
@@ -70,82 +70,107 @@ namespace PdfWriter
 			// Author
 			sTemp = pInfo->GetInfo(InfoAuthor);
 			if ((nLen = StrLen(sTemp, -1)) > 0)
-				oMd5.Update((const BYTE *)sTemp, nLen);
+               hash.Update( (const BYTE *)sTemp, nLen );
 
 			// Creator
 			sTemp = pInfo->GetInfo(InfoCreator);
 			if ((nLen = StrLen(sTemp, -1)) > 0)
-				oMd5.Update((const BYTE *)sTemp, nLen);
+                hash.Update( (const BYTE *)sTemp, nLen);
 
 			// Producer   
 			sTemp = pInfo->GetInfo(InfoProducer);
 			if ((nLen = StrLen(sTemp, -1)) > 0)
-				oMd5.Update((const BYTE *)sTemp, nLen);
+                hash.Update( (const BYTE *)sTemp, nLen);
 
 			// Title   
 			sTemp = pInfo->GetInfo(InfoTitle);
 			if ((nLen = StrLen(sTemp, -1)) > 0)
-				oMd5.Update((const BYTE *)sTemp, nLen);
+                hash.Update( (const BYTE *)sTemp, nLen);
 
 			// Subject   
 			sTemp = pInfo->GetInfo(InfoSubject);
 			if ((nLen = StrLen(sTemp, -1)) > 0)
-				oMd5.Update((const BYTE *)sTemp, nLen);
+                hash.Update( (const BYTE *)sTemp, nLen);
 
 			// Keywords   
 			sTemp = pInfo->GetInfo(InfoKeyWords);
 			if ((nLen = StrLen(sTemp, -1)) > 0)
-				oMd5.Update((const BYTE *)sTemp, nLen);
+                hash.Update( (const BYTE *)sTemp, nLen);
 
 			int nXrefEntriesCount = pXref->GetCount();
-			oMd5.Update((const BYTE *)&nXrefEntriesCount, sizeof(unsigned int));
+            hash.Update( (const BYTE *)&nXrefEntriesCount, sizeof(unsigned int));
 
 		}
-		oMd5.Final(m_pEncrypt->m_anEncryptID);
+        CryptoPP::SecByteBlock buffer(hash.DigestSize());
+        hash.Final(buffer);
+
+		memcpy(m_pEncrypt->m_anEncryptID, buffer.BytePtr(), buffer.size());
+    }
+    std::string CEncryptDict::PadOrTrancatePassword(const std::wstring & wsPassword)
+    {
+        NSUnicodeConverter::CUnicodeConverter conv;
+		std::string sNewPassword = conv.SASLprepToUtf8(wsPassword);
+
+        if (sNewPassword.length() > 127)
+            sNewPassword = sNewPassword.substr(0, 127);
+
+		return sNewPassword;
 	}
-	void CEncryptDict::SetPassword(const char* sOwnerPassword, const char* sUserPassword)
+	void CEncryptDict::SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword)
 	{
-		if (0 == StrLen(sOwnerPassword, 2))
-			return;
+        std::string sOwnerPassword	= PadOrTrancatePassword(wsOwnerPassword);
+        std::string sUserPassword	= PadOrTrancatePassword(wsUserPassword);
 
-		if (sOwnerPassword && sUserPassword && 0 == StrCmp(sOwnerPassword, sUserPassword))
-			return;
-
-		PadOrTrancatePassword(sOwnerPassword, m_pEncrypt->m_anOwnerPassword);
-		PadOrTrancatePassword(sUserPassword, m_pEncrypt->m_anUserPassword);
+        m_pEncrypt->SetPasswords(sUserPassword, sOwnerPassword);
 	}
 	void CEncryptDict::Prepare(CInfoDict* pInfo, CXref* pXref)
 	{
 		CreateId(pInfo, pXref);
 		
-		m_pEncrypt->CreateOwnerKey();
-		m_pEncrypt->CreateEncryptionKey();
-		m_pEncrypt->CreateUserKey();
+        m_pEncrypt->CreateEncryptionKey();
+        m_pEncrypt->CreateUserKey();
+        m_pEncrypt->CreateOwnerKey();
 
-		CBinaryObject* pOwnerKey = new CBinaryObject(m_pEncrypt->m_anOwnerKey, PASSWD_LEN);
-		if (!pOwnerKey)
-			return;
+        Add("Filter", "Standard");
+        Add("V", 5);
+        Add("Length", m_pEncrypt->m_unKeyLen * 8);
+        Add("R", 6);
+        Add("P", m_pEncrypt->m_unPermission);
 
-		Add("O", pOwnerKey);
+		CDictObject* pCF = new CDictObject();
+		
+		CDictObject* pStdCF = new CDictObject();
+		pCF->Add("StdCF", pStdCF);
 
-		CBinaryObject* pUserKey = new CBinaryObject(m_pEncrypt->m_anUserKey, PASSWD_LEN);
-		if (!pUserKey)
-			return;
+		pStdCF->Add("CFM", "AESV3");
+		pStdCF->Add("AuthEvent", "DocOpen");
+		pStdCF->Add("Length", m_pEncrypt->m_unKeyLen);
 
-		Add("U", pUserKey);
+		Add("CF", pCF);
 
-		Add("Filter", "Standard");
-		if (encryptmode_R2 == m_pEncrypt->m_eMode)
-		{
-			Add("V", 1);
-			Add("R", 2);
-		}
-		else if (encryptmode_R3 == m_pEncrypt->m_eMode)
-		{
-			Add("V", 2);
-			Add("R", 3);
-			Add("Length", m_pEncrypt->m_unKeyLen * 8);
-		}
-		Add("P", m_pEncrypt->m_unPermission);
-	}
+        CBinaryObject* pUserKey = new CBinaryObject(m_pEncrypt->m_anUserKey, 48);
+        if (!pUserKey)
+            return;
+
+        CBinaryObject* pUserEncryptKey = new CBinaryObject(m_pEncrypt->m_anUserEncryptKey, 32);
+        if (!pUserKey)
+            return;
+
+        Add("U", pUserKey);
+        Add("UE", pUserEncryptKey);
+
+        CBinaryObject* pOwnerKey = new CBinaryObject(m_pEncrypt->m_anOwnerKey, 48);
+        if (!pOwnerKey)
+            return;
+
+        CBinaryObject* pOwnerEncryptKey = new CBinaryObject(m_pEncrypt->m_anOwnerEncryptKey, 32);
+        if (!pOwnerKey)
+            return;
+
+        Add("O", pOwnerKey);
+        Add("OE", pOwnerEncryptKey);
+
+        CBinaryObject* pEncryptPerm = new CBinaryObject(m_pEncrypt->m_anPermEncrypt, 16);
+        Add("Perms", pEncryptPerm);
+    }
 }

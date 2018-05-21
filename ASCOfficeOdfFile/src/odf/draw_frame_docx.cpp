@@ -46,7 +46,10 @@
 #include "odf_document_impl.h"
 
 #include "draw_common.h"
+
 #include "../docx/docx_drawing.h"
+#include "../docx/xlsx_package.h"
+
 #include "chart_build_oox.h"
 
 #include "calcs_styles.h"
@@ -55,6 +58,7 @@
 #include "datatypes/borderstyle.h"
 
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 namespace cpdoccore { 
 
@@ -880,7 +884,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
 		std::wstring href = drawing->fill.bitmap->xlink_href_;
-		drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+		drawing->fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	}
 
 ////////////////////////////////////////////////////
@@ -1155,7 +1159,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing->fill.type = 2;
 	drawing->fill.bitmap->isInternal = false;
-    drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+    drawing->fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	drawing->fill.bitmap->bStretch = true;
 
     const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
@@ -1457,13 +1461,13 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 {
     try 
 	{
-        std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+		std::wstring tempPath	= Context.root()->get_temp_folder();
+		std::wstring odfPath	= Context.root()->get_folder();
 
 		if (!odf_document_ && !href.empty())
 		{			
-			std::wstring tempPath	= Context.root()->get_temp_folder();
-			std::wstring folderPath = Context.root()->get_folder();
-			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+			std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
 
 			// normalize path ???? todooo
 			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
@@ -1480,6 +1484,30 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		{
 			process_build_object process_build_object_(objectBuild, odf_document_->odf_context());
 			contentSubDoc->accept(process_build_object_); 
+
+			if (objectBuild.table_table_)
+			{
+				oox::xlsx_conversion_context xlsx_context(odf_document_.get());
+				cpdoccore::oox::package::xlsx_document outputXlsx;
+	
+				xlsx_context.set_output_document (&outputXlsx);
+
+				xlsx_context.start_document();
+					objectBuild.table_table_->xlsx_convert(xlsx_context);
+				xlsx_context.end_document();
+				
+				std::wstring href_folder = tempPath + FILE_SEPARATOR_STR + L"temp_xlsx";
+				NSDirectory::CreateDirectory(href_folder);
+				outputXlsx.write(href_folder);
+
+				std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems().count_object + 1) + L".xlsx";
+				
+				COfficeUtils oCOfficeUtils(NULL);
+				if (S_OK == oCOfficeUtils.CompressFileOrDirectory(href_folder, odfPath + FILE_SEPARATOR_STR + href, true))
+				{				
+					objectBuild.embeddedData = href;
+				}
+			}
 
 			objectBuild.docx_convert(Context);		
 			
@@ -1498,7 +1526,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			drawing->type = oox::typeChart;
 			
 			bool isMediaInternal = true;        
-			drawing->objectId = Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+			drawing->objectId = Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
 		}
 		else if (objectBuild.object_type_ == 2 ) //embedded text
 		{	
@@ -1556,7 +1584,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				bool isMediaInternal = true;        
 				
 				href += FILE_SEPARATOR_STR + href_new;
-				drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+				drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
 				drawing->objectProgId	= L"Excel.Sheet.12";
 			}
 		}
@@ -1594,7 +1622,7 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	drawing->type			=  oox::typeOleObject;
 	
 	bool isMediaInternal	= true;        
-	drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+	drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
 
 	drawing->objectProgId	= detectObject(objectPath); 
 }

@@ -134,8 +134,9 @@ void word_files::write(const std::wstring & RootPath)
 
 void word_files::update_rels(docx_conversion_context & Context)
 {
+    Context.get_mediaitems().dump_rels(rels_files_.get_rel_file()->get_rels());
+	
 	Context.dump_hyperlinks		(rels_files_.get_rel_file()->get_rels(), hyperlinks::document_place);
-    Context.dump_mediaitems		(rels_files_.get_rel_file()->get_rels());
     Context.dump_headers_footers(rels_files_.get_rel_file()->get_rels());
     Context.dump_notes			(rels_files_.get_rel_file()->get_rels());
 }

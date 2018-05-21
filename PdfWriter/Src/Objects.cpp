@@ -194,7 +194,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CArrayObject
 	//----------------------------------------------------------------------------------------
-	void          CArrayObject::Add(CObjectBase* pObject)
+    void CArrayObject::Add(CObjectBase* pObject)
 	{
 		if (!pObject)
 			return;
@@ -225,43 +225,43 @@ namespace PdfWriter
 
 		m_arrList.push_back(pObject);
 	}
-	void          CArrayObject::Add(bool bValue)
+    void CArrayObject::Add(bool bValue)
 	{
 		CObjectBase* pBool = new CBoolObject(bValue);
 		if (pBool)
 			Add(pBool);
 	}
-	void          CArrayObject::Add(int nValue)
+    void CArrayObject::Add(int nValue)
 	{
 		CObjectBase* pNumber = new CNumberObject(nValue);
 		if (pNumber)
 			Add(pNumber);
 	}
-	void          CArrayObject::Add(unsigned int unValue)
+    void CArrayObject::Add(unsigned int unValue)
 	{
 		CObjectBase* pNumber = new CNumberObject((int)unValue);
 		if (pNumber)
 			Add(pNumber);
 	}
-	void          CArrayObject::Add(float fValue)
+    void CArrayObject::Add(float fValue)
 	{
 		CObjectBase* pReal = new CRealObject(fValue);
 		if (pReal)
 			Add(pReal);
 	}
-	void          CArrayObject::Add(const char* sName)
+    void CArrayObject::Add(const char* sName)
 	{
 		CObjectBase* pName = new CNameObject(sName);
 		if (pName)
 			Add(pName);
 	}
-	void          CArrayObject::Add(double dValue)
+    void CArrayObject::Add(double dValue)
 	{
 		CObjectBase* pReal = new CRealObject(dValue);
 		if (pReal)
 			Add(pReal);
 	}
-	void          CArrayObject::Insert(CObjectBase *pTarget, CObjectBase* pObject)
+    void CArrayObject::Insert(CObjectBase *pTarget, CObjectBase* pObject)
 	{
 		if (!pObject)
 			return;
@@ -320,7 +320,7 @@ namespace PdfWriter
 
 		return pObject;
 	}
-	void          CArrayObject::Clear()
+    void CArrayObject::Clear()
 	{
 		for (int nIndex = 0, nCount = m_arrList.size(); nIndex < nCount; nIndex++)
 		{
@@ -406,7 +406,7 @@ namespace PdfWriter
 
 		return NULL;
 	}
-	void          CDictObject::Add(const std::string& sKey, CObjectBase* pObject)
+    void CDictObject::Add(const std::string& sKey, CObjectBase* pObject)
 	{
 		if (!pObject)
 			return;
@@ -429,9 +429,9 @@ namespace PdfWriter
 			pObject = pProxy;
 		}
 		pObject->SetDirect();
-		m_mList.insert(std::pair<std::string, CObjectBase*>(sKey, pObject));
+        m_mList.insert(std::make_pair(sKey, pObject));
 	}
-	void          CDictObject::Remove(const std::string& sKey)
+    void CDictObject::Remove(const std::string& sKey)
 	{
 		std::map<std::string, CObjectBase*>::const_iterator pIter = m_mList.find(sKey);
 		if (m_mList.end() != pIter)
@@ -441,27 +441,27 @@ namespace PdfWriter
 			m_mList.erase(sKey);
 		}
 	}
-	void          CDictObject::Add(const std::string& sKey, const char* sName)
+    void CDictObject::Add(const std::string& sKey, const char* sName)
 	{
 		Add(sKey, new CNameObject(sName));
 	}
-	void          CDictObject::Add(const std::string& sKey, int nNumber)
+    void CDictObject::Add(const std::string& sKey, int nNumber)
 	{
 		Add(sKey, new CNumberObject(nNumber));
 	}
-	void          CDictObject::Add(const std::string& sKey, unsigned int unNumber)
+    void CDictObject::Add(const std::string& sKey, unsigned int unNumber)
 	{
 		Add(sKey, (int)unNumber);
 	}
-	void          CDictObject::Add(const std::string& sKey, float fReal)
+    void CDictObject::Add(const std::string& sKey, float fReal)
 	{
 		Add(sKey, new CRealObject(fReal));
 	}
-	void          CDictObject::Add(const std::string& sKey, double dReal)
+    void CDictObject::Add(const std::string& sKey, double dReal)
 	{
 		Add(sKey, new CRealObject(dReal));
 	}
-	void          CDictObject::Add(const std::string& sKey, bool bBool)
+    void CDictObject::Add(const std::string& sKey, bool bBool)
 	{
 		Add(sKey, new CBoolObject(bBool));
 	}
@@ -480,7 +480,7 @@ namespace PdfWriter
 
 		return NULL;
 	}
-	void          CDictObject::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
+    void CDictObject::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
 	{
 		for (auto const &oIter : m_mList)
 		{
@@ -501,7 +501,7 @@ namespace PdfWriter
 			}
 		}
 	}
-	void          CDictObject::SetStream(CXref* pXref, CStream* pStream)
+    void CDictObject::SetStream(CXref* pXref, CStream* pStream)
 	{
 		if (m_pStream)
 			delete m_pStream;
@@ -593,7 +593,7 @@ namespace PdfWriter
 
 		return NULL;
 	}
-	void        CXref::Add(CObjectBase* pObject)
+    void CXref::Add(CObjectBase* pObject)
 	{
 		if (!pObject)
 			return;
@@ -625,7 +625,7 @@ namespace PdfWriter
 		pObject->SetRef(m_unStartOffset + m_arrEntries.size() - 1, pEntry->unGenNo);
 		pObject->SetIndirect();
 	}
-	void        CXref::WriteTrailer(CStream* pStream)
+    void CXref::WriteTrailer(CStream* pStream)
 	{
 		unsigned int unMaxObjId = m_arrEntries.size() + m_unStartOffset;
 
@@ -639,7 +639,7 @@ namespace PdfWriter
 		pStream->WriteUInt(m_unAddr);
 		pStream->WriteStr("\012%%EOF\012");
 	}
-	void        CXref::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
+    void CXref::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
 	{
 		char sBuf[SHORT_BUFFER_SIZE];
 		char* pBuf;

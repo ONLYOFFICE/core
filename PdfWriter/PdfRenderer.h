@@ -72,7 +72,8 @@ public:
 	CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts);
 	~CPdfRenderer();
 	void         SaveToFile(const std::wstring& wsPath);
-	void         SetTempFolder(const std::wstring& wsPath);
+        void         SetPassword(const std::wstring& wsPassword);
+        void         SetTempFolder(const std::wstring& wsPath);
 	std::wstring GetTempFile();
 	void         SetThemesPlace(const std::wstring& wsThemesPlace);
 	std::wstring GetThemesPlace();
@@ -233,18 +234,18 @@ private:
 	void UpdateBrush();
 	bool IsValid()
 	{
-		return m_bValid;
+            return m_bValid;
 	}
 	bool IsPageValid()
 	{
-		if (!IsValid() || !m_pPage)
-			return false;
+            if (!IsValid() || !m_pPage)
+                return false;
 
-		return true;
+            return true;
 	}
 	void SetError()
 	{
-		m_bValid = false;;
+            m_bValid = false;;
 	}
 
 private:

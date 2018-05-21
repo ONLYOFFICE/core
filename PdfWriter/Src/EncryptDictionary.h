@@ -50,7 +50,7 @@ namespace PdfWriter
 		}
 
 		void CreateId(CInfoDict* pInfo, CXref* pXref);
-		void SetPassword(const char* sOwnerPassword, const char* sUserPassword);
+        void SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void Prepare(CInfoDict* pInfo, CXref* pXref);
 		CEncrypt* GetEncrypt() const
 		{
@@ -58,6 +58,7 @@ namespace PdfWriter
 		}
 	private:
 		CEncrypt* m_pEncrypt;
+		std::string PadOrTrancatePassword(const std::wstring & wsPassword);
 	};
 }
 #endif // _PDF_WRITER_SRC_ENCRYPT_DICTIONARY_H

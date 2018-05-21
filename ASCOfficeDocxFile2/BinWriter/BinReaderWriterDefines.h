@@ -201,7 +201,10 @@ extern int g_nCurFormatVersion;
 		StyleLink = 23,
 		lvl_NumFmt = 24,
 		NumFmtVal = 25,
-		NumFmtFormat = 26
+		NumFmtFormat = 26,
+		Num_LvlOverride = 27,
+		StartOverride = 28,
+		ILvl = 29
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{

@@ -29,12 +29,22 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// PdfWriterTest.cpp : Defines the entry point for the console application.
+// PdfReaderTest.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+#include <vector>
+#include <string>
+#include <iostream>
+#include <tchar.h>
 
+#include "../OnlineOfficeBinToPdf.h"
 #include "../PdfRenderer.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+
+#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include "../Src/Streams.h"
 #include "../Src/Utils.h"
@@ -52,194 +62,28 @@
 #include "../Src/FontCidTT.h"
 #include "../Src/Pattern.h"
 
-#include <iostream>
+#define TEST_PDFWRITER_LIB
 
-#include "../../DesktopEditor/raster/BgraFrame.h"
-#include "../../DesktopEditor/common/File.h"
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
 
-#include "../../DesktopEditor/cximage/CxImage/ximage.h"
-#include "../../DesktopEditor/cximage/CxImage/ximatif.h"
-#include "../../DesktopEditor/raster/BgraFrame.h"
-
-#include "../../DesktopEditor/cximage/tiff/tiffio.h"
-
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
-#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
-#include <vector>
-#include <ctime>
-
-#include "../Src/FastStringToDouble.h"
-
-#ifdef DrawText
-#undef DrawText
+	#if defined(_DEBUG)
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		//#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/CryptoPPLib.lib")
+	#else
+		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+		//#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/CryptoPPLib.lib")
+	#endif
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
 using namespace PdfWriter;
 
-void TestStreams()
-{
-	CFileStream oFS;
-	oFS.OpenFile(L"D:/Test Files/1.txt", false);
-
-	while (!oFS.IsEof())
-	{
-		char nChar = oFS.ReadChar();
-		std::cout << nChar;
-	}
-
-	CMemoryStream oMS;
-	oMS.WriteStream(&oFS, 0, NULL);
-
-	CFileStream oTS;
-	oTS.OpenFile(L"D:/Test Files/TestStreams.tmp", true);
-	oTS.WriteStream(&oMS, 0, NULL);
-	oTS.WriteChar(' ');
-	oTS.WriteChar('c');
-	oTS.WriteChar(' ');
-	oTS.WriteBinary((const BYTE*)"123", 3, NULL);
-	oTS.WriteChar(' ');
-	oTS.WriteEscapeName((const char*)"EscapeName");
-	oTS.WriteChar(' ');
-	oTS.WriteEscapeText((const BYTE*)"EscapeTest", StrLen("EscapeTest", 12));
-	oTS.WriteChar(' ');
-	oTS.WriteHex(251, 2);
-	oTS.WriteChar(' ');
-	oTS.WriteHex(251, 4);
-	oTS.WriteChar(' ');
-	oTS.WriteInt(63);
-	oTS.WriteChar(' ');
-	oTS.WriteReal(0.12);
-	oTS.WriteChar(' ');
-	oTS.WriteStr("String");
-	oTS.WriteChar(' ');
-	oTS.Close();
-
-	CFileStream oTS2;
-	oTS2.OpenFile(L"D:/Test Files/TestStreamsFilter.tmp", true);
-	oTS2.WriteStream(&oMS, STREAM_FILTER_FLATE_DECODE, NULL);
-	oTS2.Close();
-}
-void TestObjects()
-{
-	CStream* pStream = new CFileStream();
-	((CFileStream*)pStream)->OpenFile(L"D:/Test Files/TestObjects.tmp", true);
-
-	CNullObject oNull;
-	pStream->Write(&oNull);
-	pStream->WriteChar('\n');
-
-	CBoolObject oBool = true;
-	pStream->Write(&oBool);
-	pStream->WriteChar('\n');
-
-	CNumberObject oNumber = 75;
-	pStream->Write(&oNumber);
-	pStream->WriteChar('\n');
-
-	CRealObject oReal = 13.756;
-	pStream->Write(&oReal);
-	pStream->WriteChar('\n');
-
-	CNameObject oName = "Name";
-	pStream->Write(&oName);
-	pStream->WriteChar('\n');
-
-	CStringObject oString("String");
-	pStream->Write(&oString, NULL);
-	pStream->WriteChar('\n');
-
-	CBinaryObject oBinary((BYTE*)"123", 3);
-	pStream->Write(&oBinary, NULL);
-	pStream->WriteChar('\n');
-
-	CArrayObject* pArray = new CArrayObject();
-	pArray->Add(12);
-	pArray->Add(0.13);
-	pArray->Add(13.1);
-	pStream->Write(pArray, NULL);
-	pStream->WriteChar('\n');
-
-	CProxyObject oProxy(pArray);
-	oProxy.SetRef(123, 0);
-	pStream->Write(&oProxy, NULL);
-	pStream->WriteChar('\n');
-
-	CDictObject oDict;
-	oDict.Add("Bool", true);
-	oDict.Add("Real", 0.12);
-	oDict.Add("Number", 12);
-	oDict.Add("Name", "SomeName");
-	oDict.Add("Array", pArray);
-	pStream->Write(&oDict, NULL);
-	pStream->WriteChar('\n');
-
-	delete pStream;
-}
-void TestEncrypt()
-{
-	CEncrypt oEncrypt;
-	oEncrypt.Init();
-	oEncrypt.InitKey(1231, 0);
-
-	CFileStream oFS;
-	oFS.OpenFile(L"D:/Test Files/TestStreams.tmp", false);
-
-	CFileStream oTS;
-	oTS.OpenFile(L"D:/Test Files/TestEncrypt.tmp", true);
-	oTS.WriteStream(&oFS, 0, &oEncrypt);
-	oTS.Close();
-
-	oFS.Close();
-}
-void TestDict()
-{
-	CStream* pStream = new CFileStream();
-	((CFileStream*)pStream)->OpenFile(L"D:/Test Files/TestDict.tmp", true);
-
-	CXref oXref(0);
-
-	CDictObject* pDict = new CDictObject(&oXref);
-	pDict->Add("Bool", true);
-	pDict->Add("Real", 0.12);
-	pDict->Add("Number", 12);
-	pDict->Add("Name", "SomeName");
-	pDict->Add("Array", new CArrayObject());
-
-	CStream* pDictStream = pDict->GetStream();
-	pDictStream->WriteEscapeText((BYTE*)"TestTest", 8);
-	pDictStream->WriteBinary((BYTE*)"TestTest", 8, NULL);
-
-	CDictObject* pDict2 = new CDictObject(&oXref);
-	pDict2->Add("Bool", true);
-	pDict2->Add("Real", 0.12);
-	pDict2->Add("Number", 12);
-	pDict2->Add("Name", "SomeName");
-	pDict2->Add("Array", new CArrayObject());
-
-	pDict2->SetFilter(STREAM_FILTER_FLATE_DECODE);
-
-	CStream* pDictStream2 = pDict2->GetStream();
-	pDictStream2->WriteEscapeText((BYTE*)"TestTest", 8);
-	pDictStream2->WriteBinary((BYTE*)"TestTest", 8, NULL);
-
-	TDate oDate;
-	MemSet(&oDate, 0, sizeof(oDate));
-	oDate.nDay     = 18;
-	oDate.nMonth   = 10;
-	oDate.nYear    = 1986;
-	oDate.nHour    = 12;
-	oDate.nMinutes = 0;
-	oDate.nSeconds = 0;
-	oDate.nInd     = '-';
-
-	CInfoDict* pInfo = new CInfoDict(&oXref);
-	pInfo->SetInfo(EInfoType::InfoCreator, "Ilya");
-	pInfo->SetInfo(EInfoType::InfoCreationDate, oDate);
-
-	oXref.WriteToStream(pStream, NULL);
-
-	delete pStream;
-}
 void TestDocument1()
 {
 	// PageLabels and Encryption
@@ -251,11 +95,9 @@ void TestDocument1()
 	oPdf.AddPage();
 	oPdf.AddPageLabel(2, pagenumstyle_UpperRoman, 21, "UppRom-");
 
-	oPdf.SetPassword("123", "qwe");
-	oPdf.SetPermission(ENABLE_READ);
-	oPdf.SetEncryptionMode(encryptmode_R3);
+	oPdf.SetPasswords(L"123", L"qwe");
 
-	oPdf.SaveToFile(L"D:/Test Files/Test1.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test1.pdf");
 	oPdf.Close();
 }
 void TestDocument2()
@@ -287,7 +129,7 @@ void TestDocument2()
 	pOutline11->SetDestination(pDest);
 
 
-	oPdf.SaveToFile(L"D:/Test Files/Test2.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test2.pdf");
 	oPdf.Close();
 }
 void TestDocument3()
@@ -456,7 +298,7 @@ void TestDocument3()
 
 
 
-	oPdf.SaveToFile(L"D:/Test Files/Test3.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test3.pdf");
 	oPdf.Close();
 }
 void TestDocument4()
@@ -476,7 +318,7 @@ void TestDocument4()
 	CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
 	pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
 
-	oPdf.SaveToFile(L"D:/Test Files/Test4.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test4.pdf");
 	oPdf.Close();
 }
 void TestDocument5()
@@ -488,9 +330,9 @@ void TestDocument5()
 	pPage->SetWidth(600);
 
 	//CBgraFrame oFrame;
-	//oFrame.OpenFile(L"D:/Test Files/Test.jb2");
+	//oFrame.OpenFile(L"D:/test/_pdf/Test.jb2");
 
-	//TIFF* pTiff = TIFFOpenW(L"D:/Test Files/Test.tiff", "w+");
+	//TIFF* pTiff = TIFFOpenW(L"D:/test/_pdf/Test.tiff", "w+");
 	//TIFFSetField(pTiff, TIFFTAG_IMAGEWIDTH, 800);
 	//TIFFSetField(pTiff, TIFFTAG_IMAGELENGTH, 1000);
 	//TIFFSetField(pTiff, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
@@ -511,7 +353,7 @@ void TestDocument5()
 	//TIFFClose(pTiff);
 
 	//CImageDict* pImage = oPdf.CreateImage();
-	//pImage->LoadCCITT4(L"D:/Test Files/Test.tiff", 800, 1000);
+	//pImage->LoadCCITT4(L"D:/test/_pdf/Test.tiff", 800, 1000);
 	//pPage->DrawImage(pImage, 100, 100, 200, 200);
 
 	BYTE* pBuffer = new BYTE[100 * 800];
@@ -544,14 +386,14 @@ void TestDocument5()
 
 
 	//CxImage oImage;
-	//oImage.Load(L"D:/Test Files/Test.jb2");
+	//oImage.Load(L"D:/test/_pdf/Test.jb2");
 
 	//CImageDict* pJb2Image = oPdf.CreateImage();
-	//pJb2Image->LoadJb2(L"D:/Test Files/Test.jb2", 1728, 2376);
+	//pJb2Image->LoadJb2(L"D:/test/_pdf/Test.jb2", 1728, 2376);
 	//pPage->DrawImage(pJb2Image, 100, 100, 200, 200);
 
 	//CImageDict* pJpegImage = oPdf.CreateImage();
-	//pJpegImage->LoadJpeg(L"D:/Test Files/Test.jpg", 670, 473);
+	//pJpegImage->LoadJpeg(L"D:/test/_pdf/Test.jpg", 670, 473);
 	//pPage->DrawImage(pJpegImage, 100, 100, 200, 200);
 
 	//BYTE* pAlpha = new BYTE[4 * 400 * 300];
@@ -579,14 +421,14 @@ void TestDocument5()
 	//}
 
 	//CImageDict* pJpxImage = oPdf.CreateImage();
-	//pJpxImage->LoadJpx(L"D:/Test Files/Test.jp2", 400, 300);
+	//pJpxImage->LoadJpx(L"D:/test/_pdf/Test.jp2", 400, 300);
 	//pJpxImage->LoadSMask(pAlpha, 400, 300);
 	//pPage->DrawImage(pJpxImage, 300, 100, 200, 200);
 
 	//delete[] pAlpha;
 
 	////CImageDict* pJb2Image = oPdf.CreateImage();
-	////pJb2Image->LoadJb2(L"D:/Test Files/Test.jbig2", 400, 300);
+	////pJb2Image->LoadJb2(L"D:/test/_pdf/Test.jbig2", 400, 300);
 	////pPage->DrawImage(pJb2Image, 300, 300, 200, 200);
 
 	//CImageDict* pRawImage = oPdf.CreateImage();
@@ -620,7 +462,7 @@ void TestDocument5()
 	//pPage->DrawImage(pRawImage, 300, 300, 200, 200);
 	//delete[] pBgra;
 
-	oPdf.SaveToFile(L"D:/Test Files/Test5.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test5.pdf");
 	oPdf.Close();
 }
 void TestDocument6()
@@ -693,7 +535,7 @@ void TestDocument6()
 	pPage->ClosePath();
 	pPage->Fill();
 
-	oPdf.SaveToFile(L"D:/Test Files/Test6.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test6.pdf");
 	oPdf.Close();
 }
 void TestDocument7()
@@ -726,8 +568,8 @@ void TestDocument7()
 	pPage->SetHeight(600);
 	pPage->SetWidth(1000);
 
-	//CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/Test Files/Test.ttf", 0);
-	CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/Test Files/cambria.ttc", 1);
+	//CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
+	CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
 
 	pPage->BeginText();
 
@@ -758,7 +600,7 @@ void TestDocument7()
 
 	pPage->EndText();
 
-	oPdf.SaveToFile(L"D:/Test Files/Test7.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test7.pdf");
 	oPdf.Close();
 }
 void TestDocument8()
@@ -837,7 +679,7 @@ void TestDocument8()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/Test Files/Test8.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test8.pdf");
 	oPdf.Close();
 }
 void TestDocument9()
@@ -853,7 +695,7 @@ void TestDocument9()
 	pPage->SetWidth(600);
 
 	CImageDict* pJpegImage = oPdf.CreateImage();
-	pJpegImage->LoadJpeg(L"D:/Test Files/Test.jpg", 600, 400);
+	pJpegImage->LoadJpeg(L"D:/test/_pdf/Test.jpg", 600, 400);
 
 	CImageTilePattern* pPattern = oPdf.CreateImageTilePattern(70, 70, pJpegImage, NULL, imagetilepatterntype_InverseX);
 
@@ -865,63 +707,38 @@ void TestDocument9()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/Test Files/Test9.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test9.pdf");
 	oPdf.Close();
 }
 
-std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
+
+void ConvertFolder(std::wstring wsFolderPath)
 {
-	std::vector<std::wstring> vwsNames;
+	NSFonts::IApplicationFonts *pAppFonts = NSFonts::NSApplication::Create();
+	pAppFonts->Initialize();
 
-	std::wstring wsSearchPath = wsFolder;
-	wsSearchPath.append(L"*.");
-	wsSearchPath.append(wsExt);
+	MetaFile::IMetaFile *pMetaFile = MetaFile::Create(pAppFonts);
 
-	WIN32_FIND_DATA oFindData;
-	HANDLE hFind = ::FindFirstFile(wsSearchPath.c_str(), &oFindData);
-	if (hFind != INVALID_HANDLE_VALUE)
-	{
-		do
-		{
-			if (!(oFindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-			{
-				vwsNames.push_back(oFindData.cFileName);
-			}
-		} while (::FindNextFile(hFind, &oFindData));
-		::FindClose(hFind);
-	}
-	return vwsNames;
-}
-void ConvertFolder(std::wstring wsFolderPath, const int nType)
-{
-	CApplicationFonts oFonts;
-	oFonts.Initialize();
-
-	MetaFile::CMetaFile oMetaFile(&oFonts);
-	CPdfRenderer oRenderer(&oFonts);
+	CPdfRenderer oRenderer(pAppFonts);
 	
-	oMetaFile.Close();
+	pMetaFile->Close();
 
 	std::wstring sExt;
 
-	switch (nType)
-	{
-		case MetaFile::c_lMetaEmf: sExt = L"emf"; break;
-		case MetaFile::c_lMetaWmf: sExt = L"wmf"; break;
-		case MetaFile::c_lMetaSvm: sExt = L"svm"; break;
-	}
 	double dPx2Mm = 25.4 / 96;
-	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, sExt);
+	
+	std::vector<std::wstring> vFiles = NSDirectory::GetFiles(wsFolderPath);
+
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
 	{
 		oRenderer.NewPage();
 
 		std::wstring wsFilePath = wsFolderPath;
 		wsFilePath.append(vFiles.at(nIndex));
-		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
+		if (pMetaFile->LoadFromFile(wsFilePath.c_str()))
 		{
 			double dW, dH, dX, dY;
-			oMetaFile.GetBounds(&dX, &dY, &dW, &dH);
+			pMetaFile->GetBounds(&dX, &dY, &dW, &dH);
 
 			dW *= dPx2Mm;
 			dH *= dPx2Mm;
@@ -934,163 +751,56 @@ void ConvertFolder(std::wstring wsFolderPath, const int nType)
 
 			oRenderer.put_Width(dW);
 			oRenderer.put_Height(dH);
-			//oMetaFile.DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
-			oMetaFile.DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
-			oMetaFile.Close();
+			//pMetaFile->DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
+			pMetaFile->DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
+			pMetaFile->Close();
 		}
 
 		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
 	}
 
 	oRenderer.SaveToFile(wsFolderPath + L"Out.pdf");
+
+	delete pMetaFile;
+	delete pAppFonts;
 }
-void TestMetafile()
+
+//void TestOnlineBin()
+//{
+//	std::wstring wsFolderPath = L"D://Test Files//Txt//Gradient//";
+//	//std::wstring wsFolderPath = L"D://Test Files//Txt//Text//";
+//	std::wstring wsTempFolder = L"D://Test Files//Temp//";
+//
+//	CApplicationFonts oFonts;
+//	oFonts.Initialize();
+//
+//	clock_t oBeginTime = clock();
+//	double dPx2Mm = 25.4 / 96;
+//	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
+//	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+//	{
+//		std::wstring wsFilePath = wsFolderPath;
+//		wsFilePath.append(vFiles.at(nIndex));
+//		std::wstring wsOutPath = wsFolderPath + L"Out.pdf";
+//
+//		CPdfRenderer oRenderer(&oFonts);
+//		oRenderer.SetTempFolder(wsTempFolder);
+//		oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);		
+//
+//		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
+//	}
+//
+//	clock_t oEndTime = clock();
+//	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+//	printf("%f\n", dElapsedSecs);
+//}
+//
+int _tmain(int argc, _TCHAR* argv[])
 {
-	ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
-	//ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
-}
-void TestOnlineBin()
-{
-	std::wstring wsFolderPath = L"D://Test Files//Txt//Gradient//";
-	//std::wstring wsFolderPath = L"D://Test Files//Txt//Text//";
-	std::wstring wsTempFolder = L"D://Test Files//Temp//";
 
-	CApplicationFonts oFonts;
-	oFonts.Initialize();
+	TestDocument1();
 
-	clock_t oBeginTime = clock();
-	double dPx2Mm = 25.4 / 96;
-	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
-	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
-	{
-		std::wstring wsFilePath = wsFolderPath;
-		wsFilePath.append(vFiles.at(nIndex));
-		std::wstring wsOutPath = wsFolderPath + L"Out.pdf";
 
-		CPdfRenderer oRenderer(&oFonts);
-		oRenderer.SetTempFolder(wsTempFolder);
-		oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);		
-
-		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
-	}
-
-	clock_t oEndTime = clock();
-	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-	printf("%f\n", dElapsedSecs);
+	return S_OK;
 }
 
-void TestDouble()
-{
-	const int nMaxInt = NSFastIntToString::c_nMaxInt;
-	const int nCount = 100000;
-	double pDoubles[nCount];
-	for (int nIndex = 0; nIndex < nCount; nIndex++)
-	{
-		pDoubles[nIndex] = (rand() % (nMaxInt - 1) + (rand() % (nMaxInt - 1)) / (double)nMaxInt);
-	}
-	pDoubles[0] = 120.0012;
-	pDoubles[1] = 12.012312;
-	pDoubles[2] = 0.00012312;
-
-	clock_t oBeginTime = clock();
-
-	char pBuffer[32];
-	for (int nI = 0; nI < 10; nI++)
-	{
-		for (int nIndex = 0; nIndex < nCount; nIndex++)
-		{
-			double dValue = pDoubles[nIndex];
-			memset(pBuffer, 0x00, 32);
-			FtoA(pBuffer, dValue, pBuffer + 31);
-		}
-	}
-
-	clock_t oEndTime = clock();
-	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-	printf("FtoA %f\n", dElapsedSecs);
-
-	oBeginTime = clock();
-
-	for (int nI = 0; nI < 10; nI++)
-	{
-
-		for (int nIndex = 0; nIndex < nCount; nIndex++)
-		{
-			int nResLen = 0;
-			double dValue = pDoubles[nIndex];
-			int nIVal = (int)dValue;
-			int nFVal = (int)(fabs(dValue - nIVal) * 10000);
-
-			int nLen = 0;
-			const char* sString = NSFastIntToString::GetString(abs(nIVal), nLen);
-			if (nIVal < 0)
-				pBuffer[nResLen++] = '-';
-
-			memcpy(pBuffer + nResLen, sString, nLen);
-			nResLen += nLen;
-
-			if (nFVal)
-			{
-				sString = NSFastIntToString::GetString(nFVal, nLen);
-
-				pBuffer[nResLen++] = '.';
-				int nZeros = 4 - nLen;
-				if (nZeros > 0)
-				{
-					memcpy(pBuffer + nResLen, NSFastIntToString::GetZeros(nZeros), nLen);
-					nResLen += nZeros;
-				}
-
-				memcpy(pBuffer + nResLen, sString, nLen);
-			}
-		}
-	}
-
-	oEndTime = clock();
-	dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-	printf("Fast %f\n", dElapsedSecs);
-}
-
-void main()
-{
-	//TestStreams();
-	//TestObjects();
-	//TestEncrypt();
-	//TestDict();
-	//TestDocument1();
-	//TestDocument2();
-	//TestDocument3();
-	//TestDocument4();
-	//TestDocument5();
-	//TestDocument6();
-	//TestDocument7();
-	//TestDocument8();
-	//TestDocument9();
-	//TestMetafile();
-	TestOnlineBin();
-	//TestDouble();
-
-	//std::string wsTest = "";
-
-	//wsTest = "static const char c_nPrecisionLen[] = {";
-
-	//int nMax = 100000;
-	//for (int nIndex = 0; nIndex < nMax; nIndex++)
-	//{
-
-	//	std::string sInt = std::to_string(nIndex);
-	//	while (sInt.length() > 1 && '0' == sInt.at(sInt.length() - 1))
-	//		sInt.pop_back();
-
-	//	wsTest += std::to_string(sInt.length());
-
-	//	if (nIndex != nMax - 1)
-	//		wsTest += ",";
-	//}
-
-	//wsTest += "};";
-
-
-	char q;
-	std::cin >> q;
-}

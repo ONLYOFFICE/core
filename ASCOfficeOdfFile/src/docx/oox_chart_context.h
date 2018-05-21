@@ -82,6 +82,7 @@ public:
 			plot_area_.charts_[i]->is3D_ = val;
 		}
 	}
+	void set_externalData(const std::wstring & href);
 	void add_chart(int type)
 	{
 		plot_area_.add_chart(type);
@@ -135,6 +136,7 @@ private:
 	cpdoccore::oox::oox_chart_legend	legend_;
 
 	std::wstring						pivot_source_;
+	std::wstring						externalDataId_;
 
 	std::vector<odf_reader::_property>	graphic_properties_;
 	_oox_fill							fill_;

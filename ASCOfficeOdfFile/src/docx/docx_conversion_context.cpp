@@ -333,15 +333,9 @@ hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 	return hyperlinks_.last();
 }
 
-
 void docx_conversion_context::dump_hyperlinks(rels & Rels, hyperlinks::_type_place type)
 {
     hyperlinks_.dump_rels(Rels, type);
-}
-
-void docx_conversion_context::dump_mediaitems(rels & Rels)
-{
-    mediaitems_.dump_rels(Rels);
 }
 
 void docx_conversion_context::dump_headers_footers(rels & Rels) const
@@ -353,12 +347,6 @@ void docx_conversion_context::dump_notes(rels & Rels) const
 {
     notes_context_.dump_rels(Rels);
 }
-
-std::wstring docx_conversion_context::add_mediaitem(const std::wstring & uri, RelsType type, bool & isInternal, std::wstring & ref)
-{
-	return mediaitems_.add_or_find(uri, type, isInternal, ref); 
-}
-
 void docx_conversion_context::start_document()
 {
     streams_man_ = streams_man::create(document_xml_);
@@ -1203,7 +1191,7 @@ namespace
 		//слить если есть mediaitems, добавить релсы и обнулить их для основного документа.
 		rels internal_rels;
 
-		Context.dump_mediaitems(internal_rels);
+		Context.get_mediaitems().dump_rels(internal_rels);
 		Context.dump_hyperlinks(internal_rels, hyperlinks::document_place);
 
 		Context.get_headers_footers().add(styleName, dbgStr, type, internal_rels);

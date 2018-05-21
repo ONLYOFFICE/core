@@ -103,31 +103,27 @@ namespace NSUnicodeConverter
                     int32_t nOutputLen = nUCharLength * 2;
                     if (U_SUCCESS(status))
                     {
-                        UChar* pOutput = new UChar[nOutputLen * sizeof(UChar)];
-                        nOutputLen = usprep_prepare(profile, pUCharStart, nUCharLength, pOutput, nInputLen, 0, &parseError, &status );
+                        UChar* pOutput = new UChar[nOutputLen * sizeof(UChar) * 3];
+                        nOutputLen = usprep_prepare(profile, pUCharStart, nUCharLength, pOutput, nOutputLen, 0, &parseError, &status );
 
-						if (U_SUCCESS(status))
-						{
+                        if (U_SUCCESS(status))
+                        {
                             UConverter* conv = ucnv_open("UTF-8", &status);
                             if (U_SUCCESS(status))
                             {
                                 const UChar* pOutputLimit = pOutput + nOutputLen;
                                 const UChar* pOutputStart = pOutput;
-                                sRes.resize(nOutputLen * ucnv_getMaxCharSize(conv));// UTF-16 uses 2 code-points per char
 
-                                char *sResStart = &sRes[0];
+                                char *sResStart = new char[nOutputLen * ucnv_getMaxCharSize(conv)];
                                 char *sResCur = sResStart;
-                                const char *sResLimit = sResCur + sRes.size();
+                                const char *sResLimit = sResCur + nOutputLen * ucnv_getMaxCharSize(conv);
 
                                 ucnv_fromUnicode(conv, &sResCur, sResLimit, &pOutputStart, pOutputLimit, NULL, TRUE, &status);
                                 if (U_SUCCESS(status))
                                 {
-                                    sRes.resize(sResCur - sResStart);
+                                    sRes = std::string(sResStart, sResCur - sResStart);
                                 }
-                                else
-                                {
-                                    sRes.clear();
-                                }
+                                delete sResStart;
                                 ucnv_close(conv);
                             }
                         }

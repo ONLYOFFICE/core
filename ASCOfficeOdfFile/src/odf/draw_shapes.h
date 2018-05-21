@@ -65,6 +65,9 @@ public:
 
 	draw_shape() : bad_shape_(false), word_art_(false), idx_in_owner(-1) {}
 
+	CPDOCCORE_DEFINE_VISITABLE();
+	friend class odf_document;
+//----------------------------------------------------------------------------------------------
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
@@ -79,14 +82,11 @@ public:
 	odf_types::union_common_draw_attlists	common_draw_attlists_;
 
 	draw_shape_attlist						draw_shape_attlist_;
-	odf_types::common_xlink_attlist			common_xlink_attlist_;
+	odf_types::common_xlink_attlist			xlink_attlist_;
 	_CP_OPT(std::wstring)					draw_id_;				//используется для анимашек
   
 	office_element_ptr_array content_;
 
-	CPDOCCORE_DEFINE_VISITABLE();
-	friend class odf_document;
-//----------------------------------------------------------------------------------------------
 	bool								bad_shape_;
 	bool								word_art_;
 	int									sub_type_;

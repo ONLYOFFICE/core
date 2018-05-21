@@ -63,6 +63,7 @@
 #include "../src/odf/office_event_listeners.cpp"
 #include "../src/odf/office_presentation.cpp"
 #include "../src/odf/office_scripts.cpp"
+#include "../src/odf/office_forms.cpp"
 #include "../src/odf/office_settings.cpp"
 #include "../src/odf/office_spreadsheet.cpp"
 #include "../src/odf/office_text.cpp"

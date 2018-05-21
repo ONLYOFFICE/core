@@ -58,7 +58,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    office_element_ptr_array office_script_;
+    office_element_ptr_array content_;
 
     // office-event-listeners ?
     

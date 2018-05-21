@@ -203,7 +203,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+    std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 
 	if (href.empty() && office_binary_data_)
 	{
@@ -234,7 +234,7 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+    const std::wstring href = xlink_attlist_.href_.get_value_or(L"");
     Context.get_drawing_context().set_chart(href);
 
  	for (size_t i = 0 ; i < content_.size(); i++)
@@ -264,7 +264,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	try 
 	{
-		std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+		std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 		
 		if (!odf_document_ && !href.empty())
 		{			
@@ -291,7 +291,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 //---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1) //диаграмма
 		{		
-			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"chart");
+			const std::wstring href_draw = xlink_attlist_.href_.get_value_or(L"chart");
 			objectBuild.xlsx_convert(Context);
 			
 			Context.get_drawing_context().set_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
@@ -352,7 +352,7 @@ void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 {	
 	Context.get_drawing_context().set_use_image_replacement();
 
-	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 	std::wstring folderPath = Context.root()->get_folder();
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 

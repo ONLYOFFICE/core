@@ -209,7 +209,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+    const std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 
     Context.get_slide_context().set_image(href);
 ////////////////////////////////////в принципе достаточно общая часть ...	
@@ -228,7 +228,7 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+    const std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 	Context.get_slide_context().set_chart(href);
 
 	for (size_t i = 0; i < content_.size(); i++)
@@ -260,7 +260,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		std::wstring tempPath	= Context.root()->get_temp_folder();
 		std::wstring odfPath	= Context.root()->get_folder();
-        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+        std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 		
 		if (!odf_document_ && !href.empty())
 		{			
@@ -310,7 +310,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 //---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1)//диаграмма
 		{		
-			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"Chart");
+			const std::wstring href_draw = xlink_attlist_.href_.get_value_or(L"Chart");
 			objectBuild.pptx_convert(Context);
 			
 			Context.get_slide_context().set_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
@@ -379,7 +379,7 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().set_use_image_replacement();
 	
-	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 	std::wstring folderPath = Context.root()->get_folder();
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
@@ -398,7 +398,7 @@ void draw_plugin::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().set_use_image_replacement();
 	
-	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 	std::wstring folderPath = Context.root()->get_folder();
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 

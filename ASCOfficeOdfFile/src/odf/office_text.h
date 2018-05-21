@@ -67,6 +67,7 @@ private:
 	office_element_ptr			user_fields_;
 	office_element_ptr			variables_;
  	office_element_ptr			sequences_;
+	office_element_ptr			forms_;
    
 	office_element_ptr_array	content_;
 };

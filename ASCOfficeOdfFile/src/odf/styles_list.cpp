@@ -117,7 +117,7 @@ void text_list_level_style_bullet_attr::add_attributes( const xml::attributes_wc
 
 void text_list_level_style_image_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    common_xlink_attlist_.add_attributes(Attributes);
+    xlink_attlist_.add_attributes(Attributes);
 }
  
 

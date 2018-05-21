@@ -99,7 +99,7 @@ public:
 	friend class odf_document;
 
 private:
-	odf_types::common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist xlink_attlist_;
 
     std::wstring							office_name_;
     _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;

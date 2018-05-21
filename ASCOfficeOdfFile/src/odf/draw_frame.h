@@ -81,7 +81,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     draw_image_attlist				draw_image_attlist_;
-	odf_types::common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist xlink_attlist_;
     
 	office_element_ptr				office_binary_data_;
 
@@ -121,7 +121,7 @@ private:
 
 private:
     draw_chart_attlist				draw_chart_attlist_;
-    odf_types::common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist xlink_attlist_;
     office_element_ptr_array		content_;
    
 	//office_element_ptr			title_;
@@ -294,7 +294,7 @@ public:
     virtual void pptx_convert (oox::pptx_conversion_context & Context);
 
     draw_object_attlist					draw_object_attlist_;
-    odf_types::common_xlink_attlist		common_xlink_attlist_;
+    odf_types::common_xlink_attlist		xlink_attlist_;
 
 	odf_document_ptr					odf_document_;
 
@@ -320,7 +320,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    odf_types::common_xlink_attlist	common_xlink_attlist_;
+    odf_types::common_xlink_attlist	xlink_attlist_;
 	_CP_OPT(std::wstring)			draw_class_id_;
 
 private:
@@ -331,7 +331,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);
-
+//----------------------------------------------------------------------------------------------
 class draw_param : public office_element_impl<draw_param>
 {
 public:
@@ -354,7 +354,7 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_param);
-
+//----------------------------------------------------------------------------------------------
 class draw_plugin : public office_element_impl<draw_plugin>
 {
 public:
@@ -368,7 +368,7 @@ public:
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    odf_types::common_xlink_attlist	common_xlink_attlist_;
+    odf_types::common_xlink_attlist	xlink_attlist_;
 	_CP_OPT(std::wstring)			draw_mime_type_;
     
 	office_element_ptr_array		content_;
@@ -377,9 +377,34 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(draw_plugin);
+//----------------------------------------------------------------------------------------------
+class draw_control : public office_element_impl<draw_control>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeDrawControl;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+
+	odf_types::union_common_draw_attlists	draw_attlists_;  
+	_CP_OPT(std::wstring)					xml_id_;
+	_CP_OPT(std::wstring)					caption_id_;
+	_CP_OPT(std::wstring)					control_id_;
+
+	office_element_ptr						draw_glue_point_;
+//<svg:desc>
+//<svg:title>
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_control);
 
 }
 }

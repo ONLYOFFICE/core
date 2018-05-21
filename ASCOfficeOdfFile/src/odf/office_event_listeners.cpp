@@ -73,7 +73,7 @@ void office_event_listeners::pptx_convert(oox::pptx_conversion_context & Context
 
 void presentation_event_listener_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	common_xlink_attlist_.add_attributes(Attributes);
+	xlink_attlist_.add_attributes(Attributes);
 
 	CP_APPLY_ATTR(L"script:event-name", script_event_name_);
 	CP_APPLY_ATTR(L"presentation:action", presentation_action_);
@@ -101,8 +101,8 @@ void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Co
 {
 	Context.get_slide_context().start_action(attlist_.presentation_action_.get_value_or(L""));
 	
-	if (attlist_.common_xlink_attlist_.href_)
-		Context.get_slide_context().set_link(*attlist_.common_xlink_attlist_.href_);
+	if (attlist_.xlink_attlist_.href_)
+		Context.get_slide_context().set_link(*attlist_.xlink_attlist_.href_);
 
 	if (presentation_sound_)
 	{

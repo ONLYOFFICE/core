@@ -328,7 +328,7 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		table_table_source* table_source = dynamic_cast<table_table_source*>( table_table_source_.get() );
 		if ( table_source)
 		{
-			if (table_source->table_linked_source_attlist_.common_xlink_attlist_.href_)return;
+			if (table_source->table_linked_source_attlist_.xlink_attlist_.href_)return;
 		} 
 
 	}

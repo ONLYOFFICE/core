@@ -90,7 +90,7 @@ const wchar_t * presentation_sound::name	= L"sound";
 
 void presentation_sound::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	common_xlink_attlist_.add_attributes(Attributes);
+	xlink_attlist_.add_attributes(Attributes);
 }
 
 void presentation_sound::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -100,7 +100,7 @@ void presentation_sound::add_child_element( xml::sax * Reader, const std::wstrin
 
 void presentation_sound::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().set_link(common_xlink_attlist_.href_.get_value_or(L""), oox::typeAudio);
+	Context.get_slide_context().set_link(xlink_attlist_.href_.get_value_or(L""), oox::typeAudio);
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * style_drawing_page_properties::ns	= L"style";

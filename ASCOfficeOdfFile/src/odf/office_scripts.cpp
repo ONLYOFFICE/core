@@ -52,7 +52,7 @@ void office_scripts::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void office_scripts::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"office", L"script")
-        CP_CREATE_ELEMENT(office_script_);
+        CP_CREATE_ELEMENT(content_);
     else
         CP_NOT_APPLICABLE_ELM();
 }

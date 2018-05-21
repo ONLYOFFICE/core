@@ -112,7 +112,7 @@ void table_table_source_attlist::add_attributes( const xml::attributes_wc_ptr & 
 
 void table_linked_source_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	common_xlink_attlist_.add_attributes(Attributes);
+	xlink_attlist_.add_attributes(Attributes);
 
     CP_APPLY_ATTR(L"table:filter-name", table_filter_name_);
     CP_APPLY_ATTR(L"table:filter-options", table_filter_options_);

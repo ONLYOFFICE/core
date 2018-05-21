@@ -87,7 +87,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    odf_types::common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist xlink_attlist_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

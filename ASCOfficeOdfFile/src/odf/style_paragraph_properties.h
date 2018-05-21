@@ -164,7 +164,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    _CP_OPT(odf_types::common_xlink_attlist) common_xlink_attlist_;
+    _CP_OPT(odf_types::common_xlink_attlist) xlink_attlist_;
         
 };
 
@@ -191,7 +191,7 @@ public:
     _CP_OPT(std::wstring)						filter_name_;
     _CP_OPT(odf_types::percent)					draw_opacity_;
 
-    _CP_OPT(odf_types::common_xlink_attlist)	common_xlink_attlist_;
+    _CP_OPT(odf_types::common_xlink_attlist)	xlink_attlist_;
     office_element_ptr							office_binary_data_;
 
 };

@@ -1584,6 +1584,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\office_forms.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\office_forms.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\office_presentation.cpp"
 				>
 			</File>

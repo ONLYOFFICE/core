@@ -354,6 +354,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\calcext_type.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\chartdatalabelnumber.cpp"
 				>
 			</File>
@@ -439,6 +443,14 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\datatypes\color.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\commandtype.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\commandtype.h"
 				>
 			</File>
 			<File

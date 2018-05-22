@@ -55,7 +55,8 @@ enum RelsType
 	typeOleObject,
 	typeSlide,
 	typeVideo, 
-	typeAudio
+	typeAudio,
+	typeControl
 };
 
 struct _rel

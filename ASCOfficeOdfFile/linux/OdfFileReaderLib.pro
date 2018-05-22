@@ -73,6 +73,7 @@ SOURCES += \
     ../src/odf/office_event_listeners.cpp \
     ../src/odf/office_presentation.cpp \
     ../src/odf/office_scripts.cpp \
+    ../src/odf/office_forms.cpp \
     ../src/odf/office_settings.cpp \
     ../src/odf/office_spreadsheet.cpp \
     ../src/odf/office_text.cpp \
@@ -211,6 +212,7 @@ SOURCES += \
     ../src/odf/datatypes/tablefunction.cpp \
     ../src/odf/datatypes/tableorder.cpp \
     ../src/odf/datatypes/dategroup.cpp \
+    ../src/odfcommandtype.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
@@ -335,6 +337,7 @@ HEADERS += \
     ../src/odf/office_event_listeners.h \
     ../src/odf/office_presentation.h \
     ../src/odf/office_scripts.h \
+    ../src/odf/office_forms.h \
     ../src/odf/office_settings.h \
     ../src/odf/office_spreadsheet.h \
     ../src/odf/office_text.h \
@@ -372,6 +375,7 @@ HEADERS += \
     ../src/odf/datatypes/mathvariant.h \
     ../src/odf/calcext_elements.h \
     ../src/odf/table_database_ranges.h \
+    ../src/odfcommandtype.h \
     ../src/odf/datatypes/anchortype.h \
     ../src/odf/datatypes/backgroundcolor.h \
     ../src/odf/datatypes/bool.h \

@@ -62,12 +62,15 @@ namespace cpdoccore {
 		class style_text_properties;
 		class draw_frame;
 		class draw_shape;
+		class draw_control;
 		class office_element;
 		class style_columns;
+		class form_element;
 
 		namespace text
 		{
 			class note_citation;
+			class paragraph_attrs;
 		}
 	}
 
@@ -162,7 +165,16 @@ public:
         current_object_name_	= L"";
         current_shape_			= drawShape;
     }
-    void start_group() 
+    void start_control(odf_reader::draw_control * drawControl) 
+    { 
+		current_level_++;
+        objects_count_++; 
+		
+		current_shape_id_		= objects_count_;
+        current_object_name_	= L"";
+        current_control_		= drawControl;
+    }
+	void start_group() 
     { 
 		current_level_++;
         objects_count_++; 
@@ -226,7 +238,6 @@ public:
 		else
 			throw;
 	}
-
 	std::wstring & get_text_stream_shape()
 	{
 		return shape_text_content_;
@@ -237,15 +248,22 @@ public:
 	}
  	void clear_stream_frame()
 	{
-		if (frames_.size()>0)
-			frames_.back().text_content=L"";
+		if (!frames_.empty())
+			frames_.back().text_content.clear();
 	}
 	void stop_shape()
 	{
 		current_level_--;
 		current_shape_ = NULL;
-		shape_text_content_=L"";
-		current_shape_id_ =0;
+		shape_text_content_.clear();
+		current_shape_id_ = 0;
+	}
+	void stop_control()
+	{
+		current_level_--;
+		current_control_ = NULL;
+		shape_text_content_.clear();
+		current_shape_id_ = 0;
 	}
 	void stop_group()
 	{
@@ -255,10 +273,10 @@ public:
 	
 	int get_current_frame_id() const 
 	{
-		if (frames_.size()>0)	return frames_.back().id; 
+		if (!frames_.empty())	return frames_.back().id; 
 		else					return 0;
 	}
-	bool	in_group()						{ return groups_.size() > 0; }
+	bool	in_group()						{ return !groups_.empty(); }
     int		get_current_level()		const	{ return current_level_; }
  	int		get_current_shape_id()	const	{ return current_shape_id_; }
 	
@@ -266,7 +284,7 @@ public:
    
 	odf_reader::draw_frame * get_current_frame() const 
 	{
-		if (frames_.size()>0) return frames_.back().ptr; 
+		if (!frames_.empty()) return frames_.back().ptr; 
 		else return NULL;
 	}
 	odf_reader::draw_shape * get_current_shape() const { return current_shape_; }
@@ -282,8 +300,10 @@ private:
 	std::vector<_group>		groups_;
 	std::vector<_frame>		frames_; 
    
-	odf_reader::draw_shape * current_shape_; 
+	odf_reader::draw_shape *current_shape_; 
 	size_t					current_shape_id_;
+
+	odf_reader::draw_control*current_control_; 
 
 	std::wstring			zero_string_;
 
@@ -542,6 +562,48 @@ private:
 	
 	std::map<std::wstring, _state>	mapChanges_;
 };
+
+class text_forms_context
+{
+public:
+	struct _state
+	{
+		std::wstring				id;
+		std::wstring				name;
+		int							type = 0; //enum?
+		std::wstring				label;
+		std::wstring				uuid;
+		std::wstring				value;
+		odf_reader::form_element*	element = NULL;
+	
+		void clear()
+		{
+			type = 0;
+			id.clear();
+			name.clear();
+			label.clear();
+			value.clear();
+			uuid.clear();
+			element = NULL;
+		}
+	};
+	text_forms_context(){}
+
+	void start_element	(int type);
+		void set_id		(const std::wstring& id);
+		void set_name	(const std::wstring& name);
+		void set_label	(const std::wstring& label);
+		void set_uuid	(const std::wstring& uuid);
+		void set_value	(const std::wstring& value);
+		void set_element(odf_reader::form_element *elm);
+	void end_element	();
+
+	_state& get_state_element (std::wstring id);
+
+private:
+	_state							current_state_;
+	std::map<std::wstring, _state>	mapElements_;
+};
 //---------------------------------------------------------------------------------------------------------
 class docx_conversion_context : boost::noncopyable
 {
@@ -579,6 +641,7 @@ public:
     void set_paragraph_state	(bool val)			{ in_paragraph_	= val;		}
 	bool get_paragraph_keep		()					{ return is_paragraph_keep_;}
 	void set_paragraph_keep		(bool val)			{ is_paragraph_keep_ = val;	}
+
 	bool get_delete_text_state	()					{ return is_delete_text_;	}
 	void set_delete_text_state	(bool Val)			{ is_delete_text_ = Val;	}
 
@@ -619,6 +682,9 @@ public:
     void process_comments		();
     bool process_page_properties(std::wostream & strm);
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
+	
+	int process_paragraph_attr	(odf_reader::text::paragraph_attrs *attr);
+	void process_page_break_after(const odf_reader::style_instance *styleInst);
 
 	std::vector<odf_reader::_property> & get_settings_properties ();
     void set_settings_property		(const odf_reader::_property & prop);
@@ -665,8 +731,8 @@ public:
     void start_list_item		(bool restart = false);
     void end_list_item	();
     
-	void docx_serialize_list_properties(std::wostream & strm);
-	void docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles = false);
+	void serialize_list_properties(std::wostream & strm);
+	void serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles = false);
    
 	std::wstring find_list_rename(const std::wstring & ListStyleName) const;
 
@@ -680,6 +746,7 @@ public:
 	section_context		& get_section_context()		{ return section_context_; }
 	notes_context		& get_notes_context()		{ return notes_context_; }
 	text_tracked_context& get_text_tracked_context(){ return text_tracked_context_; }
+	text_forms_context	& get_forms_context()		{ return text_forms_context_; }
 
     void docx_convert_delayed	();
     void add_delayed_element	(odf_reader::office_element * Elm);
@@ -749,6 +816,7 @@ private:
     header_footer_context	header_footer_context_;
     notes_context			notes_context_;
 	text_tracked_context	text_tracked_context_;
+	text_forms_context		text_forms_context_;
        
     boost::shared_ptr<streams_man> streams_man_;
 

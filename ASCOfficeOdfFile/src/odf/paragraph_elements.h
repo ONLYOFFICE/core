@@ -402,7 +402,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-	odf_types::common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist xlink_attlist_;
 
     std::wstring							office_name_;
     _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;

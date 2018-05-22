@@ -150,7 +150,7 @@ void style_background_image::add_attributes( const xml::attributes_wc_ptr & Attr
     common_xlink_attlist tmp;
     if (tmp.add_attributes(Attributes))
     {
-        common_xlink_attlist_ = _CP_OPT(common_xlink_attlist)(tmp);
+        xlink_attlist_ = _CP_OPT(common_xlink_attlist)(tmp);
     }
 }
 

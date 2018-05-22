@@ -100,7 +100,11 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
 
 void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	if CP_CHECK_NAME(L"text", L"tracked-changes") 
+	if CP_CHECK_NAME(L"office", L"forms") 
+	{
+		CP_CREATE_ELEMENT(forms_);
+	}
+	else if CP_CHECK_NAME(L"text", L"tracked-changes") 
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
@@ -142,7 +146,10 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 	if (tracked_changes_)
 		tracked_changes_->docx_convert(Context);
 
-    Context.start_office_text();
+ 	if (forms_)
+		forms_->docx_convert(Context);
+
+	Context.start_office_text();
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);

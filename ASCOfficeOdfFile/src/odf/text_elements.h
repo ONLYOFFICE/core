@@ -271,7 +271,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
-    odf_types::common_xlink_attlist	common_xlink_attlist_;
+    odf_types::common_xlink_attlist	xlink_attlist_;
 
     _CP_OPT(std::wstring)			text_section_name_;
     _CP_OPT(std::wstring)			text_filter_name_;

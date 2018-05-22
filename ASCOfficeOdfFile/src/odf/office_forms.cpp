@@ -263,7 +263,10 @@ void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 	Context.output_stream() << L"<w:sdt>";
 		Context.output_stream() << L"<w:sdtPr>";
 		{
-			Context.output_stream() << L"<w:alias w:val=\"" + *name_ + L"\"/>";
+			if (name_)
+			{
+				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			//<w:lock w:val="sdtLocked"/>
 			//<w:placeholder>
@@ -273,31 +276,39 @@ void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 		Context.output_stream() << L"</w:sdtPr>";
 		Context.output_stream() << L"<w:sdtContent>";
 		{
-			bool runState = Context.get_run_state();
-			
-			Context.set_run_state (false);
-
-			bool bTextStyle = false;
-			if (draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
-			{	
-				text::paragraph_attrs attrs_;
-				attrs_.text_style_name_ = *draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
-
-				bTextStyle = (1 == Context.process_text_attr(&attrs_));
-			}
-
 			Context.add_new_run(L"");
+			if (current_value_)
+			{
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
 				Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
 				Context.output_stream() << L"</w:t>";
+			}
 			Context.finish_run();
-		
-			Context.set_run_state (runState);
-			if (bTextStyle)
-				Context.pop_text_properties(); 
 		}
 		Context.output_stream() << L"</w:sdtContent>";
 	Context.output_stream() << L"</w:sdt>"; 
+}
+void form_text::docx_convert_field(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	if (!draw) return;
+
+	XmlUtils::replace_all( *name_, L" ", L"_");
+
+	Context.add_new_run(L"");
+		Context.output_stream() << L"<w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << *name_ << L"\"/><w:enabled/>";
+		Context.output_stream() << L"</w:ffData></w:fldChar>";
+	Context.finish_run();	
+
+	Context.add_new_run(L"");
+		Context.output_stream() << L"<w:instrText>FORMTEXT</w:instrText>";
+	Context.finish_run();	
+		
+	Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	
+	Context.add_new_run(L"");
+		Context.output_stream() << L"<w:t>" << *current_value_ << L"</w:t>";
+	Context.finish_run();	
+    Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 }
 // form:checkbox
 //----------------------------------------------------------------------------------
@@ -326,47 +337,58 @@ void form_checkbox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 {
 	if (!draw) return;
 	
-	bool pState = Context.get_paragraph_state();
-
 	Context.output_stream() << L"<w:sdt>";
 		Context.output_stream() << L"<w:sdtPr>";
 		{
-			Context.output_stream() << L"<w:alias w:val=\"" + *name_ + L"\"/>";
+			if (name_)
+			{
+				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			Context.output_stream() << L"<w14:checkbox>";
 
 			Context.output_stream() << L"<w14:checked w14:val=\"" + std::to_wstring(current_state_ ? 1 : 0) + L"\"/>";
-			Context.output_stream() << L"<w14:checkedState w14:val=\"2612\" w14:font=\"MS Gothic\"/>";
-			Context.output_stream() << L"<w14:uncheckedState w14:val=\"2610\" w14:font=\"MS Gothic\"/>";
+			//Context.output_stream() << L"<w14:checkedState w14:val=\"2612\" w14:font=\"MS Gothic\"/>";
+			//Context.output_stream() << L"<w14:uncheckedState w14:val=\"2610\" w14:font=\"MS Gothic\"/>";
 			Context.output_stream() << L"</w14:checkbox>";
 		}
 		Context.output_stream() << L"</w:sdtPr>";
 		Context.output_stream() << L"<w:sdtContent>";
 		{
-			bool runState = Context.get_run_state();			
-			Context.set_run_state (false);
-
-			bool bTextStyle = false;
-			if (draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
-			{	
-				text::paragraph_attrs attrs_;
-				attrs_.text_style_name_ = *draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
-
-				bTextStyle = (1 == Context.process_text_attr(&attrs_));
-			}
 			Context.add_new_run(L"");
 			if (current_state_)
 				Context.output_stream() << L"<w:t>☒</w:t>";
 			else
 				Context.output_stream() << L"<w:t>☐</w:t>";
 			Context.finish_run();
-
-			Context.set_run_state (runState);
-			if (bTextStyle)
-				Context.pop_text_properties(); 
 		}
 		Context.output_stream() << L"</w:sdtContent>";
 	Context.output_stream() << L"</w:sdt>";
+	
+	if (label_)
+	{
+		Context.add_new_run(L"");
+			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << L"</w:t>";
+		Context.finish_run();
+	}
+}
+
+void form_checkbox::docx_convert_field(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	if (!draw) return;
+
+	XmlUtils::replace_all( *name_, L" ", L"_");
+
+	Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << *name_ << L"\"/><w:enabled/>";
+	Context.output_stream() << L"<w:label w:val=\"" << xml::utils::replace_text_to_xml(*label_ ) << L"\"/>";
+	Context.output_stream() << L"<w:checkBox><w:default w:val=\"" << std::to_wstring(current_state_) << L"\"/></w:checkBox></w:ffData>";
+	Context.output_stream() << L"</w:fldChar></w:r>";
+	Context.output_stream() << L"<w:r><w:instrText>FORMCHECKBOX</w:instrText></w:r>";
+	//Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	//Context.output_stream() << L"<w:r><w:t>" << xml::utils::replace_text_to_xml(*label_ ) << L"</w:t></w:r>";
+    Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 	
 	Context.add_new_run(L"");
 		Context.output_stream() << L"<w:t xml:space=\"preserve\">";

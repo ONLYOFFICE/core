@@ -217,7 +217,8 @@ public:
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) {}
 	virtual void pptx_convert(oox::pptx_conversion_context & Context) {}
 
-	virtual void docx_convert_sdt(oox::docx_conversion_context & Context, draw_control* draw) {}
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw) {}
+	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw) {}
 	form_element() {}
 
 	//CPDOCCORE_DEFINE_VISITABLE();
@@ -286,6 +287,7 @@ public:
 
 	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
+	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
@@ -310,6 +312,7 @@ public:
 
 	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control *draw);
+	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 

@@ -1677,6 +1677,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 		if (state.element)
 		{
 			state.element->docx_convert_sdt(Context, this);
+			//state.element->docx_convert_field(Context, this);
 		}
 		else
 		{	

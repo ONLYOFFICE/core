@@ -32,9 +32,11 @@
 
 #include "office_forms.h"
 #include "draw_frame.h"
+#include "text_content.h"
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/utils.h>
 
 #include "serialize_elements.h"
 
@@ -250,13 +252,52 @@ void form_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void form_text::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.get_forms_context().start_element(2);
-
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
 	form_element::docx_convert(Context);
 }
-void form_text::docx_convert_sdr(oox::docx_conversion_context & Context, draw_control *draw)
+void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
 {
+	if (!draw) return;
 
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			Context.output_stream() << L"<w:alias w:val=\"" + *name_ + L"\"/>";
+			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
+			//<w:lock w:val="sdtLocked"/>
+			//<w:placeholder>
+			// <w:docPart w:val="DefaultPlaceholder_-1854013440"/>
+			//</w:placeholder>
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+		{
+			bool runState = Context.get_run_state();
+			
+			Context.set_run_state (false);
+
+			bool bTextStyle = false;
+			if (draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			{	
+				text::paragraph_attrs attrs_;
+				attrs_.text_style_name_ = *draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
+
+				bTextStyle = (1 == Context.process_text_attr(&attrs_));
+			}
+
+			Context.add_new_run(L"");
+				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+				Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				Context.output_stream() << L"</w:t>";
+			Context.finish_run();
+		
+			Context.set_run_state (runState);
+			if (bTextStyle)
+				Context.pop_text_properties(); 
+		}
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>"; 
 }
 // form:checkbox
 //----------------------------------------------------------------------------------
@@ -265,14 +306,75 @@ const wchar_t * form_checkbox::name = L"checkbox";
 
 void form_checkbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	_CP_OPT(std::wstring) strVal;
+	CP_APPLY_ATTR(L"form:current-state", strVal);
+	
+	if ((strVal) && (*strVal == L"checked"))
+		current_state_ = true;
+	else current_state_ = false;
+
 	form_element::add_attributes(Attributes);
 }
 void form_checkbox::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
+void form_checkbox::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	if (!draw) return;
+	
+	bool pState = Context.get_paragraph_state();
+
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			Context.output_stream() << L"<w:alias w:val=\"" + *name_ + L"\"/>";
+			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
+			Context.output_stream() << L"<w14:checkbox>";
+
+			Context.output_stream() << L"<w14:checked w14:val=\"" + std::to_wstring(current_state_ ? 1 : 0) + L"\"/>";
+			Context.output_stream() << L"<w14:checkedState w14:val=\"2612\" w14:font=\"MS Gothic\"/>";
+			Context.output_stream() << L"<w14:uncheckedState w14:val=\"2610\" w14:font=\"MS Gothic\"/>";
+			Context.output_stream() << L"</w14:checkbox>";
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+		{
+			bool runState = Context.get_run_state();			
+			Context.set_run_state (false);
+
+			bool bTextStyle = false;
+			if (draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			{	
+				text::paragraph_attrs attrs_;
+				attrs_.text_style_name_ = *draw->draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
+
+				bTextStyle = (1 == Context.process_text_attr(&attrs_));
+			}
+			Context.add_new_run(L"");
+			if (current_state_)
+				Context.output_stream() << L"<w:t>☒</w:t>";
+			else
+				Context.output_stream() << L"<w:t>☐</w:t>";
+			Context.finish_run();
+
+			Context.set_run_state (runState);
+			if (bTextStyle)
+				Context.pop_text_properties(); 
+		}
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
+	
+	Context.add_new_run(L"");
+		Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+		Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+		Context.output_stream() << L"</w:t>";
+	Context.finish_run();	
+}
+
 // form:combobox
 //----------------------------------------------------------------------------------
 const wchar_t * form_combobox::ns = L"form";

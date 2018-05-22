@@ -418,7 +418,11 @@ void docx_conversion_context::start_document()
 	output_stream() << L"xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" "; 
 	output_stream() << L"xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" ";
 	output_stream() << L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
-	output_stream() << L"mc:Ignorable=\"w14 wp14\">";
+	output_stream() << L"xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" ";
+	output_stream() << L"xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" ";
+	output_stream() << L"xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" ";
+	output_stream() << L"xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" ";
+	output_stream() << L"mc:Ignorable=\"w14 w15 w16se wne wp14\">";
 
 
 	//apply page-default prop
@@ -1161,6 +1165,24 @@ std::wstring docx_conversion_context::find_list_rename(const std::wstring & List
 
 void docx_conversion_context::end_list_item()
 {
+}
+int docx_conversion_context::process_text_attr(odf_reader::text::paragraph_attrs *Attr)
+{
+	if ( Attr->text_style_name_.empty() ) return 0;
+
+	odf_reader::style_instance * styleInst =
+				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_);
+
+	if (!styleInst) return 0;
+
+	if (false == styleInst->is_automatic()) return 0;
+
+    odf_reader::style_content *styleContent = styleInst->content();
+    
+	if (!styleContent) return 0;
+
+	push_text_properties(styleContent->get_style_text_properties());
+	return 1;
 }
 int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_attrs *Attr)
 {

@@ -684,6 +684,7 @@ public:
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
 	
 	int process_paragraph_attr	(odf_reader::text::paragraph_attrs *attr);
+	int process_text_attr		(odf_reader::text::paragraph_attrs *Attr);
 	void process_page_break_after(const odf_reader::style_instance *styleInst);
 
 	std::vector<odf_reader::_property> & get_settings_properties ();

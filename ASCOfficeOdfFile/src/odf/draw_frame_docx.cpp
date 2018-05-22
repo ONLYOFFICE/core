@@ -1635,11 +1635,6 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	oox::text_forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
 
-	//if (state.element)
-	//{
-	//	return state.element->docx_convert_sdr(Context, this);
-	//}
-    
 	Context.get_drawing_context().start_shape(NULL);    
 	Context.get_drawing_context().add_name_object(state.name.empty() ? L"Control" : state.name);
 
@@ -1652,12 +1647,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	drawing.inGroup	= Context.get_drawing_context().in_group();
 	drawing.sub_type = 1;
 	
-	std::wstring text;
-	if (!state.label.empty())		text =  state.label;
-	else if (!state.value.empty())	text =  state.value;
 //---------------------------------------------------------------------------------------------------------
-	if (!text.empty())
-	{
  		oox::StreamsManPtr prev = Context.get_stream_man();
 		
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_shape());
@@ -1682,13 +1672,24 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 			attrs_.text_style_name_ = *draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
 
 			int textStyle = Context.process_paragraph_attr(&attrs_);
+		}	
+		
+		if (state.element)
+		{
+			state.element->docx_convert_sdt(Context, this);
 		}
+		else
+		{	
+			std::wstring text;
+			if (!state.label.empty())		text =  state.label;
+			else if (!state.value.empty())	text =  state.value;
 
-		Context.add_new_run(L"");
-			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-			Context.output_stream() << xml::utils::replace_text_to_xml( text );
-			Context.output_stream() << L"</w:t>";
-		Context.finish_run();
+			Context.add_new_run(L"");
+				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+				Context.output_stream() << xml::utils::replace_text_to_xml( text );
+				Context.output_stream() << L"</w:t>";
+			Context.finish_run();
+		}
 		Context.finish_paragraph();
 		
 		Context.get_drawing_context().get_text_stream_shape() = temp_stream.str();
@@ -1708,7 +1709,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 		drawing.additional.push_back(_property(L"text-padding-top", 0.));
 		drawing.additional.push_back(_property(L"text-padding-right", 0.));
 		drawing.additional.push_back(_property(L"text-padding-bottom", 0.));
-	}
+	
 //---------------------------------------------------------------------------------------------------------
 
 /////////
@@ -1717,23 +1718,23 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & strm = Context.output_stream();
 
-	bool runState	= Context.get_run_state();
-	bool paraState	= Context.get_paragraph_state();
-	bool keepState	= Context.get_paragraph_keep();
+	pState		= Context.get_paragraph_state();
+	runState	= Context.get_run_state();
+	keepState	= Context.get_paragraph_keep();
 
 	//Context.set_run_state		(false);	
 	Context.set_paragraph_state	(false);	
 
 	bool new_run = false;
 	
-	if ((paraState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
+	if ((pState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
 	{
 	}
 	else
 	{
 		if (!Context.get_drawing_context().in_group() && !runState)
 		{
-			if (!paraState)
+			if (!pState)
 			{
 				Context.start_paragraph();
 			}
@@ -1748,13 +1749,13 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	if (new_run)
 	{
 		Context.finish_run();
-		if (!paraState)
+		if (!pState)
 		{
 			Context.finish_paragraph();
 		}
 	}
 
-	Context.set_paragraph_state(paraState);	
+	Context.set_paragraph_state(pState);	
 
 	Context.get_drawing_context().stop_shape();
 }

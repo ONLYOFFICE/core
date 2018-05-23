@@ -629,7 +629,7 @@ namespace PdfReader
 			}
 			arrW[nIndex] = oWItem.GetInt();
 			oWItem.Free();
-			if (arrW[nIndex] < 0 || arrW[nIndex] > 4)
+			if (arrW[nIndex] < 0 || arrW[nIndex] > 4 && arrW[nIndex] != 8)
 			{
 				oTemp.Free();
 				m_bValidXref = false;

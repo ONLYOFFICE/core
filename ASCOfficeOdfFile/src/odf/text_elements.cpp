@@ -68,7 +68,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
     if (Attr.text_style_name_.empty())return;
 
 	style_instance * styleInst 
-            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph,Context.process_headers_footers_);
+            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
     if ((!styleInst) || (styleInst->is_automatic() == false))return;
 
 	style_content * styleContent = styleInst->content();
@@ -103,159 +103,24 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 				text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
 		7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
 	}
-	return;
 }
 
-//int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
-//{
-//	bool in_drawing	= false;
-//
-// 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
-//	{
-//		in_drawing = true;
-//	}
-//	
-//	if (!Attr.text_style_name_.empty())
-//    {
-//        if (style_instance * styleInst =
-//				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph, Context.process_headers_footers_)
-//            )
-//        {
-//            process_page_break_after(styleInst, Context);
-//            if (styleInst->is_automatic())
-//            {
-//                if (style_content * styleContent = styleInst->content())
-//                {
-//                    std::wstring id;
-//                    if (const style_instance * parentStyleContent = styleInst->parent())
-//					{
-//                        id = Context.styles_map_.get( parentStyleContent->name(), parentStyleContent->type() );
-//					}
-//
-//                    Context.start_automatic_style(id);
-//					
-//					{//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
-//						paragraph_format_properties properties = calc_paragraph_properties_content(styleInst);
-//
-// 						if (properties.style_writing_mode_)
-//						{
-//							writing_mode::type type = properties.style_writing_mode_->get_type();
-//							switch(type)
-//							{
-//							case writing_mode::RlTb:
-//							case writing_mode::TbRl:
-//							case writing_mode::Rl:
-//								Context.set_rtl(true);
-//								break;
-//							default:
-//								Context.set_rtl(false);
-//							}
-//						}
-//						Context.set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(length::pt) : 0); 
-//							//for calculate tabs
-//					}
-//                    
-//					styleContent->docx_convert(Context);                
-//                   
-//					Context.end_automatic_style();
-//
-//                    Context.push_text_properties(styleContent->get_style_text_properties());
-//
-//					if (!Context.get_section_context().dump_.empty()
-//						&& !Context.get_table_context().in_table()
-//						&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
-//						&& !in_drawing)
-//					{
-//						Context.output_stream() << L"<w:pPr>";
-//						if (Context.is_paragraph_header() )
-//						{
-//							Context.output_stream() << Context.get_section_context().dump_;
-//							Context.get_section_context().dump_.clear();
-//
-//							Context.output_stream() << L"</w:pPr>";
-//							Context.finish_paragraph();
-//							Context.start_paragraph();					
-//						}
-//						else
-//						{
-//							Context.output_stream() << Context.get_section_context().dump_;
-//							Context.get_section_context().dump_.clear();
-//							Context.output_stream() << L"</w:pPr>";
-//						}
-//					}
-//					return 1;
-//                }            
-//            }
-//            else
-//            {
-//                const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
-//                Context.output_stream() << L"<w:pPr>";
-////todooo причесать			
-//					if (!Context.get_section_context().dump_.empty()
-//						&& !Context.get_table_context().in_table()
-//						&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
-//						&& !in_drawing)
-//					{
-//						if (Context.is_paragraph_header() )
-//						{
-//							Context.output_stream() << Context.get_section_context().dump_;
-//							Context.get_section_context().dump_.clear();
-//
-//							Context.output_stream() << L"</w:pPr>";
-//							Context.finish_paragraph();
-//							Context.start_paragraph();					
-//							Context.output_stream() << L"<w:pPr>";
-//						}
-//						else
-//						{
-//							Context.output_stream() << Context.get_section_context().dump_;
-//							Context.get_section_context().dump_.clear();
-//						}
-//					}
-//
-//					Context.output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
-//
-//					if (!Context.get_text_tracked_context().dumpPPr_.empty())
-//					{
-//						Context.output_stream() << Context.get_text_tracked_context().dumpPPr_;
-//						Context.get_text_tracked_context().dumpPPr_.clear();
-//					}
-//
-//					Context.docx_serialize_list_properties(Context.output_stream());
-//					
-//					if ((Attr.outline_level_) && (*Attr.outline_level_ > 0))
-//					{
-//						Context.output_stream() << L"<w:outlineLvl w:val=\"" << *Attr.outline_level_ - 1 << L"\" />";
-//					}
-//
-//					if (!Context.get_text_tracked_context().dumpRPrInsDel_.empty())
-//					{
-//						Context.output_stream() << L"<w:rPr>";
-//							Context.output_stream() << Context.get_text_tracked_context().dumpRPrInsDel_;
-//							Context.get_text_tracked_context().dumpRPrInsDel_.clear();
-//						Context.output_stream() << L"</w:rPr>";
-//					}
-//                Context.output_stream() << L"</w:pPr>";
-//				return 2;
-//			}
-//		}
-//	}
-//	if (!Context.get_section_context().dump_.empty() 
-//		&& !Context.get_table_context().in_table()
-//		&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
-//		&& !in_drawing)
-//	{
-//        Context.output_stream() << L"<w:pPr>";
-//			Context.output_stream() << Context.get_section_context().dump_;
-//			Context.get_section_context().dump_.clear();
-//			//todooo выяснить реальны ли заголовки без стилей и свойств
-//		Context.output_stream() << L"</w:pPr>";
-//		return 3;
-//	}
-//
-//    return 0;
-//}
-//
+void process_paragraph_index(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
+{
+	if (false == Context.is_table_content()) return;
+
+    if (Attr.text_style_name_.empty())return;
+
+	style_instance * styleInst 
+            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
+    if ((!styleInst) || (styleInst->is_automatic() == false))return;
+
+	if (L"index" != styleInst->style_class()) return;
+
+
+}
+
+
 }
 
 std::wostream & paragraph::text_to_stream(std::wostream & _Wostream) const
@@ -866,7 +731,7 @@ const wchar_t * text_index_body::name = L"index-body";
 
 std::wostream & text_index_body::text_to_stream(std::wostream & _Wostream) const
 {
-    CP_SERIALIZE_TEXT(index_content_main_);
+    CP_SERIALIZE_TEXT(content_);
     return _Wostream;
 }
 
@@ -876,21 +741,21 @@ void text_index_body::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 void text_index_body::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(index_content_main_);
+    CP_CREATE_ELEMENT(content_);
 }
 
 void text_index_body::docx_convert(oox::docx_conversion_context & Context) 
 {
-   	for (size_t i = 0; i < index_content_main_.size(); i++)
+   	for (size_t i = 0; i < content_.size(); i++)
 	{
-        index_content_main_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 void text_index_body::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-	for (size_t i = 0; i < index_content_main_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-        index_content_main_[i]->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 // text:index-title
@@ -901,21 +766,21 @@ const wchar_t * text_index_title::name = L"index-title";
 
 void text_index_title::docx_convert(oox::docx_conversion_context & Context) 
 {
-	for (size_t i = 0; i < index_content_main_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        index_content_main_[i]->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 void text_index_title::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-	for (size_t i = 0; i < index_content_main_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        index_content_main_[i]->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 std::wostream & text_index_title::text_to_stream(std::wostream & _Wostream) const
 {
-    CP_SERIALIZE_TEXT(index_content_main_);
+    CP_SERIALIZE_TEXT(content_);
     return _Wostream;
 }
 
@@ -926,7 +791,7 @@ void text_index_title::add_attributes( const xml::attributes_wc_ptr & Attributes
 
 void text_index_title::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-     CP_CREATE_ELEMENT(index_content_main_);
+     CP_CREATE_ELEMENT(content_);
 }
 
 // text:table-of-content
@@ -936,8 +801,12 @@ const wchar_t * text_table_of_content::name = L"table-of-content";
 
 void text_table_of_content::docx_convert(oox::docx_conversion_context & Context)
 {
-    if (text_index_body_)
-        text_index_body_->docx_convert(Context);
+	if (text_index_body_)
+	{
+		Context.start_table_content();
+		text_index_body_->docx_convert(Context);
+		Context.end_table_content();
+	}
 }
 
 void text_table_of_content::pptx_convert(oox::pptx_conversion_context & Context)
@@ -964,7 +833,10 @@ void text_table_of_content::add_child_element( xml::sax * Reader, const std::wst
     {
         CP_CREATE_ELEMENT(text_index_body_);
     }
-    // TODO text-table-of-content-source
+	else  if CP_CHECK_NAME(L"text", L"table-of-content-source")
+    {
+        CP_CREATE_ELEMENT(text_table_of_content_source_);
+    }
 }
 
 // text:table-index

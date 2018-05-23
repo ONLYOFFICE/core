@@ -202,14 +202,13 @@ public:
 	bookmark() {}
     bookmark(const std::wstring & Name) : text_name_(Name){};
 
-    const std::wstring & attr_name() const { return text_name_; }
+	std::wstring text_name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
 
-    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(bookmark);
@@ -226,11 +225,12 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual void docx_convert(oox::docx_conversion_context & Context);
 
 	bookmark_start() {}
-    bookmark_start(const std::wstring & Name) : text_name_(Name){};
+    bookmark_start(const std::wstring & Name) : name_(Name){};
 
-    std::wstring text_name_;
+    std::wstring name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -238,7 +238,6 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_start);
 //-------------------------------------------------------------------------------------------------------------------
 // text:bookmark-end
@@ -252,12 +251,13 @@ public:
     static const ElementType type = typeTextBookmarkEnd;
     CPDOCCORE_DEFINE_VISITABLE();
 
+    virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 	bookmark_end() {} ;
-    bookmark_end(const std::wstring & Name) : text_name_(Name){};
+    bookmark_end(const std::wstring & Name) : name_(Name){};
 
-    std::wstring text_name_;
+    std::wstring name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -265,8 +265,35 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_end);
+
+//-------------------------------------------------------------------------------------------------------------------
+// text:bookmark-ref
+//-------------------------------------------------------------------------------------------------------------------
+class bookmark_ref : public paragraph_content_element<bookmark_ref>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextBookmarkRef;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+	bookmark_ref() {} ;
+
+    std::wstring			text_ref_name_;
+    _CP_OPT(std::wstring)	text_reference_format_;
+    std::wstring			content_;
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+    virtual void add_text(const std::wstring & Text);
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(bookmark_ref);
+
 //-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark
 //-------------------------------------------------------------------------------------------------------------------
@@ -796,7 +823,12 @@ private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-	// todooo  attributes
+	_CP_OPT(std::wstring)	style_num_format_;
+	_CP_OPT(std::wstring)	style_num_letter_sync_;
+	_CP_OPT(std::wstring)	text_formula_;
+	_CP_OPT(std::wstring)	text_name_;
+	_CP_OPT(std::wstring)	text_ref_name_;
+
     office_element_ptr_array text_;
     
 };
@@ -1164,6 +1196,45 @@ private:
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time);
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// field:fieldmark-start 
+//-------------------------------------------------------------------------------------------------------------------
+class field_fieldmark_start : public text::paragraph_content_element<field_fieldmark_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextFieldFieldmarkStart;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    _CP_OPT(std::wstring)	text_name_;
+	_CP_OPT(std::wstring)	field_type_;
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+};
+CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark_start);
+
+//-------------------------------------------------------------------------------------------------------------------
+// field:fieldmark-end 
+//-------------------------------------------------------------------------------------------------------------------
+class field_fieldmark_end : public text::paragraph_content_element<field_fieldmark_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextFieldFieldmarkStart;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+};
+CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark_end);
 
 } // namespace odf_reader
 } // namespace cpdoccore

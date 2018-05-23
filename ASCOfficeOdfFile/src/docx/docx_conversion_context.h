@@ -636,6 +636,7 @@ public:
     void start_paragraph		(bool is_header = false);
     void finish_paragraph		();
 
+	bool is_table_content		()					{ return in_table_content_; }
 	bool is_paragraph_header	()					{ return in_header_;		}
 	bool get_paragraph_state	()					{ return in_paragraph_;		}
     void set_paragraph_state	(bool val)			{ in_paragraph_	= val;		}
@@ -674,7 +675,10 @@ public:
 	void start_office_text		();
     void end_office_text		();
 
-    void process_styles			();
+	void start_table_content	();
+	void end_table_content		();
+
+	void process_styles			();
     void process_fonts			();
     
     void process_list_styles	();
@@ -781,6 +785,9 @@ public:
 	void start_text_changes	(std::wstring id);
 	void end_text_changes	(std::wstring id);
 	
+	void start_bookmark	(const std::wstring &name);
+	void end_bookmark	(const std::wstring &name);
+
 	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
     headers_footers			& get_headers_footers()			{ return headers_footers_; }
 	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
@@ -844,6 +851,7 @@ private:
 
 	bool in_automatic_style_; 
 	bool in_drawing_content_;
+	bool in_table_content_;
     bool in_paragraph_;
 	bool in_run_;
 	bool in_header_;
@@ -862,6 +870,7 @@ private:
     boost::unordered_map<std::wstring, std::wstring>		list_style_renames_;// цепочки переименований нумераций
 	
 	std::map<std::wstring, std::wstring>					map_user_fields;
+	std::map<std::wstring, int>								mapBookmarks;
 };
 
 }

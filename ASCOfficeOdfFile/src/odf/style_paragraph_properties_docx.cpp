@@ -539,7 +539,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
 
 void style_paragraph_properties::docx_convert(oox::docx_conversion_context & Context)
 {
-    style_paragraph_properties_content_.docx_convert(Context);
+    content_.docx_convert(Context);
 }
 
 

@@ -303,7 +303,7 @@ void default_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void default_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    style_content_.add_child_element(Reader, Ns, Name, getContext());
+    content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
 void default_style::add_text(const std::wstring & Text)
@@ -433,7 +433,7 @@ void style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const
         CP_CREATE_ELEMENT(style_map_);
     }
     else
-        style_content_.add_child_element(Reader, Ns, Name, getContext());
+        content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
 void style::add_text(const std::wstring & Text)

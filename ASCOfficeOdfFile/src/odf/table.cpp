@@ -162,7 +162,8 @@ void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     else if ((L"table" == Ns && L"table-row-group" == Name) ||
               (L"table" == Ns && L"table-rows" == Name) ||
               (L"table" == Ns && L"table-row" == Name) ||
-              (L"table" == Ns && L"table-header-rows" == Name))
+              (L"table" == Ns && L"table-header-rows" == Name)||
+              (L"text" == Ns && L"soft-page-break" == Name))
     {
         table_rows_and_groups_.add_child_element(Reader, Ns, Name, getContext());
     }
@@ -533,7 +534,8 @@ void table_rows::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
     {
         CP_CREATE_ELEMENT_SIMPLE(table_table_rows_);
     } 
-    else if CP_CHECK_NAME(L"table", L"table-row")
+    else if (CP_CHECK_NAME(L"table", L"table-row") || CP_CHECK_NAME(L"text", L"soft-page-break"))
+
     {
         CP_CREATE_ELEMENT_SIMPLE(table_table_row_);    
     }
@@ -605,7 +607,8 @@ void table_rows_no_group::add_child_element( xml::sax * Reader, const std::wstri
 }
 void table_rows_no_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
-    if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row"))
+    if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row") ||
+		CP_CHECK_NAME(L"text", L"soft-page-break"))
     {
         if (!was_header_)
             table_rows_1_.add_child_element(Reader, Ns, Name, Context);
@@ -639,7 +642,8 @@ void table_rows_and_groups::add_child_element( xml::sax * Reader, const std::wst
     {
         CP_CREATE_ELEMENT_SIMPLE(content_);
     } 
-    else if (L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name) )
+    else if ((L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name)) ||
+		(L"text" == Ns && L"soft-page-break" == Name))
     {
 		bool add_new_no_group = false;
 		if (content_.empty())	add_new_no_group = true;

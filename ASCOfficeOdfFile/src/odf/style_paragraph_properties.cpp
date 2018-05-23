@@ -382,12 +382,12 @@ std::wostream & style_paragraph_properties::text_to_stream(std::wostream & _Wost
 
 void style_paragraph_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-     style_paragraph_properties_content_.add_attributes(Attributes);
+     content_.add_attributes(Attributes);
 }
 
 void style_paragraph_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (!style_paragraph_properties_content_.add_child_element(Reader, Ns, Name, getContext()))    
+    if (!content_.add_child_element(Reader, Ns, Name, getContext()))    
          CP_NOT_APPLICABLE_ELM();
 }
 

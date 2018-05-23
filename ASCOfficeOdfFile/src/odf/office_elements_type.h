@@ -46,9 +46,14 @@ enum ElementType
     typeTextBookmark,
     typeTextBookmarkStart,
     typeTextBookmarkEnd,
+    typeTextBookmarkRef,
     typeTextReferenceMark,
     typeTextReferenceMarkStart,
     typeTextReferenceMarkEnd,
+
+	typeTextFieldFieldmarkStart,
+	typeTextFieldFieldmarkEnd,
+
     typeTextSpan,
     typeTextA,
     typeTextNote,

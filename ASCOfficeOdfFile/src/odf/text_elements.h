@@ -319,7 +319,8 @@ private:
 
 public:
     text_section_attr	text_section_attr_;
-    office_element_ptr	text_table_of_content_source_;
+    
+	office_element_ptr	text_table_of_content_source_;
     office_element_ptr	text_index_body_;
 
 };
@@ -506,7 +507,7 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-    office_element_ptr_array index_content_main_;
+    office_element_ptr_array content_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -535,7 +536,7 @@ private:
 
 public:
     text_section_attr			text_section_attr_;
-    office_element_ptr_array	index_content_main_;
+    office_element_ptr_array	content_;
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_index_title);

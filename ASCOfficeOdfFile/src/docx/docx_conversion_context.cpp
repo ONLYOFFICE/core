@@ -190,6 +190,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	in_paragraph_				(false),
 	in_header_					(false),
 	in_drawing_content_			(false),
+	in_table_content_			(false),
 	text_tracked_context_		(*this),
 	table_context_				(*this),
 	output_document_			(NULL),
@@ -303,20 +304,21 @@ void docx_conversion_context::finish_paragraph()
 
 void docx_conversion_context::finish_run()
 {
-    if (in_run_)
-    {
-        output_stream() << L"</w:r>";
-        in_run_ = false;
-		if (get_comments_context().state()==2)
-		{
-			output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\" />";
-			
-			add_element_to_run();
-				output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\" />";			
-				get_comments_context().state(0);
-			finish_run();
-		}
-    }
+    if (false == in_run_) return;
+
+	output_stream() << L"</w:r>";
+    in_run_ = false;
+	
+	if (get_comments_context().state()==2)
+	{
+		output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\"/>";
+		
+		add_element_to_run();
+			output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
+			get_comments_context().state(0);
+		finish_run();
+	}
+
 }
 void docx_conversion_context::start_math_formula()
 {
@@ -331,6 +333,65 @@ void docx_conversion_context::end_math_formula()
 	{
 		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
 	}
+}
+void docx_conversion_context::start_table_content()
+{
+	in_table_content_ = true;
+	
+	output_stream() << L"<w:sdt>";
+	output_stream() << L"<w:sdtPr>";
+	//output_stream() << L"<w:id w:val=\"-505364165\"/>";
+	output_stream() << L"<w:docPartObj>";
+	output_stream() << L"<w:docPartGallery w:val=\"Table of Contents\"/>";
+	output_stream() << L"<w:docPartUnique/>";
+	output_stream() << L"</w:docPartObj>";
+	output_stream() << L"</w:sdtPr>";
+	output_stream() << L"<w:sdtContent>";
+}
+
+void docx_conversion_context::end_table_content()
+{
+	if (!in_table_content_) return;
+
+	output_stream() << L"</w:sdtContent>";
+	output_stream() << L"</w:sdt>";
+	
+	in_table_content_ = false;
+}
+void docx_conversion_context::start_bookmark (const std::wstring &name)
+{
+	std::map<std::wstring, int>::iterator pFind = mapBookmarks.find(name);
+
+	int id = -1;
+	if (pFind == mapBookmarks.end())
+	{
+		id = mapBookmarks.size() + 1;
+		mapBookmarks.insert(std::make_pair(name, id));
+	}
+	else
+	{
+		id = pFind->second;
+	}
+
+	finish_run();
+	output_stream() << L"<w:bookmarkStart w:id=\"" << std::to_wstring(id) << L"\" w:name=\"" << name << L"\"/>";
+}
+
+void docx_conversion_context::end_bookmark (const std::wstring &name)
+{
+	std::map<std::wstring, int>::iterator pFind = mapBookmarks.find(name);
+
+	int id = -1;
+	if (pFind == mapBookmarks.end())
+	{
+		return; //???
+	}
+	else
+	{
+		id = pFind->second;
+	}
+	finish_run();
+	output_stream() << L"<w:bookmarkEnd w:id=\"" << std::to_wstring(id) << L"\"/>";
 }
 
 void docx_conversion_context::start_chart(std::wstring  name)

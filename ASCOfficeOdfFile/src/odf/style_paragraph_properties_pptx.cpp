@@ -635,7 +635,7 @@ void style_tab_stop::pptx_convert(oox::pptx_conversion_context & Context)
 
 void style_paragraph_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    style_paragraph_properties_content_.pptx_convert(Context);
+    content_.pptx_convert(Context);
 }
 
 

@@ -958,12 +958,14 @@ namespace PdfReader
 	{
 		CTemporaryCS oCS(&m_oCS);
 
-		Object oObjNum, oObjGen, oObjContent;
-
 		if (nNum < 0 || nNum >= m_nEntrySize)
 		{
 			return pObject->InitNull();
 		}
+		bool bObjNum = false, bObjGen = false, bObjContent = false;
+		int count_obj_parser = 3;
+		Object oObjNum;//, oObjGen, oObjContent;
+		
 		Parser *pParser = NULL;
 		XRefEntry *pEntry = &m_arrEntries[nNum];
 		switch (pEntry->eType)
@@ -975,21 +977,49 @@ namespace PdfReader
 			}
 			oObjNum.InitNull();
 			pParser = new Parser(this, new Lexer(this, m_pStream->MakeSubStream(m_nStart + pEntry->unOffset, false, 0, &oObjNum)), true);
-			pParser->GetObject(&oObjNum);
-			pParser->GetObject(&oObjGen);
-			pParser->GetObject(&oObjContent);
-			if (!oObjNum.IsInt() || oObjNum.GetInt() != nNum || !oObjGen.IsInt() || oObjGen.GetInt() != nGen || !oObjContent.IsCommand("obj"))
+
+			for (int i = 0; i < count_obj_parser; i++)
 			{
-				oObjNum.Free();
-				oObjGen.Free();
-				oObjContent.Free();
+				Object obj;
+				pParser->GetObject(&obj);
+
+				if (obj.IsCommand("ndobj")) //reformed.pdf
+				{
+					count_obj_parser++;
+				}
+				else
+				{
+					//todooo порядок запросов ???
+					if (!bObjContent && obj.IsCommand("obj")) bObjContent = true;
+					if (obj.IsInt())
+					{
+						if (!bObjNum && obj.GetInt() == nNum)		bObjNum = true;
+						else if (!bObjGen && obj.GetInt() == nGen)	bObjGen = true;
+					}
+				}
+
+				obj.Free();
+			}
+			if (!bObjContent || !bObjGen || !bObjNum)
+			{
 				delete pParser;
 				return pObject->InitNull();
-			}
+			}		
+			//pParser->GetObject(&oObjNum);
+			//pParser->GetObject(&oObjGen);
+			//pParser->GetObject(&oObjContent);
+			//if (!oObjNum.IsInt() || oObjNum.GetInt() != nNum || !oObjGen.IsInt() || oObjGen.GetInt() != nGen || !oObjContent.IsCommand("obj"))
+			//{
+			//	oObjNum.Free();
+			//	oObjGen.Free();
+			//	oObjContent.Free();
+			//	delete pParser;
+			//	return pObject->InitNull();
+			//}
 			pParser->GetObject(pObject, m_bEncrypted ? m_arrDecryptKey : (unsigned char *)NULL, m_eEncryptAlgorithm, m_nKeyLength, nNum, nGen);
-			oObjNum.Free();
-			oObjGen.Free();
-			oObjContent.Free();
+			//oObjNum.Free();
+			//oObjGen.Free();
+			//oObjContent.Free();
 			delete pParser;
 			break;
 

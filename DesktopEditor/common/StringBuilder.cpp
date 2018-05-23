@@ -296,76 +296,148 @@ namespace NSStringUtils
 
 	void CStringBuilder::WriteEncodeXmlString(const wchar_t* pString, int nCount)
 	{
+		if (sizeof(wchar_t) == 2)
+			WriteEncodeXmlString_2bytes(pString, nCount);
+		else
+			WriteEncodeXmlString_4bytes(pString, nCount);
+	}
+	inline void CStringBuilder::WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount)
+	{
 		const wchar_t* pData = pString;
 		int nCounter = 0;
+		unsigned int code;
 		while (*pData != 0)
 		{
-			BYTE _code = CheckCode(*pData);
-
-			switch (_code)
-			{
-			case 1:
-				AddCharSafe(*pData);
-				break;
-			case 0:
-				AddCharSafe((wchar_t)' ');
-				break;
-			case 2:
-				AddSize(5);
-				*m_pDataCur++ = (wchar_t)('&');
-				*m_pDataCur++ = (wchar_t)('a');
-				*m_pDataCur++ = (wchar_t)('m');
-				*m_pDataCur++ = (wchar_t)('p');
-				*m_pDataCur++ = (wchar_t)(';');
-				m_lSizeCur += 5;
-				break;
-			case 3:
-				AddSize(6);
-				*m_pDataCur++ = (wchar_t)('&');
-				*m_pDataCur++ = (wchar_t)('a');
-				*m_pDataCur++ = (wchar_t)('p');
-				*m_pDataCur++ = (wchar_t)('o');
-				*m_pDataCur++ = (wchar_t)('s');
-				*m_pDataCur++ = (wchar_t)(';');
-				m_lSizeCur += 6;
-				break;
-			case 4:
-				AddSize(4);
-				*m_pDataCur++ = (wchar_t)('&');
-				*m_pDataCur++ = (wchar_t)('l');
-				*m_pDataCur++ = (wchar_t)('t');
-				*m_pDataCur++ = (wchar_t)(';');
-				m_lSizeCur += 4;
-				break;
-			case 5:
-				AddSize(4);
-				*m_pDataCur++ = (wchar_t)('&');
-				*m_pDataCur++ = (wchar_t)('g');
-				*m_pDataCur++ = (wchar_t)('t');
-				*m_pDataCur++ = (wchar_t)(';');
-				m_lSizeCur += 4;
-				break;
-			case 6:
-				AddSize(6);
-				*m_pDataCur++ = (wchar_t)('&');
-				*m_pDataCur++ = (wchar_t)('q');
-				*m_pDataCur++ = (wchar_t)('u');
-				*m_pDataCur++ = (wchar_t)('o');
-				*m_pDataCur++ = (wchar_t)('t');
-				*m_pDataCur++ = (wchar_t)(';');
-				m_lSizeCur += 6;
-				break;
-			default:
-				break;
-			}
+			code = (unsigned int)*pData;
+			WriteEncodeXmlChar(*pData, CheckXmlCode(code));
 
 			++pData;
 			if (-1 != nCount)
 			{
 				++nCounter;
-				if (nCounter == nCount)
+				if (nCounter >= nCount)
 					break;
 			}
+		}
+	}
+	inline void CStringBuilder::WriteEncodeXmlString_2bytes(const wchar_t* pString, int nCount)
+	{
+		const wchar_t* pData = pString;
+		int nCounter = 0;
+		unsigned int code;
+		BYTE type;
+		while (*pData != 0)
+		{
+			code = (unsigned int)*pData;
+			if (code >= 0xD800 && code <= 0xDFFF && *(pData + 1) != 0)
+			{
+				code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & *(pData + 1)));
+				type = CheckXmlCode(code);
+				if(0 != type)
+				{
+					WriteEncodeXmlChar(*pData, type);
+					++pData;
+				}
+			}
+			else
+			{
+				type = CheckXmlCode(code);
+			}
+			WriteEncodeXmlChar(*pData, type);
+
+			++pData;
+			if (-1 != nCount)
+			{
+				++nCounter;
+				if (nCounter >= nCount)
+					break;
+			}
+		}
+	}
+	inline void CStringBuilder::WriteEncodeXmlChar(wchar_t code, BYTE type)
+	{
+		switch (type)
+		{
+		case 1:
+			AddCharSafe(code);
+			break;
+		case 0:
+			AddCharSafe((wchar_t)' ');
+			break;
+		case 2:
+			AddSize(5);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('a');
+			*m_pDataCur++ = (wchar_t)('m');
+			*m_pDataCur++ = (wchar_t)('p');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 5;
+			break;
+		case 3:
+			AddSize(6);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('a');
+			*m_pDataCur++ = (wchar_t)('p');
+			*m_pDataCur++ = (wchar_t)('o');
+			*m_pDataCur++ = (wchar_t)('s');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 6;
+			break;
+		case 4:
+			AddSize(4);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('l');
+			*m_pDataCur++ = (wchar_t)('t');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 4;
+			break;
+		case 5:
+			AddSize(4);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('g');
+			*m_pDataCur++ = (wchar_t)('t');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 4;
+			break;
+		case 6:
+			AddSize(6);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('q');
+			*m_pDataCur++ = (wchar_t)('u');
+			*m_pDataCur++ = (wchar_t)('o');
+			*m_pDataCur++ = (wchar_t)('t');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 6;
+			break;
+		case 7:
+			AddSize(5);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('#');
+			*m_pDataCur++ = (wchar_t)('x');
+			*m_pDataCur++ = (wchar_t)('A');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 5;
+			break;
+		case 8:
+			AddSize(5);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('#');
+			*m_pDataCur++ = (wchar_t)('x');
+			*m_pDataCur++ = (wchar_t)('D');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 5;
+			break;
+		case 9:
+			AddSize(5);
+			*m_pDataCur++ = (wchar_t)('&');
+			*m_pDataCur++ = (wchar_t)('#');
+			*m_pDataCur++ = (wchar_t)('x');
+			*m_pDataCur++ = (wchar_t)('9');
+			*m_pDataCur++ = (wchar_t)(';');
+			m_lSizeCur += 5;
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -654,7 +726,7 @@ namespace NSStringUtils
 					WriteHexByteNoSafe((value >> 16) & 0xFF);
 	}
 
-	unsigned char CStringBuilder::CheckCode(const wchar_t& c)
+	unsigned char CStringBuilder::CheckXmlCode(unsigned int c)
 	{
 		if ('&' == c)
 			return 2;
@@ -666,8 +738,18 @@ namespace NSStringUtils
 			return 5;
 		if ('\"' == c)
 			return 6;
+		if ('\n' == c)//when reading from the attributes is replaced by a space.
+			return 7;
+		if ('\r' == c)//when reading from the attributes is replaced by a space.
+			return 8;
+		if ('\t' == c)//when reading from the attributes is replaced by a space.
+			return 9;
 
-		return 1;
+		//xml 1.0 Character Range https://www.w3.org/TR/xml/#charsets
+		if ((0x20 <= c && c <= 0xD7FF) || (0xE000 <= c && c <= 0xFFFD) || (0x10000 <= c && c <= 0x10FFFF))
+			return 1;
+
+		return 0;
 	}
 
     void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)

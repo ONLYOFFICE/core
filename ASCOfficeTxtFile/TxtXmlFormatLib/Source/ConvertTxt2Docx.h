@@ -33,7 +33,7 @@
 #ifndef TXT_2_DOCX_CONVERTER_INCLUDE_H_
 #define TXT_2_DOCX_CONVERTER_INCLUDE_H_
 
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../DesktopEditor/common/StringBuilder.h"
 #include <string>
 
 namespace TxtXml
@@ -53,7 +53,7 @@ namespace Txt2Docx
 		
 		void convert(TxtXml::ITxtXmlEvent& Event);
         void read	(const std::wstring& path);
-        void write	(XmlUtils::CStringWriter & stringWriter/*const std::wstring& path*/);
+        void write	(NSStringUtils::CStringBuilder & stringWriter/*const std::wstring& path*/);
 
     private:
         Converter_Impl * converter_;

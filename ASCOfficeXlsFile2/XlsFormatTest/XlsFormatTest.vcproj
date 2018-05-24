@@ -47,7 +47,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;USE_LITE_READER;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\XlsFileTestD.pdb"
 				WarningLevel="3"
@@ -367,14 +367,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Common"
@@ -432,6 +424,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\build\lib\win_32\DEBUG\graphics.lib"
+			>
+		</File>
+		<File
+			RelativePath="..\..\build\lib\win_32\DEBUG\kernel.lib"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

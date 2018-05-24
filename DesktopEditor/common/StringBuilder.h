@@ -145,7 +145,10 @@ namespace NSStringUtils
         void WriteHexColor3(const unsigned int& value);
 
 	protected:
-        unsigned char CheckCode(const wchar_t& c);
+        inline void WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount);
+        inline void WriteEncodeXmlString_2bytes(const wchar_t* pString, int nCount);
+        inline void WriteEncodeXmlChar(wchar_t code, unsigned char type);
+        inline unsigned char CheckXmlCode(unsigned int c);
 	};
 
     KERNEL_DECL void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo);

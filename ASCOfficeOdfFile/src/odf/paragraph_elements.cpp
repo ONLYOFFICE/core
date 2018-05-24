@@ -287,13 +287,11 @@ std::wostream & line_break::text_to_stream(std::wostream & _Wostream) const
     _Wostream << std::wstring(L"\r\n");
     return _Wostream;
 }
-
 void line_break::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.add_element_to_run();
     Context.output_stream() << L"<w:br/>";
 }
-
 void line_break::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.get_text_context().add_text(L"\n");
@@ -316,7 +314,6 @@ void bookmark::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:name", text_name_, std::wstring(L""));
 }
-
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * bookmark_start::ns = L"text";
 const wchar_t * bookmark_start::name = L"bookmark-start";
@@ -325,12 +322,14 @@ std::wostream & bookmark_start::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
-
 void bookmark_start::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:name", text_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:name", name_, std::wstring(L""));
 }
-
+void bookmark_start::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.start_bookmark(name_);
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * bookmark_end::ns = L"text";
 const wchar_t * bookmark_end::name = L"bookmark-end";
@@ -339,12 +338,32 @@ std::wostream & bookmark_end::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
-
 void bookmark_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:name", text_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:name", name_, std::wstring(L""));
+}
+void bookmark_end::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.end_bookmark(name_);
+}
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * bookmark_ref::ns = L"text";
+const wchar_t * bookmark_ref::name = L"bookmark-ref";
+
+std::wostream & bookmark_ref::text_to_stream(std::wostream & _Wostream) const
+{
+    return _Wostream;
 }
 
+void bookmark_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:ref-name", text_ref_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:reference-format", text_reference_format_);
+}
+void bookmark_ref::add_text(const std::wstring & Text)
+{
+    content_ = Text;
+}
 // text:reference-mark
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * reference_mark::ns = L"text";
@@ -539,25 +558,32 @@ void a::add_text(const std::wstring & Text)
 
 void a::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool pushed = false;
-    bool addNewRun = false;
+    bool pushed_style = false;
+    
+	bool addNewRun = false;
     Context.finish_run();
-    style_text_properties_ptr tempStyleTextProp;
-
     
     std::wostream & _Wostream = Context.output_stream();
 
-    std::wstring rId;
-    rId = Context.add_hyperlink(xlink_attlist_.href_.get_value_or(L""), false);
+	std::wstring ref = xlink_attlist_.href_.get_value_or(L"");
+	
+	if (Context.is_table_content())
+	{
+		_Wostream << L"<w:hyperlink w:anchor=\"" << ref.substr(1) << L"\" w:history=\"1\">"; //без #
+	}
+	else
+	{
+		std::wstring rId;
+		rId = Context.add_hyperlink(ref, false);
 
-    _Wostream << L"<w:hyperlink r:id=\"" << rId << L"\">";
-
+		_Wostream << L"<w:hyperlink r:id=\"" << rId << L"\">";
+	}
 
     style_instance * styleInst = NULL;
     
     if (!text_style_name_.empty())
-        styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text,Context.process_headers_footers_);
-    else
+        styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text, Context.process_headers_footers_);
+    else if (false == Context.is_table_content())
         styleInst = Context.root()->odf_context().styleContainer().hyperlink_style();
         
     if (styleInst)
@@ -567,7 +593,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
             if (const style_content * styleContent = styleInst->content())
             {
                 Context.push_text_properties(styleContent->get_style_text_properties());
-                pushed = true;
+                pushed_style = true;
                 Context.get_styles_context().start_process_style(styleInst);
 				Context.add_new_run();
                 Context.get_styles_context().end_process_style();
@@ -576,16 +602,17 @@ void a::docx_convert(oox::docx_conversion_context & Context)
         }
         else
         {
-            const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
+			style_text_properties_ptr tempStyleTextProp;
+			
+			const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
             tempStyleTextProp = style_text_properties_ptr( new style_text_properties(id) );
             Context.push_text_properties( tempStyleTextProp.get() );
-            pushed = true;
+            pushed_style = true;
 
             Context.add_new_run();
             addNewRun = true;
         }                        
-    }
-   
+    }   
 
     if (!addNewRun)
         Context.add_new_run();
@@ -597,7 +624,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.finish_run();
 	
-	if (pushed)
+	if (pushed_style)
         Context.pop_text_properties();
     _Wostream << L"</w:hyperlink>";
 }
@@ -1137,6 +1164,11 @@ std::wostream & sequence::text_to_stream(std::wostream & _Wostream) const
 
 void sequence::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	CP_APPLY_ATTR(L"style:data-style-name", style_num_format_);
+	CP_APPLY_ATTR(L"style:data-style-name", style_num_letter_sync_);
+	CP_APPLY_ATTR(L"text:formula", text_formula_);
+	CP_APPLY_ATTR(L"text:ref-name", text_ref_name_);
+	CP_APPLY_ATTR(L"text:name", text_name_);
 }
 
 void sequence::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -1446,6 +1478,17 @@ void presentation_date_time::pptx_convert(oox::pptx_conversion_context & Context
 {
     Context.get_text_context().start_field(oox::date, L"");
 }
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * field_fieldmark_start::ns = L"field";
+const wchar_t * field_fieldmark_start::name = L"fieldmark-start";
 
+void field_fieldmark_start::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:name", text_name_);
+    CP_APPLY_ATTR(L"field:type", field_type_);
+}
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * field_fieldmark_end::ns = L"field";
+const wchar_t * field_fieldmark_end::name = L"fieldmark-end";
 }
 }

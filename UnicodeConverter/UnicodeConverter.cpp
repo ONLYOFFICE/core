@@ -146,7 +146,8 @@ namespace NSUnicodeConverter
             {
                 int32_t nUCharCapacity = (int32_t)nInputLen;// UTF-16 uses 2 code-points per char
 
-                UChar* pUChar = new UChar[nUCharCapacity * sizeof(UChar)];
+                //UChar* pUChar = new UChar[nUCharCapacity];
+                UChar* pUChar = (UChar*)malloc(nUCharCapacity * sizeof(UChar));
                 if (pUChar)
                 {
                     const UChar* pUCharStart = pUChar;
@@ -171,7 +172,7 @@ namespace NSUnicodeConverter
                             sRes.clear();
                         }
                     }
-                    delete []pUCharStart;
+                    //delete []pUCharStart;
                 }
                 ucnv_close(conv);
             }

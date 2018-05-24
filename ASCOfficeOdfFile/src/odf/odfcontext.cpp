@@ -47,7 +47,8 @@ style_instance::style_instance(
 		bool IsDefault,
 		const std::wstring & ParentStyleName,
 		const std::wstring & NextStyleName,
-		const std::wstring & DataStyleName
+		const std::wstring & DataStyleName,
+		const std::wstring & StyleClass
 		) :
 	container_		(Container),
     name_			(Name),
@@ -56,6 +57,7 @@ style_instance::style_instance(
     is_automatic_	(IsAutomatic),
     is_default_		(IsDefault),
     next_name_		(NextStyleName),
+	style_class_	(StyleClass),
     next_			(Container->style_by_name(NextStyleName, style_type_, false)),
     data_style_name_(DataStyleName)
 {
@@ -83,7 +85,8 @@ void styles_container::add_style(	const std::wstring & Name,
 									bool IsDefault,
 									const std::wstring & ParentStyleName_,
 									const std::wstring & NextStyleName,
-									const std::wstring & DataStyleName)
+									const std::wstring & DataStyleName,
+									const std::wstring & StyleClass)
 {
 	std::wstring ParentStyleName = ParentStyleName_;
 
@@ -91,9 +94,8 @@ void styles_container::add_style(	const std::wstring & Name,
 	{
 		ParentStyleName = L"";//иначе в коде возможно зацикливание.
 	}
-    style_instance_ptr newStyle = style_instance_ptr( 
-        new style_instance(this, Name, Type, Content, IsAutomatic, IsDefault, ParentStyleName, NextStyleName, DataStyleName) 
-        );
+    style_instance_ptr newStyle = style_instance_ptr( new style_instance(this, Name, Type, Content, IsAutomatic, IsDefault, 
+							ParentStyleName, NextStyleName, DataStyleName, StyleClass));
 
     instances_.push_back(newStyle);
     int pos = static_cast<int>(instances_.size() - 1);
@@ -179,6 +181,10 @@ bool style_instance::is_default() const
 const std::wstring & style_instance::data_style_name() const
 {
     return data_style_name_;
+}
+const std::wstring & style_instance::style_class() const
+{
+    return style_class_;
 }
 
 style_instance * styles_container::style_by_name(const std::wstring & Name, style_family::type Type, bool object_in_styles) const

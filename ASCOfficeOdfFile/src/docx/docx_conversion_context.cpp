@@ -190,6 +190,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	in_paragraph_				(false),
 	in_header_					(false),
 	in_drawing_content_			(false),
+	in_table_content_			(false),
 	text_tracked_context_		(*this),
 	table_context_				(*this),
 	output_document_			(NULL),
@@ -303,20 +304,21 @@ void docx_conversion_context::finish_paragraph()
 
 void docx_conversion_context::finish_run()
 {
-    if (in_run_)
-    {
-        output_stream() << L"</w:r>";
-        in_run_ = false;
-		if (get_comments_context().state()==2)
-		{
-			output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\" />";
-			
-			add_element_to_run();
-				output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\" />";			
-				get_comments_context().state(0);
-			finish_run();
-		}
-    }
+    if (false == in_run_) return;
+
+	output_stream() << L"</w:r>";
+    in_run_ = false;
+	
+	if (get_comments_context().state()==2)
+	{
+		output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\"/>";
+		
+		add_element_to_run();
+			output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
+			get_comments_context().state(0);
+		finish_run();
+	}
+
 }
 void docx_conversion_context::start_math_formula()
 {
@@ -331,6 +333,65 @@ void docx_conversion_context::end_math_formula()
 	{
 		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
 	}
+}
+void docx_conversion_context::start_table_content()
+{
+	in_table_content_ = true;
+	
+	output_stream() << L"<w:sdt>";
+	output_stream() << L"<w:sdtPr>";
+	//output_stream() << L"<w:id w:val=\"-505364165\"/>";
+	output_stream() << L"<w:docPartObj>";
+	output_stream() << L"<w:docPartGallery w:val=\"Table of Contents\"/>";
+	output_stream() << L"<w:docPartUnique/>";
+	output_stream() << L"</w:docPartObj>";
+	output_stream() << L"</w:sdtPr>";
+	output_stream() << L"<w:sdtContent>";
+}
+
+void docx_conversion_context::end_table_content()
+{
+	if (!in_table_content_) return;
+
+	output_stream() << L"</w:sdtContent>";
+	output_stream() << L"</w:sdt>";
+	
+	in_table_content_ = false;
+}
+void docx_conversion_context::start_bookmark (const std::wstring &name)
+{
+	std::map<std::wstring, int>::iterator pFind = mapBookmarks.find(name);
+
+	int id = -1;
+	if (pFind == mapBookmarks.end())
+	{
+		id = mapBookmarks.size() + 1;
+		mapBookmarks.insert(std::make_pair(name, id));
+	}
+	else
+	{
+		id = pFind->second;
+	}
+
+	finish_run();
+	output_stream() << L"<w:bookmarkStart w:id=\"" << std::to_wstring(id) << L"\" w:name=\"" << name << L"\"/>";
+}
+
+void docx_conversion_context::end_bookmark (const std::wstring &name)
+{
+	std::map<std::wstring, int>::iterator pFind = mapBookmarks.find(name);
+
+	int id = -1;
+	if (pFind == mapBookmarks.end())
+	{
+		return; //???
+	}
+	else
+	{
+		id = pFind->second;
+	}
+	finish_run();
+	output_stream() << L"<w:bookmarkEnd w:id=\"" << std::to_wstring(id) << L"\"/>";
 }
 
 void docx_conversion_context::start_chart(std::wstring  name)
@@ -418,7 +479,11 @@ void docx_conversion_context::start_document()
 	output_stream() << L"xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" "; 
 	output_stream() << L"xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" ";
 	output_stream() << L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
-	output_stream() << L"mc:Ignorable=\"w14 wp14\">";
+	output_stream() << L"xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" ";
+	output_stream() << L"xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" ";
+	output_stream() << L"xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" ";
+	output_stream() << L"xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" ";
+	output_stream() << L"mc:Ignorable=\"w14 w15 w16se wne wp14\">";
 
 
 	//apply page-default prop
@@ -1161,6 +1226,24 @@ std::wstring docx_conversion_context::find_list_rename(const std::wstring & List
 
 void docx_conversion_context::end_list_item()
 {
+}
+int docx_conversion_context::process_text_attr(odf_reader::text::paragraph_attrs *Attr)
+{
+	if ( Attr->text_style_name_.empty() ) return 0;
+
+	odf_reader::style_instance * styleInst =
+				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_);
+
+	if (!styleInst) return 0;
+
+	if (false == styleInst->is_automatic()) return 0;
+
+    odf_reader::style_content *styleContent = styleInst->content();
+    
+	if (!styleContent) return 0;
+
+	push_text_properties(styleContent->get_style_text_properties());
+	return 1;
 }
 int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_attrs *Attr)
 {

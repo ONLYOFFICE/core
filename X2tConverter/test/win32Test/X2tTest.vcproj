@@ -725,10 +725,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\build\lib\win_32\DEBUG\UnicodeConverter.lib"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\build\lib\win_32\XpsFile.lib"
 				>
 			</File>
@@ -755,6 +751,10 @@
 		</File>
 		<File
 			RelativePath="..\..\..\Common\OfficeFileFormatChecker2.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\UnicodeConverter\UnicodeConverter.cpp"
 			>
 		</File>
 	</Files>

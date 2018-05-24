@@ -136,7 +136,7 @@ public:
 
     odf_types::style_family style_family_;
 
-    style_content style_content_;
+    style_content content_;
 
     friend class odf_document;
 
@@ -251,6 +251,7 @@ private:
  
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
+
 //  style_draw_fill_image
 class draw_fill_image : public office_element_impl<draw_fill_image>
 {
@@ -281,7 +282,6 @@ typedef weak_ptr<style>::Type style_weak_ptr;
 typedef std::vector< style_weak_ptr > style_weak_ptr_array;
 typedef std::vector< style_ptr > style_ptr_array;
 
-//  style
 ///         style:style
 class style : public office_element_impl<style>
 {
@@ -302,7 +302,6 @@ private:
     virtual void add_text(const std::wstring & Text);
     
 public:
-    // attr
     std::wstring			style_name_;
     bool					style_auto_update_;	// default = false
     
@@ -317,7 +316,7 @@ public:
     _CP_OPT( std::wstring ) style_class_;
     _CP_OPT( std::wstring ) style_default_outline_level_; 
 
-    style_content				style_content_;
+    style_content				content_;
     office_element_ptr_array	style_map_;
 
     friend class odf_document;

@@ -1072,12 +1072,14 @@ namespace NExtractTools
 	   m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
        m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
-       std::wstring sXMLOptions = _T("");
+       std::wstring sXMLOptions = _T("<XmlOptions><fileOptions fileType=\"1\"/></XmlOptions>");
        int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sTempUnpackedXLSX, sXMLOptions);
        if (SUCCEEDED_X2T(nRes))
        {
            std::wstring sMediaPath;
            std::wstring sEmbedPath;
+
+		   sXMLOptions = _T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
 
            nRes = m_oCXlsxSerializer.loadFromFile (sResultXlstFileEditor, sCSV, sXMLOptions, sMediaPath, sEmbedPath);
        }

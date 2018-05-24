@@ -691,12 +691,13 @@ void odf_document::Impl::parse_styles(office_element *element)
 					(	L"common:" + styleInst->style_name_,
 						styleInst->style_display_name_.get_value_or(L""),
 						styleInst->style_family_.get_type(),
-						&(styleInst->style_content_),
+						&(styleInst->content_),
 						true,
 						false,
 						styleInst->style_parent_style_name_.get_value_or(L""),
 						styleInst->style_next_style_name_.get_value_or(L""),
-						styleInst->style_data_style_name_.get_value_or(L"")
+						styleInst->style_data_style_name_.get_value_or(L""),
+						styleInst->style_class_.get_value_or(L"")
                     );
             }
             // list styles
@@ -770,12 +771,13 @@ void odf_document::Impl::parse_styles(office_element *element)
                 context_->styleContainer().add_style(L"",
 					L"",
                     styleInst->style_family_.get_type(), 
-                    &(styleInst->style_content_),
+                    &(styleInst->content_),
                     false,
                     true,
                     L"",
                     L"",
-                    L"");                                            
+                    L"",
+					L"");                                            
             }
 			for (size_t i = 0; i < docStyles->style_presentation_page_layout_.size(); i++)
 			{	
@@ -807,12 +809,13 @@ void odf_document::Impl::parse_styles(office_element *element)
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
-                    &(styleInst->style_content_),
+                    &(styleInst->content_),
                     false,
                     false,
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L"")
+                    styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_class_.get_value_or(L"")
                     );
             }
 
@@ -957,12 +960,13 @@ void odf_document::Impl::parse_styles(office_element *element)
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
-                    &(styleInst->style_content_),
+                    &(styleInst->content_),
                     true,
                     false,
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L"")                    
+                    styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_class_.get_value_or(L"")
                     );
             }
 

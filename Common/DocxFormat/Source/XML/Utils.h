@@ -297,7 +297,7 @@ namespace XmlUtils
 
 		return result;		  
 	}
-    AVSINLINE static std::string EncodeXmlString(const std::string& data, bool bDeleteNoUnicode = false)
+    AVSINLINE static std::string EncodeXmlString(const std::string& data, bool bDeleteNoUnicode = true)
 	{
         std::string buffer;
         buffer.reserve(data.size());
@@ -326,6 +326,14 @@ namespace XmlUtils
                                 {
                                     buffer.append(&data[pos-1], 2);
                                 }
+                                else
+                                {
+                                    buffer.append(" ");
+                                }
+                            }
+                            else
+                            {
+                                buffer.append(" ");
                             }
                         }
                         else
@@ -354,7 +362,7 @@ namespace XmlUtils
 
         return buffer;
 	}
-    AVSINLINE static std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode = false)
+    AVSINLINE static std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode = true)
 	{
         std::wstring buffer;
         buffer.reserve(data.size());
@@ -383,6 +391,14 @@ namespace XmlUtils
                                 {
                                     buffer.append(&data[pos-1], 2);
                                 }
+                                else
+                                {
+                                    buffer.append(L" ");
+                                }
+                            }
+                            else
+                            {
+                                buffer.append(L" ");
                             }
                         }
                         else
@@ -411,7 +427,7 @@ namespace XmlUtils
 
         return buffer;
 	}
-	AVSINLINE static std::wstring EncodeXmlStringExtend(const std::wstring& data, bool bDeleteNoUnicode = false)
+	AVSINLINE static std::wstring EncodeXmlStringExtend(const std::wstring& data, bool bDeleteNoUnicode = true)
 	{
 		std::wstring buffer;
 		buffer.reserve(data.size());
@@ -430,7 +446,6 @@ namespace XmlUtils
 					case '\n': buffer.append(L"&#xA;");      break;
 					case '\r': buffer.append(L"&#xD;");      break;
 					case '\t': buffer.append(L"&#x9;");      break;
-					case 160:  buffer.append(L"&#160;");     break;
 					default:
 					{
 						if ( false == IsUnicodeSymbol( data[pos] ) )
@@ -444,6 +459,14 @@ namespace XmlUtils
 								{
 									buffer.append(&data[pos-1], 2);
 								}
+								else
+								{
+									buffer.append(L" ");
+								}
+							}
+							else
+							{
+								buffer.append(L" ");
 							}
 						}
 						else
@@ -466,7 +489,6 @@ namespace XmlUtils
 					case '\n': buffer.append(L"&#xA;");      break;
 					case '\r': buffer.append(L"&#xD;");      break;
 					case '\t': buffer.append(L"&#x9;");      break;
-					case 160:  buffer.append(L"&#160;");     break;
 					case '\0':
 						return buffer;
 					default:   buffer.append(&data[pos], 1);	break;

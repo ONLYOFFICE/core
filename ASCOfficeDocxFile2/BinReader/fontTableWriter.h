@@ -43,7 +43,7 @@ namespace Writers
 
 	class FontTableWriter
 	{
-        XmlUtils::CStringWriter	m_oWriter;
+		NSStringUtils::CStringBuilder	m_oWriter;
         std::wstring            m_sDir;
         NSFonts::IApplicationFonts* m_pApplicationFonts;
         NSFonts::IFontManager*      m_pFontManager;

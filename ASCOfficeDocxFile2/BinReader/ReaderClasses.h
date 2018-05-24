@@ -516,7 +516,7 @@ public:
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
 			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
         pCStringWriter->WriteString(L"<w:rPr>");
 		if(bRStyle)
@@ -834,7 +834,7 @@ public:
 		bpersonalCompose = false;
 		bpersonalReply = false;
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
         std::wstring sType;
 		switch(byteType)
@@ -990,7 +990,7 @@ public:
 class tblStylePr
 {
 public:
-	XmlUtils::CStringWriter Writer;
+	NSStringUtils::CStringBuilder Writer;
 	BYTE Type;
 	bool bType;
 public:
@@ -1050,7 +1050,7 @@ public:
 		bHeight = false;
 		bPaddings = false;
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
 		if(bType)
 		{
@@ -1111,7 +1111,7 @@ public:
 //	tblPr()
 //	{
 //	}
-//	void Write(CStringWriter*  pCStringWriter)
+//	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 //	{
 //	}
 //};
@@ -1131,7 +1131,7 @@ public:
 		bW = false;
 		bWDocx = false;
 	}
-    void Write(XmlUtils::CStringWriter& pCStringWriter, const std::wstring& sName)
+	void Write(NSStringUtils::CStringBuilder& pCStringWriter, const std::wstring& sName)
 	{
 		pCStringWriter.WriteString(Write(sName));
 	}
@@ -1185,7 +1185,7 @@ public:
 		bValue = false;
 		bThemeColor = false;
 	}
-    void Write(std::wstring sName, XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
+	void Write(std::wstring sName, NSStringUtils::CStringBuilder*  pCStringWriter, bool bCell)
 	{
 		if(bValue)
 		{
@@ -1276,7 +1276,7 @@ public:
 	{
 		return !(bLeft || bTop || bRight || bBottom || bInsideV || bInsideH || bBetween);
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter, bool bCell)
 	{
 		if(bLeft)
             oLeft.Write(L"w:left", pCStringWriter, bCell);
@@ -1318,8 +1318,8 @@ public:
 	long Restart;
 	long Start;
 	BYTE Suff;
-	XmlUtils::CStringWriter ParaPr;
-	XmlUtils::CStringWriter TextPr;
+	NSStringUtils::CStringBuilder ParaPr;
+	NSStringUtils::CStringBuilder TextPr;
     std::wstring PStyle;
 
 	bool bILvl;
@@ -1352,7 +1352,7 @@ public:
 			delete Text[i];
 		}
 	}
-	void Write(XmlUtils::CStringWriter& oWriter)
+	void Write(NSStringUtils::CStringBuilder& oWriter)
 	{
 		oWriter.WriteString(L"<w:lvl");
 		if(bILvl)
@@ -1475,7 +1475,7 @@ public:
 	{
 		RELEASEOBJECT(Lvl);
 	}
-	void Write(XmlUtils::CStringWriter& oWriter)
+	void Write(NSStringUtils::CStringBuilder& oWriter)
 	{
 		oWriter.WriteString(L"<w:lvlOverride");
 		if (bILvl)
@@ -1518,7 +1518,7 @@ public:
 			delete Lvls[i];
 		}
 	}
-	void Write(XmlUtils::CStringWriter& oWriterANum)
+	void Write(NSStringUtils::CStringBuilder& oWriterANum)
 	{
 		if(bId)
 		{
@@ -1561,7 +1561,7 @@ public:
 			RELEASEOBJECT(LvlOverrides[i]);
 		}
 	}
-	void Write(XmlUtils::CStringWriter& oWriterNumList)
+	void Write(NSStringUtils::CStringBuilder& oWriterNumList)
 	{
 		if(bAId && bId)
 		{
@@ -1585,7 +1585,7 @@ public:
 		sName = name;
 		bGridAfter = false;
 	}
-	void Write(XmlUtils::CStringWriter& writer)
+	void Write(NSStringUtils::CStringBuilder& writer)
 	{
 		if(bGridAfter && nGridAfter > 0)
 		{
@@ -1602,7 +1602,7 @@ public:
     std::wstring href;
     std::wstring anchor;
     std::wstring tooltip;
-	XmlUtils::CStringWriter writer;
+	NSStringUtils::CStringBuilder writer;
     static WriteHyperlink* Parse(std::wstring fld)
 	{
 		WriteHyperlink* res = NULL;
@@ -1681,7 +1681,7 @@ public:
         }
 		return res;
 	}
-	void Write(XmlUtils::CStringWriter& wr)
+	void Write(NSStringUtils::CStringBuilder& wr)
 	{
         if(false == rId.empty())
 		{
@@ -2590,7 +2590,7 @@ public: CFramePr()
 	{
 		return !(bDropCap || bH || bHAnchor || bHRule || bHSpace || bLines || bVAnchor || bVSpace || bW || bWrap || bX || bXAlign || bY || bYAlign);
 	}
-	void Write(XmlUtils::CStringWriter& oStringWriter)
+	void Write(NSStringUtils::CStringBuilder& oStringWriter)
 	{
         oStringWriter.WriteString(L"<w:framePr");
 		if(bDropCap)
@@ -2728,7 +2728,7 @@ public:
     std::wstring    sDocLocation;
     std::wstring    sTgtFrame;
 
-	XmlUtils::CStringWriter writer;
+	NSStringUtils::CStringBuilder writer;
 
 	bool bHistory;
 public:
@@ -2736,7 +2736,7 @@ public:
 	{
 		bHistory = false;
 	}
-	void Write(XmlUtils::CStringWriter& wr)
+	void Write(NSStringUtils::CStringBuilder& wr)
 	{
         if(false == rId.empty())
 		{
@@ -2767,12 +2767,12 @@ public:
 class CFldSimple{
 public:
     std::wstring sInstr;
-	XmlUtils::CStringWriter writer;
+	NSStringUtils::CStringBuilder writer;
 public:
 	CFldSimple()
 	{
 	}
-	void Write(XmlUtils::CStringWriter& wr)
+	void Write(NSStringUtils::CStringBuilder& wr)
 	{
         if(false == sInstr.empty())
 		{
@@ -2797,14 +2797,14 @@ public:
 	long* vMergeOrigin;
 
 	rPr* RPr;
-	XmlUtils::CStringWriter* PPr;
+	NSStringUtils::CStringBuilder* PPr;
 	SectPr* sectPr;
 	CWiterTblPr* tblPr;
-    XmlUtils::CStringWriter* tblGridChange;
-	XmlUtils::CStringWriter* trPr;
-	XmlUtils::CStringWriter* tcPr;
-	XmlUtils::CStringWriter* content;
-	XmlUtils::CStringWriter* contentRun;
+	NSStringUtils::CStringBuilder* tblGridChange;
+	NSStringUtils::CStringBuilder* trPr;
+	NSStringUtils::CStringBuilder* tcPr;
+	NSStringUtils::CStringBuilder* content;
+	NSStringUtils::CStringBuilder* contentRun;
 	TrackRevision()
 	{
 		Id = NULL;
@@ -2841,11 +2841,11 @@ public:
 	}
     std::wstring ToString(std::wstring sName)
 	{
-		XmlUtils::CStringWriter writer;
+		NSStringUtils::CStringBuilder writer;
 		Write(&writer, sName);
 		return writer.GetData();
 	}
-    void Write(XmlUtils::CStringWriter*  pCStringWriter, std::wstring sName)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter, std::wstring sName)
 	{
 		if(IsNoEmpty())
 		{

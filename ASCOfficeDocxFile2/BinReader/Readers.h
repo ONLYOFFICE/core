@@ -659,7 +659,7 @@ public:
 	int ReadContent( BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		switch(type)
 		{
 		case c_oSerProp_pPrType::ContextualSpacing:
@@ -672,7 +672,7 @@ public:
             }break;
 		case c_oSerProp_pPrType::Ind:
 			{
-				XmlUtils::CStringWriter oTempWriter;
+				NSStringUtils::CStringBuilder oTempWriter;
 				READ2_DEF(length, res, this->ReadInd, &oTempWriter);
 				if(oTempWriter.GetCurSize() > 0)
 				{
@@ -915,7 +915,7 @@ public:
 		READ1_TRACKREV(type, length, pPPrChange)
 		else if(c_oSerProp_RevisionType::pPrChange == type)
 		{
-			pPPrChange->PPr = new XmlUtils::CStringWriter();
+			pPPrChange->PPr = new NSStringUtils::CStringBuilder();
 			res = Read(length, pPPrChange->PPr);
 		}
 		else
@@ -925,7 +925,7 @@ public:
 	int ReadInd(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		switch(type)
 		{
 		case c_oSerProp_pPrType::Ind_Left:
@@ -1032,7 +1032,7 @@ public:
 	int ReadNumPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if(c_oSerProp_pPrType::numPr_lvl == type)
 		{
 			long nLvl = m_oBufferedStream.GetLong();
@@ -1723,7 +1723,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::TableCellMar == type )
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ1_DEF(length, res, this->ReadCellMargins, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -1738,7 +1738,7 @@ public:
 			READ1_DEF(length, res, oBinary_pPrReader.ReadBorders, &odocBorders);
             if(false == odocBorders.IsEmpty())
 			{
-				XmlUtils::CStringWriter oTempWriter; 
+				NSStringUtils::CStringBuilder oTempWriter;
 				odocBorders.Write(&oTempWriter, false);
                 pWiterTblPr->TableBorders += L"<w:tblBorders>";
                 pWiterTblPr->TableBorders += oTempWriter.GetData();
@@ -1754,7 +1754,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::tblpPr == type )
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ2_DEF(length, res, this->Read_tblpPr, &oTempWriter);
             pWiterTblPr->tblpPr += L"<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"";
             pWiterTblPr->tblpPr += oTempWriter.GetData();
@@ -1762,7 +1762,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::tblpPr2 == type )
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ2_DEF(length, res, this->Read_tblpPr2, &oTempWriter);
             pWiterTblPr->tblpPr += L"<w:tblpPr";
             pWiterTblPr->tblpPr += oTempWriter.GetData();
@@ -1852,7 +1852,7 @@ public:
 	int ReadCellMargins(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerMarginsType::left == type )
 		{
 			docW oLeft;
@@ -1884,7 +1884,7 @@ public:
 	int Read_tblpPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSer_tblpPrType::X == type )
 		{
 			double dX = m_oBufferedStream.GetDouble();
@@ -1938,7 +1938,7 @@ public:
 	int Read_tblpPr2(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSer_tblpPrType2::HorzAnchor == type )
 		{
             std::wstring sXml;
@@ -2017,7 +2017,7 @@ public:
 	int Read_RowPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerProp_rowPrType::CantSplit == type )
 		{
 			BYTE CantSplit = m_oBufferedStream.GetUChar();
@@ -2186,7 +2186,7 @@ public:
 	int Read_CellPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerProp_cellPrType::GridSpan == type )
 		{
 			long nGridSpan = m_oBufferedStream.GetLong();
@@ -2215,7 +2215,7 @@ public:
 		}
 		else if( c_oSerProp_cellPrType::CellMar == type )
 		{
-			XmlUtils::CStringWriter oTempWriter; 
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ1_DEF(length, res, this->ReadCellMargins, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -2340,7 +2340,7 @@ public:
 	int ReadPaddings2(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if (c_oSerPaddingType::left == type)
 		{
 			double dLeft = m_oBufferedStream.GetDouble();
@@ -2411,7 +2411,7 @@ public:
 		READ1_TRACKREV(type, length, pTrackRevision)
 		else if (c_oSerProp_RevisionType::tblPrChange == type)
 		{
-			pTrackRevision->trPr = new XmlUtils::CStringWriter();
+			pTrackRevision->trPr = new NSStringUtils::CStringBuilder();
 			READ2_DEF(length, res, this->Read_RowPr, pTrackRevision->trPr);
 		}
 		else
@@ -2425,7 +2425,7 @@ public:
 		READ1_TRACKREV(type, length, pTrackRevision)
 		else if (c_oSerProp_RevisionType::tcPrChange == type)
 		{
-			pTrackRevision->tcPr = new XmlUtils::CStringWriter();
+			pTrackRevision->tcPr = new NSStringUtils::CStringBuilder();
 			READ2_DEF(length, res, this->Read_CellPr, pTrackRevision->tcPr);
 		}
 		else
@@ -2827,14 +2827,14 @@ public:
 			res = oBinary_rPrReader.Read(length, &oNew_rPr);
 			if(oNew_rPr.IsNoEmpty())
 			{
-				XmlUtils::CStringWriter oTempWriter;
+				NSStringUtils::CStringBuilder oTempWriter;
 				oNew_rPr.Write(&oTempWriter);
 				odocStyle->TextPr = oTempWriter.GetData();
 			}
 		}
 		else if(c_oSer_sts::Style_ParaPr == type)
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			oBinary_pPrReader.m_nCurNumId = -1;
 			oBinary_pPrReader.m_nCurLvl = -1;
 			res = oBinary_pPrReader.Read(length, &oTempWriter);
@@ -2848,14 +2848,14 @@ public:
 		}
 		else if(c_oSer_sts::Style_RowPr == type)
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ2_DEF(length, res, oBinary_tblPrReader.Read_RowPr, &oTempWriter);
             std::wstring sRowPr = oTempWriter.GetData();
 			odocStyle->RowPr = sRowPr;
 		}
 		else if(c_oSer_sts::Style_CellPr == type)
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ2_DEF(length, res, oBinary_tblPrReader.Read_CellPr, &oTempWriter);
             std::wstring sCellPr = oTempWriter.GetData();
 			odocStyle->CellPr = sCellPr;
@@ -2912,7 +2912,7 @@ public:
 			READ1_DEF(length, res, this->ReadTblStyleProperty, &otblStylePr);
 			if(otblStylePr.bType && otblStylePr.Writer.GetCurSize() > 0)
 			{
-				XmlUtils::CStringWriter oCStringWriter;
+				NSStringUtils::CStringBuilder oCStringWriter;
 				switch(otblStylePr.Type)
 				{
                 case ETblStyleOverrideType::tblstyleoverridetypeBand1Horz: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"band1Horz\">")));break;
@@ -2959,7 +2959,7 @@ public:
 		}
 		else if(c_oSerProp_tblStylePrType::ParPr == type)
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			res = oBinary_pPrReader.Read(length, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -2978,7 +2978,7 @@ public:
 		}
 		else if(c_oSerProp_tblStylePrType::TrPr == type)
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ2_DEF(length, res, oBinary_tblPrReader.Read_RowPr, &oTempWriter);
 
             if(oTempWriter.GetCurSize() > 0)
@@ -2990,7 +2990,7 @@ public:
 		}
 		else if(c_oSerProp_tblStylePrType::TcPr == type)
 		{
-			XmlUtils::CStringWriter oTempWriter;
+			NSStringUtils::CStringBuilder oTempWriter;
 			READ2_DEF(length, res, oBinary_tblPrReader.Read_CellPr, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -3711,10 +3711,10 @@ private:
     Binary_pPrReader                oBinary_pPrReader;
     Binary_rPrReader                oBinary_rPrReader;
     Binary_tblPrReader              oBinary_tblPrReader;
-    XmlUtils::CStringWriter*        m_pCurWriter;
+	NSStringUtils::CStringBuilder*        m_pCurWriter;
     rPr                             m_oCur_rPr;
     rPr                             m_oMath_rPr;
-    XmlUtils::CStringWriter         m_oCur_pPr;
+	NSStringUtils::CStringBuilder         m_oCur_pPr;
     BYTE                            m_byteLastElemType;
     CComments*                      m_pComments;
 public:
@@ -3747,7 +3747,7 @@ public:
 		READ_TABLE_DEF(res, this->ReadDocumentContent, NULL);
 		return res;
     }
-	XmlUtils::CStringWriter& GetRunStringWriter()
+	NSStringUtils::CStringBuilder& GetRunStringWriter()
 	{
 		if(NULL != m_pCurWriter)
 			return *m_pCurWriter;
@@ -3990,8 +3990,8 @@ public:
 		READ1_TRACKREV(type, length, pTrackRevision)
 		else if ( c_oSerProp_RevisionType::Content == type )
 		{
-			pTrackRevision->content = new XmlUtils::CStringWriter();
-			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			pTrackRevision->content = new NSStringUtils::CStringBuilder();
+			NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
 			m_pCurWriter = pTrackRevision->content;
 			READ1_DEF(length, res, this->ReadParagraphContent, NULL);
 			m_pCurWriter = pPrevWriter;
@@ -4157,7 +4157,7 @@ public:
 			pFldSimple->sInstr = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_FldSimpleType::Content == type )
 		{
-			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
 			m_pCurWriter = &pFldSimple->writer;
 			READ1_DEF(length, res, this->ReadParagraphContent, NULL);
 			m_pCurWriter = pPrevWriter;
@@ -4447,7 +4447,7 @@ public:
 			pHyperlink->sTgtFrame = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_HyperlinkType::Content == type )
 		{
-			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
 			m_pCurWriter = &pHyperlink->writer;
 			READ1_DEF(length, res, this->ReadParagraphContent, NULL);
 			long rId;
@@ -6119,8 +6119,8 @@ public:
 		READ1_TRACKREV(type, length, pTrackRevision)
 		else if(c_oSerProp_RevisionType::ContentRun == type)
 		{
-			pTrackRevision->contentRun = new XmlUtils::CStringWriter();
-			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			pTrackRevision->contentRun = new NSStringUtils::CStringBuilder();
+			NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
 			m_pCurWriter = pTrackRevision->contentRun;
 			READ1_DEF(length, res, this->ReadMathMRun, NULL);
 			m_pCurWriter = pPrevWriter;
@@ -7028,7 +7028,7 @@ public:
 	int ReadDocTable(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerDocTableType::tblPr == type )
 		{
 			CWiterTblPr oWiterTblPr;
@@ -7053,7 +7053,7 @@ public:
 	int Read_tblGrid(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerDocTableType::tblGrid_Item == type )
 		{
 			double dgridCol = m_oBufferedStream.GetDouble();
@@ -7083,7 +7083,7 @@ public:
 		else if(c_oSerProp_RevisionType::tblGridChange == type)
 		{
 			oBinary_tblPrReader.m_aCurTblGrid.clear();
-			pTrackRevision->tblGridChange = new XmlUtils::CStringWriter();
+			pTrackRevision->tblGridChange = new NSStringUtils::CStringBuilder();
 			READ2_DEF(length, res, this->Read_tblGrid, pTrackRevision->tblGridChange);
 		}
 		else
@@ -7093,7 +7093,7 @@ public:
 	int Read_TableContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerDocTableType::Row == type )
 		{
             pCStringWriter->WriteString(std::wstring(_T("<w:tr>")));
@@ -7124,7 +7124,7 @@ public:
 	int Read_Row(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerDocTableType::Row_Pr == type )
 		{
             pCStringWriter->WriteString(std::wstring(_T("<w:trPr>")));
@@ -7142,7 +7142,7 @@ public:
 	int ReadRowContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerDocTableType::Cell == type )
 		{
             pCStringWriter->WriteString(std::wstring(_T("<w:tc>")));
@@ -7173,7 +7173,7 @@ public:
 	int ReadCell(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
+		NSStringUtils::CStringBuilder* pCStringWriter = static_cast<NSStringUtils::CStringBuilder*>(poResult);
 		if( c_oSerDocTableType::Cell_Pr == type )
 		{
             pCStringWriter->WriteString(std::wstring(_T("<w:tcPr>")));
@@ -8260,7 +8260,7 @@ public:
 		}
 		else if ( c_oSerNotes::NoteContent == type )
 		{
-			XmlUtils::CStringWriter& writer = pBinary_DocumentTableReader->m_oDocumentWriter.m_oContent;
+			NSStringUtils::CStringBuilder& writer = pBinary_DocumentTableReader->m_oDocumentWriter.m_oContent;
 			if(m_bIsFootnote)
 			{
 				writer.WriteString(L"<w:footnote");

@@ -43,7 +43,7 @@ namespace Writers
 	class SettingWriter
 	{
         std::wstring				m_sDir;
-		XmlUtils::CStringWriter		m_oSettingWriter;
+		NSStringUtils::CStringBuilder		m_oSettingWriter;
 		HeaderFooterWriter&			m_oHeaderFooterWriter;
 	public:
         SettingWriter(std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir),m_oHeaderFooterWriter(oHeaderFooterWriter)

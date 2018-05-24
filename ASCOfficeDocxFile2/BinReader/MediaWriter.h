@@ -38,7 +38,7 @@ namespace Writers
 {
 	class MediaWriter
 	{
-		XmlUtils::CStringWriter	m_oWriter;
+		NSStringUtils::CStringBuilder	m_oWriter;
         std::wstring            m_sDir;
         std::wstring            m_sMediaDir;
 	public:

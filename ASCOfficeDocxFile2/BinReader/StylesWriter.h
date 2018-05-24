@@ -46,12 +46,12 @@ namespace Writers
 
 	class StylesWriter
 	{
-		XmlUtils::CStringWriter	m_oWriter;
+		NSStringUtils::CStringBuilder	m_oWriter;
         std::wstring	m_sDir;
 	public:
-		XmlUtils::CStringWriter	m_Styles;
-		XmlUtils::CStringWriter	m_rPrDefault;
-		XmlUtils::CStringWriter	m_pPrDefault;
+		NSStringUtils::CStringBuilder	m_Styles;
+		NSStringUtils::CStringBuilder	m_rPrDefault;
+		NSStringUtils::CStringBuilder	m_pPrDefault;
 		int m_nVersion;
         StylesWriter(std::wstring sDir, int nVersion):m_sDir(sDir),m_nVersion(nVersion)
 		{

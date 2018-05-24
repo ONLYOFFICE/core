@@ -222,6 +222,7 @@ public:
 	{
 		current_level_--;
 		frames_.pop_back();
+		caption_.clear();
 	}
 
 	std::wstring & get_text_stream_frame()
@@ -257,6 +258,7 @@ public:
 		current_shape_ = NULL;
 		shape_text_content_.clear();
 		current_shape_id_ = 0;
+		caption_.clear();
 	}
 	void stop_control()
 	{
@@ -264,6 +266,7 @@ public:
 		current_control_ = NULL;
 		shape_text_content_.clear();
 		current_shape_id_ = 0;
+		caption_.clear();
 	}
 	void stop_group()
 	{
@@ -288,6 +291,11 @@ public:
 		else return NULL;
 	}
 	odf_reader::draw_shape * get_current_shape() const { return current_shape_; }
+
+	void set_next_object_caption(const std::wstring & value)
+	{
+		caption_ = value;
+	}
 	
 private:
 	std::wstring			shape_text_content_;
@@ -306,6 +314,7 @@ private:
 	odf_reader::draw_control*current_control_; 
 
 	std::wstring			zero_string_;
+	std::wstring			caption_;
 
 };
 
@@ -675,7 +684,7 @@ public:
 	void start_office_text		();
     void end_office_text		();
 
-	void start_table_content	();
+	void start_table_content	(int type);
 	void end_table_content		();
 
 	void process_styles			();

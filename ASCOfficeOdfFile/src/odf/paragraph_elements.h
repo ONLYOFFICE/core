@@ -624,13 +624,13 @@ private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
 
-	_CP_OPT(std::wstring)		style_num_format_;
-	_CP_OPT(odf_types::Bool)	style_num_letter_sync_;
-	_CP_OPT(odf_types::Bool)	text_fixed_;
-	_CP_OPT(int)				text_page_adjust_;
-	_CP_OPT(std::wstring)		text_select_page_; //todooo to type
+	_CP_OPT(odf_types::style_numformat)	style_num_format_;
+	_CP_OPT(odf_types::Bool)			style_num_letter_sync_;
+	_CP_OPT(odf_types::Bool)			text_fixed_;
+	_CP_OPT(int)						text_page_adjust_;
+	_CP_OPT(std::wstring)				text_select_page_; //todooo to type
 
-	office_element_ptr			text_;        
+	office_element_ptr					text_;        
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_page_number);
@@ -651,8 +651,8 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-	_CP_OPT(std::wstring)		style_num_format_;
-	_CP_OPT(odf_types::Bool)	style_num_letter_sync_;
+	_CP_OPT(odf_types::style_numformat)	style_num_format_;
+	_CP_OPT(odf_types::Bool)			style_num_letter_sync_;
   
 	office_element_ptr			text_;    
 private:
@@ -818,18 +818,19 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
+	_CP_OPT(odf_types::style_numformat)	style_num_format_;
+	_CP_OPT(std::wstring)				style_num_letter_sync_;
+	_CP_OPT(std::wstring)				text_formula_;
+	_CP_OPT(std::wstring)				text_name_;
+	_CP_OPT(std::wstring)				text_ref_name_;
+
+	_CP_OPT(std::wstring)		template_;
+    office_element_ptr_array	text_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-	_CP_OPT(std::wstring)	style_num_format_;
-	_CP_OPT(std::wstring)	style_num_letter_sync_;
-	_CP_OPT(std::wstring)	text_formula_;
-	_CP_OPT(std::wstring)	text_name_;
-	_CP_OPT(std::wstring)	text_ref_name_;
-
-    office_element_ptr_array text_;
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(sequence);

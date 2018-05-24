@@ -289,8 +289,22 @@ std::wostream & line_break::text_to_stream(std::wostream & _Wostream) const
 }
 void line_break::docx_convert(oox::docx_conversion_context & Context)
 {
-    Context.add_element_to_run();
-    Context.output_stream() << L"<w:br/>";
+	bool in_drawing	= false;
+
+ 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
+	{
+		in_drawing = true;
+
+		Context.finish_run();
+		Context.finish_paragraph();
+		Context.start_paragraph();
+
+	}
+	else
+	{
+		Context.add_element_to_run();
+		Context.output_stream() << L"<w:br/>";
+	}
 }
 void line_break::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -1164,8 +1178,8 @@ std::wostream & sequence::text_to_stream(std::wostream & _Wostream) const
 
 void sequence::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"style:data-style-name", style_num_format_);
-	CP_APPLY_ATTR(L"style:data-style-name", style_num_letter_sync_);
+	CP_APPLY_ATTR(L"style:num-format", style_num_format_);
+	CP_APPLY_ATTR(L"style:num-letter-sync", style_num_letter_sync_);
 	CP_APPLY_ATTR(L"text:formula", text_formula_);
 	CP_APPLY_ATTR(L"text:ref-name", text_ref_name_);
 	CP_APPLY_ATTR(L"text:name", text_name_);
@@ -1184,10 +1198,75 @@ void sequence::add_text(const std::wstring & Text)
 
 void sequence::docx_convert(oox::docx_conversion_context & Context) 
 {
-	for (size_t i = 0; i < text_.size(); i++)
-    {
-        text_[i]->docx_convert(Context);
-    }
+	std::wstring ref;
+	if (text_ref_name_ && text_name_)
+	{
+		size_t pos = text_ref_name_->find(L"ref" + *text_name_);
+		if (pos != std::wstring::npos)
+		{
+			ref = *text_name_ + L"!" +  text_ref_name_->substr(pos + 3 + text_name_->length()) + L"|sequence";
+		}
+	}
+	if (!ref.empty())
+	{
+		Context.start_bookmark(ref);
+	}
+
+	Context.add_new_run();
+		Context.output_stream() << L"<w:t>" << template_ << L"</w:t>";
+	Context.finish_run();
+
+	std::wstring num_format = L"ARABIC";
+	if (style_num_format_)
+	{
+		switch(style_num_format_->get_type())
+		{
+			case odf_types::style_numformat::romanUc:	num_format= L"ROMANUC"; break;
+			case odf_types::style_numformat::romanLc:	num_format= L"ROMANLC"; break;
+			case odf_types::style_numformat::alphaUc:	num_format= L"ALPHAUC"; break;
+			case odf_types::style_numformat::alphaLc:	num_format= L"ALPHALC"; break;
+			case odf_types::style_numformat::arabic:
+			default:
+														num_format= L"ARABIC"; break;
+		}
+	}
+
+	Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << template_ << L" \\* " << num_format << L" \">";
+	Context.add_new_run();
+		for (size_t i = 0; i < text_.size(); i++)
+		{
+			text_[i]->docx_convert(Context);
+		}
+	Context.finish_run();
+	
+	if (!ref.empty())
+	{
+		Context.end_bookmark(ref);
+	}
+	Context.output_stream() << L"</w:fldSimple>";
+
+
+	//Context.add_new_run();
+ //   Context.output_stream() << L"<w:fldChar w:fldCharType=\"begin\"/>";
+	//Context.finish_run();
+	//
+	//Context.add_new_run();
+	//Context.output_stream() << L"<w:instrText  xml:space=\"preserve\"> SEQ " << template_ << L" \\* ARABIC </w:instrText>";
+ //	Context.finish_run();
+
+	//Context.add_new_run();
+ //   Context.output_stream() << L"<w:fldChar w:fldCharType=\"separate\"/>";
+	//Context.finish_run();
+	//
+	//for (size_t i = 0; i < text_.size(); i++)
+	//{
+	//	text_[i]->docx_convert(Context);
+	//}
+	//Context.end_bookmark();
+	//
+	//Context.add_new_run();
+ //   Context.output_stream() << L"<w:fldChar w:fldCharType=\"end\"/>";
+	//Context.finish_run();
 }
 void sequence::pptx_convert(oox::pptx_conversion_context & Context) 
 {

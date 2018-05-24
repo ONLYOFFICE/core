@@ -334,15 +334,23 @@ void docx_conversion_context::end_math_formula()
 		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
 	}
 }
-void docx_conversion_context::start_table_content()
+void docx_conversion_context::start_table_content(int type)
 {
 	in_table_content_ = true;
+
+	std::wstring sType;
+
+	switch(type)
+	{
+	case 1: sType = L"Table of Contents"; break;
+	case 2: sType = L"List od Illustrations"; break;
+	}
 	
 	output_stream() << L"<w:sdt>";
 	output_stream() << L"<w:sdtPr>";
 	//output_stream() << L"<w:id w:val=\"-505364165\"/>";
 	output_stream() << L"<w:docPartObj>";
-	output_stream() << L"<w:docPartGallery w:val=\"Table of Contents\"/>";
+	output_stream() << L"<w:docPartGallery w:val=\"" << sType << L"\"/>";
 	output_stream() << L"<w:docPartUnique/>";
 	output_stream() << L"</w:docPartObj>";
 	output_stream() << L"</w:sdtPr>";

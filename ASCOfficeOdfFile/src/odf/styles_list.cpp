@@ -244,22 +244,6 @@ void text_list_level_style_bullet::add_child_element( xml::sax * Reader, const s
 
 namespace {
 
-std::wstring GetNumFormat(const std::wstring & Format)
-{
-    if (L"1" == Format)
-        return L"decimal";
-    else if (L"i" == Format)
-        return L"lowerRoman";
-    else if (L"I" == Format)
-        return L"upperRoman";
-    else if (L"a" == Format)
-        return L"lowerLetter";
-    else if (L"A" == Format)
-        return L"upperLetter";
-    else
-        return L"decimal";
-}
-
 std::wstring GetLevelText(unsigned int displayLevels,
                           unsigned int textLevel,
                           oox::docx_conversion_context & Context)
@@ -356,7 +340,21 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 			}
 			CP_XML_NODE(L"w:numFmt")
 			{
-				CP_XML_ATTR(L"w:val",GetNumFormat( text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_.get_value_or(L"") ));
+				std::wstring num_format = L"arabic";
+				if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_)
+				{
+					switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
+					{
+						case odf_types::style_numformat::romanUc:	num_format= L"romanUc"; break;
+						case odf_types::style_numformat::romanLc:	num_format= L"romanLc"; break;
+						case odf_types::style_numformat::alphaUc:	num_format= L"alphaUc"; break;
+						case odf_types::style_numformat::alphaLc:	num_format= L"alphaLc"; break;
+						case odf_types::style_numformat::arabic:
+						default:
+																	num_format= L"arabic"; break;
+					}
+				}
+				CP_XML_ATTR(L"w:val", num_format);
 			}
 			CP_XML_NODE(L"w:suff")
 			{
@@ -477,19 +475,17 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 
 	if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_)
 	{
-		if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"1")
-			num_format= L"arabic";
-		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"I")
-			num_format= L"romanUc";
-		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"i")
-			num_format= L"romanLc";
-		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"A")
-			num_format= L"alphaUc";
-		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"a")
-			num_format= L"alphaLc";
-		else 
-			num_format= L"arabic";
-	}else num_format= L"arabic";
+		switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
+		{
+		case odf_types::style_numformat::romanUc:	num_format= L"romanUc"; break;
+		case odf_types::style_numformat::romanLc:	num_format= L"romanLc"; break;
+		case odf_types::style_numformat::alphaUc:	num_format= L"alphaUc"; break;
+		case odf_types::style_numformat::alphaLc:	num_format= L"alphaLc"; break;
+		case odf_types::style_numformat::arabic:
+		default:
+													num_format= L"arabic"; break;
+		}
+	}
 
 	if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_prefix_)
 	{

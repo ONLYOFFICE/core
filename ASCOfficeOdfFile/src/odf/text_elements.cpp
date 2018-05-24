@@ -118,14 +118,12 @@ void process_paragraph_index(const paragraph_attrs & Attr, oox::docx_conversion_
 	if (L"index" != styleInst->style_class()) return;
 
 
-}
-
+}								
 
 }
 
 std::wostream & paragraph::text_to_stream(std::wostream & _Wostream) const
 {
-    // TODO!!!!
     CP_SERIALIZE_TEXT(content_);
     _Wostream << L"\n";
     return _Wostream;
@@ -138,7 +136,24 @@ void paragraph::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void paragraph::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
-    CP_CREATE_ELEMENT_SIMPLE(content_);
+    if CP_CHECK_NAME(L"text", L"sequence")
+    {
+        CP_CREATE_ELEMENT_SIMPLE(sequence_);
+
+		if ((false == content_.empty()) && (content_.back()->get_type() == typeTextText))
+		{
+			sequence* q = dynamic_cast<sequence*>(sequence_.get());
+			text* t = dynamic_cast<text*>(content_.back().get());
+			if (q && t)
+			{
+				q->template_ = t->text_;
+				content_.pop_back();
+			}
+		}
+		content_.push_back(sequence_);
+    }
+	else
+		CP_CREATE_ELEMENT_SIMPLE(content_);
 }
 
 void paragraph::add_text(const std::wstring & Text)
@@ -263,6 +278,14 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
  	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
 		in_drawing = true;
+
+		if (sequence_)
+		{
+			std::wstringstream _Wostream;
+			CP_SERIALIZE_TEXT(content_);
+
+			Context.get_drawing_context().set_next_object_caption(_Wostream.str());
+		}
 	}
 		
 	bool bIsNewParagraph = true;
@@ -288,8 +311,6 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     if (bIsNewParagraph)
 		Context.start_paragraph(is_header_);
 	
-	std::wostream & _Wostream = Context.output_stream();
-
     const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
    
 	if (masterPageName)
@@ -356,8 +377,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		if (Context.get_page_break())
 		{
 			if (Context.process_headers_footers_ == false) 
-				//_Wostream << L"<w:lastRenderedPageBreak/>";
-				_Wostream << L"<w:br w:type=\"page\"/>";  
+				//Context.output_stream() << L"<w:lastRenderedPageBreak/>";
+				Context.output_stream() << L"<w:br w:type=\"page\"/>";  
 			Context.set_page_break(false);
 		}
         content_[i]->docx_convert(Context); 
@@ -386,7 +407,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 		is_empty = false;
         Context.add_new_run(_T(""));
-        _Wostream << L"<w:br w:type=\"page\"/>";        
+			Context.output_stream() << L"<w:br w:type=\"page\"/>";        
         Context.finish_run();
     }
 
@@ -801,12 +822,11 @@ const wchar_t * text_table_of_content::name = L"table-of-content";
 
 void text_table_of_content::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (text_index_body_)
-	{
-		Context.start_table_content();
-		text_index_body_->docx_convert(Context);
-		Context.end_table_content();
-	}
+	if (!text_index_body_) return;
+
+	Context.start_table_content(1);
+	text_index_body_->docx_convert(Context);
+	Context.end_table_content();
 }
 
 void text_table_of_content::pptx_convert(oox::pptx_conversion_context & Context)
@@ -904,14 +924,18 @@ void text_illustration_index::afterReadContent()
 }
 void text_illustration_index::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();
-   
-	Context.get_section_context().add_section (text_section_attr_.text_name_,text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
-	
-	Context.add_page_properties(current_page_properties);
+	//std::wstring current_page_properties = Context.get_page_properties();
+ //  
+	//Context.get_section_context().add_section (text_section_attr_.text_name_,text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
+	//
+	//Context.add_page_properties(current_page_properties);
 
-	 if (text_index_body_)
-        text_index_body_->docx_convert(Context);
+	// if (text_index_body_)
+ //       text_index_body_->docx_convert(Context);
+
+	Context.start_table_content(2);
+	text_index_body_->docx_convert(Context);
+	Context.end_table_content();
 }
 
 void text_illustration_index::pptx_convert(oox::pptx_conversion_context & Context)

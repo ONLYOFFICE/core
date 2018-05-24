@@ -185,6 +185,7 @@ SOURCES += \
     ../src/odf/datatypes/styleverticalrel.cpp \
     ../src/odf/datatypes/stylewrap.cpp \
     ../src/odf/datatypes/stylewrapcontourmode.cpp \
+    ../src/odf/datatypes/stylenumformat.cpp \
     ../src/odf/datatypes/tablealign.cpp \
     ../src/odf/datatypes/tablecentering.cpp \
     ../src/odf/datatypes/tablemode.cpp \
@@ -449,6 +450,7 @@ HEADERS += \
     ../src/odf/datatypes/styleverticalpos.h \
     ../src/odf/datatypes/styleverticalrel.h \
     ../src/odf/datatypes/stylewrap.h \
+    ../src/odf/datatypes/stylenumformat.h \
     ../src/odf/datatypes/stylewrapcontourmode.h \
     ../src/odf/datatypes/tablealign.h \
     ../src/odf/datatypes/tablecentering.h \

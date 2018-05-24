@@ -866,6 +866,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\stylenumformat.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\stylenumformat.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\styleposition.cpp"
 				>
 			</File>

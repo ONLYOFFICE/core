@@ -382,6 +382,11 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 		if (!current) continue;
 
+		if (1 == series_.size())
+		{
+			current->varyColors_ = false;
+		}
+
 		current->set_properties(plot_area_.properties_);
 		current->set_additional_properties(chart_graphic_properties_);
 	
@@ -420,7 +425,8 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			formatCode = *strVal;
 		}
 		
-		if (domain_cell_range_adress_.empty() == false) 
+		if (domain_cell_range_adress_.empty() == false || 
+			last_set_type == chart_scatter) 
 		{
 			if (last_set_type == chart_bubble)
 			{	//bubble(x)
@@ -434,13 +440,19 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			}
 			else
 			{	//x
-				if (!bPivotChart_)
-					current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
-				current->set_values_series (2, domain_cash);						
+				if (false == domain_cash.empty())
+				{
+					if (!bPivotChart_)
+						current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
+					current->set_values_series (2, domain_cash);		
+				}
 				//y
-				if (!bPivotChart_)
-					current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				
-				current->set_values_series (3, cell_cash);								
+				if (false == cell_cash.empty())
+				{
+					if (!bPivotChart_)
+						current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				
+					current->set_values_series (3, cell_cash);		
+				}
 			}
 		}
 		else

@@ -184,7 +184,7 @@ void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
 			}
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}
 			oox_serialize_common(CP_XML_STREAM());
 
@@ -226,7 +226,7 @@ void oox_line_chart::oox_serialize(std::wostream & _Wostream)
         {
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}	
 			oox_serialize_common(CP_XML_STREAM());
 		
@@ -259,7 +259,7 @@ void oox_area_chart::oox_serialize(std::wostream & _Wostream)
         {
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}		
 			oox_serialize_common(CP_XML_STREAM());
 			
@@ -289,7 +289,7 @@ void oox_bubble_chart::oox_serialize(std::wostream & _Wostream)
         {
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}	
 			oox_serialize_common(CP_XML_STREAM());
 			//CP_XML_NODE(L"c:bubbleScale")
@@ -326,7 +326,7 @@ void oox_doughnut_chart::oox_serialize(std::wostream & _Wostream)
         {
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}	
 			oox_serialize_common(CP_XML_STREAM());
 				
@@ -366,7 +366,7 @@ void oox_pie_chart::oox_serialize(std::wostream & _Wostream)
         {
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}	
 			oox_serialize_common(CP_XML_STREAM());
 		}
@@ -398,7 +398,7 @@ void oox_radar_chart::oox_serialize(std::wostream & _Wostream)
 			}
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}		
 			oox_serialize_common(CP_XML_STREAM());
 			
@@ -436,7 +436,7 @@ void oox_scatter_chart::oox_serialize(std::wostream & _Wostream)
 			}
 			CP_XML_NODE(L"c:varyColors")
 			{
-				CP_XML_ATTR(L"val", 1);
+				CP_XML_ATTR(L"val", varyColors_ ? L"1" : L"0");
 			}				
 			oox_serialize_common(CP_XML_STREAM());
 			

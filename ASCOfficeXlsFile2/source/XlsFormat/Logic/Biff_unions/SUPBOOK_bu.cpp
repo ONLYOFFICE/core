@@ -39,6 +39,8 @@
 #include "../Biff_records/XCT.h"
 #include "../Biff_records/CRN.h"
 
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+
 namespace XLS
 {
 
@@ -310,7 +312,7 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 													}
 													CP_XML_NODE(L"v")
 													{
-														CP_XML_STREAM() << strVal;
+														CP_XML_STREAM() << XmlUtils::EncodeXmlString(strVal);
 													}
 												}
 											}

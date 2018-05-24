@@ -142,7 +142,7 @@ namespace CSVWriter
 		if ( oXlsx.m_pWorkbook )
 		{
 			// Get active sheet
-			if ( oXlsx.m_pWorkbook->m_oBookViews.IsInit() && ! oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.empty())
+			if ( oXlsx.m_pWorkbook->m_oBookViews.IsInit() && !oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.empty())
 			{
 				if ( oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab.IsInit())
 				{
@@ -154,16 +154,17 @@ namespace CSVWriter
 
 			// Get active sheet rId (для конвертации в CSV нужно использовать name, т.к. это наш бинарник из js-скриптов и еще нет rId
 			// А для json-а нужно пользовать rId, т.к. при открытии они используются
-			if ( oXlsx.m_pWorkbook->m_oSheets.IsInit() && ! oXlsx.m_pWorkbook->m_oSheets->m_arrItems.empty())
+			if ( oXlsx.m_pWorkbook->m_oSheets.IsInit() && !oXlsx.m_pWorkbook->m_oSheets->m_arrItems.empty())
 			{
-				std::map<int, OOX::Spreadsheet::CSheet*>::iterator pFind =  oXlsx.m_pWorkbook->m_oSheets->mapSheets.find(lActiveSheet);
-				
 				OOX::Spreadsheet::CSheet *pSheet = NULL;
-				
-				if (pFind !=  oXlsx.m_pWorkbook->m_oSheets->mapSheets.end())
-					pSheet = pFind->second;
+				if (lActiveSheet >= 0 && lActiveSheet < oXlsx.m_pWorkbook->m_oSheets->m_arrItems.size())
+				{
+					pSheet =  oXlsx.m_pWorkbook->m_oSheets->m_arrItems[lActiveSheet];
+				}
 				else
+				{
 					pSheet =  oXlsx.m_pWorkbook->m_oSheets->m_arrItems.front();
+				}
 
 				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}

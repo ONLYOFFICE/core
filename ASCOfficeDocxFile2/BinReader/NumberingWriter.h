@@ -41,11 +41,11 @@ namespace Writers
 
 	class NumberingWriter
 	{
-		XmlUtils::CStringWriter	m_oWriter;
+		NSStringUtils::CStringBuilder	m_oWriter;
 		std::wstring			m_sDir;
 	public:
-		XmlUtils::CStringWriter	m_oANum;
-		XmlUtils::CStringWriter	m_oNumList;
+		NSStringUtils::CStringBuilder	m_oANum;
+		NSStringUtils::CStringBuilder	m_oNumList;
 
 		NumberingWriter( std::wstring sDir) : m_sDir(sDir)
 		{

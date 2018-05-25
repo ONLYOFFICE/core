@@ -67,10 +67,6 @@ SOURCES += \
 
 signature_openssl {
 
-DEFINES += XMLSEC_OPENSSL_110
-INCLUDEPATH += $$CORE_ROOT_DIR/Common/3dParty/openssl/openssl/include
-
-LIBS += -L$$CORE_ROOT_DIR/Common/3dParty/openssl/openssl -lssl
-LIBS += -L$$CORE_ROOT_DIR/Common/3dParty/openssl/openssl -lcrypto
+include(../../../Common/3dParty/openssl/openssl.pri)
 
 }

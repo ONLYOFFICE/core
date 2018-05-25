@@ -49,6 +49,7 @@
 #include "styleverticalpos.h"
 #include "stylehorizontalpos.h"
 #include "stylehorizontalrel.h"
+#include "stylenumformat.h"
 #include "percentorscale.h"
 #include "anchortype.h"
 #include "linewidth.h"
@@ -331,8 +332,8 @@ public:
     void apply_from(const common_num_format_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(std::wstring)	style_num_format_;
-    _CP_OPT(Bool)			style_num_letter_sync_;
+    _CP_OPT(odf_types::style_numformat)	style_num_format_;
+    _CP_OPT(Bool)						style_num_letter_sync_;
 
 };
 

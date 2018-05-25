@@ -331,9 +331,9 @@ namespace oox
         //case msosptWedgeEllipseCallout : 		return L"wedgeEllipseCallout";
         //case msosptWave : 					return L"wave";
         //case msosptFoldedCorner : 			return L"foldedCorner";
-        //case msosptLeftArrow : 				return L"leftArrow";
+        case msosptLeftArrow : 					return L"leftArrow";
         //case msosptDownArrow : 				return L"downArrow";
-        //case msosptUpArrow : 					return L"upArrow";
+        case msosptUpArrow : 					return L"upArrow";
         //case msosptLeftRightArrow : 			return L"leftRightArrow";
         //case msosptUpDownArrow : 				return L"upDownArrow";
         //case msosptIrregularSeal1 : 			return L"irregularSeal1";

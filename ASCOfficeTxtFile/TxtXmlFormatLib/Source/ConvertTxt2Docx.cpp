@@ -76,7 +76,7 @@ namespace Txt2Docx
         return converter_->m_inputFile.read(path);
     }
 
-    void Converter::write(/*const std::wstring& path*/XmlUtils::CStringWriter & stringWriter)
+    void Converter::write(/*const std::wstring& path*/NSStringUtils::CStringBuilder & stringWriter)
     {
         for (size_t	i = 0; i < converter_->m_outputFile.m_arrItems.size(); ++i)
 		{

@@ -40,9 +40,9 @@ namespace Writers
 	class ContentWriter
 	{
 	public:		
-        XmlUtils::CStringWriter	m_oBackground;
-        XmlUtils::CStringWriter	m_oContent;
-        XmlUtils::CStringWriter	m_oSecPr;
+		NSStringUtils::CStringBuilder	m_oBackground;
+		NSStringUtils::CStringBuilder	m_oContent;
+		NSStringUtils::CStringBuilder	m_oSecPr;
 	};
 	class HdrFtrItem
 	{

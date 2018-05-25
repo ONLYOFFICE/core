@@ -1144,7 +1144,7 @@ namespace NSBinPptxRW
 	CRelsGenerator::CRelsGenerator(CImageManager2* pManager) : m_lNextRelsID(1), m_mapImages()
 	{
 		m_pManager = pManager;
-		m_pWriter = new CStringWriter();
+		m_pWriter = new NSStringUtils::CStringBuilder();
 	}
 	CRelsGenerator::~CRelsGenerator()
 	{

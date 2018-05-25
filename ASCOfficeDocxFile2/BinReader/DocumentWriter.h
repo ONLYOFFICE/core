@@ -39,7 +39,7 @@ namespace Writers
 {
 	class DocumentWriter : public ContentWriter
 	{
-		XmlUtils::CStringWriter	m_oWriter;
+		NSStringUtils::CStringBuilder	m_oWriter;
 		HeaderFooterWriter&		m_oHeaderFooterWriter;
 	public:
          std::wstring			m_sDir;

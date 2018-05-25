@@ -1247,10 +1247,13 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		size_t min_y = get_value_emu(draw_text_box_attlist_.fo_min_height_->get_length());
 		if (drawing->cy < min_y) 
 		{
-			auto_fit_text = true;
 			drawing->cy = min_y;
 		}
-		if (drawing->cy < 36000) auto_fit_shape = true;
+		//if (drawing->cy < 36000)
+		//{
+		//	auto_fit_shape = true;
+		//}
+		auto_fit_shape = true;
 	}
 
 	
@@ -1262,7 +1265,11 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 			auto_fit_text = true;
 			drawing->cx = min_x;
 		}
-		if (drawing->cx < 36000) auto_fit_shape = true;
+		if (drawing->cx < 36000)
+		{
+			auto_fit_text = false;
+			auto_fit_shape = true;
+		}
 	}
 
 

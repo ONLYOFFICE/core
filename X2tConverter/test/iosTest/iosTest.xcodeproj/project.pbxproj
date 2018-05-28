@@ -203,7 +203,7 @@
 				TargetAttributes = {
 					17DAB6771ACC371E005AF479 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = N7BSMD6B3N;
+						DevelopmentTeam = 2WH24U26GJ;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -422,7 +422,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "compiler-default";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = N7BSMD6B3N;
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
@@ -447,7 +447,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "compiler-default";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = N7BSMD6B3N;
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;

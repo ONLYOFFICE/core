@@ -460,6 +460,10 @@ namespace NSFonts
         virtual bool IsItalic() = 0;
         virtual bool IsBold() = 0;
 
+
+        virtual void SetItalic(const INT& value) = 0;
+        virtual void SetNeedBold(const INT& value) = 0;
+
         virtual bool IsSymbolic(bool bIsOS2Check = false) = 0;
 
         virtual int IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex) = 0;

@@ -29,9 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "ApplicationFonts.h"
+//#include "ApplicationFonts.h"
 #include "ApplicationFontsWorker.h"
 #include "../common/File.h"
+#include "../common/Array.h"
 #include "../common/Directory.h"
 #include "./MemoryStream.h"
 #include "./../graphics/pro/Fonts.h"
@@ -347,11 +348,11 @@ namespace NSFontsApplication
         }
     };
     
-    static std::vector<std::wstring> SaveAllFontsJS(CApplicationFonts& applicationFonts, CStringWriter& oWriterJS)
+    static std::vector<std::wstring> SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, CStringWriter& oWriterJS)
     {
         std::vector<std::wstring> arrNames;
         
-        std::vector<NSFonts::CFontInfo*>* pList = applicationFonts.GetList()->GetFonts();
+        std::vector<NSFonts::CFontInfo*>* pList = applicationFonts->GetList()->GetFonts();
         
 #ifdef _IOS
         
@@ -556,7 +557,7 @@ namespace NSFontsApplication
             {
                 BYTE* pData = NULL;
                 LONG lLen = 0;
-                applicationFonts.GetList()->ToBuffer(&pData, &lLen, L"", true);
+                applicationFonts->GetList()->ToBuffer(&pData, &lLen, L"", true);
                 
                 char* cData64 = NULL;
                 int nData64Dst = 0;
@@ -658,14 +659,14 @@ std::vector<std::wstring> CApplicationFontsWorker::CheckApplication(bool bIsNeed
     std::vector<std::wstring> arrNames;
     
     std::vector<std::wstring> fonts;
-    CApplicationFonts oFonts;
+    NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
     
     pDataDst = NULL;
     nLenDst = 0;
     
     if (bIsNeedSystemFonts)
     {
-        fonts = oFonts.GetSetupFontFiles();
+        fonts = pFonts->GetSetupFontFiles();
     }
     
     for (std::vector<std::wstring>::iterator iter = m_arAdditionalFolders.begin(); iter != m_arAdditionalFolders.end(); ++iter)
@@ -720,10 +721,10 @@ std::vector<std::wstring> CApplicationFontsWorker::CheckApplication(bool bIsNeed
     }
     
     // произошли изменения
-    oFonts.InitializeFromArrayFiles(fonts);
+    pFonts->InitializeFromArrayFiles(fonts);
     
     NSFontsApplication::CStringWriter oWriterJS;
-    arrNames = NSFontsApplication::SaveAllFontsJS(oFonts, oWriterJS);
+    arrNames = NSFontsApplication::SaveAllFontsJS(pFonts, oWriterJS);
     
     // теперь нужно записать новую дату
     NSMemoryStream::CMemoryStream oStream;

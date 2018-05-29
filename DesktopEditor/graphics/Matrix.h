@@ -71,7 +71,7 @@ namespace Aggplus
         double shy() const;
         double tx() const;
         double ty() const;
-
+        double rotation();
         void SetElements(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx = 0, const double& ty = 0);
 
         Status GetElements(float* m) const;

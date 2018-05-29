@@ -40,7 +40,31 @@
 #include "./Image.h"
 
 #include "../IRenderer.h"
+#include "../structures.h"
 
+namespace Aggplus {
+    class CDIB : public IGrObject
+    {
+    public:
+        BYTE* m_pBits;
+        LONG m_lWidth;
+        LONG m_lHeight;
+
+    public:
+        CDIB() : IGrObject()
+        {
+            m_pBits = NULL;
+            m_lWidth = 0;
+            m_lHeight = 0;
+        }
+        virtual ~CDIB()
+        {
+            // delete all in system wrapper
+        }
+
+        virtual INT Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
+    };
+}
 namespace NSGraphics
 {
     class GRAPHICS_DECL IGraphicsRenderer : public IRenderer
@@ -63,9 +87,46 @@ namespace NSGraphics
     public:
         virtual void CreateFromBgraFrame(CBgraFrame* pFrame) = 0;
         virtual void SetCoordTransformOffset(double dOffsetX, double dOffsetY) = 0;
+
+
+        virtual void SavePen(NSStructures::CPen& oPen) = 0;
+        virtual void RestorePen(const NSStructures::CPen& oPen) = 0;
+
+        virtual void SaveBrush(NSStructures::CBrush& oBrush) = 0;
+        virtual void RestoreBrush(const NSStructures::CBrush& oBrush) = 0;
+
+        virtual void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal) = 0;
+        virtual void put_IntegerGrid(const bool& bEnabled) = 0;
+        virtual bool get_IntegerGrid() = 0;
+        virtual void AddRect(const double& x, const double& y, const double& w, const double& h) = 0;
+        virtual void SetFontAttack() = 0;
+
+        virtual void Create(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL) = 0;
+        virtual void CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL) = 0;
+
+        virtual Aggplus::CMatrix* GetFullTransform() = 0;
+        virtual Aggplus::CMatrix* GetTransformMatrix() = 0;
+        virtual void CalculateFullTransform() = 0;
+        virtual void PathCommandRect(double x, double y, double w, double h) = 0;
+        virtual Aggplus::CMatrix* GetCoordTransform() = 0;
+        virtual void Fill() = 0;
+        virtual void Stroke() = 0;
+        virtual double GetPixW() = 0;
+        virtual double GetPixH() = 0;
+
+        // smart methods
+        virtual void drawHorLine(BYTE align, double y, double x, double r, double penW) = 0;
+        virtual void drawHorLine2(BYTE align, double y, double x, double r, double penW) = 0;
+
+        virtual void drawVerLine(BYTE align, double x, double y, double b, double penW) = 0;
+        virtual void drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW) = 0;
+
+
     };
 
     GRAPHICS_DECL IGraphicsRenderer* Create();
 }
+
+
 
 #endif // _GRAPHICS_EXPORTS_GRAPHICS_H_

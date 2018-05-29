@@ -41,6 +41,7 @@
 #include "OOXSettingsWriter.h"
 #include "OOXThemeWriter.h"
 #include "OOXFootnoteWriter.h"
+#include "OOXCommentsWriter.h"
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/App.h"
@@ -53,11 +54,13 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 		m_sTargetFolder		( sPath.c_str() ),
 		m_oRels				( L"", oDocument ),
 		m_nCurTrackChangesId( 0),
+		m_nextParaId		( 0x77000000),
 		m_oDocRels			( L"document.xml", oDocument )
 {
 	m_nCurFitWidth		= PROP_DEF;
 	m_poFootnoteWriter	= NULL;
 	m_poEndnoteWriter	= NULL;
+	m_poCommentsWriter	= NULL;
 
 	m_poDocumentWriter	= new OOXDocumentWriter	( *this, m_oDocument );
 	m_poFootnoteWriter	= new OOXFootnoteWriter	( *this, m_oDocument );
@@ -66,6 +69,7 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 	m_poNumberingWriter = new OOXNumberingWriter( *this, m_oDocument );
 	m_poSettingsWriter	= new OOXSettingsWriter	( *this, m_oDocument );
 	m_poStylesWriter	= new OOXStylesWriter	( *this, m_oDocument );
+	m_poCommentsWriter	= new OOXCommentsWriter	( *this, m_oDocument );
 
 	m_poDocPropsApp		= new OOX::CApp(NULL);
 	m_poDocPropsCore	= new OOX::CCore(NULL);
@@ -88,6 +92,7 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 }
 OOXWriter::~OOXWriter()
 {
+	delete ((OOXCommentsWriter*)	m_poCommentsWriter);
 	delete ((OOXDocumentWriter*)	m_poDocumentWriter);
 	delete ((OOXFootnoteWriter*)	m_poFootnoteWriter);
 	delete ((OOXEndnoteWriter*)		m_poEndnoteWriter);
@@ -142,10 +147,11 @@ bool OOXWriter::SaveByItemEnd()
 
 	((OOXFootnoteWriter*)	m_poFootnoteWriter)->Save	(pathWord.GetPath());
 	((OOXEndnoteWriter*)	m_poEndnoteWriter)->Save	(pathWord.GetPath());
+	((OOXCommentsWriter*)	m_poCommentsWriter)->Save	(pathWord.GetPath());
 	((OOXNumberingWriter*)	m_poNumberingWriter)->Save	(m_sTargetFolder);
 	((OOXStylesWriter*)		m_poStylesWriter)->Save		(m_sTargetFolder);
 	((OOXFontTableWriter*)	m_poFontTableWriter)->Save	(m_sTargetFolder);
-	
+
 	((OOXSettingsWriter*)	m_poSettingsWriter)->Save	(m_sTargetFolder); //setting в последнюю очередь
 
 //-------------------------------------------------------------------------------------

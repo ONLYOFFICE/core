@@ -1513,6 +1513,40 @@ private:
 			m_oField.m_bTextOnly = true;
 	 }
 };
+class RtfAnnotElemReader: public RtfAbstractReader
+{
+public: 
+	RtfAnnotElem& m_oAnnot;
+
+	RtfAnnotElemReader( RtfAnnotElem& oAnnot ) : m_oAnnot(oAnnot)
+	{
+	}
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+	{
+		if( "atrfstart" == sCommand )
+			;
+		else if( "atrfend" == sCommand )
+			;
+		else if( "atnref" == sCommand )
+			;
+		else if( "atndate" == sCommand )
+			;
+		else if( "atnid" == sCommand )
+			;
+		else if( "atnauthor" == sCommand )
+			;
+		else if ( "atnparent"  == sCommand )
+			;
+		else
+			return false;
+		return true;
+	}
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
+	{
+		m_oAnnot.m_sValue += sText ;
+	}
+};
+
 
 class RtfBookmarkStartReader: public RtfAbstractReader
 {
@@ -1677,6 +1711,60 @@ public:
 
 		m_oRtfFootnote.m_oContent	= m_oParPropDest.m_oTextItems;
 		oReader.m_nFootnote			= PROP_DEF;
+	}
+};
+
+class RtfAnnotationReader: public RtfAbstractReader
+{
+private: 
+	RtfParagraphPropDestination m_oParPropDest;
+public: 
+	RtfAnnotation&	m_oRtfAnnotation;
+
+	RtfAnnotationReader( RtfAnnotation& oRtfAnnotation ) : m_oRtfAnnotation(oRtfAnnotation)
+	{
+	}
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+	{
+        if( "annotation" == sCommand )
+		{
+			return true;
+		}
+        else if( "atnref" == sCommand )
+		{
+			m_oRtfAnnotation.m_oRef = RtfAnnotElemPtr ( new RtfAnnotElem(3) );
+			RtfAnnotElemReader	oAnnotReader	( *m_oRtfAnnotation.m_oRef );
+
+			StartSubReader( oAnnotReader, oDocument, oReader );
+			
+		}
+        else if( "atndate" == sCommand )
+		{
+			m_oRtfAnnotation.m_oDate = RtfAnnotElemPtr ( new RtfAnnotElem(6) );
+			RtfAnnotElemReader	oAnnotReader	( *m_oRtfAnnotation.m_oDate );
+
+			StartSubReader( oAnnotReader, oDocument, oReader );
+		}
+		else if( "atnparent" == sCommand )
+		{
+			m_oRtfAnnotation.m_oParent = RtfAnnotElemPtr ( new RtfAnnotElem(7) );
+			RtfAnnotElemReader	oAnnotReader	( *m_oRtfAnnotation.m_oParent );
+
+			StartSubReader( oAnnotReader, oDocument, oReader );
+		}
+		else
+			return m_oParPropDest.ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
+		return true;
+	}
+    void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
+	{
+		m_oParPropDest.ExecuteText( oDocument, oReader, sText );
+	}
+	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
+	{
+		m_oParPropDest.Finalize( oReader );
+
+		m_oRtfAnnotation.m_oContent = m_oParPropDest.m_oTextItems;
 	}
 };
 class RtfDefParPropReader: public RtfAbstractReader

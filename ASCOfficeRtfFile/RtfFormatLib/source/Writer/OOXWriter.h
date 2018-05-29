@@ -44,6 +44,8 @@ public:
 	int				m_nCurFitWidth;
 	int				m_nCurTrackChangesId;
 
+	long int		m_nextParaId;
+
 	OOXRelsWriter	m_oDocRels;
 	OOXRelsWriter	m_oRels;
 	
@@ -57,6 +59,7 @@ public:
 	void* m_poNumberingWriter;
 	void* m_poSettingsWriter;
 	void* m_poStylesWriter;
+	void* m_poCommentsWriter;
 
 	void* m_poDocPropsApp;
 	void* m_poDocPropsCore;

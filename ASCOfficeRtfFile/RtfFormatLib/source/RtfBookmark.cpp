@@ -34,6 +34,7 @@
 
 #include "Writer/OOXWriter.h"
 #include "Writer/OOXFootnoteWriter.h"
+#include "Writer/OOXCommentsWriter.h"
 
 #include "Utils.h"
 
@@ -56,11 +57,10 @@ std::wstring RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
 std::wstring RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
-    //ATLASSERT( false == m_sName.empty() );
 	sResult += L"<w:bookmarkStart";
 	
 	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
-	RtfDocument	* poDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	RtfDocument	* poDocument	= static_cast<RtfDocument*>	( oRenderParameter.poDocument );
 	
     std::map<std::wstring, int>::iterator pPair = poOOXWriter->m_aBookmarksId.find( m_sName );
 	
@@ -118,6 +118,112 @@ std::wstring RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
 	sResult += L"/>";
 	return sResult;
 }
+
+std::wstring RtfAnnotElem::RenderToRtf(RenderParameter oRenderParameter)
+{
+    std::wstring sResult;
+	
+	if (m_nType == 1)		sResult += L"{\\*\\atrfstart " + m_sValue + L"}";
+	else if (m_nType = 2)	sResult += L"{\\*\\atrfend " + m_sValue + L"}";
+	else if (m_nType = 3)	sResult += L"{\\*\\atnref " + m_sValue + L"}";
+
+	return sResult;
+}
+
+std::wstring RtfAnnotElem::RenderToOOX(RenderParameter oRenderParameter)
+{
+	if (m_nType > 3 || m_nType < 1) return L"";
+
+    std::wstring sResult;
+	
+ 	OOXWriter* poOOXWriter = static_cast<OOXWriter*> (oRenderParameter.poWriter);	
+	OOXCommentsWriter* poCommentsWriter = static_cast<OOXCommentsWriter*>( poOOXWriter->m_poCommentsWriter );
+
+	std::map<std::wstring, int>::iterator pFind = poCommentsWriter->m_mapRefs.find(m_sValue);
+
+	int id = -1;
+	if (pFind == poCommentsWriter->m_mapRefs.end())
+	{
+		id  = poCommentsWriter->m_mapRefs.size() ;//+ 1;
+		poCommentsWriter->m_mapRefs.insert(std::make_pair(m_sValue, id));
+	}
+	else
+	{
+		id = pFind->second;
+	}
+		 if	(m_nType == 1)	sResult += L"<w:commentRangeStart w:id=\"" + std::to_wstring(id) + L"\"/>";
+	else if (m_nType == 3)	sResult += L"<w:commentReference w:id=\"" + std::to_wstring(id) + L"\"/>";
+	else if (m_nType == 2)
+	{
+		sResult += L"<w:commentRangeEnd w:id=\"" + std::to_wstring(id) + L"\"/>";
+		sResult += L"<w:r><w:commentReference w:id=\"" + std::to_wstring(id) + L"\"/></w:r>";
+	}
+
+	return sResult;
+}
+
+std::wstring RtfAnnotation::RenderToRtf(RenderParameter oRenderParameter)
+{
+    std::wstring sResult;
+	
+	if (m_oRef)
+	{
+		if (m_oRef->m_nType == 1)		sResult += L"{\\*\\atrfstart " + m_oRef->m_sValue + L"}";
+		else if (m_oRef->m_nType = 2)	sResult += L"{\\*\\atrfend " + m_oRef->m_sValue + L"}";
+		else if (m_oRef->m_nType = 3)	sResult += L"{\\*\\atnref " + m_oRef->m_sValue + L"}";
+	}
+	return sResult;
+}
+
+std::wstring RtfAnnotation::RenderToOOX(RenderParameter oRenderParameter)
+{
+ 	OOXWriter* poOOXWriter = static_cast<OOXWriter*> (oRenderParameter.poWriter);		
+	OOXCommentsWriter* poCommentsWriter = static_cast<OOXCommentsWriter*>( poOOXWriter->m_poCommentsWriter );
+  
+	std::wstring sResult;
+	
+	sResult += L"<w:comment";
+	int id = -1;
+	if (m_oRef)
+	{
+		std::map<std::wstring, int>::iterator pFind = poCommentsWriter->m_mapRefs.find(m_oRef->m_sValue);
+
+		if (pFind == poCommentsWriter->m_mapRefs.end())
+		{
+			id  = poCommentsWriter->m_mapRefs.size();// + 1;
+			poCommentsWriter->m_mapRefs.insert(std::make_pair(m_oRef->m_sValue, id));
+		}
+		else
+		{
+			id = pFind->second;
+		}
+		sResult += L" w:id=\"" + std::to_wstring(id) + L"\"";
+	}
+	sResult += L" w:author=\"Elena S\"";
+	if (m_oDate)
+	{
+		int nValue = boost::lexical_cast<int>(m_oDate->m_sValue);
+		sResult += L" w:date=\"" + RtfUtility::convertDateTime(nValue) + L"\"";
+	}
+	sResult += L" w:initials=\"ES\"";
+	sResult += L">";
+	if (m_oContent)
+	{
+		RenderParameter oNewParameter = oRenderParameter;
+		
+		oNewParameter.nType = RENDER_TO_OOX_PARAM_COMMENT;
+		oNewParameter.poRels = poCommentsWriter->m_oRelsWriter.get();
+
+		sResult += m_oContent->RenderToOOX(oNewParameter);
+	}
+	sResult += L"</w:comment>";
+
+	std::wstring sParaId = XmlUtils::IntToString(poOOXWriter->m_nextParaId, L"%08X");//last para id in comment
+	poCommentsWriter->AddComment(id, sResult, sParaId, m_oParent ? boost::lexical_cast<int>(m_oParent->m_sValue) : 0);
+
+	return L"";
+}
+
 std::wstring RtfFootnote::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -147,9 +253,11 @@ std::wstring RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		int nID = poDocument->m_oIdGenerator.Generate_EndnoteNumber();
 		OOXEndnoteWriter* poEndnoteWriter = static_cast<OOXEndnoteWriter*>( poOOXWriter->m_poEndnoteWriter );
+		
 		RenderParameter oNewParameter = oRenderParameter;
 		oNewParameter.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		oNewParameter.poRels = poEndnoteWriter->m_oRelsWriter.get();
+		
 		poEndnoteWriter->AddEndnote( L"", nID, m_oContent->RenderToOOX(oNewParameter) );
 		
 		sResult += L"<w:r>";

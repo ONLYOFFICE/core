@@ -52,7 +52,18 @@ public:
         romanUc,
         romanLc,
         alphaUc,
-        alphaLc
+        alphaLc,
+		aiueo,
+		chineseCounting,
+		chineseLegal,
+		ideographLegal,
+		ideographTraditional,
+		ideographZodiac,
+		ideographZodiacTraditional,
+		iroha,
+		koreanDigital,
+		russianLo,
+		russianUp
     };
 
     style_numformat() {}

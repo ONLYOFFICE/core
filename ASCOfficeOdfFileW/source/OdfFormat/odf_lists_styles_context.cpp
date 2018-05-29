@@ -250,13 +250,13 @@ int odf_lists_styles_context::start_style_level(int level, int type)
 	int odf_type =1;
 	int format_type = -1;
 
-	std::wstring num_format = L"1"; 
+	style_numformat num_format;
 	bool sync_letter = false;
 	switch(type)
 	{
 		case 0: //numberformatAiueo                        : 
 		case 1: //numberformatAiueoFullWidth               :
-			num_format = L"ア, イ, ウ, ...";
+			num_format = style_numformat(style_numformat::aiueo);
 			break;
 		case 2: //numberformatArabicAbjad                  : 
 			break;
@@ -272,19 +272,19 @@ int odf_lists_styles_context::start_style_level(int level, int type)
 		case 7: //numberformatChicago                      : 
 			break;
 		case 8: //numberformatChineseCounting              : 
-			num_format = L"ｲ, ﾛ, ﾊ, ...";
+			num_format = style_numformat(style_numformat::chineseCounting);
 			break;
 		case 9: //numberformatChineseCountingThousand      : 
 			break;
 		case 10: //numberformatChineseLegalSimplified       :
-			num_format = L"一, 二, 三, ...";
+			num_format = style_numformat(style_numformat::chineseLegal);
 			break;
 		case 11: //numberformatChosung                      : 
 			break;
 		case 12: //numberformatCustom                       : 
 			break;
 		case 13: //numberformatDecimal                      : 
-			num_format = L"1";
+			num_format = style_numformat(style_numformat::arabic);
 			break;
 		case 14: //numberformatDecimalEnclosedCircle        : 
 			break;
@@ -326,19 +326,19 @@ int odf_lists_styles_context::start_style_level(int level, int type)
 		case 32: //numberformatIdeographEnclosedCircle      : 
 			break;
 		case 33: //numberformatIdeographLegalTraditional    : 
-			num_format = L"壹, 貳, 參, ...";
+			num_format = style_numformat(style_numformat::ideographLegal);
 			break;
 		case 34: //numberformatIdeographTraditional         :
-			num_format = L"甲, 乙, 丙, ...";
+			num_format = style_numformat(style_numformat::ideographTraditional);
 			break;
 		case 35: //numberformatIdeographZodiac              : 
-			num_format = L"子, 丑, 寅, ...";
+			num_format = style_numformat(style_numformat::ideographZodiac);
 			break;
 		case 36: //numberformatIdeographZodiacTraditional   : 
-			num_format = L"甲子, 乙丑, 丙寅, ...";
+			num_format = style_numformat(style_numformat::ideographZodiacTraditional);
 			break;
 		case 37: //numberformatIroha                        : 
-			num_format = L"ｲ, ﾛ, ﾊ, ...";
+			num_format = style_numformat(style_numformat::iroha);
 			break;
 		case 38: //numberformatIrohaFullWidth               : 
 			break;
@@ -350,21 +350,21 @@ int odf_lists_styles_context::start_style_level(int level, int type)
 			break;
 		case 42: //numberformatKoreanCounting               : 
 		case 43: //numberformatKoreanDigital                : 
-			num_format = L"일, 이, 삼, ...";
+			num_format = style_numformat(style_numformat::koreanDigital);
 			break;
 		case 44: //numberformatKoreanDigital2               : 
 			break;
 		case 45: //numberformatKoreanLegal                  : 
 			break;
 		case 46: //numberformatLowerLetter 
-			num_format = L"a";
+			num_format = style_numformat(style_numformat::alphaLc);
 			sync_letter = true; 
 			break;
 		case 47: //numberformatLowerRoman                   : 
-			num_format = L"i";
+			num_format = style_numformat(style_numformat::romanLc);
 			break;
 		case 48: //numberformatNone                         : 
-			num_format = L"";
+			//num_format = L"";
 			break;
 		case 49: //numberformatNumberInDash                 : //??
 			//suffix -
@@ -375,11 +375,11 @@ int odf_lists_styles_context::start_style_level(int level, int type)
 		case 51: //numberformatOrdinalText                  : 
 			break;
 		case 52: //numberformatRussianLower                 : 
-			num_format = L"А, Б, .., Аа, Аб, ... (ru)";
+			num_format = style_numformat(style_numformat::russianLo);
 			sync_letter = true; 
 			break;
 		case 53: //numberformatRussianUpper                 : 
-			num_format = L"А, Б, .., Аа, Аб, ... (ru)";
+			num_format = style_numformat(style_numformat::russianUp);
 			sync_letter = true; 
 			break;
 		case 54: //numberformatTaiwaneseCounting            : 
@@ -395,11 +395,11 @@ int odf_lists_styles_context::start_style_level(int level, int type)
 		case 59: //numberformatThaiNumbers                  : 
 			break;
 		case 60: //numberformatUpperLetter                  : 
-			num_format = L"A";
+			num_format = style_numformat(style_numformat::alphaUc);
 			sync_letter = true; 
 			break;
 		case 61: //numberformatUpperRoman                   : 
-			num_format = L"I";
+			num_format = style_numformat(style_numformat::romanUc);
 			break;
 		case 62: //numberformatVietnameseCounting           : 
 			break;

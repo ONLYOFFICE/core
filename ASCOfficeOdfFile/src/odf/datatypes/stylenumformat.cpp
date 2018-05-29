@@ -56,6 +56,39 @@ std::wostream & operator << (std::wostream & _Wostream, const style_numformat & 
     case style_numformat::alphaLc:
         _Wostream << L"a";
         break;
+	case style_numformat::aiueo:
+        _Wostream << L"ア, イ, ウ, ...";
+        break;
+    case style_numformat::chineseCounting:
+        _Wostream << L"ｲ, ﾛ, ﾊ, ...";
+        break;
+    case style_numformat::chineseLegal:
+        _Wostream << L"一, 二, 三, ...";
+        break;
+    case style_numformat::ideographLegal:
+        _Wostream << L"壹, 貳, 參, ...";
+        break;
+    case style_numformat::ideographTraditional:
+        _Wostream << L"甲, 乙, 丙, ...";
+        break;
+    case style_numformat::ideographZodiac:
+        _Wostream << L"子, 丑, 寅, ...";
+        break;
+    case style_numformat::ideographZodiacTraditional:
+        _Wostream << L"甲子, 乙丑, 丙寅, ...";
+        break;
+    case style_numformat::iroha:
+        _Wostream << L"ｲ, ﾛ, ﾊ, ...";
+        break;
+    case style_numformat::koreanDigital:
+        _Wostream << L"일, 이, 삼, ...";
+        break;
+    case style_numformat::russianLo:
+        _Wostream << L"А, Б, .., Аа, Аб, ... (ru)";
+        break;
+    case style_numformat::russianUp:
+        _Wostream << L"А, Б, .., Аа, Аб, ... (ru)";
+        break;
     default:
         break;
     }
@@ -77,7 +110,28 @@ style_numformat style_numformat::parse(const std::wstring & Str)
         return style_numformat( alphaUc );
     else if (tmp == L"a")
         return style_numformat( alphaLc );
-    else
+	else if (tmp == L"А, Б, .., Аа, Аб, ... (ru)")
+        return style_numformat( russianUp );
+	else if (tmp == L"일, 이, 삼, ...")
+        return style_numformat( koreanDigital );
+    else if (tmp == L"ｲ, ﾛ, ﾊ, ...")
+        return style_numformat( iroha );
+    else if (tmp == L"甲, 乙, 丙, ...")
+        return style_numformat( ideographTraditional );
+    else if (tmp == L"甲子, 乙丑, 丙寅, ...")
+        return style_numformat( ideographZodiacTraditional );
+    else if (tmp == L"子, 丑, 寅, ...")
+        return style_numformat( ideographZodiac );
+    else if (tmp == L"壹, 貳, 參, ...")
+        return style_numformat( ideographLegal );
+    else if (tmp == L"一, 二, 三, ...")
+        return style_numformat( chineseLegal );
+    else if (tmp == L"ｲ, ﾛ, ﾊ, ...")
+        return style_numformat( chineseCounting );
+    else if (tmp == L"ア, イ, ウ, ...")
+        return style_numformat( aiueo );
+	
+	else
     {
         return style_numformat( arabic );
     }

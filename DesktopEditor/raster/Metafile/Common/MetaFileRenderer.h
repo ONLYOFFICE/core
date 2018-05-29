@@ -515,6 +515,9 @@ namespace MetaFile
 			else //if (WINDING == unFillMode)
 				unClipMode |= c_nClipRegionTypeWinding;
 
+			if (RGN_COPY == unMode)
+				ResetClip();
+
 			m_pRenderer->put_ClipMode(unClipMode);
 			m_pRenderer->BeginCommand(c_nClipType);
 			m_pRenderer->BeginCommand(c_nPathType);

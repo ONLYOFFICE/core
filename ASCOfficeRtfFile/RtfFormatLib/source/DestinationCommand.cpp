@@ -2832,8 +2832,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		
 		oAbstrReader.StartSubReader( oAnnotElemReader, oDocument, oReader );
 		
-		//if ( pNewAnnotElem->IsValid() )
-		//	m_oCurParagraph->AddItem( pNewAnnotElem );
+		if ( pNewAnnotElem->IsValid() )
+			m_oCurParagraph->AddItem( pNewAnnotElem );
 	}
 	else if ( "atnauthor" == sCommand )
 	{
@@ -2842,8 +2842,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		
 		oAbstrReader.StartSubReader( oAnnotElemReader, oDocument, oReader );
 		
-		//if ( pNewAnnotElem->IsValid() )
-		//	m_oCurParagraph->AddItem( pNewAnnotElem );
+		if ( pNewAnnotElem->IsValid() )
+			m_oCurParagraph->AddItem( pNewAnnotElem );
 	}	
 	else if ( "atnref" == sCommand )
 	{

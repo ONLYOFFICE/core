@@ -43,30 +43,66 @@ public:
 		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter( _T("comments.xml"), oDocument ) );
 		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
 	}
-	void AddComment(  int nID, std::wstring sText, const std::wstring & paraId, int nParentID)
+	void SetCommentEnd(const std::wstring & ref) //for author
 	{
-		m_sComments += sText;
-
-		m_mapCommentsParent.insert(std::make_pair(nID, paraId));
-
-		m_sCommentsExtended += L"<w15:commentEx w15:paraId=\"" + paraId + L"\"";
-		if (nParentID != 0)
-		{
-			nParentID = nID + nParentID;
-
-			std::map<int, std::wstring>::iterator pFind = m_mapCommentsParent.find(nParentID);
-
-			if (pFind != m_mapCommentsParent.end())
-			{
-				 m_sCommentsExtended += L" w15:paraIdParent=\"" + pFind->second + L"\"";
-			}
-		}
-		m_sCommentsExtended += L" w15:done=\"0\"/>";
+		m_sCurrent_ref = ref;
 	}
-  
-    bool Save( std::wstring sFolder )
+	void AddComment(  const std::wstring & ref, int nID)
 	{
-		if(  m_sComments.empty() ) return false;
+		_comment comment(nID);
+		m_mapComments.insert(std::make_pair(ref, comment));
+	}
+	void AddCommentID( const std::wstring & id)
+	{
+		std::map<std::wstring, _comment>::iterator pFind = m_mapComments.find(m_sCurrent_ref);
+
+		if (pFind != m_mapComments.end())
+		{
+			pFind->second.authorId = id;
+		}
+	}
+	void AddCommentAuthor( const std::wstring & author)
+	{
+		std::map<std::wstring, _comment>::iterator pFind = m_mapComments.find(m_sCurrent_ref);
+
+		if (pFind != m_mapComments.end())
+		{
+			pFind->second.author = author;
+		}
+	}
+	void AddCommentContent( const std::wstring & ref, const std::wstring & paraId, const std::wstring & content)
+	{
+		std::map<std::wstring, _comment>::iterator pFind = m_mapComments.find(ref);
+
+		if (pFind != m_mapComments.end())
+		{
+			pFind->second.content	= content;
+			pFind->second.paraId	= paraId;
+
+			m_mapCommentsParent.insert(std::make_pair(pFind->second.nID, paraId));
+		}
+	}
+	void AddCommentParent( const std::wstring & ref, const std::wstring & parent)
+	{
+		std::map<std::wstring, _comment>::iterator pFind = m_mapComments.find(ref);
+
+		if (pFind != m_mapComments.end())
+		{
+			pFind->second.nParentID = boost::lexical_cast<int>(parent);
+		}
+	}
+	void AddCommentDate( const std::wstring & ref, const std::wstring & date)
+	{
+		std::map<std::wstring, _comment>::iterator pFind = m_mapComments.find(ref);
+
+		if (pFind != m_mapComments.end())
+		{
+			pFind->second.date = date;
+		}
+	}
+	bool Save( std::wstring sFolder )
+	{
+		if(  m_mapComments.empty() ) return false;
 
 		CFile file;
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("comments.xml"))) return false;
@@ -82,8 +118,6 @@ public:
 
 		 file.CloseFile();
 //-------------------------------------------------------------------------------------------------------------------------
-		 if(  m_sCommentsExtended.empty() ) return true;
-
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + L"commentsExtended.xml")) return false;
 		
 		m_oWriter.m_oDocRels.AddRelationship( L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended", L"commentsExtended.xml" );
@@ -98,46 +132,82 @@ public:
 		 file.CloseFile();
 		 return true;
 	}
-	std::map<std::wstring, int> m_mapRefs;
-	std::map<int, std::wstring> m_mapCommentsParent;
+	struct _comment
+	{
+		_comment(int id) : nID(id) {}
+		int nID = 0;
+		int nParentID = 0;
+		std::wstring author;
+		std::wstring date;
+		std::wstring content;
+		std::wstring authorId;
+		std::wstring paraId;
+
+	};
+	std::map<std::wstring, _comment> m_mapComments;
 private: 
 	RtfDocument& m_oDocument;
 	OOXWriter& m_oWriter;
 
-    std::wstring m_sComments;
-    std::wstring m_sCommentsExtended;
+	std::wstring						m_sCurrent_ref;
+	std::wstring						m_sCommentsExtended;
+	std::map<int, std::wstring>			m_mapCommentsParent;
 
     std::wstring CreateXml()
 	{
-        std::wstring sResult;
-        sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+        std::wstring sResult = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
 
-		sResult += _T("<w:comments \
-xmlns:wpc=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingCanvas\" \
+		sResult += L"<w:comments \
+xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
 xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2008/9/16/wordprocessingDrawing\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
 xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
 xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
 xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2009/2/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingInk\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
 xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingShape\">");
-		sResult += m_sComments;
-		sResult += _T("</w:comments>");
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+mc:Ignorable=\"w14 w15 wp14\">";
+
+		for (std::map<std::wstring, _comment>::iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sResult += L"<w:comment w:id=\"" + std::to_wstring(it->second.nID) + L"\" w:author=\"" + 
+				it->second.author + L"\" w:date=\"" + it->second.date + L"\" w:initials=\"" + it->second.authorId + L"\">";
+			sResult += it->second.content;
+
+			sResult += L"</w:comment>";
+//--------------------------------------------------------
+			m_sCommentsExtended += L"<w15:commentEx w15:paraId=\"" + it->second.paraId + L"\"";
+			if (it->second.nParentID != 0)
+			{
+				it->second.nParentID = it->second.nID + it->second.nParentID;
+
+				std::map<int, std::wstring>::iterator pFind = m_mapCommentsParent.find(it->second.nParentID);
+
+				if (pFind != m_mapCommentsParent.end())
+				{
+					 m_sCommentsExtended += L" w15:paraIdParent=\"" + pFind->second + L"\"";
+				}
+			}
+			m_sCommentsExtended += L" w15:done=\"0\"/>";
+
+		}
+		sResult += L"</w:comments>";
 		return sResult;
 	}
     std::wstring CreateXmlExtended()
 	{
         std::wstring sResult;
-        sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+        sResult += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
 
-		sResult += _T("<w15:commentsEx \
+		sResult += L"<w15:commentsEx \
 xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" \
 xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" \
@@ -157,9 +227,9 @@ xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" 
 xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
 xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 w15 w16se wp14\">");
+mc:Ignorable=\"w14 w15 w16se wp14\">";
 		sResult += m_sCommentsExtended;
-		sResult += _T("</w15:commentsEx>");
+		sResult += L"</w15:commentsEx>";
 		return sResult;
 	}
 

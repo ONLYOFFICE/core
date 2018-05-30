@@ -238,16 +238,24 @@ void table_table_column::docx_convert(oox::docx_conversion_context & Context)
 
     for (unsigned int i = 0; i < columnsRepeated; ++i)
     {
+		bool bAddWidth = false;
         if (table_table_column_attlist_.table_style_name_)
         {
             const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get();
             if (style_instance * inst = 
-                Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn,Context.process_headers_footers_ ))
+                Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn, Context.process_headers_footers_ ))
             {
                 if (inst->content())
+				{
                     inst->content()->docx_convert(Context);
+					bAddWidth = true;
+				}
             }
         }
+		if (false == bAddWidth)
+		{
+			Context.get_table_context().add_column_width(0);
+		}
     }
 }
 
@@ -266,22 +274,27 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
         _Wostream << L"<w:tcPr>";
 
 		const std::wstring styleName = attlist_.table_style_name_.get_value_or(L""); 
-
-		//_Wostream << L"<w:tcW w:w=\"0\" w:type=\"auto\" />";
 		
         if (attlist_extra_.table_number_rows_spanned_ > 1)
         {
-            _Wostream << L"<w:vMerge w:val=\"restart\" />"; 
+            _Wostream << L"<w:vMerge w:val=\"restart\"/>"; 
             Context.get_table_context().set_rows_spanned(Context.get_table_context().current_column(), 
                 attlist_extra_.table_number_rows_spanned_ - 1,
                 attlist_extra_.table_number_columns_spanned_ - 1,
                 styleName
                 );
         }        		
+
+		double width = Context.get_table_context().get_current_cell_width();
+
+		if (width > 0.01)
+		{
+			_Wostream << L"<w:tcW w:w=\"" << (int)width << L"\" w:type=\"dxa\"/>";
+		}
 		
 		if (attlist_extra_.table_number_columns_spanned_ > 1)
         {
-            _Wostream << L"<w:gridSpan w:val=\"" << attlist_extra_.table_number_columns_spanned_ << "\" />";
+            _Wostream << L"<w:gridSpan w:val=\"" << attlist_extra_.table_number_columns_spanned_ << "\"/>";
             Context.get_table_context().set_columns_spanned(attlist_extra_.table_number_columns_spanned_ - 1);
         }
 
@@ -324,8 +337,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
 
         /// Стиль по умолчанию для данной строки
         {
-            const std::wstring & defaultCellStyle =
-                Context.get_table_context().get_default_cell_style_row();
+            const std::wstring & defaultCellStyle = Context.get_table_context().get_default_cell_style_row();
 
             if (const style_instance * inst = 
                 Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyle, style_family::TableCell,Context.process_headers_footers_))

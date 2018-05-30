@@ -70,6 +70,8 @@ public:
     void			set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style);
     unsigned int	current_rows_spanned(unsigned int Column) const;
 
+	double			get_current_cell_width();
+	void			add_column_width(double width);
 private:
     docx_conversion_context	&	context_;    
     std::wstring				table_style_;
@@ -81,7 +83,8 @@ private:
     std::vector<table_row_spanned> rows_spanned_;
 	bool						close_table_covered_cell_;
     std::vector<unsigned int>	columns_;
-    std::vector<std::wstring>	columnsDefaultCellStyleName_;
+	std::vector<double>			columns_width_;
+	std::vector<std::wstring>	columnsDefaultCellStyleName_;
     
 };
 
@@ -135,6 +138,14 @@ public:
     {
         return table_states_.back().start_cell();
     }
+	double get_current_cell_width()
+	{
+		 return table_states_.back().get_current_cell_width();
+	}
+	void add_column_width(double width)
+	{
+		 table_states_.back().add_column_width(width);
+	}
 
     void end_cell()
     {

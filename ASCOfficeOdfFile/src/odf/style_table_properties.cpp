@@ -207,10 +207,9 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 {
     std::wostream & strm = Context.output_stream();
 
-
     if (attlist_.style_column_width_)
     {
-		double kf_max_width_ms =1.;
+		double kf_max_width_ms = 1.;
 
 		const page_layout_instance * pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();//
 		if ((pp) && (pp->properties()))
@@ -226,24 +225,21 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 
 		int val = attlist_.style_column_width_->get_value_unit(length::pt);
 
+		double width = 0.5 + 20.0 * val * kf_max_width_ms;
 
-		//_CP_OPT(int) iUnormalWidth;
-		//if (odf_reader::GetProperty(Context.get_settings_properties(),L"UnormalWidthPage",iUnormalWidth))
-		{
-			//kf_max_width_ms = 31680./iUnormalWidth.get();//эквивалент 22"
-		}
-
-
-        strm << L"<w:gridCol w:w=\"" << 
-            (int)(0.5 + 20.0 * val * kf_max_width_ms) << "\"/>";
+		Context.get_table_context().add_column_width(width);
+        strm << L"<w:gridCol w:w=\"" << (int)(width) << "\"/>";
     }
+	else
+	{
+		Context.get_table_context().add_column_width(0);
+	}
 }
 
 
 void style_table_column_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
     std::wostream & strm = Context.get_table_context().tableData();
-
 
     if (attlist_.style_column_width_)
     {

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -218,6 +218,8 @@ public:
     virtual unsigned int GetNameIndex(const std::wstring& wsName);
 
     virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
+    
+    virtual void GetFace(double& d0, double& d1, double& d2);
 };
 
 #endif // _BUILD_FONT_ENGINE_FONTMANAGER_H_

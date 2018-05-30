@@ -124,8 +124,12 @@ std::wstring RtfAnnotElem::RenderToRtf(RenderParameter oRenderParameter)
     std::wstring sResult;
 	
 	if (m_nType == 1)		sResult += L"{\\*\\atrfstart " + m_sValue + L"}";
-	else if (m_nType = 2)	sResult += L"{\\*\\atrfend " + m_sValue + L"}";
-	else if (m_nType = 3)	sResult += L"{\\*\\atnref " + m_sValue + L"}";
+	else if (m_nType == 2)	sResult += L"{\\*\\atrfend " + m_sValue + L"}";
+	else if (m_nType == 3)	sResult += L"{\\*\\atnref " + m_sValue + L"}";
+	else if (m_nType == 4)	sResult += L"{\\*\\atnauthor " + m_sValue + L"}";
+	else if (m_nType == 5)	sResult += L"{\\*\\atnid " + m_sValue + L"}";
+	else if (m_nType == 6)	sResult += L"{\\*\\atndate " + m_sValue + L"}";
+	else if (m_nType == 7)	sResult += L"{\\*\\atnparent " + m_sValue + L"}";
 
 	return sResult;
 }
@@ -185,12 +189,24 @@ std::wstring RtfAnnotation::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
 	
+	sResult += L"\\chatn{\\*\\annotation";
 	if (m_oRef)
 	{
-		if (m_oRef->m_nType == 1)		sResult += L"{\\*\\atrfstart " + m_oRef->m_sValue + L"}";
-		else if (m_oRef->m_nType = 2)	sResult += L"{\\*\\atrfend " + m_oRef->m_sValue + L"}";
-		else if (m_oRef->m_nType = 3)	sResult += L"{\\*\\atnref " + m_oRef->m_sValue + L"}";
+		sResult += m_oRef->RenderToRtf(oRenderParameter);
 	}
+	if (m_oDate)
+	{
+		sResult += m_oDate->RenderToRtf(oRenderParameter);
+	}
+	if (m_oParent)
+	{
+		sResult += m_oParent->RenderToRtf(oRenderParameter);
+	}
+	if (m_oContent)
+	{
+		sResult += m_oContent->RenderToRtf(oRenderParameter);
+	}
+	sResult += L"}";
 	return sResult;
 }
 

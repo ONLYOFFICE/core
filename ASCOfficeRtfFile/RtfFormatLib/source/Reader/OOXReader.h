@@ -66,7 +66,16 @@ public:
 
 	int												m_nCurOleChartId;
 	int												m_nCurFittextId;
+	
 	std::map<int, std::wstring>						m_aBookmarks;
+
+	struct _comment
+	{
+		std::wstring	ref;
+		int				index;
+	};
+	std::map<int, _comment>							m_mapComments;		//nId, ref & index added
+	std::map<int, int>								m_mapCommentsPara;	//paraId, index added
 
 	std::map<int, int>								m_mapPictureBullet;
 	std::map<int, TextItemContainerPtr>				m_mapFootnotes;

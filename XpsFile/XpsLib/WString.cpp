@@ -186,6 +186,13 @@ namespace XPS
 
 		return (const wchar_t*)m_pBuffer;
 	}
+    const std::wstring CWString::c_stdstr() const
+    {
+        const wchar_t* pData = c_str();
+        if (NULL == pData)
+            return L"";
+        return std::wstring(pData);
+    }
 	bool CWString::operator<(const CWString& wsString) const
 	{
 		const wchar_t* wsLeft = this->c_str();

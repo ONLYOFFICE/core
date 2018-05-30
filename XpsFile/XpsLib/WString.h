@@ -59,6 +59,7 @@ namespace XPS
 		bool empty() const;
 		wchar_t operator[](const unsigned int& unIndex) const;
 		const wchar_t* c_str() const;
+        const std::wstring c_stdstr() const;
 		void clear();
 
         int tointeger() const;

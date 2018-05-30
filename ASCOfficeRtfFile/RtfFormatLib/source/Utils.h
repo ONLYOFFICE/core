@@ -379,7 +379,7 @@ public:
 
 		return date_str;
 	}
-	static int convertDateTime (std::wstring & dt_)
+    static int convertDateTime (const std::wstring & dt_)
 	{
 		int result = 0;
 		

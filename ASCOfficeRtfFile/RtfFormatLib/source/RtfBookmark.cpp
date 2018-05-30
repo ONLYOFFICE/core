@@ -132,31 +132,50 @@ std::wstring RtfAnnotElem::RenderToRtf(RenderParameter oRenderParameter)
 
 std::wstring RtfAnnotElem::RenderToOOX(RenderParameter oRenderParameter)
 {
-	if (m_nType > 3 || m_nType < 1) return L"";
+	if (m_nType > 8 || m_nType < 1) return L"";
 
     std::wstring sResult;
 	
  	OOXWriter* poOOXWriter = static_cast<OOXWriter*> (oRenderParameter.poWriter);	
 	OOXCommentsWriter* poCommentsWriter = static_cast<OOXCommentsWriter*>( poOOXWriter->m_poCommentsWriter );
 
-	std::map<std::wstring, int>::iterator pFind = poCommentsWriter->m_mapRefs.find(m_sValue);
-
-	int id = -1;
-	if (pFind == poCommentsWriter->m_mapRefs.end())
+	if (m_nType == 4)
 	{
-		id  = poCommentsWriter->m_mapRefs.size() ;//+ 1;
-		poCommentsWriter->m_mapRefs.insert(std::make_pair(m_sValue, id));
+		poCommentsWriter->AddCommentAuthor(m_sValue);
+	}
+	else if (m_nType == 5)
+	{
+		poCommentsWriter->AddCommentID(m_sValue);
 	}
 	else
 	{
-		id = pFind->second;
-	}
-		 if	(m_nType == 1)	sResult += L"<w:commentRangeStart w:id=\"" + std::to_wstring(id) + L"\"/>";
-	else if (m_nType == 3)	sResult += L"<w:commentReference w:id=\"" + std::to_wstring(id) + L"\"/>";
-	else if (m_nType == 2)
-	{
-		sResult += L"<w:commentRangeEnd w:id=\"" + std::to_wstring(id) + L"\"/>";
-		sResult += L"<w:r><w:commentReference w:id=\"" + std::to_wstring(id) + L"\"/></w:r>";
+		std::map<std::wstring,OOXCommentsWriter::_comment>::iterator pFind = poCommentsWriter->m_mapComments.find(m_sValue);
+
+		int id = -1;
+		if (pFind == poCommentsWriter->m_mapComments.end())
+		{
+			id  = poCommentsWriter->m_mapComments.size() ;//+ 1;
+			poCommentsWriter->AddComment(m_sValue, id);
+		}
+		else
+		{
+			id = pFind->second.nID;
+		}
+		if (m_nType == 1)
+		{
+			sResult += L"<w:commentRangeStart w:id=\"" + std::to_wstring(id) + L"\"/>";
+		}
+		else if (m_nType == 3)
+		{
+			sResult += L"<w:commentReference w:id=\"" + std::to_wstring(id) + L"\"/>";
+		}
+		else if (m_nType == 2)
+		{
+			poCommentsWriter->SetCommentEnd(m_sValue);
+
+			sResult += L"<w:commentRangeEnd w:id=\"" + std::to_wstring(id) + L"\"/>";
+			sResult += L"<w:r><w:commentReference w:id=\"" + std::to_wstring(id) + L"\"/></w:r>";
+		}
 	}
 
 	return sResult;
@@ -180,33 +199,14 @@ std::wstring RtfAnnotation::RenderToOOX(RenderParameter oRenderParameter)
  	OOXWriter* poOOXWriter = static_cast<OOXWriter*> (oRenderParameter.poWriter);		
 	OOXCommentsWriter* poCommentsWriter = static_cast<OOXCommentsWriter*>( poOOXWriter->m_poCommentsWriter );
   
-	std::wstring sResult;
-	
-	sResult += L"<w:comment";
-	int id = -1;
-	if (m_oRef)
-	{
-		std::map<std::wstring, int>::iterator pFind = poCommentsWriter->m_mapRefs.find(m_oRef->m_sValue);
+	if (!m_oRef) return L"";
 
-		if (pFind == poCommentsWriter->m_mapRefs.end())
-		{
-			id  = poCommentsWriter->m_mapRefs.size();// + 1;
-			poCommentsWriter->m_mapRefs.insert(std::make_pair(m_oRef->m_sValue, id));
-		}
-		else
-		{
-			id = pFind->second;
-		}
-		sResult += L" w:id=\"" + std::to_wstring(id) + L"\"";
-	}
-	sResult += L" w:author=\"Elena S\"";
 	if (m_oDate)
 	{
 		int nValue = boost::lexical_cast<int>(m_oDate->m_sValue);
-		sResult += L" w:date=\"" + RtfUtility::convertDateTime(nValue) + L"\"";
+
+		poCommentsWriter->AddCommentDate(m_oRef->m_sValue, RtfUtility::convertDateTime(nValue));
 	}
-	sResult += L" w:initials=\"ES\"";
-	sResult += L">";
 	if (m_oContent)
 	{
 		RenderParameter oNewParameter = oRenderParameter;
@@ -214,13 +214,16 @@ std::wstring RtfAnnotation::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParameter.nType = RENDER_TO_OOX_PARAM_COMMENT;
 		oNewParameter.poRels = poCommentsWriter->m_oRelsWriter.get();
 
-		sResult += m_oContent->RenderToOOX(oNewParameter);
+		std::wstring content = m_oContent->RenderToOOX(oNewParameter);
+
+		std::wstring sParaId = XmlUtils::IntToString(poOOXWriter->m_nextParaId, L"%08X");//last para id in comment
+		
+		poCommentsWriter->AddCommentContent(m_oRef->m_sValue, sParaId, content);
 	}
-	sResult += L"</w:comment>";
-
-	std::wstring sParaId = XmlUtils::IntToString(poOOXWriter->m_nextParaId, L"%08X");//last para id in comment
-	poCommentsWriter->AddComment(id, sResult, sParaId, m_oParent ? boost::lexical_cast<int>(m_oParent->m_sValue) : 0);
-
+	if (m_oParent)
+	{
+		poCommentsWriter->AddCommentParent(m_oRef->m_sValue, m_oParent->m_sValue);
+	}
 	return L"";
 }
 

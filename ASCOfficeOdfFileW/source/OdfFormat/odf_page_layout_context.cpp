@@ -537,7 +537,7 @@ void odf_page_layout_context::set_page_number_format(_CP_OPT(int) & type, _CP_OP
 		case 34: break;	    //numberformatIdeographTraditional         = 34,
 		case 35: break;	    //numberformatIdeographZodiac              = 35,
 		case 36: break;	    //numberformatIdeographZodiacTraditional   = 36,
-		case 37: break;	    //numberformatIroha                        = 37,
+		case 37: layout_state_list_.back().page_number_format = style_numformat(style_numformat::iroha); break;
 		case 38: break;	    //numberformatIrohaFullWidth               = 38,
 		case 39: break;	    //numberformatJapaneseCounting             = 39,
 		case 40: break;	    //numberformatJapaneseDigitalTenThousand   = 40,
@@ -546,26 +546,27 @@ void odf_page_layout_context::set_page_number_format(_CP_OPT(int) & type, _CP_OP
 		case 43: break;	    //numberformatKoreanDigital                = 43,
 		case 44: break;	    //numberformatKoreanDigital2               = 44,
 		case 45: break;	    //numberformatKoreanLegal                  = 45,
-		case 46: layout_state_list_.back().page_number_format = L"a"; break;	    //numberformatLowerLetter                  = 46,
-		case 47: layout_state_list_.back().page_number_format = L"i"; break;	    //numberformatLowerRoman                   = 47,
+		case 46: layout_state_list_.back().page_number_format = style_numformat(style_numformat::alphaLc); break;	    //numberformatLowerLetter                  = 46,
+		case 47: layout_state_list_.back().page_number_format = style_numformat(style_numformat::romanLc); break;	    //numberformatLowerRoman                   = 47,
 		case 48: break;	    //numberformatNone                         = 48,
 		case 49: break;	    //numberformatnumberInDash                 = 49,
 		case 50: break;	    //numberformatOrdinal                      = 50,
 		case 51: break;	    //numberformatOrdinalText                  = 51,
-		case 52: break;	    //numberformatRussianLower                 = 52,
-		case 53: break;	    //numberformatRussianUpper                 = 53,
+		case 52: layout_state_list_.back().page_number_format = style_numformat(style_numformat::russianUp); break;
+		case 53: layout_state_list_.back().page_number_format = style_numformat(style_numformat::russianLo); break;
+
 		case 54: break;	    //numberformatTaiwaneseCounting            = 54,
 		case 55: break;	    //numberformatTaiwaneseCountingThousand    = 55,
 		case 56: break;	    //numberformatTaiwaneseDigital             = 56,
 		case 57: break;	    //numberformatThaiCounting                 = 57,
 		case 58: break;	    //numberformatThaiLetters                  = 58,
 		case 59: break;	    //numberformatThainumbers                  = 59,
-		case 60: layout_state_list_.back().page_number_format = L"A"; break;	    //numberformatUpperLetter                  = 60,
-		case 61: layout_state_list_.back().page_number_format = L"I"; break;	    //numberformatUpperRoman                   = 61,
+		case 60: layout_state_list_.back().page_number_format = style_numformat(style_numformat::alphaUc); break;	    //numberformatUpperLetter                  = 60,
+		case 61: layout_state_list_.back().page_number_format = style_numformat(style_numformat::romanUc); break;	    //numberformatUpperRoman                   = 61,
 		case 62: break;	    //numberformatVietnameseCounting           = 62
 		default:
 			break;
-		}
+		}//todooo
 	}
 }	
 

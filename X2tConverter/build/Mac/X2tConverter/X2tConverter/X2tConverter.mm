@@ -95,10 +95,19 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     if (self.password) {
-        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.docx";
+
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::doct_bin2docx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
+        }
+        
+        return AVS_FILEUTILS_ERROR_CONVERT;
+        
+    } else {
+        return NExtractTools::doct_bin2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
     }
-    
-    return NExtractTools::doct_bin2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
 - (int)sdk_doct2docx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
     std::wstring from = nsstring_to_wstring(nsFrom);
@@ -160,7 +169,20 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
-    return NExtractTools::xlst_bin2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    if (self.password) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.xlsx";
+
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::xlst_bin2xlsx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
+        }
+        
+        return AVS_FILEUTILS_ERROR_CONVERT;
+        
+    } else {
+        return NExtractTools::xlst_bin2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    }
 }
 - (int)sdk_xlst2xlsx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
     std::wstring from = nsstring_to_wstring(nsFrom);
@@ -206,7 +228,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::pptx2pptt(from, to, temp, oInputParams);
 }
-- (int)sdk_pptt_bin2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir{
+- (int)sdk_pptt_bin2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
     std::wstring temp = nsstring_to_wstring(nsTemp);
@@ -216,7 +238,20 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     
-    return NExtractTools::pptt_bin2pptx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    if (self.password) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.pptx";
+        
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::pptt_bin2pptx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
+        }
+        
+        return AVS_FILEUTILS_ERROR_CONVERT;
+        
+    } else {
+        return NExtractTools::pptt_bin2pptx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    }
 }
 - (int)sdk_pptt2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir{
     std::wstring from = nsstring_to_wstring(nsFrom);

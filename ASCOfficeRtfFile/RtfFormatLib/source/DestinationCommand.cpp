@@ -1007,32 +1007,32 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
     //COMMAND_RTF_BOOL( "ul", charProps->m_bUnderline, sCommand, hasParameter, parameter)
     COMMAND_RTF_INT ( "ulc", charProps->m_nUnderlineColor, sCommand, hasParameter, parameter)
 
-    COMMAND_RTF_INT ( "uld",			charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dotted)
+    COMMAND_RTF_INT ( "uld",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dotted)
     COMMAND_RTF_INT ( "uldash",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dashed)
-    COMMAND_RTF_INT ( "uldashd",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dotted)
-    COMMAND_RTF_INT ( "uldashdd",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dot_dotted)
-    COMMAND_RTF_INT ( "uldb",			charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Double)
-    COMMAND_RTF_INT ( "ulhwave",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Heavy_wave)
-    COMMAND_RTF_INT ( "ulldash",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Long_dashe)
+    COMMAND_RTF_INT ( "uldashd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dotted)
+    COMMAND_RTF_INT ( "uldashdd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dot_dotted)
+    COMMAND_RTF_INT ( "uldb",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Double)
+    COMMAND_RTF_INT ( "ulhwave",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Heavy_wave)
+    COMMAND_RTF_INT ( "ulldash",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Long_dashe)
     COMMAND_RTF_INT ( "ulnone",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_none)
-    COMMAND_RTF_INT ( "ulth",			charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick)
-    COMMAND_RTF_INT ( "ulthd",			charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_dotted)
-    COMMAND_RTF_INT ( "ulthdash",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_dashed)
-    COMMAND_RTF_INT ( "ulthdashd",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_dash_dotted)
+    COMMAND_RTF_INT ( "ulth",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick)
+    COMMAND_RTF_INT ( "ulthd",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_dotted)
+    COMMAND_RTF_INT ( "ulthdash",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_dashed)
+    COMMAND_RTF_INT ( "ulthdashd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_dash_dotted)
     COMMAND_RTF_INT ( "ulthdashdd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_dash_dot_dotted)
-    COMMAND_RTF_INT ( "ulthldash",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_long_dashed)
+    COMMAND_RTF_INT ( "ulthldash",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Thick_long_dashed)
     COMMAND_RTF_INT ( "ululdbwave",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Double_wave)
-    COMMAND_RTF_INT ( "ulw",			charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Word)
+    COMMAND_RTF_INT ( "ulw",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Word)
     COMMAND_RTF_INT ( "ulwave",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Wave)
 	
     COMMAND_RTF_INT ( "up",			charProps->m_nUp,			sCommand, hasParameter, parameter)
 
     COMMAND_RTF_INT ( "crauth",		charProps->m_nCrAuth,		sCommand, hasParameter, parameter)
     COMMAND_RTF_INT ( "crdate",		charProps->m_nCrDate,		sCommand, hasParameter, parameter)
-    COMMAND_RTF_INT ( "insrsid",		charProps->m_nInsrsid,		sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT ( "insrsid",	charProps->m_nInsrsid,		sCommand, hasParameter, parameter)
 	
-    COMMAND_RTF_INT ( "revauth",		charProps->m_nRevauth,		sCommand, hasParameter, parameter)
-    COMMAND_RTF_INT ( "revdttm",		charProps->m_nRevdttm,		sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT ( "revauth",	charProps->m_nRevauth,		sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT ( "revdttm",	charProps->m_nRevdttm,		sCommand, hasParameter, parameter)
     COMMAND_RTF_INT ( "revauthdel",	charProps->m_nRevauthDel,	sCommand, hasParameter, parameter)
     COMMAND_RTF_INT ( "revdttmdel",	charProps->m_nRevdttmDel,	sCommand, hasParameter, parameter)
 	
@@ -2814,7 +2814,69 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		if ( pNewBookmarkEnd->IsValid() )
 			m_oCurParagraph->AddItem( pNewBookmarkEnd );
 	}
-    else if ( "footnote" == sCommand )
+    else if ( "atrfstart" == sCommand )
+	{
+		RtfAnnotElemPtr		pNewAnnotElem		( new RtfAnnotElem(1) );		
+		RtfAnnotElemReader	oAnnotElemReader	( *pNewAnnotElem );
+
+		oAbstrReader.StartSubReader( oAnnotElemReader, oDocument, oReader );
+		
+		if ( pNewAnnotElem->IsValid() )
+			m_oCurParagraph->AddItem( pNewAnnotElem );
+	}
+    else if ( "atrfend" == sCommand )
+	{
+		RtfAnnotElemPtr		pNewAnnotElem		( new RtfAnnotElem(2) );		
+		RtfAnnotElemReader	oAnnotElemReader	( *pNewAnnotElem );
+
+		oAbstrReader.StartSubReader( oAnnotElemReader, oDocument, oReader );
+		
+		if ( pNewAnnotElem->IsValid() )
+			m_oCurParagraph->AddItem( pNewAnnotElem );
+
+	}
+	else if ( "annotation" == sCommand )
+	{
+		RtfAnnotationPtr	pNewAnnot		( new RtfAnnotation() );		
+		RtfAnnotationReader	oAnnotReader	( *pNewAnnot );
+		
+		oAbstrReader.StartSubReader( oAnnotReader, oDocument, oReader );
+		
+		if ( pNewAnnot->IsValid() )
+			m_oCurParagraph->AddItem( pNewAnnot );
+	}
+	else if ( "atnid" == sCommand )
+	{
+		RtfAnnotElemPtr		pNewAnnotElem	( new RtfAnnotElem(5) );		
+		RtfAnnotElemReader	oAnnotElemReader( *pNewAnnotElem );
+		
+		oAbstrReader.StartSubReader( oAnnotElemReader, oDocument, oReader );
+		
+		//if ( pNewAnnotElem->IsValid() )
+		//	m_oCurParagraph->AddItem( pNewAnnotElem );
+	}
+	else if ( "atnauthor" == sCommand )
+	{
+		RtfAnnotElemPtr		pNewAnnotElem	( new RtfAnnotElem(4) );		
+		RtfAnnotElemReader	oAnnotElemReader( *pNewAnnotElem );
+		
+		oAbstrReader.StartSubReader( oAnnotElemReader, oDocument, oReader );
+		
+		//if ( pNewAnnotElem->IsValid() )
+		//	m_oCurParagraph->AddItem( pNewAnnotElem );
+	}	
+	else if ( "atnref" == sCommand )
+	{
+		RtfAnnotElemPtr		pNewAnnotElem		( new RtfAnnotElem(3) );		
+		RtfAnnotElemReader	oAnnotElemReader	( *pNewAnnotElem );
+		
+		oAbstrReader.StartSubReader( oAnnotElemReader, oDocument, oReader );
+		
+		if ( pNewAnnotElem->IsValid() )
+			m_oCurParagraph->AddItem( pNewAnnotElem );
+
+	}	
+	else if ( "footnote" == sCommand )
 	{
 		RtfFootnotePtr pNewFootnote ( new RtfFootnote() );
 		pNewFootnote->m_oCharProp = oReader.m_oState->m_oCharProp;
@@ -2825,6 +2887,14 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		if ( pNewFootnote->IsValid() )
 			m_oCurParagraph->AddItem( pNewFootnote );
 	}
+	//else if ( "chatn" == sCommand )
+	//{
+	//	RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
+	//	
+	//	pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+	//	pNewChar->m_eType = RtfCharSpecial::rsc_chatn;
+	//	m_oCurParagraph->AddItem( pNewChar );
+	//}
     else if ( "chftn" == sCommand )
 	{
 		if ( 1 == oReader.m_nFootnote )

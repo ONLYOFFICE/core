@@ -568,6 +568,10 @@
 					Name="___"
 					>
 					<File
+						RelativePath="..\source\Writer\OOXCommentsWriter.h"
+						>
+					</File>
+					<File
 						RelativePath="..\source\Writer\OOXContentTypesWriter.h"
 						>
 					</File>

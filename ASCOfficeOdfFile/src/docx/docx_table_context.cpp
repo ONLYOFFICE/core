@@ -39,10 +39,9 @@
 namespace cpdoccore { 
 namespace oox {
 
-/**/
 
-docx_table_state::docx_table_state(docx_conversion_context & Context,
-    const std::wstring & StyleName) : context_(Context),
+docx_table_state::docx_table_state(docx_conversion_context & Context, const std::wstring & StyleName) : 
+	context_(Context),
     table_style_(StyleName),
     current_table_column_(-1),
     columns_spanned_num_(0),
@@ -93,6 +92,19 @@ std::wstring docx_table_state::current_row_style() const
         return L"";
 }
 
+double docx_table_state::get_current_cell_width()
+{
+	if (current_table_column_ < columns_width_.size())
+		return columns_width_[current_table_column_];
+	else
+		return 0;
+}
+
+void docx_table_state::add_column_width(double width)
+{
+	columns_width_.push_back(width);
+}
+
 void docx_table_state::start_cell()
 {
     current_table_column_++;
@@ -102,7 +114,6 @@ void docx_table_state::start_cell()
 
 void docx_table_state::end_cell()
 {}
-
 bool docx_table_state::start_covered_cell(docx_conversion_context & Context)
 {
     std::wostream & _Wostream = context_.output_stream();

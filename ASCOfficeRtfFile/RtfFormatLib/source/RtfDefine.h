@@ -82,6 +82,11 @@ const long g_cdMaxPercent = 1000000;
 
 #define TYPE_RTF_FOOTNOTE						30
 
+#define TYPE_RTF_ANNOTSTART						31
+#define TYPE_RTF_ANNOTEND						32
+#define TYPE_RTF_ANNOTVALUE						33
+#define TYPE_RTF_ANNOTATION						34
+
 #define RENDER_TO_OOX_PARAM_UNKNOWN				0
 #define RENDER_TO_OOX_PARAM_LAST				1
 #define RENDER_TO_OOX_PARAM_RUN					2
@@ -107,6 +112,7 @@ const long g_cdMaxPercent = 1000000;
 #define RENDER_TO_OOX_PARAM_OLE_ONLY			25
 #define RENDER_TO_OOX_PARAM_OLDLIST_ABS			26
 #define RENDER_TO_OOX_PARAM_OLDLIST_OVR			27
+#define RENDER_TO_OOX_PARAM_COMMENT				28
 
 #define RENDER_TO_RTF_PARAM_UNKNOWN				0
 #define RENDER_TO_RTF_PARAM_CHAR				1

@@ -3590,28 +3590,28 @@ void DocxConverter::convert_comment(int oox_comm_id)
 {
 	if (!docx_document->m_pComments)return;
 
-	for (size_t comm = 0 ; comm < docx_document->m_pComments->m_arrComments.size(); comm++)
-	{
-		OOX::CComment* oox_comment = docx_document->m_pComments->m_arrComments[comm];
-		
-		if (oox_comment == NULL)					continue;
-		if (oox_comment->m_oId.IsInit() == false)	continue;
-		
-		if (oox_comment->m_oId->GetValue() == oox_comm_id)
-		{
-			odt_context->start_comment_content();
-			{
-				if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(*oox_comment->m_oAuthor);
-				if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
-				if (oox_comment->m_oInitials.IsInit())	{}
+	std::map<int, int>::iterator pFind = docx_document->m_pComments->m_mapComments.find(oox_comm_id);
 
-                for (std::vector<OOX::WritingElement*>::iterator it = oox_comment->m_arrItems.begin(); it != oox_comment->m_arrItems.end(); ++it)
-				{
-					convert(*it);
-				}
+	if (pFind == docx_document->m_pComments->m_mapComments.end()) return;
+
+	if ( pFind->second < docx_document->m_pComments->m_arrComments.size() && pFind->second >= 0)
+	{
+		OOX::CComment* oox_comment = docx_document->m_pComments->m_arrComments[pFind->second];
+		
+		if (oox_comment == NULL) return;
+		
+		odt_context->start_comment_content();
+		{
+			if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(*oox_comment->m_oAuthor);
+			if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
+			if (oox_comment->m_oInitials.IsInit())	{}
+
+            for (std::vector<OOX::WritingElement*>::iterator it = oox_comment->m_arrItems.begin(); it != oox_comment->m_arrItems.end(); ++it)
+			{
+				convert(*it);
 			}
-			odt_context->end_comment_content();
 		}
+		odt_context->end_comment_content();
 	}
 }
 void DocxConverter::convert_footnote(int oox_ref_id)

@@ -427,23 +427,7 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
-				>
-			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icudt.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icuuc.lib"
-			>
-		</File>
 		<File
 			RelativePath="RtfFormatTest.cpp"
 			>

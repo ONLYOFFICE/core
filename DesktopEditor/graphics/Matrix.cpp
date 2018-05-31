@@ -213,7 +213,12 @@ namespace Aggplus
     double CMatrix::ty() const
     {
         return m_internal->m_agg_mtx.ty;
+    }        
+    double CMatrix::rotation()
+    {
+        return m_internal->m_agg_mtx.rotation();
     }
+
 
     void CMatrix::SetElements(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx, const double& ty)
     {

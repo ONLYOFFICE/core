@@ -97,6 +97,7 @@ namespace Aggplus
         int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection = FALSE);
         int Ellipse(double fX, double fY, double fXRad, double fYRad);
         Status AddArc2(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
+        bool IsPointInPath(const double& x, const double& y);
 
     public:
         CGraphicsPath_private* m_internal;

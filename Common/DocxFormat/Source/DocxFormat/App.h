@@ -413,6 +413,18 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
+		void SetDefaults()
+		{
+			SetApplication(L"ONLYOFFICE");
+#if defined(INTVER)
+            SetAppVersion(VALUE2STR(INTVER));
+#endif
+			SetDocSecurity(0);
+			SetScaleCrop(false);
+			SetLinksUpToDate(false);
+			SetSharedDoc(false);
+			SetHyperlinksChanged(false);
+		}
         void SetApplication(const std::wstring& sVal)
 		{
 			m_sApplication = sVal;

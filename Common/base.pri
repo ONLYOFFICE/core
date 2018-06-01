@@ -1,5 +1,9 @@
-VERSION = 2.4.537.0
+
+VERSION = $$cat(version.txt)
 DEFINES += INTVER=$$VERSION
+
+QMAKE_TARGET_COMPANY = Ascensio System SIA
+QMAKE_TARGET_COPYRIGHT = Ascensio System SIA Copyright (c) 2018
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {

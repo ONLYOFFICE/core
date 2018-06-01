@@ -30,8 +30,8 @@ fi
 echo "$platform$arch"
 
 if [ ! -f Makefile ]; then
-  perl ./Configure $platform$arch
-  ./config
+  #perl ./Configure $platform$arch
+  ./config no-shared no-asm
 fi
 
 make

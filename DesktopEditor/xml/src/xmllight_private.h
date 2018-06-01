@@ -32,8 +32,11 @@
 #ifndef _BUILD_XMLLIGHT_PRIVATE_CROSSPLATFORM_H_
 #define _BUILD_XMLLIGHT_PRIVATE_CROSSPLATFORM_H_
 
+#include "../../../DesktopEditor/common/File.h"
+
 #include "../libxml2/libxml.h"
 #include "../libxml2/include/libxml/xmlreader.h"
+#include "../include/xmlutils.h"
 
 namespace XmlUtils
 {
@@ -208,7 +211,8 @@ namespace XmlUtils
 
                 if ((XmlNodeType_Element == eNodeType  && nCurDepth == nDepth + 1)
                         || ((XmlNodeType_Text == eNodeType ||
-                             XmlNodeType_Whitespace == eNodeType) && nCurDepth == nDepth + 1))
+                             XmlNodeType_Whitespace == eNodeType ||
+							 XmlNodeType_SIGNIFICANT_WHITESPACE == eNodeType ) && nCurDepth == nDepth + 1))
                     return true;
                 else if (XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth)
                     return false;
@@ -425,6 +429,25 @@ namespace XmlUtils
             if (!IsValid())
                 return false;
             return 1 == xmlTextReaderIsEmptyElement(reader) ? true : false;
+        }
+
+        std::wstring GetNamespacePrefix()
+        {
+            xmlChar* pName = xmlTextReaderPrefix(reader);
+            if (NULL == pName)
+                return L"";
+
+            std::wstring sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
+            free(pName);
+            return sTemp;
+        }
+        XmlNodeType GetNodeType()
+        {
+            return (XmlUtils::XmlNodeType)xmlTextReaderNodeType(reader);
+        }
+        bool IsDefaultAttribute()
+        {
+            return (0 != xmlTextReaderIsDefault(reader)) ? true : false;
         }
 
     private:

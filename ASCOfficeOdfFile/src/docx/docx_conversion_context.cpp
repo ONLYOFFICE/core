@@ -1062,7 +1062,8 @@ void docx_conversion_context::start_automatic_style(const std::wstring & ParentI
 void docx_conversion_context::end_automatic_style()
 {
     in_automatic_style_ = false;
-    automatic_parent_style_ = L"";
+    automatic_parent_style_.clear();
+	tabs_context_.clear();
 }
 
 bool docx_conversion_context::in_automatic_style()
@@ -1276,33 +1277,36 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
                 if (odf_reader::style_content * styleContent = styleInst->content())
                 {
                     std::wstring id;
+					//office_element_ptr parent_tab_stops_;
                     if (const odf_reader::style_instance * parentStyleContent = styleInst->parent())
 					{
                         id = styles_map_.get( parentStyleContent->name(), parentStyleContent->type() );
+
+						//odf_reader::paragraph_format_properties parent_properties = odf_reader::calc_paragraph_properties_content(styleInst);
+						//parent_tab_stops_ = parent_properties.style_tab_stops_;
 					}
 
                     start_automatic_style(id);
-					
-					{//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
-						odf_reader::paragraph_format_properties properties = odf_reader::calc_paragraph_properties_content(styleInst);
 
- 						if (properties.style_writing_mode_)
+					odf_reader::calc_tab_stops(styleInst, get_tabs_context());
+					
+					//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
+					odf_reader::paragraph_format_properties properties = odf_reader::calc_paragraph_properties_content(styleInst);
+					if (properties.style_writing_mode_)
+					{
+						odf_types::writing_mode::type type = properties.style_writing_mode_->get_type();
+						switch(type)
 						{
-							odf_types::writing_mode::type type = properties.style_writing_mode_->get_type();
-							switch(type)
-							{
-							case odf_types::writing_mode::RlTb:
-							case odf_types::writing_mode::TbRl:
-							case odf_types::writing_mode::Rl:
-								set_rtl(true);
-								break;
-							default:
-								set_rtl(false);
-							}
+						case odf_types::writing_mode::RlTb:
+						case odf_types::writing_mode::TbRl:
+						case odf_types::writing_mode::Rl:
+							set_rtl(true);
+							break;
+						default:
+							set_rtl(false);
 						}
-						set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
-							//for calculate tabs
 					}
+					set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
                     
 					styleContent->docx_convert(*this);                
                    
@@ -1415,7 +1419,7 @@ void docx_conversion_context::process_page_break_after(const odf_reader::style_i
         {
             if (inst->content() && inst->content()->get_style_paragraph_properties())
             {
-                _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content().fo_break_after_;
+                _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
                 if (fo_break_val)
                 {
 					if (fo_break_val->get_type() == odf_types::fo_break::Page)
@@ -1811,6 +1815,7 @@ void docx_conversion_context::add_user_field(const std::wstring & name, const st
 {
 	map_user_fields.insert(std::make_pair(name, value));
 }
+
 std::wstring docx_conversion_context::get_user_field(const std::wstring & name)
 {
 	std::map<std::wstring, std::wstring>::iterator pFind = map_user_fields.find(name);

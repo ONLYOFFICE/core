@@ -793,18 +793,12 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-	_CP_OPT(odf_types::office_value_type)	office_value_type_;
+	odf_types::common_value_and_type_attlist	office_value_;
+	_CP_OPT(std::wstring)						office_formula_;
 
-	_CP_OPT(std::wstring)	office_boolean_value_;
-	_CP_OPT(std::wstring)	office_date_value_;
-	_CP_OPT(std::wstring)	office_time_value_;
-	_CP_OPT(std::wstring)	office_string_value_;
-	_CP_OPT(std::wstring)	office_value_;
-	_CP_OPT(std::wstring)	office_currency_;
-	_CP_OPT(std::wstring)	office_formula_;
-	_CP_OPT(std::wstring)	style_data_style_name_;
-	_CP_OPT(std::wstring)	text_display_;
-	_CP_OPT(std::wstring)	text_name_;
+	_CP_OPT(std::wstring)			style_data_style_name_;
+	_CP_OPT(std::wstring)			text_display_;
+	_CP_OPT(std::wstring)			text_name_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_variable_set);
@@ -873,15 +867,9 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-	_CP_OPT(odf_types::office_value_type)	office_value_type_;
-	_CP_OPT(std::wstring)					office_boolean_value_;
-	_CP_OPT(std::wstring)					office_date_value_;
-	_CP_OPT(std::wstring)					office_time_value_;
-	_CP_OPT(std::wstring)					office_string_value_;
-	_CP_OPT(std::wstring)					office_value_;
-	_CP_OPT(std::wstring)					office_currency_;
-	_CP_OPT(std::wstring)					office_formula_;
-	_CP_OPT(std::wstring)					text_name_;
+	odf_types::common_value_and_type_attlist	office_value_;
+	_CP_OPT(std::wstring)						office_formula_;
+	_CP_OPT(std::wstring)						text_name_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_user_field_decl);
 //---------------------------------------------------------------------------------------------------

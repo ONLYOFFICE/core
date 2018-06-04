@@ -96,6 +96,7 @@ private:
     void parse_fonts	(office_element *elemen);
 	void parse_manifests(office_element *element);
     void parse_settings	(office_element *element);
+    void parse_meta		(office_element *element);
 
 	bool decrypt_folder (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
 	bool decrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr data, int size );

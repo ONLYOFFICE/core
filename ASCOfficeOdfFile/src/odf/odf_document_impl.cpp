@@ -56,6 +56,7 @@
 #include "office_scripts.h"
 #include "office_forms.h"
 #include "office_event_listeners.h"
+#include "office_meta.h"
 
 #include "styles.h"
 #include "style_regions.h"
@@ -142,6 +143,9 @@ odf_document::Impl::Impl(xml::sax * Reader, const std::wstring & tempPath):
 		_CP_LOG << L"[info] parse manifest" << std::endl;
 		parse_manifests(content_xml_->get_content());
 
+		_CP_LOG << L"[info] parse meta" << std::endl;
+		parse_meta(content_xml_->get_content());
+
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(content_xml_->get_content());
 			
@@ -207,6 +211,8 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & temp
 		  _CP_LOG << L"[info] read styles.xml" << std::endl;
 		styles_xml_ = read_file_content(styles_xml);
 
+		  _CP_LOG << L"[info] read meta.xml" << std::endl;
+		meta_xml_ = read_file_content(meta_xml);
 //----------------------------------------------------------------------------------------
 		_CP_LOG << L"[info] parse fonts" << std::endl;
 		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
@@ -217,6 +223,8 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & temp
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
 
+		_CP_LOG << L"[info] parse meta" << std::endl;
+		parse_meta(meta_xml_ ? meta_xml_->get_content() : NULL);
 	}
 	else 
 	{
@@ -636,7 +644,26 @@ void odf_document::Impl::parse_settings(office_element *element)
 				}
 			}
 		}	
+	}
 }
+
+void odf_document::Impl::parse_meta(office_element *element)
+{
+	office_document_base * document = dynamic_cast<office_document_base *>( element );
+	if (!document)	return;
+
+	office_meta * meta = dynamic_cast<office_meta*>(document->office_meta_.get());
+	if (!meta)	return;
+
+	for (size_t i = 0; i < meta->meta_user_defined_.size(); i++)
+	{	
+		meta_user_defined * user_defined = dynamic_cast<meta_user_defined*>(meta->meta_user_defined_[i].get());
+		if (!user_defined) continue;
+
+		if (user_defined->meta_name_.empty()) continue;
+		
+		context_->Settings().add_user_defined(user_defined->meta_name_, user_defined->content_);
+	}
 }
 
 void odf_document::Impl::parse_styles(office_element *element)

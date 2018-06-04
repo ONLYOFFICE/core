@@ -89,21 +89,15 @@ std::wostream & style_tab_stops::text_to_stream(std::wostream & _Wostream) const
     return _Wostream;
 }
 
-void style_tab_stops::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{}
-
 void style_tab_stops::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"tab-stop" == Name)
-        CP_CREATE_ELEMENT(style_tab_stops_);
+        CP_CREATE_ELEMENT(content_);
     else
     {
         CP_NOT_APPLICABLE_ELM();
     }
 }
-
-void style_tab_stops::add_text(const std::wstring & Text)
-{}
 
 // style:drop-cap
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -408,14 +402,12 @@ void paragraph_format_properties::apply_from(const paragraph_format_properties &
     _CP_APPLY_PROP(fo_widows_, Other.fo_widows_);
     _CP_APPLY_PROP(fo_orphans_, Other.fo_orphans_);
 
-    // TODO
-    _CP_APPLY_PROP(style_tab_stops_, Other.style_tab_stops_);
+	//style_tab_stops_ calc in context
 
     _CP_APPLY_PROP(style_tab_stop_distance_, Other.style_tab_stop_distance_);
     _CP_APPLY_PROP(fo_hyphenation_keep_, Other.fo_hyphenation_keep_);
     _CP_APPLY_PROP(fo_hyphenation_ladder_count_, Other.fo_hyphenation_ladder_count_);
     
-    // TODO
     _CP_APPLY_PROP(style_drop_cap_, Other.style_drop_cap_);
     
     _CP_APPLY_PROP(style_register_true_, Other.style_register_true_);

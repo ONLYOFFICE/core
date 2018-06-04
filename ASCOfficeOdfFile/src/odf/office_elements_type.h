@@ -104,6 +104,9 @@ enum ElementType
 
 	typeDcCreator,
 	typeDcDate,
+	typeDcDescription,
+	typeDcSubject,
+	typeDcTitle,
 
 	typeDrawA,
 
@@ -155,6 +158,8 @@ enum ElementType
 	typeTextUserFieldGet,
 	typeTextUserFieldSet,
 	typeTextUserFieldInput,
+
+	typeTextUserDefined,
 
 	typeTextTrackedChanges,
 	typeTextChangedRegion,
@@ -373,6 +378,15 @@ enum ElementType
 	typeOfficeSettingsConfigItemMapIndexed,
 	typeOfficeSettingsConfigItemMapNamed,
   	typeOfficeSettingsConfigItemMapEntry,
+
+	typeOfficeMeta,
+	typeOfficeMetaUserDefined,
+	typeOfficeMetaDocumentStatistic,
+	typeOfficeMetaGenerator,
+	typeOfficeMetaCreationDate,
+	typeOfficeMetaKeyword,
+	typeOfficeMetaEditingCycles,
+	typeOfficeMetaEditingDuration,
 
  	typeDrawG,
 	typeDrawFrame,

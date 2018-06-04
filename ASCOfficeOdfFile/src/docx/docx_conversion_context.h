@@ -636,7 +636,7 @@ public:
 	void add_user_field			(const std::wstring & name, const std::wstring & value);	
 	std::wstring get_user_field	(const std::wstring & name);
 
-    void add_element_to_run		(std::wstring parenStyleId = _T(""));
+	void add_element_to_run		(std::wstring parenStyleId = _T(""));
     void finish_run				();
 	void add_new_run			(std::wstring parentStyleId = _T(""));
     bool get_run_state			()			{ return in_run_; }
@@ -761,6 +761,7 @@ public:
 	notes_context		& get_notes_context()		{ return notes_context_; }
 	text_tracked_context& get_text_tracked_context(){ return text_tracked_context_; }
 	text_forms_context	& get_forms_context()		{ return text_forms_context_; }
+	tabs_context		& get_tabs_context()		{ return tabs_context_;}
 
     void docx_convert_delayed	();
     void add_delayed_element	(odf_reader::office_element * Elm);
@@ -822,6 +823,7 @@ private:
     std::wstringstream		footer_xml_;
     std::wstringstream		header_xml_;
     std::wstringstream		settings_xml_;
+    std::wstringstream		meta_xml_;
 
 	styles_context			styles_context_;
 	math_context			math_context_;
@@ -834,6 +836,7 @@ private:
     notes_context			notes_context_;
 	text_tracked_context	text_tracked_context_;
 	text_forms_context		text_forms_context_;
+	tabs_context			tabs_context_;
        
     boost::shared_ptr<streams_man> streams_man_;
 

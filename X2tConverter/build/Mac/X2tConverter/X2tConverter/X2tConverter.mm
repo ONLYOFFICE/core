@@ -94,7 +94,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
-    if (self.password) {
+    if (nil != self.password && self.password.length > 0) {
         oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
         
         std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.docx";
@@ -169,7 +169,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
-    if (self.password) {
+    if (nil != self.password && self.password.length > 0) {
         oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
         
         std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.xlsx";
@@ -238,7 +238,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     
-    if (self.password) {
+    if (nil != self.password && self.password.length > 0) {
         oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
         
         std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.pptx";

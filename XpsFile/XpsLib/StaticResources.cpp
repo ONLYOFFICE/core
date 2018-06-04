@@ -152,13 +152,13 @@ namespace XPS
 	}
 	bool CImageBrush::SetToRenderer(IRenderer* pRenderer)
 	{
-		std::wstring wsPath = m_wsRoot.c_str();
-		wsPath += m_wsPath.c_str();
+        std::wstring wsPath = m_wsRoot.c_stdstr();
+        wsPath += m_wsPath.c_stdstr();
 
 		if (!NSFile::CFileBinary::Exists(wsPath))
 		{
-			wsPath = m_wsPage.c_str();
-			wsPath += m_wsPath.c_str();
+            wsPath = m_wsPage.c_stdstr();
+            wsPath += m_wsPath.c_stdstr();
 			if (!NSFile::CFileBinary::Exists(wsPath))
 				return false;
 		}

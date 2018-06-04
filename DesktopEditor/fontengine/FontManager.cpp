@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -773,4 +773,32 @@ void CFontManager::SetSubpixelRendering(const bool& hmul, const bool& vmul)
         m_nRENDER_MODE = FT_RENDER_MODE_LCD_V;
     else
         m_nRENDER_MODE = FT_RENDER_MODE_NORMAL;
+}
+
+void CFontManager::GetFace(double& d0, double& d1, double& d2)
+{
+    d0 = 2048;
+    d1 = 0;
+    d2 = 0;
+    
+    if (m_pFont)
+    {
+        TT_OS2* os2 = NULL;
+        TT_Header* header = NULL;
+        if (m_pFont->m_pFace)
+        {
+            if ((header = (TT_Header*)FT_Get_Sfnt_Table(m_pFont->m_pFace, ft_sfnt_head)) != NULL)
+            {
+                d1 = header->yMax;
+                d2 = header->yMin;
+                d0 = header->Units_Per_EM;
+            }
+            
+            if ((os2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFont->m_pFace, ft_sfnt_os2)) != NULL && os2->version != 0xFFFFU)
+            {
+                d1 = os2->usWinAscent;
+                d2 = -os2->usWinDescent;
+            }
+        }
+    }
 }

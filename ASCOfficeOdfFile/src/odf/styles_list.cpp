@@ -345,13 +345,13 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 				{
 					switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
 					{
-						case odf_types::style_numformat::romanUc:	num_format= L"romanUc"; break;
-						case odf_types::style_numformat::romanLc:	num_format= L"romanLc"; break;
-						case odf_types::style_numformat::alphaUc:	num_format= L"alphaUc"; break;
-						case odf_types::style_numformat::alphaLc:	num_format= L"alphaLc"; break;
+						case odf_types::style_numformat::romanUc:	num_format= L"upperRoman"; break;
+						case odf_types::style_numformat::romanLc:	num_format= L"lowerRoman"; break;
+						case odf_types::style_numformat::alphaUc:	num_format= L"upperLetter"; break;
+						case odf_types::style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
 						case odf_types::style_numformat::arabic:
 						default:
-																	num_format= L"arabic"; break;
+																	num_format= L"decimal"; break;
 					}
 				}
 				CP_XML_ATTR(L"w:val", num_format);

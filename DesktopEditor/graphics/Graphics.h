@@ -152,27 +152,7 @@ static inline unsigned char Div255(int nValue)
 
 //-------------------------------------------------------------------------------------------------------------------------------
 
-class CDIB : public IGrObject
-{
-public:
-	BYTE* m_pBits;
-	LONG m_lWidth;
-	LONG m_lHeight;
-
-public:
-	CDIB() : IGrObject()
-	{
-		m_pBits = NULL;
-		m_lWidth = 0;
-		m_lHeight = 0;
-	}
-	virtual ~CDIB()
-	{
-		// delete all in system wrapper
-	}
-
-	virtual INT Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
-};
+class CDIB;
 
 class CGraphics_ClipStateRecord
 {

@@ -57,8 +57,6 @@ namespace OOX
 		virtual ~CCore()
 		{
 		}
-
-	public:
 		virtual void read(const CPath& oPath)
 		{
 			XmlUtils::CXmlNode oProperties;
@@ -230,7 +228,6 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		}
 
-	public:
 		virtual const FileType type() const
 		{
 			return FileTypes::Core;
@@ -244,7 +241,11 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
+		void SetDefaults()
+		{
+			m_sCreator = L"";
+			m_sLastModifiedBy = L"";
+		}
 		void SetCreator(std::wstring sVal)
 		{
 			m_sCreator = sVal;

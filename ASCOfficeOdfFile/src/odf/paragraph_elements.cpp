@@ -594,7 +594,8 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 	}
 
     style_instance * styleInst = NULL;
-    
+ 	style_text_properties_ptr tempStyleTextProp;
+   
     if (!text_style_name_.empty())
         styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text, Context.process_headers_footers_);
     else if (false == Context.is_table_content())
@@ -616,8 +617,6 @@ void a::docx_convert(oox::docx_conversion_context & Context)
         }
         else
         {
-			style_text_properties_ptr tempStyleTextProp;
-			
 			const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
             tempStyleTextProp = style_text_properties_ptr( new style_text_properties(id) );
             Context.push_text_properties( tempStyleTextProp.get() );

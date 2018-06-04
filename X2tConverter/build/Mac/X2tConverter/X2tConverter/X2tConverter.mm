@@ -32,6 +32,8 @@
 
 #import "X2tConverter.h"
 
+#include "version.h"
+
 #include "cextracttools.h"
 #include "ASCConverters.h"
 
@@ -384,6 +386,10 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     }
     
     return values;
+}
+
++ (NSString *)version {
+    return [[NSString alloc] initWithUTF8String:X2T_VERSION];
 }
 
 @end

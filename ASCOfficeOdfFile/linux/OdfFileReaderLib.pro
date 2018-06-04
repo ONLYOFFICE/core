@@ -77,6 +77,7 @@ SOURCES += \
     ../src/odf/office_settings.cpp \
     ../src/odf/office_spreadsheet.cpp \
     ../src/odf/office_text.cpp \
+    ../src/odf/office_meta.cpp \
     ../src/odf/paragraph_elements.cpp \
     ../src/odf/ruby.cpp \
     ../src/odf/search_table_cell.cpp \
@@ -342,6 +343,7 @@ HEADERS += \
     ../src/odf/office_settings.h \
     ../src/odf/office_spreadsheet.h \
     ../src/odf/office_text.h \
+    ../src/odf/office_meta.h \
     ../src/odf/paragraph_elements.h \
     ../src/odf/ruby.h \
     ../src/odf/search_table_cell.h \

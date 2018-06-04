@@ -67,6 +67,7 @@
 #include "../src/odf/office_settings.cpp"
 #include "../src/odf/office_spreadsheet.cpp"
 #include "../src/odf/office_text.cpp"
+#include "../src/odf/office_meta.cpp"
 #include "../src/odf/paragraph_elements.cpp"
 #include "../src/odf/ruby.cpp"
 #include "../src/odf/search_table_cell.cpp"

@@ -1056,7 +1056,7 @@ namespace OOX
 			std::vector<std::wstring> sAnchors;
             boost::algorithm::split(sAnchors, m_oAnchor.get(), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 			
-			if (sAnchors.size() != 8) return; //???? todoooo
+			if (sAnchors.size() < 8) return;
 
 			if (pCellAnchor == NULL)
 			{

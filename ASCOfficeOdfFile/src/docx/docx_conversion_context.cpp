@@ -334,9 +334,11 @@ void docx_conversion_context::end_math_formula()
 		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
 	}
 }
-void docx_conversion_context::start_table_content(int type)
+void docx_conversion_context::start_sdt(int type)
 {
 	in_table_content_ = true;
+
+	table_content_context_.type_table_content = type;
 
 	std::wstring sType;
 
@@ -349,15 +351,66 @@ void docx_conversion_context::start_table_content(int type)
 	output_stream() << L"<w:sdt>";
 	output_stream() << L"<w:sdtPr>";
 	//output_stream() << L"<w:id w:val=\"-505364165\"/>";
-	output_stream() << L"<w:docPartObj>";
-	output_stream() << L"<w:docPartGallery w:val=\"" << sType << L"\"/>";
-	output_stream() << L"<w:docPartUnique/>";
-	output_stream() << L"</w:docPartObj>";
+
+	if (false == sType.empty())
+	{
+		output_stream() << L"<w:docPartObj>";
+		output_stream() << L"<w:docPartGallery w:val=\"" << sType << L"\"/>";
+		output_stream() << L"<w:docPartUnique/>";
+		output_stream() << L"</w:docPartObj>";
+	}
 	output_stream() << L"</w:sdtPr>";
 	output_stream() << L"<w:sdtContent>";
 }
 
-void docx_conversion_context::end_table_content()
+void docx_conversion_context::start_index_content()
+{
+	if (!in_table_content_) return;
+
+	start_paragraph(false);
+
+	std::wstring sInstrText;
+
+	switch(table_content_context_.type_table_content)
+	{
+		case 1: sInstrText = L" TOC \\o \"1-3\" \\u \\l 1-3 \\t \"_PrefaceTitle;1;IPG_task_title;6\" "; break;
+		case 2: sInstrText = L" TOC \\h \\z \\c \"Illustration\" "; break;
+	}
+
+	output_stream() << L"<w:r>";
+	output_stream() << L"<w:fldChar w:fldCharType=\"begin\"/>";
+	output_stream() << L"</w:r>";
+	output_stream() << L"<w:r>";
+	output_stream() << L"<w:instrText xml:space=\"preserve\">" + sInstrText + L"</w:instrText>";
+	output_stream() << L"</w:r>";
+	output_stream() << L"<w:r>";
+	//output_stream() << L"<w:rPr>
+	//output_stream() << L"<w:rFonts w:ascii="Minion Pro" w:eastAsia="DejaVuSans" w:hAnsi="Minion Pro"/>
+	//output_stream() << L"<w:bCs w:val="0"/>
+	//output_stream() << L"<w:sz w:val="21"/>
+	//output_stream() << L"<w:szCs w:val="24"/>
+	//output_stream() << L"</w:rPr>
+	output_stream() << L"<w:fldChar w:fldCharType=\"separate\"/>";
+	output_stream() << L"</w:r>";
+	
+	finish_paragraph();
+}
+void docx_conversion_context::end_index_content()
+{
+	if (!in_table_content_) return;
+
+	start_paragraph(false);
+	output_stream() << L"<w:r>";
+	//output_stream() << L"<w:rPr>";
+	//output_stream() << L"<w:rFonts w:ascii="Minion Pro" w:hAnsi="Minion Pro"/>";
+	//output_stream() << L"<w:sz w:val="20"/>
+	//output_stream() << L"</w:rPr>";
+	output_stream() << L"<w:fldChar w:fldCharType=\"end\"/>";
+	output_stream() << L"</w:r>";
+	
+	finish_paragraph();
+}
+void docx_conversion_context::end_sdt()
 {
 	if (!in_table_content_) return;
 
@@ -365,6 +418,14 @@ void docx_conversion_context::end_table_content()
 	output_stream() << L"</w:sdt>";
 	
 	in_table_content_ = false;
+}
+void docx_conversion_context::start_index_element()
+{
+	table_content_context_.clear_current_level_index();
+}
+void docx_conversion_context::end_index_element()
+{
+	table_content_context_.clear_current_level_index();
 }
 void docx_conversion_context::start_bookmark (const std::wstring &name)
 {
@@ -1267,7 +1328,11 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 	
 	if (false == Attr->text_style_name_.empty())
     {
-        if (odf_reader::style_instance * styleInst =
+		if (in_table_content_ && Attr->text_style_name_.empty())
+		{
+			table_content_context_.set_current_level(Attr->text_style_name_);
+		}
+		if (odf_reader::style_instance * styleInst =
 				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_)
             )
         {
@@ -1280,10 +1345,13 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 					//office_element_ptr parent_tab_stops_;
                     if (const odf_reader::style_instance * parentStyleContent = styleInst->parent())
 					{
-                        id = styles_map_.get( parentStyleContent->name(), parentStyleContent->type() );
+						std::wstring parent_name = parentStyleContent->name();
+                        id = styles_map_.get( parent_name, parentStyleContent->type() );
 
-						//odf_reader::paragraph_format_properties parent_properties = odf_reader::calc_paragraph_properties_content(styleInst);
-						//parent_tab_stops_ = parent_properties.style_tab_stops_;
+						if (in_table_content_ && table_content_context_.empty_current_table_content_level_index())
+						{
+							table_content_context_.set_current_level(parent_name);
+						}
 					}
 
                     start_automatic_style(id);

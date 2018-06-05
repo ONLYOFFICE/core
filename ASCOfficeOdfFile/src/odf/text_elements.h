@@ -238,7 +238,7 @@ public:
 
 };
 
-class text_section : public text_content_impl<text_section>
+class section : public text_content_impl<section>
 {
 public:
     static const wchar_t * ns;
@@ -264,9 +264,9 @@ private:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(text_section);
+CP_REGISTER_OFFICE_ELEMENT2(section);
 
-class text_section_source_attr
+class section_source_attr
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -280,7 +280,7 @@ private:
 };
 
 //---------------------------------------------------------------------------------------------------
-class text_section_source : public text_content_impl<text_section_source>
+class section_source : public text_content_impl<section_source>
 {
 public:
     static const wchar_t * ns;
@@ -293,13 +293,13 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    text_section_source_attr text_section_source_attr_;
+    section_source_attr text_section_source_attr_;
     
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_section_source);
+CP_REGISTER_OFFICE_ELEMENT2(section_source);
 
 //---------------------------------------------------------------------------------------------------
-class text_table_of_content : public text_content_impl<text_table_of_content>
+class table_of_content : public text_content_impl<table_of_content>
 {
 public:
     static const wchar_t * ns;
@@ -325,10 +325,10 @@ public:
     office_element_ptr	text_index_body_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_table_of_content);
+CP_REGISTER_OFFICE_ELEMENT2(table_of_content);
 
 //---------------------------------------------------------------------------------------------------
-class text_table_index : public text_content_impl<text_table_index>
+class table_index : public text_content_impl<table_index>
 {
 public:
     static const wchar_t * ns;
@@ -353,10 +353,10 @@ public:
     office_element_ptr	text_index_body_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_table_index);
+CP_REGISTER_OFFICE_ELEMENT2(table_index);
 
 //---------------------------------------------------------------------------------------------------
-class text_illustration_index : public text_content_impl<text_illustration_index>
+class illustration_index : public text_content_impl<illustration_index>
 {
 public:
     static const wchar_t * ns;
@@ -384,9 +384,9 @@ public:
     office_element_ptr	text_index_body_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index);
+CP_REGISTER_OFFICE_ELEMENT2(illustration_index);
 //---------------------------------------------------------------------------------------------------
-class text_alphabetical_index : public text_content_impl<text_alphabetical_index>
+class alphabetical_index : public text_content_impl<alphabetical_index>
 {
 public:
     static const wchar_t * ns;
@@ -414,9 +414,9 @@ public:
     office_element_ptr	text_index_body_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index);
+CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index);
 //------------------------------------------------------------------------------------------------------------
-class text_bibliography : public text_content_impl<text_bibliography>
+class bibliography : public text_content_impl<bibliography>
 {
 public:
     static const wchar_t * ns;
@@ -443,7 +443,7 @@ public:
     office_element_ptr	text_bibliography_source_;
     office_element_ptr	text_index_body_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_bibliography);
+CP_REGISTER_OFFICE_ELEMENT2(bibliography);
 //---------------------------------------------------------------------------------------------------
 //typeTextTableIndex,
 //typeTextObjectIndex,
@@ -452,7 +452,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_bibliography);
 //---------------------------------------------------------------------------------------------------
 //text:bibliography-mark
 
-class text_bibliography_attr
+class bibliography_attr
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -469,7 +469,7 @@ public:
 	//todooo to map or list
 };
 
-class text_bibliography_mark : public text_content_impl<text_bibliography_mark>
+class bibliography_mark : public text_content_impl<bibliography_mark>
 {
 public:
     static const wchar_t * ns;
@@ -484,7 +484,7 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-    text_bibliography_attr	text_bibliography_attr_;
+    bibliography_attr	text_bibliography_attr_;
     office_element_ptr		content_;
 
 private:
@@ -492,9 +492,9 @@ private:
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_bibliography_mark);
+CP_REGISTER_OFFICE_ELEMENT2(bibliography_mark);
 //---------------------------------------------------------------------------------------------------
-class text_index_body : public text_content_impl<text_index_body>
+class index_body : public text_content_impl<index_body>
 {
 public:
     static const wchar_t * ns;
@@ -508,16 +508,16 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-    office_element_ptr_array content_;
+	office_element_ptr			index_title_;
+    office_element_ptr_array	content_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_index_body);
-
+CP_REGISTER_OFFICE_ELEMENT2(index_body);
 //---------------------------------------------------------------------------------------------------
-class text_index_title : public text_content_impl<text_index_title>
+class index_title : public text_content_impl<index_title>
 {
 public:
     static const wchar_t * ns;
@@ -536,14 +536,15 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    text_section_attr			text_section_attr_;
+	_CP_OPT(std::wstring)		xml_id_;
+	text_section_attr			text_section_attr_;
     office_element_ptr_array	content_;
     
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_index_title);
+CP_REGISTER_OFFICE_ELEMENT2(index_title);
 
 //---------------------------------------------------------------------------------------------------
-class text_unknown_base_change : public office_element_impl<text_unknown_base_change>
+class unknown_base_change : public office_element_impl<unknown_base_change>
 {
 public:
 	static const wchar_t * ns;
@@ -565,7 +566,7 @@ private:
 };
 
 //---------------------------------------------------------------------------------------------------
-class text_unknown_change : public text_unknown_base_change
+class unknown_change : public unknown_base_change
 {
 public:
 	static const wchar_t * ns;
@@ -575,10 +576,10 @@ public:
     
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_unknown_change);
+CP_REGISTER_OFFICE_ELEMENT2(unknown_change);
 
 //---------------------------------------------------------------------------------------------------
-class text_insertion : public text_unknown_base_change
+class insertion : public unknown_base_change
 {
 public:
     static const wchar_t * ns;
@@ -589,10 +590,10 @@ public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(text_insertion);
+CP_REGISTER_OFFICE_ELEMENT2(insertion);
 
 //---------------------------------------------------------------------------------------------------
-class text_deletion : public text_unknown_base_change
+class deletion : public unknown_base_change
 {
 public:
     static const wchar_t * ns;
@@ -603,10 +604,10 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(text_deletion);
+CP_REGISTER_OFFICE_ELEMENT2(deletion);
 
 //---------------------------------------------------------------------------------------------------
-class text_format_change : public text_unknown_base_change
+class format_change : public unknown_base_change
 {
 public:
     static const wchar_t * ns;
@@ -619,10 +620,10 @@ public:
 	
 	_CP_OPT(std::wstring)	text_style_name_; //не по снецификации ... но КАК сохранить то что было изменено в формате?????
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_format_change);
+CP_REGISTER_OFFICE_ELEMENT2(format_change);
 
 //---------------------------------------------------------------------------------------------------
-class text_tracked_changes : public office_element_impl<text_tracked_changes>
+class tracked_changes : public office_element_impl<tracked_changes>
 {
 public:
     static const wchar_t * ns;
@@ -640,10 +641,10 @@ private:
 	_CP_OPT(odf_types::Bool)	text_track_changes_;
     office_element_ptr_array	content_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_tracked_changes);
+CP_REGISTER_OFFICE_ELEMENT2(tracked_changes);
 
 //---------------------------------------------------------------------------------------------------
-class text_changed_region : public office_element_impl<text_changed_region>
+class changed_region : public office_element_impl<changed_region>
 {
 public:
     static const wchar_t * ns;
@@ -661,10 +662,10 @@ private:
 	_CP_OPT(std::wstring)		text_id_; //== xml:id
     office_element_ptr_array	content_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_changed_region);
+CP_REGISTER_OFFICE_ELEMENT2(changed_region);
 
 //---------------------------------------------------------------------------------------------------
-class text_add_change : public office_element_impl<text_add_change>
+class add_change : public office_element_impl<add_change>
 {
 public:
  	static const wchar_t * ns;
@@ -685,7 +686,7 @@ private:
 };
 
 //---------------------------------------------------------------------------------------------------
-class text_change : public text_add_change
+class change : public add_change
 {
 public:
     static const wchar_t * ns;
@@ -695,10 +696,10 @@ public:
    
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_change);
+CP_REGISTER_OFFICE_ELEMENT2(change);
 
 //---------------------------------------------------------------------------------------------------
-class text_change_start : public text_add_change
+class change_start : public add_change
 {
 public:
     static const wchar_t * ns;
@@ -708,10 +709,10 @@ public:
 	
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_change_start);
+CP_REGISTER_OFFICE_ELEMENT2(change_start);
 
 //---------------------------------------------------------------------------------------------------
-class text_change_end : public text_add_change
+class change_end : public add_change
 {
 public:
     static const wchar_t * ns;
@@ -721,11 +722,11 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_change_end);
+CP_REGISTER_OFFICE_ELEMENT2(change_end);
 //-------------------------------------------------------------------------------------------------------------------
 //text:variable-input
 //---------------------------------------------------------------------------------------------------
-class text_variable_input : public office_element_impl<text_variable_input>
+class variable_input : public office_element_impl<variable_input>
 {
 public:
     static const wchar_t * ns;
@@ -750,11 +751,11 @@ private:
 
     std::wstring			text_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_variable_input);
+CP_REGISTER_OFFICE_ELEMENT2(variable_input);
 //-------------------------------------------------------------------------------------------------------------------
 //text:variable-get
 //---------------------------------------------------------------------------------------------------
-class text_variable_get : public office_element_impl<text_variable_get>
+class variable_get : public office_element_impl<variable_get>
 {
 public:
     static const wchar_t * ns;
@@ -774,11 +775,11 @@ private:
 	_CP_OPT(std::wstring)	text_name_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_variable_get);
+CP_REGISTER_OFFICE_ELEMENT2(variable_get);
 //-------------------------------------------------------------------------------------------------------------------
 //text:variable-set
 //---------------------------------------------------------------------------------------------------
-class text_variable_set : public office_element_impl<text_variable_set>
+class variable_set : public office_element_impl<variable_set>
 {
 public:
     static const wchar_t * ns;
@@ -801,11 +802,11 @@ private:
 	_CP_OPT(std::wstring)			text_name_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_variable_set);
+CP_REGISTER_OFFICE_ELEMENT2(variable_set);
 //---------------------------------------------------------------------------------------------------
 //text:variable-decl
 //---------------------------------------------------------------------------------------------------
-class text_variable_decl : public office_element_impl<text_variable_decl>
+class variable_decl : public office_element_impl<variable_decl>
 {
 public:
     static const wchar_t * ns;
@@ -825,11 +826,11 @@ private:
 	_CP_OPT(std::wstring)	text_name_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_variable_decl);
+CP_REGISTER_OFFICE_ELEMENT2(variable_decl);
 //---------------------------------------------------------------------------------------------------
 //text:variable-decls
 //---------------------------------------------------------------------------------------------------
-class text_variable_decls : public office_element_impl<text_variable_decls>
+class variable_decls : public office_element_impl<variable_decls>
 {
 public:
     static const wchar_t * ns;
@@ -846,11 +847,11 @@ private:
 
     office_element_ptr_array content_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_variable_decls);
+CP_REGISTER_OFFICE_ELEMENT2(variable_decls);
 //---------------------------------------------------------------------------------------------------
 //text:user-field-decl
 //---------------------------------------------------------------------------------------------------
-class text_user_field_decl : public office_element_impl<text_user_field_decl>
+class user_field_decl : public office_element_impl<user_field_decl>
 {
 public:
     static const wchar_t * ns;
@@ -871,11 +872,11 @@ private:
 	_CP_OPT(std::wstring)						office_formula_;
 	_CP_OPT(std::wstring)						text_name_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_user_field_decl);
+CP_REGISTER_OFFICE_ELEMENT2(user_field_decl);
 //---------------------------------------------------------------------------------------------------
 //text:user-field-decls
 //---------------------------------------------------------------------------------------------------
-class text_user_field_decls : public office_element_impl<text_user_field_decls>
+class user_field_decls : public office_element_impl<user_field_decls>
 {
 public:
     static const wchar_t * ns;
@@ -894,7 +895,184 @@ private:
 
     office_element_ptr_array content_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(text_user_field_decls);
+CP_REGISTER_OFFICE_ELEMENT2(user_field_decls);
+
+//---------------------------------------------------------------------------------------------------
+//text:table-of-content-source
+//---------------------------------------------------------------------------------------------------
+class table_of_content_source: public office_element_impl<table_of_content_source>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextTableOfContentSource;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+    virtual void docx_convert(oox::docx_conversion_context & Context) ;
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+	_CP_OPT(int)				text_outline_level_;
+	_CP_OPT(odf_types::Bool)	text_use_index_marks_;
+	_CP_OPT(odf_types::Bool)	text_use_index_source_styles_;
+	_CP_OPT(odf_types::Bool)	text_use_outline_level_;
+//text:relative-tab-stopposition 19.855, 
+//text:index-scope 19.812, 
+
+	office_element_ptr_array entry_templates_;
+	//<text:index-source-styles> 8.10
+	//<text:index-title-template> 8.12
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_of_content_source);
+
+//---------------------------------------------------------------------------------------------------
+//text:table-of-content-entry-template
+//---------------------------------------------------------------------------------------------------
+class table_of_content_entry_template: public office_element_impl<table_of_content_entry_template>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextTableOfContentEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+    virtual void docx_convert(oox::docx_conversion_context & Context) ;
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+	_CP_OPT(int)				text_outline_level_;
+	_CP_OPT(std::wstring)		text_style_name_;
+
+	office_element_ptr_array	content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_of_content_entry_template);
+
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-chapter
+//---------------------------------------------------------------------------------------------------
+class index_entry_chapter: public office_element_impl<index_entry_chapter>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryChapter;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(index_entry_chapter);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-link-end
+//---------------------------------------------------------------------------------------------------
+class index_entry_link_end: public office_element_impl<index_entry_link_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryLinkEnd;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(index_entry_link_end);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-link-start
+//---------------------------------------------------------------------------------------------------
+class index_entry_link_start: public office_element_impl<index_entry_link_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryLinkStart;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(index_entry_link_start);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-page-number
+//---------------------------------------------------------------------------------------------------
+class index_entry_page_number: public office_element_impl<index_entry_page_number>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryPageNumber;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(index_entry_page_number);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-span
+//---------------------------------------------------------------------------------------------------
+class index_entry_span: public office_element_impl<index_entry_span>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntrySpan;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(index_entry_span);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-tab-stop
+//---------------------------------------------------------------------------------------------------
+class index_entry_tab_stop: public office_element_impl<index_entry_tab_stop>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryTabStop;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(index_entry_tab_stop);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-text
+//---------------------------------------------------------------------------------------------------
+class index_entry_text: public office_element_impl<index_entry_text>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryText;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(index_entry_text);
+//---------------------------------------------------------------------------------------------------
 }
 }
 }

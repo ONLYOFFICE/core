@@ -91,7 +91,7 @@ void paragraph_content_element<ElementT>::docx_serialize_field(const std::wstrin
 	}
 }
 template <class ElementT>
-void paragraph_content_element<ElementT>::docx_serialize_sdt(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context)
+void paragraph_content_element<ElementT>::docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context)
 {
 	std::wostream & strm = Context.output_stream();
 	Context.finish_run();	
@@ -100,11 +100,6 @@ void paragraph_content_element<ElementT>::docx_serialize_sdt(const std::wstring 
 	strm << name;
 	strm << L"\"/><w:temporary/>";
 	strm << L"<w:showingPlcHdr/><w:text/></w:sdtPr><w:sdtContent>";
-
-	//if (!text)
-	//{
-	//	text = text::create(L"Enter your text here") ;
-	//}
 
 	docx_serialize_run(text, Context);
 
@@ -153,7 +148,13 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 			Context.output_stream() << L"<w:del>";
 		}
 	}  
-	
+	if (Context.is_table_content())
+	{
+		int type = Context.get_table_content_context().get_type_current_level_index();
+		if (type == 6)
+		{
+		}
+	}	
 	Context.add_element_to_run();
   
 	std::wstring textNode = L"w:t";
@@ -584,6 +585,9 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 	if (Context.is_table_content())
 	{
 		_Wostream << L"<w:hyperlink w:anchor=\"" << ref.substr(1) << L"\" w:history=\"1\">"; //без #
+		int type = Context.get_table_content_context().get_type_current_level_index();
+		//type == 3 (LinkStart)
+		Context.get_table_content_context().next_level_index();
 	}
 	else
 	{
@@ -633,7 +637,11 @@ void a::docx_convert(oox::docx_conversion_context & Context)
     for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);
-    }
+ 		if (Context.is_table_content())
+		{
+			Context.get_table_content_context().next_level_index();
+		}
+	}
 
 	Context.finish_run();
 	
@@ -930,7 +938,7 @@ void text_placeholder::add_text(const std::wstring & Text)
 
 void text_placeholder::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Click placeholder and overwrite", text_, Context);
+	docx_serialize_sdt_placeholder(L"Click placeholder and overwrite", text_, Context);
 }
 
 void text_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
@@ -1351,7 +1359,7 @@ void sheet_name::add_text(const std::wstring & Text)
 }
 void sheet_name::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"sheet name", text_, Context);
+	docx_serialize_sdt_placeholder(L"sheet name", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * author_name::ns = L"text";
@@ -1397,7 +1405,7 @@ void sender_city::add_text(const std::wstring & Text)
 }
 void sender_city::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender city", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender city", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_email::ns = L"text";
@@ -1412,7 +1420,7 @@ void sender_email::add_text(const std::wstring & Text)
 }
 void sender_email::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender email", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender email", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_lastname::ns = L"text";
@@ -1427,7 +1435,7 @@ void sender_lastname::add_text(const std::wstring & Text)
 }
 void sender_lastname::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender last name", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender last name", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_firstname::ns = L"text";
@@ -1442,7 +1450,7 @@ void sender_firstname::add_text(const std::wstring & Text)
 }
 void sender_firstname::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender first name", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender first name", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_company::ns = L"text";
@@ -1457,7 +1465,7 @@ void sender_company::add_text(const std::wstring & Text)
 }
 void sender_company::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender company", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender company", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_postal_code::ns = L"text";
@@ -1479,7 +1487,7 @@ void sender_postal_code::add_text(const std::wstring & Text)
 }
 void sender_postal_code::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender postal code", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender postal code", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_street::ns = L"text";
@@ -1494,7 +1502,7 @@ void sender_street::add_text(const std::wstring & Text)
 }
 void sender_street::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender street", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender street", text_, Context);
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -1510,7 +1518,7 @@ void sender_state_or_province::add_text(const std::wstring & Text)
 }
 void sender_state_or_province::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender state or province", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender state or province", text_, Context);
 }
 //---------------------------------------------------------------------------------------------------
 const wchar_t * text_user_field_get::ns		= L"text";

@@ -127,6 +127,15 @@ enum ElementType
 
     typeTextTableOfContent,
     typeTextTableOfContentSource,
+	typeTextTableOfContentEntryTemplate,
+
+	typeTextIndexEntryText,
+	typeTextIndexEntryTabStop,
+	typeTextIndexEntrySpan,
+	typeTextIndexEntryPageNumber,
+	typeTextIndexEntryLinkStart,
+	typeTextIndexEntryLinkEnd,
+	typeTextIndexEntryChapter,
     
 	typeTextIllustrationIndex,
     typeTextIllustrationIndexSource,

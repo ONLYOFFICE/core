@@ -56,7 +56,7 @@ template <class ElementT>
 class paragraph_content_element :  public office_element_impl<ElementT>
 {
 public:
-	void docx_serialize_sdt(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context);
+	void docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context);
 	void docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, oox::docx_conversion_context & Context, bool bLock = false);
 	void docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context);
 };

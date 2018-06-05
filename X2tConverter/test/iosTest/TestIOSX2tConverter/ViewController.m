@@ -52,6 +52,8 @@
 {
     [super viewDidLoad];
     
+    NSLog(@"x2t version converter: %@", [X2tConverter version]);
+    
     NSLog(@"%@", [X2tConverter delimiters]);
     NSLog(@"%@", [X2tConverter encodingings]);
 

@@ -78,7 +78,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	
 	if (!paragraph_properties)return;
 
-	const office_element_ptr & elm_style_drop_cap = paragraph_properties->content().style_drop_cap_;
+	const office_element_ptr & elm_style_drop_cap = paragraph_properties->content_.style_drop_cap_;
 
 	if (!elm_style_drop_cap)return;
 			
@@ -1387,18 +1387,13 @@ const wchar_t * text_variable_set::name	= L"variable-set";
 
 void text_variable_set::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"office:value-type",		office_value_type_);
 	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
 	CP_APPLY_ATTR(L"text:display",			text_display_);
 	CP_APPLY_ATTR(L"text:name",				text_name_);
 
-	CP_APPLY_ATTR(L"office:value",			office_value_);
-	CP_APPLY_ATTR(L"office:boolean-value",	office_boolean_value_);
-	CP_APPLY_ATTR(L"office:date-value",		office_date_value_);
-	CP_APPLY_ATTR(L"office:time-value",		office_time_value_);
-	CP_APPLY_ATTR(L"office:string-value",	office_string_value_);
-	CP_APPLY_ATTR(L"office:currency",		office_currency_);
 	CP_APPLY_ATTR(L"office:formula",		office_formula_);
+	
+	office_value_.add_attributes(Attributes);
 }
 void text_variable_set::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1445,17 +1440,10 @@ const wchar_t * text_user_field_decl::name	= L"user-field-decl";
 
 void text_user_field_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"office:value-type",		office_value_type_);
 	CP_APPLY_ATTR(L"text:name",				text_name_);
-
-	CP_APPLY_ATTR(L"office:value",			office_value_);
-	CP_APPLY_ATTR(L"office:boolean-value",	office_boolean_value_);
-	CP_APPLY_ATTR(L"office:date-value",		office_date_value_);
-	CP_APPLY_ATTR(L"office:time-value",		office_time_value_);
-	CP_APPLY_ATTR(L"office:string-value",	office_string_value_);
-	CP_APPLY_ATTR(L"office:currency",		office_currency_);
 	CP_APPLY_ATTR(L"office:formula",		office_formula_);
 
+	office_value_.add_attributes(Attributes);
 }
 void text_user_field_decl::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1463,12 +1451,12 @@ void text_user_field_decl::docx_convert(oox::docx_conversion_context & Context)
 
 	std::wstring value;
 
-	if (office_string_value_)		value = *office_string_value_;
-	else if (office_value_)			value = *office_value_;
-	else if (office_date_value_)	value = *office_date_value_;
-	else if (office_time_value_)	value = *office_time_value_;
-	else if (office_currency_)		value = *office_currency_;
-	else if (office_boolean_value_)	value = *office_boolean_value_;
+	if (office_value_.office_string_value_)		value = *office_value_.office_string_value_;
+	else if (office_value_.office_value_)		value = *office_value_.office_value_;
+	else if (office_value_.office_date_value_)	value = *office_value_.office_date_value_;
+	else if (office_value_.office_time_value_)	value = *office_value_.office_time_value_;
+	else if (office_value_.office_currency_)	value = *office_value_.office_currency_;
+	else if (office_value_.office_boolean_value_)value = *office_value_.office_boolean_value_;
 
 	Context.add_user_field(*text_name_, value);
 }

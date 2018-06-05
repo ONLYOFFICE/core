@@ -41,6 +41,7 @@
 #include <vector>
 
 namespace cpdoccore { 
+	class tabs_context;
 namespace odf_reader {
 
 graphic_format_properties calc_graphic_properties_content(const style_instance * styleInstance);
@@ -55,5 +56,6 @@ paragraph_format_properties calc_paragraph_properties_content(const std::vector<
 style_table_cell_properties_attlist calc_table_cell_properties(const style_instance * styleInstance);
 style_table_cell_properties_attlist calc_table_cell_properties(const std::vector<const style_instance *> & styleInstances);
 
+void calc_tab_stops(const style_instance * styleInstance, tabs_context & context);
 }
 }

@@ -41,6 +41,8 @@
 
 @interface X2tConverter : NSObject
 
++ (NSString *)version;
+
 @property (strong) NSString* password;
 @property (assign) BOOL isNoBase64;
 @property (strong) NSNumber* delimiter;

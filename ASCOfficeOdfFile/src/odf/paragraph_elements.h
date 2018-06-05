@@ -1153,6 +1153,35 @@ private:
 	office_element_ptr		text_;    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_user_field_get);
+//-------------------------------------------------------------------------------------------------------------------
+//text:user-defined
+//---------------------------------------------------------------------------------------------------
+class text_user_defined : public paragraph_content_element<text_user_defined>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextUserDefined;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(std::wstring)						style_data_style_name_;
+	_CP_OPT(std::wstring)						text_name_;
+	_CP_OPT(odf_types::Bool)					text_fixed_;
+	odf_types::common_value_and_type_attlist	office_value_;
+	
+	office_element_ptr	text_;    
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_user_defined);
+
 } // namespace text
 //-------------------------------------------------------------------------------------------------------------------
 //presentation:footer

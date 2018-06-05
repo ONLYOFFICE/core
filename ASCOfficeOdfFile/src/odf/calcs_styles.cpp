@@ -31,8 +31,6 @@
  */
 
 #include "calcs_styles.h"
-#include <boost/foreach.hpp>
-#include <vector>
 #include <algorithm>
 
 namespace cpdoccore { 
@@ -44,10 +42,10 @@ namespace odf_reader {
 text_format_properties_content calc_text_properties_content(const std::vector<const style_text_properties*> & textProps)
 {
     text_format_properties_content result;
-    BOOST_FOREACH(const style_text_properties* v, textProps)
+ 	for (size_t i = 0; i < textProps.size(); i++)
     {
-        if (v)
-            result.apply_from(v->content());
+        if (textProps[i])
+            result.apply_from(textProps[i]->content());
     }
     return result;
 }
@@ -60,20 +58,21 @@ text_format_properties_content calc_text_properties_content(const style_instance
     {
         if (const style_content * content = styleInstance->content())
             if (const style_text_properties * textProp = content->get_style_text_properties())
-                textProps.push_back(textProp);
+			{
+                textProps.insert(textProps.begin(), textProp);
+			}
 		
         styleInstance = styleInstance->parent();
     }
-    reverse(textProps.begin(), textProps.end());
     return calc_text_properties_content(textProps);
 }
 
 text_format_properties_content calc_text_properties_content(const std::vector<const style_instance *> & styleInstances)
 {
     text_format_properties_content result;
-    BOOST_FOREACH(const style_instance * inst, styleInstances)
+ 	for (size_t i = 0; i < styleInstances.size(); i++)
     {
-        result.apply_from(calc_text_properties_content(inst));
+        result.apply_from(calc_text_properties_content(styleInstances[i]));
     }
     return result;
 }
@@ -82,10 +81,10 @@ text_format_properties_content calc_text_properties_content(const std::vector<co
 graphic_format_properties calc_graphic_properties_content(const std::vector<const graphic_format_properties*> & graphicProps)
 {
     graphic_format_properties result;
-    BOOST_FOREACH(const graphic_format_properties* v, graphicProps)
+ 	for (size_t i = 0; i < graphicProps.size(); i++)
     {
-        if (v)
-            result.apply_from(v);
+        if (graphicProps[i])
+			result.apply_from(graphicProps[i]);
     }
     return result;
 }
@@ -97,20 +96,22 @@ graphic_format_properties calc_graphic_properties_content(const style_instance *
     {
         if (const style_content * content = styleInstance->content())
             if (const graphic_format_properties * graphicProp = content->get_graphic_properties())
-                graphicProps.push_back(graphicProp);
+			{
+                graphicProps.insert(graphicProps.begin(), graphicProp);
+			}
 		
         styleInstance = styleInstance->parent();
 	}
-    reverse(graphicProps.begin(), graphicProps.end());
     return calc_graphic_properties_content(graphicProps);
 }
 
 graphic_format_properties calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances)
 {
     graphic_format_properties result;
-    BOOST_FOREACH(const style_instance * inst, styleInstances)
-    {
-		graphic_format_properties f = calc_graphic_properties_content(inst);
+
+ 	for (size_t i = 0; i < styleInstances.size(); i++)
+	{
+		graphic_format_properties f = calc_graphic_properties_content(styleInstances[i]);
         result.apply_from(&f);
     }
     return result;
@@ -121,10 +122,11 @@ graphic_format_properties calc_graphic_properties_content(const std::vector<cons
 paragraph_format_properties calc_paragraph_properties_content(const std::vector<const style_paragraph_properties*> & parProps)
 {
     paragraph_format_properties result;
-    BOOST_FOREACH(const style_paragraph_properties* v, parProps)
+
+	for (size_t i = 0; i < parProps.size(); i++)
     {
-        if (v)
-            result.apply_from(v->content());
+        if (parProps[i])
+            result.apply_from(parProps[i]->content_);
     }
     return result;
 }
@@ -136,32 +138,60 @@ paragraph_format_properties calc_paragraph_properties_content(const style_instan
     {
         if (const style_content * content = styleInstance->content())
             if (const style_paragraph_properties * parProp = content->get_style_paragraph_properties())
-                parProps.push_back(parProp);
+			{
+                parProps.insert(parProps.begin(), parProp);
+			}
         styleInstance = styleInstance->parent();
     }
-    reverse(parProps.begin(), parProps.end());
     return calc_paragraph_properties_content(parProps);
 }
 
 paragraph_format_properties calc_paragraph_properties_content(const std::vector<const style_instance *> & styleInstances)
 {
     paragraph_format_properties result;
-    BOOST_FOREACH(const style_instance * inst, styleInstances)
+	for (size_t i = 0; i < styleInstances.size(); i++)
     {
-        result.apply_from(calc_paragraph_properties_content(inst));
+        result.apply_from(calc_paragraph_properties_content(styleInstances[i]));
     }
     return result;
 }
+
+void calc_tab_stops(const style_instance * styleInstance, tabs_context & context)
+{
+    std::vector<const style_paragraph_properties*> parProps;
+    while (styleInstance)
+    {
+        if (const style_content * content = styleInstance->content())
+            if (const style_paragraph_properties * parProp = content->get_style_paragraph_properties())
+			{
+                parProps.insert(parProps.begin(), parProp);
+			}
+        styleInstance = styleInstance->parent();
+    }
+	for (size_t i = 0; i < parProps.size(); i++)
+	{
+		if (parProps[i]->content_.style_tab_stops_)
+		{
+			style_tab_stops *tab_stops = dynamic_cast<style_tab_stops*>(parProps[i]->content_.style_tab_stops_.get());
+			context.reset();
+			for (size_t j = 0; j < tab_stops->content_.size(); j++)
+			{
+				context.add(tab_stops->content_[j]);
+			}
+		}
+	}
+}
+
 
 //////
 
 style_table_cell_properties_attlist calc_table_cell_properties(const std::vector<const style_table_cell_properties*> & props)
 {
     style_table_cell_properties_attlist result;
-    BOOST_FOREACH(const style_table_cell_properties* v, props)
+	for (size_t i = 0; i < props.size(); i++)
     {
-        if (v)
-            result.apply_from(v->attlist_);
+        if (props[i])
+			result.apply_from(props[i]->attlist_);
     }
     return result;
 }
@@ -173,19 +203,20 @@ style_table_cell_properties_attlist calc_table_cell_properties(const style_insta
     {
         if (const style_content * content = styleInstance->content())
             if (const style_table_cell_properties * prop = content->get_style_table_cell_properties())
-                props.push_back(prop);
+			{
+                props.insert(props.begin(), prop);
+			}
         styleInstance = styleInstance->parent();
     }
-    reverse(props.begin(), props.end());
     return calc_table_cell_properties(props);        
 }
 
 style_table_cell_properties_attlist calc_table_cell_properties(const std::vector<const style_instance *> & styleInstances)
 {
     style_table_cell_properties_attlist result;
-    BOOST_FOREACH(const style_instance * inst, styleInstances)
+	for (size_t i = 0; i < styleInstances.size(); i++)
     {
-        result.apply_from(calc_table_cell_properties(inst));
+        result.apply_from(calc_table_cell_properties(styleInstances[i]));
     }
     return result;
 }

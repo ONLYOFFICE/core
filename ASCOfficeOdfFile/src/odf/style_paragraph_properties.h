@@ -88,6 +88,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+	void docx_convert(oox::docx_conversion_context & Context, bool clear = false);
+
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
@@ -96,8 +98,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
-    odf_types::length						style_position_;
+public:
+	odf_types::length						style_position_;
     _CP_OPT(odf_types::style_type)			style_type_;
     _CP_OPT(wchar_t)						style_char_;
 
@@ -124,20 +126,17 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
     
-    size_t size() const { return style_tab_stops_.size(); }
-
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
+    office_element_ptr_array	content_;
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void add_text(const std::wstring & Text){}
 
-private:
-    office_element_ptr_array style_tab_stops_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stops);
@@ -239,7 +238,7 @@ public:
     
 	office_element_ptr						style_background_image_;
     office_element_ptr						style_drop_cap_;
-    office_element_ptr						style_tab_stops_;                 
+    office_element_ptr						style_tab_stops_;         
 
 	_CP_OPT(odf_types::border_style) fo_border_;          
 	_CP_OPT(odf_types::border_style) fo_border_top_;      
@@ -290,7 +289,7 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-    const paragraph_format_properties & content() const { return content_; }
+    paragraph_format_properties content_;
 
 public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
@@ -302,7 +301,6 @@ private:
 
 
 private:
-    paragraph_format_properties content_;
 
 };
 

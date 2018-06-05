@@ -79,6 +79,9 @@ public:
 	void end_table_view ();
 	
 	void add_view (const std::wstring & name, const std::wstring & value);
+
+	void add_user_defined(const std::wstring & name, const std::wstring & value);
+	std::wstring get_user_defined(const std::wstring & name);
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

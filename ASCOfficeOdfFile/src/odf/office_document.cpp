@@ -74,7 +74,9 @@ void office_document_base::add_child_element( xml::sax * Reader, const std::wstr
         CP_CREATE_ELEMENT(office_scripts_);
     else if CP_CHECK_NAME(L"office", L"settings")
         CP_CREATE_ELEMENT(office_settings_);
-    else if CP_CHECK_NAME(L"manifest", L"file-entry")
+     else if CP_CHECK_NAME(L"office", L"meta")
+        CP_CREATE_ELEMENT(office_meta_);
+   else if CP_CHECK_NAME(L"manifest", L"file-entry")
         CP_CREATE_ELEMENT(manifests_);
 	else
         CP_NOT_APPLICABLE_ELM();

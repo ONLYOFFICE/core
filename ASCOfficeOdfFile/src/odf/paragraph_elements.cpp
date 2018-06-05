@@ -1533,8 +1533,38 @@ void text_user_field_get::docx_convert(oox::docx_conversion_context & Context)
 	if (!text_)
 	{
 		std::wstring value = Context.get_user_field(*text_name_);
-		text_ = text::create(value) ;
+		
+		if (!value.empty())
+			text_ = text::create(value) ;
 	}
+	
+	docx_serialize_run(text_, Context);
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_user_defined::ns	= L"text";
+const wchar_t * text_user_defined::name	= L"user-defined";
+
+void text_user_defined::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
+	CP_APPLY_ATTR(L"text:name",				text_name_);
+    CP_APPLY_ATTR(L"text:fixed",			text_fixed_);
+	
+	office_value_.add_attributes(Attributes);
+}
+void text_user_defined::add_text(const std::wstring & Text)
+{
+    text_ = text::create(Text) ;//cache
+}
+void text_user_defined::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!text_name_) return;
+
+	odf_reader::odf_read_context & odfContext = Context.root()->odf_context();
+	
+	std::wstring value = odfContext.Settings().get_user_defined(*text_name_);
+	if (!value.empty())
+		text_ = text::create(value) ;
 	
 	docx_serialize_run(text_, Context);
 }

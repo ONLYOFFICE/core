@@ -57,6 +57,7 @@
 		69DA32F91CEE100E00E10AF0 /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32491CEE094A00E10AF0 /* libraster_ios.a */; };
 		69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69EC66D21E01770D003527E2 /* libUnicodeConverter.a */; };
 		8A9FAC2B207772E1007787F6 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A9FAC27207772CC007787F6 /* libicu.a */; };
+		8ADB5F4220C52EFE00B72D37 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ADB5F4120C52EFE00B72D37 /* version.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -479,6 +480,7 @@
 		69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = ../../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UnicodeConverter.xcodeproj; path = ../../../../UnicodeConverter/build/UnicodeConverter/UnicodeConverter.xcodeproj; sourceTree = "<group>"; };
 		8A9FAC22207772CC007787F6 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = icu/icu.xcodeproj; sourceTree = "<group>"; };
+		8ADB5F4120C52EFE00B72D37 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -567,6 +569,7 @@
 			isa = PBXGroup;
 			children = (
 				6967AFA51E27918600A129E2 /* src */,
+				8ADB5F4120C52EFE00B72D37 /* version.h */,
 				17C27A171AC2DB3D00E1D003 /* X2tConverter.h */,
 				17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */,
 			);
@@ -828,6 +831,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */,
+				8ADB5F4220C52EFE00B72D37 /* version.h in Headers */,
 				6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */,
 				6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */,
 				6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */,
@@ -845,6 +849,7 @@
 				17C8DEC61ACD696100902C85 /* Sources */,
 				17C8DEC81ACD696100902C85 /* Frameworks */,
 				17C8DECB1ACD696100902C85 /* Headers */,
+				8ADB5F4420C52F6E00B72D37 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1224,6 +1229,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "SIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\" &&\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" &&\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\" &&\nFRAMEWORK=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal/${PROJECT_NAME}.framework\" &&\n\n# Create framework directory structure.\nrm -rf \"${FRAMEWORK}\" &&\nmkdir -p \"${UNIVERSAL_LIBRARY_DIR}\" &&\n\n# Generate universal binary for the device and simulator.\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${FRAMEWORK}\"";
+		};
+		8ADB5F4420C52F6E00B72D37 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "VERSION=$(cat \"../../../../Common/version.txt\")\n\necho \"#ifndef X2T_VERSION_H\n#define X2T_VERSION_H\n\n#define X2T_VERSION \\\"$VERSION\\\"\n\n#endif\" > \"X2tConverter/version.h\"\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

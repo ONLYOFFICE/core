@@ -39,8 +39,57 @@
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
+#include "../odf/style_paragraph_properties.h"
 
 namespace cpdoccore { 
+
+void tabs_context::reset()
+{
+	for (size_t i = 0; i < tabs.size(); i++)
+	{
+		odf_reader::style_tab_stop *tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(tabs[i].get());
+		if (tab_stop)
+		{
+			clear_tabs.insert(std::make_pair(tab_stop->style_position_.get_value(), tabs[i]));
+		}
+	}
+	tabs.clear();
+}
+void tabs_context::add(const odf_reader::office_element_ptr & element)
+{
+	odf_reader::style_tab_stop *tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(element.get());
+	if (tab_stop)
+	{
+		std::map<double, odf_reader::office_element_ptr>::iterator pFind = clear_tabs.find(tab_stop->style_position_.get_value());
+
+		if (pFind != clear_tabs.end())
+		{
+			clear_tabs.erase(pFind);
+		}
+		tabs.push_back(element);
+	}
+}
+void tabs_context::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (clear_tabs.empty() && tabs.empty()) return;
+	
+	std::wstringstream & _pPr = Context.get_styles_context().paragraph_nodes();
+ 
+    _pPr << L"<w:tabs>";
+
+		for (std::map<double, odf_reader::office_element_ptr>::iterator it = clear_tabs.begin(); it != clear_tabs.end(); ++it)
+		{
+			odf_reader::style_tab_stop * tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(it->second.get());
+			tab_stop->docx_convert(Context, true);				
+		}
+
+		for (size_t i = 0; i < tabs.size(); i++)
+		{
+			odf_reader::style_tab_stop * tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(tabs[i].get());
+			tab_stop->docx_convert(Context, false);
+		}
+    _pPr << L"</w:tabs>";
+}
 
 void styles_context::start_process_style(const odf_reader::style_instance * Instance)
 {

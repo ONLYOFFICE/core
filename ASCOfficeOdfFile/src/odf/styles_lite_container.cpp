@@ -113,6 +113,8 @@ public:
 
 	bool inViewTable;
 	bool inView;
+
+	std::map<std::wstring, std::wstring> map_user_defineds;
 };
 
 settings_container::settings_container(): impl_(new settings_container::Impl() )
@@ -263,6 +265,16 @@ _CP_OPT(std::wstring) settings_container::find_view_by_name(const std::wstring &
 		}
 	}
 	return value;
+}
+void settings_container::add_user_defined(const std::wstring & name, const std::wstring & value)
+{
+	impl_->map_user_defineds.insert(std::make_pair(name, value));
+}
+std::wstring settings_container::get_user_defined(const std::wstring & name)
+{
+	std::map<std::wstring, std::wstring>::iterator pFind = impl_->map_user_defineds.find(name);
+
+	return pFind != impl_->map_user_defineds.end() ? pFind->second : L"";
 }
 
 }

@@ -649,7 +649,7 @@ public:
 	{
 		current_template.clear();
 		caption_sequence_name.clear();
-		type_table_content = 0;
+		type_table_content = type;
 	}
 	void end_template()
 	{

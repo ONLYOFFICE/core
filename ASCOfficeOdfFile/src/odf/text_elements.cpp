@@ -1651,59 +1651,6 @@ void bibliography_entry_template::docx_convert(oox::docx_conversion_context & Co
 {
 	common_entry_template::docx_convert( Context );
 }
-//-----------------------------------------------------------------------------------------------
-// text:bibliography-mark
-//-----------------------------------------------------------------------------------------------
-const wchar_t * bibliography_mark::ns = L"text";
-const wchar_t * bibliography_mark::name = L"bibliography-mark";
-
-void bibliography_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"text:identifier",			identifier_, std::wstring(L""));
-    CP_APPLY_ATTR(L"text:bibliography-type",	bibliography_type_, std::wstring(L""));
-    CP_APPLY_ATTR(L"text:author",				author_);
-    CP_APPLY_ATTR(L"text:url",					url_);
-    CP_APPLY_ATTR(L"text:title",				title_);
-    CP_APPLY_ATTR(L"text:year",					year_);
-}
-
-void bibliography_mark::add_text(const std::wstring & Text)
-{
-    office_element_ptr elm = text::create(Text) ;
-	content_ = elm;
-}
-
-std::wostream & bibliography_mark::text_to_stream(std::wostream & _Wostream) const
-{
-    CP_SERIALIZE_TEXT(content_);
-    return _Wostream;
-}
-
-void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
-{
-	if (content_)
-        content_->docx_convert(Context);
-}
-
-void bibliography_mark::pptx_convert(oox::pptx_conversion_context & Context)
-{
-    if (content_)
-        content_->pptx_convert(Context);
-}
-//-----------------------------------------------------------------------------------------------
-// text:alphabetical-index-auto-mark-file
-//-----------------------------------------------------------------------------------------------
-const wchar_t * alphabetical_index_auto_mark_file::ns = L"text";
-const wchar_t * alphabetical_index_auto_mark_file::name = L"alphabetical-index-auto-mark-file";
-
-void alphabetical_index_auto_mark_file::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	xlink_attlist_.add_attributes(Attributes);
-}
-void alphabetical_index_auto_mark_file::docx_convert(oox::docx_conversion_context & Context)
-{
-}
-
 //--------------------------------------------------------------------------------------------------------
 // text:tracked-changes
 const wchar_t * tracked_changes::ns		= L"text";

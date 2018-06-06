@@ -369,12 +369,13 @@ void docx_conversion_context::start_index_content()
 
 	start_paragraph(false);
 
-	std::wstring sInstrText = L" TOC \\h";
+	std::wstring sInstrText;
 
 	switch(table_content_context_.type_table_content)
 	{
-		case 1: sInstrText += L" \\o \"1-3\" \\u \\l 1-3 "; break;
-		case 2: sInstrText += L" \\z"; break;
+		case 1: sInstrText += L" TOC \\h \\o \"1-3\" \\u \\l 1-3 "; break;
+		case 2: sInstrText += L" TOC \\h \\z"; break;
+		case 5: sInstrText += L" INDEX \\c \"2\" \\z \"1049\" "; break;
 	}
 
 	if (!table_content_context_.caption_sequence_name.empty())

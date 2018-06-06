@@ -577,62 +577,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(bibliography_entry_template);
 //---------------------------------------------------------------------------------------------------
-//text:bibliography-mark
-//---------------------------------------------------------------------------------------------------
-class bibliography_mark : public text_content_impl<bibliography_mark>
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
-    static const ElementType	type		= typeTextBibliographyMark;
-    
-	CPDOCCORE_DEFINE_VISITABLE();
-
-	void docx_convert(oox::docx_conversion_context & Context);
-	void pptx_convert(oox::pptx_conversion_context & Context) ;
-
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-
-    std::wstring			identifier_;
-    std::wstring			bibliography_type_; // todoooo in datatype
-    
-	_CP_OPT(std::wstring)	url_;
-    _CP_OPT(std::wstring)	author_;
-    _CP_OPT(std::wstring)	title_;
-    _CP_OPT(std::wstring)	year_;
-    _CP_OPT(std::wstring)	isbn_;
-	_CP_OPT(std::wstring)	chapter_;
-
-	office_element_ptr		content_;
-
-private:
-    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
-    virtual void add_text			(const std::wstring & Text);
-};
-CP_REGISTER_OFFICE_ELEMENT2(bibliography_mark);
-//---------------------------------------------------------------------------------------------------
-//text:alphabetical-index-auto-mark-file
-//---------------------------------------------------------------------------------------------------
-class alphabetical_index_auto_mark_file : public text_content_impl<alphabetical_index_auto_mark_file>
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
-    static const ElementType	type		= typeTextAlphabeticalIndexAutoMarkFile;    
-	CPDOCCORE_DEFINE_VISITABLE();
-
-	void docx_convert(oox::docx_conversion_context & Context);
-
-    odf_types::common_xlink_attlist xlink_attlist_;
-
-private:
-    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
-};
-CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_auto_mark_file);
+//text:index-body
 //---------------------------------------------------------------------------------------------------
 class index_body : public text_content_impl<index_body>
 {
@@ -1082,7 +1027,7 @@ private:
 
 	office_element_ptr			index_title_template_;
 	office_element_ptr_array	entry_templates_;
-	office_element_ptr			index_source_styles_;
+	office_element_ptr_array	index_source_styles_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_of_content_source);
 
@@ -1472,7 +1417,7 @@ private:
 
 	office_element_ptr			index_title_template_;
 	office_element_ptr_array	entry_templates_;
-	office_element_ptr			index_source_styles_;
+	office_element_ptr_array	index_source_styles_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(user_index_source);
 //---------------------------------------------------------------------------------------------------

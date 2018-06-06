@@ -58,6 +58,8 @@ namespace _image_file_
 {
     bool GetResolution(const wchar_t* fileName, int & Width, int &Height, NSFonts::IApplicationFonts* appFonts)
 	{
+		if (!appFonts) return false;
+
 		CBgraFrame image;
         MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
 

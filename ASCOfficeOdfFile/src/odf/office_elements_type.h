@@ -50,6 +50,7 @@ enum ElementType
     typeTextReferenceMark,
     typeTextReferenceMarkStart,
     typeTextReferenceMarkEnd,
+	typeTextReferenceRef,
 
 	typeTextFieldFieldmarkStart,
 	typeTextFieldFieldmarkEnd,
@@ -98,6 +99,10 @@ enum ElementType
     typeTextSequenceDecls,
     typeTextSequenceDecl,
     typeTextSequence,
+	typeTextSequenceRef,
+
+	typeTextHiddenParagraph,
+	typeTextHiddenText,
 
 	typePresentationFooter,
 	typePresentationDateTime,
@@ -165,7 +170,19 @@ enum ElementType
 	typeTextBibliographyEntryTemplate,
 
 	typeTextBibliographyMark,
+
 	typeTextAlphabeticalIndexAutoMarkFile,
+	typeTextAlphabeticalIndexMarkStart,
+	typeTextAlphabeticalIndexMarkEnd,
+	typeTextAlphabeticalIndexMark,
+
+	typeTextTocMarkStart,
+	typeTextTocMarkEnd,
+	typeTextTocMark,
+
+	typeTextUserIndexMarkStart,
+	typeTextUserIndexMarkEnd,
+	typeTextUserIndexMark,
 
 	typeTextIndexSourceStyles,
 	typeTextIndexSourceStyle,

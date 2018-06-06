@@ -125,6 +125,8 @@ enum ElementType
     typeTextNumberedParagraph, 
 	typeTextExpression,    
 
+	typeTextCommonEntryTemplate,
+
     typeTextTableOfContent,
     typeTextTableOfContentSource,
 	typeTextTableOfContentEntryTemplate,
@@ -136,25 +138,37 @@ enum ElementType
 	typeTextIndexEntryLinkStart,
 	typeTextIndexEntryLinkEnd,
 	typeTextIndexEntryChapter,
+	typeTextIndexEntryBibliography,
     
 	typeTextIllustrationIndex,
     typeTextIllustrationIndexSource,
-   
+     typeTextIllustrationIndexEntryTemplate,
+  
 	typeTextTableIndex,
     typeTextTableIndexSource,
-    
+ 	typeTextTableIndexEntryTemplate,
+   
 	typeTextObjectIndex,
     typeTextObjectIndexSource,
-   
+	typeTextObjectIndexEntryTemplate,
+  
 	typeTextUserIndex,
     typeTextUserIndexSource,
+	typeTextUserIndexEntryTemplate,
     
 	typeTextAlphabeticalIndex,
     typeTextAlphabeticalIndexSource,
-   
+	typeTextAlphabeticalIndexEntryTemplate,
+  
 	typeTextBibliography,
+    typeTextBibliographySource, 
+	typeTextBibliographyEntryTemplate,
+
 	typeTextBibliographyMark,
-    typeTextBibliographySource,  	
+	typeTextAlphabeticalIndexAutoMarkFile,
+
+	typeTextIndexSourceStyles,
+	typeTextIndexSourceStyle,
 
 	typeTextVariableInput,
 	typeTextVariableGet,
@@ -247,6 +261,8 @@ enum ElementType
 	typeTableLastColumnTemplate,
 	typeTableOddColumnsTemplate,
 	typeTableOddRowsTemplate,
+
+	typeTextIndexTitleTemplate,
 
     typeTextNotesConfiguration,
 

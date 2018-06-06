@@ -648,6 +648,8 @@ public:
 	void start_template(int type)
 	{
 		current_template.clear();
+		caption_sequence_name.clear();
+		type_table_content = 0;
 	}
 	void end_template()
 	{
@@ -692,7 +694,7 @@ public:
 	}
 	int get_type_current_level_index()
 	{
-		if (current_level_index_ < current_level_.size() && current_level_index_ >= 0)
+		if (current_level_index_ < (int)current_level_.size() && current_level_index_ >= 0)
 			return current_level_[current_level_index_];
 
 		return 0;
@@ -708,6 +710,7 @@ public:
 	{
 		return current_level_.empty();
 	}
+	std::wstring					caption_sequence_name;
 	int								type_table_content;
 private:
 	std::vector<int>				current_level_;

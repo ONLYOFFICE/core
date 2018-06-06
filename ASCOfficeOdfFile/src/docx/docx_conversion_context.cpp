@@ -369,12 +369,17 @@ void docx_conversion_context::start_index_content()
 
 	start_paragraph(false);
 
-	std::wstring sInstrText;
+	std::wstring sInstrText = L" TOC \\h";
 
 	switch(table_content_context_.type_table_content)
 	{
-		case 1: sInstrText = L" TOC \\o \"1-3\" \\u \\l 1-3 \\t \"_PrefaceTitle;1;IPG_task_title;6\" "; break;
-		case 2: sInstrText = L" TOC \\h \\z \\c \"Illustration\" "; break;
+		case 1: sInstrText += L" \\o \"1-3\" \\u \\l 1-3 "; break;
+		case 2: sInstrText += L" \\z"; break;
+	}
+
+	if (!table_content_context_.caption_sequence_name.empty())
+	{
+		 sInstrText += L" \\c \"" + table_content_context_.caption_sequence_name + L"\" "; 
 	}
 
 	output_stream() << L"<w:r>";

@@ -72,6 +72,8 @@
 - (int)sdk_xlst2csv:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 - (int)sdk_xlsx2csv:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 
+- (int)txt2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
+
 - (int)sdk_dir2zip:(NSString*)nsFrom nsTo:(NSString*)nsTo;
 - (int)sdk_zip2dir:(NSString*)nsFrom nsTo:(NSString*)nsTo;
 

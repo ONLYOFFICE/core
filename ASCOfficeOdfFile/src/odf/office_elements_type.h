@@ -50,6 +50,7 @@ enum ElementType
     typeTextReferenceMark,
     typeTextReferenceMarkStart,
     typeTextReferenceMarkEnd,
+	typeTextReferenceRef,
 
 	typeTextFieldFieldmarkStart,
 	typeTextFieldFieldmarkEnd,
@@ -98,6 +99,10 @@ enum ElementType
     typeTextSequenceDecls,
     typeTextSequenceDecl,
     typeTextSequence,
+	typeTextSequenceRef,
+
+	typeTextHiddenParagraph,
+	typeTextHiddenText,
 
 	typePresentationFooter,
 	typePresentationDateTime,
@@ -125,27 +130,62 @@ enum ElementType
     typeTextNumberedParagraph, 
 	typeTextExpression,    
 
+	typeTextCommonEntryTemplate,
+
     typeTextTableOfContent,
     typeTextTableOfContentSource,
+	typeTextTableOfContentEntryTemplate,
+
+	typeTextIndexEntryText,
+	typeTextIndexEntryTabStop,
+	typeTextIndexEntrySpan,
+	typeTextIndexEntryPageNumber,
+	typeTextIndexEntryLinkStart,
+	typeTextIndexEntryLinkEnd,
+	typeTextIndexEntryChapter,
+	typeTextIndexEntryBibliography,
     
 	typeTextIllustrationIndex,
     typeTextIllustrationIndexSource,
-   
+     typeTextIllustrationIndexEntryTemplate,
+  
 	typeTextTableIndex,
     typeTextTableIndexSource,
-    
+ 	typeTextTableIndexEntryTemplate,
+   
 	typeTextObjectIndex,
     typeTextObjectIndexSource,
-   
+	typeTextObjectIndexEntryTemplate,
+  
 	typeTextUserIndex,
     typeTextUserIndexSource,
+	typeTextUserIndexEntryTemplate,
     
 	typeTextAlphabeticalIndex,
     typeTextAlphabeticalIndexSource,
-   
+	typeTextAlphabeticalIndexEntryTemplate,
+  
 	typeTextBibliography,
+    typeTextBibliographySource, 
+	typeTextBibliographyEntryTemplate,
+
 	typeTextBibliographyMark,
-    typeTextBibliographySource,  	
+
+	typeTextAlphabeticalIndexAutoMarkFile,
+	typeTextAlphabeticalIndexMarkStart,
+	typeTextAlphabeticalIndexMarkEnd,
+	typeTextAlphabeticalIndexMark,
+
+	typeTextTocMarkStart,
+	typeTextTocMarkEnd,
+	typeTextTocMark,
+
+	typeTextUserIndexMarkStart,
+	typeTextUserIndexMarkEnd,
+	typeTextUserIndexMark,
+
+	typeTextIndexSourceStyles,
+	typeTextIndexSourceStyle,
 
 	typeTextVariableInput,
 	typeTextVariableGet,
@@ -238,6 +278,8 @@ enum ElementType
 	typeTableLastColumnTemplate,
 	typeTableOddColumnsTemplate,
 	typeTableOddRowsTemplate,
+
+	typeTextIndexTitleTemplate,
 
     typeTextNotesConfiguration,
 

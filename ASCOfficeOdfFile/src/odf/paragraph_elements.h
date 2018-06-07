@@ -56,7 +56,7 @@ template <class ElementT>
 class paragraph_content_element :  public office_element_impl<ElementT>
 {
 public:
-	void docx_serialize_sdt(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context);
+	void docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context);
 	void docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, oox::docx_conversion_context & Context, bool bLock = false);
 	void docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context);
 };
@@ -175,8 +175,6 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-    line_break() {};
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
@@ -198,9 +196,6 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-
-	bookmark() {}
-    bookmark(const std::wstring & Name) : text_name_(Name){};
 
 	std::wstring text_name_;
 
@@ -227,9 +222,6 @@ public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
 
-	bookmark_start() {}
-    bookmark_start(const std::wstring & Name) : name_(Name){};
-
     std::wstring name_;
 
 private:
@@ -254,9 +246,6 @@ public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-	bookmark_end() {} ;
-    bookmark_end(const std::wstring & Name) : name_(Name){};
-
     std::wstring name_;
 
 private:
@@ -279,12 +268,8 @@ public:
     static const ElementType type = typeTextBookmarkRef;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-
-	bookmark_ref() {} ;
-
-    std::wstring			text_ref_name_;
-    _CP_OPT(std::wstring)	text_reference_format_;
+    std::wstring			ref_name_;
+    _CP_OPT(std::wstring)	reference_format_;
     std::wstring			content_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -293,7 +278,29 @@ private:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_ref);
+//-------------------------------------------------------------------------------------------------------------------
+// text:reference-ref
+//-------------------------------------------------------------------------------------------------------------------
+class reference_ref : public paragraph_content_element<reference_ref>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextReferenceRef;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+    std::wstring			ref_name_;
+    _CP_OPT(std::wstring)	reference_format_;
+    std::wstring			content_;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+    virtual void add_text(const std::wstring & Text);
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(reference_ref);
 //-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark
 //-------------------------------------------------------------------------------------------------------------------
@@ -306,10 +313,6 @@ public:
     static const ElementType type = typeTextReferenceMark;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    reference_mark() {};
-    reference_mark(const std::wstring & Name) : text_name_(Name){};
-    
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
     std::wstring text_name_;
 
 private:
@@ -318,7 +321,6 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(reference_mark);
 //-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark-start
@@ -332,10 +334,6 @@ public:
     static const ElementType type = typeTextReferenceMarkStart;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    reference_mark_start() {}
-    reference_mark_start(const std::wstring & Name) : text_name_(Name){};
-
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
     std::wstring text_name_;
 
 private:
@@ -356,11 +354,6 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextReferenceMarkEnd;
     CPDOCCORE_DEFINE_VISITABLE();
-
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-
-	reference_mark_end() {};
-    reference_mark_end(const std::wstring & Name) : text_name_(Name){};
 
     std::wstring text_name_;
 
@@ -800,7 +793,55 @@ private:
 	//text:display    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_file_name);
+//-------------------------------------------------------------------------------------------------------------------
+// text:hidden-paragraph
+//-------------------------------------------------------------------------------------------------------------------
+class hidden_paragraph : public paragraph_content_element<hidden_paragraph>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextHiddenParagraph;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	void docx_convert(oox::docx_conversion_context & Context);
 
+	_CP_OPT(odf_types::Bool)	is_hidden_;
+	_CP_OPT(std::wstring)		condition_;
+
+	std::wstring				content_;
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(hidden_paragraph);
+//-------------------------------------------------------------------------------------------------------------------
+// text:hidden-text
+//-------------------------------------------------------------------------------------------------------------------
+class hidden_text : public paragraph_content_element<hidden_text>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextHiddenText;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	_CP_OPT(odf_types::Bool)	is_hidden_;
+	_CP_OPT(std::wstring)		condition_;
+	_CP_OPT(std::wstring)		string_value_;
+
+	std::wstring				content_;
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(hidden_text);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sequence
 //-------------------------------------------------------------------------------------------------------------------
@@ -830,10 +871,33 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
-
-    
 };
 CP_REGISTER_OFFICE_ELEMENT2(sequence);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sequence_ref
+//-------------------------------------------------------------------------------------------------------------------
+class sequence_ref : public paragraph_content_element<sequence_ref>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSequenceRef;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	_CP_OPT(std::wstring)	reference_format_;//caption, category-and-value, value, chapter, direction, page, text, number, number-all-superior, number-no-superior
+	_CP_OPT(std::wstring)	ref_name_;
+   
+	std::wstring			content_;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(sequence_ref);
 //-------------------------------------------------------------------------------------------------------------------
 //text:drop-down
 //-------------------------------------------------------------------------------------------------------------------
@@ -1181,7 +1245,270 @@ private:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_user_defined);
+//---------------------------------------------------------------------------------------------------
+//text:bibliography-mark
+//---------------------------------------------------------------------------------------------------
+class bibliography_mark : public paragraph_content_element<bibliography_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextBibliographyMark;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
 
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+    std::wstring			identifier_;
+    std::wstring			bibliography_type_; // todoooo in datatype
+    
+	_CP_OPT(std::wstring)	url_;
+    _CP_OPT(std::wstring)	author_;
+    _CP_OPT(std::wstring)	title_;
+    _CP_OPT(std::wstring)	year_;
+    _CP_OPT(std::wstring)	isbn_;
+	_CP_OPT(std::wstring)	chapter_;
+
+	office_element_ptr		content_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text			(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(bibliography_mark);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-auto-mark-file
+//---------------------------------------------------------------------------------------------------
+class alphabetical_index_auto_mark_file : public paragraph_content_element<alphabetical_index_auto_mark_file>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndexAutoMarkFile;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+    odf_types::common_xlink_attlist xlink_attlist_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_auto_mark_file);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-mark-start
+//---------------------------------------------------------------------------------------------------
+class alphabetical_index_mark_start : public paragraph_content_element<alphabetical_index_mark_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndexMarkStart;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	std::wstring id_;
+	_CP_OPT(std::wstring)		key1_;
+	_CP_OPT(std::wstring)		key1_phonetic_;
+	_CP_OPT(std::wstring)		key2_;
+	_CP_OPT(std::wstring)		key2_phonetic_;
+	_CP_OPT(odf_types::Bool)	main_entry_;
+	_CP_OPT(std::wstring)		string_value_phonetic_;
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_mark_start);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-mark-end
+//---------------------------------------------------------------------------------------------------
+class alphabetical_index_mark_end : public paragraph_content_element<alphabetical_index_mark_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndexMarkEnd;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	std::wstring id_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_mark_end);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-mark
+//---------------------------------------------------------------------------------------------------
+class alphabetical_index_mark : public paragraph_content_element<alphabetical_index_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndexMark;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	_CP_OPT(std::wstring)		key1_;
+	_CP_OPT(std::wstring)		key1_phonetic_;
+	_CP_OPT(std::wstring)		key2_;
+	_CP_OPT(std::wstring)		key2_phonetic_;
+	_CP_OPT(odf_types::Bool)	main_entry_;
+	_CP_OPT(std::wstring)		string_value_phonetic_;
+
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_mark);
+//---------------------------------------------------------------------------------------------------
+//text:user-index-mark-start
+//---------------------------------------------------------------------------------------------------
+class user_index_mark_start : public paragraph_content_element<user_index_mark_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextUserIndexMarkStart;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	std::wstring			id_;
+	_CP_OPT(std::wstring)	index_name_;
+    _CP_OPT(int)			outline_level_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(user_index_mark_start);
+//---------------------------------------------------------------------------------------------------
+//text:user-index-mark-end
+//---------------------------------------------------------------------------------------------------
+class user_index_mark_end : public paragraph_content_element<user_index_mark_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextUserIndexMarkEnd;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	std::wstring id_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(user_index_mark_end);
+//---------------------------------------------------------------------------------------------------
+//text:user-index-mark
+//---------------------------------------------------------------------------------------------------
+class user_index_mark : public paragraph_content_element<user_index_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextUserIndexMark;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	_CP_OPT(std::wstring)	index_name_;
+    _CP_OPT(int)			outline_level_;
+	_CP_OPT(std::wstring)	string_value_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(user_index_mark);
+//---------------------------------------------------------------------------------------------------
+//text:toc-mark-start
+//---------------------------------------------------------------------------------------------------
+class toc_mark_start : public paragraph_content_element<toc_mark_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextTocMarkStart;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+    _CP_OPT(int)	outline_level_;
+	std::wstring	id_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(toc_mark_start);
+//---------------------------------------------------------------------------------------------------
+//text:toc-mark-end
+//---------------------------------------------------------------------------------------------------
+class toc_mark_end : public paragraph_content_element<toc_mark_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextTocMarkEnd;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	std::wstring	id_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(toc_mark_end);
+//---------------------------------------------------------------------------------------------------
+//text:toc-mark
+//---------------------------------------------------------------------------------------------------
+class toc_mark : public paragraph_content_element<toc_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextTocMark;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+
+	_CP_OPT(std::wstring)	string_value_;
+    _CP_OPT(int)			outline_level_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(toc_mark);
+//-------------------------------------------------------------------------------------------------------------------
 } // namespace text
 //-------------------------------------------------------------------------------------------------------------------
 //presentation:footer

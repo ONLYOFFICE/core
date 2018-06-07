@@ -613,6 +613,112 @@ private:
 	_state							current_state_;
 	std::map<std::wstring, _state>	mapElements_;
 };
+class table_content_context
+{
+public:
+	enum template_type
+	{
+		TableContent	= 1,
+		Illustrations	= 2,
+		Bibliography	= 3,
+		Tables			= 4
+	};
+	enum level_type
+	{
+		Span = 1,
+		Text = 2,
+		LinkStart = 3,
+		LinkEnd = 4,
+		TabStop = 5,
+		PageNumber = 6,
+		Chapter = 7
+	};
+
+	struct _state
+	{
+		std::wstring name;
+		std::vector<int> levels;
+
+		void clear()
+		{
+			name.clear();
+			levels.clear();
+		}
+	};
+	void start_template(int type)
+	{
+		current_template.clear();
+		caption_sequence_name.clear();
+		type_table_content = type;
+	}
+	void end_template()
+	{
+	}
+	void add_level_content(int type)
+	{
+		current_state.levels.push_back(type);
+	}
+	void start_level(const std::wstring& style_name)
+	{
+		current_state.name = style_name;
+	}
+	void end_level()
+	{
+		current_template.insert(std::make_pair(current_state.name, current_state));
+		current_state.clear();
+	}
+	//std::vector<int> find(const std::wstring &name)
+	//{
+	//	std::map<std::wstring, _state>::iterator pFind = current_template.find(name);
+	//	if (pFind == current_template.end())
+	//	{
+	//		std::vector<int> empty;
+	//		return empty;
+	//	}
+	//	return pFind->second.levels;
+	//}
+	void set_current_level(const std::wstring &name)
+	{
+		std::map<std::wstring, _state>::iterator pFind = current_template.find(name);
+		if (pFind == current_template.end())
+		{
+			current_level_.clear();
+		}
+		current_level_ = pFind->second.levels;
+		current_level_index_ = 0;
+	}
+
+	void next_level_index()
+	{
+		current_level_index_++;
+	}
+	int get_type_current_level_index()
+	{
+		if (current_level_index_ < (int)current_level_.size() && current_level_index_ >= 0)
+			return current_level_[current_level_index_];
+
+		return 0;
+	}
+
+	void clear_current_level_index()
+	{
+		current_level_index_ = 0;
+		current_level_.clear();
+	}
+
+	bool empty_current_table_content_level_index()
+	{
+		return current_level_.empty();
+	}
+	std::wstring					caption_sequence_name;
+	int								type_table_content;
+private:
+	std::vector<int>				current_level_;
+	int								current_level_index_;
+
+	std::map<std::wstring, _state>	current_template;
+	_state							current_state;
+};
 //---------------------------------------------------------------------------------------------------------
 class docx_conversion_context : boost::noncopyable
 {
@@ -684,8 +790,14 @@ public:
 	void start_office_text		();
     void end_office_text		();
 
-	void start_table_content	(int type);
-	void end_table_content		();
+	void start_sdt	(int type);
+	void end_sdt	();
+
+	void start_index_content();
+	void end_index_content();
+
+	void start_index_element();
+	void end_index_element();
 
 	void process_styles			();
     void process_fonts			();
@@ -762,6 +874,8 @@ public:
 	text_tracked_context& get_text_tracked_context(){ return text_tracked_context_; }
 	text_forms_context	& get_forms_context()		{ return text_forms_context_; }
 	tabs_context		& get_tabs_context()		{ return tabs_context_;}
+	
+	table_content_context	& get_table_content_context()	{ return table_content_context_;}
 
     void docx_convert_delayed	();
     void add_delayed_element	(odf_reader::office_element * Elm);
@@ -837,6 +951,7 @@ private:
 	text_tracked_context	text_tracked_context_;
 	text_forms_context		text_forms_context_;
 	tabs_context			tabs_context_;
+	table_content_context	table_content_context_;
        
     boost::shared_ptr<streams_man> streams_man_;
 
@@ -883,6 +998,7 @@ private:
 	
 	std::map<std::wstring, std::wstring>					map_user_fields;
 	std::map<std::wstring, int>								mapBookmarks;
+
 };
 
 }

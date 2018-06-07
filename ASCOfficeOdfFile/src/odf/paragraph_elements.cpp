@@ -91,7 +91,7 @@ void paragraph_content_element<ElementT>::docx_serialize_field(const std::wstrin
 	}
 }
 template <class ElementT>
-void paragraph_content_element<ElementT>::docx_serialize_sdt(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context)
+void paragraph_content_element<ElementT>::docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context)
 {
 	std::wostream & strm = Context.output_stream();
 	Context.finish_run();	
@@ -100,11 +100,6 @@ void paragraph_content_element<ElementT>::docx_serialize_sdt(const std::wstring 
 	strm << name;
 	strm << L"\"/><w:temporary/>";
 	strm << L"<w:showingPlcHdr/><w:text/></w:sdtPr><w:sdtContent>";
-
-	//if (!text)
-	//{
-	//	text = text::create(L"Enter your text here") ;
-	//}
 
 	docx_serialize_run(text, Context);
 
@@ -153,7 +148,13 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 			Context.output_stream() << L"<w:del>";
 		}
 	}  
-	
+	if (Context.is_table_content())
+	{
+		int type = Context.get_table_content_context().get_type_current_level_index();
+		if (type == 6)
+		{
+		}
+	}	
 	Context.add_element_to_run();
   
 	std::wstring textNode = L"w:t";
@@ -364,17 +365,26 @@ void bookmark_end::docx_convert(oox::docx_conversion_context & Context)
 const wchar_t * bookmark_ref::ns = L"text";
 const wchar_t * bookmark_ref::name = L"bookmark-ref";
 
-std::wostream & bookmark_ref::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
-
 void bookmark_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:ref-name", text_ref_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"text:reference-format", text_reference_format_);
+    CP_APPLY_ATTR(L"text:ref-name", ref_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:reference-format", reference_format_);
 }
 void bookmark_ref::add_text(const std::wstring & Text)
+{
+    content_ = Text;
+}
+// text:reference-ref
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * reference_ref::ns = L"text";
+const wchar_t * reference_ref::name = L"reference-ref";
+
+void reference_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:ref-name", ref_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:reference-format", reference_format_);
+}
+void reference_ref::add_text(const std::wstring & Text)
 {
     content_ = Text;
 }
@@ -382,11 +392,6 @@ void bookmark_ref::add_text(const std::wstring & Text)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * reference_mark::ns = L"text";
 const wchar_t * reference_mark::name = L"reference-mark";
-
-std::wostream & reference_mark::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
 
 void reference_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -398,11 +403,6 @@ void reference_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
 const wchar_t * reference_mark_start::ns = L"text";
 const wchar_t * reference_mark_start::name = L"reference-mark-start";
 
-std::wostream & reference_mark_start::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
-
 void reference_mark_start::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:name", text_name_, std::wstring(L""));
@@ -413,16 +413,43 @@ void reference_mark_start::add_attributes( const xml::attributes_wc_ptr & Attrib
 const wchar_t * reference_mark_end::ns = L"text";
 const wchar_t * reference_mark_end::name = L"reference-mark-end";
 
-std::wostream & reference_mark_end::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
-
 void reference_mark_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:name", text_name_, std::wstring(L""));
 }
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * hidden_paragraph::ns = L"text";
+const wchar_t * hidden_paragraph::name = L"hidden-paragraph";
 
+void hidden_paragraph::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:is-hidden", is_hidden_);
+    CP_APPLY_ATTR(L"text:condition", condition_);
+}
+void hidden_paragraph::add_text(const std::wstring & Text)
+{
+    content_ = Text;
+}
+void hidden_paragraph::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * hidden_text::ns = L"text";
+const wchar_t * hidden_text::name = L"hidden-text";
+
+void hidden_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:is-hidden", is_hidden_);
+    CP_APPLY_ATTR(L"text:condition", condition_);
+    CP_APPLY_ATTR(L"text:string-value", string_value_);
+}
+void hidden_text::add_text(const std::wstring & Text)
+{
+    content_ = Text;
+}
+void hidden_text::docx_convert(oox::docx_conversion_context & Context)
+{
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * span::ns = L"text";
 const wchar_t * span::name = L"span";
@@ -584,6 +611,9 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 	if (Context.is_table_content())
 	{
 		_Wostream << L"<w:hyperlink w:anchor=\"" << ref.substr(1) << L"\" w:history=\"1\">"; //без #
+		int type = Context.get_table_content_context().get_type_current_level_index();
+		//type == 3 (LinkStart)
+		Context.get_table_content_context().next_level_index();
 	}
 	else
 	{
@@ -633,7 +663,11 @@ void a::docx_convert(oox::docx_conversion_context & Context)
     for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);
-    }
+ 		if (Context.is_table_content())
+		{
+			Context.get_table_content_context().next_level_index();
+		}
+	}
 
 	Context.finish_run();
 	
@@ -930,7 +964,7 @@ void text_placeholder::add_text(const std::wstring & Text)
 
 void text_placeholder::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Click placeholder and overwrite", text_, Context);
+	docx_serialize_sdt_placeholder(L"Click placeholder and overwrite", text_, Context);
 }
 
 void text_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
@@ -1166,14 +1200,24 @@ void text_file_name::pptx_convert(oox::pptx_conversion_context & Context)
   //  Context.get_text_context().end_field();
 }
 //------------------------------------------------------------------------------------------------------------
+const wchar_t * sequence_ref::ns = L"text";
+const wchar_t * sequence_ref::name = L"sequence-ref";
+
+void sequence_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{	
+	CP_APPLY_ATTR(L"text:ref-name", ref_name_);
+	CP_APPLY_ATTR(L"text:reference-format", reference_format_);
+}
+void sequence_ref::add_text(const std::wstring & Text)
+{
+    content_ = Text;
+}
+void sequence_ref::docx_convert(oox::docx_conversion_context & Context) 
+{
+}
+//------------------------------------------------------------------------------------------------------------
 const wchar_t * sequence::ns = L"text";
 const wchar_t * sequence::name = L"sequence";
-
-std::wostream & sequence::text_to_stream(std::wostream & _Wostream) const
-{
-    CP_SERIALIZE_TEXT(text_);
-    return _Wostream;
-}
 
 void sequence::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -1183,7 +1227,11 @@ void sequence::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"text:ref-name", text_ref_name_);
 	CP_APPLY_ATTR(L"text:name", text_name_);
 }
-
+std::wostream & sequence::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(text_);
+    return _Wostream;
+}
 void sequence::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(text_);
@@ -1351,7 +1399,7 @@ void sheet_name::add_text(const std::wstring & Text)
 }
 void sheet_name::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"sheet name", text_, Context);
+	docx_serialize_sdt_placeholder(L"sheet name", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * author_name::ns = L"text";
@@ -1397,7 +1445,7 @@ void sender_city::add_text(const std::wstring & Text)
 }
 void sender_city::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender city", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender city", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_email::ns = L"text";
@@ -1412,7 +1460,7 @@ void sender_email::add_text(const std::wstring & Text)
 }
 void sender_email::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender email", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender email", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_lastname::ns = L"text";
@@ -1427,7 +1475,7 @@ void sender_lastname::add_text(const std::wstring & Text)
 }
 void sender_lastname::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender last name", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender last name", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_firstname::ns = L"text";
@@ -1442,7 +1490,7 @@ void sender_firstname::add_text(const std::wstring & Text)
 }
 void sender_firstname::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender first name", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender first name", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_company::ns = L"text";
@@ -1457,7 +1505,7 @@ void sender_company::add_text(const std::wstring & Text)
 }
 void sender_company::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender company", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender company", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_postal_code::ns = L"text";
@@ -1479,7 +1527,7 @@ void sender_postal_code::add_text(const std::wstring & Text)
 }
 void sender_postal_code::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender postal code", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender postal code", text_, Context);
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sender_street::ns = L"text";
@@ -1494,7 +1542,7 @@ void sender_street::add_text(const std::wstring & Text)
 }
 void sender_street::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender street", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender street", text_, Context);
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -1510,7 +1558,7 @@ void sender_state_or_province::add_text(const std::wstring & Text)
 }
 void sender_state_or_province::docx_convert(oox::docx_conversion_context & Context)
 {
-	docx_serialize_sdt(L"Sender state or province", text_, Context);
+	docx_serialize_sdt_placeholder(L"Sender state or province", text_, Context);
 }
 //---------------------------------------------------------------------------------------------------
 const wchar_t * text_user_field_get::ns		= L"text";
@@ -1568,6 +1616,193 @@ void text_user_defined::docx_convert(oox::docx_conversion_context & Context)
 	
 	docx_serialize_run(text_, Context);
 }
+//-----------------------------------------------------------------------------------------------
+// text:bibliography-mark
+//-----------------------------------------------------------------------------------------------
+const wchar_t * bibliography_mark::ns = L"text";
+const wchar_t * bibliography_mark::name = L"bibliography-mark";
+
+void bibliography_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:identifier",			identifier_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:bibliography-type",	bibliography_type_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:author",				author_);
+    CP_APPLY_ATTR(L"text:url",					url_);
+    CP_APPLY_ATTR(L"text:title",				title_);
+    CP_APPLY_ATTR(L"text:year",					year_);
+}
+
+void bibliography_mark::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+	content_ = elm;
+}
+
+std::wostream & bibliography_mark::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(content_);
+    return _Wostream;
+}
+
+void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (content_)
+        content_->docx_convert(Context);
+}
+
+void bibliography_mark::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (content_)
+        content_->pptx_convert(Context);
+}
+//-----------------------------------------------------------------------------------------------
+// text:alphabetical-index-auto-mark-file
+//-----------------------------------------------------------------------------------------------
+const wchar_t * alphabetical_index_auto_mark_file::ns = L"text";
+const wchar_t * alphabetical_index_auto_mark_file::name = L"alphabetical-index-auto-mark-file";
+
+void alphabetical_index_auto_mark_file::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	xlink_attlist_.add_attributes(Attributes);
+}
+void alphabetical_index_auto_mark_file::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:alphabetical-index-mark
+//-----------------------------------------------------------------------------------------------
+const wchar_t * alphabetical_index_mark::ns = L"text";
+const wchar_t * alphabetical_index_mark::name = L"alphabetical-index-mark";
+
+void alphabetical_index_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:key1", key1_);
+	CP_APPLY_ATTR(L"text:key1-phonetic", key1_phonetic_);
+	CP_APPLY_ATTR(L"text:key2", key2_);
+	CP_APPLY_ATTR(L"text:key2-phonetic", key2_phonetic_);
+	CP_APPLY_ATTR(L"text:main-entry", main_entry_);
+	CP_APPLY_ATTR(L"text:string-value-phonetic", string_value_phonetic_);
+}
+void alphabetical_index_mark::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:alphabetical-index-mark-start
+//-----------------------------------------------------------------------------------------------
+const wchar_t * alphabetical_index_mark_start::ns = L"text";
+const wchar_t * alphabetical_index_mark_start::name = L"alphabetical-index-mark-start";
+
+void alphabetical_index_mark_start::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:id", id_, std::wstring(L""));
+	CP_APPLY_ATTR(L"text:key1", key1_);
+	CP_APPLY_ATTR(L"text:key1-phonetic", key1_phonetic_);
+	CP_APPLY_ATTR(L"text:key2", key2_);
+	CP_APPLY_ATTR(L"text:key2-phonetic", key2_phonetic_);
+	CP_APPLY_ATTR(L"text:main-entry", main_entry_);
+	CP_APPLY_ATTR(L"text:string-value-phonetic", string_value_phonetic_);
+}
+void alphabetical_index_mark_start::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:alphabetical-index-mark-end
+//-----------------------------------------------------------------------------------------------
+const wchar_t * alphabetical_index_mark_end::ns = L"text";
+const wchar_t * alphabetical_index_mark_end::name = L"alphabetical-index-mark-end";
+
+void alphabetical_index_mark_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:id", id_, std::wstring(L""));
+}
+void alphabetical_index_mark_end::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:user-index-mark
+//-----------------------------------------------------------------------------------------------
+const wchar_t * user_index_mark::ns = L"text";
+const wchar_t * user_index_mark::name = L"user-index-mark";
+
+void user_index_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:index-name", index_name_);
+	CP_APPLY_ATTR(L"text:outline-level", outline_level_);
+	CP_APPLY_ATTR(L"text:string-value", string_value_);
+}
+void user_index_mark::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:user-index-mark-start
+//-----------------------------------------------------------------------------------------------
+const wchar_t * user_index_mark_start::ns = L"text";
+const wchar_t * user_index_mark_start::name = L"user-index-mark-start";
+
+void user_index_mark_start::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:id", id_, std::wstring(L""));
+	CP_APPLY_ATTR(L"text:index-name", index_name_);
+	CP_APPLY_ATTR(L"text:outline-level", outline_level_);
+}
+void user_index_mark_start::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:user-index-mark-end
+//-----------------------------------------------------------------------------------------------
+const wchar_t * user_index_mark_end::ns = L"text";
+const wchar_t * user_index_mark_end::name = L"user-index-mark-end";
+
+void user_index_mark_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:id", id_, std::wstring(L""));
+}
+void user_index_mark_end::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:toc-mark
+//-----------------------------------------------------------------------------------------------
+const wchar_t * toc_mark::ns = L"text";
+const wchar_t * toc_mark::name = L"toc-mark";
+
+void toc_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:outline-level", outline_level_);
+	CP_APPLY_ATTR(L"text:string-value", string_value_);
+}
+void toc_mark::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:toc-mark-start
+//-----------------------------------------------------------------------------------------------
+const wchar_t * toc_mark_start::ns = L"text";
+const wchar_t * toc_mark_start::name = L"toc-mark-start";
+
+void toc_mark_start::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:id", id_, std::wstring(L""));
+	CP_APPLY_ATTR(L"text:outline-level", outline_level_);
+}
+void toc_mark_start::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//-----------------------------------------------------------------------------------------------
+// text:toc-mark-end
+//-----------------------------------------------------------------------------------------------
+const wchar_t * toc_mark_end::ns = L"text";
+const wchar_t * toc_mark_end::name = L"toc-mark-end";
+
+void toc_mark_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:id", id_, std::wstring(L""));
+}
+void toc_mark_end::docx_convert(oox::docx_conversion_context & Context)
+{
+}
+//------------------------------------------------------------------------------------------------------------
 }//namespace text
 
 //------------------------------------------------------------------------------------------------------------

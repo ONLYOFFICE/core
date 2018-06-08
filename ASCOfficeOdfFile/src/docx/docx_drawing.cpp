@@ -209,8 +209,8 @@ void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 					CP_XML_NODE(L"pic:cNvPr")
 					{
 						//CP_XML_ATTR(L"desc text",L"");
-						CP_XML_ATTR(L"id",val.id);
-						CP_XML_ATTR(L"name",val.name);
+						CP_XML_ATTR(L"id", val.id + 1);
+						CP_XML_ATTR(L"name", val.name);
 					}
 					CP_XML_NODE(L"pic:cNvPicPr")
 					{
@@ -316,7 +316,7 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 		CP_XML_NODE(L"wp:docPr")
 		{
 			CP_XML_ATTR(L"name",	val.name);
-			CP_XML_ATTR(L"id",		val.id + 1);
+			CP_XML_ATTR(L"id",		0xf000 + val.id + 1);
 			
 			oox_serialize_action(CP_XML_STREAM(), val.action);
 		}
@@ -398,8 +398,8 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 							CP_XML_ATTR(L"cy", val.cy);
 						}
 
-						serialize_null_extent(CP_XML_STREAM());
 					}
+					serialize_null_extent(CP_XML_STREAM());
 				}
 				else//anchor
 				{

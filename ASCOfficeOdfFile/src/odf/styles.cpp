@@ -853,11 +853,6 @@ void style_footer_style::add_child_element( xml::sax * Reader, const std::wstrin
     }
 }
 
-void style_page_layout_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"style:name", style_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"style:page-usage", style_page_usage_, page_usage(page_usage::All));    
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_page_layout::ns = L"style";
@@ -870,7 +865,8 @@ std::wostream & style_page_layout::text_to_stream(std::wostream & _Wostream) con
 
 void style_page_layout::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    attlist_.add_attributes(Attributes);
+    CP_APPLY_ATTR(L"style:name", style_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"style:page-usage", style_page_usage_, page_usage(page_usage::All));    
 }
 
 void style_page_layout::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

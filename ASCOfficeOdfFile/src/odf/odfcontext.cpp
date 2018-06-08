@@ -333,7 +333,7 @@ page_layout_instance::page_layout_instance(const style_page_layout * StylePageLa
 
 const std::wstring & page_layout_instance::name() const
 {     
-    return style_page_layout_->attlist_.get_style_name();
+    return style_page_layout_->style_name_;
 }
 
 style_page_layout_properties * page_layout_instance::properties() const
@@ -371,6 +371,11 @@ void page_layout_instance::docx_serialize(std::wostream & strm, oox::docx_conver
         _CP_OPT(length) bottom = attr.fo_min_height_ ? attr.fo_min_height_ : attr.svg_height_;
         Context.get_header_footer_context().set_footer(bottom);
     }
+
+	if ( style_page_layout_->style_page_usage_.get_type() == page_usage::Mirrored )
+	{
+		Context.set_settings_property(odf_reader::_property(L"mirrorMargins",true));
+	}
 	
 	style_page_layout_properties * props = properties();
     if (props)

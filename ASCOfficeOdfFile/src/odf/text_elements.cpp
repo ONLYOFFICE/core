@@ -282,7 +282,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		if (sequence_)
 		{
 			std::wstringstream _Wostream;
-			CP_SERIALIZE_TEXT(content_);
+			CP_SERIALIZE_TEXT(content_);///todooo
 
 			Context.get_drawing_context().set_next_object_caption(_Wostream.str());
 		}
@@ -381,15 +381,25 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 				Context.output_stream() << L"<w:br w:type=\"page\"/>";  
 			Context.set_page_break(false);
 		}
-
-        content_[i]->docx_convert(Context); 
- 		if (Context.is_table_content())
+		if (Context.is_alphabetical_index() && 
+			(content_[i]->get_type() != typeTextAlphabeticalIndexMarkStart && 
+			 content_[i]->get_type() != typeTextAlphabeticalIndexMarkEnd && 
+			 content_[i]->get_type() != typeTextAlphabeticalIndexMark))
+		{
+			Context.add_alphabetical_index_text(content_[i]);
+		}
+		else
+		{
+			content_[i]->docx_convert(Context); 
+			
+			if (Context.get_drop_cap_context().state() > 0)		
+				Context.get_drop_cap_context().state(0);//disable
+		
+		}
+		if (Context.is_table_content())
 		{
 			Context.get_table_content_context().next_level_index();
 		}
-		
-		if (Context.get_drop_cap_context().state() > 0)		
-			Context.get_drop_cap_context().state(0);//disable
 	}
 
     if (textStyle > 0)
@@ -1049,6 +1059,10 @@ void table_index_source::add_child_element( xml::sax * Reader, const std::wstrin
 }
 void table_index_source::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (caption_sequence_name_)
+	{
+		Context.get_table_content_context().caption_sequence_name = *caption_sequence_name_;
+	}
 	Context.get_table_content_context().start_template(4);
 	for (size_t i = 0; i < entry_templates_.size(); i++)
 	{
@@ -1162,6 +1176,10 @@ void illustration_index_source::add_child_element( xml::sax * Reader, const std:
 }
 void illustration_index_source::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (caption_sequence_name_)
+	{
+		Context.get_table_content_context().caption_sequence_name = *caption_sequence_name_;
+	}
 	Context.get_table_content_context().start_template(2);
 	for (size_t i = 0; i < entry_templates_.size(); i++)
 	{

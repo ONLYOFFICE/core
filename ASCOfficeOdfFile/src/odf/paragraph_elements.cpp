@@ -320,23 +320,18 @@ void line_break::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * bookmark::ns = L"text";
 const wchar_t * bookmark::name = L"bookmark";
 
-std::wostream & bookmark::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
-
 void bookmark::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:name", text_name_, std::wstring(L""));
+}
+std::wostream & bookmark::text_to_stream(std::wostream & _Wostream) const
+{
+    return _Wostream;
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * bookmark_start::ns = L"text";
 const wchar_t * bookmark_start::name = L"bookmark-start";
 
-std::wostream & bookmark_start::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
 void bookmark_start::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:name", name_, std::wstring(L""));
@@ -345,14 +340,14 @@ void bookmark_start::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.start_bookmark(name_);
 }
+std::wostream & bookmark_start::text_to_stream(std::wostream & _Wostream) const
+{
+    return _Wostream;
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * bookmark_end::ns = L"text";
 const wchar_t * bookmark_end::name = L"bookmark-end";
 
-std::wostream & bookmark_end::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
 void bookmark_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:name", name_, std::wstring(L""));
@@ -360,6 +355,10 @@ void bookmark_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void bookmark_end::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.end_bookmark(name_);
+}
+std::wostream & bookmark_end::text_to_stream(std::wostream & _Wostream) const
+{
+    return _Wostream;
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * bookmark_ref::ns = L"text";
@@ -1681,10 +1680,17 @@ void alphabetical_index_mark::add_attributes( const xml::attributes_wc_ptr & Att
 	CP_APPLY_ATTR(L"text:key2", key2_);
 	CP_APPLY_ATTR(L"text:key2-phonetic", key2_phonetic_);
 	CP_APPLY_ATTR(L"text:main-entry", main_entry_);
+	CP_APPLY_ATTR(L"text:string-value", string_value_);
 	CP_APPLY_ATTR(L"text:string-value-phonetic", string_value_phonetic_);
 }
 void alphabetical_index_mark::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (!string_value_) return;
+
+	Context.finish_run();	
+	
+	Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
+	Context.output_stream() << L"<w:r><w:instrText> XE \"" <<  *string_value_ << L"\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 }
 //-----------------------------------------------------------------------------------------------
 // text:alphabetical-index-mark-start
@@ -1704,6 +1710,7 @@ void alphabetical_index_mark_start::add_attributes( const xml::attributes_wc_ptr
 }
 void alphabetical_index_mark_start::docx_convert(oox::docx_conversion_context & Context)
 {
+	Context.start_alphabetical_index(id_);
 }
 //-----------------------------------------------------------------------------------------------
 // text:alphabetical-index-mark-end
@@ -1717,6 +1724,7 @@ void alphabetical_index_mark_end::add_attributes( const xml::attributes_wc_ptr &
 }
 void alphabetical_index_mark_end::docx_convert(oox::docx_conversion_context & Context)
 {
+	Context.end_alphabetical_index(id_);
 }
 //-----------------------------------------------------------------------------------------------
 // text:user-index-mark

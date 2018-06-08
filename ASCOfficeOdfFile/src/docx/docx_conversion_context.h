@@ -648,7 +648,6 @@ public:
 	void start_template(int type)
 	{
 		current_template.clear();
-		caption_sequence_name.clear();
 		type_table_content = type;
 	}
 	void end_template()
@@ -710,6 +709,16 @@ public:
 	{
 		return current_level_.empty();
 	}
+	void clear_all()
+	{
+		type_table_content = 0;
+		current_level_index_ = 0;
+		current_level_.clear();
+		current_template.clear();
+		current_state.clear();
+		caption_sequence_name.clear();
+
+	}
 	std::wstring					caption_sequence_name;
 	int								type_table_content;
 private:
@@ -751,6 +760,7 @@ public:
     void start_paragraph		(bool is_header = false);
     void finish_paragraph		();
 
+	bool is_alphabetical_index	()					{ return false == mapAlphabeticals.empty();}
 	bool is_table_content		()					{ return in_table_content_; }
 	bool is_paragraph_header	()					{ return in_header_;		}
 	bool get_paragraph_state	()					{ return in_paragraph_;		}
@@ -906,11 +916,15 @@ public:
 	void start_math_formula	();
 	void end_math_formula	();
 
-	void start_text_changes	(std::wstring id);
-	void end_text_changes	(std::wstring id);
+	void start_text_changes	(const std::wstring &id);
+	void end_text_changes	(const std::wstring &id);
 	
 	void start_bookmark	(const std::wstring &name);
 	void end_bookmark	(const std::wstring &name);
+
+	void start_alphabetical_index (const std::wstring &id);
+	void end_alphabetical_index	(const std::wstring &id);
+	void add_alphabetical_index_text (odf_reader::office_element_ptr & elem);
 
 	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
     headers_footers			& get_headers_footers()			{ return headers_footers_; }
@@ -986,18 +1000,20 @@ private:
     bool is_rtl_; // right-to-left
     bool is_paragraph_keep_; 
  
+	std::wstring current_alphabetic_index_;
 	int current_margin_left_;
     int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
 	NoteType process_note_;
     
-	std::vector<odf_reader::office_element*> delayed_elements_;
+	std::vector<odf_reader::office_element*>							delayed_elements_;
 
-    std::vector< const odf_reader::style_text_properties*>	text_properties_stack_;
-	std::map<std::wstring, text_tracked_context::_state>	map_current_changes_;    
-    boost::unordered_map<std::wstring, std::wstring>		list_style_renames_;// цепочки переименований нумераций
+    std::vector< const odf_reader::style_text_properties*>				text_properties_stack_;
+	std::map<std::wstring, text_tracked_context::_state>				map_current_changes_;    
+    boost::unordered_map<std::wstring, std::wstring>					list_style_renames_;// цепочки переименований нумераций
 	
-	std::map<std::wstring, std::wstring>					map_user_fields;
-	std::map<std::wstring, int>								mapBookmarks;
+	std::map<std::wstring, std::wstring>								map_user_fields;
+	std::map<std::wstring, int>											mapBookmarks;
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>> mapAlphabeticals;
 
 };
 

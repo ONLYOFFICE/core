@@ -775,18 +775,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_section_properties);
 
-///         style-page-layout-attlist
-class style_page_layout_attlist
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    const std::wstring & get_style_name() const { return style_name_; }
-
-    std::wstring			style_name_;
-    odf_types::page_usage	style_page_usage_; // default All
-        
-};
-
 /// style:header-style
 class style_header_style : public office_element_impl<style_header_style>
 {
@@ -841,7 +829,8 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
-	style_page_layout_attlist	attlist_;
+    std::wstring				style_name_;
+    odf_types::page_usage		style_page_usage_; // default All
 
     office_element_ptr			style_page_layout_properties_;
     office_element_ptr			style_header_style_;

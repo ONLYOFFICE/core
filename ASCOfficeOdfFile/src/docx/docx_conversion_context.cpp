@@ -340,27 +340,25 @@ void docx_conversion_context::start_sdt(int type)
 
 	table_content_context_.type_table_content = type;
 
-	std::wstring sType;
-
-	switch(type)
+	if (table_content_context_.type_table_content < 4)
 	{
-	case 1: sType = L"Table of Contents"; break;
-	case 2: sType = L"List od Illustrations"; break;
-	}
-	
-	output_stream() << L"<w:sdt>";
-	output_stream() << L"<w:sdtPr>";
-	//output_stream() << L"<w:id w:val=\"-505364165\"/>";
+		output_stream() << L"<w:sdt><w:sdtPr>";
+		if (table_content_context_.type_table_content == 3)
+		{
+			output_stream() << L"<w:bibliography/>";
+		}
+		else
+		{
+			output_stream() << L"<w:docPartObj><w:docPartGallery w:val=\"";
+			
+			if (table_content_context_.type_table_content == 1) output_stream() << L"Table of Contents";
+			if (table_content_context_.type_table_content == 2) output_stream() << L"List od Illustrations";
 
-	if (false == sType.empty())
-	{
-		output_stream() << L"<w:docPartObj>";
-		output_stream() << L"<w:docPartGallery w:val=\"" << sType << L"\"/>";
-		output_stream() << L"<w:docPartUnique/>";
-		output_stream() << L"</w:docPartObj>";
+			output_stream() << L"\"/><w:docPartUnique/></w:docPartObj>";
+
+		}
+		output_stream() << L"</w:sdtPr><w:sdtContent>";
 	}
-	output_stream() << L"</w:sdtPr>";
-	output_stream() << L"<w:sdtContent>";
 }
 
 void docx_conversion_context::start_index_content()
@@ -374,8 +372,12 @@ void docx_conversion_context::start_index_content()
 	switch(table_content_context_.type_table_content)
 	{
 		case 1: sInstrText += L" TOC \\h \\o \"1-3\" \\u \\l 1-3 "; break;
-		case 2: sInstrText += L" TOC \\h \\z"; break;
-		case 5: sInstrText += L" INDEX \\c \"2\" \\z \"1049\" "; break;
+		case 2: 
+		case 4: 
+		case 6:
+		case 7:	sInstrText += L" TOC \\h \\z "; break;
+		case 5: sInstrText += L" INDEX \\z "; break;
+		case 3: sInstrText += L" BIBLIOGRAPHY "; break;
 	}
 
 	if (!table_content_context_.caption_sequence_name.empty())
@@ -420,10 +422,12 @@ void docx_conversion_context::end_sdt()
 {
 	if (!in_table_content_) return;
 
-	output_stream() << L"</w:sdtContent>";
-	output_stream() << L"</w:sdt>";
-	
+	if (table_content_context_.type_table_content < 4)
+	{
+		output_stream() << L"</w:sdtContent></w:sdt>";
+	}
 	in_table_content_ = false;
+	table_content_context_.clear_all();
 }
 void docx_conversion_context::start_index_element()
 {
@@ -468,6 +472,64 @@ void docx_conversion_context::end_bookmark (const std::wstring &name)
 	finish_run();
 	output_stream() << L"<w:bookmarkEnd w:id=\"" << std::to_wstring(id) << L"\"/>";
 }
+
+void docx_conversion_context::start_alphabetical_index (const std::wstring &id)
+{
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>>::iterator pFind = mapAlphabeticals.find(id);
+
+	if (pFind != mapAlphabeticals.end()) return;
+
+	std::vector<odf_reader::office_element_ptr> texts;
+	mapAlphabeticals.insert(std::make_pair(id, texts));
+
+	current_alphabetic_index_ = id;
+}
+void docx_conversion_context::add_alphabetical_index_text (odf_reader::office_element_ptr & elem)
+{
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>>::iterator pFind = mapAlphabeticals.find(current_alphabetic_index_);
+	if (pFind == mapAlphabeticals.end())
+	{
+		return; 
+	}
+	pFind->second.push_back(elem);
+}
+void docx_conversion_context::end_alphabetical_index (const std::wstring &id)
+{
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>>::iterator pFind = mapAlphabeticals.find(id);
+
+	if (pFind == mapAlphabeticals.end())
+	{
+		return; 
+	}
+	finish_run();
+
+	output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
+	output_stream() << L"<w:r><w:instrText>XE \"";
+	
+	odf_reader::ElementType type;
+	for (size_t i = 0; i < pFind->second.size(); i++)
+	{
+		type = pFind->second[i]->get_type();
+		pFind->second[i]->text_to_stream(output_stream());
+	}
+
+	output_stream() << L"\"</w:instrText></w:r>";
+
+	output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+	
+	for (size_t i = 0; i < pFind->second.size(); i++)
+	{
+		pFind->second[i]->docx_convert(*this);
+	}
+ 	
+	mapAlphabeticals.erase(pFind);
+	
+	if (mapAlphabeticals.empty())
+		current_alphabetic_index_.clear();
+	else
+		current_alphabetic_index_ = mapAlphabeticals.begin()->first; // todooo vector+map+level
+}
+
 
 void docx_conversion_context::start_chart(std::wstring  name)
 {
@@ -626,20 +688,24 @@ std::wstring  docx_conversion_context::dump_settings_document()
             _CP_OPT(std::wstring)  strVal;
             _CP_OPT(int)   intVal;
 
-			if (odf_reader::GetProperty(settings_properties_,L"evenAndOddHeaders",boolVal))
+			if (odf_reader::GetProperty(settings_properties_,L"evenAndOddHeaders", boolVal))
 			{
 				CP_XML_NODE(L"w:evenAndOddHeaders");
 			}
-			if (odf_reader::GetProperty(settings_properties_,L"displayBackgroundShape",boolVal))
+			if (odf_reader::GetProperty(settings_properties_,L"displayBackgroundShape", boolVal))
 			{
 				CP_XML_NODE(L"w:displayBackgroundShape");
 			}
-			if (odf_reader::GetProperty(settings_properties_,L"zoom",intVal))
+			if (odf_reader::GetProperty(settings_properties_,L"zoom", intVal))
 			{
 				CP_XML_NODE(L"w:zoom")
 				{
 					CP_XML_ATTR(L"w:percent",intVal.get());
 				}
+			}
+			if (odf_reader::GetProperty(settings_properties_,L"mirrorMargins", boolVal))
+			{
+				CP_XML_NODE(L"w:mirrorMargins");
 			}
 		}
 	}
@@ -1020,7 +1086,7 @@ bool docx_conversion_context::process_page_properties(std::wostream & strm)
 
 		if (page_layout_instance_) 
 		{
-				page_layout_instance_->docx_serialize(strm, *this);
+			page_layout_instance_->docx_serialize(strm, *this);
 		}
 		else
 		{
@@ -1697,7 +1763,7 @@ void docx_conversion_context::add_note_reference ()
 
 typedef std::map<std::wstring, text_tracked_context::_state>::iterator map_changes_iterator;
 
-void docx_conversion_context::start_text_changes (std::wstring id)
+void docx_conversion_context::start_text_changes (const std::wstring &id)
 {
 	text_tracked_context::_state  &state_add = text_tracked_context_.get_tracked_change(id);
 	if (state_add.id != id) return;
@@ -1864,7 +1930,7 @@ void docx_conversion_context::end_changes()
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
 }
-void docx_conversion_context::end_text_changes (std::wstring id)
+void docx_conversion_context::end_text_changes (const std::wstring &id)
 {
 	if (map_current_changes_.empty()) return;
 

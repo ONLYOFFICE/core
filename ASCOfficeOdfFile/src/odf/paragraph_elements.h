@@ -243,8 +243,8 @@ public:
     static const ElementType type = typeTextBookmarkEnd;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual void docx_convert(oox::docx_conversion_context & Context);
 
     std::wstring name_;
 
@@ -1368,9 +1368,8 @@ public:
 	_CP_OPT(std::wstring)		key2_;
 	_CP_OPT(std::wstring)		key2_phonetic_;
 	_CP_OPT(odf_types::Bool)	main_entry_;
+	_CP_OPT(std::wstring)		string_value_;
 	_CP_OPT(std::wstring)		string_value_phonetic_;
-
-
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}

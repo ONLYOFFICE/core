@@ -2987,6 +2987,54 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 				m_oBcw.m_oStream.WriteLONG(lvl.m_oIlvl->GetValue());
 			}
+			if(lvl.m_oTentative.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::Tentative);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteBOOL(lvl.m_oTentative->ToBool());
+			}
+			if(lvl.m_oTplc.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::Tplc);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+				m_oBcw.m_oStream.WriteULONG(lvl.m_oTplc->GetValue());
+			}
+			if(lvl.m_oIsLgl.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::IsLgl);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteBOOL(lvl.m_oIsLgl->m_oVal.ToBool());
+			}
+			if(lvl.m_oLegacy.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::LvlLegacy);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+				nCurPos = m_oBcw.WriteItemWithLengthStart();
+				WriteLvlLegacy(lvl.m_oLegacy.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteLvlLegacy(const ComplexTypes::Word::CLvlLegacy& lvlLegacy)
+		{
+			int nCurPos = 0;
+			if (lvlLegacy.m_oLegacy.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::Legacy);
+				m_oBcw.m_oStream.WriteBOOL(lvlLegacy.m_oLegacy->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (lvlLegacy.m_oLegacyIndent.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::LegacyIndent);
+				m_oBcw.m_oStream.WriteLONG(lvlLegacy.m_oLegacyIndent->ToTwips());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (lvlLegacy.m_oLegacySpace.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::LegacySpace);
+				m_oBcw.m_oStream.WriteULONG(lvlLegacy.m_oLegacySpace->ToUnsignedTwips());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 		}
 		void WriteLevelText(const std::wstring& text)
 		{

@@ -1321,6 +1321,12 @@ public:
 	NSStringUtils::CStringBuilder ParaPr;
 	NSStringUtils::CStringBuilder TextPr;
     std::wstring PStyle;
+	bool Tentative;
+	unsigned long Tplc;
+	bool IsLgl;
+	bool Legacy;
+	long LegacyIndent;
+	unsigned long LegacySpace;
 
 	bool bILvl;
 	bool bFormat;
@@ -1332,6 +1338,14 @@ public:
 	bool bParaPr;
 	bool bTextPr;
 	bool bPStyle;
+	bool bTentative;
+	bool bTplc;
+	bool bIsLgl;
+	bool bLvlLegacy;
+	bool bLegacy;
+	bool bLegacyIndent;
+	bool bLegacySpace;
+
 	docLvl()
 	{
 		bILvl = false;
@@ -1344,6 +1358,13 @@ public:
 		bParaPr = false;
 		bTextPr = false;
 		bPStyle = false;
+		bTentative = false;
+		bTplc = false;
+		bIsLgl = false;
+		bLvlLegacy = false;
+		bLegacy = false;
+		bLegacyIndent = false;
+		bLegacySpace = false;
 	}
 	~docLvl()
 	{
@@ -1358,6 +1379,19 @@ public:
 		if(bILvl)
 		{
 			oWriter.WriteString(L" w:ilvl=\"" + std::to_wstring(ILvl) + L"\"");
+		}
+		if(bTentative)
+		{
+			if(Tentative)
+				oWriter.WriteString(L" w:tentative=\"1\"");
+			else
+				oWriter.WriteString(L" w:tentative=\"0\"");
+		}
+		if(bTplc)
+		{
+			oWriter.WriteString(L" w:tplc=\"");
+			oWriter.WriteString(XmlUtils::IntToString(Tplc, L"%08X"));
+			oWriter.WriteString(L"\"");
 		}
 		oWriter.WriteString(L">");
 		if(bStart)
@@ -1391,6 +1425,13 @@ public:
 		{
             std::wstring sStyleName = XmlUtils::EncodeXmlString(PStyle);
             oWriter.WriteString(L"<w:pStyle w:val=\"" + sStyleName + L"\"/>");
+		}
+		if(bIsLgl)
+		{
+			if(IsLgl)
+				oWriter.WriteString(L"<w:isLgl/>");
+			else
+				oWriter.WriteString(L"<w:isLgl w:val=\"false\"/>");
 		}
 		if(bSuff)
 		{
@@ -1429,6 +1470,30 @@ public:
             sTextXml += _T("\"/>");
 
 			oWriter.WriteString(sTextXml);
+		}
+		if(bLvlLegacy)
+		{
+			 oWriter.WriteString(L"<w:legacy");
+			 if(bLegacy)
+			 {
+				 if(Legacy)
+					 oWriter.WriteString(L" w:legacy=\"1\"");
+				 else
+					 oWriter.WriteString(L" w:legacy=\"0\"");
+			 }
+			 if(bLegacyIndent)
+			 {
+				 oWriter.WriteString(L" w:legacyIndent=\"");
+				 oWriter.WriteString(std::to_wstring(LegacyIndent));
+				 oWriter.WriteString(L"\"");
+			 }
+			 if(bLegacySpace)
+			 {
+				 oWriter.WriteString(L" w:legacySpace=\"");
+				 oWriter.WriteString(std::to_wstring(LegacySpace));
+				 oWriter.WriteString(L"\"");
+			 }
+			 oWriter.WriteString(L"/>");
 		}
 		if(bJc)
 		{

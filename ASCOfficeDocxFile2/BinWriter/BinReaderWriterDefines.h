@@ -204,7 +204,14 @@ extern int g_nCurFormatVersion;
 		NumFmtFormat = 26,
 		Num_LvlOverride = 27,
 		StartOverride = 28,
-		ILvl = 29
+		ILvl = 29,
+		Tentative = 30,
+		Tplc = 31,
+		IsLgl = 32,
+		LvlLegacy = 33,
+		Legacy = 34,
+		LegacyIndent = 35,
+		LegacySpace = 36
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{

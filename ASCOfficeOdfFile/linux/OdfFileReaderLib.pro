@@ -214,6 +214,7 @@ SOURCES += \
     ../src/odf/datatypes/tablefunction.cpp \
     ../src/odf/datatypes/tableorder.cpp \
     ../src/odf/datatypes/dategroup.cpp \
+    ../src/odf/datatypes/bibliography \
     ../src/odfcommandtype.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \

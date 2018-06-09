@@ -371,25 +371,34 @@ void docx_conversion_context::start_index_content()
 
 	switch(table_content_context_.type_table_content)
 	{
-		case 1: sInstrText += L" TOC \\h \\o \"1-3\" \\u \\l 1-3 "; break;
+		case 1: sInstrText += L" TOC \\f \\h \\u"; break;
 		case 2: 
 		case 4: 
 		case 6:
-		case 7:	sInstrText += L" TOC \\h \\z "; break;
-		case 5: sInstrText += L" INDEX \\z "; break;
-		case 3: sInstrText += L" BIBLIOGRAPHY "; break;
+		case 7:	sInstrText += L" TOC \\h \\z"; break;
+		case 5: sInstrText += L" INDEX \\z"; break;
+		case 3: sInstrText += L" BIBLIOGRAPHY"; break;
 	}
 
+	if (table_content_context_.min_outline_level > 0)
+	{
+		if (table_content_context_.max_outline_level > 9)
+			table_content_context_.max_outline_level = 9;
+
+		sInstrText += L" \\o \"" +	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
+									std::to_wstring(table_content_context_.max_outline_level) + L"\" ";
+	}
+ /*\\l 1-3*/
 	if (!table_content_context_.caption_sequence_name.empty())
 	{
-		 sInstrText += L" \\c \"" + table_content_context_.caption_sequence_name + L"\" "; 
+		 sInstrText += L" \\c \"" + table_content_context_.caption_sequence_name + L"\""; 
 	}
 
 	output_stream() << L"<w:r>";
 	output_stream() << L"<w:fldChar w:fldCharType=\"begin\"/>";
 	output_stream() << L"</w:r>";
 	output_stream() << L"<w:r>";
-	output_stream() << L"<w:instrText xml:space=\"preserve\">" + sInstrText + L"</w:instrText>";
+	output_stream() << L"<w:instrText xml:space=\"preserve\">" << sInstrText << L" </w:instrText>";
 	output_stream() << L"</w:r>";
 	output_stream() << L"<w:r>";
 	//output_stream() << L"<w:rPr>
@@ -431,11 +440,15 @@ void docx_conversion_context::end_sdt()
 }
 void docx_conversion_context::start_index_element()
 {
-	table_content_context_.clear_current_level_index();
+	table_content_context_.clear_current_content_template_index();
 }
 void docx_conversion_context::end_index_element()
 {
-	table_content_context_.clear_current_level_index();
+	table_content_context_.clear_current_content_template_index();
+}
+void docx_conversion_context::add_bibliography_item	(const std::wstring & item)
+{
+	arBibliography.push_back(item);
 }
 void docx_conversion_context::start_bookmark (const std::wstring &name)
 {

@@ -129,3 +129,4 @@
 #include "../src/odf/datatypes/dategroup.cpp"
 #include "../src/odf/datatypes/commandtype.cpp"
 #include "../src/odf/datatypes/stylenumformat.cpp"
+#include "../src/odf/datatypes/bibliography.cpp"

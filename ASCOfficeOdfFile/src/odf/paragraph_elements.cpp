@@ -150,7 +150,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 	}  
 	if (Context.is_table_content())
 	{
-		int type = Context.get_table_content_context().get_type_current_level_index();
+		int type = Context.get_table_content_context().get_type_current_content_template_index();
 		if (type == 6)
 		{
 		}
@@ -610,7 +610,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 	if (Context.is_table_content())
 	{
 		_Wostream << L"<w:hyperlink w:anchor=\"" << ref.substr(1) << L"\" w:history=\"1\">"; //без #
-		int type = Context.get_table_content_context().get_type_current_level_index();
+		int type = Context.get_table_content_context().get_type_current_content_template_index();
 		//type == 3 (LinkStart)
 		Context.get_table_content_context().next_level_index();
 	}
@@ -1220,11 +1220,11 @@ const wchar_t * sequence::name = L"sequence";
 
 void sequence::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"style:num-format", style_num_format_);
+	CP_APPLY_ATTR(L"style:num-format",		style_num_format_);
 	CP_APPLY_ATTR(L"style:num-letter-sync", style_num_letter_sync_);
-	CP_APPLY_ATTR(L"text:formula", text_formula_);
-	CP_APPLY_ATTR(L"text:ref-name", text_ref_name_);
-	CP_APPLY_ATTR(L"text:name", text_name_);
+	CP_APPLY_ATTR(L"text:formula",			formula_);
+	CP_APPLY_ATTR(L"text:ref-name",			ref_name_);
+	CP_APPLY_ATTR(L"text:name",				name_);
 }
 std::wostream & sequence::text_to_stream(std::wostream & _Wostream) const
 {
@@ -1244,19 +1244,20 @@ void sequence::add_text(const std::wstring & Text)
 
 void sequence::docx_convert(oox::docx_conversion_context & Context) 
 {
-	std::wstring ref;
-	if (text_ref_name_ && text_name_)
+	std::wstring ref, sequence;
+	if (ref_name_)
 	{
-		size_t pos = text_ref_name_->find(L"ref" + *text_name_);
+		sequence = Context.get_table_content_context().get_sequence(*ref_name_);
+		size_t pos = ref_name_->find(L"ref" + ref);
 		if (pos != std::wstring::npos)
 		{
-			ref = *text_name_ + L"!" +  text_ref_name_->substr(pos + 3 + text_name_->length()) + L"|sequence";
+			ref = sequence + L"!" +  ref_name_->substr(pos + 3 + sequence.length()) + L"|sequence";
 		}
 	}
-	if (!ref.empty())
-	{
-		Context.start_bookmark(ref);
-	}
+	//if (!ref.empty())
+	//{
+	//	Context.start_bookmark(ref);
+	//}
 
 	Context.add_new_run();
 		Context.output_stream() << L"<w:t>" << template_ << L"</w:t>";
@@ -1277,7 +1278,7 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << template_ << L" \\* " << num_format << L" \">";
+	Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << sequence << L" \\* " << num_format << L" \">";
 	Context.add_new_run();
 		for (size_t i = 0; i < text_.size(); i++)
 		{
@@ -1285,34 +1286,11 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 		}
 	Context.finish_run();
 	
-	if (!ref.empty())
-	{
-		Context.end_bookmark(ref);
-	}
-	Context.output_stream() << L"</w:fldSimple>";
-
-
-	//Context.add_new_run();
- //   Context.output_stream() << L"<w:fldChar w:fldCharType=\"begin\"/>";
-	//Context.finish_run();
-	//
-	//Context.add_new_run();
-	//Context.output_stream() << L"<w:instrText  xml:space=\"preserve\"> SEQ " << template_ << L" \\* ARABIC </w:instrText>";
- //	Context.finish_run();
-
-	//Context.add_new_run();
- //   Context.output_stream() << L"<w:fldChar w:fldCharType=\"separate\"/>";
-	//Context.finish_run();
-	//
-	//for (size_t i = 0; i < text_.size(); i++)
+	//if (!ref.empty())
 	//{
-	//	text_[i]->docx_convert(Context);
+	//	Context.end_bookmark(ref);
 	//}
-	//Context.end_bookmark();
-	//
-	//Context.add_new_run();
- //   Context.output_stream() << L"<w:fldChar w:fldCharType=\"end\"/>";
-	//Context.finish_run();
+	Context.output_stream() << L"</w:fldSimple>";
 }
 void sequence::pptx_convert(oox::pptx_conversion_context & Context) 
 {
@@ -1623,12 +1601,31 @@ const wchar_t * bibliography_mark::name = L"bibliography-mark";
 
 void bibliography_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:identifier",			identifier_, std::wstring(L""));
-    CP_APPLY_ATTR(L"text:bibliography-type",	bibliography_type_, std::wstring(L""));
-    CP_APPLY_ATTR(L"text:author",				author_);
-    CP_APPLY_ATTR(L"text:url",					url_);
-    CP_APPLY_ATTR(L"text:title",				title_);
-    CP_APPLY_ATTR(L"text:year",					year_);
+    CP_APPLY_ATTR(L"text:identifier",		identifier_, std::wstring(L""));
+	CP_APPLY_ATTR(L"text:bibliography-type",bibliography_type_, odf_types::bibliography(odf_types::bibliography::Book));
+    CP_APPLY_ATTR(L"text:author",			author_);
+    CP_APPLY_ATTR(L"text:url",				url_);
+    CP_APPLY_ATTR(L"text:title",			title_);
+    CP_APPLY_ATTR(L"text:year",				year_);
+	CP_APPLY_ATTR(L"text:address",			address_);
+	CP_APPLY_ATTR(L"text:annote",			annote_);
+	CP_APPLY_ATTR(L"text:booktitle",		booktitle_);
+	CP_APPLY_ATTR(L"text:edition",			edition_);
+	CP_APPLY_ATTR(L"text:editor_",			editor_);
+	CP_APPLY_ATTR(L"text:howpublished",		howpublished_);
+	CP_APPLY_ATTR(L"text:institution",		institution_);
+	CP_APPLY_ATTR(L"text:issn",				issn_);
+	CP_APPLY_ATTR(L"text:journal",			journal_);
+	CP_APPLY_ATTR(L"text:month",			month_);
+	CP_APPLY_ATTR(L"text:note",				note_);
+	CP_APPLY_ATTR(L"text:number",			number_);
+	CP_APPLY_ATTR(L"text:organizations",	organizations_);
+	CP_APPLY_ATTR(L"text:pages",			pages_);
+	CP_APPLY_ATTR(L"text:publisher",		publisher_);
+	CP_APPLY_ATTR(L"text:report-type",		report_type_);
+	CP_APPLY_ATTR(L"text:school",			school_);
+	CP_APPLY_ATTR(L"text:series",			series_);
+	CP_APPLY_ATTR(L"text:volume",			volume_);
 }
 
 void bibliography_mark::add_text(const std::wstring & Text)
@@ -1645,8 +1642,75 @@ std::wostream & bibliography_mark::text_to_stream(std::wostream & _Wostream) con
 
 void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (content_)
-        content_->docx_convert(Context);
+	std::wstringstream strm;
+
+    CP_XML_WRITER(strm)
+    {
+        CP_XML_NODE(L"b:Source")
+        {
+			CP_XML_NODE(L"b:Tag")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(identifier_);
+			}
+			CP_XML_NODE(L"b:SourceType")
+			{
+				std::wstring type;
+				switch(bibliography_type_.get_type())
+				{
+				case odf_types::bibliography::article:			type = L"ArticleInAPeriodical"; break;
+				case odf_types::bibliography::book:				type = L"Book"; break;
+				case odf_types::bibliography::booklet:			type = L"BookSection"; break;
+				case odf_types::bibliography::conference:		type = L"ConferenceProceedings"; break;
+				case odf_types::bibliography::email:			type = L"ElectronicSource"; break;
+				case odf_types::bibliography::inbook:			type = L"Book"; break;
+				case odf_types::bibliography::incollection:		type = L"Misc"; break;
+				case odf_types::bibliography::inproceedings:	type = L"Misc"; break;
+				case odf_types::bibliography::journal:			type = L"JournalArticle"; break;
+				case odf_types::bibliography::manual:			type = L"ElectronicSource"; break;
+				case odf_types::bibliography::mastersthesis:	type = L"Misc"; break;
+				case odf_types::bibliography::misc:				type = L"Misc"; break;
+				case odf_types::bibliography::phdthesis:		type = L"Misc"; break;
+				case odf_types::bibliography::proceedings:		type = L"ConferenceProceedings"; break;
+				case odf_types::bibliography::techreport:		type = L"Report"; break;
+				case odf_types::bibliography::unpublished:		type = L"Misc"; break;
+				case odf_types::bibliography::www:				type = L"InternetSite"; break;
+				}
+				CP_XML_STREAM() << type;
+			}
+			//CP_XML_NODE(L"b:Guid")
+			//{
+			//}
+			if (title_)
+			{
+				CP_XML_NODE(L"b:Title")
+				{
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*title_);
+				}
+			}
+			if (author_)
+			{
+				CP_XML_NODE(L"b:Author")
+				{
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*year_);
+				}
+			}
+			if (year_)
+			{
+				CP_XML_NODE(L"b:Year")
+				{
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*year_);
+				}
+			}
+			if (url_)
+			{
+				CP_XML_NODE(L"b:InternetSiteTitle")
+				{
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*url_);
+				}
+			}
+		}
+	}
+	Context.add_bibliography_item(strm.str());
 }
 
 void bibliography_mark::pptx_convert(oox::pptx_conversion_context & Context)

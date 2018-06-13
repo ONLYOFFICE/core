@@ -134,6 +134,9 @@ void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 
 void office_text::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (sequences_)
+		sequences_->docx_convert(Context);
+
 	if (user_fields_)
 		user_fields_->docx_convert(Context);
 	

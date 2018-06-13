@@ -42,6 +42,7 @@
 #include "datatypes/targetframename.h"
 #include "datatypes/noteclass.h"
 #include "datatypes/bool.h"
+#include "datatypes/bibliography.h"
 
 #include "../docx/docx_conversion_context.h"
 
@@ -243,8 +244,8 @@ public:
     static const ElementType type = typeTextBookmarkEnd;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual void docx_convert(oox::docx_conversion_context & Context);
 
     std::wstring name_;
 
@@ -861,9 +862,9 @@ public:
 
 	_CP_OPT(odf_types::style_numformat)	style_num_format_;
 	_CP_OPT(std::wstring)				style_num_letter_sync_;
-	_CP_OPT(std::wstring)				text_formula_;
-	_CP_OPT(std::wstring)				text_name_;
-	_CP_OPT(std::wstring)				text_ref_name_;
+	_CP_OPT(std::wstring)				formula_;
+	_CP_OPT(std::wstring)				name_;
+	_CP_OPT(std::wstring)				ref_name_;
 
 	_CP_OPT(std::wstring)		template_;
     office_element_ptr_array	text_;
@@ -1264,7 +1265,7 @@ public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     std::wstring			identifier_;
-    std::wstring			bibliography_type_; // todoooo in datatype
+	odf_types::bibliography	bibliography_type_; 
     
 	_CP_OPT(std::wstring)	url_;
     _CP_OPT(std::wstring)	author_;
@@ -1272,6 +1273,25 @@ public:
     _CP_OPT(std::wstring)	year_;
     _CP_OPT(std::wstring)	isbn_;
 	_CP_OPT(std::wstring)	chapter_;
+	_CP_OPT(std::wstring)	address_;
+	_CP_OPT(std::wstring)	annote_;
+	_CP_OPT(std::wstring)	booktitle_;
+	_CP_OPT(std::wstring)	edition_;
+	_CP_OPT(std::wstring)	editor_;
+	_CP_OPT(std::wstring)	howpublished_;
+	_CP_OPT(std::wstring)	institution_;
+	_CP_OPT(std::wstring)	issn_;
+	_CP_OPT(std::wstring)	journal_;
+	_CP_OPT(std::wstring)	month_;
+	_CP_OPT(std::wstring)	note_;
+	_CP_OPT(std::wstring)	number_;
+	_CP_OPT(std::wstring)	organizations_;
+	_CP_OPT(std::wstring)	pages_;
+	_CP_OPT(std::wstring)	publisher_;
+	_CP_OPT(std::wstring)	report_type_;
+	_CP_OPT(std::wstring)	school_;
+	_CP_OPT(std::wstring)	series_;
+	_CP_OPT(std::wstring)	volume_;
 
 	office_element_ptr		content_;
 
@@ -1368,9 +1388,8 @@ public:
 	_CP_OPT(std::wstring)		key2_;
 	_CP_OPT(std::wstring)		key2_phonetic_;
 	_CP_OPT(odf_types::Bool)	main_entry_;
+	_CP_OPT(std::wstring)		string_value_;
 	_CP_OPT(std::wstring)		string_value_phonetic_;
-
-
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}

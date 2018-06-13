@@ -2654,6 +2654,49 @@ public:
 			odocLvl->bILvl = true;
 			odocLvl->ILvl = m_oBufferedStream.GetLong();
 		}
+		else if ( c_oSerNumTypes::Tentative == type )
+		{
+			odocLvl->bTentative = true;
+			odocLvl->Tentative = m_oBufferedStream.GetBool();
+		}
+		else if ( c_oSerNumTypes::Tplc == type )
+		{
+			odocLvl->bTplc = true;
+			odocLvl->Tplc = m_oBufferedStream.GetULong();
+		}
+		else if ( c_oSerNumTypes::IsLgl == type )
+		{
+			odocLvl->bIsLgl = true;
+			odocLvl->IsLgl = m_oBufferedStream.GetBool();
+		}
+		else if ( c_oSerNumTypes::LvlLegacy == type )
+		{
+			odocLvl->bLvlLegacy = true;
+			READ1_DEF(length, res, this->ReadLvlLegacy, odocLvl);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadLvlLegacy(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		docLvl* odocLvl = static_cast<docLvl*>(poResult);
+		if ( c_oSerNumTypes::Legacy == type )
+		{
+			odocLvl->bLegacy = true;
+			odocLvl->Legacy = m_oBufferedStream.GetBool();
+		}
+		else if ( c_oSerNumTypes::LegacyIndent == type )
+		{
+			odocLvl->bLegacyIndent = true;
+			odocLvl->LegacyIndent = m_oBufferedStream.GetLong();
+		}
+		else if ( c_oSerNumTypes::LegacySpace == type )
+		{
+			odocLvl->bLegacySpace = true;
+			odocLvl->LegacySpace = m_oBufferedStream.GetULong();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

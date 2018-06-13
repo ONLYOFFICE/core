@@ -165,6 +165,10 @@ namespace SimpleTypes
 		{
 			return (long)Pt_To_Dx(m_dValue);
 		}
+		unsigned long ToUnsignedTwips() const
+		{
+			return (unsigned long)Pt_To_Dx(m_dValue);
+		}
 		virtual double FromPoints(double dValue)
 		{
 			m_dValue = dValue;

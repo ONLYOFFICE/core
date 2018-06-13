@@ -282,7 +282,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		if (sequence_)
 		{
 			std::wstringstream _Wostream;
-			CP_SERIALIZE_TEXT(content_);
+			CP_SERIALIZE_TEXT(content_);///todooo
 
 			Context.get_drawing_context().set_next_object_caption(_Wostream.str());
 		}
@@ -381,15 +381,25 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 				Context.output_stream() << L"<w:br w:type=\"page\"/>";  
 			Context.set_page_break(false);
 		}
-
-        content_[i]->docx_convert(Context); 
- 		if (Context.is_table_content())
+		if (Context.is_alphabetical_index() && 
+			(content_[i]->get_type() != typeTextAlphabeticalIndexMarkStart && 
+			 content_[i]->get_type() != typeTextAlphabeticalIndexMarkEnd && 
+			 content_[i]->get_type() != typeTextAlphabeticalIndexMark))
+		{
+			Context.add_alphabetical_index_text(content_[i]);
+		}
+		else
+		{
+			content_[i]->docx_convert(Context); 
+			
+			if (Context.get_drop_cap_context().state() > 0)		
+				Context.get_drop_cap_context().state(0);//disable
+		
+		}
+		if (Context.is_table_content())
 		{
 			Context.get_table_content_context().next_level_index();
 		}
-		
-		if (Context.get_drop_cap_context().state() > 0)		
-			Context.get_drop_cap_context().state(0);//disable
 	}
 
     if (textStyle > 0)
@@ -946,6 +956,11 @@ void common_entry_template::docx_convert(oox::docx_conversion_context & Context)
 	if (!style_name_)return;
 
 	Context.get_table_content_context().start_level(*style_name_);
+
+	if (outline_level_)
+	{
+		Context.get_table_content_context().set_outline_level(*outline_level_);
+	}
 	for (size_t i = 0; i < content_.size(); i++)
 	{
 		switch(content_[i]->get_type())
@@ -1049,6 +1064,10 @@ void table_index_source::add_child_element( xml::sax * Reader, const std::wstrin
 }
 void table_index_source::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (caption_sequence_name_)
+	{
+		Context.get_table_content_context().caption_sequence_name = *caption_sequence_name_;
+	}
 	Context.get_table_content_context().start_template(4);
 	for (size_t i = 0; i < entry_templates_.size(); i++)
 	{
@@ -1162,6 +1181,10 @@ void illustration_index_source::add_child_element( xml::sax * Reader, const std:
 }
 void illustration_index_source::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (caption_sequence_name_)
+	{
+		Context.get_table_content_context().caption_sequence_name = *caption_sequence_name_;
+	}
 	Context.get_table_content_context().start_template(2);
 	for (size_t i = 0; i < entry_templates_.size(); i++)
 	{
@@ -1984,6 +2007,43 @@ void user_field_decls::add_child_element( xml::sax * Reader, const std::wstring 
 	}
 }
 void user_field_decls::docx_convert(oox::docx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->docx_convert(Context);
+	}
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * sequence_decl::ns	= L"text";
+const wchar_t * sequence_decl::name	= L"sequence-decl";
+
+void sequence_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:name",						name_);
+	CP_APPLY_ATTR(L"text:display-outline-level",	display_outline_level_);
+	CP_APPLY_ATTR(L"text:separation-character",		separation_character_);
+}
+void sequence_decl::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!name_) return;
+
+	Context.get_table_content_context().add_sequence(*name_, display_outline_level_ ? *display_outline_level_ : -1);
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * sequence_decls::ns		= L"text";
+const wchar_t * sequence_decls::name	= L"sequence-decls";
+
+void sequence_decls::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"sequence-decl")
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else
+	{
+	}
+}
+void sequence_decls::docx_convert(oox::docx_conversion_context & Context)
 {
 	for (size_t i = 0; i < content_.size(); i++)
 	{

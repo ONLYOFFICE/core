@@ -318,6 +318,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\bibliography.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\bibliography.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\bool.cpp"
 				>
 			</File>

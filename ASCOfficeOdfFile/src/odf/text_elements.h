@@ -311,6 +311,7 @@ public:
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 	_CP_OPT(std::wstring)		style_name_;
+	_CP_OPT(int)				outline_level_;
 	office_element_ptr_array	content_;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -999,7 +1000,50 @@ private:
     office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(user_field_decls);
+//---------------------------------------------------------------------------------------------------
+//text:sequence-decl
+//---------------------------------------------------------------------------------------------------
+class sequence_decl : public office_element_impl<sequence_decl>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextSequenceDecl;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+    void docx_convert(oox::docx_conversion_context & Context);
 
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+	_CP_OPT(std::wstring)	separation_character_; //one char
+	_CP_OPT(unsigned int)	display_outline_level_;
+	_CP_OPT(std::wstring)	name_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(sequence_decl);
+//---------------------------------------------------------------------------------------------------
+//text:sequence-decls
+//---------------------------------------------------------------------------------------------------
+class sequence_decls : public office_element_impl<sequence_decls>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextSequenceDecls;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+    void docx_convert(oox::docx_conversion_context & Context);
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(sequence_decls);
 //---------------------------------------------------------------------------------------------------
 //text:table-of-content-source
 //---------------------------------------------------------------------------------------------------
@@ -1047,9 +1091,6 @@ public:
 
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-	_CP_OPT(int)	outline_level_;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_of_content_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -1237,8 +1278,6 @@ public:
 
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-	_CP_OPT(int)	outline_level_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(illustration_index_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -1293,8 +1332,6 @@ public:
     static const ElementType type		= typeTextAlphabeticalIndexEntryTemplate;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	_CP_OPT(int)	outline_level_;
-	
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 };

@@ -616,6 +616,10 @@ private:
 class table_content_context
 {
 public:
+	table_content_context()
+	{
+		clear_all();
+	}
 	enum template_type
 	{
 		TableContent	= 1,
@@ -637,87 +641,123 @@ public:
 	struct _state
 	{
 		std::wstring name;
-		std::vector<int> levels;
+		int outline_level = -1;
+		std::vector<int> content;
 
 		void clear()
 		{
 			name.clear();
-			levels.clear();
+			content.clear();
+			outline_level = -1;
 		}
 	};
 	void start_template(int type)
 	{
 		current_template.clear();
-		caption_sequence_name.clear();
 		type_table_content = type;
 	}
 	void end_template()
 	{
 	}
-	void add_level_content(int type)
-	{
-		current_state.levels.push_back(type);
-	}
+
 	void start_level(const std::wstring& style_name)
 	{
 		current_state.name = style_name;
+	}
+	void add_level_content(int type)
+	{
+		current_state.content.push_back(type);
+	}	
+	void set_outline_level(int level)
+	{
+		if (min_outline_level == -1 || min_outline_level > level)
+			min_outline_level = level;
+		
+		if (max_outline_level == -1 || max_outline_level < level)
+			max_outline_level = level;
+
+		current_state.outline_level = level;
 	}
 	void end_level()
 	{
 		current_template.insert(std::make_pair(current_state.name, current_state));
 		current_state.clear();
 	}
-	//std::vector<int> find(const std::wstring &name)
-	//{
-	//	std::map<std::wstring, _state>::iterator pFind = current_template.find(name);
-	//	if (pFind == current_template.end())
-	//	{
-	//		std::vector<int> empty;
-	//		return empty;
-	//	}
-	//	return pFind->second.levels;
-	//}
 	void set_current_level(const std::wstring &name)
 	{
 		std::map<std::wstring, _state>::iterator pFind = current_template.find(name);
 		if (pFind == current_template.end())
 		{
-			current_level_.clear();
+			current_content_template_.clear();
 		}
-		current_level_ = pFind->second.levels;
-		current_level_index_ = 0;
+		current_content_template_ = pFind->second.content;
+		current_content_template_index_ = 0;
 	}
 
 	void next_level_index()
 	{
-		current_level_index_++;
+		current_content_template_index_++;
 	}
-	int get_type_current_level_index()
+	int get_type_current_content_template_index()
 	{
-		if (current_level_index_ < (int)current_level_.size() && current_level_index_ >= 0)
-			return current_level_[current_level_index_];
+		if (current_content_template_index_ < (int)current_content_template_.size() && current_content_template_index_ >= 0)
+			return current_content_template_[current_content_template_index_];
 
 		return 0;
 	}
 
-	void clear_current_level_index()
+	void clear_current_content_template_index()
 	{
-		current_level_index_ = 0;
-		current_level_.clear();
+		current_content_template_index_ = 0;
+		current_content_template_.clear();
 	}
 
 	bool empty_current_table_content_level_index()
 	{
-		return current_level_.empty();
+		return current_content_template_.empty();
 	}
+	void clear_all()
+	{
+		type_table_content = 0;
+		current_content_template_index_ = 0;
+		current_content_template_.clear();
+		current_template.clear();
+		current_state.clear();
+		caption_sequence_name.clear();
+		min_outline_level = -1;
+		max_outline_level = -1;
+	}
+	void add_sequence(const std::wstring & name, int outline_level)
+	{
+		//sequences.insert(std::make_pair(name, outline_level));
+		sequences.push_back(name);
+	}
+
+	std::wstring get_sequence (const std::wstring & ref)
+	{
+		for (size_t i = 0; i < sequences.size(); i++)
+		{
+			if (std::wstring:: npos != ref.find(sequences[i]))
+			{
+				return sequences[i];
+			}
+		}
+		return L"";
+	}
+
 	std::wstring					caption_sequence_name;
 	int								type_table_content;
+	int								min_outline_level;
+	int								max_outline_level;
+
 private:
-	std::vector<int>				current_level_;
-	int								current_level_index_;
+	std::vector<int>				current_content_template_;
+	int								current_content_template_index_;
 
 	std::map<std::wstring, _state>	current_template;
 	_state							current_state;
+	//std::map<std::wstring, int>	sequences;
+	std::vector<std::wstring>		sequences;
 };
 //---------------------------------------------------------------------------------------------------------
 class docx_conversion_context : boost::noncopyable
@@ -739,6 +779,7 @@ public:
             return temp_stream_;
     }
 
+	void add_bibliography_item	(const std::wstring & item);
 	void add_user_field			(const std::wstring & name, const std::wstring & value);	
 	std::wstring get_user_field	(const std::wstring & name);
 
@@ -751,6 +792,7 @@ public:
     void start_paragraph		(bool is_header = false);
     void finish_paragraph		();
 
+	bool is_alphabetical_index	()					{ return false == mapAlphabeticals.empty();}
 	bool is_table_content		()					{ return in_table_content_; }
 	bool is_paragraph_header	()					{ return in_header_;		}
 	bool get_paragraph_state	()					{ return in_paragraph_;		}
@@ -906,11 +948,15 @@ public:
 	void start_math_formula	();
 	void end_math_formula	();
 
-	void start_text_changes	(std::wstring id);
-	void end_text_changes	(std::wstring id);
+	void start_text_changes	(const std::wstring &id);
+	void end_text_changes	(const std::wstring &id);
 	
 	void start_bookmark	(const std::wstring &name);
 	void end_bookmark	(const std::wstring &name);
+
+	void start_alphabetical_index (const std::wstring &id);
+	void end_alphabetical_index	(const std::wstring &id);
+	void add_alphabetical_index_text (odf_reader::office_element_ptr & elem);
 
 	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
     headers_footers			& get_headers_footers()			{ return headers_footers_; }
@@ -986,18 +1032,22 @@ private:
     bool is_rtl_; // right-to-left
     bool is_paragraph_keep_; 
  
+	std::wstring current_alphabetic_index_;
 	int current_margin_left_;
     int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
 	NoteType process_note_;
     
-	std::vector<odf_reader::office_element*> delayed_elements_;
+	std::vector<odf_reader::office_element*>							delayed_elements_;
 
-    std::vector< const odf_reader::style_text_properties*>	text_properties_stack_;
-	std::map<std::wstring, text_tracked_context::_state>	map_current_changes_;    
-    boost::unordered_map<std::wstring, std::wstring>		list_style_renames_;// цепочки переименований нумераций
+    std::vector< const odf_reader::style_text_properties*>				text_properties_stack_;
+	std::map<std::wstring, text_tracked_context::_state>				map_current_changes_;    
+    boost::unordered_map<std::wstring, std::wstring>					list_style_renames_;// цепочки переименований нумераций
 	
-	std::map<std::wstring, std::wstring>					map_user_fields;
-	std::map<std::wstring, int>								mapBookmarks;
+	std::map<std::wstring, std::wstring>								map_user_fields;
+	std::map<std::wstring, int>											mapBookmarks;
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>> mapAlphabeticals;
+
+	std::vector<std::wstring>											arBibliography;
 
 };
 

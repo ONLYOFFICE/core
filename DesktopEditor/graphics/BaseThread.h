@@ -130,7 +130,13 @@ namespace NSThreads
 			Join();
 			RELEASEOBJECT(m_hThread);
 		}
-		
+
+		virtual void StopNoJoin()
+		{
+			m_bRunThread = FALSE;
+			RELEASEOBJECT(m_hThread);
+		}
+
 		inline INT IsSuspended() { return m_bSuspend; }
 		inline INT IsRunned() { return m_bRunThread; }
 		inline int GetError() { return m_lError; }

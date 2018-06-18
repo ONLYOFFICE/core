@@ -388,7 +388,14 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[ind_AXIS].get());
 
 	int iCrt = -1;
-
+	for (size_t i = 0; i < parent0->m_arCRT.size(); i++)
+	{
+		CRT* crt= dynamic_cast<CRT*>(parent0->m_arCRT[i].get());
+		if (crt)
+		{
+			parent0->m_mapCRTIndex.insert(std::make_pair(crt->m_indexCrt, i));
+		}
+	}
 	if (charts->m_arSERIESFORMAT.empty() && !parent0->m_arCRT.empty())
 	{
 		std::vector<int> ser;
@@ -735,12 +742,16 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 	
 	//todooo разобраться с разными типами в одном чарте .. считать количество серий?? 
 	std::unordered_map< int, std::vector<int>>::iterator it = m_mapTypeChart.begin();
-	if (it != m_mapTypeChart.end())
+	while (it != m_mapTypeChart.end())
 	{
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
 
 		LD * ld = dynamic_cast<LD*>(crt->m_LD.get());
-		if (ld == NULL) return 0;
+		if (ld == NULL)
+		{
+			++it;
+			continue;
+		}
 
 		CP_XML_WRITER(_stream)    
 		{
@@ -750,6 +761,7 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 				ld->serialize(CP_XML_STREAM(), legend_entries);				
 			}
 		}
+		break;
 	}
 	return 0;
 }
@@ -833,7 +845,12 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 			for (std::unordered_map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); ++it)
 			{
-				CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
+				std::map<int, int>::iterator pFindIndexCrt = parent0->m_mapCRTIndex.find(it->first);
+				
+				if (pFindIndexCrt == parent0->m_mapCRTIndex.end())
+					continue;
+
+				CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[pFindIndexCrt->second].get());
 
 				ChartFormat	*format	= dynamic_cast<ChartFormat*>(crt->m_ChartFormat.get());
 				AXISPARENT	*parent	= dynamic_cast<AXISPARENT*>(chart_formats->m_arAXISPARENT[crt->m_indAXISPARENT].get());

@@ -47,7 +47,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;FILE_FORMAT_CHECKER_WITH_MACRO;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\X2tTestD.pdb"
 				WarningLevel="3"
@@ -742,7 +742,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\build\lib\win_32\UnicodeConverter.lib"
+			RelativePath="..\..\..\build\lib\win_32\DEBUG\UnicodeConverter.lib"
 			>
 		</File>
 		<File

@@ -2569,11 +2569,12 @@ namespace NExtractTools
 	}
 	int oox2mscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-		std::wstring password = params.getSavePassword();
+		std::wstring password	= params.getSavePassword();
+		std::wstring documentID = params.getDocumentID();
 
 		ECMACryptFile cryptReader;
 
-        if (cryptReader.EncryptOfficeFile(sFrom, sTo, password) == false)
+        if (cryptReader.EncryptOfficeFile(sFrom, sTo, password, documentID) == false)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT;
 		}

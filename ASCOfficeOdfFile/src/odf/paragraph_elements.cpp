@@ -1602,7 +1602,7 @@ const wchar_t * bibliography_mark::name = L"bibliography-mark";
 void bibliography_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:identifier",		identifier_, std::wstring(L""));
-	CP_APPLY_ATTR(L"text:bibliography-type",bibliography_type_, odf_types::bibliography(odf_types::bibliography::Book));
+	CP_APPLY_ATTR(L"text:bibliography-type",bibliography_type_, odf_types::bibliography(odf_types::bibliography::book));
     CP_APPLY_ATTR(L"text:author",			author_);
     CP_APPLY_ATTR(L"text:url",				url_);
     CP_APPLY_ATTR(L"text:title",			title_);
@@ -1646,67 +1646,64 @@ void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
 
     CP_XML_WRITER(strm)
     {
-        CP_XML_NODE(L"b:Source")
-        {
-			CP_XML_NODE(L"b:Tag")
+		CP_XML_NODE(L"b:Tag")
+		{
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(identifier_);
+		}
+		CP_XML_NODE(L"b:SourceType")
+		{
+			std::wstring type;
+			switch(bibliography_type_.get_type())
 			{
-				CP_XML_STREAM() << XmlUtils::EncodeXmlString(identifier_);
+			case odf_types::bibliography::article:			type = L"ArticleInAPeriodical"; break;
+			case odf_types::bibliography::book:				type = L"Book"; break;
+			case odf_types::bibliography::booklet:			type = L"BookSection"; break;
+			case odf_types::bibliography::conference:		type = L"ConferenceProceedings"; break;
+			case odf_types::bibliography::email:			type = L"ElectronicSource"; break;
+			case odf_types::bibliography::inbook:			type = L"Book"; break;
+			case odf_types::bibliography::incollection:		type = L"Misc"; break;
+			case odf_types::bibliography::inproceedings:	type = L"Misc"; break;
+			case odf_types::bibliography::journal:			type = L"JournalArticle"; break;
+			case odf_types::bibliography::manual:			type = L"ElectronicSource"; break;
+			case odf_types::bibliography::mastersthesis:	type = L"Misc"; break;
+			case odf_types::bibliography::misc:				type = L"Misc"; break;
+			case odf_types::bibliography::phdthesis:		type = L"Misc"; break;
+			case odf_types::bibliography::proceedings:		type = L"ConferenceProceedings"; break;
+			case odf_types::bibliography::techreport:		type = L"Report"; break;
+			case odf_types::bibliography::unpublished:		type = L"Misc"; break;
+			case odf_types::bibliography::www:				type = L"InternetSite"; break;
 			}
-			CP_XML_NODE(L"b:SourceType")
+			CP_XML_STREAM() << type;
+		}
+		//CP_XML_NODE(L"b:Guid")
+		//{
+		//}
+		if (title_)
+		{
+			CP_XML_NODE(L"b:Title")
 			{
-				std::wstring type;
-				switch(bibliography_type_.get_type())
-				{
-				case odf_types::bibliography::article:			type = L"ArticleInAPeriodical"; break;
-				case odf_types::bibliography::book:				type = L"Book"; break;
-				case odf_types::bibliography::booklet:			type = L"BookSection"; break;
-				case odf_types::bibliography::conference:		type = L"ConferenceProceedings"; break;
-				case odf_types::bibliography::email:			type = L"ElectronicSource"; break;
-				case odf_types::bibliography::inbook:			type = L"Book"; break;
-				case odf_types::bibliography::incollection:		type = L"Misc"; break;
-				case odf_types::bibliography::inproceedings:	type = L"Misc"; break;
-				case odf_types::bibliography::journal:			type = L"JournalArticle"; break;
-				case odf_types::bibliography::manual:			type = L"ElectronicSource"; break;
-				case odf_types::bibliography::mastersthesis:	type = L"Misc"; break;
-				case odf_types::bibliography::misc:				type = L"Misc"; break;
-				case odf_types::bibliography::phdthesis:		type = L"Misc"; break;
-				case odf_types::bibliography::proceedings:		type = L"ConferenceProceedings"; break;
-				case odf_types::bibliography::techreport:		type = L"Report"; break;
-				case odf_types::bibliography::unpublished:		type = L"Misc"; break;
-				case odf_types::bibliography::www:				type = L"InternetSite"; break;
-				}
-				CP_XML_STREAM() << type;
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*title_);
 			}
-			//CP_XML_NODE(L"b:Guid")
-			//{
-			//}
-			if (title_)
+		}
+		if (author_)
+		{
+			CP_XML_NODE(L"b:Author")
 			{
-				CP_XML_NODE(L"b:Title")
-				{
-					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*title_);
-				}
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*author_);
 			}
-			if (author_)
+		}
+		if (year_)
+		{
+			CP_XML_NODE(L"b:Year")
 			{
-				CP_XML_NODE(L"b:Author")
-				{
-					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*year_);
-				}
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*year_);
 			}
-			if (year_)
+		}
+		if (url_)
+		{
+			CP_XML_NODE(L"b:InternetSiteTitle")
 			{
-				CP_XML_NODE(L"b:Year")
-				{
-					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*year_);
-				}
-			}
-			if (url_)
-			{
-				CP_XML_NODE(L"b:InternetSiteTitle")
-				{
-					CP_XML_STREAM() << XmlUtils::EncodeXmlString(*url_);
-				}
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*url_);
 			}
 		}
 	}

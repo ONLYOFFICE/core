@@ -254,30 +254,31 @@ void rels_files::add(std::wstring const & Id,
 {
     return add(relationship(Id, Type, Target, TargetMode));
 }
-///////////////////////////////////////////
-
+//-----------------------------------------------------------------------------------------------
 chart_content::chart_content() : rels_(rels_file::create(L""))
 {
         
 }
-
 _CP_PTR(chart_content) chart_content::create()
 {
     return boost::make_shared<chart_content>();
 }
-
 void chart_content::add_rel(relationship const & r)
 {
     rels_->get_rels().add(r);
 }
-
-///////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------
+_CP_PTR(customXml_content) customXml_content::create(const std::wstring &item, const std::wstring &props)
+{
+    return boost::make_shared<customXml_content>(item, props);
+}
+//-----------------------------------------------------------------------------------------------
 element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
 {
     return boost::make_shared<simple_element>(FileName, Content);
 }
 
-////////////
+//-----------------------------------------------------------------------------------------------
 
 void core_file::write(const std::wstring & RootPath)
 {

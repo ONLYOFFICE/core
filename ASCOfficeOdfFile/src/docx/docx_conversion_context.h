@@ -813,6 +813,7 @@ public:
     void dump_headers_footers	(rels & Rels) const;
     void dump_notes				(rels & Rels) const;
 	
+	void dump_bibliography();
 	std::wstring  dump_settings_document();
 
  	bool next_dump_page_properties_;

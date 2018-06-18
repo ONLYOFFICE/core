@@ -646,7 +646,7 @@ void docx_conversion_context::end_document()
     output_stream() << L"</w:document>";
 
     output_document_->get_word_files().set_document	( package::simple_element::create(L"document.xml", document_xml_.str()) );
-	output_document_->get_word_files().set_settings	( package::simple_element::create(L"settings.xml",dump_settings_document()));
+	output_document_->get_word_files().set_settings	( package::simple_element::create(L"settings.xml", dump_settings_document()));
 	output_document_->get_word_files().set_media	( mediaitems_, applicationFonts_);
 	output_document_->get_word_files().set_comments	( comments_context_);
     output_document_->get_word_files().set_headers_footers( headers_footers_);
@@ -655,6 +655,7 @@ void docx_conversion_context::end_document()
 	content_file_.set_media( mediaitems_);
 
 ////////////////////////////////////////////////////////////////////////////
+	dump_bibliography();
 	dump_hyperlinks (notes_context_.footnotesRels(), hyperlinks::footnote_place);
 	dump_hyperlinks (notes_context_.endnotesRels(), hyperlinks::endnote_place);
    
@@ -671,13 +672,66 @@ void docx_conversion_context::end_document()
 	
 	}    
 ////////////////////////////////
-	//content->add_rel(relationship(dId, kType, dName));
-
 	output_document_->get_word_files().update_rels(*this);
 /////////////////////////////////////
 	
 }
+void docx_conversion_context::dump_bibliography()
+{
+	if (arBibliography.empty()) return;
 
+	std::wstringstream output(L"");
+    CP_XML_WRITER(output)
+    {
+        CP_XML_NODE(L"b:Sources")
+        {
+			CP_XML_ATTR(L"Version",	6);
+			CP_XML_ATTR(L"StyleName", L"APA");
+			CP_XML_ATTR(L"SelectedStyle", L"\\APASixthEditionOfficeOnline.xsl");
+			CP_XML_ATTR(L"xmlns",	L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography");
+			CP_XML_ATTR(L"xmlns:b",	L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography");
+
+			for (size_t i = 0; i < arBibliography.size(); i++)
+			{
+				CP_XML_NODE(L"b:Source")
+				{				
+					CP_XML_STREAM() << arBibliography[i];
+					CP_XML_NODE(L"b:RefOrder")
+					{
+						CP_XML_STREAM() << std::to_wstring(i + 1);
+					}
+				}
+			}
+		}
+	}
+	std::wstringstream output_props(L"");
+    CP_XML_WRITER(output_props)
+    {
+        CP_XML_NODE(L"ds:datastoreItem")
+        {
+			CP_XML_ATTR(L"xmlns:ds", L"http://schemas.openxmlformats.org/officeDocument/2006/customXml");
+			CP_XML_ATTR(L"ds:itemID", L"{28C8D49A-D84A-4837-A0AC-8E2C3AE46B82}");
+
+			CP_XML_NODE(L"ds:schemaRefs")
+			{
+				CP_XML_NODE(L"ds:schemaRef")
+				{
+					CP_XML_ATTR(L"ds:uri", L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography");
+				}
+			}
+		}
+	}
+
+	package::customXml_content_ptr content = package::customXml_content::create(output.str(), output_props.str());
+	int id = output_document_->add_customXml(content);
+
+	const std::wstring sRId			= std::wstring(L"cstId") + std::to_wstring(id);
+	const std::wstring sRel			= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml";
+	const std::wstring sFileRef		= std::wstring(L"../customXml/item") + std::to_wstring(id) + L".xml";
+
+	output_document_->get_word_files().add_rels(relationship(sRId, sRel, sFileRef));
+
+}
 
 std::wstring  docx_conversion_context::dump_settings_document()
 {

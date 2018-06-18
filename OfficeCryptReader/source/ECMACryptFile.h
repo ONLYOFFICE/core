@@ -37,8 +37,8 @@
 class ECMACryptFile
 {
 public:	
-	bool DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password, bool & bDataIntegrity);
-	bool EncryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password);
+	bool DecryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, bool & bDataIntegrity);
+	bool EncryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, const std::wstring &documentID = L"");
 
 	struct _refComponent
 	{

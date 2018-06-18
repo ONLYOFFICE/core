@@ -484,7 +484,7 @@ bool ReadExtensibleEncryptionInfo(unsigned char* data, int size, _ecmaCryptData 
 
 
 //--------------------------------------------------------------
-bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
+bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, const std::wstring &documentID)
 {
 	_ecmaCryptData cryptData;
 	
@@ -562,6 +562,17 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	pStream->flush();
 	delete pStream;
 	
+
+	if (false == documentID.empty())
+	{
+		std::string utfDocumentID = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(documentID);
+		pStream = new POLE::Stream(pStorage, L"DocumentID", true, lengthData);
+		
+		pStream->write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length());
+
+		pStream->flush();
+		delete pStream;		
+	}
 	pStorage->close();
 	delete pStorage;
 
@@ -589,7 +600,7 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	return true;
 }
 
-bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password, bool & bDataIntegrity)
+bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, bool & bDataIntegrity)
 {
 	bDataIntegrity = false;
 
@@ -696,8 +707,7 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	{
 		if (password.empty())
 		{
-			password = L"VelvetSweatshop";
-			if (!decryptor.SetPassword(password))
+			if (!decryptor.SetPassword(L"VelvetSweatshop"))
 				return false;
 		}
 		else

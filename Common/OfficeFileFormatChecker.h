@@ -42,8 +42,9 @@ namespace POLE
 class COfficeFileFormatChecker
 {
 public:
-	int		nFileType;
-	bool	bMacroEnabled;
+	int				nFileType;
+	bool			bMacroEnabled;
+	std::wstring	sDocumentID;
 	
 	COfficeFileFormatChecker()
 	{
@@ -70,7 +71,8 @@ public:
 	bool isDocFormatFile	(POLE::Storage *storage);
 	bool isXlsFormatFile	(POLE::Storage *storage);
 	bool isPptFormatFile	(POLE::Storage *storage);
-    bool isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage);
+    bool isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID);
+    bool isMS_OFFCRYPTOFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 
 	bool isDocFlatFormatFile	(unsigned char* pBuffer,int dwBytes);
 

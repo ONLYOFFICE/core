@@ -3,18 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcproj", "{BE4AA52B-8AF0-48DD-8240-CCBA6F84D7A2}"
 	ProjectSection(ProjectDependencies) = postProject
+		{F8274B05-168E-4D6E-B843-AA7510725363} = {F8274B05-168E-4D6E-B843-AA7510725363}
 		{C27E9A9F-3A17-4482-9C5F-BF15C01E747C} = {C27E9A9F-3A17-4482-9C5F-BF15C01E747C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeFileCrypt", "..\win32\ECMACryptReader.vcproj", "{C27E9A9F-3A17-4482-9C5F-BF15C01E747C}"
 	ProjectSection(ProjectDependencies) = postProject
-		{21663823-DE45-479B-91D0-B4FEF4916EF0} = {21663823-DE45-479B-91D0-B4FEF4916EF0}
 		{3423EC9A-52E4-4A4D-9753-EDEBC38785EF} = {3423EC9A-52E4-4A4D-9753-EDEBC38785EF}
+		{21663823-DE45-479B-91D0-B4FEF4916EF0} = {21663823-DE45-479B-91D0-B4FEF4916EF0}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib", "..\..\Common\3dParty\cryptopp\cryptlib.vcproj", "{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2", "..\..\DesktopEditor\xml\build\vs2005\libxml2.vcproj", "{21663823-DE45-479B-91D0-B4FEF4916EF0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeUtilsLib", "..\..\OfficeUtils\win32\OfficeUtilsLib.vcproj", "{F8274B05-168E-4D6E-B843-AA7510725363}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +91,22 @@ Global
 		{21663823-DE45-479B-91D0-B4FEF4916EF0}.Release|Win32.Build.0 = Release|Win32
 		{21663823-DE45-479B-91D0-B4FEF4916EF0}.Release|x64.ActiveCfg = Release|x64
 		{21663823-DE45-479B-91D0-B4FEF4916EF0}.Release|x64.Build.0 = Release|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Debug|Win32.Build.0 = Debug|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Debug|x64.ActiveCfg = Debug|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Debug|x64.Build.0 = Debug|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Debug|Win32.ActiveCfg = Debug|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Debug|Win32.Build.0 = Debug|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Debug|x64.ActiveCfg = Debug|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Debug|x64.Build.0 = Debug|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Release|Win32.ActiveCfg = Release|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Release|Win32.Build.0 = Release|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Release|x64.ActiveCfg = Release|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.DLL-Import Release|x64.Build.0 = Release|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Release|Win32.ActiveCfg = Release|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Release|Win32.Build.0 = Release|Win32
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Release|x64.ActiveCfg = Release|x64
+		{F8274B05-168E-4D6E-B843-AA7510725363}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

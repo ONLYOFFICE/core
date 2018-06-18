@@ -613,7 +613,7 @@ namespace OOX
                 {
                     if ( m_arrItems[i] )
                     {
-                        m_arrItems[i]->toXML(writer);
+						m_arrItems[i]->toXML2(writer, L"val");
                     }
                 }
 				writer.WriteString(L"</value>");
@@ -684,7 +684,7 @@ namespace OOX
                 {
                     if ( m_arrItems[i] )
                     {
-                        m_arrItems[i]->toXML(writer);
+						m_arrItems[i]->toXML(writer);
                     }
                 }
 				writer.WriteString(L"</values>");

@@ -566,7 +566,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	if (false == documentID.empty())
 	{
 		std::string utfDocumentID = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(documentID);
-		pStream = new POLE::Stream(pStorage, L"DocumentID", true, lengthData);
+		pStream = new POLE::Stream(pStorage, L"DocumentID", true, utfDocumentID.length());
 		
 		pStream->write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length());
 

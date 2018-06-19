@@ -150,7 +150,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
     PIVOTFRT9* frt9		= frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
 
 	SXEx						*view_ex	= pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
-    SXViewEx9					*view_ex9	= pivot_ex ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;    
+    SXViewEx9					*view_ex9	= frt9 ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;    
 	SXAddl_SXCView_SXDVer10Info *view_ex10	= addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDVer10Info.get()) : NULL;
     SXAddl_SXCView_SXDVer12Info *view_ex12	= addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDVer12Info.get()) : NULL;
 

@@ -71,6 +71,7 @@ public:
 	std::wstring	getOoxChartType();
 	bool			m_bIs3D;
 	int				m_iChartType;
+	int				m_indexCrt;
 
 	int				m_indAXISPARENT;
 };

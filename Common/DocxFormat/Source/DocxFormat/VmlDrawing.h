@@ -368,7 +368,7 @@ namespace OOX
 							sClientData += boost::lexical_cast<std::wstring>(comment->m_nRight.get())         + L",";
 							sClientData += boost::lexical_cast<std::wstring>(comment->m_nRightOffset.get())   + L",";
 							sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottom.get())        + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottomOffset.get())  + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottomOffset.get());
 							sClientData += L"</x:Anchor>";
 						}
 						sClientData += L"<x:AutoFill>False</x:AutoFill>";

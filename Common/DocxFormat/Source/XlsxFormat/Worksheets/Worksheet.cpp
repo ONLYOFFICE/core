@@ -251,7 +251,7 @@ namespace OOX
 									pCommentItem->m_sGfxdata = pShape->m_sGfxData.get2();
 								std::vector<int> m_aAnchor;
 								pClientData->getAnchorArray(m_aAnchor);
-								if(8 == m_aAnchor.size())
+								if(8 <= m_aAnchor.size())
 								{
 									pCommentItem->m_nLeft = m_aAnchor[0];
 									pCommentItem->m_nLeftOffset = m_aAnchor[1];

@@ -235,19 +235,17 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
                 unsigned char nCharCode = sTempAnsiChars[k];
                 bWriteUnicode = false;
 
-                if (nCharCode == 0x5c || nCharCode == 0x7b || nCharCode == 0x7d)
+                if (nCharCode == 0x5c || nCharCode == 0x7b || nCharCode == 0x7d || 
+					(0x00 <= nCharCode && nCharCode < 0x20) )
                 {
-                    sResult += L"\\'" + XmlUtils::IntToString( nCharCode, L"%x");
-                } else if (0x00 <= nCharCode && nCharCode - 1 < 0x10)
-                {
-                    sResult += L"\\'0" + XmlUtils::IntToString( nCharCode - 1, L"%x" );
-                } else if (0x10 <= nCharCode - 1 && nCharCode  < 0x20)
-                {
-                    sResult += L"\\'" + XmlUtils::IntToString(nCharCode - 1, L"%x" );
-                } else if ( 0x20 <= nCharCode && nCharCode < 0x80 )
+                    sResult += L"\\'" + XmlUtils::IntToString( nCharCode, L"%02x");
+                } 
+				else if ( 0x20 <= nCharCode && nCharCode < 0x80 )
                 {
                     sResult += nCharCode;
-                } else { // 0x80 <= nUnicode <= 0xff
+                } 
+				else 
+				{ // 0x80 <= nUnicode <= 0xff
                     sResult += L"\\'" + XmlUtils::IntToString(nCharCode, L"%x" );
                 }
             }

@@ -405,6 +405,7 @@ namespace NExtractTools
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
 		std::wstring* m_sSavePassword;
+		std::wstring* m_sDocumentID;
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
 		boost::unordered_map<int, InputLimit> m_mapInputLimits;
@@ -433,6 +434,7 @@ namespace NExtractTools
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
 			m_sSavePassword = NULL;
+			m_sDocumentID = NULL;
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 
@@ -460,6 +462,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sSavePassword);
+			RELEASEOBJECT(m_sDocumentID);
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 		}
@@ -610,6 +613,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_sSavePassword);
 									m_sSavePassword = new std::wstring(sValue);
 								}
+								else if(_T("m_sDocumentID") == sName)
+								{
+									RELEASEOBJECT(m_sDocumentID);
+									m_sDocumentID = new std::wstring(sValue);
+								}
 								else if(_T("m_sTempDir") == sName)
 								{
 									RELEASEOBJECT(m_sTempDir);
@@ -686,6 +694,10 @@ namespace NExtractTools
 		std::wstring getSavePassword() const
 		{
 			return (NULL != m_sSavePassword) ? (*m_sSavePassword) : L"";
+		}
+		std::wstring getDocumentID() const
+		{
+			return (NULL != m_sDocumentID) ? (*m_sDocumentID) : L"";
 		}
 		std::wstring getFontPath() const
         {

@@ -232,18 +232,55 @@ bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 
 	return true;
 }
-bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage)
+bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(const std::wstring & _fileName, std::wstring & documentID)
+{
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+    std::wstring fileName = CorrectPathW(_fileName);
+#else
+    std::wstring fileName = _fileName;
+#endif
+
+	POLE::Storage storage(fileName.c_str());
+    if (storage.open())
+    {
+		if ( isMS_OFFCRYPTOFormatFile(&storage, documentID) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
+            return true;
+        }
+	}
+	return false;
+}
+
+bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID)
 {
     if (storage == NULL) return false;
 
+	bool result = false;
     std::list<std::wstring> entries = storage->entries(L"DataSpaces");
     if (entries.size() > 0)
-        return true;
+	{
+        result = true;
+	}
 
     if ( storage->exists(L"EncryptionInfo") && 
 				storage->exists(L"EncryptedPackage"))
-				return true;
-   return false;
+	{
+        result = true;
+	}
+	if (result)
+	{
+		POLE::Stream stream(storage, L"DocumentID");	
+		
+		std::string sData;
+		sData.resize(stream.size());
+		if (stream.read((BYTE*)sData.c_str(), stream.size()) > 0)
+		{
+			documentID = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sData.c_str(), sData.length());
+		}
+
+	}
+	return result;
 }
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 {
@@ -284,7 +321,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
             return true;
         }
-        else if ( isMS_OFFCRYPTOFormatFile(&storage) )
+        else if ( isMS_OFFCRYPTOFormatFile(&storage, sDocumentID) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
             return true;

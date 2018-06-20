@@ -603,7 +603,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"relRotation",	sResult,   	m_nRelRotation );
     RENDER_RTF_SHAPE_PROP(L"dhgt",			sResult,	m_nRelZOrder );
 //Fill
-	if( 0 == m_bFilled )
+	if( 0 == m_bFilled)
 		sResult += L"{\\sp{\\sn fFilled}{\\sv 0}}";
 	RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
     RENDER_RTF_SHAPE_PROP(L"fillColor",		sResult,	m_nFillColor );

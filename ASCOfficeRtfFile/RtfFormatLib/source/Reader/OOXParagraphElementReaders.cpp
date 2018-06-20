@@ -400,9 +400,9 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 		{
 			OOX::Logic::CSmartTag * pSmartTag = dynamic_cast<OOX::Logic::CSmartTag*>(m_ooxElement);
 
-            for (std::vector<OOX::WritingElement*>::iterator it = pSmartTag->m_arrItems.begin(); it != pSmartTag->m_arrItems.end(); ++it)
+            for (size_t i = 0; i < pSmartTag->m_arrItems.size(); ++i)
 			{
-				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(*it);
+				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(pSmartTag->m_arrItems[i]);
 				if (pRun == NULL) continue;
 
 				OOXRunReader oRunReader(pRun);

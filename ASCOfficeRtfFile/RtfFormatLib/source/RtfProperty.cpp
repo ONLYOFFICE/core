@@ -38,6 +38,8 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
+#include <boost/algorithm/string.hpp>
+
 std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 {
 	if ( IsValid() == false) return L"";
@@ -1081,6 +1083,68 @@ std::wstring RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 }
+std::wstring RtfListLevelProperty::GetLevelTextOOX()
+{
+    std::wstring sResult = m_sText;
+    if ( sResult.length() > 0 )
+	{
+		size_t nLevelTextLength = sResult[0];
+		nLevelTextLength--;
+       
+		for (int i = (int)m_sNumber.length() - 1; i >= 0; i-- )
+		{
+			int nReplaceNumber = m_sNumber[i];
+			nReplaceNumber--;
+            if ( nReplaceNumber >= 0 && nReplaceNumber < (int)sResult.length() )
+			{
+				int nLevel = sResult[ nReplaceNumber ];
+
+				if (nLevel > 11)
+				{//001.rtf 
+					nReplaceNumber++;
+					nLevel = sResult[ nReplaceNumber];
+				}
+                std::wstring sExt = L"%" + std::to_wstring(nLevel);
+
+                sResult.erase( nReplaceNumber, 1 );
+                sResult.insert(sResult.begin() + nReplaceNumber, sExt.begin(), sExt.end());
+                nLevelTextLength += sExt.length() - 1;
+			}
+		}
+        sResult = sResult.substr(1);
+        if ( nLevelTextLength < sResult.length() )
+            sResult = sResult.substr(0,  nLevelTextLength );
+
+	}
+    return XmlUtils::EncodeXmlString( sResult );
+}
+void RtfListLevelProperty::SetLevelTextOOX(std::wstring sText)
+{
+	m_sText		= L"";
+	m_sNumber	= L"";
+
+	int nLevelOffsets = 0;
+
+	 for (size_t i = 0; i < sText.length() ; i++ )
+	 {
+		if ( (sText[i] == '%') && (i + 1 < sText.length()) && (isdigit( sText[ i + 1 ] )))
+		{
+			int nLevel = RtfUtility::ToByte( sText[ i + 1 ] );
+
+			wchar_t ch1 = nLevel - 1;
+			m_sText += ch1;
+			i++; //т.к. следующий симовл уже учли
+			wchar_t ch2 = nLevelOffsets + 1;
+			m_sNumber += ch2;
+		}
+		else
+			m_sText += sText[i];
+		 nLevelOffsets++;
+	 }
+	 wchar_t ch = m_sText.length(); 
+     m_sText.insert(m_sText.begin() + 0, ch );
+}
+
 std::wstring RtfListLevelProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
 	return RenderToOOX2(oRenderParameter);

@@ -121,14 +121,27 @@ public:
 		std::wstring sFont;	
 		std::wstring sTempFont;
 		
+		bool bFont = false;
 		if( !sAscii.empty() )
+		{
+			bFont = true;
 			sFont = sAscii;
+		}
 		else if( !sAsciiTheme.empty() && !GetThemeFont(sAsciiTheme, *oParam.oReader).empty() )
+		{
+			bFont = true;
 			sFont = GetThemeFont(sAsciiTheme, *oParam.oReader);
+		}
 		else if( !sHAnsi.empty() )
+		{
+			bFont = true;
 			sFont = sHAnsi;
+		}
 		else if( !sHAnsiTheme.empty() && !GetThemeFont(sHAnsiTheme, *oParam.oReader).empty() )
+		{
+			bFont = true;
 			sFont = GetThemeFont(sHAnsiTheme, *oParam.oReader);
+		}
 		else if( !sCs.empty()  )
 			sFont = sCs;
 		else if( !sCsTheme.empty()  && !GetThemeFont(sCsTheme, *oParam.oReader).empty() )
@@ -143,13 +156,18 @@ public:
 		{
 			RtfFont oCurFont;
 			if( true == oParam.oRtf->m_oFontTable.GetFont( sFont, oCurFont ) )
-				nFont = oCurFont.m_nID;
+			{
+				if (bFont)
+					nFont = oCurFont.m_nID;
+			}
 			else
 			{
 				oCurFont.m_sName = sFont;
-				nFont = oParam.oRtf->m_oFontTable.GetCount() + 1;
-				oCurFont.m_nID = nFont;
+				oCurFont.m_nID = oParam.oRtf->m_oFontTable.GetCount() + 1;
 				oParam.oRtf->m_oFontTable.AddItem( oCurFont );
+				
+				if (bFont)
+					nFont = oCurFont.m_nID;
 			}
 		}
 		return true;

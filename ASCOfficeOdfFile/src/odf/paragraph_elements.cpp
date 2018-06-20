@@ -1639,11 +1639,8 @@ std::wostream & bibliography_mark::text_to_stream(std::wostream & _Wostream) con
     CP_SERIALIZE_TEXT(content_);
     return _Wostream;
 }
-
-void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
+void bibliography_mark::serialize(std::wostream & strm)
 {
-	std::wstringstream strm;
-
     CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"b:Tag")
@@ -1706,14 +1703,117 @@ void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
 				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*url_);
 			}
 		}
+		if (note_)
+		{
+			CP_XML_NODE(L"b:Comments")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*note_);
+			}
+		}
+		if (chapter_)
+		{
+			CP_XML_NODE(L"b:ChapterNumber")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*chapter_);
+			}
+		}
+		if (journal_)
+		{
+			CP_XML_NODE(L"b:JournalName")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*journal_);
+			}
+		}
+		if (month_)
+		{
+			CP_XML_NODE(L"b:Month")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*month_);
+			}
+		}
+		if (pages_)
+		{
+			CP_XML_NODE(L"b:Pages")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*pages_);
+			}
+		}
+		if (publisher_)
+		{
+			CP_XML_NODE(L"b:Publisher")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*publisher_);
+			}
+		}
+		if (volume_)
+		{
+			CP_XML_NODE(L"b:Volume")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*volume_);
+			}
+		}
+		if (address_)
+		{
+			CP_XML_NODE(L"b:City")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*address_);
+			}
+		}
+		if (booktitle_)
+		{
+			CP_XML_NODE(L"b:BookTitle")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*booktitle_);
+			}
+		}
+		if (edition_)
+		{
+			CP_XML_NODE(L"b:Edition")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*edition_);
+			}
+		}
+		if (institution_)
+		{
+			CP_XML_NODE(L"b:Institution")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*institution_);
+			}
+		}	
+		if (institution_)
+		{
+			CP_XML_NODE(L"b:Institution")
+			{
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(*institution_);
+			}
+		}
+//isbn_;
+//annote_;
+//editor_;
+//howpublished_;
+//issn_;
+//number_;
+//organizations_;
+//report_type_;
+//school_;
+//series_;
 	}
+}
+void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
+{
+	std::wstringstream strm;
+	serialize(strm);
+
 	Context.add_bibliography_item(strm.str());
 }
 
 void bibliography_mark::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    if (content_)
-        content_->pptx_convert(Context);
+ 	std::wstringstream strm;
+	serialize(strm);
+
+	//if (content_)
+    //    content_->pptx_convert(Context);
 }
 //-----------------------------------------------------------------------------------------------
 // text:alphabetical-index-auto-mark-file

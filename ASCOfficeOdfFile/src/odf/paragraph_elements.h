@@ -1262,6 +1262,8 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
+	void serialize(std::wostream & strm);
+
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     std::wstring			identifier_;

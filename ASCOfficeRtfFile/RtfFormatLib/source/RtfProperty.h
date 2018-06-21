@@ -1415,66 +1415,8 @@ public:
 		
 		return 0; //decimal
 	}
-    std::wstring GetLevelTextOOX()
-	{
-        std::wstring sResult = m_sText;
-        if ( sResult.length() > 0 )
-		{
-			size_t nLevelTextLength = sResult[0];
-			nLevelTextLength--;
-           
-			for (int i = (int)m_sNumber.length() - 1; i >= 0; i-- )
-			{
-				int nReplaceNumber = m_sNumber[i];
-				nReplaceNumber--;
-                if ( nReplaceNumber >= 0 && nReplaceNumber < (int)sResult.length() )
-				{
-					int nLevel = sResult[ nReplaceNumber ];
-
-					if (nLevel > 11)
-					{//001.rtf 
-						nReplaceNumber++;
-						nLevel = sResult[ nReplaceNumber];
-					}
-                    std::wstring sExt = L"%" + std::to_wstring(nLevel);
-
-                    sResult.erase( nReplaceNumber, 1 );
-                    sResult.insert(sResult.begin() + nReplaceNumber, sExt.begin(), sExt.end());
-                    nLevelTextLength += sExt.length() - 1;
-				}
-			}
-            sResult = sResult.substr(1);
-            if ( nLevelTextLength < sResult.length() )
-                sResult = sResult.substr(0,  nLevelTextLength );
-
-		}
-        return XmlUtils::EncodeXmlString( sResult );
-	}
-    void SetLevelTextOOX(std::wstring sText)
-	{
-		m_sText		= L"";
-		m_sNumber	= L"";
-
-		 int nNumberIndex = 0; //индекс символа который отвечает за уровень символа
-         for (size_t i = 0; i < sText.length() ; i++ )
-		 {
-             if ( sText[i] == '%' && i + 1 < sText.length() && isdigit( sText[ i + 1 ] ))
-			 {
-				 int nLevel = RtfUtility::ToByte( sText[ i + 1 ] );
-
-                 wchar_t ch1 = nLevel;
-                 m_sNumber += ch1;
-                 wchar_t ch2 = nNumberIndex + 2;
-                 m_sNumber += ch2;
-				 i++; //т.к. следующий симовл уже учли
-			 }
-			 else
-                 m_sText += sText[i];
-			 nNumberIndex++;
-		 }
-         wchar_t ch = nNumberIndex + 1; // 1 - учитывает то что мы сдвигаем на на единицу вниз при записи
-         m_sText.insert(m_sText.begin() + 0, ch );
-	}
+    std::wstring GetLevelTextOOX();
+    void SetLevelTextOOX(std::wstring sText);
 };
 
 class RtfListProperty : public IRenderableProperty, public ItemContainer<RtfListLevelProperty>

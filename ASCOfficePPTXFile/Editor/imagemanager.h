@@ -76,7 +76,8 @@ namespace NSShapeImageGen
 		itWMF	= 3,
 		itEMF	= 4,
 		itSVG   = 5,
-		itMedia = 6
+		itMedia = 6,
+		itUnknown = 7
 	};
 
 	class CMediaInfo
@@ -381,6 +382,10 @@ namespace NSShapeImageGen
 			{
 				//конвертация неудачная - берем оригинальный файл
 				OOX::CPath pathOriginal = strFileSrc;
+
+				//default is itJPG. set itUnknown to use original extension
+				oInfo.m_eType = itUnknown;
+				oInfo.m_sExt = pathOriginal.GetExtention();
 
 				std::wstring strSaveItem = oInfo.GetPathWithoutExtension();
 

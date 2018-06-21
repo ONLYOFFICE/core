@@ -31,13 +31,14 @@
  */
 
 #include "AXISPARENT.h"
-#include <Logic/Biff_records/AxisParent.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/Pos.h>
-#include <Logic/Biff_records/End.h>
+#include "AXES.h"
+#include "CRT.h"
 
-#include <Logic/Biff_unions/AXES.h>
-#include <Logic/Biff_unions/CRT.h>
+#include "../Biff_records/AxisParent.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/Pos.h"
+#include "../Biff_records/End.h"
+
 
 namespace XLS
 {

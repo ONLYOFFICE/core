@@ -59,9 +59,9 @@ public:
 
 	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, std::wstring sTempPath = L"" );
 
-	bool Parse			( ReaderParameter oParam , RtfShapePtr& oOutput);
+	bool Parse			( ReaderParameter oParam , RtfShapePtr& oOutput, bool bUsedType = false);
+	bool ParseVml		( ReaderParameter oParam , RtfShapePtr& oOutput, bool bUsedType = false);
 	bool ParseVmlChild	( ReaderParameter oParam , RtfShapePtr& oOutput);
-	bool ParseVml		( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& oOutput);
 	
 	static bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);

@@ -983,22 +983,30 @@ public:
 			else
 			{
 				RtfShapePtr	pNewShape ( new RtfShape() );
+				pNewShape->m_bInGroup	= true;
+				pNewShape->m_bIsGroup	= true;
+				pNewShape->m_nShapeType	= 1;
+				
 				RtfShapeGroupReader oShapeGroupReader ( *pNewShape );
-
 				StartSubReader( oShapeGroupReader, oDocument, oReader );
+
 				m_oShapeGroup.AddItem( pNewShape );
 			}
 		}
         else if( "shp" == sCommand )
 		{
-			RtfShapePtr		pNewShape	( new RtfShape() );
+			RtfShapePtr pNewShape ( new RtfShape() );
+			pNewShape->m_bInGroup = true;
+			
 			RtfShapeReader	oShapeReader( *pNewShape );
-
 			StartSubReader( oShapeReader, oDocument, oReader );
+
 			m_oShapeGroup.AddItem( pNewShape );
 		}
 		else
+		{
 			return RtfShapeReader::ExecuteCommand( oDocument,  oReader, sCommand, hasParameter, parameter);
+		}
 		return true;
 	}
 };

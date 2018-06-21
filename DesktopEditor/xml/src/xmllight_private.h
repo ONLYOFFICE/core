@@ -212,7 +212,7 @@ namespace XmlUtils
                 if ((XmlNodeType_Element == eNodeType  && nCurDepth == nDepth + 1)
                         || ((XmlNodeType_Text == eNodeType ||
                              XmlNodeType_Whitespace == eNodeType ||
-							 XmlNodeType_SIGNIFICANT_WHITESPACE == eNodeType ) && nCurDepth == nDepth + 1))
+                                                         XmlNodeType_SIGNIFICANT_WHITESPACE == eNodeType ) && nCurDepth == nDepth + 1))
                     return true;
                 else if (XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth)
                     return false;

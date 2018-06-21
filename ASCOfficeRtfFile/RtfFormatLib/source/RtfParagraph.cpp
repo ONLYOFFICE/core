@@ -87,7 +87,8 @@ std::wstring RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
 
 std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 {
-	OOXWriter* poOOXWriter = static_cast<OOXWriter*>(oRenderParameter.poWriter);
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>(oRenderParameter.poWriter);
 
 	std::wstring sResult ;
 
@@ -139,7 +140,28 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		sResult += L"><w:pPr>";
 		
 		m_oProperty.m_bOldList = (NULL != m_oOldList);
-		sResult += m_oProperty.RenderToOOX(oRenderParameter);
+		
+		bool bRenderProps = false;
+		if ( PROP_DEF != m_oProperty.m_nTableStyle && m_oProperty.m_bInTable > 0)
+		{
+			RtfStylePtr oCurStyle;
+			if( true == poRtfDocument->m_oStyleTable.GetStyle( m_oProperty.m_nTableStyle, oCurStyle ) )
+			{
+				RtfParagraphStyle* oCurParaStyle = dynamic_cast<RtfParagraphStyle*>(oCurStyle.get());
+
+				if (oCurParaStyle)
+				{
+					RtfParagraphProperty newProps;
+					newProps.Merge(oCurParaStyle->m_oParProp);
+					newProps.Merge(m_oProperty);
+					
+					sResult += newProps.RenderToOOX(oRenderParameter);
+					bRenderProps = true;
+				}
+			}
+		}
+		if (false == bRenderProps)
+			sResult += m_oProperty.RenderToOOX(oRenderParameter);
 
 		if( NULL != m_oOldList )
 		{

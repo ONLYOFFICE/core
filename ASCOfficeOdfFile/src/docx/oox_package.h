@@ -61,7 +61,7 @@ typedef std::vector<element_ptr> element_ptr_array;
 class document;
 
 
-//  element
+//------------------------------------------------------------------------
 class element
 {
 public:
@@ -108,10 +108,10 @@ private:
 
 };
 
+//------------------------------------------------------------------------
 class rels_file;
 typedef boost::shared_ptr<rels_file> rels_file_ptr;
 
-// rels_file
 class rels_file : public element
 {
 public:
@@ -132,7 +132,7 @@ private:
     rels			rels_;
 };
 
-// rels_files
+//------------------------------------------------------------------------
 class rels_files : public element
 {
 public:
@@ -150,13 +150,29 @@ private:
     rels_file_ptr rels_file_;
 };
 
+//------------------------------------------------------------------------
+class customXml_content;
+typedef _CP_PTR(customXml_content) customXml_content_ptr;
 
-////////////////////////////////////////
-///\class chart_files
+class customXml_content : boost::noncopyable
+{
+public:
+	customXml_content(const std::wstring &item, const std::wstring &props) : content_item(item), content_props(props) {}
+	static _CP_PTR(customXml_content) create(const std::wstring &item, const std::wstring &props);
+
+    std::wstring	item()	{ return content_item; }
+    std::wstring	props() { return content_props; }
+	
+	friend class	customXml_files;
+private:
+    std::wstring	content_item;
+    std::wstring	content_props;
+};
+///------------------------------------------------------------------------
 class chart_content;
 typedef _CP_PTR(chart_content) chart_content_ptr;
 
-class chart_content : noncopyable
+class chart_content : boost::noncopyable
 {
 public:
     chart_content();
@@ -169,7 +185,7 @@ private:
     std::wstringstream content_;
     rels_file_ptr rels_;
 };
-/////////////////////////////////
+//------------------------------------------------------------------------
 class document : public element
 {
 public:

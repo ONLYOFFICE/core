@@ -35,7 +35,7 @@
 
 #include <vector>
 #include <boost/lexical_cast.hpp>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "../formulasconvert/formulasconvert.h"
 namespace cpdoccore {

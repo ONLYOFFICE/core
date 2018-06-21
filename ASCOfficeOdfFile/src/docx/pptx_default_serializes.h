@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 

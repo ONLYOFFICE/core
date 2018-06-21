@@ -32,7 +32,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <iostream>
-#include <cpdoccore/xml/utils.h>
+#include <xml/utils.h>
 
 #include "xlsx_drawing.h"
 #include "xlsx_drawings.h"

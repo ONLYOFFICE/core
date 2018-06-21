@@ -32,7 +32,7 @@
 #pragma once
 
 #include "oox_package.h"
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPNoncopyable.h>
 #include "pptx_comments.h"
 
 namespace NSFonts

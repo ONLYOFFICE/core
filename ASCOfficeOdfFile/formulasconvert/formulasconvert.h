@@ -33,7 +33,7 @@
 
 #include <string>
 #include <vector>
-#include "../include/cpdoccore/CPScopedPtr.h"
+#include "../include/CPScopedPtr.h"
 
 namespace cpdoccore {
 namespace formulasconvert {

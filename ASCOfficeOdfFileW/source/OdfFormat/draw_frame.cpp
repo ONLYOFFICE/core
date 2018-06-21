@@ -39,9 +39,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.h>
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 #include "style_graphic_properties.h"
 #include "length.h"

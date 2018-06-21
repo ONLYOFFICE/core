@@ -33,8 +33,8 @@
 
 #include "ruby.h"
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/xmlchar.h>
 
 #include "paragraph_elements.h"
 #include "serialize_elements.h"

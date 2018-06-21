@@ -34,8 +34,8 @@
 #include <iosfwd>
 #include <string>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPOptional.h>
 
 #include "xlsx_alignment.h"
 #include "xlsx_protection.h"

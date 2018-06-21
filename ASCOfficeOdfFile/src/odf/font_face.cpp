@@ -32,9 +32,9 @@
 
 #include "font_face.h"
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 

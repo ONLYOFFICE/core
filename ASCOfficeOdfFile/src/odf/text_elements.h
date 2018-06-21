@@ -33,9 +33,9 @@
 
 #include <iosfwd>
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 #include "text_content.h"
 #include "office_elements_create.h"

@@ -34,8 +34,8 @@
 #include "math_layout_elements.h"
 #include "math_limit_elements.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 
 namespace cpdoccore { 

@@ -32,7 +32,7 @@
 
 
 #include "office_elements_create.h"
-#include <cpdoccore/xml/sax.h>
+#include <xml/sax.h>
 #include <sstream>
 #include <logging.h>
 

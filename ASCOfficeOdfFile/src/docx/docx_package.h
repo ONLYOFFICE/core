@@ -34,7 +34,7 @@
 #include <string>
 #include <vector>
 
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPSharedPtr.h>
 
 #include "oox_rels.h"
 #include "docx_content_type.h"

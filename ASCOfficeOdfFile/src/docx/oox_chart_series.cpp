@@ -34,7 +34,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/ref.hpp>
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 #include "../odf/style_text_properties.h"
 
 #include "xlsx_utils.h"

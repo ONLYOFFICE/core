@@ -31,9 +31,9 @@
  */
 
 #include "oox_rels.h"
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 #include "namespaces.h"
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 namespace oox {

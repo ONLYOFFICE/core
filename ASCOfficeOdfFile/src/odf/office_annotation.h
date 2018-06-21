@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 #include "office_elements.h"
 #include "office_elements_create.h"
 

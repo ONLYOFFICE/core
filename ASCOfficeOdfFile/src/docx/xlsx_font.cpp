@@ -36,7 +36,7 @@
 #include "../odf/style_paragraph_properties.h"
 
 #include <boost/functional.hpp>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 
 namespace cpdoccore {

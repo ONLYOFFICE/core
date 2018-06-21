@@ -34,10 +34,10 @@
 
 #include "serialize_elements.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 #include "odfcontext.h"
 #include "draw_common.h"

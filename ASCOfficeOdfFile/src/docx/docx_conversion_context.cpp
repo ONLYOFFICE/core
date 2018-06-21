@@ -35,9 +35,9 @@
 
 #include <iostream>
 
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/utils.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
 
 #include "docx_conversion_context.h"
 
@@ -519,7 +519,7 @@ void docx_conversion_context::end_alphabetical_index (const std::wstring &id)
 	output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
 	output_stream() << L"<w:r><w:instrText>XE \"";
 	
-	odf_reader::ElementType type;
+	ElementType type;
 	for (size_t i = 0; i < pFind->second.size(); i++)
 	{
 		type = pFind->second[i]->get_type();

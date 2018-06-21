@@ -34,10 +34,10 @@
 #include <iosfwd>
 #include <string>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPOptional.h>
 
-#include <cpdoccore/xml/nodetype.h>
+#include <xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"

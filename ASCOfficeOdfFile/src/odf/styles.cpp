@@ -32,11 +32,11 @@
 
 
 #include "styles.h"
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 #include <iostream>
 
@@ -1531,7 +1531,7 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
 
 	for (size_t i = 0; i <  content_.size(); i++)
     {
-		if (content_[i]->get_type() == odf_reader::typeDrawFrame)
+		if (content_[i]->get_type() == typeDrawFrame)
 		{
 			draw_frame* frame = dynamic_cast<draw_frame *>(content_[i].get());
 			if (frame)

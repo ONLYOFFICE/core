@@ -34,7 +34,7 @@
 #include <string>
 #include "length.h"
 #include "color.h"
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 
 namespace cpdoccore { namespace odf_types { 
 

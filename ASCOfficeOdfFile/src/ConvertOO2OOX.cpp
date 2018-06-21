@@ -41,7 +41,7 @@
 #include "../src/docx/pptx_conversion_context.h"
 #include "../src/docx/xlsxconversioncontext.h"
 
-#include "../include/cpdoccore/odf/odf_document.h"
+#include "../include/odf/odf_document.h"
 
 int ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {

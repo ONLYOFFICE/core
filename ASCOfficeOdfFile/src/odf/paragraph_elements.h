@@ -33,9 +33,9 @@
 
 #include <iosfwd>
 #include <vector>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/CPWeakPtr.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <CPWeakPtr.h>
+#include <xml/nodetype.h>
 
 #include "office_elements_create.h"
 
@@ -927,7 +927,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_drop_down);
 //-------------------------------------------------------------------------------------------------------------------
-//text:drop-down
+//text:label
 //-------------------------------------------------------------------------------------------------------------------
 class text_label : public paragraph_content_element<text_label>
 {

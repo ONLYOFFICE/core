@@ -37,7 +37,7 @@
 #include <vector>
 
 
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 
 namespace cpdoccore 
 { 

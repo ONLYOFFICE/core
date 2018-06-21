@@ -32,8 +32,8 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/CPOptional.h>
+#include <xml/attributes.h>
+#include <CPOptional.h>
 
 #include "office_elements_create.h"
 

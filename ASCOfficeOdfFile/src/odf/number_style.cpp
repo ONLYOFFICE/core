@@ -33,12 +33,12 @@
 #include "number_style.h"
 
 #include <boost/foreach.hpp>
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/CPColorUtils.h>
+#include <xml/xmlchar.h>
+#include <xml/utils.h>
+#include <xml/attributes.h>
+#include <CPColorUtils.h>
 
 #include "serialize_elements.h"
 #include "paragraph_elements.h"

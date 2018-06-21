@@ -36,9 +36,9 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/xml/attributes.h>
+#include <CPOptional.h>
+#include <CPScopedPtr.h>
+#include <xml/attributes.h>
             
 namespace cpdoccore {
 namespace oox {

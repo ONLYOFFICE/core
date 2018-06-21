@@ -32,15 +32,15 @@
 
 #include "text_elements.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/utils.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/utils.h>
 
 #include "paragraph_elements.h"
 #include "serialize_elements.h"
 #include "list.h"
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 #include "odfcontext.h"
 #include "style_paragraph_properties.h"
 #include "style_text_properties.h"

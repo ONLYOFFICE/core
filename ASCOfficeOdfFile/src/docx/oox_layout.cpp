@@ -32,8 +32,8 @@
 
 #include "oox_layout.h"
 #include <boost/functional.hpp>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <CPOptional.h>
+#include <xml/simple_xml_writer.h>
 #include "../odf/style_text_properties.h"
 
 namespace cpdoccore {

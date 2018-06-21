@@ -32,7 +32,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "pptx_output_xml.h"
 

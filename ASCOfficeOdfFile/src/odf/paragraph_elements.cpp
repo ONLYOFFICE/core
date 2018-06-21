@@ -37,13 +37,13 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/common/readstring.h>
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/CPWeakPtr.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/utils.h>
+#include <common/readstring.h>
+#include <odf/odf_document.h>
+#include <CPOptional.h>
+#include <CPWeakPtr.h>
 
 #include "styles.h"
 #include "note.h"

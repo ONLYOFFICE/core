@@ -35,7 +35,7 @@
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "xlsx_border.h"
 #include "../odf/datatypes/length.h"

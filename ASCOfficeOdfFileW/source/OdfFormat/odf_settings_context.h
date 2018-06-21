@@ -35,7 +35,7 @@
 #include <vector>
 #include <map>
 
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPSharedPtr.h>
 
 
 namespace cpdoccore {

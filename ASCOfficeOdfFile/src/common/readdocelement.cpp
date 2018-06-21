@@ -30,9 +30,9 @@
  *
  */
 
-#include "../../include/cpdoccore/common/readdocelement.h"
-#include "../../include/cpdoccore/xml/attributes.h"
-#include "../../include/cpdoccore/xml/sax.h"
+#include "../../include/common/readdocelement.h"
+#include "../../include/xml/attributes.h"
+#include "../../include/xml/sax.h"
 
 namespace cpdoccore { 
 namespace common {

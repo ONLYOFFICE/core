@@ -32,13 +32,13 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 #include "office_elements_create.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "bool.h"
 

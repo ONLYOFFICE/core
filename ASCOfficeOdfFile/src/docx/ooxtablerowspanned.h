@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPSharedPtr.h>
 #include <string>
 
 namespace cpdoccore { 

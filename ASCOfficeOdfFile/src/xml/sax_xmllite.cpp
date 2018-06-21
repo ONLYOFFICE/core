@@ -35,7 +35,7 @@
 
 #include "../../../DesktopEditor/xml/include/xmlutils.h"
 
-#include "../../include/cpdoccore/xml/sax.h"
+#include "../../include/xml/sax.h"
 
 #include "sax_xmllite.h"
 

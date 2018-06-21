@@ -32,12 +32,12 @@
 
 #include "office_scripts.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 #include "office_elements_create.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 
 namespace cpdoccore { 

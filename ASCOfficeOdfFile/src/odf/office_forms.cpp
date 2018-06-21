@@ -34,9 +34,9 @@
 #include "draw_frame.h"
 #include "text_content.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/utils.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/utils.h>
 
 #include "serialize_elements.h"
 

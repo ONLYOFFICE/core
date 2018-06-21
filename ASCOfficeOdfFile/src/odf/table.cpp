@@ -33,13 +33,13 @@
 #include "table.h"
 
 #include <boost/make_shared.hpp>
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 
 #include "odfcontext.h"
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 
 namespace cpdoccore { 

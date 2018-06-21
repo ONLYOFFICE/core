@@ -32,8 +32,8 @@
 
 #include "styles_list.h"
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
 #include "serialize_elements.h"
 #include "style_text_properties.h"

@@ -31,9 +31,9 @@
  */
 
 #include <iostream>
-#include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
+#include <xml/utils.h>
+#include <odf/odf_document.h>
 
 #include "pptx_drawing.h"
 #include "pptx_drawings.h"

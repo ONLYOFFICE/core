@@ -33,9 +33,9 @@
 #include "oox_conversion_context.h"
 
 #include <iostream>
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/utils.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"

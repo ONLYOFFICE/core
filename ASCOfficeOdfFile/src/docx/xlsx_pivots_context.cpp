@@ -36,7 +36,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 #include"../../Common/DocxFormat/Source/XML/Utils.h"
 #include"../../Common/DocxFormat/Source/Base/Types_32.h"
 

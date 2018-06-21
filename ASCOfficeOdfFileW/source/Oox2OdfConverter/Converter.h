@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 #include "../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 #include "../progressCallback.h"

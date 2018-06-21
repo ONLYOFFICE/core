@@ -31,10 +31,10 @@
  */
 
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 #include <iostream>
 
 #include "office_elements_create.h"

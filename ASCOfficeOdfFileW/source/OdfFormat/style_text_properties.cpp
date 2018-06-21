@@ -40,7 +40,7 @@
 
 #include "common_attlists.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 //#include "../docx/oox_drawing_fills.h"
 

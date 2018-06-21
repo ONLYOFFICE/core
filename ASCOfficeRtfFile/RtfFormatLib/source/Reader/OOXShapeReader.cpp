@@ -1655,10 +1655,10 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 
 		Width = abs(x1-x2); Height = abs(y1-y2);
 
-		pOutput->m_nRelLeft = min (x1,x2);
-		pOutput->m_nRelRight = max (x1,x2);
-		pOutput->m_nRelTop= min (y1,y2);
-		pOutput->m_nRelBottom = max (y1,y2);
+		pOutput->m_nRelLeft		= (std::min) (x1,x2);
+		pOutput->m_nRelRight	= (std::max) (x1,x2);
+		pOutput->m_nRelTop		= (std::min) (y1,y2);
+		pOutput->m_nRelBottom	= (std::max) (y1,y2);
 	}
 	else if (OOX::Vml::CArc* arc = dynamic_cast<OOX::Vml::CArc*>(m_vmlElement))
 	{

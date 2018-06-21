@@ -62,6 +62,7 @@
 #include "fillimagerefpoint.h"
 #include "borderstyle.h"
 #include "mathvariant.h"
+#include "textdisplay.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -589,5 +590,19 @@ public:
 	_CP_OPT(std::wstring)			smil_end_;
 };
 
+class section_attlists
+{
+public:
+    void add_attributes	( const xml::attributes_wc_ptr & Attributes );
+	void serialize		(CP_ATTR_NODE);
+
+    _CP_OPT(std::wstring)	style_name_;
+    std::wstring			name_;
+    _CP_OPT(bool)			protected_;
+    _CP_OPT(std::wstring)	protection_key_;
+    _CP_OPT(text_display)	display_;
+    _CP_OPT(std::wstring)	condition_;
+
+};
 }
 }

@@ -33,14 +33,15 @@
 
 #include <iosfwd>
 #include <vector>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/CPWeakPtr.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <CPWeakPtr.h>
+#include <xml/nodetype.h>
 
 #include "office_elements_create.h"
 
 #include "targetframename.h"
 #include "noteclass.h"
+#include "bibliography.h"
 
 #include "common_attlists.h"
 
@@ -48,7 +49,7 @@ namespace cpdoccore {
 namespace odf_writer {
 
 // simple text
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_text : public office_element_impl<text_text>
 {
 public:
@@ -78,7 +79,7 @@ public:
 };
 
 // text:s
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_s : public office_element_impl<text_s>
 {
 public:
@@ -102,7 +103,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_s);
 
 // text:tab
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_tab : public office_element_impl<text_tab>
 {
 public:
@@ -128,7 +129,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_tab);
 
 // text:line-break
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_line_break : public office_element_impl<text_line_break>
 {
 public:
@@ -150,7 +151,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_line_break);
 
 // text:bookmark
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_bookmark : public office_element_impl<text_bookmark>
 {
 public:
@@ -176,7 +177,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_bookmark);
 
 // text:bookmark-start
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_bookmark_start : public office_element_impl<text_bookmark_start>
 {
 public:
@@ -201,7 +202,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_bookmark_start);
 
 // text:bookmark-end
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_bookmark_end : public office_element_impl<text_bookmark_end>
 {
 public:
@@ -226,7 +227,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_bookmark_end);
 
 // text:reference-mark
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_reference_mark : public office_element_impl<text_reference_mark>
 {
 public:
@@ -251,7 +252,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_reference_mark);
 
 // text:reference-mark-start
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_reference_mark_start : public office_element_impl<text_reference_mark_start>
 {
 public:
@@ -276,7 +277,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_reference_mark_start);
 
 // text:reference-mark-end
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_reference_mark_end : public office_element_impl<text_reference_mark_end>
 {
 public:
@@ -301,8 +302,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_reference_mark_end);
 
 // text:span
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------------------------------
 class text_span : public office_element_impl<text_span>
 {
 public:
@@ -330,8 +330,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_span);
 
 // text:a
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------------------------------
 class text_a : public office_element_impl<text_a>
 {
 public:
@@ -365,7 +364,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_a);
 
 // text:note-citation
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_note_citation : public office_element_impl<text_note_citation>
 {
 public:
@@ -391,7 +390,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_note_citation);
 
 // text:note-body
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_note_body : public office_element_impl<text_note_body>
 {
 public:
@@ -417,8 +416,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_note_body);
 
 
 // text:note
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------------------------------
 class text_note : public office_element_impl<text_note>
 {
 public:
@@ -448,8 +446,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_note);
 
 // text:ruby
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------------------------------
 class text_ruby : public office_element_impl<text_ruby>
 {
 public:
@@ -486,8 +483,7 @@ public:
 };
 
 // text:title
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------------------------------
 class text_title : public office_element_impl<text_title>
 {
 public:
@@ -512,8 +508,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_title);
 
 // text:placeholder
-// text-placeholder
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_placeholder : public office_element_impl<text_placeholder>
 {
 public:
@@ -536,7 +531,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(text_placeholder);
 
 // text:page-number
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_page_number: public office_element_impl<text_page_number>
 {
 public:
@@ -551,22 +546,21 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	odf_types::common_num_format_attlist		common_num_format_attlist_;
-	common_field_fixed_attlist		common_field_fixed_attlist_;
+	odf_types::common_num_format_attlist	common_num_format_attlist_;
+	common_field_fixed_attlist				common_field_fixed_attlist_;
 
 	_CP_OPT(int)			text_page_adjust_;
 	_CP_OPT(std::wstring)	text_select_page_;
 
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array text_;
-    
+    office_element_ptr_array text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_page_number);
 
 // text:page-count
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_page_count : public office_element_impl<text_page_count>
 {
 public:
@@ -580,19 +574,17 @@ public:
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
     virtual void add_text(const std::wstring & Text);
 
 	common_field_fixed_attlist common_field_fixed_attlist_;
-private:
-    office_element_ptr_array text_;
-    
+
+    office_element_ptr_array text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_page_count);
 
 // text:date 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_date : public office_element_impl<text_date>
 {
 public:
@@ -606,22 +598,20 @@ public:
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
     virtual void add_text(const std::wstring & Text);
 
-	common_field_fixed_attlist		common_field_fixed_attlist_;
+	common_field_fixed_attlist	common_field_fixed_attlist_;
 
 	_CP_OPT(std::wstring)		style_data_style_name_;
 	_CP_OPT(std::wstring)		text_date_value_;//with format
 
-    office_element_ptr_array text_;
-    
+    office_element_ptr_array	text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_date);
 
 // text:time 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_time : public office_element_impl<text_time>
 {
 public:
@@ -635,22 +625,20 @@ public:
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
-	virtual void add_text(const std::wstring & Text);
+    virtual void add_text(const std::wstring & Text);
 
 	common_field_fixed_attlist		common_field_fixed_attlist_;
 
 	_CP_OPT(std::wstring)			style_data_style_name_;
 	_CP_OPT(std::wstring)			text_time_value_;//with format
 
-    office_element_ptr_array		text_;
-    
+    office_element_ptr_array		text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_time);
 
 // text:file-name 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_file_name : public office_element_impl<text_file_name>
 {
 public:
@@ -660,25 +648,21 @@ public:
     static const ElementType type = typeTextFileName;
     CPDOCCORE_DEFINE_VISITABLE();
    
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element( const office_element_ptr & child_element);
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
     virtual void add_text(const std::wstring & Text);
 
 	common_field_fixed_attlist		common_field_fixed_attlist_;
 
-private:
-    // TODO: attributes
-    office_element_ptr_array text_;
-    
+    office_element_ptr_array text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_file_name);
 
 // text:sequence
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_sequence : public office_element_impl<text_sequence>
 {
 public:
@@ -692,18 +676,15 @@ public:
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
-
     virtual void add_text(const std::wstring & Text);
 
     office_element_ptr_array text_;
-    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_sequence);
 
 // text:sheet-name
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 class text_sheet_name : public office_element_impl<text_sheet_name>
 {
 public:
@@ -717,17 +698,14 @@ public:
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-
-
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array text_;
-    
+    office_element_ptr_array text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_sheet_name);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 //presentation:footer
 class presentation_footer : public office_element_impl<presentation_footer>
 {
@@ -741,13 +719,11 @@ public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
-    virtual void serialize(std::wostream & _Wostream);
-
-    
+    virtual void serialize(std::wostream & _Wostream);    
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_footer);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------
 //presentation:date-time
 class presentation_date_time: public office_element_impl<presentation_date_time>
 {
@@ -761,10 +737,258 @@ public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
-    virtual void serialize(std::wostream & _Wostream);
-
-    
+    virtual void serialize(std::wostream & _Wostream);    
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time);
+//---------------------------------------------------------------------------------------------------
+//text:toc-mark-start
+//---------------------------------------------------------------------------------------------------
+class text_toc_mark_start : public office_element_impl<text_toc_mark_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextTocMarkStart;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    _CP_OPT(int)	outline_level_;
+	std::wstring	id_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_toc_mark_start);
+//---------------------------------------------------------------------------------------------------
+//text:toc-mark-end
+//---------------------------------------------------------------------------------------------------
+class text_toc_mark_end : public office_element_impl<text_toc_mark_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextTocMarkEnd;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	std::wstring	id_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_toc_mark_end);
+//---------------------------------------------------------------------------------------------------
+//text:toc-mark
+//---------------------------------------------------------------------------------------------------
+class text_toc_mark : public office_element_impl<text_toc_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextTocMark;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)	string_value_;
+    _CP_OPT(int)			outline_level_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_toc_mark);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-mark-start
+//---------------------------------------------------------------------------------------------------
+class text_alphabetical_index_mark_start : public office_element_impl<text_alphabetical_index_mark_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndexMarkStart;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	std::wstring				id_;
+	_CP_OPT(std::wstring)		key1_;
+	_CP_OPT(std::wstring)		key1_phonetic_;
+	_CP_OPT(std::wstring)		key2_;
+	_CP_OPT(std::wstring)		key2_phonetic_;
+	_CP_OPT(odf_types::Bool)	main_entry_;
+	_CP_OPT(std::wstring)		string_value_phonetic_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index_mark_start);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-mark-end
+//---------------------------------------------------------------------------------------------------
+class text_alphabetical_index_mark_end : public office_element_impl<text_alphabetical_index_mark_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndexMarkEnd;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	std::wstring id_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index_mark_end);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-mark
+//---------------------------------------------------------------------------------------------------
+class text_alphabetical_index_mark : public office_element_impl<text_alphabetical_index_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndexMark;    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)		key1_;
+	_CP_OPT(std::wstring)		key1_phonetic_;
+	_CP_OPT(std::wstring)		key2_;
+	_CP_OPT(std::wstring)		key2_phonetic_;
+	_CP_OPT(odf_types::Bool)	main_entry_;
+	_CP_OPT(std::wstring)		string_value_;
+	_CP_OPT(std::wstring)		string_value_phonetic_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index_mark);
+//---------------------------------------------------------------------------------------------------
+//text:bibliography-mark
+//---------------------------------------------------------------------------------------------------
+class text_bibliography_mark : public office_element_impl<text_bibliography_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextBibliographyMark;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    std::wstring			identifier_;
+	odf_types::bibliography	bibliography_type_; 
+    
+	_CP_OPT(std::wstring)	url_;
+    _CP_OPT(std::wstring)	author_;
+    _CP_OPT(std::wstring)	title_;
+    _CP_OPT(std::wstring)	year_;
+    _CP_OPT(std::wstring)	isbn_;
+	_CP_OPT(std::wstring)	chapter_;
+	_CP_OPT(std::wstring)	address_;
+	_CP_OPT(std::wstring)	annote_;
+	_CP_OPT(std::wstring)	booktitle_;
+	_CP_OPT(std::wstring)	edition_;
+	_CP_OPT(std::wstring)	editor_;
+	_CP_OPT(std::wstring)	howpublished_;
+	_CP_OPT(std::wstring)	institution_;
+	_CP_OPT(std::wstring)	issn_;
+	_CP_OPT(std::wstring)	journal_;
+	_CP_OPT(std::wstring)	month_;
+	_CP_OPT(std::wstring)	note_;
+	_CP_OPT(std::wstring)	number_;
+	_CP_OPT(std::wstring)	organizations_;
+	_CP_OPT(std::wstring)	pages_;
+	_CP_OPT(std::wstring)	publisher_;
+	_CP_OPT(std::wstring)	report_type_;
+	_CP_OPT(std::wstring)	school_;
+	_CP_OPT(std::wstring)	series_;
+	_CP_OPT(std::wstring)	volume_;
+
+	_CP_OPT(std::wstring)	content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_bibliography_mark);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sequence-ref
+//-------------------------------------------------------------------------------------------------------------------
+class text_sequence_ref : public office_element_impl<text_sequence_ref>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSequenceRef;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)	reference_format_;//caption, category-and-value, value, chapter, direction, page, text, number, number-all-superior, number-no-superior
+	_CP_OPT(std::wstring)	ref_name_;
+   
+	std::wstring			content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_sequence_ref);
+//-------------------------------------------------------------------------------------------------------------------
+//text:drop-down
+//-------------------------------------------------------------------------------------------------------------------
+class text_drop_down : public office_element_impl<text_drop_down>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextDropDown;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)		text_name_;
+    office_element_ptr			label_;
+    
+    _CP_OPT(std::wstring)		text_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_drop_down);
+//-------------------------------------------------------------------------------------------------------------------
+//text:label
+//-------------------------------------------------------------------------------------------------------------------
+class text_label : public office_element_impl<text_label>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextLabel;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring) text_value_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_label);
 } // namespace odf_writer
 } // namespace cpdoccore

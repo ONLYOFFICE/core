@@ -840,6 +840,23 @@ void union_common_draw_attlists::serialize(CP_ATTR_NODE)
     rel_size_.serialize(CP_GET_XML_NODE());
     position_.serialize(CP_GET_XML_NODE());
 }
-
+void section_attlists::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:style-name", style_name_);
+    CP_APPLY_ATTR(L"text:name", name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:protected", protected_);
+    CP_APPLY_ATTR(L"text:protection-key", protection_key_);
+    CP_APPLY_ATTR(L"text:display", display_);
+    CP_APPLY_ATTR(L"text:condition", condition_);
+}
+void section_attlists::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"text:style-name", style_name_);
+    CP_XML_ATTR(L"text:name", name_);
+    CP_XML_ATTR_OPT(L"text:protected", protected_);
+    CP_XML_ATTR_OPT(L"text:protection-key", protection_key_);
+    CP_XML_ATTR_OPT(L"text:display", display_);
+    CP_XML_ATTR_OPT(L"text:condition", condition_);
+}
 }
 }

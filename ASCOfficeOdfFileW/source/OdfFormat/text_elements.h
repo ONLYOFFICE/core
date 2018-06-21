@@ -33,9 +33,9 @@
 
 #include <iosfwd>
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 #include "office_elements_create.h"
 #include "common_attlists.h"
@@ -484,6 +484,541 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_change_end);
 //---------------------------------------------------------------------------------------------------
+// text:table-index
+//---------------------------------------------------------------------------------------------------
+class text_table_index : public office_element_impl<text_table_index>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextTableIndex;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
 
+    virtual void serialize(std::wostream & _Wostream);
+
+	odf_types::section_attlists	section_attr_;
+    office_element_ptr			table_index_source_;
+    office_element_ptr			index_body_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_table_index);
+//---------------------------------------------------------------------------------------------------
+// text:illustration-index
+//---------------------------------------------------------------------------------------------------
+class text_illustration_index : public office_element_impl<text_illustration_index>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextIllustrationIndex;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+  
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	odf_types::section_attlists	section_attr_;
+    office_element_ptr			illustration_index_source_;
+    office_element_ptr			index_body_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index);
+//---------------------------------------------------------------------------------------------------
+// text:alphabetical-index
+//---------------------------------------------------------------------------------------------------
+class text_alphabetical_index : public office_element_impl<text_alphabetical_index>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndex;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	odf_types::section_attlists	section_attr_;
+    office_element_ptr			alphabetical_index_source_;
+    office_element_ptr			index_body_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index);
+//------------------------------------------------------------------------------------------------------------
+// text:bibliography
+//------------------------------------------------------------------------------------------------------------
+class text_bibliography : public office_element_impl<text_bibliography>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextBibliography;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			bibliography_source_;
+    office_element_ptr			index_body_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_bibliography);
+//------------------------------------------------------------------------------------------------------------
+// text:bibliography-source
+//------------------------------------------------------------------------------------------------------------
+class text_bibliography_source: public office_element_impl<text_bibliography_source>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextBibliographySource;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	office_element_ptr			index_title_template_;
+	office_element_ptr_array	entry_templates_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_bibliography_source);
+//---------------------------------------------------------------------------------------------------
+class common_entry_template : public office_element_impl<common_entry_template>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextCommonEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)		style_name_;
+	_CP_OPT(int)				outline_level_;
+	office_element_ptr_array	content_;
+};
+//------------------------------------------------------------------------------------------------------------
+// text:bibliography-entry-template
+//------------------------------------------------------------------------------------------------------------
+class text_bibliography_entry_template: public common_entry_template
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextBibliographyEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)		bibliography_type_;//article, book, email, ...
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_bibliography_entry_template);
+//---------------------------------------------------------------------------------------------------
+class text_index_title_template : public office_element_impl<text_index_title_template>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextIndexTitleTemplate;
+    CPDOCCORE_DEFINE_VISITABLE();
+  	
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)	style_name_;
+	_CP_OPT(std::wstring)	content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_title_template);
+////---------------------------------------------------------------------------------------------------
+////text:sequence-decl
+////---------------------------------------------------------------------------------------------------
+//class text_sequence_decl : public office_element_impl<text_sequence_decl>
+//{
+//public:
+//    static const wchar_t * ns;
+//    static const wchar_t * name;
+//    static const xml::NodeType xml_type = xml::typeElement;
+//    static const ElementType type		= typeTextSequenceDecl;
+//    CPDOCCORE_DEFINE_VISITABLE()
+//    
+//	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+//    virtual void add_child_element		( const office_element_ptr & child_element);
+//
+//    virtual void serialize(std::wostream & _Wostream);
+//
+//	_CP_OPT(std::wstring)	separation_character_; //one char
+//	_CP_OPT(unsigned int)	display_outline_level_;
+//	_CP_OPT(std::wstring)	name_;
+//};
+//CP_REGISTER_OFFICE_ELEMENT2(text_sequence_decl);
+////---------------------------------------------------------------------------------------------------
+////text:sequence-decls
+////---------------------------------------------------------------------------------------------------
+//class text_sequence_decls : public office_element_impl<text_sequence_decls>
+//{
+//public:
+//    static const wchar_t * ns;
+//    static const wchar_t * name;
+//    static const xml::NodeType xml_type = xml::typeElement;
+//    static const ElementType type		= typeTextSequenceDecls;
+//    CPDOCCORE_DEFINE_VISITABLE()
+//    
+//	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+//    virtual void add_child_element		( const office_element_ptr & child_element);
+//
+//    virtual void serialize(std::wostream & _Wostream);
+//
+//    office_element_ptr_array content_;
+//};
+//CP_REGISTER_OFFICE_ELEMENT2(text_sequence_decls);
+//---------------------------------------------------------------------------------------------------
+//text:table-of-content-source
+//---------------------------------------------------------------------------------------------------
+class text_table_of_content_source: public office_element_impl<text_table_of_content_source>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextTableOfContentSource;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(int)				outline_level_;
+	_CP_OPT(odf_types::Bool)	use_index_marks_;
+	_CP_OPT(odf_types::Bool)	use_index_source_styles_;
+	_CP_OPT(odf_types::Bool)	use_outline_level_;
+	_CP_OPT(odf_types::Bool)	relative_tab_stop_position_;
+	_CP_OPT(std::wstring)		index_scope_; // chapter or document:
+
+	office_element_ptr			index_title_template_;
+	office_element_ptr_array	entry_templates_;
+	office_element_ptr_array	index_source_styles_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_table_of_content_source);
+
+//---------------------------------------------------------------------------------------------------
+//text:table-of-content-entry-template
+//---------------------------------------------------------------------------------------------------
+class text_table_of_content_entry_template : public common_entry_template
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextTableOfContentEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_table_of_content_entry_template);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-bibliography
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_bibliography: public office_element_impl<text_index_entry_bibliography>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryBibliography;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)		style_name_;
+	_CP_OPT(std::wstring)		bibliography_data_field_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_bibliography);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-chapter
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_chapter: public office_element_impl<text_index_entry_chapter>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryChapter;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_chapter);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-link-end
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_link_end: public office_element_impl<text_index_entry_link_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryLinkEnd;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_link_end);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-link-start
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_link_start: public office_element_impl<text_index_entry_link_start>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryLinkStart;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_link_start);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-page-number
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_page_number: public office_element_impl<text_index_entry_page_number>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryPageNumber;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_page_number);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-span
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_span: public office_element_impl<text_index_entry_span>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntrySpan;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_span);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-tab-stop
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_tab_stop: public office_element_impl<text_index_entry_tab_stop>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryTabStop;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_tab_stop);
+//---------------------------------------------------------------------------------------------------
+//text:index-entry-text
+//---------------------------------------------------------------------------------------------------
+class text_index_entry_text: public office_element_impl<text_index_entry_text>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIndexEntryText;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_index_entry_text);
+//---------------------------------------------------------------------------------------------------
+//text:illustration-index-source
+//---------------------------------------------------------------------------------------------------
+class text_illustration_index_source: public office_element_impl<text_illustration_index_source>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIllustrationIndexSource;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+	
+	_CP_OPT(std::wstring)		caption_sequence_name_;
+	_CP_OPT(std::wstring)		caption_sequence_format_;
+
+	_CP_OPT(odf_types::Bool)	relative_tab_stop_position_;
+	_CP_OPT(odf_types::Bool)	use_caption_;
+	_CP_OPT(std::wstring)		index_scope_; // chapter or document:
+
+	office_element_ptr			index_title_template_;
+	office_element_ptr_array	entry_templates_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index_source);
+//---------------------------------------------------------------------------------------------------
+//text:illustration-index-entry-template
+//---------------------------------------------------------------------------------------------------
+class text_illustration_index_entry_template : public common_entry_template
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextIllustrationIndexEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index_entry_template);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-source
+//---------------------------------------------------------------------------------------------------
+class alphabetical_index_source : public office_element_impl<alphabetical_index_source>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextAlphabeticalIndexSource;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+	
+	_CP_OPT(std::wstring)	index_scope_; // chapter or document:
+
+//fo:country
+//fo:language 
+//fo:script
+//style:rfclanguage-tag
+//text:alphabetical-separators 
+//text:capitalizeentries
+//text:combine-entries 
+//text:combine-entries-with-dash
+//text:combine-entries-with-pp
+//text:comma-separated
+//text:ignore-case
+//text:main-entry-style-name
+//text:relative-tab-stop-position
+//text:sort-algorithm
+//text:use-keys-as-entries
+
+	office_element_ptr			index_title_template_;
+	office_element_ptr_array	entry_templates_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_source);
+//---------------------------------------------------------------------------------------------------
+//text:alphabetical-index-entry-template
+//---------------------------------------------------------------------------------------------------
+class text_alphabetical_index_entry_template : public common_entry_template
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextAlphabeticalIndexEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index_entry_template);
+//---------------------------------------------------------------------------------------------------
+//text:table-index-source
+//---------------------------------------------------------------------------------------------------
+class text_table_index_source: public office_element_impl<text_table_index_source>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextTableIndexSource;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+	
+	_CP_OPT(std::wstring)		caption_sequence_name_;
+	_CP_OPT(std::wstring)		caption_sequence_format_;
+
+	_CP_OPT(odf_types::Bool)	relative_tab_stop_position_;
+	_CP_OPT(odf_types::Bool)	use_caption_;
+	_CP_OPT(std::wstring)		index_scope_; // chapter or document:
+
+	office_element_ptr			index_title_template_;
+	office_element_ptr_array	entry_templates_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_table_index_source);
+//---------------------------------------------------------------------------------------------------
+//text:table-index-entry-template
+//---------------------------------------------------------------------------------------------------
+class text_table_index_entry_template : public common_entry_template
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextTableIndexEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_table_index_entry_template);
 }
 }

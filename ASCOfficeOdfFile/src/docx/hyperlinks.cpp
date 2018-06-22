@@ -33,7 +33,7 @@
 #include "hyperlinks.h"
 #include "oox_rels.h"
 
-#include <cpdoccore/xml/utils.h>
+#include <xml/utils.h>
 
 namespace cpdoccore { 
 namespace oox {

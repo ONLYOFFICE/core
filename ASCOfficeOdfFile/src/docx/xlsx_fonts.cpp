@@ -33,7 +33,7 @@
 #include "xlsx_fonts.h"
 #include "xlsx_font.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>

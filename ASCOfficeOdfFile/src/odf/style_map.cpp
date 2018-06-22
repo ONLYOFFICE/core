@@ -32,7 +32,7 @@
 
 #include "style_map.h"
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 

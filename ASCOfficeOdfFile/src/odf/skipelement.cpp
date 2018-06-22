@@ -32,7 +32,7 @@
 
 #include "skipelement.h"
 #include "logging.h"
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf_reader {

@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPScopedPtr.h>
+#include <CPOptional.h>
 
 namespace cpdoccore { 
 namespace odf_reader {

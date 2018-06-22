@@ -33,8 +33,8 @@
 
 #include "Converter.h"
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPOptional.h>
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
 

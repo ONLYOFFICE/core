@@ -33,12 +33,12 @@
 
 #include <vector>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPWeakPtr.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/common/readdocelement.h>
+#include <CPSharedPtr.h>
+#include <CPWeakPtr.h>
+#include <xml/xmlelement.h>
+#include <common/readdocelement.h>
 
-#include "office_elements_type.h"
+#include <odf/odf_elements_type.h>
 
 #include "../docx/docx_conversion_context.h"
 #include "../docx/xlsxconversioncontext.h"

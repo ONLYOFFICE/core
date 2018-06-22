@@ -33,7 +33,7 @@
 #include "xlsx_defined_names.h"
 
 #include <vector>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "../formulasconvert/formulasconvert.h"
 

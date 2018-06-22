@@ -33,8 +33,8 @@
 
 #include "common_attlists.h"
 
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 
 #include "office_elements.h"

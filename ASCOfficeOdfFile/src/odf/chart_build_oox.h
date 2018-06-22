@@ -38,10 +38,10 @@
 
 #include <boost/regex.hpp>
 //
-#include <cpdoccore/CPString.h>
-#include <cpdoccore/xml/xmlchar.h>
+#include <CPString.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 #include "visitor.h"
 

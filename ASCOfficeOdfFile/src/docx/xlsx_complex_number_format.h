@@ -33,7 +33,7 @@
 #define CPDOCCORE_COMPLEX_NUMBER_FORMAT
 
 #include <string>
-#include <cpdoccore/CPScopedPtr.h>
+#include <CPScopedPtr.h>
 
 namespace cpdoccore {
 namespace oox {

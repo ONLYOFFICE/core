@@ -38,9 +38,9 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 
 #include "odf_conversion_context.h"

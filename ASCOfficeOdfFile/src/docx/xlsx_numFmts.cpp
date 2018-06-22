@@ -30,7 +30,7 @@
  *
  */
 #include <vector>
-#include <cpdoccore/xml/utils.h>
+#include <xml/utils.h>
 
 #include "xlsx_numFmts.h"
 

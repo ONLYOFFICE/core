@@ -30,7 +30,7 @@
  *
  */
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "xlsx_hyperlinks.h"
 #include "oox_rels.h"

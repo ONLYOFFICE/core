@@ -32,7 +32,7 @@
 #include "xlsx_fill.h"
 #include "xlsx_fills.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>

@@ -33,8 +33,8 @@
 
 #include <vector>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPSharedPtr.h>
+#include <CPNoncopyable.h>
 
 #include "odf_rels.h"
 

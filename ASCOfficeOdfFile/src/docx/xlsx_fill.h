@@ -32,7 +32,7 @@
 #pragma once
 
 #include <string>
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 #include "xlsx_color.h"
 
 namespace cpdoccore { 

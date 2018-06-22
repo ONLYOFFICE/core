@@ -33,9 +33,9 @@
 
 #include <iosfwd>
 #include <iostream>
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/attributes.h>
+#include <CPScopedPtr.h>
+#include <CPOptional.h>
+#include <xml/attributes.h>
 
 #include "oox_drawing.h"
 #include "xlsx_table_position.h"

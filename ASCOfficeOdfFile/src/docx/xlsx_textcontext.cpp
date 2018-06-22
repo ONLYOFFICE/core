@@ -35,10 +35,10 @@
 #include <iostream>
 #include "xlsx_sharedstrings.h"
 #include <list>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/utils.h>
+#include <odf/odf_document.h>
+#include <xml/utils.h>
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"

@@ -34,9 +34,8 @@
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 
 #include "../../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../../DesktopEditor/xml/src/xmllight_private.h"
 
-#include "../../include/cpdoccore/xml/sax.h"
+#include "../../include/xml/sax.h"
 
 #include "sax_xmllite.h"
 
@@ -73,7 +72,7 @@ public:
     virtual NodeType next(int Depth);
     
 private:
-    smart_ptr< XmlUtils::CXmlLiteReader_Private > xml_;
+    smart_ptr< XmlUtils::CXmlLiteReader > xml_;
 
 };
 
@@ -100,7 +99,7 @@ namespace
         case XmlUtils::XmlNodeType_DocumentType:
             return typeDocumentType;
         case XmlUtils::XmlNodeType_Whitespace:
-	case XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE:
+		case XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE:
             return typeWhitespace;
         case XmlUtils::XmlNodeType_EndElement:
             return typeEndElement;
@@ -114,7 +113,7 @@ namespace
 
 saxXmlLiteReader::saxXmlLiteReader(const wchar_t * FileName)
 {
-    xml_ = new XmlUtils::CXmlLiteReader_Private();
+    xml_ = new XmlUtils::CXmlLiteReader();
 	
 	xml_->FromFile(FileName);
 
@@ -158,20 +157,14 @@ std::wstring saxXmlLiteReader::namespacePrefix()
 {
 	if (xml_.IsInit() == false) return _T("");
 
-    xmlChar* pName = xmlTextReaderPrefix(xml_->getNativeReader());
-	if (NULL == pName)
-		return L"";
-
-	std::wstring sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
-	free(pName);
-	return sTemp;
+    return xml_->GetNamespacePrefix();
 }
 
 NodeType saxXmlLiteReader::nodeType()
 {
 	if (xml_.IsInit() == false) return typeNone;	
 
-	XmlUtils::XmlNodeType nTempType = (XmlUtils::XmlNodeType)xmlTextReaderNodeType(xml_->getNativeReader());
+    XmlUtils::XmlNodeType nTempType = xml_->GetNodeType();
 	return NodeTypeConvert(nTempType); 
 }
 
@@ -215,14 +208,14 @@ bool saxXmlLiteReader::attrDefault()
 {
 	if (xml_.IsInit() == false) return false;
 	
-    return (FALSE != xmlTextReaderIsDefault(xml_->getNativeReader()));
+    return xml_->IsDefaultAttribute();
 }
 
 NodeType saxXmlLiteReader::next(int Depth)
 {
 	if (xml_->ReadNextSiblingNode2(Depth))
 	{
-		XmlUtils::XmlNodeType nTempType = (XmlUtils::XmlNodeType)xmlTextReaderNodeType(xml_->getNativeReader());
+        XmlUtils::XmlNodeType nTempType = xml_->GetNodeType();
 		return NodeTypeConvert(nTempType);
 	}
 	else 

@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <cpdoccore/common/readdocelement.h>
+#include <common/readdocelement.h>
 #include "office_elements.h"
 #include "documentcontext.h"
 

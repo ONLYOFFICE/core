@@ -34,12 +34,12 @@
 #include <vector>
 #include <boost/algorithm/string/replace.hpp>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPWeakPtr.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/attributes.h>
+#include <CPSharedPtr.h>
+#include <CPWeakPtr.h>
+#include <xml/xmlelement.h>
+#include <xml/attributes.h>
 
-#include "office_elements_type.h"
+#include <odf/odf_elements_type.h>
 
 #include "visitor.h"
 

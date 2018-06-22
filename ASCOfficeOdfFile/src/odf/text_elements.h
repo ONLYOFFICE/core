@@ -33,9 +33,9 @@
 
 #include <iosfwd>
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 #include "text_content.h"
 #include "office_elements_create.h"
@@ -223,21 +223,6 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(soft_page_break);
 
 //---------------------------------------------------------------------------------------------------
-
-class section_attr
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-    _CP_OPT(std::wstring)				style_name_;
-    std::wstring						name_;
-    _CP_OPT(bool)						protected_;
-    _CP_OPT(std::wstring)				protection_key_;
-    _CP_OPT(odf_types::text_display)	display_;
-    _CP_OPT(std::wstring)				condition_;
-
-};
-
 class section : public text_content_impl<section>
 {
 public:
@@ -258,9 +243,9 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    section_attr					section_attr_;
-    office_element_ptr				section_source_;
-    office_element_ptr_array		content_;          
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			section_source_;
+    office_element_ptr_array	content_;          
 
 };
 
@@ -340,10 +325,10 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-		section_attr		section_attr_;
+	odf_types::section_attlists	section_attr_;
     
-	office_element_ptr		table_of_content_source_;
-    office_element_ptr		index_body_;
+	office_element_ptr			table_of_content_source_;
+    office_element_ptr			index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_of_content);
@@ -370,9 +355,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    section_attr		section_attr_;
-    office_element_ptr	table_index_source_;
-    office_element_ptr	index_body_;
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			table_index_source_;
+    office_element_ptr			index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_index);
@@ -402,9 +387,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    section_attr		section_attr_;
-    office_element_ptr	illustration_index_source_;
-    office_element_ptr	index_body_;
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			illustration_index_source_;
+    office_element_ptr			index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(illustration_index);
@@ -434,9 +419,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    section_attr		section_attr_;
-    office_element_ptr	alphabetical_index_source_;
-    office_element_ptr	index_body_;
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			alphabetical_index_source_;
+    office_element_ptr			index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index);
@@ -466,9 +451,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    section_attr		section_attr_;
-    office_element_ptr	object_index_source_;
-    office_element_ptr	index_body_;
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			object_index_source_;
+    office_element_ptr			index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(object_index);
@@ -498,9 +483,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    section_attr		section_attr_;
-    office_element_ptr	user_index_source_;
-    office_element_ptr	index_body_;
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			user_index_source_;
+    office_element_ptr			index_body_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(user_index);
@@ -530,9 +515,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    section_attr		section_attr_;
-    office_element_ptr	bibliography_source_;
-    office_element_ptr	index_body_;
+    odf_types::section_attlists	section_attr_;
+    office_element_ptr			bibliography_source_;
+    office_element_ptr			index_body_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(bibliography);
 //------------------------------------------------------------------------------------------------------------
@@ -623,7 +608,7 @@ private:
 
 public:
 	_CP_OPT(std::wstring)		xml_id_;
-	section_attr				section_attr_;
+	odf_types::section_attlists	section_attr_;
     office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(index_title);

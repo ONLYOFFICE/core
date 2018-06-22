@@ -32,8 +32,8 @@
 
 #include "office_text.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf_writer {

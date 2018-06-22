@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPScopedPtr.h>
+#include <CPSharedPtr.h>
+#include <CPScopedPtr.h>
 
 namespace cpdoccore { 
 namespace odf {

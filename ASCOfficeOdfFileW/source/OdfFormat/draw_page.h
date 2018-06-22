@@ -31,10 +31,10 @@
  */
 #pragma once
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
+#include <xml/simple_xml_writer.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"

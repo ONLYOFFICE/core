@@ -34,8 +34,8 @@
 
 #include <iostream>
 
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
 
 #include "measuredigits.h"
 #include "xlsx_package.h"

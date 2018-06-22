@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../include/cpdoccore/xml/utils.h"
+#include "../../include/xml/utils.h"
 
 #include <boost/regex.hpp>
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"

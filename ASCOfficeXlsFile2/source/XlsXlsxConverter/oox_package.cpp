@@ -36,7 +36,7 @@
 #include <boost/ref.hpp>
 #include <boost/make_shared.hpp>
 
-#include "../../../ASCOfficeOdfFile/include/cpdoccore/utf8cpp/utf8.h"
+#include "../../../ASCOfficeOdfFile/include/utf8cpp/utf8.h"
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #include "external_items.h"

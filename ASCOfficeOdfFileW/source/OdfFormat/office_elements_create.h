@@ -36,7 +36,7 @@
 
 #include <boost/function.hpp>
 
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPSharedPtr.h>
 
 #include "office_elements.h"
 

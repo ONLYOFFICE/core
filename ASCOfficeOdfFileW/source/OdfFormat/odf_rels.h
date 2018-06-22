@@ -34,8 +34,8 @@
 #include <vector>
 #include <string>
 
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/CPSharedPtr.h>
+#include <xml/xmlelement.h>
+#include <CPSharedPtr.h>
 
 namespace cpdoccore { 
 namespace odf_writer {

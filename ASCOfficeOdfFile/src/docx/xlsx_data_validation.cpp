@@ -36,8 +36,8 @@
 #include <vector>
 #include <map>
 
-#include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/CPSharedPtr.h>
+#include <xml/simple_xml_writer.h>
+#include <CPSharedPtr.h>
 
 #include "../formulasconvert/formulasconvert.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"

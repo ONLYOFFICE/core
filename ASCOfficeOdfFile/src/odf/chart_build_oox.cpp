@@ -35,7 +35,7 @@
 #include "../docx/xlsx_num_format_context.h"
 
 #include "serialize_elements.h"
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 #include "../formulasconvert/formulasconvert.h"
 
 #include "style_graphic_properties.h"

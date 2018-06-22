@@ -30,8 +30,8 @@
  *
  */
 
-#include <cpdoccore/utf8cpp/utf8.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <utf8cpp/utf8.h>
+#include <xml/simple_xml_writer.h>
 
 #include "object_package.h"
 #include "mediaitems.h"

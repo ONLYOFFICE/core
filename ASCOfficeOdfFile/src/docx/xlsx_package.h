@@ -33,7 +33,7 @@
 
 #include "oox_package.h"
 
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPNoncopyable.h>
 
 #include "xlsx_drawings.h"
 #include "xlsx_comments.h"

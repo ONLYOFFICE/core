@@ -33,8 +33,8 @@
 #include <iostream>
 #include "style_table_properties.h"
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
 #include "serialize_elements.h"
 #include "datatypes/borderstyle.h"

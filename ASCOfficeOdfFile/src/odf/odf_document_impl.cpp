@@ -34,10 +34,10 @@
 
 #include "odf_document_impl.h"
 
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/CPString.h>
-#include <cpdoccore/xml/sax.h>
-#include <cpdoccore/common/readdocelement.h>
+#include <odf/odf_document.h>
+#include <CPString.h>
+#include <xml/sax.h>
+#include <common/readdocelement.h>
 
 #include <boost/algorithm/string.hpp>
 

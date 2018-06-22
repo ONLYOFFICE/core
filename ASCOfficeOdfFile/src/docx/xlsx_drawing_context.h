@@ -32,8 +32,8 @@
 #pragma once
 
 #include <string>
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPScopedPtr.h>
+#include <CPSharedPtr.h>
 
 #include "xlsx_drawings.h"
 

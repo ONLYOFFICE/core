@@ -33,10 +33,10 @@
 
 #include <string>
 #include <boost/noncopyable.hpp>
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPScopedPtr.h>
+#include <CPOptional.h>
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 
 namespace cpdoccore {

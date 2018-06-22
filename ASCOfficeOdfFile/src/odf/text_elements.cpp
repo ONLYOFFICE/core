@@ -32,15 +32,15 @@
 
 #include "text_elements.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/utils.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/utils.h>
 
 #include "paragraph_elements.h"
 #include "serialize_elements.h"
 #include "list.h"
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 #include "odfcontext.h"
 #include "style_paragraph_properties.h"
 #include "style_text_properties.h"
@@ -647,18 +647,6 @@ void soft_page_break::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 void soft_page_break::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-}
-
-// text-section-attr
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void section_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"text:style-name", style_name_);
-    CP_APPLY_ATTR(L"text:name", name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"text:protected", protected_);
-    CP_APPLY_ATTR(L"text:protection-key", protection_key_);
-    CP_APPLY_ATTR(L"text:display", display_);
-    CP_APPLY_ATTR(L"text:condition", condition_);
 }
 
 // text:section

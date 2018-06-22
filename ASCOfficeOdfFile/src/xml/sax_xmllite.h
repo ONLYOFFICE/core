@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include "../../include/cpdoccore/xml/sax.h"
-#include "../../include/cpdoccore/CPSharedPtr.h"
+#include "../../include/xml/sax.h"
+#include "../../include/CPSharedPtr.h"
 
 namespace cpdoccore {
 namespace xml {

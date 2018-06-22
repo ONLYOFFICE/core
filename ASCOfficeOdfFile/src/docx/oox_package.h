@@ -33,8 +33,8 @@
 #define _CPDOCCORE_OOX_PACKAGE_H_75f74d15
 
 #include <vector>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPSharedPtr.h>
+#include <CPNoncopyable.h>
 
 #include "docx_content_type.h"
 #include "oox_rels.h"

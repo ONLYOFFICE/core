@@ -32,8 +32,8 @@
 
 #include "style_map.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 
 namespace cpdoccore { 

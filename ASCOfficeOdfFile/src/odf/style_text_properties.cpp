@@ -31,9 +31,9 @@
  */
 
 #include <iostream>
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/xml/attributes.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
+#include <xml/attributes.h>
 #include <logging.h>
 
 #include "calcs_styles.h"

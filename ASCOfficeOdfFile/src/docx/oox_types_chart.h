@@ -34,8 +34,8 @@
 #include <iosfwd>
 #include <boost/noncopyable.hpp>
 
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPScopedPtr.h>
+#include <CPSharedPtr.h>
 
 #include "xlsx_color.h"
 #include "oox_chart_series.h"

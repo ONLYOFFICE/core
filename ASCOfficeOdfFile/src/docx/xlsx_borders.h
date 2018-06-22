@@ -32,8 +32,8 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/CPScopedPtr.h>
+#include <CPOptional.h>
+#include <CPScopedPtr.h>
 
 namespace cpdoccore {
 namespace odf_reader {

@@ -557,27 +557,27 @@ HEADERS += \
     ../src/docx/xlsx_utils.h \
     ../src/docx/xlsx_xf.h \
     ../include/logging.h \
-    ../include/cpdoccore/CPColorUtils.h \
-    ../include/cpdoccore/CPNoncopyable.h \
-    ../include/cpdoccore/CPOptional.h \
-    ../include/cpdoccore/CPScopedPtr.h \
-    ../include/cpdoccore/CPSharedPtr.h \
-    ../include/cpdoccore/CPString.h \
-    ../include/cpdoccore/CPWeakPtr.h \
-    ../include/cpdoccore/common/readdocelement.h \
-    ../include/cpdoccore/common/readstring.h \
-    ../include/cpdoccore/common/writedocelement.h \
-    ../include/cpdoccore/odf/odf_document.h \
-    ../include/cpdoccore/odf/odfformat.h \
-    ../include/cpdoccore/utf8cpp/utf8/checked.h \
-    ../include/cpdoccore/utf8cpp/utf8/core.h \
-    ../include/cpdoccore/utf8cpp/utf8/unchecked.h \
-    ../include/cpdoccore/utf8cpp/utf8.h \
-    ../include/cpdoccore/xml/attributes.h \
-    ../include/cpdoccore/xml/nodetype.h \
-    ../include/cpdoccore/xml/sax.h \
-    ../include/cpdoccore/xml/simple_xml_writer.h \
-    ../include/cpdoccore/xml/utils.h \
-    ../include/cpdoccore/xml/xmlchar.h \
-    ../include/cpdoccore/xml/xmlelement.h
+    ../include/CPColorUtils.h \
+    ../include/CPNoncopyable.h \
+    ../include/CPOptional.h \
+    ../include/CPScopedPtr.h \
+    ../include/CPSharedPtr.h \
+    ../include/CPString.h \
+    ../include/CPWeakPtr.h \
+    ../include/common/readdocelement.h \
+    ../include/common/readstring.h \
+    ../include/common/writedocelement.h \
+    ../include/odf/odf_document.h \
+    ../include/odf/odfformat.h \
+    ../include/utf8cpp/utf8/checked.h \
+    ../include/utf8cpp/utf8/core.h \
+    ../include/utf8cpp/utf8/unchecked.h \
+    ../include/utf8cpp/utf8.h \
+    ../include/xml/attributes.h \
+    ../include/xml/nodetype.h \
+    ../include/xml/sax.h \
+    ../include/xml/simple_xml_writer.h \
+    ../include/xml/utils.h \
+    ../include/xml/xmlchar.h \
+    ../include/xml/xmlelement.h
 

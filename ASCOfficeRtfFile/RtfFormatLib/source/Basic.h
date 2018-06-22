@@ -38,7 +38,7 @@
 #include "IdGenerator.h"
 #include "RtfDefine.h"
 
-#include "../../../ASCOfficeOdfFile/include/cpdoccore/CPOptional.h"
+#include "../../../ASCOfficeOdfFile/include/CPOptional.h"
 
 enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 

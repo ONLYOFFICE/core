@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <tchar.h>
+#include <time.h>
 
 #include "../OnlineOfficeBinToPdf.h"
 #include "../PdfRenderer.h"
@@ -48,7 +49,7 @@ void TestDocument1()
 
 	oPdf.SetPasswords(L"123", L"qwe");
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test1.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test1.pdf");
 	oPdf.Close();
 }
 void TestDocument2()
@@ -80,7 +81,7 @@ void TestDocument2()
 	pOutline11->SetDestination(pDest);
 
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test2.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test2.pdf");
 	oPdf.Close();
 }
 void TestDocument3()
@@ -249,7 +250,7 @@ void TestDocument3()
 
 
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test3.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test3.pdf");
 	oPdf.Close();
 }
 void TestDocument4()
@@ -269,7 +270,7 @@ void TestDocument4()
 	CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
 	pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test4.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test4.pdf");
 	oPdf.Close();
 }
 void TestDocument5()
@@ -413,12 +414,13 @@ void TestDocument5()
 	//pPage->DrawImage(pRawImage, 300, 300, 200, 200);
 	//delete[] pBgra;
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test5.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test5.pdf");
 	oPdf.Close();
 }
 void TestDocument6()
 {
 	CDocument oPdf;
+	oPdf.SetPDFAConformanceMode(true);
 	oPdf.CreateNew();
 	CPage* pPage = oPdf.AddPage();
 	pPage->SetHeight(600);
@@ -486,7 +488,7 @@ void TestDocument6()
 	pPage->ClosePath();
 	pPage->Fill();
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test6.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test6.pdf");
 	oPdf.Close();
 }
 void TestDocument7()
@@ -551,7 +553,7 @@ void TestDocument7()
 
 	pPage->EndText();
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test7.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test7.pdf");
 	oPdf.Close();
 }
 void TestDocument8()
@@ -630,7 +632,7 @@ void TestDocument8()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test8.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test8.pdf");
 	oPdf.Close();
 }
 void TestDocument9()
@@ -646,7 +648,7 @@ void TestDocument9()
 	pPage->SetWidth(600);
 
 	CImageDict* pJpegImage = oPdf.CreateImage();
-	pJpegImage->LoadJpeg(L"D:/test/_pdf/Test.jpg", 600, 400);
+	pJpegImage->LoadJpeg(L"D:/Test/PDF/Test.jpg", 600, 400);
 
 	CImageTilePattern* pPattern = oPdf.CreateImageTilePattern(70, 70, pJpegImage, NULL, imagetilepatterntype_InverseX);
 
@@ -658,7 +660,7 @@ void TestDocument9()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/test/_pdf/Test9.pdf");
+	oPdf.SaveToFile(L"D:/Test/PDF/Test9.pdf");
 	oPdf.Close();
 }
 
@@ -716,41 +718,138 @@ void ConvertFolder(std::wstring wsFolderPath)
 	delete pAppFonts;
 }
 
-//void TestOnlineBin()
+std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
+{
+	std::vector<std::wstring> vwsNames;
+
+	std::wstring wsSearchPath = wsFolder;
+	wsSearchPath.append(L"*.");
+	wsSearchPath.append(wsExt);
+
+	WIN32_FIND_DATA oFindData;
+	HANDLE hFind = ::FindFirstFile(wsSearchPath.c_str(), &oFindData);
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			if (!(oFindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
+				vwsNames.push_back(oFindData.cFileName);
+			}
+		} while (::FindNextFile(hFind, &oFindData));
+		::FindClose(hFind);
+	}
+	return vwsNames;
+}
+
+//void ConvertFolder(std::wstring wsFolderPath, const int nType)
 //{
-//	std::wstring wsFolderPath = L"D://Test Files//Txt//Gradient//";
-//	//std::wstring wsFolderPath = L"D://Test Files//Txt//Text//";
-//	std::wstring wsTempFolder = L"D://Test Files//Temp//";
+//	NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+//	if (!pFonts)
+//		return;
 //
-//	CApplicationFonts oFonts;
-//	oFonts.Initialize();
+//	pFonts->Initialize();
 //
-//	clock_t oBeginTime = clock();
+//	MetaFile::CMetaFile oMetaFile(pFonts);
+//	CPdfRenderer oRenderer(pFonts);
+//
+//	oMetaFile.Close();
+//
+//	std::wstring sExt;
+//
+//	switch (nType)
+//	{
+//		case MetaFile::c_lMetaEmf: sExt = L"emf"; break;
+//		case MetaFile::c_lMetaWmf: sExt = L"wmf"; break;
+//		case MetaFile::c_lMetaSvm: sExt = L"svm"; break;
+//	}
 //	double dPx2Mm = 25.4 / 96;
-//	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
+//	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, sExt);
 //	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
 //	{
+//		oRenderer.NewPage();
+//
 //		std::wstring wsFilePath = wsFolderPath;
 //		wsFilePath.append(vFiles.at(nIndex));
-//		std::wstring wsOutPath = wsFolderPath + L"Out.pdf";
+//		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
+//		{
+//			double dW, dH, dX, dY;
+//			oMetaFile.GetBounds(&dX, &dY, &dW, &dH);
 //
-//		CPdfRenderer oRenderer(&oFonts);
-//		oRenderer.SetTempFolder(wsTempFolder);
-//		oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);		
+//			dW *= dPx2Mm;
+//			dH *= dPx2Mm;
+//			dX *= dPx2Mm;
+//			dY *= dPx2Mm;
+//
+//			double dAspect = dH / dW;
+//			dW = 595.27;
+//			dH = dAspect * dW;
+//
+//			oRenderer.put_Width(dW);
+//			oRenderer.put_Height(dH);
+//			//oMetaFile.DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
+//			oMetaFile.DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
+//			oMetaFile.Close();
+//		}
 //
 //		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
 //	}
 //
-//	clock_t oEndTime = clock();
-//	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-//	printf("%f\n", dElapsedSecs);
+//	oRenderer.SaveToFile(wsFolderPath + L"Out.pdf");
+//	delete pFonts;
 //}
-//
+//void TestMetafile()
+//{
+//	ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
+//	//ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
+//}
+void TestOnlineBin()
+{
+	std::wstring wsFolderPath = L"D:/Test/PDF/TextOnline/";
+	std::wstring wsTempFolder = L"D:/Test/PDF/TextOnline/Temp/";
 
+	NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+	if (!pFonts)
+		return;
+
+	pFonts->Initialize();
+
+	clock_t oBeginTime = clock();
+	double dPx2Mm = 25.4 / 96;
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
+	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+	{
+		std::wstring wsFilePath = wsFolderPath;
+		wsFilePath.append(vFiles.at(nIndex));
+
+		std::wstring::size_type stFound = vFiles.at(nIndex).rfind(L".");
+		std::wstring wsFileName = vFiles.at(nIndex);
+		if (stFound != std::wstring::npos)
+			wsFileName.erase(stFound);
+
+		std::wstring wsOutPath = wsFolderPath + wsFileName + L".pdf";
+
+		CPdfRenderer oRenderer(pFonts);
+		oRenderer.SetTempFolder(wsTempFolder);
+		oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);
+
+		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
+	}
+
+	clock_t oEndTime = clock();
+	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+	printf("%f\n", dElapsedSecs);
+
+	delete pFonts;
+}
 
 int main()
 {
 	TestDocument1();
+	TestDocument6();
+
+	TestOnlineBin();
+
     return 0;
 }
 

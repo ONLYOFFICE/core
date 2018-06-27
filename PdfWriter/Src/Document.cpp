@@ -54,7 +54,7 @@
 
 namespace PdfWriter
 {
-	const char* c_sPdfHeader = "%PDF-1.7\012%ASC\012";
+	const char* c_sPdfHeader = "%PDF-1.7\015%\315\312\322\251\015";
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ namespace PdfWriter
 	{
 		Close();
 
-		m_pXref = new CXref(0);
+		m_pXref = new CXref(this, 0);
 		if (!m_pXref)
 			return false;
 
@@ -99,6 +99,24 @@ namespace PdfWriter
 
 		m_pCatalog->SetPageMode(pagemode_UseNone);
 		m_pCatalog->SetPageLayout(pagelayout_OneColumn);
+
+		if (IsPDFA())
+		{
+			CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref);
+
+			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+			if (!pID)
+			{
+				BYTE arrId[16];
+				CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+				pID = new CArrayObject();
+				m_pTrailer->Add("ID", pID);
+
+				pID->Add(new CBinaryObject(arrId, 16));
+				pID->Add(new CBinaryObject(arrId, 16));
+			}
+		}
 
 		m_pPageTree = m_pCatalog->GetRoot();
 		if (!m_pPageTree)
@@ -151,10 +169,8 @@ namespace PdfWriter
 		m_vFreeTypeFonts.clear();
 		if (m_pFreeTypeLibrary)
 		{
-#ifndef	TEST_PDFWRITER_LIB
 			FT_Done_FreeType(m_pFreeTypeLibrary);
 			m_pFreeTypeLibrary = NULL;
-#endif
 		}
 	}
     bool CDocument::SaveToFile(const std::wstring& wsPath)
@@ -252,6 +268,14 @@ namespace PdfWriter
     void CDocument::SetCompressionMode(unsigned int unMode)
 	{
 		m_unCompressMode = unMode;
+	}
+	void CDocument::SetPDFAConformanceMode(bool isPDFA)
+	{
+		m_bPDFAConformance = isPDFA;		
+	}
+	bool CDocument::IsPDFA() const
+	{
+		return m_bPDFAConformance;
 	}
     void CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
@@ -465,6 +489,12 @@ namespace PdfWriter
 		if (!pFont)
 			return NULL;
 
+		// 0 GID всегда используется для .notdef символа, не используем данный код для настоящих символов
+		unsigned int unUnicode = 0, unGid = 0;
+		unsigned char* pString = pFont->EncodeString(&unUnicode, 1, &unGid);
+		if (pString)
+			delete pString;
+
 		m_vTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}
@@ -518,10 +548,9 @@ namespace PdfWriter
 	}
     FT_Library CDocument::GetFreeTypeLibrary()
 	{
-#ifndef	TEST_PDFWRITER_LIB
 		if (!m_pFreeTypeLibrary)
 			FT_Init_FreeType(&m_pFreeTypeLibrary);
-#endif
+
 		return m_pFreeTypeLibrary;
 	}
     CJbig2Global* CDocument::GetJbig2Global()

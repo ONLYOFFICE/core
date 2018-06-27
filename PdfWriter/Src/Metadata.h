@@ -29,40 +29,28 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _PDF_WRITER_SRC_CATALOG_H
-#define _PDF_WRITER_SRC_CATALOG_H
+#ifndef _PDF_WRITER_SRC_METADATA_H
+#define _PDF_WRITER_SRC_METADATA_H
 
 #include "Objects.h"
 
 namespace PdfWriter
 {
-	class CPageTree;
-	class CDestination;
-	class CMetadata;
+	class CMemoryStream;
 
-	class CCatalog : public CDictObject
+	class CMetadata : public CDictObject
 	{
 	public:
-		CCatalog(CXref* pXref);
-		CPageTree*   GetRoot() const;
-		EPageLayout  GetPageLayout() const;
-		void         SetPageLayout(EPageLayout eLayout);
-		EPageMode    GetPageMode() const;
-		void         SetPageMode(EPageMode eMode);
-		void         SetOpenAction(CDestination* pOpenAction);
-		void         AddPageLabel(unsigned int unIndex, CDictObject* pPageLabel);
-		CMetadata*   AddMetadata(CXref* pXref);
+		CMetadata(CXref* pXref);
 		EDictType    GetDictType() const
 		{
-			return dict_type_CATALOG;
+			return dict_type_METADATA;
 		}
-	};
 
-	class CStructureTreeRoot : public CDictObject
-	{
-	public:
-		CStructureTreeRoot(CXref* pXref);
+	private:
+
+		CMemoryStream* m_pStream;
 	};
 }
 
-#endif // _PDF_WRITER_SRC_CATALOG_H
+#endif // _PDF_WRITER_SRC_METADATA_H

@@ -29,40 +29,37 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _PDF_WRITER_SRC_CATALOG_H
-#define _PDF_WRITER_SRC_CATALOG_H
-
-#include "Objects.h"
+#include "Metadata.h"
+#include "Streams.h"
 
 namespace PdfWriter
 {
-	class CPageTree;
-	class CDestination;
-	class CMetadata;
-
-	class CCatalog : public CDictObject
+	//----------------------------------------------------------------------------------------
+	// Metadata
+	//----------------------------------------------------------------------------------------
+	CMetadata::CMetadata(CXref* pXref)
 	{
-	public:
-		CCatalog(CXref* pXref);
-		CPageTree*   GetRoot() const;
-		EPageLayout  GetPageLayout() const;
-		void         SetPageLayout(EPageLayout eLayout);
-		EPageMode    GetPageMode() const;
-		void         SetPageMode(EPageMode eMode);
-		void         SetOpenAction(CDestination* pOpenAction);
-		void         AddPageLabel(unsigned int unIndex, CDictObject* pPageLabel);
-		CMetadata*   AddMetadata(CXref* pXref);
-		EDictType    GetDictType() const
-		{
-			return dict_type_CATALOG;
-		}
-	};
+		pXref->Add(this);
 
-	class CStructureTreeRoot : public CDictObject
-	{
-	public:
-		CStructureTreeRoot(CXref* pXref);
-	};
+		Add("Type", "Metadata");
+		Add("Subtype", "XML");
+
+		m_pStream = new CMemoryStream();
+		SetStream(pXref, m_pStream);
+
+		m_pStream->WriteStr("<?xpacket begin=\"п»ї\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n\
+<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n\
+<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n\
+<rdf:Description rdf:about=\"\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\">\n\
+<pdf:Producer>Ascensio System Copyright (c) 2018</pdf:Producer>\n\
+</rdf:Description>\n\
+<rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n\
+<xmp:CreatorTool>OnlyOffice 2018</xmp:CreatorTool>\n\
+</rdf:Description>\n\
+<rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n\
+<pdfaid:part>3</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n\
+</rdf:Description>\n\
+</rdf:RDF></x:xmpmeta><?xpacket end=\"w\"?>");
+	}
+
 }
-
-#endif // _PDF_WRITER_SRC_CATALOG_H

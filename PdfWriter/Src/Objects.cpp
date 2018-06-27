@@ -34,6 +34,7 @@
 #include "Types.h"
 #include "Encrypt.h"
 #include "Streams.h"
+#include "Document.h"
 
 // Если установлен бит OTYPE_DIRECT, значит данный объект принадлежит другому
 // объекту. Если установлен бит OTYPE_INDIRECT, значит объект управляется таблицей xref.
@@ -522,8 +523,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CXref
 	//----------------------------------------------------------------------------------------
-	CXref::CXref(unsigned int unOffset)
+	CXref::CXref(CDocument* pDocument, unsigned int unOffset)
 	{
+		m_pDocument     = pDocument;
 		m_unStartOffset = unOffset;
 		m_unAddr        = 0;
 		m_pPrev         = NULL;
@@ -704,5 +706,9 @@ namespace PdfWriter
 
 		// Записываем Trailer
 		WriteTrailer(pStream);
+	}
+	bool CXref::IsPDFA() const
+	{
+		return m_pDocument->IsPDFA();
 	}
 }

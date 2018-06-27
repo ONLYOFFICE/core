@@ -102,6 +102,9 @@
     <ClInclude Include="..\PdfRenderer.h">
       <Filter>PdfWriterLib</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Metadata.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PdfWriterLibTest.cpp">
@@ -288,6 +291,9 @@
       <Filter>PdfWriterLib</Filter>
     </ClCompile>
     <ClCompile Include="..\PdfRenderer.cpp">
+      <Filter>PdfWriterLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Metadata.cpp">
       <Filter>PdfWriterLib</Filter>
     </ClCompile>
   </ItemGroup>

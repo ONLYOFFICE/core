@@ -55,8 +55,6 @@ namespace PdfWriter
 		if (!pFace)
 			return nCharIndex;
 
-#ifndef TEST_PDFWRITER_LIB
-
 		for (int nIndex = 0; nIndex < pFace->num_charmaps; nIndex++)
 		{
 			FT_CharMap pCharMap = pFace->charmaps[nIndex];
@@ -88,13 +86,11 @@ namespace PdfWriter
 			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
 			}*/
 		}
-#endif
 
 		return nCharIndex;
 	}
 	static int GetSymbolicCmapIndex(FT_Face pFace)
 	{
-#ifndef TEST_PDFWRITER_LIB
 		TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table(pFace, ft_sfnt_os2);
 		if (NULL == pOs2 || 0xFFFF == pOs2->version)
 			return -1;
@@ -110,7 +106,7 @@ namespace PdfWriter
 			if (0 == pFace->charmaps[nIndex]->encoding_id && 3 == pFace->charmaps[nIndex]->platform_id)
 				return nIndex;
 		}
-#endif
+
 		return -1;
 	}
 	//----------------------------------------------------------------------------------------
@@ -154,16 +150,16 @@ namespace PdfWriter
 		if (m_pFontFile)
 			delete m_pFontFile;
 
-#ifndef	TEST_PDFWRITER_LIB
 		if (m_pFace)
 			FT_Done_Face(m_pFace);
-#endif
+
 		if (m_pFaceMemory)
 			delete[] m_pFaceMemory;
 	}
 	void CFontCidTrueType::CreateCIDFont2(CDictObject* pFont)
 	{
 		m_pFont = pFont;
+		pFont->Add("Type", "Font");
 		pFont->Add("Subtype", "CIDFontType2");
 
 		CDictObject* pSystemInfo = new CDictObject();
@@ -277,7 +273,6 @@ namespace PdfWriter
 				// Данный символ используется
 				m_mGlyphs.insert(std::pair<unsigned int, bool>(unGID, true));
 
-#ifndef TEST_PDFWRITER_LIB
 				// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
 				if (0 == FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
 				{
@@ -298,7 +293,6 @@ namespace PdfWriter
 					else
 						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
 				}
-#endif
 			}
 			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
 			pEncodedString[2 * unIndex + 1] = ushCode & 0xFF;
@@ -442,10 +436,8 @@ namespace PdfWriter
 	{
 		if (m_pFace)
 		{
-#ifndef	TEST_PDFWRITER_LIB
 			FT_Done_Face(m_pFace);
 			m_pFace = NULL;
-#endif
 		}
 
 		RELEASEARRAYOBJECTS(m_pFaceMemory);
@@ -471,9 +463,8 @@ namespace PdfWriter
 		if (!m_pFaceMemory)
 			return false;
 
-#ifndef	TEST_PDFWRITER_LIB
 		FT_New_Memory_Face(pLibrary, m_pFaceMemory, dwFileSize, m_unFontIndex, &m_pFace);
-#endif
+
 		if (!m_pFace)
 		{
 			RELEASEARRAYOBJECTS(m_pFaceMemory);

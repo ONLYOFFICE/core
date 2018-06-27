@@ -72,8 +72,8 @@ public:
 	CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts);
 	~CPdfRenderer();
 	void         SaveToFile(const std::wstring& wsPath);
-        void         SetPassword(const std::wstring& wsPassword);
-        void         SetTempFolder(const std::wstring& wsPath);
+	void         SetPassword(const std::wstring& wsPassword);
+	void         SetTempFolder(const std::wstring& wsPath);
 	std::wstring GetTempFile();
 	void         SetThemesPlace(const std::wstring& wsThemesPlace);
 	std::wstring GetThemesPlace();

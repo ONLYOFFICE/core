@@ -93,6 +93,9 @@ namespace PdfWriter
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void              SetPermission(unsigned int unPermission);
 		void              SetCompressionMode(unsigned int unMode);
+
+		void              SetPDFAConformanceMode(bool isPDFA);
+		bool              IsPDFA() const;
 			              
 		CPage*            AddPage();
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
@@ -170,6 +173,7 @@ namespace PdfWriter
 		CDictObject*                   m_pTransparencyGroup;
 		std::vector<CFontCidTrueType*> m_vFreeTypeFonts;
 		FT_Library                     m_pFreeTypeLibrary;
+		bool                           m_bPDFAConformance;
 
 		friend class CFontCidTrueType;
 	};

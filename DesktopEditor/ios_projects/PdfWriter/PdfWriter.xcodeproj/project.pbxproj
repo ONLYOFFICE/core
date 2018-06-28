@@ -47,6 +47,7 @@
 		17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFC2C31BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp */; };
 		698AF5051C0766200080D889 /* unicode_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 698AF5031C0766200080D889 /* unicode_util.cpp */; };
 		7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */; };
+		8A493EAC20E4B7EC00D478DC /* Metadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A493EAA20E4B7EB00D478DC /* Metadata.cpp */; };
 		8ABC65A3208A1EFA00E96FFE /* pro_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */; };
 		8ABC65A5208A1F1B00E96FFE /* pro_Fonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */; };
 		8ABC65A7208A1F3A00E96FFE /* MetafileToRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */; };
@@ -121,6 +122,8 @@
 		7C560F6F1AA71A91000E5860 /* libPdfWriter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPdfWriter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AscEditorPDFPrinter.h; sourceTree = "<group>"; };
 		7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AscEditorPDFPrinter.mm; sourceTree = "<group>"; };
+		8A493EAA20E4B7EB00D478DC /* Metadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Metadata.cpp; path = ../../../PdfWriter/Src/Metadata.cpp; sourceTree = "<group>"; };
+		8A493EAB20E4B7EC00D478DC /* Metadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Metadata.h; path = ../../../PdfWriter/Src/Metadata.h; sourceTree = "<group>"; };
 		8ABC65A1208A1EF400E96FFE /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Image.h; path = ../../graphics/pro/Image.h; sourceTree = "<group>"; };
 		8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Image.cpp; path = ../../graphics/pro/pro_Image.cpp; sourceTree = "<group>"; };
 		8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Fonts.cpp; path = ../../graphics/pro/pro_Fonts.cpp; sourceTree = "<group>"; };
@@ -217,6 +220,8 @@
 				176285DA1BAAFC3B00AEDA07 /* Info.cpp */,
 				176285DB1BAAFC3B00AEDA07 /* Info.h */,
 				8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */,
+				8A493EAA20E4B7EB00D478DC /* Metadata.cpp */,
+				8A493EAB20E4B7EC00D478DC /* Metadata.h */,
 				176285DC1BAAFC3B00AEDA07 /* Objects.cpp */,
 				176285DD1BAAFC3B00AEDA07 /* Objects.h */,
 				176285DE1BAAFC3B00AEDA07 /* Outline.cpp */,
@@ -328,6 +333,7 @@
 				8ABC65A5208A1F1B00E96FFE /* pro_Fonts.cpp in Sources */,
 				698AF5051C0766200080D889 /* unicode_util.cpp in Sources */,
 				176285F81BAAFC3B00AEDA07 /* Objects.cpp in Sources */,
+				8A493EAC20E4B7EC00D478DC /* Metadata.cpp in Sources */,
 				176285F91BAAFC3B00AEDA07 /* Outline.cpp in Sources */,
 				176285F01BAAFC3B00AEDA07 /* EncryptDictionary.cpp in Sources */,
 				176285FB1BAAFC3B00AEDA07 /* Pattern.cpp in Sources */,

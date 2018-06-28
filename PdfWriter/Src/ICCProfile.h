@@ -29,6 +29,22 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+ /*
+ *  Licensing ICC v2 sRGB profile
+ *
+ * The copyright owner and terms of use of an ICC profile are normally identified 
+ * in the Creator field in the profile header and in the Copyright tag. Where ICC 
+ * is the copyright owner, the following license terms apply:
+ *
+ * "This profile is made available by the International Color Consortium, and may 
+ * be copied, distributed, embedded, made, used, and sold without restriction. 
+ * Altered versions of this profile shall have the original identification and 
+ * copyright information removed and shall not be misrepresented as the original 
+ * profile."
+ *
+ * http://www.color.org/profiles2.xalter#license
+ */
+ 
 #ifndef _PDF_WRITER_SRC_ICCPROFILE_H
 #define _PDF_WRITER_SRC_ICCPROFILE_H
 namespace PdfWriter

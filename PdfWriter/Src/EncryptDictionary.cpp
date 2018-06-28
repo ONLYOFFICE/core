@@ -54,7 +54,7 @@ namespace PdfWriter
 		if (m_pEncrypt)
 			delete m_pEncrypt;
 	}
-	void CEncryptDict::CreateId(CInfoDict* pInfo, CXref* pXref)
+	void CEncryptDict::CreateId(CInfoDict* pInfo, CXref* pXref, BYTE* pBuffer)
 	{
         CryptoPP::MD5 hash;
 
@@ -104,7 +104,7 @@ namespace PdfWriter
         CryptoPP::SecByteBlock buffer(hash.DigestSize());
         hash.Final(buffer);
 
-		memcpy(m_pEncrypt->m_anEncryptID, buffer.BytePtr(), buffer.size());
+		memcpy(pBuffer, buffer.BytePtr(), buffer.size());
     }
     std::string CEncryptDict::PadOrTrancatePassword(const std::wstring & wsPassword)
     {
@@ -125,7 +125,7 @@ namespace PdfWriter
 	}
 	void CEncryptDict::Prepare(CInfoDict* pInfo, CXref* pXref)
 	{
-		CreateId(pInfo, pXref);
+		CreateId(pInfo, pXref, (BYTE*)m_pEncrypt->m_anEncryptID);
 		
         m_pEncrypt->CreateEncryptionKey();
         m_pEncrypt->CreateUserKey();

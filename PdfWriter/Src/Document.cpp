@@ -54,7 +54,8 @@
 
 namespace PdfWriter
 {
-	const char* c_sPdfHeader = "%PDF-1.7\012%ASC\012";
+	const char* c_sPdfHeader = "%PDF-1.7\015%\315\312\322\251\015";
+	const char* c_sPdfAHeader = "%PDF-1.4\015%\315\312\322\251\015";
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -85,7 +86,7 @@ namespace PdfWriter
 	{
 		Close();
 
-		m_pXref = new CXref(0);
+		m_pXref = new CXref(this, 0);
 		if (!m_pXref)
 			return false;
 
@@ -110,6 +111,23 @@ namespace PdfWriter
 
 		m_pInfo->SetCreationTime();
 		m_pInfo->SetInfo(InfoProducer, "Ascensio System SIA Copyright (c) 2018");
+
+		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);
+		if (IsPDFA())
+		{
+			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+			if (!pID)
+			{
+				BYTE arrId[16];
+				CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+				pID = new CArrayObject();
+				m_pTrailer->Add("ID", pID);
+
+				pID->Add(new CBinaryObject(arrId, 16));
+				pID->Add(new CBinaryObject(arrId, 16));
+			}
+		}
 
 		m_nCurPageNum = -1;
 
@@ -151,10 +169,8 @@ namespace PdfWriter
 		m_vFreeTypeFonts.clear();
 		if (m_pFreeTypeLibrary)
 		{
-#ifndef	TEST_PDFWRITER_LIB
 			FT_Done_FreeType(m_pFreeTypeLibrary);
 			m_pFreeTypeLibrary = NULL;
-#endif
 		}
 	}
     bool CDocument::SaveToFile(const std::wstring& wsPath)
@@ -176,7 +192,10 @@ namespace PdfWriter
 		unsigned long nRet = OK;
 
 		// Пишем заголовок
-		pStream->WriteStr(c_sPdfHeader);
+		if (IsPDFA())
+			pStream->WriteStr(c_sPdfAHeader);
+		else
+			pStream->WriteStr(c_sPdfHeader);
 
 		// Добавляем в Trailer необходимые элементы 
 		m_pTrailer->Add("Root", m_pCatalog);
@@ -214,6 +233,9 @@ namespace PdfWriter
 	}
     void CDocument::SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword)
 	{
+		if (IsPDFA())
+			return;
+
 		if (!m_pEncryptDict)
 			m_pEncryptDict = new CEncryptDict(m_pXref);
 
@@ -252,6 +274,14 @@ namespace PdfWriter
     void CDocument::SetCompressionMode(unsigned int unMode)
 	{
 		m_unCompressMode = unMode;
+	}
+	void CDocument::SetPDFAConformanceMode(bool isPDFA)
+	{
+		m_bPDFAConformance = isPDFA;		
+	}
+	bool CDocument::IsPDFA() const
+	{
+		return m_bPDFAConformance;
 	}
     void CDocument::AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix)
 	{
@@ -345,6 +375,9 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
+		if (IsPDFA())
+			return NULL;
+
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
 
 		if (!pExtGrState)
@@ -355,7 +388,6 @@ namespace PdfWriter
 
 			if (-1 != dAlphaStroke)
 				pExtGrState->SetAlphaStroke(dAlphaStroke);
-
 
 			if (-1 != dAlphaFill)
 				pExtGrState->SetAlphaFill(dAlphaFill);
@@ -373,6 +405,9 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetStrokeAlpha(double dAlpha)
 	{
+		if (IsPDFA())
+			return NULL;
+
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vStrokeAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -387,11 +422,15 @@ namespace PdfWriter
 			return NULL;
 
 		pExtGrState->SetAlphaStroke(dAlpha);
+
 		m_vStrokeAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
     CExtGrState* CDocument::GetFillAlpha(double dAlpha)
 	{
+		if (IsPDFA())
+			return NULL;
+
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vFillAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -406,6 +445,7 @@ namespace PdfWriter
 			return NULL;
 
 		pExtGrState->SetAlphaFill(dAlpha);
+
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
@@ -465,6 +505,12 @@ namespace PdfWriter
 		if (!pFont)
 			return NULL;
 
+		// 0 GID всегда используется для .notdef символа, не используем данный код для настоящих символов
+		unsigned int unUnicode = 0, unGid = 0;
+		unsigned char* pString = pFont->EncodeString(&unUnicode, 1, &unGid);
+		if (pString)
+			delete pString;
+
 		m_vTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}
@@ -518,10 +564,9 @@ namespace PdfWriter
 	}
     FT_Library CDocument::GetFreeTypeLibrary()
 	{
-#ifndef	TEST_PDFWRITER_LIB
 		if (!m_pFreeTypeLibrary)
 			FT_Init_FreeType(&m_pFreeTypeLibrary);
-#endif
+
 		return m_pFreeTypeLibrary;
 	}
     CJbig2Global* CDocument::GetJbig2Global()
@@ -620,11 +665,14 @@ namespace PdfWriter
 		pMask->Add("S", "Luminosity");
 		pMask->Add("G", pXObject);
 
-		// Создаем ExtGState объект, в который мы запишем альфа-маску
-		pExtGrState = new CExtGrState(m_pXref);
-		pExtGrState->Add("BM", "Normal");
-		pExtGrState->Add("ca", 1);
-		pExtGrState->Add("SMask", pMask);
+		if (!IsPDFA())
+		{
+			// Создаем ExtGState объект, в который мы запишем альфа-маску
+			pExtGrState = new CExtGrState(m_pXref);
+			pExtGrState->Add("BM", "Normal");
+			pExtGrState->Add("ca", 1);
+			pExtGrState->Add("SMask", pMask);
+		}
 
 		return pColorShading;
 	}

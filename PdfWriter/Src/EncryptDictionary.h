@@ -49,7 +49,7 @@ namespace PdfWriter
 			return dict_type_ENCRYPT;
 		}
 
-		void CreateId(CInfoDict* pInfo, CXref* pXref);
+		static void CreateId(CInfoDict* pDict, CXref* pXref, BYTE* pBuffer);
         void SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void Prepare(CInfoDict* pInfo, CXref* pXref);
 		CEncrypt* GetEncrypt() const

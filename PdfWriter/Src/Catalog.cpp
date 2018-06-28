@@ -33,6 +33,9 @@
 #include "Destination.h"
 #include "Pages.h"
 #include "Utils.h"
+#include "Metadata.h"
+#include "Streams.h"
+#include "ICCProfile.h"
 
 namespace PdfWriter
 {
@@ -63,6 +66,36 @@ namespace PdfWriter
 
 		Add("Type", "Catalog");
 		Add("Pages", new CPageTree(pXref));
+
+		if (pXref->IsPDFA())
+		{
+			CDictObject* pMarkInfo = new CDictObject();
+			pMarkInfo->Add("Marked", true);
+			Add("MarkInfo", pMarkInfo);
+			Add("StructTreeRoot", new CStructureTreeRoot(pXref));
+
+
+			CArrayObject* pArray = new CArrayObject();
+			Add("OutputIntents", pArray);
+
+			CDictObject* pRGB = new CDictObject();
+			pArray->Add(pRGB);
+
+			pRGB->Add("Type", "OutputIntent");
+			pRGB->Add("S", "GTS_PDFA1");
+			pRGB->Add("OutputConditionIdentifier", new CStringObject("sRGB IEC61966-2.1"));
+
+			CDictObject* pRGBProfile = new CDictObject(pXref);
+			pRGB->Add("DestOutputProfile", pRGBProfile);
+			pRGB->Add("RegistryName", new CStringObject("http://www.color.org"));
+
+			pRGBProfile->Add("N", 3);
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			pRGBProfile->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+			pRGBProfile->GetStream()->Write(c_arrICCsRGB, c_nSizeICCsRGB, false);
+		}
 	}
 	CPageTree*   CCatalog::GetRoot() const
 	{
@@ -141,5 +174,19 @@ namespace PdfWriter
 
 		pNums->Add(unPageNum);
 		pNums->Add(pPageLabel);
+	}
+	CMetadata*   CCatalog::AddMetadata(CXref* pXref, CInfoDict* pInfo)
+	{
+		CMetadata* pMetadata = new CMetadata(pXref, pInfo);
+		Add("Metadata", pMetadata);
+		return pMetadata;
+	}
+	//----------------------------------------------------------------------------------------
+	// CStructureTreeRoot
+	//----------------------------------------------------------------------------------------
+	CStructureTreeRoot::CStructureTreeRoot(CXref* pXref)
+	{
+		pXref->Add(this);
+		Add("Type", "StructTreeRoot");
 	}
 }

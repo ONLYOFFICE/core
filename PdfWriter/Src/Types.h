@@ -141,7 +141,7 @@ namespace PdfWriter
 			oInverse.m11 =  m22 / dDet;
 			oInverse.m12 = -m12 / dDet;
 			oInverse.m21 = -m21 / dDet;
-			oInverse.m22 =  m22 / dDet;
+			oInverse.m22 =  m11 / dDet;
 			oInverse.x   =  y * m21 / dDet - x * m22 / dDet;
 			oInverse.y   =  x * m12 / dDet - y * m11 / dDet;
 

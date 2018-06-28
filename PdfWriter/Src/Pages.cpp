@@ -839,6 +839,9 @@ namespace PdfWriter
 	}
     void CPage::SetExtGrState(CExtGrState* pState)
 	{
+		if (!pState)
+			return;
+
 		// Operator   : gs
 		// Description: устанавливаем сразу все настройки данного графического состояния(ExtGState)
 

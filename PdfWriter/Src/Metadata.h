@@ -29,58 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _PDF_WRITER_SRC_INFO_H
-#define _PDF_WRITER_SRC_INFO_H
+#ifndef _PDF_WRITER_SRC_METADATA_H
+#define _PDF_WRITER_SRC_METADATA_H
 
 #include "Objects.h"
 
 namespace PdfWriter
 {
-	enum EInfoType
-	{
-		// Данные относительно даты создания и изменения.
-		InfoCreationDate = 0,
-		InfoModaDate     = 1,
+	class CMemoryStream;
+	class CInfoDict;
 
-		// Текстовые данные
-		InfoAuthor       = 2,
-		InfoCreator      = 3,
-		InfoProducer     = 4,
-		InfoTitle        = 5,
-		InfoSubject      = 6,
-		InfoKeyWords     = 7,
-
-		InfoMin          = 0,
-		InfoMax          = 0
-	};
-	struct TDate
-	{
-		int  nYear;
-		int  nMonth;
-		int  nDay;
-		int  nHour;
-		int  nMinutes;
-		int  nSeconds;
-		int  nOffHour;
-		int  nOffMinutes;
-
-		void AppendToString(std::string &s) const;
-	};
-
-	class CXref;
-
-	class CInfoDict : public CDictObject
+	class CMetadata : public CDictObject
 	{
 	public:
-		CInfoDict(CXref* pXref);
-		void        SetInfo(EInfoType eType, const char* sValue);
-		const char* GetInfo(EInfoType eType);
-		void        SetInfo(EInfoType eType, const TDate& oDate);
-		void        SetCreationTime();
-		TDate       GetDate();
+		CMetadata(CXref* pXref, CInfoDict* pInfo);
+		EDictType    GetDictType() const
+		{
+			return dict_type_METADATA;
+		}
+
 	private:
-		TDate m_oDate;
+
+		CMemoryStream* m_pStream;
 	};
 }
-#endif // _PDF_WRITER_SRC_INFO_H
 
+#endif // _PDF_WRITER_SRC_METADATA_H

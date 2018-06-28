@@ -315,9 +315,12 @@ namespace PdfWriter
 	{
 		if (m_pFontDescriptor)
 		{
-			CDictObject* pCIDSet = (CDictObject*)m_pFontDescriptor->Get("CIDSet");
+			CDictObject* pCIDSet = (CDictObject*)m_pFontDescriptor->Get("CIDSet");			
 			if (pCIDSet)
 			{
+#ifndef FILTER_FLATE_DECODE_DISABLED
+				pCIDSet->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 				CStream* pStream = pCIDSet->GetStream();
 
 				unsigned int unBytes = (m_ushCodesCount) / 8;

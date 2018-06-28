@@ -35,6 +35,7 @@
 #include "Utils.h"
 #include "Metadata.h"
 #include "Streams.h"
+#include "ICCProfile.h"
 
 namespace PdfWriter
 {
@@ -93,11 +94,7 @@ namespace PdfWriter
 #ifndef FILTER_FLATE_DECODE_DISABLED
 			pRGBProfile->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-			CFileStream* pRGBicc = new CFileStream();
-			if (pRGBicc->OpenFile(L"D:\\Test\\PDF\\sRGB2014.icc"))
-			{
-				pRGBProfile->GetStream()->WriteStream(pRGBicc, STREAM_FILTER_NONE, NULL);
-			}
+			pRGBProfile->GetStream()->Write(c_arrICCsRGB, c_nSizeICCsRGB, false);
 		}
 	}
 	CPageTree*   CCatalog::GetRoot() const

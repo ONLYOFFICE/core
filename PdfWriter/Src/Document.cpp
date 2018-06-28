@@ -101,10 +101,20 @@ namespace PdfWriter
 		m_pCatalog->SetPageMode(pagemode_UseNone);
 		m_pCatalog->SetPageLayout(pagelayout_OneColumn);
 
+		m_pPageTree = m_pCatalog->GetRoot();
+		if (!m_pPageTree)
+			return false;
+
+		m_pInfo = new CInfoDict(m_pXref);
+		if (!m_pInfo)
+			return false;
+
+		m_pInfo->SetCreationTime();
+		m_pInfo->SetInfo(InfoProducer, "Ascensio System SIA Copyright (c) 2018");
+
+		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);
 		if (IsPDFA())
 		{
-			CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref);
-
 			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
 			if (!pID)
 			{
@@ -118,17 +128,6 @@ namespace PdfWriter
 				pID->Add(new CBinaryObject(arrId, 16));
 			}
 		}
-
-		m_pPageTree = m_pCatalog->GetRoot();
-		if (!m_pPageTree)
-			return false;
-
-		m_pInfo = new CInfoDict(m_pXref);
-		if (!m_pInfo)
-			return false;
-
-		m_pInfo->SetCreationTime();
-		m_pInfo->SetInfo(InfoProducer, "Ascensio System SIA Copyright (c) 2018");
 
 		m_nCurPageNum = -1;
 

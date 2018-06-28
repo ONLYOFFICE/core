@@ -178,9 +178,9 @@ namespace PdfWriter
 		pNums->Add(unPageNum);
 		pNums->Add(pPageLabel);
 	}
-	CMetadata*   CCatalog::AddMetadata(CXref* pXref)
+	CMetadata*   CCatalog::AddMetadata(CXref* pXref, CInfoDict* pInfo)
 	{
-		CMetadata* pMetadata = new CMetadata(pXref);
+		CMetadata* pMetadata = new CMetadata(pXref, pInfo);
 		Add("Metadata", pMetadata);
 		return pMetadata;
 	}

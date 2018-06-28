@@ -37,11 +37,12 @@
 namespace PdfWriter
 {
 	class CMemoryStream;
+	class CInfoDict;
 
 	class CMetadata : public CDictObject
 	{
 	public:
-		CMetadata(CXref* pXref);
+		CMetadata(CXref* pXref, CInfoDict* pInfo);
 		EDictType    GetDictType() const
 		{
 			return dict_type_METADATA;

@@ -207,6 +207,11 @@ namespace PdfWriter
 		pFont->Add("CIDToGIDMap", pCIDToGIDMapDict);
 		pCIDToGIDMapDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pCidToGidMapStream = pCIDToGIDMapDict->GetStream();
+
+		if (m_pXref->IsPDFA())
+		{
+			pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
+		}
 	}
 	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids)
 	{
@@ -308,6 +313,43 @@ namespace PdfWriter
 	}
 	void CFontCidTrueType::BeforeWrite()
 	{
+		if (m_pFontDescriptor)
+		{
+			CDictObject* pCIDSet = (CDictObject*)m_pFontDescriptor->Get("CIDSet");
+			if (pCIDSet)
+			{
+				CStream* pStream = pCIDSet->GetStream();
+
+				unsigned int unBytes = (m_ushCodesCount) / 8;
+
+				if (unBytes * 8 < m_ushCodesCount)
+					unBytes++;
+
+				if (1 == unBytes)
+				{
+					BYTE nValue = 0xFF;
+					nValue = (BYTE)(nValue << (8 - m_ushCodesCount));
+					nValue &= 0x7F;
+					pStream->WriteChar(nValue);
+				}
+				else
+				{
+					BYTE nStartValue = 0x7F, nMidValue = 0xFF;
+					pStream->WriteChar(nStartValue);
+
+					for (unsigned int unIndex = 0; unIndex < unBytes - 2; ++unIndex)
+					{
+						pStream->WriteChar(nMidValue);
+					}
+
+					BYTE nEndValue = 0xFF;
+					nEndValue = (BYTE)(nEndValue << (unBytes * 8 - m_ushCodesCount));
+
+					pStream->WriteChar(nEndValue);
+				}
+			}
+		}
+
 		if (m_pFontFile)
 		{
 			unsigned short* pCodeToGid;

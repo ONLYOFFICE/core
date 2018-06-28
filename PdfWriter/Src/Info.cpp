@@ -55,6 +55,45 @@ namespace PdfWriter
 		unsigned int nIndex = (unsigned int)eType;
 		return c_asInfoItemNames[nIndex];
 	}
+	void TDate::AppendToString(std::string& s) const
+	{
+		s += std::to_string(nYear);
+		if (nMonth < 10)
+			s += "-0";
+		else
+			s += "-";
+		s += std::to_string(nMonth);
+
+		if (nDay < 10)
+			s += "-0";
+		else
+			s +=  "-";
+
+		s += std::to_string(nDay);
+
+		if (nHour < 10)
+			s += "T0";
+		else
+			s += "T";
+
+		s += std::to_string(nHour);
+
+		if (nMinutes < 10)
+			s += ":0";
+		else
+			s += ":";
+
+		s += std::to_string(nMinutes);
+
+		if (nSeconds < 10)
+			s += ":0";
+		else
+			s += ":";
+
+		s += std::to_string(nSeconds);
+
+		s += "+00:00";			 
+	}
 	//----------------------------------------------------------------------------------------
 	// CInfoDict
 	//----------------------------------------------------------------------------------------
@@ -92,11 +131,14 @@ namespace PdfWriter
 
 		MemSet(sTemp, 0, DATE_TIME_STR_LEN + 1);
 
-		if (oDate.nMonth < 1 || 12 < oDate.nMonth ||
-			oDate.nDay < 1 ||
-			23 < oDate.nHour || 59 < oDate.nMinutes || 59 < oDate.nSeconds ||
-			(oDate.nInd != '+'  && oDate.nInd != '-'   && oDate.nInd != 'Z'   && oDate.nInd != ' ') ||
-			23 < oDate.nOffHour || 59 < oDate.nOffMinutes)
+		if (oDate.nMonth < 1 
+			|| 12 < oDate.nMonth 
+			|| oDate.nDay < 1 
+			|| 23 < oDate.nHour 
+			|| 59 < oDate.nMinutes 
+			|| 59 < oDate.nSeconds 
+			|| 23 < oDate.nOffHour
+			|| 59 < oDate.nOffMinutes)
 		{
 			return;
 		}
@@ -131,22 +173,20 @@ namespace PdfWriter
 			return;
 		}
 
-		pTemp = (char*)MemCpy((BYTE*)sTemp, (BYTE*)"D:", 2);
+		pTemp = (char*)MemCpy((BYTE*)sTemp, (BYTE*)"D:", 2); 
+		*pTemp++; 
+		*pTemp++;
 		pTemp = ItoA2(pTemp, oDate.nYear, 5);
 		pTemp = ItoA2(pTemp, oDate.nMonth, 3);
 		pTemp = ItoA2(pTemp, oDate.nDay, 3);
 		pTemp = ItoA2(pTemp, oDate.nHour, 3);
 		pTemp = ItoA2(pTemp, oDate.nMinutes, 3);
 		pTemp = ItoA2(pTemp, oDate.nSeconds, 3);
-
-		if (' ' != oDate.nInd)
-		{
-			*pTemp++ = oDate.nInd;
-			pTemp = ItoA2(pTemp, oDate.nOffHour, 3);
-			*pTemp++ = '\'';
-			pTemp = ItoA2(pTemp, oDate.nOffMinutes, 3);
-			*pTemp++ = '\'';
-		}
+		*pTemp++ = '+';
+		pTemp = ItoA2(pTemp, oDate.nOffHour, 3);
+		*pTemp++ = '\'';
+		pTemp = ItoA2(pTemp, oDate.nOffMinutes, 3);
+		*pTemp++ = '\'';
 		*pTemp = 0;
 
 		Add(sName, new CStringObject(sTemp));
@@ -154,19 +194,26 @@ namespace PdfWriter
 	void CInfoDict::SetCreationTime()
 	{
 		time_t oTime = time(0);
-		struct tm* oNow = localtime(&oTime);
+		struct tm* oNow = gmtime(&oTime);
 
 		TDate oDate;
 
-		oDate.nYear    = oNow->tm_year + 1900;
-		oDate.nMonth   = oNow->tm_mon + 1;
-		oDate.nDay     = oNow->tm_mday;
-		oDate.nHour    = oNow->tm_hour;
-		oDate.nMinutes = oNow->tm_min;
-		oDate.nSeconds = oNow->tm_sec;
-		oDate.nInd     = ' ';
+		oDate.nYear       = oNow->tm_year + 1900;
+		oDate.nMonth      = oNow->tm_mon + 1;
+		oDate.nDay        = oNow->tm_mday;
+		oDate.nHour       = oNow->tm_hour;
+		oDate.nMinutes    = oNow->tm_min;
+		oDate.nSeconds    = oNow->tm_sec;
+		oDate.nOffHour    = 0;
+		oDate.nOffMinutes = 0;
 
 		SetInfo(InfoCreationDate, oDate);
 		SetInfo(InfoModaDate, oDate);
+
+		m_oDate = oDate;
+	}
+	TDate CInfoDict::GetDate()
+	{
+		return m_oDate;
 	}
 }

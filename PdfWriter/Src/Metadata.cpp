@@ -31,13 +31,14 @@
  */
 #include "Metadata.h"
 #include "Streams.h"
+#include "Info.h"
 
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
 	// Metadata
 	//----------------------------------------------------------------------------------------
-	CMetadata::CMetadata(CXref* pXref)
+	CMetadata::CMetadata(CXref* pXref, CInfoDict* pInfo)
 	{
 		pXref->Add(this);
 
@@ -47,19 +48,47 @@ namespace PdfWriter
 		m_pStream = new CMemoryStream();
 		SetStream(pXref, m_pStream);
 
-		m_pStream->WriteStr("<?xpacket begin=\"п»ї\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n\
-<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n\
-<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n\
-<rdf:Description rdf:about=\"\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\">\n\
-<pdf:Producer>Ascensio System SIA Copyright (c) 2018</pdf:Producer>\n\
-</rdf:Description>\n\
-<rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n\
-<xmp:CreatorTool>OnlyOffice 2018</xmp:CreatorTool>\n\
-</rdf:Description>\n\
-<rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n\
-<pdfaid:part>1</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n\
-</rdf:Description>\n\
-</rdf:RDF></x:xmpmeta><?xpacket end=\"w\"?>");
+		std::string sXML;
+
+		// Begin
+		sXML += "<?xpacket begin=\"п»ї\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n";
+
+		// Producer
+		sXML += "<rdf:Description rdf:about=\"\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\">\n";
+		sXML += "<pdf:Producer>";		
+		sXML += pInfo->GetInfo(InfoProducer);
+		sXML += "</pdf:Producer>\n";
+		sXML += "</rdf:Description>\n";
+
+		// Creator Tool
+		sXML += "<rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n";
+		sXML += "<xmp:CreatorTool>";
+		sXML += "OnlyOffice 2018";
+		sXML += "</xmp:CreatorTool>\n";
+
+		TDate oDate = pInfo->GetDate();
+		sXML += "<xmp:CreateDate>";
+		oDate.AppendToString(sXML);
+		sXML += "</xmp:CreateDate>";
+
+		sXML += "<xmp:ModifyDate>";
+		oDate.AppendToString(sXML);
+		sXML += "</xmp:ModifyDate>";
+
+		sXML += "</rdf:Description>\n";
+
+
+		if (pXref->IsPDFA())
+		{
+			sXML += "<rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n";
+			sXML += "<pdfaid:part>1</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n";
+			sXML += "</rdf:Description>";
+		}
+
+		// End
+		sXML += "</rdf:RDF>\n</x:xmpmeta><?xpacket end=\"w\"?>";
+
+		m_pStream->WriteStr(sXML.c_str());
 	}
 
 }

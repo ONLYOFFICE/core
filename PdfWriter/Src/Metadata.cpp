@@ -51,13 +51,13 @@ namespace PdfWriter
 <x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n\
 <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n\
 <rdf:Description rdf:about=\"\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\">\n\
-<pdf:Producer>Ascensio System Copyright (c) 2018</pdf:Producer>\n\
+<pdf:Producer>Ascensio System SIA Copyright (c) 2018</pdf:Producer>\n\
 </rdf:Description>\n\
 <rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n\
 <xmp:CreatorTool>OnlyOffice 2018</xmp:CreatorTool>\n\
 </rdf:Description>\n\
 <rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n\
-<pdfaid:part>3</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n\
+<pdfaid:part>1</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n\
 </rdf:Description>\n\
 </rdf:RDF></x:xmpmeta><?xpacket end=\"w\"?>");
 	}

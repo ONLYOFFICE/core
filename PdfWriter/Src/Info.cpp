@@ -167,5 +167,6 @@ namespace PdfWriter
 		oDate.nInd     = ' ';
 
 		SetInfo(InfoCreationDate, oDate);
+		SetInfo(InfoModaDate, oDate);
 	}
 }

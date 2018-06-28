@@ -55,6 +55,7 @@
 namespace PdfWriter
 {
 	const char* c_sPdfHeader = "%PDF-1.7\015%\315\312\322\251\015";
+	const char* c_sPdfAHeader = "%PDF-1.4\015%\315\312\322\251\015";
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -192,7 +193,10 @@ namespace PdfWriter
 		unsigned long nRet = OK;
 
 		// Пишем заголовок
-		pStream->WriteStr(c_sPdfHeader);
+		if (IsPDFA())
+			pStream->WriteStr(c_sPdfAHeader);
+		else
+			pStream->WriteStr(c_sPdfHeader);
 
 		// Добавляем в Trailer необходимые элементы 
 		m_pTrailer->Add("Root", m_pCatalog);
@@ -230,6 +234,9 @@ namespace PdfWriter
 	}
     void CDocument::SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword)
 	{
+		if (IsPDFA())
+			return;
+
 		if (!m_pEncryptDict)
 			m_pEncryptDict = new CEncryptDict(m_pXref);
 
@@ -369,6 +376,9 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
+		if (IsPDFA())
+			return NULL;
+
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);
 
 		if (!pExtGrState)
@@ -379,7 +389,6 @@ namespace PdfWriter
 
 			if (-1 != dAlphaStroke)
 				pExtGrState->SetAlphaStroke(dAlphaStroke);
-
 
 			if (-1 != dAlphaFill)
 				pExtGrState->SetAlphaFill(dAlphaFill);
@@ -397,6 +406,9 @@ namespace PdfWriter
 	}
     CExtGrState* CDocument::GetStrokeAlpha(double dAlpha)
 	{
+		if (IsPDFA())
+			return NULL;
+
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vStrokeAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -411,11 +423,15 @@ namespace PdfWriter
 			return NULL;
 
 		pExtGrState->SetAlphaStroke(dAlpha);
+
 		m_vStrokeAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
     CExtGrState* CDocument::GetFillAlpha(double dAlpha)
 	{
+		if (IsPDFA())
+			return NULL;
+
 		CExtGrState* pExtGrState = NULL;
 		for (unsigned int unIndex = 0, unCount = m_vFillAlpha.size(); unIndex < unCount; unIndex++)
 		{
@@ -430,6 +446,7 @@ namespace PdfWriter
 			return NULL;
 
 		pExtGrState->SetAlphaFill(dAlpha);
+
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
@@ -649,11 +666,14 @@ namespace PdfWriter
 		pMask->Add("S", "Luminosity");
 		pMask->Add("G", pXObject);
 
-		// Создаем ExtGState объект, в который мы запишем альфа-маску
-		pExtGrState = new CExtGrState(m_pXref);
-		pExtGrState->Add("BM", "Normal");
-		pExtGrState->Add("ca", 1);
-		pExtGrState->Add("SMask", pMask);
+		if (!IsPDFA())
+		{
+			// Создаем ExtGState объект, в который мы запишем альфа-маску
+			pExtGrState = new CExtGrState(m_pXref);
+			pExtGrState->Add("BM", "Normal");
+			pExtGrState->Add("ca", 1);
+			pExtGrState->Add("SMask", pMask);
+		}
 
 		return pColorShading;
 	}

@@ -80,9 +80,6 @@ namespace PdfWriter
 			CDictObject* pRGB = new CDictObject();
 			pArray->Add(pRGB);
 
-			CDictObject* pGray = new CDictObject();
-			pArray->Add(pGray);
-
 			pRGB->Add("Type", "OutputIntent");
 			pRGB->Add("S", "GTS_PDFA1");
 			pRGB->Add("OutputConditionIdentifier", new CStringObject("sRGB IEC61966-2.1"));
@@ -90,7 +87,6 @@ namespace PdfWriter
 			CDictObject* pRGBProfile = new CDictObject(pXref);
 			pRGB->Add("DestOutputProfile", pRGBProfile);
 			pRGB->Add("RegistryName", new CStringObject("http://www.color.org"));
-			//pRGB->Add("Info", new CStringObject(""));
 
 			pRGBProfile->Add("N", 3);
 

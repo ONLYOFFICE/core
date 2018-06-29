@@ -69,7 +69,7 @@ class CRendererTextCommand;
 class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 {
 public:
-	CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts);
+	CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false);
 	~CPdfRenderer();
 	void         SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);

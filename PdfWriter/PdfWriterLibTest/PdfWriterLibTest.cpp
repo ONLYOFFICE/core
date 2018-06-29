@@ -829,7 +829,7 @@ void TestOnlineBin()
 
 		std::wstring wsOutPath = wsFolderPath + wsFileName + L".pdf";
 
-		CPdfRenderer oRenderer(pFonts);
+		CPdfRenderer oRenderer(pFonts, true);
 		oRenderer.SetTempFolder(wsTempFolder);
 		oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);
 
@@ -845,8 +845,8 @@ void TestOnlineBin()
 
 int main()
 {
-	TestDocument1();
-	TestDocument6();
+	//TestDocument1();
+	//TestDocument6();
 
 	TestOnlineBin();
 

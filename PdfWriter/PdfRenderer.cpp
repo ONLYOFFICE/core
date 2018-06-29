@@ -480,7 +480,7 @@ void CPdfRenderer::CCommandManager::SetTransform(const double& m11, const double
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts) : m_oCommandManager(this)
+CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) : m_oCommandManager(this)
 {
 	m_pAppFonts = pAppFonts;
 
@@ -491,6 +491,10 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts) : m_oCommandMa
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 
 	m_pDocument = new CDocument();
+
+	if (isPDFA)
+		m_pDocument->SetPDFAConformanceMode(true);
+
 	if (!m_pDocument || !m_pDocument->CreateNew())
 	{
 		SetError();
@@ -1510,8 +1514,11 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 
 	// Картинки совсем маленьких размеров нельзя делать Jpeg2000
 	bool bJpeg = false;
-	if (nImageH < 100 || nImageW < 100)
+	if (nImageH < 100 || nImageW < 100 || m_pDocument->IsPDFA())
 		bJpeg = true;
+
+	if (nImageH <= 0 || nImageW <= 0)
+		return NULL;
 
 	// TODO: Пока не разберемся как в CxImage управлять параметрами кодирования нельзя писать в Jpeg2000,
 	//       т.к. файлы получаются гораздо больше и конвертация идет намного дольше.
@@ -1519,17 +1526,44 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 
 	// Пробегаемся по картинке и определяем есть ли у нас альфа-канал
 	bool bAlpha = false;
-	for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
+
+	CBgraFrame oFrame;
+	if (m_pDocument->IsPDFA())
 	{
-		if (pData[4 * nIndex + 3] < 255)
+		BYTE* pCopyImage = new BYTE[4 * nImageW * nImageH];
+		if (!pCopyImage)
+			return NULL;
+
+		::memcpy(pCopyImage, pData, 4 * nImageW * nImageH);
+
+		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
-			bAlpha = true;
-			break;
+			if (pCopyImage[4 * nIndex + 3] < 32)
+			{
+				pCopyImage[4 * nIndex + 0] = 255;
+				pCopyImage[4 * nIndex + 1] = 255;
+				pCopyImage[4 * nIndex + 2] = 255;
+			}
 		}
+
+		oFrame.put_Width(nImageW);
+		oFrame.put_Height(nImageH);
+		oFrame.put_Data(pCopyImage);// +4 * (nImageH - 1) * nImageW);
+		oFrame.put_Stride(-4* nImageW);
+	}
+	else
+	{
+		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
+		{
+			if (pData[4 * nIndex + 3] < 255)
+			{
+				bAlpha = true;
+				break;
+			}
+		}
+		oFrame.FromImage(pImage);
 	}
 
-    CBgraFrame oFrame;
-    oFrame.FromImage(pImage);
     oFrame.SetJpegQuality(85.0);
 
 	BYTE* pBuffer = NULL;

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -258,7 +258,7 @@ namespace PdfWriter
 	}
 	TBox          CPage::GetMediaBox()
 	{
-		TBox oMediaBox ={ 0, 0, 0, 0 };
+		TBox oMediaBox = TRect( 0, 0, 0, 0 );
 
 		CArrayObject* pArray = GetMediaBoxItem();
 

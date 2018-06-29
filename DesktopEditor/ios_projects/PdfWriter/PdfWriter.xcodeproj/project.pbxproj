@@ -124,6 +124,7 @@
 		7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AscEditorPDFPrinter.mm; sourceTree = "<group>"; };
 		8A493EAA20E4B7EB00D478DC /* Metadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Metadata.cpp; path = ../../../PdfWriter/Src/Metadata.cpp; sourceTree = "<group>"; };
 		8A493EAB20E4B7EC00D478DC /* Metadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Metadata.h; path = ../../../PdfWriter/Src/Metadata.h; sourceTree = "<group>"; };
+		8A7E89E020E6211000E06CBE /* ICCProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICCProfile.h; path = ../../../PdfWriter/Src/ICCProfile.h; sourceTree = "<group>"; };
 		8ABC65A1208A1EF400E96FFE /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Image.h; path = ../../graphics/pro/Image.h; sourceTree = "<group>"; };
 		8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Image.cpp; path = ../../graphics/pro/pro_Image.cpp; sourceTree = "<group>"; };
 		8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Fonts.cpp; path = ../../graphics/pro/pro_Fonts.cpp; sourceTree = "<group>"; };
@@ -148,6 +149,7 @@
 				698AF5041C0766200080D889 /* unicode_util.h */,
 				7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */,
 				7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */,
+				8A7E89E020E6211000E06CBE /* ICCProfile.h */,
 				17FFC2C11BAB15CE00D91F59 /* PdfRenderer.h */,
 				17FFC2C01BAB15CE00D91F59 /* PdfRenderer.cpp */,
 				17FFC2C41BAB163500D91F59 /* OnlineOfficeBinToPdf.h */,
@@ -456,6 +458,8 @@
 		7C560F841AA71A91000E5860 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -496,6 +500,8 @@
 		7C560F851AA71A91000E5860 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (

@@ -112,7 +112,9 @@ HEADERS += \
     Src/Types.h \
     Src/Utils.h \
     OnlineOfficeBinToPdf.h \
-    PdfRenderer.h
+    PdfRenderer.h \
+    Src/Metadata.h \
+    Src/ICCProfile.h
 
 SOURCES += \
     Src/Annotation.cpp \
@@ -135,5 +137,6 @@ SOURCES += \
     Src/Shading.cpp \
     Src/Streams.cpp \
     Src/Utils.cpp \
+    Src/Metadata.cpp \
     OnlineOfficeBinToPdf.cpp \
     PdfRenderer.cpp

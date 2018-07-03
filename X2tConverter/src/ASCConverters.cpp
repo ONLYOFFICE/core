@@ -1128,7 +1128,7 @@ namespace NExtractTools
         NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
         
-		CPdfRenderer pdfWriter(pApplicationFonts);
+		CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
 		
 		pdfWriter.SetTempFolder(sTemp);
 		pdfWriter.SetThemesPlace(sThemeDir);
@@ -1268,7 +1268,7 @@ namespace NExtractTools
            NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
            initApplicationFonts(pApplicationFonts, params);
           
-		   CPdfRenderer pdfWriter(pApplicationFonts);
+		   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
            
 			pdfWriter.SetTempFolder(sTemp);
 			pdfWriter.SetThemesPlace(sThemeDir);
@@ -2827,7 +2827,7 @@ namespace NExtractTools
 
                                NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
                                initApplicationFonts(pApplicationFonts, params);
-                               CPdfRenderer pdfWriter(pApplicationFonts);
+							   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
                                pdfWriter.SetTempFolder(sTemp);
                                pdfWriter.SetThemesPlace(sThemeDir);
                                int nReg = (bPaid == false) ? 0 : 1;
@@ -3670,7 +3670,7 @@ namespace NExtractTools
            }
            else
            {
-				CPdfRenderer pdfWriter(pApplicationFonts);
+				CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
 				pdfWriter.SetTempFolder(sTemp);
 				pdfWriter.SetTempFolder(sTemp);
               

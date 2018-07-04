@@ -2809,4 +2809,18 @@ namespace NSEditorApi
     };
 }
 
+namespace NSEditorApi
+{
+    class CEncryptData : public IMenuEventDataBase
+    {
+    public:
+        CEncryptData(){}
+        virtual ~CEncryptData(){}
+
+        LINK_PROPERTY_STRING(Path)
+    private:
+        std::wstring m_sPath;
+    };
+}
+
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

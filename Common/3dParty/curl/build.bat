@@ -37,7 +37,7 @@ nmake /f Makefile.vc mode=static ENABLE_WINSSL=yes MACHINE=%MACHINE% VC=12
 if not exist "%SCRIPTPATH%%OUTPUT%" (
    md %SCRIPTPATH%%OUTPUT%\build
    xcopy /Y /S ..\builds\libcurl-vc12-%MACHINE%-release-static-ipv6-sspi-winssl\lib\libcurl_a.lib %SCRIPTPATH%%OUTPUT%\build\
-   mv %SCRIPTPATH%%OUTPUT%\build\libcurl_a.lib %SCRIPTPATH%%OUTPUT%\build\curl.lib
+   move %SCRIPTPATH%%OUTPUT%\build\libcurl_a.lib %SCRIPTPATH%%OUTPUT%\build\curl.lib
 )
 
 cd ..\..

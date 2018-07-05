@@ -23,4 +23,4 @@ cd v8
 call git checkout -b 6.0 -t branch-heads/6.0
 cd ../
 
-call gclient sync
+call gclient sync --no-history

@@ -1819,6 +1819,12 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 	{
 		TextReader oTextReader( m_oOle.m_sOleClass, false );
 		StartSubReader( oTextReader, oDocument, oReader );
+
+		size_t pos = m_oOle.m_sOleClass.find(L"asc.");
+		if (std::wstring::npos != pos)
+		{
+			m_oOle.m_sOleClass = L"asc.{" + m_oOle.m_sOleClass.substr(pos + 4) + L"}";
+		}
 	}
     else if ( "objdata" == sCommand )
 	{

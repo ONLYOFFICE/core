@@ -668,13 +668,16 @@ public:
 	{
 		current_state.content.push_back(type);
 	}	
-	void set_outline_level(int level)
+	void add_outline_level_style(int level, const std::wstring& style_name)
 	{
 		if (min_outline_level == -1 || min_outline_level > level)
 			min_outline_level = level;
 		
 		if (max_outline_level == -1 || max_outline_level < level)
 			max_outline_level = level;
+
+		if (!style_name.empty())
+			outline_level_styles.insert(std::make_pair(level, style_name));
 
 		current_state.outline_level = level;
 	}
@@ -726,6 +729,7 @@ public:
 		caption_sequence_name.clear();
 		min_outline_level = -1;
 		max_outline_level = -1;
+		outline_level_styles.clear();
 	}
 	void add_sequence(const std::wstring & name, int outline_level)
 	{
@@ -749,6 +753,7 @@ public:
 	int								type_table_content;
 	int								min_outline_level;
 	int								max_outline_level;
+	std::map<int, std::wstring>		outline_level_styles;
 
 private:
 	std::vector<int>				current_content_template_;

@@ -947,7 +947,7 @@ void common_entry_template::docx_convert(oox::docx_conversion_context & Context)
 
 	if (outline_level_)
 	{
-		Context.get_table_content_context().set_outline_level(*outline_level_);
+		Context.get_table_content_context().add_outline_level_style(*outline_level_, style_name_.get_value_or(L""));
 	}
 	for (size_t i = 0; i < content_.size(); i++)
 	{

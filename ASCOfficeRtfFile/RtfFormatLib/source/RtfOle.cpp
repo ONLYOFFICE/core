@@ -34,7 +34,6 @@
 #include "Writer/OOXRelsWriter.h"
 #include "RtfDocument.h"
 
-#include "../../../Common/OfficeFileFormatChecker.h"
 
 std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 {
@@ -98,6 +97,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		if (m_oResultShape)
 		{
 			m_oResultShape->m_bIsOle = true;
+
 			sResult += m_oResultShape->RenderToOOX(oNewRenderParameter);
 
 			oNewRenderParameter.nValue = m_oResultShape->m_nID;
@@ -120,37 +120,6 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	OOXRelsWriter	* poRelsWriter	= static_cast<OOXRelsWriter*>	(oRenderParameter.poRels);
 	RtfDocument		* poDocument	= static_cast<RtfDocument*>		(oRenderParameter.poDocument);
 
-	int ind_ole = poDocument->m_oIdGenerator.Generate_OleIndex();
-
-    std::wstring sName		= L"oleObject" + std::to_wstring(ind_ole);
-    std::wstring sExtension	= L"bin";
-    std::wstring sMime		= L"application/vnd.openxmlformats-officedocument.oleObject";
-    std::wstring sRelsType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
-
-	COfficeFileFormatChecker checker;
-
-	if (checker.isOfficeFile(m_sOleFilename))
-	{
-		switch(checker.nFileType)
-		{
-		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
-		{
-			sName		= L"_____Microsoft_Excel" + ((ind_ole > 1) ? (L"_" + std::to_wstring(ind_ole - 1)) : L"");
-			sExtension	= L"xlsx";
-			sMime		= L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-			sRelsType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
-			m_sOleClass	= L"Excel.Sheet.12";
-		}break;
-		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:
-		{
-			sName		= L"_____Microsoft_Excel_97-2003" + ((ind_ole > 1) ? (L"_" + std::to_wstring(ind_ole - 1)) : L"");
-			sExtension	= L"xls";
-			sMime		= L"application/vnd.ms-excel";
-			m_sOleClass	= L"Excel.Sheet.8";
-		}break;
-		}
-	}	
-
 	sResult += L"<o:OLEObject";
 	switch ( m_eOleType )
 	{
@@ -161,9 +130,13 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
     sResult += L" ShapeID=\"_x0000_s" + std::to_wstring(poDocument->GetShapeId( oRenderParameter.nValue )) + L"\"";
 	sResult += L" DrawAspect=\"Content\"";
     sResult += L" ObjectID=\"" + poDocument->m_oIdGenerator.Generate_OleId() + L"\"";
+
+    std::wstring sExtension	= L"bin";
+    std::wstring sMime		= L"application/vnd.openxmlformats-officedocument.oleObject";
 	
     std::wstring sFilenameRels;
-    sFilenameRels += sName + L"." + sExtension;
+    sFilenameRels += L"oleObject" + std::to_wstring(poDocument->m_oIdGenerator.Generate_OleIndex()) + L".";
+	sFilenameRels += sExtension;
 	
     std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";
 	
@@ -175,7 +148,7 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	Utils::CopyDirOrFile( m_sOleFilename, sFilenameFull );
 
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
-    std::wstring srId = poRelsWriter->AddRelationship( sRelsType, sFilenameRels);
+    std::wstring srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", sFilenameRels);
     
 	sResult += L" r:id=\"" + srId + L"\"";
 	sResult += L"/>";

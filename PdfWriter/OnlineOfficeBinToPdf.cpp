@@ -37,6 +37,7 @@
 #include "../DesktopEditor/common/String.h"
 
 #include "../DesktopEditor/graphics/MetafileToRenderer.h"
+#include "../DesktopEditor/raster/BgraFrame.h"
 
 namespace NSOnlineOfficeBinToPdf
 {
@@ -60,6 +61,11 @@ namespace NSOnlineOfficeBinToPdf
                 try
                 {
                     int nFind = wsTempString.find(L",");
+
+                    bool bIsOnlyOfficeHatch = false;
+                    if (nFind > 0 && (std::wstring::npos != wsTempString.find(L"onlyoffice_hatch")))
+                        bIsOnlyOfficeHatch = true;
+
                     wsTempString = wsTempString.substr(nFind + 1);
 
                     std::wstring wsBase64TempFile = ((CPdfRenderer*)m_pRenderer)->GetTempFile();
@@ -70,11 +76,25 @@ namespace NSOnlineOfficeBinToPdf
 
                     if (NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageBuffer, &nBufferLen))
                     {
-                        NSFile::CFileBinary oFile;
-                        if (oFile.CreateFileW(wsBase64TempFile))
+                        if (!bIsOnlyOfficeHatch)
                         {
-                            oFile.WriteFile(pImageBuffer, nBufferLen);
-                            oFile.CloseFile();
+                            NSFile::CFileBinary oFile;
+                            if (oFile.CreateFileW(wsBase64TempFile))
+                            {
+                                oFile.WriteFile(pImageBuffer, nBufferLen);
+                                oFile.CloseFile();
+                                wsTempString = wsBase64TempFile;
+                            }
+                        }
+                        else
+                        {
+                            int nSize = (int)std::sqrt(nBufferLen >> 2);
+                            CBgraFrame oFrame;
+                            oFrame.put_Data(pImageBuffer);
+                            oFrame.put_Width(nSize);
+                            oFrame.put_Height(nSize);
+                            oFrame.put_Stride(4 * nSize);
+                            oFrame.SaveFile(wsBase64TempFile, 4); // PNG
                             wsTempString = wsBase64TempFile;
                         }
                     }

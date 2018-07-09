@@ -88,7 +88,7 @@ namespace NSOnlineOfficeBinToPdf
                         }
                         else
                         {
-                            int nSize = (int)std::sqrt(nBufferLen >> 2);
+                            int nSize = (int)sqrt(nBufferLen >> 2);
                             CBgraFrame oFrame;
                             oFrame.put_Data(pImageBuffer);
                             oFrame.put_Width(nSize);

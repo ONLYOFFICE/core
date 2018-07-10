@@ -2915,12 +2915,9 @@ namespace BinDocxRW
 				const ComplexTypes::Word::CDecimalNumber& oVal = lvl.m_oLvlRestart.get();
 				if(oVal.m_oVal.IsInit())
 				{
-					int nVal = oVal.m_oVal.get().GetValue();
-					if(0 != nVal)
-						nVal = -1;
 					m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Restart);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-					m_oBcw.m_oStream.WriteLONG(nVal);
+					m_oBcw.m_oStream.WriteLONG(oVal.m_oVal.get().GetValue());
 				}
 			}
 			//Start

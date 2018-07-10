@@ -1417,7 +1417,7 @@ public:
                 oWriter.WriteString(L"<w:numFmt w:val=\"" + sFormat + L"\"/>");
 			}
 		}
-		if(bRestart && 0 == Restart)
+		if(bRestart)
 		{
             oWriter.WriteString(L"<w:lvlRestart w:val=\"" + std::to_wstring(Restart) + L"\"/>");
 		}

@@ -84,6 +84,7 @@ namespace PdfWriter
 	}
 	void CObjectBase::WriteValue(CStream* pStream, CEncrypt* pEncrypt)
 	{
+
 		switch (GetType())
 		{
 		case object_type_NAME:   pStream->Write((CNameObject*)this); break;

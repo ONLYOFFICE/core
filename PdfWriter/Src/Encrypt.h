@@ -51,7 +51,7 @@ namespace PdfWriter
 		void CreateEncryptionKey();
 		void InitKey(unsigned int unObjectId, unsigned short unGenNo);
 		void Reset();
-        void CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen, bool bLast);
+        unsigned int CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen, bool bLast);
 		void SetPermission(unsigned int unPermission);
         void SetPasswords(const std::string &sUserPassword, const std::string &sOwnerPassword);
 	private:

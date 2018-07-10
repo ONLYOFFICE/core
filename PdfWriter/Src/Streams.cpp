@@ -336,9 +336,9 @@ namespace PdfWriter
 		const BYTE* pBuffer = NULL;
 		if (pEncrypt)
 		{
-			pBuf = new BYTE[unLen];
+			pBuf = new BYTE[unLen + 16 + 16]; // iv + padding
 			bDelete = true;
-            pEncrypt->CryptBuf(pData, pBuf, unLen, true);
+			unLen = pEncrypt->CryptBuf(pData, pBuf, unLen, true);
 			pBuffer = pBuf;
 		}
 		else
@@ -423,7 +423,7 @@ namespace PdfWriter
                 unsigned int osize = DEFLATE_BUF_SIZ - ZStream.GetAvailOut();
 				if (pEncrypt)
 				{
-                    pEncrypt->CryptBuf(otbuf, ebuf, osize, true);
+                    osize = pEncrypt->CryptBuf(otbuf, ebuf, osize, true);
 					Write(ebuf, osize);
 				}
 				else
@@ -464,7 +464,7 @@ namespace PdfWriter
 
 			if (pEncrypt)
 			{
-                pEncrypt->CryptBuf(pBuf, pEBuf, unSize, pStream->IsEof());
+                unSize = pEncrypt->CryptBuf(pBuf, pEBuf, unSize, pStream->IsEof());
 				Write(pEBuf, unSize);
 			}
 			else

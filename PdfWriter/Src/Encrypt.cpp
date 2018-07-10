@@ -98,21 +98,28 @@ namespace PdfWriter
         }
         void Reset()
         {
-            unsigned char empty[16] = {};
             if (streamEncryption)
                 delete streamEncryption;
             if (aesEncryption)
                 delete aesEncryption;
 
-            aesEncryption       = new CryptoPP::AES::Encryption(m_anEncryptionKey, 32);
-            streamEncryption    = new CryptoPP::CBC_Mode_ExternalCipher::Encryption( *aesEncryption, empty);
+			CryptoPP::RandomPool prng;
+			CryptoPP::SecByteBlock iv(16);
+			CryptoPP::OS_GenerateRandomBlock(false, iv, iv.size());
+			prng.IncorporateEntropy(iv, iv.size());
+
+			memcpy(streamInitialization, iv, iv.size());
+			
+			aesEncryption       = new CryptoPP::AES::Encryption(m_anEncryptionKey, 32);
+            streamEncryption    = new CryptoPP::CBC_Mode_ExternalCipher::Encryption( *aesEncryption, streamInitialization);
         }
 
         std::string     m_sOwnerPassword;
         std::string     m_sUserPassword;
         BYTE			m_anEncryptionKey[32];
 
-        CryptoPP::AES::Encryption       *aesEncryption;
+		unsigned char streamInitialization[16];
+		CryptoPP::AES::Encryption       *aesEncryption;
         CryptoPP::StreamTransformation  *streamEncryption;
     };
     CEncrypt::CEncrypt() : m_unKeyLen(32)
@@ -312,12 +319,32 @@ namespace PdfWriter
     {
         impl->Reset();
 	}
-    void CEncrypt::CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen, bool bLast)
+ #define PADDING_SIZE 16
+	unsigned int CEncrypt::CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen, bool bLast)
 	{
-        CryptoPP::StreamTransformationFilter stfEncryption(*impl->streamEncryption, new CryptoPP::ArraySink( pDst, unLen), CryptoPP::StreamTransformationFilter::ZEROS_PADDING );
+		unsigned int unLenOut = unLen;
+		
+		if (unLenOut % PADDING_SIZE != 0 && bLast)
+			unLenOut = (unLen / PADDING_SIZE + 1) * PADDING_SIZE;
 
-        stfEncryption.Put2(pSrc, unLen, bLast ? 1 : 0, true);
+		memcpy(pDst, impl->streamInitialization, 16);
+        
+		CryptoPP::StreamTransformationFilter stfEncryption(*impl->streamEncryption, new CryptoPP::ArraySink( pDst + 16, unLenOut), CryptoPP::StreamTransformationFilter::NO_PADDING );
+
+		if (unLenOut != unLen)
+		{
+			stfEncryption.Put2(pSrc, unLen, 0, true);
+			
+			unsigned char empty[16] = {};
+			stfEncryption.Put2(empty, unLenOut - unLen, 1, true);
+		}
+		else
+		{
+			stfEncryption.Put2(pSrc, unLen, bLast ? 1 : 0, true);
+		}
         stfEncryption.MessageEnd();
+
+		return unLenOut + 16;
     }
 	void CEncrypt::SetPermission(unsigned int unPermission)
 	{

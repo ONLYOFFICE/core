@@ -77,6 +77,8 @@ namespace PdfWriter
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
+
+		m_bPDFAConformance	= false;
 	}
 	CDocument::~CDocument()
 	{

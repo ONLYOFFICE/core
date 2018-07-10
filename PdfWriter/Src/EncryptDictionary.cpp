@@ -147,8 +147,10 @@ namespace PdfWriter
 		pStdCF->Add("Length", m_pEncrypt->m_unKeyLen);
 
 		Add("CF", pCF);
+		Add("StmF", "StdCF");
+		Add("StrF", "StdCF");
 
-        CBinaryObject* pUserKey = new CBinaryObject(m_pEncrypt->m_anUserKey, 48);
+		CBinaryObject* pUserKey = new CBinaryObject(m_pEncrypt->m_anUserKey, 48);
         if (!pUserKey)
             return;
 

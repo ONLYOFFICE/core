@@ -1246,7 +1246,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -1288,7 +1288,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
 				SDKROOT = iphoneos;
 			};

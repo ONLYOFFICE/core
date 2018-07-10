@@ -1090,7 +1090,7 @@
 					_IOS,
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1110,7 +1110,7 @@
 					_IOS,
 				);
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

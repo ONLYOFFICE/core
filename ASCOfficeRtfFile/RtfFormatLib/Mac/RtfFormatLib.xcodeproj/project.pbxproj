@@ -594,7 +594,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -628,7 +628,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

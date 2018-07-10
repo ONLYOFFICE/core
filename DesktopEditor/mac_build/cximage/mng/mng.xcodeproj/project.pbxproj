@@ -398,7 +398,7 @@
 					/usr/include,
 					"$(PROJECT_DIR)/../../../cximage/zlib",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = mng_ios;
 				SDKROOT = iphoneos;
 			};
@@ -425,7 +425,7 @@
 					/usr/include,
 					"$(PROJECT_DIR)/../../../cximage/zlib",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = mng_ios;
 				SDKROOT = iphoneos;
 			};

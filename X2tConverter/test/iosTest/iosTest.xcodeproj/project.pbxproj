@@ -66,8 +66,14 @@
 		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
 		699690721E2F925200B620CD /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
 		69BE370B1F60129600CBA47B /* crypted.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = crypted.xlsx; sourceTree = "<group>"; };
+		8A1045C420F4B55E005A0F61 /* libicudata.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicudata.58.dylib; path = ../../../Common/3dParty/icu/mac_64/build/libicudata.58.dylib; sourceTree = "<group>"; };
+		8A1045C520F4B55F005A0F61 /* libicuuc.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicuuc.58.dylib; path = ../../../Common/3dParty/icu/mac_64/build/libicuuc.58.dylib; sourceTree = "<group>"; };
 		8A94F3C9207CE7D600EC05D2 /* test.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.csv; sourceTree = "<group>"; };
 		8A9FAD36207781C5007787F6 /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = ../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<group>"; };
+		8AED79AA20F50164008BB78E /* libicui18n.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicui18n.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicui18n.a"; sourceTree = "<group>"; };
+		8AED79AC20F50164008BB78E /* libicuio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuio.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicuio.a"; sourceTree = "<group>"; };
+		8AED79AD20F50164008BB78E /* libicutu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicutu.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicutu.a"; sourceTree = "<group>"; };
+		8AED79AE20F50164008BB78E /* libicuuc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuuc.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicuuc.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +162,12 @@
 		6967BEB11E27D5BE00A129E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8AED79AA20F50164008BB78E /* libicui18n.a */,
+				8AED79AC20F50164008BB78E /* libicuio.a */,
+				8AED79AD20F50164008BB78E /* libicutu.a */,
+				8AED79AE20F50164008BB78E /* libicuuc.a */,
+				8A1045C420F4B55E005A0F61 /* libicudata.58.dylib */,
+				8A1045C520F4B55F005A0F61 /* libicuuc.58.dylib */,
 				698810C41F4DA87A00E4C541 /* libcryptopp.a */,
 				699690721E2F925200B620CD /* libc++abi.tbd */,
 				6967BEB21E27D5BE00A129E2 /* libiconv.tbd */,
@@ -350,7 +362,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -402,7 +414,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -425,7 +437,7 @@
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -450,7 +462,7 @@
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";

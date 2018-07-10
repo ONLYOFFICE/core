@@ -1546,7 +1546,7 @@
 					"$(PROJECT_DIR)/../../../../DesktopEditor/agg-2.4/include",
 					"$(PROJECT_DIR)/../../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1595,7 +1595,7 @@
 					"$(PROJECT_DIR)/../../../../DesktopEditor/agg-2.4/include",
 					"$(PROJECT_DIR)/../../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-ObjC",

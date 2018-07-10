@@ -30,7 +30,6 @@
 		8AAB550F207766D100F149DA /* number_patternmodifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB539D2077668B00F149DA /* number_patternmodifier.cpp */; };
 		8AAB5510207766D100F149DA /* nfsubs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53A02077668C00F149DA /* nfsubs.cpp */; };
 		8AAB5511207766D100F149DA /* dangical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53A32077668C00F149DA /* dangical.cpp */; };
-		8AAB5512207766D100F149DA /* digitgrouping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53A42077668C00F149DA /* digitgrouping.cpp */; };
 		8AAB5513207766D100F149DA /* fpositer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53A52077668C00F149DA /* fpositer.cpp */; };
 		8AAB5514207766D100F149DA /* number_integerwidth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53A62077668C00F149DA /* number_integerwidth.cpp */; };
 		8AAB5515207766D100F149DA /* translit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53A82077668D00F149DA /* translit.cpp */; };
@@ -42,7 +41,6 @@
 		8AAB551B207766D100F149DA /* umsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53B32077668E00F149DA /* umsg.cpp */; };
 		8AAB551C207766D100F149DA /* name2uni.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53B42077668E00F149DA /* name2uni.cpp */; };
 		8AAB551D207766D100F149DA /* uregion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53B52077668E00F149DA /* uregion.cpp */; };
-		8AAB551E207766D100F149DA /* affixpatternparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53B82077668E00F149DA /* affixpatternparser.cpp */; };
 		8AAB551F207766D100F149DA /* olsontz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53BC2077668F00F149DA /* olsontz.cpp */; };
 		8AAB5520207766D100F149DA /* collationiterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53BE2077668F00F149DA /* collationiterator.cpp */; };
 		8AAB5521207766D100F149DA /* decContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53BF2077668F00F149DA /* decContext.cpp */; };
@@ -53,7 +51,6 @@
 		8AAB5526207766D100F149DA /* japancal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53CC2077669000F149DA /* japancal.cpp */; };
 		8AAB5527207766D100F149DA /* quantityformatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53D02077669100F149DA /* quantityformatter.cpp */; };
 		8AAB5528207766D100F149DA /* funcrepl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53D12077669100F149DA /* funcrepl.cpp */; };
-		8AAB5529207766D100F149DA /* visibledigits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53D42077669100F149DA /* visibledigits.cpp */; };
 		8AAB552A207766D100F149DA /* indiancal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53D82077669100F149DA /* indiancal.cpp */; };
 		8AAB552B207766D100F149DA /* tznames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53D92077669200F149DA /* tznames.cpp */; };
 		8AAB552C207766D100F149DA /* csrutf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53DC2077669200F149DA /* csrutf8.cpp */; };
@@ -65,7 +62,6 @@
 		8AAB5532207766D100F149DA /* collationdata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53E22077669300F149DA /* collationdata.cpp */; };
 		8AAB5533207766D100F149DA /* ucln_in.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53E32077669300F149DA /* ucln_in.cpp */; };
 		8AAB5534207766D100F149DA /* dtitvfmt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53E62077669300F149DA /* dtitvfmt.cpp */; };
-		8AAB5535207766D100F149DA /* digitaffixesandpadding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53E72077669300F149DA /* digitaffixesandpadding.cpp */; };
 		8AAB5536207766D100F149DA /* rbt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53E82077669300F149DA /* rbt.cpp */; };
 		8AAB5537207766D100F149DA /* uitercollationiterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53EA2077669400F149DA /* uitercollationiterator.cpp */; };
 		8AAB5538207766D100F149DA /* regexst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53EB2077669400F149DA /* regexst.cpp */; };
@@ -79,14 +75,11 @@
 		8AAB5540207766D100F149DA /* taiwncal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53FB2077669700F149DA /* taiwncal.cpp */; };
 		8AAB5541207766D100F149DA /* basictz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53FC2077669800F149DA /* basictz.cpp */; };
 		8AAB5542207766D100F149DA /* standardplural.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53FD2077669800F149DA /* standardplural.cpp */; };
-		8AAB5543207766D100F149DA /* smallintformatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53FE2077669800F149DA /* smallintformatter.cpp */; };
-		8AAB5544207766D100F149DA /* precision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB53FF2077669800F149DA /* precision.cpp */; };
 		8AAB5545207766D100F149DA /* tzgnames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54002077669800F149DA /* tzgnames.cpp */; };
 		8AAB5546207766D100F149DA /* csr2022.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54012077669800F149DA /* csr2022.cpp */; };
 		8AAB5547207766D100F149DA /* anytrans.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54032077669800F149DA /* anytrans.cpp */; };
 		8AAB5548207766D100F149DA /* collation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54042077669900F149DA /* collation.cpp */; };
 		8AAB5549207766D100F149DA /* coleitr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54052077669900F149DA /* coleitr.cpp */; };
-		8AAB554A207766D100F149DA /* decimfmtimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54062077669900F149DA /* decimfmtimpl.cpp */; };
 		8AAB554B207766D100F149DA /* region.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54072077669900F149DA /* region.cpp */; };
 		8AAB554C207766D100F149DA /* ucol_sit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54082077669900F149DA /* ucol_sit.cpp */; };
 		8AAB554D207766D100F149DA /* decNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB540A2077669900F149DA /* decNumber.cpp */; };
@@ -126,9 +119,7 @@
 		8AAB556F207766D100F149DA /* simpletz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5450207766A300F149DA /* simpletz.cpp */; };
 		8AAB5570207766D100F149DA /* uspoof.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5451207766A300F149DA /* uspoof.cpp */; };
 		8AAB5571207766D100F149DA /* csmatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5452207766A400F149DA /* csmatch.cpp */; };
-		8AAB5572207766D100F149DA /* pluralaffix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5453207766A400F149DA /* pluralaffix.cpp */; };
 		8AAB5573207766D100F149DA /* nultrans.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5458207766A400F149DA /* nultrans.cpp */; };
-		8AAB5574207766D100F149DA /* digitinterval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB545E207766A600F149DA /* digitinterval.cpp */; };
 		8AAB5575207766D100F149DA /* tridpars.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB545F207766A600F149DA /* tridpars.cpp */; };
 		8AAB5576207766D100F149DA /* dayperiodrules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5460207766A700F149DA /* dayperiodrules.cpp */; };
 		8AAB5577207766D100F149DA /* nfrs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5462207766A700F149DA /* nfrs.cpp */; };
@@ -155,7 +146,6 @@
 		8AAB558C207766D100F149DA /* utf16collationiterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5486207766AF00F149DA /* utf16collationiterator.cpp */; };
 		8AAB558D207766D100F149DA /* decimfmt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB5487207766B000F149DA /* decimfmt.cpp */; };
 		8AAB558E207766D100F149DA /* ufieldpositer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB548A207766B000F149DA /* ufieldpositer.cpp */; };
-		8AAB558F207766D100F149DA /* digitlst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB548B207766B100F149DA /* digitlst.cpp */; };
 		8AAB5590207766D100F149DA /* collationdatabuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB548C207766B100F149DA /* collationdatabuilder.cpp */; };
 		8AAB5591207766D100F149DA /* dcfmtsym.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB548D207766B100F149DA /* dcfmtsym.cpp */; };
 		8AAB5592207766D100F149DA /* coll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB548F207766B200F149DA /* coll.cpp */; };
@@ -189,9 +179,7 @@
 		8AAB55AE207766D100F149DA /* number_affixutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54C0207766C000F149DA /* number_affixutils.cpp */; };
 		8AAB55AF207766D100F149DA /* persncal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54C1207766C000F149DA /* persncal.cpp */; };
 		8AAB55B0207766D100F149DA /* collationkeys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54C3207766C000F149DA /* collationkeys.cpp */; };
-		8AAB55B1207766D100F149DA /* decfmtst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54C4207766C100F149DA /* decfmtst.cpp */; };
 		8AAB55B2207766D100F149DA /* msgfmt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54C5207766C100F149DA /* msgfmt.cpp */; };
-		8AAB55B3207766D100F149DA /* decimalformatpattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54C7207766C100F149DA /* decimalformatpattern.cpp */; };
 		8AAB55B4207766D100F149DA /* rbt_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54C9207766C200F149DA /* rbt_set.cpp */; };
 		8AAB55B5207766D100F149DA /* regeximp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54CA207766C200F149DA /* regeximp.cpp */; };
 		8AAB55B6207766D100F149DA /* scriptset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54CB207766C200F149DA /* scriptset.cpp */; };
@@ -202,11 +190,9 @@
 		8AAB55BB207766D100F149DA /* udat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54D4207766C500F149DA /* udat.cpp */; };
 		8AAB55BC207766D100F149DA /* timezone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54D5207766C500F149DA /* timezone.cpp */; };
 		8AAB55BD207766D100F149DA /* search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54D7207766C500F149DA /* search.cpp */; };
-		8AAB55BE207766D100F149DA /* digitaffix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54D8207766C500F149DA /* digitaffix.cpp */; };
 		8AAB55BF207766D100F149DA /* selfmt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54D9207766C600F149DA /* selfmt.cpp */; };
 		8AAB55C0207766D100F149DA /* transreg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54DA207766C600F149DA /* transreg.cpp */; };
 		8AAB55C1207766D100F149DA /* uspoof_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54DB207766C600F149DA /* uspoof_impl.cpp */; };
-		8AAB55C2207766D100F149DA /* digitformatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54DC207766C600F149DA /* digitformatter.cpp */; };
 		8AAB55C3207766D100F149DA /* number_decimalquantity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54DE207766C700F149DA /* number_decimalquantity.cpp */; };
 		8AAB55C4207766D100F149DA /* collationdatareader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54E0207766C700F149DA /* collationdatareader.cpp */; };
 		8AAB55C5207766D100F149DA /* nounit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54E1207766C800F149DA /* nounit.cpp */; };
@@ -225,7 +211,6 @@
 		8AAB55D2207766D100F149DA /* collationsettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54F3207766CC00F149DA /* collationsettings.cpp */; };
 		8AAB55D3207766D100F149DA /* collationfastlatinbuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54F4207766CC00F149DA /* collationfastlatinbuilder.cpp */; };
 		8AAB55D4207766D100F149DA /* utrans.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54F8207766CD00F149DA /* utrans.cpp */; };
-		8AAB55D5207766D100F149DA /* valueformatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54FA207766CD00F149DA /* valueformatter.cpp */; };
 		8AAB55D6207766D100F149DA /* gender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54FC207766CE00F149DA /* gender.cpp */; };
 		8AAB55D7207766D100F149DA /* quant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54FD207766CE00F149DA /* quant.cpp */; };
 		8AAB55D8207766D100F149DA /* uregexc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB54FF207766CF00F149DA /* uregexc.cpp */; };
@@ -532,8 +517,6 @@
 		8A9FACA620777360007787F6 /* utypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utypes.h; sourceTree = "<group>"; };
 		8A9FACA720777360007787F6 /* ulistformatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ulistformatter.h; sourceTree = "<group>"; };
 		8A9FACA820777360007787F6 /* unifilt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unifilt.h; sourceTree = "<group>"; };
-		8AAB536D2077663000F149DA /* ustream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ustream.h; path = ../../../../../../../../Common/3dParty/icu/mac_64/icu/source/io/unicode/ustream.h; sourceTree = "<group>"; };
-		8AAB536E2077663000F149DA /* ustdio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ustdio.h; path = ../../../../../../../../Common/3dParty/icu/mac_64/icu/source/io/unicode/ustdio.h; sourceTree = "<group>"; };
 		8AAB536F2077664500F149DA /* uprntf_p.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uprntf_p.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/io/uprntf_p.cpp; sourceTree = "<group>"; };
 		8AAB53702077664500F149DA /* ustdio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ustdio.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/io/ustdio.cpp; sourceTree = "<group>"; };
 		8AAB53712077664500F149DA /* ustream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ustream.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/io/ustream.cpp; sourceTree = "<group>"; };
@@ -567,13 +550,11 @@
 		8AAB539B2077668B00F149DA /* ulocdata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ulocdata.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/ulocdata.cpp; sourceTree = "<group>"; };
 		8AAB539C2077668B00F149DA /* wintzimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wintzimpl.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/wintzimpl.cpp; sourceTree = "<group>"; };
 		8AAB539D2077668B00F149DA /* number_patternmodifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = number_patternmodifier.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_patternmodifier.cpp; sourceTree = "<group>"; };
-		8AAB539E2077668B00F149DA /* digitlst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digitlst.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitlst.h; sourceTree = "<group>"; };
 		8AAB539F2077668C00F149DA /* number_modifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = number_modifiers.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_modifiers.h; sourceTree = "<group>"; };
 		8AAB53A02077668C00F149DA /* nfsubs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nfsubs.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/nfsubs.cpp; sourceTree = "<group>"; };
 		8AAB53A12077668C00F149DA /* collationdatawriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationdatawriter.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationdatawriter.h; sourceTree = "<group>"; };
 		8AAB53A22077668C00F149DA /* collationdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationdata.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationdata.h; sourceTree = "<group>"; };
 		8AAB53A32077668C00F149DA /* dangical.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dangical.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dangical.cpp; sourceTree = "<group>"; };
-		8AAB53A42077668C00F149DA /* digitgrouping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = digitgrouping.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitgrouping.cpp; sourceTree = "<group>"; };
 		8AAB53A52077668C00F149DA /* fpositer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fpositer.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/fpositer.cpp; sourceTree = "<group>"; };
 		8AAB53A62077668C00F149DA /* number_integerwidth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = number_integerwidth.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_integerwidth.cpp; sourceTree = "<group>"; };
 		8AAB53A72077668C00F149DA /* rbt_set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rbt_set.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/rbt_set.h; sourceTree = "<group>"; };
@@ -593,12 +574,9 @@
 		8AAB53B52077668E00F149DA /* uregion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uregion.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uregion.cpp; sourceTree = "<group>"; };
 		8AAB53B62077668E00F149DA /* collationfastlatin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationfastlatin.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationfastlatin.h; sourceTree = "<group>"; };
 		8AAB53B72077668E00F149DA /* decContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decContext.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decContext.h; sourceTree = "<group>"; };
-		8AAB53B82077668E00F149DA /* affixpatternparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = affixpatternparser.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/affixpatternparser.cpp; sourceTree = "<group>"; };
 		8AAB53B92077668E00F149DA /* casetrn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = casetrn.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/casetrn.h; sourceTree = "<group>"; };
-		8AAB53BA2077668E00F149DA /* precision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = precision.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/precision.h; sourceTree = "<group>"; };
 		8AAB53BB2077668F00F149DA /* csrmbcs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = csrmbcs.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/csrmbcs.h; sourceTree = "<group>"; };
 		8AAB53BC2077668F00F149DA /* olsontz.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = olsontz.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/olsontz.cpp; sourceTree = "<group>"; };
-		8AAB53BD2077668F00F149DA /* digitaffix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digitaffix.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitaffix.h; sourceTree = "<group>"; };
 		8AAB53BE2077668F00F149DA /* collationiterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = collationiterator.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationiterator.cpp; sourceTree = "<group>"; };
 		8AAB53BF2077668F00F149DA /* decContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = decContext.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decContext.cpp; sourceTree = "<group>"; };
 		8AAB53C02077668F00F149DA /* fmtable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fmtable.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/fmtable.cpp; sourceTree = "<group>"; };
@@ -619,7 +597,6 @@
 		8AAB53D12077669100F149DA /* funcrepl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = funcrepl.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/funcrepl.cpp; sourceTree = "<group>"; };
 		8AAB53D22077669100F149DA /* umsg_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = umsg_imp.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/umsg_imp.h; sourceTree = "<group>"; };
 		8AAB53D32077669100F149DA /* unesctrn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unesctrn.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/unesctrn.h; sourceTree = "<group>"; };
-		8AAB53D42077669100F149DA /* visibledigits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = visibledigits.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/visibledigits.cpp; sourceTree = "<group>"; };
 		8AAB53D52077669100F149DA /* sharedpluralrules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sharedpluralrules.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/sharedpluralrules.h; sourceTree = "<group>"; };
 		8AAB53D62077669100F149DA /* ztrans.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ztrans.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/ztrans.h; sourceTree = "<group>"; };
 		8AAB53D72077669100F149DA /* csrutf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = csrutf8.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/csrutf8.h; sourceTree = "<group>"; };
@@ -636,9 +613,7 @@
 		8AAB53E22077669300F149DA /* collationdata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = collationdata.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationdata.cpp; sourceTree = "<group>"; };
 		8AAB53E32077669300F149DA /* ucln_in.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ucln_in.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/ucln_in.cpp; sourceTree = "<group>"; };
 		8AAB53E42077669300F149DA /* uspoof_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uspoof_impl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uspoof_impl.h; sourceTree = "<group>"; };
-		8AAB53E52077669300F149DA /* visibledigits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = visibledigits.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/visibledigits.h; sourceTree = "<group>"; };
 		8AAB53E62077669300F149DA /* dtitvfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dtitvfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dtitvfmt.cpp; sourceTree = "<group>"; };
-		8AAB53E72077669300F149DA /* digitaffixesandpadding.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = digitaffixesandpadding.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitaffixesandpadding.cpp; sourceTree = "<group>"; };
 		8AAB53E82077669300F149DA /* rbt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rbt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/rbt.cpp; sourceTree = "<group>"; };
 		8AAB53E92077669300F149DA /* regexst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regexst.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/regexst.h; sourceTree = "<group>"; };
 		8AAB53EA2077669400F149DA /* uitercollationiterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uitercollationiterator.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uitercollationiterator.cpp; sourceTree = "<group>"; };
@@ -656,20 +631,15 @@
 		8AAB53F62077669700F149DA /* esctrn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esctrn.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/esctrn.cpp; sourceTree = "<group>"; };
 		8AAB53F72077669700F149DA /* dt_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dt_impl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dt_impl.h; sourceTree = "<group>"; };
 		8AAB53F82077669700F149DA /* tznames_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tznames_impl.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/tznames_impl.cpp; sourceTree = "<group>"; };
-		8AAB53F92077669700F149DA /* valueformatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = valueformatter.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/valueformatter.h; sourceTree = "<group>"; };
 		8AAB53FA2077669700F149DA /* windtfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = windtfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/windtfmt.cpp; sourceTree = "<group>"; };
 		8AAB53FB2077669700F149DA /* taiwncal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = taiwncal.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/taiwncal.cpp; sourceTree = "<group>"; };
 		8AAB53FC2077669800F149DA /* basictz.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basictz.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/basictz.cpp; sourceTree = "<group>"; };
 		8AAB53FD2077669800F149DA /* standardplural.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = standardplural.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/standardplural.cpp; sourceTree = "<group>"; };
-		8AAB53FE2077669800F149DA /* smallintformatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = smallintformatter.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/smallintformatter.cpp; sourceTree = "<group>"; };
-		8AAB53FF2077669800F149DA /* precision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = precision.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/precision.cpp; sourceTree = "<group>"; };
 		8AAB54002077669800F149DA /* tzgnames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tzgnames.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/tzgnames.cpp; sourceTree = "<group>"; };
 		8AAB54012077669800F149DA /* csr2022.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = csr2022.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/csr2022.cpp; sourceTree = "<group>"; };
-		8AAB54022077669800F149DA /* dcfmtimp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dcfmtimp.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dcfmtimp.h; sourceTree = "<group>"; };
 		8AAB54032077669800F149DA /* anytrans.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = anytrans.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/anytrans.cpp; sourceTree = "<group>"; };
 		8AAB54042077669900F149DA /* collation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = collation.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collation.cpp; sourceTree = "<group>"; };
 		8AAB54052077669900F149DA /* coleitr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = coleitr.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/coleitr.cpp; sourceTree = "<group>"; };
-		8AAB54062077669900F149DA /* decimfmtimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = decimfmtimpl.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decimfmtimpl.cpp; sourceTree = "<group>"; };
 		8AAB54072077669900F149DA /* region.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = region.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/region.cpp; sourceTree = "<group>"; };
 		8AAB54082077669900F149DA /* ucol_sit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ucol_sit.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/ucol_sit.cpp; sourceTree = "<group>"; };
 		8AAB54092077669900F149DA /* cecal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cecal.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/cecal.h; sourceTree = "<group>"; };
@@ -744,7 +714,6 @@
 		8AAB5450207766A300F149DA /* simpletz.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = simpletz.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/simpletz.cpp; sourceTree = "<group>"; };
 		8AAB5451207766A300F149DA /* uspoof.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uspoof.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uspoof.cpp; sourceTree = "<group>"; };
 		8AAB5452207766A400F149DA /* csmatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = csmatch.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/csmatch.cpp; sourceTree = "<group>"; };
-		8AAB5453207766A400F149DA /* pluralaffix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pluralaffix.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/pluralaffix.cpp; sourceTree = "<group>"; };
 		8AAB5454207766A400F149DA /* remtrans.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = remtrans.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/remtrans.h; sourceTree = "<group>"; };
 		8AAB5455207766A400F149DA /* taiwncal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = taiwncal.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/taiwncal.h; sourceTree = "<group>"; };
 		8AAB5456207766A400F149DA /* titletrn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = titletrn.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/titletrn.h; sourceTree = "<group>"; };
@@ -755,10 +724,8 @@
 		8AAB545B207766A500F149DA /* bocsu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bocsu.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/bocsu.h; sourceTree = "<group>"; };
 		8AAB545C207766A600F149DA /* ethpccal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ethpccal.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/ethpccal.h; sourceTree = "<group>"; };
 		8AAB545D207766A600F149DA /* brktrans.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = brktrans.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/brktrans.h; sourceTree = "<group>"; };
-		8AAB545E207766A600F149DA /* digitinterval.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = digitinterval.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitinterval.cpp; sourceTree = "<group>"; };
 		8AAB545F207766A600F149DA /* tridpars.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tridpars.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/tridpars.cpp; sourceTree = "<group>"; };
 		8AAB5460207766A700F149DA /* dayperiodrules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dayperiodrules.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dayperiodrules.cpp; sourceTree = "<group>"; };
-		8AAB5461207766A700F149DA /* affixpatternparser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = affixpatternparser.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/affixpatternparser.h; sourceTree = "<group>"; };
 		8AAB5462207766A700F149DA /* nfrs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nfrs.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/nfrs.cpp; sourceTree = "<group>"; };
 		8AAB5463207766A700F149DA /* number_decimfmtprops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = number_decimfmtprops.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_decimfmtprops.cpp; sourceTree = "<group>"; };
 		8AAB5464207766A700F149DA /* measfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = measfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/measfmt.cpp; sourceTree = "<group>"; };
@@ -771,8 +738,6 @@
 		8AAB546C207766A900F149DA /* astro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = astro.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/astro.h; sourceTree = "<group>"; };
 		8AAB546D207766AA00F149DA /* unumsys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = unumsys.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/unumsys.cpp; sourceTree = "<group>"; };
 		8AAB546E207766AA00F149DA /* nfrule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nfrule.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/nfrule.cpp; sourceTree = "<group>"; };
-		8AAB546F207766AA00F149DA /* digitformatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digitformatter.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitformatter.h; sourceTree = "<group>"; };
-		8AAB5470207766AA00F149DA /* decimfmtimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decimfmtimpl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decimfmtimpl.h; sourceTree = "<group>"; };
 		8AAB5471207766AB00F149DA /* casetrn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = casetrn.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/casetrn.cpp; sourceTree = "<group>"; };
 		8AAB5472207766AB00F149DA /* number_fluent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = number_fluent.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_fluent.cpp; sourceTree = "<group>"; };
 		8AAB5473207766AB00F149DA /* tznames_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tznames_impl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/tznames_impl.h; sourceTree = "<group>"; };
@@ -780,7 +745,6 @@
 		8AAB5475207766AC00F149DA /* uspoof_conf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uspoof_conf.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uspoof_conf.h; sourceTree = "<group>"; };
 		8AAB5476207766AC00F149DA /* choicfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = choicfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/choicfmt.cpp; sourceTree = "<group>"; };
 		8AAB5477207766AC00F149DA /* collationbuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationbuilder.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationbuilder.h; sourceTree = "<group>"; };
-		8AAB5478207766AC00F149DA /* decfmtst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decfmtst.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decfmtst.h; sourceTree = "<group>"; };
 		8AAB5479207766AC00F149DA /* anytrans.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = anytrans.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/anytrans.h; sourceTree = "<group>"; };
 		8AAB547A207766AD00F149DA /* vtzone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vtzone.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/vtzone.cpp; sourceTree = "<group>"; };
 		8AAB547B207766AD00F149DA /* bocsu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bocsu.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/bocsu.cpp; sourceTree = "<group>"; };
@@ -799,7 +763,6 @@
 		8AAB5488207766B000F149DA /* winnmfmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = winnmfmt.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/winnmfmt.h; sourceTree = "<group>"; };
 		8AAB5489207766B000F149DA /* zonemeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zonemeta.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/zonemeta.h; sourceTree = "<group>"; };
 		8AAB548A207766B000F149DA /* ufieldpositer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ufieldpositer.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/ufieldpositer.cpp; sourceTree = "<group>"; };
-		8AAB548B207766B100F149DA /* digitlst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = digitlst.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitlst.cpp; sourceTree = "<group>"; };
 		8AAB548C207766B100F149DA /* collationdatabuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = collationdatabuilder.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationdatabuilder.cpp; sourceTree = "<group>"; };
 		8AAB548D207766B100F149DA /* dcfmtsym.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dcfmtsym.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dcfmtsym.cpp; sourceTree = "<group>"; };
 		8AAB548E207766B100F149DA /* collationcompare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationcompare.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationcompare.h; sourceTree = "<group>"; };
@@ -809,7 +772,6 @@
 		8AAB5492207766B200F149DA /* tmutamt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tmutamt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/tmutamt.cpp; sourceTree = "<group>"; };
 		8AAB5493207766B300F149DA /* dtitv_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dtitv_impl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dtitv_impl.h; sourceTree = "<group>"; };
 		8AAB5494207766B300F149DA /* number_scientific.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = number_scientific.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_scientific.cpp; sourceTree = "<group>"; };
-		8AAB5495207766B300F149DA /* digitaffixesandpadding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digitaffixesandpadding.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitaffixesandpadding.h; sourceTree = "<group>"; };
 		8AAB5496207766B300F149DA /* number_scientific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = number_scientific.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_scientific.h; sourceTree = "<group>"; };
 		8AAB5497207766B400F149DA /* calendar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = calendar.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/calendar.cpp; sourceTree = "<group>"; };
 		8AAB5498207766B400F149DA /* regextxt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regextxt.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/regextxt.h; sourceTree = "<group>"; };
@@ -831,7 +793,6 @@
 		8AAB54A8207766B900F149DA /* collationdatareader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationdatareader.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationdatareader.h; sourceTree = "<group>"; };
 		8AAB54A9207766B900F149DA /* shareddateformatsymbols.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shareddateformatsymbols.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/shareddateformatsymbols.h; sourceTree = "<group>"; };
 		8AAB54AA207766B900F149DA /* tzfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tzfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/tzfmt.cpp; sourceTree = "<group>"; };
-		8AAB54AB207766BA00F149DA /* digitinterval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digitinterval.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitinterval.h; sourceTree = "<group>"; };
 		8AAB54AC207766BA00F149DA /* number_longnames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = number_longnames.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_longnames.h; sourceTree = "<group>"; };
 		8AAB54AD207766BA00F149DA /* number_stringbuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = number_stringbuilder.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_stringbuilder.h; sourceTree = "<group>"; };
 		8AAB54AE207766BA00F149DA /* plurfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plurfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/plurfmt.cpp; sourceTree = "<group>"; };
@@ -843,24 +804,18 @@
 		8AAB54B4207766BD00F149DA /* number_decimfmtprops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = number_decimfmtprops.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_decimfmtprops.h; sourceTree = "<group>"; };
 		8AAB54B5207766BD00F149DA /* reldtfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reldtfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/reldtfmt.cpp; sourceTree = "<group>"; };
 		8AAB54B6207766BD00F149DA /* ucol_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ucol_imp.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/ucol_imp.h; sourceTree = "<group>"; };
-		8AAB54B7207766BD00F149DA /* regexcst.pl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; name = regexcst.pl; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/regexcst.pl; sourceTree = "<group>"; };
 		8AAB54B8207766BD00F149DA /* coptccal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = coptccal.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/coptccal.h; sourceTree = "<group>"; };
 		8AAB54B9207766BE00F149DA /* number_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = number_types.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_types.h; sourceTree = "<group>"; };
 		8AAB54BA207766BE00F149DA /* upluralrules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = upluralrules.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/upluralrules.cpp; sourceTree = "<group>"; };
 		8AAB54BB207766BE00F149DA /* uspoof_build.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uspoof_build.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uspoof_build.cpp; sourceTree = "<group>"; };
 		8AAB54BC207766BE00F149DA /* collationkeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationkeys.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationkeys.h; sourceTree = "<group>"; };
-		8AAB54BD207766BF00F149DA /* significantdigitinterval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = significantdigitinterval.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/significantdigitinterval.h; sourceTree = "<group>"; };
 		8AAB54BE207766BF00F149DA /* dtitvinf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dtitvinf.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/dtitvinf.cpp; sourceTree = "<group>"; };
 		8AAB54BF207766BF00F149DA /* csrucode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = csrucode.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/csrucode.cpp; sourceTree = "<group>"; };
 		8AAB54C0207766C000F149DA /* number_affixutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = number_affixutils.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_affixutils.cpp; sourceTree = "<group>"; };
 		8AAB54C1207766C000F149DA /* persncal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = persncal.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/persncal.cpp; sourceTree = "<group>"; };
-		8AAB54C2207766C000F149DA /* pluralaffix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pluralaffix.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/pluralaffix.h; sourceTree = "<group>"; };
 		8AAB54C3207766C000F149DA /* collationkeys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = collationkeys.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationkeys.cpp; sourceTree = "<group>"; };
-		8AAB54C4207766C100F149DA /* decfmtst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = decfmtst.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decfmtst.cpp; sourceTree = "<group>"; };
 		8AAB54C5207766C100F149DA /* msgfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = msgfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/msgfmt.cpp; sourceTree = "<group>"; };
 		8AAB54C6207766C100F149DA /* plurrule_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = plurrule_impl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/plurrule_impl.h; sourceTree = "<group>"; };
-		8AAB54C7207766C100F149DA /* decimalformatpattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = decimalformatpattern.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decimalformatpattern.cpp; sourceTree = "<group>"; };
-		8AAB54C8207766C200F149DA /* decimalformatpatternimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decimalformatpatternimpl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decimalformatpatternimpl.h; sourceTree = "<group>"; };
 		8AAB54C9207766C200F149DA /* rbt_set.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rbt_set.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/rbt_set.cpp; sourceTree = "<group>"; };
 		8AAB54CA207766C200F149DA /* regeximp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = regeximp.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/regeximp.cpp; sourceTree = "<group>"; };
 		8AAB54CB207766C200F149DA /* scriptset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scriptset.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/scriptset.cpp; sourceTree = "<group>"; };
@@ -876,11 +831,9 @@
 		8AAB54D5207766C500F149DA /* timezone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = timezone.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/timezone.cpp; sourceTree = "<group>"; };
 		8AAB54D6207766C500F149DA /* collationsettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationsettings.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationsettings.h; sourceTree = "<group>"; };
 		8AAB54D7207766C500F149DA /* search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = search.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/search.cpp; sourceTree = "<group>"; };
-		8AAB54D8207766C500F149DA /* digitaffix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = digitaffix.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitaffix.cpp; sourceTree = "<group>"; };
 		8AAB54D9207766C600F149DA /* selfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = selfmt.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/selfmt.cpp; sourceTree = "<group>"; };
 		8AAB54DA207766C600F149DA /* transreg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = transreg.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/transreg.cpp; sourceTree = "<group>"; };
 		8AAB54DB207766C600F149DA /* uspoof_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uspoof_impl.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uspoof_impl.cpp; sourceTree = "<group>"; };
-		8AAB54DC207766C600F149DA /* digitformatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = digitformatter.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/digitformatter.cpp; sourceTree = "<group>"; };
 		8AAB54DD207766C700F149DA /* regeximp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regeximp.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/regeximp.h; sourceTree = "<group>"; };
 		8AAB54DE207766C700F149DA /* number_decimalquantity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = number_decimalquantity.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/number_decimalquantity.cpp; sourceTree = "<group>"; };
 		8AAB54DF207766C700F149DA /* csrsbcs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = csrsbcs.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/csrsbcs.h; sourceTree = "<group>"; };
@@ -904,16 +857,12 @@
 		8AAB54F2207766CC00F149DA /* utmscale.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utmscale.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/utmscale.cpp; sourceTree = "<group>"; };
 		8AAB54F3207766CC00F149DA /* collationsettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = collationsettings.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationsettings.cpp; sourceTree = "<group>"; };
 		8AAB54F4207766CC00F149DA /* collationfastlatinbuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = collationfastlatinbuilder.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationfastlatinbuilder.cpp; sourceTree = "<group>"; };
-		8AAB54F5207766CC00F149DA /* decimalformatpattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decimalformatpattern.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/decimalformatpattern.h; sourceTree = "<group>"; };
 		8AAB54F6207766CC00F149DA /* chnsecal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chnsecal.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/chnsecal.h; sourceTree = "<group>"; };
-		8AAB54F7207766CD00F149DA /* regexcst.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = regexcst.txt; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/regexcst.txt; sourceTree = "<group>"; };
 		8AAB54F8207766CD00F149DA /* utrans.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utrans.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/utrans.cpp; sourceTree = "<group>"; };
 		8AAB54F9207766CD00F149DA /* name2uni.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = name2uni.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/name2uni.h; sourceTree = "<group>"; };
-		8AAB54FA207766CD00F149DA /* valueformatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = valueformatter.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/valueformatter.cpp; sourceTree = "<group>"; };
 		8AAB54FB207766CE00F149DA /* rbt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rbt.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/rbt.h; sourceTree = "<group>"; };
 		8AAB54FC207766CE00F149DA /* gender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gender.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/gender.cpp; sourceTree = "<group>"; };
 		8AAB54FD207766CE00F149DA /* quant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = quant.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/quant.cpp; sourceTree = "<group>"; };
-		8AAB54FE207766CE00F149DA /* smallintformatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = smallintformatter.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/smallintformatter.h; sourceTree = "<group>"; };
 		8AAB54FF207766CF00F149DA /* uregexc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uregexc.cpp; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/uregexc.cpp; sourceTree = "<group>"; };
 		8AAB5500207766CF00F149DA /* wintzimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wintzimpl.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/wintzimpl.h; sourceTree = "<group>"; };
 		8AAB5501207766CF00F149DA /* collationfastlatinbuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = collationfastlatinbuilder.h; path = ../../../../../../../Common/3dParty/icu/mac_64/icu/source/i18n/collationfastlatinbuilder.h; sourceTree = "<group>"; };
@@ -1551,8 +1500,6 @@
 		698AEE5B1C07269A0080D889 /* i18n */ = {
 			isa = PBXGroup;
 			children = (
-				8AAB53B82077668E00F149DA /* affixpatternparser.cpp */,
-				8AAB5461207766A700F149DA /* affixpatternparser.h */,
 				8AAB549A207766B400F149DA /* alphaindex.cpp */,
 				8AAB54032077669800F149DA /* anytrans.cpp */,
 				8AAB5479207766AC00F149DA /* anytrans.h */,
@@ -1645,32 +1592,13 @@
 				8AAB54A2207766B600F149DA /* datefmt.cpp */,
 				8AAB5460207766A700F149DA /* dayperiodrules.cpp */,
 				8AAB543C207766A100F149DA /* dayperiodrules.h */,
-				8AAB54022077669800F149DA /* dcfmtimp.h */,
 				8AAB548D207766B100F149DA /* dcfmtsym.cpp */,
 				8AAB53BF2077668F00F149DA /* decContext.cpp */,
 				8AAB53B72077668E00F149DA /* decContext.h */,
-				8AAB54C4207766C100F149DA /* decfmtst.cpp */,
-				8AAB5478207766AC00F149DA /* decfmtst.h */,
-				8AAB54C7207766C100F149DA /* decimalformatpattern.cpp */,
-				8AAB54F5207766CC00F149DA /* decimalformatpattern.h */,
-				8AAB54C8207766C200F149DA /* decimalformatpatternimpl.h */,
 				8AAB5487207766B000F149DA /* decimfmt.cpp */,
-				8AAB54062077669900F149DA /* decimfmtimpl.cpp */,
-				8AAB5470207766AA00F149DA /* decimfmtimpl.h */,
 				8AAB540A2077669900F149DA /* decNumber.cpp */,
 				8AAB5441207766A100F149DA /* decNumber.h */,
 				8AAB546B207766A900F149DA /* decNumberLocal.h */,
-				8AAB54D8207766C500F149DA /* digitaffix.cpp */,
-				8AAB53BD2077668F00F149DA /* digitaffix.h */,
-				8AAB53E72077669300F149DA /* digitaffixesandpadding.cpp */,
-				8AAB5495207766B300F149DA /* digitaffixesandpadding.h */,
-				8AAB54DC207766C600F149DA /* digitformatter.cpp */,
-				8AAB546F207766AA00F149DA /* digitformatter.h */,
-				8AAB53A42077668C00F149DA /* digitgrouping.cpp */,
-				8AAB545E207766A600F149DA /* digitinterval.cpp */,
-				8AAB54AB207766BA00F149DA /* digitinterval.h */,
-				8AAB548B207766B100F149DA /* digitlst.cpp */,
-				8AAB539E2077668B00F149DA /* digitlst.h */,
 				8AAB53F72077669700F149DA /* dt_impl.h */,
 				8AAB54CE207766C300F149DA /* dtfmtsym.cpp */,
 				8AAB5493207766B300F149DA /* dtitv_impl.h */,
@@ -1763,13 +1691,9 @@
 				8AAB5442207766A200F149DA /* olsontz.h */,
 				8AAB54C1207766C000F149DA /* persncal.cpp */,
 				8AAB5444207766A200F149DA /* persncal.h */,
-				8AAB5453207766A400F149DA /* pluralaffix.cpp */,
-				8AAB54C2207766C000F149DA /* pluralaffix.h */,
 				8AAB54AE207766BA00F149DA /* plurfmt.cpp */,
 				8AAB54C6207766C100F149DA /* plurrule_impl.h */,
 				8AAB54AF207766BB00F149DA /* plurrule.cpp */,
-				8AAB53FF2077669800F149DA /* precision.cpp */,
-				8AAB53BA2077668E00F149DA /* precision.h */,
 				8AAB54FD207766CE00F149DA /* quant.cpp */,
 				8AAB54E5207766C900F149DA /* quant.h */,
 				8AAB53D02077669100F149DA /* quantityformatter.cpp */,
@@ -1789,8 +1713,6 @@
 				8AAB549B207766B500F149DA /* regexcmp.cpp */,
 				8AAB5482207766AF00F149DA /* regexcmp.h */,
 				8AAB54E3207766C800F149DA /* regexcst.h */,
-				8AAB54B7207766BD00F149DA /* regexcst.pl */,
-				8AAB54F7207766CD00F149DA /* regexcst.txt */,
 				8AAB54CA207766C200F149DA /* regeximp.cpp */,
 				8AAB54DD207766C700F149DA /* regeximp.h */,
 				8AAB53EB2077669400F149DA /* regexst.cpp */,
@@ -1819,10 +1741,7 @@
 				8AAB54A9207766B900F149DA /* shareddateformatsymbols.h */,
 				8AAB54CD207766C300F149DA /* sharednumberformat.h */,
 				8AAB53D52077669100F149DA /* sharedpluralrules.h */,
-				8AAB54BD207766BF00F149DA /* significantdigitinterval.h */,
 				8AAB5450207766A300F149DA /* simpletz.cpp */,
-				8AAB53FE2077669800F149DA /* smallintformatter.cpp */,
-				8AAB54FE207766CE00F149DA /* smallintformatter.h */,
 				8AAB5466207766A800F149DA /* smpdtfmt.cpp */,
 				8AAB54B0207766BB00F149DA /* smpdtfst.cpp */,
 				8AAB53F32077669500F149DA /* smpdtfst.h */,
@@ -1901,10 +1820,6 @@
 				8AAB545A207766A500F149DA /* utf16collationiterator.h */,
 				8AAB54F2207766CC00F149DA /* utmscale.cpp */,
 				8AAB54F8207766CD00F149DA /* utrans.cpp */,
-				8AAB54FA207766CD00F149DA /* valueformatter.cpp */,
-				8AAB53F92077669700F149DA /* valueformatter.h */,
-				8AAB53D42077669100F149DA /* visibledigits.cpp */,
-				8AAB53E52077669300F149DA /* visibledigits.h */,
 				8AAB547A207766AD00F149DA /* vtzone.cpp */,
 				8AAB544C207766A300F149DA /* vzone.cpp */,
 				8AAB543E207766A100F149DA /* vzone.h */,
@@ -1945,18 +1860,8 @@
 				8AAB53732077664600F149DA /* uscanf.h */,
 				8AAB53702077664500F149DA /* ustdio.cpp */,
 				8AAB53712077664500F149DA /* ustream.cpp */,
-				698AF0151C07269B0080D889 /* unicode */,
 			);
 			path = io;
-			sourceTree = "<group>";
-		};
-		698AF0151C07269B0080D889 /* unicode */ = {
-			isa = PBXGroup;
-			children = (
-				8AAB536E2077663000F149DA /* ustdio.h */,
-				8AAB536D2077663000F149DA /* ustream.h */,
-			);
-			path = unicode;
 			sourceTree = "<group>";
 		};
 		698AF4C41C0750CE0080D889 /* stubdata */ = {
@@ -2132,7 +2037,6 @@
 				8AAB55BC207766D100F149DA /* timezone.cpp in Sources */,
 				8AAB57C3207767DD00F149DA /* unames.cpp in Sources */,
 				8AAB57C5207767DD00F149DA /* messagepattern.cpp in Sources */,
-				8AAB5512207766D100F149DA /* digitgrouping.cpp in Sources */,
 				8AAB538D2077664E00F149DA /* ufile.cpp in Sources */,
 				8AAB575E207767DD00F149DA /* ucurr.cpp in Sources */,
 				8AAB57BE207767DD00F149DA /* usprep.cpp in Sources */,
@@ -2161,11 +2065,9 @@
 				8AAB552E207766D100F149DA /* gregocal.cpp in Sources */,
 				8AAB57E9207767DD00F149DA /* unistr_case_locale.cpp in Sources */,
 				8AAB5804207767DD00F149DA /* umutex.cpp in Sources */,
-				8AAB5572207766D100F149DA /* pluralaffix.cpp in Sources */,
 				8AAB576E207767DD00F149DA /* ucnvisci.cpp in Sources */,
 				8AAB5787207767DD00F149DA /* locdspnm.cpp in Sources */,
 				8AAB55C6207766D100F149DA /* number_compact.cpp in Sources */,
-				8AAB55D5207766D100F149DA /* valueformatter.cpp in Sources */,
 				8AAB553F207766D100F149DA /* windtfmt.cpp in Sources */,
 				8AAB55A4207766D100F149DA /* tzfmt.cpp in Sources */,
 				8AAB5549207766D100F149DA /* coleitr.cpp in Sources */,
@@ -2179,7 +2081,6 @@
 				8AAB580F207767DD00F149DA /* simpleformatter.cpp in Sources */,
 				8AAB5557207766D100F149DA /* collationfastlatin.cpp in Sources */,
 				8AAB57CD207767DD00F149DA /* ucnv2022.cpp in Sources */,
-				8AAB55C2207766D100F149DA /* digitformatter.cpp in Sources */,
 				8AAB55D2207766D100F149DA /* collationsettings.cpp in Sources */,
 				8AAB5809207767DD00F149DA /* ucnvhz.cpp in Sources */,
 				8AAB556A207766D100F149DA /* number_modifiers.cpp in Sources */,
@@ -2209,9 +2110,7 @@
 				8AAB576C207767DD00F149DA /* ucmndata.cpp in Sources */,
 				8AAB5540207766D100F149DA /* taiwncal.cpp in Sources */,
 				8AAB5556207766D100F149DA /* toupptrn.cpp in Sources */,
-				8AAB55B3207766D100F149DA /* decimalformatpattern.cpp in Sources */,
 				8AAB5802207767DD00F149DA /* util_props.cpp in Sources */,
-				8AAB5544207766D100F149DA /* precision.cpp in Sources */,
 				8AAB57FA207767DD00F149DA /* utrace.cpp in Sources */,
 				8AAB5784207767DD00F149DA /* rbbitblb.cpp in Sources */,
 				8AAB57D0207767DD00F149DA /* uchriter.cpp in Sources */,
@@ -2321,7 +2220,6 @@
 				8AAB57B0207767DD00F149DA /* ustrcase.cpp in Sources */,
 				8AAB57FB207767DD00F149DA /* ucnvdisp.cpp in Sources */,
 				8AAB57C4207767DD00F149DA /* rbbidata.cpp in Sources */,
-				8AAB55B1207766D100F149DA /* decfmtst.cpp in Sources */,
 				8AAB5563207766D100F149DA /* numsys.cpp in Sources */,
 				8AAB552A207766D100F149DA /* indiancal.cpp in Sources */,
 				8AAB5569207766D100F149DA /* ucol.cpp in Sources */,
@@ -2344,7 +2242,6 @@
 				8AAB5513207766D100F149DA /* fpositer.cpp in Sources */,
 				8AAB57ED207767DD00F149DA /* unistr_titlecase_brkiter.cpp in Sources */,
 				8AAB5791207767DD00F149DA /* servnotf.cpp in Sources */,
-				8AAB558F207766D100F149DA /* digitlst.cpp in Sources */,
 				8AAB5785207767DD00F149DA /* normalizer2impl.cpp in Sources */,
 				8AAB5807207767DD00F149DA /* utrie2_builder.cpp in Sources */,
 				8AAB559C207766D100F149DA /* tmutfmt.cpp in Sources */,
@@ -2367,7 +2264,6 @@
 				8AAB5521207766D100F149DA /* decContext.cpp in Sources */,
 				8AAB5801207767DD00F149DA /* ubidiwrt.cpp in Sources */,
 				8AAB556E207766D100F149DA /* brktrans.cpp in Sources */,
-				8AAB55BE207766D100F149DA /* digitaffix.cpp in Sources */,
 				8AAB5786207767DD00F149DA /* filteredbrk.cpp in Sources */,
 				8AAB5584207766D100F149DA /* vtzone.cpp in Sources */,
 				8AAB55C4207766D100F149DA /* collationdatareader.cpp in Sources */,
@@ -2376,7 +2272,6 @@
 				8AAB5509207766D100F149DA /* rbnf.cpp in Sources */,
 				8AAB5596207766D100F149DA /* calendar.cpp in Sources */,
 				8AAB558E207766D100F149DA /* ufieldpositer.cpp in Sources */,
-				8AAB554A207766D100F149DA /* decimfmtimpl.cpp in Sources */,
 				8AAB57DD207767DD00F149DA /* resbund.cpp in Sources */,
 				8AAB559A207766D100F149DA /* udateintervalformat.cpp in Sources */,
 				8AAB5524207766D100F149DA /* nortrans.cpp in Sources */,
@@ -2436,9 +2331,7 @@
 				8AAB5763207767DD00F149DA /* udata.cpp in Sources */,
 				8AAB5534207766D100F149DA /* dtitvfmt.cpp in Sources */,
 				8AAB57B8207767DD00F149DA /* rbbinode.cpp in Sources */,
-				8AAB5574207766D100F149DA /* digitinterval.cpp in Sources */,
 				8AAB553E207766D100F149DA /* tznames_impl.cpp in Sources */,
-				8AAB5529207766D100F149DA /* visibledigits.cpp in Sources */,
 				8AAB5757207767DD00F149DA /* ucol_swp.cpp in Sources */,
 				8AAB5598207766D100F149DA /* alphaindex.cpp in Sources */,
 				8AAB5562207766D100F149DA /* zrule.cpp in Sources */,
@@ -2465,7 +2358,6 @@
 				8AAB5774207767DD00F149DA /* punycode.cpp in Sources */,
 				8AAB5792207767DD00F149DA /* udatamem.cpp in Sources */,
 				8AAB55D6207766D100F149DA /* gender.cpp in Sources */,
-				8AAB551E207766D100F149DA /* affixpatternparser.cpp in Sources */,
 				8AAB57B9207767DD00F149DA /* ucase.cpp in Sources */,
 				8AAB5583207766D100F149DA /* choicfmt.cpp in Sources */,
 				8AAB55B8207766D100F149DA /* dtfmtsym.cpp in Sources */,
@@ -2502,7 +2394,6 @@
 				8AAB5568207766D100F149DA /* tzrule.cpp in Sources */,
 				8AAB554F207766D100F149DA /* curramt.cpp in Sources */,
 				8AAB5799207767DD00F149DA /* listformatter.cpp in Sources */,
-				8AAB5535207766D100F149DA /* digitaffixesandpadding.cpp in Sources */,
 				8AAB575F207767DD00F149DA /* ucasemap_titlecase_brkiter.cpp in Sources */,
 				8AAB5768207767DD00F149DA /* parsepos.cpp in Sources */,
 				8AAB55C1207766D100F149DA /* uspoof_impl.cpp in Sources */,
@@ -2511,7 +2402,6 @@
 				8AAB57D6207767DD00F149DA /* rbbi.cpp in Sources */,
 				8AAB550C207766D100F149DA /* sortkey.cpp in Sources */,
 				8AAB576D207767DD00F149DA /* utext.cpp in Sources */,
-				8AAB5543207766D100F149DA /* smallintformatter.cpp in Sources */,
 				8AAB552D207766D100F149DA /* collationruleparser.cpp in Sources */,
 				8AAB55B0207766D100F149DA /* collationkeys.cpp in Sources */,
 				8AAB57CB207767DD00F149DA /* uinit.cpp in Sources */,

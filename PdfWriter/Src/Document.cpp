@@ -198,6 +198,12 @@ namespace PdfWriter
 			pStream->WriteStr(c_sPdfAHeader);
 		else
 			pStream->WriteStr(c_sPdfHeader);
+		
+		if (false == m_wsDocumentID.empty())
+		{
+			std::string sDocumentID = "%DocumentID " + NSFile::CUtf8Converter::GetUtf8StringFromUnicode(m_wsDocumentID);
+			pStream->WriteStr(sDocumentID.c_str());
+		}
 
 		// Добавляем в Trailer необходимые элементы 
 		m_pTrailer->Add("Root", m_pCatalog);
@@ -265,6 +271,11 @@ namespace PdfWriter
 		m_nCurPageNum++;
 		return pPage;
 	}
+	void CDocument::SetDocumentID(const std::wstring & documentID)
+	{
+		m_wsDocumentID = documentID;		
+	}
+
     void CDocument::SetPermission(unsigned int unPermission)
 	{
 		if (!m_bEncrypt)

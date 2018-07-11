@@ -536,6 +536,14 @@ void CPdfRenderer::SetPassword(const std::wstring& wsPassword)
 
     m_pDocument->SetPasswords(wsPassword, wsPassword);
 }
+
+void CPdfRenderer::SetDocumentID(const std::wstring& wsDocumentID)
+{
+    if (!IsValid())
+        return;
+
+    m_pDocument->SetDocumentID(wsDocumentID);
+}
 void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
 	if (!IsValid())

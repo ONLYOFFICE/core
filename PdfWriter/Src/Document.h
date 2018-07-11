@@ -93,6 +93,7 @@ namespace PdfWriter
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void              SetPermission(unsigned int unPermission);
 		void              SetCompressionMode(unsigned int unMode);
+		void			  SetDocumentID(const std::wstring & wsDocumentID);
 
 		void              SetPDFAConformanceMode(bool isPDFA);
 		bool              IsPDFA() const;
@@ -174,6 +175,7 @@ namespace PdfWriter
 		std::vector<CFontCidTrueType*> m_vFreeTypeFonts;
 		FT_Library                     m_pFreeTypeLibrary;
 		bool                           m_bPDFAConformance;
+		std::wstring				   m_wsDocumentID;
 
 		friend class CFontCidTrueType;
 	};

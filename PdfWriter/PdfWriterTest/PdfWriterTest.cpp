@@ -296,9 +296,11 @@ void TestDocument3()
 	pPage->ClosePath();
 	pPage->FillStroke();
 
+	oPdf.SetDocumentID(L"23193r09jscladjalj");
+	oPdf.SetPasswords(L"123", L"qwe");
+	oPdf.SetPDFAConformanceMode(true);
 
-
-	oPdf.SaveToFile(L"D:/test/_pdf/Test3.pdf");
+	oPdf.SaveToFile(L"D:/test/_pdf/Test3-pdfa-my.pdf");
 	oPdf.Close();
 }
 void TestDocument4()
@@ -798,7 +800,7 @@ void ConvertFolder(std::wstring wsFolderPath)
 int _tmain(int argc, _TCHAR* argv[])
 {
 
-	TestDocument1();
+	TestDocument3();
 
 
 	return S_OK;

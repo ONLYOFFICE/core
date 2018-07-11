@@ -189,14 +189,6 @@
 				RelativePath="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\Test.cpp"

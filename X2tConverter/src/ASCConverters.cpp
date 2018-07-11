@@ -1133,6 +1133,10 @@ namespace NExtractTools
 		pdfWriter.SetTempFolder(sTemp);
 		pdfWriter.SetThemesPlace(sThemeDir);
 		
+		std::wstring documentID = params.getDocumentID();
+		if (false == documentID.empty())
+			pdfWriter.SetDocumentID(documentID);
+
 		std::wstring password = params.getSavePassword();
 		if (false == password.empty())
 			pdfWriter.SetPassword(password);
@@ -1273,6 +1277,10 @@ namespace NExtractTools
 			pdfWriter.SetTempFolder(sTemp);
 			pdfWriter.SetThemesPlace(sThemeDir);
 			
+			std::wstring documentID = params.getDocumentID();
+			if (false == documentID.empty())
+				pdfWriter.SetDocumentID(documentID);
+
 			std::wstring password = params.getSavePassword();
 			if (false == password.empty())
 				pdfWriter.SetPassword(password);

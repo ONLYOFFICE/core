@@ -73,6 +73,7 @@ public:
 	~CPdfRenderer();
 	void         SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);
+	void		 SetDocumentID(const std::wstring& wsDocumentID);
 	void         SetTempFolder(const std::wstring& wsPath);
 	std::wstring GetTempFile();
 	void         SetThemesPlace(const std::wstring& wsThemesPlace);

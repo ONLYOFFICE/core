@@ -38,6 +38,7 @@
 
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/StreamWriter.h"
 
 #include "../Common/BinReaderWriterDefines.h"
 #include "../Common/Common.h"
@@ -70,6 +71,19 @@
 
 namespace BinXlsxRW 
 {
+	#define SEEK_TO_POS_START(type) \
+		nPos = aSeekPositions[2 * type - 1]; \
+		length = aSeekPositions[2 * type]; \
+		if (nPos > 0) \
+		{ \
+			m_oBufferedStream.Seek(nPos); \
+
+	#define SEEK_TO_POS_END(elem) \
+		elem.toXML(oStreamWriter); \
+		}
+
+	#define SEEK_TO_POS_END2(elem) \
+		}
 
 	class ImageObject
 	{
@@ -151,20 +165,21 @@ namespace BinXlsxRW
 	};
 	class BinaryTableReader : public Binary_CommonReader
 	{
+		OOX::Spreadsheet::CWorksheet* m_pCurWorksheet;
 		public:
-		BinaryTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream):Binary_CommonReader(oBufferedStream)
+		BinaryTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorksheet* pCurWorksheet):Binary_CommonReader(oBufferedStream), m_pCurWorksheet(pCurWorksheet)
 		{
 		}
-		int Read(long length, OOX::Spreadsheet::CWorksheet* pWorksheet)
+		int Read(long length, OOX::Spreadsheet::CTableParts* pTableParts)
 		{
 			int res = c_oSerConstants::ReadOk;
-			READ1_DEF(length, res, this->ReadTablePart, pWorksheet);
+			READ1_DEF(length, res, this->ReadTablePart, pTableParts);
 			return res;
 		}
 		int ReadTablePart(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			OOX::Spreadsheet::CWorksheet* pWorksheet = static_cast<OOX::Spreadsheet::CWorksheet*>(poResult);
+			OOX::Spreadsheet::CTableParts* pTableParts = static_cast<OOX::Spreadsheet::CTableParts*>(poResult);
 			if(c_oSer_TablePart::Table == type)
 			{
 				OOX::Spreadsheet::CTableFile* pTable = new OOX::Spreadsheet::CTableFile(NULL);
@@ -173,10 +188,10 @@ namespace BinXlsxRW
 
 				OOX::Spreadsheet::CTablePart* pTablePart = new OOX::Spreadsheet::CTablePart();
 				NSCommon::smart_ptr<OOX::File> pTableFile(pTable);
-				const OOX::RId oRId = pWorksheet->Add(pTableFile);
+				const OOX::RId oRId = m_pCurWorksheet->Add(pTableFile);
 				pTablePart->m_oRId.Init();
 				pTablePart->m_oRId->SetValue(oRId.get());
-				pWorksheet->m_oTableParts->m_arrItems.push_back(pTablePart);
+				pTableParts->m_arrItems.push_back(pTablePart);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2505,6 +2520,8 @@ namespace BinXlsxRW
         OOX::Spreadsheet::CWorksheet*               m_pCurWorksheet;
         OOX::Spreadsheet::CDrawing*                 m_pCurDrawing;
         OOX::CVmlDrawing*                           m_pCurVmlDrawing;
+		NSFile::CStreamWriter*						m_pCurStreamWriter;
+		OOX::Spreadsheet::COleObjects*				m_pCurOleObjects;
 
         const std::wstring&					m_sDestinationDir;
         const std::wstring&					m_sMediaDir;
@@ -2551,20 +2568,24 @@ namespace BinXlsxRW
 
 				m_pCurVmlDrawing->m_lObjectIdVML = (long)(1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1);
 
-				READ1_DEF(length, res, this->ReadWorksheet, poResult);
+				_UINT32 aSeekPositions[2 * c_oSerWorksheetsTypes::PivotTable + 1];
+				memset(aSeekPositions, 0, (2 * c_oSerWorksheetsTypes::PivotTable + 1) * sizeof(_UINT32));
+				READ1_DEF(length, res, this->ReadWorksheetSeekPositions, aSeekPositions);
+
+				m_pCurWorksheet->m_sOutputFilename = m_pCurWorksheet->DefaultFileName().GetBasename();
+				m_pCurWorksheet->m_sOutputFilename += std::to_wstring(m_arWorksheets.size() + 1);
+				m_pCurWorksheet->m_sOutputFilename += m_pCurWorksheet->DefaultFileName().GetExtention();
+				std::wstring sWsPath = m_sDestinationDir + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + m_pCurWorksheet->DefaultDirectory().GetPath();
+				NSDirectory::CreateDirectories(sWsPath);
+				sWsPath += FILE_SEPARATOR_STR + m_pCurWorksheet->m_sOutputFilename;
+				NSFile::CStreamWriter oStreamWriter;
+				oStreamWriter.CreateFileW(sWsPath);
+				m_pCurStreamWriter = &oStreamWriter;
+				res = ReadWorksheet(aSeekPositions, oStreamWriter, poResult);
+				oStreamWriter.CloseFile();
+
 				if(m_pCurSheet->m_oName.IsInit())
 				{
-					//ole & comment
-					if(m_pCurVmlDrawing->m_aXml.size() > 0 || (NULL != m_pCurVmlDrawing->m_mapComments && m_pCurVmlDrawing->m_mapComments->size() > 0))
-					{
-						NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(m_pCurVmlDrawing);
-						m_pCurVmlDrawing = NULL;
-						const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
-                        m_pCurWorksheet->m_oLegacyDrawing.Init();
-                        m_pCurWorksheet->m_oLegacyDrawing->m_oId.Init();
-                        m_pCurWorksheet->m_oLegacyDrawing->m_oId->SetValue(oRId.get());
-					}
-
 					smart_ptr<OOX::File> oCurFile(m_pCurWorksheet);
 					const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
 					m_pCurSheet->m_oRid.Init();
@@ -2580,114 +2601,129 @@ namespace BinXlsxRW
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-        }
-		int ReadWorksheet(BYTE type, long length, void* poResult)
+		}
+		int ReadWorksheetSeekPositions(BYTE type, long length, void* poResult)
+		{
+			_UINT32* aSeekPositions = static_cast<_UINT32*>(poResult);
+			aSeekPositions[2 * type - 1] = m_oBufferedStream.GetPos();
+			aSeekPositions[2 * type] = length;
+			return c_oSerConstants::ReadUnknown;
+		}
+		int ReadWorksheet(_UINT32* aSeekPositions, NSFile::CStreamWriter& oStreamWriter, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSerWorksheetsTypes::WorksheetProp == type)
-			{
-				READ2_DEF(length, res, this->ReadWorksheetProp, poResult);
-			}
-			else if(c_oSerWorksheetsTypes::Cols == type)
-			{
-				m_pCurWorksheet->m_oCols.Init();
-				READ1_DEF(length, res, this->ReadWorksheetCols, poResult);
-			}
-			else if (c_oSerWorksheetsTypes::SheetViews == type)
-			{
-				m_pCurWorksheet->m_oSheetViews.Init();
-				READ1_DEF(length, res, this->ReadSheetViews, poResult);
-			}
-			else if (c_oSerWorksheetsTypes::SheetPr == type)
-			{
-				m_pCurWorksheet->m_oSheetPr.Init();
-				READ1_DEF(length, res, this->ReadSheetPr, m_pCurWorksheet->m_oSheetPr.GetPointer());
-			}
-			else if(c_oSerWorksheetsTypes::SheetFormatPr == type)
-			{
-				m_pCurWorksheet->m_oSheetFormatPr.Init();
-				READ2_DEF(length, res, this->ReadSheetFormatPr, m_pCurWorksheet->m_oSheetFormatPr.GetPointer());
-			}
-			else if(c_oSerWorksheetsTypes::PageMargins == type)
-			{
-				m_pCurWorksheet->m_oPageMargins.Init();
-				READ2_DEF(length, res, this->ReadPageMargins, m_pCurWorksheet->m_oPageMargins.GetPointer());
-			}
-			else if(c_oSerWorksheetsTypes::PageSetup == type)
-			{
-				m_pCurWorksheet->m_oPageSetup.Init();
-				READ2_DEF(length, res, this->ReadPageSetup, m_pCurWorksheet->m_oPageSetup.GetPointer());
-			}
-			else if(c_oSerWorksheetsTypes::PrintOptions == type)
-			{
-				m_pCurWorksheet->m_oPrintOptions.Init();
-				READ2_DEF(length, res, this->ReadPrintOptions, m_pCurWorksheet->m_oPrintOptions.GetPointer());
-			}
-			else if(c_oSerWorksheetsTypes::Hyperlinks == type)
-			{
-				m_pCurWorksheet->m_oHyperlinks.Init();
-				READ1_DEF(length, res, this->ReadHyperlinks, poResult);
-			}
-			else if(c_oSerWorksheetsTypes::MergeCells == type)
-			{
-				m_pCurWorksheet->m_oMergeCells.Init();
-				READ1_DEF(length, res, this->ReadMergeCells, poResult);
-				
-				m_pCurWorksheet->m_oMergeCells->m_oCount.Init();
-				m_pCurWorksheet->m_oMergeCells->m_oCount->SetValue((unsigned int)m_pCurWorksheet->m_oMergeCells->m_arrItems.size());
-			}
-			else if(c_oSerWorksheetsTypes::Drawings == type)
-			{
-                OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
-				OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
-			
-                OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
-				OOX::CSystemUtility::CreateDirectories(pathDrawingsRelsDir.GetPath());
+			m_pCurWorksheet->toXMLStart(oStreamWriter);
+			LONG nOldPos = m_oBufferedStream.GetPos();
+			LONG nPos;
+			LONG length;
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetPr);
+				OOX::Spreadsheet::CSheetPr oSheetPr;
+				READ1_DEF(length, res, this->ReadSheetPr, &oSheetPr);
+			SEEK_TO_POS_END(oSheetPr);
 
-				m_pOfficeDrawingConverter->SetDstContentRels();
-				m_pCurDrawing = new OOX::Spreadsheet::CDrawing(NULL);
-				
-				READ1_DEF(length, res, this->ReadDrawings, m_pCurDrawing);
-				
-				NSCommon::smart_ptr<OOX::File> pDrawingFile(m_pCurDrawing);
-				const OOX::RId oRId = m_pCurWorksheet->Add(pDrawingFile);
-				
-				m_pCurWorksheet->m_oDrawing.Init();
-				m_pCurWorksheet->m_oDrawing->m_oId.Init();
-				m_pCurWorksheet->m_oDrawing->m_oId->SetValue(oRId.get());
+			OOX::Spreadsheet::CSheetViews oSheetViews;
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetViews);
+				READ1_DEF(length, res, this->ReadSheetViews, &oSheetViews);
+			SEEK_TO_POS_END2();
+			if(oSheetViews.m_arrItems.empty())
+				oSheetViews.m_arrItems.push_back(new OOX::Spreadsheet::CSheetView());
+			OOX::Spreadsheet::CSheetView* pSheetView = oSheetViews.m_arrItems.front();
+			if(false == pSheetView->m_oWorkbookViewId.IsInit())
+			{
+				pSheetView->m_oWorkbookViewId.Init();
+				pSheetView->m_oWorkbookViewId->SetValue(0);
+			}
+			oSheetViews.toXML(oStreamWriter);
 
-				OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath()  + FILE_SEPARATOR_STR + m_pCurDrawing->m_sOutputFilename + _T(".rels");
-				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
-			}
-			else if(c_oSerWorksheetsTypes::SheetData == type)
+			OOX::Spreadsheet::CSheetFormatPr oSheetFormatPr;
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetFormatPr);
+				READ2_DEF(length, res, this->ReadSheetFormatPr, &oSheetFormatPr);
+			SEEK_TO_POS_END2();
+			if(!oSheetFormatPr.m_oDefaultRowHeight.IsInit())
 			{
-				m_pCurWorksheet->m_oSheetData.Init();
-				READ1_DEF(length, res, this->ReadSheetData, poResult);
+				oSheetFormatPr.m_oDefaultRowHeight.Init();
+				oSheetFormatPr.m_oDefaultRowHeight->SetValue(15);
 			}
-			else if (c_oSerWorksheetsTypes::ConditionalFormatting == type)
-			{
-				OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
-				READ1_DEF(length, res, this->ReadConditionalFormatting, pConditionalFormatting);
-				m_pCurWorksheet->m_arrConditionalFormatting.push_back(pConditionalFormatting);
-			}
-			else if(c_oSerWorksheetsTypes::Comments == type)
-			{
+			oSheetFormatPr.toXML(oStreamWriter);
+
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Cols);
+				OOX::Spreadsheet::CCols oCols;
+				READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
+			SEEK_TO_POS_END(oCols);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData);
+				OOX::Spreadsheet::CSheetData oSheetData;
+				if (NULL == m_oSaveParams.pCSVWriter)
+				{
+					oSheetData.toXMLStart(oStreamWriter);
+					READ1_DEF(length, res, this->ReadSheetData, NULL);
+					oSheetData.toXMLEnd(oStreamWriter);
+				}
+				else if(m_arWorksheets.size() == m_oWorkbook.GetActiveSheetIndex())
+				{
+					m_oSaveParams.pCSVWriter->WriteSheetStart(m_pCurWorksheet);
+					READ1_DEF(length, res, this->ReadSheetData, NULL);
+					m_oSaveParams.pCSVWriter->WriteSheetEnd(m_pCurWorksheet);
+				}
+			SEEK_TO_POS_END2();
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Autofilter);
+				OOX::Spreadsheet::CAutofilter oAutofilter;
+				BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet);
+				READ1_DEF(length, res, oBinaryTableReader.ReadAutoFilter, &oAutofilter);
+			SEEK_TO_POS_END(oAutofilter);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::MergeCells);
+				OOX::Spreadsheet::CMergeCells oMergeCells;
+				READ1_DEF(length, res, this->ReadMergeCells, &oMergeCells);
+				oMergeCells.m_oCount.Init();
+				oMergeCells.m_oCount->SetValue((unsigned int)oMergeCells.m_arrItems.size());
+			SEEK_TO_POS_END(oMergeCells);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::ConditionalFormatting);
+				OOX::Spreadsheet::CConditionalFormatting oConditionalFormatting;
+				READ1_DEF(length, res, this->ReadConditionalFormatting, &oConditionalFormatting);
+			SEEK_TO_POS_END(oConditionalFormatting);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Hyperlinks);
+				OOX::Spreadsheet::CHyperlinks oHyperlinks;
+				READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
+			SEEK_TO_POS_END(oHyperlinks);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
+				OOX::Spreadsheet::CPrintOptions oPrintOptions;
+				READ2_DEF(length, res, this->ReadPrintOptions, &oPrintOptions);
+			SEEK_TO_POS_END(oPrintOptions);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PageMargins);
+				OOX::Spreadsheet::CPageMargins oPageMargins;
+				READ2_DEF(length, res, this->ReadPageMargins, &oPageMargins);
+			SEEK_TO_POS_END(oPageMargins);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PageSetup);
+				OOX::Spreadsheet::CPageSetup oPageSetup;
+				READ2_DEF(length, res, this->ReadPageSetup, &oPageSetup);
+			SEEK_TO_POS_END(oPageSetup);
+
+			//important before Drawings
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Comments);
 				BinaryCommentReader oBinaryCommentReader(m_oBufferedStream, m_pCurWorksheet);
 				oBinaryCommentReader.Read(length, poResult);
-				
+
 				if(m_pCurWorksheet->m_mapComments.size() > 0)
 				{
 					m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
 
-                    boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
+					boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
 					OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
-					
+
 					pComments->m_oCommentList.Init();
-                    std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
-					
+					std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
+
 					pComments->m_oAuthors.Init();
 
-                    for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
+					for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 					{
 						if(it->second->IsValid())
 						{
@@ -2702,18 +2738,18 @@ namespace BinXlsxRW
 							if(pCommentItem->m_sAuthor.IsInit())
 							{
 								const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
-                                boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
-								
+								boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+
 								int nAuthorId;
 								if(pFind != mapByAuthors.end())
 									nAuthorId = pFind->second;
 								else
 								{
 									nAuthorId = (int)mapByAuthors.size();
-								
+
 									mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
-									
-                                    pComments->m_oAuthors->m_arrItems.push_back( sAuthor );
+
+									pComments->m_oAuthors->m_arrItems.push_back( sAuthor );
 								}
 								pNewComment->m_oAuthorId.Init();
 								pNewComment->m_oAuthorId->SetValue(nAuthorId);
@@ -2729,42 +2765,79 @@ namespace BinXlsxRW
 					NSCommon::smart_ptr<OOX::File> pCommentsFile(pComments);
 					m_pCurWorksheet->Add(pCommentsFile);
 				}
-			}
-			else if(c_oSerWorksheetsTypes::Autofilter == type)
-			{
-				BinaryTableReader oBinaryTableReader(m_oBufferedStream);
-				m_pCurWorksheet->m_oAutofilter.Init();
-				READ1_DEF(length, res, oBinaryTableReader.ReadAutoFilter, m_pCurWorksheet->m_oAutofilter.GetPointer());
-			}
-			else if(c_oSerWorksheetsTypes::TableParts == type)
-			{
-				BinaryTableReader oBinaryTableReader(m_oBufferedStream);
-				m_pCurWorksheet->m_oTableParts.Init();
-				oBinaryTableReader.Read(length, m_pCurWorksheet);
-				
-				m_pCurWorksheet->m_oTableParts->m_oCount.Init();
-				m_pCurWorksheet->m_oTableParts->m_oCount->SetValue((unsigned int)m_pCurWorksheet->m_oTableParts->m_arrItems.size());
-			}
-            else if(c_oSerWorksheetsTypes::SparklineGroups == type)
-            {
-                OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
-                pOfficeArtExtension->m_oSparklineGroups.Init();
+			SEEK_TO_POS_END2();
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Drawings);
+				OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
+				OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
+
+				OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
+				OOX::CSystemUtility::CreateDirectories(pathDrawingsRelsDir.GetPath());
+
+				m_pOfficeDrawingConverter->SetDstContentRels();
+				m_pCurDrawing = new OOX::Spreadsheet::CDrawing(NULL);
+				OOX::Spreadsheet::COleObjects oOleObjects;
+				m_pCurOleObjects = &oOleObjects;
+				READ1_DEF(length, res, this->ReadDrawings, m_pCurDrawing);
+
+				NSCommon::smart_ptr<OOX::File> pDrawingFile(m_pCurDrawing);
+				const OOX::RId oRId = m_pCurWorksheet->Add(pDrawingFile);
+				OOX::Spreadsheet::CDrawingWorksheet oDrawingWorksheet;
+				oDrawingWorksheet.m_oId.Init();
+				oDrawingWorksheet.m_oId->SetValue(oRId.get());
+				oDrawingWorksheet.toXML(oStreamWriter);
+				//ole & comment
+				if(m_pCurVmlDrawing->m_aXml.size() > 0 || (NULL != m_pCurVmlDrawing->m_mapComments && m_pCurVmlDrawing->m_mapComments->size() > 0))
+				{
+					NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(m_pCurVmlDrawing);
+					m_pCurVmlDrawing = NULL;
+					const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
+					OOX::Spreadsheet::CLegacyDrawingWorksheet oLegacyDrawing;
+					oLegacyDrawing.m_oId.Init();
+					oLegacyDrawing.m_oId->SetValue(oRId.get());
+					oLegacyDrawing.toXML(oStreamWriter);
+				}
+				if (oOleObjects.m_mapOleObjects.size() > 0)
+				{
+					oOleObjects.toXML(oStreamWriter);
+				}
+
+				OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath()  + FILE_SEPARATOR_STR + m_pCurDrawing->m_sOutputFilename + _T(".rels");
+				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
+			SEEK_TO_POS_END2();
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::TableParts);
+				BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet);
+				OOX::Spreadsheet::CTableParts oTableParts;
+				oBinaryTableReader.Read(length, &oTableParts);
+				oTableParts.m_oCount.Init();
+				oTableParts.m_oCount->SetValue((unsigned int)oTableParts.m_arrItems.size());
+			SEEK_TO_POS_END(oTableParts);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::SparklineGroups);
+				OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+				pOfficeArtExtension->m_oSparklineGroups.Init();
 
 				READ1_DEF(length, res, this->ReadSparklineGroups, pOfficeArtExtension->m_oSparklineGroups.GetPointer());
 
-                pOfficeArtExtension->m_sUri.Init();
-                pOfficeArtExtension->m_sUri->append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
-                pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
-                m_pCurWorksheet->m_oExtLst.Init();
-                m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
-            }
-			else if(c_oSerWorksheetsTypes::PivotTable == type)
-			{
+				pOfficeArtExtension->m_sUri.Init();
+				pOfficeArtExtension->m_sUri->append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
+				pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+				OOX::Drawing::COfficeArtExtensionList oExtLst;
+				oExtLst.m_arrExt.push_back(pOfficeArtExtension);
+				oStreamWriter.WriteString(oExtLst.toXMLWithNS(_T("")));
+			SEEK_TO_POS_END2();
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
+				READ2_DEF(length, res, this->ReadWorksheetProp, poResult);
+			SEEK_TO_POS_END2();
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PivotTable);
 				PivotCachesTemp oPivotCachesTemp;
-				
+
 				READ1_DEF(length, res, this->ReadPivotTable, &oPivotCachesTemp);
-                boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
-				
+				boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
+
 				if(m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
 				{
 					NSCommon::smart_ptr<OOX::File> pFileTable(oPivotCachesTemp.pTable);
@@ -2775,9 +2848,10 @@ namespace BinXlsxRW
 				{
 					RELEASEOBJECT(oPivotCachesTemp.pTable);
 				}
-			}
-			else
-				res = c_oSerConstants::ReadUnknown;
+			SEEK_TO_POS_END2();
+
+			m_oBufferedStream.Seek(nOldPos);
+			m_pCurWorksheet->toXMLEnd(oStreamWriter);
 			return res;
         }
 		int ReadPivotTable(BYTE type, long length, void* poResult)
@@ -2823,12 +2897,13 @@ namespace BinXlsxRW
         }
 		int ReadWorksheetCols(BYTE type, long length, void* poResult)
 		{
+			OOX::Spreadsheet::CCols* pCols = static_cast<OOX::Spreadsheet::CCols*>(poResult);
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::Col == type)
 			{
 				OOX::Spreadsheet::CCol* pCol = new OOX::Spreadsheet::CCol();
 				READ2_DEF(length, res, this->ReadWorksheetCol, pCol);
-				m_pCurWorksheet->m_oCols->m_arrItems.push_back(pCol);
+				pCols->m_arrItems.push_back(pCol);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2889,12 +2964,13 @@ namespace BinXlsxRW
         }
 		int ReadSheetViews(BYTE type, long length, void* poResult)
 		{
+			OOX::Spreadsheet::CSheetViews* pSheetViews = static_cast<OOX::Spreadsheet::CSheetViews*>(poResult);
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::SheetView == type)
 			{
 				OOX::Spreadsheet::CSheetView* pSheetView = new OOX::Spreadsheet::CSheetView();
 				READ1_DEF(length, res, this->ReadSheetView, pSheetView);
-				m_pCurWorksheet->m_oSheetViews->m_arrItems.push_back(pSheetView);
+				pSheetViews->m_arrItems.push_back(pSheetView);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -3250,12 +3326,13 @@ namespace BinXlsxRW
         }
 		int ReadHyperlinks(BYTE type, long length, void* poResult)
 		{
+			OOX::Spreadsheet::CHyperlinks* pHyperlinks = static_cast<OOX::Spreadsheet::CHyperlinks*>(poResult);
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::Hyperlink == type)
 			{
 				OOX::Spreadsheet::CHyperlink* pHyperlink = new OOX::Spreadsheet::CHyperlink();
 				READ1_DEF(length, res, this->ReadHyperlink, pHyperlink);
-				m_pCurWorksheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
+				pHyperlinks->m_arrItems.push_back(pHyperlink);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -3298,13 +3375,14 @@ namespace BinXlsxRW
         }
 		int ReadMergeCells(BYTE type, long length, void* poResult)
 		{
+			OOX::Spreadsheet::CMergeCells* pMergeCells = static_cast<OOX::Spreadsheet::CMergeCells*>(poResult);
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::MergeCell == type)
 			{
 				OOX::Spreadsheet::CMergeCell* pMergeCell = new OOX::Spreadsheet::CMergeCell();
 				pMergeCell->m_oRef.Init();
 				pMergeCell->m_oRef->append(m_oBufferedStream.GetString4(length));
-				m_pCurWorksheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
+				pMergeCells->m_arrItems.push_back(pMergeCell);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -3404,10 +3482,6 @@ namespace BinXlsxRW
 									oRIdImg = new OOX::RId(m_pCurWorksheet->Add(pFileWorksheet));
 								}
 							//add oleObject rels
-								if(!m_pCurWorksheet->m_oOleObjects.IsInit())
-								{
-									m_pCurWorksheet->m_oOleObjects.Init();
-								}
 
                                 smart_ptr<OOX::File> pFileObject = pOleObject->m_OleObjectFile.smart_dynamic_cast<OOX::File>();
                                 const OOX::RId oRIdBin = m_pCurWorksheet->Add(pFileObject);
@@ -3442,7 +3516,7 @@ namespace BinXlsxRW
 								pOleObject->m_oObjectPr->m_oAnchor->m_oFrom = pCellAnchor->m_oFrom;
 								pOleObject->m_oObjectPr->m_oAnchor->m_oTo	= pCellAnchor->m_oTo;
 
-								m_pCurWorksheet->m_oOleObjects->m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+								m_pCurOleObjects->m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
 							}
 							else
 							{
@@ -3582,9 +3656,8 @@ namespace BinXlsxRW
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::Row == type)
 			{
-				OOX::Spreadsheet::CRow* pRow = new OOX::Spreadsheet::CRow();
-				READ2_DEF(length, res, this->ReadRow, pRow);
-				m_pCurWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+				OOX::Spreadsheet::CRow oRow;
+				READ2_DEF(length, res, this->ReadRow, &oRow);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -3633,7 +3706,18 @@ namespace BinXlsxRW
 			}
 			else if(c_oSerRowTypes::Cells == type)
 			{
-				READ1_DEF(length, res, this->ReadCells, pRow);
+				if (NULL == m_oSaveParams.pCSVWriter)
+				{
+					pRow->toXMLStart(*m_pCurStreamWriter);
+					READ1_DEF(length, res, this->ReadCells, pRow);
+					pRow->toXMLEnd(*m_pCurStreamWriter);
+				}
+				else
+				{
+					m_oSaveParams.pCSVWriter->WriteRowStart(pRow);
+					READ1_DEF(length, res, this->ReadCells, pRow);
+					m_oSaveParams.pCSVWriter->WriteRowEnd(pRow);
+				}
 			}
 
 			else
@@ -3646,24 +3730,24 @@ namespace BinXlsxRW
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerRowTypes::Cell == type)
 			{
-				OOX::Spreadsheet::CCell* pCell = new OOX::Spreadsheet::CCell();
-				READ1_DEF(length, res, this->ReadCell, pCell);
+				OOX::Spreadsheet::CCell oCell;
+				READ1_DEF(length, res, this->ReadCell, &oCell);
 		
 		//текст error и формул пишем
-				if(NULL != m_pSharedStrings && pCell->m_oType.IsInit() && pCell->m_oValue.IsInit())
+				if(NULL != m_pSharedStrings && oCell.m_oType.IsInit() && oCell.m_oValue.IsInit())
 				{
-					SimpleTypes::Spreadsheet::ECellTypeType eCellType = pCell->m_oType->GetValue();
+					SimpleTypes::Spreadsheet::ECellTypeType eCellType = oCell.m_oType->GetValue();
 					bool bMoveText = false;
 					if(SimpleTypes::Spreadsheet::celltypeError == eCellType)
 						bMoveText = true;
-					else if((SimpleTypes::Spreadsheet::celltypeSharedString == eCellType && pCell->m_oFormula.IsInit()))
+					else if((SimpleTypes::Spreadsheet::celltypeSharedString == eCellType && oCell.m_oFormula.IsInit()))
 					{
 						bMoveText = true;
-						pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
+						oCell.m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
 					}
 					if(bMoveText)
 					{
-						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
+						int nValue = _wtoi(oCell.m_oValue->ToString().c_str());
 
                         if (nValue >= 0 && nValue < (int)m_pSharedStrings->m_arrItems.size())
 						{
@@ -3674,14 +3758,21 @@ namespace BinXlsxRW
 								if(OOX::et_x_t == pWe->getType())
 								{
 									OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(pWe);
-									pCell->m_oValue->m_sText = pText->m_sText;
-									pCell->m_oValue->m_oSpace = pText->m_oSpace;
+									oCell.m_oValue->m_sText = pText->m_sText;
+									oCell.m_oValue->m_oSpace = pText->m_oSpace;
 								}
 							}
 						}
 					}
 				}
-				pRow->m_arrItems.push_back(pCell);
+				if (NULL == m_oSaveParams.pCSVWriter)
+				{
+					oCell.toXML(*m_pCurStreamWriter);
+				}
+				else
+				{
+					m_oSaveParams.pCSVWriter->WriteCell(&oCell);
+				}
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -4518,27 +4609,20 @@ namespace BinXlsxRW
 					OOX::Spreadsheet::CXlsx oXlsx;
 					std::wstring params_path = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
                     
-					SaveParams oSaveParams(params_path.c_str(), pOfficeDrawingConverter->GetContentTypes());
-					
-					ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
-
-                    //std::wstring sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
-
-  //                  if(NULL != pOfficeDrawingConverter)
-					//{
-  //                      sAdditionalContentTypes += pOfficeDrawingConverter->GetContentTypes();
-					//}
-					oXlsx.PrepareToWrite();
-
-					switch(fileType)
+					if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
 					{
-					case BinXlsxRW::c_oFileTypes::CSV:
-						CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, sDelimiter, false);
-						break;
-					case BinXlsxRW::c_oFileTypes::XLSX:
-					default:
+						SaveParams oSaveParams(params_path.c_str(), pOfficeDrawingConverter->GetContentTypes(), NULL);
+						ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+						oXlsx.PrepareToWrite();
 						oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
-						break;
+					}
+					else
+					{
+						CSVWriter::CCSVWriter oCSVWriter(oXlsx, nCodePage, sDelimiter, false);
+						oCSVWriter.Start(sDstPathCSV);
+						SaveParams oSaveParams(params_path.c_str(), pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
+						ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+						oCSVWriter.End();
 					}
 					bResultOk = true;
 				}

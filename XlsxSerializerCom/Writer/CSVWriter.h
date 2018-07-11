@@ -35,9 +35,45 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CRow;
+		class CCell;
+	}
+}
 namespace CSVWriter
 {
-	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, const std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd = false);
+	class CCSVWriter
+	{
+	protected:
+		NSFile::CFileBinary m_oFile;
+		OOX::Spreadsheet::CXlsx& m_oXlsx;
+		UINT m_nCodePage;
+		const std::wstring& m_sDelimiter;
+		bool m_bJSON;
+
+		WCHAR* m_pWriteBuffer;
+		INT m_nCurrentIndex;
+		std::wstring m_sEscape;
+		INT m_nRowCurrent;
+		INT m_nColCurrent;
+		bool m_bIsWriteCell; // Нужно только для записи JSON-а
+		bool m_bStartRow;
+		bool m_bStartCell;
+	public:
+		CCSVWriter(OOX::Spreadsheet::CXlsx &oXlsx, UINT m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
+		~CCSVWriter();
+		void Start(const std::wstring &sFileDst);
+		void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
+		void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
+		void WriteCell(OOX::Spreadsheet::CCell *pCell);
+		void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet);
+		void WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet);
+		void End();
+		void Close();
+	};
 	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 }
 

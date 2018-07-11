@@ -91,6 +91,12 @@ namespace OOX
 
 		bool FileInDirectoryCorrect();
 
+		AVSINLINE std::wstring GetBasename() const
+		{
+			std::wstring sFilename = GetFilename();
+			std::wstring sExt = GetExtention();
+			return sFilename.substr(0, sFilename.length() - sExt.length());
+		}
         AVSINLINE std::wstring GetExtention(bool bIsPoint = true) const
         {
             int nFind = (int)m_strFilename.rfind('.');

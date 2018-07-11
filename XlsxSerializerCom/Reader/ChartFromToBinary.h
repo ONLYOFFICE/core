@@ -36,6 +36,7 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartSerialize.h"
 #include "../Writer/BinaryCommonReader.h"
 #include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
+#include "../../XlsxSerializerCom/Writer/CSVWriter.h"
 
 namespace OOX
 {
@@ -50,12 +51,13 @@ namespace BinXlsxRW
 	class SaveParams
 	{
 	public:
-		SaveParams	(const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes);
+		SaveParams	(const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes, CSVWriter::CCSVWriter* pCSVWriter = NULL);
 
 		smart_ptr<PPTX::Theme>			pTheme;
 		std::wstring					sThemePath;
 		OOX::CContentTypes*				pContentTypes;
 		int								nThemeOverrideCount;
+		CSVWriter::CCSVWriter*			pCSVWriter;
 	};
 
 	class BinaryChartReader : public Binary_CommonReader

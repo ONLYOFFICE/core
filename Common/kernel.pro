@@ -97,6 +97,9 @@ SOURCES += ./../DesktopEditor/common/Base64.cpp
 HEADERS += ./../DesktopEditor/common/File.h
 SOURCES += ./../DesktopEditor/common/File.cpp
 
+HEADERS += ./../DesktopEditor/common/StreamWriter.h
+SOURCES += ./../DesktopEditor/common/StreamWriter.cpp
+
 # DIRECTORY
 HEADERS += ./../DesktopEditor/common/Directory.h
 SOURCES += ./../DesktopEditor/common/Directory.cpp

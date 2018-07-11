@@ -90,6 +90,8 @@ namespace OOX
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
 			void PrepareToWrite();
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
+			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual const OOX::FileType type() const
 			{
 				return OOX::Spreadsheet::FileTypes::Worksheet;

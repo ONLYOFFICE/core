@@ -229,6 +229,22 @@ namespace OOX
 					pWorkbookView->m_oWindowHeight->SetValue(9720);
 				}
 			}
+			LONG GetActiveSheetIndex()
+			{
+				LONG lActiveSheet = 0;
+				std::wstring sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
+				// Get active sheet
+				if ( m_oBookViews.IsInit() && !m_oBookViews->m_arrItems.empty())
+				{
+					if (m_oBookViews->m_arrItems.front()->m_oActiveTab.IsInit())
+					{
+						lActiveSheet =  m_oBookViews->m_arrItems.front()->m_oActiveTab->GetValue();
+						if (0 > lActiveSheet)
+							lActiveSheet = 0;
+					}
+				}
+				return lActiveSheet;
+			}
 		private:
 			CPath											m_oReadPath;
 

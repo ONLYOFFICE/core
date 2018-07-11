@@ -65,7 +65,7 @@ public:
 	static int GetFormatByExtension(const std::wstring& ext);
 
 	bool isOOXFormatFile		(const std::wstring & fileName);
-	bool isOpenOfficeFormatFile	(const std::wstring & fileName);
+	bool isOpenOfficeFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 	bool isOnlyOfficeFormatFile	(const std::wstring & fileName);
 
 	bool isDocFormatFile	(POLE::Storage *storage);
@@ -74,11 +74,13 @@ public:
     bool isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID);
     bool isMS_OFFCRYPTOFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 
-	bool isDocFlatFormatFile	(unsigned char* pBuffer,int dwBytes);
+    std::wstring getDocumentID		(const std::wstring & fileName);
+	
+	bool isDocFlatFormatFile(unsigned char* pBuffer,int dwBytes);
 
 	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);
 	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes, bool testCloseTag);
-	bool isPdfFormatFile	(unsigned char* pBuffer,int dwBytes);
+	bool isPdfFormatFile	(unsigned char* pBuffer,int dwBytes, std::wstring & documentID);
 	bool isOpenOfficeFlatFormatFile(unsigned char* pBuffer,int dwBytes);
 
 	bool isBinaryDoctFormatFile	(unsigned char* pBuffer,int dwBytes);

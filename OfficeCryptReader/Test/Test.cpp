@@ -44,11 +44,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	COfficeFileFormatChecker fileChecker;
 
-	std::wstring sDocumentID;
+	std::wstring sDocumentID = fileChecker.getDocumentID(L"d:/test/_pdf/Test3-pdfa-my.pdf");
 	
-	if (fileChecker.isMS_OFFCRYPTOFormatFile(dstFileName, sDocumentID))
-	{
-	}
 	return 0;
 }
 

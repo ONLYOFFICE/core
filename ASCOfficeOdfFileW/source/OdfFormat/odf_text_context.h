@@ -80,7 +80,7 @@ public:
 	void start_element		(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element		();
  	
-	void start_field		(int type);
+	bool start_field		(int type);
 	void end_field			();
 
 	void start_span			(bool styled = false); 

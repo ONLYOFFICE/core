@@ -1890,18 +1890,19 @@ namespace NExtractTools
        std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
        NSDirectory::CreateDirectory(sTempUnpackedODP);
 
-		std::wstring password = params.getSavePassword();
-		
 		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(),  NULL);
 
        int nRes = 0;
        try
        {
-           converter.convert();
-           converter.write(sTempUnpackedODP, sTemp, password);
+			std::wstring password	= params.getSavePassword();
+			std::wstring documentID = params.getDocumentID();
+			
+			converter.convert();
+			converter.write(sTempUnpackedODP, sTemp, password, documentID);
 
-           COfficeUtils oCOfficeUtils(NULL);
-           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
        }catch(...)
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
@@ -2465,10 +2466,11 @@ namespace NExtractTools
        int nRes = 0;
        try
        {
-			std::wstring password = params.getSavePassword();
-			
+			std::wstring password	= params.getSavePassword();			
+			std::wstring documentID = params.getDocumentID();
+
 			converter.convert();
-			converter.write(sTempUnpackedODT, sTemp, password);
+			converter.write(sTempUnpackedODT, sTemp, password, documentID);
 
 			COfficeUtils oCOfficeUtils(NULL);
 			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -2502,10 +2504,11 @@ namespace NExtractTools
        {
            Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), NULL);
 
-			std::wstring password = params.getSavePassword();
+			std::wstring password	= params.getSavePassword();
+			std::wstring documentID = params.getDocumentID();
 			
 			converter.convert();
-			converter.write(sTempUnpackedODS, sTemp, password);
+			converter.write(sTempUnpackedODS, sTemp, password, documentID);
 
 			COfficeUtils oCOfficeUtils(NULL);
 			int nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;

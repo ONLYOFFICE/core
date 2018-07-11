@@ -272,8 +272,8 @@ public:
 
     text_section_attr	text_section_attr_;
     
-	office_element_ptr	text_table_of_content_source_;
-    office_element_ptr	text_index_body_;
+	office_element_ptr	table_of_content_source_;
+    office_element_ptr	index_body_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_table_of_content);
@@ -555,6 +555,30 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index);
+//---------------------------------------------------------------------------------------------------
+// text:user-index
+//---------------------------------------------------------------------------------------------------
+class text_user_index : public office_element_impl<text_user_index>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextUserIndex;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+  
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	odf_types::section_attlists	section_attr_;
+    office_element_ptr			user_index_source_;
+    office_element_ptr			index_body_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_user_index);
 //------------------------------------------------------------------------------------------------------------
 // text:bibliography
 //------------------------------------------------------------------------------------------------------------
@@ -927,6 +951,54 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index_entry_template);
+//---------------------------------------------------------------------------------------------------
+//text:user-index-source
+//---------------------------------------------------------------------------------------------------
+class text_user_index_source: public office_element_impl<text_user_index_source>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextUserIndexSource;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+	
+	_CP_OPT(std::wstring)		index_name_;
+	_CP_OPT(odf_types::Bool)	copy_outline_levels_;
+	_CP_OPT(odf_types::Bool)	relative_tab_stop_position_;
+	_CP_OPT(odf_types::Bool)	use_chart_objects_;
+	_CP_OPT(odf_types::Bool)	use_draw_objects_;
+	_CP_OPT(odf_types::Bool)	use_graphics_;
+	_CP_OPT(odf_types::Bool)	use_floating_frames_;
+	_CP_OPT(odf_types::Bool)	use_index_marks_;
+	_CP_OPT(odf_types::Bool)	use_index_source_styles_;
+	_CP_OPT(odf_types::Bool)	use_objects_;
+	_CP_OPT(odf_types::Bool)	use_tables_;
+	_CP_OPT(std::wstring)		index_scope_; // chapter or document:
+
+	office_element_ptr			index_title_template_;
+	office_element_ptr_array	entry_templates_;
+	office_element_ptr_array	index_source_styles_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_user_index_source);
+//---------------------------------------------------------------------------------------------------
+//text:user-index-entry-template
+//---------------------------------------------------------------------------------------------------
+class text_user_index_entry_template : public common_entry_template
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextUserIndexEntryTemplate;
+    CPDOCCORE_DEFINE_VISITABLE()
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_user_index_entry_template);
 //---------------------------------------------------------------------------------------------------
 //text:alphabetical-index-source
 //---------------------------------------------------------------------------------------------------

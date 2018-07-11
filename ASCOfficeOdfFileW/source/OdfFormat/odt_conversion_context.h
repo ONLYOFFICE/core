@@ -90,14 +90,24 @@ public:
 
 	void add_paragraph_break(int type);
 
-	void start_hyperlink	(std::wstring ref);
+	bool start_hyperlink	(std::wstring ref);
 	void end_hyperlink		();
+
+	bool start_table_of_content ();
+	bool start_bibliography ();
+	bool start_alphabetical_index ();
+	bool start_illustration_index ();
+	bool start_table_index ();
+
+	void start_index_field();
+	void end_index_field();
 
 	void start_field		(bool in_span);
 	void end_field			();
 	void separate_field		();
 	void set_field_instr	(std::wstring instr);
-
+	std::map<std::wstring, std::wstring> parse_instr_options(const std::wstring& value);
+	
 	void start_run			(bool styled = false);
 	void end_run			();
 
@@ -186,15 +196,22 @@ private:
 
 	struct _field_state
 	{
+		int				type = 0;
+
 		std::wstring	name;
-		bool			enabled;	
-		int				type;
 		std::wstring	value;
+
 		std::wstring	format;
-		bool			started;
-		bool			in_span;
+		bool			started = false;
+		bool			in_span = false;
 		bool			result;
-	}current_field_;
+		bool			bHyperlinks	= false;
+		bool			bHidePageNumbers = false;
+		std::wstring	captionSEQ;
+		std::wstring	title;
+	};
+
+	std::vector<_field_state> current_fields;
 	
 	struct _text_changes_state
 	{

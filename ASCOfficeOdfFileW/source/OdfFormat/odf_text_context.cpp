@@ -462,10 +462,11 @@ void odf_text_context::end_list()
 
 	list_state_.levels.pop_back();
 }
-///////////////////////////////////////////////////////////////////////////////////////////  LIST
-void odf_text_context::start_field(int type)
+//------------------------------------------------------------------------------------------  LIST
+
+bool odf_text_context::start_field(int type)
 {
-	if (single_paragraph_ == true) return;
+	if (single_paragraph_ == true) return false;
 
 	office_element_ptr elm;
 	if (type == 2)
@@ -493,11 +494,15 @@ void odf_text_context::start_field(int type)
 	{
 		create_element(L"text", L"date", elm, odf_context_);
 	}
+
 	if (elm)
 	{
 		in_field_ = true;
 		start_element(elm);
+	
+		return true;
 	}
+	return false;
 }
 
 void odf_text_context::end_field()

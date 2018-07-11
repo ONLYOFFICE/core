@@ -343,7 +343,7 @@ namespace Oox2Odf
 public:
 		virtual void convertDocument() = 0;
 		
-		void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password);
+		void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID);
 		
 		OoxConverter(const ProgressCallback* CallBack = NULL){
 																oox_current_child_document = NULL; 

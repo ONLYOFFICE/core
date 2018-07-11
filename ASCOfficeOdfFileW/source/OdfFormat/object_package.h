@@ -160,6 +160,17 @@ namespace odf_writer
 			std::wstring type_;
 
 		};
+		class documentID_file : public element
+		{
+		public:
+			documentID_file(std::wstring value);
+			
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
+
+		private:
+			std::wstring value_;
+
+		};
 		class mimetype_file : public element
 		{
 		public:
@@ -219,10 +230,11 @@ namespace odf_writer
 			void set_rels(rels & r);
 			
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);
-
 			void write_manifest(const std::wstring & RootPath);
 
 			manifect_file* get_manifest() {return dynamic_cast<manifect_file*>(manifest_.get());}
+
+			void set_documentID(const std::wstring &value);
 
 		private:
 			element_ptr					base_;

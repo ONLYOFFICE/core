@@ -101,13 +101,13 @@ namespace Oox2Odf
        
 		impl_->convertDocument();
     }
-    void Converter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password) const
+    void Converter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const
     {
 		if (!impl_)return;
 
 		if (impl_->bUserStopConvert) return;
 
-		return impl_->write(out_path, temp_path, password);
+		return impl_->write(out_path, temp_path, password, documentID);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,10 +126,15 @@ bool  OoxConverter::UpdateProgress(long nComplete)
 
 	return FALSE;
 }
-void OoxConverter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password)
+void OoxConverter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID)
 {
 	if (!output_document)return;
 
+	if (false == documentID.empty())
+	{
+		output_document->set_documentID(documentID);
+	}
+	
 	if (password.empty())
 	{
 		output_document->write(out_path);

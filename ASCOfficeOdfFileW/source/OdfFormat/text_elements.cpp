@@ -379,25 +379,30 @@ void text_table_of_content::serialize(std::wostream & _Wostream)
         {   
 			text_section_attr_.serialize(CP_GET_XML_NODE());
 
-			if (text_index_body_)
-				text_index_body_->serialize(CP_XML_STREAM());
+			if (table_of_content_source_)
+				table_of_content_source_->serialize(CP_XML_STREAM());
 
-			if (text_table_of_content_source_)
-				text_table_of_content_source_->serialize(CP_XML_STREAM());
+			if (index_body_)
+				index_body_->serialize(CP_XML_STREAM());
 		}
 	} 
 }
 void text_table_of_content::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    if CP_CHECK_NAME(L"text", L"index-body")
-    {
-        CP_CREATE_ELEMENT(text_index_body_);
-    }
+	if (L"text" == Ns && L"table-of-content-source" == Name)	CP_CREATE_ELEMENT(table_of_content_source_);    
+    else if CP_CHECK_NAME(L"text", L"index-body")				CP_CREATE_ELEMENT(index_body_);
 }
 
 void text_table_of_content::add_child_element( const office_element_ptr & child_element)
 {
-     text_index_body_ = child_element;
+	if (!child_element) return;
+
+	ElementType type = child_element->get_type();
+
+	if (type == typeTextTableOfContentSource)
+		table_of_content_source_= child_element;
+	else if (type == typeTextIndexBody)
+		index_body_ = child_element;
 }
 //--------------------------------------------------------------------------------------------------------
 
@@ -616,7 +621,7 @@ const wchar_t * text_table_index::name	= L"table-index";
 
 void text_table_index::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"text" == Ns && L"index-body_" == Name)		CP_CREATE_ELEMENT(index_body_);    
+    if		(L"text" == Ns && L"index-body" == Name)		CP_CREATE_ELEMENT(index_body_);    
     else if (L"text" == Ns && L"table-index-source" == Name)CP_CREATE_ELEMENT(table_index_source_);    
 }
 
@@ -654,7 +659,7 @@ const wchar_t * text_illustration_index::name	= L"illustration-index";
 
 void text_illustration_index::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"text" == Ns && L"index-body_" == Name)				CP_CREATE_ELEMENT(index_body_);    
+    if		(L"text" == Ns && L"index-body" == Name)				CP_CREATE_ELEMENT(index_body_);    
     else if (L"text" == Ns && L"illustration-index-source" == Name)	CP_CREATE_ELEMENT(illustration_index_source_);    
 }
 
@@ -687,12 +692,50 @@ void text_illustration_index::serialize(std::wostream & _Wostream)
 	}
 }
 //------------------------------------------------------------
+const wchar_t * text_user_index::ns		= L"text";
+const wchar_t * text_user_index::name	= L"user-index";
+
+void text_user_index::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    if		(L"text" == Ns && L"index-body" == Name)		CP_CREATE_ELEMENT(index_body_);    
+    else if (L"text" == Ns && L"user-index-source" == Name)	CP_CREATE_ELEMENT(user_index_source_);    
+}
+
+void text_user_index::add_child_element( const office_element_ptr & child_element)
+{
+	if (!child_element) return;
+
+	ElementType type = child_element->get_type();
+
+	if (type == typeTextUserIndexSource)
+		user_index_source_= child_element;
+	else if (type == typeTextIndexBody)
+		index_body_= child_element;
+}
+
+void text_user_index::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 
+			section_attr_.serialize(CP_GET_XML_NODE());
+
+			if (user_index_source_)
+				user_index_source_->serialize(CP_XML_STREAM());
+
+			if (index_body_)
+				index_body_->serialize(CP_XML_STREAM());
+		}
+	}
+}
+//------------------------------------------------------------
 const wchar_t * text_alphabetical_index::ns		= L"text";
 const wchar_t * text_alphabetical_index::name	= L"alphabetical-index";
 
 void text_alphabetical_index::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"text" == Ns && L"index-body_" == Name)				CP_CREATE_ELEMENT(index_body_);    
+    if		(L"text" == Ns && L"index-body" == Name)				CP_CREATE_ELEMENT(index_body_);    
     else if (L"text" == Ns && L"alphabetical-index-source" == Name)	CP_CREATE_ELEMENT(alphabetical_index_source_);    
 }
 
@@ -730,7 +773,7 @@ const wchar_t * text_bibliography::name	= L"bibliography";
 
 void text_bibliography::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"text" == Ns && L"index-body_" == Name)			CP_CREATE_ELEMENT(index_body_);    
+    if		(L"text" == Ns && L"index-body" == Name)			CP_CREATE_ELEMENT(index_body_);    
     else if (L"text" == Ns && L"bibliography-source" == Name)	CP_CREATE_ELEMENT(bibliography_source_);    
 }
 
@@ -898,6 +941,62 @@ void text_illustration_index_source::serialize(std::wostream & _Wostream)
 	}
 }
 //----------------------------------------------------------------------------------------------------------
+const wchar_t * text_user_index_source::ns		= L"text";
+const wchar_t * text_user_index_source::name	= L"user-index-source";
+
+void text_user_index_source::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    if (L"text" == Ns && L"index-title-template" == Name)	CP_CREATE_ELEMENT(index_title_template_);    
+    else													CP_CREATE_ELEMENT(entry_templates_);
+}
+
+void text_user_index_source::add_child_element( const office_element_ptr & child_element)
+{
+	if (!child_element) return;
+
+	ElementType type = child_element->get_type();
+
+    if (type == typeTextIndexTitleTemplate)
+		index_title_template_ = child_element;
+	else
+		entry_templates_.push_back(child_element);
+}
+
+void text_user_index_source::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 
+			CP_XML_ATTR_OPT(L"text:index-name", index_name_);
+			CP_XML_ATTR_OPT(L"text:copy-outline-levels", copy_outline_levels_);
+
+			CP_XML_ATTR_OPT(L"text:use-chart-objects", use_chart_objects_);
+			CP_XML_ATTR_OPT(L"text:use-draw-objects", use_draw_objects_);
+			CP_XML_ATTR_OPT(L"text:use-graphics", use_graphics_);
+			CP_XML_ATTR_OPT(L"text:use-floating-frames", use_floating_frames_);
+			CP_XML_ATTR_OPT(L"text:use-index-marks", use_index_marks_);
+			CP_XML_ATTR_OPT(L"text:use-index_source_styles", use_index_source_styles_);
+			CP_XML_ATTR_OPT(L"text:use-objects", use_objects_);
+			CP_XML_ATTR_OPT(L"text:use-tables", use_tables_);			
+			CP_XML_ATTR_OPT(L"text:relative_tab-stop-position", relative_tab_stop_position_);
+			CP_XML_ATTR_OPT(L"text:index-scope", index_scope_); // chapter or document
+
+			if (index_title_template_)
+				index_title_template_->serialize(CP_XML_STREAM());
+
+			for (size_t i = 0 ; i < index_source_styles_.size(); i++)
+			{
+				index_source_styles_[i]->serialize(CP_XML_STREAM());
+			}  
+			for (size_t i = 0 ; i < entry_templates_.size(); i++)
+			{
+				entry_templates_[i]->serialize(CP_XML_STREAM());
+			}  
+		}
+	}
+}
+//----------------------------------------------------------------------------------------------------------
 const wchar_t * alphabetical_index_source::ns	= L"text";
 const wchar_t * alphabetical_index_source::name	= L"alphabetical-index-source";
 
@@ -994,6 +1093,9 @@ const wchar_t * text_table_index_entry_template::name			= L"table-index-entry-te
 //----------------------------------------------------------------------------------------------------------
 const wchar_t * text_table_of_content_entry_template::ns		= L"text";
 const wchar_t * text_table_of_content_entry_template::name		= L"table-of-content-entry-template";
+//----------------------------------------------------------------------------------------------------------
+const wchar_t * text_user_index_entry_template::ns				= L"text";
+const wchar_t * text_user_index_entry_template::name			= L"user-index-entry-template";
 //----------------------------------------------------------------------------------------------------------
 const wchar_t * text_bibliography_entry_template::ns		= L"text";
 const wchar_t * text_bibliography_entry_template::name		= L"bibliography-entry-template";

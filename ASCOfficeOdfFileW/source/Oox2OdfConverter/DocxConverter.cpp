@@ -861,9 +861,9 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 		if (oox_fld->m_sInstr.IsInit())	
 			odt_context->set_field_instr(oox_fld->m_sInstr.get2());
 
-        for (std::vector<OOX::WritingElement*>::iterator it = oox_fld->m_arrItems.begin(); it != oox_fld->m_arrItems.end(); ++it)
+        for (size_t i = 0; i < oox_fld->m_arrItems.size(); ++i)
 		{
-			convert(*it);
+			convert(oox_fld->m_arrItems[i]);
 		}
 	}
 	odt_context->end_field();

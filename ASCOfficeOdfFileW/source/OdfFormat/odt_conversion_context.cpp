@@ -32,6 +32,7 @@
 
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "../utils.h"
 
@@ -78,10 +79,6 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this)	
 {
 
-	current_field_.enabled		= false;
-	current_field_.started		= false;
-	current_field_.in_span		= false;
-	
 	is_hyperlink_				= false;
 
 	is_header_					= false;
@@ -286,8 +283,18 @@ void odt_conversion_context::end_drawings()
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
-	if (current_field_.enabled && !current_field_.result) return;	//Стандартное_составное_письмо.docx
-	
+	if (!current_fields.empty() && current_fields.back().started == false && !current_fields.back().in_span)
+	{
+		//if (!current_fields.empty() && !current_fields.back().result) return;	//Стандартное_составное_письмо.docx
+		switch (current_fields.back().type)
+		{
+		case 6:	current_fields.back().started = start_bibliography();		break;
+		case 7:	current_fields.back().started = start_alphabetical_index();	break;
+		case 8: //current_fields.back().started = start_table_index();		break;
+		case 9:	current_fields.back().started = start_illustration_index();	break;
+		case 10:current_fields.back().started = start_table_of_content();	break;
+		}	
+	}
 	if (is_paragraph_in_current_section_ && !styled) 
 	{
 		styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
@@ -345,13 +352,119 @@ void odt_conversion_context::add_paragraph_break(int type)
 		//}
 	}
 }
-void odt_conversion_context::start_hyperlink(std::wstring ref)
+bool odt_conversion_context::start_table_of_content()
+{
+	office_element_ptr elm1, elm2;
+	
+	create_element(L"text", L"table-of-content", elm1, this);	
+	text_context()->start_element(elm1);	
+
+	add_to_root();
+
+	create_element(L"text", L"table-of-content-source", elm2, this);
+	text_context()->start_element(elm2);
+	text_context()->end_element();
+	
+	start_index_field();
+	return true;
+}
+
+bool odt_conversion_context::start_alphabetical_index()
+{
+	office_element_ptr elm1, elm2;
+	create_element(L"text", L"alphabetical-index", elm1, this);	
+	text_context()->start_element(elm1);	
+
+	add_to_root();
+
+	create_element(L"text", L"alphabetical-index-source", elm2, this);
+	text_context()->start_element(elm2);
+	text_context()->end_element();
+	
+	start_index_field();
+	return true;
+}
+
+bool odt_conversion_context::start_illustration_index()
+{
+	office_element_ptr elm1, elm2;
+	create_element(L"text", L"illustration-index", elm1, this);	
+	text_context()->start_element(elm1);	
+	
+	add_to_root();
+
+	create_element(L"text", L"illustration-index-source", elm2, this);
+	text_context()->start_element(elm2);
+	text_context()->end_element();
+	
+	start_index_field();
+	return true;
+}
+
+bool odt_conversion_context::start_bibliography()
+{
+	office_element_ptr elm;
+	create_element(L"text", L"bibliography", elm, this);	
+	text_context()->start_element(elm);	
+
+	add_to_root();
+
+	create_element(L"text", L"bibliography-source", elm, this);
+	text_context()->start_element(elm);
+	text_context()->end_element();
+
+	start_index_field();
+	return true;
+}
+
+bool odt_conversion_context::start_table_index()
+{
+	end_paragraph();
+
+	office_element_ptr elm;
+	create_element(L"text", L"table-index", elm, this);	
+	text_context()->start_element(elm);	
+
+	add_to_root();
+
+	create_element(L"text", L"table-index-source", elm, this);
+	text_context()->start_element(elm);
+	text_context()->end_element();
+	
+	start_index_field();
+
+	start_paragraph();
+	return true;
+}
+
+void odt_conversion_context::start_index_field()
+{
+	if (current_fields.empty()) return;
+
+	office_element_ptr elm1, elm2;
+	create_element(L"text", L"index-body", elm1, this);
+	text_context()->start_element(elm1);
+
+	if (false == current_fields.back().title.empty())
+	{
+		create_element(L"text", L"index-title", elm2, this);
+		text_context()->start_element(elm2);
+		text_context()->end_element();
+	}
+}
+void odt_conversion_context::end_index_field()
+{
+	text_context()->end_element();
+	text_context()->end_element();
+}
+
+bool odt_conversion_context::start_hyperlink(std::wstring ref)
 {
 	office_element_ptr hyperlink_elm;
 	create_element(L"text", L"a", hyperlink_elm, this);
 
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
-	if (!hyperlink)return;
+	if (!hyperlink)return false;
 
 ////////////////////////////
 
@@ -364,26 +477,48 @@ void odt_conversion_context::start_hyperlink(std::wstring ref)
 	text_context()->start_element(hyperlink_elm);
 
 	is_hyperlink_ = true;
+	return true;
 }
 void odt_conversion_context::end_hyperlink()
 {
 	if (!is_hyperlink_) return;
 
-	//current_level_.pop_back();
 	text_context()->end_element();
 
 	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
 }
+		
+std::map<std::wstring, std::wstring> odt_conversion_context::parse_instr_options(const std::wstring& value)
+{
+	std::map<std::wstring, std::wstring> result;
+
+	std::vector<std::wstring> arOptions;
+	boost::algorithm::split(arOptions, value, boost::algorithm::is_any_of(L"\\"), boost::algorithm::token_compress_on);
+
+	for (size_t i = 0; i < arOptions.size(); i++)
+	{
+		std::wstring key = arOptions[i].substr(0, 1);
+		std::wstring value;
+		if (arOptions[i].length() > 1)
+		{
+			value = arOptions[i].substr(1);
+		}
+		result.insert(std::make_pair(key, value));
+	}
+
+	return result;
+}
+
 
 void odt_conversion_context::set_field_instr(std::wstring instr)
 {
-	if (current_field_.enabled == false) 	return;
+	if (current_fields.empty()) return;
 
-	current_field_.type = 0; //users field
 	size_t res1 = instr.find(L"HYPERLINK");
-	if (std::wstring::npos != res1)							//это не поле - это hyperlink
+	if (std::wstring::npos != res1)	
 	{
-		current_field_.type = 1;
+		current_fields.back().type = 1;
+		current_fields.back().in_span = false;
 		
 		std::wstring ref;
 		boost::match_results<std::wstring::const_iterator> res;
@@ -391,66 +526,103 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
         if (boost::regex_search(instr, res, r2))
         {
             ref = res[1].str();
-			current_field_.value = ref.substr(1, ref.length()-2);
+			current_fields.back().value = ref.substr(1, ref.length() - 2);
 
         }
 	}
 	res1 = instr.find(L"NUMPAGES");
-	if (std::wstring::npos != res1 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_field_.type = 3;
+		current_fields.back().type = 3;
 	}	
 	res1 = instr.find(L"PAGEREF");
-	if (std::wstring::npos != res1 && current_field_.type == 0 )	//это не поле - это bookmark
+	if (std::wstring::npos != res1 && current_fields.back().type == 0 )
 	{
-		current_field_.type = 5;
+		current_fields.back().type = 5;
 		if (instr.length() > 9)
-			current_field_.value = instr.substr(9, instr.length()-5);
+			current_fields.back().value = instr.substr(9, instr.length() - 5);
 	}
 	res1 = instr.find(L"PAGE");
-	if (std::wstring::npos != res1 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_field_.type = 2;
+		current_fields.back().type = 2;
 	}
 	res1 = instr.find(L"TIME");
-	if (std::wstring::npos != res1 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_field_.type = 4;
+		current_fields.back().type = 4;
 	}
 	res1 = instr.find(L"BIBLIOGRAPHY");
-	if (std::wstring::npos != res1 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_field_.type = 6;
+		current_fields.back().type = 6;
+		current_fields.back().in_span = false;
 	}
-////////////////////////////////////////// 
+	res1 = instr.find(L"INDEX");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = 7;
+		current_fields.back().in_span = false;
+	}
+	res1 = instr.find(L"TOC");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = 8;
+		current_fields.back().in_span = false;
+		std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(res1 + 3));
+		
+		std::map<std::wstring, std::wstring>::iterator pFind = options.find(L"c");
+		if ( pFind != options.end())
+		{
+			current_fields.back().captionSEQ = pFind->second;
+		}
+		pFind = options.find(L"h");
+		if ( pFind != options.end())
+		{
+			current_fields.back().bHyperlinks = true; 
+		}
+		pFind = options.find(L"u"); //paragraph outline level
+		if ( pFind != options.end())
+		{
+			current_fields.back().type = 10;  //table of content
+		}
+		pFind = options.find(L"o");
+		if ( pFind != options.end())//table of content outline levels style
+		{
+			current_fields.back().type = 10;  
+		}
+		pFind = options.find(L"z");
+		if ( pFind != options.end())//table of content outline levels style
+		{
+			current_fields.back().bHidePageNumbers = true; 
+		}
+	}
+	////////////////////////////////////////// 
 	res1 = instr.find(L"@");
 	if (std::wstring::npos != res1)
 	{
-		current_field_.format = instr.substr(res1 + 1, instr.length());
+		current_fields.back().format = instr.substr(res1 + 1, instr.length());
 	}
 
-	if (current_field_.type == 0)
+	if (current_fields.back().type == 0)
 	{
 		res1 = instr.find(L" ");
 		if (std::wstring::npos != res1)
 		{
-			current_field_.name = instr.substr(0, res1);
+			current_fields.back().name = instr.substr(0, res1);
 		}		
 	}
 }
 void odt_conversion_context::start_field(bool in_span)
 {
-	current_field_.enabled = true;
-	
-	current_field_.result = false;
-	current_field_.in_span = in_span;
-	current_field_.value.clear();
-	current_field_.name.clear();
-	current_field_.type = 0; // users field
+	_field_state field;
+	current_fields.push_back(field);
 }
 void odt_conversion_context::separate_field()
 {
-	current_field_.result = true;
+	if (current_fields.empty()) return;
+
+	current_fields.back().result = true;
 }
 void odt_conversion_context::set_master_page_name(std::wstring master_name)
 {
@@ -587,23 +759,27 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double, do
 }
 void odt_conversion_context::end_field()
 {
-	if (current_field_.enabled && current_field_.started)	
-	{
-		if (current_field_.type == 1) end_hyperlink();
-		else text_context()->end_field();
-	}
-	current_field_.value	= L"";
-	current_field_.format	= L"";
-	current_field_.name		= L"";
+	if (current_fields.empty()) return;
 
-	current_field_.result	= false;
-	current_field_.enabled	= false;
-	current_field_.started	= false;
-	current_field_.in_span	= false;
+	if (current_fields.back().started)	
+	{
+		switch(current_fields.back().type)
+		{
+		case 1:		end_hyperlink(); break;
+		case 6:		
+		case 7:		
+		case 8:		
+		case 9:		
+		case 10:	end_index_field(); break;
+		default:
+					text_context()->end_field();
+		}
+	}
+	current_fields.pop_back();
 }
 void odt_conversion_context::end_paragraph()
 {
-	if (current_field_.enabled && !current_field_.result) return;	//Стандартное_составное_письмо.docx
+	if (!current_fields.empty() && !current_fields.back().result) return;	//Стандартное_составное_письмо.docx
 	
 	text_context()->end_paragraph();
 	
@@ -706,11 +882,10 @@ void odt_conversion_context::start_run(bool styled)
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 	
-
-	if (current_field_.started == false && current_field_.type > 1 && current_field_.enabled == true && !current_field_.in_span)
+	if (!current_fields.empty() && current_fields.back().started == false && !current_fields.back().in_span)
 	{
-		text_context()->start_field(current_field_.type);
-		current_field_.started = true;
+		if (current_fields.back().type == 1)		current_fields.back().started = start_hyperlink(current_fields.back().value);
+		else if (current_fields.back().type < 6)	current_fields.back().started = text_context()->start_field(current_fields.back().type);
 	}	
 	
 	text_context()->start_span(styled);
@@ -722,25 +897,27 @@ void odt_conversion_context::start_run(bool styled)
 			props->apply_from(dynamic_cast<style_text_properties*>(drop_cap_state_.text_properties.get()));
 
 	}
-	if (current_field_.started == false && current_field_.type > 1 && current_field_.enabled == true && current_field_.in_span)//поле стартуется в span - нужно для сохранения стиля
+	if (!current_fields.empty() && current_fields.back().started == false && current_fields.back().in_span)//поле стартуется в span - нужно для сохранения стиля
 	{
-		text_context()->start_field(current_field_.type);
-		current_field_.started = true;
+		current_fields.back().started = text_context()->start_field(current_fields.back().type);
 	}	
 }
 void odt_conversion_context::end_run()
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 
-	if (current_field_.in_span && current_field_.started== true && current_field_.enabled ==true) end_field();
+	if (!current_fields.empty() && current_fields.back().started == true && current_fields.back().in_span)
+	{
+		end_field();
+	}
 	
 	text_context()->end_span();
 
-	if (current_field_.started== false && current_field_.type == 1 && current_field_.enabled ==true)
-	{
-		start_hyperlink(current_field_.value);
-		current_field_.started = true;
-	}
+	//if (current_field_.enabled == true && current_field_.started== false && current_field_.type == 1)
+	//{
+	//	start_hyperlink(current_field_.value);
+	//	current_field_.started = true;
+	//}
 }
 //--------------------------------------------------------------------------------------------------------
 bool odt_conversion_context::start_comment(int oox_comm_id)

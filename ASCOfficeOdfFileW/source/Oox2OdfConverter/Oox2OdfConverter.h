@@ -46,7 +46,7 @@ namespace Oox2Odf
 
 		void convert();
      
-        void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password) const;
+        void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const;
 
 		OoxConverter * get_ooxConverter() { return impl_; }
 

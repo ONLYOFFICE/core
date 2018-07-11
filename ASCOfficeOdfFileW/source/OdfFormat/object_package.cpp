@@ -124,6 +124,15 @@ namespace odf_writer
 		{
 			type_ = t;
 		}
+		documentID_file::documentID_file(std::wstring v)
+		{
+			value_ = v;
+		}	
+		void documentID_file::write(const std::wstring & RootPath, bool add_padding)
+		{
+			simple_element elm(L"documentID", value_, false);
+			elm.write(RootPath, false);
+		}
 		mimetype_file::mimetype_file(std::wstring t)
 		{
 			type_ = t;
@@ -290,6 +299,14 @@ namespace odf_writer
 		void odf_document::set_rels(rels  & r)
 		{
 			dynamic_cast<manifect_file*>(manifest_.get())->add_rels(r);
+		}
+		void odf_document::set_documentID(const std::wstring &value)
+		{
+			add_object(element_ptr(new documentID_file(value)));
+			
+			rels rels_;
+			rels_.add(relationship(std::wstring(L"application/binary"), L"documentID"));			
+			set_rels(rels_);
 		}
 
 		odf_document::odf_document(std::wstring type)

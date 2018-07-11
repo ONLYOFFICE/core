@@ -3403,9 +3403,10 @@ namespace SimpleTypes
 			std::wstring result;
 			for (size_t i = 0 ; i < sText.length(); i++)
 			{
-				if (XmlUtils::IsUnicodeSymbol(sText[i]) == true)
+				WCHAR wChar = sText[i];
+				if (XmlUtils::IsUnicodeSymbol(wChar) == true && wChar > 0x20)
 				{
-					result += sText[i];
+					result += wChar;
 				}
 			}
 			return result;

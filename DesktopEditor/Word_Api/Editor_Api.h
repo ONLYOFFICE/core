@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -981,6 +981,88 @@ namespace NSEditorApi
         
         LINK_PROPERTY_INT_JS(InsertPageNum)
 	};
+    
+    
+    
+    
+    class CAscSlideTiming : public IMenuEventDataBase
+    {
+    private:
+        js_wrapper<int> m_nTransitionType;
+        js_wrapper<int> m_nTransitionOption;
+        js_wrapper<int> m_nTransitionDuration;
+        
+        js_wrapper<bool> m_bSlideAdvanceOnMouseClick;
+        js_wrapper<bool> m_bSlideAdvanceAfter;
+        js_wrapper<bool> m_bSlideAdvanceDuration;
+        js_wrapper<bool> m_bShowLoop;
+        
+    public:
+        CAscSlideTiming()
+        {
+        }
+        virtual ~CAscSlideTiming()
+        {
+        }
+        LINK_PROPERTY_INT_JS(TransitionType)
+        LINK_PROPERTY_INT_JS(TransitionOption)
+        LINK_PROPERTY_INT_JS(TransitionDuration)
+        
+        LINK_PROPERTY_BOOL_JS(SlideAdvanceOnMouseClick)
+        LINK_PROPERTY_BOOL_JS(SlideAdvanceAfter)
+        LINK_PROPERTY_BOOL_JS(SlideAdvanceDuration)
+        LINK_PROPERTY_BOOL_JS(ShowLoop)
+    };
+    
+    class CAscTransitions : public IMenuEventDataBase
+    {
+    public:
+        std::vector<CAscSlideTiming> m_arTransitions;
+    public:
+        
+        CAscTransitions()
+        {}
+        
+        virtual ~CAscTransitions()
+        {
+        }
+    };
+    
+    
+    class CAscSlideProp : public IMenuEventDataBase
+    {
+        js_wrapper<CAscFill> m_oBackground;
+        js_wrapper<CAscSlideTiming> m_oTiming;
+        
+        js_wrapper<int> m_nLayoutIndex;
+        js_wrapper<bool> m_bIsHidden;
+        js_wrapper<bool> m_bLockBackground;
+        js_wrapper<bool> m_bLockDelete;
+        js_wrapper<bool> m_bLockLayout;
+        js_wrapper<bool> m_bLockRemove;
+        js_wrapper<bool> m_bLockTiming;
+        js_wrapper<bool> m_bLockTranzition;
+        
+    public:
+        CAscSlideProp()
+        {
+        }
+        virtual ~CAscSlideProp()
+        {
+        }
+        LINK_PROPERTY_OBJECT_JS(CAscFill, Background)
+        LINK_PROPERTY_OBJECT_JS(CAscSlideTiming, Timing)
+        
+        LINK_PROPERTY_INT_JS(LayoutIndex)
+        LINK_PROPERTY_BOOL_JS(IsHidden)
+        LINK_PROPERTY_BOOL_JS(LockBackground)
+        LINK_PROPERTY_BOOL_JS(LockDelete)
+        LINK_PROPERTY_BOOL_JS(LockLayout)
+        LINK_PROPERTY_BOOL_JS(LockRemove)
+        LINK_PROPERTY_BOOL_JS(LockTiming)
+        LINK_PROPERTY_BOOL_JS(LockTranzition)
+        
+    };
 
 	class CAscImagePosition
 	{

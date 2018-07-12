@@ -3036,10 +3036,19 @@ void DocxConverter::convert_styles()
 void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 {
 	if (oox_hyperlink == NULL)return;
+
+	std::wstring ref;
+
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		std::wstring ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(),2);
-
+		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(),2);
+	}
+	else if (oox_hyperlink->m_sAnchor.IsInit())
+	{
+		ref = L"#" + *oox_hyperlink->m_sAnchor;
+	}
+	if (false == ref.empty())
+	{
 		odt_context->start_hyperlink(ref);
 		
         for (std::vector<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); ++it)
@@ -3049,14 +3058,12 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 		odt_context->end_hyperlink();
 	}
 	else
-	{//ссылка внутри дока
-		//anchor todooo
+	{
         for (std::vector<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); ++it)
 		{
 			convert(*it);
 		}
 	}
-    //nullable<std::wstring                                      > m_sAnchor;
     //nullable<std::wstring                                      > m_sDocLocation;
 	//nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oHistory;
     //nullable<std::wstring                                      > m_sTgtFrame;

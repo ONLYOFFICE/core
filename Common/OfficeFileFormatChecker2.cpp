@@ -649,6 +649,8 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 		delete []pBuffer;
 		pBuffer = NULL;
 	}
+
+	nBufferSize = 0;	
 	hresult = OfficeUtils.LoadFileFromArchive(fileName, L"mimetype", &pBuffer, nBufferSize);
 	if (hresult == S_OK && pBuffer != NULL)
 	{
@@ -689,7 +691,8 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 	else
     {
        //если не записан тип смотрим манифест
-        HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"META-INF/manifest.xml", &pBuffer, nBufferSize);
+		nBufferSize = 0;
+		HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"META-INF/manifest.xml", &pBuffer, nBufferSize);
         if (hresult == S_OK && pBuffer != NULL)
         {
             std::string xml_string((char*)pBuffer, nBufferSize);

@@ -90,14 +90,23 @@ public:
 
 	void add_paragraph_break(int type);
 
-	bool start_hyperlink	(std::wstring ref);
+	void start_hyperlink	(std::wstring ref);
 	void end_hyperlink		();
 
-	bool start_table_of_content ();
-	bool start_bibliography ();
-	bool start_alphabetical_index ();
-	bool start_illustration_index ();
-	bool start_table_index ();
+	void start_table_of_content ();
+	void end_table_of_content ();
+
+	void start_bibliography ();
+	void end_bibliography ();
+	
+	void start_alphabetical_index ();
+	void end_alphabetical_index ();
+	
+	void start_illustration_index ();
+	void end_illustration_index ();
+
+	void start_table_index ();
+	void end_table_index ();
 
 	void start_index_field();
 	void end_index_field();
@@ -202,13 +211,17 @@ private:
 		std::wstring	value;
 
 		std::wstring	format;
-		bool			started = false;
+		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
 		bool			in_span = false;
-		bool			result;
+		bool			result = false; //after separate
 		bool			bHyperlinks	= false;
 		bool			bHidePageNumbers = false;
 		std::wstring	captionSEQ;
 		std::wstring	title;
+		std::vector<std::wstring> arStyleLevels;
+		int				outline_levels = 0;
+		std::vector<int> arTemplateTypes;//text, link, tab ....
+		int				tabLeader = 0;//dot
 	};
 
 	std::vector<_field_state> current_fields;

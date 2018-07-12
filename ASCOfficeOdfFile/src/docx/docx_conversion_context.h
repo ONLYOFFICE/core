@@ -693,7 +693,8 @@ public:
 		{
 			current_content_template_.clear();
 		}
-		current_content_template_ = pFind->second.content;
+		else 
+			current_content_template_ = pFind->second.content;
 		current_content_template_index_ = 0;
 	}
 

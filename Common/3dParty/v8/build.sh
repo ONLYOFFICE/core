@@ -26,13 +26,13 @@ cd "$SCRIPTPATH/v8"
 
 if [[ "$platform$arch" == "linux_64" ]]
 then
-gn gen out.gn/linux_64 --args='is_debug=false target_cpu="x64" v8_target_cpu="x64" v8_static_library=true is_component_build=false v8_use_snapshot=false is_clang=false use_sysroot=false'
+gn gen out.gn/linux_64 --args='is_debug=false target_cpu="x64" v8_target_cpu="x64" v8_static_library=true is_component_build=false v8_use_snapshot=false is_clang=true use_sysroot=false'
 ninja -C out.gn/linux_64
 fi
 
 if [[ "$platform$arch" == "linux_32" ]]
 then
-gn gen out.gn/linux_32 --args='is_debug=false target_cpu="x86" v8_target_cpu="x86" v8_static_library=true is_component_build=false v8_use_snapshot=false is_clang=false use_sysroot=false'
+gn gen out.gn/linux_32 --args='is_debug=false target_cpu="x86" v8_target_cpu="x86" v8_static_library=true is_component_build=false v8_use_snapshot=false is_clang=true use_sysroot=false'
 ninja -C out.gn/linux_32
 fi
 

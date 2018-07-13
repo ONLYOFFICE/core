@@ -369,42 +369,51 @@ void docx_conversion_context::start_index_content()
 
 	std::wstring sInstrText;
 
-	switch(table_content_context_.type_table_content)
+	if (table_content_context_.type_table_content == 3)
 	{
-		case 1: sInstrText += L" TOC \\f \\h \\u"; break;
-		case 2: 
-		case 4: 
-		case 6:
-		case 7:	sInstrText += L" TOC \\h \\z"; break;
-		case 5: sInstrText += L" INDEX \\z"; break;
-		case 3: sInstrText += L" BIBLIOGRAPHY"; break;
+		sInstrText = L" BIBLIOGRAPHY "; 
 	}
-	if (table_content_context_.min_outline_level > 0)
+	else if (table_content_context_.type_table_content == 5)
 	{
-		if (table_content_context_.max_outline_level > 9)
-			table_content_context_.max_outline_level = 9;
-
-		sInstrText += L" \\o \"" +	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
-									std::to_wstring(table_content_context_.max_outline_level) + L"\"";
+		sInstrText = L" INDEX"; 
+		if (table_content_context_.bSeparators)
+			sInstrText += L" \\h \"A\""; 
 	}
-	if (false == table_content_context_.outline_level_styles.empty())
+	else
 	{
-		sInstrText += L"\\t \"";
+		sInstrText += L" TOC \\h";
 
-		for (std::map<int, std::wstring>::iterator it = table_content_context_.outline_level_styles.begin(); 
-													it != table_content_context_.outline_level_styles.end(); ++it)
+		if (table_content_context_.type_table_content == 1)
+			sInstrText += L" \\f \\u";
+		else 
+			sInstrText += L" \\z";
+
+		if (table_content_context_.min_outline_level > 0)
 		{
-			sInstrText += it->second + L";" + std::to_wstring(it->first) + L";";
+			if (table_content_context_.max_outline_level > 9)
+				table_content_context_.max_outline_level = 9;
+
+			sInstrText += L" \\o \"" +	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
+										std::to_wstring(table_content_context_.max_outline_level) + L"\"";
+		}
+		if (false == table_content_context_.outline_level_styles.empty())
+		{
+			sInstrText += L" \\t \"";
+
+			for (std::map<int, std::wstring>::iterator it = table_content_context_.outline_level_styles.begin(); 
+														it != table_content_context_.outline_level_styles.end(); ++it)
+			{
+				sInstrText += it->second + L";" + std::to_wstring(it->first) + L";";
+			}
+
+			sInstrText += L"\"";
 		}
 
-		sInstrText += L"\"";
+		if (!table_content_context_.caption_sequence_name.empty())
+		{
+			 sInstrText += L" \\c \"" + table_content_context_.caption_sequence_name + L"\""; 
+		}
 	}
-
-	if (!table_content_context_.caption_sequence_name.empty())
-	{
-		 sInstrText += L" \\c \"" + table_content_context_.caption_sequence_name + L"\""; 
-	}
-
 	output_stream() << L"<w:r>";
 	output_stream() << L"<w:fldChar w:fldCharType=\"begin\"/>";
 	output_stream() << L"</w:r>";

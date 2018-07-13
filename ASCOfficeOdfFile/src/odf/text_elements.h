@@ -1283,7 +1283,9 @@ private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	
-	_CP_OPT(std::wstring)	index_scope_; // chapter or document:
+	_CP_OPT(std::wstring)		index_scope_; // chapter or document:
+	_CP_OPT(odf_types::Bool)	alphabetical_separators_; 
+	_CP_OPT(odf_types::Bool)	ignore_case_; 
 
 //fo:country
 //fo:language 
@@ -1295,7 +1297,6 @@ private:
 //text:combine-entries-with-dash
 //text:combine-entries-with-pp
 //text:comma-separated
-//text:ignore-case
 //text:main-entry-style-name
 //text:relative-tab-stop-position
 //text:sort-algorithm

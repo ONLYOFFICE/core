@@ -1273,7 +1273,9 @@ const wchar_t * alphabetical_index_source::name = L"alphabetical-index-source";
 
 void alphabetical_index_source::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"text:index-scope",	index_scope_); // chapter or document
+	CP_APPLY_ATTR(L"text:index-scope",				index_scope_); // chapter or document
+	CP_APPLY_ATTR(L"text:alphabetical-separators",	alphabetical_separators_); 
+	CP_APPLY_ATTR(L"text:ignore-case",				ignore_case_); 
 
 }
 void alphabetical_index_source::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -1286,6 +1288,11 @@ void alphabetical_index_source::add_child_element( xml::sax * Reader, const std:
 }
 void alphabetical_index_source::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (alphabetical_separators_)
+	{
+		Context.get_table_content_context().bSeparators = alphabetical_separators_->get();
+	}	
+	
 	Context.get_table_content_context().start_template(5);
 	for (size_t i = 0; i < entry_templates_.size(); i++)
 	{

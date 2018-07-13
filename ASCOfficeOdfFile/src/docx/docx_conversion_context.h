@@ -731,6 +731,7 @@ public:
 		min_outline_level = -1;
 		max_outline_level = -1;
 		outline_level_styles.clear();
+		bSeparators = false;
 	}
 	void add_sequence(const std::wstring & name, int outline_level)
 	{
@@ -755,6 +756,7 @@ public:
 	int								min_outline_level;
 	int								max_outline_level;
 	std::map<int, std::wstring>		outline_level_styles;
+	bool							bSeparators;
 
 private:
 	std::vector<int>				current_content_template_;

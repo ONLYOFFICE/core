@@ -1278,7 +1278,7 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << sequence << L" \\* " << num_format << L" \">";
+	Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << XmlUtils::EncodeXmlString(sequence) << L" \\* " << num_format << L" \">";
 	Context.add_new_run();
 		for (size_t i = 0; i < text_.size(); i++)
 		{
@@ -1846,12 +1846,22 @@ void alphabetical_index_mark::add_attributes( const xml::attributes_wc_ptr & Att
 }
 void alphabetical_index_mark::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!string_value_) return;
+	std::wstring value;
+	if (string_value_ && false == string_value_->empty())
+	{
+		if (*string_value_ != L" ")
+			value = *string_value_;
+	}
+	if (value.empty() && key1_)
+	{
+		value = *key1_;
+	}
+	if (value.empty()) return;
 
 	Context.finish_run();	
 	
 	Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
-	Context.output_stream() << L"<w:r><w:instrText> XE \"" <<  *string_value_ << L"\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+	Context.output_stream() << L"<w:r><w:instrText> XE \"" <<  XmlUtils::EncodeXmlString(value) << L"\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 }
 //-----------------------------------------------------------------------------------------------
 // text:alphabetical-index-mark-start

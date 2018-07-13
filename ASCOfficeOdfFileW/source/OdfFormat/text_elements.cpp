@@ -1255,5 +1255,46 @@ void text_index_entry_text::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE();
 	}
 }
+//----------------------------------------------------------------------------------------------------------
+const wchar_t * text_sequence_decl::ns		= L"text";
+const wchar_t * text_sequence_decl::name	= L"sequence-decl";
+
+void text_sequence_decl::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"text:name",					name_);
+			CP_XML_ATTR_OPT(L"text:separation-character",	separation_character_); 
+			CP_XML_ATTR_OPT(L"text:display-outline-level",	display_outline_level_);
+		}
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+const wchar_t * text_sequence_decls::ns		= L"text";
+const wchar_t * text_sequence_decls::name	= L"sequence-decls";
+
+void text_sequence_decls::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+void text_sequence_decls::add_child_element( const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
+void text_sequence_decls::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0 ; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 }
 }

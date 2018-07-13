@@ -71,6 +71,13 @@ using xml::xml_char_wc;
 const wchar_t * text_text::ns = L"";
 const wchar_t * text_text::name = L"";
 
+std::wostream & text_text::text_to_stream(std::wostream & _Wostream) const
+{
+	_Wostream << xml::utils::replace_text_to_xml( text_ );
+
+	return _Wostream;
+}
+
 void text_text::serialize(std::wostream & _Wostream)
 {
     _Wostream << xml::utils::replace_text_to_xml( text_ );
@@ -236,6 +243,14 @@ void text_reference_mark_end::serialize(std::wostream & _Wostream)
 const wchar_t * text_span::ns = L"text";
 const wchar_t * text_span::name = L"span";
 
+std::wostream & text_span::text_to_stream(std::wostream & _Wostream) const
+{
+	for (size_t i = 0; i < paragraph_content_.size(); i++)
+	{
+		paragraph_content_[i]->text_to_stream(_Wostream);
+	}
+	return _Wostream;
+}
 void text_span::serialize(std::wostream & _Wostream) 
 {
  	CP_XML_WRITER(_Wostream)
@@ -772,9 +787,15 @@ void text_sequence::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
+			CP_XML_ATTR_OPT(L"text:name", name_);
+			CP_XML_ATTR_OPT(L"text:ref-name", ref_name_);	
+			CP_XML_ATTR_OPT(L"style:num-format", style_num_format_);
+			CP_XML_ATTR_OPT(L"style:num-letter-syn", style_num_letter_sync_);
+			CP_XML_ATTR_OPT(L"text:formula", formula_);
+	
 			for (size_t i = 0; i < text_.size(); i++)
 			{
-				text_[i]->serialize(CP_XML_STREAM());
+				text_[i]->text_to_stream(CP_XML_STREAM());
 			}
 		}
 	}

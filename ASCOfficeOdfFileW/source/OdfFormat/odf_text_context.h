@@ -43,7 +43,22 @@
 namespace cpdoccore {
 namespace odf_writer
 {
+	enum _typeField
+	{
+		fieldUnknown = 0,
+		fieldHyperlink,
+		fieldPage,
+		fieldNumPages,
+		fieldTime,
+		fieldPageRef,
+		fieldSeq,
 
+		fieldBibliography = 0xff + 1,
+		fieldIndex,
+		fieldIllustration,
+		fieldTable,
+		fieldToc
+	};	
 class odf_conversion_context;
 class odf_style_context;
 class paragraph;
@@ -139,6 +154,7 @@ private:
 	std::wstring			parent_span_style_;
 	std::wstring			parent_paragraph_style_;
 };
+typedef shared_ptr<odf_text_context>::Type		odf_text_context_ptr;
 
 }
 }

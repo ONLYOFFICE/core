@@ -469,7 +469,7 @@ bool odf_text_context::start_field(int type)
 	if (single_paragraph_ == true) return false;
 
 	office_element_ptr elm;
-	if (type == 2)
+	if (type == fieldPage)
 	{
 		create_element(L"text", L"page-number", elm, odf_context_);
 		text_page_number *page_numb = dynamic_cast<text_page_number*>(elm.get());
@@ -486,11 +486,11 @@ bool odf_text_context::start_field(int type)
             }
 		}	
 	}
-	if (type == 3)
+	if (type == fieldNumPages)
 	{
 		create_element(L"text", L"page-count", elm, odf_context_);
 	}
-	if (type == 4)
+	if (type == fieldTime)
 	{
 		create_element(L"text", L"date", elm, odf_context_);
 	}

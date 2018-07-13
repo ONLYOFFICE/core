@@ -71,7 +71,13 @@ public:
 
 private:
 	office_element_ptr			tracked_changes_;
-    office_element_ptr_array	content_;
+	office_element_ptr			table_content_validations_;
+	office_element_ptr			user_fields_;
+	office_element_ptr			variables_;
+ 	office_element_ptr			sequences_;
+	office_element_ptr			forms_;
+
+	office_element_ptr_array	content_;
 	
 	// TODO: office-text-content-prelude:
     // TODO: office-forms

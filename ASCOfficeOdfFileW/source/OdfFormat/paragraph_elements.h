@@ -65,7 +65,8 @@ public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
-    virtual void serialize(std::wostream & _Wostream);
+	std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	virtual void serialize(std::wostream & _Wostream);
   
     text_text(const std::wstring & Text) :  text_(Text) {}
     text_text() {}
@@ -316,6 +317,7 @@ public:
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
+	std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     text_span() {}
    
@@ -678,7 +680,14 @@ public:
     virtual void serialize(std::wostream & _Wostream);
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array text_;
+	_CP_OPT(odf_types::style_numformat)	style_num_format_;
+	_CP_OPT(std::wstring)				style_num_letter_sync_;
+	_CP_OPT(std::wstring)				formula_;
+	_CP_OPT(std::wstring)				name_;
+	_CP_OPT(std::wstring)				ref_name_;
+
+	_CP_OPT(std::wstring)		template_;
+    office_element_ptr_array	text_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_sequence);

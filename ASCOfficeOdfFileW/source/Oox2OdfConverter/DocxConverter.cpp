@@ -412,9 +412,9 @@ void DocxConverter::convert(OOX::Logic::CSdtContent *oox_sdt)
 {
 	if (oox_sdt == NULL) return;
 
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_sdt->m_arrItems.begin(); it != oox_sdt->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_sdt->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(oox_sdt->m_arrItems[i]);
 	}
 }
 void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
@@ -607,9 +607,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	{//rapcomnat12.docx - стр 185
 		bool empty_para = true;
 
-        for (std::vector<OOX::WritingElement*>::iterator it = oox_paragraph->m_arrItems.begin(); it != oox_paragraph->m_arrItems.end(); ++it)
+        for (size_t i = 0; i < oox_paragraph->m_arrItems.size(); ++i)
 		{		
-			switch((*it)->getType())
+			switch(oox_paragraph->m_arrItems[i]->getType())
 			{
 				case OOX::et_w_pPr: break;
 				default:
@@ -631,17 +631,17 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	}
 
 //---------------------------------------------------------------------------------------------------------------------
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_paragraph->m_arrItems.begin(); it != oox_paragraph->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_paragraph->m_arrItems.size(); ++i)
 	{
 		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
-		switch((*it)->getType())
+		switch(oox_paragraph->m_arrItems[i]->getType())
 		{
 			case OOX::et_w_pPr:
 			{
 				// пропускаем .. 
 			}break;		
 			default:
-				convert(*it);
+				convert(oox_paragraph->m_arrItems[i]);
 				break;
 		}
 	}
@@ -691,24 +691,24 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 
 	odt_context->start_run(styled);
 	
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_run->m_arrItems.begin(); it != oox_run->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_run->m_arrItems.size(); ++i)
 	{
 		//те элементы которые тока для Run - здесь - остальные в общей куче		
-		switch((*it)->getType())
+		switch(oox_run->m_arrItems[i]->getType())
 		{
 			case OOX::et_w_fldChar:	
 			{
-				OOX::Logic::CFldChar* pFldChar= dynamic_cast<OOX::Logic::CFldChar*>(*it);
+				OOX::Logic::CFldChar* pFldChar= dynamic_cast<OOX::Logic::CFldChar*>(oox_run->m_arrItems[i]);
 				convert(pFldChar);
 			}break;
 			case OOX::et_w_instrText:
 			{
-				OOX::Logic::CInstrText* pInstrText= dynamic_cast<OOX::Logic::CInstrText*>(*it);
+				OOX::Logic::CInstrText* pInstrText= dynamic_cast<OOX::Logic::CInstrText*>(oox_run->m_arrItems[i]);
 				convert(pInstrText);
 			}break;
 			case OOX::et_w_delText:
 			{
-				OOX::Logic::CDelText* pDelText= dynamic_cast<OOX::Logic::CDelText*>(*it);
+				OOX::Logic::CDelText* pDelText= dynamic_cast<OOX::Logic::CDelText*>(oox_run->m_arrItems[i]);
 				convert(pDelText);
 			}break;
 			case OOX::et_w_rPr:	// пропускаем .. 
@@ -719,7 +719,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 			}break;
 			case OOX::et_w_br:
 			{
-				OOX::Logic::CBr* pBr= dynamic_cast<OOX::Logic::CBr*>(*it);
+				OOX::Logic::CBr* pBr= dynamic_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
 				if (pBr)
 				{
 					int type = pBr->m_oType.GetValue();
@@ -732,17 +732,17 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 			}break;
 			case OOX::et_w_t:
 			{
-				OOX::Logic::CText* pText= dynamic_cast<OOX::Logic::CText*>(*it);
+				OOX::Logic::CText* pText= dynamic_cast<OOX::Logic::CText*>(oox_run->m_arrItems[i]);
 				convert(pText);
 			}break;
 			case OOX::et_w_sym:
 			{
-				OOX::Logic::CSym* pSym= dynamic_cast<OOX::Logic::CSym*>(*it);
+				OOX::Logic::CSym* pSym= dynamic_cast<OOX::Logic::CSym*>(oox_run->m_arrItems[i]);
 				convert(pSym);
 			}break;
 			case OOX::et_w_tab:
 			{
-				OOX::Logic::CTab* pTab= dynamic_cast<OOX::Logic::CTab*>(*it);
+				OOX::Logic::CTab* pTab= dynamic_cast<OOX::Logic::CTab*>(oox_run->m_arrItems[i]);
 				odt_context->text_context()->add_tab();
 			}break;
 
@@ -759,7 +759,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 			//softHyphen
 			//delInstrText
 			default:
-				convert(*it);
+				convert(oox_run->m_arrItems[i]);
 		}
 	}
 	odt_context->end_run();
@@ -898,9 +898,9 @@ void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 			
 	bool start_change = odt_context->start_change(id, 1, author, userId, date);
 
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_ins->m_arrItems.begin(); it != oox_ins->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_ins->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(oox_ins->m_arrItems[i]);
 	}
 	
 	if (start_change)
@@ -1103,9 +1103,9 @@ void DocxConverter::convert(OOX::Logic::CDel *oox_del)
 
 	bool res_change  = odt_context->start_change(id, 2, author, userId, date);
 
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_del->m_arrItems.begin(); it != oox_del->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_del->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(oox_del->m_arrItems[i]);
 	}
 	if (res_change)
 		odt_context->end_change(id, 2);
@@ -1114,9 +1114,9 @@ void DocxConverter::convert(OOX::Logic::CSmartTag *oox_tag)
 {
 	if (oox_tag == NULL) return;
 
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_tag->m_arrItems.begin(); it != oox_tag->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_tag->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(oox_tag->m_arrItems[i]);
 	}
 }
 void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties)
@@ -3051,17 +3051,17 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 	{
 		odt_context->start_hyperlink(ref);
 		
-        for (std::vector<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); ++it)
+        for (size_t i = 0; i < oox_hyperlink->m_arrItems.size(); ++i)
 		{
-			convert(*it);
+			convert(oox_hyperlink->m_arrItems[i]);
 		}
 		odt_context->end_hyperlink();
 	}
 	else
 	{
-        for (std::vector<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); ++it)
+        for (size_t i = 0; i < oox_hyperlink->m_arrItems.size(); ++i)
 		{
-			convert(*it);
+			convert(oox_hyperlink->m_arrItems[i]);
 		}
 	}
     //nullable<std::wstring                                      > m_sDocLocation;
@@ -3613,9 +3613,9 @@ void DocxConverter::convert_comment(int oox_comm_id)
 			if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
 			if (oox_comment->m_oInitials.IsInit())	{}
 
-            for (std::vector<OOX::WritingElement*>::iterator it = oox_comment->m_arrItems.begin(); it != oox_comment->m_arrItems.end(); ++it)
+            for (size_t i = 0; i < oox_comment->m_arrItems.size(); ++i)
 			{
-				convert(*it);
+				convert(oox_comment->m_arrItems[i]);
 			}
 		}
 		odt_context->end_comment_content();
@@ -3638,9 +3638,9 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 		{
 			odt_context->start_note_content();
 			{
-                for (std::vector<OOX::WritingElement*>::iterator it = oox_note->m_arrItems.begin(); it != oox_note->m_arrItems.end(); ++it)
+                for (size_t i = 0; i < oox_note->m_arrItems.size(); ++i)
 				{
-					convert(*it);
+					convert(oox_note->m_arrItems[i]);
 				}
 			}
 			odt_context->end_note_content();
@@ -3665,9 +3665,9 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 		{
 			odt_context->start_note_content();
 			{
-                for (std::vector<OOX::WritingElement*>::iterator it = oox_note->m_arrItems.begin(); it != oox_note->m_arrItems.end(); ++it)
+                for (size_t i = 0; i < oox_note->m_arrItems.size(); ++i)
 				{
-					convert(*it);
+					convert(oox_note->m_arrItems[i]);
 				}
 			}
 			odt_context->end_note_content();
@@ -3682,9 +3682,9 @@ void DocxConverter::convert_hdr_ftr	(std::wstring sId)
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_hdr_ftr);
 
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_hdr_ftr->m_arrItems.begin(); it != oox_hdr_ftr->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_hdr_ftr->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(oox_hdr_ftr->m_arrItems[i]);
 	}
 	oox_current_child_document  = NULL;
 }
@@ -3861,16 +3861,16 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	convert(oox_table->m_oTblGrid.GetPointer());
 
 //------ строки
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_table->m_arrItems.begin(); it != oox_table->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_table->m_arrItems.size(); ++i)
 	{
-		switch((*it)->getType())
+		switch(oox_table->m_arrItems[i]->getType())
 		{
 			case OOX::et_w_tblPr:	
 			{
 				//skip 
 			}break;
 			default:				
-				convert(*it);
+				convert(oox_table->m_arrItems[i]);
 		}
 	}
 	if (in_frame)
@@ -3977,16 +3977,16 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 	
 	convert(oox_table_row->m_pTableRowProperties);
 
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_table_row->m_arrItems.begin(); it != oox_table_row->m_arrItems.end(); ++it)
+    for (size_t i =0; i <  oox_table_row->m_arrItems.size(); ++i)
 	{
-		switch((*it)->getType())
+		switch(oox_table_row->m_arrItems[i]->getType())
 		{
 			case OOX::et_w_trPr:	
 			{
 				//skip
 			}break;
 			default:
-				convert(*it);
+				convert(oox_table_row->m_arrItems[i]);
 		}
 	}	
 	odt_context->end_table_row();
@@ -4037,16 +4037,16 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 			odt_context->table_context()->set_cell_column_span(oox_table_cell->m_pTableCellProperties->m_oGridSpan->m_oVal->GetValue());
 	}
 
-    for (std::vector<OOX::WritingElement*>::iterator it = oox_table_cell->m_arrItems.begin(); it != oox_table_cell->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < oox_table_cell->m_arrItems.size(); ++i)
 	{
-		switch((*it)->getType())
+		switch(oox_table_cell->m_arrItems[i]->getType())
 		{
 			case OOX::et_w_tcPr:	
 			{
 				//skip
 			}break;
 			default:
-				convert(*it);
+				convert(oox_table_cell->m_arrItems[i]);
 		}
 	}		
 	odt_context->end_table_cell();

@@ -678,48 +678,48 @@ public:
 	_CP_OPT(std::wstring)	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_index_title_template);
-////---------------------------------------------------------------------------------------------------
-////text:sequence-decl
-////---------------------------------------------------------------------------------------------------
-//class text_sequence_decl : public office_element_impl<text_sequence_decl>
-//{
-//public:
-//    static const wchar_t * ns;
-//    static const wchar_t * name;
-//    static const xml::NodeType xml_type = xml::typeElement;
-//    static const ElementType type		= typeTextSequenceDecl;
-//    CPDOCCORE_DEFINE_VISITABLE()
-//    
-//	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
-//    virtual void add_child_element		( const office_element_ptr & child_element);
-//
-//    virtual void serialize(std::wostream & _Wostream);
-//
-//	_CP_OPT(std::wstring)	separation_character_; //one char
-//	_CP_OPT(unsigned int)	display_outline_level_;
-//	_CP_OPT(std::wstring)	name_;
-//};
-//CP_REGISTER_OFFICE_ELEMENT2(text_sequence_decl);
-////---------------------------------------------------------------------------------------------------
-////text:sequence-decls
-////---------------------------------------------------------------------------------------------------
-//class text_sequence_decls : public office_element_impl<text_sequence_decls>
-//{
-//public:
-//    static const wchar_t * ns;
-//    static const wchar_t * name;
-//    static const xml::NodeType xml_type = xml::typeElement;
-//    static const ElementType type		= typeTextSequenceDecls;
-//    CPDOCCORE_DEFINE_VISITABLE()
-//    
-//	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
-//    virtual void add_child_element		( const office_element_ptr & child_element);
-//
-//    virtual void serialize(std::wostream & _Wostream);
-//
-//    office_element_ptr_array content_;
-//};
-//CP_REGISTER_OFFICE_ELEMENT2(text_sequence_decls);
+//---------------------------------------------------------------------------------------------------
+//text:sequence-decl
+//---------------------------------------------------------------------------------------------------
+class text_sequence_decl : public office_element_impl<text_sequence_decl>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextSequenceDecl;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)	separation_character_; //one char
+	_CP_OPT(unsigned int)	display_outline_level_;
+	_CP_OPT(std::wstring)	name_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_sequence_decl);
+//---------------------------------------------------------------------------------------------------
+//text:sequence-decls
+//---------------------------------------------------------------------------------------------------
+class text_sequence_decls : public office_element_impl<text_sequence_decls>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextSequenceDecls;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_sequence_decls);
 //---------------------------------------------------------------------------------------------------
 //text:table-of-content-source
 //---------------------------------------------------------------------------------------------------

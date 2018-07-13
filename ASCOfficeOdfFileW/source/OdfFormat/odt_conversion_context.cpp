@@ -37,7 +37,6 @@
 #include "../utils.h"
 
 #include "odt_conversion_context.h"
-#include "odf_text_context.h"
 
 #include "styles.h"
 
@@ -114,6 +113,27 @@ void odt_conversion_context::start_document()
 
 void odt_conversion_context::end_document()
 {
+	if (false == mapSequenceDecls.empty())
+	{
+		office_element_ptr seq_decls;		
+		create_element(L"text", L"sequence-decls", seq_decls, this);	
+
+		for (std::map<std::wstring, int>::iterator it = mapSequenceDecls.begin(); it != mapSequenceDecls.end(); ++it)
+		{
+			office_element_ptr elm;		
+			create_element(L"text", L"sequence-decl", elm, this);	
+
+			text_sequence_decl* decl = dynamic_cast<text_sequence_decl*>(elm.get());
+			if (decl)
+			{
+				decl->name_ = it->first;
+				decl->display_outline_level_ = 0;
+			}		
+			seq_decls->add_child_element(elm);
+		}
+		root_document_->add_child_element(seq_decls);
+	}
+
 	//add sections to root
 	for (size_t i = 0; i < sections_.size(); i++)
 	{
@@ -289,11 +309,11 @@ void odt_conversion_context::start_paragraph(bool styled)
 		//if (!current_fields.empty() && !current_fields.back().result) return;	//Стандартное_составное_письмо.docx
 		switch (current_fields.back().type)
 		{
-		case 6:	start_bibliography();		break;
-		case 7:	start_alphabetical_index();	break;
-		case 8:	start_illustration_index();	break;
-		case 9: start_table_index();		break;
-		case 10:start_table_of_content();	break;
+		case fieldBibliography:	start_bibliography();		break;
+		case fieldIndex:		start_alphabetical_index();	break;
+		case fieldIllustration:	start_illustration_index();	break;
+		case fieldTable:		start_table_index();		break;
+		case fieldToc:			start_table_of_content();	break;
 		}	
 	}
 	if (is_paragraph_in_current_section_ && !styled) 
@@ -522,9 +542,6 @@ void odt_conversion_context::start_hyperlink(std::wstring ref)
 		hyperlink->common_xlink_attlist_.href_	= ref;
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		
-		//current_level_.back()->add_child_element(hyperlink_elm);
-		//current_level_.push_back(hyperlink_elm);
-		
 		text_context()->start_element(hyperlink_elm);
 
 		is_hyperlink_ = true;
@@ -538,7 +555,37 @@ void odt_conversion_context::end_hyperlink()
 
 	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
 }
+void odt_conversion_context::start_sequence()
+{
+	std::map<std::wstring, int>::iterator pFind = mapSequenceDecls.find(current_fields.back().value);
+	
+	int index = 0;
+	if (pFind == mapSequenceDecls.end())
+	{
+		mapSequenceDecls.insert(std::make_pair(current_fields.back().value, index));
+	}
+	else
+	{
+		index = ++pFind->second;
+	}
+	office_element_ptr seq_elm;
+	create_element(L"text", L"sequence", seq_elm, this);
+
+	text_sequence* sequence = dynamic_cast<text_sequence*>(seq_elm.get());
+	if (sequence)
+	{
+		sequence->name_	= current_fields.back().value;
+		sequence->ref_name_	= L"ref" + current_fields.back().value + std::to_wstring(index);
+		sequence->formula_ = L"ooow:" + current_fields.back().value + L"+1";
+		sequence->style_num_format_	= style_numformat(style_numformat::arabic);
 		
+		text_context()->start_element(seq_elm);
+	}
+}	
+void odt_conversion_context::end_sequence()
+{
+	text_context()->end_element();
+}
 std::map<std::wstring, std::wstring> odt_conversion_context::parse_instr_options(const std::wstring& value)
 {
 	std::map<std::wstring, std::wstring> result;
@@ -552,12 +599,20 @@ std::map<std::wstring, std::wstring> odt_conversion_context::parse_instr_options
 		std::wstring value;
 		if (arOptions[i].length() > 2)
 		{
-			value = arOptions[i].substr(2);			
-			boost::algorithm::trim(value);
-
-			if (value[0] == L'\"')
+			size_t pos = arOptions[i].find(L"\"");
+			if (std::wstring::npos != pos)
 			{
-				value = value.substr(1, value.length() - 2);
+				value = arOptions[i].substr(pos + 1, arOptions[i].length() - pos - 1);
+				
+				pos = value.rfind(L"\"");
+				if (std::wstring::npos != pos)
+				{
+					value = value.substr(0, pos);
+				}
+			}
+			else
+			{
+				value = arOptions[i].substr(1);		
 			}
 		}
 		result.insert(std::make_pair(key, value));
@@ -576,7 +631,7 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	size_t res1 = instr.find(L"HYPERLINK");
 	if (std::wstring::npos != res1)	
 	{
-		current_fields.back().type = 1;
+		current_fields.back().type = fieldHyperlink;
 		current_fields.back().in_span = false;
 		
 		std::wstring ref;
@@ -592,41 +647,59 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	res1 = instr.find(L"NUMPAGES");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = 3;
+		current_fields.back().type = fieldNumPages;
 	}	
 	res1 = instr.find(L"PAGEREF");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0 )
 	{
-		current_fields.back().type = 5;
+		current_fields.back().type = fieldPageRef;
 		if (instr.length() > 9)
 			current_fields.back().value = instr.substr(9, instr.length() - 5);
 	}
 	res1 = instr.find(L"PAGE");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = 2;
+		current_fields.back().type = fieldPage;
 	}
 	res1 = instr.find(L"TIME");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = 4;
+		current_fields.back().type = fieldTime;
+	}
+	res1 = instr.find(L"SEQ");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = fieldSeq;
+		std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(4));
+		
+		for (std::map<std::wstring, std::wstring>::iterator it = options.begin(); it != options.end(); ++it)
+		{
+			if (it->first == L" ")
+			{
+				current_fields.back().value = it->second.substr(0, it->second.length() - 1);	
+			}
+			else if (it->first == L"*")
+			{
+				current_fields.back().format = it->second.substr(0, it->second.length() - 1);	
+			}
+		}
 	}
 	res1 = instr.find(L"BIBLIOGRAPHY");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = 6;
+		current_fields.back().type = fieldBibliography;
 		current_fields.back().in_span = false;
 	}
 	res1 = instr.find(L"INDEX");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = 7;
+		current_fields.back().type = fieldIndex;
 		current_fields.back().in_span = false;
 	}
 	res1 = instr.find(L"TOC");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = 8;
+		current_fields.back().type = fieldIllustration;
 		current_fields.back().in_span = false;
 		std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(res1 + 3));
 		
@@ -643,7 +716,7 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 		pFind = options.find(L"u"); //paragraph outline level
 		if ( pFind != options.end())
 		{
-			current_fields.back().type = 10;  //table of content
+			current_fields.back().type = fieldToc;  //table of content
 		}
 		pFind = options.find(L"o");
 		if ( pFind != options.end())//table of content outline levels style
@@ -652,7 +725,7 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 			boost::algorithm::split(arLevels, pFind->second, boost::algorithm::is_any_of(L"-"), boost::algorithm::token_compress_on);
 			if (arLevels.size() > 1)
 			{
-				current_fields.back().type = 10;  
+				current_fields.back().type = fieldToc;  
 				current_fields.back().outline_levels = XmlUtils::GetInteger(arLevels[1]);
 			}
 		}
@@ -848,9 +921,10 @@ void odt_conversion_context::end_field()
 	{
 		current_fields.back().status = 3;//prepare for delete
 		
-		if (current_fields.back().type < 6)
+		if (current_fields.back().type < 0xff)
 		{
-			if (current_fields.back().type == 1)	end_hyperlink();
+			if (current_fields.back().type == fieldHyperlink)	end_hyperlink();
+			else if (current_fields.back().type == fieldSeq)	end_sequence();
 			else text_context()->end_field();
 		
 			current_fields.pop_back();
@@ -866,11 +940,11 @@ void odt_conversion_context::end_paragraph()
 	{
 		switch(current_fields.back().type)
 		{
-			case 6:		end_bibliography();			break;
-			case 7:		end_alphabetical_index();	break;
-			case 8:		end_illustration_index();	break;
-			case 9:		end_table_index();			break;
-			case 10:	end_table_of_content();		break;
+			case fieldBibliography:	end_bibliography();			break;
+			case fieldIndex:		end_alphabetical_index();	break;
+			case fieldIllustration:	end_illustration_index();	break;
+			case fieldTable:		end_table_index();			break;
+			case fieldToc:			end_table_of_content();		break;
 		}
 		current_fields.pop_back();
 	}
@@ -974,12 +1048,13 @@ void odt_conversion_context::start_run(bool styled)
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 	
-	if (!current_fields.empty() && current_fields.back().status == 1 && !current_fields.back().in_span && current_fields.back().type < 6)
+	if (!current_fields.empty() && current_fields.back().status == 1 && !current_fields.back().in_span && current_fields.back().type < 0xff)
 	{
 		current_fields.back().status = 2;
 
-		if (current_fields.back().type == 1)	start_hyperlink(current_fields.back().value);
-		else									text_context()->start_field(current_fields.back().type);
+		if (current_fields.back().type == fieldHyperlink)	start_hyperlink(current_fields.back().value);
+		else if (current_fields.back().type == fieldSeq)	start_sequence();
+		else												text_context()->start_field(current_fields.back().type);
 	}	
 	
 	text_context()->start_span(styled);

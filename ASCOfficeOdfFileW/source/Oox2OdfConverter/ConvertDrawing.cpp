@@ -623,9 +623,9 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 					//docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
 					
-                    for (std::vector<OOX::WritingElement*>::iterator	it = oox_shape->oTextBoxShape->m_arrItems.begin(); it != oox_shape->oTextBoxShape->m_arrItems.end(); ++it)
+                    for (size_t i = 0; i < oox_shape->oTextBoxShape->m_arrItems.size(); i++)
 					{
-						docx_converter->convert(*it);
+						docx_converter->convert(oox_shape->oTextBoxShape->m_arrItems[i]);
 				
 						convert(oox_shape->oTextBoxBodyPr.GetPointer());
 						

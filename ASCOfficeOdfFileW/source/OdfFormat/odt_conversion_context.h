@@ -36,16 +36,13 @@
 #include "odf_comment_context.h"
 #include "odf_notes_context.h"
 #include "odf_table_context.h"
+#include "odf_text_context.h"
 
-namespace cpdoccore { 
-namespace odf_writer {
-
+namespace cpdoccore 
+{ 
+namespace odf_writer 
+{
 class office_text;
-
-class odf_text_context;
-
-typedef shared_ptr<odf_text_context>::Type		odf_text_context_ptr;
-typedef shared_ptr<odf_drawing_context>::Type	odf_drawing_context_ptr;
 
 struct odt_section_state
 {
@@ -92,6 +89,9 @@ public:
 
 	void start_hyperlink	(std::wstring ref);
 	void end_hyperlink		();
+
+	void start_sequence ();
+	void end_sequence ();
 
 	void start_table_of_content ();
 	void end_table_of_content ();
@@ -201,11 +201,13 @@ private:
 	std::vector<odf_element_state>		current_root_elements_; // for section, if needed
 	std::vector<odt_section_state>		sections_;
 
+	std::map<std::wstring, int>			mapSequenceDecls;
+
 	void add_to_root();
 
 	struct _field_state
 	{
-		int				type = 0;
+		_typeField		type = fieldUnknown;
 
 		std::wstring	name;
 		std::wstring	value;

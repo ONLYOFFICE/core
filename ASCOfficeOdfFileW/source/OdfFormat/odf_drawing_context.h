@@ -284,8 +284,8 @@ private:
 	
     class Impl;
     _CP_PTR(Impl) impl_;
-
 };
+typedef shared_ptr<odf_drawing_context>::Type	odf_drawing_context_ptr;
 
 }
 }

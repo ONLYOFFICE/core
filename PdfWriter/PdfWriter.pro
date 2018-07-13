@@ -22,6 +22,10 @@ LIBS += -lCryptoPPLib
 
 DEFINES += NOMINMAX
 
+core_linux {
+    QMAKE_CXXFLAGS += -Wno-narrowing
+}
+
 core_windows {
     DEFINES -= UNICODE
     DEFINES -= _UNICODE

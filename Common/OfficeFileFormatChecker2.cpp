@@ -266,10 +266,10 @@ std::wstring COfficeFileFormatChecker::getDocumentID (const std::wstring & _file
 		{
 			NSFile::CFileBinary file;
 			if (!file.OpenFile(fileName))
-				return false;
+				return documentID;
 			
 			unsigned char* buffer = new unsigned char[4096]; //enaf !!
-			if (!buffer){file.CloseFile();return false;}
+			if (!buffer){file.CloseFile();return documentID;}
 
 			DWORD dwReadBytes = 0;
 			file.ReadFile(buffer, MIN_SIZE_BUFFER, dwReadBytes);

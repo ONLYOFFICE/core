@@ -1041,7 +1041,7 @@ namespace NSEditorApi
         js_wrapper<bool> m_bLockLayout;
         js_wrapper<bool> m_bLockRemove;
         js_wrapper<bool> m_bLockTiming;
-        js_wrapper<bool> m_bLockTranzition;
+        js_wrapper<bool> m_bLockTransition;
         
     public:
         CAscSlideProp()
@@ -1060,7 +1060,7 @@ namespace NSEditorApi
         LINK_PROPERTY_BOOL_JS(LockLayout)
         LINK_PROPERTY_BOOL_JS(LockRemove)
         LINK_PROPERTY_BOOL_JS(LockTiming)
-        LINK_PROPERTY_BOOL_JS(LockTranzition)
+        LINK_PROPERTY_BOOL_JS(LockTransition)
         
     };
 

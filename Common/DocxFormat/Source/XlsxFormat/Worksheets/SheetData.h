@@ -377,6 +377,20 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				toXMLStart(writer);
+				
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+				
+				toXMLEnd(writer);
+			}
+			virtual void toXMLStart(NSStringUtils::CStringBuilder& writer) const
+			{
 				writer.WriteString(_T("<row"));
 				WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
 				WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
@@ -390,15 +404,9 @@ namespace OOX
 				WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
 				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
 				writer.WriteString(_T(">"));
-				
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-				
+			}
+			virtual void toXMLEnd(NSStringUtils::CStringBuilder& writer) const
+			{
 				writer.WriteString(_T("</row>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -489,8 +497,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<sheetData>"));
-				
+				toXMLStart(writer);
                 for ( size_t i = 0; i < m_arrItems.size(); ++i)
                 {
                     if (  m_arrItems[i] )
@@ -498,7 +505,14 @@ namespace OOX
                         m_arrItems[i]->toXML(writer);
                     }
                 }
-				
+				toXMLEnd(writer);
+			}
+			virtual void toXMLStart(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(_T("<sheetData>"));
+			}
+			virtual void toXMLEnd(NSStringUtils::CStringBuilder& writer) const
+			{
 				writer.WriteString(_T("</sheetData>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

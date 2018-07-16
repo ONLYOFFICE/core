@@ -78,7 +78,7 @@ namespace NSStringUtils
 
     class KERNEL_DECL CStringBuilder
 	{
-	private:
+	protected:
 		wchar_t*	m_pData;
 		size_t		m_lSize;
 
@@ -87,9 +87,9 @@ namespace NSStringUtils
 
 	public:
         CStringBuilder();
-        ~CStringBuilder();
+        virtual ~CStringBuilder();
 
-        void AddSize(size_t nSize);
+        virtual void AddSize(size_t nSize);
 
 	public:
 

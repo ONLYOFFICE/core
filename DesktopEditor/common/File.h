@@ -130,9 +130,9 @@ namespace NSFile
 
 	public:
         CFileBinary();
-        ~CFileBinary();
+        virtual ~CFileBinary();
 
-        void CloseFile();
+        virtual void CloseFile();
 
         FILE* GetFileNative();
         long GetFileSize();

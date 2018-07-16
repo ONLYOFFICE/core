@@ -345,54 +345,71 @@ namespace OOX
 		}
 		void CWorksheet::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			NSStringUtils::CStringBuilder sXml;
-			sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" mc:Ignorable=\"x14ac\">"));
-			if(m_oSheetPr.IsInit())
-				m_oSheetPr->toXML(sXml);
-			if(m_oSheetViews.IsInit())
-				m_oSheetViews->toXML(sXml);
-			if(m_oSheetFormatPr.IsInit())
-				m_oSheetFormatPr->toXML(sXml);
-			if(m_oCols.IsInit())
-				m_oCols->toXML(sXml);
-			if(m_oSheetData.IsInit())
-				m_oSheetData->toXML(sXml);
-			if(m_oAutofilter.IsInit())
-				m_oAutofilter->toXML(sXml);
-			if(m_oMergeCells.IsInit())
-				m_oMergeCells->toXML(sXml);
-			for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
-				m_arrConditionalFormatting[nIndex]->toXML(sXml);
-			if(m_oHyperlinks.IsInit())
-				m_oHyperlinks->toXML(sXml);
-			if(m_oPrintOptions.IsInit())
-				m_oPrintOptions->toXML(sXml);
-			if(m_oPageMargins.IsInit())
-				m_oPageMargins->toXML(sXml);
-			if(m_oPageSetup.IsInit())
-				m_oPageSetup->toXML(sXml);
-			if(m_oDrawing.IsInit())
-				m_oDrawing->toXML(sXml);
-			if(m_oLegacyDrawing.IsInit())
-				m_oLegacyDrawing->toXML(sXml);
-			if(m_oLegacyDrawingHF.IsInit())
-				m_oLegacyDrawingHF->toXML(sXml);
-			if(m_oOleObjects.IsInit())
-				m_oOleObjects->toXML(sXml);
-			if (m_oControls.IsInit())
-				m_oControls->toXML(sXml);
-			if(m_oTableParts.IsInit())
-				m_oTableParts->toXML(sXml);
-            if(m_oExtLst.IsInit())
+			if (m_sOutputFilename.empty())
 			{
-                sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+				NSStringUtils::CStringBuilder sXml;
+				toXMLStart(sXml);
+				if(m_oSheetPr.IsInit())
+					m_oSheetPr->toXML(sXml);
+				if(m_oSheetViews.IsInit())
+					m_oSheetViews->toXML(sXml);
+				if(m_oSheetFormatPr.IsInit())
+					m_oSheetFormatPr->toXML(sXml);
+				if(m_oCols.IsInit())
+					m_oCols->toXML(sXml);
+				if(m_oSheetData.IsInit())
+					m_oSheetData->toXML(sXml);
+				if(m_oAutofilter.IsInit())
+					m_oAutofilter->toXML(sXml);
+				if(m_oMergeCells.IsInit())
+					m_oMergeCells->toXML(sXml);
+				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+					m_arrConditionalFormatting[nIndex]->toXML(sXml);
+				if(m_oHyperlinks.IsInit())
+					m_oHyperlinks->toXML(sXml);
+				if(m_oPrintOptions.IsInit())
+					m_oPrintOptions->toXML(sXml);
+				if(m_oPageMargins.IsInit())
+					m_oPageMargins->toXML(sXml);
+				if(m_oPageSetup.IsInit())
+					m_oPageSetup->toXML(sXml);
+				if(m_oDrawing.IsInit())
+					m_oDrawing->toXML(sXml);
+				if(m_oLegacyDrawing.IsInit())
+					m_oLegacyDrawing->toXML(sXml);
+				if(m_oLegacyDrawingHF.IsInit())
+					m_oLegacyDrawingHF->toXML(sXml);
+				if(m_oOleObjects.IsInit())
+					m_oOleObjects->toXML(sXml);
+				if (m_oControls.IsInit())
+					m_oControls->toXML(sXml);
+				if(m_oTableParts.IsInit())
+					m_oTableParts->toXML(sXml);
+				if(m_oExtLst.IsInit())
+				{
+					sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+				}
+				toXMLEnd(sXml);
+
+				NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+
+				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+				IFileContainer::Write( oPath, oDirectory, oContent );
 			}
-			sXml.WriteString(_T("</worksheet>"));
-
-            NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
-
-            oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-			IFileContainer::Write( oPath, oDirectory, oContent );
+			else
+			{
+				CPath oRealPath(oPath.GetDirectory() + FILE_SEPARATOR_STR + m_sOutputFilename);
+				oContent.Registration( type().OverrideType(), oDirectory, oRealPath.GetFilename() );
+				IFileContainer::Write( oRealPath, oDirectory, oContent );
+			}
+		}
+		void CWorksheet::toXMLStart(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" mc:Ignorable=\"x14ac\">"));
+		}
+		void CWorksheet::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("</worksheet>"));
 		}
 
 		const OOX::RId CWorksheet::AddHyperlink (std::wstring& sHref)

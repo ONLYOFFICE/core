@@ -218,6 +218,8 @@
 		69E6AC8D2031ACA900795D9D /* VbaProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 69E6AC8B2031ACA900795D9D /* VbaProject.h */; };
 		69E6AC8F2031B72500795D9D /* Worksheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69E6AC8E2031B72500795D9D /* Worksheet.cpp */; };
 		69F181EC1C7734A700B2952B /* strings_hack_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181EA1C7734A700B2952B /* strings_hack_printf.h */; };
+		8A218DBF20FCC770006589C2 /* StreamWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A218DBD20FCC76F006589C2 /* StreamWriter.h */; };
+		8A218DC020FCC770006589C2 /* StreamWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A218DBE20FCC770006589C2 /* StreamWriter.cpp */; };
 		8A404FCA2089FF7E00F2D5CF /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC92089FF7E00F2D5CF /* Base64.cpp */; };
 		8A404FCC2089FFE700F2D5CF /* Directory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCB2089FFE700F2D5CF /* Directory.cpp */; };
 		8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCD208A001D00F2D5CF /* Path.cpp */; };
@@ -443,6 +445,8 @@
 		69E6AC8B2031ACA900795D9D /* VbaProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VbaProject.h; sourceTree = "<group>"; };
 		69E6AC8E2031B72500795D9D /* Worksheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Worksheet.cpp; sourceTree = "<group>"; };
 		69F181EA1C7734A700B2952B /* strings_hack_printf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strings_hack_printf.h; path = ../../Common/DocxFormat/Source/Base/strings_hack_printf.h; sourceTree = "<group>"; };
+		8A218DBD20FCC76F006589C2 /* StreamWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamWriter.h; sourceTree = "<group>"; };
+		8A218DBE20FCC770006589C2 /* StreamWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StreamWriter.cpp; sourceTree = "<group>"; };
 		8A404FC92089FF7E00F2D5CF /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64.cpp; path = ../../../../DesktopEditor/common/Base64.cpp; sourceTree = "<group>"; };
 		8A404FCB2089FFE700F2D5CF /* Directory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Directory.cpp; path = ../../../../DesktopEditor/common/Directory.cpp; sourceTree = "<group>"; };
 		8A404FCD208A001D00F2D5CF /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Path.cpp; path = ../../../../DesktopEditor/common/Path.cpp; sourceTree = "<group>"; };
@@ -925,6 +929,8 @@
 				17E6B3C01AC4298500F28F8B /* Path.h */,
 				17E6B3C11AC4298500F28F8B /* Types.h */,
 				69F181EA1C7734A700B2952B /* strings_hack_printf.h */,
+				8A218DBE20FCC770006589C2 /* StreamWriter.cpp */,
+				8A218DBD20FCC76F006589C2 /* StreamWriter.h */,
 			);
 			name = common;
 			path = ../../../../DesktopEditor/common;
@@ -970,6 +976,7 @@
 				17C1FBEE1ACC4250006B99B3 /* MergeCells.h in Headers */,
 				17C1FBEF1ACC4250006B99B3 /* Docx.h in Headers */,
 				17C1FBF11ACC4250006B99B3 /* SimpleTypes_OMath.h in Headers */,
+				8A218DBF20FCC770006589C2 /* StreamWriter.h in Headers */,
 				17C1FBF21ACC4250006B99B3 /* StringOutput.h in Headers */,
 				17C1FBF41ACC4250006B99B3 /* Image.h in Headers */,
 				17C1FBF51ACC4250006B99B3 /* Dir.h in Headers */,
@@ -1198,6 +1205,7 @@
 				17C1FBBA1ACC4250006B99B3 /* SimpleTypes_Word.cpp in Sources */,
 				17C1FBBB1ACC4250006B99B3 /* MathEquation.cpp in Sources */,
 				17C1FBBC1ACC4250006B99B3 /* Wrap.cpp in Sources */,
+				8A218DC020FCC770006589C2 /* StreamWriter.cpp in Sources */,
 				17C1FBBD1ACC4250006B99B3 /* Common.cpp in Sources */,
 				1732414A1BBEC90000E67992 /* pole.cpp in Sources */,
 				17C1FBBE1ACC4250006B99B3 /* IFileContainer.cpp in Sources */,

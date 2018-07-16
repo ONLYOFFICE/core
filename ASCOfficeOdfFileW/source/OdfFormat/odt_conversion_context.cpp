@@ -674,13 +674,27 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 		
 		for (std::map<std::wstring, std::wstring>::iterator it = options.begin(); it != options.end(); ++it)
 		{
-			if (it->first == L" ")
+			if (it->first == L" ")//field-argument
 			{
 				current_fields.back().value = it->second.substr(0, it->second.length() - 1);	
 			}
 			else if (it->first == L"*")
 			{
 				current_fields.back().format = it->second.substr(0, it->second.length() - 1);	
+			}
+		}
+	}
+	res1 = instr.find(L"XE");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = fieldXE;
+		std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(3));
+		
+		for (std::map<std::wstring, std::wstring>::iterator it = options.begin(); it != options.end(); ++it)
+		{
+			if (it->first == L" ")//field-argument
+			{
+				current_fields.back().value = it->second.substr(0, it->second.length() - 1);	
 			}
 		}
 	}
@@ -1054,7 +1068,7 @@ void odt_conversion_context::start_run(bool styled)
 
 		if (current_fields.back().type == fieldHyperlink)	start_hyperlink(current_fields.back().value);
 		else if (current_fields.back().type == fieldSeq)	start_sequence();
-		else												text_context()->start_field(current_fields.back().type);
+		else												text_context()->start_field(current_fields.back().type, current_fields.back().value);
 	}	
 	
 	text_context()->start_span(styled);
@@ -1069,7 +1083,7 @@ void odt_conversion_context::start_run(bool styled)
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)//поле стартуется в span - нужно для сохранения стиля
 	{
 		current_fields.back().status = 2;
-		text_context()->start_field(current_fields.back().type);
+		text_context()->start_field(current_fields.back().type, current_fields.back().value);
 	}	
 }
 void odt_conversion_context::end_run()

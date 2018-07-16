@@ -197,6 +197,7 @@ bool OoxConverter::encrypt_document (const std::wstring &password, const std::ws
 		
 		encrypt_file(password, inp_file_name, out_file_name, rels->relationships_[i].encryption_, rels->relationships_[i].size_);
 	}
+	return true;
 }
 bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size)
 {

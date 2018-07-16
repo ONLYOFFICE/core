@@ -52,6 +52,7 @@ namespace odf_writer
 		fieldTime,
 		fieldPageRef,
 		fieldSeq,
+		fieldXE,
 
 		fieldBibliography = 0xff + 1,
 		fieldIndex,
@@ -95,7 +96,7 @@ public:
 	void start_element		(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element		();
  	
-	bool start_field		(int type);
+	bool start_field		(int type, const std::wstring& value);
 	void end_field			();
 
 	void start_span			(bool styled = false); 

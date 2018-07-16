@@ -98,6 +98,21 @@ namespace NExtractTools
 		}
 		return sExt;
 	}
+	bool replaceContentType(const std::wstring &sDir, const std::wstring &sCTFrom, const std::wstring &sCTTo)
+	{
+		bool res = false;
+		std::wstring sContentTypesPath = sDir + FILE_SEPARATOR_STR + _T("[Content_Types].xml");
+		if (NSFile::CFileBinary::Exists(sContentTypesPath))
+		{
+			std::wstring sData;
+			if (NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
+			{
+				sData = string_replaceAll(sData, sCTFrom, sCTTo);
+				res = NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true);
+			}
+		}
+		return res;
+	}
 	// docx -> bin
     int docx2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -3078,20 +3093,36 @@ namespace NExtractTools
        int nRes = 0;
        if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
        {
-           if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
-           {
-				if(params.hasSavePassword())
+			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
+			{
+				if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
 				{
-					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
-					nRes = dir2zip(sFrom, sToMscrypt);
-					if(SUCCEEDED_X2T(nRes))
+					std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+					std::wstring sCTTo;
+					switch(nFormatTo)
 					{
-						nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM: sCTTo = _T("application/vnd.ms-word.document.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTTo = _T("application/vnd.ms-word.template.macroEnabledTemplate.main+xml");break;
 					}
+					nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				}
-				else
+				if(SUCCEEDED_X2T(nRes))
 				{
-					nRes = dir2zip(sFrom, sTo);
+					if(params.hasSavePassword())
+					{
+						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
+						nRes = dir2zip(sFrom, sToMscrypt);
+						if(SUCCEEDED_X2T(nRes))
+						{
+							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+						}
+					}
+					else
+					{
+						nRes = dir2zip(sFrom, sTo);
+					}
 				}
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatTo)
@@ -3290,20 +3321,36 @@ namespace NExtractTools
        int nRes = 0;
        if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
        {
-           if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo)
-           {
-				if(params.hasSavePassword())
+			if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo ||
+				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
+			{
+				if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
 				{
-					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
-					nRes = dir2zip(sFrom, sToMscrypt);
-					if(SUCCEEDED_X2T(nRes))
+					std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
+					std::wstring sCTTo;
+					switch(nFormatTo)
 					{
-						nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM: sCTTo = _T("application/vnd.ms-excel.sheet.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM: sCTTo = _T("application/vnd.ms-excel.template.macroEnabled.main+xml");break;
 					}
+					nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				}
-				else
+				if(SUCCEEDED_X2T(nRes))
 				{
-					nRes = dir2zip(sFrom, sTo);
+					if(params.hasSavePassword())
+					{
+						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
+						nRes = dir2zip(sFrom, sToMscrypt);
+						if(SUCCEEDED_X2T(nRes))
+						{
+							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+						}
+					}
+					else
+					{
+						nRes = dir2zip(sFrom, sTo);
+					}
 				}
            }
            //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
@@ -3477,20 +3524,39 @@ namespace NExtractTools
 		int nRes = 0;
 		if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
 		{
-			if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo)
+			if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM == nFormatTo)
 			{
-				if(params.hasSavePassword())
+				if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo ||
+					AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM == nFormatTo)
 				{
-					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
-					nRes = dir2zip(sFrom, sToMscrypt);
-					if(SUCCEEDED_X2T(nRes))
+					std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml");
+					std::wstring sCTTo;
+					switch(nFormatTo)
 					{
-						nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM: sCTTo = _T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX: sCTTo = _T("application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.presentationml.template.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM: sCTTo = _T("application/vnd.ms-powerpoint.template.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM: sCTTo = _T("application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml");break;
 					}
+					nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				}
-				else
+				if(SUCCEEDED_X2T(nRes))
 				{
-					nRes = dir2zip(sFrom, sTo);
+					if(params.hasSavePassword())
+					{
+						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
+						nRes = dir2zip(sFrom, sToMscrypt);
+						if(SUCCEEDED_X2T(nRes))
+						{
+							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+						}
+					}
+					else
+					{
+						nRes = dir2zip(sFrom, sTo);
+					}
 				}
 			}
 			//else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatTo)

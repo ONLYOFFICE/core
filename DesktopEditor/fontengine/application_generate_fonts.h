@@ -492,7 +492,7 @@ namespace NSCommon
                     pImageData[i] = 0;
                 }
                 
-                NSGraphics::IGraphicsRenderer pRenderer = NSGraphics::Create();
+                NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
                 pRenderer->CreateFromBgraFrame(&oFrame);
                 
                 pRenderer->SetFontManager(pManager);

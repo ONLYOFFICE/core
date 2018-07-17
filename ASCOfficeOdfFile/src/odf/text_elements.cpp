@@ -627,20 +627,28 @@ void section::afterCreate()
 	
 	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_section(true);        
+            lastPar->paragraph_.set_next_section(true);        
         }
-    }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_section(true);        
+        }
+	}
 }
 
 void section::afterReadContent()
 {
 	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_end_section(true);        
+            lastPar->paragraph_.set_next_end_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_end_section(true);        
         }
     }
  	office_element::afterReadContent();
@@ -1045,9 +1053,13 @@ void illustration_index::afterCreate()
 
 	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_section(true);        
+            lastPar->paragraph_.set_next_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_section(true);        
         }
     }
 }
@@ -1056,9 +1068,13 @@ void illustration_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_end_section(true);        
+            lastPar->paragraph_.set_next_end_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_end_section(true);        
         }
     }
 	office_element::afterReadContent();
@@ -1191,9 +1207,13 @@ void alphabetical_index::afterCreate()
 	
 	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_section(true);        
+            lastPar->paragraph_.set_next_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_section(true);        
         }
     }
 }
@@ -1201,9 +1221,13 @@ void alphabetical_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_end_section(true);        
+            lastPar->paragraph_.set_next_end_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_end_section(true);        
         }
     }
 	office_element::afterReadContent();
@@ -1299,9 +1323,13 @@ void object_index::afterCreate()
 
 	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_section(true);        
+            lastPar->paragraph_.set_next_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_section(true);        
         }
     }
 }
@@ -1309,9 +1337,13 @@ void object_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_end_section(true);        
+            lastPar->paragraph_.set_next_end_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_end_section(true);        
         }
     }
 	office_element::afterReadContent();
@@ -1404,9 +1436,13 @@ void user_index::afterCreate()
 
 	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_section(true);        
+            lastPar->paragraph_.set_next_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_section(true);        
         }
     }
 }
@@ -1414,9 +1450,13 @@ void user_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_end_section(true);        
+            lastPar->paragraph_.set_next_end_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_end_section(true);        
         }
     }
 	office_element::afterReadContent();
@@ -1548,9 +1588,13 @@ void bibliography::afterCreate()
 
 	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_section(true);        
+            lastPar->paragraph_.set_next_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_section(true);        
         }
     }
 }
@@ -1559,9 +1603,13 @@ void bibliography::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
         {
-            lastPar->set_next_end_section(true);        
+            lastPar->paragraph_.set_next_end_section(true);        
+        }
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+        {
+            lastPar->paragraph_.set_next_end_section(true);        
         }
     }
 	office_element::afterReadContent();

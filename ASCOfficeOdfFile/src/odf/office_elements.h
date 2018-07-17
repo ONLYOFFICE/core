@@ -34,7 +34,6 @@
 #include <vector>
 
 #include <CPSharedPtr.h>
-#include <CPWeakPtr.h>
 #include <xml/xmlelement.h>
 #include <common/readdocelement.h>
 
@@ -54,9 +53,10 @@
 namespace cpdoccore {
 namespace odf_reader {
 
+class document_context;
 class office_element;
+
 typedef shared_ptr<office_element>::Type	office_element_ptr;
-typedef weak_ptr<office_element>::Type		office_element_weak_ptr;
 typedef std::vector<office_element_ptr>		office_element_ptr_array;
 
 class office_element : public xml::element<wchar_t>,
@@ -75,15 +75,14 @@ public:
 
     virtual void afterCreate()
 	{
-		// вызывается сразу после создания объекта
-		if (context_)
+		if (context_ && this->get_type() != typeTextSection)
 		{
 			context_->level++;
 		}
 	}
 	virtual void afterReadContent()
 	{
-		if (context_)
+		if (context_ && this->get_type() != typeTextSection)
 		{
 			if (context_->level == 4)
 			{
@@ -92,7 +91,6 @@ public:
 					prev->next_element_style_name = element_style_name;
 				}
 		        
-				// запоминаем в контексте вновь созданный элемент
 				context_->set_last_element(this);
 			}
 			context_->level--;

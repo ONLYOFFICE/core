@@ -100,6 +100,7 @@ namespace
         case XmlUtils::XmlNodeType_DocumentType:
             return typeDocumentType;
         case XmlUtils::XmlNodeType_Whitespace:
+	case XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE:
             return typeWhitespace;
         case XmlUtils::XmlNodeType_EndElement:
             return typeEndElement;

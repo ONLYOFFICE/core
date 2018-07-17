@@ -32,6 +32,8 @@
 #include "RtfParagraph.h"
 #include "RtfWriter.h"
 
+#include "Writer/OOXWriter.h"
+
 int RtfParagraph::AddItem( IDocumentElementPtr piRend )
 {
 	if( TYPE_RTF_CHAR == piRend->GetType() )
@@ -85,7 +87,11 @@ std::wstring RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
 
 std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 {
-    std::wstring sResult ;
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>(oRenderParameter.poWriter);
+
+	std::wstring sResult ;
+
 	if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
 	{
 		for (size_t i = 0; i < m_aArray.size(); i++ )
@@ -125,11 +131,33 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		if( NULL != m_oOldList )
 			bCanConvertToNumbering = m_oOldList->CanConvertToNumbering();
 
-		sResult += L"<w:p>";
+		std::wstring sParaId = XmlUtils::IntToString(++poOOXWriter->m_nextParaId, L"%08X");
+		sResult += L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">";
 		sResult += L"<w:pPr>";
 		
 		m_oProperty.m_bOldList = (NULL != m_oOldList);
-		sResult += m_oProperty.RenderToOOX(oRenderParameter);
+		
+		bool bRenderProps = false;
+		if ( PROP_DEF != m_oProperty.m_nTableStyle && m_oProperty.m_bInTable > 0)
+		{
+			RtfStylePtr oCurStyle;
+			if( true == poRtfDocument->m_oStyleTable.GetStyle( m_oProperty.m_nTableStyle, oCurStyle ) )
+			{
+				RtfParagraphStyle* oCurParaStyle = dynamic_cast<RtfParagraphStyle*>(oCurStyle.get());
+
+				if (oCurParaStyle)
+				{
+					RtfParagraphProperty newProps;
+					newProps.Merge(oCurParaStyle->m_oParProp);
+					newProps.Merge(m_oProperty);
+					
+					sResult += newProps.RenderToOOX(oRenderParameter);
+					bRenderProps = true;
+				}
+			}
+		}
+		if (false == bRenderProps)
+			sResult += m_oProperty.RenderToOOX(oRenderParameter);
 
 		if( NULL != m_oOldList )
 		{
@@ -162,7 +190,15 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 				}
 			}
 		}
-
+		if (oRenderParameter.nType == RENDER_TO_OOX_PARAM_COMMENT)
+		{
+			sResult += L"<w:r>";
+				sResult += L"<w:rPr>";
+					sResult += m_oProperty.m_oCharProperty.RenderToOOX(oRenderParameter);
+				sResult += L"</w:rPr>";
+			sResult += L"<w:annotationRef/>";
+			sResult += L"</w:r>";
+		}
 		oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 		
         std::wstring ParagraphContent;

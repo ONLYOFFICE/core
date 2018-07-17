@@ -600,7 +600,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"relRotation",	sResult,   	m_nRelRotation );
     RENDER_RTF_SHAPE_PROP(L"dhgt",			sResult,	m_nRelZOrder );
 //Fill
-	if( 0 == m_bFilled )
+	if( 0 == m_bFilled)
 		sResult += L"{\\sp{\\sn fFilled}{\\sv 0}}";
 	RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
     RENDER_RTF_SHAPE_PROP(L"fillColor",		sResult,	m_nFillColor );
@@ -800,7 +800,8 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 }
 std::wstring RtfShape::GetShapeNodeName()
 {
-	if (m_bBackground) return L"v:background";
+	if (m_bBackground)	return L"v:background";
+	if (m_bIsOle)		return L"v:rect";
 	
 	switch(m_nShapeType)
 	{
@@ -1383,7 +1384,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	{
 		sPicture = m_oPicture->RenderToOOX(oRenderParameter);
 		
-		if (m_nShapeType == PROP_DEF || m_nShapeType == 75)
+		if (m_nShapeType == PROP_DEF || m_nShapeType == 75 || m_bIsOle)
 		{
             if( sPicture.empty() )//если не сохранилась картинка, то весь shape-picture будет бесполезным
 				return L"";

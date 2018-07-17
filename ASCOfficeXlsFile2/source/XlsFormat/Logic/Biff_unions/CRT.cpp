@@ -178,6 +178,9 @@ const bool CRT::loadContent(BinProcessor& proc)
 	m_ChartFormat = elements_.back();
 	elements_.pop_back(); 
 
+	ChartFormat* fmt = dynamic_cast<ChartFormat*>(m_ChartFormat.get());
+	m_indexCrt = fmt->icrt;
+
 	if (proc.optional<Begin>())	elements_.pop_back();
 
 	proc.mandatory<Parenthesis_CRT_1>();

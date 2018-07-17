@@ -96,6 +96,8 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 
 		if (m_oResultShape)
 		{
+			m_oResultShape->m_bIsOle = true;
+
 			sResult += m_oResultShape->RenderToOOX(oNewRenderParameter);
 
 			oNewRenderParameter.nValue = m_oResultShape->m_nID;

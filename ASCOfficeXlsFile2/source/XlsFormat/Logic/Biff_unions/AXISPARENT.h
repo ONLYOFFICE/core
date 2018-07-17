@@ -54,6 +54,8 @@ public:
 	BaseObjectPtr				m_AXES;
 	std::vector<BaseObjectPtr>	m_arCRT;
 
+	std::map<int, int>			m_mapCRTIndex;
+
 	void concatinate_second (BaseObjectPtr & addit);
 };
 

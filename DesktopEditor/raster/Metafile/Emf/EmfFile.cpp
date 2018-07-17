@@ -228,7 +228,7 @@ static const struct ActionNamesEmf
 					//-----------------------------------------------------------
 					// 2.3.2 Clipping
 					//-----------------------------------------------------------
-				case EMR_EXCLUDECLIPRECT: Read_EMR_EXCLUDECLIPRECT(); break;
+				case EMR_EXCLUDECLIPRECT:   Read_EMR_EXCLUDECLIPRECT(); break;
 				case EMR_EXTSELECTCLIPRGN:  Read_EMR_EXTSELECTCLIPRGN(); break;
 				case EMR_INTERSECTCLIPRECT: Read_EMR_INTERSECTCLIPRECT(); break;
 				case EMR_SELECTCLIPPATH:    Read_EMR_SELECTCLIPPATH(); break;

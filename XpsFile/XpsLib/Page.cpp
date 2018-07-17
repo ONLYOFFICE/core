@@ -358,7 +358,7 @@ namespace XPS
 				ReadAttribute(oReader, L"Source", wsSource);
 				if (!wsSource.empty())
 				{
-					std::wstring wsPath = m_wsRootPath + wsSource.c_str();
+                    std::wstring wsPath = m_wsRootPath + wsSource.c_stdstr();
 					pState->PushResource(m_pDocument->GetStaticResource(wsPath.c_str()), false);
 				}
 				else
@@ -687,7 +687,14 @@ namespace XPS
 				if (oEntry.bGid)
 					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
 				else
-					pRenderer->CommandDrawTextCHAR(oEntry.nUnicode,  xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
+                {
+                    LONG nRenType = 0;
+                    pRenderer->get_Type(&nRenType);
+                    if (c_nGrRenderer == nRenType)
+                        pRenderer->put_FontStringGID(FALSE);
+
+                    pRenderer->CommandDrawTextCHAR(oEntry.nUnicode,  xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
+                }
 
 				if (bNeedBold)
 				{

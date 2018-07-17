@@ -64,6 +64,48 @@ public:
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
+class RtfAnnotElem : public IDocumentElement
+{
+public: 
+    std::wstring	m_sValue;	
+	int				m_nType;
+	
+	RtfAnnotElem(int type = 0) : m_nType (type)
+	{
+	}
+	int GetType()
+	{
+		return TYPE_RTF_ANNOTVALUE;
+	}
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
+};
+typedef boost::shared_ptr<RtfAnnotElem>		RtfAnnotElemPtr;
+
+class RtfAnnotation : public IDocumentElement
+{
+public: 
+	RtfAnnotElemPtr			m_oRef;
+	RtfAnnotElemPtr			m_oDate;
+	RtfAnnotElemPtr			m_oParent;
+
+	TextItemContainerPtr	m_oContent;
+	RtfCharProperty			m_oCharProp;
+	
+	RtfAnnotation()
+	{
+		m_oContent = TextItemContainerPtr( new TextItemContainer() );
+	}
+	int GetType()
+	{
+		return TYPE_RTF_ANNOTATION;
+	}
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
+};
+typedef boost::shared_ptr<RtfAnnotation> RtfAnnotationPtr;
+
 class RtfFootnote : public IDocumentElement
 {
 public: 

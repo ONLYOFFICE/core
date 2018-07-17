@@ -601,7 +601,9 @@ namespace OOX
 								if ( _T("v:path") == sName )
 									pItem = new OOX::Vml::CPath( oSubReader );
 								break;
-
+							case 'r':
+								if ( _T("v:rect") == sName )
+									m_oShape = oSubReader;
 							case 's':
 								if ( _T("v:shadow") == sName )
 									pItem = new OOX::Vml::CShadow( oSubReader );
@@ -662,7 +664,7 @@ namespace OOX
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if		( oReader, _T("w:dxaOrig"), m_oDxaOrig )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:dxyOrig"), m_oDyaOrig )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:dyaOrig"), m_oDyaOrig )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		};

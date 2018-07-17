@@ -1255,7 +1255,19 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		//}
 		auto_fit_shape = true;
 	}
-
+	else if ((frame->draw_frame_attlist_.fo_min_height_) && (draw_text_box_attlist_.fo_min_height_->get_type()==length_or_percent::Length))
+	{
+		size_t min_y = get_value_emu(frame->draw_frame_attlist_.fo_min_height_->get_length());
+		if (drawing->cy < min_y) 
+		{
+			drawing->cy = min_y;
+		}
+		auto_fit_shape = true;
+	}
+	else if ((frame->common_draw_attlists_.rel_size_.style_rel_height_) && (frame->common_draw_attlists_.rel_size_.style_rel_height_->get_type() == percent_or_scale::ScaleMin))
+	{
+		auto_fit_shape = true;
+	}
 	
 	if ((draw_text_box_attlist_.fo_min_width_) && (draw_text_box_attlist_.fo_min_width_->get_type()==length_or_percent::Length))
 	{

@@ -36,8 +36,10 @@
 #include <xml/xmlchar.h>
 #include <xml/attributes.h>
 #include <xml/utils.h>
+#include <odf/odf_document.h>
 
 #include "serialize_elements.h"
+#include "odfcontext.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -155,7 +157,41 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 	Context.start_office_text();
 	for (size_t i = 0; i < content_.size(); i++)
     {
-        content_[i]->docx_convert(Context);
+		if (content_[i]->element_style_name)
+		{
+			std::wstring text___ = *content_[i]->element_style_name;
+
+			const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(*content_[i]->element_style_name);
+		   
+			if (masterPageName)
+			{
+				Context.set_master_page_name(*masterPageName);
+		        
+				const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
+		        
+				Context.remove_page_properties();
+				Context.add_page_properties(masterPageNameLayout);
+			}  
+		}
+		if (content_[i]->next_element_style_name)
+		{
+			std::wstring text___ = *content_[i]->next_element_style_name;
+			// проверяем не сменится ли свойства страницы.
+			// если да — устанавливаем контексту флаг на то что необходимо в текущем параграфе
+			// распечатать свойства раздела/секции
+			//проверить ... не она ли текущая - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
+			const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(*content_[i]->next_element_style_name);
+
+			if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
+			{
+				if (false == Context.root()->odf_context().pageLayoutContainer().compare_page_properties(Context.get_master_page_name(), *next_masterPageName))
+				{
+					Context.next_dump_page_properties(true);
+					//is_empty = false;
+				}
+			}
+		} 
+		content_[i]->docx_convert(Context);
     }
     Context.end_office_text();
 }

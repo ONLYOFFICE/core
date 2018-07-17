@@ -306,10 +306,15 @@ void docx_conversion_context::finish_run()
 {
     if (false == in_run_) return;
 
+	if (get_comments_context().state() == 4)
+	{
+		output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
+		get_comments_context().state(0);
+	}
 	output_stream() << L"</w:r>";
     in_run_ = false;
 	
-	if (get_comments_context().state()==2)
+	if (get_comments_context().state() == 2)
 	{
 		output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\"/>";
 		
@@ -318,7 +323,6 @@ void docx_conversion_context::finish_run()
 			get_comments_context().state(0);
 		finish_run();
 	}
-
 }
 void docx_conversion_context::start_math_formula()
 {
@@ -587,7 +591,8 @@ oox_chart_context & docx_conversion_context::current_chart()
 void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 {
 	finish_run();
-	if (get_comments_context().state()==1)
+	if (get_comments_context().state() == 1 ||
+		get_comments_context().state() == 4)//??? comment in run
 	{
 		output_stream() << L"<w:commentRangeStart w:id=\"" << get_comments_context().current_id() << L"\" />";
 		get_comments_context().state(2);//active

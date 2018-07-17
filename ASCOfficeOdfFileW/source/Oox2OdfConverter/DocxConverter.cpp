@@ -403,10 +403,39 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 {
 	if (oox_sdt == NULL) return;
-	//nullable<OOX::Logic::CSdtEndPr  > m_oSdtEndPr;
-	//nullable<OOX::Logic::CSdtPr     > m_oSdtPr;
+
+	bool bField = false;
+	if (oox_sdt->m_oSdtPr.IsInit())
+	{
+		if (oox_sdt->m_oSdtPr->m_oAlias.IsInit())//friendly name
+		{
+		}
+		if (oox_sdt->m_oSdtPr->m_oDocPartObj.IsInit())
+		{
+			if (oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery.IsInit() && 
+				oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery->m_sVal.IsInit())
+			{
+				if (*oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery->m_sVal == L"List od Illustrations" ||
+					*oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery->m_sVal == L"Table of Contents")
+				{
+					odt_context->start_field(false);
+					bField = true;
+				}
+			}
+		}
+		if (oox_sdt->m_oSdtPr->m_eType == OOX::Logic::sdttypeBibliography)
+		{
+			odt_context->start_field(false);
+			bField = true;
+		}
+	}
 
 	convert(oox_sdt->m_oSdtContent.GetPointer());
+
+	if (bField)
+	{
+		odt_context->end_field();
+	}
 }
 void DocxConverter::convert(OOX::Logic::CSdtContent *oox_sdt)
 {

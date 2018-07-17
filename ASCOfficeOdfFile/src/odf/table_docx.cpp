@@ -144,6 +144,16 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
 
+	std::wstring sDumpPageProperties;
+	if (false == Context.get_paragraph_state())
+	{
+		std::wstringstream strm;
+		if (Context.process_page_properties(strm))
+		{
+			sDumpPageProperties = strm.str();
+		}
+	}
+
 	bool sub_table = table_table_attlist_.table_is_sub_table_.get_value_or(false);
 	//todooo придумать как сделать внешние границы sub-таблицы границами внешней ячейки (чтоб слияние произошло)
 	
@@ -173,6 +183,15 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_table_context().end_table();
 	_Wostream << L"</w:tbl>";
+
+	if (false == sDumpPageProperties.empty())
+	{			
+		Context.output_stream() << L"<w:p>";
+		Context.output_stream() << L"<w:pPr>";
+			Context.output_stream() << sDumpPageProperties;
+		Context.output_stream() << L"</w:pPr>";
+		Context.output_stream() << L"</w:p>";
+	}
 }
 
 void table_columns::docx_convert(oox::docx_conversion_context & Context)

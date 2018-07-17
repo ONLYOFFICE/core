@@ -51,7 +51,7 @@ namespace text {
 class paragraph
 {
 public:
-    paragraph() : next_par_(NULL), next_section_(false), next_end_section_(false), is_header_(false) {}
+    paragraph() : next_section_(false), next_end_section_(false), is_header_(false) {}
 
     std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
@@ -59,9 +59,8 @@ public:
     void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     void add_text			(const std::wstring & Text);
 
-    paragraph * get_next()					{ return next_par_; }
-    void		set_next(paragraph * next)	{next_par_ = next;}
-    
+ 	_CP_OPT(std::wstring)	next_element_style_name; //for master page
+   
 	void set_next_section(bool Val) 
     {
         next_section_ = Val;
@@ -71,9 +70,6 @@ public:
     {
         next_end_section_ = Val;
     }
-
-    void afterCreate(document_context * ctx);
- 	void afterReadContent(document_context * ctx);
   
 	void docx_convert (oox::docx_conversion_context & Context) ;
     void xlsx_convert (oox::xlsx_conversion_context & Context) ;
@@ -88,21 +84,18 @@ private:
    
 	paragraph_attrs			attrs_;
    
-	paragraph				*next_par_;
-    
 	bool					next_section_;
     bool					next_end_section_;
 	
 	bool					is_header_;
 
-    friend class par_docx_convert_class;   
     friend class p;   
 	friend class h;   
    
 };
 
 //---------------------------------------------------------------------------------------------------
-class h : public text_content_impl<h>
+class h : public office_element_impl<h>
 {
 public:
     static const wchar_t * ns;
@@ -115,9 +108,8 @@ public:
     void xlsx_convert(oox::xlsx_conversion_context & Context) ;
     void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual void afterCreate();
     virtual void afterReadContent();
-    
+     
 	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     paragraph paragraph_;
@@ -134,14 +126,12 @@ private:
     _CP_OPT(bool)			is_list_header_;
     _CP_OPT(std::wstring)	number_;
     
-    friend class par_docx_convert_class;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(h);
 
 //---------------------------------------------------------------------------------------------------
-class p : public text_content_impl<p>
+class p : public office_element_impl<p>
 {
 public:
     static const wchar_t * ns;
@@ -154,7 +144,6 @@ public:
     void xlsx_convert(oox::xlsx_conversion_context & Context) ;
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-	virtual void afterCreate();
 	virtual void afterReadContent();
     
 	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
@@ -167,12 +156,11 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-	friend class par_docx_convert_class;   
 };
 CP_REGISTER_OFFICE_ELEMENT2(p);
 
 //---------------------------------------------------------------------------------------------------
-class list : public text_content_impl<list>
+class list : public office_element_impl<list>
 {
 public:
     static const wchar_t * ns;
@@ -203,7 +191,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(list);
 
 //---------------------------------------------------------------------------------------------------
-class soft_page_break : public text_content_impl<soft_page_break>
+class soft_page_break : public office_element_impl<soft_page_break>
 {
 public:
     static const wchar_t * ns;
@@ -223,7 +211,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(soft_page_break);
 
 //---------------------------------------------------------------------------------------------------
-class section : public text_content_impl<section>
+class section : public office_element_impl<section>
 {
 public:
     static const wchar_t * ns;
@@ -265,7 +253,7 @@ private:
 };
 
 //---------------------------------------------------------------------------------------------------
-class section_source : public text_content_impl<section_source>
+class section_source : public office_element_impl<section_source>
 {
 public:
     static const wchar_t * ns;
@@ -305,7 +293,7 @@ public:
 };
 //---------------------------------------------------------------------------------------------------
 
-class table_of_content : public text_content_impl<table_of_content>
+class table_of_content : public office_element_impl<table_of_content>
 {
 public:
     static const wchar_t * ns;
@@ -335,7 +323,7 @@ CP_REGISTER_OFFICE_ELEMENT2(table_of_content);
 //---------------------------------------------------------------------------------------------------
 // text:table-index
 //---------------------------------------------------------------------------------------------------
-class table_index : public text_content_impl<table_index>
+class table_index : public office_element_impl<table_index>
 {
 public:
     static const wchar_t * ns;
@@ -364,7 +352,7 @@ CP_REGISTER_OFFICE_ELEMENT2(table_index);
 //---------------------------------------------------------------------------------------------------
 // text:illustration-index
 //---------------------------------------------------------------------------------------------------
-class illustration_index : public text_content_impl<illustration_index>
+class illustration_index : public office_element_impl<illustration_index>
 {
 public:
     static const wchar_t * ns;
@@ -396,7 +384,7 @@ CP_REGISTER_OFFICE_ELEMENT2(illustration_index);
 //---------------------------------------------------------------------------------------------------
 // text:alphabetical-index
 //---------------------------------------------------------------------------------------------------
-class alphabetical_index : public text_content_impl<alphabetical_index>
+class alphabetical_index : public office_element_impl<alphabetical_index>
 {
 public:
     static const wchar_t * ns;
@@ -428,7 +416,7 @@ CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index);
 //---------------------------------------------------------------------------------------------------
 // text:object-index
 //---------------------------------------------------------------------------------------------------
-class object_index : public text_content_impl<object_index>
+class object_index : public office_element_impl<object_index>
 {
 public:
     static const wchar_t * ns;
@@ -460,7 +448,7 @@ CP_REGISTER_OFFICE_ELEMENT2(object_index);
 //---------------------------------------------------------------------------------------------------
 // text:user-index
 //---------------------------------------------------------------------------------------------------
-class user_index : public text_content_impl<user_index>
+class user_index : public office_element_impl<user_index>
 {
 public:
     static const wchar_t * ns;
@@ -492,7 +480,7 @@ CP_REGISTER_OFFICE_ELEMENT2(user_index);
 //------------------------------------------------------------------------------------------------------------
 // text:bibliography
 //------------------------------------------------------------------------------------------------------------
-class bibliography : public text_content_impl<bibliography>
+class bibliography : public office_element_impl<bibliography>
 {
 public:
     static const wchar_t * ns;
@@ -565,7 +553,7 @@ CP_REGISTER_OFFICE_ELEMENT2(bibliography_entry_template);
 //---------------------------------------------------------------------------------------------------
 //text:index-body
 //---------------------------------------------------------------------------------------------------
-class index_body : public text_content_impl<index_body>
+class index_body : public office_element_impl<index_body>
 {
 public:
     static const wchar_t * ns;
@@ -588,7 +576,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(index_body);
 //---------------------------------------------------------------------------------------------------
-class index_title : public text_content_impl<index_title>
+class index_title : public office_element_impl<index_title>
 {
 public:
     static const wchar_t * ns;
@@ -613,7 +601,7 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(index_title);
 //---------------------------------------------------------------------------------------------------
-class index_title_template : public text_content_impl<index_title_template>
+class index_title_template : public office_element_impl<index_title_template>
 {
 public:
     static const wchar_t * ns;

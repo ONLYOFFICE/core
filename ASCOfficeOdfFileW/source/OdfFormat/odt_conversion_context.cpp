@@ -785,6 +785,9 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 }
 void odt_conversion_context::start_field(bool in_span)
 {
+	if (false == current_fields.empty() && current_fields.back().status == 0)
+		return; //start_field из sdt 
+
 	_field_state field;
 	current_fields.push_back(field);
 }
@@ -943,6 +946,10 @@ void odt_conversion_context::end_field()
 		
 			current_fields.pop_back();
 		}
+	}
+	else if (current_fields.back().status == 0)	
+	{
+		current_fields.pop_back();
 	}
 }
 void odt_conversion_context::end_paragraph()

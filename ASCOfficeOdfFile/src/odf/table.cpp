@@ -142,7 +142,9 @@ const wchar_t * table_table::name = L"table";
 
 void table_table::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    table_table_attlist_.add_attributes(Attributes);
+	CP_APPLY_ATTR(L"table:style-name",	element_style_name);
+
+	table_table_attlist_.add_attributes(Attributes);
 }
 
 void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

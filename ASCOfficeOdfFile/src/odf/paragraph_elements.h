@@ -891,7 +891,7 @@ public:
 	_CP_OPT(std::wstring)	reference_format_;//caption, category-and-value, value, chapter, direction, page, text, number, number-all-superior, number-no-superior
 	_CP_OPT(std::wstring)	ref_name_;
    
-	std::wstring			content_;
+	office_element_ptr		text_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

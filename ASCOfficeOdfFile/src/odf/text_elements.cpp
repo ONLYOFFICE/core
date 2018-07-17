@@ -161,35 +161,6 @@ void paragraph::add_text(const std::wstring & Text)
     office_element_ptr elm = text::create(Text) ;
 	content_.push_back( elm );
 }
-
-void paragraph::afterCreate(document_context * Context)
-{
-    // вызывается сразу после создания объекта
-    if (Context)
-    {
-		Context->level++;
-		// выставляем у предыдущего параграфа указатель на следующий (т.е. на вновь созданный)
-
-		if (Context->level == 1)
-		{
-			if (paragraph * prevPar = Context->get_last_paragraph())
-			{
-				prevPar->set_next(this);
-			}
-	        
-			// запоминаем в контексте вновь созданный параграф
-			Context->set_last_paragraph(this);
-		}
-    }
-}
-void paragraph::afterReadContent(document_context * Context)
-{
-    if (Context)
-    {
-		Context->level--;
-    }
-}
-
 const wchar_t * emptyParagraphContent = L"<w:pPr></w:pPr><w:r><w:rPr></w:rPr></w:r>";
 
 const wchar_t * emptyParagraphDrawing = L"<w:p><w:pPr></w:pPr></w:p>";
@@ -315,30 +286,22 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
    
 	if (masterPageName)
     {
-		Context.set_master_page_name(*masterPageName);
-        
-		const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
-        
-		Context.remove_page_properties();
-		Context.add_page_properties(masterPageNameLayout);
-
 		is_empty = false;
     }    
 
-    if (next_par_)
+    if (next_element_style_name)
     {
         // проверяем не сменит ли следующий параграф свойства страницы.
         // если да — устанавливаем контексту флаг на то что необходимо в текущем параграфе
         // распечатать свойства раздела/секции
-		//проверить ... не она ли текущая - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
-        const std::wstring & next_styleName				= next_par_->attrs_.text_style_name_;
-        const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(next_styleName);
+		// проверить ... не она ли текущая - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
+		// dump был выше уровнем
+        const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(*next_element_style_name);
 
         if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
         {
 			if (false == Context.root()->odf_context().pageLayoutContainer().compare_page_properties(Context.get_master_page_name(), *next_masterPageName))
 			{
-				Context.next_dump_page_properties(true);
 				is_empty = false;
 			}
         }
@@ -473,7 +436,9 @@ std::wostream & h::text_to_stream(std::wostream & _Wostream) const
 
 void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:outline-level"		, outline_level_);
+	CP_APPLY_ATTR(L"text:style-name",	element_style_name);
+
+	CP_APPLY_ATTR(L"text:outline-level"		, outline_level_);
     CP_APPLY_ATTR(L"text:restart-numbering"	, restart_numbering_);
     CP_APPLY_ATTR(L"text:start-value"		, start_value_);
     CP_APPLY_ATTR(L"text:is-list-header"	, is_list_header_);
@@ -494,14 +459,12 @@ void h::add_text(const std::wstring & Text)
     paragraph_.add_text(Text);
 }
 
-void h::afterCreate()
-{
-    paragraph_.afterCreate( getContext() );
-}
 void h::afterReadContent()
 {
-    paragraph_.afterReadContent( getContext() );
+	office_element::afterReadContent();
+	paragraph_.next_element_style_name = next_element_style_name;
 }
+
 void h::docx_convert(oox::docx_conversion_context & Context) 
 {
     paragraph_.docx_convert(Context);
@@ -520,14 +483,6 @@ void h::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * p::ns = L"text";
 const wchar_t * p::name = L"p";
 
-void p::afterCreate()
-{
-    paragraph_.afterCreate( getContext() );
-}
-void p::afterReadContent()
-{
-    paragraph_.afterReadContent( getContext() );
-}
 std::wostream & p::text_to_stream(std::wostream & _Wostream) const
 {
     return paragraph_.text_to_stream(_Wostream);
@@ -535,6 +490,8 @@ std::wostream & p::text_to_stream(std::wostream & _Wostream) const
 
 void p::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	CP_APPLY_ATTR(L"text:style-name",	element_style_name);
+
     paragraph_.add_attributes(Attributes);
 }
 
@@ -561,6 +518,11 @@ void p::xlsx_convert(oox::xlsx_conversion_context & Context)
 void p::pptx_convert(oox::pptx_conversion_context & Context)
 {
     paragraph_.pptx_convert(Context);
+}
+void p::afterReadContent()
+{
+	office_element::afterReadContent();
+	paragraph_.next_element_style_name = next_element_style_name;
 }
 // text:list
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -661,9 +623,11 @@ std::wostream & section::text_to_stream(std::wostream & _Wostream) const
 
 void section::afterCreate()
 {
-    if (document_context * context = getContext())
+	office_element::afterCreate();
+	
+	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_section(true);        
         }
@@ -672,13 +636,14 @@ void section::afterCreate()
 
 void section::afterReadContent()
 {
-    if (document_context * context = getContext())
+	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_end_section(true);        
         }
     }
+ 	office_element::afterReadContent();
 }
 
 void section::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -1076,9 +1041,11 @@ const wchar_t * illustration_index::name = L"illustration-index";
 
 void illustration_index::afterCreate()
 {
-    if (document_context * context = getContext())
+ 	office_element::afterCreate();
+
+	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_section(true);        
         }
@@ -1089,11 +1056,12 @@ void illustration_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_end_section(true);        
         }
     }
+	office_element::afterReadContent();
 }
 void illustration_index::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1219,9 +1187,11 @@ void alphabetical_index::add_child_element( xml::sax * Reader, const std::wstrin
 }
 void alphabetical_index::afterCreate()
 {
-    if (document_context * context = getContext())
+	office_element::afterCreate();
+	
+	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_section(true);        
         }
@@ -1231,11 +1201,12 @@ void alphabetical_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_end_section(true);        
         }
     }
+	office_element::afterReadContent();
 }
 void alphabetical_index::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1324,9 +1295,11 @@ const wchar_t * object_index::name = L"object-index";
 
 void object_index::afterCreate()
 {
-    if (document_context * context = getContext())
+	office_element::afterCreate();
+
+	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_section(true);        
         }
@@ -1336,11 +1309,12 @@ void object_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_end_section(true);        
         }
     }
+	office_element::afterReadContent();
 }
 void object_index::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1426,9 +1400,11 @@ const wchar_t * user_index::name = L"user-index";
 
 void user_index::afterCreate()
 {
-    if (document_context * context = getContext())
+	office_element::afterCreate();
+
+	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_section(true);        
         }
@@ -1438,11 +1414,12 @@ void user_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_end_section(true);        
         }
     }
+	office_element::afterReadContent();
 }
 void user_index::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1567,9 +1544,11 @@ const wchar_t * bibliography::name = L"bibliography";
 
 void bibliography::afterCreate()
 {
-    if (document_context * context = getContext())
+	office_element::afterCreate();
+
+	if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_section(true);        
         }
@@ -1580,11 +1559,12 @@ void bibliography::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (paragraph * lastPar = context->get_last_paragraph())
+        if (paragraph * lastPar = dynamic_cast<paragraph*>(context->get_last_element()))
         {
             lastPar->set_next_end_section(true);        
         }
     }
+	office_element::afterReadContent();
 }
 void bibliography::docx_convert(oox::docx_conversion_context & Context)
 {

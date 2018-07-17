@@ -47,12 +47,12 @@
 #include "visitor.h"
 #include "../conversionelement.h"
 
+#include "documentcontext.h"
+
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace odf_reader {
-
-class document_context;
 
 class office_element;
 typedef shared_ptr<office_element>::Type	office_element_ptr;
@@ -69,17 +69,43 @@ public:
 
     virtual ElementType get_type() const = 0;
     virtual ~office_element() = 0;
+
     void set_root(bool isRoot) { is_root_ = isRoot; }
     bool is_root() const { return is_root_; }
 
-    virtual void afterCreate() {};
-    virtual void afterReadContent() {};
+    virtual void afterCreate()
+	{
+		// вызывается сразу после создания объекта
+		if (context_)
+		{
+			context_->level++;
+		}
+	}
+	virtual void afterReadContent()
+	{
+		if (context_)
+		{
+			if (context_->level == 4)
+			{
+				if (office_element * prev= context_->get_last_element())
+				{
+					prev->next_element_style_name = element_style_name;
+				}
+		        
+				// запоминаем в контексте вновь созданный элемент
+				context_->set_last_element(this);
+			}
+			context_->level--;
+		}
+	}
    
     CPDOCCORE_DEFINE_VISITABLE();
 
     void setContext(document_context * Context) { context_ = Context; }
 
-public:
+	_CP_OPT(std::wstring)	element_style_name;
+	_CP_OPT(std::wstring)	next_element_style_name; //for master page
+
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const
     {
         _CP_LOG << L"[warning] use base text_to_stream\n";
@@ -92,8 +118,7 @@ public:
         return _Wostream;
     }
     document_context * getContext() { return context_; }
-//
-//protected:
+
     const document_context * getContext() const { return context_; }
 
 private:

@@ -71,12 +71,6 @@ public:
 };
 
 
-template <class ElementT> 
-class text_content_impl : public office_element_impl<ElementT>
-{
-};
-
-
 }
 }
 }

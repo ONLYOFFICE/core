@@ -1209,10 +1209,21 @@ void sequence_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void sequence_ref::add_text(const std::wstring & Text)
 {
-    content_ = Text;
+    text_ = text::create(Text) ;
 }
 void sequence_ref::docx_convert(oox::docx_conversion_context & Context) 
 {
+	std::wstring ref, sequence;
+	if (!ref_name_) return;
+
+	Context.finish_run();
+	Context.output_stream() << L"<w:fldSimple w:instr=\" REF " << *ref_name_ << L" \\h\">";
+	Context.add_new_run();
+	if (text_)
+		text_->docx_convert(Context);
+	Context.finish_run();
+
+	Context.output_stream() << L"</w:fldSimple>";
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * sequence::ns = L"text";
@@ -1277,7 +1288,7 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 														num_format= L"ARABIC"; break;
 		}
 	}
-
+	Context.start_bookmark(*ref_name_);
 	Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << XmlUtils::EncodeXmlString(sequence) << L" \\* " << num_format << L" \">";
 	Context.add_new_run();
 		for (size_t i = 0; i < text_.size(); i++)
@@ -1291,6 +1302,8 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 	//	Context.end_bookmark(ref);
 	//}
 	Context.output_stream() << L"</w:fldSimple>";
+
+	Context.end_bookmark(*ref_name_);
 }
 void sequence::pptx_convert(oox::pptx_conversion_context & Context) 
 {

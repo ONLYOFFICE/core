@@ -39,21 +39,22 @@ namespace odf_reader {
 class document_context::Impl
 {
 public:
-    Impl() : last_paragraph_(NULL) {}
+    Impl() : last_element_(NULL) {}
 
 public:
-    void set_last_paragraph(text::paragraph * Paragraph)
+    void set_last_element(office_element* elem)
     {
-        last_paragraph_ = Paragraph;
+        last_element_ = elem;
     }
 
-    text::paragraph * get_last_paragraph()
+    office_element* get_last_element()
     {
-        return last_paragraph_;
+        return last_element_;
     }
 
 private:
-    text::paragraph * last_paragraph_;
+    office_element * last_element_;
+
 
 };
 
@@ -68,17 +69,14 @@ document_context::~document_context()
 {
     delete impl_;
 }
-
-void document_context::set_last_paragraph(text::paragraph * Paragraph)
+void document_context::set_last_element(office_element* elem)
 {
-    return impl_->set_last_paragraph(Paragraph);
+    return impl_->set_last_element(elem);
 }
-
-text::paragraph * document_context::get_last_paragraph()
+office_element* document_context::get_last_element()
 {
-    return impl_->get_last_paragraph();
+    return impl_->get_last_element();
 }
-
 
 
 }

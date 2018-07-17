@@ -50,7 +50,7 @@ std::wostream & operator << (std::wostream & _Wostream, const style_repeat & _Va
     case style_repeat::Stretch:
         _Wostream << L"stretch";
         break;
-    default:
+	default:
         break;
     }
     return _Wostream;    
@@ -67,9 +67,10 @@ style_repeat style_repeat::parse(const std::wstring & Str)
         return style_repeat( Repeat );
     else if (tmp == L"stretch")
         return style_repeat( Stretch );
-    else
+	else if (tmp == L"scale")//LOWriter-form-controls modded.odt
+        return style_repeat( Stretch );
+	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return style_repeat( NoRepeat );
     }
 }

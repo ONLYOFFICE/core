@@ -486,14 +486,14 @@ public:
 		std::wstring author;
 		std::wstring initials;
 	};
-    void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date)
+    void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date, bool inRun = false)
 	{
-		int id = comments_.size()+1;
-		_comment_desc new_comment={content,id,date,author};
+		int id = comments_.size() + 1;
+		_comment_desc new_comment={content, id, date, author};
 		
 		comments_.push_back(new_comment);
 
-		state_ = 1;
+		state_ = inRun ? 4 : 1;
 	}
 	int current_id()
 	{

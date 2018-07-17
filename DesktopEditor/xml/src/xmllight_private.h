@@ -36,6 +36,7 @@
 
 #include "../libxml2/libxml.h"
 #include "../libxml2/include/libxml/xmlreader.h"
+#include "../libxml2/include/libxml/c14n.h"
 #include "../include/xmlutils.h"
 
 namespace XmlUtils

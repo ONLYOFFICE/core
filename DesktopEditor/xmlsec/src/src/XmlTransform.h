@@ -77,32 +77,32 @@ public:
         m_mode = -1;
         if ("http://www.w3.org/TR/2001/REC-xml-c14n-20010315" == alg)
         {
-            m_mode = XML_C14N_1_0;
+            m_mode = XmlUtils::XML_C14N_1_0;
             m_comments = false;
         }
         else if ("http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments" == alg)
         {
-            m_mode = XML_C14N_1_0;
+            m_mode = XmlUtils::XML_C14N_1_0;
             m_comments = true;
         }
         else if ("http://www.w3.org/2006/12/xml-c14n11" == alg)
         {
-            m_mode = XML_C14N_1_1;
+            m_mode = XmlUtils::XML_C14N_1_1;
             m_comments = false;
         }
         else if ("http://www.w3.org/2006/12/xml-c14n11#WithComments" == alg)
         {
-            m_mode = XML_C14N_1_1;
+            m_mode = XmlUtils::XML_C14N_1_1;
             m_comments = true;
         }
         else if ("http://www.w3.org/2001/10/xml-exc-c14n#" == alg)
         {
-            m_mode = XML_C14N_EXCLUSIVE_1_0;
+            m_mode = XmlUtils::XML_C14N_EXCLUSIVE_1_0;
             m_comments = false;
         }
         else if ("http://www.w3.org/2001/10/xml-exc-c14n#WithComments" == alg)
         {
-            m_mode = XML_C14N_EXCLUSIVE_1_0;
+            m_mode = XmlUtils::XML_C14N_EXCLUSIVE_1_0;
             m_comments = true;
         }
         return (-1 != m_mode) ? true : false;
@@ -112,7 +112,7 @@ public:
     {
         if (-1 == m_mode)
             return xml;
-        return CXmlCanonicalizator::Execute(xml, m_mode, m_comments);
+        return XmlUtils::NSXmlCanonicalizator::Execute(xml, m_mode, m_comments);
     }
 
     virtual void LoadFromXml(XmlUtils::CXmlNode& node)

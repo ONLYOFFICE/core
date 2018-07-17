@@ -39,6 +39,10 @@
 
 #include "../../common/StringBuilder.h"
 
+#ifndef XML_UNUSED
+#define XML_UNUSED( arg )  ( (arg) = (arg) )
+#endif
+
 namespace XmlUtils
 {
 	typedef enum XmlNodeType
@@ -63,6 +67,12 @@ namespace XmlUtils
 		XmlNodeType_XmlDeclaration = 17,
 		_XmlNodeType_Last = 17
 	} XmlNodeType;
+
+    typedef enum {
+        XML_C14N_1_0            = 0,    /* Origianal C14N 1.0 spec */
+        XML_C14N_EXCLUSIVE_1_0  = 1,    /* Exclusive C14N 1.0 spec */
+        XML_C14N_1_1            = 2     /* C14N 1.1 spec */
+    } xmlC14NMode;
 
 	class CXmlLiteReader_Private;
 	class KERNEL_DECL CXmlLiteReader
@@ -178,6 +188,8 @@ namespace XmlUtils
 
 		std::wstring ReadAttributeBase(const wchar_t* bstrName);		
 		std::wstring ReadAttribute(const std::wstring& strAttibuteName);
+		void ReadAllAttributesA(std::vector<std::string>& strNames, std::vector<std::string>& strValues);
+		void ReadAllAttributes(std::vector<std::wstring>& strNames, std::vector<std::wstring>& strValues);
 
 		int GetAttributesCount();
 		void GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values);
@@ -301,6 +313,12 @@ namespace XmlUtils
     #define XmlMacroReadNodeValueBase(node, name, value)    \
     {                                                       \
         value = node.ReadNodeTextBase(name);                \
+    }
+
+    namespace NSXmlCanonicalizator
+    {
+        std::string KERNEL_DECL Execute(const std::string& sXml, int mode = XML_C14N_1_0, bool withComments = false);
+        std::string KERNEL_DECL Execute(const std::wstring& sXmlFile, int mode = XML_C14N_1_0, bool withComments = false);
     }
 }
 

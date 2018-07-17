@@ -180,6 +180,11 @@ namespace NSThreads
         Join();
         RELEASEOBJECT(m_hThread);
     }
+    void CBaseThread::StopNoJoin()
+    {
+        m_bRunThread = FALSE;
+        RELEASEOBJECT(m_hThread);
+    }
 
     INT CBaseThread::IsSuspended() { return m_bSuspend; }
     INT CBaseThread::IsRunned() { return m_bRunThread; }

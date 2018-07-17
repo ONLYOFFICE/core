@@ -437,6 +437,32 @@ namespace XmlUtils
 		return GetAttribute(std::wstring(strAttibuteName));
 	}
 
+    void CXmlNode::ReadAllAttributesA(std::vector<std::string>& strNames, std::vector<std::string>& strValues)
+    {
+        if (!IsValid())
+            return;
+
+        std::map<std::string, std::string>::iterator p;
+        for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            strNames.push_back(p->first);
+            strValues.push_back(p->second);
+        }
+    }
+
+    void CXmlNode::ReadAllAttributes(std::vector<std::wstring>& strNames, std::vector<std::wstring>& strValues)
+    {
+        if (!IsValid())
+            return;
+
+        std::map<std::string, std::string>::iterator p;
+        for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            strNames.push_back  (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (long)p->first.length()));
+            strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
+        }
+    }
+
 	std::string CXmlNode::GetAttributeA(const std::string& sName, const std::string& _default)
 	{
 		if (!IsValid())
@@ -954,5 +980,75 @@ namespace XmlUtils
         WriteString(L"\"");
         WriteDouble(dValue);
         WriteString(L"\"");
+    }
+}
+
+namespace XmlUtils
+{
+    class CXmlBuffer
+    {
+    public:
+        NSStringUtils::CStringBuilderA builder;
+
+    public:
+        CXmlBuffer()
+        {
+        }
+        ~CXmlBuffer()
+        {
+        }
+    };
+
+    static int buffer_xmlBufferIOWrite(CXmlBuffer* buf, const char* buffer, int len)
+    {
+        buf->builder.WriteString(buffer, (size_t)len);
+        return len;
+    }
+
+    static int buffer_xmlBufferIOClose(CXmlBuffer* buf)
+    {
+        XML_UNUSED(buf);
+        return 0;
+    }
+
+    static int buffer_xmlC14NIsVisibleCallback(void * user_data, xmlNodePtr node, xmlNodePtr parent)
+    {
+        XML_UNUSED(user_data);
+        XML_UNUSED(parent);
+        if (node->type == XML_TEXT_NODE)
+        {
+            const char* cur = (char*)node->content;
+            size_t size = strlen(cur);
+            for (size_t i = 0; i < size; ++i, ++cur)
+            {
+                if (*cur != '\n' && *cur != '\r' && *cur != '\t')
+                    return 1;
+            }
+            return 0;
+        }
+        return 1;
+    }
+
+    std::string NSXmlCanonicalizator::Execute(const std::string& sXml, int mode, bool withComments)
+    {
+        xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
+
+        CXmlBuffer bufferC14N;
+        xmlOutputBufferPtr _buffer = xmlOutputBufferCreateIO((xmlOutputWriteCallback)buffer_xmlBufferIOWrite,
+                                                             (xmlOutputCloseCallback)buffer_xmlBufferIOClose,
+                                                             &bufferC14N,
+                                                             NULL);
+
+        xmlC14NExecute(xmlDoc, buffer_xmlC14NIsVisibleCallback, NULL, mode, NULL, withComments ? 1 : 0, _buffer);
+
+        xmlOutputBufferClose(_buffer);
+
+        return bufferC14N.builder.GetData();
+    }
+    std::string NSXmlCanonicalizator::Execute(const std::wstring& sXmlFile, int mode, bool withComments)
+    {
+        std::string sXml;
+        NSFile::CFileBinary::ReadAllTextUtf8A(sXmlFile, sXml);
+        return Execute(sXml, mode, withComments);
     }
 }

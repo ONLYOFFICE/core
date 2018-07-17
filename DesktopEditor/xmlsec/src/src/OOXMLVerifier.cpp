@@ -1,4 +1,3 @@
-#include "./XmlCanonicalizator.h"
 #include "./XmlTransform.h"
 #include "./../include/OOXMLVerifier.h"
 

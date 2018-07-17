@@ -73,6 +73,7 @@ namespace NSThreads
         virtual void Suspend();
         virtual void Resume();
         virtual void Stop();
+        virtual void StopNoJoin();
 
         INT IsSuspended();
         INT IsRunned();

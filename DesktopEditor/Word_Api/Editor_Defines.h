@@ -690,6 +690,8 @@
 #define ASC_MENU_EVENT_TYPE_SECTION					17
 #define ASC_MENU_EVENT_TYPE_SHAPE                   18
 #define ASC_MENU_EVENT_TYPE_SLIDE                   20
+#define ASC_MENU_EVENT_TYPE_THEME_THUMBNAILS        21
+#define ASC_MENU_EVENT_TYPE_LAYOUT_THUMBNAILS       22
 
 // insert commands
 #define ASC_MENU_EVENT_TYPE_INSERT_IMAGE			50

@@ -63,6 +63,24 @@ struct TBBoxAdvance
     float fAdvanceY;
 };
 
+namespace NSBase
+{
+    class GRAPHICS_DECL CBaseRefCounter
+    {
+    protected:
+        volatile int m_lRef;
+
+    public:
+        CBaseRefCounter();
+        virtual ~CBaseRefCounter();
+
+        virtual int AddRef();
+        virtual int Release();
+    };
+
+    void GRAPHICS_DECL Release(CBaseRefCounter* base);
+}
+
 namespace NSFonts
 {
     class CFontSelectFormat
@@ -382,7 +400,7 @@ namespace NSFonts
         virtual bool _Close()																		= 0;
     };
 
-    class GRAPHICS_DECL IFontPath
+    class GRAPHICS_DECL IFontPath : public NSBase::CBaseRefCounter
     {
     public:
         IFontPath();
@@ -400,20 +418,17 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class GRAPHICS_DECL IFontStream
+    class GRAPHICS_DECL IFontStream : public NSBase::CBaseRefCounter
     {
     public:
         IFontStream();
         virtual ~IFontStream();
 
-        virtual int AddRef() = 0;
-        virtual int Release() = 0;
-
     public:
         virtual int CreateFromFile(const std::wstring& strFileName, unsigned char* pDataUse = NULL) = 0;
     };
 
-    class GRAPHICS_DECL IApplicationFontStreams
+    class GRAPHICS_DECL IApplicationFontStreams : public NSBase::CBaseRefCounter
     {
     public:
         IApplicationFontStreams();
@@ -438,7 +453,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class GRAPHICS_DECL IFontFile
+    class GRAPHICS_DECL IFontFile : public NSBase::CBaseRefCounter
     {
     public:
         IFontFile();
@@ -483,7 +498,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class GRAPHICS_DECL IFontsCache
+    class GRAPHICS_DECL IFontsCache : public NSBase::CBaseRefCounter
     {
     public:
         IFontsCache();
@@ -506,7 +521,7 @@ namespace NSFonts
 namespace NSFonts
 {
     class IApplicationFonts;
-    class GRAPHICS_DECL IFontManager
+    class GRAPHICS_DECL IFontManager : public NSBase::CBaseRefCounter
     {
     public:
         IFontManager();
@@ -553,10 +568,6 @@ namespace NSFonts
 
         virtual int GetStringPath(ISimpleGraphicsPath* pPath) = 0;
 
-        // addref/release
-        virtual int AddRef() = 0;
-        virtual int Release() = 0;
-
         virtual CFontInfo* GetFontInfoByParams(CFontSelectFormat& oFormat, bool bIsDictionaryUse = true) = 0;
         virtual std::vector<CFontInfo*> GetAllStylesByFontName(const std::wstring& strName) = 0;
 
@@ -584,7 +595,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class GRAPHICS_DECL IFontList
+    class GRAPHICS_DECL IFontList : public NSBase::CBaseRefCounter
     {
     public:
         IFontList();
@@ -596,7 +607,7 @@ namespace NSFonts
         virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false) = 0;
     };
 
-    class GRAPHICS_DECL IApplicationFonts
+    class GRAPHICS_DECL IApplicationFonts : public NSBase::CBaseRefCounter
     {
     public:
         IApplicationFonts();

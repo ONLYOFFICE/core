@@ -38,9 +38,6 @@
 
 class CFontStream : public NSFonts::IFontStream
 {
-private:
-	int m_lRef;
-
 public:
 	BYTE*	m_pData;
 	LONG	m_lSize;
@@ -49,10 +46,6 @@ public:
 public:
 	CFontStream();
 	virtual ~CFontStream();
-
-	virtual int AddRef();
-	virtual int Release();
-	
 
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
@@ -125,8 +118,7 @@ class CApplicationFonts;
 class CFontManager : public NSFonts::IFontManager
 {
 	friend class CApplicationFonts;
-private:
-	int m_lRef;
+
 public:
 	FT_Library		m_pLibrary;
 	
@@ -202,10 +194,6 @@ public:
     virtual INT SetTextMatrix2(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
 
     virtual INT GetStringPath(NSFonts::ISimpleGraphicsPath* pPath);
-
-	// addref/release
-	virtual int AddRef();
-	virtual int Release();
 
     virtual NSFonts::CFontInfo* GetFontInfoByParams(NSFonts::CFontSelectFormat& oFormat, bool bIsDictionaryUse = true);
     virtual std::vector<NSFonts::CFontInfo*> GetAllStylesByFontName(const std::wstring& strName);

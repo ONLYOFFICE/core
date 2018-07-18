@@ -49,15 +49,13 @@ class CCacheImage : public NSImages::ICacheImage
 {
 private:
 	Aggplus::CImage m_oImage;
-	LONG m_lRef;
 
 public:
-    CCacheImage(CApplicationFonts* pFonts) : m_oImage()
+    CCacheImage(CApplicationFonts* pFonts) : NSImages::ICacheImage(), m_oImage()
 	{
-		m_lRef = 1;		
 	}
 
-    CCacheImage(CApplicationFonts* pFonts, const std::wstring& strFile)
+    CCacheImage(CApplicationFonts* pFonts, const std::wstring& strFile) : NSImages::ICacheImage()
 	{
         if (NULL == pFonts)
         {
@@ -80,32 +78,12 @@ public:
                 NSFile::CFileBinary::Remove(sTempFile);
             }
         }
-
-		m_lRef = 1;
 	}
 
     virtual ~CCacheImage()
     {
     }
 
-    virtual LONG AddRef()
-	{
-		++m_lRef;
-		return m_lRef;
-	}
-    virtual LONG Release()
-	{
-		--m_lRef;
-
-		if (0 == m_lRef)
-		{
-			delete this;
-			return 0;
-		}
-
-		return m_lRef;
-	}
-	
 	Aggplus::CImage* GetImage()
 	{
 		return &m_oImage;
@@ -118,18 +96,15 @@ private:
 	std::map<std::wstring, CCacheImage*> m_mapImages;
 	LONG m_lMaxCount;
 
-	LONG m_lRef;
-
     CApplicationFonts* m_pApplicationFonts;
 
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
 
 public:
-    CImageFilesCache(CApplicationFonts* pFonts = NULL)
+    CImageFilesCache(CApplicationFonts* pFonts = NULL) : NSImages::IImageFilesCache()
 	{
         m_pApplicationFonts = pFonts;
 		m_lMaxCount = 10;
-		m_lRef = 1;
 
 		m_oCS.InitializeCriticalSection();
 	}
@@ -188,12 +163,7 @@ public:
 		return pImage;
 	}
 	
-    virtual LONG AddRef()
-	{
-		++m_lRef;
-		return m_lRef;
-	}
-    virtual LONG Release()
+    virtual int Release()
 	{
 		m_oCS.Enter();
 		--m_lRef;

@@ -40,26 +40,12 @@ CFontStream::CFontStream() : NSFonts::IFontStream()
 {
 	m_pData	= NULL;
 	m_lSize = 0;
-	m_lRef = 1;
     m_bIsAttach = false;
 }
 CFontStream::~CFontStream()
 {
     if (!m_bIsAttach)
-	RELEASEARRAYOBJECTS(m_pData);
-}
-
-int CFontStream::AddRef()
-{
-	++m_lRef;
-	return m_lRef;
-}
-int CFontStream::Release()
-{
-	int ret = --m_lRef;
-	if (0 == m_lRef)
-		delete this;
-	return ret;
+        RELEASEARRAYOBJECTS(m_pData);
 }
 
 int CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
@@ -234,7 +220,7 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-CFontManager::CFontManager()
+CFontManager::CFontManager() : NSFonts::IFontManager()
 {
 	m_pLibrary = NULL;
 	FT_Init_FreeType(&m_pLibrary);
@@ -246,7 +232,6 @@ CFontManager::CFontManager()
 
 	m_bStringGID = FALSE;
 	m_nLOAD_MODE = 40968;
-	m_lRef = 1;
 
 	m_nRENDER_MODE = FT_RENDER_MODE_NORMAL;
 
@@ -631,18 +616,6 @@ INT CFontManager::GetStringPath(NSFonts::ISimpleGraphicsPath* pInterface)
 	return TRUE;
 }
 
-int CFontManager::AddRef()
-{
-	++m_lRef;
-	return m_lRef;
-}
-int CFontManager::Release()
-{
-	int ret = --m_lRef;
-	if (0 == m_lRef)
-		delete this;
-	return ret;
-}
 NSFonts::CFontInfo* CFontManager::GetFontInfoByParams(NSFonts::CFontSelectFormat& oFormat, bool bIsDictionaryUse)
 {
     NSFonts::CFontInfo* pRes = NULL;

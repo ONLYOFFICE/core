@@ -80,7 +80,7 @@ namespace NSHtmlRenderer
 	{
 		RELEASEOBJECT(m_pSimpleGraphicsConverter);
 		if(m_bDeleteFontManager)
-			RELEASEOBJECT(m_pFontManager);
+            NSBase::Release(m_pFontManager);
 		RELEASEOBJECT(m_pPen);
 		RELEASEOBJECT(m_pBrush);
 		RELEASEOBJECT(m_pFont);
@@ -930,7 +930,7 @@ namespace NSHtmlRenderer
 		if(NULL != pFontManager)
 		{
 			if(m_bDeleteFontManager)
-				RELEASEOBJECT(m_pFontManager);
+                NSBase::Release(m_pFontManager);
 			m_pFontManager = pFontManager;
 			m_bDeleteFontManager = false;
 		}

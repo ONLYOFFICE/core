@@ -137,6 +137,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CHeaderFooter>				m_oHeaderFooter;
 			nullable<OOX::Spreadsheet::CLegacyDrawingHFWorksheet>	m_oLegacyDrawingHF;
 			nullable<OOX::Spreadsheet::CPictureWorksheet>			m_oPicture;
+			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oRowBreaks;
+			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oColBreaks;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

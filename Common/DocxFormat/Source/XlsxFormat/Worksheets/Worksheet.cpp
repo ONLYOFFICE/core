@@ -153,6 +153,10 @@ namespace OOX
                             m_oExtLst = oReader;
                         else if (_T("picture") == sName)
                             m_oPicture = oReader;
+						else if (_T("rowBreaks") == sName)
+							m_oRowBreaks = oReader;
+						else if (_T("colBreaks") == sName)
+							m_oColBreaks = oReader;
 					}
 				}
 				if(m_oLegacyDrawing.IsInit() && m_oLegacyDrawing->m_oId.IsInit())
@@ -367,18 +371,26 @@ namespace OOX
 					m_arrConditionalFormatting[nIndex]->toXML(sXml);
 				if(m_oHyperlinks.IsInit())
 					m_oHyperlinks->toXML(sXml);
+				if(m_oRowBreaks.IsInit())
+					m_oRowBreaks->toXML(sXml);
+				if(m_oColBreaks.IsInit())
+					m_oColBreaks->toXML(sXml);
 				if(m_oPrintOptions.IsInit())
 					m_oPrintOptions->toXML(sXml);
 				if(m_oPageMargins.IsInit())
 					m_oPageMargins->toXML(sXml);
 				if(m_oPageSetup.IsInit())
 					m_oPageSetup->toXML(sXml);
+				if(m_oHeaderFooter.IsInit())
+					m_oHeaderFooter->toXML(sXml);
 				if(m_oDrawing.IsInit())
 					m_oDrawing->toXML(sXml);
 				if(m_oLegacyDrawing.IsInit())
 					m_oLegacyDrawing->toXML(sXml);
 				if(m_oLegacyDrawingHF.IsInit())
 					m_oLegacyDrawingHF->toXML(sXml);
+				if(m_oPicture.IsInit())
+					m_oPicture->toXML(sXml);
 				if(m_oOleObjects.IsInit())
 					m_oOleObjects->toXML(sXml);
 				if (m_oControls.IsInit())

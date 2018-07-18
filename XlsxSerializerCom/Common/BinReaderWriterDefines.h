@@ -264,7 +264,12 @@ namespace BinXlsxRW
 		SheetView = 23,
 		SheetPr = 24,
 		SparklineGroups = 25,
-		PivotTable = 26
+		PivotTable = 26,
+		HeaderFooter = 27,
+		LegacyDrawingHF = 28,
+		Picture = 29,
+		RowBreaks = 30,
+		ColBreaks = 31
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -897,6 +902,55 @@ namespace BinXlsxRW
 		DdeValue = 10,
 		DdeValueType = 11,
 		DdeValueVal = 12
+	};}
+	namespace c_oSer_HeaderFooter{enum c_oSer_HeaderFooter
+	{
+		AlignWithMargins = 0,
+		DifferentFirst = 1,
+		DifferentOddEven = 2,
+		ScaleWithDoc = 3,
+		EvenFooter = 4,
+		EvenHeader = 5,
+		FirstFooter = 6,
+		FirstHeader = 7,
+		OddFooter = 8,
+		OddHeader = 9
+	};}
+	namespace c_oSer_RowColBreaks{enum c_oSer_RowColBreaks
+	{
+		Count = 0,
+		ManualBreakCount = 1,
+		Break = 2,
+		Id = 3,
+		Man = 4,
+		Max = 5,
+		Min = 6,
+		Pt = 7
+	};}
+	namespace c_oSer_LegacyDrawingHF{enum c_oSer_LegacyDrawingHF
+	{
+		Drawings = 0,
+		Drawing = 1,
+		DrawingId = 2,
+		DrawingShape = 3,
+		Cfe = 4,
+		Cff = 5,
+		Cfo = 6,
+		Che = 7,
+		Chf = 8,
+		Cho = 9,
+		Lfe = 10,
+		Lff = 11,
+		Lfo = 12,
+		Lhe = 13,
+		Lhf = 14,
+		Lho = 15,
+		Rfe = 16,
+		Rff = 17,
+		Rfo = 18,
+		Rhe = 19,
+		Rhf = 20,
+		Rho = 21
 	};}
 }
 

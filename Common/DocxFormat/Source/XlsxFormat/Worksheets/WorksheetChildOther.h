@@ -774,7 +774,7 @@ namespace OOX
 					writer.WriteString(sName);
 				writer.WriteString(_T(">"));
 
-				writer.WriteString(m_sText);
+				writer.WriteEncodeXmlString(m_sText);
 				
 				writer.WriteString(_T("</"));				
 					writer.WriteString(sName);
@@ -944,6 +944,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"cho", m_oCho, m_oCho->GetValue());
 				WritingStringNullableAttrInt(L"lfe", m_oLfe, m_oLfe->GetValue());
 				WritingStringNullableAttrInt(L"lff", m_oLff, m_oLff->GetValue());
+				WritingStringNullableAttrInt(L"lfo", m_oLfo, m_oLfo->GetValue());
 				WritingStringNullableAttrInt(L"lhe", m_oLhe, m_oLhe->GetValue());
 				WritingStringNullableAttrInt(L"lLhf", m_oLhf, m_oLhf->GetValue());
 				WritingStringNullableAttrInt(L"lho", m_oLho, m_oLho->GetValue());
@@ -953,7 +954,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"rhe", m_oRhe, m_oRhe->GetValue());
 				WritingStringNullableAttrInt(L"rhf", m_oRhf, m_oRhf->GetValue());
 				WritingStringNullableAttrInt(L"rho", m_oRho, m_oRho->GetValue());
-				writer.WriteString(L"\"/>");
+				writer.WriteString(L"/>");
 
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -983,6 +984,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cho"),     m_oCho )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lfe"),     m_oLfe )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lff"),     m_oLff )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lfo"),     m_oLfo )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lhe"),     m_oLhe )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lhf"),     m_oLhf )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lho"),     m_oLho )
@@ -1005,6 +1007,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCho;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLfe;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLfo;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLhe;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLhf;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLho;
@@ -1067,6 +1070,138 @@ namespace OOX
 			nullable<SimpleTypes::CRelationshipId > m_oId;
 		};
 
+		class CBreak : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CBreak)
+			CBreak()
+			{
+			}
+			virtual ~CBreak()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(_T("<brk"));
+				WritingStringNullableAttrInt(L"id", m_oId, m_oId->GetValue());
+				WritingStringNullableAttrBool(L"man", m_oMan);
+				WritingStringNullableAttrInt(L"max", m_oMax, m_oMax->GetValue());
+				WritingStringNullableAttrInt(L"min", m_oMin, m_oMin->GetValue());
+				WritingStringNullableAttrBool(L"pt", m_oPt);
+				writer.WriteString(_T("/>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_Break;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("id"),	m_oId)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("man"),	m_oMan)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("max"),	m_oMax)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("min"),	m_oMin)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("pt"),	m_oPt)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oId;
+			nullable<SimpleTypes::COnOff<>>					m_oMan;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMax;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMin;
+			nullable<SimpleTypes::COnOff<>>					m_oPt;
+		};
+
+		class CRowColBreaks : public WritingElementWithChilds<CBreak>
+		{
+		public:
+			WritingElement_AdditionConstructors(CRowColBreaks)
+			CRowColBreaks()
+			{
+			}
+			virtual ~CRowColBreaks()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				toXML2(writer, L"rowBreaks");
+			}
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
+			{
+				writer.WriteString(_T("<"));
+				writer.WriteString(sName);
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				WritingStringNullableAttrInt(L"manualBreakCount", m_oManualBreakCount, m_oManualBreakCount->GetValue());
+				writer.WriteString(_T(">"));
+				for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if ( m_arrItems[i] )
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+				writer.WriteString(_T("</"));
+				writer.WriteString(sName);
+				writer.WriteString(_T(">"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( _T("brk") == sName )
+						m_arrItems.push_back( new CBreak( oReader ));
+				}
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_RowColBreaks;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("count"),	m_oCount)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("manualBreakCount"),	m_oManualBreakCount)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oManualBreakCount;
+		};
 	} //Spreadsheet
 } // namespace OOX
 

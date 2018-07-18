@@ -83,7 +83,7 @@ public:
 
 	bool preserve_;
     
-	text(const std::wstring & Text) :  text_(Text) {preserve_ = true;};
+	text(const std::wstring & Text);
     text() {preserve_ = true;};
 
     std::wstring text_;

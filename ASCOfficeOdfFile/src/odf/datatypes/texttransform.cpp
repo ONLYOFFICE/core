@@ -73,7 +73,9 @@ text_transform text_transform::parse(const std::wstring & Str)
         return text_transform(Uppercase);
     else if (tmp == L"capitalize")
         return text_transform(Capitalize);
-    else
+	else if (tmp == L"underline")
+        return text_transform(Underline);
+	else
     {
         BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return None;        

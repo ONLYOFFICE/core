@@ -365,6 +365,7 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 					CP_XML_ATTR(L"cap", "small");
 				}
 			}			
+			std::wstring underline = L"";
 			if (fo_text_transform_)
 			{
 				if (fo_text_transform_->get_type() == text_transform::Uppercase)
@@ -375,6 +376,10 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 				{
 					CP_XML_ATTR(L"cap", "small");
 				}
+				else if (fo_text_transform_->get_type() == text_transform::Underline)
+				{
+					underline = L"sng";
+				}
 			}
 			const int W = process_font_weight(fo_font_weight_);
 			if (W > 0) CP_XML_ATTR(L"b", true);
@@ -382,9 +387,7 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 		// underline
 			line_width under	=	style_text_underline_width_.get_value_or(line_width::Auto);
 			bool underlineBold	=	under.get_type() == line_width::Bold	|| 
-									under.get_type() == line_width::Thick;
-			
-			std::wstring underline = L"";
+									under.get_type() == line_width::Thick;			
 
             if ((style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::None) ||
 				(style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None))

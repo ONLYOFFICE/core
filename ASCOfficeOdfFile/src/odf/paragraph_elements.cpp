@@ -128,9 +128,17 @@ std::wostream & text::text_to_stream(std::wostream & _Wostream) const
 
 void text::add_text(const std::wstring & Text) 
 {
-    text_ = Text;
+	text_.reserve(Text.length());
+	for (size_t i =0; i < Text.length(); i++)
+	{
+		if (Text[i] < 0x20) continue;
+		text_ += Text[i];
+	}
 }
-
+text::text(const std::wstring & Text)
+{
+    add_text(Text);
+}
 void text::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (Context.get_process_note() != oox::docx_conversion_context::noNote && 

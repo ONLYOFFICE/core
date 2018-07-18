@@ -991,10 +991,10 @@ namespace NSEditorApi
         js_wrapper<int> m_nTransitionType;
         js_wrapper<int> m_nTransitionOption;
         js_wrapper<int> m_nTransitionDuration;
+        js_wrapper<int> m_nSlideAdvanceDuration;
         
         js_wrapper<bool> m_bSlideAdvanceOnMouseClick;
         js_wrapper<bool> m_bSlideAdvanceAfter;
-        js_wrapper<bool> m_bSlideAdvanceDuration;
         js_wrapper<bool> m_bShowLoop;
         
     public:
@@ -1007,10 +1007,10 @@ namespace NSEditorApi
         LINK_PROPERTY_INT_JS(TransitionType)
         LINK_PROPERTY_INT_JS(TransitionOption)
         LINK_PROPERTY_INT_JS(TransitionDuration)
+        LINK_PROPERTY_INT_JS(SlideAdvanceDuration)
         
         LINK_PROPERTY_BOOL_JS(SlideAdvanceOnMouseClick)
         LINK_PROPERTY_BOOL_JS(SlideAdvanceAfter)
-        LINK_PROPERTY_BOOL_JS(SlideAdvanceDuration)
         LINK_PROPERTY_BOOL_JS(ShowLoop)
     };
     

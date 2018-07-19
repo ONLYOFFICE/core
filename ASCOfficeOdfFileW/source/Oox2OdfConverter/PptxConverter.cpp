@@ -259,7 +259,7 @@ void PptxConverter::convert_styles()
 
 void PptxConverter::convert_settings()
 {
-
+	OoxConverter::convert(presentation->m_pJsaProject.operator ->());
 }
 
 void PptxConverter::convert_common()

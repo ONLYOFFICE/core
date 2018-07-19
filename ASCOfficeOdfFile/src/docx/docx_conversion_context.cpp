@@ -2055,5 +2055,13 @@ std::wstring docx_conversion_context::get_user_field(const std::wstring & name)
 	return pFind != map_user_fields.end() ? pFind->second : L"";
 }
 
+void docx_conversion_context::add_jsaProject(const std::string &content)
+{
+	if (content.empty()) return;
+	
+	output_document_->get_word_files().add_jsaProject(content);
+	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
+
 }
 }

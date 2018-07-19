@@ -110,6 +110,23 @@ content_xml_t_ptr odf_document::Impl::read_file_content(xml::sax * reader_owner)
 
     return result;
 }
+std::string odf_document::Impl::read_binary(const std::wstring & Path)
+{
+	std::string result;
+
+	NSFile::CFileBinary file;	
+	if (file.OpenFile(Path))
+	{	
+		DWORD size = file.GetFileSize();
+		result.resize(size);
+
+		file.ReadFile((BYTE*)result.c_str(), size, size);
+		file.CloseFile();
+
+		result[size] = 0;
+	}
+	return result;
+}
 
 content_xml_t_ptr odf_document::Impl::read_file_content(const std::wstring & Path)
 {
@@ -200,6 +217,8 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & temp
 		std::wstring styles_xml		= base_folder_ + FILE_SEPARATOR_STR + L"styles.xml";
 		std::wstring meta_xml		= base_folder_ + FILE_SEPARATOR_STR + L"meta.xml";
 		std::wstring settings_xml	= base_folder_ + FILE_SEPARATOR_STR + L"settings.xml";
+		
+		std::wstring jsaProject_bin	= base_folder_ + FILE_SEPARATOR_STR + L"jsaProject.bin";
 
 //-----------------------------------------------------------------------------------------------------
 		  _CP_LOG << L"[info] read settings.xml" << std::endl;
@@ -208,11 +227,13 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & temp
 		_CP_LOG << L"[info] read content.xml" << std::endl;
 		content_xml_ = read_file_content(content_xml);
 
-		  _CP_LOG << L"[info] read styles.xml" << std::endl;
+		_CP_LOG << L"[info] read styles.xml" << std::endl;
 		styles_xml_ = read_file_content(styles_xml);
 
-		  _CP_LOG << L"[info] read meta.xml" << std::endl;
+		_CP_LOG << L"[info] read meta.xml" << std::endl;
 		meta_xml_ = read_file_content(meta_xml);
+		
+		jsaProject_bin_ = read_binary(jsaProject_bin);
 //----------------------------------------------------------------------------------------
 		_CP_LOG << L"[info] parse fonts" << std::endl;
 		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
@@ -1054,6 +1075,8 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
     Context.process_list_styles();
 	if (UpdateProgress(850000)) return false;
 
+	Context.add_jsaProject(jsaProject_bin_);
+
 	return true;
 }
 bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context) 
@@ -1078,6 +1101,7 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
         Context.process_styles();
  		if (UpdateProgress(800000)) return false;
       
+		Context.add_jsaProject(jsaProject_bin_);
     }
     catch(boost::exception & ex)
     {
@@ -1123,6 +1147,8 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
 
         Context.end_document();
 		if (UpdateProgress(850000)) return false;
+		
+		Context.add_jsaProject(jsaProject_bin_);
 	}
     catch(boost::exception & ex)
     {

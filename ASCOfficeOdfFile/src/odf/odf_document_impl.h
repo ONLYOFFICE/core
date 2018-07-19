@@ -101,11 +101,15 @@ private:
 	bool decrypt_folder (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
 	bool decrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr data, int size );
 
-    content_xml_t_ptr content_xml_;
-    content_xml_t_ptr styles_xml_;
-    content_xml_t_ptr meta_xml_;
-    content_xml_t_ptr settings_xml_;
-	content_xml_t_ptr manifest_xml_;
+	std::string read_binary(const std::wstring & Path);
+
+    content_xml_t_ptr	content_xml_;
+    content_xml_t_ptr	styles_xml_;
+    content_xml_t_ptr	meta_xml_;
+    content_xml_t_ptr	settings_xml_;
+	content_xml_t_ptr	manifest_xml_;
+
+	std::string			jsaProject_bin_;
     
 	std::wstring mimetype_content_file_;
 

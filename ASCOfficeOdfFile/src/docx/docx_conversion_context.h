@@ -973,14 +973,15 @@ public:
 
 	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
 	
-	styles_map				styles_map_;
-	bool					process_headers_footers_;
-	bool					delayed_converting_;
-	bool					convert_delayed_enabled_;
+	styles_map	styles_map_;
+	bool		process_headers_footers_;
+	bool		delayed_converting_;
+	bool		convert_delayed_enabled_;
 
-	void					start_changes();
-	void					end_changes();
+	void		start_changes();
+	void		end_changes();
 
+	void		add_jsaProject(const std::string &content);
 private:
 	std::wstringstream		document_xml_;
     std::wstringstream		styles_xml_;

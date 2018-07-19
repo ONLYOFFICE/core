@@ -165,7 +165,7 @@ void odf_conversion_context::end_document()
 			if (isRoot)object_files->local_path = L"/";
 			rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
 
-			output_document_->add_object(package::element_ptr(object_files),isRoot);
+			output_document_->add_object(package::element_ptr(object_files), isRoot);
 		}
 
 	}

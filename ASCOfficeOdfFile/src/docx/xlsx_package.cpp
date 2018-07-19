@@ -251,6 +251,11 @@ void xl_files::write(const std::wstring & RootPath)
         comments_->set_main_document(get_main_document());
         comments_->write(path);
     }
+	if (jsaProject_)
+	{
+		rels_files_.add( relationship(L"jsaId", L"http://schemas.onlyoffice.com/jsaProject", L"jsaProject.bin" ) );
+		jsaProject_->write( path );
+	}
     rels_files_.write(path);
 }
 
@@ -312,6 +317,10 @@ void xl_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
 void xl_files::add_pivot_table(pivot_table_content_ptr pivot_table)
 {
     pivot_table_files_.add_pivot_table(pivot_table);
+}
+void xl_files::add_jsaProject(const std::string &content)
+{
+	jsaProject_ = package::simple_element::create(L"jsaProject.bin", content);
 }
 //----------------------------------------------------------------------------------------
 void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)

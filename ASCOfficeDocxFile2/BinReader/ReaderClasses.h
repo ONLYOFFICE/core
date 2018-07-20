@@ -2800,30 +2800,51 @@ public:
 	}
 	void Write(NSStringUtils::CStringBuilder& wr)
 	{
-        if(false == rId.empty())
+		wr.WriteString(L"<w:hyperlink");
+		if(!rId.empty())
 		{
-            std::wstring sCorrect_rId       = XmlUtils::EncodeXmlString(rId);
-            std::wstring sCorrect_tooltip   = XmlUtils::EncodeXmlString(sTooltip);
-            std::wstring sCorrect_anchor    = XmlUtils::EncodeXmlString(sAnchor);
-
-            std::wstring sStart = L"<w:hyperlink r:id=\"" + sCorrect_rId + L"\"";
-            if(false == sTooltip.empty())
-			{
-                sStart += L" w:tooltip=\"";
-                sStart += sCorrect_tooltip;
-                sStart += L"\"";
-			}
-            if(false == sAnchor.empty())
-			{
-                sStart += L" w:anchor=\"";
-                sStart += sCorrect_anchor;
-                sStart += L"\"";
-			}
-            sStart += L" w:history=\"1\">";
-			wr.WriteString(sStart);
-			wr.Write(writer);
-            wr.WriteString(L"</w:hyperlink>");
+			wr.WriteString(L" r:id=\"");
+			wr.WriteEncodeXmlString(rId);
+			wr.WriteString(L"\"");
 		}
+		if(!sTooltip.empty())
+		{
+			wr.WriteString(L" w:tooltip=\"");
+			wr.WriteEncodeXmlString(sTooltip);
+			wr.WriteString(L"\"");
+		}
+		if(!sAnchor.empty())
+		{
+			wr.WriteString(L" w:anchor=\"");
+			wr.WriteEncodeXmlString(sAnchor);
+			wr.WriteString(L"\"");
+		}
+		if (bHistory)
+		{
+			if (History)
+			{
+				wr.WriteString(L" w:history=\"1\"");
+			}
+			else
+			{
+				wr.WriteString(L" w:history=\"0\"");
+			}
+		}
+		if (!sDocLocation.empty())
+		{
+			wr.WriteString(L" w:docLocation=\"");
+			wr.WriteEncodeXmlString(sDocLocation);
+			wr.WriteString(L"\"");
+		}
+		if (!sTgtFrame.empty())
+		{
+			wr.WriteString(L" w:tgtFrame=\"");
+			wr.WriteEncodeXmlString(sTgtFrame);
+			wr.WriteString(L"\"");
+		}
+		wr.WriteString(L">");
+		wr.Write(writer);
+		wr.WriteString(L"</w:hyperlink>");
 	}
 };
 class CFldSimple{

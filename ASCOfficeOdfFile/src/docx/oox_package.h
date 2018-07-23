@@ -99,12 +99,16 @@ public:
     simple_element(const std::wstring & FileName, const std::wstring & Content);
     static element_ptr create(const std::wstring & FileName, const std::wstring & Content);
 
-public:
-    virtual void write(const std::wstring & RootPath);
+    simple_element(const std::wstring & FileName, const std::string & Content);
+    static element_ptr create(const std::wstring & FileName, const std::string & Content);
+
+	virtual void write(const std::wstring & RootPath);
 
 private:
     std::wstring file_name_;
     std::string content_utf8_;
+
+	bool bXml;
 
 };
 

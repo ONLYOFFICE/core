@@ -2522,6 +2522,7 @@ namespace BinXlsxRW
         OOX::CVmlDrawing*                           m_pCurVmlDrawing;
 		NSFile::CStreamWriter*						m_pCurStreamWriter;
 		OOX::Spreadsheet::COleObjects*				m_pCurOleObjects;
+		long                                        m_lObjectIdVML;
 
         const std::wstring&					m_sDestinationDir;
         const std::wstring&					m_sMediaDir;
@@ -2549,6 +2550,7 @@ namespace BinXlsxRW
 			m_pCurVmlDrawing	= NULL;
 			m_pOfficeDrawingConverter = pOfficeDrawingConverter;
 			m_nNextObjectId		= 0xfffff; // в CDrawingConverter своя нумерация .. 
+			m_lObjectIdVML = 0;
 		} 
 		int Read()
 		{
@@ -2566,10 +2568,11 @@ namespace BinXlsxRW
 				m_pCurSheet			= new OOX::Spreadsheet::CSheet();
 				m_pCurVmlDrawing	= new OOX::CVmlDrawing(NULL, false);
 
-				m_pCurVmlDrawing->m_lObjectIdVML = (long)(1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1);
+				m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML = (long)(1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1);
 
-				_UINT32 aSeekPositions[2 * c_oSerWorksheetsTypes::PivotTable + 1];
-				memset(aSeekPositions, 0, (2 * c_oSerWorksheetsTypes::PivotTable + 1) * sizeof(_UINT32));
+				//todo bigger then last int c_oSerWorksheetsTypes::
+				_UINT32 aSeekPositions[2 * 256];
+				memset(aSeekPositions, 0, (2 * 256) * sizeof(_UINT32));
 				READ1_DEF(length, res, this->ReadWorksheetSeekPositions, aSeekPositions);
 
 				m_pCurWorksheet->m_sOutputFilename = m_pCurWorksheet->DefaultFileName().GetBasename();
@@ -2706,6 +2709,23 @@ namespace BinXlsxRW
 				READ2_DEF(length, res, this->ReadPageSetup, &oPageSetup);
 			SEEK_TO_POS_END(oPageSetup);
 
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::HeaderFooter);
+				OOX::Spreadsheet::CHeaderFooter oHeaderFooter;
+				READ1_DEF(length, res, this->ReadHeaderFooter, &oHeaderFooter);
+			SEEK_TO_POS_END(oHeaderFooter);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::RowBreaks);
+				OOX::Spreadsheet::CRowColBreaks oRowBreaks;
+				READ1_DEF(length, res, this->ReadRowColBreaks, &oRowBreaks);
+				oRowBreaks.toXML2(oStreamWriter, L"rowBreaks");
+			SEEK_TO_POS_END2();
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::ColBreaks);
+				OOX::Spreadsheet::CRowColBreaks oColBreaks;
+				READ1_DEF(length, res, this->ReadRowColBreaks, &oColBreaks);
+				oColBreaks.toXML2(oStreamWriter, L"colBreaks");
+			SEEK_TO_POS_END2();
+
 			//important before Drawings
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Comments);
 				BinaryCommentReader oBinaryCommentReader(m_oBufferedStream, m_pCurWorksheet);
@@ -2767,6 +2787,8 @@ namespace BinXlsxRW
 				}
 			SEEK_TO_POS_END2();
 
+			OOX::Spreadsheet::COleObjects oOleObjects;
+			m_pCurOleObjects = &oOleObjects;
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Drawings);
 				OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
 				OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
@@ -2776,8 +2798,6 @@ namespace BinXlsxRW
 
 				m_pOfficeDrawingConverter->SetDstContentRels();
 				m_pCurDrawing = new OOX::Spreadsheet::CDrawing(NULL);
-				OOX::Spreadsheet::COleObjects oOleObjects;
-				m_pCurOleObjects = &oOleObjects;
 				READ1_DEF(length, res, this->ReadDrawings, m_pCurDrawing);
 
 				NSCommon::smart_ptr<OOX::File> pDrawingFile(m_pCurDrawing);
@@ -2786,25 +2806,47 @@ namespace BinXlsxRW
 				oDrawingWorksheet.m_oId.Init();
 				oDrawingWorksheet.m_oId->SetValue(oRId.get());
 				oDrawingWorksheet.toXML(oStreamWriter);
-				//ole & comment
-				if(m_pCurVmlDrawing->m_aXml.size() > 0 || (NULL != m_pCurVmlDrawing->m_mapComments && m_pCurVmlDrawing->m_mapComments->size() > 0))
-				{
-					NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(m_pCurVmlDrawing);
-					m_pCurVmlDrawing = NULL;
-					const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
-					OOX::Spreadsheet::CLegacyDrawingWorksheet oLegacyDrawing;
-					oLegacyDrawing.m_oId.Init();
-					oLegacyDrawing.m_oId->SetValue(oRId.get());
-					oLegacyDrawing.toXML(oStreamWriter);
-				}
-				if (oOleObjects.m_mapOleObjects.size() > 0)
-				{
-					oOleObjects.toXML(oStreamWriter);
-				}
 
 				OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath()  + FILE_SEPARATOR_STR + m_pCurDrawing->m_sOutputFilename + _T(".rels");
 				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 			SEEK_TO_POS_END2();
+
+			//ole & comment
+			if(m_pCurVmlDrawing->m_aXml.size() > 0 || (NULL != m_pCurVmlDrawing->m_mapComments && m_pCurVmlDrawing->m_mapComments->size() > 0))
+			{
+				NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(m_pCurVmlDrawing);
+				m_pCurVmlDrawing = NULL;
+				const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
+				OOX::Spreadsheet::CLegacyDrawingWorksheet oLegacyDrawing;
+				oLegacyDrawing.m_oId.Init();
+				oLegacyDrawing.m_oId->SetValue(oRId.get());
+				oLegacyDrawing.toXML(oStreamWriter);
+			}
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::LegacyDrawingHF);
+				OOX::Spreadsheet::CLegacyDrawingHFWorksheet oLegacyDrawingHF;
+				READ1_DEF(length, res, this->ReadLegacyDrawingHF, &oLegacyDrawingHF);
+			SEEK_TO_POS_END(oLegacyDrawingHF);
+
+			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Picture);
+				std::wstring sPicture = m_pOfficeDrawingConverter->m_pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + m_oBufferedStream.GetString4(length);
+				smart_ptr<OOX::File> additionalFile;
+				NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = m_pOfficeDrawingConverter->m_pReader->m_pRels->WriteImage(sPicture, additionalFile, L"", L"");
+
+				NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(NULL, false));
+				pImageFileWorksheet->set_filename(oRelsGeneratorInfo.sFilepathImage, false);
+				smart_ptr<OOX::File> pFileWorksheet = pImageFileWorksheet.smart_dynamic_cast<OOX::File>();
+				OOX::RId oRId = m_pCurWorksheet->Add(pFileWorksheet);
+
+				OOX::Spreadsheet::CPictureWorksheet oPicture;
+				oPicture.m_oId.Init();
+				oPicture.m_oId->SetValue(oRId.get());
+				oPicture.toXML(oStreamWriter);
+			SEEK_TO_POS_END2();
+
+			if (oOleObjects.m_mapOleObjects.size() > 0)
+			{
+				oOleObjects.toXML(oStreamWriter);
+			}
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::TableParts);
 				BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet);
@@ -3303,6 +3345,121 @@ namespace BinXlsxRW
 				res = c_oSerConstants::ReadUnknown;
 			return res;
         }
+		int ReadHeaderFooter(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CHeaderFooter* pHeaderFooter = static_cast<OOX::Spreadsheet::CHeaderFooter*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_HeaderFooter::AlignWithMargins == type)
+			{
+				pHeaderFooter->m_oAlignWithMargins.Init();
+				pHeaderFooter->m_oAlignWithMargins->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_HeaderFooter::DifferentFirst == type)
+			{
+				pHeaderFooter->m_oDifferentFirst.Init();
+				pHeaderFooter->m_oDifferentFirst->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_HeaderFooter::DifferentOddEven == type)
+			{
+				pHeaderFooter->m_oDifferentOddEven.Init();
+				pHeaderFooter->m_oDifferentOddEven->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_HeaderFooter::ScaleWithDoc == type)
+			{
+				pHeaderFooter->m_oScaleWithDoc.Init();
+				pHeaderFooter->m_oScaleWithDoc->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_HeaderFooter::EvenFooter == type)
+			{
+				pHeaderFooter->m_oEvenFooter.Init();
+				pHeaderFooter->m_oEvenFooter->m_sText = m_oBufferedStream.GetString4(length);
+			}
+			else if(c_oSer_HeaderFooter::EvenHeader == type)
+			{
+				pHeaderFooter->m_oEvenHeader.Init();
+				pHeaderFooter->m_oEvenHeader->m_sText = m_oBufferedStream.GetString4(length);
+			}
+			else if(c_oSer_HeaderFooter::FirstFooter == type)
+			{
+				pHeaderFooter->m_oFirstFooter.Init();
+				pHeaderFooter->m_oFirstFooter->m_sText = m_oBufferedStream.GetString4(length);
+			}
+			else if(c_oSer_HeaderFooter::FirstHeader == type)
+			{
+				pHeaderFooter->m_oFirstHeader.Init();
+				pHeaderFooter->m_oFirstHeader->m_sText = m_oBufferedStream.GetString4(length);
+			}
+			else if(c_oSer_HeaderFooter::OddFooter == type)
+			{
+				pHeaderFooter->m_oOddFooter.Init();
+				pHeaderFooter->m_oOddFooter->m_sText = m_oBufferedStream.GetString4(length);
+			}
+			else if(c_oSer_HeaderFooter::OddHeader == type)
+			{
+				pHeaderFooter->m_oOddHeader.Init();
+				pHeaderFooter->m_oOddHeader->m_sText = m_oBufferedStream.GetString4(length);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadRowColBreaks(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CRowColBreaks* pRowColBreaks = static_cast<OOX::Spreadsheet::CRowColBreaks*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_RowColBreaks::Count == type)
+			{
+				pRowColBreaks->m_oCount.Init();
+				pRowColBreaks->m_oCount->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_RowColBreaks::ManualBreakCount == type)
+			{
+				pRowColBreaks->m_oManualBreakCount.Init();
+				pRowColBreaks->m_oManualBreakCount->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_RowColBreaks::Break == type)
+			{
+				OOX::Spreadsheet::CBreak* pColBreaks = new OOX::Spreadsheet::CBreak();
+				READ1_DEF(length, res, this->ReadBreak, pColBreaks);
+				pRowColBreaks->m_arrItems.push_back(pColBreaks);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadBreak(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CBreak* pBreak = static_cast<OOX::Spreadsheet::CBreak*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_RowColBreaks::Id == type)
+			{
+				pBreak->m_oId.Init();
+				pBreak->m_oId->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_RowColBreaks::Man == type)
+			{
+				pBreak->m_oMan.Init();
+				pBreak->m_oMan->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_RowColBreaks::Max == type)
+			{
+				pBreak->m_oMax.Init();
+				pBreak->m_oMax->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_RowColBreaks::Min == type)
+			{
+				pBreak->m_oMin.Init();
+				pBreak->m_oMin->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_RowColBreaks::Pt == type)
+			{
+				pBreak->m_oPt.Init();
+				pBreak->m_oPt->FromBool(m_oBufferedStream.GetBool());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
 		int ReadPrintOptions(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CPrintOptions* pPrintOptions = static_cast<OOX::Spreadsheet::CPrintOptions*>(poResult);
@@ -3456,7 +3613,7 @@ namespace BinXlsxRW
 								std::wstring strXml = oWriter.GetXmlString();								
 								
 								m_pCurVmlDrawing->m_aXml.push_back(strXml);
-								m_pCurVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
+								m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 
 								pOleObject->m_oShapeId = *oPic.oleObject->m_sShapeId;
                                
@@ -3581,6 +3738,168 @@ namespace BinXlsxRW
 				res = c_oSerConstants::ReadUnknown;
 			return res;
         }
+		int ReadLegacyDrawingHF(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CLegacyDrawingHFWorksheet* pLegacyDrawingHF = static_cast<OOX::Spreadsheet::CLegacyDrawingHFWorksheet*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_LegacyDrawingHF::Drawings == type)
+			{
+				m_pOfficeDrawingConverter->SetDstContentRels();
+				OOX::CVmlDrawing* pVmlDrawing = new OOX::CVmlDrawing(NULL, false);
+				pVmlDrawing->m_lObjectIdVML = m_lObjectIdVML;
+				READ1_DEF(length, res, this->ReadLegacyDrawingHFDrawings, pVmlDrawing);
+				m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+				NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(pVmlDrawing);
+				const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
+				pLegacyDrawingHF->m_oId.Init();
+				pLegacyDrawingHF->m_oId->SetValue(oRId.get());
+
+				OOX::CPath pathVmlsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
+				OOX::CSystemUtility::CreateDirectories(pathVmlsDir.GetPath());
+				OOX::CPath pathVmlsRelsDir = pathVmlsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
+				OOX::CSystemUtility::CreateDirectories(pathVmlsRelsDir.GetPath());
+				OOX::CPath pathVmlRels = pathVmlsRelsDir.GetPath()  + FILE_SEPARATOR_STR + pVmlDrawingFile->m_sOutputFilename + _T(".rels");
+				m_pOfficeDrawingConverter->SaveDstContentRels(pathVmlRels.GetPath());
+			}
+			else if(c_oSer_LegacyDrawingHF::Cfe == type)
+			{
+				pLegacyDrawingHF->m_oCfe.Init();
+				pLegacyDrawingHF->m_oCfe->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Cff == type)
+			{
+				pLegacyDrawingHF->m_oCff.Init();
+				pLegacyDrawingHF->m_oCff->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Cfo == type)
+			{
+				pLegacyDrawingHF->m_oCfo.Init();
+				pLegacyDrawingHF->m_oCfo->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Che == type)
+			{
+				pLegacyDrawingHF->m_oChe.Init();
+				pLegacyDrawingHF->m_oChe->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Chf == type)
+			{
+				pLegacyDrawingHF->m_oChf.Init();
+				pLegacyDrawingHF->m_oChf->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Cho == type)
+			{
+				pLegacyDrawingHF->m_oCho.Init();
+				pLegacyDrawingHF->m_oCho->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Lfe == type)
+			{
+				pLegacyDrawingHF->m_oLfe.Init();
+				pLegacyDrawingHF->m_oLfe->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Lff == type)
+			{
+				pLegacyDrawingHF->m_oLff.Init();
+				pLegacyDrawingHF->m_oLff->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Lfo == type)
+			{
+				pLegacyDrawingHF->m_oLfo.Init();
+				pLegacyDrawingHF->m_oLfo->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Lhe == type)
+			{
+				pLegacyDrawingHF->m_oLhe.Init();
+				pLegacyDrawingHF->m_oLhe->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Lhf == type)
+			{
+				pLegacyDrawingHF->m_oLhf.Init();
+				pLegacyDrawingHF->m_oLhf->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Lho == type)
+			{
+				pLegacyDrawingHF->m_oLho.Init();
+				pLegacyDrawingHF->m_oLho->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Rfe == type)
+			{
+				pLegacyDrawingHF->m_oRfe.Init();
+				pLegacyDrawingHF->m_oRfe->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Rff == type)
+			{
+				pLegacyDrawingHF->m_oRff.Init();
+				pLegacyDrawingHF->m_oRff->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Rfo == type)
+			{
+				pLegacyDrawingHF->m_oRfo.Init();
+				pLegacyDrawingHF->m_oRfo->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Rhe == type)
+			{
+				pLegacyDrawingHF->m_oRhe.Init();
+				pLegacyDrawingHF->m_oRhe->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Rhf == type)
+			{
+				pLegacyDrawingHF->m_oRhf.Init();
+				pLegacyDrawingHF->m_oRhf->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_LegacyDrawingHF::Rho == type)
+			{
+				pLegacyDrawingHF->m_oRho.Init();
+				pLegacyDrawingHF->m_oRho->SetValue(m_oBufferedStream.GetLong());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadLegacyDrawingHFDrawings(BYTE type, long length, void* poResult)
+		{
+			OOX::CVmlDrawing* pVmlDrawing = static_cast<OOX::CVmlDrawing*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_LegacyDrawingHF::Drawing == type)
+			{
+				OOX::CVmlDrawing::_vml_shape oVmlShape;
+				READ1_DEF(length, res, this->ReadLegacyDrawingHFDrawing, &oVmlShape);
+				if(NULL != oVmlShape.pElement && !oVmlShape.sXml.empty())
+				{
+					PPTX::Logic::SpTreeElem* pSpTree = static_cast<PPTX::Logic::SpTreeElem*>(oVmlShape.pElement);
+					NSBinPptxRW::CXmlWriter						oWriter(XMLWRITER_DOC_TYPE_XLSX);
+					NSCommon::smart_ptr<PPTX::Logic::ClrMap>	oClrMap;
+					oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+					pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oVmlShape.sXml.c_str());
+					pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
+					pVmlDrawing->m_aXml.push_back(oWriter.GetXmlString());
+				}
+				RELEASEOBJECT(oVmlShape.pElement);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadLegacyDrawingHFDrawing(BYTE type, long length, void* poResult)
+		{
+			OOX::CVmlDrawing::_vml_shape* poVmlShape = static_cast<OOX::CVmlDrawing::_vml_shape*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_LegacyDrawingHF::DrawingId == type)
+			{
+				poVmlShape->sXml = m_oBufferedStream.GetString4(length);
+			}
+			else if(c_oSer_LegacyDrawingHF::DrawingShape == type)
+			{
+				PPTX::Logic::SpTreeElem* pSpTree = new PPTX::Logic::SpTreeElem();
+				BYTE typeRec1   = m_oBufferedStream.GetUChar();    // must be 0;
+				LONG _e         = m_oBufferedStream.GetPos()   + m_oBufferedStream.GetLong() + 4;
+				m_oBufferedStream.Skip(5); // type record (must be 1) + 4 byte - len recor
+				pSpTree->fromPPTY(&m_oBufferedStream);
+				poVmlShape->pElement = pSpTree;
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
 		int ReadFromTo(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CFromTo* pFromTo = static_cast<OOX::Spreadsheet::CFromTo*>(poResult);

@@ -86,6 +86,7 @@ public:
 	struct _field
 	{
 		std::wstring				name;
+		bool						name_enabled = false;
 		std::wstring				display_name;
 		int							type = -1;
 		int							hierarchy = -1;
@@ -479,6 +480,11 @@ void xlsx_pivots_context::Impl::sort_fields()
 						if (count_items_col != current_.fields[i].caches.size())
 							bAddRepeateCol = true;
 					}	
+				}
+				else if (current_.fields[i].name_enabled)
+				{
+					count_items_col = 0;
+					bAddRepeateCol = true; //add col axis
 				}
 				//if (current_.fields[i].data_layout)
 				//{
@@ -1296,6 +1302,7 @@ void xlsx_pivots_context::start_field()
 void xlsx_pivots_context::set_field_name(std::wstring name)
 {
 	impl_->current_.fields.back().name = name;
+	impl_->current_.fields.back().name_enabled = true;
 }
 void xlsx_pivots_context::set_field_display(std::wstring name)
 {

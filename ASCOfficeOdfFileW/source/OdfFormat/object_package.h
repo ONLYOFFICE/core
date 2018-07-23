@@ -102,8 +102,11 @@ namespace odf_writer
 		class simple_element : public element
 		{
 		public:
+			simple_element(const std::wstring & FileName, const std::string & Content);
 			simple_element(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
+			
 			static element_ptr create(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
+			static element_ptr create(const std::wstring & FileName, const std::string & Content);
 
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 
@@ -160,15 +163,16 @@ namespace odf_writer
 			std::wstring type_;
 
 		};
-		class documentID_file : public element
+		class binary_file : public element
 		{
 		public:
-			documentID_file(std::wstring value);
+			binary_file(const std::wstring &file_name, const std::string &value);
 			
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
 
 		private:
-			std::wstring value_;
+			std::string value_;
+			std::wstring file_name_;
 
 		};
 		class mimetype_file : public element
@@ -226,6 +230,7 @@ namespace odf_writer
 			odf_document(std::wstring type);
 			
 			void add_object(element_ptr _object,bool root = false);
+			void add_binary(const std::wstring &file_name, const std::string &value);
 			
 			void set_rels(rels & r);
 			
@@ -233,9 +238,6 @@ namespace odf_writer
 			void write_manifest(const std::wstring & RootPath);
 
 			manifect_file* get_manifest() {return dynamic_cast<manifect_file*>(manifest_.get());}
-
-			void set_documentID(const std::wstring &value);
-
 		private:
 			element_ptr					base_;
 			std::vector<element_ptr>	objects_;

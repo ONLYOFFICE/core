@@ -52,11 +52,13 @@ namespace odf_writer
 		{
 			if (utf8_)
 			{
-				utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
+				content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(Content);
 			}else
 				content_utf8_ = std::string( Content.begin(), Content.end());
 		}
-
+		simple_element::simple_element(const std::wstring & FileName, const std::string & Content) : file_name_(FileName), utf8_(false), content_utf8_(Content)
+		{
+		}
 		void simple_element::write(const std::wstring & RootPath, bool add_padding)
 		{
 			NSFile::CFileBinary file;
@@ -124,13 +126,14 @@ namespace odf_writer
 		{
 			type_ = t;
 		}
-		documentID_file::documentID_file(std::wstring v)
+		binary_file::binary_file(const std::wstring &file_name, const std::string &value)
 		{
-			value_ = v;
+			file_name_	= file_name;
+			value_		= value;
 		}	
-		void documentID_file::write(const std::wstring & RootPath, bool add_padding)
+		void binary_file::write(const std::wstring & RootPath, bool add_padding)
 		{
-			simple_element elm(L"documentID", value_, false);
+			simple_element elm(file_name_, value_);
 			elm.write(RootPath, false);
 		}
 		mimetype_file::mimetype_file(std::wstring t)
@@ -300,12 +303,12 @@ namespace odf_writer
 		{
 			dynamic_cast<manifect_file*>(manifest_.get())->add_rels(r);
 		}
-		void odf_document::set_documentID(const std::wstring &value)
+		void odf_document::add_binary(const std::wstring &file_name, const std::string &value)
 		{
-			add_object(element_ptr(new documentID_file(value)));
+			objects_.push_back(element_ptr(new binary_file(file_name, value)));
 			
 			rels rels_;
-			rels_.add(relationship(std::wstring(L"application/binary"), L"documentID"));			
+			rels_.add(relationship(std::wstring(L"application/binary"), file_name));			
 			set_rels(rels_);
 		}
 

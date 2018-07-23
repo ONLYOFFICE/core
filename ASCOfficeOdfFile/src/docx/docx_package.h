@@ -145,6 +145,7 @@ public:
     void set_comments		(comments_context	& commentsContext);
 
 	void add_charts(chart_content_ptr chart);
+	void add_jsaProject(const std::string &content);
 
 	void add_rels(relationship const & r);
 
@@ -163,6 +164,7 @@ private:
     element_ptr notes_;
     element_ptr settings_;
     element_ptr comments_;
+    element_ptr jsaProject_;
 
 };
 

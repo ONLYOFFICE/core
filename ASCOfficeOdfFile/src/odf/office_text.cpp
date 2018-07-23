@@ -96,17 +96,17 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
     {
         return true; // all shapes // 
     }
+	else if (ns == L"office" && name == L"forms") 
+	{
+		return true;
+	}
 
     return false;
 }
 
 void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	if CP_CHECK_NAME(L"office", L"forms") 
-	{
-		CP_CREATE_ELEMENT(forms_);
-	}
-	else if CP_CHECK_NAME(L"text", L"tracked-changes") 
+	if CP_CHECK_NAME(L"text", L"tracked-changes") 
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
@@ -151,8 +151,8 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 	if (tracked_changes_)
 		tracked_changes_->docx_convert(Context);
 
- 	if (forms_)
-		forms_->docx_convert(Context);
+ 	//if (forms_)
+		//forms_->docx_convert(Context);
 
 	Context.start_office_text();
 	for (size_t i = 0; i < content_.size(); i++)
@@ -164,13 +164,16 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 			const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(*content_[i]->element_style_name);
 		   
 			if (masterPageName)
-			{
-				Context.set_master_page_name(*masterPageName);
-		        
-				const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
-		        
-				Context.remove_page_properties();
-				Context.add_page_properties(masterPageNameLayout);
+			{				
+				std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
+
+				if (false == masterPageNameLayout.empty())
+				{
+					Context.set_master_page_name(*masterPageName); //проверка на то что тема действительно существует????
+					
+					Context.remove_page_properties();
+					Context.add_page_properties(masterPageNameLayout);
+				}
 			}  
 		}
 		if (content_[i]->next_element_style_name)

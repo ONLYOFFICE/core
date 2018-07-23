@@ -694,12 +694,17 @@ void pptx_conversion_context::start_chart(std::wstring name)
 	//этот контекст нужно передавать в файл
 
 }
-
 void pptx_conversion_context::end_chart()
 {
 	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
 	//излишняя инфа
 }
-
+void pptx_conversion_context::add_jsaProject(const std::string &content)
+{
+	if (content.empty()) return;
+	
+	output_document_->get_ppt_files().add_jsaProject(content);
+	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
 }
 }

@@ -193,20 +193,25 @@ void content_types_file::set_media(mediaitems & _Mediaitems)
 
 /////////////////////////////////////////////////////////////////////////
 
-simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName)
+simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName), bXml(true)
 {
     utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
 }
-
+simple_element::simple_element(const std::wstring & FileName, const std::string & Content) : file_name_(FileName), content_utf8_(Content), bXml(false)
+{
+}
 void simple_element::write(const std::wstring & RootPath)
 {
-	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  file_name_;
+	std::wstring name_ = RootPath + FILE_SEPARATOR_STR + file_name_;
 
 	NSFile::CFileBinary file;
 	if ( file.CreateFileW(name_) == true)
 	{
-		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-		file.WriteFile((BYTE*)root.c_str(), root.length());
+		if (bXml)
+		{
+			std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+			file.WriteFile((BYTE*)root.c_str(), root.length());
+		}
 		file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
 		file.CloseFile();
 	}
@@ -277,7 +282,10 @@ element_ptr simple_element::create(const std::wstring & FileName, const std::wst
 {
     return boost::make_shared<simple_element>(FileName, Content);
 }
-
+element_ptr simple_element::create(const std::wstring & FileName, const std::string & Content)
+{
+    return boost::make_shared<simple_element>(FileName, Content);
+}
 //-----------------------------------------------------------------------------------------------
 
 void core_file::write(const std::wstring & RootPath)

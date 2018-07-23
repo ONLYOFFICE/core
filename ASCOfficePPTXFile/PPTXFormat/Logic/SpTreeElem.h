@@ -94,7 +94,7 @@ namespace PPTX
 				if (m_elem.is_init())
 					m_elem->toPPTY(pWriter);
 			}
-					void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const;
+					void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL) const;
 			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				if (m_elem.is_init())

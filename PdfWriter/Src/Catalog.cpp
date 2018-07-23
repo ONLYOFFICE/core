@@ -94,7 +94,7 @@ namespace PdfWriter
 #ifndef FILTER_FLATE_DECODE_DISABLED
 			pRGBProfile->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-			pRGBProfile->GetStream()->Write(c_arrICCsRGB, c_nSizeICCsRGB, false);
+            pRGBProfile->GetStream()->Write((unsigned char*)c_arrICCsRGB, c_nSizeICCsRGB, false);
 		}
 	}
 	CPageTree*   CCatalog::GetRoot() const

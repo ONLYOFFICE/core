@@ -41,7 +41,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
+		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group)
 		{
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();
@@ -51,8 +51,23 @@ namespace PPTX
 
 			pWriter->m_lObjectIdVML++;
 
-            pWriter->WriteAttribute(L"id", strId);
-            pWriter->WriteAttribute(L"o:spid", strSpid);
+			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+			{
+				if(NULL == pId)
+				{
+					pWriter->WriteAttribute(L"id", strSpid);
+				}
+				else
+				{
+					pWriter->WriteAttribute(L"id", pId);
+					pWriter->WriteAttribute(L"o:spid", strSpid);
+				}
+			}
+			else
+			{
+				pWriter->WriteAttribute(L"id",		strId);
+				pWriter->WriteAttribute(L"o:spid",	strSpid);
+			}
 		
 			NSBinPptxRW::CXmlWriter oStylesWriter;
 			
@@ -181,15 +196,15 @@ namespace PPTX
 			{
 				if (SpTreeElems[i].is<PPTX::Logic::Shape>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::Pic>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::SpTree>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
 				}				
 			}
 

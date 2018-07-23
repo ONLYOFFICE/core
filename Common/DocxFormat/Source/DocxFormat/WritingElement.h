@@ -1120,6 +1120,8 @@ namespace OOX
 		et_x_PictureWorksheet,
 		et_x_HeaderFooterWorksheet,
 		et_x_HeaderFooterElementWorksheet,
+		et_x_Break,
+		et_x_RowColBreaks,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

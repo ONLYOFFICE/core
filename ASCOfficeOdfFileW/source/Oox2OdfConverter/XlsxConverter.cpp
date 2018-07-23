@@ -205,6 +205,9 @@ void XlsxConverter::convert_sheets()
 			convert(Workbook->m_oDefinedNames->m_arrItems[i]);
 		}
 	}
+//-----------------------------------------------------------------------------------------------------------------
+	OoxConverter::convert(xlsx_document->m_pJsaProject);
+
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 {

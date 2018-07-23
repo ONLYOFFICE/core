@@ -132,7 +132,7 @@ void OoxConverter::write(const std::wstring & out_path, const std::wstring & tem
 
 	if (false == documentID.empty())
 	{
-		output_document->set_documentID(documentID);
+		output_document->add_binary(L"documentID", NSFile::CUtf8Converter::GetUtf8StringFromUnicode(documentID));
 	}
 	
 	if (password.empty())
@@ -573,5 +573,23 @@ void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf_types::font_size) 
 	 if (odf_length)
 		 odf_font_size = odf_types::font_size(odf_length.get());
 }
+void OoxConverter::convert(OOX::JsaProject *jsaProject)
+{
+	if (!jsaProject) return;
 
+	std::string content;
+	NSFile::CFileBinary file;
+	
+	file.OpenFile(jsaProject->filename().GetPath());
+	
+	DWORD size = file.GetFileSize();
+	content.resize(size);
+
+	file.ReadFile((BYTE*)content.c_str(), size, size);
+	file.CloseFile();
+	
+	content[size] = 0;
+
+	output_document->add_binary(L"jsaProject.bin", content);
+}
 }

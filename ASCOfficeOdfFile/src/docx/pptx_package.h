@@ -222,7 +222,8 @@ public:
     void add_theme (pptx_xml_theme_ptr theme);
 
 	void set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments);    
-
+	
+	void add_jsaProject	(const std::string &content);
 private:
     rels_files				rels_files_;
    
@@ -242,6 +243,7 @@ private:
 	element_ptr			comments_;
     element_ptr			media_;
     element_ptr			embeddings_;
+	element_ptr			jsaProject_;
 };
 
 //  xlsx_document

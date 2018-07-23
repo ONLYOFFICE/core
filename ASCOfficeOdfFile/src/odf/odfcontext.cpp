@@ -450,7 +450,7 @@ const page_layout_instance * page_layout_container::page_layout_first() const
 bool page_layout_container::compare_page_properties(const std::wstring & master1, const std::wstring & master2)
 {
 	const page_layout_instance *page_layout1 = page_layout_by_style(master1);
-	const page_layout_instance *page_layout2 = page_layout_by_style(master1);
+	const page_layout_instance *page_layout2 = page_layout_by_style(master2);
 
 	if (!page_layout1 || !page_layout2) return true;
 	if (!page_layout1->style_page_layout_ || !page_layout1->style_page_layout_) return true;
@@ -458,7 +458,9 @@ bool page_layout_container::compare_page_properties(const std::wstring & master1
 	style_page_layout_properties *props1 = dynamic_cast<style_page_layout_properties*>(page_layout1->style_page_layout_->style_page_layout_properties_.get());
 	style_page_layout_properties *props2 = dynamic_cast<style_page_layout_properties*>(page_layout2->style_page_layout_->style_page_layout_properties_.get());
 	
-	if (!props1 || !props1) return true;
+	if (!props1 || !props2) return true;
+
+	if (props1 == props2) return true;
 
 	return props1->attlist_.compare(props2->attlist_);
 }

@@ -385,7 +385,29 @@ void docx_conversion_context::start_index_content()
 	}
 	else
 	{
-		sInstrText += L" TOC \\h";
+		sInstrText += L" TOC";
+	
+		bool bLink = false, bPages = false;
+
+		if (table_content_context_.current_template.empty())
+		{
+			bLink = true;
+			bPages = true;
+		}
+		else
+		{
+			for (size_t i = 0; i < table_content_context_.current_template.size(); i++)
+			{
+				for (size_t j = 0; j < table_content_context_.current_template[i].content.size(); j++)
+				{
+					if (table_content_context_.current_template[i].content[j] == 3) bLink = true;
+					if (table_content_context_.current_template[i].content[j] == 6) bPages = true;
+				}
+			}
+		}
+
+		if (bLink)
+			sInstrText += L" \\h";
 
 		if (table_content_context_.type_table_content == 1)
 			sInstrText += L" \\f \\u";
@@ -399,6 +421,9 @@ void docx_conversion_context::start_index_content()
 
 			sInstrText += L" \\o \"" +	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
 										std::to_wstring(table_content_context_.max_outline_level) + L"\"";
+			if (!bPages)
+				sInstrText += L" \\n "+	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
+										std::to_wstring(table_content_context_.max_outline_level);
 		}
 		if (false == table_content_context_.outline_level_styles.empty())
 		{
@@ -490,7 +515,7 @@ void docx_conversion_context::start_bookmark (const std::wstring &name)
 	}
 
 	finish_run();
-	output_stream() << L"<w:bookmarkStart w:id=\"" << std::to_wstring(id) << L"\" w:name=\"" << name << L"\"/>";
+	output_stream() << L"<w:bookmarkStart w:id=\"" << std::to_wstring(id) << L"\" w:name=\"" << XmlUtils::EncodeXmlString(name) << L"\"/>";
 }
 
 void docx_conversion_context::end_bookmark (const std::wstring &name)

@@ -181,7 +181,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile"
-				PreprocessorDefinitions="_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
+				PreprocessorDefinitions="_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"

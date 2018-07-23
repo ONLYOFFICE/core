@@ -338,7 +338,7 @@ namespace DocFileFormat
 			HeaderStoriesPlex =	new Plex<EmptyStructure>( EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfHdd, FIB->m_FibWord97.lcbPlcfHdd, nWordVersion);
 		}
 
-		if (FIB->m_RgLw97.ccpAtn > 0)
+        if (FIB->m_RgLw97.ccpAtn > 0)
 		{
 			AnnotationsReferencePlex		=	new Plex<AnnotationReferenceDescriptor>(AnnotationReferenceDescriptor::GetSize(nWordVersion), TableStream, FIB->m_FibWord97.fcPlcfandRef, FIB->m_FibWord97.lcbPlcfandRef, nWordVersion);
 			IndividualCommentsPlex			=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfandTxt,		FIB->m_FibWord97.lcbPlcfandTxt,		nWordVersion);
@@ -417,7 +417,7 @@ namespace DocFileFormat
 			AnnotationOwners		=	new AnnotationOwnerList		(FIB, TableStream);
 		}
 
-		if (m_pCallFunc)
+        if (m_pCallFunc)
 		{
 			m_pCallFunc->OnProgress(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 300000 );
 
@@ -435,24 +435,24 @@ namespace DocFileFormat
 			std::unordered_map<int, int> fonts_charsets;
 			bool bFontsCodePage = false;
 
-			for ( std::vector<ByteStructure*>::iterator iter = FontTable->Data.begin(); !bFontsCodePage &&  iter != FontTable->Data.end(); iter++ )
+            for ( size_t i = 0; !bFontsCodePage &&  i < FontTable->Data.size(); ++i)
 			{
-				FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
+                FontFamilyName* font = dynamic_cast<FontFamilyName*>( FontTable->Data[i]);
 				if (!font) continue;
 
 				if (fonts_charsets.find(font->chs) == fonts_charsets.end())
 				{
 					fonts_charsets.insert(std::make_pair(font->chs, font->ff));
 					
-					for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
-					{
-						if (aCodePages[i][0] == font->chs && font->chs != 0)
-						{
-							nFontsCodePage = aCodePages[i][1];
-							bFontsCodePage = true;
-							break;
-						}
-					}	
+                    for (size_t j = 0 ; j < 32; j++)
+                    {
+                        if (aCodePages[j][0] == font->chs && font->chs != 0)
+                        {
+                            nFontsCodePage = aCodePages[j][1];
+                            bFontsCodePage = true;
+                            break;
+                        }
+                    }
 				}
 			}
 		}
@@ -465,7 +465,7 @@ namespace DocFileFormat
 			Text			= m_PieceTable->GetAllEncodingText (WordDocumentStream);
 		}
 		
-		if (FIB->m_FibWord97.lcbClx < 1 || ((Text) && (Text->empty())))
+        if (FIB->m_FibWord97.lcbClx < 1 || ((Text) && (Text->empty())))
 		{
 			int cb = FIB->m_FibBase.fcMac - FIB->m_FibBase.fcMin;
 

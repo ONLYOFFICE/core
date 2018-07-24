@@ -320,6 +320,18 @@ namespace DocFileFormat
 				break;
 			}
 		}
+		if (_gridSpan <= 1 && nComputedCellWidth > _width && _width > 1)
+		{
+			int width_current = 0;
+			for (int i = _gridIndex; i < _grid->size();  i++)
+			{
+				width_current += _grid->at(i);
+				if (width_current >= nComputedCellWidth)
+					break;
+				_gridSpan++;
+			}
+			_width = nComputedCellWidth;
+		}
 
 		XMLTools::XMLElement    tcW     ( L"w:tcW" );
 		

@@ -1647,17 +1647,23 @@ void bibliography_mark::add_attributes( const xml::attributes_wc_ptr & Attribute
 	CP_APPLY_ATTR(L"text:school",			school_);
 	CP_APPLY_ATTR(L"text:series",			series_);
 	CP_APPLY_ATTR(L"text:volume",			volume_);
+
+	if (std::wstring::npos != identifier_.find(L"CITATION "))
+	{
+		XmlUtils::replace_all(identifier_, L"CITATION ", L"");
+	}
+	XmlUtils::replace_all(identifier_, L" ", L"");
+	XmlUtils::replace_all(identifier_, L"\\", L"");
 }
 
 void bibliography_mark::add_text(const std::wstring & Text)
 {
-    office_element_ptr elm = text::create(Text) ;
-	content_ = elm;
+	text_ = text::create(Text) ;
 }
 
 std::wostream & bibliography_mark::text_to_stream(std::wostream & _Wostream) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(text_);
     return _Wostream;
 }
 void bibliography_mark::serialize(std::wostream & strm)
@@ -1826,6 +1832,20 @@ void bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
 	serialize(strm);
 
 	Context.add_bibliography_item(strm.str());
+
+	if (text_)
+	{
+		docx_serialize_field(L"CITATION " + XmlUtils::EncodeXmlString(identifier_), text_, Context, false);		
+		//Context.finish_run();
+		//Context.output_stream() << L"<w:fldSimple w:instr=\" CITATION " << content_ << L" \\h\"/>";
+		
+		//Context.add_new_run();
+		//	content_->docx_convert(Context);
+		//Context.finish_run();
+
+		//Context.output_stream() << L"</w:fldSimple>";
+	}
+
 }
 
 void bibliography_mark::pptx_convert(oox::pptx_conversion_context & Context)

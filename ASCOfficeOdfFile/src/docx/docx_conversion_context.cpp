@@ -1754,10 +1754,7 @@ namespace
 {
     // обработка Header/Footer
     // конвертируем содержимое header/footer и сохраняем результат в виде строки
-    void process_one_header_footer(docx_conversion_context & Context,
-        const std::wstring & styleName,
-        odf_reader::office_element * elm,
-        headers_footers::Type type)
+    void process_one_header_footer(docx_conversion_context & Context, const std::wstring & styleName, odf_reader::office_element *elm, headers_footers::Type type)
     {
         if (!elm) return;
         
@@ -1775,13 +1772,7 @@ namespace
 		Context.dump_hyperlinks(internal_rels, hyperlinks::document_place);
 
 		Context.get_headers_footers().add(styleName, dbgStr, type, internal_rels);
-
-		if (type == headers_footers::headerLeft || type == headers_footers::footerLeft)
-		{
-			Context.set_settings_property(odf_reader::_property(L"evenAndOddHeaders",true));
-		}
-   }
-
+	}
 }
 void docx_conversion_context::set_settings_property(const odf_reader::_property & prop)
 {
@@ -1803,21 +1794,39 @@ void docx_conversion_context::process_headers_footers()
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 
     // проходим по всем page layout
-    BOOST_FOREACH(const odf_reader::style_master_page* page, pageLayouts.master_pages())
-    {
-        const std::wstring & styleName = page->attlist_.style_name_.get_value_or( L"" );
-        const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);
-        add_page_properties(masterPageNameLayout);
-		
-		process_one_header_footer(*this, styleName, page->style_header_.get(), headers_footers::header);
-        process_one_header_footer(*this, styleName, page->style_footer_.get(), headers_footers::footer );
-        process_one_header_footer(*this, styleName, page->style_header_first_.get(), headers_footers::headerFirst);
-        process_one_header_footer(*this, styleName, page->style_footer_first_.get(), headers_footers::footerFirst );
-        process_one_header_footer(*this, styleName, page->style_header_left_.get(), headers_footers::headerLeft );
-        process_one_header_footer(*this, styleName, page->style_footer_left_.get(), headers_footers::footerLeft );
+	std::vector<odf_reader::style_master_page*> & master_pages = pageLayouts.master_pages();
 
-		if (!page->style_header_ && !page->style_footer_ && !page->style_header_first_ && !page->style_footer_first_
-			&& !page->style_header_left_ && !page->style_footer_left_)
+	bool bOddEvenPages = false;
+	for (size_t i = 0; i < master_pages.size(); i++)
+	{
+		if (master_pages[i]->style_header_left_ || master_pages[i]->style_footer_left_)
+			bOddEvenPages = true;
+	}
+	if (bOddEvenPages)
+	{
+		set_settings_property(odf_reader::_property(L"evenAndOddHeaders", true));
+	}
+ 	for (size_t i = 0; i < master_pages.size(); i++)
+	{
+        const std::wstring & styleName = master_pages[i]->attlist_.style_name_.get_value_or( L"" );
+        const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);
+       
+		add_page_properties(masterPageNameLayout);
+		
+		process_one_header_footer(*this, styleName, master_pages[i]->style_header_.get(),		headers_footers::header);
+        process_one_header_footer(*this, styleName, master_pages[i]->style_footer_.get(),		headers_footers::footer );
+        process_one_header_footer(*this, styleName, master_pages[i]->style_header_first_.get(),	headers_footers::headerFirst);
+        process_one_header_footer(*this, styleName, master_pages[i]->style_footer_first_.get(),	headers_footers::footerFirst );
+        process_one_header_footer(*this, styleName, master_pages[i]->style_header_left_.get(),	headers_footers::headerLeft );
+        process_one_header_footer(*this, styleName, master_pages[i]->style_footer_left_.get(),	headers_footers::footerLeft );
+
+		if (bOddEvenPages && !master_pages[i]->style_header_left_)
+			process_one_header_footer(*this, styleName, master_pages[i]->style_header_.get(),	headers_footers::headerLeft);
+		if (bOddEvenPages && !master_pages[i]->style_footer_left_)
+			process_one_header_footer(*this, styleName, master_pages[i]->style_footer_.get(),	headers_footers::footerLeft );
+
+		if (!master_pages[i]->style_header_ && !master_pages[i]->style_footer_ && !master_pages[i]->style_header_first_ && !master_pages[i]->style_footer_first_
+			&& !master_pages[i]->style_header_left_ && !master_pages[i]->style_footer_left_)
 		{
 			//отключенные колонтитулы
 			rels rels_;

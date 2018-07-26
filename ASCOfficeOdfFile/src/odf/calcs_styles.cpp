@@ -201,8 +201,8 @@ style_table_cell_properties_attlist calc_table_cell_properties(const style_insta
     std::vector<const style_table_cell_properties*> props;
     while (styleInstance)
     {
-        if (const style_content * content = styleInstance->content())
-            if (const style_table_cell_properties * prop = content->get_style_table_cell_properties())
+        if (style_content * content = styleInstance->content())
+            if (style_table_cell_properties * prop = content->get_style_table_cell_properties())
 			{
                 props.insert(props.begin(), prop);
 			}

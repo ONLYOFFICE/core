@@ -1295,7 +1295,7 @@ public:
 	_CP_OPT(std::wstring)	series_;
 	_CP_OPT(std::wstring)	volume_;
 
-	office_element_ptr		content_;
+	office_element_ptr		text_;
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );

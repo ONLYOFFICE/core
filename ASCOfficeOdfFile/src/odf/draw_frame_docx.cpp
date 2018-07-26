@@ -1654,6 +1654,11 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	oox::text_forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
 
+	if (state.type == 6 && state.element)
+	{
+		return state.element->docx_convert_sdt(Context, this);
+	}
+
 	Context.get_drawing_context().start_shape(NULL);    
 	Context.get_drawing_context().add_name_object(state.name.empty() ? L"Control" : state.name);
 

@@ -2053,5 +2053,22 @@ void field_fieldmark_start::add_attributes( const xml::attributes_wc_ptr & Attri
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * field_fieldmark_end::ns = L"field";
 const wchar_t * field_fieldmark_end::name = L"fieldmark-end";
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * field_fieldmark::ns = L"field";
+const wchar_t * field_fieldmark::name = L"fieldmark";
+
+void field_fieldmark::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:name", text_name_);
+    CP_APPLY_ATTR(L"field:type", field_type_);
+}
+void field_fieldmark::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!field_type_) return;
+
+	//if (std::wstring::npos = field_type_->find(L"FORMCHECKBOX"))
+	//{
+	//}
+}
 }
 }

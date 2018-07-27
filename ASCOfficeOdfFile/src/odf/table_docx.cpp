@@ -321,18 +321,19 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
                 );
         }        		
 
+		if (attlist_extra_.table_number_columns_spanned_ > 1)
+        {
+            _Wostream << L"<w:gridSpan w:val=\"" << attlist_extra_.table_number_columns_spanned_ << "\"/>";
+            Context.get_table_context().set_columns_spanned(attlist_extra_.table_number_columns_spanned_ - 1);
+        }	
 		double width = Context.get_table_context().get_current_cell_width();
-
+		
 		if (width > 0.01)
 		{
 			_Wostream << L"<w:tcW w:w=\"" << (int)width << L"\" w:type=\"dxa\"/>";
 		}
 		
-		if (attlist_extra_.table_number_columns_spanned_ > 1)
-        {
-            _Wostream << L"<w:gridSpan w:val=\"" << attlist_extra_.table_number_columns_spanned_ << "\"/>";
-            Context.get_table_context().set_columns_spanned(attlist_extra_.table_number_columns_spanned_ - 1);
-        }
+
 
 		const style_instance * inst = 
             Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableCell, Context.process_headers_footers_);

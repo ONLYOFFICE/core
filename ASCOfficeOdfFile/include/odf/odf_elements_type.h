@@ -52,8 +52,9 @@ enum ElementType
     typeTextReferenceMarkEnd,
 	typeTextReferenceRef,
 
-	typeTextFieldFieldmarkStart,
-	typeTextFieldFieldmarkEnd,
+	typeFieldFieldmarkStart,
+	typeFieldFieldmarkEnd,
+	typeFieldFieldmark,
 
     typeTextSpan,
     typeTextA,

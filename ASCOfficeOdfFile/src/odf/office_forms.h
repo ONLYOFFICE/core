@@ -380,10 +380,29 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_listbox);
 
+//  form:date
+class form_date : public form_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormDate;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+public:
+
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_date);
 }
 }
-//<form:connection-resource>7.6.2, 
-//<form:date> 13.5.8, 
+//<form:connection-resource>7.6.2,  
 //<form:file> 13.5.5,
 //<form:fixed-text> 13.5.10,
 //<form:form> 13.3, 

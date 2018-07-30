@@ -42,7 +42,8 @@
 #include "../IRenderer.h"
 #include "../structures.h"
 
-namespace Aggplus {
+namespace Aggplus
+{
     class CDIB : public IGrObject
     {
     public:

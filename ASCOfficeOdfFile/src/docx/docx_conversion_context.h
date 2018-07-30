@@ -683,13 +683,15 @@ public:
 	}
 	void end_level()
 	{
-		current_template.insert(std::make_pair(current_state.name, current_state));
+		current_template.push_back(current_state);
+
+		map_current_template.insert(std::make_pair(current_state.name, current_state));
 		current_state.clear();
 	}
 	void set_current_level(const std::wstring &name)
 	{
-		std::map<std::wstring, _state>::iterator pFind = current_template.find(name);
-		if (pFind == current_template.end())
+		std::map<std::wstring, _state>::iterator pFind = map_current_template.find(name);
+		if (pFind == map_current_template.end())
 		{
 			current_content_template_.clear();
 		}
@@ -726,6 +728,7 @@ public:
 		current_content_template_index_ = 0;
 		current_content_template_.clear();
 		current_template.clear();
+		map_current_template.clear();
 		current_state.clear();
 		caption_sequence_name.clear();
 		min_outline_level = -1;
@@ -757,12 +760,13 @@ public:
 	int								max_outline_level;
 	std::map<int, std::wstring>		outline_level_styles;
 	bool							bSeparators;
+	std::vector<_state>				current_template;
 
 private:
 	std::vector<int>				current_content_template_;
 	int								current_content_template_index_;
 
-	std::map<std::wstring, _state>	current_template;
+	std::map<std::wstring, _state>	map_current_template;
 	_state							current_state;
 	//std::map<std::wstring, int>	sequences;
 	std::vector<std::wstring>		sequences;
@@ -973,14 +977,15 @@ public:
 
 	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
 	
-	styles_map				styles_map_;
-	bool					process_headers_footers_;
-	bool					delayed_converting_;
-	bool					convert_delayed_enabled_;
+	styles_map	styles_map_;
+	bool		process_headers_footers_;
+	bool		delayed_converting_;
+	bool		convert_delayed_enabled_;
 
-	void					start_changes();
-	void					end_changes();
+	void		start_changes();
+	void		end_changes();
 
+	void		add_jsaProject(const std::string &content);
 private:
 	std::wstringstream		document_xml_;
     std::wstringstream		styles_xml_;

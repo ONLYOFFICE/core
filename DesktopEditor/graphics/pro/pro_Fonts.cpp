@@ -34,6 +34,10 @@
 #include "../../common/File.h"
 #include "../../fontengine/ApplicationFonts.h"
 
+#ifdef __APPLE__
+#include <libkern/OSAtomic.h>
+#endif
+
 namespace NSFonts
 {
     CLibrary::CLibrary()
@@ -47,9 +51,56 @@ namespace NSFonts
     }
 }
 
+namespace NSBase
+{
+    CBaseRefCounter::CBaseRefCounter()
+    {
+        m_lRef = 1;
+    }
+
+    CBaseRefCounter::~CBaseRefCounter()
+    {
+    }
+
+#ifdef __APPLE__
+    int CBaseRefCounter::AddRef()
+    {
+        OSAtomicIncrement32(&m_lRef);
+        return m_lRef;
+    }
+    int CBaseRefCounter::Release()
+    {
+        int32_t ret = OSAtomicDecrement32(&m_lRef);
+        if (0 == m_lRef)
+            delete this;
+
+        return ret;
+    }
+#else
+    int CBaseRefCounter::AddRef()
+    {
+        ++m_lRef;
+        return m_lRef;
+    }
+
+    int CBaseRefCounter::Release()
+    {
+        int ret = --m_lRef;
+        if (0 == m_lRef)
+            delete this;
+        return ret;
+    }
+#endif
+
+    void Release(CBaseRefCounter* base)
+    {
+        delete base;
+    }
+}
+
 namespace NSFonts
 {
-    IFontPath::IFontPath() {}
+    IFontPath::IFontPath() : NSBase::CBaseRefCounter() {}
     IFontPath::~IFontPath() {}
     namespace NSFontPath
     {
@@ -59,7 +110,7 @@ namespace NSFonts
         }
     }
 
-    IFontStream::IFontStream() {}
+    IFontStream::IFontStream() : NSBase::CBaseRefCounter() {}
     IFontStream::~IFontStream() {}
     namespace NSStream
     {
@@ -69,7 +120,7 @@ namespace NSFonts
         }
     }
 
-    IApplicationFontStreams::IApplicationFontStreams() {}
+    IApplicationFontStreams::IApplicationFontStreams() : NSBase::CBaseRefCounter() {}
     IApplicationFontStreams::~IApplicationFontStreams() {}
     namespace NSApplicationFontStream
     {
@@ -79,7 +130,7 @@ namespace NSFonts
         }
     }
 
-    IFontFile::IFontFile() {}
+    IFontFile::IFontFile() : NSBase::CBaseRefCounter() {}
     IFontFile::~IFontFile() {}
     namespace NSFontFile
     {
@@ -89,7 +140,7 @@ namespace NSFonts
         }
     }
 
-    IFontsCache::IFontsCache() {}
+    IFontsCache::IFontsCache() : NSBase::CBaseRefCounter() {}
     IFontsCache::~IFontsCache() {}
     namespace NSFontCache
     {
@@ -99,7 +150,7 @@ namespace NSFonts
         }
     }
 
-    IFontManager::IFontManager() {}
+    IFontManager::IFontManager() : NSBase::CBaseRefCounter() {}
     IFontManager::~IFontManager() {}
     namespace NSFontManager
     {
@@ -109,10 +160,10 @@ namespace NSFonts
         }
     }
 
-    IFontList::IFontList() {}
+    IFontList::IFontList() : NSBase::CBaseRefCounter() {}
     IFontList::~IFontList() {}
 
-    IApplicationFonts::IApplicationFonts() {}
+    IApplicationFonts::IApplicationFonts() : NSBase::CBaseRefCounter() {}
     IApplicationFonts::~IApplicationFonts() {}
     namespace NSApplication
     {

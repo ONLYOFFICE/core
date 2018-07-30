@@ -357,7 +357,7 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 			if (bWordArt)
 			{
 				_CP_OPT(int) iVal;
-				odf_reader::GetProperty(prop, L"odf-custom-draw-index",iVal);
+				odf_reader::GetProperty(prop, L"oox-geom-index", iVal);
 				if (iVal)
 				{
 					std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;					

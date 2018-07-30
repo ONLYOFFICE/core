@@ -4493,11 +4493,13 @@ public:
 			NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
 			m_pCurWriter = &pHyperlink->writer;
 			READ1_DEF(length, res, this->ReadParagraphContent, NULL);
-			long rId;
-            std::wstring sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
-            m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, std::wstring(_T("External")), &rId);
-
-            pHyperlink->rId = L"rId" + std::to_wstring(rId);
+			if (!pHyperlink->sLink.empty())
+			{
+				long rId;
+				std::wstring sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, std::wstring(_T("External")), &rId);
+				pHyperlink->rId = L"rId" + std::to_wstring(rId);
+			}
 			m_pCurWriter = pPrevWriter;
 		}
 		else

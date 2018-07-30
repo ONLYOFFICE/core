@@ -427,5 +427,69 @@ void form_listbox::docx_convert(oox::docx_conversion_context & Context)
 
 	form_element::docx_convert(Context);
 }
+// form:button
+//----------------------------------------------------------------------------------
+const wchar_t * form_date::ns = L"form";
+const wchar_t * form_date::name = L"date";
+
+void form_date::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	form_element::add_attributes(Attributes);
+}
+void form_date::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::docx_convert(Context);
+}
+void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			if (name_)
+			{
+				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+			}
+			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
+			
+			Context.output_stream() << L"<w:date>";
+				Context.output_stream() << L"<w:dateFormat w:val=\"\"/>";
+				Context.output_stream() << L"<w:lid w:val=\"en-US\"/>";
+				Context.output_stream() << L"<w:storeMappedDataAs w:val=\"dateTime\"/>";
+				Context.output_stream() << L"<w:calendar w:val=\"gregorian\"/>";				
+			Context.output_stream() << L"</w:date>";
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+		{
+			Context.add_new_run(L"");
+				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+				if (current_value_)
+				{
+					Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				}
+				else
+				{
+					Context.output_stream() << L"[Insert date]";
+				}
+				Context.output_stream() << L"</w:t>";
+			Context.finish_run();
+		}
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
+	
+	if (label_)
+	{
+		Context.add_new_run(L"");
+			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << L"</w:t>";
+		Context.finish_run();
+	}
+}
+
+
 }
 }

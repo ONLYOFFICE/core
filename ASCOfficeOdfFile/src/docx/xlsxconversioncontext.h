@@ -156,6 +156,8 @@ public:
 	void add_conditional_format_color		(std::wstring col);
 	void add_conditional_format_entry		(int type, std::wstring value);
 	void set_conditional_format_dataBar		(_CP_OPT(int) min, _CP_OPT(int) max);
+
+	void add_jsaProject	(const std::string &content);
 //------------------------------------------------------------------------------------
 
     odf_reader::odf_document * root()

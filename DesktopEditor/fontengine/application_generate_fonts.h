@@ -575,10 +575,10 @@ namespace NSCommon
                     
                     pRenderer->CloseFont();
                     pCache->Clear();
-                    applicationFonts->GetStreams()->Clear();
-
-                    RELEASEOBJECT(pRenderer);
+                    applicationFonts->GetStreams()->Clear();                    
                 }
+
+                RELEASEOBJECT(pRenderer);
                 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";
                 if (iX == 1)

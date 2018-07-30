@@ -35,6 +35,7 @@ Common/3dParty/openssl/openssl
 .idea
 .svn
 .DS_Store
+.qmake.stash
 Thumbs.db
 *.xcuserstate
 *.xcuserdatad
@@ -55,3 +56,4 @@ X2tConverter/**/Makefile.*
 *.zip
 *.tar.gz
 **/*.build/
+

@@ -232,6 +232,7 @@ public:
     void add_charts			(chart_content_ptr chart);
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
+	void add_jsaProject		(const std::string &content);
 
 private:
     rels_files				rels_files_;
@@ -251,6 +252,7 @@ private:
 	element_ptr		vml_drawings_;
 	element_ptr		comments_;
 	element_ptr		connections_;
+    element_ptr		jsaProject_;
 };
 
 class xlsx_document : public document

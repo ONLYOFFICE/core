@@ -38,6 +38,8 @@ fi
 
 if [[ "$platform" == "mac" ]]
 then
+# for new macOS!!!
+#sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 gn gen out.gn/mac_64 --args='is_debug=false target_cpu="x64" v8_static_library=true is_component_build=false v8_use_snapshot=false'
 ninja -C out.gn/mac_64
 fi

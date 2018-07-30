@@ -755,7 +755,13 @@ void xlsx_conversion_context::set_conditional_format_dataBar (_CP_OPT(int) min, 
 {
 	get_table_context().state()->get_conditionalFormatting_context().set_dataBar(min, max);
 }
-
+void xlsx_conversion_context::add_jsaProject(const std::string &content)
+{
+	if (content.empty()) return;
+	
+	output_document_->get_xl_files().add_jsaProject(content);
+	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
 
 }
 }

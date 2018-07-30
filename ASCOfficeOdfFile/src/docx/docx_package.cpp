@@ -124,6 +124,12 @@ void word_files::write(const std::wstring & RootPath)
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
+
+	if (jsaProject_)
+	{
+		rels_files_.add( relationship(L"jsaId", L"http://schemas.onlyoffice.com/jsaProject", L"jsaProject.bin" ) );
+		jsaProject_->write( path );
+	}
    
 	if (notes_)
     {
@@ -185,7 +191,10 @@ bool word_files::has_numbering()
 { 
     return numbering_ ? true : false;
 }
-
+void word_files::add_jsaProject(const std::string &content)
+{
+	jsaProject_ = package::simple_element::create(L"jsaProject.bin", content);
+}
 void word_files::set_headers_footers(headers_footers & HeadersFooters)
 {
     headers_footers_elements * elm = new headers_footers_elements(HeadersFooters); 

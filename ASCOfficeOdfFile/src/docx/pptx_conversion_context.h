@@ -106,6 +106,8 @@ public:
 	void start_theme(std::wstring & name);
 	void end_theme();
 
+	void add_jsaProject(const std::string &content);
+
 	std::pair<int,int> add_author_comments(std::wstring author);
 
 	pptx_slide_context & get_slide_context() { return pptx_slide_context_; }

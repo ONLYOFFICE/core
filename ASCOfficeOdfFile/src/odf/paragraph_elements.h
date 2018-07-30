@@ -83,7 +83,7 @@ public:
 
 	bool preserve_;
     
-	text(const std::wstring & Text) :  text_(Text) {preserve_ = true;};
+	text(const std::wstring & Text);
     text() {preserve_ = true;};
 
     std::wstring text_;
@@ -1295,7 +1295,7 @@ public:
 	_CP_OPT(std::wstring)	series_;
 	_CP_OPT(std::wstring)	volume_;
 
-	office_element_ptr		content_;
+	office_element_ptr		text_;
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
@@ -1585,7 +1585,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeTextFieldFieldmarkStart;
+    static const ElementType type = typeFieldFieldmarkStart;
     CPDOCCORE_DEFINE_VISITABLE();
 
     _CP_OPT(std::wstring)	text_name_;
@@ -1605,7 +1605,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeTextFieldFieldmarkStart;
+    static const ElementType type = typeFieldFieldmarkStart;
     CPDOCCORE_DEFINE_VISITABLE();
 
 private:
@@ -1614,5 +1614,26 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark_end);
 
+//-------------------------------------------------------------------------------------------------------------------
+// field:fieldmark 
+//-------------------------------------------------------------------------------------------------------------------
+class field_fieldmark : public text::paragraph_content_element<field_fieldmark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFieldFieldmark;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    _CP_OPT(std::wstring)	text_name_;
+	_CP_OPT(std::wstring)	field_type_;
+
+	void docx_convert(oox::docx_conversion_context & Context);
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+};
+CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark);
 } // namespace odf_reader
 } // namespace cpdoccore

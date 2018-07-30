@@ -4,6 +4,7 @@
 #include "../../../common/String.h"
 #include "../../../common/BigInteger.h"
 
+#include <unistd.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>

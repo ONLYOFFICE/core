@@ -244,6 +244,8 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
+	style_table_cell_properties() {}
+
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 private:

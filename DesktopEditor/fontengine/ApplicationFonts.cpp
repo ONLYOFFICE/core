@@ -1406,7 +1406,7 @@ void CFontList::Add(NSFonts::CFontInfo* pInfo)
 }
 
 // ApplicationFonts
-CApplicationFonts::CApplicationFonts()
+CApplicationFonts::CApplicationFonts() : NSFonts::IApplicationFonts()
 {
 	m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }

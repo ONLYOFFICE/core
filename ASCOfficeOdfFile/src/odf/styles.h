@@ -96,11 +96,11 @@ public:
     style_paragraph_properties *	get_style_paragraph_properties()	const;
     style_table_properties *		get_style_table_properties()		const;
     style_section_properties *		get_style_section_properties()		const;
-    style_table_cell_properties *	get_style_table_cell_properties()	const;
     style_table_row_properties *	get_style_table_row_properties()	const;
     style_table_column_properties * get_style_table_column_properties() const;
     style_chart_properties *		get_style_chart_properties()		const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
+    style_table_cell_properties *	get_style_table_cell_properties		(bool always =false);
 
 private:
 	odf_types::style_family style_family_;

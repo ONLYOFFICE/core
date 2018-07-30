@@ -176,9 +176,12 @@ style_section_properties * style_content::get_style_section_properties() const
     return dynamic_cast<style_section_properties *>(style_section_properties_.get());
 }
 
-style_table_cell_properties * style_content::get_style_table_cell_properties() const
+style_table_cell_properties * style_content::get_style_table_cell_properties(bool always)
 {
-    return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
+	if (!style_table_cell_properties_ && always)
+		style_table_cell_properties_ = boost::make_shared<style_table_cell_properties>();
+
+	return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
 }
 
 style_table_row_properties * style_content::get_style_table_row_properties() const

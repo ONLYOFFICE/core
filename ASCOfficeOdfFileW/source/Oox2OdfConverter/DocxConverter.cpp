@@ -267,6 +267,8 @@ void DocxConverter::convert_document()
 			convert(docx_document->m_pDocument->m_arrItems[i]);
 		}
 	}
+//-----------------------------------------------------------------------------------------------------------------
+	OoxConverter::convert (docx_document->m_pJsaProject);
 }
 void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 {

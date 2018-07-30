@@ -86,6 +86,7 @@ public:
 	struct _field
 	{
 		std::wstring				name;
+		bool						name_enabled = false;
 		std::wstring				display_name;
 		int							type = -1;
 		int							hierarchy = -1;
@@ -422,6 +423,8 @@ void xlsx_pivots_context::Impl::sort_fields()
 	
 	bool bAddRepeateRow = false;
 	bool bAddRepeateCol = false;
+	bool bShowEmptyCol	= true;
+	bool bShowEmptyRow	= true;
 
 	int count_items_col = -1, count_items_row = -1;
 	
@@ -479,25 +482,15 @@ void xlsx_pivots_context::Impl::sort_fields()
 						if (count_items_col != current_.fields[i].caches.size())
 							bAddRepeateCol = true;
 					}	
+					if (!current_.fields[i].show_empty || !current_.fields[i].repeat_item_labels )
+						bShowEmptyCol = false;
+
 				}
-				//if (current_.fields[i].data_layout)
-				//{
-				//	bAddRepeateCol = false;
-
-				//	if ((current_.fields[i].name.empty() && (!current_.identify_categories || current_.fields[i].hierarchy >= 0)) || 
-				//		current_.fields[i].used_in_referenes )
-				//	{
-				//		if ((current_.col_fields.empty()) || (current_.col_fields.back() != -2))
-				//		{
-				//			bAddRepeateCol = true;
-				//		}	
-				//	}
-				//}
-				
-				//if (current_.fields[i].caches.empty())
-				//	bEmptyColCache = true;
-
-
+				else if (current_.fields[i].name_enabled)
+				{
+					count_items_col = 0;
+					bAddRepeateCol = true; //add col axis
+				}
 			}break;
 			case 1:	// data
 			{
@@ -547,10 +540,20 @@ void xlsx_pivots_context::Impl::sort_fields()
 					}
 					else
 					{
-						if (count_items_row != current_.fields[i].caches.size())
+						if (count_items_row < current_.fields[i].caches.size())
 							bAddRepeateRow = true;
 					}
 				}
+				else if (current_.fields[i].name_enabled)
+				{
+					count_items_row = 0;
+					bAddRepeateRow = true; //add row axis
+				}
+				if (!current_.fields[i].show_empty)
+					bShowEmptyRow = false;
+
+				if (!current_.fields[i].repeat_item_labels)
+					bAddRepeateCol = false;
 
 				if (current_.fields[i].data_layout)
 				{
@@ -575,10 +578,10 @@ void xlsx_pivots_context::Impl::sort_fields()
 			i--;
 		}
 	}
-	if (bAddRepeateCol || (count_items_col == 0 && current_.bAxisCol)) ///* || (bEmptyColCache && current_.grand_total < 0)*/?? Financial Execution (template).ods
+	if ((bAddRepeateCol || (count_items_col == 0 && current_.bAxisCol))/* && bShowEmptyCol*/) ///* || (bEmptyColCache && current_.grand_total < 0)*/?? Financial Execution (template).ods
 		current_.col_fields.push_back(-2);	
 	
-	if (bAddRepeateRow || (count_items_row == 0 && current_.bAxisRow))
+	if ((bAddRepeateRow || (count_items_row == 0 && current_.bAxisRow))/* && bShowEmptyRow*/)
 		current_.row_fields.push_back(-2);	
 }
 void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
@@ -1296,6 +1299,7 @@ void xlsx_pivots_context::start_field()
 void xlsx_pivots_context::set_field_name(std::wstring name)
 {
 	impl_->current_.fields.back().name = name;
+	impl_->current_.fields.back().name_enabled = true;
 }
 void xlsx_pivots_context::set_field_display(std::wstring name)
 {

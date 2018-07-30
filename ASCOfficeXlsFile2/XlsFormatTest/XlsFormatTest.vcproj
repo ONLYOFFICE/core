@@ -336,18 +336,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\XlsFormatTest.cpp"
 				>
 				<FileConfiguration
@@ -424,14 +412,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\graphics.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\kernel.lib"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

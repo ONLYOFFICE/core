@@ -104,7 +104,7 @@ OleObject::OleObject( const CharacterPropertyExceptions* chpx, WordDocument* doc
 				szData = szData >> 16;
 			}
 			unsigned char* bytes = reader.ReadBytes( szData, true );
-			if (bytes)
+			if (bytes && szData < 0xffff)
 			{
 				emeddedData = std::string((char*)bytes, szData);
 				delete []bytes;

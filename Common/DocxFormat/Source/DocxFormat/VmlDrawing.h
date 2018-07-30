@@ -72,6 +72,14 @@ namespace OOX
 		virtual ~CVmlDrawing()
 		{
 		}
+		virtual void ClearItems()
+		{
+			for ( size_t i = 0; i < m_arrShapeTypes.size(); ++i)
+			{
+				if ( m_arrShapeTypes[i].pElement ) delete m_arrShapeTypes[i].pElement;
+			}
+			m_arrShapeTypes.clear();
+		}
 		virtual void read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -253,6 +261,15 @@ namespace OOX
                                 bReadyElement   = false;
                                 bComment        = false;
 							}
+							else
+							{
+								_vml_shape element;
+								element.nId			= -1;
+								element.sXml		= elementContent;
+								element.pElement	= pItem;
+								element.bUsed       = false;
+								m_arrShapeTypes.push_back(element);
+							}
 						}						
 					}
 				}
@@ -433,6 +450,7 @@ namespace OOX
 //reading
         CPath                                                                   m_oReadPath;
         boost::unordered_map<std::wstring, _vml_shape>							m_mapShapes;
+		std::vector<_vml_shape>													m_arrShapeTypes;
 //writing
         boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
         std::vector<std::wstring>                                               m_aXml;

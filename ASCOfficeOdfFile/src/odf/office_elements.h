@@ -75,14 +75,22 @@ public:
 
     virtual void afterCreate()
 	{
-		if (context_ && this->get_type() != typeTextSection)
+		if (!context_) return;
+
+		ElementType type_ = this->get_type();
+
+		if (type_ != typeTextSection)
 		{
 			context_->level++;
 		}
 	}
 	virtual void afterReadContent()
 	{
-		if (context_ && this->get_type() != typeTextSection)
+		if (!context_) return;
+
+		ElementType type_ = this->get_type();
+
+		if (type_ != typeTextSection)
 		{
 			if (context_->level == 4)
 			{

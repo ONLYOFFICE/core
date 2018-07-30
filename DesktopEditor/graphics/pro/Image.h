@@ -38,14 +38,11 @@
 
 namespace NSImages
 {
-    class GRAPHICS_DECL ICacheImage
+    class GRAPHICS_DECL ICacheImage : public NSBase::CBaseRefCounter
     {
     public:
-        ICacheImage() {}
+        ICacheImage() : NSBase::CBaseRefCounter() {}
         virtual ~ICacheImage() {}
-
-        virtual LONG AddRef() = 0;
-        virtual LONG Release() = 0;
     };
 
     namespace NSCacheImage
@@ -53,18 +50,15 @@ namespace NSImages
         GRAPHICS_DECL ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile = L"");
     }
 
-    class GRAPHICS_DECL IImageFilesCache
+    class GRAPHICS_DECL IImageFilesCache : public NSBase::CBaseRefCounter
     {
     public:
-        IImageFilesCache() {}
+        IImageFilesCache() : NSBase::CBaseRefCounter() {}
         virtual ~IImageFilesCache() {}
 
         virtual void Clear() = 0;
 
         virtual ICacheImage* Lock(const std::wstring& strFile) = 0;
-
-        virtual LONG AddRef() = 0;
-        virtual LONG Release() = 0;
 
         void SetApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts);
     };
@@ -116,7 +110,7 @@ namespace MetaFile
     const int c_lMetaSvg = 0x04;
     const int c_lMetaSvm = 0x05;
 
-    class GRAPHICS_DECL IMetaFile
+    class GRAPHICS_DECL IMetaFile : public NSBase::CBaseRefCounter
     {
     public:
         IMetaFile(NSFonts::IApplicationFonts *pAppFonts) {}

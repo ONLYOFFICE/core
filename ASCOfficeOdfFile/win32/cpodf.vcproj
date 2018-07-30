@@ -1520,6 +1520,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\odf\odf_elements_type.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\odfcontext.cpp"
 				>
 			</File>
@@ -1569,10 +1573,6 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\office_elements.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\odf\office_elements_type.h"
 				>
 			</File>
 			<File

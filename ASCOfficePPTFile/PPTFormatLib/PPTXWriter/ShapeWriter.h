@@ -146,6 +146,8 @@ namespace NSPresentationEditor
 		
 		NSPresentationEditor::CRelsGenerator*	m_pRels;
 
+		NSPresentationEditor::CTheme*			m_pTheme;
+
         LONG									m_lNextShapeID;
 
 		bool									m_bWordArt;

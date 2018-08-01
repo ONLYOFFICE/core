@@ -48,7 +48,7 @@
 				PreprocessorDefinitions="_DEBUG;_CONSOLE;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\PptFileFormatTest.pdb"
@@ -358,6 +358,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\XlsxSerializerCom\Common\Common.cpp"
 				>
 			</File>
@@ -374,7 +378,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
 				>
 			</File>
 			<File
@@ -390,36 +398,12 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
-			>
-		</File>
-		<File
 			RelativePath="PptFormatTest.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\lib\win_32\DEBUG\UnicodeConverter.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 			>
 		</File>
 	</Files>

@@ -523,7 +523,8 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
    
 	if (false == m_pDocument->m_arThemes.empty())
 	{
-		strDefaultTextStyle += CStylesWriter::ConvertStyles(m_pDocument->m_arThemes[0]->m_pStyles[0], 9);
+		CStylesWriter styleWriter(m_pDocument->m_arThemes[0].get());
+		strDefaultTextStyle += styleWriter.ConvertStyles(m_pDocument->m_arThemes[0]->m_pStyles[0], 9);
 	}
 	strDefaultTextStyle += _T("</p:defaultTextStyle>");
 
@@ -587,7 +588,9 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 
 	for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
 	{
-		WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
+		m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
+			WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
+		m_pShapeWriter->m_pTheme = NULL;
 	}
 
 	WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
@@ -776,20 +779,23 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nInde
 		if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
 		oWriter.WriteString(std::wstring(L"/>"));
 	}
+	CStylesWriter styleWriter;
+	styleWriter.m_pTheme = pTheme.get();
+
 	if (pTheme->m_eType == typeMaster)
 	{	
 		oWriter.WriteString(std::wstring(L"<p:txStyles>"));
 
 		oWriter.WriteString(std::wstring(L"<p:titleStyle>"));
-		CStylesWriter::ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+		styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
 		oWriter.WriteString(std::wstring(L"</p:titleStyle>"));
 
 		oWriter.WriteString(std::wstring(L"<p:bodyStyle>"));
-		CStylesWriter::ConvertStyles(pTheme->m_pStyles[2], oWriter, 9);
+		styleWriter.ConvertStyles(pTheme->m_pStyles[2], oWriter, 9);
 		oWriter.WriteString(std::wstring(L"</p:bodyStyle>"));
 
 		oWriter.WriteString(std::wstring(L"<p:otherStyle>"));
-		CStylesWriter::ConvertStyles(pTheme->m_pStyles[3], oWriter, 9);
+		styleWriter.ConvertStyles(pTheme->m_pStyles[3], oWriter, 9);
 		oWriter.WriteString(std::wstring(L"</p:otherStyle>"));
 		
 		oWriter.WriteString(std::wstring(L"</p:txStyles>"));
@@ -797,7 +803,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nInde
 	else if (pTheme->m_eType == typeNotesMaster)
 	{	
 		oWriter.WriteString(std::wstring(L"<p:notesStyle>"));
-		CStylesWriter::ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+		styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
 		oWriter.WriteString(std::wstring(L"</p:notesStyle>"));
 	}
 

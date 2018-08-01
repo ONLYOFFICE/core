@@ -130,7 +130,7 @@ namespace NSPresentationEditor
         NSCommon::nullable_base<bool>			FontStrikeout;
         NSCommon::nullable_base<bool>			FontShadow;
 		
-		NSCommon::nullable_base<WORD>			Typeface;			// fontRef
+		NSCommon::nullable_base<WORD>			fontRef;			// fontRef
 		NSCommon::nullable_base<WORD>			EAFontRef;			// eaFontRef
 		NSCommon::nullable_base<WORD>			AnsiFontRef;		// ansiFontRef
 		NSCommon::nullable_base<WORD>			SymbolFontRef;		// SymbolFontRef
@@ -162,7 +162,7 @@ namespace NSPresentationEditor
 			FontStrikeout	= oSrc.FontStrikeout;
 			FontShadow		= oSrc.FontShadow;
 			
-			Typeface		= oSrc.Typeface;
+			fontRef		= oSrc.fontRef;
 			EAFontRef		= oSrc.EAFontRef;
 			AnsiFontRef		= oSrc.AnsiFontRef;
 			SymbolFontRef	= oSrc.SymbolFontRef;
@@ -192,7 +192,7 @@ namespace NSPresentationEditor
 			if (!FontStrikeout.is_init())			FontStrikeout = oSrc.FontStrikeout;
 			if (!FontShadow.is_init())				FontShadow = oSrc.FontShadow;
 			
-			if (!Typeface.is_init())				Typeface = oSrc.Typeface;
+			if (!fontRef.is_init())					fontRef = oSrc.fontRef;
 			if (!EAFontRef.is_init())				EAFontRef = oSrc.EAFontRef;
 			if (!AnsiFontRef.is_init())				AnsiFontRef = oSrc.AnsiFontRef;
 			if (!SymbolFontRef.is_init())			SymbolFontRef = oSrc.SymbolFontRef;
@@ -217,11 +217,11 @@ namespace NSPresentationEditor
 			if (oSrc.FontStrikeout.is_init())		FontStrikeout = oSrc.FontStrikeout;
 			if (oSrc.FontShadow.is_init())			FontShadow = oSrc.FontShadow;
 			
-			bool bTypefaceSetUp = false;
-			if (oSrc.Typeface.is_init())
+			bool bFontRefSetUp = false;
+			if (oSrc.fontRef.is_init())
 			{
-				Typeface = oSrc.Typeface;
-				bTypefaceSetUp = true;
+				fontRef = oSrc.fontRef;
+				bFontRefSetUp = true;
 			}
 			if (oSrc.EAFontRef.is_init())			EAFontRef = oSrc.EAFontRef;
 			if (oSrc.AnsiFontRef.is_init())			AnsiFontRef = oSrc.AnsiFontRef;
@@ -238,8 +238,8 @@ namespace NSPresentationEditor
 			if (oSrc.FontProperties.is_init())
 			{
 				FontProperties = oSrc.FontProperties;
-				if (!bTypefaceSetUp)
-					Typeface.reset();
+				if (!bFontRefSetUp)
+					fontRef.reset();
 			}
 			if (oSrc.Language.is_init())
 				Language = oSrc.Language;

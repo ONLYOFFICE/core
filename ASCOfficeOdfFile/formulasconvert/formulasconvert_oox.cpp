@@ -220,6 +220,20 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 
 namespace 
 {
+std::wstring replace_tilda_formater(boost::wsmatch const & what)
+{
+    if (what[1].matched)
+        return L";";
+    else if (what[2].matched)
+        return what[2].str();    
+    else if (what[3].matched)
+        return what[3].str();
+    //else if (what[4].matched)
+    //    return what[4].str();
+	else
+		return L"";
+}
+
 
 std::wstring replace_semicolons_formater(boost::wsmatch const & what)
 {
@@ -250,7 +264,6 @@ void oox2odf_converter::Impl::replace_semicolons(std::wstring& expr)
         boost::match_default | boost::format_all);
      expr = res;
 }
-
 namespace 
 {
 

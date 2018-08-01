@@ -384,10 +384,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
 				>
 			</File>
@@ -409,10 +405,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 				>
 			</File>
 			<File

@@ -34,8 +34,6 @@
 #include <string>
 #include <iostream>
 
-#include <boost/foreach.hpp>
-
 #include "../../include/xml/attributes.h"
 #include "../../include/xml/sax.h"
 

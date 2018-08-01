@@ -31,7 +31,6 @@
  */
 
 #include <string>
-#include <boost/foreach.hpp>
 #include <cmath>
 
 #include <boost/optional/optional_io.hpp>
@@ -78,14 +77,13 @@ std::wstring RGBToString(int r, int g, int b)
     color v(r, g, b);
     double minDist = (std::numeric_limits<double>::max)();
     
-    
-    BOOST_FOREACH(color const & c, colors)
+    for (size_t i = 0; i < 6; i++)
     {
-        double dist = color_dist(v, c);
+        double dist = color_dist(v, colors[i]);
         if (dist < minDist)
         {
             minDist = dist;
-            result = c.name_;
+            result = colors[i].name_;
         }
     }
 

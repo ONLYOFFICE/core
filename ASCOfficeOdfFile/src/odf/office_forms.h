@@ -337,10 +337,16 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
+	_CP_OPT(odf_types::Bool)	dropdown_;
+	office_element_ptr_array	items_;
+	_CP_OPT(int	)				size_;
+	
 	//form:list-source-type
 	//form:size
 	//form:auto-complete
@@ -367,10 +373,9 @@ private:
 
 public:
 	//form:list-source-type
-	//form:size
 	//form:list-source
 	//form:source-cell-range
-	//form:dropdown
+	
 	//form:bound-column
 	//form:xforms-list-source
 	//form:multiple
@@ -400,6 +405,27 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_date);
+
+//  form:item
+class form_item : public office_element_impl<form_item>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormItem;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+public:
+	std::wstring label_;
+	std::wstring text_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_item);
 }
 }
 //<form:connection-resource>7.6.2,  

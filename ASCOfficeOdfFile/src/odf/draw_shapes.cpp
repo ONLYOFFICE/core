@@ -37,7 +37,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/regex.h>
 
 #include <xml/xmlchar.h>
@@ -438,9 +437,9 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 	int pos = 0, res = -1;
 	if (!val) return res;
 
-	BOOST_FOREACH(wchar_t c, val.get())
+	for (size_t i = 0; i < val->length(); i++)
     {
-		if (c < L'0' && c > L'9')
+		if (val->at(i) < L'0' && val->at(i) > L'9')
 			return res;
 	}
 

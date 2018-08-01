@@ -842,8 +842,8 @@ public:
     void start_body		();
     void end_body		();
     
-	void start_office_text		();
-    void end_office_text		();
+	void start_office_text	();
+    void end_office_text	();
 
 	void start_sdt	(int type);
 	void end_sdt	();
@@ -853,6 +853,9 @@ public:
 
 	void start_index_element();
 	void end_index_element();
+
+	void start_field(const std::wstring & sInstrText, const std::wstring & sName);
+	void end_field();
 
 	void process_styles			();
     void process_fonts			();

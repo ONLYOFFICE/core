@@ -29,8 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <boost/foreach.hpp>
-
 #include "../docx/xlsx_textcontext.h"
 #include "../docx/xlsx_num_format_context.h"
 
@@ -61,17 +59,17 @@ class office_element;
 typedef shared_ptr<const office_element>::Type office_element_ptr_const;
 
 #define ACCEPT_ALL_CONTENT(VAL) \
-        BOOST_FOREACH(office_element_ptr & elm, (VAL)) \
+	for (size_t ii = 0; ii < VAL.size(); ++ii) \
         { \
-            if (elm) \
-                elm->accept(*this); \
+            if (VAL[ii]) \
+                VAL[ii]->accept(*this); \
         }
         
 #define ACCEPT_ALL_CONTENT_CONST(VAL) \
-        BOOST_FOREACH(const office_element_ptr_const & elm, (VAL)) \
+	for (size_t ii = 0; ii < VAL.size(); ++ii) \
         { \
-            if (elm) \
-                elm->accept(*this); \
+            if (VAL[ii]) \
+                VAL[ii]->accept(*this); \
         }
 
 

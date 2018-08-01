@@ -32,7 +32,6 @@
 #include "formulasconvert.h"
 
 #include <boost/regex.hpp>
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include"../../Common/DocxFormat/Source/XML/Utils.h"
@@ -306,9 +305,9 @@ std::wstring forbidden_formulas1[] =
 
 bool is_forbidden1(const std::wstring & formula)
 {
-    BOOST_FOREACH(const std::wstring & s, forbidden_formulas1)
-    {
-        if (boost::algorithm::contains(formula, s))
+	for (size_t i = 0; i < 1; i++)
+     {
+        if (boost::algorithm::contains(formula, forbidden_formulas1[i]))
             return true;
     }
     return false;
@@ -669,9 +668,10 @@ size_t getColAddressInv(const std::wstring & a_)
     size_t mul = 1;
     bool f = true;
     size_t res = 0;
-    BOOST_REVERSE_FOREACH(const wchar_t c, a)
+
+	for (int i = a.length() - 1; i >= 0; i--)
     {
-        size_t v = c - L'A';
+        size_t v = a[i] - L'A';
         if (f)
             f = false;
         else
@@ -700,14 +700,13 @@ void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring 
     ::XmlUtils::replace_all( a, L"$", L"");
     //::XmlUtils::replace_all( a, L"'", L"");
 	::boost::algorithm::to_upper(a);
-	
 
-	BOOST_FOREACH(wchar_t c, a)
+	for (size_t i = 0; i < a.length(); i++)
     {
-		if (c >= L'0' && c <= L'9')
-			row +=c;
+		if (a[i] >= L'0' && a[i] <= L'9')
+			row += a[i];
 		else
-			col += c;
+			col += a[i];
     }
 	std::reverse(col.begin(), col.end());
 	std::reverse(row.begin(), row.end());

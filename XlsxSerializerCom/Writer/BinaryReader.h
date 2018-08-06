@@ -2565,6 +2565,7 @@ namespace BinXlsxRW
 			if(c_oSerWorksheetsTypes::Worksheet == type)
 			{
 				m_pCurWorksheet		= new OOX::Spreadsheet::CWorksheet(NULL);
+				smart_ptr<OOX::File> oCurWorksheetFile(m_pCurWorksheet);
 				m_pCurSheet			= new OOX::Spreadsheet::CSheet();
 				m_pCurVmlDrawing	= new OOX::CVmlDrawing(NULL, false);
 
@@ -2575,9 +2576,8 @@ namespace BinXlsxRW
 				memset(aSeekPositions, 0, (2 * 256) * sizeof(_UINT32));
 				READ1_DEF(length, res, this->ReadWorksheetSeekPositions, aSeekPositions);
 
-				m_pCurWorksheet->m_sOutputFilename = m_pCurWorksheet->DefaultFileName().GetBasename();
-				m_pCurWorksheet->m_sOutputFilename += std::to_wstring(m_arWorksheets.size() + 1);
-				m_pCurWorksheet->m_sOutputFilename += m_pCurWorksheet->DefaultFileName().GetExtention();
+				m_pCurWorksheet->m_bWriteDirectlyToFile = true;
+				m_oWorkbook.AssignOutputFilename(oCurWorksheetFile);
 				std::wstring sWsPath = m_sDestinationDir + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + m_pCurWorksheet->DefaultDirectory().GetPath();
 				NSDirectory::CreateDirectories(sWsPath);
 				sWsPath += FILE_SEPARATOR_STR + m_pCurWorksheet->m_sOutputFilename;
@@ -2589,8 +2589,7 @@ namespace BinXlsxRW
 
 				if(m_pCurSheet->m_oName.IsInit())
 				{
-					smart_ptr<OOX::File> oCurFile(m_pCurWorksheet);
-					const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
+					const OOX::RId oRId = m_oWorkbook.Add(oCurWorksheetFile);
 					m_pCurSheet->m_oRid.Init();
 					m_pCurSheet->m_oRid->SetValue(oRId.get());
 					

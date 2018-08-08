@@ -55,6 +55,7 @@ enum ElementType
 	typeFieldFieldmarkStart,
 	typeFieldFieldmarkEnd,
 	typeFieldFieldmark,
+	typeFieldParam,
 
     typeTextSpan,
     typeTextA,
@@ -502,6 +503,7 @@ enum ElementType
 	typeFormTextarea,
 	typeFormTime,
 	typeFormValueRange,
+	typeFormItem,
 
 	typeDrawPage,    
 	typePresentationFooterDecl,

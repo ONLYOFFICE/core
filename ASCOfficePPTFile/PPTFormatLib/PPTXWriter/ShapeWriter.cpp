@@ -31,6 +31,7 @@
  */
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h"
 
 #include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
 #include "../../../Common/MS-LCID.h"
@@ -38,6 +39,9 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
+
+CStylesWriter::CStylesWriter() : m_pTheme(NULL) {}
+CStylesWriter::CStylesWriter(NSPresentationEditor::CTheme* pTheme) : m_pTheme(pTheme) {}
 
 void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CStringWriter& oWriter, const int& nLevel)
 {//дублирование CTextPFRun и  CTextCFRun с ShapeWriter - todooo  - вынести отдельно
@@ -243,24 +247,31 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 			oWriter.WriteString(L"<a:solidFill><a:srgbClr val=\"" + strColor + L"\"/></a:solidFill>");
 		}
 	}
-	if (pCF->Typeface.is_init())
+	if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
 	{
-		if (0 == pCF->Typeface.get())
+		oWriter.WriteString(L"<a:latin typeface=\"" + pCF->FontProperties->strFontName + L"\"/>");
+	}
+	else if (pCF->fontRef.is_init())
+	{
+		if ((m_pTheme) && (pCF->fontRef.get() < m_pTheme->m_arFonts.size()))
 		{
-			oWriter.WriteString(L"<a:latin typeface=\"+mj-lt\"/>");
+			oWriter.WriteString(L"<a:latin typeface=\"" + m_pTheme->m_arFonts[pCF->fontRef.get()].Name + L"\"/>");
 		}
 		else
 		{
-			oWriter.WriteString(L"<a:latin typeface=\"+mn-lt\"/>");
+			if (0 == pCF->fontRef.get())
+			{
+				oWriter.WriteString(L"<a:latin typeface=\"+mj-lt\"/>");
+			}
+			else
+			{
+				oWriter.WriteString(L"<a:latin typeface=\"+mn-lt\"/>");
+			}
 		}
 	}
-	else if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
-	{
-		oWriter.WriteString(L"<a:latin typeface=\"" + pCF->FontProperties->strFontName + L"\"/>");
-	}	
 	if (pCF->FontPropertiesEA.is_init())
 	{
-		oWriter.WriteString(L"<a:ea typeface=\"" + pCF->FontPropertiesEA->strFontName + L"\"/>");
+		oWriter.WriteString(L"<a:cs typeface=\"" + pCF->FontPropertiesEA->strFontName + L"\"/>");
 	}
 	if (pCF->FontPropertiesSym.is_init())
 	{
@@ -278,6 +289,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 }
 NSPresentationEditor::CShapeWriter::CShapeWriter()
 {
+	m_pTheme		= NULL;
 	m_pRels			= NULL;
 	m_lNextShapeID	= 1000;
 
@@ -979,7 +991,8 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 	if (!m_bWordArt)
 	{
-		CStylesWriter::ConvertStyles(pShapeElement->m_pShape->m_oText.m_oStyles, m_oWriter);
+		CStylesWriter styleWriter(m_pTheme);
+		styleWriter.ConvertStyles(pShapeElement->m_pShape->m_oText.m_oStyles, m_oWriter);
 	}
 
 	m_oWriter.WriteString(std::wstring(L"</a:lstStyle>"));
@@ -1267,24 +1280,32 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 			}
 
-			if (pCF->Typeface.is_init())
-			{
-				if (0 == pCF->Typeface.get())
-				{
-					m_oWriter.WriteString(L"<a:latin typeface=\"+mj-lt\"/>");
-				}
-				else
-				{
-					m_oWriter.WriteString(L"<a:latin typeface=\"+mn-lt\"/>");
-				}
-			}
-			else if (pCF->FontProperties.is_init())
+			if (pCF->FontProperties.is_init())
 			{
 				m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
 			}
+			else if (pCF->fontRef.is_init())
+			{
+				if ((m_pTheme) && (pCF->fontRef.get() < m_pTheme->m_arFonts.size()))
+				{
+					m_oWriter.WriteString(L"<a:latin typeface=\"" + m_pTheme->m_arFonts[pCF->fontRef.get()].Name + L"\"/>");
+				}
+				else
+				{
+					if (0 == pCF->fontRef.get())
+					{
+						m_oWriter.WriteString(L"<a:latin typeface=\"+mj-lt\"/>");
+					}
+					else
+					{
+						m_oWriter.WriteString(L"<a:latin typeface=\"+mn-lt\"/>");
+					}
+				}
+			}
+
 			if (pCF->FontPropertiesEA.is_init())
 			{
-				m_oWriter.WriteString(std::wstring(L"<a:ea typeface=\"") + pCF->FontPropertiesEA->strFontName + _T("\"/>"));
+				m_oWriter.WriteString(std::wstring(L"<a:cs typeface=\"") + pCF->FontPropertiesEA->strFontName + L"\"/>");
 			}
 			if (pCF->FontPropertiesSym.is_init())
 			{

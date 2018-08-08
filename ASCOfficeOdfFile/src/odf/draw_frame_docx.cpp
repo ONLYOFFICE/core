@@ -774,6 +774,20 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 			style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 			if (defaultStyle)instances.push_back(defaultStyle);
 		}
+		else if (styleInst->content())
+		{
+			style_paragraph_properties *para_props = styleInst->content()->get_style_paragraph_properties();
+			if ((para_props) && (para_props->content_.style_writing_mode_))
+			{
+				switch(para_props->content_.style_writing_mode_->get_type())
+				{
+					case writing_mode::TbLr:
+						drawing->additional.push_back(odf_reader::_property(L"text_vert", 2)); break;
+					case writing_mode::TbRl:
+						drawing->additional.push_back(odf_reader::_property(L"text_vert", 1)); break;
+				}
+			}
+		}
 		
 		instances.push_back(styleInst);
 	}
@@ -870,7 +884,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		}
 
     }
-	drawing->number_wrapped_paragraphs=graphicProperties.style_number_wrapped_paragraphs_.
+	drawing->number_wrapped_paragraphs = graphicProperties.style_number_wrapped_paragraphs_.
 									get_value_or( integer_or_nolimit( integer_or_nolimit::NoLimit) ).get_value();
 	if (anchor && anchor->get_type() == anchor_type::AsChar && drawing->posOffsetV< 0)
 	{
@@ -1232,7 +1246,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 
 	const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
 	
-	drawing->additional.push_back(_property(L"text-content",content));
+	drawing->additional.push_back(_property(L"text-content", content));
 	Context.get_drawing_context().clear_stream_frame();
 
 /////////
@@ -1302,6 +1316,12 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (auto_fit_text)
 		drawing->additional.push_back(_property(L"fit-to-size",	auto_fit_text));
+
+	if (drawing->cx < 1 && drawing->cy < 1)
+	{
+		drawing->cx = 10;
+		drawing->cy = 10;
+	}
 }
 void draw_g::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1425,8 +1445,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
     Context.get_drawing_context().start_frame(this);
     
     const _CP_OPT(std::wstring) name = 
-        common_draw_attlists_.shape_with_text_and_styles_.
-        common_shape_draw_attlist_.draw_name_;
+        common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_;
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Object"));
 	
@@ -1654,7 +1673,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	oox::text_forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
 
-	if (state.type == 6 && state.element)
+	if ((state.type == 6 || state.type == 4) && state.element)
 	{
 		return state.element->docx_convert_sdt(Context, this);
 	}
@@ -1711,7 +1730,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
 			Context.add_new_run(L"");
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-				Context.output_stream() << xml::utils::replace_text_to_xml( text );
+				Context.output_stream() << xml::utils::replace_text_to_xml( text, true );
 				Context.output_stream() << L"</w:t>";
 			Context.finish_run();
 		}

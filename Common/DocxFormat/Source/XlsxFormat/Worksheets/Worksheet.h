@@ -114,6 +114,7 @@ namespace OOX
 
 		public:
 			bool	m_bPrepareForBinaryWriter;
+			bool	m_bWriteDirectlyToFile;
 
 			nullable<OOX::Spreadsheet::CCols>						m_oCols;
 			nullable<OOX::Spreadsheet::CDimension>					m_oDimension;

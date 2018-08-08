@@ -30,9 +30,6 @@
  *
  */
 
-
-#include <boost/foreach.hpp>
-
 #include <iostream>
 
 #include <xml/utils.h>
@@ -443,21 +440,7 @@ void docx_conversion_context::start_index_content()
 			 sInstrText += L" \\c \"" + table_content_context_.caption_sequence_name + L"\""; 
 		}
 	}
-	output_stream() << L"<w:r>";
-	output_stream() << L"<w:fldChar w:fldCharType=\"begin\"/>";
-	output_stream() << L"</w:r>";
-	output_stream() << L"<w:r>";
-	output_stream() << L"<w:instrText xml:space=\"preserve\">" << sInstrText << L" </w:instrText>";
-	output_stream() << L"</w:r>";
-	output_stream() << L"<w:r>";
-	//output_stream() << L"<w:rPr>
-	//output_stream() << L"<w:rFonts w:ascii="Minion Pro" w:eastAsia="DejaVuSans" w:hAnsi="Minion Pro"/>
-	//output_stream() << L"<w:bCs w:val="0"/>
-	//output_stream() << L"<w:sz w:val="21"/>
-	//output_stream() << L"<w:szCs w:val="24"/>
-	//output_stream() << L"</w:rPr>
-	output_stream() << L"<w:fldChar w:fldCharType=\"separate\"/>";
-	output_stream() << L"</w:r>";
+	start_field(sInstrText, L"");
 	
 	finish_paragraph();
 }
@@ -466,15 +449,38 @@ void docx_conversion_context::end_index_content()
 	if (!in_table_content_) return;
 
 	start_paragraph(false);
+	end_field();
+	
+	finish_paragraph();
+}
+void docx_conversion_context::start_field(const std::wstring & sInstrText, const std::wstring & sName)
+{
+	output_stream() << L"<w:r>";
+	output_stream() << L"<w:fldChar w:fldCharType=\"begin\">";
+
+	if (!sName.empty())
+	{
+		output_stream() << L"<w:ffData><w:name w:val=\"" << sName << L"\"/><w:enabled/><w:calcOnExit w:val=\"0\"/></w:ffData>";
+	}
+	output_stream() << L"</w:fldChar>";
+	output_stream() << L"</w:r>";
+	output_stream() << L"<w:r>";
+	output_stream() << L"<w:instrText xml:space=\"preserve\">" << sInstrText << L" </w:instrText>";
+	output_stream() << L"</w:r>";
+	output_stream() << L"<w:r>";
+
+	output_stream() << L"<w:fldChar w:fldCharType=\"separate\"/>";
+	output_stream() << L"</w:r>";
+}
+void docx_conversion_context::end_field()
+{
 	output_stream() << L"<w:r>";
 	//output_stream() << L"<w:rPr>";
 	//output_stream() << L"<w:rFonts w:ascii="Minion Pro" w:hAnsi="Minion Pro"/>";
 	//output_stream() << L"<w:sz w:val="20"/>
 	//output_stream() << L"</w:rPr>";
 	output_stream() << L"<w:fldChar w:fldCharType=\"end\"/>";
-	output_stream() << L"</w:r>";
-	
-	finish_paragraph();
+	output_stream() << L"</w:r>";	
 }
 void docx_conversion_context::end_sdt()
 {
@@ -917,21 +923,23 @@ xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" 
 mc:Ignorable=\"w14 wp14\">";
 
     std::vector<int> numIds;
-	BOOST_FOREACH(odf_reader::list_style_instance_ptr & inst, list_styles.instances())
-    {
-        odf_reader::office_element_ptr_array & content = inst->get_text_list_style()->get_content();
+
+	odf_reader::list_style_container::instances_array & arListStyles = list_styles.instances();
+	for (size_t i = 0; i < arListStyles.size(); i++)
+   {
+        odf_reader::office_element_ptr_array & content = arListStyles[i]->get_text_list_style()->get_content();
 
 		if (content.size() < 1) 
 			continue;
        
-		const int abstractNumId = list_styles.id_by_name(inst->get_style_name());
+		const int abstractNumId = list_styles.id_by_name(arListStyles[i]->get_style_name());
         
         strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
         numIds.push_back(abstractNumId);		
        
 		for (size_t i = 0; i < (std::min)( content.size(), (size_t)9); i++)
         {
-            start_text_list_style(inst->get_text_list_style()->get_style_name());
+            start_text_list_style(arListStyles[i]->get_text_list_style()->get_style_name());
             content[i]->docx_convert(*this);
             // TODO
             end_text_list_style();        
@@ -963,21 +971,25 @@ void docx_conversion_context::process_fonts()
         odf_reader::odf_read_context & context =  doc->odf_context();
         odf_reader::fonts_container & fonts = context.fontContainer();
 
-        BOOST_FOREACH(odf_reader::font_instance_ptr & inst, fonts.instances())
+		odf_reader::fonts_container::instances_array &arFonts = fonts.instances();
+		for (size_t i = 0; i < arFonts.size(); i++)
         {
-            strm << L"<w:font w:name=\"" << inst->name() << L"\" >";
+			if (!arFonts[i]) continue;
+			if (arFonts[i]->name().empty()) continue;
 
-            if (!inst->charset().empty())
-                strm << L"<w:charset w:val=\"" << inst->charset() <<"\" />";
+            strm << L"<w:font w:name=\"" << arFonts[i]->name() << L"\" >";
 
-            if (!inst->family().empty())
-                strm << L"<w:family w:val=\"" << inst->family() << "\" />";
+            if (!arFonts[i]->charset().empty())
+                strm << L"<w:charset w:val=\"" << arFonts[i]->charset() <<"\" />";
 
-            if (!inst->pitch().empty())
-                strm << L"<w:pitch w:val=\"" << inst->pitch() << "\" />";
+            if (!arFonts[i]->family().empty())
+                strm << L"<w:family w:val=\"" << arFonts[i]->family() << "\" />";
 
-            if (!inst->alt_name().empty())
-                strm << L"<w:altName w:val=\"" << inst->alt_name() << "\" />";
+            if (!arFonts[i]->pitch().empty())
+                strm << L"<w:pitch w:val=\"" << arFonts[i]->pitch() << "\" />";
+
+            if (!arFonts[i]->alt_name().empty())
+                strm << L"<w:altName w:val=\"" << arFonts[i]->alt_name() << "\" />";
 
             strm << L"</w:font>";
         }
@@ -1008,9 +1020,11 @@ void docx_conversion_context::process_styles()
         odf_reader::styles_container & styles = context.styleContainer();
 
         // add all styles to the map
-        BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
+		odf_reader::styles_container::instances_array &arStyles = styles.instances();
+		for (size_t i = 0; i < arStyles.size(); i++)
         {
-            styles_map_.get(inst->name(), inst->type());
+			if (!arStyles[i]) continue;
+            styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
         }
 
         _Wostream << L"<w:docDefaults>";
@@ -1029,51 +1043,51 @@ void docx_conversion_context::process_styles()
 
         _Wostream << L"</w:docDefaults>";
 
-        BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
-        {
-            if (!inst->is_automatic() && 
+		for (size_t i = 0; i < arStyles.size(); i++)
+		{
+            if (!arStyles[i]->is_automatic() && 
 					(
-					inst->type() == odf_types::style_family::Paragraph ||
-					inst->type() == odf_types::style_family::Text
+					arStyles[i]->type() == odf_types::style_family::Paragraph ||
+					arStyles[i]->type() == odf_types::style_family::Text
 					))
             {
-                const std::wstring id = styles_map_.get(inst->name(), inst->type());
-                _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(inst->type()) << L"\""; 
-				if (!inst->is_default())
+                const std::wstring id = styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
+                _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
+				if (!arStyles[i]->is_default())
 				{
 					_Wostream << L" w:customStyle=\"1\"";
 				}
 				_Wostream << L">";
 
-                const std::wstring displayName = StyleDisplayName(inst->name(), inst->type());
+                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->type());
 
                 _Wostream << L"<w:name w:val=\"" << displayName << L"\" />";
 
-                if (odf_reader::style_instance * baseOn = inst->parent())
+                if (odf_reader::style_instance * baseOn = arStyles[i]->parent())
                 {
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
-                else if (!inst->is_default() && styles_map_.check(L"", inst->type()))
+                else if (!arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
                 {
-                    const std::wstring basedOnId = styles_map_.get(L"", inst->type());
+                    const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
 
-                if (odf_reader::style_instance * next = inst->next())
+                if (odf_reader::style_instance * next = arStyles[i]->next())
                 {
                     const std::wstring nextId = styles_map_.get(next->name(), next->type());
                     _Wostream << L"<w:next w:val=\"" << nextId << "\" />";
                 }
-                else if (inst->is_default())
+                else if (arStyles[i]->is_default())
                 {
                     // self
                     _Wostream << L"<w:next w:val=\"" << id << "\" />";
                 }
 
-                if (odf_reader::style_content * content = inst->content())
+                if (odf_reader::style_content * content = arStyles[i]->content())
                 {
-                    get_styles_context().start_process_style(inst.get());
+                    get_styles_context().start_process_style(arStyles[i].get());
                     content->docx_convert(*this, true);
                     get_styles_context().end_process_style();
                 }
@@ -1334,10 +1348,11 @@ void docx_conversion_context::pop_text_properties()
 odf_reader::style_text_properties_ptr docx_conversion_context::current_text_properties()
 {
     odf_reader::style_text_properties_ptr cur = boost::make_shared<odf_reader::style_text_properties>();
-    BOOST_FOREACH(const odf_reader::style_text_properties * prop, text_properties_stack_)
+
+	for (size_t i = 0; i < text_properties_stack_.size(); i++)
     {
-        if (prop)
-            cur->content().apply_from( prop->content() );
+        if (text_properties_stack_[i])
+            cur->content().apply_from( text_properties_stack_[i]->content() );
     }
     return cur;
 }

@@ -47,12 +47,15 @@
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
 	#else
 		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
 	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
+
 HRESULT convert_single(std::wstring srcFileName)
 {
 	int n1 = srcFileName.rfind(_T('.'));

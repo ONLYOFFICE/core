@@ -71,7 +71,7 @@ style_instance::style_instance(
    
 style_instance * styles_container::hyperlink_style()
 {
-    if (hyperlink_style_pos_ > 0)
+    if (hyperlink_style_pos_ > 0 && hyperlink_style_pos_ < instances_.size())
         return instances_[hyperlink_style_pos_].get();
     else
         return NULL;

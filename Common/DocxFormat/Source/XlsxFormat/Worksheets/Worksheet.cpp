@@ -45,7 +45,7 @@ namespace OOX
 		CWorksheet::CWorksheet(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			m_bSpreadsheets = true;
-			
+			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
@@ -62,7 +62,7 @@ namespace OOX
 		CWorksheet::CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			m_bSpreadsheets = true;
-
+			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
@@ -349,7 +349,7 @@ namespace OOX
 		}
 		void CWorksheet::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			if (m_sOutputFilename.empty())
+			if (!m_bWriteDirectlyToFile)
 			{
 				NSStringUtils::CStringBuilder sXml;
 				toXMLStart(sXml);

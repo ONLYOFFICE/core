@@ -34,7 +34,6 @@
 
 #include <xml/simple_xml_writer.h>
 
-#include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
 
@@ -155,10 +154,10 @@ struct compare_xlsx_fills
 void xlsx_fills::serialize(std::wostream & _Wostream) const
 {
     std::vector<xlsx_fill> inst_array;
-            
-    BOOST_FOREACH(const xlsx_fill & inst, impl_->fills_)
-    {
-        inst_array.push_back(inst);
+            	
+	for (boost::unordered_set<xlsx_fill, boost::hash<xlsx_fill>>::iterator it = impl_->fills_.begin(); it != impl_->fills_.end(); ++it)
+	{
+        inst_array.push_back(*it);
     }
 
     std::sort(inst_array.begin(), inst_array.end(), compare_xlsx_fills());
@@ -169,7 +168,7 @@ void xlsx_fills::serialize(std::wostream & _Wostream) const
         {
             CP_XML_ATTR(L"count", inst_array.size());
 			
-			for (int i = 0; i < inst_array.size(); i++)
+			for (size_t i = 0; i < inst_array.size(); i++)
             {
                 xlsx_serialize(CP_XML_STREAM(), inst_array[i]);
             }

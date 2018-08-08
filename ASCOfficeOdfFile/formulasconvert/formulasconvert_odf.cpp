@@ -51,6 +51,7 @@ namespace formulasconvert {
 		void replace_cells_range(std::wstring& expr, bool withTableName);
 		bool check_formula(std::wstring& expr);
 		void replace_semicolons(std::wstring& expr);
+		void replace_tilda(std::wstring& expr);
 		void replace_vertical(std::wstring& expr);
 		void replace_space(std::wstring& expr);
 
@@ -291,7 +292,17 @@ namespace formulasconvert {
 		else
 			return L"";
 	}
-
+	std::wstring replace_tilda_formater(boost::wsmatch const & what)
+	{
+		if (what[1].matched)
+			return L";";
+		else if (what[2].matched)
+			return what[2].str();    
+		else if (what[3].matched)
+			return what[3].str();
+		else
+			return L"";
+	}
 	// TODO
 	// заменить точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
 	void odf2oox_converter::Impl::replace_semicolons(std::wstring& expr)
@@ -302,9 +313,20 @@ namespace formulasconvert {
 			boost::wregex(L"(;)|(\".*?\")|('.*?')"),
 			&replace_semicolons_formater,
 			boost::match_default | boost::format_all);
+
 		 expr = res;
 	}
+	void odf2oox_converter::Impl::replace_tilda(std::wstring& expr)
+	{
+		 const std::wstring res = boost::regex_replace(
+			expr,
+			//boost::wregex(L"(;)|(?:\".*?\")|(?:'.*?')"),
+			boost::wregex(L"(~)|(\".*?\")|('.*?')"),
+			&replace_semicolons_formater,
+			boost::match_default | boost::format_all);
 
+		 expr = res;
+	}
 	std::wstring replace_vertical_formater(boost::wsmatch const & what)
 	{
 		if (what[1].matched)
@@ -462,6 +484,7 @@ namespace formulasconvert {
 
 		replace_cells_range	(workstr, true);
 		replace_semicolons	(workstr);
+		replace_tilda		(workstr);
 		replace_vertical	(workstr);
 		
 		if (isFormula)

@@ -317,8 +317,8 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 				if ((iWrap) && (*iWrap == 0)) CP_XML_ATTR(L"wrap", L"none");
 			}
 
-			_CP_OPT(int) iAlign;
-			odf_reader::GetProperty(prop,L"textarea-vertical_align",iAlign);
+			_CP_OPT(int) iAlign, iVert;
+			odf_reader::GetProperty(prop, L"textarea-vertical_align", iAlign);
 			if (iAlign)
 			{
 				switch (iAlign.get())
@@ -336,6 +336,16 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 					CP_XML_ATTR(L"anchor", L"just");break;
 				}
 			}
+			odf_reader::GetProperty(prop, L"text_vert", iVert);
+			if (iVert)
+			{
+				switch (iVert.get())
+				{
+				case 1:	CP_XML_ATTR(L"vert", L"vert");		break;
+				case 2:	CP_XML_ATTR(L"vert", L"vert270");	break;
+
+				}
+			}			
 			_CP_OPT(bool) bAutoGrowHeight;
 			_CP_OPT(bool) bFitToSize;
 			odf_reader::GetProperty(prop,L"fit-to-size", bFitToSize);

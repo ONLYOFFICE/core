@@ -122,7 +122,7 @@ const wchar_t * text::name = L"";
 
 std::wostream & text::text_to_stream(std::wostream & _Wostream) const
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    _Wostream << xml::utils::replace_text_to_xml( text_, true );
     return _Wostream;
 }
 
@@ -174,7 +174,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		Context.output_stream() << L" xml:space=\"preserve\"";
 	Context.output_stream() << L">";
 
-	Context.output_stream() << xml::utils::replace_text_to_xml( text_ );
+	Context.output_stream() << xml::utils::replace_text_to_xml( text_, true );
     Context.output_stream() << L"</" << textNode << L">";
 
 	if (add_del_run)
@@ -2050,9 +2050,25 @@ void field_fieldmark_start::add_attributes( const xml::attributes_wc_ptr & Attri
     CP_APPLY_ATTR(L"text:name", text_name_);
     CP_APPLY_ATTR(L"field:type", field_type_);
 }
+void field_fieldmark_start::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!field_type_) return;
+	if (!text_name_) return;
+
+	if (std::wstring::npos != field_type_->find(L"vnd.oasis.opendocument.field."))
+	{
+		Context.start_field(field_type_->substr(29), *text_name_);
+	}
+
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * field_fieldmark_end::ns = L"field";
 const wchar_t * field_fieldmark_end::name = L"fieldmark-end";
+
+void field_fieldmark_end::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.end_field();
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * field_fieldmark::ns = L"field";
 const wchar_t * field_fieldmark::name = L"fieldmark";
@@ -2062,13 +2078,75 @@ void field_fieldmark::add_attributes( const xml::attributes_wc_ptr & Attributes 
     CP_APPLY_ATTR(L"text:name", text_name_);
     CP_APPLY_ATTR(L"field:type", field_type_);
 }
+void field_fieldmark::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(field_params_);
+}
 void field_fieldmark::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (!field_type_) return;
+	if (!text_name_) return;
 
-	//if (std::wstring::npos = field_type_->find(L"FORMCHECKBOX"))
-	//{
-	//}
+	if (std::wstring::npos != field_type_->find(L"FORMCHECKBOX"))
+	{
+		XmlUtils::replace_all( *text_name_, L" ", L"_");
+
+		Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << *text_name_ << L"\"/><w:enabled/>";
+		Context.output_stream() << L"<w:checkBox>";
+		//Context.output_stream() << L"<w:default w:val=\"" << std::to_wstring(current_state_) << L"\"/>
+		Context.output_stream() << L"<w:sizeAuto/>";
+		for (size_t i = 0; i < field_params_.size(); i++)
+		{
+			field_param *param = dynamic_cast<field_param*>(field_params_[i].get());
+			if ((param) && (param->field_name_) && (std::wstring::npos != param->field_name_->find(L"Checkbox_Checked")))
+			{
+				odf_types::Bool value = Bool::parse(*param->field_value_);
+				if (value.get())
+ 					Context.output_stream() << L"<w:checked/>";
+				break;
+			}
+		}
+		Context.output_stream() << L"</w:checkBox></w:ffData>";
+		Context.output_stream() << L"</w:fldChar></w:r>";
+		Context.output_stream() << L"<w:r><w:instrText>FORMCHECKBOX</w:instrText></w:r>";
+		Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+		Context.output_stream() << L"<w:r><w:t>" << L"" << L"</w:t></w:r>";
+		Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+	}
+	else if (std::wstring::npos != field_type_->find(L"FORMDROPDOWN"))
+	{
+		std::wostream & strm = Context.output_stream();
+		Context.finish_run();
+		
+		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << text_name_.get_value_or(L"") << L"\"/><w:enabled/>";
+
+		strm << L"<w:ddList><w:result w:val=\"0\"/>";
+		for (size_t i = 0; i < field_params_.size(); i++)
+		{
+			field_params_[i]->docx_convert(Context);
+		}
+		strm << L"</w:ddList></w:ffData>";
+
+		strm << L"</w:fldChar></w:r>";
+		strm << L"<w:r><w:instrText>FORMDROPDOWN</w:instrText></w:r>";
+		strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+		strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+	}
+	else if (std::wstring::npos != field_type_->find(L"FORMTEXT"))
+	{
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * field_param::ns = L"field";
+const wchar_t * field_param::name = L"param";
+
+void field_param::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"field:name", field_name_);
+    CP_APPLY_ATTR(L"field:value", field_value_);
+}
+void field_param::docx_convert(oox::docx_conversion_context & Context)
+{
 }
 }
 }

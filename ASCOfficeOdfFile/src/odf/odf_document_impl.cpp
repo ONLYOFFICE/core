@@ -296,9 +296,20 @@ bool odf_document::Impl::decrypt_folder (const std::wstring &password, const std
 			if (false == result)
 				break;
 		}
-		else
+		else 
 		{
-			NSFile::CFileBinary::Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
+			pFind = map_encryptions_extra_.find(arFiles[i]);
+			if ( pFind != map_encryptions_.end() )
+			{
+				result = decrypt_file(password, arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
+				
+				if (false == result)
+					break;
+			}
+			else 
+			{
+				NSFile::CFileBinary::Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
+			}
 		}
 	}
 	for (size_t i = 0; result && i < arDirectories.size(); ++i)
@@ -573,7 +584,14 @@ void odf_document::Impl::parse_manifests(office_element *element)
 			XmlUtils::replace_all( file_path, L"/", FILE_SEPARATOR_STR);
 			file_path = base_folder_ + FILE_SEPARATOR_STR + file_path;
 
-			map_encryptions_.insert(std::make_pair(file_path, std::make_pair(entry->encryption_data_, entry->size)));
+			if (0 == entry->full_path_.find(L"Basic/")) //Cuaderno de notas 1.2.ods
+			{
+				map_encryptions_extra_.insert(std::make_pair(file_path, std::make_pair(entry->encryption_data_, entry->size)));
+			}
+			else
+			{
+				map_encryptions_.insert(std::make_pair(file_path, std::make_pair(entry->encryption_data_, entry->size)));
+			}
 		}
 
 		if (entry->full_path_ == L"/")

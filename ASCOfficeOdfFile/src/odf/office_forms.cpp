@@ -406,12 +406,76 @@ void form_combobox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	form_element::add_attributes(Attributes);
 }
+void form_combobox::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"form", L"item")
+    {
+        CP_CREATE_ELEMENT(items_);                    
+    }
+	else
+	{
+		form_element::add_child_element(Reader, Ns, Name);
+	}
+}
 void form_combobox::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.get_forms_context().start_element(4);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
+void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	Context.finish_run();
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			if (name_)
+			{
+				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+			}
+			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
+			
+			Context.output_stream() << L"<w:dropDownList>";
+
+			for (size_t i = 0; i < items_.size(); i++)
+			{
+				form_item* item = dynamic_cast<form_item*>(items_[i].get());
+				if (!item) continue;
+
+				Context.output_stream() << L"<w:listItem w:displayText=\"" << (item->text_.empty() ? item->label_ : item->text_);
+				Context.output_stream() << L"\" w:value=\"" << item->label_ << L"\"/>";
+			}
+			
+			Context.output_stream() << L"</w:dropDownList>";
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+		{
+			Context.add_new_run(L"");
+				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+				if (current_value_)
+				{
+					Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				}
+				Context.output_stream() << L"</w:t>";
+			Context.finish_run();
+		}
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
+	
+	if (label_)
+	{
+		Context.add_new_run(L"");
+			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << L"</w:t>";
+		Context.finish_run();
+	}
+}
+
+
+
 // form:listbox
 //----------------------------------------------------------------------------------
 const wchar_t * form_listbox::ns = L"form";
@@ -445,6 +509,8 @@ void form_date::docx_convert(oox::docx_conversion_context & Context)
 }
 void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
 {
+	Context.finish_run();
+
 	Context.output_stream() << L"<w:sdt>";
 		Context.output_stream() << L"<w:sdtPr>";
 		{
@@ -489,7 +555,19 @@ void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 		Context.finish_run();
 	}
 }
+// form:item
+//----------------------------------------------------------------------------------
+const wchar_t * form_item::ns = L"form";
+const wchar_t * form_item::name = L"item";
 
+void form_item::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"form:label", label_, std::wstring(L""));
+}
+void form_item::add_text(const std::wstring & Text)
+{
+	text_ = Text;
+}
 
 }
 }

@@ -1590,6 +1590,8 @@ public:
 
     _CP_OPT(std::wstring)	text_name_;
 	_CP_OPT(std::wstring)	field_type_;
+	
+	void docx_convert(oox::docx_conversion_context & Context);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
@@ -1608,6 +1610,7 @@ public:
     static const ElementType type = typeFieldFieldmarkStart;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	void docx_convert(oox::docx_conversion_context & Context);
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
@@ -1629,11 +1632,35 @@ public:
     _CP_OPT(std::wstring)	text_name_;
 	_CP_OPT(std::wstring)	field_type_;
 
+	office_element_ptr_array	field_params_;
+
 	void docx_convert(oox::docx_conversion_context & Context);
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark);
+
+//-------------------------------------------------------------------------------------------------------------------
+// field:param
+//-------------------------------------------------------------------------------------------------------------------
+class field_param : public text::paragraph_content_element<field_param>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFieldParam;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    _CP_OPT(std::wstring)	field_name_;
+	_CP_OPT(std::wstring)	field_value_;
+
+	void docx_convert(oox::docx_conversion_context & Context);
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+};
+CP_REGISTER_OFFICE_ELEMENT2(field_param);
 } // namespace odf_reader
 } // namespace cpdoccore

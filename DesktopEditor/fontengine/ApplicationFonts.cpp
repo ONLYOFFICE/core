@@ -41,6 +41,32 @@
 
 namespace NSFonts
 {
+    void makeLower(std::wstring& name)
+    {
+        int nLen = (int)name.length();
+        wchar_t* pStr = (wchar_t*)name.c_str();
+
+        for (int i = 0; i < nLen; ++i)
+        {
+            if (pStr[i] >= 'A' && pStr[i] <= 'Z')
+                pStr[i] = pStr[i] + 'a' - 'A';
+        }
+    }
+    std::wstring prepareFont3000(std::wstring& name)
+    {
+        std::wstring sRet;
+        int nLen = (int)name.length();
+        wchar_t* pStr = (wchar_t*)name.c_str();
+
+        for (int i = 0; i < nLen; ++i)
+        {
+            if (pStr[i] == ' ' || pStr[i] == '-')
+                continue;
+            sRet.append(pStr + i, 1);
+        }
+        return sRet;
+    }
+
     CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir)
     {
         // name
@@ -729,7 +755,7 @@ int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName,
 	else if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
 		return 1000;
 
-	if (NULL != pArrayLikes)
+    if (NULL != pArrayLikes)
 	{
 		for (std::vector<std::wstring>::iterator iter = pArrayLikes->begin(); iter != pArrayLikes->end(); iter++)
 		{
@@ -737,6 +763,19 @@ int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName,
 				return 2000;
 		}
 	}
+
+    /*
+    NSFonts::makeLower(sCandName);
+    NSFonts::makeLower(sReqName);
+    if ( sReqName == sCandName )
+        return 1500;
+
+    sCandName = NSFonts::prepareFont3000(sCandName);
+    sReqName = NSFonts::prepareFont3000(sReqName);
+
+    if ( sReqName == sCandName )
+        return 3000;
+    */
 
 	return 10000;
 }

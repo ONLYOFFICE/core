@@ -45,7 +45,7 @@ namespace utils {
 		std::wstring replace_xml_to_text_ImplRegEx(const std::wstring & Text);
 		std::string replace_xml_to_text_ImplRegEx(const std::string & Text);
 
-		std::wstring replace_text_to_xml_ImplReplace(const std::wstring & Text);
+		std::wstring replace_text_to_xml_ImplReplace(const std::wstring & Text, bool dDeleteUnicode = false);
 		std::string replace_text_to_xml_ImplReplace(const std::string & Text);
 
 		std::wstring replace_amp_text_to_xml_ImplReplace(const std::wstring & Text);
@@ -55,7 +55,7 @@ namespace utils {
 		std::string replace_xml_to_text_ImplReplace(const std::string & Text);
 	}
 
-	std::wstring replace_text_to_xml(const std::wstring & Text);
+	std::wstring replace_text_to_xml(const std::wstring & Text, bool dDeleteUnicode = false);
 	std::string replace_text_to_xml(const std::string & Text);
 
 	std::wstring replace_amp_text_to_xml(const std::wstring & Text);

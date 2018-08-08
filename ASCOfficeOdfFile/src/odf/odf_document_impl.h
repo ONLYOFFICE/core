@@ -80,7 +80,9 @@ public:
 
 	int get_office_mime_type() {return office_mime_type_;}
 
-	bool get_encrypted() {return (false == map_encryptions_.empty());}
+	bool get_encrypted()		{return (false == map_encryptions_.empty());}
+	bool get_encrypted_extra()	{return (false == map_encryptions_extra_.empty());}
+	
 	bool get_error() {return bError;}
 
 	bool UpdateProgress(long Complete);
@@ -122,7 +124,8 @@ private:
 	int GetMimetype(std::wstring value);
 
 	std::map<std::wstring, std::pair<office_element_ptr, int>> map_encryptions_;
-            
+ 	std::map<std::wstring, std::pair<office_element_ptr, int>> map_encryptions_extra_;
+           
 };
 
 }

@@ -147,9 +147,9 @@ namespace NSPresentationEditor
 							oColor.A	= m_arColorScheme[oColor.m_lSchemeIndex].A;
 						}
 					}
-					if (pLevel->m_oCFRun.Typeface.IsInit())
+					if (pLevel->m_oCFRun.fontRef.IsInit())
 					{
-						WORD lFontIndex = pLevel->m_oCFRun.Typeface.get();
+						WORD lFontIndex = pLevel->m_oCFRun.fontRef.get();
 						if (lFontIndex < (WORD)m_arFonts.size())
 						{
 							if (!pLevel->m_oCFRun.FontProperties.is_init())
@@ -208,9 +208,9 @@ namespace NSPresentationEditor
 						oColor.A	= pTheme->m_arColorScheme[oColor.m_lSchemeIndex].A;
 					}
 				}
-				if (pLevel->m_oCFRun.Typeface.IsInit())
+				if (pLevel->m_oCFRun.fontRef.IsInit())
 				{
-					WORD lFontIndex = pLevel->m_oCFRun.Typeface.get();
+					WORD lFontIndex = pLevel->m_oCFRun.fontRef.get();
 					if (lFontIndex < (WORD)pTheme->m_arFonts.size())
 					{
 						if (!pLevel->m_oCFRun.FontProperties.is_init())

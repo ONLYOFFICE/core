@@ -17,6 +17,596 @@
 	#include <assert.h>
 #endif
 
+#define USE_RGB_PALETTE
+#ifdef USE_RGB_PALETTE
+
+#include <vector>
+namespace NSGeneratePalette
+{
+    class CImage32bit_BGRA
+    {
+    public:
+        unsigned char* m_pPixels;
+        int m_lWidth;
+        int m_lHeight;
+    };
+
+    class CImage8bit
+    {
+    public:
+        unsigned char* m_pPixels;
+        int m_lWidth;
+        int m_lHeight;
+
+    public:
+
+        CImage8bit()
+        {
+            m_pPixels = NULL;
+            m_lWidth = 0;
+            m_lHeight = 0;
+        }
+
+        ~CImage8bit()
+        {
+            Destroy(TRUE);
+        }
+
+        void Destroy(BOOL bAttack = TRUE)
+        {
+            if (bAttack)
+            {
+                if (NULL != m_pPixels)
+                    delete[] m_pPixels;
+            }
+            m_pPixels = NULL;
+        }
+
+        bool Create( int lWidth, int lHeight )
+        {
+            unsigned char* pPixels = new unsigned char[lWidth * lHeight];
+            if( !pPixels )
+                return false;
+
+            m_pPixels = pPixels;
+            m_lWidth  = lWidth;
+            m_lHeight = lHeight;
+
+            return true;
+        }
+
+        static bool ImageCut ( CImage8bit* pSource, int X, int Y, int Width, int Height, CImage8bit** pImage )
+        {
+            if ( NULL != pSource )
+            {
+                int SrcWidth		=	pSource->m_lWidth;
+                int SrcHeigth		=	pSource->m_lHeight;
+
+                unsigned char* pSrc	=	pSource->m_pPixels;
+
+                if ( ( X + Width ) > SrcWidth || ( Y + Height ) > SrcHeigth || NULL == pSrc )
+                {
+                    return NULL;
+                }
+
+                (*pImage)	=	new CImage8bit ();
+                if ( NULL != pImage )
+                {
+                    (*pImage)->Create ( Width, Height );
+
+                    unsigned char* pDst	=	(*pImage)->m_pPixels;
+
+                    pSrc			+=	X + Y * SrcWidth;
+
+                    for ( int i = 0; i < Height; ++i )
+                    {
+                        ::memcpy ( pDst, pSrc, Width );
+                        pDst		+=	Width;
+                        pSrc		+=	SrcWidth;
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    };
+
+    struct SColor
+    {
+        union
+        {
+            unsigned int Pixel;
+
+            unsigned char Color[4];
+
+            struct
+            {
+                unsigned char B;
+                unsigned char G;
+                unsigned char R;
+                unsigned char A;
+            };
+        };
+
+        unsigned char* RefByDstPixel;
+
+        SColor()
+        {
+            Pixel = 0;
+            RefByDstPixel = 0;
+        }
+
+        SColor( const SColor& other )
+        {
+            Pixel = other.Pixel;
+            RefByDstPixel = other.RefByDstPixel;
+        }
+
+        void SetBgraColor( unsigned char* pBgraColor, unsigned char* pDstPixel )
+        {
+            Pixel = *((unsigned int*)pBgraColor);
+            RefByDstPixel = pDstPixel;
+
+            A = (A & ~15) + 15; // квантуем альфу
+        }
+    };
+
+
+    struct SRect3D
+    {
+        unsigned char MaxWidth; // максимальная ширина
+        unsigned char MaxColor; // цвет максимальной ширины: 0 - blue, 1 - green, 2 - red, 3 - alpha
+
+        SRect3D()
+        {
+            Clear();
+        }
+
+        void Clear()
+        {
+            MaxWidth = 0;
+            MaxColor = 0;
+        }
+    };
+
+    class CPaletteCreator
+    {
+    public:
+        class CBounder
+        {
+        public:
+            SColor*         m_arrPoints;
+            unsigned int    m_nCountPoints;
+
+            SRect3D m_oRect;
+
+        public:
+            CBounder()
+            {
+                m_arrPoints = NULL;
+                m_nCountPoints = 0;
+            }
+
+            ~CBounder()
+            {
+                // удалять ничего не нужно, так как нет динамических данных
+            }
+
+
+            void Init( SColor* points, unsigned int count )
+            {
+                m_arrPoints = points;
+                m_nCountPoints = count;
+
+                Normalize();
+            }
+
+            void Clear()
+            {
+                m_arrPoints = 0;
+                m_nCountPoints = 0;
+
+                m_oRect.Clear();
+            }
+
+            void Normalize()
+            {
+                if( 0 == m_nCountPoints )
+                {
+                    m_oRect.Clear();
+                    return;
+                }
+
+                if( 1 == m_nCountPoints )
+                {
+                    m_oRect.MaxWidth = 0;
+                    m_oRect.MaxColor = 0;
+                    return;
+                }
+
+                // нормализуем по точкам, убивая лишние грани...
+                int nMinB, nMaxB;
+                int nMinG, nMaxG;
+                int nMinR, nMaxR;
+                int nMinA, nMaxA;
+
+                SColor* pPoint = m_arrPoints;
+
+                nMinB = nMaxB = pPoint->B;
+                nMinG = nMaxG = pPoint->G;
+                nMinR = nMaxR = pPoint->R;
+                nMinA = nMaxA = pPoint->A;
+
+                for( unsigned int i = 1; i < m_nCountPoints; ++i, ++pPoint )
+                {
+                    int B = pPoint->B;
+                    int G = pPoint->G;
+                    int R = pPoint->R;
+                    int A = pPoint->A;
+
+                    if( B < nMinB ) nMinB = B;
+                    if( B > nMaxB ) nMaxB = B;
+                    if( G < nMinG ) nMinG = G;
+                    if( G > nMaxG ) nMaxG = G;
+                    if( R < nMinR ) nMinR = R;
+                    if( R > nMaxR ) nMaxR = R;
+                    if( A < nMinA ) nMinA = A;
+                    if( A > nMaxA ) nMaxA = A;
+                }
+
+                nMaxB -= nMinB;
+                nMaxG -= nMinG;
+                nMaxR -= nMinR;
+                nMaxA -= nMinA;
+
+                int nMaxWidth = nMaxB;
+                int nMaxColor = 0;
+
+                if( nMaxWidth < nMaxG )
+                {
+                    nMaxWidth = nMaxG;
+                    nMaxColor = 1;
+                }
+
+                if( nMaxWidth < nMaxR )
+                {
+                    nMaxWidth = nMaxR;
+                    nMaxColor = 2;
+                }
+
+                if( nMaxWidth < nMaxA )
+                {
+                    nMaxWidth = nMaxA;
+                    nMaxColor = 3;
+                }
+
+                m_oRect.MaxWidth = nMaxWidth;
+                m_oRect.MaxColor = nMaxColor;
+            }
+
+            void GetHistogramm( unsigned int Table[256], int nColorType ) const
+            {
+                memset( Table, 0, 256 * sizeof(unsigned int) );
+
+                if( !m_nCountPoints )
+                    return;
+
+                SColor* pPoint = m_arrPoints;
+                for( unsigned int i = 0; i < m_nCountPoints; ++i, ++pPoint )
+                {
+                    Table[pPoint->Color[nColorType]] += 1;
+                }
+            }
+
+
+            bool CreateNew( CBounder& bound1, CBounder& bound2 ) const
+            {
+                // перераспределяем точки в массиве на две части.
+                if( 0 == m_oRect.MaxWidth )
+                {
+                    return FALSE;
+                }
+
+                // сначала определяем самую длинную сторону...
+                int nColorType = m_oRect.MaxColor;
+
+                unsigned int hist[256];
+                GetHistogramm( hist, nColorType );
+
+                unsigned int nHalfCountPoints = m_nCountPoints / 2;
+                unsigned int nIndexH = 0;
+                unsigned int nCurCount = 0;
+
+                do
+                {
+                    nCurCount += hist[nIndexH++];
+                } while( nCurCount < nHalfCountPoints );
+
+                --nIndexH;
+
+                if( nCurCount == m_nCountPoints )
+                    nCurCount -= hist[nIndexH--];
+
+                SColor* pPoint1 = m_arrPoints;
+                SColor* pPoint2 = m_arrPoints + m_nCountPoints;
+
+                while( pPoint1 != pPoint2 )
+                {
+                    if( pPoint1->Color[nColorType] <= nIndexH )
+                    {
+                        ++pPoint1;
+                    }
+                    else
+                    {
+                        --pPoint2;
+
+                        SColor tmp( *pPoint1 );
+                        *pPoint1 = *pPoint2;
+                        *pPoint2 = tmp;
+                    }
+                }
+
+                bound1.m_arrPoints = m_arrPoints;
+                bound1.m_nCountPoints = (unsigned int)(((size_t)pPoint2 - (size_t)m_arrPoints) / sizeof(SColor));
+
+                bound2.m_arrPoints = m_arrPoints + bound1.m_nCountPoints;
+                bound2.m_nCountPoints = m_nCountPoints - bound1.m_nCountPoints;
+
+                bound1.Normalize();
+                bound2.Normalize();
+
+                return true;
+            }
+
+            unsigned int GetColor() const
+            {
+                union
+                {
+                    unsigned int value;
+
+                    struct
+                    {
+                        unsigned char B;
+                        unsigned char G;
+                        unsigned char R;
+                        unsigned char A;
+                    };
+                } color;
+
+                SColor* pPoint = m_arrPoints;
+                if( !pPoint )
+                    return 0;
+
+                color.value = pPoint->Pixel;
+
+                if( 0 == m_oRect.MaxWidth )
+                {
+                    return color.value;
+                }
+
+                double dB = pPoint->B;
+                double dG = pPoint->G;
+                double dR = pPoint->R;
+                double dA = pPoint->A;
+
+                for( unsigned int i = 1; i < m_nCountPoints; ++i, ++pPoint )
+                {
+                    dB += pPoint->B;
+                    dG += pPoint->G;
+                    dR += pPoint->R;
+                    dA += pPoint->A;
+                }
+
+                color.B = (unsigned char)(dB / m_nCountPoints + 0.5);
+                color.G = (unsigned char)(dG / m_nCountPoints + 0.5);
+                color.R = (unsigned char)(dR / m_nCountPoints + 0.5);
+                color.A = (unsigned char)(dA / m_nCountPoints + 0.5);
+
+                return color.value;
+            }
+
+            void ApplyPaletteColor( unsigned char color ) const
+            {
+                SColor* pPoint = m_arrPoints;
+                for( unsigned int i = 0; i < m_nCountPoints; ++i, ++pPoint )
+                {
+                    pPoint->RefByDstPixel[0] = color;
+                }
+            }
+        };
+
+    public:
+
+        CPaletteCreator()
+        {
+        }
+
+        ~CPaletteCreator()
+        {
+        }
+
+        void Destroy()
+        {
+        }
+
+        std::vector<CImage8bit*> Convert(std::vector<CImage32bit_BGRA>& arImages, unsigned int** pDstPalette)
+        {
+            std::vector<CImage8bit*> arDst;
+            int nCountImages = (int)arImages.size();
+
+            if( !nCountImages || pDstPalette == NULL )
+                return arDst;
+
+            // создаём палитру
+            unsigned int* pPalette = new unsigned int[256];
+
+            *pDstPalette = pPalette;
+
+            if( !pPalette )
+                return arDst;
+
+            memset( pPalette, 0, 256 * sizeof(unsigned int) );
+
+            unsigned int lCountPoints = 0;
+
+            for( int nImage = 0; nImage < nCountImages; ++nImage )
+            {
+                int lWidth  = arImages[nImage].m_lWidth;
+                int lHeight = arImages[nImage].m_lHeight;
+
+                CImage8bit* pImage8 = new CImage8bit();
+                if( pImage8 )
+                {
+                    if( pImage8->Create( lWidth, lHeight ) )
+                    {
+                        lCountPoints += lWidth * lHeight;
+
+                        ::memset( pImage8->m_pPixels, 0, lWidth * lHeight );
+                    }
+                    else
+                    {
+                        delete pImage8;
+                        pImage8 = NULL;
+                    }
+                }
+
+                arDst.push_back( pImage8 );
+            }
+
+            SColor* arrPoints = (SColor*)(new unsigned char[lCountPoints * sizeof(SColor)]);
+            if( !arrPoints )
+                return arDst;
+
+            SColor* pPoint = arrPoints;
+
+            for( int nImage = 0; nImage < nCountImages; ++nImage )
+            {
+                CImage8bit* pImage8 = arDst[nImage];
+                if( !pImage8 )
+                    continue;
+
+                unsigned int lCountPixels = pImage8->m_lWidth * pImage8->m_lHeight;
+                unsigned char* pBgraPixel = arImages[nImage].m_pPixels;
+
+                for( unsigned int i = 0; i < lCountPixels; ++i, pBgraPixel += 4 )
+                {
+                    if( pBgraPixel[3] > 4 )
+                    {
+                        pPoint->SetBgraColor( pBgraPixel, pImage8->m_pPixels + i );
+
+                        ++pPoint;
+                    }
+                }
+            }
+
+            if( pPoint == arrPoints )
+            {
+                delete [] (unsigned char*)arrPoints;
+                return arDst;
+            }
+
+            size_t nActivePoints = (size_t(pPoint) - size_t(arrPoints)) / sizeof(SColor);
+
+            CBounder bounds[255];
+
+            CBounder oNew1;
+            CBounder oNew2;
+
+            bounds[0].Init( arrPoints, nActivePoints );
+            int nCountBounds = 1;
+
+            while( nCountBounds < 255 )
+            {
+                int nBoundIndex = FindBoundIndexWithMaxWidth( bounds, nCountBounds );
+                if( nBoundIndex < 0 )
+                    break;
+
+                bounds[nBoundIndex].CreateNew( oNew1, oNew2 );
+
+                bounds[nBoundIndex]  = oNew1;
+                bounds[nCountBounds] = oNew2;
+
+                ++nCountBounds;
+            }
+
+            for( int i = 0; i < nCountBounds; i++ )
+            {
+                pPalette[i + 1] = bounds[i].GetColor();
+                bounds[i].ApplyPaletteColor( i + 1 );
+            }
+
+            delete [] (unsigned char*)arrPoints;
+
+            //for( int nImage = 0; nImage < nCountImages; ++nImage )
+            //{
+            //	CImage8bit* pImage8 = arDst[nImage];
+            //	if( !pImage8 )
+            //		continue;
+
+            //	if( !pImage8->m_pPixels )
+            //		continue;
+
+            //	unsigned int nSize = pImage8->m_lWidth * pImage8->m_lHeight;
+            //	unsigned int* buffer = new unsigned int[nSize];
+            //	if( !buffer )
+            //		continue;
+
+            //	for( unsigned int i = 0; i < nSize; i++ )
+            //	{
+            //		buffer[i] = pPalette[pImage8->m_pPixels[i]];
+            //	}
+
+            //	delete [] buffer;
+            //}
+
+            return arDst;
+        }
+
+        static int FindBoundIndexWithMaxWidth( const CBounder* pBounds, int nCountBounds )
+        {
+            int nMaxWidth = 0;
+            int nMaxIndex = -1;
+
+            for( int i = 0; i < nCountBounds; ++i, ++pBounds )
+            {
+                int width = pBounds->m_oRect.MaxWidth;
+                if( width > nMaxWidth )
+                {
+                    nMaxWidth = width;
+                    nMaxIndex = i;
+                }
+            }
+
+            return nMaxIndex;
+        }
+
+        unsigned char* CreateFrom8bit(CImage8bit* pImage, unsigned int* pPalette)
+        {
+            unsigned char* pData = new unsigned char[4 * pImage->m_lWidth * pImage->m_lHeight];
+            unsigned char* pDataMem = pData;
+
+            long lCount = pImage->m_lWidth * pImage->m_lHeight;
+
+            for (long nIndex = 0; nIndex < lCount; ++nIndex)
+            {
+                unsigned int color = pPalette[pImage->m_pPixels[nIndex]]; // ARGB
+
+                pDataMem[2] = (unsigned char)((color >> 16) & 0xFF);
+                pDataMem[1] = (unsigned char)((color >> 8) & 0xFF);
+                pDataMem[0] = (unsigned char)(color & 0xFF);
+                pDataMem[3] = (unsigned char)(color >> 24);
+                pDataMem += 4;
+            }
+
+            return pData;
+        }
+    };
+}
+
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 CxImageGIF::CxImageGIF(): CxImage(CXIMAGE_FORMAT_GIF)
 {
@@ -693,10 +1283,11 @@ bool CxImageGIF::EncodeRGB(CxFile *fp)
 
 	EncodeComment(fp);
 
+#ifndef USE_RGB_PALETTE
 	uint32_t w,h;
 	w=h=0;
-	const int32_t cellw = 17;
-	const int32_t cellh = 15;
+    int32_t cellw = 17;
+    int32_t cellh = 15;
 	CxImageGIF tmp;
 	for (int32_t y=0;y<head.biHeight;y+=cellh){
 		for (int32_t x=0;x<head.biWidth;x+=cellw){
@@ -724,6 +1315,71 @@ bool CxImageGIF::EncodeRGB(CxFile *fp)
 			tmp.EncodeBody(fp,true);
 		}
 	}
+#else
+    CxImageGIF tmp;
+    tmp.Create(head.biWidth, head.biHeight, 8);
+    tmp.SetTransIndex(0);
+
+    NSGeneratePalette::CImage32bit_BGRA srcBgra;
+    srcBgra.m_lWidth = head.biWidth;
+    srcBgra.m_lHeight = head.biHeight;
+    srcBgra.m_pPixels = new unsigned char[4 * srcBgra.m_lWidth * srcBgra.m_lHeight];
+    unsigned char* pixelsTmp = srcBgra.m_pPixels;
+
+    for (uint32_t j=0;j<head.biHeight;j++)
+    {
+        for (uint32_t k=0;k<head.biWidth;k++)
+        {
+            RGBQUAD c = GetPixelColor(k,j);
+            *pixelsTmp++ = c.rgbBlue;
+            *pixelsTmp++ = c.rgbGreen;
+            *pixelsTmp++ = c.rgbRed;
+            *pixelsTmp++ = c.rgbReserved;
+        }
+    }
+
+    NSGeneratePalette::CPaletteCreator oCreator;
+    std::vector<NSGeneratePalette::CImage32bit_BGRA> imagesSrc;
+    imagesSrc.push_back(srcBgra);
+
+    unsigned int* pPalette = NULL;
+    std::vector<NSGeneratePalette::CImage8bit*> imagesDst = oCreator.Convert(imagesSrc, &pPalette);
+
+    NSGeneratePalette::CImage8bit* pImage8 = imagesDst[0];
+
+    for (int i = 0; i < 256; i++)
+    {
+        unsigned int c = pPalette[i];
+        RGBQUAD cRGB;
+        //cRGB.rgbRed = (c >> 8) & 0xFF;
+        //cRGB.rgbGreen = (c >> 16) & 0xFF;
+        //cRGB.rgbBlue = (c >> 24) & 0xFF;
+        //cRGB.rgbReserved = c & 0xFF;
+        cRGB.rgbRed = (c >> 16) & 0xFF;
+        cRGB.rgbGreen = (c >> 8) & 0xFF;
+        cRGB.rgbReserved = (c >> 24) & 0xFF;
+        cRGB.rgbBlue = c & 0xFF;
+        tmp.SetPaletteColor(i, cRGB);
+    }
+
+    unsigned char* pImage8Tmp = pImage8->m_pPixels;
+    for (uint32_t j=0;j<head.biHeight;j++)
+    {
+        for (uint32_t k=0;k<head.biWidth;k++)
+        {
+            tmp.SetPixelIndex(k, j, *pImage8Tmp++);
+        }
+    }
+
+    delete[] srcBgra.m_pPixels;
+    delete[] pPalette;
+
+    delete pImage8;
+
+    tmp.SetOffset(0,0);
+    tmp.EncodeExtension(fp);
+    tmp.EncodeBody(fp,true);
+#endif
 
 	fp->PutC(';'); // Write the GIF file terminator
 

@@ -97,13 +97,13 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 			}
 			if (NULL != pTheme)
 			{
-				if ((pRun->Typeface.is_init()) && (pRun->Typeface.get() < pTheme->m_arFonts.size()))
+				if ((pRun->fontRef.is_init()) && (pRun->fontRef.get() < pTheme->m_arFonts.size()))
 				{
 					pRun->FontProperties = new CFontProperties();
-					pRun->FontProperties->SetFont(pTheme->m_arFonts[pRun->Typeface.get()]);
+					pRun->FontProperties->SetFont(pTheme->m_arFonts[pRun->fontRef.get()]);
 
-					if (1 < pRun->Typeface.get())
-						pRun->Typeface.reset();
+					if (1 < pRun->fontRef.get())
+						pRun->fontRef.reset();
 				}
 				if ((pRun->EAFontRef.is_init()) && (pRun->EAFontRef.get() < pTheme->m_arFonts.size()))
 				{

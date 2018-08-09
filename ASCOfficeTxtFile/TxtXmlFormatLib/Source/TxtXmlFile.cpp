@@ -42,6 +42,7 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 namespace NSBinPptxRW
 {
@@ -218,7 +219,10 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	OOX::CApp* pApp = new OOX::CApp(NULL);
 	if (pApp)
 	{
-		pApp->SetApplication(L"ONLYOFFICE");
+		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+		if (sApplication.empty())
+			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+		pApp->SetApplication(sApplication);
 #if defined(INTVER)
         pApp->SetAppVersion(VALUE2STR(INTVER));
 #endif

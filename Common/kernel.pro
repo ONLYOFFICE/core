@@ -103,3 +103,7 @@ SOURCES += ./../DesktopEditor/common/StreamWriter.cpp
 # DIRECTORY
 HEADERS += ./../DesktopEditor/common/Directory.h
 SOURCES += ./../DesktopEditor/common/Directory.cpp
+
+# SYSTEM
+HEADERS += ./../DesktopEditor/common/SystemUtils.h
+SOURCES += ./../DesktopEditor/common/SystemUtils.cpp

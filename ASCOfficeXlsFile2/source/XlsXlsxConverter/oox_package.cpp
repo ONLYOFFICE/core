@@ -42,6 +42,7 @@
 #include "external_items.h"
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace oox {
@@ -252,7 +253,11 @@ void app_file::write(const std::wstring & RootPath)
     resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
         L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
    
-	resStream << L"<Application>ONLYOFFICE"; 
+	resStream << L"<Application>";
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+	if (sApplication.empty())
+		sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+	resStream << sApplication;
 #if defined(INTVER)
 	std::string s = VALUE2STR(INTVER);
 	resStream << L"/" << std::wstring(s.begin(), s.end());

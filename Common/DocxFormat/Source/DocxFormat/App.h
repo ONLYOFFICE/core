@@ -38,6 +38,7 @@
 #include "../Base/Nullable.h"
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
+#include "../../../../DesktopEditor/common/SystemUtils.h"
 
 namespace OOX
 {
@@ -415,7 +416,10 @@ namespace OOX
 		}
 		void SetDefaults()
 		{
-			SetApplication(L"ONLYOFFICE");
+			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sApplication.empty())
+				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+			SetApplication(sApplication);
 #if defined(INTVER)
             SetAppVersion(VALUE2STR(INTVER));
 #endif

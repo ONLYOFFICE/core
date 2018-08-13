@@ -8004,10 +8004,53 @@ public:
 			pSdtPr->m_oAlias->m_sVal.Init();
 			pSdtPr->m_oAlias->m_sVal->append(m_oBufferedStream.GetString3(length));
 		}
+		else if (c_oSerSdt::Appearance == type)
+		{
+			pSdtPr->m_oAppearance.Init();
+			pSdtPr->m_oAppearance->m_oVal.Init();
+			pSdtPr->m_oAppearance->m_oVal->SetValue((SimpleTypes::ESdtAppearance)m_oBufferedStream.GetUChar());
+		}
 		else if (c_oSerSdt::ComboBox == type)
 		{
 			pSdtPr->m_oComboBox.Init();
 			READ1_DEF(length, res, this->ReadSdtComboBox, pSdtPr->m_oComboBox.GetPointer());
+		}
+		else if (c_oSerSdt::Color == type)
+		{
+			rPr oRPr(m_oFileWriter.m_oFontTableWriter.m_mapFonts);
+			res = oBinary_rPrReader.Read(length, &oRPr);
+			pSdtPr->m_oColor.Init();
+			if (oRPr.bColor)
+			{
+				pSdtPr->m_oColor->m_oVal.Init();
+				pSdtPr->m_oColor->m_oVal->SetValue(SimpleTypes::hexcolorRGB);
+				pSdtPr->m_oColor->m_oVal->Set_R(oRPr.Color.R);
+				pSdtPr->m_oColor->m_oVal->Set_G(oRPr.Color.G);
+				pSdtPr->m_oColor->m_oVal->Set_B(oRPr.Color.B);
+			}
+			if (oRPr.bThemeColor && oRPr.ThemeColor.IsNoEmpty())
+			{
+				if(oRPr.ThemeColor.Auto && !oRPr.bColor)
+				{
+					pSdtPr->m_oColor->m_oVal.Init();
+					pSdtPr->m_oColor->m_oVal->SetValue(SimpleTypes::hexcolorAuto);
+				}
+				if(oRPr.ThemeColor.bColor)
+				{
+					pSdtPr->m_oColor->m_oThemeColor.Init();
+					pSdtPr->m_oColor->m_oThemeColor->SetValue((SimpleTypes::EThemeColor)oRPr.ThemeColor.Color);
+				}
+				if(oRPr.ThemeColor.bTint)
+				{
+					pSdtPr->m_oColor->m_oThemeTint.Init();
+					pSdtPr->m_oColor->m_oThemeTint->SetValue(oRPr.ThemeColor.Tint);
+				}
+				if(oRPr.ThemeColor.bShade)
+				{
+					pSdtPr->m_oColor->m_oThemeShade.Init();
+					pSdtPr->m_oColor->m_oThemeShade->SetValue(oRPr.ThemeColor.Shade);
+				}
+			}
 		}
 		else if (c_oSerSdt::DataBinding == type)
 		{

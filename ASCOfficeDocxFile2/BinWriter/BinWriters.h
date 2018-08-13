@@ -7074,10 +7074,25 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteStringW3(oStdPr.m_oAlias->m_sVal.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oStdPr.m_oAppearance.IsInit() && oStdPr.m_oAppearance->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Appearance);
+				m_oBcw.m_oStream.WriteBYTE(oStdPr.m_oAppearance->m_oVal->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			if(oStdPr.m_oComboBox.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::ComboBox);
 				WriteSdtComboBox(oStdPr.m_oComboBox.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Color);
+				if(oStdPr.m_oColor->m_oVal.IsInit())
+					m_oBcw.WriteColor(c_oSerProp_rPrType::Color, oStdPr.m_oColor->m_oVal.get());
+
+				m_oBcw.WriteThemeColor(c_oSerProp_rPrType::ColorTheme, oStdPr.m_oColor->m_oVal, oStdPr.m_oColor->m_oThemeColor, oStdPr.m_oColor->m_oThemeTint, oStdPr.m_oColor->m_oThemeShade);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			if(oStdPr.m_oDataBinding.IsInit())

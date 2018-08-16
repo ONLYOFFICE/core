@@ -58,6 +58,7 @@
 #include "Diagram/DiagramDrawing.h"
 #include "Diagram/DiagramData.h"
 #include "VmlDrawing.h"
+#include "CustomXml.h"
 
 #include "../XlsxFormat/Chart/Chart.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
@@ -140,6 +141,10 @@ namespace OOX
 		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
 		else if ( oRelation.Type() == FileTypes::JsaProject)
 			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CustomXml)
+			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
+		else if ( oRelation.Type() == FileTypes::CustomXmlProps)
+			return smart_ptr<OOX::File>(new OOX::CCustomXMLProps(pMain, oFileName));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 	}
@@ -228,6 +233,10 @@ namespace OOX
 		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
 		else if ( pRelation->Type() == FileTypes::JsaProject)
 			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CustomXml)
+			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
+		else if ( pRelation->Type() == FileTypes::CustomXmlProps)
+			return smart_ptr<OOX::File>(new OOX::CCustomXMLProps(pMain, oFileName));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 	}

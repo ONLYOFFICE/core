@@ -3460,6 +3460,64 @@ namespace OOX
 		nullable<OOX::Settings::CWriteProtection>                     m_oWriteProtection;
 		nullable<OOX::Settings::CZoom>                                m_oZoom;
 	};
+	class CSettingsCustom
+	{
+	public:
+		static std::wstring GetSchemaUrl()
+		{
+			return L"http://schemas.onlyoffice.com/settingsCustom";
+		}
+		void FromXml(const std::wstring& sXml)
+		{
+			XmlUtils::CXmlLiteReader oReader;
+
+			if ( !oReader.FromString(sXml) )
+				return;
+
+			if ( !oReader.ReadNextNode() )
+				return;
+
+			std::wstring sName = oReader.GetName();
+			if ( _T("w:settings") == sName && !oReader.IsEmptyNode() )
+			{
+				int nStylesDepth = oReader.GetDepth();
+				while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+				{
+					sName = oReader.GetName();
+
+					if ( _T("w:SdtGlobalColor") == sName )
+						m_oSdtGlobalColor = oReader;
+					else if ( _T("w:SdtGlobalShowHighlight") == sName )
+						m_oSdtGlobalShowHighlight = oReader;
+				}
+			}
+		}
+		std::wstring ToXml()
+		{
+			std::wstring sXml;
+			sXml += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
+			if(m_oSdtGlobalColor.IsInit())
+			{
+				sXml += L"<w:SdtGlobalColor ";
+				sXml += m_oSdtGlobalColor->ToString();
+				sXml += L"/>";
+			}
+			if(m_oSdtGlobalShowHighlight.IsInit())
+			{
+				sXml += L"<w:SdtGlobalShowHighlight ";
+				sXml += m_oSdtGlobalShowHighlight->ToString();
+				sXml += L"/>";
+			}
+			sXml += L"</w:settings>";
+			return sXml;
+		}
+		bool IsEmpty()
+		{
+			return !(m_oSdtGlobalColor.IsInit() || m_oSdtGlobalShowHighlight.IsInit());
+		}
+		nullable<ComplexTypes::Word::CColor> m_oSdtGlobalColor;
+		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSdtGlobalShowHighlight;
+	};
 } // namespace OOX
 
 #endif /* OOX_SETTINGS_INCLUDE_H_ */

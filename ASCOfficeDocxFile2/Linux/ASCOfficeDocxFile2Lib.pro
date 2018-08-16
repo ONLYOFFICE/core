@@ -34,7 +34,8 @@ SOURCES += \
     ../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../OfficeCryptReader/source/ECMACryptFile.cpp \
     ../../OfficeCryptReader/source/CryptTransform.cpp \
-    ../BinReader/Readers.cpp
+    ../BinReader/Readers.cpp \
+    ../BinReader/CustormXmlWriter.cpp
 
 HEADERS += ../DocWrapper/DocxSerializer.h \
     ../DocWrapper/FontProcessor.h \
@@ -69,4 +70,5 @@ HEADERS += ../DocWrapper/DocxSerializer.h \
     ../BinReader/DefaultThemeWriter.h \
     ../DocWrapper/ChartWriter.h \
     ../../OfficeCryptReader/source/ECMACryptFile.h \
-    ../../OfficeCryptReader/source/CryptTransform.h
+    ../../OfficeCryptReader/source/CryptTransform.h \
+    ../BinReader/CustormXmlWriter.h

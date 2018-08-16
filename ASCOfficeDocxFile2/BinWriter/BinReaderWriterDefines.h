@@ -761,7 +761,9 @@ extern int g_nCurFormatVersion;
 		MathPr = 2,
 		TrackRevisions = 3,
 		FootnotePr = 4,
-		EndnotePr = 5
+		EndnotePr = 5,
+		SdtGlobalColor = 6,
+		SdtGlobalShowHighlight = 7
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

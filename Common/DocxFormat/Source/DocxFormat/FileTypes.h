@@ -116,7 +116,11 @@ namespace OOX
 												_T("application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml"),
 												_T("http://schemas.microsoft.com/office/2011/relationships/people"));
 
-		const FileType CustomXml		(L"customXml", L"itemProps.xml",
+		const FileType CustomXml		(L"customXml", L"item.xml",
+												_T(""),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml"));
+
+		const FileType CustomXmlProps	(L"customXml", L"itemProps.xml",
 												_T("application/vnd.openxmlformats-officedocument.customXmlProperties+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps"));
 

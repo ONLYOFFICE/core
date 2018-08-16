@@ -34,6 +34,41 @@
 
 namespace BinDocxRW {
 
+void InnerColorToOOX(rPr& oRPr, ComplexTypes::Word::CColor& oColor)
+{
+	if (oRPr.bColor)
+	{
+		oColor.m_oVal.Init();
+		oColor.m_oVal->SetValue(SimpleTypes::hexcolorRGB);
+		oColor.m_oVal->Set_R(oRPr.Color.R);
+		oColor.m_oVal->Set_G(oRPr.Color.G);
+		oColor.m_oVal->Set_B(oRPr.Color.B);
+	}
+	if (oRPr.bThemeColor && oRPr.ThemeColor.IsNoEmpty())
+	{
+		if(oRPr.ThemeColor.Auto && !oRPr.bColor)
+		{
+			oColor.m_oVal.Init();
+			oColor.m_oVal->SetValue(SimpleTypes::hexcolorAuto);
+		}
+		if(oRPr.ThemeColor.bColor)
+		{
+			oColor.m_oThemeColor.Init();
+			oColor.m_oThemeColor->SetValue((SimpleTypes::EThemeColor)oRPr.ThemeColor.Color);
+		}
+		if(oRPr.ThemeColor.bTint)
+		{
+			oColor.m_oThemeTint.Init();
+			oColor.m_oThemeTint->SetValue(oRPr.ThemeColor.Tint);
+		}
+		if(oRPr.ThemeColor.bShade)
+		{
+			oColor.m_oThemeShade.Init();
+			oColor.m_oThemeShade->SetValue(oRPr.ThemeColor.Shade);
+		}
+	}
+}
+
 int Binary_VbaProjectTableReader::Read()
 {
 	m_oFileWriter.m_pVbaProject = new OOX::VbaProject(NULL);

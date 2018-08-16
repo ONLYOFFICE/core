@@ -182,6 +182,8 @@ public:
         poResult->UserId = m_oBufferedStream.GetString3(length);\
     }
 
+	void InnerColorToOOX(rPr& oRPr, ComplexTypes::Word::CColor& oColor);
+
 	class Binary_CommonReader
 	{
 	protected:
@@ -3220,11 +3222,13 @@ public:
 class Binary_SettingsTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader m_oBinary_pPrReader;
+	Binary_rPrReader m_oBinary_rPrReader;
 	Writers::SettingWriter& m_oSettingWriter;
 	Writers::FileWriter& m_oFileWriter;
+	OOX::CSettingsCustom& m_oSettingsCustom;
 public:
-	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):
-		Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter),m_oBinary_pPrReader(poBufferedStream, oFileWriter)
+	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom& oSettingsCustom):
+		Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter),m_oBinary_pPrReader(poBufferedStream, oFileWriter),m_oBinary_rPrReader(poBufferedStream, oFileWriter),m_oSettingsCustom(oSettingsCustom)
 	{
 	}
 	int Read()
@@ -3315,6 +3319,18 @@ public:
 			OOX::Settings::CEdnDocProps oEdnProps;
 			READ1_DEF(length, res, this->ReadEndnotePr, &oEdnProps);
 			m_oFileWriter.m_oSettingWriter.AddSetting(oEdnProps.toXML());
+		}
+		else if( c_oSer_SettingsType::SdtGlobalColor == type )
+		{
+			rPr oRPr(m_oFileWriter.m_oFontTableWriter.m_mapFonts);
+			res = m_oBinary_rPrReader.Read(length, &oRPr);
+			m_oSettingsCustom.m_oSdtGlobalColor.Init();
+			InnerColorToOOX(oRPr, m_oSettingsCustom.m_oSdtGlobalColor.get2());
+		}
+		else if( c_oSer_SettingsType::SdtGlobalShowHighlight == type )
+		{
+			m_oSettingsCustom.m_oSdtGlobalShowHighlight.Init();
+			m_oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -8020,37 +8036,7 @@ public:
 			rPr oRPr(m_oFileWriter.m_oFontTableWriter.m_mapFonts);
 			res = oBinary_rPrReader.Read(length, &oRPr);
 			pSdtPr->m_oColor.Init();
-			if (oRPr.bColor)
-			{
-				pSdtPr->m_oColor->m_oVal.Init();
-				pSdtPr->m_oColor->m_oVal->SetValue(SimpleTypes::hexcolorRGB);
-				pSdtPr->m_oColor->m_oVal->Set_R(oRPr.Color.R);
-				pSdtPr->m_oColor->m_oVal->Set_G(oRPr.Color.G);
-				pSdtPr->m_oColor->m_oVal->Set_B(oRPr.Color.B);
-			}
-			if (oRPr.bThemeColor && oRPr.ThemeColor.IsNoEmpty())
-			{
-				if(oRPr.ThemeColor.Auto && !oRPr.bColor)
-				{
-					pSdtPr->m_oColor->m_oVal.Init();
-					pSdtPr->m_oColor->m_oVal->SetValue(SimpleTypes::hexcolorAuto);
-				}
-				if(oRPr.ThemeColor.bColor)
-				{
-					pSdtPr->m_oColor->m_oThemeColor.Init();
-					pSdtPr->m_oColor->m_oThemeColor->SetValue((SimpleTypes::EThemeColor)oRPr.ThemeColor.Color);
-				}
-				if(oRPr.ThemeColor.bTint)
-				{
-					pSdtPr->m_oColor->m_oThemeTint.Init();
-					pSdtPr->m_oColor->m_oThemeTint->SetValue(oRPr.ThemeColor.Tint);
-				}
-				if(oRPr.ThemeColor.bShade)
-				{
-					pSdtPr->m_oColor->m_oThemeShade.Init();
-					pSdtPr->m_oColor->m_oThemeShade->SetValue(oRPr.ThemeColor.Shade);
-				}
-			}
+			InnerColorToOOX(oRPr, pSdtPr->m_oColor.get2());
 		}
 		else if (c_oSerSdt::DataBinding == type)
 		{
@@ -8467,11 +8453,12 @@ public:
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
+			OOX::CSettingsCustom oSettingsCustom;
 			if(-1 != nSettingsOffset)
 			{
 				int nOldPos = m_oBufferedStream.GetPos();
 				m_oBufferedStream.Seek(nSettingsOffset);
-				res = Binary_SettingsTableReader(m_oBufferedStream, m_oFileWriter).Read();
+				res = Binary_SettingsTableReader(m_oBufferedStream, m_oFileWriter, oSettingsCustom).Read();
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
@@ -8618,6 +8605,13 @@ public:
 						m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml", L"/word", pFooter->m_sFilename);
 					}
 				}
+				if(!oSettingsCustom.IsEmpty()){
+					std::wstring sFilename = m_oFileWriter.m_oCustomXmlWriter.WriteCustomXml(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
+					std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + sFilename;
+					long rId;
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
+				}
+
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
 
                 OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir	+ FILE_SEPARATOR_STR + L"word"

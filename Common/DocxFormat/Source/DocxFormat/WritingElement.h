@@ -414,6 +414,7 @@ namespace OOX
         et_a_buSzPts,
         et_a_buSzTx,
 
+		et_ds_schemaRefs, // <ds:shemeRefs>
         et_ds_schemaRef, // <ds:shemeRef>	
 		
 		et_m_acc, //m:acc

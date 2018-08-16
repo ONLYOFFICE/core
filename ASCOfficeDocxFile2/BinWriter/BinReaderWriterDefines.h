@@ -445,7 +445,8 @@ extern int g_nCurFormatVersion;
 		textDirection = 11,
 		hideMark = 12,
 		noWrap = 13,
-		tcFitText = 14
+		tcFitText = 14,
+		HMerge = 15
 	};}
 	namespace c_oSerProp_secPrType{enum c_oSerProp_secPrType
 	{

@@ -2266,6 +2266,24 @@ namespace BinDocxRW
 						m_oBcw.m_oStream.WriteBYTE(vmerge_Continue);
 					}
 				}
+				if(cellPr->m_oHMerge.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_cellPrType::HMerge);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					if(cellPr->m_oHMerge->m_oVal.IsInit())
+					{
+						switch(cellPr->m_oHMerge->m_oVal->GetValue())
+						{
+						case SimpleTypes::mergeContinue: m_oBcw.m_oStream.WriteBYTE(vmerge_Continue); break;
+						case SimpleTypes::mergeRestart: m_oBcw.m_oStream.WriteBYTE(vmerge_Restart); break;
+						default: m_oBcw.m_oStream.WriteBYTE(vmerge_Continue);break;
+						}
+					}
+					else
+					{
+						m_oBcw.m_oStream.WriteBYTE(vmerge_Continue);
+					}
+				}
 				if(cellPr->m_oCellDel.IsInit())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_cellPrType::CellDel);

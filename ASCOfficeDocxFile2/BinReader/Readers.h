@@ -2251,6 +2251,15 @@ public:
             case vmerge_Continue:pCStringWriter->WriteString(std::wstring(_T("<w:vMerge w:val=\"continue\" />")));break;
 			}
 		}
+		else if( c_oSerProp_cellPrType::HMerge == type )
+		{
+			BYTE HMerge = m_oBufferedStream.GetUChar();
+			switch(HMerge)
+			{
+			case vmerge_Restart:pCStringWriter->WriteString(std::wstring(_T("<w:hMerge w:val=\"restart\" />")));break;
+			case vmerge_Continue:pCStringWriter->WriteString(std::wstring(_T("<w:hMerge w:val=\"continue\" />")));break;
+			}
+		}
 		else if( c_oSerProp_cellPrType::CellDel == type )
 		{
 			TrackRevision Del;

@@ -1675,9 +1675,11 @@ namespace NSHtmlRenderer
         NSHtmlRenderer::CImageInfo GenerateImageID(IGrObject* pGrObject)
         {
             CBgraFrame* pFrame = new CBgraFrame();
-            pFrame->FromImage(pGrObject);
+            pFrame->FromImage(pGrObject, false);
 
             NSHtmlRenderer::CImageInfo _info = GenerateImageID(pFrame, true);
+
+            pFrame->put_Data(NULL);
             RELEASEOBJECT(pFrame);
             return _info;
         }

@@ -518,7 +518,7 @@ bool CBgraFrame::ReColorPatternImage(const std::wstring& strFileName, unsigned i
 	return false;
 }
 
-void CBgraFrame::FromImage(IGrObject* pGrObject)
+void CBgraFrame::FromImage(IGrObject* pGrObject, bool bIsCopy)
 {
     Aggplus::CImage* pImage = (Aggplus::CImage*)pGrObject;
 
@@ -530,7 +530,14 @@ void CBgraFrame::FromImage(IGrObject* pGrObject)
 
     if (nSize > 0)
     {
-        m_pData = new BYTE[nSize];
-        memcpy(m_pData, pImage->GetData(), nSize);
+        if (bIsCopy)
+        {
+            m_pData = new BYTE[nSize];
+            memcpy(m_pData, pImage->GetData(), nSize);
+        }
+        else
+        {
+            m_pData = pImage->GetData();
+        }
     }
 }

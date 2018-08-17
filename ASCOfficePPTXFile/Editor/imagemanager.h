@@ -540,7 +540,8 @@ namespace NSShapeImageGen
 						oWriterSVG.SetFontManager(m_pFontManager);
 						oWriterSVG.put_Width(WW);
 						oWriterSVG.put_Height(HH);
-                        pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+                        
+						pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
 
 						bool bIsRaster = true;
 						oWriterSVG.IsRaster(&bIsRaster);
@@ -582,6 +583,8 @@ namespace NSShapeImageGen
 								oInfo.m_eType = itPNG;
 
 								m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
+                   
+								RELEASEOBJECT(pMetafile);
 								return oInfo;
 							}
 						}
@@ -591,6 +594,8 @@ namespace NSShapeImageGen
 
 							oWriterSVG.SaveFile(strSaveItemWE + L".svg");
 							m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
+                    
+							RELEASEOBJECT(pMetafile);
 							return oInfo;
 						}
 					}

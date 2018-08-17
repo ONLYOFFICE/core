@@ -937,10 +937,10 @@ mc:Ignorable=\"w14 wp14\">";
         strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
         numIds.push_back(abstractNumId);		
        
-		for (size_t i = 0; i < (std::min)( content.size(), (size_t)9); i++)
+        for (size_t j = 0; j < (std::min)( content.size(), (size_t)9); j++)
         {
             start_text_list_style(arListStyles[i]->get_text_list_style()->get_style_name());
-            content[i]->docx_convert(*this);
+            content[j]->docx_convert(*this);
             // TODO
             end_text_list_style();        
         }

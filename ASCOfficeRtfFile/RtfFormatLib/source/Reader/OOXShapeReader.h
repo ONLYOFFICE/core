@@ -57,7 +57,7 @@ public:
 		m_arrElement = NULL;
 	}
 
-	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, std::wstring sTempPath = L"" );
+	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, ReaderParameter& oParam );
 
 	bool Parse			( ReaderParameter oParam , RtfShapePtr& oOutput, bool bUsedType = false);
 	bool ParseVml		( ReaderParameter oParam , RtfShapePtr& oOutput, bool bUsedType = false);

@@ -42,24 +42,21 @@
 
 enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 
-
 class RenderParameter
 {
 	public: 
-		void* poWriter;
-		void* poDocument;
-		void* poRels;
+		void*	poWriter;
+		void*	poDocument;
+		void*	poRels;
+
+		int		nType;
+		int		nValue;
+		int		RtfType;
 		
-		int			nType;
-		int			nValue;
-        std::wstring		sValue;
-		int			RtfType;
-		
-		RenderParameter()
+        std::wstring sValue;
+
+		RenderParameter() : poWriter(NULL), poDocument(NULL), poRels(NULL)
 		{
-			poWriter	= NULL;
-			poDocument	= NULL;
-			poRels		= NULL;
 			nType		= RENDER_TO_OOX_PARAM_UNKNOWN;
 			nValue		= PROP_DEF;
 			RtfType		= RTF_MAX;

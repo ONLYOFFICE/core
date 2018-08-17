@@ -43,21 +43,20 @@ bool RtfShape::GetPictureResolution(RenderParameter oRenderParameter, int & Widt
 {
 	if (!m_oPicture) return false;
 
-	//if (!oRenderParameter.appFonts)
-	//{
-	//	oRenderParameter.appFonts = new CApplicationFonts();
-	//	oRenderParameter.appFonts->Initialize();
-	//}
-
 	std::wstring fileName = m_oPicture->m_sPicFilename;
 
 	if (fileName.empty()) return false;
 
-    NSFonts::IApplicationFonts* appFonts = NSFonts::NSApplication::Create();
-    appFonts->Initialize();
+	RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+
+	if (!poDocument->m_pAppFonts)
+	{
+		poDocument->m_pAppFonts = NSFonts::NSApplication::Create();
+		poDocument->m_pAppFonts->Initialize();
+	}
 
 	CBgraFrame image;
-    MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
+    MetaFile::IMetaFile* meta_file = MetaFile::Create(poDocument->m_pAppFonts);
 
     bool bRet = false;
     if ( meta_file->LoadFromFile(fileName.c_str()))
@@ -77,7 +76,6 @@ bool RtfShape::GetPictureResolution(RenderParameter oRenderParameter, int & Widt
 	}
 
     RELEASEOBJECT(meta_file);
-    RELEASEOBJECT(appFonts);
 
     return bRet;
 }

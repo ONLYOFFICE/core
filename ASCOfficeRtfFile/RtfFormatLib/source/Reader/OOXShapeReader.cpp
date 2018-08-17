@@ -318,7 +318,8 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
+						
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam );
 
 						pOutput->m_nFillType = 2;
 					}
@@ -404,7 +405,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam);
 					}
 				}
 				if (pOutput->m_oPicture)
@@ -742,7 +743,8 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 				std::wstring sImagePath = pImage->filename().GetPath();
-				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder);
+
+				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam);
 			}
 		}
 		else if (oox_bitmap_fill->blip->link.IsInit())
@@ -2071,12 +2073,12 @@ bool OOXBackgroundReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 	return true;
 }
 
-bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, std::wstring sTempPath)
+bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, ReaderParameter& oParam)
 {
 	OOX::CPath ooxPath = sPath;	//для target 
 
-	if (!sTempPath.empty())
-		ooxPath = sTempPath + FILE_SEPARATOR_STR;
+	if (!oParam.oReader->m_sTempFolder.empty())
+		ooxPath = oParam.oReader->m_sTempFolder + FILE_SEPARATOR_STR;
 
 	pOutput.m_dScaleX = 100;
 	pOutput.m_dScaleY = 100;
@@ -2159,8 +2161,15 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	{
 		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf)
 		{
-            MetaFile::IMetaFile* meta = MetaFile::Create(NULL);
-            if (meta->LoadFromFile(sPath.c_str()))
+			if (!oParam.oRtf->m_pAppFonts)
+			{
+				oParam.oRtf->m_pAppFonts = NSFonts::NSApplication::Create();
+				oParam.oRtf->m_pAppFonts->Initialize();
+			}
+			
+			MetaFile::IMetaFile* meta = MetaFile::Create(oParam.oRtf->m_pAppFonts);
+            
+			if (meta->LoadFromFile(sPath.c_str()))
 			{
 				double dX, dY, dW, dH;
                 meta->GetBounds(&dX, &dY, &dW, &dH);

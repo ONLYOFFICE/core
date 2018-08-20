@@ -69,6 +69,7 @@ public:
 //-----------------------------
 
 	int ind_xf;//for ext
+	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
 };
 
 } // namespace XLS

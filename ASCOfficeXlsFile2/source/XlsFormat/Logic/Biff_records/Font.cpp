@@ -72,9 +72,9 @@ void Font::readFields(CFRecord& record)
 	
 	unsigned char reserved;
 
-	record >> reserved;
+	record >> reserved; 
 
-	if (bls >=100 && bls <= 1000)
+	if ((bls >=100 && bls <= 1000) || bls == 0)
 		correct = true;
 	
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)

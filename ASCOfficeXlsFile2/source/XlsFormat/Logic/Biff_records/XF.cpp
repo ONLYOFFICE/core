@@ -54,6 +54,8 @@ BaseObjectPtr XF::clone()
 
 void XF::readFields(CFRecord& record)
 {
+	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+	
 	unsigned short flags;
 	
 	record >> ifnt >> ifmt >> flags;
@@ -82,7 +84,14 @@ int XF::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"xf")
 		{	
-			if (ifnt.value())			CP_XML_ATTR(L"fontId"	, ifnt.getValue());
+			if (ifnt.value())
+			{
+				int val = ifnt.getValue();
+				if (val < pGlobalWorkbookInfoPtr->m_arFonts.size())
+				{
+					CP_XML_ATTR(L"fontId", val);
+				}
+			}
 			
 			CP_XML_ATTR(L"numFmtId"	, ifmt);
 

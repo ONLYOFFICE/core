@@ -351,10 +351,15 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
     std::wstring pathImage;
 	double Width=0, Height = 0;
 
-	if (vml_image_data->m_rId.IsInit())
+	std::wstring sID;
+
+		 if (vml_image_data->m_rId.IsInit())	sID = vml_image_data->m_rId->GetValue();
+	else if (vml_image_data->m_oRelId.IsInit())	sID = vml_image_data->m_oRelId->GetValue();
+	else if (vml_image_data->m_rPict.IsInit())	sID = vml_image_data->m_rPict->GetValue();
+
+	if (!sID.empty())
 	{
-        std::wstring sID = vml_image_data->m_rId->GetValue();
-		pathImage = find_link_by_id(sID,1);
+		pathImage = find_link_by_id(sID, 1);
 	}
 		
 	//что именно нужно заливка объекта или картинка - разрулится внутри drawing_context
@@ -432,13 +437,18 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		sRgbColor2 = XmlUtils::IntToString(*nRgbColor2, L"%06X");
 	}
 
-	if (vml_fill->m_rId.IsInit())
+	std::wstring sID;
+		 
+	if (vml_fill->m_rId.IsInit())			sID = vml_fill->m_rId->GetValue();
+	else if (vml_fill->m_oRelId.IsInit())	sID = vml_fill->m_oRelId->GetValue();
+	else if (vml_fill->m_sId.IsInit())		sID = vml_fill->m_sId.get2();
+	
+	if (!sID.empty())
 	{
 		//bitmap fill
 		odf_context()->drawing_context()->start_bitmap_style();
 		{
 			double Width=0, Height = 0;
-            std::wstring sID = vml_fill->m_rId->GetValue();
 			
 			sImagePath	= find_link_by_id(sID, 1);
 

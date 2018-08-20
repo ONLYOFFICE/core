@@ -305,9 +305,12 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				
 				std::wstring srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
 
-				if (srId.empty())
-                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : L"" ;
+				if (srId.empty() && fill->m_rId.IsInit())
+                    srId =  fill->m_rId->GetValue();
 				
+				if (srId.empty() && fill->m_oRelId.IsInit())
+                    srId =  fill->m_oRelId->GetValue();
+
 				if (!srId.empty() && oParam.oReader->m_currentContainer)
 				{        
 					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);
@@ -394,6 +397,9 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				if (srId.empty())
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : L"" ;
 
+				if (srId.empty())
+                    srId = image_data->m_rPict.IsInit() ? image_data->m_rPict->GetValue() : L"" ;
+				
 				if (oParam.oReader->m_currentContainer)
 				{        
 					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);

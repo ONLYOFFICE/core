@@ -465,22 +465,34 @@ void docx_conversion_context::start_field(const std::wstring & sInstrText, const
 	output_stream() << L"</w:fldChar>";
 	output_stream() << L"</w:r>";
 	output_stream() << L"<w:r>";
-	output_stream() << L"<w:instrText xml:space=\"preserve\">" << sInstrText << L" </w:instrText>";
+	output_stream() << L"<w:instrText xml:space=\"preserve\">" << XmlUtils::EncodeXmlString(sInstrText) << L" </w:instrText>";
 	output_stream() << L"</w:r>";
 	output_stream() << L"<w:r>";
 
 	output_stream() << L"<w:fldChar w:fldCharType=\"separate\"/>";
 	output_stream() << L"</w:r>";
+
+	if (!sName.empty())
+	{
+		start_bookmark(sName);
+	}
+	fields_names_stack_.push_back(sName);
 }
 void docx_conversion_context::end_field()
 {
+	if (fields_names_stack_.empty()) return;
+
 	output_stream() << L"<w:r>";
-	//output_stream() << L"<w:rPr>";
-	//output_stream() << L"<w:rFonts w:ascii="Minion Pro" w:hAnsi="Minion Pro"/>";
-	//output_stream() << L"<w:sz w:val="20"/>
-	//output_stream() << L"</w:rPr>";
 	output_stream() << L"<w:fldChar w:fldCharType=\"end\"/>";
 	output_stream() << L"</w:r>";	
+
+	std::wstring sName = fields_names_stack_.back();
+	fields_names_stack_.pop_back();
+
+	if (!sName.empty())
+	{
+		end_bookmark(sName);
+	}
 }
 void docx_conversion_context::end_sdt()
 {
@@ -1087,7 +1099,9 @@ void docx_conversion_context::process_styles()
 
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
-                    get_styles_context().start_process_style(arStyles[i].get());
+					odf_reader::calc_tab_stops(arStyles[i].get(), get_tabs_context());
+					
+					get_styles_context().start_process_style(arStyles[i].get());
                     content->docx_convert(*this, true);
                     get_styles_context().end_process_style();
                 }
@@ -1599,14 +1613,30 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 
 							output_stream() << L"</w:pPr>";
 							finish_paragraph();
-							start_paragraph();					
+							start_paragraph();
+							if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							{
+								output_stream() << L"<w:pPr>";
+									output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+								output_stream() << L"</w:pPr>";
+							}					
 						}
 						else
 						{
 							output_stream() << get_section_context().dump_;
 							get_section_context().dump_.clear();
+							if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							{
+								output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+							}
 							output_stream() << L"</w:pPr>";
 						}
+					}
+					else if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+					{
+						output_stream() << L"<w:pPr>";
+							output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+						output_stream() << L"</w:pPr>";
 					}
 					return 1;
                 }            

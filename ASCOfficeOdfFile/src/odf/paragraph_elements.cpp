@@ -2059,6 +2059,10 @@ void field_fieldmark_start::docx_convert(oox::docx_conversion_context & Context)
 	{
 		Context.start_field(field_type_->substr(29), *text_name_);
 	}
+	else
+	{
+		Context.start_field(*field_type_, *text_name_);
+	}
 
 }
 //------------------------------------------------------------------------------------------------------------

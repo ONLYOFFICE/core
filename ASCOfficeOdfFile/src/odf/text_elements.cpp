@@ -445,7 +445,7 @@ void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
     paragraph_.add_attributes(Attributes);
 
-	paragraph_.is_header_						= true;
+	paragraph_.is_header_				= true;
 	paragraph_.attrs_.outline_level_	= outline_level_;
 }
 
@@ -960,9 +960,9 @@ void common_entry_template::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_table_content_context().start_level(*style_name_);
 
-	if (outline_level_)
+	if (outline_level_ && style_name_)
 	{
-		Context.get_table_content_context().add_outline_level_style(*outline_level_, style_name_.get_value_or(L""));
+		Context.get_table_content_context().add_outline_level_style(*style_name_, *outline_level_);
 	}
 	for (size_t i = 0; i < content_.size(); i++)
 	{

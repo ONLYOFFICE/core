@@ -165,162 +165,61 @@ void style_background_image::add_text(const std::wstring & Text)
 
 void paragraph_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    // 15.5.1 
     CP_APPLY_ATTR(L"fo:line-height", fo_line_height_);
     
-    // 15.5.2 
     CP_APPLY_ATTR(L"style:line-height-at-least", style_line_height_at_least_);
-
-    // 15.5.3 
     CP_APPLY_ATTR(L"style:line-spacing", style_line_spacing_);
-
-    // 15.5.4 
     CP_APPLY_ATTR(L"style:font-independent-line-spacing", style_font_independent_line_spacing_);
-
-    // 15.5.5 
     CP_APPLY_ATTR(L"fo:text-align", fo_text_align_);
-
-    // 15.5.6 
     CP_APPLY_ATTR(L"fo:text-align-last", fo_text_align_last_);
-
-    // 15.5.7 
     CP_APPLY_ATTR(L"style:justify-single-word", style_justify_single_word_);
-
-    // 15.5.8 
     CP_APPLY_ATTR(L"fo:keep-together", fo_keep_together_);
-    
-    // 15.5.9 
     CP_APPLY_ATTR(L"fo:widows", fo_widows_);
-
-    // 15.5.10 
     CP_APPLY_ATTR(L"fo:orphans", fo_orphans_);
-
-    // 15.5.11 - Element
-   
-    // 15.5.12 
     CP_APPLY_ATTR(L"style:tab-stop-distance", style_tab_stop_distance_);
-
-    // 15.5.13 
     CP_APPLY_ATTR(L"fo:hyphenation-keep", fo_hyphenation_keep_);
-
-    // 15.5.14 
     CP_APPLY_ATTR(L"fo:hyphenation-ladder-count", fo_hyphenation_ladder_count_);
-    
-    // 15.5.15  - Element
-      
-    // 15.5.16 
     CP_APPLY_ATTR(L"style:register-true", style_register_true_);
-
-    // 15.5.17 
     CP_APPLY_ATTR(L"fo:margin-left", fo_margin_left_);
-
-    // 
     CP_APPLY_ATTR(L"fo:margin-right", fo_margin_right_);
-
-    // 15.5.18 
     CP_APPLY_ATTR(L"fo:text-indent", fo_text_indent_);
-
-    // 15.5.19 
     CP_APPLY_ATTR(L"style:auto-text-indent", style_auto_text_indent_);
-
-    // 15.5.20 
     CP_APPLY_ATTR(L"fo:margin-top", fo_margin_top_);
-    
-    // 
     CP_APPLY_ATTR(L"fo:margin-bottom", fo_margin_bottom_);
-
-    // 15.5.21 
     CP_APPLY_ATTR(L"fo:margin", fo_margin_);
-    
-    // 15.5.22 
     CP_APPLY_ATTR(L"fo:break-before", fo_break_before_);
-
-    // 
     CP_APPLY_ATTR(L"fo:break-after", fo_break_after_);
 
-    // 15.5.23 
     CP_APPLY_ATTR(L"fo:background-color", fo_background_color_);
 
-    // 15.5.24 - Element
-
-    // 15.5.25 
-    CP_APPLY_ATTR(L"fo:border", fo_border_);
-
-    // 
+	CP_APPLY_ATTR(L"fo:border", fo_border_);
     CP_APPLY_ATTR(L"fo:border-top", fo_border_top_);
 
-    // 
     CP_APPLY_ATTR(L"fo:border-bottom", fo_border_bottom_);
-
-    // 
     CP_APPLY_ATTR(L"fo:border-left", fo_border_left_);
-
-    // 
     CP_APPLY_ATTR(L"fo:border-right", fo_border_right_);
-
-    // 15.5.26
-    // 
     CP_APPLY_ATTR(L"style:border-line-width", style_border_line_width_);
     
-    // 
     CP_APPLY_ATTR(L"style:border-line-width-top", style_border_line_width_top_);
-    // 
     CP_APPLY_ATTR(L"style:border-line-width-bottom", style_border_line_width_bottom_);
-    // 
     CP_APPLY_ATTR(L"style:border-line-width-left", style_border_line_width_left_);
-    //
     CP_APPLY_ATTR(L"style:border-line-width-right", style_border_line_width_right_);
-
-    // 15.5.27
-    // 
     CP_APPLY_ATTR(L"fo:padding", fo_padding_);
-    
-    // 
     CP_APPLY_ATTR(L"fo:padding-top", fo_padding_top_);
-    
-    // 
     CP_APPLY_ATTR(L"fo:padding-bottom", fo_padding_bottom_);
-    
-    // 
     CP_APPLY_ATTR(L"fo:padding-left", fo_padding_left_);
-    
-    // 
     CP_APPLY_ATTR(L"fo:padding-right", fo_padding_right_);
-
-    // 15.5.28 
     CP_APPLY_ATTR(L"style:shadow", style_shadow_);
-
-    // 15.5.29 
     CP_APPLY_ATTR(L"fo:keep-with-next", fo_keep_with_next_);
-
-    // 15.5.30 
     CP_APPLY_ATTR(L"text:number-lines", text_number_lines_);
-
-    // 15.5.31 
     CP_APPLY_ATTR(L"text:line-number", text_line_number_);
-
-    // 15.5.32 
     CP_APPLY_ATTR(L"style:text-autospace", style_text_autospace_);
-
-    // 15.5.33 
     CP_APPLY_ATTR(L"style:punctuation-wrap", style_punctuation_wrap_);
-
-    // 15.5.34 
     CP_APPLY_ATTR(L"style:line-break", style_line_break_);
-
-    // 15.5.35 
     CP_APPLY_ATTR(L"style:vertical-align", style_vertical_align_);
-
-    // 15.5.36 
     CP_APPLY_ATTR(L"style:writing-mode", style_writing_mode_);
-
-    // 15.5.37 
     CP_APPLY_ATTR(L"style:writing-mode-automatic", style_writing_mode_automatic_);
-
-    // 15.5.38 
     CP_APPLY_ATTR(L"style:snap-to-layout-grid", style_snap_to_layout_grid_);
-    
-    // 15.5.39 
 	_CP_OPT(std::wstring) style_page_number_str_;
     CP_APPLY_ATTR(L"style:page-number", style_page_number_str_);
 
@@ -331,7 +230,6 @@ void paragraph_format_properties::add_attributes( const xml::attributes_wc_ptr &
 			style_page_number_=  boost::lexical_cast<int>(style_page_number_str_.get());
 	}
 
-    // 15.5.40 
     CP_APPLY_ATTR(L"style:background-transparency", style_background_transparency_);
 
     CP_APPLY_ATTR(L"style:join_border", style_join_border_);
@@ -391,6 +289,8 @@ void style_paragraph_properties::add_text(const std::wstring & Text)
 
 void paragraph_format_properties::apply_from(const paragraph_format_properties & Other)
 {
+	_CP_APPLY_PROP(outline_level_, Other.outline_level_);
+
     apply_line_width(fo_line_height_, Other.fo_line_height_);
     _CP_APPLY_PROP(style_line_height_at_least_, Other.style_line_height_at_least_);
     _CP_APPLY_PROP(style_line_spacing_, Other.style_line_spacing_);

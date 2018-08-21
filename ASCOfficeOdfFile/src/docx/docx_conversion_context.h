@@ -668,7 +668,7 @@ public:
 	{
 		current_state.content.push_back(type);
 	}	
-	void add_outline_level_style(int level, const std::wstring& style_name)
+	void add_outline_level_style(const std::wstring& style_name, int level)
 	{
 		if (min_outline_level == -1 || min_outline_level > level)
 			min_outline_level = level;
@@ -1032,8 +1032,11 @@ private:
     std::wstring			automatic_parent_style_; 
     std::wstring			current_master_page_name_;
 	std::wstring			text_list_style_name_;
+
     std::vector<std::wstring> list_style_stack_;
-    bool					first_element_list_item_;
+	std::vector<std::wstring> fields_names_stack_;
+    
+	bool					first_element_list_item_;
     
 	bool page_break_after_;
     bool page_break_before_;

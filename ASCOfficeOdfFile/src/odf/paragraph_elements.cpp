@@ -174,7 +174,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		Context.output_stream() << L" xml:space=\"preserve\"";
 	Context.output_stream() << L">";
 
-	Context.output_stream() << xml::utils::replace_text_to_xml( text_, true );
+	Context.output_stream() << xml::utils::replace_text_to_xml( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
     Context.output_stream() << L"</" << textNode << L">";
 
 	if (add_del_run)

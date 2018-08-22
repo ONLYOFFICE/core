@@ -96,14 +96,7 @@ private:
 	OOX::WritingElement									*m_ooxShape;
 
 	void ParseVmlPath	(RtfShapePtr& pShape, const std::wstring &custom_path);
-	bool ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
-	{
-		for (size_t i=0; i< props.size(); i++)
-		{
-			ParseVmlStyle( pShape, props[i].get());
-		}
-		return true;
-	}
+	bool ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props);
 
 	void ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object);
 	void ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object);

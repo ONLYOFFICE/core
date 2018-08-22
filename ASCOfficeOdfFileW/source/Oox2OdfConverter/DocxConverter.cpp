@@ -2560,6 +2560,17 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			odf_context()->drawing_context()->corrected_line_fill();
 			odf_context()->drawing_context()->end_shape(); 
 		}
+		else if (oox_pic->m_oImage.IsInit())
+		{
+			odf_context()->drawing_context()->set_name(L"Image");
+			odf_context()->drawing_context()->start_shape(3000);
+
+			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
+			OoxConverter::convert(oox_pic->m_oImage.GetPointer());
+			
+			odf_context()->drawing_context()->corrected_line_fill();
+			odf_context()->drawing_context()->end_shape(); 
+		}
 		else if (oox_pic->m_oShapeType.IsInit())
 		{
             SimpleTypes::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
@@ -2638,7 +2649,12 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 				odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
 			}
 			OoxConverter::convert(shape_type);
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 			
+			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 	
+
+			for (size_t i = 0; i < oox_pic->m_arrItems.size(); i++)
+			{
+				convert(oox_pic->m_arrItems[i]);
+			}
 			odf_context()->drawing_context()->end_shape(); 
 		}
 		odf_context()->drawing_context()->end_drawing();
@@ -4050,6 +4066,12 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 					oox_table_cell->m_pTableCellProperties->m_oVMerge->m_oVal->GetValue() == SimpleTypes::mergeRestart))
 				covered = true; 
 		}
+		if (oox_table_cell->m_pTableCellProperties->m_oHMerge.IsInit())
+		{
+			if (!(oox_table_cell->m_pTableCellProperties->m_oHMerge->m_oVal.IsInit() && 
+					oox_table_cell->m_pTableCellProperties->m_oHMerge->m_oVal->GetValue() == SimpleTypes::mergeRestart))
+				covered = true; 
+		}
 	}
 
 	odt_context->start_table_cell( oox_table_cell->m_nNumCol, covered, convert(oox_table_cell->m_pTableCellProperties, oox_table_cell->m_nNumCol + 1));
@@ -4065,7 +4087,18 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 				odt_context->table_context()->set_cell_row_span();
 		}
 		if (oox_table_cell->m_pTableCellProperties->m_oGridSpan.IsInit() && oox_table_cell->m_pTableCellProperties->m_oGridSpan->m_oVal.IsInit())
+		{
 			odt_context->table_context()->set_cell_column_span(oox_table_cell->m_pTableCellProperties->m_oGridSpan->m_oVal->GetValue());
+		}
+		else if ((oox_table_cell->m_pTableCellProperties->m_oHMerge.IsInit()) &&
+				 (oox_table_cell->m_pTableCellProperties->m_oHMerge->m_oVal.IsInit()))
+		{
+			if (oox_table_cell->m_pTableCellProperties->m_oHMerge->m_oVal->GetValue() == SimpleTypes::mergeRestart)
+				odt_context->table_context()->set_cell_column_span_restart();
+			else
+				odt_context->table_context()->set_cell_column_span();
+		}
+
 	}
 
     for (size_t i = 0; i < oox_table_cell->m_arrItems.size(); ++i)

@@ -1099,6 +1099,7 @@ void docx_conversion_context::process_styles()
 
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
+					get_tabs_context().clear();
 					odf_reader::calc_tab_stops(arStyles[i].get(), get_tabs_context());
 					
 					get_styles_context().start_process_style(arStyles[i].get());

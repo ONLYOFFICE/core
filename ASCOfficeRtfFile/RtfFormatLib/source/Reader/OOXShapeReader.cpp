@@ -124,7 +124,8 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			}break;
 		case SimpleTypes::Vml::cssptMsoPositionHorizontal: 
 			{
-				pShape->m_nPositionH = prop->get_Value().eMsoPosHor;	
+				pShape->m_nPositionH = prop->get_Value().eMsoPosHor;
+				pShape->m_nPositionHRelative = PROP_DEF; //images.docx
 			}break;
 		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative  :
 			{
@@ -259,7 +260,14 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
     }
 	return true;
 }
-
+bool OOXShapeReader::ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+{
+	for (size_t i=0; i< props.size(); i++)
+	{
+		ParseVmlStyle( pShape, props[i].get());
+	}
+	return true;
+}
 
 OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem)
 {
@@ -476,7 +484,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			{
 				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(m_arrElement->m_arrItems[i]);
 
-				if (wrap->m_oType.IsInit() && pOutput->m_nZOrderRelative == PROP_DEF)
+				if (wrap->m_oType.IsInit() /*&& pOutput->m_nZOrderRelative == PROP_DEF*/)
 				{
 					switch(wrap->m_oType->GetValue())
 					{

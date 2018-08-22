@@ -343,6 +343,9 @@ void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 void OoxConverter::convert(OOX::Vml::CImage *vml_image)
 {
 	if (vml_image == NULL) return;
+	
+	OOX::Vml::CVmlCommonElements *vml_common = dynamic_cast<OOX::Vml::CVmlCommonElements *>(vml_image);
+	convert(vml_common);
 }
 void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 {
@@ -742,12 +745,59 @@ void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
 	if (vml_textpath == NULL) return; //это типо фигурный текст
 	if (vml_textpath->m_sString.IsInit()==false) return;
 
-	//DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
+	odf_context()->drawing_context()->change_text_box_2_wordart();
 
+	if (vml_textpath->m_oStyle.IsInit())
+	{
+		odf_context()->styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);
+		
+		odf_writer::style_paragraph_properties	*paragraph_properties	= odf_context()->styles_context()->last_state()->get_paragraph_properties();
+		odf_writer::style_text_properties		*text_properties		= odf_context()->styles_context()->last_state()->get_text_properties();
+
+		for (size_t i = 0; i < vml_textpath->m_oStyle->m_arrProperties.size(); i++)
+		{
+			if (vml_textpath->m_oStyle->m_arrProperties[i] == NULL) continue;
+
+			switch(vml_textpath->m_oStyle->m_arrProperties[i]->get_Type())
+			{
+			case SimpleTypes::Vml::cssptFont:
+				//height = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue;
+				break;
+			case SimpleTypes::Vml::cssptFontSize:
+				text_properties->content_.fo_font_size_ = odf_types::length(vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().dValue, odf_types::length::pt);
+			break;
+			case SimpleTypes::Vml::cssptFontStyle:
+				//width = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue;
+				break;
+			case SimpleTypes::Vml::cssptFontWeight:
+				//width = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue;
+				break;
+			case SimpleTypes::Vml::cssptFontFamily:
+				text_properties->content_.fo_font_family_ = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().wsValue;
+				break;
+			case SimpleTypes::Vml::cssptHTextAlign:
+			switch(vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().eVTextAlign)
+			{			
+			case SimpleTypes::Vml::cssvtextalignLeft: 
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Left); break;
+			case SimpleTypes::Vml::cssvtextalignRight:
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Right); break;
+			case SimpleTypes::Vml::cssvtextalignCenter:
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center); break;
+			case SimpleTypes::Vml::cssvtextalignJustify:
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Left); break;
+			case SimpleTypes::Vml::cssvtextalignLetterJustify:
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
+			case SimpleTypes::Vml::cssvtextalignStretchJustify:
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
+			}break;			
+			}
+		}
+	}
 	odf_context()->start_text_context();
 
-	odf_context()->text_context()->start_paragraph(false);
-		odf_context()->text_context()->start_span(false);
+	odf_context()->text_context()->start_paragraph(vml_textpath->m_oStyle.IsInit());
+		odf_context()->text_context()->start_span(/*vml_textpath->m_oStyle.IsInit()*/);
 			odf_context()->text_context()->add_text_content(vml_textpath->m_sString.get());
 		odf_context()->text_context()->end_span();
 	odf_context()->text_context()->end_paragraph();
@@ -775,11 +825,13 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 			}break;
 			case SimpleTypes::wraptypeSquare:
 			{
+				odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Dynamic);
 				if (vml_wrap->m_oSide.IsInit())
 				{
-					if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLargest)
+/*					if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLargest)
 						odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Dynamic);
-					else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLeft)
+					else */
+					if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLeft)
 						odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Left);
 					else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideRight)
 						odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Right);
@@ -797,7 +849,7 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 			}break;
 			case SimpleTypes::wraptypeTopAndBottom:
 			{
-				odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
+				odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::None);
 			}break;
 		}
 	}

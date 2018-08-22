@@ -1487,7 +1487,7 @@ void odt_conversion_context::start_table_row(bool styled)
 }
 void odt_conversion_context::start_table_cell(int col, bool covered, bool styled)
 {
-	for (int i=table_context()->current_column() ; i < col;  i++)
+	for (int i = table_context()->current_column(); i < col;  i++)
 	{
 		add_default_cell();
 	}

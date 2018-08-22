@@ -621,10 +621,15 @@ std::map<std::wstring, std::wstring> odt_conversion_context::parse_instr_options
 	return result;
 }
 
-
-void odt_conversion_context::set_field_instr(std::wstring instr)
+void odt_conversion_context::add_field_instr(const std::wstring &instr)
+{
+	current_fields.back().instrText += instr;
+}
+void odt_conversion_context::set_field_instr()
 {
 	if (current_fields.empty()) return;
+	
+	std::wstring instr = current_fields.back().instrText;
 
 	current_fields.back().status = 1; //prepare
 
@@ -641,7 +646,6 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
         {
             ref = res[1].str();
 			current_fields.back().value = ref.substr(1, ref.length() - 2);
-
         }
 	}
 	res1 = instr.find(L"NUMPAGES");
@@ -795,6 +799,7 @@ void odt_conversion_context::separate_field()
 {
 	if (current_fields.empty()) return;
 
+	set_field_instr();
 	current_fields.back().result = true;
 }
 void odt_conversion_context::set_master_page_name(std::wstring master_name)
@@ -933,6 +938,11 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double, do
 void odt_conversion_context::end_field()
 {
 	if (current_fields.empty()) return;
+
+	if (current_fields.back().status == 0 && current_fields.back().instrText.empty() == false)
+	{
+		set_field_instr();
+	}
 
 	if (current_fields.back().status == 2)	
 	{

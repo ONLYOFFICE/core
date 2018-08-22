@@ -114,7 +114,8 @@ public:
 	void start_field		(bool in_span);
 	void end_field			();
 	void separate_field		();
-	void set_field_instr	(std::wstring instr);
+	void add_field_instr	(const std::wstring &instr);
+	void set_field_instr	();
 	std::map<std::wstring, std::wstring> parse_instr_options(const std::wstring& value);
 	
 	void start_run			(bool styled = false);
@@ -213,6 +214,8 @@ private:
 		std::wstring	value;
 
 		std::wstring	format;
+		std::wstring	instrText;
+
 		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
 		bool			in_span = false;
 		bool			result = false; //after separate

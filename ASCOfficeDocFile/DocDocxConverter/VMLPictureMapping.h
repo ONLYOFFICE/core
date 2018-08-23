@@ -58,6 +58,7 @@ namespace DocFileFormat
 		void writePictureBorder (const std::wstring & name, const BorderCode* brc);
 		void appendStyleProperty( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
 		bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
+		std::wstring GetShapeID(const Shape* pShape) const;
 	protected:
 		/// Copies the picture from the binary stream to the zip archive 
 		/// and creates the relationships for the image.
@@ -77,7 +78,7 @@ namespace DocFileFormat
 		std::wstring					m_shapeId;
 	private:
 		
-		ConversionContext*				m_ctx;
+		ConversionContext*				m_context;
 		IMapping*						m_caller;
 		int								m_nImageId;
 		

@@ -50,13 +50,9 @@ namespace DocFileFormat
   /*========================================================================================================*/
 
   Record::Record( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance ):
-  HeaderSize(0), BodySize(0), RawData(NULL), SiblingIdx(0), TypeCode(0), Version(0), Instance(0), Reader(NULL),
+  HeaderSize(Record::HEADER_SIZE_IN_BYTES), BodySize(bodySize), RawData(NULL), SiblingIdx(0), TypeCode(typeCode), Version(version), Instance(instance), Reader(NULL),
   _ParentRecord(NULL)
   {
-    BodySize = bodySize;
-    TypeCode = typeCode;
-    Version = version;
-    Instance = instance;
 	HeaderSize = Record::HEADER_SIZE_IN_BYTES;
 
 	int real_size = _reader->GetSize() - _reader->GetPosition();

@@ -374,6 +374,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
 				>
 				<FileConfiguration

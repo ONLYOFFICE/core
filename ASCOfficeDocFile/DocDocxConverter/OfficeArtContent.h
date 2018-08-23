@@ -58,7 +58,7 @@ namespace DocFileFormat
 
 	public:
 
-		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream): m_pDrawingGroupData(NULL), m_pBackgroud(NULL)
+		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream): m_pDrawingGroupData(NULL), m_pBackgroud(NULL), m_uLastShapeId(1024)
 		{
 			VirtualStreamReader oStearmReader(pStream, 0 , pFIB->m_nWordVersion);
 
@@ -86,7 +86,6 @@ namespace DocFileFormat
 						{
 							if (GroupContainer::TYPE_CODE_0xF003 == groupChild->TypeCode)
 							{
-								// the child is a subgroup
 								GroupContainer* group	=	static_cast<GroupContainer*>(groupChild);
 								if (group)
 								{
@@ -95,7 +94,6 @@ namespace DocFileFormat
 							}
 							else if (ShapeContainer::TYPE_CODE_0xF004 == groupChild->TypeCode)
 							{
-								// the child is a shape
 								ShapeContainer* shape	=	static_cast<ShapeContainer*>(groupChild);
 								if (shape)
 								{
@@ -104,6 +102,14 @@ namespace DocFileFormat
 									{
 										m_pBackgroud = shape;
 									}
+								}
+							}
+							else if (DrawingRecord::TYPE_CODE_0xF008 == groupChild->TypeCode)
+							{
+								DrawingRecord* dr	=	static_cast<DrawingRecord*>(groupChild);
+								if (dr)
+								{
+									m_uLastShapeId = dr->spidCur;
 								}
 							}
 						}
@@ -183,7 +189,7 @@ namespace DocFileFormat
 		{
 			return m_pDrawingGroupData;
 		}
-
+		unsigned int					m_uLastShapeId;
 	private:
 		ShapeContainer*					m_pBackgroud;
 		DrawingGroup*					m_pDrawingGroupData;

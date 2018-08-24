@@ -335,10 +335,48 @@ public:
 			sShd += L"<w:shd";
 			if(bValue)
 			{
-				if(shd_Nil == Value)
-					sShd += L" w:val=\"nil\"";
-				else
-					sShd += L" w:val=\"clear\"";
+				switch(Value)
+				{
+					case SimpleTypes::shdClear                 : sShd += L" w:val=\"clear\"";		break;
+					case SimpleTypes::shdDiagCross             : sShd += L" w:val=\"diagCross\"";	break;
+					case SimpleTypes::shdDiagStripe            : sShd += L" w:val=\"diagStripe\"";	break;
+					case SimpleTypes::shdHorzCross             : sShd += L" w:val=\"horzCross\"";	break;
+					case SimpleTypes::shdHorzStripe            : sShd += L" w:val=\"horzStripe\"";	break;
+					case SimpleTypes::shdNil                   : sShd += L" w:val=\"nil\"";			break;
+					case SimpleTypes::shdPct10                 : sShd += L" w:val=\"pct10\"";	break;
+					case SimpleTypes::shdPct12                 : sShd += L" w:val=\"pct12\"";	break;
+					case SimpleTypes::shdPct15                 : sShd += L" w:val=\"pct15\"";	break;
+					case SimpleTypes::shdPct20                 : sShd += L" w:val=\"pct20\"";	break;
+					case SimpleTypes::shdPct25                 : sShd += L" w:val=\"pct25\"";	break;
+					case SimpleTypes::shdPct30                 : sShd += L" w:val=\"pct30\"";	break;
+					case SimpleTypes::shdPct35                 : sShd += L" w:val=\"pct35\"";	break;
+					case SimpleTypes::shdPct37                 : sShd += L" w:val=\"pct37\"";	break;
+					case SimpleTypes::shdPct40                 : sShd += L" w:val=\"pct40\"";	break;
+					case SimpleTypes::shdPct45                 : sShd += L" w:val=\"pct45\"";	break;
+					case SimpleTypes::shdPct5                  : sShd += L" w:val=\"pct5\"";	break;
+					case SimpleTypes::shdPct50                 : sShd += L" w:val=\"pct50\"";	break;
+					case SimpleTypes::shdPct55                 : sShd += L" w:val=\"pct55\"";	break;
+					case SimpleTypes::shdPct60                 : sShd += L" w:val=\"pct60\"";	break;
+					case SimpleTypes::shdPct62                 : sShd += L" w:val=\"pct62\"";	break;
+					case SimpleTypes::shdPct65                 : sShd += L" w:val=\"pct65\"";	break;
+					case SimpleTypes::shdPct70                 : sShd += L" w:val=\"pct70\"";	break;
+					case SimpleTypes::shdPct75                 : sShd += L" w:val=\"pct75\"";	break;
+					case SimpleTypes::shdPct80                 : sShd += L" w:val=\"pct80\"";	break;
+					case SimpleTypes::shdPct85                 : sShd += L" w:val=\"pct85\"";	break;
+					case SimpleTypes::shdPct87                 : sShd += L" w:val=\"pct87\"";	break;
+					case SimpleTypes::shdPct90                 : sShd += L" w:val=\"pct90\"";	break;
+					case SimpleTypes::shdPct95                 : sShd += L" w:val=\"pct95\"";	break;
+					case SimpleTypes::shdReverseDiagStripe     : sShd += L" w:val=\"reverseDiagStripe\"";		break;
+					case SimpleTypes::shdSolid                 : sShd += L" w:val=\"solid\"";					break;
+					case SimpleTypes::shdThinDiagCross         : sShd += L" w:val=\"thinDiagCross\"";			break;
+					case SimpleTypes::shdThinDiagStripe        : sShd += L" w:val=\"thinDiagStripe\"";			break;
+					case SimpleTypes::shdThinHorzCross         : sShd += L" w:val=\"thinHorzCross\"";			break;
+					case SimpleTypes::shdThinHorzStripe			: sShd += L" w:val=\"thinHorzStripe\"";			break;
+					case SimpleTypes::shdThinReverseDiagStripe	: sShd += L" w:val=\"thinReverseDiagStripe\"";	break;
+					case SimpleTypes::shdThinVertStripe			: sShd += L" w:val=\"thinVertStripe\"";			break;
+					case SimpleTypes::shdVertStripe				: sShd += L" w:val=\"vertStripe\"";				break;
+					default										: sShd += L" w:val=\"solid\"";					break;
+				}
 			}
 			sShd += L" w:color=\"auto\"";
 			if(bColor)

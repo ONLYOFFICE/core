@@ -4884,11 +4884,11 @@ namespace SimpleTypes
 	enum EShd
 	{
 		shdClear                 =  0,
-		shdDiagCross             =  1,
-		shdDiagStripe            =  2,
-		shdHorzCross             =  3,
-		shdHorzStripe            =  4,
-		shdNil                   =  5,
+		shdNil                   =  1,
+		shdDiagCross             =  2,
+		shdDiagStripe            =  3,
+		shdHorzCross             =  4,
+		shdHorzStripe            =  5,
 		shdPct10                 =  6,
 		shdPct12                 =  7,
 		shdPct15                 =  8,

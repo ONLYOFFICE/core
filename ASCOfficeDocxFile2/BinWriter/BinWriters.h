@@ -315,19 +315,19 @@ namespace BinDocxRW
 		void WriteShd(const ComplexTypes::Word::CShading& Shd)
 		{
 			//Type
-			if(false != Shd.m_oVal.IsInit())
+			if (false != Shd.m_oVal.IsInit())
 			{
 				m_oStream.WriteBYTE(c_oSerShdType::Value);
 				m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				switch(Shd.m_oVal.get().GetValue())
-				{
-				case SimpleTypes::shdNil:   m_oStream.WriteBYTE(shd_Nil);break;
-				default:                    m_oStream.WriteBYTE(shd_Clear);break;
-				}
+				m_oStream.WriteBYTE(Shd.m_oVal.get().GetValue()); //Misalignment-footer.doc
+
 			}
 			//Value
-			if(false != Shd.m_oFill.IsInit())
+			if (false != Shd.m_oFill.IsInit())
 				WriteColor(c_oSerShdType::Color, Shd.m_oFill.get());
+			else if (false != Shd.m_oColor.IsInit())
+				WriteColor(c_oSerShdType::Color, Shd.m_oColor.get());
+
 			WriteThemeColor(c_oSerShdType::ColorTheme, Shd.m_oFill, Shd.m_oThemeFill, Shd.m_oThemeFillTint, Shd.m_oThemeFillShade);
 		}
 		void WriteDistance(const NSCommon::nullable<SimpleTypes::CWrapDistance<>>& m_oDistL,

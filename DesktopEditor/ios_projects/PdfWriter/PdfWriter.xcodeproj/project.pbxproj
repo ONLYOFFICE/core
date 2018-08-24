@@ -482,6 +482,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/libxml2,
 					"../../agg-2.4/include",
 					"../../freetype-2.5.2/include",
 					../../cximage/zlib,
@@ -524,6 +525,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/libxml2,
 					"../../agg-2.4/include",
 					"../../freetype-2.5.2/include",
 					../../cximage/zlib,

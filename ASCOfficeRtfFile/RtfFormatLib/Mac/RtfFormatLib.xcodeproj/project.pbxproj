@@ -86,7 +86,6 @@
 		6967B1561E27B4B800A129E2 /* OOXParagraphElementReaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OOXParagraphElementReaders.cpp; sourceTree = "<group>"; };
 		6967B1571E27B4B800A129E2 /* OOXParagraphReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOXParagraphReader.h; sourceTree = "<group>"; };
 		6967B1581E27B4B800A129E2 /* OOXPictureAnchorReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOXPictureAnchorReader.h; sourceTree = "<group>"; };
-		6967B1591E27B4B800A129E2 /* OOXPictureGraphicReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOXPictureGraphicReader.h; sourceTree = "<group>"; };
 		6967B15A1E27B4B800A129E2 /* OOXPictureInlineReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOXPictureInlineReader.h; sourceTree = "<group>"; };
 		6967B15B1E27B4B800A129E2 /* OOXPictureReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOXPictureReader.h; sourceTree = "<group>"; };
 		6967B15C1E27B4B800A129E2 /* OOXpPrFrameReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OOXpPrFrameReader.h; sourceTree = "<group>"; };
@@ -241,7 +240,6 @@
 				6967B1561E27B4B800A129E2 /* OOXParagraphElementReaders.cpp */,
 				6967B1571E27B4B800A129E2 /* OOXParagraphReader.h */,
 				6967B1581E27B4B800A129E2 /* OOXPictureAnchorReader.h */,
-				6967B1591E27B4B800A129E2 /* OOXPictureGraphicReader.h */,
 				6967B15A1E27B4B800A129E2 /* OOXPictureInlineReader.h */,
 				6967B15B1E27B4B800A129E2 /* OOXPictureReader.h */,
 				6967B15C1E27B4B800A129E2 /* OOXpPrFrameReader.h */,
@@ -587,8 +585,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/,
-					/usr/include/libxml2/,
+					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 					"$(PROJECT_DIR)/../../../DesktopEditor",
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
@@ -621,8 +618,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/,
-					/usr/include/libxml2/,
+					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 					"$(PROJECT_DIR)/../../../DesktopEditor",
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",

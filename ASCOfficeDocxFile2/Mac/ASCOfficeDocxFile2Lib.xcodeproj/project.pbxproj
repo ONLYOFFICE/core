@@ -55,6 +55,10 @@
 		8A404FD5208A01CE00F2D5CF /* FileDownloader_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FD4208A01CE00F2D5CF /* FileDownloader_private.h */; };
 		8AB24BFD213004E400E80DDD /* CustormXmlWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AB24BFB213004E300E80DDD /* CustormXmlWriter.cpp */; };
 		8AB24BFE213004E400E80DDD /* CustormXmlWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AB24BFC213004E300E80DDD /* CustormXmlWriter.h */; };
+		8AC6D2052130146000D9C0F1 /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AC6D2042130146000D9C0F1 /* xmlutils.h */; };
+		8AC6D2092130146800D9C0F1 /* xmllight_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AC6D2062130146800D9C0F1 /* xmllight_private.h */; };
+		8AC6D20A2130146800D9C0F1 /* xmldom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC6D2072130146800D9C0F1 /* xmldom.cpp */; };
+		8AC6D20B2130146800D9C0F1 /* xmllight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC6D2082130146800D9C0F1 /* xmllight.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -107,6 +111,10 @@
 		8A404FD4208A01CE00F2D5CF /* FileDownloader_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader_private.h; path = ../../../Common/FileDownloader/FileDownloader_private.h; sourceTree = "<group>"; };
 		8AB24BFB213004E300E80DDD /* CustormXmlWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustormXmlWriter.cpp; sourceTree = "<group>"; };
 		8AB24BFC213004E300E80DDD /* CustormXmlWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustormXmlWriter.h; sourceTree = "<group>"; };
+		8AC6D2042130146000D9C0F1 /* xmlutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlutils.h; path = ../../../DesktopEditor/xml/include/xmlutils.h; sourceTree = "<group>"; };
+		8AC6D2062130146800D9C0F1 /* xmllight_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmllight_private.h; path = ../../../DesktopEditor/xml/src/xmllight_private.h; sourceTree = "<group>"; };
+		8AC6D2072130146800D9C0F1 /* xmldom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmldom.cpp; path = ../../../DesktopEditor/xml/src/xmldom.cpp; sourceTree = "<group>"; };
+		8AC6D2082130146800D9C0F1 /* xmllight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmllight.cpp; path = ../../../DesktopEditor/xml/src/xmllight.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +147,7 @@
 		17E17EDE1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */ = {
 			isa = PBXGroup;
 			children = (
+				8AC6D2032130145600D9C0F1 /* XmlUtils */,
 				17E17F4D1AC454E200BEA2EA /* Common */,
 				17E17F1A1AC4549B00BEA2EA /* XlsxSerializerCom */,
 				17E17F0D1AC4546100BEA2EA /* DocWrapper */,
@@ -258,6 +267,17 @@
 			name = BinWriter;
 			sourceTree = "<group>";
 		};
+		8AC6D2032130145600D9C0F1 /* XmlUtils */ = {
+			isa = PBXGroup;
+			children = (
+				8AC6D2072130146800D9C0F1 /* xmldom.cpp */,
+				8AC6D2062130146800D9C0F1 /* xmllight_private.h */,
+				8AC6D2082130146800D9C0F1 /* xmllight.cpp */,
+				8AC6D2042130146000D9C0F1 /* xmlutils.h */,
+			);
+			name = XmlUtils;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -282,7 +302,9 @@
 				17C1FEAD1ACC42C4006B99B3 /* ChartWriter.h in Headers */,
 				17C1FEAE1ACC42C4006B99B3 /* DocumentRelsWriter.h in Headers */,
 				17C1FEAF1ACC42C4006B99B3 /* CommentsWriter.h in Headers */,
+				8AC6D2052130146000D9C0F1 /* xmlutils.h in Headers */,
 				69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */,
+				8AC6D2092130146800D9C0F1 /* xmllight_private.h in Headers */,
 				17C1FEB01ACC42C4006B99B3 /* BinaryCommonReader.h in Headers */,
 				17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */,
 				8A404FD5208A01CE00F2D5CF /* FileDownloader_private.h in Headers */,
@@ -359,12 +381,14 @@
 				17C1FE981ACC42C4006B99B3 /* CSVReader.cpp in Sources */,
 				17C1FE991ACC42C4006B99B3 /* DocxSerializer.cpp in Sources */,
 				17C1FE9A1ACC42C4006B99B3 /* CommonWriter.cpp in Sources */,
+				8AC6D20B2130146800D9C0F1 /* xmllight.cpp in Sources */,
 				17C1FE9B1ACC42C4006B99B3 /* CSVWriter.cpp in Sources */,
 				69414A301CB51666003E771B /* ChartWriter.cpp in Sources */,
 				6967917E1D9E8AEE002CA4BA /* BinWriters.cpp in Sources */,
 				69BBDF251F0B8AAC00EB1BF7 /* FileDownloader_mac.mm in Sources */,
 				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
 				690FE0851E9BBD68004B26D0 /* Readers.cpp in Sources */,
+				8AC6D20A2130146800D9C0F1 /* xmldom.cpp in Sources */,
 				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
 				8A404FD3208A01AF00F2D5CF /* FileDownloader.cpp in Sources */,
 			);

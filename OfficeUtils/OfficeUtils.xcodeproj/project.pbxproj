@@ -31,8 +31,6 @@
 
 /* Begin PBXFileReference section */
 		69676CA91CA58B7400D7A1D1 /* libOfficeUtils.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOfficeUtils.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		69676CB61CA58BBD00D7A1D1 /* ASCOfficeCriticalSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCOfficeCriticalSection.h; sourceTree = "<group>"; };
-		69676CB71CA58BBD00D7A1D1 /* CSLocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSLocker.h; sourceTree = "<group>"; };
 		69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OfficeUtils.cpp; sourceTree = "<group>"; };
 		69676CB91CA58BBD00D7A1D1 /* OfficeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficeUtils.h; sourceTree = "<group>"; };
 		69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficeUtilsCommon.h; sourceTree = "<group>"; };
@@ -81,8 +79,6 @@
 		69676CB51CA58BBD00D7A1D1 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				69676CB61CA58BBD00D7A1D1 /* ASCOfficeCriticalSection.h */,
-				69676CB71CA58BBD00D7A1D1 /* CSLocker.h */,
 				69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */,
 				69676CB91CA58BBD00D7A1D1 /* OfficeUtils.h */,
 				69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */,

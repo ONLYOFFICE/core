@@ -32,6 +32,7 @@
 #pragma once
 #include "Converter.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
@@ -1027,7 +1028,9 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			std::wstring sApplication = L"ONLYOFFICE";
+			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sApplication.empty())
+				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 #if defined(INTVER)
             std::string s = VALUE2STR(INTVER);
             sApplication += L"/" + std::wstring(s.begin(), s.end());

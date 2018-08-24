@@ -84,7 +84,7 @@ public:
 	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
 
 public:
-    void FromImage(IGrObject* pGraphics);
+    void FromImage(IGrObject* pGraphics, bool bIsCopy = true);
 };
 
 #endif

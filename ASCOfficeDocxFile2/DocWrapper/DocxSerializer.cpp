@@ -34,6 +34,7 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 #include "../BinWriter/BinWriters.h"
 #include "../BinReader/Readers.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
@@ -298,7 +299,10 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				OOX::CApp* pApp = new OOX::CApp(NULL);
 				if (pApp)
 				{
-					pApp->SetApplication(L"ONLYOFFICE");
+					std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+					if (sApplication.empty())
+						sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+					pApp->SetApplication(sApplication);
 #if defined(INTVER)
                     pApp->SetAppVersion(VALUE2STR(INTVER));
 #endif

@@ -38,6 +38,7 @@
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../../Common/3dParty/cryptopp/osrng.h"
@@ -194,7 +195,10 @@ namespace odf_writer
 					{  
 						CP_XML_NODE(L"meta:generator")
 						{
-							CP_XML_STREAM() << L"ONLYOFFICE";
+							std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+							if (sApplication.empty())
+								sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+							CP_XML_STREAM() << sApplication;
 #if defined(INTVER)
 							std::string s = VALUE2STR(INTVER);
 							CP_XML_STREAM() << L"/" << std::wstring (s.begin(), s.end() );

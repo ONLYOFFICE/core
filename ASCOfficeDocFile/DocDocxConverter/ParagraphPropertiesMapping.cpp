@@ -566,14 +566,35 @@ namespace DocFileFormat
 
 				case sprmOldPDxaAbs:
 				case sprmPDxaAbs:
-                    appendValueAttribute( _framePr, L"w:x", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-					break;
-
+				{
+					unsigned short val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					switch (val)
+					{
+					case 0x0000:	break; //left
+					case 0xfffc:	appendValueAttribute( _framePr, L"w:xAlign", L"center");	break;
+					case 0xfff8:	appendValueAttribute( _framePr, L"w:xAlign", L"right");		break;
+					case 0xfff4:	appendValueAttribute( _framePr, L"w:xAlign", L"inside");	break;
+					case 0xfff0:	appendValueAttribute( _framePr, L"w:xAlign", L"outside");	break;
+					default:
+						appendValueAttribute( _framePr, L"w:x",  (short)val);
+					}
+				}break;
 				case sprmOldPDyaAbs:
 				case sprmPDyaAbs:
-                    appendValueAttribute( _framePr, L"w:y", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-					break;
-
+				{
+					unsigned short val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					switch (val)
+					{
+					case 0x0000:	break; //inline
+					case 0xfffc:	appendValueAttribute( _framePr, L"w:yAlign", L"top");		break;
+					case 0xfff8:	appendValueAttribute( _framePr, L"w:yAlign", L"center");	break;
+					case 0xfff4:	appendValueAttribute( _framePr, L"w:yAlign", L"bottom");	break;
+					case 0xfff0:	appendValueAttribute( _framePr, L"w:yAlign", L"inside");	break;
+					case 0xffec:	appendValueAttribute( _framePr, L"w:yAlign", L"outside");	break;
+					default:
+						appendValueAttribute( _framePr, L"w:y", (short)val );
+					}					
+				}break;
 				case sprmPWHeightAbs:
                     appendValueAttribute( _framePr, L"w:h", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;

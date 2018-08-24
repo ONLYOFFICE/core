@@ -37,6 +37,7 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -3280,7 +3281,9 @@ std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nInternalId )
         sResult += L"{\\id" + std::to_wstring(m_nInternalId) + L"}";
 
-	m_sApplication = L"ONLYOFFICE";
+	std::wstring m_sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+	if (m_sApplication.empty())
+		m_sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 
 #if defined(INTVER)
 	std::string s = VALUE2STR(INTVER);

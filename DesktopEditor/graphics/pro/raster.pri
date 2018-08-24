@@ -27,8 +27,10 @@ core_windows {
     JAS_WIN_MSVC_BUILD \
     NOMINMAX
 
-    DEFINES -= UNICODE
-    DEFINES -= _UNICODE
+    #DEFINES -= UNICODE
+    #DEFINES -= _UNICODE
+
+    DEFINES += CXIMAGE_ATTACK_NO_UNICODE
 
     LIBS += -lAdvapi32
     LIBS += -lShell32

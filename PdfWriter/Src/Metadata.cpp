@@ -33,6 +33,8 @@
 #include "Streams.h"
 #include "Info.h"
 
+#include "../../DesktopEditor/common/SystemUtils.h"
+
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
@@ -61,9 +63,12 @@ namespace PdfWriter
 		sXML += "</rdf:Description>\n";
 
 		// Creator Tool
+		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+		if (sApplication.empty())
+			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 		sXML += "<rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n";
 		sXML += "<xmp:CreatorTool>";
-		sXML += "OnlyOffice 2018";
+		sXML += NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sApplication);
 		sXML += "</xmp:CreatorTool>\n";
 
 		TDate oDate = pInfo->GetDate();

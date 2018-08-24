@@ -646,6 +646,7 @@ namespace PPTX
 
 									if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
 									else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+									else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
 																		
 									if (!sIdImageFileCache.empty())
 									{

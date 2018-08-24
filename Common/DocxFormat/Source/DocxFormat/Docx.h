@@ -100,6 +100,7 @@ namespace OOX
 		}
 
 		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const;
+		const std::wstring GetCustomSettings() const;
 		
 		OOX::CApp			*m_pApp;
 		OOX::CCore			*m_pCore;

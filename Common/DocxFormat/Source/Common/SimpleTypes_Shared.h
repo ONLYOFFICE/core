@@ -1252,4 +1252,39 @@ namespace SimpleTypes
 		SimpleType_FromString     (ETrueFalse)
 		SimpleType_Operator_Equal (CTrueFalse)
 	};
+	enum ESdtAppearance
+	{
+		sdtappearenceTags = 0,
+		sdtappearenceBoundingBox = 1,
+		sdtappearenceHidden = 2
+	};
+
+	template<ESdtAppearance eDefValue = sdtappearenceBoundingBox>
+	class CSdtAppearance : public CSimpleType<ESdtAppearance, eDefValue>
+	{
+	public:
+		CSdtAppearance() {}
+
+		virtual ESdtAppearance FromString(std::wstring &sValue)
+		{
+			if      ( L"boundingBox"     == sValue )	this->m_eValue = sdtappearenceBoundingBox;
+			else if ( L"tags"  == sValue )	this->m_eValue = sdtappearenceTags;
+			else if ( L"hidden"  == sValue )	this->m_eValue = sdtappearenceHidden;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring    ToString  () const
+		{
+			switch(this->m_eValue)
+			{
+			case sdtappearenceTags : return L"tags";
+			case sdtappearenceHidden  : return L"hidden";
+			default           : return L"boundingBox";
+			}
+		}
+
+		SimpleType_FromString     (ESdtAppearance)
+		SimpleType_Operator_Equal (CSdtAppearance)
+	};
 } // SimpleTypes

@@ -211,6 +211,8 @@ public:
     
 	void xlsx_convert(std::wostream & strm, bool in_draw);
 
+    _CP_OPT(unsigned int)			outline_level_;
+
     _CP_OPT(odf_types::line_width)	fo_line_height_;           
 	_CP_OPT(odf_types::length)		style_line_height_at_least_;   
     _CP_OPT(odf_types::length)		style_line_spacing_;           

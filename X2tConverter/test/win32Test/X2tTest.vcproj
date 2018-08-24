@@ -684,6 +684,10 @@
 				RelativePath="..\..\..\XlsxSerializerCom\Common\Common.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="111"

@@ -39,6 +39,7 @@
 #include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 #include "../Reader/PPTDocumentInfo.h"
 
@@ -291,7 +292,9 @@ void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
 			{
 				CP_XML_STREAM() << 0;
 			}
-			std::wstring sApplication = L"ONLYOFFICE";
+			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sApplication.empty())
+				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 	#if defined(INTVER)
 			std::string s = VALUE2STR(INTVER);
 			sApplication += L"/" + std::wstring(s.begin(), s.end());

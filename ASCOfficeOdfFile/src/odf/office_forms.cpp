@@ -443,8 +443,9 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 				form_item* item = dynamic_cast<form_item*>(items_[i].get());
 				if (!item) continue;
 
-				Context.output_stream() << L"<w:listItem w:displayText=\"" << (item->text_.empty() ? item->label_ : item->text_);
-				Context.output_stream() << L"\" w:value=\"" << item->label_ << L"\"/>";
+				std::wstring displayText = item->text_.empty() ? item->label_ : item->text_;
+				Context.output_stream() << L"<w:listItem w:displayText=\"" << XmlUtils::EncodeXmlString(displayText);
+				Context.output_stream() << L"\" w:value=\"" << XmlUtils::EncodeXmlString(item->label_) << L"\"/>";
 			}
 			
 			Context.output_stream() << L"</w:dropDownList>";
@@ -457,6 +458,10 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 				if (current_value_)
 				{
 					Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				}
+				else
+				{
+					Context.output_stream() << L"Select item";
 				}
 				Context.output_stream() << L"</w:t>";
 			Context.finish_run();

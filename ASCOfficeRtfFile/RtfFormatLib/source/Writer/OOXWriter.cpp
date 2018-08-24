@@ -47,6 +47,8 @@
 #include "../../../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
+#include "../../../../DesktopEditor/common/SystemUtils.h"
+
 #include "../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
 OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) : 
@@ -160,7 +162,10 @@ bool OOXWriter::SaveByItemEnd()
 	
 	if (m_poDocPropsApp)
 	{
-		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"ONLYOFFICE" );
+		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+		if (sApplication.empty())
+			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( sApplication );
 #if defined(INTVER)
         ((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( VALUE2STR(INTVER) );
 #endif		

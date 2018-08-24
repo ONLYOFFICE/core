@@ -61,6 +61,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
 
 namespace BinDocxRW
 {
@@ -2254,6 +2255,24 @@ namespace BinDocxRW
 					if(cellPr->m_oVMerge->m_oVal.IsInit())
 					{
 						switch(cellPr->m_oVMerge->m_oVal->GetValue())
+						{
+						case SimpleTypes::mergeContinue: m_oBcw.m_oStream.WriteBYTE(vmerge_Continue); break;
+						case SimpleTypes::mergeRestart: m_oBcw.m_oStream.WriteBYTE(vmerge_Restart); break;
+						default: m_oBcw.m_oStream.WriteBYTE(vmerge_Continue);break;
+						}
+					}
+					else
+					{
+						m_oBcw.m_oStream.WriteBYTE(vmerge_Continue);
+					}
+				}
+				if(cellPr->m_oHMerge.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_cellPrType::HMerge);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					if(cellPr->m_oHMerge->m_oVal.IsInit())
+					{
+						switch(cellPr->m_oHMerge->m_oVal->GetValue())
 						{
 						case SimpleTypes::mergeContinue: m_oBcw.m_oStream.WriteBYTE(vmerge_Continue); break;
 						case SimpleTypes::mergeRestart: m_oBcw.m_oStream.WriteBYTE(vmerge_Restart); break;
@@ -7074,10 +7093,25 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteStringW3(oStdPr.m_oAlias->m_sVal.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oStdPr.m_oAppearance.IsInit() && oStdPr.m_oAppearance->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Appearance);
+				m_oBcw.m_oStream.WriteBYTE(oStdPr.m_oAppearance->m_oVal->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			if(oStdPr.m_oComboBox.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::ComboBox);
 				WriteSdtComboBox(oStdPr.m_oComboBox.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Color);
+				if(oStdPr.m_oColor->m_oVal.IsInit())
+					m_oBcw.WriteColor(c_oSerProp_rPrType::Color, oStdPr.m_oColor->m_oVal.get());
+
+				m_oBcw.WriteThemeColor(c_oSerProp_rPrType::ColorTheme, oStdPr.m_oColor->m_oVal, oStdPr.m_oColor->m_oThemeColor, oStdPr.m_oColor->m_oThemeTint, oStdPr.m_oColor->m_oThemeShade);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			if(oStdPr.m_oDataBinding.IsInit())
@@ -7477,17 +7511,18 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 		Binary_pPrWriter bpPrs;
+		Binary_rPrWriter brPrs;
 	public:
-		BinarySettingsTableWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter),bpPrs(oParamsWriter, NULL)
+		BinarySettingsTableWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter),bpPrs(oParamsWriter, NULL), brPrs(oParamsWriter)
 		{
 		};
-		void Write(OOX::CSettings& oSettings)
+		void Write(OOX::CSettings& oSettings, OOX::CSettingsCustom& oSettingsCustom)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
-			WriteSettingsContent(oSettings);
+			WriteSettingsContent(oSettings, oSettingsCustom);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		}
-		void WriteSettingsContent(OOX::CSettings& oSettings)
+		void WriteSettingsContent(OOX::CSettings& oSettings, OOX::CSettingsCustom& oSettingsCustom)
 		{
 			int nCurPos = 0;
 			if(oSettings.m_oClrSchemeMapping.IsInit())
@@ -7526,6 +7561,20 @@ namespace BinDocxRW
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::EndnotePr);
 				bpPrs.WriteNotePr(oSettings.m_oEndnotePr->m_oNumFmt, oSettings.m_oEndnotePr->m_oNumRestart, oSettings.m_oEndnotePr->m_oNumStart,
 								  NULL, &oSettings.m_oEndnotePr->m_oPos, &oSettings.m_oEndnotePr->m_arrEndnote);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oSettingsCustom.m_oSdtGlobalColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SdtGlobalColor);
+				OOX::Logic::CRunProperty oRPr;
+				oRPr.m_oColor = oSettingsCustom.m_oSdtGlobalColor;
+				brPrs.Write_rPr(&oRPr);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oSettingsCustom.m_oSdtGlobalShowHighlight.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SdtGlobalShowHighlight);
+				m_oBcw.m_oStream.WriteBOOL(oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		};
@@ -8039,9 +8088,16 @@ namespace BinDocxRW
 		//Write Settings
 				if(NULL != oDocx.m_pSettings)
 				{
+					std::wstring sSettings = oDocx.GetCustomSettings();
+					OOX::CSettingsCustom oSettingsCustom;
+					if(!sSettings.empty())
+					{
+						oSettingsCustom.FromXml(sSettings);
+					}
+
 					BinDocxRW::BinarySettingsTableWriter oBinarySettingsTableWriter(m_oParamsWriter);
 					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Settings);
-					oBinarySettingsTableWriter.Write(*oDocx.m_pSettings);
+					oBinarySettingsTableWriter.Write(*oDocx.m_pSettings, oSettingsCustom);
 					this->WriteTableEnd(nCurPos);
 				}
 

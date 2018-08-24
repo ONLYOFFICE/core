@@ -47,6 +47,7 @@
 #include "Pattern.h"
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 #ifdef CreateFont
 #undef CreateFont
@@ -112,7 +113,11 @@ namespace PdfWriter
 			return false;
 
 		m_pInfo->SetCreationTime();
-		m_pInfo->SetInfo(InfoProducer, "Ascensio System SIA Copyright (c) 2018");
+		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCompanyName);
+		if (sApplication.empty())
+			sApplication = NSSystemUtils::gc_EnvCompanyNameDefault;
+		std::string sApplicationA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sApplication);
+		m_pInfo->SetInfo(InfoProducer, sApplicationA.c_str());
 
 		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);
 		if (IsPDFA())

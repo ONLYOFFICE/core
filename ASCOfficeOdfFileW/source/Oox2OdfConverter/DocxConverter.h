@@ -117,6 +117,7 @@ namespace ComplexTypes
 		class CTblWidth;
 		class CPageBorder;
 		class CTrackChange;
+		class CShading;
 	}
 }
 namespace cpdoccore 
@@ -219,6 +220,7 @@ namespace Oox2Odf
 		void convert(OOX::Drawing::CInline				*oox_inline);
 	
 		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
+		void convert(ComplexTypes::Word::CShading		*shading,		_CP_OPT(odf_types::color)			& odf_color);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf_types::color)			& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length_or_percent) & odf_size);

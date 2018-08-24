@@ -40,3 +40,18 @@ core_release {
 }
 
 }
+
+core_boost_date_time {
+
+core_windows {
+core_debug {
+    LIBS += -L$$CORE_BOOST_LIBS -llibboost_date_time-$$MSVC-mt-gd-1_58
+}
+core_release {
+    LIBS += -L$$CORE_BOOST_LIBS -llibboost_date_time-$$MSVC-mt-1_58
+}
+} else {
+    LIBS += -L$$CORE_BOOST_LIBS -lboost_date_time
+}
+
+}

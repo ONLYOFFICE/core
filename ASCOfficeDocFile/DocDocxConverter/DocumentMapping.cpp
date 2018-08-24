@@ -916,7 +916,7 @@ namespace DocFileFormat
 					PictureDescriptor pictDiscr(chpx, m_document->WordDocumentStream, 0x7fffffff, m_document->nWordVersion);
 					ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeContainer(pSpa->GetShapeID());
 
-					if (pShape)
+					if ((pShape) /*&& (false == pShape->isLastIdentify())*/)
 					{
 						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, &pictDiscr,  _caller);
 						
@@ -950,23 +950,24 @@ namespace DocFileFormat
 					
                     m_pXmlWriter->WriteNodeEnd	 (L"w:pict");
 				}
-				else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
+				else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer)/* && (false == oPicture.shapeContainer->isLastIdentify())*/)
 				{
 					bool bFormula = false;
 
-					XMLTools::CStringXmlWriter pictWriter;
-                    pictWriter.WriteNodeBegin (L"w:pict");
 
-					bool picture = true;
+					bool bPicture = true;
 
 					if (oPicture.shapeContainer)
 					{
 						int shape_type = oPicture.shapeContainer->getShapeType();
 
-						if (shape_type != msosptPictureFrame) picture = false;//шаблон 1.doc картинка в колонтитуле
+						if (shape_type != msosptPictureFrame) bPicture = false;//шаблон 1.doc картинка в колонтитуле
 					}
 					
-					if (picture)
+					XMLTools::CStringXmlWriter pictWriter;
+                    pictWriter.WriteNodeBegin (L"w:pict");
+
+					if (bPicture)
 					{
 						VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
 						oPicture.Convert (&oVmlMapper);
@@ -989,7 +990,8 @@ namespace DocFileFormat
 							_writeAfterRun = oVmlMapper.m_equationXml;
 							bFormula = true;
 						}
-					}else
+					}
+					else
 					{
 						VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline);
 						oPicture.shapeContainer->Convert(&oVmlMapper);

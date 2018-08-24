@@ -50,10 +50,15 @@ namespace MetaFile
 		m_pAppFonts = (CApplicationFonts*)pAppFonts;
 
 		// Создаем менеджер шрифтов с собственным кэшем
-		m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
-		CFontsCache* pMeasurerCache = new CFontsCache();
-		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
-		m_pFontManager->SetOwnerCache(pMeasurerCache);
+
+		if (pAppFonts)
+		{
+			m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
+			
+			CFontsCache* pMeasurerCache = new CFontsCache();
+			pMeasurerCache->SetStreams(pAppFonts->GetStreams());
+			m_pFontManager->SetOwnerCache(pMeasurerCache);
+		}
 		
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
@@ -76,10 +81,15 @@ namespace MetaFile
 		//       FontManager, потому что сейчас в нем кэш без ограничения.
 		//------------------------------------------------------
 		RELEASEINTERFACE(m_pFontManager);
-		m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
-		CFontsCache* pMeasurerCache = new CFontsCache();
-		pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-		m_pFontManager->SetOwnerCache(pMeasurerCache);
+
+		if (m_pAppFonts)
+		{
+			m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+			CFontsCache* pMeasurerCache = new CFontsCache();
+			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+			m_pFontManager->SetOwnerCache(pMeasurerCache);
+		}
+
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
 		m_oSvmFile.SetFontManager(m_pFontManager);

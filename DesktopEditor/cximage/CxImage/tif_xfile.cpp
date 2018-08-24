@@ -2,9 +2,6 @@
  * TIFF file IO, using CxFile.
  */
 
-#if defined(_WIN32) || defined (_WIN64)
- #include <windows.h>
-#endif
 #include <stdio.h>
 
 #include "ximage.h"
@@ -112,7 +109,7 @@ extern	char* realloc();
 #include <malloc.h>
 #endif
 
-#ifndef UNICODE
+#ifdef UNICODE
 #define DbgPrint wvsprintf
 #define DbgPrint2 wsprintf
 #define DbgMsgBox MessageBox

@@ -124,7 +124,8 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			}break;
 		case SimpleTypes::Vml::cssptMsoPositionHorizontal: 
 			{
-				pShape->m_nPositionH = prop->get_Value().eMsoPosHor;	
+				pShape->m_nPositionH = prop->get_Value().eMsoPosHor;
+				pShape->m_nPositionHRelative = PROP_DEF; //images.docx
 			}break;
 		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative  :
 			{
@@ -259,7 +260,14 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
     }
 	return true;
 }
-
+bool OOXShapeReader::ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+{
+	for (size_t i=0; i< props.size(); i++)
+	{
+		ParseVmlStyle( pShape, props[i].get());
+	}
+	return true;
+}
 
 OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem)
 {
@@ -305,9 +313,12 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				
 				std::wstring srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
 
-				if (srId.empty())
-                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : L"" ;
+				if (srId.empty() && fill->m_rId.IsInit())
+                    srId =  fill->m_rId->GetValue();
 				
+				if (srId.empty() && fill->m_oRelId.IsInit())
+                    srId =  fill->m_oRelId->GetValue();
+
 				if (!srId.empty() && oParam.oReader->m_currentContainer)
 				{        
 					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);
@@ -318,7 +329,8 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
+						
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam );
 
 						pOutput->m_nFillType = 2;
 					}
@@ -393,6 +405,9 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				if (srId.empty())
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : L"" ;
 
+				if (srId.empty())
+                    srId = image_data->m_rPict.IsInit() ? image_data->m_rPict->GetValue() : L"" ;
+				
 				if (oParam.oReader->m_currentContainer)
 				{        
 					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);
@@ -404,7 +419,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam);
 					}
 				}
 				if (pOutput->m_oPicture)
@@ -469,7 +484,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			{
 				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(m_arrElement->m_arrItems[i]);
 
-				if (wrap->m_oType.IsInit() && pOutput->m_nZOrderRelative == PROP_DEF)
+				if (wrap->m_oType.IsInit() /*&& pOutput->m_nZOrderRelative == PROP_DEF*/)
 				{
 					switch(wrap->m_oType->GetValue())
 					{
@@ -742,7 +757,8 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 				std::wstring sImagePath = pImage->filename().GetPath();
-				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder);
+
+				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam);
 			}
 		}
 		else if (oox_bitmap_fill->blip->link.IsInit())
@@ -2071,12 +2087,12 @@ bool OOXBackgroundReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 	return true;
 }
 
-bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, std::wstring sTempPath)
+bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, ReaderParameter& oParam)
 {
 	OOX::CPath ooxPath = sPath;	//для target 
 
-	if (!sTempPath.empty())
-		ooxPath = sTempPath + FILE_SEPARATOR_STR;
+	if (!oParam.oReader->m_sTempFolder.empty())
+		ooxPath = oParam.oReader->m_sTempFolder + FILE_SEPARATOR_STR;
 
 	pOutput.m_dScaleX = 100;
 	pOutput.m_dScaleY = 100;
@@ -2159,8 +2175,15 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	{
 		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf)
 		{
-            MetaFile::IMetaFile* meta = MetaFile::Create(NULL);
-            if (meta->LoadFromFile(sPath.c_str()))
+			if (!oParam.oRtf->m_pAppFonts)
+			{
+				oParam.oRtf->m_pAppFonts = NSFonts::NSApplication::Create();
+				oParam.oRtf->m_pAppFonts->Initialize();
+			}
+			
+			MetaFile::IMetaFile* meta = MetaFile::Create(oParam.oRtf->m_pAppFonts);
+            
+			if (meta->LoadFromFile(sPath.c_str()))
 			{
 				double dX, dY, dW, dH;
                 meta->GetBounds(&dX, &dY, &dW, &dH);

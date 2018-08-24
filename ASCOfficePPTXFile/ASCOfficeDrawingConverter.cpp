@@ -4257,7 +4257,10 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			nullable_string sRelid;
             XmlMacroReadAttributeBase(oNodeFillID, L"o:relid", sRelid);
 
-			if (sRid.is_init() || sRelid.is_init())
+			nullable_string sPictId;
+            XmlMacroReadAttributeBase(oNodeFillID, L"r:pict", sPictId);
+
+			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init())
 			{			
 				nullable_string sType;
                 XmlMacroReadAttributeBase(oNodeFillID, L"type", sType);
@@ -4278,7 +4281,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
                 pBlipFill->m_namespace = L"a";
 				pBlipFill->blip = new PPTX::Logic::Blip();
 
-                std::wstring sId = sRid.IsInit() ? *sRid : (sRelid.IsInit() ? *sRelid : L"");
+				std::wstring sId = sRid.IsInit() ? *sRid : (sRelid.IsInit() ? *sRelid : (sPictId.IsInit() ? *sPictId : L""));
 				pBlipFill->blip->embed = new OOX::RId(sId);
 
                 if (sType.is_init() && *sType == L"tile")

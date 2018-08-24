@@ -182,6 +182,8 @@ public:
         poResult->UserId = m_oBufferedStream.GetString3(length);\
     }
 
+	void InnerColorToOOX(rPr& oRPr, ComplexTypes::Word::CColor& oColor);
+
 	class Binary_CommonReader
 	{
 	protected:
@@ -2249,6 +2251,15 @@ public:
             case vmerge_Continue:pCStringWriter->WriteString(std::wstring(_T("<w:vMerge w:val=\"continue\" />")));break;
 			}
 		}
+		else if( c_oSerProp_cellPrType::HMerge == type )
+		{
+			BYTE HMerge = m_oBufferedStream.GetUChar();
+			switch(HMerge)
+			{
+			case vmerge_Restart:pCStringWriter->WriteString(std::wstring(_T("<w:hMerge w:val=\"restart\" />")));break;
+			case vmerge_Continue:pCStringWriter->WriteString(std::wstring(_T("<w:hMerge w:val=\"continue\" />")));break;
+			}
+		}
 		else if( c_oSerProp_cellPrType::CellDel == type )
 		{
 			TrackRevision Del;
@@ -3220,11 +3231,13 @@ public:
 class Binary_SettingsTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader m_oBinary_pPrReader;
+	Binary_rPrReader m_oBinary_rPrReader;
 	Writers::SettingWriter& m_oSettingWriter;
 	Writers::FileWriter& m_oFileWriter;
+	OOX::CSettingsCustom& m_oSettingsCustom;
 public:
-	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):
-		Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter),m_oBinary_pPrReader(poBufferedStream, oFileWriter)
+	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom& oSettingsCustom):
+		Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter),m_oBinary_pPrReader(poBufferedStream, oFileWriter),m_oBinary_rPrReader(poBufferedStream, oFileWriter),m_oSettingsCustom(oSettingsCustom)
 	{
 	}
 	int Read()
@@ -3315,6 +3328,18 @@ public:
 			OOX::Settings::CEdnDocProps oEdnProps;
 			READ1_DEF(length, res, this->ReadEndnotePr, &oEdnProps);
 			m_oFileWriter.m_oSettingWriter.AddSetting(oEdnProps.toXML());
+		}
+		else if( c_oSer_SettingsType::SdtGlobalColor == type )
+		{
+			rPr oRPr(m_oFileWriter.m_oFontTableWriter.m_mapFonts);
+			res = m_oBinary_rPrReader.Read(length, &oRPr);
+			m_oSettingsCustom.m_oSdtGlobalColor.Init();
+			InnerColorToOOX(oRPr, m_oSettingsCustom.m_oSdtGlobalColor.get2());
+		}
+		else if( c_oSer_SettingsType::SdtGlobalShowHighlight == type )
+		{
+			m_oSettingsCustom.m_oSdtGlobalShowHighlight.Init();
+			m_oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -8004,10 +8029,23 @@ public:
 			pSdtPr->m_oAlias->m_sVal.Init();
 			pSdtPr->m_oAlias->m_sVal->append(m_oBufferedStream.GetString3(length));
 		}
+		else if (c_oSerSdt::Appearance == type)
+		{
+			pSdtPr->m_oAppearance.Init();
+			pSdtPr->m_oAppearance->m_oVal.Init();
+			pSdtPr->m_oAppearance->m_oVal->SetValue((SimpleTypes::ESdtAppearance)m_oBufferedStream.GetUChar());
+		}
 		else if (c_oSerSdt::ComboBox == type)
 		{
 			pSdtPr->m_oComboBox.Init();
 			READ1_DEF(length, res, this->ReadSdtComboBox, pSdtPr->m_oComboBox.GetPointer());
+		}
+		else if (c_oSerSdt::Color == type)
+		{
+			rPr oRPr(m_oFileWriter.m_oFontTableWriter.m_mapFonts);
+			res = oBinary_rPrReader.Read(length, &oRPr);
+			pSdtPr->m_oColor.Init();
+			InnerColorToOOX(oRPr, pSdtPr->m_oColor.get2());
 		}
 		else if (c_oSerSdt::DataBinding == type)
 		{
@@ -8424,11 +8462,12 @@ public:
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
+			OOX::CSettingsCustom oSettingsCustom;
 			if(-1 != nSettingsOffset)
 			{
 				int nOldPos = m_oBufferedStream.GetPos();
 				m_oBufferedStream.Seek(nSettingsOffset);
-				res = Binary_SettingsTableReader(m_oBufferedStream, m_oFileWriter).Read();
+				res = Binary_SettingsTableReader(m_oBufferedStream, m_oFileWriter, oSettingsCustom).Read();
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
@@ -8575,6 +8614,13 @@ public:
 						m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml", L"/word", pFooter->m_sFilename);
 					}
 				}
+				if(!oSettingsCustom.IsEmpty()){
+					std::wstring sFilename = m_oFileWriter.m_oCustomXmlWriter.WriteCustomXml(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
+					std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + sFilename;
+					long rId;
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
+				}
+
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
 
                 OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir	+ FILE_SEPARATOR_STR + L"word"

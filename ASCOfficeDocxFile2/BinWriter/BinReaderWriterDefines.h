@@ -445,7 +445,8 @@ extern int g_nCurFormatVersion;
 		textDirection = 11,
 		hideMark = 12,
 		noWrap = 13,
-		tcFitText = 14
+		tcFitText = 14,
+		HMerge = 15
 	};}
 	namespace c_oSerProp_secPrType{enum c_oSerProp_secPrType
 	{
@@ -761,7 +762,9 @@ extern int g_nCurFormatVersion;
 		MathPr = 2,
 		TrackRevisions = 3,
 		FootnotePr = 4,
-		EndnotePr = 5
+		EndnotePr = 5,
+		SdtGlobalColor = 6,
+		SdtGlobalShowHighlight = 7
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1096,7 +1099,9 @@ extern int g_nCurFormatVersion;
 		TabIndex = 32,
 		Tag = 33,
 		Temporary = 34,
-		MultiLine = 35
+		MultiLine = 35,
+		Appearance = 36,
+		Color = 37
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

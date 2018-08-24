@@ -39,7 +39,7 @@
 #include "Writer/OOXSettingsWriter.h"
 #include "Writer/OOXFootnoteWriter.h"
 
-RtfDocument::RtfDocument()
+RtfDocument::RtfDocument() : m_pAppFonts(NULL)
 {
     _section section;
 	section.props = RtfSectionPtr(new RtfSection());
@@ -52,6 +52,15 @@ RtfDocument::RtfDocument()
 
 	m_nZIndexLast = 0;
 }
+RtfDocument::~RtfDocument()
+{
+	if (m_pAppFonts)
+	{
+		delete m_pAppFonts;
+		m_pAppFonts = NULL;
+	}
+}
+
 int RtfDocument::GetType()
 {
 	return TYPE_RTF_DOCUMENT;

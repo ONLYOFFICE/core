@@ -174,7 +174,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		Context.output_stream() << L" xml:space=\"preserve\"";
 	Context.output_stream() << L">";
 
-	Context.output_stream() << xml::utils::replace_text_to_xml( text_, true );
+	Context.output_stream() << xml::utils::replace_text_to_xml( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
     Context.output_stream() << L"</" << textNode << L">";
 
 	if (add_del_run)
@@ -2058,6 +2058,10 @@ void field_fieldmark_start::docx_convert(oox::docx_conversion_context & Context)
 	if (std::wstring::npos != field_type_->find(L"vnd.oasis.opendocument.field."))
 	{
 		Context.start_field(field_type_->substr(29), *text_name_);
+	}
+	else
+	{
+		Context.start_field(*field_type_, *text_name_);
 	}
 
 }

@@ -59,6 +59,10 @@ namespace odf_writer
 	{
 		std::vector<office_element_ptr>	spanned_row_cell;
 	};
+	struct odf_row_state : odf_element_state
+	{
+		std::vector<office_element_ptr>	spanned_column_cell;
+	};
 	struct odf_table_state
 	{
 		odf_table_state()
@@ -71,9 +75,9 @@ namespace odf_writer
 
 			table_width = 0;
 		}
-		std::vector<odf_element_state> rows;
-		std::vector<odf_column_state> columns;
-		std::vector<odf_element_state> cells;
+		std::vector<odf_row_state>		rows;
+		std::vector<odf_column_state>	columns;
+		std::vector<odf_element_state>	cells;
 
 		odf_element_state table;
 
@@ -178,13 +182,17 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 }
 void odf_table_context::end_table()
 {
-	//последние объединенные по вертикали ячейки ..
-	for (size_t i =0 ; i < impl_->current_table().columns.size(); i++)
+	//последние объединенные ячейки ..
+	for (size_t i = 0 ; i < impl_->current_table().columns.size(); i++)
 	{
-		impl_->current_table().current_column = i+1;
+		impl_->current_table().current_column = i + 1;
 		set_cell_row_span_restart();
 	}
-
+	for (size_t i = 0 ; i < impl_->current_table().rows.size(); i++)
+	{
+		impl_->current_table().current_row = i + 1;
+		set_cell_column_span_restart();
+	}
 	style * style_ = dynamic_cast<style *>(impl_->current_table().table.style_elm.get());
 	if (style_)
 	{
@@ -206,7 +214,7 @@ void odf_table_context::start_row(office_element_ptr &elm, bool styled)
 	table_table_row * row = dynamic_cast<table_table_row *>(elm.get());
 	if (!row)return;
 	
-	odf_element_state state;
+	odf_row_state state;
 
 	state.elm = elm;
 
@@ -235,6 +243,8 @@ void odf_table_context::end_row()
 {
 	if (impl_->empty()) return;
 	
+	set_cell_column_span_restart();
+
 	//for (int i = impl_->current_table().current_column ; i< impl_->current_table().columns.size() ; i++)
 	//{
 	//	office_element_ptr cell; //потом на default ???
@@ -480,29 +490,59 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 			}
 		}
 	}
-	//if (cell)
-	//{
-	//	cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
-	//	cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
-	//}
+	int row = impl_->current_table().current_row - 1;
+	odf_row_state & state_row = impl_->current_table().rows[row];
+	
+	if (cell && state_row.spanned_column_cell.size() > 1)
+	{
+		table_table_cell * cell = dynamic_cast<table_table_cell *>(state_row.spanned_column_cell[0].get());
+		if (!cell)return;
+
+		cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = state_row.spanned_column_cell.size();	
+		state_row.spanned_column_cell.clear();
+	}
 
 	impl_->current_table().cells.push_back(state);
 
 	impl_->current_table().current_column++;
 }
+void odf_table_context::set_cell_column_span_restart()
+{
+	int row = impl_->current_table().current_row - 1;
+	odf_row_state & state = impl_->current_table().rows[row];
+	
+	int sz = state.spanned_column_cell.size();	
+	if (sz  > 1)
+	{
+		table_table_cell * cell = dynamic_cast<table_table_cell *>(state.spanned_column_cell[0].get());
+		if (!cell)return;
 
+		cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = sz;
+	}
+	state.spanned_column_cell.clear();
+}
 void odf_table_context::set_cell_column_span(int spanned)
 {
 	if (impl_->empty()) return;
 	if (impl_->current_table().cells.size() < 1)return;
-	if (spanned < 1)return;
+	
+	if (spanned > 0)
+	{
+		table_table_cell * cell = dynamic_cast<table_table_cell *>(impl_->current_table().cells.back().elm.get());
+		if (cell)
+			cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned;
+	}
+	else
+	{
+		int row = impl_->current_table().current_row - 1;
+		odf_row_state & state = impl_->current_table().rows[row];
 
-	table_table_cell * cell = dynamic_cast<table_table_cell *>(impl_->current_table().cells.back().elm.get());;
-	if (!cell)return;
-
-	cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned;
-
-	//impl_->current_table().current_column += spanned - 1;			
+		if (state.spanned_column_cell.empty() && impl_->current_table().cells.size() > 1 )
+		{
+			state.spanned_column_cell.push_back(impl_->current_table().cells[impl_->current_table().cells.size() - 2].elm);
+		}
+		state.spanned_column_cell.push_back(impl_->current_table().cells.back().elm);
+	}
 }
 
 void odf_table_context::set_cell_row_span(int spanned)
@@ -524,7 +564,7 @@ void odf_table_context::set_cell_row_span(int spanned)
 
 void odf_table_context::set_cell_row_span_restart()
 {
-	int col = impl_->current_table().current_column-1;
+	int col = impl_->current_table().current_column - 1;
 	odf_column_state & state = impl_->current_table().columns[col];
 
 	int sz = state.spanned_row_cell.size();

@@ -45,6 +45,8 @@
 #include "Pivot/PivotCacheDefinition.h"
 #include "Pivot/PivotCacheRecords.h"
 
+#include "../../../../DesktopEditor/common/SystemUtils.h"
+
 OOX::Spreadsheet::CXlsx::~CXlsx()
 {
     if(bDeleteWorkbook)			RELEASEOBJECT(m_pWorkbook);
@@ -123,7 +125,10 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
 //CApp
     OOX::CApp* pApp = new OOX::CApp(this);
 
-    pApp->SetApplication(L"ONLYOFFICE");
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+	if (sApplication.empty())
+		sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+	pApp->SetApplication(sApplication);
 
 #if defined(INTVER)
     pApp->SetAppVersion(VALUE2STR(INTVER));

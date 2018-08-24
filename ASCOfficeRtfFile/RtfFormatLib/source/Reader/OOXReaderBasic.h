@@ -39,7 +39,7 @@
 class ReaderParameter
 {
 public: 
-
+	ReaderParameter() : oRtf(NULL), oDocx(NULL), oReader(NULL){}
 	OOXReader*			oReader;
 	OOX::CDocx*			oDocx;	
 	RtfDocument*		oRtf;

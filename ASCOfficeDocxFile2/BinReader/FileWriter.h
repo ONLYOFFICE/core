@@ -47,6 +47,7 @@
 #include "DocumentRelsWriter.h"
 #include "webSettingsWriter.h"
 #include "DefaultThemeWriter.h"
+#include "CustormXmlWriter.h"
 
 namespace BinDocxRW 
 {
@@ -77,6 +78,7 @@ namespace Writers
 		DocumentRelsWriter		m_oDocumentRelsWriter;
 		WebSettingsWriter		m_oWebSettingsWriter;
 		DefaultThemeWriter		m_oTheme;
+		CustomXmlWriter			m_oCustomXmlWriter;
 		
 		smart_ptr<OOX::VbaProject>		m_pVbaProject;
 	
@@ -102,7 +104,8 @@ namespace Writers
 										m_oDocumentRelsWriter	(sDirOutput),
 										m_oWebSettingsWriter	(sDirOutput),
 										m_nDocPrIndex(0),
-										m_pComments(NULL)
+										m_pComments(NULL),
+										m_oCustomXmlWriter		(sDirOutput, pDrawingConverter)
 		{
 		}
 		int getNextDocPr()

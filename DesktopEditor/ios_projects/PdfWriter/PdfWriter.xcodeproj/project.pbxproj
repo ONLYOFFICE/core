@@ -51,6 +51,7 @@
 		8ABC65A3208A1EFA00E96FFE /* pro_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */; };
 		8ABC65A5208A1F1B00E96FFE /* pro_Fonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */; };
 		8ABC65A7208A1F3A00E96FFE /* MetafileToRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */; };
+		8ADE001421302B3600BFAD8C /* SystemUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADE001321302B3600BFAD8C /* SystemUtils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -129,6 +130,8 @@
 		8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Image.cpp; path = ../../graphics/pro/pro_Image.cpp; sourceTree = "<group>"; };
 		8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Fonts.cpp; path = ../../graphics/pro/pro_Fonts.cpp; sourceTree = "<group>"; };
 		8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetafileToRenderer.cpp; path = ../../graphics/MetafileToRenderer.cpp; sourceTree = "<group>"; };
+		8ADE001221302B3600BFAD8C /* SystemUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemUtils.h; path = ../../common/SystemUtils.h; sourceTree = "<group>"; };
+		8ADE001321302B3600BFAD8C /* SystemUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemUtils.cpp; path = ../../common/SystemUtils.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,11 +148,13 @@
 		1791A2181BAC19C600FC9C28 /* PdfWriter */ = {
 			isa = PBXGroup;
 			children = (
-				698AF5031C0766200080D889 /* unicode_util.cpp */,
 				698AF5041C0766200080D889 /* unicode_util.h */,
+				698AF5031C0766200080D889 /* unicode_util.cpp */,
 				7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */,
 				7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */,
 				8A7E89E020E6211000E06CBE /* ICCProfile.h */,
+				8ADE001221302B3600BFAD8C /* SystemUtils.h */,
+				8ADE001321302B3600BFAD8C /* SystemUtils.cpp */,
 				17FFC2C11BAB15CE00D91F59 /* PdfRenderer.h */,
 				17FFC2C01BAB15CE00D91F59 /* PdfRenderer.cpp */,
 				17FFC2C41BAB163500D91F59 /* OnlineOfficeBinToPdf.h */,
@@ -322,6 +327,7 @@
 				176285F11BAAFC3B00AEDA07 /* Font.cpp in Sources */,
 				176285F21BAAFC3B00AEDA07 /* Font14.cpp in Sources */,
 				176E57401BB0057700276C19 /* ImageFileFormatChecker.cpp in Sources */,
+				8ADE001421302B3600BFAD8C /* SystemUtils.cpp in Sources */,
 				176285FD1BAAFC3B00AEDA07 /* Streams.cpp in Sources */,
 				176285FA1BAAFC3B00AEDA07 /* Pages.cpp in Sources */,
 				17FFC2C21BAB15CE00D91F59 /* PdfRenderer.cpp in Sources */,

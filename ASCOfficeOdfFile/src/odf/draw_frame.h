@@ -153,7 +153,7 @@ public:
     static const ElementType	type		= typeDrawFrame;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	draw_frame() : oox_drawing_(NULL), idx_in_owner(-1)  {}
+	draw_frame() : oox_drawing_(), idx_in_owner(-1)  {}
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);

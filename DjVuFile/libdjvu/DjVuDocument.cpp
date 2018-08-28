@@ -78,7 +78,7 @@
 
 #include "debug.h"
 
-#if defined(__linux__) || defined(LINUX)
+#if defined(__unix__) || defined(LINUX)
 typedef unsigned int	UINT;
 #endif
 

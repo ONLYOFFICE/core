@@ -46,7 +46,7 @@ std::wstring readXstz(VirtualStreamReader *reader)
 
 	std::wstring ret;
 
-	if (cch > 0)
+	if (cch > 0 && cch < 0x0fff)
 	{
 		std::shared_ptr<unsigned char>data = std::shared_ptr<unsigned char>(reader->ReadBytes(cch * 2, true));	
 #if defined(_WIN32) || defined(_WIN64)

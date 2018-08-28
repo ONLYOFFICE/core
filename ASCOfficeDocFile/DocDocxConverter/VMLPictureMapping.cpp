@@ -324,24 +324,28 @@ namespace DocFileFormat
 				}break;
 //BORDERS
 			case borderBottomColor:
+				if (!pict->brcBottom)
 				{
 					RGBColor bottomColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", L"#" + bottomColor.SixDigitHexCode);
 				}
 				break;
 			case borderLeftColor:
+				if (!pict->brcLeft)
 				{  
 					RGBColor leftColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", L"#" + leftColor.SixDigitHexCode);
 				}  
 				break;
 			case borderRightColor:
+				if (!pict->brcRight)
 				{  
 					RGBColor rightColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderrightcolor",  L"#" + rightColor.SixDigitHexCode);
 				}
 				break;
 			case borderTopColor:
+				if (!pict->brcTop)
 				{
 					RGBColor topColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", L"#" + topColor.SixDigitHexCode);
@@ -463,12 +467,9 @@ namespace DocFileFormat
 		{
 			appendValueAttribute(m_imageData, L"r:id", L"rId" + FormatUtils::IntToWideString(m_nImageId));
 			appendValueAttribute(m_imageData, L"o:title", L"" );
+			m_pXmlWriter->WriteString(m_imageData->GetXMLString());
 		}
-		else
-		{
-			appendValueAttribute(m_imageData, L"r:id", L"");
-		}
-		m_pXmlWriter->WriteString(m_imageData->GetXMLString());
+
 
 		{//borders			
 			writePictureBorder( L"bordertop",		pict->brcTop );

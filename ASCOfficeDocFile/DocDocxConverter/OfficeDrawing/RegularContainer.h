@@ -84,11 +84,11 @@ namespace DocFileFormat
 		{
 			T* firstChildWithType = NULL;
 
-			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			for ( size_t i = 0; i < this->Children.size(); ++i )
 			{
-				if ( (*iter != NULL) && (typeid(T) == typeid(**iter)) )
+				if ( (this->Children[i] != NULL) && (typeid(T) == typeid(*(this->Children[i]))) )
 				{
-					firstChildWithType = static_cast<T*>(*iter);
+					firstChildWithType = static_cast<T*>(this->Children[i]);
 
 					break;
 				}

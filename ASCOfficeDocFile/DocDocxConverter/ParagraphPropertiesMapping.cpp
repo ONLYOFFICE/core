@@ -422,12 +422,11 @@ namespace DocFileFormat
 		//numbering
 				case sprmOldPAnld:
 				{
-					NumberingDescriptor desc( iter->Arguments, iter->argumentsSize );
+					NumberingDescriptorPtr desc = NumberingDescriptor::create( iter->Arguments, iter->argumentsSize );
 
 					if (m_document->listTable)
 					{
-						m_document->listTable->appendNumbering(  desc );
-						short numId = static_cast<short>(m_document->listTable->listNumbering.size());
+						unsigned short numId = m_document->listTable->appendNumbering(  desc );
                         appendValueElement( &numPr, L"numId", numId, true );
 					}
 				}break;
@@ -460,7 +459,8 @@ namespace DocFileFormat
 					//Todo разобраться с закоментированным кодом
 					if (NULL != m_document->listTable && false == m_document->listTable->listData.empty())
 					{
-                        appendValueElement( &numPr, L"numId", FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), true );
+						unsigned short numId = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+						appendValueElement( &numPr, L"numId", numId, true );
 					}
 
 					//check if there is a ilvl reference, if not, check the count of LVLs.

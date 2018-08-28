@@ -44,7 +44,7 @@
 namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
-		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
+		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(1),
 		_endnoteNr(0), _commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;
@@ -60,7 +60,7 @@ namespace DocFileFormat
 	}
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), 
-		AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
+		AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(1), _endnoteNr(0),
 		_commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;
@@ -591,6 +591,7 @@ namespace DocFileFormat
                 std::wstring HYPERLINK	( L"HYPERLINK" );
                 std::wstring PAGEREF	( L"PAGEREF" );
                 std::wstring PAGE		( L"PAGE" );
+                std::wstring SHAPE		( L"SHAPE" );
 
 				if (arField.empty() == false)
 					f = arField[0];
@@ -611,6 +612,7 @@ namespace DocFileFormat
 				bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
 				bool bPAGE			= search( f.begin(), f.end(), PAGE.begin(),			PAGE.end())				!= f.end();
 				bool bTOC			= search( f.begin(), f.end(), TOC.begin(),			TOC.end())				!= f.end();
+				bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())				!= f.end();
 				
 				bool bPAGEREF = false; 
 				if (bHYPERLINK && arField.size() > 1)
@@ -952,55 +954,57 @@ namespace DocFileFormat
 				}
 				else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer)/* && (false == oPicture.shapeContainer->isLastIdentify())*/)
 				{
-					bool bFormula = false;
-
-
-					bool bPicture = true;
+					bool bPicture	= true;
+					bool m_bSkip	= false;
 
 					if (oPicture.shapeContainer)
 					{
-						int shape_type = oPicture.shapeContainer->getShapeType();
+						if (oPicture.shapeContainer->m_nShapeType != msosptPictureFrame)
+							bPicture = false;//шаблон 1.doc картинка в колонтитуле
 
-						if (shape_type != msosptPictureFrame) bPicture = false;//шаблон 1.doc картинка в колонтитуле
+						m_bSkip = oPicture.shapeContainer->m_bSkip;
 					}
-					
-					XMLTools::CStringXmlWriter pictWriter;
-                    pictWriter.WriteNodeBegin (L"w:pict");
-
-					if (bPicture)
+					if (!m_bSkip)
 					{
-						VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
-						oPicture.Convert (&oVmlMapper);
-						
-						if (oVmlMapper.m_isEmbedded)
+						bool bFormula	= false;
+						XMLTools::CStringXmlWriter pictWriter;
+						pictWriter.WriteNodeBegin (L"w:pict");
+
+						if (bPicture)
 						{
-							OleObject ole ( chpx, m_document);
-							OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
+							VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
+							oPicture.Convert (&oVmlMapper);
 							
-							ole.isEquation		= oVmlMapper.m_isEquation;
-							ole.isEmbedded		= oVmlMapper.m_isEmbedded;
-							ole.emeddedData		= oVmlMapper.m_embeddedData;
-						
-							ole.Convert( &oleObjectMapping );
+							if (oVmlMapper.m_isEmbedded)
+							{
+								OleObject ole ( chpx, m_document);
+								OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
+								
+								ole.isEquation		= oVmlMapper.m_isEquation;
+								ole.isEmbedded		= oVmlMapper.m_isEmbedded;
+								ole.emeddedData		= oVmlMapper.m_embeddedData;
+							
+								ole.Convert( &oleObjectMapping );
+							}
+							else if (oVmlMapper.m_isEquation)
+							{
+								//нельзя в Run писать oMath
+								//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
+								_writeAfterRun = oVmlMapper.m_equationXml;
+								bFormula = true;
+							}
 						}
-						else if (oVmlMapper.m_isEquation)
+						else
 						{
-							//нельзя в Run писать oMath
-							//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
-							_writeAfterRun = oVmlMapper.m_equationXml;
-							bFormula = true;
+							VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline);
+							oPicture.shapeContainer->Convert(&oVmlMapper);
 						}
-					}
-					else
-					{
-						VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline);
-						oPicture.shapeContainer->Convert(&oVmlMapper);
-					}
-					
-                    pictWriter.WriteNodeEnd	 (L"w:pict");
+						
+						pictWriter.WriteNodeEnd	 (L"w:pict");
 
-					if (!bFormula)
-						m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+						if (!bFormula)
+							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+					}
 
 				}                   
 			}

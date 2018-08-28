@@ -36,6 +36,9 @@
 
 namespace DocFileFormat
 {
+	class ListData;
+	typedef class boost::shared_ptr<ListData> ListDataPtr;
+
 	class ListData
 	{
 		friend class ListTable;
@@ -74,15 +77,20 @@ namespace DocFileFormat
 
 		virtual ~ListData();
 		ListData( VirtualStreamReader* reader, int length );
+
+		static ListDataPtr create(VirtualStreamReader* reader, int length);
 	};
 
+	class NumberingDescriptor;
+	typedef class boost::shared_ptr<NumberingDescriptor> NumberingDescriptorPtr;
+	
 	class NumberingDescriptor : public IVisitable
 	{
 		friend class ListTable;
 		friend class NumberingMapping;
 	
 	private:
-
+		size_t			id;
 		unsigned char	nfc;
 		unsigned char	cbTextBefore;
 		unsigned char	cbTextAfter;
@@ -121,9 +129,15 @@ namespace DocFileFormat
 		std::wstring	xst; //32 chars ansi
 
 	public:
+
+		bool operator == (const NumberingDescriptor & val) const;
+		bool operator == (const NumberingDescriptorPtr & val) const;
+
 		virtual ~NumberingDescriptor(){}
 		// Parses the given StreamReader to retrieve a ANLD struct
 		NumberingDescriptor( unsigned char * data, int length ); //cbANLD (count of bytes of ANLD) is 52 
+		
+		static NumberingDescriptorPtr create(unsigned char * data, int length);
 	};
 
 	

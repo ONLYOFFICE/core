@@ -9,6 +9,9 @@
  * based on dcraw.c -- Dave Coffin's raw photo decoder
  * Copyright 1997-2007 by Dave Coffin, dcoffin a cybercom o net
  */
+#if defined(__unix__) 
+#include <unistd.h> 
+#endif
 
 #include "ximaraw.h"
 #include "../../common/File.h"

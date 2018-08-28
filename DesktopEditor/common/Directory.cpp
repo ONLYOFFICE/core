@@ -35,17 +35,7 @@
     #include "windef.h"
     #include <shlobj.h>
     #include <Rpc.h>
-#elif __linux__
-    #include <sys/types.h>
-    #include <sys/stat.h>
-    #include <unistd.h>
-    #include <dirent.h>
-#elif MAC
-    #include <sys/types.h>
-    #include <sys/stat.h>
-    #include <unistd.h>
-    #include <dirent.h>
-#elif _IOS
+#else
     #include <sys/types.h>
     #include <sys/stat.h>
     #include <unistd.h>

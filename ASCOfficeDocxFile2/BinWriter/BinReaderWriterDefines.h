@@ -764,7 +764,8 @@ extern int g_nCurFormatVersion;
 		FootnotePr = 4,
 		EndnotePr = 5,
 		SdtGlobalColor = 6,
-		SdtGlobalShowHighlight = 7
+		SdtGlobalShowHighlight = 7,
+		Compat = 8
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1149,6 +1150,13 @@ extern int g_nCurFormatVersion;
 		DisplacedByCustomXml = 2,
 		ColFirst = 3,
 		ColLast = 4
+	};}
+	namespace c_oSerCompat{enum c_oSerCompat
+	{
+		CompatSetting = 0,
+		CompatName = 1,
+		CompatUri = 2,
+		CompatValue = 3
 	};}
 }
 

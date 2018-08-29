@@ -690,9 +690,7 @@
 #define ASC_MENU_EVENT_TYPE_SECTION					17
 #define ASC_MENU_EVENT_TYPE_SHAPE                   18
 #define ASC_MENU_EVENT_TYPE_SLIDE                   20
-#define ASC_MENU_EVENT_TYPE_THEME_THUMBNAILS        21
-#define ASC_MENU_EVENT_TYPE_LAYOUT_THUMBNAILS       22
-#define ASC_MENU_EVENT_TYPE_SLIDETIMINGALL          23
+#define ASC_MENU_EVENT_TYPE_CHART                   21
 
 // insert commands
 #define ASC_MENU_EVENT_TYPE_INSERT_IMAGE			50
@@ -751,6 +749,7 @@
 #define ASC_MENU_EVENT_TYPE_USER_ZOOM               301
 
 #define ASC_MENU_EVENT_TYPE_INSERT_CHART            400
+#define ASC_MENU_EVENT_TYPE_ADD_CHART_DATA          440
 #define ASC_MENU_EVENT_TYPE_GET_CHART_DATA          450
 #define ASC_MENU_EVENT_TYPE_SET_CHART_DATA          460
 

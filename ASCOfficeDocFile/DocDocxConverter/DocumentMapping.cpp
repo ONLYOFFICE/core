@@ -44,7 +44,7 @@
 namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
-		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(1),
+		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
 		_endnoteNr(0), _commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;
@@ -60,7 +60,7 @@ namespace DocFileFormat
 	}
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), 
-		AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(1), _endnoteNr(0),
+		AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
 		_commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;

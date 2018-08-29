@@ -92,7 +92,7 @@ namespace DocFileFormat
 			{
 				//start abstractNum
                 m_pXmlWriter->WriteNodeBegin( L"w:abstractNum", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i + 1 ));
+                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i /*+ 1 */));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				//nsid

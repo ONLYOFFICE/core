@@ -52,7 +52,7 @@ namespace DocFileFormat
 			{
 				m_context->_docx->RegisterFootnotes();
 
-				int id = 1;
+				int id = 0;
 
                 m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
                 m_pXmlWriter->WriteNodeBegin( L"w:footnotes", TRUE );
@@ -77,21 +77,21 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( L"mc:Ignorable", L"w14 wp14" );
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
                 
-				m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:type", L"separator");
-				m_pXmlWriter->WriteAttribute( L"w:id", L"-1");
-				m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+				//m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
+				//m_pXmlWriter->WriteAttribute( L"w:type", L"separator");
+				//m_pXmlWriter->WriteAttribute( L"w:id", L"-1");
+				//m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-				m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:separator/></w:r></w:p>");
-				m_pXmlWriter->WriteNodeEnd( L"w:footnote");
+				//m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:separator/></w:r></w:p>");
+				//m_pXmlWriter->WriteNodeEnd( L"w:footnote");
 
-				m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:type", L"continuationSeparator");
-				m_pXmlWriter->WriteAttribute( L"w:id", L"0");
-				m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+				//m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
+				//m_pXmlWriter->WriteAttribute( L"w:type", L"continuationSeparator");
+				//m_pXmlWriter->WriteAttribute( L"w:id", L"0");
+				//m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-				m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:continuationSeparator/></w:r></w:p>");
-				m_pXmlWriter->WriteNodeEnd( L"w:footnote");
+				//m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:continuationSeparator/></w:r></w:p>");
+				//m_pXmlWriter->WriteNodeEnd( L"w:footnote");
 
 				int cp = m_document->FIB->m_RgLw97.ccpText;
 

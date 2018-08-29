@@ -170,7 +170,7 @@ namespace NS_DWC_Common
 				alpha = (BYTE)(XmlUtils::GetDouble(str) * 256);
 			}
 			else
-				alpha = (BYTE)XmlUtils::GetDouble(opacityStr) * 256;
+				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) * 256);
 		}
 		return alpha;
 	}
@@ -2164,6 +2164,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							nullable_string sOpacity;
 							nullable_string sOpacity2;
 							nullable_string sColor2;
+							nullable_string sColor;
 							nullable_string sType;
 							nullable_string sFocus;
 							nullable_string sFocusSize;
@@ -2171,8 +2172,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							nullable_string sAngle;
 							nullable_string sColors;
 
-                            XmlMacroReadAttributeBase(oNodeP, L"opacity"			, sOpacity);
+                            XmlMacroReadAttributeBase(oNodeP, L"opacity"		, sOpacity);
                             XmlMacroReadAttributeBase(oNodeP, L"opacity2"		, sOpacity2);
+                            XmlMacroReadAttributeBase(oNodeP, L"color"			, sColor);
                             XmlMacroReadAttributeBase(oNodeP, L"color2"			, sColor2);
                             XmlMacroReadAttributeBase(oNodeP, L"type"			, sType);
                             XmlMacroReadAttributeBase(oNodeP, L"focus"			, sFocus);
@@ -2199,22 +2201,52 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							{
 								nFocus = _wtoi(sFocus->c_str())/100.0;
 							}
+
 							if (sOpacity.is_init())
 							{
 								bOpacity	= true;
 								lAlpha		= NS_DWC_Common::getOpacityFromString(*sOpacity);
 								oMod.name	= L"alpha";
-								oMod.val	= (int)(lAlpha * 100000.0 / 255.0);
+								oMod.val	= (int)((1 - lAlpha/ 255.0) * 100000.0 );
 
 								if (arColors.at(0)->is_init())
 									arColors.at(0)->Color->Modifiers.push_back(oMod);
+							}
+							if (sColor.is_init())
+							{
+								NSPresentationEditor::CColor color;
+								if (sColor->find(L"fill") != -1)
+								{
+									std::wstring sColorEffect = *sColor;
+									if (sColorEffect.length() > 5)
+										sColorEffect = sColorEffect.substr(5);
+
+									int resR, resG, resB;
+									GetColorWithEffect(sColorEffect, R, G, B, resR, resG, resB);
+
+									color.R = resR;
+									color.G = resG;
+									color.B = resB;
+								}
+								else
+								{
+									color = NS_DWC_Common::getColorFromString(*sColor);
+								}
+								PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
+								oColor->Color = new PPTX::Logic::SrgbClr();
+								oColor->Color->SetRGB(color.R, color.G, color.B);
+
+								if (bOpacity)
+									oColor->Color->Modifiers.push_back(oMod);
+
+								arColors[0] = oColor;
 							}
 							if (sOpacity2.is_init())
 							{
 								bOpacity2	= true;
 								lAlpha		= NS_DWC_Common::getOpacityFromString(*sOpacity2);
 								oMod.name	= L"alpha";
-								oMod2.val	= (int)(lAlpha * 100000.0 / 255.0);
+								oMod2.val	= (int)((1 - lAlpha/ 255.) * 100000.);
 								
 								if (arColors.at(1)->is_init())
 									arColors.at(1)->Color->Modifiers.push_back(oMod2);
@@ -2863,8 +2895,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			pShape->signatureLine = pPPTShape->m_oSignatureLine;
 		}
 
-		if (!pPPTShape->IsWordArt())
-			CheckPenShape(elem, oNodeShape, pPPTShape);		
+		//if (!pPPTShape->IsWordArt())
+		CheckPenShape(elem, oNodeShape, pPPTShape);		
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
 
@@ -4454,6 +4486,13 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
     XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"v:stroke");
 	if (oNodeStroke.IsValid())
 	{
+		nullable_string sStrokeOn;
+        XmlMacroReadAttributeBase(oNodeStroke, L"on", sStrokeOn);
+		if (sStrokeOn.is_init())
+		{
+			sStroked.reset();
+			sStroked = sStrokeOn;
+		}
 		sStrokeColor.reset();
         XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor);
 		if (sStrokeColor.is_init())

@@ -81,7 +81,7 @@ namespace DocFileFormat
 				return listNumbering[i]->id;
 			}
 		}
-		desc->id = listData.size() + listNumbering.size() + 1;
+		desc->id = listData.size() + listNumbering.size()/* + 1*/;
 		listNumbering.push_back(desc);
 		return desc->id;
 	}

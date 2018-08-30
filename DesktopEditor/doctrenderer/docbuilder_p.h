@@ -937,7 +937,38 @@ namespace NSDoctRenderer
             CheckFileDir();
             NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 
-            std::wstring sFileCopy = m_sFileDir + L"/origin." + NSCommon::GetFileExtention(path);
+            std::wstring sExtCopy = NSCommon::GetFileExtention(path);
+
+            if (true)
+            {
+                // для файлов по ссылке - расширение может быть плохим.
+                const wchar_t* sExtCopyPtr = sExtCopy.c_str();
+                int nExtCopyLen = sExtCopy.length();
+                int nValidIndex = 0;
+                while (nValidIndex < nExtCopyLen)
+                {
+                    wchar_t c = sExtCopyPtr[nValidIndex];
+                    if ((c >= 'a' && c <= 'z') ||
+                        (c >= 'A' && c <= 'Z') ||
+                        (c >= '0' && c <= '9'))
+                    {
+                        ++nValidIndex;
+                    }
+                    else
+                        break;
+                }
+
+                if (nValidIndex > 0)
+                {
+                    sExtCopy = sExtCopy.substr(0, nValidIndex);
+                }
+                else
+                {
+                    sExtCopy = L"tmp";
+                }
+            }
+
+            std::wstring sFileCopy = m_sFileDir + L"/origin." + sExtCopy;
             MoveFileOpen(path, sFileCopy);
 
             COfficeFileFormatChecker oChecker;

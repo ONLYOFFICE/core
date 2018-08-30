@@ -46,7 +46,8 @@
 
 using namespace CRYPT;
 
-#define GETBIT(from, num) ((from & (1 << num)) != 0)
+#define GETBIT(from, num)				((from & (1 << num)) != 0)
+#define SETBIT(to, num, setorclear)		{setorclear ? to |= (1 << num) : to &= ~(1 << num);}
 
 #define WritingElement_ReadAttributes_Start(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
@@ -291,7 +292,14 @@ bool ReadXmlEncryptionInfo(const std::string & xml_string, _ecmaCryptData & cryp
 		if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
 		if (keyData.cipherChaining == "ChainingModeCFB")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CFB;
 	}
-
+	else if (keyData.cipherAlgorithm == "RC4")
+	{
+		cryptData.cipherAlgorithm = CRYPT_METHOD::RC4;
+	}
+	else if (keyData.cipherAlgorithm == "DES")
+	{
+		cryptData.cipherAlgorithm = CRYPT_METHOD::DES;
+	}
 	if (keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
 	if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
 	if (keyData.hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
@@ -315,12 +323,27 @@ bool WriteXmlEncryptionInfo(const _ecmaCryptData & cryptData, std::string & xml_
 	keyData.keyBits		= std::to_string(cryptData.keySize * 8);
 	keyData.saltValue	= EncodeBase64(cryptData.dataSaltValue);
 
-	keyData.cipherAlgorithm = "AES";
-
-	if (keyData.cipherAlgorithm == "AES")
+	switch(cryptData.cipherAlgorithm)
 	{
-		if (cryptData.cipherAlgorithm == CRYPT_METHOD::AES_CBC)	keyData.cipherChaining = "ChainingModeCBC";	
-		if (cryptData.cipherAlgorithm == CRYPT_METHOD::AES_CFB)	keyData.cipherChaining = "ChainingModeCFB";
+	case CRYPT_METHOD::RC4:
+		keyData.cipherAlgorithm = "RC4"; 
+	break;
+	case CRYPT_METHOD::AES_CBC:
+		keyData.cipherAlgorithm = "AES";
+		keyData.cipherChaining = "ChainingModeCBC";	
+	break;
+	case CRYPT_METHOD::AES_ECB:
+		keyData.cipherAlgorithm = "AES";
+		keyData.cipherChaining = "ChainingModeECB";
+	break;
+	case CRYPT_METHOD::AES_CFB:
+		keyData.cipherAlgorithm = "AES";
+		keyData.cipherChaining = "ChainingModeCFB";
+	case CRYPT_METHOD::DES:
+		keyData.cipherAlgorithm = "DES";
+		keyData.cipherChaining = "ChainingModeCBC";
+	break;
+
 	}
 
 	switch(cryptData.hashAlgorithm)
@@ -360,7 +383,12 @@ bool WriteXmlEncryptionInfo(const _ecmaCryptData & cryptData, std::string & xml_
 				CP_XML_ATTR("keyBits",			keyData.keyBits);
 				CP_XML_ATTR("hashSize",			keyData.hashSize);
 				CP_XML_ATTR("cipherAlgorithm",	keyData.cipherAlgorithm);
-				CP_XML_ATTR("cipherChaining",	keyData.cipherChaining);
+				
+				if (false == keyData.cipherChaining.empty())
+				{
+					CP_XML_ATTR("cipherChaining",	keyData.cipherChaining);
+				}
+				
 				CP_XML_ATTR("hashAlgorithm",	keyData.hashAlgorithm);
 				CP_XML_ATTR("saltValue",		keyData.saltValue);
 			}
@@ -400,7 +428,90 @@ bool WriteXmlEncryptionInfo(const _ecmaCryptData & cryptData, std::string & xml_
 
 	return true;
 }
+bool WriteStandartEncryptionInfo(unsigned char* data, int &size, _ecmaCryptData & cryptData)
+{
+	if (!data || size < 1) return false;
+	MemoryStream mem_stream(data, size, false);
 
+	_UINT32 SizeHeader = 0, Flags = 0, SizeExtra = 0, AlgID = 0, AlgIDHash = 0, KeySize = 0, ProviderType = 0, Reserved1 = 0, Reserved2 = 0;
+
+	bool fCryptoAPI = true, fDocProps = false, fExternal = false, fAES = cryptData.cipherAlgorithm != CRYPT_METHOD::RC4;
+
+	SETBIT(Flags, 2, fCryptoAPI); 
+	SETBIT(Flags, 3, fDocProps);  
+	SETBIT(Flags, 4, fExternal);  
+	SETBIT(Flags, 5, fAES);  
+
+	mem_stream.WriteUInt32(SizeHeader);	
+
+	KeySize = (cryptData.keySize == 5) ? 0 : cryptData.keySize * 8;
+	
+	switch(cryptData.cipherAlgorithm)
+	{
+		case CRYPT_METHOD::RC4:
+		{
+			ProviderType = 0x0001; 
+			AlgID = 0x6801;
+		}break;
+		case CRYPT_METHOD::AES_ECB:
+		case CRYPT_METHOD::AES_CBC:
+		{
+			ProviderType = 0x0018;
+			switch(KeySize)
+			{
+			case 128: AlgID = 0x660E; break;
+			case 192: AlgID = 0x660F; break;
+			case 256: AlgID = 0x6610; break;
+			}
+			break;
+		}break;
+	}
+	switch(cryptData.hashAlgorithm)
+	{
+		case CRYPT_METHOD::MD5:		AlgIDHash = 0x8003; break;
+		case CRYPT_METHOD::SHA1:	AlgIDHash = 0x8004; break;
+	}
+
+	mem_stream.WriteUInt32(Flags);
+	mem_stream.WriteUInt32(SizeExtra); 
+	mem_stream.WriteUInt32(AlgID);
+	mem_stream.WriteUInt32(AlgIDHash);
+	mem_stream.WriteUInt32(KeySize);
+	mem_stream.WriteUInt32(ProviderType);
+	mem_stream.WriteUInt32(Reserved1);
+	mem_stream.WriteUInt32(Reserved2);
+
+	std::string provider = "Microsoft Enhanced RSA and AES Cryptographic Provider";// to utf16
+
+	for (size_t i = 0; i < provider.length(); ++i)
+	{
+		mem_stream.WriteByte((unsigned char)provider[i]);
+		mem_stream.WriteByte((unsigned char)0);
+	}
+	mem_stream.WriteByte((unsigned char)0); //null terminate
+	mem_stream.WriteByte((unsigned char)0);
+
+	SizeHeader	= mem_stream.GetPosition() - 4;
+
+//EncryptionVerifier
+	mem_stream.WriteUInt32((_UINT32)cryptData.saltSize);
+	
+	mem_stream.WriteBytes((unsigned char*)cryptData.saltValue.c_str(), cryptData.saltSize);
+	
+	mem_stream.WriteBytes((unsigned char*)cryptData.encryptedVerifierInput.c_str(), 0x10);
+
+	mem_stream.WriteUInt32((_UINT32)cryptData.hashSize);
+			
+	int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20; //RC4 | AES
+	mem_stream.WriteBytes((unsigned char*)cryptData.encryptedVerifierValue.c_str(), szEncryptedVerifierHash);
+
+	size = mem_stream.GetPosition();
+
+	mem_stream.Seek(0);
+	mem_stream.WriteUInt32(SizeHeader);
+
+	return true;
+}
 bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & cryptData)
 {
 	if (!data || size < 1) return false;
@@ -445,21 +556,29 @@ bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & 
 
 	cryptData.hashSize = mem_stream.ReadUInt32();
 			
-	int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20;
+	int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20; // RC4 | AES
 	cryptData.encryptedVerifierValue = std::string((char*)data + mem_stream.GetPosition(), szEncryptedVerifierHash);
 	mem_stream.ReadBytes(szEncryptedVerifierHash, false);
 
 	pos = mem_stream.GetPosition();
 	
 //------------------------------------------------------------------------------------------
-	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1; //by AlgIDHash -> 0x0000 || 0x8004
-	cryptData.spinCount		= 50000;
+	switch(AlgIDHash)
+	{
+	case 0x8003:
+		cryptData.hashAlgorithm = CRYPT_METHOD::MD5; break;
+	case 0x0000:
+	case 0x8004:
+		cryptData.hashAlgorithm = CRYPT_METHOD::SHA1; break;
+	}
+	cryptData.spinCount = 50000;
 
 	switch(AlgID)
 	{
 	case 0x6801:	
 		cryptData.cipherAlgorithm = CRYPT_METHOD::RC4;		
-		cryptData.keySize = KeySize / 8;
+		if (KeySize == 0)	cryptData.keySize = 5; //40 bit
+		else				cryptData.keySize = KeySize / 8;
 		break;
 	case 0x660E:	
 		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
@@ -488,12 +607,39 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 {
 	_ecmaCryptData cryptData;
 	
-	cryptData.bAgile		= true;
-	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
-	cryptData.keySize		= 0x20;
-	cryptData.hashSize		= 0x40;
-	cryptData.blockSize		= 0x10;
-	cryptData.saltSize		= 0x10;
+	//cryptData.bAgile			= true;
+	//cryptData.cipherAlgorithm	= CRYPT_METHOD::DES;
+	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
+	//cryptData.keySize			= 0x08;
+	//cryptData.hashSize			= 0x14;
+	//cryptData.blockSize			= 0x10;
+	//cryptData.saltSize			= 0x10;
+
+	cryptData.bAgile			= true;
+	cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
+	cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
+	cryptData.keySize			= 0x20;
+	cryptData.hashSize			= 0x40;
+	cryptData.blockSize			= 0x10;
+	cryptData.saltSize			= 0x10;
+
+	//cryptData.bAgile			= false;
+	//cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_ECB;
+	//cryptData.hashAlgorithm	= CRYPT_METHOD::SHA1;
+	//cryptData.keySize			= 0x10;
+	//cryptData.hashSize		= 0x14;
+	//cryptData.blockSize		= 0x10;
+	//cryptData.saltSize		= 0x10;
+	//cryptData.spinCount		= 50000;
+
+	//cryptData.bAgile			= false;
+	//cryptData.cipherAlgorithm	= CRYPT_METHOD::RC4;
+	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
+	//cryptData.keySize			= 7;
+	//cryptData.hashSize			= 0x14;
+	//cryptData.blockSize			= 0x10;
+	//cryptData.saltSize			= 0x10;
+	//cryptData.spinCount			= 50000;
 
 	ECMAEncryptor cryptor;	
 
@@ -539,22 +685,53 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 
 	cryptor.GetCryptData(cryptData);
 
-	std::string strXml;
-	WriteXmlEncryptionInfo(cryptData, strXml);
+	if (cryptData.bAgile)
+	{
+		_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0004; //agile
+	
+		pStream->write((unsigned char*)&VersionInfoMajor, 2);
+		pStream->write((unsigned char*)&VersionInfoMinor, 2);
 
-	_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0004; //agile standart
+		_UINT32 nEncryptionInfoFlags = 64;
+		pStream->write((unsigned char*)&nEncryptionInfoFlags, 4); 
+		
+		std::string strXml;
+		WriteXmlEncryptionInfo(cryptData, strXml);
+		
+		pStream->write((unsigned char*)strXml.c_str(), strXml.length()); 
+		
+		pStream->flush();
+		delete pStream;
+	}
+	else
+	{
+		_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0002; // standart
 	
-	pStream->write((unsigned char*)&VersionInfoMajor, 2);
-	pStream->write((unsigned char*)&VersionInfoMinor, 2);
+		pStream->write((unsigned char*)&VersionInfoMajor, 2);
+		pStream->write((unsigned char*)&VersionInfoMinor, 2);
 
-	_UINT32 nEncryptionInfoFlags = 64;
-	pStream->write((unsigned char*)&nEncryptionInfoFlags, 4); 
-	
-	pStream->write((unsigned char*)strXml.c_str(), strXml.length()); 
-	
-	pStream->flush();
-	delete pStream;
-//-------------------------------------------------------------------
+		_UINT32 nEncryptionInfoFlags = 0;
+		bool fCryptoAPI = true, fDocProps = false, fExternal = false, fAES = cryptData.cipherAlgorithm != CRYPT_METHOD::RC4;
+
+		SETBIT(nEncryptionInfoFlags, 2, fCryptoAPI); 
+		SETBIT(nEncryptionInfoFlags, 3, fDocProps);  
+		SETBIT(nEncryptionInfoFlags, 4, fExternal);  
+		SETBIT(nEncryptionInfoFlags, 5, fAES);  
+		
+		pStream->write((unsigned char*)&nEncryptionInfoFlags, 4); 
+
+		int nEncryptionInfoSize = 4096;
+		unsigned char* byteEncryptionInfo = new unsigned char[nEncryptionInfoSize];
+
+		WriteStandartEncryptionInfo(byteEncryptionInfo, nEncryptionInfoSize, cryptData);
+
+		pStream->write(byteEncryptionInfo, nEncryptionInfoSize); 
+		delete []byteEncryptionInfo;
+		
+		pStream->flush();
+		delete pStream;
+	}
+	//-------------------------------------------------------------------
 	pStream = new POLE::Stream(pStorage, L"EncryptedPackage", true, lengthData);
 	
 	pStream->write(data_out, lengthData);
@@ -651,10 +828,10 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 		else
 		{
 			cryptData.bAgile = false;
-			bool fCryptoAPI	= GETBIT(nEncryptionInfoFlags, 1); 
-			bool fDocProps	= GETBIT(nEncryptionInfoFlags, 2); 
-			bool fExternal	= GETBIT(nEncryptionInfoFlags, 3); 
-			bool fAES		= GETBIT(nEncryptionInfoFlags, 4); 
+			bool fCryptoAPI	= GETBIT(nEncryptionInfoFlags, 2); 
+			bool fDocProps	= GETBIT(nEncryptionInfoFlags, 3); 
+			bool fExternal	= GETBIT(nEncryptionInfoFlags, 4); 
+			bool fAES		= GETBIT(nEncryptionInfoFlags, 5); 
 			
 			if ((VersionInfoMajor == 0x0003 || VersionInfoMajor == 0x0004) && VersionInfoMinor == 0x0003)		//extensible info
 			{
@@ -676,28 +853,6 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 		delete pStorage;
 		return false;
 	}
-//------------------------------------------------------------------------------------------------------------
-	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); 
-	//if (pStream)
-	//{
-	//	delete pStream;
-	//	pStorage->deleteByName("DataSpaces");
-
-	//	//_UINT32 size	= 0;
-	//	//_UINT32 count	= 0;
-	//	//
-	//	//pStream->read((unsigned char*)&size, 4); 
-	//	//pStream->read((unsigned char*)&count, 4); 
-
-	//	//for (int i = 0 ; i < count; i++)
-	//	//{
-	//	//	_mapEntry m;
-	//	//	ReadMapEntry(pStream, m);
-
-	//	//	mapEntries.push_back(m);
-	//	//}
-	//	//delete pStream;
-	//}
 //------------------------------------------------------------------------------------------------------------
 	ECMADecryptor decryptor;
 	

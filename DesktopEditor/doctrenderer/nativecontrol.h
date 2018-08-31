@@ -1158,6 +1158,29 @@ public:
 };
 #endif
 
+#ifdef V8_OS_XP
+
+class ExternalMallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
+{
+public:
+    virtual void* Allocate(size_t length)
+    {
+        void* ret = malloc(length);
+        memset(ret, 0, length);
+        return ret;
+    }
+    virtual void* AllocateUninitialized(size_t length)
+    {
+        return malloc(length);
+    }
+    virtual void Free(void* data, size_t length)
+    {
+        free(data);
+    }
+};
+
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 class CV8Initializer
 {
@@ -1171,11 +1194,19 @@ public:
         std::wstring sPrW = NSFile::GetProcessPath();
         std::string sPrA = U_TO_UTF8(sPrW);
 
+#ifndef V8_OS_XP
         v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
         v8::V8::InitializeExternalStartupData(sPrA.c_str());
         m_platform = v8::platform::CreateDefaultPlatform();
         v8::V8::InitializePlatform(m_platform);
         v8::V8::Initialize();
+#else
+        m_platform = v8::platform::CreateDefaultPlatform();
+        v8::V8::InitializePlatform(m_platform);
+
+        v8::V8::Initialize();
+        v8::V8::InitializeICU();
+#endif
     }
     ~CV8Initializer()
     {
@@ -1193,7 +1224,11 @@ public:
     v8::Isolate* CreateNew()
     {
         v8::Isolate::CreateParams create_params;
+#ifndef V8_OS_XP
         m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+#else
+        m_pAllocator = new ExternalMallocArrayBufferAllocator();
+#endif
         create_params.array_buffer_allocator = m_pAllocator;
         return v8::Isolate::New(create_params);
     }

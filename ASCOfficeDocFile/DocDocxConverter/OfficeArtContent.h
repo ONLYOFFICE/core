@@ -97,8 +97,8 @@ namespace DocFileFormat
 								ShapeContainer* shape	=	static_cast<ShapeContainer*>(groupChild);
 								if (shape)
 								{
-									shape->Index = i;
-									if (shape->isBackground())
+									shape->m_nIndex = i;
+									if (shape->m_bBackground)
 									{
 										m_pBackgroud = shape;
 									}

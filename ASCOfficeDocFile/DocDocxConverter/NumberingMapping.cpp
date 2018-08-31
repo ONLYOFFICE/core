@@ -72,33 +72,42 @@ namespace DocFileFormat
             m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
             m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
             m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
-
+			m_pXmlWriter->WriteAttribute( L"xmlns:wpc", L"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" );
+			m_pXmlWriter->WriteAttribute( L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+			m_pXmlWriter->WriteAttribute( L"xmlns:wp14", L"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing");
+			m_pXmlWriter->WriteAttribute( L"xmlns:wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+			m_pXmlWriter->WriteAttribute( L"xmlns:w14", L"http://schemas.microsoft.com/office/word/2010/wordml" );
+			m_pXmlWriter->WriteAttribute( L"xmlns:wpg", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" );
+			m_pXmlWriter->WriteAttribute( L"xmlns:wpi", L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk" );
+			m_pXmlWriter->WriteAttribute( L"xmlns:wne", L"http://schemas.microsoft.com/office/word/2006/wordml" );
+			m_pXmlWriter->WriteAttribute( L"xmlns:wps", L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape" );
+			m_pXmlWriter->WriteAttribute( L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main" );
+			m_pXmlWriter->WriteAttribute( L"xmlns:m", L"http://schemas.openxmlformats.org/officeDocument/2006/math" );
+			m_pXmlWriter->WriteAttribute( L"mc:Ignorable", L"w14 wp14" );
             m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 			PictureBulletsMapping();
 
-			int i = 0;
-
-			for (std::list<ListData*>::iterator iter = rglst->listData.begin(); iter != rglst->listData.end(); ++iter, ++i)
+			for (size_t i = 0; i < rglst->listData.size();  ++i)
 			{
 				//start abstractNum
                 m_pXmlWriter->WriteNodeBegin( L"w:abstractNum", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i ));
+                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i /*+ 1 */));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				//nsid
                 m_pXmlWriter->WriteNodeBegin( L"w:nsid", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( (*iter)->lsid, L"%08x" ));
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( rglst->listData[i]->lsid, L"%08x" ));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				//multiLevelType
                 m_pXmlWriter->WriteNodeBegin( L"w:multiLevelType", TRUE );
 
-				if ( (*iter)->fHybrid )
+				if ( rglst->listData[i]->fHybrid )
 				{
                     m_pXmlWriter->WriteAttribute( L"w:val", L"hybridMultilevel" );
 				}
-				else if ( (*iter)->fSimpleList )
+				else if ( rglst->listData[i]->fSimpleList )
 				{
                     m_pXmlWriter->WriteAttribute( L"w:val", L"singleLevel" );
 				}
@@ -111,32 +120,32 @@ namespace DocFileFormat
 
 				//template
                 m_pXmlWriter->WriteNodeBegin( L"w:tmpl", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( (*iter)->tplc, L"%08x"));
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( rglst->listData[i]->tplc, L"%08x"));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				// writes the levels
-				size_t length = (*iter)->rglvl->size();
+				size_t length = rglst->listData[i]->rglvl->size();
 
 				for (size_t j = 0; j < length; ++j)
 				{
-					ListLevel* lvl = (*iter)->rglvl->at(j);
-					LevelMapping(lvl, j, (*iter)->rgistd[j]);
+					ListLevel* lvl = rglst->listData[i]->rglvl->at(j);
+					LevelMapping(lvl, j, rglst->listData[i]->rgistd[j]);
 				}
 
 				//end abstractNum
                 m_pXmlWriter->WriteNodeEnd( L"w:abstractNum" );
 			}
 			//write old style numbering (сложносоставных не сущестует)
-			for (std::list<NumberingDescriptor>::iterator iter = rglst->listNumbering.begin(); iter != rglst->listNumbering.end(); ++iter, ++i)
+			for (size_t i = 0;  i < rglst->listNumbering.size();  ++i)
 			{
 				//start abstractNum
                 m_pXmlWriter->WriteNodeBegin( L"w:abstractNum", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i ));
+                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( rglst->listNumbering[i]->id ));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				////nsid
                 //m_pXmlWriter->WriteNodeBegin( L"w:nsid", TRUE );
-                //m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( (*iter)->lsid, L"%08x" ) ));
+                //m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( rglst->listNumbering[i]->lsid, L"%08x" ) ));
                 //m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				//multiLevelType
@@ -147,14 +156,14 @@ namespace DocFileFormat
 
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-				LevelMapping(*iter, 0);
+				LevelMapping(rglst->listNumbering[i], 0);
 
 				//end abstractNum
                 m_pXmlWriter->WriteNodeEnd( L"w:abstractNum" );
 			}
 
 			//write the overrides
-			for (unsigned int i = 0; i < m_document->listFormatOverrideTable->size(); ++i)
+			for (size_t i = 0; i < m_document->listFormatOverrideTable->size(); ++i)
 			{
 				ListFormatOverride* lfo = m_document->listFormatOverrideTable->at(i);
 
@@ -193,16 +202,15 @@ namespace DocFileFormat
 
 			if (m_document->listFormatOverrideTable->empty() &&  !rglst->listNumbering.empty())
 			{
-				i = 0;
-				for (std::list<NumberingDescriptor>::iterator iter = rglst->listNumbering.begin(); iter != rglst->listNumbering.end(); ++iter, ++i)
+				for (size_t i = 0; i < rglst->listNumbering.size(); ++i)
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:num", TRUE );
-                    m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::IntToWideString(i+1));
+                    m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::IntToWideString(rglst->listNumbering[i]->id));
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 
                     m_pXmlWriter->WriteNodeBegin( L"w:abstractNumId", TRUE );
-                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString( i ));
+                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString( rglst->listNumbering[i]->id ));
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
                     m_pXmlWriter->WriteNodeEnd(L"w:num");
@@ -215,21 +223,20 @@ namespace DocFileFormat
 		}
 	}
 
-	int NumberingMapping::FindIndexbyId(const std::list<ListData*>& listData, int id)
+	int NumberingMapping::FindIndexbyId(std::vector<ListDataPtr>& listData, int lsid)
 	{
 		int ret = -1;
 		int i = 0;
 
-		for (std::list<ListData*>::const_iterator iter = listData.begin(); iter != listData.end(); ++iter, ++i)
+		for (size_t i = 0; i < listData.size(); ++i)
 		{
-			if ((*iter)->lsid == id)
+			if (listData[i]->lsid == lsid)
 			{
-				ret = i;
-				break;
+				return i;
 			}
 		}
 
-		return ret;
+		return -1;
 	}
 
 	// Converts the number text of the binary format to the number text of OOXML.
@@ -288,15 +295,17 @@ namespace DocFileFormat
 		return ret;
 	}
 	
-	std::wstring NumberingMapping::GetLvlText(const NumberingDescriptor& lvl, bool bIsSymbol, int Before, int After) const
+	std::wstring NumberingMapping::GetLvlText(NumberingDescriptorPtr& lvl, bool bIsSymbol, int Before, int After) const
 	{
+		if (!lvl)return L"";
+
 		std::wstring ret;
 
-		if (lvl.nfc == 0xff)
+		if (lvl->nfc == 0xff)
 		{
-			if (!lvl.xst.empty())
+			if (!lvl->xst.empty())
 			{
-				wchar_t xchBullet = lvl.xst[0];
+				wchar_t xchBullet = lvl->xst[0];
 
 				// В символьном шрифте обрезать надо, в других случаях - нет
 				if (bIsSymbol && (xchBullet & 0xF000) != 0)
@@ -306,7 +315,7 @@ namespace DocFileFormat
 
 				if (!FormatUtils::IsControlSymbol(xchBullet))
 				{
-					ret.push_back(lvl.xst[0]);
+					ret.push_back(lvl->xst[0]);
 				}
 			}
 			else
@@ -316,8 +325,8 @@ namespace DocFileFormat
 		}
 		else
 		{
-			std::wstring strBefore		=	lvl.xst.substr(0, Before);
-			std::wstring strAfter		=	lvl.xst.substr(Before, After);
+			std::wstring strBefore		=	lvl->xst.substr(0, Before);
+			std::wstring strAfter		=	lvl->xst.substr(Before, After);
 
             ret = strBefore + L"%1" + strAfter ;
 		}
@@ -473,14 +482,16 @@ namespace DocFileFormat
 		}
 	}
 
-	void NumberingMapping::LevelMapping(const NumberingDescriptor& lvl, unsigned int level)
+	void NumberingMapping::LevelMapping(NumberingDescriptorPtr & lvl, unsigned int level)
 	{
+		if (!lvl) return;
+
 		std::wstring fontFamily;
 		bool isSymbol = false;
 		
-		if( lvl.ftc < m_document->FontTable->Data.size() )
+		if( lvl->ftc < m_document->FontTable->Data.size() )
 		{
-			FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( lvl.ftc ) );
+			FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( lvl->ftc ) );
 			isSymbol = (ffn->chs == 2);
 			fontFamily = FormatUtils::XmlEncode(ffn->xszFtn);
 		}
@@ -491,22 +502,22 @@ namespace DocFileFormat
         m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
         m_pXmlWriter->WriteNodeBegin( L"w:start", TRUE );
-            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString(lvl.iStartAt));
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString(lvl->iStartAt));
         m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
         m_pXmlWriter->WriteNodeBegin( L"w:numFmt", TRUE );
-            m_pXmlWriter->WriteAttribute( L"w:val", GetNumberFormatWideString(lvl.nfc, true));
+            m_pXmlWriter->WriteAttribute( L"w:val", GetNumberFormatWideString(lvl->nfc, true));
         m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 //// suffix
 //		m_pXmlWriter->WriteNodeBegin( L"w:suff", TRUE );
-//		m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl.ixchFollow, &FollowingCharMap[0][0], 3, 8));
+//		m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl->ixchFollow, &FollowingCharMap[0][0], 3, 8));
 //		m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 // Number level text
-		std::wstring lvlText = GetLvlText(lvl, isSymbol, lvl.cbTextBefore, lvl.cbTextAfter);
+		std::wstring lvlText = GetLvlText(lvl, isSymbol, lvl->cbTextBefore, lvl->cbTextAfter);
 
-		//if (lvlText.empty() && lvl.ftc == 0)//auto
+		//if (lvlText.empty() && lvl->ftc == 0)//auto
 		//{
 		//	lvlText.push_back(L'\xF0B7');
 		//	lvlText.push_back(L'\0');
@@ -522,7 +533,7 @@ namespace DocFileFormat
 
 // jc
         m_pXmlWriter->WriteNodeBegin( L"w:lvlJc", TRUE );
-            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl.jc, &LevelJustificationMap[0][0], 3, 7));
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl->jc, &LevelJustificationMap[0][0], 3, 7));
         m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 // pPr
         m_pXmlWriter->WriteNodeBegin( L"w:pPr", FALSE );

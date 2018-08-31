@@ -34,6 +34,7 @@
 #include "RegularContainer.h"
 #include "ShapeOptions.h"
 #include "Shape.h"
+#include "ClientAnchor.h"
 
 namespace DocFileFormat
 {
@@ -42,30 +43,35 @@ namespace DocFileFormat
 	public:
 		static const unsigned short TYPE_CODE_0xF004 = 0xF004;
 
-		int Index;
+		int				m_nIndex;
+		unsigned int	m_nShapeType;
+		bool			m_bBackground;
+		bool			m_bOLE;
+		bool			m_bSkip;
 
 		ShapeContainer():
-		RegularContainer(), Index(0)
+		RegularContainer(), m_nIndex(0), m_nShapeType(0), m_bSkip(false), m_bBackground(false), m_bOLE(false)
 		{
 		}
 
-		ShapeContainer( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ):
-		RegularContainer( _reader, size, typeCode, version, instance ), Index(0) 
+		ShapeContainer( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ) :
+		m_bSkip(false), m_bBackground(false), m_bOLE(false), m_nIndex(0), m_nShapeType(0), RegularContainer( _reader, size, typeCode, version, instance )
 		{ 
-		}
-
-		int getShapeType()
-		{
-			int ret = 0;
-
-			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			for ( size_t i = 0; i < this->Children.size(); ++i )
 			{
-				Shape* sh = dynamic_cast<Shape*>( *iter );
+				ClientAnchor *clientAnchor = dynamic_cast<ClientAnchor*>( this->Children[i] );
+				if ( (clientAnchor) && (clientAnchor->value == 0x80000000))
+					m_bSkip = true;
+
+				Shape* sh = dynamic_cast<Shape*>( this->Children[i] );
 				if (sh)
 				{
+					m_bBackground	= sh->fBackground;
+					m_bOLE			= sh->fOleShape;
+
 					if (sh->shapeType) 
 					{
-						return sh->shapeType->GetTypeCode();
+						m_nShapeType = sh->shapeType->GetTypeCode();
 					}
 					else 
 					{
@@ -76,44 +82,16 @@ namespace DocFileFormat
 							{
 								if (sh_options->OptionsByID.end() != sh_options->OptionsByID.find(Pib))
 								{
-									return msosptPictureFrame;
+									m_nShapeType = msosptPictureFrame;
 								}
 							}
 						}
-						return 0;
 					}
 				}
-			}
-			return 0;
-		}
-		bool isBackground()
-		{
-			int ret = 0;
 
-			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
-			{
-				Shape* sh = dynamic_cast<Shape*>( *iter );
-				if (sh)
-				{
-					return sh->fBackground;
-				}
 			}
-			return false;
 		}
-		bool isOLE()
-		{
-			int ret = 0;
 
-			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
-			{
-				Shape* sh = dynamic_cast<Shape*>( *iter );
-				if (sh)
-				{
-					return sh->fOleShape;
-				}
-			}
-			return false;
-		}
 		virtual ~ShapeContainer()
 		{
 		}
@@ -128,9 +106,9 @@ namespace DocFileFormat
 			std::vector<OptionEntryPtr> ret;
 
 			//build the list of all option entries of this shape
-			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			for ( size_t i = 0; i < this->Children.size(); ++i )
 			{
-				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( *iter );
+				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( this->Children[i] );
 
 				if ( opt == NULL ) continue;
 				

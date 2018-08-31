@@ -18,7 +18,15 @@ include(../../Common/base.pri)
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
-include(../../Common/3dParty/v8/v8.pri)
+#CONFIG += build_xp
+
+!build_xp {
+    include(../../Common/3dParty/v8/v8.pri)
+} else {
+    DEFINES += V8_OS_XP
+    DESTDIR=$$DESTDIR/xp
+    include(../../Common/3dParty/v8/v8_xp/v8.pri)
+}
 
 SOURCES += \
     memorystream.cpp \

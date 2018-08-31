@@ -32,6 +32,8 @@
 
 #include "ListData.h"
 
+#include <boost/make_shared.hpp>
+
 #include <algorithm> 
 #include <functional> 
 #include <cctype>
@@ -44,6 +46,11 @@ namespace DocFileFormat
 		for_each(rglvl->begin(), rglvl->end(), DeleteDynamicObject());
 
 		RELEASEOBJECT(rglvl);
+	}
+
+	ListDataPtr ListData::create(VirtualStreamReader* reader, int length)
+	{
+		return boost::make_shared<ListData>(reader, length);
 	}
 
 	// Parses the StreamReader to retrieve a ListData
@@ -80,9 +87,85 @@ namespace DocFileFormat
 
 		grfhic		= reader->ReadByte();
 	}
+	NumberingDescriptorPtr NumberingDescriptor::create(unsigned char * data, int length)
+	{
+		return boost::make_shared<NumberingDescriptor>(data, length);
+	}
+	bool NumberingDescriptor::operator == (const NumberingDescriptor & val) const
+	{
+		const bool res =     
+		nfc				== val.nfc &&
+		cbTextBefore	== val.cbTextBefore &&
+		cbTextAfter		== val.cbTextAfter &&
+		jc				== val.jc &&
+		fPrev			== val.fPrev &&
+		fHang			== val.fHang &&
+		fSetBold		== val.fSetBold &&
+		fSetItalic		== val.fSetItalic &&
+		fSetSmallCaps	== val.fSetSmallCaps &&
+		fSetCaps		== val.fSetCaps &&
+		fSetStrike		== val.fSetStrike &&
+		fSetKul			== val.fSetKul &&
+		fPrevSpace		== val.fPrevSpace &&
+		fBold			== val.fBold &&
+		fItalic			== val.fItalic &&
+		fSmallCaps		== val.fSmallCaps &&
+		fCaps			== val.fCaps &&
+		fStrike			== val.fStrike &&
+		kul				== val.kul &&
+		ico				== val.ico &&
+		ftc				== val.ftc &&
+		hps				== val.hps &&
+		iStartAt		== val.iStartAt &&
+		dxaIndent		== val.dxaIndent &&
+		dxaSpace		== val.dxaSpace &&
+		fNumber1		== val.fNumber1 &&
+		fNumberAcross	== val.fNumberAcross &&
+		fRestartHdn		== val.fRestartHdn &&
+		fSpareX			== val.fSpareX;
 
+		return res;
+	}
+	bool NumberingDescriptor::operator == (const NumberingDescriptorPtr & val) const
+	{
+		if (!val) return false;
+		const bool res =     
+		nfc				== val->nfc &&
+		cbTextBefore	== val->cbTextBefore &&
+		cbTextAfter		== val->cbTextAfter &&
+		jc				== val->jc &&
+		fPrev			== val->fPrev &&
+		fHang			== val->fHang &&
+		fSetBold		== val->fSetBold &&
+		fSetItalic		== val->fSetItalic &&
+		fSetSmallCaps	== val->fSetSmallCaps &&
+		fSetCaps		== val->fSetCaps &&
+		fSetStrike		== val->fSetStrike &&
+		fSetKul			== val->fSetKul &&
+		fPrevSpace		== val->fPrevSpace &&
+		fBold			== val->fBold &&
+		fItalic			== val->fItalic &&
+		fSmallCaps		== val->fSmallCaps &&
+		fCaps			== val->fCaps &&
+		fStrike			== val->fStrike &&
+		kul				== val->kul &&
+		ico				== val->ico &&
+		ftc				== val->ftc &&
+		hps				== val->hps &&
+		iStartAt		== val->iStartAt &&
+		dxaIndent		== val->dxaIndent &&
+		dxaSpace		== val->dxaSpace &&
+		fNumber1		== val->fNumber1 &&
+		fNumberAcross	== val->fNumberAcross &&
+		fRestartHdn		== val->fRestartHdn &&
+		fSpareX			== val->fSpareX;
+
+		return res;
+
+	}
 	NumberingDescriptor::NumberingDescriptor( unsigned char * data, int length )
 	{
+		id				= 0;
 		nfc				= FormatUtils::BytesToUChar(data, 0, length);
 		cbTextBefore	= FormatUtils::BytesToUChar(data, 1, length);
 		cbTextAfter		= FormatUtils::BytesToUChar(data, 2, length);

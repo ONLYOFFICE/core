@@ -63,7 +63,7 @@ namespace DocFileFormat
 		NumberingMapping(ConversionContext* ctx);
 		void Apply(IVisitable* visited);
 		
-		static int FindIndexbyId(const std::list<ListData*>& listData, int id);
+		static int FindIndexbyId(std::vector<ListDataPtr>& listData, int id);
 		/// Converts the number format code of the binary format.
 		static std::wstring GetNumberFormatWideString(int nfc, int nWordVersion = 0);
 		
@@ -73,12 +73,12 @@ namespace DocFileFormat
 		// Converts the number text of the binary format to the number text of OOXML.
 		// OOXML uses different placeholders for the numbers.
 		std::wstring GetLvlText(const ListLevel* lvl, bool bIsSymbol) const;
-		std::wstring GetLvlText(const NumberingDescriptor& lvl, bool bIsSymbol, int Before, int After) const;
+		std::wstring GetLvlText(NumberingDescriptorPtr& lvl, bool bIsSymbol, int Before, int After) const;
 		
 		static bool IsPlaceholder(wchar_t symbol);
 		
 		void LevelMapping(const ListLevel* lvl, unsigned int level, short styleIndex);
-		void LevelMapping(const NumberingDescriptor& lvl, unsigned int level);
+		void LevelMapping(NumberingDescriptorPtr & lvl, unsigned int level);
 
 		void PictureBulletsMapping();
 		void WriteLevelPictureBullet(const CharacterPropertyExceptions* grpprlChpx);

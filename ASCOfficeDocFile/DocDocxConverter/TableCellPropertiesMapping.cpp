@@ -345,22 +345,23 @@ namespace DocFileFormat
 		_tcPr->AppendChild( tcW );
 
 
-		//if ( ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidth > _grid->at( _gridIndex ) ) )
-		//{
-		//	//check the number of merged cells
-		//	int w = _grid->at( _gridIndex );
+		if ( _gridSpan == 1 && ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidth > _grid->at( _gridIndex ) ) )
+		{
+			//check the number of merged cells
+			int w = _grid->at( _gridIndex );
 
-		//	for ( size_t i = _gridIndex + 1; i < _grid->size(); i++ )
-		//	{
-		//		_gridSpan++;
+			for ( size_t i = _gridIndex + 1; i < _grid->size(); i++ )
+			{
+				_gridSpan++;
 
-		//		w += _grid->at( i );
+				w += _grid->at( i );
 
-		//		if ( w >= nComputedCellWidth )
-		//		{
-		//			break;
-		//		}
-		//	}
+				if ( w >= nComputedCellWidth )
+				{
+					break;
+				}
+			}
+		}
 		if (_gridSpan > 1)
 		{
             appendValueElement( _tcPr, L"gridSpan", FormatUtils::IntToWideString( _gridSpan ), true );

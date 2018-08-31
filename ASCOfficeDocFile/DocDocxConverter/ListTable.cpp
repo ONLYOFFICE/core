@@ -38,7 +38,6 @@ namespace DocFileFormat
 {
 	ListTable::~ListTable()
 	{
-		for_each( this->listData.begin(), this->listData.end(), DeleteDynamicObject() );
 	}
 
 	ListTable::ListTable( FileInformationBlock* fib, POLE::Stream* tableStream )
@@ -59,23 +58,32 @@ namespace DocFileFormat
 			//read the LSTF structs
 			for ( int i = 0; i < count; i++ )
 			{
-				listData.push_back( new ListData( &reader, ListData::VARIABLE_LENGTH ) );
+				listData.push_back( ListData::create( &reader, ListData::VARIABLE_LENGTH ) );
 			}
 
 			//read the LVLF structs
-			for ( std::list<ListData*>::iterator iter = listData.begin(); iter != listData.end(); iter++ )
+			for ( size_t i = 0; i < listData.size(); ++i)
 			{
-				for ( unsigned int j = 0; j < (*iter)->rglvl->size(); j++ )
+				for ( size_t j = 0; j < listData[i]->rglvl->size(); j++ )
 				{
-					(*iter)->rglvl->operator []( j ) = new ListLevel( &reader, ListData::VARIABLE_LENGTH );
+					listData[i]->rglvl->operator []( j ) = new ListLevel( &reader, ListData::VARIABLE_LENGTH );
 				}
 			}
 		}
 	}
 
-	void ListTable::appendNumbering( const NumberingDescriptor & desc )
+	size_t ListTable::appendNumbering( NumberingDescriptorPtr &desc )
 	{
+		for (size_t i = 0; i < listNumbering.size(); ++i)
+		{
+			if (listNumbering[i]->operator==(desc))
+			{
+				return listNumbering[i]->id;
+			}
+		}
+		desc->id = listData.size() + listNumbering.size()/* + 1*/;
 		listNumbering.push_back(desc);
+		return desc->id;
 	}
 
 }

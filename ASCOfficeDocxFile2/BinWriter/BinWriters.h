@@ -7563,6 +7563,12 @@ namespace BinDocxRW
 								  NULL, &oSettings.m_oEndnotePr->m_oPos, &oSettings.m_oEndnotePr->m_arrEndnote);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oSettings.m_oCompat.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::Compat);
+				WriteCompat(oSettings.m_oCompat.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			if(oSettingsCustom.m_oSdtGlobalColor.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SdtGlobalColor);
@@ -7892,6 +7898,38 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteBYTE(re_index[pFind->second.GetBYTECode()]);
 			}
 		};
+		void WriteCompat(const OOX::Settings::CCompat& oCompat)
+		{
+			int nCurPos = 0;
+			for(size_t i = 0; i < oCompat.m_arrCompatSettings.size(); ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCompat::CompatSetting);
+				WriteCompatSetting(*oCompat.m_arrCompatSettings[i]);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteCompatSetting(const OOX::Settings::CCompatSetting& oCompatSetting)
+		{
+			int nCurPos = 0;
+			if(oCompatSetting.m_sName.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart	(c_oSerCompat::CompatName);
+				m_oBcw.m_oStream.WriteStringW3(oCompatSetting.m_sName.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oCompatSetting.m_sUri.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart	(c_oSerCompat::CompatUri);
+				m_oBcw.m_oStream.WriteStringW3(oCompatSetting.m_sUri.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oCompatSetting.m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart	(c_oSerCompat::CompatValue);
+				m_oBcw.m_oStream.WriteStringW3(oCompatSetting.m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
 	};
 	class BinaryNotesTableWriter
 	{

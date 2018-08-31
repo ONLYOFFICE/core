@@ -446,7 +446,7 @@ namespace DocFileFormat
 					
                     for (size_t j = 0 ; j < 32; j++)
                     {
-                        if (aCodePages[j][0] == font->chs && font->chs != 0)
+                        if (aCodePages[j][0] == font->chs && font->chs > 2)
                         {
                             nFontsCodePage = aCodePages[j][1];
                             bFontsCodePage = true;

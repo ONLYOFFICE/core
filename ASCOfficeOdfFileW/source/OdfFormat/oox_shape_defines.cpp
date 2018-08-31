@@ -123,15 +123,18 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypePie:					return boost::make_shared<oox_shape_Pie>();
 	case SimpleTypes::shapetypeDonut:				return boost::make_shared<oox_shape_Donut>();	
 	case SimpleTypes::shapetypeLeftRightRibbon:		return boost::make_shared<oox_shape_LeftRightRibbon>();	
+	case SimpleTypes::shapetypeWave:				return boost::make_shared<oox_shape_Wave>();	
+	case SimpleTypes::shapetypeBracketPair:			return boost::make_shared<oox_shape_bracketPair>();
 
 	case SimpleTypes::shapetypeFlowChartExtract:	return boost::make_shared<oox_shape_FlowChartExtract>();	
 
 	case SimpleTypes::shapetypeLeftArrowCallout:	return boost::make_shared<oox_shape_LeftArrowCallout>();	
 	case SimpleTypes::shapetypeRightArrowCallout:	return boost::make_shared<oox_shape_RightArrowCallout>();	
 	case SimpleTypes::shapetypeUpArrowCallout:		return boost::make_shared<oox_shape_UpArrowCallout>();	
-	case SimpleTypes::shapetypeDownArrowCallout:	return boost::make_shared<oox_shape_DownArrowCallout>();	
+	case SimpleTypes::shapetypeDownArrowCallout:	return boost::make_shared<oox_shape_DownArrowCallout>();		
 
 	case SimpleTypes::shapetypeBentUpArrow:			return boost::make_shared<oox_shape_BentUpArrow>();	
+	case SimpleTypes::shapetypeLeftRightUpArrow:	return boost::make_shared<oox_shape_leftRightUpArrow>();	
 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDownPour): 

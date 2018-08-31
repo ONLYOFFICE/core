@@ -1301,7 +1301,7 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		}
 	}
 
-	if (oox_bodyPr->fromWordArt.IsInit() && oox_bodyPr->prstTxWarp.IsInit())
+	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
 	{
 		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
 		{

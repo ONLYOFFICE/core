@@ -35,7 +35,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/String.h"
-
+#include <cmath>
 #include "../DesktopEditor/graphics/MetafileToRenderer.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 
@@ -88,7 +88,7 @@ namespace NSOnlineOfficeBinToPdf
                         }
                         else
                         {
-                            int nSize = (int)std::sqrt(nBufferLen >> 2);
+                            int nSize = (int)sqrt(nBufferLen >> 2);
                             CBgraFrame oFrame;
                             oFrame.put_Data(pImageBuffer);
                             oFrame.put_Width(nSize);

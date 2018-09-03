@@ -435,7 +435,7 @@ namespace DocFileFormat
 			std::unordered_map<int, int> fonts_charsets;
 			bool bFontsCodePage = false;
 
-            for ( size_t i = 0; !bFontsCodePage &&  i < FontTable->Data.size(); ++i)
+            for ( size_t i = 0; FIB->m_FibWord97.lcbClx > 0 && !bFontsCodePage &&  i < FontTable->Data.size(); ++i)
 			{
                 FontFamilyName* font = dynamic_cast<FontFamilyName*>( FontTable->Data[i]);
 				if (!font) continue;

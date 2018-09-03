@@ -52,8 +52,6 @@ namespace DocFileFormat
 			{
 				m_context->_docx->RegisterComments();
 
-				int index = 0; 
-
                 m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
                 m_pXmlWriter->WriteNodeBegin( L"w:comments", TRUE );
 
@@ -63,12 +61,28 @@ namespace DocFileFormat
                 m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
                 m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
                 m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wpc", L"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" ); 
+                m_pXmlWriter->WriteAttribute( L"xmlns:cx", L"http://schemas.microsoft.com/office/drawing/2014/chartex"  );
+                m_pXmlWriter->WriteAttribute( L"xmlns:cx1", L"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex"  );
+                m_pXmlWriter->WriteAttribute( L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:m", L"http://schemas.openxmlformats.org/officeDocument/2006/math" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wp14", L"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w14", L"http://schemas.microsoft.com/office/word/2010/wordml" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w15", L"http://schemas.microsoft.com/office/word/2012/wordml" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w16se", L"http://schemas.microsoft.com/office/word/2015/wordml/symex" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wpg", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wpi", L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wne", L"http://schemas.microsoft.com/office/word/2006/wordml" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wps", L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape" );
+                m_pXmlWriter->WriteAttribute( L"mc:Ignorable", L"w14 w15 w16se wp14");
+
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				int cp = m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn + m_document->FIB->m_RgLw97.ccpHdr;
 
 				size_t count = m_document->AnnotationsReferencePlex->Elements.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t index = 0; index < count; ++index)
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
 
@@ -116,8 +130,6 @@ namespace DocFileFormat
 					}
 
                     m_pXmlWriter->WriteNodeEnd(L"w:comment" );
-
-					++index;
 				}
 
                 m_pXmlWriter->WriteNodeEnd( L"w:comments" );

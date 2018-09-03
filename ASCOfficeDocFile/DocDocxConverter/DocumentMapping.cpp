@@ -45,7 +45,7 @@ namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
 		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
-		_endnoteNr(0), _commentNr(0), _caller(caller)
+		_endnoteNr(0), _commentNr(1), _caller(caller)
 	{
 		m_document				=	NULL;
 		m_context				=	context;
@@ -1041,10 +1041,10 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeBegin( L"w:annotationRef", true );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}	
-				else
+				else if ((m_document->AnnotationsReferencePlex) && (_commentNr <= m_document->AnnotationsReferencePlex->Elements.size()))
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
-					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr ));
+					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr++ ));
 					m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 			}

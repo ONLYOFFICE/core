@@ -90,6 +90,7 @@ namespace MetaFile
 		unsigned int    GetMapMode();
 		TEmfXForm*      GetTransform();
 		TEmfXForm*      GetInverseTransform();
+		TEmfXForm*      GetFinalTransform();
 		void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
 		void            SetTextColor(TEmfColor& oColor);
 		TEmfColor&      GetTextColor();
@@ -140,6 +141,7 @@ namespace MetaFile
 		void            SetPixelWidth(double dPixelW);
 		void            SetPixelHeight(double dPixelH);
 		bool            UpdatePixelMetrics();
+		void            UpdateFinalTransform();
 
 	private:
 
@@ -150,6 +152,7 @@ namespace MetaFile
 		CEmfLogPalette* m_pPalette;
 		TEmfXForm       m_oTransform;
 		TEmfXForm       m_oInverseTransform;
+		TEmfXForm       m_oFinalTransform;
 		TEmfColor       m_oTextColor;
 		TEmfColor       m_oBgColor;
 		unsigned int    m_ulTextAlign;

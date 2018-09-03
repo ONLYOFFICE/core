@@ -142,7 +142,14 @@ namespace MetaFile
 		}
 		TXForm* GetTransform()
 		{
-			return m_pDC->GetTransform();
+			TRect* pBounds = GetDCBounds();
+			double dT = pBounds->nTop;
+			double dL = pBounds->nLeft;
+
+			TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
+			m_oTransform.Copy(m_pDC->GetFinalTransform());
+			m_oTransform.Multiply(oShiftXForm, MWT_RIGHTMULTIPLY);
+			return &m_oTransform;
 		}
 		unsigned int GetMiterLimit()
 		{
@@ -218,6 +225,7 @@ namespace MetaFile
 		void Read_EMR_STRETCHDIBITS();
 		void Read_EMR_BITBLT();
 		void Read_EMR_SETDIBITSTODEVICE();
+		void Read_EMR_STRETCHBLT();
 		void Read_EMR_EOF();
 		void Read_EMR_UNKNOWN();
 		void Read_EMR_SAVEDC();
@@ -313,6 +321,7 @@ namespace MetaFile
 		CEmfDC*           m_pDC;
 		CEmfPlayer        m_oPlayer;
 		CEmfPath*         m_pPath;
+		TEmfXForm         m_oTransform;
 
 		friend class CEmfPlayer;
 	};

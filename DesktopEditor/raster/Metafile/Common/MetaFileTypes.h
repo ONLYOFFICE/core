@@ -458,12 +458,12 @@ namespace MetaFile
 			{
 				// oOther слева, текущая матрица справа
 				double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
-				double dM12 = oOther.M11 * M21 + oOther.M12 * M22;
+				double dM12 = oOther.M11 * M12 + oOther.M12 * M22;
 				double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
-				double dM22 = oOther.M21 * M21 + oOther.M22 * M22;
+				double dM22 = oOther.M21 * M12 + oOther.M22 * M22;
 
 				double dDx = oOther.Dx * M11 + oOther.Dy * M21 + Dx;
-				double dDy = oOther.Dx * M21 + oOther.Dy * M22 + Dy;
+				double dDy = oOther.Dx * M12 + oOther.Dy * M22 + Dy;
 
 				M11 = dM11;
 				M12	= dM12;
@@ -476,12 +476,12 @@ namespace MetaFile
 			{
 				// oOther справа, текущая матрица слева
 				double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
-				double dM12 = M11 * oOther.M21 + M12 * oOther.M22;
+				double dM12 = M11 * oOther.M12 + M12 * oOther.M22;
 				double dM21 = M21 * oOther.M11 + M22 * oOther.M21;
-				double dM22 = M21 * oOther.M21 + M22 * oOther.M22;
+				double dM22 = M21 * oOther.M12 + M22 * oOther.M22;
 
 				double dDx = Dx * oOther.M11 + Dy * oOther.M21 + oOther.Dx;
-				double dDy = Dx * oOther.M21 + Dy * oOther.M22 + oOther.Dy;
+				double dDy = Dx * oOther.M12 + Dy * oOther.M22 + oOther.Dy;
 
 				M11 = dM11;
 				M12	= dM12;

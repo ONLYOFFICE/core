@@ -298,7 +298,7 @@ bool ReadXmlEncryptionInfo(const std::string & xml_string, _ecmaCryptData & cryp
 	}
 	else if (keyData.cipherAlgorithm == "DES")
 	{
-		cryptData.cipherAlgorithm = CRYPT_METHOD::DES;
+		cryptData.cipherAlgorithm = CRYPT_METHOD::DES_ECB;
 	}
 	if (keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
 	if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
@@ -339,9 +339,15 @@ bool WriteXmlEncryptionInfo(const _ecmaCryptData & cryptData, std::string & xml_
 	case CRYPT_METHOD::AES_CFB:
 		keyData.cipherAlgorithm = "AES";
 		keyData.cipherChaining = "ChainingModeCFB";
-	case CRYPT_METHOD::DES:
+		break;
+	case CRYPT_METHOD::DES_CBC:
 		keyData.cipherAlgorithm = "DES";
 		keyData.cipherChaining = "ChainingModeCBC";
+	break;
+	case CRYPT_METHOD::DES_ECB:
+		keyData.cipherAlgorithm = "DES";
+		keyData.cipherChaining = "ChainingModeECB";
+	break;
 	break;
 
 	}
@@ -608,7 +614,12 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	_ecmaCryptData cryptData;
 	
 	//cryptData.bAgile			= true;
-	//cryptData.cipherAlgorithm	= CRYPT_METHOD::DES;
+	//cryptData.cipherAlgorithm	= CRYPT_METHOD::DES_ECB;
+	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
+	//cryptData.keySize			= 0x08;
+	//cryptData.hashSize			= 0x40;
+	//cryptData.blockSize			= 0x10;
+	//cryptData.saltSize			= 0x10;
 	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
 	//cryptData.keySize			= 0x08;
 	//cryptData.hashSize			= 0x14;

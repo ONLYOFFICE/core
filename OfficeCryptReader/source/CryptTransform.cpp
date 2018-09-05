@@ -388,10 +388,25 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 		CFB_Mode<Blowfish>::Encryption encryption(key.ptr, key.size, iv.ptr);
 		encryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
 	}
-	else if (algorithm == CRYPT_METHOD::DES)
+	else if (algorithm == CRYPT_METHOD::DES_CBC)
 	{
 		DES::Encryption desEncryption(key.ptr, key.size == 7 ? 8 : key.size);
 		StreamTransformation *modeEncryption = new CipherModeFinalTemplate_ExternalCipher<CBC_Encryption>(desEncryption, iv.ptr ); 
+		if (!data_out.ptr)
+		{
+			data_out = _buf(data_inp.size);
+		}
+		StreamTransformationFilter stfEncryption(*modeEncryption, new ArraySink( data_out.ptr, data_out.size), padding);
+	 
+		stfEncryption.Put( data_inp.ptr, data_inp.size );
+		stfEncryption.MessageEnd();
+
+		delete modeEncryption;
+	}
+	else if (algorithm == CRYPT_METHOD::DES_ECB)
+	{
+		DES::Encryption desEncryption(key.ptr, key.size == 7 ? 8 : key.size);
+		StreamTransformation *modeEncryption = new CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>(desEncryption, iv.ptr ); 
 		if (!data_out.ptr)
 		{
 			data_out = _buf(data_inp.size);
@@ -463,10 +478,21 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 		CFB_Mode<Blowfish>::Decryption decryption(key.ptr, key.size, iv.ptr);
 		decryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
 	}
-	else if (algorithm == CRYPT_METHOD::DES)
+	else if (algorithm == CRYPT_METHOD::DES_CBC)
 	{
 		DES::Decryption desDecryption(key.ptr, key.size == 7 ? 8 : key.size);
 		StreamTransformation *modeDecryption = new CipherModeFinalTemplate_ExternalCipher<CBC_Decryption>(desDecryption, iv.ptr );
+		StreamTransformationFilter stfDecryptor(*modeDecryption, new ArraySink( data_out.ptr, data_out.size), padding);
+	 
+		stfDecryptor.Put( data_inp.ptr, data_inp.size );
+		stfDecryptor.MessageEnd();
+
+		delete modeDecryption;
+	}
+	else if (algorithm == CRYPT_METHOD::DES_ECB)
+	{
+		DES::Decryption desDecryption(key.ptr, key.size == 7 ? 8 : key.size);
+		StreamTransformation *modeDecryption = new CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>(desDecryption, iv.ptr );
 		StreamTransformationFilter stfDecryptor(*modeDecryption, new ArraySink( data_out.ptr, data_out.size), padding);
 	 
 		stfDecryptor.Put( data_inp.ptr, data_inp.size );

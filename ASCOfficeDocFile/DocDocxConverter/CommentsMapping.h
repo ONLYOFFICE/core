@@ -85,25 +85,36 @@ namespace DocFileFormat
 				for (size_t index = 0; index < count; ++index)
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
+					AnnotationReferenceExDescriptor* atrdPost10 = m_document->AnnotationsReferenceExPlex ? static_cast<AnnotationReferenceExDescriptor*>(m_document->AnnotationsReferenceExPlex->Elements[index]) : NULL;
 
-					unsigned short index_author = atrdPre10->GetAuthorIndex();
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
-					if (index_author < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
+					if (atrdPre10->m_BookmarkId < 0)
+					{
+						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 + count + 1024 ));
+					}
+					else
+					{
+						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
+					}
+					if (atrdPost10)
+					{
+						//!!!TODO!!!
+						/*//ATRDpost10 is optional and not saved in all files
+						if (doc.AnnotationReferenceExtraTable != null && 
+						doc.AnnotationReferenceExtraTable.Count > index)
+						{
+						AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
+						atrdPost10.Date.Convert(new DateMapping(_writer));
+						}*/	
+					}
+					if (atrdPre10->m_AuthorIndex < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
 					{
 						m_pXmlWriter->WriteAttribute( L"w:author",
-							FormatUtils::XmlEncode(m_document->AnnotationOwners->at( index_author ) ));
+							FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->m_AuthorIndex ) ));
 					}
-                    m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->GetUserInitials());
+                    m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->m_UserInitials);
 
-					//!!!TODO!!!
-					/*//ATRDpost10 is optional and not saved in all files
-					if (doc.AnnotationReferenceExtraTable != null && 
-					doc.AnnotationReferenceExtraTable.Count > index)
-					{
-					AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
-					atrdPost10.Date.Convert(new DateMapping(_writer));
-					}*/
+
 
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 

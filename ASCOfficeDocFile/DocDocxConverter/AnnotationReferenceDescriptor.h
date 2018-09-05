@@ -46,21 +46,6 @@ namespace DocFileFormat
 			return (nWordVersion > 0) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
 		}
 
-		inline std::wstring GetUserInitials() const
-		{
-			return m_UserInitials;
-		}
-
-		inline unsigned short GetAuthorIndex() const
-		{
-			return m_AuthorIndex;
-		}
-
-		inline int GetBookmarkId() const
-		{
-			return m_BookmarkId;
-		}
-
         AnnotationReferenceDescriptor() : m_AuthorIndex(0), m_BookmarkId(0)
 		{
 		}
@@ -71,13 +56,35 @@ namespace DocFileFormat
 
         virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 
-	private:
-
-		/// The initials of the user who left the annotation.
 		std::wstring	m_UserInitials;
-		/// An index into the string table of comment author names.
 		unsigned short	m_AuthorIndex;
-		/// Identifies a bookmark.
 		int				m_BookmarkId;
+	};
+
+	class AnnotationReferenceExDescriptor: public ByteStructure
+	{
+	public:
+		static const int STRUCTURE_SIZE = 18;
+		static const int STRUCTURE_SIZE_OLD = 0;
+
+		static const int GetSize(int nWordVersion)
+		{
+			return (nWordVersion > 0) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
+		}
+
+        AnnotationReferenceExDescriptor() : m_nDTTM(0), m_nDepth(0), m_nDiatrdParent(0), m_fInkAtn(false)
+		{
+		}
+
+		virtual ~AnnotationReferenceExDescriptor() 
+		{
+		}
+
+        virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+
+		unsigned int	m_nDTTM;
+		unsigned int	m_nDepth;
+		unsigned int	m_nDiatrdParent;
+		bool			m_fInkAtn;
 	};
 }

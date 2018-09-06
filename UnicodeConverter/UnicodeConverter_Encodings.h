@@ -46,7 +46,7 @@ namespace NSUnicodeConverter
         const char* DisplayName;
     };
 
-    #define UNICODE_CONVERTER_ENCODINGS_COUNT 52
+    #define UNICODE_CONVERTER_ENCODINGS_COUNT 53
     static const EncodindId Encodings[UNICODE_CONVERTER_ENCODINGS_COUNT] =
     {
         { 0,    28596, "ISO-8859-6",       "Arabic (ISO 8859-6)" },

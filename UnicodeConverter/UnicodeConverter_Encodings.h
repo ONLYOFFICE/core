@@ -118,7 +118,9 @@ namespace NSUnicodeConverter
         { 49,   1201, "UTF-16BE",          "Unicode (UTF-16 Big Endian)" },
 
         { 50,   12000, "UTF-32LE",         "Unicode (UTF-32)" },
-        { 51,   12001, "UTF-32BE",         "Unicode (UTF-32 Big Endian)" }
+        { 51,   12001, "UTF-32BE",         "Unicode (UTF-32 Big Endian)" },
+        { 52,   950,   "EUC-JP",           "Japanese (EUC-JP)" }
+
     };
 
     static std::map<int, std::string> create_mapEncodingsICU()
@@ -161,6 +163,7 @@ namespace NSUnicodeConverter
 		m[1255]		= "windows-1255";
 
 		m[932]		= "Shift_JIS";
+                m[950]		= "EUC-JP";
 
 		m[949]		= "KS_C_5601-1987";
 		m[51949]	= "EUC-KR";

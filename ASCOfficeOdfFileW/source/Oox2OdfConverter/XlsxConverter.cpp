@@ -301,7 +301,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		ods_context->start_rows();
 			for (size_t row = 0 ; row < oox_sheet->m_oSheetData->m_arrItems.size(); row++)
 			{
-				convert(oox_sheet->m_oSheetData->m_arrItems[row]);
+				convert(oox_sheet->m_oSheetData->m_arrItems[row], row > 0 ? oox_sheet->m_oSheetData->m_arrItems[row - 1] : NULL);
 				
 				if ( oox_sheet->m_oSheetData->m_arrItems[row] )
 					delete oox_sheet->m_oSheetData->m_arrItems[row];

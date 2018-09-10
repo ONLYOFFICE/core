@@ -79,7 +79,7 @@ namespace DocFileFormat
 					drawing.dgglbl			=	(DrawingType)oStearmReader.ReadByte();
 					drawing.container		=	static_cast<DrawingContainer*>(RecordFactory::ReadRecord (&oStearmReader, 0));
 
-					for (unsigned int i = 0; i < drawing.container->Children.size(); ++i)
+					for (size_t i = 0; i < drawing.container->Children.size(); ++i)
 					{
 						Record* groupChild = drawing.container->Children[i];
 						if (groupChild)
@@ -140,7 +140,7 @@ namespace DocFileFormat
 				GroupContainer* group = iter->container->FirstChildWithType<GroupContainer>();
 				if (group)
 				{
-					for (unsigned int i = 1; i < group->Children.size(); ++i)
+					for (size_t i = 1; i < group->Children.size(); ++i)
 					{
 						Record* groupChild = group->Children[i];
 

@@ -85,7 +85,7 @@ namespace DocFileFormat
 		IndividualFootnotesPlex(NULL), FootnoteReferenceCharactersPlex(NULL), IndividualEndnotesPlex(NULL),
 		EndnoteReferenceCharactersPlex(NULL), FieldsPlex(NULL), FootnoteDocumentFieldsPlex(NULL),
 		EndnoteDocumentFieldsPlex(NULL), HeadersAndFootersDocumentFieldsPlex(NULL), HeaderStoriesPlex(NULL),
-		AnnotationsReferencePlex(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
+		AnnotationsReferencePlex(NULL), AnnotationsReferenceExPlex(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
 		TextboxIndividualPlex(NULL),AssocNames(NULL), BookmarkAnnotNames(NULL), Captions(NULL), AutoCaptions(NULL), ListPlex(NULL),
 		OfficeDrawingPlex(NULL), OfficeDrawingPlexHeader(NULL), SectionPlex(NULL), BookmarkStartPlex(NULL), BookmarkEndPlex(NULL),
 		AutoTextPlex(NULL), AllPapxFkps(NULL), AllChpxFkps(NULL), AllPapx(NULL), AllPapxVector(NULL), AllSepx(NULL), Styles(NULL), listTable(NULL),
@@ -318,8 +318,8 @@ namespace DocFileFormat
 		// Read all needed PLCFs
 		if (FIB->m_RgLw97.ccpFtn > 0)
 		{
-			IndividualFootnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcffndTxt, FIB->m_FibWord97.lcbPlcffndTxt, nWordVersion);
 			FootnoteReferenceCharactersPlex	=	new Plex<FootnoteDescriptor>(FootnoteDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcffndRef, FIB->m_FibWord97.lcbPlcffndRef, nWordVersion);
+			IndividualFootnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcffndTxt, FIB->m_FibWord97.lcbPlcffndTxt, nWordVersion);
 		}
 	
 		if (nWordVersion > 0 && FIB->m_FibWord97.lcbPlcPad > 0)
@@ -329,8 +329,8 @@ namespace DocFileFormat
 
 		if (FIB->m_RgLw97.ccpEdn > 0)
 		{
-			IndividualEndnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcfendTxt, FIB->m_FibWord97.lcbPlcfendTxt, nWordVersion);
 			EndnoteReferenceCharactersPlex	=	new Plex<EndnoteDescriptor>(EndnoteDescriptor::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfendRef, FIB->m_FibWord97.lcbPlcfendRef, nWordVersion);
+			IndividualEndnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcfendTxt, FIB->m_FibWord97.lcbPlcfendTxt, nWordVersion);
 		}
 
 		if (FIB->m_RgLw97.ccpHdr > 0)
@@ -342,6 +342,11 @@ namespace DocFileFormat
 		{
 			AnnotationsReferencePlex		=	new Plex<AnnotationReferenceDescriptor>(AnnotationReferenceDescriptor::GetSize(nWordVersion), TableStream, FIB->m_FibWord97.fcPlcfandRef, FIB->m_FibWord97.lcbPlcfandRef, nWordVersion);
 			IndividualCommentsPlex			=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfandTxt,		FIB->m_FibWord97.lcbPlcfandTxt,		nWordVersion);
+		}
+
+		if (FIB->m_FibWord2002.lcbAtrdExtra > 0)
+		{
+			AnnotationsReferenceExPlex	=	new Plex<AnnotationReferenceExDescriptor>(AnnotationReferenceExDescriptor::GetSize(nWordVersion), TableStream, FIB->m_FibWord2002.fcAtrdExtra, FIB->m_FibWord2002.lcbAtrdExtra, nWordVersion);
 		}
 		OfficeDrawingPlex					=	new Plex<Spa>				(Spa::GetSize(nWordVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaMom,		FIB->m_FibWord97.lcbPlcSpaMom,		nWordVersion);
 		OfficeDrawingPlexHeader				=	new Plex<Spa>				(Spa::GetSize(nWordVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaHdr,		FIB->m_FibWord97.lcbPlcSpaHdr,		nWordVersion);
@@ -356,7 +361,7 @@ namespace DocFileFormat
 		TextboxBreakPlex					=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxBkd,	FIB->m_FibWord97.lcbPlcfTxbxBkd,	nWordVersion);
 		TextboxBreakPlexHeader				=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxHdrBkd, FIB->m_FibWord97.lcbPlcfTxbxHdrBkd, nWordVersion);
 
-		AnnotStartPlex						=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfAtnBkf,		FIB->m_FibWord97.lcbPlcfAtnBkf,		nWordVersion);
+		AnnotStartPlex						=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfAtnBkf,		FIB->m_FibWord97.lcbPlcfAtnBkf,		nWordVersion);
 		AnnotEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfAtnBkl,		FIB->m_FibWord97.lcbPlcfAtnBkl,		nWordVersion);
 		
 
@@ -368,18 +373,19 @@ namespace DocFileFormat
 				BookmarkStartEndCPs.push_back(std::make_pair(BookmarkStartPlex->CharacterPositions[i], BookmarkEndPlex->CharacterPositions[pBookmark->GetIndex()]));
 			}
 		}
-		for (size_t i = 0; i < AnnotStartPlex->Elements.size(); ++i)
+		for (size_t i = 0; AnnotStartPlex && i < AnnotStartPlex->Elements.size(); ++i)
 		{
-			BookmarkFirst* pBookmark		=	static_cast<BookmarkFirst*>(AnnotStartPlex->Elements[i]);
+			BookmarkFirst* pBookmark = static_cast<BookmarkFirst*>(AnnotStartPlex->Elements[i]);
 			if (pBookmark)
 			{
-				short end = pBookmark->GetIndex();
-				if (i < AnnotStartPlex->CharacterPositions.size() && end < AnnotEndPlex->CharacterPositions.size())
+				short ind = pBookmark->GetIndex();
+				if (i < AnnotStartPlex->CharacterPositions.size() -1 )
 				{
-					AnnotStartEndCPs.push_back(std::make_pair(AnnotStartPlex->CharacterPositions[i], AnnotEndPlex->CharacterPositions[end]));
+					AnnotStartEndCPs.push_back(std::make_pair(AnnotStartPlex->CharacterPositions[i], AnnotEndPlex->CharacterPositions[i + 1]));
 				}
 			}
 		}
+
 		AutoTextPlex						=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfGlsy,   FIB->m_FibWord97.lcbPlcfGlsy, nWordVersion);
 		FieldsPlex							=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldMom, FIB->m_FibWord97.lcbPlcfFldMom, nWordVersion);
 		FootnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldFtn, FIB->m_FibWord97.lcbPlcfFldFtn, nWordVersion);
@@ -435,7 +441,7 @@ namespace DocFileFormat
 			std::unordered_map<int, int> fonts_charsets;
 			bool bFontsCodePage = false;
 
-            for ( size_t i = 0; !bFontsCodePage &&  i < FontTable->Data.size(); ++i)
+            for ( size_t i = 0; FIB->m_FibWord97.lcbClx > 0 && !bFontsCodePage &&  i < FontTable->Data.size(); ++i)
 			{
                 FontFamilyName* font = dynamic_cast<FontFamilyName*>( FontTable->Data[i]);
 				if (!font) continue;
@@ -488,13 +494,13 @@ namespace DocFileFormat
 
 		if (BookmarkNames)
 		{
-			for (unsigned int i = 0; i < BookmarkStartEndCPs.size(); ++i)
+			for (size_t i = 0; i < BookmarkStartEndCPs.size(); ++i)
 			{
 				WideString* bookmarkName = static_cast<WideString*>(BookmarkNames->operator[]( i ));
 
                 if ( ( bookmarkName != NULL ) && ( *bookmarkName == L"_PictureBullets" ) )
 				{
-					for (unsigned int j = BookmarkStartEndCPs[i].first, k = 0; j < Text->size(); ++j, ++k )
+					for (size_t j = BookmarkStartEndCPs[i].first, k = 0; j < Text->size(); ++j, ++k )
 					{
 						if ( Text->at( j ) == 1 )
 						{
@@ -540,7 +546,7 @@ namespace DocFileFormat
 		{
 			AllSepx = new std::map<int, SectionPropertyExceptions*>();
 
-			for (unsigned int i = 0; i < SectionPlex->Elements.size(); ++i)
+			for (size_t i = 0; i < SectionPlex->Elements.size(); ++i)
 			{
 				//Read the SED
 				SectionDescriptor* sed = static_cast<SectionDescriptor*>(SectionPlex->Elements.at(i));
@@ -869,6 +875,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(HeaderStoriesPlex);
 		RELEASEOBJECT(IndividualCommentsPlex);
 		RELEASEOBJECT(AnnotationsReferencePlex);
+		RELEASEOBJECT(AnnotationsReferenceExPlex);
 		RELEASEOBJECT(TextboxBreakPlex);
 		RELEASEOBJECT(TextboxBreakPlexHeader);
 		RELEASEOBJECT(OfficeDrawingPlex);

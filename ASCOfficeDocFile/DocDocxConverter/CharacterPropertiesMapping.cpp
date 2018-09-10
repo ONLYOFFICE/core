@@ -75,7 +75,7 @@ namespace DocFileFormat
 		convertSprms( dynamic_cast<CharacterPropertyExceptions*>( chpx )->grpprl, _rPr );
 
 		// apend revision changes
-		if (_revisionData->Type == Changed)
+		if ((_revisionData) && (_revisionData->Type == Changed))
 		{
             XMLTools::XMLElement rPrChange( L"w:rPrChange");
 

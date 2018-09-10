@@ -434,6 +434,28 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfStretchBLT& oBitmap)
+		{
+			*this >> oBitmap.Bounds;
+			*this >> oBitmap.xDest;
+			*this >> oBitmap.yDest;
+			*this >> oBitmap.cxDest;
+			*this >> oBitmap.cyDest;
+			*this >> oBitmap.BitBltRasterOperation;
+			*this >> oBitmap.xSrc;
+			*this >> oBitmap.ySrc;
+			*this >> oBitmap.XformSrc;
+			*this >> oBitmap.BkColorSrc;
+			*this >> oBitmap.UsageSrc;
+			*this >> oBitmap.offBmiSrc;
+			*this >> oBitmap.cbBmiSrc;
+			*this >> oBitmap.offBitsSrc;
+			*this >> oBitmap.cbBitsSrc;
+			*this >> oBitmap.cxSrc;
+			*this >> oBitmap.cySrc;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfSetDiBitsToDevice& oBitmap)
 		{
 			*this >> oBitmap.Bounds;

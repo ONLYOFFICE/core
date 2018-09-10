@@ -257,6 +257,7 @@ namespace MetaFile
 		m_oTransform.Init();
 		m_oInverseTransform.Init();
 		m_oTextColor.Init();
+		m_oFinalTransform.Init();
 		m_oBgColor.Init();
 		m_ulTextAlign   = TA_TOP | TA_LEFT | TA_NOUPDATECP;
 		m_ulBgMode      = TRANSPARENT;
@@ -287,13 +288,14 @@ namespace MetaFile
 		pNewDC->m_pPalette       = m_pPalette;
 		pNewDC->m_oTransform.Copy(&m_oTransform);
 		pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
+		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
 		pNewDC->m_oBgColor.Copy(&m_oBgColor);
 		pNewDC->m_ulTextAlign    = m_ulTextAlign;
 		pNewDC->m_ulBgMode       = m_ulBgMode;
 		pNewDC->m_ulMiterLimit   = m_ulMiterLimit;
 		pNewDC->m_ulFillMode     = m_ulFillMode;
-		pNewDC->m_ulStretchMode  = m_ulStretchMode;		
+		pNewDC->m_ulStretchMode  = m_ulStretchMode;
 		pNewDC->m_ulRop2Mode     = m_ulRop2Mode;
 		pNewDC->m_dPixelHeight   = m_dPixelHeight;
 		pNewDC->m_dPixelWidth    = m_dPixelWidth;
@@ -358,6 +360,8 @@ namespace MetaFile
 				break;
 			}
 		}
+
+		UpdateFinalTransform();
 	}
 	unsigned int    CEmfDC::GetMapMode()
 	{
@@ -370,6 +374,10 @@ namespace MetaFile
 	TEmfXForm*      CEmfDC::GetInverseTransform()
 	{
 		return &m_oInverseTransform;
+	}
+	TEmfXForm*      CEmfDC::GetFinalTransform()
+	{
+		return &m_oFinalTransform;
 	}
 	void            CEmfDC::MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode)
 	{
@@ -394,6 +402,8 @@ namespace MetaFile
 		m_oInverseTransform.M22 = pT->M22 / dDet;
 		m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
 		m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
+
+		UpdateFinalTransform();
 	}
 	void            CEmfDC::SetTextColor(TEmfColor& oColor)
 	{
@@ -511,12 +521,15 @@ namespace MetaFile
 		m_oWindow.lX = oPoint.x;
 		m_oWindow.lY = oPoint.y;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void            CEmfDC::SetWindowExtents(TEmfSizeL& oPoint)
 	{
 		m_oWindow.ulW = oPoint.cx;
 		m_oWindow.ulH = oPoint.cy;
+
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	TEmfWindow*     CEmfDC::GetWindow()
 	{
@@ -527,12 +540,14 @@ namespace MetaFile
 		m_oViewport.lX = oPoint.x;
 		m_oViewport.lY = oPoint.y;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void            CEmfDC::SetViewportExtents(TEmfSizeL& oPoint)
 	{
 		m_oViewport.ulW = oPoint.cx;
 		m_oViewport.ulH = oPoint.cy;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	TEmfWindow*     CEmfDC::GetViewport()
 	{
@@ -560,6 +575,44 @@ namespace MetaFile
 		}
 
 		return true;
+	}
+	void            CEmfDC::UpdateFinalTransform()
+	{
+		TEmfWindow* pWindow   = GetWindow();
+		TEmfWindow* pViewPort = GetViewport();
+
+		int nWindowX = pWindow->lX;
+		int nWindowY = pWindow->lY;
+
+		double dPixelW = GetPixelWidth();
+		double dPixelH = GetPixelHeight();
+
+		// Вообще отрицательных высоты и ширины быть не должно, но если так встречается, то
+		// мы считаем, что это не перевернутая система координат, а просто сдвинутая
+
+		if (pWindow->ulH < 0)
+		{
+			if (dPixelH < 0)
+				dPixelH = -dPixelH;
+
+			nWindowY += pWindow->ulH;
+		}
+
+		if (pWindow->ulW < 0)
+		{
+			if (dPixelW < 0)
+				dPixelW = -dPixelW;
+
+			nWindowY += pWindow->ulW;
+		}
+
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -nWindowX, -nWindowY);
+		TEmfXForm oViewportXForm(dPixelW, 0, 0, dPixelH, pViewPort->lX, pViewPort->lY);
+
+		m_oFinalTransform.Init();
+		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)
 	{

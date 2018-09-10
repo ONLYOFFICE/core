@@ -39,13 +39,8 @@ namespace DocFileFormat
   class BookmarkFirst: public ByteStructure
   {
     private:
-      /// An unsigned integer that specifies a zero-based index into the PlcfBkl or PlcfBkld 
-      /// that is paired with the PlcfBkf  or PlcfBkfd containing this FBKF.
-      /// The entry found at said index specifies the location of the end of the bookmark associated with this FBKF.
-      /// Ibkl MUST be unique for all FBKFs inside a given PlcfBkf or PlcfBkfd.
-      short ibkl;
-      /// A BKC that specifies further information about the bookmark associated with this FBKF.
-      short bkc;
+		short ibkl;
+		short bkc;
 
     public:
       static const int STRUCTURE_SIZE = 4;
@@ -74,6 +69,34 @@ namespace DocFileFormat
 
 	    newObject->ibkl = reader->ReadInt16();
         newObject->bkc = reader->ReadInt16();
+
+	    return static_cast<ByteStructure*>( newObject );
+      }
+  };
+  class AtnBookmarkFirst: public ByteStructure
+  {
+public:
+	unsigned short	bmc;
+	unsigned int	lTag;
+
+	static const int STRUCTURE_SIZE = 10;
+
+	  AtnBookmarkFirst()
+	  {
+	  }
+
+	  virtual ~AtnBookmarkFirst()
+	  {
+	  }
+
+      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
+      {
+        AtnBookmarkFirst *newObject = new AtnBookmarkFirst();
+
+	    newObject->bmc = reader->ReadUInt16(); //0x0100
+        newObject->lTag = reader->ReadUInt32();
+        
+		unsigned int lTagOld = reader->ReadUInt32();
 
 	    return static_cast<ByteStructure*>( newObject );
       }

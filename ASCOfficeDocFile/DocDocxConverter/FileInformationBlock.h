@@ -560,8 +560,7 @@ namespace DocFileFormat
 					m_FibWord97.fcPlcffndRef	= reader.ReadInt32();
 					m_FibWord97.lcbPlcffndRef	= reader.ReadInt32();	
 
-					m_FibWord97.lcbPlcfandTxt	= reader.ReadInt32();//112
-
+					m_FibWord97.fcPlcffndTxt	= reader.ReadInt32();//112
 					m_FibWord97.lcbPlcffndTxt	= reader.ReadInt32();
 
 					m_FibWord97.fcPlcfandRef	= reader.ReadInt32();

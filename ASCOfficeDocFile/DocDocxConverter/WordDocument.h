@@ -224,6 +224,7 @@ namespace DocFileFormat
 		Plex<FieldCharacter>				*EndnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*HeadersAndFootersDocumentFieldsPlex;
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
+		Plex<AnnotationReferenceExDescriptor> *AnnotationsReferenceExPlex;
 		Plex<EmptyStructure>				*AutoTextPlex;		
 		// Each character position specifies the beginning of a range of text that constitutes the contents of an AutoText item
 		

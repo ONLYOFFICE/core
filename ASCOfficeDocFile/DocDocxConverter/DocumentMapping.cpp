@@ -45,7 +45,7 @@ namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
 		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
-		_endnoteNr(0), _commentNr(0), _caller(caller)
+		_endnoteNr(0), _commentNr(1), _caller(caller)
 	{
 		m_document				=	NULL;
 		m_context				=	context;
@@ -506,7 +506,7 @@ namespace DocFileFormat
 		}
 
 		//write text
-		for (unsigned int i = 0; i < chars->size(); ++i)
+		for (size_t i = 0; i < chars->size(); ++i)
 		{
 			wchar_t c = chars->at(i), code = c;
 
@@ -526,7 +526,20 @@ namespace DocFileFormat
 
                 text.clear();
 
-                XMLTools::XMLElement elem(L"w:br");
+				if (textType == L"instrText")
+				{
+					m_pXmlWriter->WriteNodeEnd(L"w:r");
+					m_pXmlWriter->WriteNodeBegin(L"w:r");
+					CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, NULL, _lastValidPapx, false);
+					if (rPr)
+					{
+						rPr->_webHidden = _writeWebHidden;
+						
+						chpx->Convert(rPr);
+						RELEASEOBJECT(rPr);
+					}
+				}
+				XMLTools::XMLElement elem(L"w:br");
                 elem.AppendAttribute(L"w:type", L"textWrapping");
                 elem.AppendAttribute(L"w:clear", L"all");
 
@@ -1013,6 +1026,11 @@ namespace DocFileFormat
 				if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:footnoteReference", true );
+					FootnoteDescriptor* desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+					if (desc && desc->aFtnIdx == 0)
+					{
+						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+					}
                     m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
@@ -1024,6 +1042,11 @@ namespace DocFileFormat
 				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
+					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+					if (desc && desc->aEndIdx == 0)
+					{
+						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+					}
                     m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_endnoteNr++ ));
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
@@ -1041,10 +1064,10 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeBegin( L"w:annotationRef", true );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}	
-				else
+				else if ((m_document->AnnotationsReferencePlex) && (_commentNr <= m_document->AnnotationsReferencePlex->Elements.size()))
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
-					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr ));
+					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr++ ));
 					m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 			}
@@ -1196,7 +1219,7 @@ namespace DocFileFormat
 
 		// add the parts
 
-		for (unsigned int i = 0; i < splitIndices->size(); ++i)
+		for (size_t i = 0; i < splitIndices->size(); ++i)
 		{
 			int cch = splitIndices->at( i ) - startIndex;
 

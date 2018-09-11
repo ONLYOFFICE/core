@@ -289,7 +289,8 @@ void xlsx_serialize(std::wostream & strm, _xlsx_drawing & val)
 		xlsx_serialize_group(strm, val);
 	}
 	else if (val.type == typeOleObject ||
-			 val.type == typeMsObject )
+			 val.type == typeMsObject || 
+			 val.type == typeControl)
 	{
 		xlsx_serialize_object(strm, val);
 	}
@@ -351,6 +352,38 @@ void _xlsx_drawing::serialize_object (std::wostream & strm)
 			CP_XML_ATTR(L"progId",	objectProgId);
 			
 			CP_XML_NODE(L"objectPr")
+			{
+				CP_XML_ATTR(L"defaultSize", 0);
+				if (fill.bitmap)
+				{
+					CP_XML_ATTR(L"r:id", fill.bitmap->rId);
+				}
+				CP_XML_NODE(L"anchor")
+				{
+					CP_XML_ATTR(L"moveWithCells", 1);
+
+					from_.serialize	(CP_XML_STREAM(), L"");
+					to_.serialize	(CP_XML_STREAM(), L"");
+
+				}
+			}
+		}
+	}
+
+}
+
+void _xlsx_drawing::serialize_control (std::wostream & strm)
+{
+	if (type != typeControl) return;
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"control")
+		{
+			CP_XML_ATTR(L"r:id",	objectId);
+			CP_XML_ATTR(L"shapeId", id);
+			//CP_XML_ATTR(L"name",	objectProgId);
+			
+			CP_XML_NODE(L"controlPr")
 			{
 				CP_XML_ATTR(L"defaultSize", 0);
 				if (fill.bitmap)

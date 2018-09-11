@@ -226,7 +226,7 @@ int text_format_properties_content::process_font_style(const _CP_OPT(font_style)
 }
 void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_context & Context)
 {
-	styles_context & styles_context_ = Context.get_text_context().get_styles_context();
+	oox::styles_context & styles_context_ = Context.get_text_context().get_styles_context();
 	CP_XML_WRITER(styles_context_.text_style())
 	{  
 		if (fo_color_)
@@ -948,7 +948,7 @@ void text_format_properties_content::docx_serialize(std::wostream & _rPr, fonts_
 
 void text_format_properties_content::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	styles_context	& styles_context_	= Context.get_text_context().get_styles_context();
+	oox::styles_context	& styles_context_	= Context.get_text_context().get_styles_context();
 	fonts_container & fonts_			= Context.root()->odf_context().fontContainer();	  
 
 	drawing_serialize(styles_context_.text_style(), styles_context_.extern_node(), fonts_, styles_context_.get_current_processed_style(), styles_context_.hlinkClick());

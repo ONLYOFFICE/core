@@ -121,7 +121,7 @@ void slides_files::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slides" ;
     NSDirectory::CreateDirectory(path.c_str());
 
-	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
     
     for (int i = 0; i < slides_.size(); i++)
@@ -156,7 +156,7 @@ void notes_files::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"notesSlides" ;
     NSDirectory::CreateDirectory(path.c_str());
 
-	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";
     
     for (int i = 0; i < slides_.size(); i++)
@@ -199,7 +199,7 @@ void slideMasters_files::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slideMasters" ;
     NSDirectory::CreateDirectory(path.c_str());
 
-	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
    
     for (int i = 0; i < slides_.size(); i++)
@@ -233,7 +233,7 @@ void notesMaster_files::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"notesMasters" ;
     NSDirectory::CreateDirectory(path.c_str());
 
-	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml";
    
     for (int i = 0; i < slides_.size(); i++)
@@ -282,7 +282,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
         const std::wstring fileName		= std::wstring(L"slideLayout") + std::to_wstring( i + 1 ) + L".xml";
         const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
        
-		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
+		content_type * contentTypes = get_main_document()->get_content_types_file().content();
         contentTypes->add_override(std::wstring(L"/ppt/slideLayouts/") + fileName, kWSConType);
 
         slides_[i]->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
@@ -332,7 +332,7 @@ void ppt_charts_files::write(const std::wstring & RootPath)
         if (!charts_[i]) continue;
 		
 		const std::wstring fileName = std::wstring(L"chart") + std::to_wstring( i + 1 ) + L".xml";
-        content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
+        content_type * contentTypes = get_main_document()->get_content_types_file().content();
        
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
         contentTypes->add_override(std::wstring(L"/ppt/charts/") + fileName, kWSConType);
@@ -364,7 +364,7 @@ void ppt_themes_files::write(const std::wstring & RootPath)
 		const std::wstring fileName		= std::wstring(L"theme") + std::to_wstring( i + 1) + L".xml";
 		const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.theme+xml";
        
-		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
+		content_type * contentTypes = get_main_document()->get_content_types_file().content();
         contentTypes->add_override(std::wstring(L"/ppt/theme/") + fileName, kWSConType);
 
 		std::wstringstream content;
@@ -385,7 +385,7 @@ void ppt_comments_files::write(const std::wstring & RootPath)
    
 	for (int i = 0; i < comments_.size(); i++)
     {
-		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
+		content_type * contentTypes = get_main_document()->get_content_types_file().content();
 
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.comments+xml";
         contentTypes->add_override(std::wstring(L"/ppt/comments/") + comments_[i].filename, kWSConType);

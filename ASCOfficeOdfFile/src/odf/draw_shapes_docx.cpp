@@ -42,6 +42,7 @@
 
 #include <xml/xmlchar.h>
 #include <xml/attributes.h>
+#include <xml/utils.h>
 #include <odf/odf_document.h>
 
 #include "serialize_elements.h"
@@ -53,7 +54,7 @@
 #include "datatypes/borderstyle.h"
 
 #include "../docx/xlsx_utils.h"
-#include "../docx/oox_drawing.h"
+#include "../docx/docx_drawing.h"
 
 namespace cpdoccore { 
 

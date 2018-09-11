@@ -42,7 +42,56 @@
 #include "../odf/style_paragraph_properties.h"
 
 namespace cpdoccore { 
+namespace oox
+{
+void forms_context::start_element (int type)
+{
+	current_state_.clear();
 
+	current_state_.type	= type;
+}
+void forms_context::set_id (const std::wstring& id)
+{
+	current_state_.id = id;
+}
+void forms_context::set_name (const std::wstring& name)
+{
+	current_state_.name	= name;
+}
+void forms_context::set_label (const std::wstring& label)
+{
+	current_state_.label = label;
+}
+void forms_context::set_uuid (const std::wstring& uuid)
+{
+	current_state_.uuid	= uuid;
+}
+void forms_context::set_value (const std::wstring &value)
+{
+	current_state_.value = value;
+}
+void forms_context::set_element(odf_reader::form_element *elm)
+{
+	current_state_.element = elm;
+}
+void forms_context::end_element ()
+{
+	mapElements_.insert( std::make_pair(current_state_.id, current_state_));
+
+	current_state_.clear();
+}
+forms_context::_state& forms_context::get_state_element (std::wstring id)
+{
+	std::map<std::wstring, _state>::iterator it = mapElements_.find(id);
+	
+	if (it != mapElements_.end())
+	{
+		return it->second;
+	}
+	else 
+		return 	current_state_; //empty
+}
+//----------------------------------------------------------------------------------------------------------------
 void tabs_context::reset()
 {
 	for (size_t i = 0; i < tabs.size(); i++)
@@ -190,8 +239,7 @@ void styles_context::docx_serialize_table_style(std::wostream & strm, std::wstri
 		}
     }
 }
-namespace oox
-{
+
 math_context::math_context(odf_reader::fonts_container & fonts, bool graphic) :
 						base_font_size_(12), fonts_container_(fonts), is_need_e_(false)
 {

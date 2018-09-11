@@ -52,6 +52,8 @@ public:
  		count_audio		= 0;
  		count_video		= 0;
  		count_slide		= 0;
+		count_activeX	= 0;	
+		count_control	= 0;	
 	}
 
     struct item 
@@ -82,10 +84,14 @@ public:
 	size_t count_shape;
 	size_t count_tables;
 	size_t count_object;
+	size_t count_activeX;
+	size_t count_control;
 
     std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal);//возможны ссылки на один и тот же объект
     std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref);
     
+	std::wstring add_control_props	(std::wstring & oox_target);
+
 	void dump_rels(rels & Rels);
     items_array & items() { return items_; }
 
@@ -102,6 +108,9 @@ public:
 			case typeAudio:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio";
 			case typeVideo:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
 			case typeSlide:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
+			case typeExternalLink:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+			case typeActiveX:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control";
+			case typeControlProps:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/ctrlProp";
 			default:
 				return L"";
 		}

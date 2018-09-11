@@ -572,47 +572,6 @@ private:
 	std::map<std::wstring, _state>	mapChanges_;
 };
 
-class text_forms_context
-{
-public:
-	struct _state
-	{
-		std::wstring				id;
-		std::wstring				name;
-		int							type = 0; //enum?
-		std::wstring				label;
-		std::wstring				uuid;
-		std::wstring				value;
-		odf_reader::form_element*	element = NULL;
-	
-		void clear()
-		{
-			type = 0;
-			id.clear();
-			name.clear();
-			label.clear();
-			value.clear();
-			uuid.clear();
-			element = NULL;
-		}
-	};
-	text_forms_context(){}
-
-	void start_element	(int type);
-		void set_id		(const std::wstring& id);
-		void set_name	(const std::wstring& name);
-		void set_label	(const std::wstring& label);
-		void set_uuid	(const std::wstring& uuid);
-		void set_value	(const std::wstring& value);
-		void set_element(odf_reader::form_element *elm);
-	void end_element	();
-
-	_state& get_state_element (std::wstring id);
-
-private:
-	_state							current_state_;
-	std::map<std::wstring, _state>	mapElements_;
-};
 class table_content_context
 {
 public:
@@ -930,7 +889,7 @@ public:
 	section_context		& get_section_context()		{ return section_context_; }
 	notes_context		& get_notes_context()		{ return notes_context_; }
 	text_tracked_context& get_text_tracked_context(){ return text_tracked_context_; }
-	text_forms_context	& get_forms_context()		{ return text_forms_context_; }
+	forms_context		& get_forms_context()		{ return forms_context_; }
 	tabs_context		& get_tabs_context()		{ return tabs_context_;}
 	
 	table_content_context	& get_table_content_context()	{ return table_content_context_;}
@@ -1012,7 +971,7 @@ private:
     header_footer_context	header_footer_context_;
     notes_context			notes_context_;
 	text_tracked_context	text_tracked_context_;
-	text_forms_context		text_forms_context_;
+	forms_context			forms_context_;
 	tabs_context			tabs_context_;
 	table_content_context	table_content_context_;
        

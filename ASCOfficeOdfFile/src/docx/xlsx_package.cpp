@@ -148,7 +148,7 @@ void sheets_files::write(const std::wstring & RootPath)
         const std::wstring fileName		= std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
 		const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
         
-		content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+		content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
         contentTypes->add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
 
         if (rels_)
@@ -194,6 +194,10 @@ void xl_files::write(const std::wstring & RootPath)
 		sheets_files_.set_main_document( this->get_main_document() );
 		sheets_files_.write(path);
 	}
+	{
+		control_props_files_.set_main_document( this->get_main_document() );
+		control_props_files_.write(path);
+	}
 	int index = 1;
     if (true)
     {
@@ -210,7 +214,7 @@ void xl_files::write(const std::wstring & RootPath)
         connections_->write(path);
         rels_files_.add( relationship( L"cnId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections", L"connections.xml" ) );
 
-		content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+		content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 		contentTypes->add_override(L"/xl/connections.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml");
 	}
 
@@ -322,6 +326,10 @@ void xl_files::add_jsaProject(const std::string &content)
 {
 	jsaProject_ = package::simple_element::create(L"jsaProject.bin", content);
 }
+void xl_files::add_control_props (simple_element_ptr element)
+{
+	control_props_files_.add_control_props(element);
+}
 //----------------------------------------------------------------------------------------
 void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
 {
@@ -332,7 +340,7 @@ void xl_pivot_cache_files::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"pivotCache";
     NSDirectory::CreateDirectory(path.c_str());
 
-	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	
 	static const std::wstring kWSConTypeD = L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml";
 	static const std::wstring kWSConTypeR = L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml";
@@ -384,7 +392,7 @@ void xl_pivot_table_files::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"pivotTables";
     NSDirectory::CreateDirectory(path.c_str());
 
-	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml";
 	
@@ -425,7 +433,7 @@ void xl_charts_files::write(const std::wstring & RootPath)
     {
         count++;
         const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(i + 1) + L".xml";
-        content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+        content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
        
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
         contentTypes->add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
@@ -438,6 +446,33 @@ void xl_charts_files::write(const std::wstring & RootPath)
 		    
 		relFiles.add_rel_file(charts_[i]->get_rel_file());
 		relFiles.write(path);
+    }
+}
+//----------------------------------------------------------------------------------------
+void xl_control_props_files::add_control_props(simple_element_ptr query_table)
+{
+	control_props_.push_back(query_table);
+}
+void xl_control_props_files::write(const std::wstring & RootPath)
+{
+	if (control_props_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"ctrlProps";
+
+	NSDirectory::CreateDirectory(path);
+
+	content_type *contentTypes = this->get_main_document()->get_content_types_file().content();
+	static const std::wstring kWSConType = L"application/vnd.ms-excel.controlproperties+xml";
+	
+	for (size_t i = 0; i < control_props_.size(); i++)
+    {
+        if (!control_props_[i])continue;
+
+        const std::wstring fileName = control_props_[i]->get_filename();
+       
+        contentTypes->add_override(std::wstring(L"/xl/ctrlProps/") + fileName, kWSConType);
+
+		control_props_[i]->write(path);
     }
 }
 //------------------------------------------------------------------------------------------------------
@@ -463,7 +498,7 @@ void xl_drawings::write(const std::wstring & RootPath)
         relFiles.add_rel_file(r);
         relFiles.write(path);
 
-        content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+        content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 
         const std::wstring kDrawingCT = L"application/vnd.openxmlformats-officedocument.drawing+xml";
         contentTypes->add_override(L"/xl/drawings/" + drawings_[i].filename, kDrawingCT);
@@ -483,7 +518,7 @@ void xl_comments::write(const std::wstring & RootPath)
    
     for (size_t i = 0; i < comments_.size(); i++)
     {
-		content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+		content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
         contentTypes->add_override(std::wstring(L"/xl/") + comments_[i].filename, kWSConType);

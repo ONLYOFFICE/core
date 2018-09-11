@@ -128,54 +128,7 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 	else 
 		return 	current_state_; //empty
 }
-//----------------------------------------------------------------------------------------------------------------
-void text_forms_context::start_element (int type)
-{
-	current_state_.clear();
 
-	current_state_.type	= type;
-}
-void text_forms_context::set_id (const std::wstring& id)
-{
-	current_state_.id = id;
-}
-void text_forms_context::set_name (const std::wstring& name)
-{
-	current_state_.name	= name;
-}
-void text_forms_context::set_label (const std::wstring& label)
-{
-	current_state_.label = label;
-}
-void text_forms_context::set_uuid (const std::wstring& uuid)
-{
-	current_state_.uuid	= uuid;
-}
-void text_forms_context::set_value (const std::wstring &value)
-{
-	current_state_.value = value;
-}
-void text_forms_context::set_element(odf_reader::form_element *elm)
-{
-	current_state_.element = elm;
-}
-void text_forms_context::end_element ()
-{
-	mapElements_.insert( std::make_pair(current_state_.id, current_state_));
-
-	current_state_.clear();
-}
-text_forms_context::_state& text_forms_context::get_state_element (std::wstring id)
-{
-	std::map<std::wstring, _state>::iterator it = mapElements_.find(id);
-	
-	if (it != mapElements_.end())
-	{
-		return it->second;
-	}
-	else 
-		return 	current_state_; //empty
-}
 //----------------------------------------------------------------------------------------------------------------
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
 	next_dump_page_properties_	(false),
@@ -1100,7 +1053,7 @@ void docx_conversion_context::process_styles()
                 if (odf_reader::style_content * content = arStyles[i]->content())
                 {
 					get_tabs_context().clear();
-					odf_reader::calc_tab_stops(arStyles[i].get(), get_tabs_context());
+					calc_tab_stops(arStyles[i].get(), get_tabs_context());
 					
 					get_styles_context().start_process_style(arStyles[i].get());
                     content->docx_convert(*this, true);
@@ -1575,7 +1528,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 
                     start_automatic_style(id);
 
-					odf_reader::calc_tab_stops(styleInst, get_tabs_context());
+					calc_tab_stops(styleInst, get_tabs_context());
 					
 					//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
 					odf_reader::paragraph_format_properties properties = odf_reader::calc_paragraph_properties_content(styleInst);

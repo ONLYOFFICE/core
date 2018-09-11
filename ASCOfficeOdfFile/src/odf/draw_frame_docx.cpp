@@ -51,6 +51,7 @@
 
 #include "../docx/docx_drawing.h"
 #include "../docx/xlsx_package.h"
+#include "../docx/oox_conversion_context.h"
 
 #include "chart_build_oox.h"
 
@@ -1670,7 +1671,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (!control_id_) return;
 
-	oox::text_forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
+	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
 
 	if ((state.type == 6 || state.type == 4) && state.element)
@@ -1709,10 +1710,10 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
 		Context.start_paragraph(false);
 		
-		if (draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+		if (common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
 		{	
 			text::paragraph_attrs attrs_;
-			attrs_.text_style_name_ = *draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
+			attrs_.text_style_name_ = *common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
 
 			int textStyle = Context.process_paragraph_attr(&attrs_);
 		}	
@@ -1757,7 +1758,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 //---------------------------------------------------------------------------------------------------------
 
 /////////
-	common_draw_docx_convert(Context, draw_attlists_, &drawing);
+	common_draw_docx_convert(Context, common_draw_attlists_, &drawing);
 /////////
 
     std::wostream & strm = Context.output_stream();

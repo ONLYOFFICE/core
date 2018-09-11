@@ -44,6 +44,7 @@
 #include <xml/attributes.h>
 #include <odf/odf_document.h>
 
+#include "office_forms.h"
 #include "serialize_elements.h"
 #include "style_graphic_properties.h"
 #include "odfcontext.h"
@@ -140,7 +141,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
     }
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 
-	if (text_content_.length()>0)
+	if (!text_content_.empty())
 	{
 		Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
 	}
@@ -355,5 +356,38 @@ void dr3d_light::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 
 }
+void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	if (!control_id_) return;
+
+	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
+	if (state.id.empty()) return;
+
+	if (state.ctrlPropId.empty())
+	{
+		std::wstring target;
+		state.ctrlPropId = Context.get_mediaitems().add_control_props(target);
+		
+		std::wstringstream strm;		
+		
+		form_element* control = dynamic_cast<form_element*>(state.element);
+		if (control)
+		{
+			control->serialize_control_props(strm);
+		}
+
+		Context.add_control_props(state.ctrlPropId, target, strm.str());
+	}
+
+	Context.get_drawing_context().start_frame();
+	Context.get_drawing_context().set_control(state.ctrlPropId);
+	
+	common_xlsx_convert(Context);
+
+	Context.get_drawing_context().end_frame();
+	Context.get_drawing_context().clear();
+
+}
+
 }
 }

@@ -73,6 +73,7 @@ public:
 
     void serialize			(std::wostream & _Wostream);  
 	void serialize_objects	(std::wostream & _Wostream);  
+	void serialize_controls	(std::wostream & _Wostream);  
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

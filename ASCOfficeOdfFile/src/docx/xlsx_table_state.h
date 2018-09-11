@@ -134,6 +134,7 @@ public:
 	void serialize_table_format				(std::wostream & _Wostream);
 	void serialize_merge_cells				(std::wostream & _Wostream);
     void serialize_hyperlinks				(std::wostream & _Wostream);
+	void serialize_controls					(std::wostream & _Wostream);
     void serialize_ole_objects				(std::wostream & _Wostream);
 	void serialize_page_properties			(std::wostream & _Wostream);
 	void serialize_background				(std::wostream & _Wostream);

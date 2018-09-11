@@ -66,7 +66,8 @@ public:
 	std::wstring			content_group_;
 
     void serialize			(std::wostream & strm);    
-    void serialize_object	(std::wostream & strm);    
+	void serialize_object	(std::wostream & strm);    
+	void serialize_control	(std::wostream & strm);    
 };
 }
 }

@@ -52,8 +52,10 @@
 #include "odf_document_impl.h"
 
 #include "calcs_styles.h"
-#include "../docx/xlsx_drawing.h"
 #include "chart_build_oox.h"
+
+#include "../docx/oox_conversion_context.h"
+#include "../docx/xlsx_drawing.h"
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
@@ -255,7 +257,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 
-	if (text_content_.length()>0)
+	if (!text_content_.empty())
 	{
 		Context.get_drawing_context().set_property(_property(L"text-content", text_content_));
 	}

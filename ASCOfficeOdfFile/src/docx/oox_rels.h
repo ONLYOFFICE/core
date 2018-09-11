@@ -56,7 +56,10 @@ enum RelsType
 	typeSlide,
 	typeVideo, 
 	typeAudio,
-	typeControl
+	typeExternalLink, 
+	typeActiveX, 
+	typeControl,
+	typeControlProps
 };
 
 struct _rel

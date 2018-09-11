@@ -156,7 +156,7 @@ paragraph_format_properties calc_paragraph_properties_content(const std::vector<
     return result;
 }
 
-void calc_tab_stops(const style_instance * styleInstance, tabs_context & context)
+void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & context)
 {
     std::vector<const style_paragraph_properties*> parProps;
     while (styleInstance)

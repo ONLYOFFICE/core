@@ -323,6 +323,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
 
+	if (office_forms_)
+	{
+		office_forms_->xlsx_convert(Context);
+	}
+
 	if (table_table_source_)
 	{
 		table_table_source* table_source = dynamic_cast<table_table_source*>( table_table_source_.get() );

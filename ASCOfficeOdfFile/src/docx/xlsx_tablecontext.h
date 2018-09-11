@@ -89,6 +89,7 @@ public:
 	void serialize_conditionalFormatting(std::wostream & _Wostream);
 	void serialize_hyperlinks			(std::wostream & _Wostream);
 	void serialize_ole_objects			(std::wostream & _Wostream);
+	void serialize_controls				(std::wostream & _Wostream);
 	void serialize_page_properties		(std::wostream & _Wostream);
 	void serialize_background			(std::wostream & _Wostream);
 	void serialize_data_validation		(std::wostream & _Wostream);

@@ -430,29 +430,6 @@ void draw_plugin::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 {
     CP_CREATE_ELEMENT(content_); 
 }
-// draw:control
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * draw_control::ns = L"draw";
-const wchar_t * draw_control::name = L"control";
-
-void draw_control::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	CP_APPLY_ATTR(L"xml:id", xml_id_);
-	CP_APPLY_ATTR(L"draw:caption-id", caption_id_);
-	CP_APPLY_ATTR(L"draw:control", control_id_);
-
- 	draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
-	draw_attlists_.position_.add_attributes(Attributes);
-	draw_attlists_.rel_size_.add_attributes(Attributes);
-}
-
-void draw_control::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	if CP_CHECK_NAME(L"draw", L"glue-point")
-    {
-        CP_CREATE_ELEMENT(draw_glue_point_);
-    }   
-}
 
 }
 }

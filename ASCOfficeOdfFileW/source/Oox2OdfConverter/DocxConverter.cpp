@@ -2240,19 +2240,37 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 
 	bool set_color = false;
-	if (oox_run_pr->m_oTextFill.getType() == OOX::et_a_gradFill)
+	if (oox_run_pr->m_oTextFill.getType() == OOX::et_a_gradFill || oox_run_pr->m_oTextOutline.IsInit())
 	{
-		NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
 		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
 		if (drawing_context)
 		{
 			if (odf_context()->drawing_context()->change_text_box_2_wordart())
 			{
-				odf_context()->drawing_context()->start_area_properties();
+				NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+				NSCommon::smart_ptr<PPTX::Logic::SolidFill> solidFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+				
+				odf_context()->drawing_context()->start_area_properties(true);				
+				if(gradFill.IsInit())
 				{		
 					OoxConverter::convert(gradFill.operator->());
 				}
+				else if (solidFill.IsInit())
+				{
+					OoxConverter::convert(solidFill.operator->());
+				}
+				else
+				{
+					odf_context()->drawing_context()->set_no_fill();
+				}
 				odf_context()->drawing_context()->end_area_properties();
+
+				if (oox_run_pr->m_oTextOutline.IsInit())
+				{
+					odf_context()->drawing_context()->start_line_properties(true);
+					OoxConverter::convert(oox_run_pr->m_oTextOutline.operator->());
+					odf_context()->drawing_context()->end_line_properties();
+				}
 
 				set_color = true;
 			}

@@ -385,6 +385,7 @@ bool table_table_cell::empty()
 {
 	if (!content_.elements_.empty()) return false;
 	if (attlist_.table_formula_) return false;
+	if (attlist_.table_style_name_) return false;
 	
 	if (attlist_extra_.table_number_columns_spanned_ > 1) return false;
 	if (attlist_extra_.table_number_rows_spanned_ > 1) return false;

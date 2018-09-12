@@ -124,7 +124,7 @@ void slides_files::write(const std::wstring & RootPath)
 	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
     
-    for (int i = 0; i < slides_.size(); i++)
+    for (size_t i = 0; i < slides_.size(); i++)
     {
         if (!slides_[i]) continue;
 
@@ -159,7 +159,7 @@ void notes_files::write(const std::wstring & RootPath)
 	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";
     
-    for (int i = 0; i < slides_.size(); i++)
+    for (size_t i = 0; i < slides_.size(); i++)
     {
         if (!slides_[i]) continue;
 
@@ -202,7 +202,7 @@ void slideMasters_files::write(const std::wstring & RootPath)
 	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
    
-    for (int i = 0; i < slides_.size(); i++)
+    for (size_t i = 0; i < slides_.size(); i++)
     {
         if (!slides_[i]) continue;
 
@@ -236,7 +236,7 @@ void notesMaster_files::write(const std::wstring & RootPath)
 	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml";
    
-    for (int i = 0; i < slides_.size(); i++)
+    for (size_t i = 0; i < slides_.size(); i++)
     {
         if (!slides_[i]) continue;
 
@@ -275,7 +275,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slideLayouts" ;
     NSDirectory::CreateDirectory(path.c_str());
 
-    for (int i = 0; i < slides_.size(); i++)
+    for (size_t i = 0; i < slides_.size(); i++)
     {
         if (!slides_[i]) continue;
 
@@ -327,7 +327,7 @@ void ppt_charts_files::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
     NSDirectory::CreateDirectory(path.c_str());
 
-    for (int i = 0; i < charts_.size(); i++)
+    for (size_t i = 0; i < charts_.size(); i++)
     {
         if (!charts_[i]) continue;
 		
@@ -357,7 +357,7 @@ void ppt_themes_files::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"theme" ;
     NSDirectory::CreateDirectory(path.c_str());
 
-    for (int i = 0; i < themes_.size(); i++)
+    for (size_t i = 0; i < themes_.size(); i++)
     {
         if (!themes_[i]) continue;
             
@@ -383,7 +383,7 @@ void ppt_comments_files::write(const std::wstring & RootPath)
 	std::wstring comm_path = RootPath + FILE_SEPARATOR_STR +  L"comments";
     NSDirectory::CreateDirectory(comm_path.c_str());
    
-	for (int i = 0; i < comments_.size(); i++)
+	for (size_t i = 0; i < comments_.size(); i++)
     {
 		content_type * contentTypes = get_main_document()->get_content_types_file().content();
 

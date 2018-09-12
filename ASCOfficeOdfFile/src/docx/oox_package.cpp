@@ -132,7 +132,7 @@ bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
 	std::vector<default_content_type> & defaults = content_type_content_.get_default();
 	
-	for (int i = 0 ; i < defaults.size(); i++)
+	for (size_t i = 0 ; i < defaults.size(); i++)
 	{
 		if (defaults[i].extension() == extension)
 			return true;

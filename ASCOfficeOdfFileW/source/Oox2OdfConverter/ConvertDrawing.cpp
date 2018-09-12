@@ -1807,7 +1807,7 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (drawing)	//from styles drawing impossible(  ... todoooo ??? 
 	{	
 		if ((oox_run_pr->Fill.is<PPTX::Logic::GradFill>()) ||
-			((oox_run_pr->ln.IsInit()) && (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)))
+			(oox_run_pr->ln.IsInit() /*&& (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)*/))
 		{
 			drawing->change_text_box_2_wordart();
 		}
@@ -1816,13 +1816,13 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		{
 			if (oox_run_pr->Fill.is_init())
 			{
-				drawing->start_area_properties();
+				drawing->start_area_properties(true);
 					convert(&oox_run_pr->Fill);
 				drawing->end_area_properties();
 			}
 			if (oox_run_pr->ln.is_init())
 			{
-				drawing->start_line_properties();
+				drawing->start_line_properties(true);
 				if (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill )
 				{
 					drawing->set_line_dash_preset(6);

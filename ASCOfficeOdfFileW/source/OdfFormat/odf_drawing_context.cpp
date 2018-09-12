@@ -1178,7 +1178,7 @@ void odf_drawing_context::end_element()
 	impl_->current_level_.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::start_area_properties()
+void odf_drawing_context::start_area_properties(bool reset)
 {
 	impl_->current_drawing_part_ = Area;
 }
@@ -1186,9 +1186,11 @@ void odf_drawing_context::end_area_properties()
 {
 	impl_->current_drawing_part_ = Unknown;
 }
-void odf_drawing_context::start_line_properties()
+void odf_drawing_context::start_line_properties(bool reset)
 {
 	impl_->current_drawing_part_ = Line;
+	if (reset)
+		impl_->current_graphic_properties->draw_stroke_ = boost::none;
 }
 void odf_drawing_context::end_line_properties()
 {
@@ -2130,7 +2132,7 @@ void odf_drawing_context::set_line_dash_preset(int style)
 	if (!impl_->current_graphic_properties)return;
 
 	if ((impl_->current_graphic_properties->draw_stroke_) && 
-		(impl_->current_graphic_properties->draw_stroke_->get_type() == line_style::None))	return;
+		(impl_->current_graphic_properties->draw_stroke_->get_type() == line_style::None) )return;
 
 	switch(style)	//+создать стиль, привзать имена
 	{
@@ -2142,15 +2144,15 @@ void odf_drawing_context::set_line_dash_preset(int style)
 			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::DotDash);	break;
 		case 2://presetlinedashvalDot       
 		case 10://presetlinedashvalSysDot        
-			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Dotted);	break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Dotted);		break;
 		case 3://presetlinedashvalLgDash  
 		case 4://presetlinedashvalLgDashDot  
 			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::LongDash);	break;
 		case 5://presetlinedashvalLgDashDotDot 
 		case 9://presetlinedashvalSysDashDotDot 
-			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::DotDotDash);break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::DotDotDash);	break;
 		case 6://presetlinedashvalSolid      
-			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);	 break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);		break;
 	}
 }
 void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)

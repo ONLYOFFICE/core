@@ -423,7 +423,7 @@ int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
 	for (size_t i = 0; i < comments_.size(); i++)
 	{
-		if ((comments_[i].col < col + repeate_col && comments_[i].col >= col) && comments_[i].row == row)
+		if ((comments_[i].col < col + repeate_col && comments_[i].col >= col) && comments_[i].row == row && comments_[i].used == false)
 		{
             return  (int)i;
 		}
@@ -434,7 +434,7 @@ int ods_table_state::is_row_comment(int row, int repeate_row)
 {
 	for (size_t i = 0; i < comments_.size(); i++)
 	{
-		if (comments_[i].row < row + repeate_row && comments_[i].row >= row)
+		if (comments_[i].row < row + repeate_row && comments_[i].row >= row && comments_[i].used == false)
 		{
 			return  i;
 		}
@@ -1050,6 +1050,7 @@ void ods_table_state::end_cell()
 	{
 		office_element_ptr & comm_elm = comments_[cells_.back().comment_idx].elm;
 		cells_.back().elm->add_child_element(comm_elm);
+		comments_[cells_.back().comment_idx].used = true;
 	}
 	if (cells_.back().empty)
 	{
@@ -1060,22 +1061,22 @@ void ods_table_state::end_cell()
 
 void ods_table_state::add_default_cell( unsigned int repeated)
 {
-    int comment_idx = is_cell_comment(current_table_column_ + 1 , current_table_row_, repeated);
+    int comment_idx = is_cell_comment(current_table_column_ + 1, current_table_row_, repeated);
 	if (comment_idx  >= 0 && repeated > 1)
 	{
 		//делим на 3 - до, с комметом, после;
         int c = current_table_column_;
 
-		add_default_cell(comments_[comment_idx].col - c -1);
+		add_default_cell(comments_[comment_idx].col - c - 1);
 		add_default_cell(1);
-		add_default_cell(repeated + c +1 - comments_[comment_idx].col);
+		add_default_cell(repeated + c + 1 - comments_[comment_idx].col);
 
 		return;
 	}
 
 //////////////////////////////////////////////////
 	office_element_ptr default_cell_elm;
-	create_element(L"table", L"table-cell",default_cell_elm, context_);
+	create_element(L"table", L"table-cell", default_cell_elm, context_);
 
 	current_row_element()->add_child_element(default_cell_elm);
 	

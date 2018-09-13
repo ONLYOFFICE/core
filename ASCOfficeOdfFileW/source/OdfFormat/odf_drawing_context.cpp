@@ -1178,7 +1178,7 @@ void odf_drawing_context::end_element()
 	impl_->current_level_.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::start_area_properties()
+void odf_drawing_context::start_area_properties(bool reset)
 {
 	impl_->current_drawing_part_ = Area;
 }
@@ -1186,9 +1186,11 @@ void odf_drawing_context::end_area_properties()
 {
 	impl_->current_drawing_part_ = Unknown;
 }
-void odf_drawing_context::start_line_properties()
+void odf_drawing_context::start_line_properties(bool reset)
 {
 	impl_->current_drawing_part_ = Line;
+	if (reset)
+		impl_->current_graphic_properties->draw_stroke_ = boost::none;
 }
 void odf_drawing_context::end_line_properties()
 {

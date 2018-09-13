@@ -798,8 +798,6 @@ public:
 	void add_element_to_run		(std::wstring parenStyleId = _T(""));
     void finish_run				();
 	void add_new_run			(std::wstring parentStyleId = _T(""));
-    bool get_run_state			()			{ return in_run_; }
-    void set_run_state			(bool Val)	{ in_run_			= Val; }
   
     void start_paragraph		(bool is_header = false);
     void finish_paragraph		();
@@ -807,10 +805,18 @@ public:
 	bool is_alphabetical_index	()					{ return false == mapAlphabeticals.empty();}
 	bool is_table_content		()					{ return in_table_content_; }
 	bool is_paragraph_header	()					{ return in_header_;		}
-	bool get_paragraph_state	()					{ return in_paragraph_;		}
-    void set_paragraph_state	(bool val)			{ in_paragraph_	= val;		}
-	bool get_paragraph_keep		()					{ return is_paragraph_keep_;}
-	void set_paragraph_keep		(bool val)			{ is_paragraph_keep_ = val;	}
+	
+	void reset_context_state();
+	void back_context_state();
+	
+	bool get_run_state			()					{ return state_.in_run_; }
+    void set_run_state			(bool Val)			{ state_.in_run_ = Val; }
+	
+	bool get_paragraph_state	()					{ return state_.in_paragraph_;		}
+    void set_paragraph_state	(bool val)			{ state_.in_paragraph_	= val;		}
+	
+	bool get_paragraph_keep		()					{ return state_.is_paragraph_keep_;}
+	void set_paragraph_keep		(bool val)			{ state_.is_paragraph_keep_ = val;	}
 
 	bool get_delete_text_state	()					{ return is_delete_text_;	}
 	void set_delete_text_state	(bool Val)			{ is_delete_text_ = Val;	}
@@ -990,6 +996,17 @@ public:
 
 	void		add_jsaProject(const std::string &content);
 private:
+
+	struct _context_state
+	{
+		bool in_paragraph_ = false;
+		bool in_run_ = false;
+		bool is_paragraph_keep_ = false; 
+
+		std::vector< const odf_reader::style_text_properties*> text_properties_stack_;
+	}state_;
+	std::vector<_context_state> keep_state_;
+	
 	std::wstringstream		document_xml_;
     std::wstringstream		styles_xml_;
     std::wstringstream		fontTable_xml_;
@@ -1045,12 +1062,10 @@ private:
 	bool in_automatic_style_; 
 	bool in_drawing_content_;
 	bool in_table_content_;
-    bool in_paragraph_;
-	bool in_run_;
+
 	bool in_header_;
 	bool is_delete_text_;
     bool is_rtl_; // right-to-left
-    bool is_paragraph_keep_; 
  
 	std::wstring current_alphabetic_index_;
 	int current_margin_left_;
@@ -1059,7 +1074,6 @@ private:
     
 	std::vector<odf_reader::office_element*>							delayed_elements_;
 
-    std::vector< const odf_reader::style_text_properties*>				text_properties_stack_;
 	std::map<std::wstring, text_tracked_context::_state>				map_current_changes_;    
     boost::unordered_map<std::wstring, std::wstring>					list_style_renames_;// цепочки переименований нумераций
 	

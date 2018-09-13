@@ -182,9 +182,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	page_break_					(false),
 	page_break_after_			(false),
 	page_break_before_			(false),
-	in_run_						(false),
 	in_automatic_style_			(false),
-	in_paragraph_				(false),
 	in_header_					(false),
 	in_drawing_content_			(false),
 	in_table_content_			(false),
@@ -195,7 +193,6 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	new_list_style_number_		(0),
 	current_margin_left_		(0),
 	is_rtl_						(false),
-	is_paragraph_keep_			(false),
 	is_delete_text_				(false),
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
@@ -247,14 +244,14 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 }
 void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
-    if (!in_run_)
+    if (!state_.in_run_)
     {
-        in_run_ = true;
+        state_.in_run_ = true;
 		output_stream() << L"<w:r>";
 
-		if (!text_properties_stack_.empty() || parenStyleId.length() > 0)
+		if (!state_.text_properties_stack_.empty() || parenStyleId.length() > 0)
 		{
-			if (!text_properties_stack_.empty())
+			if (!state_.text_properties_stack_.empty())
 			{
 				odf_reader::style_text_properties_ptr textProp = this->current_text_properties();
 				get_styles_context().start();
@@ -272,36 +269,36 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 
 void docx_conversion_context::start_paragraph(bool is_header)
 {
-	if (in_paragraph_)
+	if (state_.in_paragraph_)
 		finish_paragraph();
 
 	output_stream() << L"<w:p>";
 
 	in_header_		= is_header;
-	in_paragraph_	= true;
     is_rtl_			= false; 
 	
+	state_.in_paragraph_ = true;
 	start_changes();
 }
 
 void docx_conversion_context::finish_paragraph()
 {
-	if (in_paragraph_)
+	if (state_.in_paragraph_)
 	{
 		end_changes();
 
 		output_stream() << L"</w:p>";
 	}
 	
-	in_paragraph_		= false;
 	in_header_			= false;
-	is_paragraph_keep_	= false;
+	state_.is_paragraph_keep_	= false;
+	state_.in_paragraph_		= false;
 }
 
 
 void docx_conversion_context::finish_run()
 {
-    if (false == in_run_) return;
+    if (false == state_.in_run_) return;
 
 	if (get_comments_context().state() == 4)
 	{
@@ -309,7 +306,7 @@ void docx_conversion_context::finish_run()
 		get_comments_context().state(0);
 	}
 	output_stream() << L"</w:r>";
-    in_run_ = false;
+    state_.in_run_ = false;
 	
 	if (get_comments_context().state() == 2)
 	{
@@ -631,6 +628,22 @@ oox_chart_context & docx_conversion_context::current_chart()
         throw std::runtime_error("internal error");
     }
 }
+void docx_conversion_context::reset_context_state()
+{
+	keep_state_.push_back(state_);
+	
+	state_.in_paragraph_		= false;
+	state_.in_run_				= false;
+	state_.is_paragraph_keep_	= false;
+	
+	state_.text_properties_stack_.clear();
+}
+void docx_conversion_context::back_context_state()
+{
+	state_ = keep_state_.back();
+	keep_state_.pop_back();
+}
+
 void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 {
 	finish_run();
@@ -1046,13 +1059,36 @@ void docx_conversion_context::process_styles()
             _Wostream << L"<w:pPrDefault>";
             if ( odf_reader::style_content * content = defaultParStyle->content())
             {
+				if (content->get_style_paragraph_properties())
+				{
+					if(content->get_style_paragraph_properties()->content_.fo_background_color_)
+					{
+						odf_types::background_color color = *content->get_style_paragraph_properties()->content_.fo_background_color_;
+						if ((color.get_type() != odf_types::background_color::Transparent && 
+							color.get_color() == odf_types::color(L"ffffff")) ||
+							(color.get_type() == odf_types::background_color::Transparent))
+						{
+							content->get_style_paragraph_properties()->content_.fo_background_color_ = boost::none;
+						}
+					}
+				}
                 get_styles_context().start_process_style(defaultParStyle);
                 content->docx_convert(*this);
 				get_styles_context().end_process_style();
 			}
             _Wostream << L"</w:pPrDefault>";
         }
-
+        if (odf_reader::style_instance * defaultParStyle = styles.style_default_by_type(odf_types::style_family::Text))
+        {
+            _Wostream << L"<w:rPrDefault>";
+            if ( odf_reader::style_content * content = defaultParStyle->content())
+            {
+                get_styles_context().start_process_style(defaultParStyle);
+                content->docx_convert(*this);
+				get_styles_context().end_process_style();
+			}
+            _Wostream << L"</w:rPrDefault>";
+        }
         _Wostream << L"</w:docDefaults>";
 
 		for (size_t i = 0; i < arStyles.size(); i++)
@@ -1352,22 +1388,22 @@ bool docx_conversion_context::in_automatic_style()
 
 void docx_conversion_context::push_text_properties(const odf_reader::style_text_properties * TextProperties)
 {
-    text_properties_stack_.push_back(TextProperties);
+    state_.text_properties_stack_.push_back(TextProperties);
 }
 
 void docx_conversion_context::pop_text_properties()
 {
-    text_properties_stack_.pop_back();
+    state_.text_properties_stack_.pop_back();
 }
 
 odf_reader::style_text_properties_ptr docx_conversion_context::current_text_properties()
 {
     odf_reader::style_text_properties_ptr cur = boost::make_shared<odf_reader::style_text_properties>();
 
-	for (size_t i = 0; i < text_properties_stack_.size(); i++)
+	for (size_t i = 0; i < state_.text_properties_stack_.size(); i++)
     {
-        if (text_properties_stack_[i])
-            cur->content().apply_from( text_properties_stack_[i]->content() );
+        if (state_.text_properties_stack_[i])
+            cur->content().apply_from( state_.text_properties_stack_[i]->content() );
     }
     return cur;
 }
@@ -1942,7 +1978,7 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 	
 	map_current_changes_.insert(std::pair<std::wstring, text_tracked_context::_state> (id, state_add));
 
-	if (in_paragraph_ && ( state_add.type == 1 || state_add.type == 2 ))
+	if (state_.in_paragraph_ && ( state_add.type == 1 || state_add.type == 2 ))
 	{
 		map_changes_iterator it = map_current_changes_.find(id);
 		text_tracked_context::_state  &state = it->second;
@@ -2114,7 +2150,7 @@ void docx_conversion_context::end_text_changes (const std::wstring &id)
 	
 	if (state.active)
 	{
-		if (in_paragraph_)
+		if (state_.in_paragraph_)
 			finish_run();
 		
 		if (state.type	== 1)	output_stream() << L"</w:ins>";

@@ -192,10 +192,30 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 {
 	if (_start_row > current_table().current_row() + 1)
 	{
-		int repeated_default = _start_row - current_table().current_row()-1;
-		
-		start_row(_start_row - repeated_default, repeated_default, 0, true);
-		end_row();
+		int repeated_default = _start_row - current_table().current_row() - 1;
+
+		while(true)
+		{
+			//делим на 3 - до, с комметом, после;
+			int comment_idx = current_table().is_row_comment(current_table().current_row() + 1, repeated_default);
+			
+			if (comment_idx < 0) break;
+			int rows = current_table().comments_[comment_idx].row - current_table().current_row() - 1;
+
+			start_row(current_table().current_row() + 1, rows, 0, true);
+			end_row();
+			
+			start_row(current_table().current_row() + 1, 1, 0, true);
+			end_row();
+
+			repeated_default -= (1 + rows);
+		}
+
+		if (repeated_default > 0)
+		{		
+			start_row(_start_row - repeated_default, repeated_default, 0, true);
+			end_row();
+		}
 	}
 /////////////////////////////////////////////////////////////////
 	while (level < current_table().current_level())

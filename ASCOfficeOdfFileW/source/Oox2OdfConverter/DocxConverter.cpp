@@ -1410,6 +1410,11 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 
 	if (shading->m_oColor.IsInit())
 	{
+		if ((shading->m_oColor->GetValue() == SimpleTypes::hexcolorAuto) && 
+			(shading->m_oVal.IsInit()) && (shading->m_oVal->GetValue() == SimpleTypes::shdClear))
+		{
+			return;
+		}
 		BYTE ucR = 0xff, ucB = 0xff, ucG = 0xff;  //auto fill
 		if (shading->m_oColor->GetValue() == SimpleTypes::hexcolorRGB)
 		{
@@ -2240,19 +2245,37 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 
 	bool set_color = false;
-	if (oox_run_pr->m_oTextFill.getType() == OOX::et_a_gradFill)
+	if (oox_run_pr->m_oTextFill.getType() == OOX::et_a_gradFill || oox_run_pr->m_oTextOutline.IsInit())
 	{
-		NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
 		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
 		if (drawing_context)
 		{
 			if (odf_context()->drawing_context()->change_text_box_2_wordart())
 			{
-				odf_context()->drawing_context()->start_area_properties();
+				NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+				NSCommon::smart_ptr<PPTX::Logic::SolidFill> solidFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+				
+				odf_context()->drawing_context()->start_area_properties(true);				
+				if(gradFill.IsInit())
 				{		
 					OoxConverter::convert(gradFill.operator->());
 				}
+				else if (solidFill.IsInit())
+				{
+					OoxConverter::convert(solidFill.operator->());
+				}
+				else
+				{
+					odf_context()->drawing_context()->set_no_fill();
+				}
 				odf_context()->drawing_context()->end_area_properties();
+
+				if (oox_run_pr->m_oTextOutline.IsInit())
+				{
+					odf_context()->drawing_context()->start_line_properties(true);
+					OoxConverter::convert(oox_run_pr->m_oTextOutline.operator->());
+					odf_context()->drawing_context()->end_line_properties();
+				}
 
 				set_color = true;
 			}
@@ -4402,13 +4425,23 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	{
 		switch(oox_table_cell_pr->m_oTextDirection->m_oVal->GetValue())
 		{
-		case SimpleTypes::textdirectionLr  :
-			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);break;
+		case SimpleTypes::textdirectionTb  :
+		{
+			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);
+		}break;
+		case SimpleTypes::textdirectionLr  ://повернутость буковок
 		case SimpleTypes::textdirectionLrV :
-		case SimpleTypes::textdirectionTb  ://повернутость буковок
 		case SimpleTypes::textdirectionTbV :
 		case SimpleTypes::textdirectionRlV :
-			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);break;
+		{
+			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
+			odf_writer::style_text_properties *text_cell_properties	= odt_context->styles_context()->last_state()->get_text_properties();
+			if (text_cell_properties)
+			{
+				text_cell_properties->content_.style_text_rotation_angle_ = 90;
+				text_cell_properties->content_.style_text_rotation_scale_ = odf_types::text_rotation_scale::LineHeight;
+			}
+		}break;
 		case SimpleTypes::textdirectionRl  ://rtl
 			break;
 		}

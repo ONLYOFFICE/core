@@ -218,9 +218,11 @@ namespace NSBinPptxRW
 		}
 
 		std::wstring strExts = _T(".jpg");
-        int nIndexExt = (int)strInput.rfind(wchar_t('.'));
+		//use GetFileName to avoid defining '.' in the directory as extension
+		std::wstring strFileName = NSFile::GetFileName(strInput);
+		int nIndexExt = (int)strFileName.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
-			strExts = strInput.substr(nIndexExt);
+			strExts = strFileName.substr(nIndexExt);
 
 		int	typeAdditional = 0;
 		std::wstring strAdditional;

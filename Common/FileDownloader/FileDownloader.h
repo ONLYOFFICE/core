@@ -41,6 +41,10 @@ protected:
     // создаем в зависимости от платформы
     CFileDownloader_private* m_pInternal;
 
+#ifdef _MAC
+    static bool m_bIsARCEnabled;
+#endif
+
 public:
     CFileDownloader(std::wstring sFileUrl, bool bDelete = true);
     virtual ~CFileDownloader();
@@ -63,4 +67,9 @@ public:
     int GetPriority();
 
     void CheckSuspend();
+
+#ifdef _MAC
+    static void SetARCEnabled(const bool& enabled);
+    static bool GetARCEnabled();
+#endif
 };

@@ -498,6 +498,8 @@ private:
 			m_nDashStyle       = Aggplus::DashStyleSolid;
 			m_lDashPatternSize = 0;
 			m_pDashPattern     = NULL;
+
+            m_dDashOffset = 0;
 		}
 
 	private:

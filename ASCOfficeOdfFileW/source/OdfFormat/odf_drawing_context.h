@@ -203,10 +203,10 @@ public:
 	void set_opacity		(double percent);
 
 //////////////////////////////////////////////////////////////
-	void start_area_properties();
+	void start_area_properties(bool reset = false);
 	void end_area_properties();
 	
-	void start_line_properties		();
+	void start_line_properties		(bool reset = false);
 		void set_line_width			(double pt);
 		void set_line_dash_preset	(int style);
 		

@@ -487,6 +487,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 {
 	if (oox_row == NULL)return;
 
+	int row_number = oox_row->m_oR.IsInit() ? oox_row->m_oR->GetValue() : -1;
+
 	if (oox_row_prev)
 	{
 		if (oox_row_prev->m_arrItems.empty() && 
@@ -592,13 +594,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 
 			if (bEqual)
 			{
-				ods_context->add_row_repeated();
-				return;
+				if (false == ods_context->current_table().is_row_comment(row_number, 1))
+				{
+					ods_context->add_row_repeated();
+					return;
+				}
 			}
 		}
 	}
-
-	int row_number = oox_row->m_oR.IsInit() ? oox_row->m_oR->GetValue() : -1;
 
 	bool _default = true;
 	

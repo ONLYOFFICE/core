@@ -1658,7 +1658,7 @@ void odf_drawing_context::set_object_background(bool Val)
 	if (Val)
 	{
 		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
-		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+		//impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 	}
 }
 void odf_drawing_context::set_object_foreground(bool Val)
@@ -1673,7 +1673,7 @@ void odf_drawing_context::set_object_foreground(bool Val)
 		{
 			impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
 		}
-		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+		//impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 	}
 }
 

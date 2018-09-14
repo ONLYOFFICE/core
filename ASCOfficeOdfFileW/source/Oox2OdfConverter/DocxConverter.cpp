@@ -2447,10 +2447,11 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oShd.IsInit())
 	{
 		_CP_OPT(odf_types::color) odf_color;
-		convert(oox_run_pr->m_oShd->m_oFill.GetPointer(), oox_run_pr->m_oShd->m_oThemeFill.GetPointer(),
-			oox_run_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_run_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
+		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
 		if (odf_color)
-			text_properties->content_.fo_background_color_ = *odf_color;
+		{
+			text_properties->content_.fo_background_color_= *odf_color;
+		}
 	}
 	if (oox_run_pr->m_oOutline.IsInit())
 		text_properties->content_.style_text_outline_ = true; //контур

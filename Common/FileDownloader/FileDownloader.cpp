@@ -102,3 +102,16 @@ void CFileDownloader::CheckSuspend()
 {
     return m_pInternal->CheckSuspend();
 }
+
+#ifdef _MAC
+bool CFileDownloader::m_bIsARCEnabled = false;
+
+void CFileDownloader::SetARCEnabled(const bool& enabled)
+{
+    m_bIsARCEnabled = enabled;
+}
+bool CFileDownloader::GetARCEnabled()
+{
+    return m_bIsARCEnabled;
+}
+#endif

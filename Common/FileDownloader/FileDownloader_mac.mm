@@ -1,4 +1,5 @@
 #include "FileDownloader_private.h"
+#include "FileDownloader.h"
 
 #if _IOS
     #import <Foundation/Foundation.h>
@@ -50,9 +51,12 @@ public :
             return 0;
 #else
 #ifndef _ASC_USE_ARC_
-            [stringURL release];
-            [url release];
-            [urlData release];
+            if (!CFileDownloader::GetARCEnabled())
+            {
+                [stringURL release];
+                [url release];
+                [urlData release];
+            }
 #endif
 #endif
             return 0;
@@ -62,8 +66,11 @@ public :
         return 1;
 #else
 #ifndef _ASC_USE_ARC_
-        [stringURL release];
-        [url release];
+        if (!CFileDownloader::GetARCEnabled())
+        {
+            [stringURL release];
+            [url release];
+        }
 #endif
 #endif
         return 1;

@@ -1072,10 +1072,10 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	bool runState	= Context.get_run_state();
 	bool paraState	= Context.get_paragraph_state();
-	bool keepState	= Context.get_paragraph_keep();
 
-	//Context.set_run_state		(false);	
-	Context.set_paragraph_state	(false);	
+	Context.reset_context_state();
+	Context.set_run_state		(runState);	
+	//Context.set_paragraph_state	(false);	
 
 	bool new_run = false;
 	
@@ -1107,7 +1107,8 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	Context.set_paragraph_state(paraState);		
+	//Context.set_paragraph_state(paraState);		
+	Context.back_context_state();
 
 	Context.get_drawing_context().stop_shape();
 }
@@ -1143,19 +1144,14 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
   
-	bool runState	= Context.get_run_state			();	
-	bool pState		= Context.get_paragraph_state	();
-	
-	Context.set_run_state		(false);
-	Context.set_paragraph_state	(false);		
+	Context.reset_context_state();
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);
     }
 
-	Context.set_run_state		(runState);
-	Context.set_paragraph_state	(pState);
+	Context.back_context_state();
 
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 	Context.set_stream_man(prev);
@@ -1209,13 +1205,8 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 	
-	bool pState		= Context.get_paragraph_state	();
-	bool runState	= Context.get_run_state			();
-	bool keepState	= Context.get_paragraph_keep	();
+	Context.reset_context_state();
 	
-	Context.set_run_state		(false);
-	Context.set_paragraph_state	(false);		
-
 	bool drState = Context.get_drawing_state_content();
 	
 	Context.set_drawing_state_content(true);
@@ -1228,10 +1219,8 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 	Context.set_stream_man(prev);
 	
-	Context.set_run_state				(runState);
-	Context.set_paragraph_state			(pState);		
 	Context.set_drawing_state_content	(drState);
-	Context.set_paragraph_keep			(keepState);
+	Context.back_context_state();
 
 //---------------------------------------------------------------------------------------------------------
 
@@ -1356,11 +1345,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(drawing.content_group_);
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 	
-	bool pState		= Context.get_paragraph_state	();
-	bool runState	= Context.get_run_state			();
-	
-	Context.set_paragraph_state	(false);		
-	Context.set_run_state		(false);
+	Context.reset_context_state();
 		
 	for (size_t i = 0; i < content_.size(); i++)
     {
@@ -1369,9 +1354,9 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
     }
 	drawing.content_group_ = temp_stream.str();
 	
-	Context.set_stream_man		(prev);
-	Context.set_run_state		(runState);
-	Context.set_paragraph_state	(pState);
+	Context.set_stream_man(prev);	
+	Context.back_context_state();
+
 //--------------------------------------------------
 	Context.get_drawing_context().get_size_group	(drawing.cx	, drawing.cy);
 	Context.get_drawing_context().get_position_group(drawing.x	, drawing.y);
@@ -1404,8 +1389,8 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------
     std::wostream & strm = Context.output_stream();
 
-	runState	= Context.get_run_state();	
-	pState		= Context.get_paragraph_state();
+	bool runState	= Context.get_run_state();	
+	bool pState		= Context.get_paragraph_state();
 
 	if (!Context.get_drawing_context().in_group() && !pState)
 	{
@@ -1466,10 +1451,8 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 //-----------------------------------------------------------------------------------------------------
 	bool runState	= Context.get_run_state();
 	bool paraState	= Context.get_paragraph_state();
-	bool keepState	= Context.get_paragraph_keep();
 
-	Context.set_run_state		(false);	
-	Context.set_paragraph_state	(false);	
+	Context.reset_context_state();
 
 	if (!Context.get_drawing_context().in_group() && !runState)
 	{
@@ -1491,9 +1474,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	Context.set_run_state		(runState);
-	Context.set_paragraph_state	(paraState);	
-	Context.set_paragraph_keep	(keepState);
+	Context.back_context_state();
 
 	Context.get_drawing_context().stop_frame();
 }
@@ -1578,6 +1559,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
 
 			bool in_frame	= !drawing->isInline;
+			
 			bool runState	= Context.get_run_state();
 			bool pState		= Context.get_paragraph_state();
 			
@@ -1697,12 +1679,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_shape());
 		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 		
-		bool pState		= Context.get_paragraph_state	();
-		bool runState	= Context.get_run_state			();
-		bool keepState	= Context.get_paragraph_keep	();
-		
-		Context.set_run_state		(false);
-		Context.set_paragraph_state	(false);		
+		Context.reset_context_state();
 
 		bool drState = Context.get_drawing_state_content();
 		
@@ -1740,10 +1717,9 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_drawing_context().get_text_stream_shape() = temp_stream.str();
 		Context.set_stream_man(prev);
 		
-		Context.set_run_state				(runState);
-		Context.set_paragraph_state			(pState);		
 		Context.set_drawing_state_content	(drState);
-		Context.set_paragraph_keep			(keepState);
+		
+		Context.back_context_state();
 
 		const std::wstring & content = Context.get_drawing_context().get_text_stream_shape();
 		
@@ -1763,9 +1739,9 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & strm = Context.output_stream();
 
-	pState		= Context.get_paragraph_state();
-	runState	= Context.get_run_state();
-	keepState	= Context.get_paragraph_keep();
+	bool pState		= Context.get_paragraph_state();
+	bool runState	= Context.get_run_state();
+	bool keepState	= Context.get_paragraph_keep();
 
 	//Context.set_run_state		(false);	
 	Context.set_paragraph_state	(false);	

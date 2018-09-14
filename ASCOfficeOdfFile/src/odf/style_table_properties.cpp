@@ -230,7 +230,7 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
     {
 		double kf_max_width_ms = 1.;
 
-		int val =  0.5 + 20.0 * page_width;
+		int val =  (int)(0.5 + 20.0 * page_width);
 		if (val > 31680.)
 			kf_max_width_ms = 31680./val;
 
@@ -259,7 +259,7 @@ void style_table_column_properties::pptx_convert(oox::pptx_conversion_context & 
 
     if (attlist_.style_column_width_)
     {
-		int val = attlist_.style_column_width_->get_value_unit(length::emu);
+		int val = (int)attlist_.style_column_width_->get_value_unit(length::emu);
 
         strm << L"<a:gridCol w=\"" << val << "\"/>";
     }

@@ -1244,7 +1244,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
 
 			 if (fontSize < 1)
-				 fontSize = Context.get_drop_cap_context().FontSize / 7.52;
+				 fontSize = (int)(Context.get_drop_cap_context().FontSize / 7.52);
 		 }
 		 else
 		 {

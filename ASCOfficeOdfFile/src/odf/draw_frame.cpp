@@ -312,7 +312,7 @@ std::wstring draw_object_ole::detectObject(const std::wstring &fileName)
 		//skip the CompObjHeader
 		pStream->seek(28);
 
-		int sz_obj = pStream->size() - 28;
+		int sz_obj = (int)pStream->size() - 28;
 
 		std::vector<std::string> str;
 		

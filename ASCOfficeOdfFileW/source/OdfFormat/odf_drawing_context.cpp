@@ -1798,8 +1798,14 @@ void odf_drawing_context::set_default_wrap_style()
 }
 void odf_drawing_context::set_wrap_style(style_wrap::type type)
 {
-
 	impl_->anchor_settings_.style_wrap_ = style_wrap(type);
+}
+void odf_drawing_context::set_wrap_contour()
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->style_wrap_contour_ = true;
+	impl_->current_graphic_properties->style_wrap_contour_mode_ = wrap_contour_mode(wrap_contour_mode::Full);
 }
 void odf_drawing_context::set_overlap (bool val)
 {

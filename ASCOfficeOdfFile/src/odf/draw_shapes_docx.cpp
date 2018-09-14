@@ -90,11 +90,7 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 			content_[i]->docx_convert(Context);
 		}
     }
-	
-	bool pParaState = Context.get_paragraph_state();
-	bool pRunState	= Context.get_run_state();
-	Context.set_paragraph_state	(false);		
-	Context.set_run_state		(false);		
+	Context.reset_context_state();
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
@@ -106,8 +102,7 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 		}
     }
 
-	Context.set_paragraph_state(pParaState);	
-	Context.set_run_state(pRunState);	
+	Context.back_context_state();
 
 	Context.get_drawing_context().get_text_stream_shape() = temp_stream.str();
 	Context.set_stream_man(prev);

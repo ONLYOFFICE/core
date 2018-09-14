@@ -1410,6 +1410,11 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 
 	if (shading->m_oColor.IsInit())
 	{
+		if ((shading->m_oColor->GetValue() == SimpleTypes::hexcolorAuto) && 
+			(shading->m_oVal.IsInit()) && (shading->m_oVal->GetValue() == SimpleTypes::shdClear))
+		{
+			return;
+		}
 		BYTE ucR = 0xff, ucB = 0xff, ucG = 0xff;  //auto fill
 		if (shading->m_oColor->GetValue() == SimpleTypes::hexcolorRGB)
 		{
@@ -2895,14 +2900,30 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	else if (oox_anchor->m_oWrapThrough.IsInit())//style:wrap="run-through" draw:wrap-influence-on-position style:wrap-contour
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::RunThrough);
+
 	}
 	else if (oox_anchor->m_oWrapTight.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
-		if (oox_anchor->m_oWrapTight->m_oWrapPolygon.IsInit())
+		bool bPolygon = oox_anchor->m_oWrapTight->m_oWrapPolygon.IsInit();
+
+		if (oox_anchor->m_oWrapTight->m_oWrapText.IsInit())
 		{
+			switch(oox_anchor->m_oWrapTight->m_oWrapText->GetValue())
+			{
+			case SimpleTypes::wraptextBothSides:
+			{
+				odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Dynamic);
+				if (bPolygon)
+				{
+					odt_context->drawing_context()->set_wrap_contour();					
+				}
+			}break;
+			case SimpleTypes::wraptextLargest:	odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Biggest); break;
+			case SimpleTypes::wraptextLeft:		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Left); break;
+			case SimpleTypes::wraptextRight:	odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Right); break;
+			}
 		}
-		wrap_set = true;
 	}
 	else if (oox_anchor->m_oWrapTopAndBottom.IsInit())
 	{
@@ -4397,7 +4418,7 @@ void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr)
 	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWAfter;
 	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWBefore;
 }
-bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,odf_writer::style_table_cell_properties	* table_cell_properties)
+bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr, odf_writer::style_table_cell_properties *table_cell_properties)
 {
 	if (oox_table_cell_pr == NULL) return false;
 	if (table_cell_properties == NULL) return false;
@@ -4420,13 +4441,23 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	{
 		switch(oox_table_cell_pr->m_oTextDirection->m_oVal->GetValue())
 		{
-		case SimpleTypes::textdirectionLr  :
-			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);break;
+		case SimpleTypes::textdirectionTb  :
+		{
+			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);
+		}break;
+		case SimpleTypes::textdirectionLr  ://повернутость буковок
 		case SimpleTypes::textdirectionLrV :
-		case SimpleTypes::textdirectionTb  ://повернутость буковок
 		case SimpleTypes::textdirectionTbV :
 		case SimpleTypes::textdirectionRlV :
-			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);break;
+		{
+			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
+			odf_writer::style_text_properties *text_cell_properties	= odt_context->styles_context()->last_state()->get_text_properties();
+			if (text_cell_properties)
+			{
+				text_cell_properties->content_.style_text_rotation_angle_ = 90;
+				text_cell_properties->content_.style_text_rotation_scale_ = odf_types::text_rotation_scale::LineHeight;
+			}
+		}break;
 		case SimpleTypes::textdirectionRl  ://rtl
 			break;
 		}
@@ -4501,7 +4532,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	if (parent_name.length() > 0) 
 	{
 		odf_writer::style * style_ = NULL;		
-		if (odt_context->styles_context()->find_odf_style(parent_name,odf_types::style_family::TableCell,style_))
+		if (odt_context->styles_context()->find_odf_style(parent_name, odf_types::style_family::TableCell, style_))
 		{
 			parent_cell_properties = style_->content_.get_style_table_cell_properties();
 		}
@@ -4510,14 +4541,15 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	if (oox_table_cell_pr == NULL && is_base_styled == false && parent_cell_properties == NULL) return false;
 	
 	odt_context->styles_context()->create_style(L"",odf_types::style_family::TableCell, true, false, -1); 	
-	odf_writer::style_table_cell_properties *cell_properties = odt_context->styles_context()->last_state()->get_table_cell_properties();
+	
+	odf_writer::style_table_cell_properties *cell_properties		= odt_context->styles_context()->last_state()->get_table_cell_properties();
 
 	if (cell_properties == NULL) return false;
 
 	if (is_base_styled)
 	{
-		odf_writer::style_text_properties		* text_properties		= odt_context->styles_context()->last_state()->get_text_properties();
-		odf_writer::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
+		odf_writer::style_text_properties		*text_properties		= odt_context->styles_context()->last_state()->get_text_properties();
+		odf_writer::style_paragraph_properties	*paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
 		
 		if (col < 0) col=odt_context->table_context()->current_column()+1;
 		int row=odt_context->table_context()->current_row();

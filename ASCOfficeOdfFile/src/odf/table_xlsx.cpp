@@ -761,7 +761,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             double s;
             if (oox::parseTime(tv, h, m, s))
             {
-				boost::int64_t intTime = oox::convertTime(h, m, s);
+				boost::int64_t intTime = (boost::int64_t)oox::convertTime(h, m, s);
 				if (intTime > 0)
 				{
 					number_val = boost::lexical_cast<std::wstring>(intTime);

@@ -984,7 +984,7 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		
 		if (fo_page_width_)
 		{
-			int val =  0.5 + 20.0 * fo_page_width_->get_value_unit(length::pt);
+			int val = (int)( 0.5 + 20.0 * fo_page_width_->get_value_unit(length::pt) );
 			if (val > 31680)
 			{
 				//Context.set_settings_property(odf_reader::_property(L"UnormalWidthPage",val));
@@ -994,7 +994,7 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		}
 		if (fo_page_height_)
 		{
-			int val = 0.5 + 20.0 * fo_page_height_->get_value_unit(length::pt);
+			int val = (int)( 0.5 + 20.0 * fo_page_height_->get_value_unit(length::pt));
 			if (val > 31680) val =31680;//22"
 			w_h = std::to_wstring(val);
 
@@ -1141,12 +1141,12 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 				int val_step = 0;
 				if (style_layout_grid_base_height_ && style_layout_grid_ruby_height_)
 				{
-					val_step = 0.5	+ 20. * style_layout_grid_ruby_height_->get_value_unit(odf_types::length::pt) 
-									+ 20. * style_layout_grid_base_height_->get_value_unit(odf_types::length::pt);
+					val_step = (int)(0.5	+ 20. * style_layout_grid_ruby_height_->get_value_unit(odf_types::length::pt) 
+									+ 20. * style_layout_grid_base_height_->get_value_unit(odf_types::length::pt));
 				}
 				else  if (style_layout_grid_lines_ && height_page > 0)
 				{
-					val_step = height_page / (*style_layout_grid_lines_);
+					val_step = (int)(height_page / (*style_layout_grid_lines_));
 				}
 				
 				if (val_step > 0)CP_XML_ATTR(L"w:linePitch", val_step);

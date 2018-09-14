@@ -282,7 +282,7 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 
 	odf_reader::text_list_style * text_list_style = odf_context_.listStyleContainer().list_style_by_name(list_style_stack_.back());
 	
-	if ((text_list_style) && (Level < text_list_style->get_content().size()))
+	if ((text_list_style) && (Level < (int)text_list_style->get_content().size()))
 	{
 		odf_reader::office_element_ptr  elm = text_list_style->get_content()[Level];
 		odf_reader::office_element_ptr  elm_list;

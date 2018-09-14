@@ -93,7 +93,9 @@ public:
 	void set_horizontal_pos	(double offset_pt);
 
 	void set_default_wrap_style();
-	void set_wrap_style		(odf_types::style_wrap::type  style);
+	void set_wrap_style(odf_types::style_wrap::type  style);
+	void set_wrap_contour();
+
 	void set_overlap		(bool val);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,10 +203,10 @@ public:
 	void set_opacity		(double percent);
 
 //////////////////////////////////////////////////////////////
-	void start_area_properties(bool reset = false);
+	void start_area_properties();
 	void end_area_properties();
 	
-	void start_line_properties		(bool reset = false);
+	void start_line_properties		();
 		void set_line_width			(double pt);
 		void set_line_dash_preset	(int style);
 		

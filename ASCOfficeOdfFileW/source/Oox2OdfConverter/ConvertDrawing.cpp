@@ -1067,8 +1067,13 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;
 			
-            convert(&oox_grad_fill->GsLst[0].color,hexColorEnd, opacityEnd, nARGB);
-            convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size()-1].color,hexColorStart, opacityStart, nARGB);
+            convert(&oox_grad_fill->GsLst[0].color, hexColorEnd, opacityEnd, nARGB);
+            convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() - 1].color, hexColorStart, opacityStart, nARGB);
+
+			if (hexColorEnd == hexColorStart && opacityEnd == opacityStart && oox_grad_fill->GsLst.size() > 2)
+			{
+				convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() / 2].color, hexColorStart, opacityStart, nARGB);
+			}
 			
 			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
 			odf_context()->drawing_context()->set_gradient_end	(hexColorEnd,	opacityEnd);
@@ -1253,6 +1258,16 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 {
 	if (!oox_bodyPr) return;
 
+	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
+	{
+		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
+		{
+			if (oox_bodyPr->prstTxWarp->avLst[i].fmla.IsInit())
+			{
+				odf_context()->drawing_context()->add_modifier(oox_bodyPr->prstTxWarp->avLst[i].fmla.get());
+			}
+		}
+	}
 	if (oox_bodyPr->vert.IsInit())
 	{
 		odf_context()->drawing_context()->set_textarea_writing_mode (oox_bodyPr->vert->GetBYTECode());
@@ -1298,17 +1313,6 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		}break;
 		default:
 		{
-		}
-	}
-
-	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
-	{
-		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
-		{
-			if (oox_bodyPr->prstTxWarp->avLst[i].fmla.IsInit())
-			{
-				odf_context()->drawing_context()->add_modifier(oox_bodyPr->prstTxWarp->avLst[i].fmla.get());
-			}
 		}
 	}
 }

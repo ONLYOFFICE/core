@@ -331,6 +331,8 @@ public:
 	_CP_OPT(odf_types::Bool)	draw_text_path_same_letter_heights_;
 	_CP_OPT(std::wstring)		draw_text_path_mode_;
 	_CP_OPT(std::wstring)		draw_text_path_scale_;
+
+	_CP_OPT(int)				draw_text_rotate_angle_;
 	
 	void serialize(CP_ATTR_NODE);   
 };
@@ -350,7 +352,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    draw_enhanced_geometry_attlist			draw_enhanced_geometry_attlist_;
+    draw_enhanced_geometry_attlist			attlist_;
 
 	_CP_OPT(std::wstring)					svg_viewbox_;
 

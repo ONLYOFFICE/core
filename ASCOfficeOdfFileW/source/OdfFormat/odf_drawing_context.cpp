@@ -186,6 +186,7 @@ struct odf_drawing_state
 		presentation_placeholder_	= boost::none;
 
 		rotateAngle_		= boost::none;
+		text_rotateAngle_	= boost::none;
 		
 		path_				= L"";
 		view_box_			= L"";
@@ -218,6 +219,7 @@ struct odf_drawing_state
 
 	_CP_OPT(double)			rotateAngle_;
 	_CP_OPT(unsigned int)	fill_color_;
+	_CP_OPT(int)			text_rotateAngle_;
 	
 	_CP_OPT(presentation_class)	presentation_class_;
 	_CP_OPT(std::wstring)		presentation_placeholder_;
@@ -232,6 +234,7 @@ struct odf_drawing_state
 	int oox_shape_preset_;
 	bool in_group_;
 	bool text_box_tableframe_;
+
 };
 
 class odf_drawing_context::Impl
@@ -536,7 +539,7 @@ void odf_drawing_context::end_drawing()
 			if (impl_->current_drawing_state_.rotateAngle_)
 				rotate += *impl_->current_drawing_state_.rotateAngle_;
 
-			if (fabs(rotate)>0.001)impl_->current_drawing_state_.rotateAngle_ = rotate;
+			if (fabs(rotate) > 0.001)impl_->current_drawing_state_.rotateAngle_ = rotate;
 		}
         double x = impl_->current_drawing_state_.svg_x_ ? impl_->current_drawing_state_.svg_x_->get_value() : 0;
         double y = impl_->current_drawing_state_.svg_y_ ? impl_->current_drawing_state_.svg_y_->get_value() : 0;
@@ -615,8 +618,8 @@ void odf_drawing_context::end_drawing()
 		draw_enhanced_geometry* enhan = dynamic_cast<draw_enhanced_geometry*>(custom->draw_enhanced_geometry_.get());
 		if(enhan)
 		{
-			if (impl_->current_drawing_state_.flipV_) enhan->draw_enhanced_geometry_attlist_.draw_mirror_vertical_ = true;
-			if (impl_->current_drawing_state_.flipH_) enhan->draw_enhanced_geometry_attlist_.draw_mirror_horizontal_ = true;
+			if (impl_->current_drawing_state_.flipV_) enhan->attlist_.draw_mirror_vertical_ = true;
+			if (impl_->current_drawing_state_.flipH_) enhan->attlist_.draw_mirror_horizontal_ = true;
 		}
 	}else
 	{
@@ -986,15 +989,17 @@ void odf_drawing_context::end_shape()
 		{
 			if (text_shape)
 			{
-				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_same_letter_heights_ = false;
-				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_scale_ = L"path" ;
-				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_mode_	= L"shape" ;
-				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_		= true; 
+				enhanced->attlist_.draw_text_path_same_letter_heights_ = false;
+				enhanced->attlist_.draw_text_path_scale_ = L"path" ;
+				enhanced->attlist_.draw_text_path_mode_	= L"shape" ;
+				enhanced->attlist_.draw_text_path_		= true; 
+
+				enhanced->attlist_.draw_text_rotate_angle_ = impl_->current_drawing_state_.text_rotateAngle_;
 			}
 
 			if (!impl_->current_drawing_state_.path_.empty())
 			{
-				enhanced->draw_enhanced_geometry_attlist_.draw_enhanced_path_ =impl_->current_drawing_state_.path_;
+				enhanced->attlist_.draw_enhanced_path_ =impl_->current_drawing_state_.path_;
 			}
 			if (!impl_->current_drawing_state_.view_box_.empty())
 			{
@@ -1002,7 +1007,7 @@ void odf_drawing_context::end_shape()
 			}
 			if (!sub_type.empty())
 			{
-				enhanced->draw_enhanced_geometry_attlist_.draw_type_ = sub_type;
+				enhanced->attlist_.draw_type_ = sub_type;
 			}
 			else
 			{
@@ -1018,23 +1023,23 @@ void odf_drawing_context::end_shape()
 					else
 						enhanced->svg_viewbox_										= shape_define->view_box;
 
-					enhanced->draw_enhanced_geometry_attlist_.draw_type_			= shape_define->odf_type_name;
-					enhanced->draw_enhanced_geometry_attlist_.draw_text_areas_		= shape_define->text_areas;
+					enhanced->attlist_.draw_type_			= shape_define->odf_type_name;
+					enhanced->attlist_.draw_text_areas_		= shape_define->text_areas;
 					
-					enhanced->draw_enhanced_geometry_attlist_.draw_glue_points_		= shape_define->glue_points;
-					enhanced->draw_enhanced_geometry_attlist_.draw_sub_view_size_	= shape_define->sub_view_size;
+					enhanced->attlist_.draw_glue_points_		= shape_define->glue_points;
+					enhanced->attlist_.draw_sub_view_size_	= shape_define->sub_view_size;
 
 					if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
 					{
-						enhanced->draw_enhanced_geometry_attlist_.draw_modifiers_ = impl_->current_drawing_state_.oox_shape_->modifiers;
+						enhanced->attlist_.draw_modifiers_ = impl_->current_drawing_state_.oox_shape_->modifiers;
 					}
 					else // обязательно нужны дефолтовые
-						enhanced->draw_enhanced_geometry_attlist_.draw_modifiers_ = shape_define->modifiers;
+						enhanced->attlist_.draw_modifiers_ = shape_define->modifiers;
 
 					if (!shape_define->enhanced_path.empty())
-						enhanced->draw_enhanced_geometry_attlist_.draw_enhanced_path_ = shape_define->enhanced_path;
+						enhanced->attlist_.draw_enhanced_path_ = shape_define->enhanced_path;
 					else
-						enhanced->draw_enhanced_geometry_attlist_.draw_enhanced_path_ = impl_->current_drawing_state_.path_;
+						enhanced->attlist_.draw_enhanced_path_ = impl_->current_drawing_state_.path_;
 
 					for (size_t i = 0; i < shape_define->equations.size(); i++)
 					{
@@ -1074,6 +1079,18 @@ void odf_drawing_context::end_shape()
 		}
 		end_element();
 	}
+	if (impl_->current_drawing_state_.flipV_)
+	{
+		impl_->current_graphic_properties->style_mirror_ = std::wstring(L"vertical");
+	}
+	if (impl_->current_drawing_state_.flipH_)
+	{
+		if (impl_->current_graphic_properties->style_mirror_)
+			impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" horizontal");
+		else
+			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"horizontal");
+	}
+
 	end_element();
 }
 
@@ -1599,26 +1616,10 @@ void odf_drawing_context::set_viewBox (double W, double H)
 void odf_drawing_context::set_flip_H(bool bVal)
 {
 	impl_->current_drawing_state_.flipH_ = bVal;
-
-	if (impl_->current_graphic_properties == NULL) return;
-	if (bVal == false)return;
-//for image 
-	if (impl_->current_graphic_properties->style_mirror_)
-		impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" horizontal");
-	else
-		impl_->current_graphic_properties->style_mirror_ = std::wstring(L"horizontal");
 }
 void odf_drawing_context::set_flip_V(bool bVal)
 {
 	impl_->current_drawing_state_.flipV_ = bVal;
-
-	if (impl_->current_graphic_properties == NULL) return;
-	if (bVal == false)return;
-//for image 
-	if (impl_->current_graphic_properties->style_mirror_)
-		impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" vertical");
-	else
-		impl_->current_graphic_properties->style_mirror_ = std::wstring(L"vertical");
 }
 
 void odf_drawing_context::set_rotate(double dVal)
@@ -2278,6 +2279,33 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	if (mode == 1) return;//незачем
 	if (impl_->current_drawing_state_.elements_.empty())return;
 
+	if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
+	{
+		switch(mode)
+		{
+			case 5://textverticaltypeWordArtVert:
+			case 6://textverticaltypeWordArtVertRtl:
+			case 3://SimpleTypes::textverticaltypeVert: 
+			case 2://SimpleTypes::textverticaltypeMongolianVert:
+			case 0://SimpleTypes::textverticaltypeEaVert: 
+				impl_->current_drawing_state_.rotateAngle_ = 90. / 180. * 3.14159265358979323846;
+				break;			
+			case 4://SimpleTypes::textverticaltypeVert270:
+				impl_->current_drawing_state_.rotateAngle_ = 270. / 180. * 3.14159265358979323846;
+				break;
+			case 1://SimpleTypes::textverticaltypeHorz: 
+			default:
+				break;
+		}
+
+		if (impl_->current_drawing_state_.flipH_ && impl_->current_drawing_state_.rotateAngle_ )
+		{
+			impl_->current_drawing_state_.rotateAngle_  = - *impl_->current_drawing_state_.rotateAngle_;
+			impl_->current_drawing_state_.flipH_ = false;
+		}
+		return;	
+	}
+
 	if (!impl_->current_paragraph_properties)
 	{
 		style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
@@ -2647,7 +2675,13 @@ void odf_drawing_context::end_image()
 		end_shape();
 		return;
 	}
-	
+	if (impl_->current_drawing_state_.flipH_)
+	{
+		if (impl_->current_graphic_properties->style_mirror_)
+			impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" horizontal");
+		else
+			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"horizontal");
+	}	
 	end_element();
 	end_frame();
 }
@@ -2860,10 +2894,20 @@ void odf_drawing_context::start_gradient_style()
 	if (gradient->draw_start_color_) gradient->draw_start_intensity_ = 100.;
 	
 	gradient->draw_border_ = 0;
-	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_ = gradient->draw_name_;
-	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::gradient);
 
-
+	switch(impl_->current_drawing_part_)
+	{
+		case Area:
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_ = gradient->draw_name_;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::gradient);
+			break;
+		case Line:
+			if (!impl_->current_graphic_properties->draw_stroke_)
+				impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::Solid);//default
+			if (!impl_->current_graphic_properties->svg_stroke_width_)
+				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
+			break;
+	}
 }
 void odf_drawing_context::set_gradient_type(gradient_style::type style)
 {
@@ -2882,6 +2926,11 @@ void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(doub
 	
 	gradient->draw_start_color_		= hexColor;
 	gradient->draw_start_intensity_ = 100.;
+
+	if (impl_->current_drawing_part_ == Line)
+	{
+		impl_->current_graphic_properties->svg_stroke_color_ =  hexColor;
+	}
 }
 void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv)
 {

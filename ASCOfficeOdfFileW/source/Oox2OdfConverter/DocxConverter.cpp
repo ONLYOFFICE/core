@@ -2245,7 +2245,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 
 	bool set_color = false;
-	if (oox_run_pr->m_oTextFill.getType() == OOX::et_a_gradFill || oox_run_pr->m_oTextOutline.IsInit())
+	if (oox_run_pr->m_oTextFill.is_init() || oox_run_pr->m_oTextOutline.is_init())
 	{
 		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
 		if (drawing_context)

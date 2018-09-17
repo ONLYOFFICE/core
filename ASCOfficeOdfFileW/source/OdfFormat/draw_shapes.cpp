@@ -407,6 +407,7 @@ void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"draw:type",				draw_type_);
 	CP_XML_ATTR_OPT(L"drawooo:sub-view-size",	draw_sub_view_size_);
 	CP_XML_ATTR_OPT(L"draw:text-areas",			draw_text_areas_);
+	CP_XML_ATTR_OPT(L"draw:text-rotate-angle",	draw_text_rotate_angle_);
     CP_XML_ATTR_OPT(L"draw:modifiers",			draw_modifiers_);
 	CP_XML_ATTR_OPT(L"drawooo:enhanced-path",	draw_enhanced_path_);	
     //CP_XML_ATTR_OPT(L"draw:enhanced-path",		draw_enhanced_path_);	
@@ -430,7 +431,7 @@ void draw_enhanced_geometry::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {
 			CP_XML_ATTR_OPT(L"svg:viewBox", svg_viewbox_);
-			draw_enhanced_geometry_attlist_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
 			
 			for (size_t i = 0; i < draw_equation_.size(); i++)
 			{

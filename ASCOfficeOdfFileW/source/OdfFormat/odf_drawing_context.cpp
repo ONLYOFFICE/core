@@ -1363,7 +1363,7 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 	switch(impl_->current_drawing_part_)
 	{
 		case Area:
-			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_				= hexColor;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = hexColor;
 			//impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor); - default transparent
 			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
 			
@@ -2511,6 +2511,12 @@ void odf_drawing_context::start_text_box()
 }
 void odf_drawing_context::set_text_box_min_size(bool val)
 {
+	if (impl_->current_graphic_properties)
+	{
+		impl_->current_graphic_properties->draw_auto_grow_height_ = true;
+		impl_->current_graphic_properties->draw_auto_grow_width_ = true; 
+	}	
+	
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
 	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
@@ -2829,7 +2835,8 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 		}
 	}
 
-	if (impl_->current_graphic_properties)
+	if ((impl_->current_graphic_properties) && 
+		!impl_->current_graphic_properties->draw_auto_grow_height_)
 	{
 		//автоувеличение при добавлении текста
 		impl_->current_graphic_properties->draw_auto_grow_height_ = false;

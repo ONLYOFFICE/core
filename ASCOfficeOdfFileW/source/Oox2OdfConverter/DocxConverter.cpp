@@ -254,7 +254,7 @@ void DocxConverter::convert_document()
 					
 //----------------------------------------------------------------------------------------------------------
 
-	convert(docx_document->m_pDocument->m_oSectPr.GetPointer(), false, L"Standard");
+	convert(docx_document->m_pDocument->m_oSectPr.GetPointer(), false, L"Standard", true);
 	
 	odt_context->text_context()->clear_params();
 
@@ -1507,7 +1507,7 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 		}
 	}
 }
-void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool bSection, const std::wstring & master_name)
+void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool bSection, const std::wstring & master_name, bool bAlways)
 {
 	if (oox_section_pr == NULL) return;
 	current_section_properties = NULL;
@@ -1684,7 +1684,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;	
 	}
 	
-	if (continuous == false || oox_section_pr->m_oTitlePg.IsInit())
+	if (continuous == false || oox_section_pr->m_oTitlePg.IsInit() || bAlways)
 	{
 		OOX::Logic::CSectionProperty*	s = last_section_properties ? last_section_properties : oox_section_pr; 
 		
@@ -2244,43 +2244,94 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			text_properties->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
 
+	odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();	
+	
+	bool set_word_art = drawing_context ? drawing_context->is_wordart() : false;
 	bool set_color = false;
-	if (oox_run_pr->m_oTextFill.is_init() || oox_run_pr->m_oTextOutline.is_init())
+
+	NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+	NSCommon::smart_ptr<PPTX::Logic::SolidFill> solidFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+
+	bool bFillText =	(oox_run_pr->m_oTextFill.m_type != PPTX::Logic::UniFill::notInit) && 
+						(oox_run_pr->m_oTextFill.m_type != PPTX::Logic::UniFill::noFill);
+
+	bool bOutlineText = ((oox_run_pr->m_oTextOutline.is_init()) && 
+						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::notInit) && 
+						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::noFill));
+
+	bool bColorText = (oox_run_pr->m_oColor.IsInit() && (oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorRGB));
+	
+	if	(gradFill.is_init() || (bOutlineText && (bFillText || bColorText)))
 	{
-		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
-		if (drawing_context)
-		{
-			if (odf_context()->drawing_context()->change_text_box_2_wordart())
-			{
-				NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
-				NSCommon::smart_ptr<PPTX::Logic::SolidFill> solidFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
-				
-				odf_context()->drawing_context()->start_area_properties(true);				
-				if(gradFill.IsInit())
-				{		
-					OoxConverter::convert(gradFill.operator->());
-				}
-				else if (solidFill.IsInit())
-				{
-					OoxConverter::convert(solidFill.operator->());
-				}
-				else
-				{
-					odf_context()->drawing_context()->set_no_fill();
-				}
-				odf_context()->drawing_context()->end_area_properties();
+		set_word_art = true;	
+	}
 
-				if (oox_run_pr->m_oTextOutline.IsInit())
-				{
-					odf_context()->drawing_context()->start_line_properties(true);
-					OoxConverter::convert(oox_run_pr->m_oTextOutline.operator->());
-					odf_context()->drawing_context()->end_line_properties();
-				}
-
-				set_color = true;
+	if (drawing_context && set_word_art)
+	{
+		if (drawing_context->change_text_box_2_wordart())
+		{			
+			drawing_context->start_area_properties(true);				
+			if(gradFill.IsInit())
+			{		
+				OoxConverter::convert(gradFill.operator->());
 			}
+			else if (solidFill.IsInit())
+			{
+				OoxConverter::convert(solidFill.operator->());
+			}
+			else if (bColorText)
+			{
+				_CP_OPT(odf_types::color) color;
+				convert(oox_run_pr->m_oColor.GetPointer(), color);
+				if (color)
+					drawing_context->set_solid_fill(color->get_hex_value());
+			}
+			else
+			{
+				drawing_context->set_no_fill();
+			}
+			drawing_context->end_area_properties();
+
+			if (oox_run_pr->m_oTextOutline.IsInit())
+			{
+				drawing_context->start_line_properties(true);
+				OoxConverter::convert(oox_run_pr->m_oTextOutline.operator->());
+				drawing_context->end_line_properties();
+			}
+
+			set_color = true;
 		}
-		else{}	//обычный текст .. градиент по телу абзаца (
+		else
+		{
+			set_word_art = false;
+		}
+	}
+
+	if (!set_word_art)
+	{
+		std::wstring	hexString;
+		_CP_OPT(double) opacity;
+		
+		if (bOutlineText)
+		{
+			text_properties->content_.style_text_outline_ = true;
+			
+			gradFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+			solidFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+		}
+		if (solidFill.is_init())
+		{
+			OoxConverter::convert(&solidFill->Color, hexString, opacity);
+		}
+		else if ((gradFill.is_init()) && (false == gradFill->GsLst.empty()))
+		{
+			OoxConverter::convert(&gradFill->GsLst[0].color, hexString, opacity);
+		}
+		if (!hexString.empty())
+		{
+			set_color = true;
+			text_properties->content_.fo_color_ = hexString;	
+		}
 	}
 	
 	if (!set_color && oox_run_pr->m_oColor.IsInit())
@@ -2288,7 +2339,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
 			text_properties->content_.fo_color_ = odf_types::color(L"#000000");
 		else
-		   convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content_.fo_color_);
+		   convert(oox_run_pr->m_oColor.GetPointer(), text_properties->content_.fo_color_);
 	}
 
     //text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::None); //нельзя..если будет выше наследуемого то подчеркивания не будет

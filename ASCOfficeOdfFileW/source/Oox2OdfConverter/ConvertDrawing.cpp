@@ -593,7 +593,7 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 			if (oox_shape->txBody.IsInit())		bodyPr = oox_shape->txBody->bodyPr.GetPointer();
 			else								bodyPr = oox_shape->oTextBoxBodyPr.GetPointer();
 			
-			if (bodyPr && bodyPr->fromWordArt.get_value_or(false))
+			if ((bodyPr) && (bodyPr->prstTxWarp.IsInit()))
 			{
 				int wordart_type = convert(bodyPr->prstTxWarp.GetPointer());
 				if (wordart_type > 0) type = wordart_type;
@@ -782,9 +782,16 @@ void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
 int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
 {
 	if (oox_text_preset == NULL) return -1;
-	if (oox_text_preset->prst.GetBYTECode() ==  SimpleTypes::textshapetypeTextNoShape) return 2000;
-
-	return 2001 + oox_text_preset->prst.GetBYTECode();
+	
+	if (oox_text_preset->prst.GetBYTECode() == SimpleTypes::textshapetypeTextNoShape ||
+		oox_text_preset->prst.GetBYTECode() == SimpleTypes::textshapetypeTextPlain) // в зависимости от других настроек
+	{
+		return 2000;
+	}
+	else
+	{
+		return 2001 + oox_text_preset->prst.GetBYTECode();
+	}
 }
 void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 {
@@ -1302,7 +1309,7 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 	switch(oox_bodyPr->Fit.type)
 	{
 		case  PPTX::Logic::TextFit::FitSpAuto:
-		{//изменяемы размеры			
+		{//изменяемы размеры шейпа под текст			
 			odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
 		}break;
 		case  PPTX::Logic::TextFit::FitNo:

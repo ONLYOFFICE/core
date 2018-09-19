@@ -2247,7 +2247,6 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();	
 	
 	bool set_word_art = drawing_context ? drawing_context->is_wordart() : false;
-	bool set_color = false;
 
 	NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
 	NSCommon::smart_ptr<PPTX::Logic::SolidFill> solidFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
@@ -2259,8 +2258,20 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::notInit) && 
 						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::noFill));
 
-	bool bColorText = (oox_run_pr->m_oColor.IsInit() && (oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorRGB));
+	bool bOutline	= oox_run_pr->m_oOutline.IsInit();
+	bool bColorText = !bOutline && (oox_run_pr->m_oColor.IsInit() && (oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorRGB));
 	
+	_CP_OPT(odf_types::color) color;
+
+	if (oox_run_pr->m_oColor.IsInit())
+	{
+		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
+			color = odf_types::color(L"#000000");
+		else
+		   convert(oox_run_pr->m_oColor.GetPointer(), color);
+		
+		text_properties->content_.fo_color_ = color;
+	}
 	if	(gradFill.is_init() || (bOutlineText && (bFillText || bColorText)))
 	{
 		set_word_art = true;	
@@ -2279,12 +2290,9 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			{
 				OoxConverter::convert(solidFill.operator->());
 			}
-			else if (bColorText)
+			else if (color)
 			{
-				_CP_OPT(odf_types::color) color;
-				convert(oox_run_pr->m_oColor.GetPointer(), color);
-				if (color)
-					drawing_context->set_solid_fill(color->get_hex_value());
+				drawing_context->set_solid_fill(color->get_hex_value());
 			}
 			else
 			{
@@ -2298,8 +2306,6 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 				OoxConverter::convert(oox_run_pr->m_oTextOutline.operator->());
 				drawing_context->end_line_properties();
 			}
-
-			set_color = true;
 		}
 		else
 		{
@@ -2307,39 +2313,26 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		}
 	}
 
-	if (!set_word_art)
+	std::wstring	hexString;
+	_CP_OPT(double) opacity;
+	if (bOutlineText)
 	{
-		std::wstring	hexString;
-		_CP_OPT(double) opacity;
+		text_properties->content_.style_text_outline_ = true;
 		
-		if (bOutlineText)
-		{
-			text_properties->content_.style_text_outline_ = true;
-			
-			gradFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
-			solidFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
-		}
-		if (solidFill.is_init())
-		{
-			OoxConverter::convert(&solidFill->Color, hexString, opacity);
-		}
-		else if ((gradFill.is_init()) && (false == gradFill->GsLst.empty()))
-		{
-			OoxConverter::convert(&gradFill->GsLst[0].color, hexString, opacity);
-		}
-		if (!hexString.empty())
-		{
-			set_color = true;
-			text_properties->content_.fo_color_ = hexString;	
-		}
+		gradFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+		solidFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
 	}
-	
-	if (!set_color && oox_run_pr->m_oColor.IsInit())
+	if (solidFill.is_init())
 	{
-		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
-			text_properties->content_.fo_color_ = odf_types::color(L"#000000");
-		else
-		   convert(oox_run_pr->m_oColor.GetPointer(), text_properties->content_.fo_color_);
+		OoxConverter::convert(&solidFill->Color, hexString, opacity);
+	}
+	else if ((gradFill.is_init()) && (false == gradFill->GsLst.empty()))
+	{
+		OoxConverter::convert(&gradFill->GsLst[0].color, hexString, opacity);
+	}
+	if (!hexString.empty())
+	{
+		text_properties->content_.fo_color_ = hexString;	
 	}
 
     //text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::None); //нельзя..если будет выше наследуемого то подчеркивания не будет

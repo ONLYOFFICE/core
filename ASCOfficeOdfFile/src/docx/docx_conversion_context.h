@@ -900,6 +900,8 @@ public:
 	
 	table_content_context	& get_table_content_context()	{ return table_content_context_;}
 
+	void set_drawing_text_props (const std::wstring &props);
+
     void docx_convert_delayed	();
     void add_delayed_element	(odf_reader::office_element * Elm);
 
@@ -940,10 +942,10 @@ public:
 	void add_alphabetical_index_text (odf_reader::office_element_ptr & elem);
 
 	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
-    headers_footers			& get_headers_footers()			{ return headers_footers_; }
+   
+	headers_footers			& get_headers_footers()			{ return headers_footers_; }
 	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
-
-	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
+	drop_cap_context		& get_drop_cap_context()		{return drop_cap_context_;}
 	
 	styles_map	styles_map_;
 	bool		process_headers_footers_;
@@ -961,6 +963,8 @@ private:
 		bool in_paragraph_ = false;
 		bool in_run_ = false;
 		bool is_paragraph_keep_ = false; 
+
+		std::wstring drawing_text_props_;
 
 		std::vector< const odf_reader::style_text_properties*> text_properties_stack_;
 	}state_;

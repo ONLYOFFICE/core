@@ -252,7 +252,7 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
                 CP_XML_NODE(L"xdr:cNvGraphicFramePr");
             } 
 			val.serialize_xfrm(CP_XML_STREAM(), L"xdr");
-			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
+			//oox_serialize_ln(CP_XML_STREAM(), val.additional);
 
             CP_XML_NODE(L"a:graphic")
             {                   

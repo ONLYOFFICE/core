@@ -855,8 +855,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
         }
 
         if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough 
-            && styleRunThrough && styleRunThrough->get_type() == run_through::Background
-            )
+            && styleRunThrough && styleRunThrough->get_type() == run_through::Background)
         {
            drawing-> behindDoc = L"1";            
         }

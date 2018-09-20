@@ -92,7 +92,7 @@ void oox_serialize_srgb(std::wostream & strm, const std::wstring &color, _CP_OPT
 			{
 				CP_XML_NODE(ns + L":alpha")
 				{
-					CP_XML_ATTR2(ns_att + L"val", std::to_wstring((int)opacity->get_value()*1000));// + L"%");
+					CP_XML_ATTR2(ns_att + L"val", std::to_wstring((int)opacity->get_value() * 1000));// + L"%");
 				}
 			}
 		}

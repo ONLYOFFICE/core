@@ -274,7 +274,7 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
             } 
 			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
-			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
+			//oox_serialize_ln(CP_XML_STREAM(), val.additional);
 
             CP_XML_NODE(L"a:graphic")
             {                   
@@ -311,7 +311,7 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
             } 
 			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
-			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
+			//oox_serialize_ln(CP_XML_STREAM(), val.additional);
 
             CP_XML_NODE(L"a:graphic")
             {                   
@@ -352,7 +352,7 @@ void pptx_serialize_object(std::wostream & strm, _pptx_drawing & val)
             } 
 			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
-			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
+			//oox_serialize_ln(CP_XML_STREAM(), val.additional);
 
             CP_XML_NODE(L"a:graphic")
             {                   

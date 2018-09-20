@@ -589,12 +589,17 @@ void docx_conversion_context::reset_context_state()
 	state_.in_run_				= false;
 	state_.is_paragraph_keep_	= false;
 	
+	state_.drawing_text_props_.clear();	
 	state_.text_properties_stack_.clear();
+	
+	get_styles_context().text_style_ext().clear();
 }
 void docx_conversion_context::back_context_state()
 {
 	state_ = keep_state_.back();
 	keep_state_.pop_back();
+
+	get_styles_context().text_style_ext().clear();
 }
 
 void docx_conversion_context::add_new_run(std::wstring parentStyleId)
@@ -1754,6 +1759,11 @@ void docx_conversion_context::serialize_list_properties(std::wostream & strm)
             first_element_list_item_ = false;
         }
     }
+}
+
+void docx_conversion_context::set_drawing_text_props (const std::wstring &props)
+{
+	get_styles_context().text_style_ext() = props;
 }
 
 void docx_conversion_context::add_delayed_element(odf_reader::office_element * Elm)

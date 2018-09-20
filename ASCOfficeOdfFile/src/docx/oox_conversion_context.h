@@ -141,6 +141,7 @@ public:
 
 	std::wstring & extern_node(){return extern_node_;}
 	std::wstring & hlinkClick(){return hlinkClick_;}
+	std::wstring & text_style_ext(){return text_style_ext_;}
 
 	const odf_reader::style_instance * get_current_processed_style() const { return current_processed_style_; }
    
@@ -152,6 +153,7 @@ private:
 	
 	std::wstring				extern_node_;
 	std::wstring				hlinkClick_;
+	std::wstring				text_style_ext_;
 
     std::wstringstream			list_style_;
     std::wstringstream			text_style_;

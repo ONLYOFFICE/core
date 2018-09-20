@@ -198,7 +198,9 @@ std::wstringstream & styles_context::list_style()
 
 void styles_context::docx_serialize_text_style(std::wostream & strm, std::wstring parenStyleId, std::wstring & strChange)
 {
-    if (!text_style_.str().empty())
+	const std::wstring & text_style_str = text_style_.str();
+  
+	if (!text_style_str.empty() || !text_style_ext_.empty())
 	{
 		CP_XML_WRITER(strm)
 		{
@@ -208,13 +210,16 @@ void styles_context::docx_serialize_text_style(std::wostream & strm, std::wstrin
 				{
 					CP_XML_STREAM() << L"<w:rStyle w:val=\"" << parenStyleId << L"\" />";
 				}
-				const std::wstring & test_str = text_style_.str();
-				CP_XML_STREAM() << test_str;
+				CP_XML_STREAM() << text_style_str;
 
 				if (!strChange.empty())//rPrChange
 				{
 					CP_XML_STREAM() << strChange;
 					strChange.clear();
+				}
+				if (!text_style_ext_.empty())
+				{
+					CP_XML_STREAM() << text_style_ext_;
 				}
 			}
 		}

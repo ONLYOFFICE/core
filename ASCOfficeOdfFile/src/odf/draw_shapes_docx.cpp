@@ -99,10 +99,32 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 			oox::_oox_fill fill;
 			Compute_GraphicFill(graphicProp->common_draw_fill_attlist_, graphicProp->style_background_image_,
 																	Context.root()->odf_context().drawStyles(), fill);	
-			std::wstringstream strm;
-			oox::oox_serialize_fill(strm, fill, L"w14");
-			std::wstring textFill = strm.str();
+			if ((fill.bitmap) && (fill.bitmap->rId.empty()))
+			{
+				std::wstring href = fill.bitmap->xlink_href_;
+				fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
+			}
 
+			std::wstringstream strm_fill, strm_ln;
+			oox::oox_serialize_fill(strm_fill, fill, L"w14");
+			std::wstring textFill = strm_fill.str();
+
+			std::vector<_property> props;
+			graphicProp->apply_to(props);
+
+			oox::oox_serialize_ln(strm_ln, props, false, L"w14");
+			std::wstring textLn = strm_ln.str();
+
+			std::wstring text_props;
+			if (!textLn.empty())
+			{
+				text_props += textLn;
+			}	
+			if (!textFill.empty())
+			{
+				text_props += L"<w14:textFill>" + textFill + L"</w14:textFill>";
+			}
+			Context.set_drawing_text_props(text_props);
 		}
 	}
 

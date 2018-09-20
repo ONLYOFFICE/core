@@ -172,15 +172,24 @@ namespace PdfReader
 
 			if (pEncryptDict->DictLookup("OE", &oOwnerEncryptionKey))
 			{
-				m_seOwnerEncryptionKey = oOwnerEncryptionKey.GetString()->Copy();
+				if (oOwnerEncryptionKey.IsString())
+				{
+					m_seOwnerEncryptionKey = oOwnerEncryptionKey.GetString()->Copy();
+				}
 			}
 			if (pEncryptDict->DictLookup("UE", &oUserEncryptionKey))
 			{
-				m_seUserEncryptionKey = oUserEncryptionKey.GetString()->Copy();
+				if (oUserEncryptionKey.IsString())
+				{
+					m_seUserEncryptionKey = oUserEncryptionKey.GetString()->Copy();
+				}
 			}	
 			if (pEncryptDict->DictLookup("Perms", &oPermsValue))
 			{
-				m_sePermsValue = oPermsValue.GetString()->Copy();
+				if (oPermsValue.IsString())
+				{
+					m_sePermsValue = oPermsValue.GetString()->Copy();
+				}
 			}
 
 			if (oFileID.IsArray())

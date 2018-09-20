@@ -200,7 +200,11 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & temp
 
 		if (false == map_encryptions_.empty())
 		{
-			if (password.empty()) return;
+			if (password.empty())
+			{
+				bError = true;
+				return;
+			}
 
 			//decrypt files
 			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
@@ -286,17 +290,22 @@ bool odf_document::Impl::decrypt_folder (const std::wstring &password, const std
 	bool result = true;
 	for (size_t i = 0; i < arFiles.size(); ++i)
 	{
+		result = false;
 		std::wstring sFileName = NSFile::GetFileName(arFiles[i]);
 		
-		std::map<std::wstring, std::pair<office_element_ptr, int>>::iterator pFind = map_encryptions_.find(arFiles[i]);
-		if ( pFind != map_encryptions_.end() )
+		std::map<std::wstring, std::pair<office_element_ptr, int>>::iterator pFind;
+		if (false == map_encryptions_.empty())
 		{
-			result = decrypt_file(password, arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
-			
-			if (false == result)
-				break;
+			pFind = map_encryptions_.find(arFiles[i]);
+			if ( pFind != map_encryptions_.end() )
+			{
+				result = decrypt_file(password, arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
+				
+				if (false == result)
+					break;
+			}
 		}
-		else 
+		if (!result && false == map_encryptions_extra_.empty())
 		{
 			pFind = map_encryptions_extra_.find(arFiles[i]);
 			if ( pFind != map_encryptions_.end() )
@@ -306,10 +315,11 @@ bool odf_document::Impl::decrypt_folder (const std::wstring &password, const std
 				if (false == result)
 					break;
 			}
-			else 
-			{
-				NSFile::CFileBinary::Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
-			}
+		}
+		if (!result) 
+		{
+			NSFile::CFileBinary::Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
+			result = true;
 		}
 	}
 	for (size_t i = 0; result && i < arDirectories.size(); ++i)

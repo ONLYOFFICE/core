@@ -85,7 +85,8 @@ public:
 	odf_types::common_xlink_attlist			xlink_attlist_;
 	_CP_OPT(std::wstring)					draw_id_;				//используется для анимашек
   
-	office_element_ptr_array content_;
+	office_element_ptr_array			content_;
+	office_element_ptr					enhanced_geometry_;
 
 	bool								bad_shape_;
 	bool								word_art_;

@@ -896,7 +896,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 //////////////////////////////////////////
 	bool bTxbx = (drawing->sub_type == 1);
 
-	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing->fill, bTxbx);	
+	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles(),drawing->fill, bTxbx);	
 
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
@@ -1040,7 +1040,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	if (drawing.sub_type !=5 )//line
 	{
-		drawing.additional.push_back(_property(L"text-content",Context.get_drawing_context().get_text_stream_shape()));
+		drawing.additional.push_back(_property(L"text-content", Context.get_drawing_context().get_text_stream_shape()));
 	}
 
 	Context.get_drawing_context().clear_stream_shape();
@@ -1055,7 +1055,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 		bad_shape_ = false;
 	}
 
-	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional,L"stroke"))//бывает что и не определено ничего 
+	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional, L"stroke"))//бывает что и не определено ничего 
 	{
 		drawing.fill.solid = oox::oox_solid_fill::create();
 		drawing.fill.solid->color = L"729FCF";

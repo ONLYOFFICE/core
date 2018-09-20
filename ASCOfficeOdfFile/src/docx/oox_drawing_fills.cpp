@@ -53,55 +53,59 @@ namespace oox {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void oox_serialize_none_fill(std::wostream & strm)
+void oox_serialize_none_fill(std::wostream & strm, const std::wstring &ns)
 {
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(L"a:noFill");
+		CP_XML_NODE(ns + L":noFill");
 	}
 }
-void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(double)  opacity)
+void oox_serialize_srgb(std::wostream & strm, const std::wstring &color,_CP_OPT(double) opacity, const std::wstring &ns)
 {
+	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
+
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(L"a:srgbClr")
+		CP_XML_NODE(ns + L":srgbClr")
 		{
-			CP_XML_ATTR(L"val", color);
+			CP_XML_ATTR2(ns_att + L"val", color);
 			if (opacity)
 			{
-				CP_XML_NODE(L"a:alpha")
+				CP_XML_NODE(ns + L":alpha")
 				{
-					CP_XML_ATTR(L"val", std::to_wstring((int)(*opacity)*1000));// + L"%");
+					CP_XML_ATTR2(ns_att + L"val", std::to_wstring((int)(*opacity)*1000));// + L"%");
 				}
 			}
 		}
 	}
 }
-void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf_types::percent)  opacity)
+void oox_serialize_srgb(std::wostream & strm, const std::wstring &color, _CP_OPT(odf_types::percent) opacity, const std::wstring &ns)
 {
+	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
+
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(L"a:srgbClr")
+		CP_XML_NODE(ns + L":srgbClr")
 		{
-			CP_XML_ATTR(L"val",color);
+			CP_XML_ATTR2(ns_att + L"val",color);
 			if (opacity)
 			{
-				CP_XML_NODE(L"a:alpha")
+				CP_XML_NODE(ns + L":alpha")
 				{
-					CP_XML_ATTR(L"val", std::to_wstring((int)opacity->get_value()*1000));// + L"%");
+					CP_XML_ATTR2(ns_att + L"val", std::to_wstring((int)opacity->get_value()*1000));// + L"%");
 				}
 			}
 		}
 	}
 }
-void oox_serialize_solid_fill(std::wostream & strm, const _oox_fill & val)
+void oox_serialize_solid_fill(std::wostream & strm, const _oox_fill & val, const std::wstring &ns)
 {
 	if (!val.solid)return;
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(L"a:solidFill")
+		CP_XML_NODE(ns + L":solidFill")
 		{
-			oox_serialize_srgb(CP_XML_STREAM(), val.solid->color, val.opacity);
+			oox_serialize_srgb(CP_XML_STREAM(), val.solid->color, val.opacity, ns);
 		}
 
 	}
@@ -151,20 +155,25 @@ void vml_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 		}
 	}
 }
-void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
+void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, const std::wstring &ns)
 {
 	if (!val.bitmap) return;
+
+	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
 
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(std::wstring(val.bitmap->name_space + L":blipFill"))
 		{
-			//if (val.bitmap->rotate)	CP_XML_ATTR(L"a:rotWithShape",*(val.bitmap->rotate));
-			//else CP_XML_ATTR(L"a:rotWithShape",1);
+			//if (val.bitmap->rotate)	CP_XML_ATTR(ns + L":rotWithShape",*(val.bitmap->rotate));
+			//else CP_XML_ATTR(ns + L":rotWithShape",1);
 
-			if (val.bitmap->dpi)	CP_XML_ATTR(L"a:dpi", *val.bitmap->dpi);
+			if (val.bitmap->dpi)	
+			{
+				CP_XML_ATTR2(ns + L":dpi", *val.bitmap->dpi);
+			}
 			
-			CP_XML_NODE(L"a:blip")
+			CP_XML_NODE(ns + L":blip")
 			{
 				if (val.bitmap->isInternal) 
 				{
@@ -176,38 +185,38 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 
 				if (val.opacity)
 				{
-					CP_XML_NODE(L"a:alphaModFix")
+					CP_XML_NODE(ns + L":alphaModFix")
 					{
-						CP_XML_ATTR(L"amt",(int)(*val.opacity * 1000));
+						CP_XML_ATTR2(ns_att + L"amt", (int)(*val.opacity * 1000));
 					}
 				}		
 			}
 			if (val.bitmap->bCrop)
 			{
-				CP_XML_NODE(L"a:srcRect")
+				CP_XML_NODE(ns + L":srcRect")
 				{
-					CP_XML_ATTR(L"l", static_cast<int>(val.bitmap->cropRect[0]*1000));
-					CP_XML_ATTR(L"t", static_cast<int>(val.bitmap->cropRect[1]*1000));
-					CP_XML_ATTR(L"r", static_cast<int>(val.bitmap->cropRect[2]*1000));
-					CP_XML_ATTR(L"b", static_cast<int>(val.bitmap->cropRect[3]*1000));
+					CP_XML_ATTR2(ns_att + L"l", static_cast<int>(val.bitmap->cropRect[0]*1000));
+					CP_XML_ATTR2(ns_att + L"t", static_cast<int>(val.bitmap->cropRect[1]*1000));
+					CP_XML_ATTR2(ns_att + L"r", static_cast<int>(val.bitmap->cropRect[2]*1000));
+					CP_XML_ATTR2(ns_att + L"b", static_cast<int>(val.bitmap->cropRect[3]*1000));
 				}
 			}
 			if (val.bitmap->bTile)
 			{
-				CP_XML_NODE(L"a:tile")
+				CP_XML_NODE(ns + L":tile")
 				{
 					//tx="0" ty="0" sx="100000" sy="100000"
-					CP_XML_ATTR(L"flip", "none");
-					CP_XML_ATTR(L"algn", L"ctr");
+					CP_XML_ATTR2(ns_att + L"flip", "none");
+					CP_XML_ATTR2(ns_att + L"algn", L"ctr");
 				}
 			}
 			else if (val.bitmap->bStretch)
 			{			
-				CP_XML_NODE(L"a:stretch")
+				CP_XML_NODE(ns + L":stretch")
 				{
 					if (!val.bitmap->bCrop)
 					{
-						CP_XML_NODE(L"a:fillRect");
+						CP_XML_NODE(ns + L":fillRect");
 					}
 				}
 			}	
@@ -269,25 +278,27 @@ void vml_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 		}
 	}
 }
-void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
+void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val, const std::wstring &ns)
 {
 	if (!val.gradient) return;
 	
+	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
+
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(L"a:gradFill")
+		CP_XML_NODE(ns + L":gradFill")
 		{
 			if (val.gradient->colors.size()>0)
 			{
-				CP_XML_NODE(L"a:gsLst")
+				CP_XML_NODE(ns + L":gsLst")
 				{
 					for (int i = 0; i < val.gradient->colors.size(); i++)
 					{
 						oox_gradient_fill::_color_position & col = val.gradient->colors[i];
-						CP_XML_NODE(L"a:gs")
+						CP_XML_NODE(ns + L":gs")
 						{
-							CP_XML_ATTR(L"pos", (int)(col.pos * 1000));//%
-							oox_serialize_srgb(CP_XML_STREAM(), col.color_ref, col.opacity);
+							CP_XML_ATTR2(ns_att + L"pos", (int)(col.pos * 1000));//%
+							oox_serialize_srgb(CP_XML_STREAM(), col.color_ref, col.opacity, ns);
 						}
 					}
 				}
@@ -298,25 +309,25 @@ void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 			switch(val.gradient->style)
 			{
 			case 0:
-				CP_XML_NODE(L"a:lin")
+				CP_XML_NODE(ns + L":lin")
 				{		
-					CP_XML_ATTR(L"ang",(int)angle);//gr in rad
+					CP_XML_ATTR2(ns_att + L"ang",(int)angle);//gr in rad
 				}break;
 			case 1:
 			case 2:
 			case 3:
-				CP_XML_NODE(L"a:path")
+				CP_XML_NODE(ns + L":path")
 				{
-					if (val.gradient->style == 1) CP_XML_ATTR(L"path", L"rect");
-					if (val.gradient->style == 2) CP_XML_ATTR(L"path", L"circle");
-					if (val.gradient->style == 3) CP_XML_ATTR(L"path", L"shape");
+					if (val.gradient->style == 1) CP_XML_ATTR2(ns_att + L"path", L"rect");
+					if (val.gradient->style == 2) CP_XML_ATTR2(ns_att + L"path", L"circle");
+					if (val.gradient->style == 3) CP_XML_ATTR2(ns_att + L"path", L"shape");
 					
-					CP_XML_NODE(L"a:fillToRect")
+					CP_XML_NODE(ns + L":fillToRect")
 					{
-						CP_XML_ATTR(L"l", (int)(val.gradient->rect[0] * 1000));
-						CP_XML_ATTR(L"t", (int)(val.gradient->rect[1] * 1000));
-						CP_XML_ATTR(L"r", (int)(val.gradient->rect[2] * 1000));
-						CP_XML_ATTR(L"b", (int)(val.gradient->rect[3] * 1000));
+						CP_XML_ATTR2(ns_att + L"l", (int)(val.gradient->rect[0] * 1000));
+						CP_XML_ATTR2(ns_att + L"t", (int)(val.gradient->rect[1] * 1000));
+						CP_XML_ATTR2(ns_att + L"r", (int)(val.gradient->rect[2] * 1000));
+						CP_XML_ATTR2(ns_att + L"b", (int)(val.gradient->rect[3] * 1000));
 					}
 				}break;
 			}
@@ -324,22 +335,24 @@ void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 //tileRect (Tile Rectangle) §20.1.8.59
 	}
 }
-void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
+void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val, const std::wstring &ns)
 {
 	if (!val.hatch)return;
 
+	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
+
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(L"a:pattFill")
+		CP_XML_NODE(ns + L":pattFill")
 		{
-			CP_XML_ATTR(L"prst",val.hatch->preset);
-			CP_XML_NODE(L"a:fgClr")//опять для ms важно что этот цвет перед back
+			CP_XML_ATTR2(ns_att + L"prst", val.hatch->preset);
+			CP_XML_NODE(ns + L":fgClr")//опять для ms важно что этот цвет перед back
 			{
 				oox_serialize_srgb(CP_XML_STREAM(), val.hatch->color_ref, val.opacity);
 			}	
 			if (val.hatch->color_back_ref)
 			{
-				CP_XML_NODE(L"a:bgClr")
+				CP_XML_NODE(ns + L":bgClr")
 				{
 					oox_serialize_srgb(CP_XML_STREAM(), *val.hatch->color_back_ref ,val.opacity);
 				}
@@ -379,23 +392,23 @@ void vml_serialize_background (std::wostream & strm, const _oox_fill & val, cons
 	}
 }
 
-void oox_serialize_fill (std::wostream & strm, const _oox_fill & val)
+void oox_serialize_fill (std::wostream & strm, const _oox_fill & val, const std::wstring &ns)
 {
 	switch (val.type)
 	{
 		case 0:	
-			oox_serialize_none_fill(strm);
+			oox_serialize_none_fill(strm, ns);
 			break;
 		case 1:	
-			oox_serialize_solid_fill(strm, val);
+			oox_serialize_solid_fill(strm, val, ns);
 			break;
 		case 2:	
-			oox_serialize_bitmap_fill(strm, val);
+			oox_serialize_bitmap_fill(strm, val, ns);
 			break;
 		case 3:	
-			oox_serialize_gradient_fill(strm, val);
+			oox_serialize_gradient_fill(strm, val, ns);
 			break;
-		case 4:	oox_serialize_hatch_fill(strm, val);
+		case 4:	oox_serialize_hatch_fill(strm, val, ns);
 			break;
 	}
 }

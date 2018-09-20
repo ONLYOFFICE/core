@@ -66,6 +66,9 @@ namespace odf_reader {
 
 void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	if (enhanced_geometry_)
+		enhanced_geometry_->xlsx_convert(Context);
+
 	common_draw_shape_with_text_and_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_;
 
     const int z_index				= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
@@ -130,10 +133,16 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	
 	oox::_oox_fill fill;
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-																	Context.root()->odf_context().drawStyles() ,fill);	
+																	Context.root()->odf_context().drawStyles(), fill);	
 	Context.get_drawing_context().set_fill(fill);
+
 //////////////////////////////////////////////////////////////////////////////////////	
 	Context.get_text_context().start_drawing_content();
+
+	if (word_art_)
+	{
+		//Context.get_text_context().start_drawing_fill(fill);
+	}
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
@@ -143,7 +152,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (!text_content_.empty())
 	{
-		Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
+		Context.get_drawing_context().set_property(_property(L"text-content", text_content_));
 	}
 
     Context.get_drawing_context().end_drawing();    

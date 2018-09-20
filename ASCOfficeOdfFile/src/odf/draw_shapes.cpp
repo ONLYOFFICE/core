@@ -69,7 +69,14 @@ void draw_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 
 void draw_shape::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+    if CP_CHECK_NAME(L"draw", L"enhanced-geometry")
+	{
+		CP_CREATE_ELEMENT(enhanced_geometry_);
+	}
+	else
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
 }
 void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

@@ -72,34 +72,43 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Shape"));
 
-//////////////////////////////на другом контексте
+//---------------------------сначала элементы графики  потом все остальное	
+	if (enhanced_geometry_)
+		enhanced_geometry_->docx_convert(Context);
 
+//---------------------------на другом контексте
 	//тут может быть не только текст , но и таблицы, другие объекты ...
  	oox::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_shape());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
 
-//сначала элементы графики  потом все остальное	
-	for (size_t i = 0; i < content_.size(); i++)
-    {
-		ElementType type = content_[i]->get_type();
-		
-		if (type == typeDrawCustomShape) // || .... 
-		{
-			content_[i]->docx_convert(Context);
-		}
-    }
 	Context.reset_context_state();
+
+	if (word_art_)
+	{
+		const std::wstring styleName = common_draw_attlists_.shape_with_text_and_styles_.
+						common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");
+
+		style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
+		style_content * content = styleInst ? styleInst->content() : NULL;
+		graphic_format_properties * graphicProp = content ? content->get_graphic_properties() : NULL;
+
+		if (graphicProp)
+		{
+			oox::_oox_fill fill;
+			Compute_GraphicFill(graphicProp->common_draw_fill_attlist_, graphicProp->style_background_image_,
+																	Context.root()->odf_context().drawStyles(), fill);	
+			std::wstringstream strm;
+			oox::oox_serialize_fill(strm, fill, L"w14");
+			std::wstring textFill = strm.str();
+
+		}
+	}
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = content_[i]->get_type();
-		
-		if (type != typeDrawCustomShape)
-		{
-			content_[i]->docx_convert(Context);
-		}
+		content_[i]->docx_convert(Context);
     }
 
 	Context.back_context_state();

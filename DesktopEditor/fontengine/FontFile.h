@@ -239,6 +239,8 @@ public:
 	int SetCMapForCharCode(long lUnicode, int *pnCMapIndex);
 	int SetCMapForCharCode2(long lUnicode);
 
+    double GetCharWidth(int gid);
+
     int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
     void SetStringGID(const INT& bGID);
     INT GetStringGID();

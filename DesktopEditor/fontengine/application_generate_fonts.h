@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -256,7 +256,7 @@ namespace NSCommon
                 int nCount = 1;
                 ++tmp;
 
-                while (nMask == *tmp && tmp < tmpLast)
+                while (tmp < tmpLast && nMask == *tmp)
                 {
                     ++tmp;
                     nCount++;
@@ -537,12 +537,13 @@ namespace NSCommon
                     pRenderer->put_FontFaceIndex(lFaceIndex);
                     pManager->LoadFontFromFile(strFontPath, lFaceIndex, 14, dDpi, dDpi);
                     
-                    bool bIsSymbol = FALSE;
+                    bool bIsSymbol = false;
+                    NSFonts::IFontFile* pFile = pManager->GetFile();
                     
-                    if (pManager->GetFile())
-                    {
-                        bIsSymbol = pManager->GetFile()->IsSymbolic(false);
-                    }
+                    if (pFile)
+                        bIsSymbol = pFile->IsSymbolic(false);
+                    
+                    std::wstring sFontName = pPair->second.m_sName;
                     
                     if (bIsSymbol)
                     {
@@ -557,6 +558,45 @@ namespace NSCommon
                         pRenderer->put_FontPath(pInfoCur->m_wsFontPath);
                         pRenderer->put_FontFaceIndex(0);
                     }
+                    else if (pFile)
+                    {
+                        int nFontNameLen = (int)sFontName.length();
+                        bool bIsPresentAll = true;
+                        
+                        for (int nC = 0; nC < nFontNameLen; nC++)
+                        {
+                            int nCMapIndex = 0;
+                            int nGid = pFile->SetCMapForCharCode(sFontName.at(nC), &nCMapIndex);
+                            if (0 >= nGid)
+                            {
+                                bIsPresentAll = false;
+                                break;
+                            }
+                            else
+                            {
+                                double offsetG = pFile->GetCharWidth(nGid);
+                                if (offsetG < 0.0001)
+                                {
+                                    bIsPresentAll = false;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!bIsPresentAll)
+                        {
+                            NSFonts::CFontSelectFormat oSelectFormat;
+                            oSelectFormat.wsName = new std::wstring(L"Arial");
+                            NSFonts::CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);
+                            
+                            if (NULL != pInfoCur)
+                            {
+                                pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
+                            }
+                            pRenderer->put_FontPath(pInfoCur->m_wsFontPath);
+                            pRenderer->put_FontFaceIndex(0);
+                        }
+                    }
                     
                     pRenderer->PathCommandStart();
                     pRenderer->BeginCommand(c_nClipType);
@@ -568,7 +608,7 @@ namespace NSCommon
                     pRenderer->put_FontCharSpace(0);
                     pRenderer->put_FontSize(14);
                     
-                    pRenderer->CommandDrawText(pPair->second.m_sName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
+                    pRenderer->CommandDrawText(sFontName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
                     
                     pRenderer->BeginCommand(c_nResetClipType);
                     pRenderer->EndCommand(c_nResetClipType);

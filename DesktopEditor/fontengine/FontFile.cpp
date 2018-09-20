@@ -914,6 +914,25 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
     return oSizes;
 }
 
+double CFontFile::GetCharWidth(int gid)
+{
+    if (!m_pFace)
+        return 0;
+
+    if (0 != FT_Load_Glyph(m_pFace, gid, 40970))
+        return 0;
+
+    FT_Glyph pGlyph = NULL;
+    if (0 != FT_Get_Glyph(m_pFace->glyph, &pGlyph))
+        return 0;
+
+    double dRet = (double)(m_pFace->glyph->linearHoriAdvance * m_dUnitsKoef / m_pFace->units_per_EM);
+
+    FT_Done_Glyph(pGlyph);
+
+    return dRet;
+}
+
 INT CFontFile::GetString(CGlyphString& oString)
 {
 	int nCountGlyph = oString.GetLength();

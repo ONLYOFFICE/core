@@ -488,6 +488,7 @@ namespace NSFonts
         virtual void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF) = 0;
 
         virtual int SetCMapForCharCode(long lUnicode, int *pnCMapIndex) = 0;
+        virtual double GetCharWidth(int gid) = 0;
     };
 
     namespace NSFontFile

@@ -113,7 +113,7 @@ namespace NExtractTools
 		}
 		return res;
 	}
-	int (int hRes, const std::wstring &sFrom, InputParams& params)
+	int processEncryptionError(int hRes, const std::wstring &sFrom, InputParams& params)
 	{
 		if (AVS_ERROR_DRM == hRes)
 		{

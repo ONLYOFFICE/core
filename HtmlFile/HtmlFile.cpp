@@ -45,7 +45,7 @@
 #include <vector>
 #include <map>
 
-#ifdef LINUX
+#ifdef __unix__
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>

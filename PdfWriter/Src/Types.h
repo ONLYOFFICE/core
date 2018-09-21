@@ -46,7 +46,7 @@
 #include <algorithm>
 #include <math.h>
 
-#ifdef __linux__
+#ifdef __unix__
 #include <string.h>
 #endif
 

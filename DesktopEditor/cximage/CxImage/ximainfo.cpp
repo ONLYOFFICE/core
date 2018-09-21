@@ -5,7 +5,7 @@
 
 #include "ximage.h"
 
-#if defined(_LINUX) || defined(__APPLE__)
+#if defined(__unix__) || defined(__APPLE__)
     #ifdef UNICODE
         #define _tcsnicmp(a,b,c) wcscasecmp(a,b)
     #else

@@ -39,7 +39,7 @@
     #include <windows.h>
 #endif
 
-#if defined(__linux__) || defined(_MAC) && !defined(_IOS)
+#if defined(__unix__) || defined(_MAC) && !defined(_IOS)
 #include <unistd.h>
 #include <string.h>
 #endif

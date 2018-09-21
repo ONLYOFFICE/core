@@ -35,6 +35,10 @@
 #include "../common/Types.h"
 #include "../common/File.h"
 
+#ifdef GetCharWidth
+#undef GetCharWidth
+#endif
+
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif

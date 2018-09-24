@@ -677,7 +677,7 @@ namespace NExtractTools
 								oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
 								oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
 							}
-							for (int j = 0; j < aTypes.size(); ++j)
+							for (size_t j = 0; j < aTypes.size(); ++j)
 							{
 								m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
 							}
@@ -1170,7 +1170,7 @@ namespace NExtractTools
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
                             const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
-    int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
+    _UINT32 apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
 #endif
 }
 #endif // CEXTRACTTOOLS_H

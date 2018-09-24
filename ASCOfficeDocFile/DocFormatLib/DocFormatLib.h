@@ -53,8 +53,8 @@ public:
 
 	std::wstring m_sTempFolder;
 
-    HRESULT LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstFileName, const std::wstring & password, bool &bMacros, ProgressCallback *ffCallBack = NULL);
-    HRESULT SaveToFile(const std::wstring &  sDstFileName, const std::wstring &  sSrcFileName, ProgressCallback *ffCallBack = NULL);
+    _UINT32 LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstFileName, const std::wstring & password, bool &bMacros, ProgressCallback *ffCallBack = NULL);
+    _UINT32 SaveToFile(const std::wstring &  sDstFileName, const std::wstring &  sSrcFileName, ProgressCallback *ffCallBack = NULL);
 
 };
 

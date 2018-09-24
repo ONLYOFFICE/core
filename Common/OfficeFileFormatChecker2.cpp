@@ -34,9 +34,9 @@
 #include "../DesktopEditor/common/File.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
 
-#if defined FILE_FORMAT_CHECKER_WITH_MACRO
-	#include "../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
-#endif
+//#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+//	#include "../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
+//#endif
 
 #include "3dParty/pole/pole.h"
 #include <algorithm>
@@ -362,17 +362,17 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
         }
         else if ( isPptFormatFile(&storage) )
         {
-#if defined FILE_FORMAT_CHECKER_WITH_MACRO
-			COfficePPTFile pptFile;
-			
-			bMacroEnabled = true;
-			long nResult = pptFile.OpenFile(fileName, L"", bMacroEnabled);
-			if (nResult != S_OK)
-			{
-				return false;
-			}         
-			pptFile.CloseFile();
-#endif
+//#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+//			COfficePPTFile pptFile;
+//			
+//			bMacroEnabled = true;
+//			long nResult = pptFile.OpenFile(fileName, L"", bMacroEnabled);
+//			if (nResult != S_OK)
+//			{
+//				return false;
+//			}         
+//			pptFile.CloseFile();
+//#endif
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
             return true;
         }

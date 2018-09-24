@@ -74,9 +74,9 @@ public:
 
 	~CPPTXFile();
 
-	HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions);
+	_UINT32 LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions);
 
-	HRESULT SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions);
+	_UINT32 SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions);
 
     HRESULT get_TempDirectory(std::wstring* pVal);
     HRESULT put_TempDirectory(std::wstring newVal);
@@ -96,8 +96,9 @@ public:
     HRESULT SetThemesDir		(std::wstring bsDir);
     HRESULT SetUseSystemFonts	(bool useSystemFonts);
     void SetIsNoBase64			(bool bIsNoBase64);
-    HRESULT OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
-    HRESULT OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
-    HRESULT ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);
+    
+	_UINT32 OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
+    _UINT32 OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
+    _UINT32 ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);
 };
 #endif //ASC_OFFICE_PPTX_FILE

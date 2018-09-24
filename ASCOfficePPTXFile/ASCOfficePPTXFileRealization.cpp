@@ -47,6 +47,7 @@
 #include "Editor/PPTXWriter.h"
 
 #include "PPTXFormat/PPTXEvent.h"
+#include "../Common/OfficeFileErrorDescription.h"
 
 CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg)
 {
@@ -82,20 +83,20 @@ CPPTXFile::~CPPTXFile()
 {
 	RELEASEOBJECT(m_pPptxDocument);
 }
-HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions)
+_UINT32 CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions)
 {
 	std::wstring localTempDir(sDstPath);
     if(!localTempDir.empty())
 	{
         bool res = NSDirectory::CreateDirectory(localTempDir);
-        if (res == false) return S_FALSE;
+        if (res == false) return AVS_FILEUTILS_ERROR_CONVERT;
 
 		put_TempDirectory(sDstPath);
 	}
 	else
 	{
         bool res = NSDirectory::CreateDirectory(m_strTempDir);
-        if (res == false) return S_FALSE;
+        if (res == false) return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	localTempDir = m_strTempDir;
 
@@ -103,7 +104,7 @@ HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 	if (m_pCallbackArg)
 	{
 		if(!m_fCallbackExtract(m_pCallbackArg, srcFileName , localTempDir))
-			return S_FALSE;
+			return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	else
 	{
@@ -116,19 +117,19 @@ HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 	if(!m_pPptxDocument->isValid(localTempDir))
 	{
 		RELEASEOBJECT(m_pPptxDocument);
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	m_pPptxDocument->read(localTempDir, (PPTX::IPPTXEvent*)this);
 	if(GetPercent() < 1000000)
 	{
 		RELEASEOBJECT(m_pPptxDocument);
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	smart_ptr<PPTX::Presentation> presentation = m_pPptxDocument->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
         NSDirectory::DeleteDirectory(m_strTempDir, false);
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
     m_strDirectory = sSrcFileName;
@@ -136,12 +137,12 @@ HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 	if (-1 != nIndex)
 		m_strDirectory = m_strDirectory.substr(0, nIndex);
 
-	return S_OK;
+	return 0;
 }
-HRESULT CPPTXFile::SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions)
+_UINT32 CPPTXFile::SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions)
 {
 	if (NULL == m_pPptxDocument)
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 
 	OOX::CPath oPath;
 	oPath.m_strFilename = std::wstring(sSrcPath);
@@ -149,7 +150,7 @@ HRESULT CPPTXFile::SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, 
 
     std::wstring srcFilePath = sSrcPath;
     std::wstring dstFileName = sDstFileName;
-	return m_fCallbackCompress ? (m_fCallbackCompress(m_pCallbackArg, srcFilePath, dstFileName) ? S_OK : S_FALSE) : S_OK;
+	return m_fCallbackCompress ? (m_fCallbackCompress(m_pCallbackArg, srcFilePath, dstFileName) ? 0 : AVS_FILEUTILS_ERROR_CONVERT) : 0;
 }
 HRESULT CPPTXFile::get_TempDirectory(std::wstring* pVal)
 {
@@ -237,7 +238,7 @@ void CPPTXFile::SetIsNoBase64(bool bIsNoBase64)
 {
 	m_bIsNoBase64 = bIsNoBase64;
 }
-HRESULT CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)
+_UINT32 CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
     if (m_strTempDir.empty())
 	{
@@ -268,14 +269,14 @@ HRESULT CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)
 	}
 	std::wstring bsLocalInputTemp= pathLocalInputTemp.GetPath();
 
-	HRESULT hr = OpenDirectoryToPPTY(bsLocalInputTemp, bsOutput);
+	_UINT32 hr = OpenDirectoryToPPTY(bsLocalInputTemp, bsOutput);
 
 	if (notDeleteInput == false)
         NSDirectory::DeleteDirectory(pathLocalInputTemp.GetPath());
 	
 	return hr;
 }
-HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutput)
+_UINT32 CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
 	OOX::CPath pathInputDirectory = bsInput;
 
@@ -285,20 +286,20 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 	if (!m_pPptxDocument->isValid(pathInputDirectory.GetPath())) // true ???
 	{
 		RELEASEOBJECT(m_pPptxDocument);
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
 	m_pPptxDocument->read(pathInputDirectory.GetPath() + FILE_SEPARATOR_STR, (PPTX::IPPTXEvent*)this);
 	if(GetPercent() < 1000000)
 	{
 		RELEASEOBJECT(m_pPptxDocument);
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	smart_ptr<PPTX::Presentation> presentation = m_pPptxDocument->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
         NSDirectory::DeleteDirectory(m_strTempDir, false);
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
 	m_strDirectory = pathInputDirectory.GetDirectory();
@@ -335,7 +336,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 	return S_OK;
 }
 
-HRESULT CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder)//bsOutput и файл и директория может быть 
+_UINT32 CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder)//bsOutput и файл и директория может быть 
 {
 	OOX::CPath pathLocalTempDirectory;
 	
@@ -368,14 +369,15 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput
 	oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, bsThemesFolder);
 	
 	RELEASEARRAYOBJECTS(pSrcBuffer);
-	HRESULT hRes = S_OK;
+	
+	_UINT32 hRes = 0;
 
 	if (m_fCallbackCompress)
 	{
         std::wstring strOutput = bsOutput;
         std::wstring strInput = pathLocalTempDirectory.GetPath();
 
-        hRes = m_fCallbackCompress(m_pCallbackArg, strInput, strOutput) ? S_OK : S_FALSE;
+        hRes = m_fCallbackCompress(m_pCallbackArg, strInput, strOutput) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
         NSDirectory::DeleteDirectory(strInput);
 	}

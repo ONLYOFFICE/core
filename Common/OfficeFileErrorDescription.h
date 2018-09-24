@@ -31,7 +31,11 @@
  */
 #pragma once
 
-#define AVS_ERROR_FIRST                 0
+#ifdef MAKE_HRESULT
+#define AVS_ERROR_FIRST					MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0300)
+#else
+#define AVS_ERROR_FIRST                 (((unsigned long)(1)<<31) | ((unsigned long)(4)<<16) | ((unsigned long)(0x0300)))
+#endif
 
 #define AVS_ERROR_UNEXPECTED				(AVS_ERROR_FIRST + 0x0000)
 #define AVS_ERROR_BUSY						(AVS_ERROR_FIRST + 0x0001)

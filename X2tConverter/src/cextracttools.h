@@ -999,7 +999,7 @@ namespace NExtractTools
         }
         return str;
     }
-	static int getReturnErrorCode(int nDefine)
+	static int getReturnErrorCode(_UINT32 nDefine)
 	{
         return 0 == nDefine ? 0 : nDefine - AVS_ERROR_FIRST - AVS_FILEUTILS_ERROR_FIRST;
 	}

@@ -225,7 +225,7 @@ namespace CSVReader
 		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-	int ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
+	_UINT32 ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
 	{
 		NSFile::CFileBinary oFile;
 		if (false == oFile.OpenFile(sFileName)) return AVS_FILEUTILS_ERROR_CONVERT;

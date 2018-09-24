@@ -94,7 +94,7 @@ namespace DocFileFormat
 		WordDocument (const ProgressCallback* pCallFunc, const std::wstring & tempFolder );
 		virtual ~WordDocument();
 
-		int LoadDocument(const std::wstring & fileName, const std::wstring & password);
+		_UINT32 LoadDocument(const std::wstring & fileName, const std::wstring & password);
 
 		int		nWordVersion;
 		int		nDocumentCodePage;

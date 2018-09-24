@@ -4764,10 +4764,10 @@ namespace BinXlsxRW
 		{
 			RELEASEOBJECT(m_oBcw);
 		}
-        int Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
+        _UINT32 Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
 		{
-			int result = 0;
+			_UINT32 result = 0;
 
 			OOX::CPath path(sFileDst);
 	//создаем папку для media

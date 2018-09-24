@@ -2516,18 +2516,22 @@ namespace NExtractTools
 			//было несанкционированое вешательство в файл
 		}
 
-		return S_OK;
+		return 0;
 	}
 	_UINT32 mscrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		//decrypt to temp file
-        std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
+         std::wstring password = params.getPassword();
+       std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
 
 		ECMACryptFile cryptReader;
 		bool bDataIntegrity = false;
 
-		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptFile, params.getPassword(), bDataIntegrity) == false)
-			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptFile, password, bDataIntegrity) == false)
+		{
+             if (password.empty())	return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+            else					return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		}
 
 		if (bDataIntegrity == false)
 		{
@@ -2580,7 +2584,7 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-		return S_OK;
+		return 0;
 	}
     _UINT32 fromMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
@@ -2598,7 +2602,8 @@ namespace NExtractTools
 		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
 		
         _UINT32 nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
-
+ 
+		nRes = processEncryptionError(nRes, sFrom, params);
         if (SUCCEEDED_X2T(nRes))
         {
             COfficeFileFormatChecker OfficeFileFormatChecker;
@@ -2633,18 +2638,6 @@ namespace NExtractTools
                 }break;
                 }
             }
-        }
-        else if (AVS_ERROR_DRM == nRes)
-        {
-            if(!params.getDontSaveAdditional())
-            {
-                copyOrigin(sFrom, *params.m_sFileTo);
-            }
-            return AVS_FILEUTILS_ERROR_CONVERT_DRM;
-        }
-        else if (AVS_ERROR_PASSWORD == nRes)
-        {
-            return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
         }
         return nRes;
 	}

@@ -34,9 +34,9 @@
 #include "../DocDocxConverter/Converter.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-HRESULT COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::wstring & docxDirectory, const std::wstring & password, bool &bMacros, ProgressCallback *ffCallBack)
+_UINT32 COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::wstring & docxDirectory, const std::wstring & password, bool &bMacros, ProgressCallback *ffCallBack)
 {
-	HRESULT hr = S_FALSE;
+	_UINT32 hr = 0;
 
 	DocFileFormat::Converter docToDocx;
 	docToDocx.m_sTempFolder = m_sTempFolder;
@@ -46,7 +46,7 @@ HRESULT COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::w
 	return hr;
 }
 
-HRESULT COfficeDocFile::SaveToFile (const std::wstring &  sDstFileName, const std::wstring &   sSrcFileName, ProgressCallback *ffCallBack )
+_UINT32 COfficeDocFile::SaveToFile (const std::wstring &  sDstFileName, const std::wstring &   sSrcFileName, ProgressCallback *ffCallBack )
 {
-    return S_OK;
+    return 0;
 }

@@ -403,7 +403,7 @@ namespace NExtractTools
             }
             std::sort (aChangesFiles.begin(), aChangesFiles.end(), compare_string_by_length);
 
-            for(int i = 0; i < aChangesFiles.size(); ++i)
+            for(size_t i = 0; i < aChangesFiles.size(); ++i)
             {
                 oBuilder.WriteString(_T("<Change>"));
                 oBuilder.WriteEncodeXmlString(aChangesFiles[i]);
@@ -419,7 +419,7 @@ namespace NExtractTools
         oBuilder.WriteString(_T("</Settings>"));
         return oBuilder.GetData();
     }
-    int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params)
+    _UINT32 apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params)
 	{
         std::wstring sBinDir = NSDirectory::GetFolderPath(sBinFrom);
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
@@ -464,7 +464,7 @@ namespace NExtractTools
                     {
                         std::vector<std::wstring> aImages = oDoctRenderer.GetImagesInChanges();
                         //todo сделать interface у COfficeUtils, чтобы можно было делать архив из файлов в разных папках.
-                        for(int i = 0; i < aImages.size(); ++i)
+                        for(size_t i = 0; i < aImages.size(); ++i)
                         {
                             std::wstring sImageName = aImages[i];
                             std::wstring sImage = sImagesDirectory + FILE_SEPARATOR_STR + sImageName;

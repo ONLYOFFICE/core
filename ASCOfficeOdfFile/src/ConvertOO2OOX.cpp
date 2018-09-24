@@ -43,7 +43,7 @@
 
 #include "../include/odf/odf_document.h"
 
-int ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+_UINT32 ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::xlsx_document outputXlsx;
 	cpdoccore::oox::xlsx_conversion_context conversionContext( &inputOdf);
@@ -56,7 +56,7 @@ int ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::w
 	outputXlsx.write(dstPath);
     return 0;
 }
-int ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+_UINT32 ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::docx_document	outputDocx;
     cpdoccore::oox::docx_conversion_context conversionContext(&inputOdf);
@@ -70,7 +70,7 @@ int ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::w
 		
     return 0;
 }
-int ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+_UINT32 ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::pptx_document	outputPptx;
     cpdoccore::oox::pptx_conversion_context conversionContext(&inputOdf);
@@ -83,9 +83,9 @@ int ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::w
 
     return 0;
 }
-int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* CallBack)
+_UINT32 ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* CallBack)
 {
-	int nResult = 0;
+	_UINT32 nResult = 0;
 
 	try 
     {
@@ -134,9 +134,9 @@ int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath,
 
 }
 
-int ConvertOTF2ODF(const std::wstring & srcPath)
+_UINT32 ConvertOTF2ODF(const std::wstring & srcPath)
 {
-	int nResult = 0;
+	_UINT32 nResult = 0;
 	
 	std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
 	std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";

@@ -117,7 +117,7 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
-	int WordDocument::LoadDocument(const std::wstring & fileName, const std::wstring & password)
+	_UINT32 WordDocument::LoadDocument(const std::wstring & fileName, const std::wstring & password)
 	{
 		m_sFileName = fileName;
 		m_sPassword = password;

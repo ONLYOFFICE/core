@@ -32,6 +32,7 @@
 #pragma once
 
 #include <string>
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 class OOXWriter;
 class OOXReader;
@@ -54,9 +55,9 @@ public:
         m_poRtfReader = NULL;
     }
 
-    long ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath);
+    _UINT32 ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath);
 
-    long ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath);
+    _UINT32 ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath);
 
     void OnCompleteItemRtf();
     void OnCompleteItemOOX();

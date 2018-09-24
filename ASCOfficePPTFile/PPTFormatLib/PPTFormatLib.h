@@ -66,9 +66,9 @@ public:
 		return m_strTempDirectory;
 	}
 
-    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros);
+    _UINT32 LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros);
    
-	long OpenFile(const std::wstring & fileName, const std::wstring & password, bool &bMacros);
+	_UINT32 OpenFile(const std::wstring & fileName, const std::wstring & password, bool &bMacros);
     bool CloseFile();
 private:
 

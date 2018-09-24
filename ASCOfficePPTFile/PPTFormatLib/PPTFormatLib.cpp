@@ -52,7 +52,7 @@ COfficePPTFile::~COfficePPTFile()
     CloseFile();
 }
 
-long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring & password, bool &bMacros)
+_UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring & password, bool &bMacros)
 {
 	CloseFile();
 	
@@ -103,14 +103,14 @@ bool COfficePPTFile::CloseFile()
 	return S_OK;
 }
 
-HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros)
+_UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros)
 {
     if (m_strTempDirectory.empty())
     {
         m_strTempDirectory = NSDirectory::GetTempPath();
     }
 
-    long nResult = OpenFile(sSrcFileName, password, bMacros);
+    _UINT32 nResult = OpenFile(sSrcFileName, password, bMacros);
 	if (nResult != S_OK)
     {
 		CloseFile();

@@ -61,7 +61,7 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
-	long Converter::Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress)
+	_UINT32 Converter::Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress)
 	{
 		if (!doc || !docx) return S_FALSE;
 		
@@ -202,20 +202,18 @@ namespace DocFileFormat
 		return S_OK;
 	}
 
-	long Converter::LoadAndConvert(const std::wstring& strSrcFile, const std::wstring& strDstDirectory, const std::wstring& password, const ProgressCallback* progress, bool &bMacros)
+	_UINT32 Converter::LoadAndConvert(const std::wstring& strSrcFile, const std::wstring& strDstDirectory, const std::wstring& password, const ProgressCallback* progress, bool &bMacros)
 	{
-        long result = S_FALSE;
-
 		WordDocument			doc(progress, m_sTempFolder);
 		WordprocessingDocument	docx(strDstDirectory, &doc);
 		
-		result = doc.LoadDocument(strSrcFile, password);
+		_UINT32 result = doc.LoadDocument(strSrcFile, password);
 
-        if (result == S_OK)
+        if (result == 0)
 		{
 			result = Convert(&doc, &docx, progress);
 
-            if (result == S_OK)
+            if (result == 0)
 			{
 				docx.SaveDocument(bMacros);
 

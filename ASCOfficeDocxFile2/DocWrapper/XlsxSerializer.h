@@ -33,6 +33,7 @@
 #define XLSX_SERIALIZER
 
 #include <string>
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace OOX
 {
@@ -62,8 +63,8 @@ namespace BinXlsxRW {
 		
         static void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 
-        int loadFromFile		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
-        int saveToFile			(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
+        _UINT32 loadFromFile	(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
+        _UINT32 saveToFile		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
         bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilename, const long& lChartNumber);
 		

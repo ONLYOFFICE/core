@@ -37,32 +37,32 @@
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
 
 bool RtfShape::GetPictureResolution(RenderParameter oRenderParameter, int & Width, int &Height)
 {
 	if (!m_oPicture) return false;
 
-	//if (!oRenderParameter.appFonts)
-	//{
-	//	oRenderParameter.appFonts = new CApplicationFonts();
-	//	oRenderParameter.appFonts->Initialize();
-	//}
-
 	std::wstring fileName = m_oPicture->m_sPicFilename;
 
 	if (fileName.empty()) return false;
 
-	CApplicationFonts appFonts;
-	appFonts.Initialize();
+	RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+
+	if (!poDocument->m_pAppFonts)
+	{
+		poDocument->m_pAppFonts = NSFonts::NSApplication::Create();
+		poDocument->m_pAppFonts->Initialize();
+	}
 
 	CBgraFrame image;
-	MetaFile::CMetaFile meta_file(/*oRenderParameter.*/&appFonts);
+    MetaFile::IMetaFile* meta_file = MetaFile::Create(poDocument->m_pAppFonts);
 
-	if ( meta_file.LoadFromFile(fileName.c_str()))
+    bool bRet = false;
+    if ( meta_file->LoadFromFile(fileName.c_str()))
 	{
 		double dX = 0, dY = 0, dW = 0, dH = 0;
-		meta_file.GetBounds(&dX, &dY, &dW, &dH);
+        meta_file->GetBounds(&dX, &dY, &dW, &dH);
 		
 		Width  = dW;
 		Height = dH;
@@ -72,11 +72,12 @@ bool RtfShape::GetPictureResolution(RenderParameter oRenderParameter, int & Widt
 		Width  = image.get_Width();
 		Height = image.get_Height();
 
-		return true;
+        bRet = true;
 	}
 
+    RELEASEOBJECT(meta_file);
 
-	return false;
+    return bRet;
 }
 
 
@@ -1180,7 +1181,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sResult += L" style=\"" + sStyle + L"\"";
 	}
 //----------------------------------------------------------------------------------------------------------------------------
-	if( false == m_sOle.empty() ) sResult += L" o:ole=\"\"";
+	if (m_bIsOle) sResult += L" o:ole=\"\"";
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
         sResult += L" coordorigin=\"" + std::to_wstring(m_nGroupLeft) + L"," + std::to_wstring(m_nGroupTop) + L"\"";

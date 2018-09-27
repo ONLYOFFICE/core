@@ -422,12 +422,11 @@ namespace DocFileFormat
 		//numbering
 				case sprmOldPAnld:
 				{
-					NumberingDescriptor desc( iter->Arguments, iter->argumentsSize );
+					NumberingDescriptorPtr desc = NumberingDescriptor::create( iter->Arguments, iter->argumentsSize );
 
 					if (m_document->listTable)
 					{
-						m_document->listTable->appendNumbering(  desc );
-						short numId = static_cast<short>(m_document->listTable->listNumbering.size());
+						unsigned short numId = m_document->listTable->appendNumbering(  desc );
                         appendValueElement( &numPr, L"numId", numId, true );
 					}
 				}break;
@@ -460,7 +459,8 @@ namespace DocFileFormat
 					//Todo разобраться с закоментированным кодом
 					if (NULL != m_document->listTable && false == m_document->listTable->listData.empty())
 					{
-                        appendValueElement( &numPr, L"numId", FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), true );
+						unsigned short numId = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+						appendValueElement( &numPr, L"numId", numId, true );
 					}
 
 					//check if there is a ilvl reference, if not, check the count of LVLs.
@@ -492,7 +492,7 @@ namespace DocFileFormat
 
 					pos++;
 
-					for( int i=0; i < itbdDelMax; i++ )
+					for( int i = 0; i < itbdDelMax; i++ )
 					{
                         XMLTools::XMLElement tab( L"w:tab" );
 
@@ -566,14 +566,35 @@ namespace DocFileFormat
 
 				case sprmOldPDxaAbs:
 				case sprmPDxaAbs:
-                    appendValueAttribute( _framePr, L"w:x", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-					break;
-
+				{
+					unsigned short val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					switch (val)
+					{
+					case 0x0000:	break; //left
+					case 0xfffc:	appendValueAttribute( _framePr, L"w:xAlign", L"center");	break;
+					case 0xfff8:	appendValueAttribute( _framePr, L"w:xAlign", L"right");		break;
+					case 0xfff4:	appendValueAttribute( _framePr, L"w:xAlign", L"inside");	break;
+					case 0xfff0:	appendValueAttribute( _framePr, L"w:xAlign", L"outside");	break;
+					default:
+						appendValueAttribute( _framePr, L"w:x",  (short)val);
+					}
+				}break;
 				case sprmOldPDyaAbs:
 				case sprmPDyaAbs:
-                    appendValueAttribute( _framePr, L"w:y", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-					break;
-
+				{
+					unsigned short val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					switch (val)
+					{
+					case 0x0000:	break; //inline
+					case 0xfffc:	appendValueAttribute( _framePr, L"w:yAlign", L"top");		break;
+					case 0xfff8:	appendValueAttribute( _framePr, L"w:yAlign", L"center");	break;
+					case 0xfff4:	appendValueAttribute( _framePr, L"w:yAlign", L"bottom");	break;
+					case 0xfff0:	appendValueAttribute( _framePr, L"w:yAlign", L"inside");	break;
+					case 0xffec:	appendValueAttribute( _framePr, L"w:yAlign", L"outside");	break;
+					default:
+						appendValueAttribute( _framePr, L"w:y", (short)val );
+					}					
+				}break;
 				case sprmPWHeightAbs:
                     appendValueAttribute( _framePr, L"w:h", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;

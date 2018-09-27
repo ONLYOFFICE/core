@@ -124,7 +124,13 @@ void word_files::write(const std::wstring & RootPath)
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
-    
+
+	if (jsaProject_)
+	{
+		rels_files_.add( relationship(L"jsaId", L"http://schemas.onlyoffice.com/jsaProject", L"jsaProject.bin" ) );
+		jsaProject_->write( path );
+	}
+   
 	if (notes_)
     {
 		notes_->write( path );
@@ -134,13 +140,14 @@ void word_files::write(const std::wstring & RootPath)
 
 void word_files::update_rels(docx_conversion_context & Context)
 {
+    Context.get_mediaitems().dump_rels(rels_files_.get_rel_file()->get_rels());
+	
 	Context.dump_hyperlinks		(rels_files_.get_rel_file()->get_rels(), hyperlinks::document_place);
-    Context.dump_mediaitems		(rels_files_.get_rel_file()->get_rels());
     Context.dump_headers_footers(rels_files_.get_rel_file()->get_rels());
     Context.dump_notes			(rels_files_.get_rel_file()->get_rels());
 }
 
-void word_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
+void word_files::set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{
@@ -184,7 +191,10 @@ bool word_files::has_numbering()
 { 
     return numbering_ ? true : false;
 }
-
+void word_files::add_jsaProject(const std::string &content)
+{
+	jsaProject_ = package::simple_element::create(L"jsaProject.bin", content);
+}
 void word_files::set_headers_footers(headers_footers & HeadersFooters)
 {
     headers_footers_elements * elm = new headers_footers_elements(HeadersFooters); 
@@ -206,7 +216,50 @@ void word_files::set_comments(comments_context & commentsContext)
     elm->set_main_document( get_main_document() );
     comments_ = element_ptr( elm );
 }
-///////////////////
+void word_files::add_rels(relationship const & r)
+{
+    rels_files_.add(r);
+
+}
+//----------------------------------------------------------
+int customXml_files::add_customXml(customXml_content_ptr customXml)
+{
+    customXmls_.push_back(customXml);
+	return customXmls_.size();
+}
+
+void customXml_files::write(const std::wstring & RootPath)
+{
+	std::wstring path = RootPath + FILE_SEPARATOR_STR +  L"customXml";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	std::wstring path_rels = path + FILE_SEPARATOR_STR + L"_rels";
+    NSDirectory::CreateDirectory(path_rels.c_str());
+
+	for (size_t i = 0 ; i < customXmls_.size(); i++)
+    {
+        if (!customXmls_[i]) continue;
+        
+		const std::wstring fileNameItem = std::wstring(L"item") + std::to_wstring(i+1) + L".xml";
+		const std::wstring fileNameProps = std::wstring(L"itemProps") + std::to_wstring(i+1) + L".xml";
+       
+		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();           
+        contentTypes->add_override(std::wstring(L"/customXml/") + fileNameProps, 
+							L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml");
+
+        package::simple_element(fileNameItem, customXmls_[i]->item()).write(path);
+        package::simple_element(fileNameProps, customXmls_[i]->props()).write(path);
+		
+		rels_file_ptr rels_file = rels_file::create(fileNameItem + L".rels");
+		
+		rels_file->get_rels().add(relationship(L"rId1", 
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps", 
+			fileNameProps));
+		
+		rels_file->write(path_rels);
+    }
+}
+//----------------------------------------------------------
 void docx_charts_files::add_chart(chart_content_ptr chart)
 {
     charts_.push_back(chart);
@@ -219,7 +272,7 @@ void docx_charts_files::write(const std::wstring & RootPath)
 
     size_t count = 0;
 
-	for (int i = 0 ; i < charts_.size(); i++)
+	for (size_t i = 0 ; i < charts_.size(); i++)
     {
         if (!charts_[i]) continue;
         
@@ -433,8 +486,10 @@ void comments_elements::write(const std::wstring & RootPath)
 docx_document::docx_document()
 {
 	this->set_main_document(this);
-    word_files_.set_main_document(this);
     
+	word_files_.set_main_document(this);
+	customXml_files_.set_main_document(this);
+   
 	rels_file_ptr relFile = rels_file_ptr( new rels_file(L".rels") );
     relFile->get_rels().relationships().push_back( 
         relationship(L"rId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml" ) 
@@ -449,16 +504,18 @@ docx_document::docx_document()
     rels_files_.add_rel_file( relFile );
 
 }
-
+int docx_document::add_customXml(customXml_content_ptr customXml)
+{
+    return customXml_files_.add_customXml(customXml);
+}
 void docx_document::write(const std::wstring & RootPath)
 {
-
     if (word_files_.has_numbering())
     {
         content_type_file_.content()->get_override().push_back( override_content_type(L"/word/numbering.xml",
 				L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml") );
     }
-
+    customXml_files_.write	(RootPath);
     word_files_.write		(RootPath);
     rels_files_.write		(RootPath);
     docProps_files_.write	(RootPath);

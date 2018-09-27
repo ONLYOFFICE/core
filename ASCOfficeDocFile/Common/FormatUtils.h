@@ -641,14 +641,12 @@ namespace DocFileFormat
 			else
 			{
 				std::string sCodePage;
-				for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+				std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
+				if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
 				{
-					if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
-					{
-						sCodePage = NSUnicodeConverter::Encodings[i].Name;
-						break;
-					}
+					sCodePage = pFind->second;
 				}
+
 				if (sCodePage.empty())
 					sCodePage = "CP1250"/* + std::to_string(code_page)*/;
 

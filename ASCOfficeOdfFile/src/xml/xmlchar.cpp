@@ -30,7 +30,7 @@
  *
  */
 
-#include "../../include/cpdoccore/xml/xmlchar.h"
+#include "../../include/xml/xmlchar.h"
 
 namespace cpdoccore {
 namespace xml {

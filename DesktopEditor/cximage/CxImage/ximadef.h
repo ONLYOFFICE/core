@@ -75,6 +75,16 @@
 
 
 #if defined(WIN32) || defined(_WIN32_WCE)
+
+#ifdef CXIMAGE_ATTACK_NO_UNICODE
+#ifdef _UNICODE
+#undef _UNICODE
+#endif
+#ifdef UNICODE
+#undef UNICODE
+#endif
+#endif
+
 #include <windows.h>
 #include <tchar.h>
 #endif

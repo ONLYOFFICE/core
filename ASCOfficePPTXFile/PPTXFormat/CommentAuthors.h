@@ -54,11 +54,11 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"id", id);
-				node.ReadAttributeBase(L"lastIdx", last_idx);
-				node.ReadAttributeBase(L"clrIdx", clr_idx);
-				node.ReadAttributeBase(L"name", name);
-				node.ReadAttributeBase(L"initials", initials);
+				XmlMacroReadAttributeBase(node, L"id", id);
+				XmlMacroReadAttributeBase(node, L"lastIdx", last_idx);
+				XmlMacroReadAttributeBase(node, L"clrIdx", clr_idx);
+				XmlMacroReadAttributeBase(node, L"name", name);
+				XmlMacroReadAttributeBase(node, L"initials", initials);
 			}
 
 			virtual std::wstring toXML() const

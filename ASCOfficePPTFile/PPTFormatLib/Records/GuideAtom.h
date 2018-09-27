@@ -34,8 +34,8 @@
 
 class CRecordGuideAtom : public CUnknownRecord
 {
-	DWORD m_nType;
-	DWORD m_nPos;
+	_UINT32 m_nType;
+	_UINT32 m_nPos;
 
 public:
 	

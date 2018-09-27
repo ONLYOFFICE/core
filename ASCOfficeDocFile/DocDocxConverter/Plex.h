@@ -43,18 +43,19 @@ namespace DocFileFormat
 		friend class TextboxMapping;
 
 	protected:
-		static const int CP_LENGTH = 4;
+		int							CP_LENGTH;
 		std::vector<int>			CharacterPositions;
 		std::vector<ByteStructure*>	Elements;
 		bool						m_bIsValid;
 
+		std::map<int, int>			mapCP;
 	public:
-		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, bool oldVersion) 
-			: m_bIsValid(false)
+		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, int nWordVersion) 
+			: m_bIsValid(false), CP_LENGTH(/*nWordVersion == 2 ? 2 :*/ 4)
 		{
 			if ((lcb > 0) && (NULL != stream))
 			{
-				VirtualStreamReader reader(stream, (ULONG)fc, oldVersion);
+				VirtualStreamReader reader(stream, (ULONG)fc, nWordVersion);
 
 				if (fc > reader.GetSize()) return;
 
@@ -77,7 +78,10 @@ namespace DocFileFormat
 
 				for (int i = 0; i < (n + 1); ++i)
 				{
-					CharacterPositions.push_back(reader.ReadInt32());
+					int val = reader.ReadInt32();
+
+					mapCP.insert(std::make_pair(val, (int)CharacterPositions.size()));
+					CharacterPositions.push_back(val);
 				}
 
 				// read the n structs
@@ -96,9 +100,9 @@ namespace DocFileFormat
 
 		~Plex()
 		{
-			for (std::vector<ByteStructure*>::iterator iter = Elements.begin(); iter != Elements.end(); ++iter)
+			for (size_t i = 0; i < Elements.size(); ++i)
 			{
-				RELEASEOBJECT(*iter);
+				RELEASEOBJECT(Elements[i]);
 			}
 		}
 
@@ -109,14 +113,13 @@ namespace DocFileFormat
 		{
 			int index = -1;
 
-			for (int i = 0; i < (int)CharacterPositions.size(); ++i)
+			std::map<int, int>::iterator pFind = mapCP.find(cp);
+
+			if (pFind != mapCP.end())
 			{
-				if (CharacterPositions[i] == cp)
-				{
-					index = i;
-					break;
-				}
+				index = pFind->second;
 			}
+
 
 			if ((index >= 0) && (index < (int)Elements.size()))
 				return this->Elements[index];
@@ -128,13 +131,11 @@ namespace DocFileFormat
 		{
 			bool result = false;
 
-			for (int i = 0; i < (int)CharacterPositions.size(); ++i)
+			std::map<int, int>::const_iterator pFind = mapCP.find(cp);
+
+			if (pFind != mapCP.end())
 			{
-				if (CharacterPositions[i] == cp)
-				{
-					result = true;
-					break;
-				}
+				result = true;
 			}
 
 			return result;
@@ -142,7 +143,7 @@ namespace DocFileFormat
 
 		inline int operator [] (unsigned int index) const
 		{
-			if (index < CharacterPositions.size())
+			if (index < (unsigned int)CharacterPositions.size())
 				return CharacterPositions[index];
 
 			return -1;

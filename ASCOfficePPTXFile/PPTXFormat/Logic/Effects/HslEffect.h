@@ -76,9 +76,9 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"hue", hue);
-				node.ReadAttributeBase(L"sat", sat);
-				node.ReadAttributeBase(L"lum", lum);
+                XmlMacroReadAttributeBase(node, L"hue", hue);
+                XmlMacroReadAttributeBase(node, L"sat", sat);
+                XmlMacroReadAttributeBase(node, L"lum", lum);
 
 				Normalize();
 			}

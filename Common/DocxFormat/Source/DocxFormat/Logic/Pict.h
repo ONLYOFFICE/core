@@ -61,9 +61,9 @@ namespace OOX
 
             virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
-				oNode.ReadAttributeBase( _T("r:id"),      m_rId  );
-				oNode.ReadAttributeBase( _T("w:name"),    m_sName );
-				oNode.ReadAttributeBase( _T("w:shapeid"), m_sShapeId );
+				XmlMacroReadAttributeBase( oNode, _T("r:id"),      m_rId  );
+				XmlMacroReadAttributeBase( oNode, _T("w:name"),    m_sName );
+				XmlMacroReadAttributeBase( oNode, _T("w:shapeid"), m_sShapeId );
 			}
 
             virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -320,7 +320,7 @@ namespace OOX
 
 							case 'i':
 								if ( _T("v:image") == sName )
-									pItem = new OOX::Vml::CImage( oSubReader );
+									m_oImage =  oSubReader;
 								else if ( _T("v:imagedata") == sName )
 									pItem = new OOX::Vml::CImageData( oSubReader );
 
@@ -428,7 +428,8 @@ namespace OOX
 			nullable<OOX::Vml::CPolyLine>	m_oShapePolyLine;
 			nullable<OOX::Vml::CArc>		m_oShapeArc;
 			nullable<OOX::Vml::CCurve>		m_oShapeCurve;
-			nullable<OOX::Vml::CRoundRect>	m_oShapeRoundRect;		
+			nullable<OOX::Vml::CRoundRect>	m_oShapeRoundRect;	
+			nullable<OOX::Vml::CImage>		m_oImage;
 
 			nullable<OOX::Vml::CGroup>		m_oShapeGroup;
 			

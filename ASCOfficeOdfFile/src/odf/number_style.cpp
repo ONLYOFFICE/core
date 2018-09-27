@@ -32,13 +32,12 @@
 
 #include "number_style.h"
 
-#include <boost/foreach.hpp>
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/CPColorUtils.h>
+#include <xml/xmlchar.h>
+#include <xml/utils.h>
+#include <xml/attributes.h>
+#include <CPColorUtils.h>
 
 #include "serialize_elements.h"
 #include "paragraph_elements.h"
@@ -78,10 +77,10 @@ void number_style_base::oox_convert_impl(oox::num_format_context & Context)
         }
     }
 
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		number_style_base	*number_style_		= dynamic_cast<number_style_base *>	(elm.get());
-  		number_element		*number_element_	= dynamic_cast<number_element *>	(elm.get());
+		number_style_base	*number_style_		= dynamic_cast<number_style_base *>	(content_[i].get());
+  		number_element		*number_element_	= dynamic_cast<number_element *>	(content_[i].get());
 		
 		if (number_style_)		number_style_->oox_convert(Context);
 		if (number_element_)	number_element_->oox_convert(Context);
@@ -93,9 +92,9 @@ void number_style_base::oox_convert(oox::num_format_context & Context)
 {
     if (!style_map_.empty())
     {
-        BOOST_FOREACH(const office_element_ptr & elm, style_map_)
-        {
-            if (const style_map * styleMap = dynamic_cast<const style_map *>(elm.get()))
+		for (size_t i = 0; i < style_map_.size(); i++)
+		{
+            if (const style_map * styleMap = dynamic_cast<const style_map *>(style_map_[i].get()))
             {
                 const std::wstring applyStyleName	= styleMap->style_apply_style_name_;
                 const std::wstring condition		= styleMap->style_condition_;
@@ -309,12 +308,13 @@ void number_currency_symbol::add_text(const std::wstring & Text)
 void number_currency_symbol::oox_convert(oox::num_format_context & Context)
 {
     std::wostream & strm = Context.output();
-    strm << L"[$";//xml::utils::replace_text_to_xml(L"\"");
-    BOOST_FOREACH(const std::wstring & t, text_)
+    strm << L"[$";
+
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        strm << xml::utils::replace_text_to_xml(t);
+        strm << xml::utils::replace_text_to_xml(text_[i]);
     }
-    strm << L"]";;//xml::utils::replace_text_to_xml(L"\"");
+    strm << L"]";
 }
 
 

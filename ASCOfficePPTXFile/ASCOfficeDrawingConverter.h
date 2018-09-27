@@ -42,8 +42,9 @@
 #include <vector>
 #include <map>
 
+#include "./../DesktopEditor/graphics/pro/Fonts.h"
+
 class IRenderer;
-class CFontManager;
 class COfficeFontPicker;
 
 class CShape;
@@ -226,6 +227,7 @@ namespace NSBinPptxRW
         void SetEmbedDstPath    (const std::wstring& sEmbedPath);
 
 		void ClearShapeTypes	();
+		HRESULT AddShapeType        (const std::wstring& sXml);
 
         HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
 
@@ -258,7 +260,7 @@ namespace NSBinPptxRW
 		void WriteRels				(const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, long* lId);
 		void Registration			(const std::wstring& sType, const std::wstring& oDirectory, const std::wstring& oFilename);
 
-		void SetFontManager         (CFontManager* pFontManager);
+        void SetFontManager         (NSFonts::IFontManager* pFontManager);
 
         void SetDocumentChartsCount (int val);
         int  GetDocumentChartsCount ();
@@ -279,6 +281,7 @@ namespace NSBinPptxRW
 
         void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
+		void CheckBorderShape		(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 
         void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
 		void LoadCoordPos			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
@@ -294,7 +297,6 @@ namespace NSBinPptxRW
 
         void    Clear();
 		HRESULT SetCurrentRelsPath();
-        HRESULT AddShapeType        (const std::wstring& sXml);
 	};
 }
 #endif //OOX_IFILE_CONTAINER_INCLUDE_H_

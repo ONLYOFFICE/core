@@ -21,14 +21,10 @@ include($$PWD/../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
             _UNICODE \
-            _USE_LIBXML2_READER_ \
-            LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
 
-INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/src/odf/datatypes
-INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
@@ -41,6 +37,8 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
+    ../source/utils.cpp \
+    ../source/OdfFormat/office_document.cpp \
     ../source/OdfFormat/abstract_xml.cpp \
     ../source/OdfFormat/calcext_elements.cpp \
     ../source/OdfFormat/draw_base.cpp \
@@ -118,6 +116,7 @@ SOURCES += \
     ../source/Oox2OdfConverter/PptxConverter.cpp
 
 HEADERS += \
+    ../source/OdfFormat/office_document.h \
     ../source/OdfFormat/abstract_xml.h \
     ../source/OdfFormat/calcext_elements.h \
     ../source/OdfFormat/draw_base.h \

@@ -35,7 +35,7 @@
 #include <vector>
 #include <map>
 
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 
 #include "office_elements_create.h"
 
@@ -201,10 +201,10 @@ public:
 	void set_opacity		(double percent);
 
 //////////////////////////////////////////////////////////////
-	void start_area_properties();
+	void start_area_properties(bool reset = false);
 	void end_area_properties();
 	
-	void start_line_properties		();
+	void start_line_properties		(bool reset = false);
 		void set_line_width			(double pt);
 		void set_line_dash_preset	(int style);
 		
@@ -284,8 +284,8 @@ private:
 	
     class Impl;
     _CP_PTR(Impl) impl_;
-
 };
+typedef shared_ptr<odf_drawing_context>::Type	odf_drawing_context_ptr;
 
 }
 }

@@ -120,6 +120,16 @@ int STYLES::serialize(std::wostream & stream)
 						
 						if (styleExt)
 						{
+							std::wstring name = styleExt->stName.value();
+
+							if (name.empty() && style)
+							{
+								name = style->user.value();
+							}
+							if (name.empty())
+							{
+								name = L"Style " + std::to_wstring( i + 1);
+							}
 							CP_XML_ATTR(L"name", styleExt->stName.value());
 						
 							if (styleExt->fBuiltIn)
@@ -140,9 +150,16 @@ int STYLES::serialize(std::wostream & stream)
 						{
 							std::wstring name = style->user.value();
 							
-							XmlUtils::replace_all(name, L"\x01", L"_x0001_");
-							XmlUtils::replace_all(name, L"\x0d", L"_x000d_");
-							XmlUtils::replace_all(name, L"\x0a", L"_x000a_");
+							if (name.empty())
+							{
+								name = L"Style " + std::to_wstring( i + 1);
+							}
+							else
+							{
+								XmlUtils::replace_all(name, L"\x01", L"_x0001_");
+								XmlUtils::replace_all(name, L"\x0d", L"_x000d_");
+								XmlUtils::replace_all(name, L"\x0a", L"_x000a_");
+							}
 
 							CP_XML_ATTR(L"name", name);
 								

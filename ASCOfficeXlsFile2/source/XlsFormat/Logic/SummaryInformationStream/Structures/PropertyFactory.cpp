@@ -39,10 +39,6 @@
 namespace OLEPS
 {
 
-PropertyFactory::PropertyFactory()
-{
-}
-
 PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFStreamPtr stream, const unsigned int property_offset)
 {
 	stream->seekFromBegin(property_offset);
@@ -53,33 +49,45 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFS
 	stream->seekFromCurForward(2); // Skip 2 reserved unsigned chars
 
 	value_type = value_type & 0x00ff;
-	switch(prop_type)
+
+	PropertyPtr property_;
+
+	if (prop_type == 0x01)
 	{
-        case 0x01:
-            return PropertyPtr(new PropertyCodePage(prop_type, value_type, stream));
- 		default:
+		property_ = PropertyPtr(new PropertyCodePage(prop_type, value_type));
+		
+		PropertyCodePagePtr property_CodePage = boost::dynamic_pointer_cast<PropertyCodePage>(property_);
+		if(property_CodePage)
 		{
-/*			if (value_type == 0x001E)
-			{
-				return PropertyPtr(new PropertyStr(prop_type, value_type, stream));
-			}
-			else */if (value_type == 0x0003)
-			{
-				return PropertyPtr(new PropertyInt(prop_type, value_type, stream));
-			}
-			else if (value_type == 0x000b)
-			{
-				return PropertyPtr(new PropertyBool(prop_type, value_type, stream));
-			}
-			else if (value_type == 0x0040)
-			{
-				return PropertyPtr(new PropertyDTM(prop_type, value_type, stream));
-			}
-			else
-				return PropertyPtr();
-		}break;
+			property_CodePage->Read(stream);
+			code_page = property_CodePage->code_page;
+		}
+	}
+	else
+	{
+		if (value_type == 0x001E)
+		{
+			property_ = PropertyPtr(new PropertyStr(prop_type, value_type, code_page));
+		}
+		else if (value_type == 0x0003)
+		{
+			property_ = PropertyPtr(new PropertyInt(prop_type, value_type));
+		}
+		else if (value_type == 0x000b)
+		{
+			property_ = PropertyPtr(new PropertyBool(prop_type, value_type));
+		}
+		else if (value_type == 0x0040)
+		{
+			property_ = PropertyPtr(new PropertyDTM(prop_type, value_type));
+		}
+	}
+	if (property_)
+	{
+		property_->Read(stream);
 	}
 
+	return property_;
 }
 
 

@@ -372,6 +372,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
 				>
 				<FileConfiguration
@@ -382,10 +386,6 @@
 						AdditionalOptions="/bigobj"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
-				>
 			</File>
 			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
@@ -412,10 +412,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
 				<FileConfiguration
@@ -427,23 +423,7 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
-				>
-			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icudt.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icuuc.lib"
-			>
-		</File>
 		<File
 			RelativePath="RtfFormatTest.cpp"
 			>

@@ -29,12 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "PdfReader.h"
 #include "../Common/OfficeDefines.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
-#include "../DesktopEditor/graphics/GraphicsRenderer.h"
-#include "../DesktopEditor/fontengine/ApplicationFonts.h"
-#include "../DesktopEditor/fontengine/FontManager.h"
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
 
@@ -45,8 +43,6 @@
 #include "Src/ExtractImageOutputDev.h"
 #include "Src/RendererOutputDev.h"
 
-#include <string>
-
 namespace PdfReader
 {
     class CPdfReader_Private
@@ -56,12 +52,12 @@ namespace PdfReader
         GlobalParams*      m_pGlobalParams;
         std::wstring       m_wsTempFolder;
         std::wstring       m_wsCMapFolder;
-        CApplicationFonts* m_pAppFonts;
-        CFontManager*      m_pFontManager;
+        NSFonts::IApplicationFonts* m_pAppFonts;
+        NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
     };
 
-	CPdfReader::CPdfReader(CApplicationFonts* pAppFonts)
+    CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 	{
         m_pInternal = new CPdfReader_Private();
 
@@ -78,7 +74,7 @@ namespace PdfReader
 
 		// Создаем менеджер шрифтов с собственным кэшем
         m_pInternal->m_pFontManager = pAppFonts->GenerateFontManager();
-		CFontsCache* pMeasurerCache = new CFontsCache();
+        NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
@@ -109,40 +105,28 @@ namespace PdfReader
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
 	{
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
-		//------------------------------------------------------
+// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
+//       FontManager, потому что сейчас в нем кэш без ограничения.
+//------------------------------------------------------
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
         m_pInternal->m_pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-		CFontsCache* pMeasurerCache = new CFontsCache();
+        NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
         pMeasurerCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
         m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
-		//------------------------------------------------------
+//------------------------------------------------------
 
         if (m_pInternal->m_pPDFDocument)
             delete m_pInternal->m_pPDFDocument;
 
-		StringExt *seOwner = NULL, *seUser = NULL;
-        if (!wsOwnerPassword.empty())
-            seOwner = new StringExt(wsOwnerPassword.c_str());
-        if (!wsUserPassword.empty())
-            seUser = new StringExt(wsUserPassword.c_str());
-
         m_eError = errorNone;
-        m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, wsSrcPath.c_str(), seOwner, seUser);
+        m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, wsSrcPath, wsOwnerPassword, wsUserPassword);
 
         if (m_pInternal->m_pPDFDocument)
             m_eError = m_pInternal->m_pPDFDocument->GetErrorCode();
         else
             m_eError = errorMemory;
-
-		if (seUser)
-			delete seUser;
-
-		if (seOwner)
-			delete seOwner;
 
         if (!m_pInternal->m_pPDFDocument || !m_pInternal->m_pPDFDocument->CheckValidation())
 		{
@@ -262,13 +246,13 @@ namespace PdfReader
 	}
     void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 	{
-		CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-		CFontsCache* pFontCache = new CFontsCache();
+        NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
+        NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
 		pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
 		pFontManager->SetOwnerCache(pFontCache);
 
-		CGraphicsRenderer oRenderer;
-		oRenderer.SetFontManager(pFontManager);
+        NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+        pRenderer->SetFontManager(pFontManager);
 
 		double dWidth, dHeight;
         double dDpiX, dDpiY;
@@ -288,20 +272,21 @@ namespace PdfReader
 		oFrame.put_Height(nHeight);
 		oFrame.put_Stride(-4 * nWidth);
 
-        oRenderer.CreateFromBgraFrame(&oFrame);
-		oRenderer.SetSwapRGB(false);
+        pRenderer->CreateFromBgraFrame(&oFrame);
+        pRenderer->SetSwapRGB(false);
 
         dWidth  *= 25.4 / dDpiX;
         dHeight *= 25.4 / dDpiY;
 
-		oRenderer.put_Width(dWidth);
-		oRenderer.put_Height(dHeight);
+        pRenderer->put_Width(dWidth);
+        pRenderer->put_Height(dHeight);
 
 		bool bBreak = false;
-		DrawPageOnRenderer(&oRenderer, nPageIndex, &bBreak);
+        DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
 
 		oFrame.SaveFile(wsDstPath, nImageType);
 		RELEASEINTERFACE(pFontManager);
+        RELEASEOBJECT(pRenderer);
 	}
     int CPdfReader::GetImagesCount()
 	{
@@ -355,7 +340,7 @@ namespace PdfReader
         if (m_pInternal->m_pGlobalParams)
             m_pInternal->m_pGlobalParams->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
-    CFontManager* CPdfReader::GetFontManager()
+    NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{
         return m_pInternal->m_pFontManager;
 	}

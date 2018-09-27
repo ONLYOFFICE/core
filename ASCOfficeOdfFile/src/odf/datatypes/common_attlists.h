@@ -32,9 +32,9 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/attributes.h>
+#include <CPOptional.h>
+#include <xml/simple_xml_writer.h>
 
 #include "bool.h"
 #include "lengthorpercent.h"
@@ -49,6 +49,7 @@
 #include "styleverticalpos.h"
 #include "stylehorizontalpos.h"
 #include "stylehorizontalrel.h"
+#include "stylenumformat.h"
 #include "percentorscale.h"
 #include "anchortype.h"
 #include "linewidth.h"
@@ -61,6 +62,7 @@
 #include "fillimagerefpoint.h"
 #include "borderstyle.h"
 #include "mathvariant.h"
+#include "textdisplay.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -331,8 +333,8 @@ public:
     void apply_from(const common_num_format_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(std::wstring)	style_num_format_;
-    _CP_OPT(Bool)			style_num_letter_sync_;
+    _CP_OPT(odf_types::style_numformat)	style_num_format_;
+    _CP_OPT(Bool)						style_num_letter_sync_;
 
 };
 
@@ -588,5 +590,19 @@ public:
 	_CP_OPT(std::wstring)			smil_end_;
 };
 
+class section_attlists
+{
+public:
+    void add_attributes	( const xml::attributes_wc_ptr & Attributes );
+	void serialize		(CP_ATTR_NODE);
+
+    _CP_OPT(std::wstring)	style_name_;
+    std::wstring			name_;
+    _CP_OPT(bool)			protected_;
+    _CP_OPT(std::wstring)	protection_key_;
+    _CP_OPT(text_display)	display_;
+    _CP_OPT(std::wstring)	condition_;
+
+};
 }
 }

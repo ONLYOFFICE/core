@@ -63,10 +63,10 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("l"), m_oL );
-				oNode.ReadAttributeBase( _T("t"), m_oT );
-				oNode.ReadAttributeBase( _T("r"), m_oR );
-				oNode.ReadAttributeBase( _T("b"), m_oB );
+				XmlMacroReadAttributeBase( oNode, _T("l"), m_oL );
+				XmlMacroReadAttributeBase( oNode, _T("t"), m_oT );
+				XmlMacroReadAttributeBase( oNode, _T("r"), m_oR );
+				XmlMacroReadAttributeBase( oNode, _T("b"), m_oB );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -122,7 +122,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+				XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -245,7 +245,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+				XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -364,7 +364,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+				XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 				
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -449,7 +449,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+				XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 				
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -566,11 +566,11 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"distB",	m_oDistB );				
-				node.ReadAttributeBase( L"distL",	m_oDistL );				
-				node.ReadAttributeBase( L"distR",	m_oDistR );				
-				node.ReadAttributeBase( L"distT",	m_oDistT );				
-				node.ReadAttributeBase( L"wrapText",	m_oWrapText );	
+				XmlMacroReadAttributeBase(node, L"distB",	m_oDistB );
+				XmlMacroReadAttributeBase(node, L"distL",	m_oDistL );
+				XmlMacroReadAttributeBase(node, L"distR",	m_oDistR );
+				XmlMacroReadAttributeBase(node, L"distT",	m_oDistT );
+				XmlMacroReadAttributeBase(node, L"wrapText",	m_oWrapText );
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -668,7 +668,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"edited",	m_oEdited );	
+				XmlMacroReadAttributeBase(node, L"edited",	m_oEdited );
 
 				XmlUtils::CXmlNodes oNodes;
 				
@@ -771,9 +771,9 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"distL",		m_oDistL );				
-				node.ReadAttributeBase( L"distR",		m_oDistR );				
-				node.ReadAttributeBase( L"wrapText",	m_oWrapText );	
+				XmlMacroReadAttributeBase(node, L"distL",		m_oDistL );
+				XmlMacroReadAttributeBase(node, L"distR",		m_oDistR );
+				XmlMacroReadAttributeBase(node, L"wrapText",	m_oWrapText );
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -943,8 +943,8 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase( L"distB",	m_oDistB );				
-				node.ReadAttributeBase( L"distT",	m_oDistT );				
+				XmlMacroReadAttributeBase(node, L"distB",	m_oDistB );
+				XmlMacroReadAttributeBase(node, L"distT",	m_oDistT );
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -1218,17 +1218,17 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"allowOverlap",	m_oAllowOverlap );				
-				oNode.ReadAttributeBase( L"behindDoc",      m_oBehindDoc );
-				oNode.ReadAttributeBase( L"distB",          m_oDistB );
-				oNode.ReadAttributeBase( L"distL",          m_oDistL );
-				oNode.ReadAttributeBase( L"distR",          m_oDistR );
-				oNode.ReadAttributeBase( L"distT",          m_oDistT );
-				oNode.ReadAttributeBase( L"hidden",         m_oHidden );
-				oNode.ReadAttributeBase( L"layoutInCell",   m_oLayoutInCell );
-				oNode.ReadAttributeBase( L"locked",         m_oLocked );
-				oNode.ReadAttributeBase( L"relativeHeight", m_oRelativeHeight );
-				oNode.ReadAttributeBase( L"simplePos",      m_bSimplePos );
+				XmlMacroReadAttributeBase(oNode, L"allowOverlap",	m_oAllowOverlap );
+				XmlMacroReadAttributeBase(oNode, L"behindDoc",      m_oBehindDoc );
+				XmlMacroReadAttributeBase(oNode, L"distB",          m_oDistB );
+				XmlMacroReadAttributeBase(oNode, L"distL",          m_oDistL );
+				XmlMacroReadAttributeBase(oNode, L"distR",          m_oDistR );
+				XmlMacroReadAttributeBase(oNode, L"distT",          m_oDistT );
+				XmlMacroReadAttributeBase(oNode, L"hidden",         m_oHidden );
+				XmlMacroReadAttributeBase(oNode, L"layoutInCell",   m_oLayoutInCell );
+				XmlMacroReadAttributeBase(oNode, L"locked",         m_oLocked );
+				XmlMacroReadAttributeBase(oNode, L"relativeHeight", m_oRelativeHeight );
+				XmlMacroReadAttributeBase(oNode, L"simplePos",      m_bSimplePos );
 			}
 		public:
 			nullable<EAnchorWrapType>								m_eWrapType;
@@ -1358,10 +1358,10 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"distB",          m_oDistB );
-				oNode.ReadAttributeBase( L"distL",          m_oDistL );
-				oNode.ReadAttributeBase( L"distR",          m_oDistR );
-				oNode.ReadAttributeBase( L"distT",          m_oDistT );
+				XmlMacroReadAttributeBase(oNode, L"distB",          m_oDistB );
+				XmlMacroReadAttributeBase(oNode, L"distL",          m_oDistL );
+				XmlMacroReadAttributeBase(oNode, L"distR",          m_oDistR );
+				XmlMacroReadAttributeBase(oNode, L"distT",          m_oDistT );
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{

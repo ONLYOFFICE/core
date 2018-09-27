@@ -94,17 +94,24 @@ namespace DocFileFormat
 		WordDocument (const ProgressCallback* pCallFunc, const std::wstring & tempFolder );
 		virtual ~WordDocument();
 
-		long LoadDocument (const std::wstring & fileName, const std::wstring & password);
+		_UINT32 LoadDocument(const std::wstring & fileName, const std::wstring & password);
 
-		bool	bOlderVersion;
+		int		nWordVersion;
 		int		nDocumentCodePage;
 		bool	bDocumentCodePage;
+		int		nFontsCodePage;
 		
 		inline StructuredStorageReader* GetStorage() const
 		{
 			return m_pStorage;
 		}
+		inline POLE::Stream* GetDocumentStream() const
+		{
+			return WordDocumentStream;
+		}
 	private:
+		bool LoadDocumentFlat();
+
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
 		
 		bool DecryptStream		(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt);
@@ -217,6 +224,7 @@ namespace DocFileFormat
 		Plex<FieldCharacter>				*EndnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*HeadersAndFootersDocumentFieldsPlex;
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
+		Plex<AnnotationReferenceExDescriptor> *AnnotationsReferenceExPlex;
 		Plex<EmptyStructure>				*AutoTextPlex;		
 		// Each character position specifies the beginning of a range of text that constitutes the contents of an AutoText item
 		

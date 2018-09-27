@@ -52,38 +52,40 @@ namespace DocFileFormat
 	//so used another bit setting
 		if ( size == 12 )
 		{
+			unsigned short nFlag = FormatUtils::BytesToInt16( bytes, 0, size );
 			if ( fTtpMode )
 			{
-				fSpare			= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
-				fUnk			= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
-				dcpTtpNext		= FormatUtils::BytesToInt16( bytes, 0, size );
+				fSpare			= FormatUtils::BitmaskToBool( nFlag, 0x0001 );
+				fUnk			= FormatUtils::BitmaskToBool( nFlag, 0x0002 );
+				dcpTtpNext		= nFlag;
 				dxaCol			= FormatUtils::BytesToInt32( bytes, 4, size );
 				dymTableHeight	= FormatUtils::BytesToInt32( bytes, 8, size );
 			}
 			else
 			{
-				fVolatile	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
-				fUnk		= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
-				fDiffLines	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0004 );
-				clMac		= FormatUtils::BytesToUInt16( bytes, 0, size ) & 0x00FF;
+				fVolatile	= FormatUtils::BitmaskToBool( nFlag, 0x0001 );
+				fUnk		= FormatUtils::BitmaskToBool( nFlag, 0x0002 );
+				fDiffLines	= FormatUtils::BitmaskToBool( nFlag, 0x0004 );
+				clMac		= nFlag& 0x00FF;
 
 				dxaCol		= FormatUtils::BytesToInt32( bytes, 4, size );
 				dymLine		= FormatUtils::BytesToInt32( bytes, 8, size );
-				dymHeight	= FormatUtils::BytesToInt32( bytes, 8, size );
+				dymHeight	= dymLine;
 			}
 		}
 		else if (size == 6)
 		{
-			fVolatile	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
-			fUnk		= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
-			fDiffLines	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0004 );
-			clMac		= FormatUtils::BytesToUChar( bytes, 0, size ) & 0x000F;
+			unsigned short nFlag = FormatUtils::BytesToInt16( bytes, 0, size );
+			
+			fVolatile	= FormatUtils::BitmaskToBool( nFlag, 0x0001 );
+			fUnk		= FormatUtils::BitmaskToBool( nFlag, 0x0002 );
+			fDiffLines	= FormatUtils::BitmaskToBool( nFlag, 0x0004 );
+			clMac		= nFlag & 0x000F;
 
 			dxaCol		= FormatUtils::BytesToInt16( bytes, 2, size );
 			dymLine		= FormatUtils::BytesToInt16( bytes, 4, size );
-			dymHeight	= FormatUtils::BytesToInt16( bytes, 4, size );
+			dymHeight	= dymLine;
 		}
-
 	}
 
 	/*========================================================================================================*/

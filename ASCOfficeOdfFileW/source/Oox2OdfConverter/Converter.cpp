@@ -40,8 +40,8 @@
 #include "DocxConverter.h"
 #include "PptxConverter.h"
 
+#include "../OdfFormat/office_document.h"
 #include "../OdfFormat/odf_conversion_context.h"
-
 #include "../OdfFormat/odf_text_context.h"
 #include "../OdfFormat/odf_drawing_context.h"
 
@@ -63,8 +63,12 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SmartArt.h"
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
+#include "../../../OfficeCryptReader/source/CryptTransform.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #define PROGRESSEVENT_ID	0
+
+using namespace cpdoccore;
 
 namespace Oox2Odf
 {
@@ -97,25 +101,16 @@ namespace Oox2Odf
        
 		impl_->convertDocument();
     }
-    void Converter::write(const std::wstring & path) const
+    void Converter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const
     {
 		if (!impl_)return;
 
 		if (impl_->bUserStopConvert) return;
 
-		return impl_->write(path);
+		return impl_->write(out_path, temp_path, password, documentID);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-double OoxConverter::getSystemDPI()
-{
-    //При запросе системных настроек-проблема в linux без графического интерфейса.
-    //Используется в GetMaxDigitSizePixels для измерения символов, можно указывать любой dpi,
-    //потому что после измерения pix переводятся обратно в метрические величины.
-    //Используется для конвертации картинок с процентными размерами oox->odf. Из редактора никогда не приходят относительные размеры,
-    //думаю тут несущественнен dpi.
-	return 96.;
-}
 
 bool  OoxConverter::UpdateProgress(long nComplete)
 {
@@ -130,6 +125,205 @@ bool  OoxConverter::UpdateProgress(long nComplete)
 	}
 
 	return FALSE;
+}
+void OoxConverter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID)
+{
+	if (!output_document)return;
+
+	if (false == documentID.empty())
+	{
+		output_document->add_binary(L"documentID", NSFile::CUtf8Converter::GetUtf8StringFromUnicode(documentID));
+	}
+	
+	if (password.empty())
+	{
+		output_document->write(out_path);
+	}
+	else
+	{
+		//encrypt files
+		std::wstring temp_folder = NSDirectory::CreateDirectoryWithUniqueName(temp_path);
+		output_document->write(temp_folder, true);
+	
+		encrypt_document(password, temp_folder, out_path);
+
+		output_document->write_manifest(out_path);
+		
+		NSDirectory::DeleteDirectory(temp_folder);
+	}
+		
+	if (UpdateProgress(1000000))return;
+}
+std::wstring EncodeBase64(const std::string & value)
+{
+	int nLength = 0;
+	char *pData = NULL;
+	std::wstring result;
+
+	NSFile::CBase64Converter::Encode((BYTE*)value.c_str(), value.length(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
+	if (pData)
+	{
+		result = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pData, nLength);
+		delete []pData; pData = NULL;
+	}
+	return result;
+}
+bool OoxConverter::encrypt_document (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath)
+{
+	odf_writer::package::manifect_file* manifest =  output_document->get_manifest();
+	if (!manifest) return false;
+
+	odf_writer::rels *rels = manifest->get_rels();
+
+	for (size_t i = 0; i < rels->relationships_.size(); i++)
+	{
+		if (rels->relationships_[i].target_ == L"/") continue;
+
+		std::wstring inp_file_name = srcPath + FILE_SEPARATOR_STR + rels->relationships_[i].target_;
+		std::wstring out_file_name = dstPath + FILE_SEPARATOR_STR + rels->relationships_[i].target_;
+
+		if (std::wstring::npos != rels->relationships_[i].target_.find(L"/"))
+		{
+			std::vector<std::wstring> refs;
+			boost::algorithm::split(refs, rels->relationships_[i].target_, boost::algorithm::is_any_of(L"/"), boost::algorithm::token_compress_on);
+
+			std::wstring folder = dstPath;
+			for (size_t j = 0; j < refs.size() - 1; j++)
+			{
+				folder += FILE_SEPARATOR_STR + refs[j];
+				NSDirectory::CreateDirectory(folder);
+			}
+		}
+		
+		encrypt_file(password, inp_file_name, out_file_name, rels->relationships_[i].encryption_, rels->relationships_[i].size_);
+	}
+	return true;
+}
+bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size)
+{
+	CRYPT::ODFEncryptor		encryptor;
+	CRYPT::_odfCryptData	cryptData;
+//-----------------------
+//aes
+	cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
+	cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
+	cryptData.start_hashSize		= 32;
+
+	cryptData.spinCount	= 100000;
+	cryptData.keySize	= 32;
+
+	cryptData.checksum_size = 1024;
+	cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+//-----------------------
+//blowfish
+	//cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
+	//cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
+	//cryptData.start_hashSize		= 20;
+
+	//cryptData.spinCount	= 1024;
+	//cryptData.keySize	= 16;
+
+	//cryptData.checksum_size = 1024;
+	//cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+//-----------------------
+	NSFile::CFileBinary file;
+
+	if (false == file.OpenFile(srcPath))
+		return false;
+
+	DWORD	size_inp = 0;
+	size = file.GetFileSize();
+
+	unsigned char* data_inp	= new unsigned char[size];
+	unsigned char* data_out	= NULL;
+	
+	file.ReadFile(data_inp, size, size_inp); 
+	file.CloseFile();	
+//------------------------------------------------------------------------------------------
+	encryptor.SetCryptData(cryptData);
+	
+	int size_out = encryptor.Encrypt(password, data_inp, size_inp, data_out);
+	delete []data_inp;
+	
+	encryptor.GetCryptData(cryptData);
+//------------------------------------------------------------------------------------------------------------
+	if (!data_out) return false;
+
+	if (false == file.CreateFileW(dstPath)) return false;
+	
+	file.WriteFile(data_out, size_out);
+	file.CloseFile();
+	delete []data_out;
+//------------------------------------------------------------------------------------------
+	odf_writer::office_element_ptr encryption_elm;
+	odf_writer::create_element (L"manifest", L"encryption-data", encryption_elm, odf_context());
+
+	encryption_elm->create_child_element(L"manifest", L"algorithm");
+	encryption_elm->create_child_element(L"manifest", L"key-derivation");
+	encryption_elm->create_child_element(L"manifest", L"start-key-generation");
+
+	odf_writer::manifest_encryption_data* encryption_data = dynamic_cast<odf_writer::manifest_encryption_data*>(encryption_elm.get());
+	
+	if (!encryption_data) return false;
+
+	odf_writer::manifest_algorithm*				algorithm = dynamic_cast<odf_writer::manifest_algorithm*>(encryption_data->algorithm_.get());
+	odf_writer::manifest_key_derivation*		key_derivation = dynamic_cast<odf_writer::manifest_key_derivation*>(encryption_data->key_derivation_.get());
+	odf_writer::manifest_start_key_generation*	start_key_generation = dynamic_cast<odf_writer::manifest_start_key_generation*>(encryption_data->start_key_generation_.get());
+
+	if (key_derivation)
+	{
+		key_derivation->salt_ = EncodeBase64(cryptData.saltValue);	
+		key_derivation->iteration_count_ = cryptData.spinCount;	
+		key_derivation->key_size_ = cryptData.keySize;	
+	}
+//------------------------------------------------------------------------------------------
+	if (start_key_generation)
+	{
+		switch(cryptData.start_hashAlgorithm)
+		{
+		case CRYPT_METHOD::SHA1:	start_key_generation->start_key_generation_name_ = L"SHA1"; break;
+		case CRYPT_METHOD::SHA256:	start_key_generation->start_key_generation_name_ = L"http://www.w3.org/2000/09/xmldsig#sha256"; break;
+		case CRYPT_METHOD::SHA512:	start_key_generation->start_key_generation_name_ = L"http://www.w3.org/2000/09/xmldsig#sha512"; break;
+		}
+		start_key_generation->key_size_ = cryptData.start_hashSize;
+	}
+//------------------------------------------------------------------------------------------
+	if (algorithm)
+	{
+		algorithm->initialisation_vector_ = EncodeBase64(cryptData.initializationVector);
+
+		switch(cryptData.cipherAlgorithm)
+		{		
+		case CRYPT_METHOD::AES_CBC:			algorithm->algorithm_name_ = L"http://www.w3.org/2001/04/xmlenc#aes256-cbc"; break;
+		case CRYPT_METHOD::Blowfish_CFB:	algorithm->algorithm_name_ = L"Blowfish CFB"; break;
+		}
+	}
+//------------------------------------------------------------------------------------------
+	if (encryption_data)
+	{
+		encryption_data->checksum_= EncodeBase64(cryptData.checksum);
+
+		switch(cryptData.checksum_hashAlgorithm)
+		{	
+		case CRYPT_METHOD::SHA1:	encryption_data->checksum_type_ = L"SHA1"; break;
+		case CRYPT_METHOD::SHA256:	encryption_data->checksum_type_ = L"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0#sha256"; break;
+		case CRYPT_METHOD::SHA512:	encryption_data->checksum_type_ = L"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0#sha512"; break;
+		}
+		if (cryptData.checksum_size == 1024)
+		{
+			if (cryptData.checksum_hashAlgorithm == CRYPT_METHOD::SHA1)
+				encryption_data->checksum_type_ += L"/1K";
+			else
+				encryption_data->checksum_type_ += L"-1k";
+		}
+	}
+//------------------------------------------------------------------------------------------
+	std::wstringstream strm;
+	encryption_elm->serialize(strm);
+
+	encrypt_info = strm.str();
+	
+	return true;
 }
 
 void OoxConverter::set_fonts_directory(const std::wstring &fontsPath)
@@ -379,5 +573,23 @@ void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf_types::font_size) 
 	 if (odf_length)
 		 odf_font_size = odf_types::font_size(odf_length.get());
 }
+void OoxConverter::convert(OOX::JsaProject *jsaProject)
+{
+	if (!jsaProject) return;
 
+	std::string content;
+	NSFile::CFileBinary file;
+	
+	file.OpenFile(jsaProject->filename().GetPath());
+	
+	DWORD size = file.GetFileSize();
+	content.resize(size);
+
+	file.ReadFile((BYTE*)content.c_str(), size, size);
+	file.CloseFile();
+	
+	content[size] = 0;
+
+	output_document->add_binary(L"jsaProject.bin", content);
+}
 }

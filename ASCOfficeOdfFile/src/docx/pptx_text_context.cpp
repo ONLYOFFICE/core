@@ -37,9 +37,9 @@
 #include <iostream>
 #include <list>
 
-#include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/utils.h>
+#include <xml/simple_xml_writer.h>
+#include <odf/odf_document.h>
+#include <xml/utils.h>
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
@@ -287,17 +287,17 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 		odf_reader::office_element_ptr  elm = text_list_style->get_content()[Level];
 		odf_reader::office_element_ptr  elm_list;
 
-		if (elm->get_type() == odf_reader::typeTextListLevelStyleBullet)
+		if (elm->get_type() == typeTextListLevelStyleBullet)
 		{
 			odf_reader::text_list_level_style_bullet* list_bullet = dynamic_cast<odf_reader::text_list_level_style_bullet *>(elm.get());
 			if (list_bullet)elm_list = list_bullet->style_list_level_properties_;
 		}
-		if (elm->get_type() == odf_reader::typeTextListLevelStyleNumber)
+		if (elm->get_type() == typeTextListLevelStyleNumber)
 		{
 			odf_reader::text_list_level_style_number* list_number = dynamic_cast<odf_reader::text_list_level_style_number *>(elm.get());
 			if (list_number)elm_list = list_number->style_list_level_properties_;
 		}
-		if (elm->get_type() == odf_reader::typeTextListLevelStyleImage)
+		if (elm->get_type() == typeTextListLevelStyleImage)
 		{
 			odf_reader::text_list_level_style_image* list_image = dynamic_cast<odf_reader::text_list_level_style_image *>(elm.get());
 			if (list_image)elm_list = list_image->style_list_level_properties_;

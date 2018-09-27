@@ -34,10 +34,10 @@
 
 #include "serialize_elements.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 #include "odfcontext.h"
 #include "draw_common.h"
@@ -126,7 +126,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 				if ((fill.bitmap) && (fill.bitmap->rId.empty()))
 				{
 					std::wstring href = fill.bitmap->xlink_href_;
-					fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, fill.bitmap->isInternal, href);
+					fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
 				}		
 				int id = Context.get_drawing_context().get_current_shape_id();
 				if (layout_properties->docx_background_serialize(Context.output_stream(), Context, fill, id))
@@ -142,14 +142,14 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 	if (content_)
         content_->docx_convert(Context);
 
-	if (!Context.get_section_context().dump_.empty() && !Context.get_table_context().in_table())
+	if (false == Context.get_section_context().dump_.empty() && false == Context.get_table_context().in_table())
 	{
 		Context.output_stream() << Context.get_section_context().dump_;
 		Context.get_section_context().dump_.clear();
 	}
 	else
 	{
-		if (page_layout_instance * lastPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
+		if (page_layout_instance *lastPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
 		{
 			Context.next_dump_page_properties(true);
 			

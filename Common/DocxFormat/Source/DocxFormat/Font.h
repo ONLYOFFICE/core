@@ -57,37 +57,37 @@ namespace OOX
 			Reset();
 			if ( _T("w:font") == oNode.GetName() )
 			{
-				oNode.ReadAttributeBase( _T("w:name"), m_sName );
+				XmlMacroReadAttributeBase( oNode, _T("w:name"), m_sName );
 
 				XmlUtils::CXmlNode oChild;
 
 				if ( oNode.GetNode( _T("w:altName"), oChild ) )
-					oChild.ReadAttributeBase( _T("w:val"), m_oAltName );
+					XmlMacroReadAttributeBase( oChild, _T("w:val"), m_oAltName );
 
 				if ( oNode.GetNode( _T("w:charset"), oChild ) )
-					oChild.ReadAttributeBase( _T("w:val"), m_oCharset );
+					XmlMacroReadAttributeBase( oChild, _T("w:val"), m_oCharset );
 
 				if ( oNode.GetNode( _T("w:family"), oChild ) )
-					oChild.ReadAttributeBase( _T("w:val"), m_oFamily );
+					XmlMacroReadAttributeBase( oChild, _T("w:val"), m_oFamily );
 
 				if ( oNode.GetNode( _T("w:notTrueType"), oChild ) )
-					oChild.ReadAttributeBase( _T("w:val"), m_oNotTrueType );
+					XmlMacroReadAttributeBase( oChild, _T("w:val"), m_oNotTrueType );
 
 				if ( oNode.GetNode( _T("w:panose1"), oChild ) )
-					oChild.ReadAttributeBase( _T("w:val"), m_oPanose );
+					XmlMacroReadAttributeBase( oChild, _T("w:val"), m_oPanose );
 
 				if ( oNode.GetNode( _T("w:pitch"), oChild ) )
-					oChild.ReadAttributeBase( _T("w:val"), m_oPitch );
+					XmlMacroReadAttributeBase( oChild, _T("w:val"), m_oPitch );
 
 				if ( oNode.GetNode( _T("w:sig"), oChild ) )
 				{
-					oChild.ReadAttributeBase( _T("w:csb0"), m_oCsb0 );
-					oChild.ReadAttributeBase( _T("w:csb1"), m_oCsb1 );
+					XmlMacroReadAttributeBase( oChild, _T("w:csb0"), m_oCsb0 );
+					XmlMacroReadAttributeBase( oChild, _T("w:csb1"), m_oCsb1 );
 
-					oChild.ReadAttributeBase( _T("w:usb0"), m_oUsb0 );
-					oChild.ReadAttributeBase( _T("w:usb1"), m_oUsb1 );
-					oChild.ReadAttributeBase( _T("w:usb2"), m_oUsb2 );
-					oChild.ReadAttributeBase( _T("w:usb3"), m_oUsb3 );
+					XmlMacroReadAttributeBase( oChild, _T("w:usb0"), m_oUsb0 );
+					XmlMacroReadAttributeBase( oChild, _T("w:usb1"), m_oUsb1 );
+					XmlMacroReadAttributeBase( oChild, _T("w:usb2"), m_oUsb2 );
+					XmlMacroReadAttributeBase( oChild, _T("w:usb3"), m_oUsb3 );
 				}
 
 			}

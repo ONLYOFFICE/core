@@ -31,8 +31,8 @@
  */
 
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <CPOptional.h>
+#include <xml/simple_xml_writer.h>
 
 #include "oox_data_labels.h"
 #include "oox_chart_shape.h"

@@ -34,7 +34,7 @@
 #include <string>
 #include <vector>
 
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 
 #include "office_elements_create.h"
 
@@ -85,7 +85,8 @@ public:
 	void end_row();
 
 	void start_cell(office_element_ptr &elm, bool styled = false);
-		void set_cell_column_span(int spanned);
+		void set_cell_column_span(int spanned = 0);
+		void set_cell_column_span_restart();	
 		void set_cell_row_span(int spanned = 0);
 		void set_cell_row_span_restart();	
 	void end_cell();

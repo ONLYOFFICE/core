@@ -51,6 +51,8 @@
 		6967917F1D9E8AEE002CA4BA /* BinWriters.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967917B1D9E8AEE002CA4BA /* BinWriters.h */; };
 		69BBDF251F0B8AAC00EB1BF7 /* FileDownloader_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69BBDF241F0B8AAC00EB1BF7 /* FileDownloader_mac.mm */; };
 		69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
+		8A404FD3208A01AF00F2D5CF /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FD2208A01AF00F2D5CF /* FileDownloader.cpp */; };
+		8A404FD5208A01CE00F2D5CF /* FileDownloader_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FD4208A01CE00F2D5CF /* FileDownloader_private.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -99,6 +101,8 @@
 		6967917B1D9E8AEE002CA4BA /* BinWriters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinWriters.h; path = ../../BinWriter/BinWriters.h; sourceTree = "<group>"; };
 		69BBDF241F0B8AAC00EB1BF7 /* FileDownloader_mac.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 4; name = FileDownloader_mac.mm; path = ../../../Common/FileDownloader/FileDownloader_mac.mm; sourceTree = "<group>"; };
 		69F181AD1C77274E00B2952B /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader/FileDownloader.h; sourceTree = "<group>"; };
+		8A404FD2208A01AF00F2D5CF /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader.cpp; path = ../../../Common/FileDownloader/FileDownloader.cpp; sourceTree = "<group>"; };
+		8A404FD4208A01CE00F2D5CF /* FileDownloader_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader_private.h; path = ../../../Common/FileDownloader/FileDownloader_private.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -231,6 +235,8 @@
 			children = (
 				69F181AD1C77274E00B2952B /* FileDownloader.h */,
 				69BBDF241F0B8AAC00EB1BF7 /* FileDownloader_mac.mm */,
+				8A404FD2208A01AF00F2D5CF /* FileDownloader.cpp */,
+				8A404FD4208A01CE00F2D5CF /* FileDownloader_private.h */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -273,6 +279,7 @@
 				69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */,
 				17C1FEB01ACC42C4006B99B3 /* BinaryCommonReader.h in Headers */,
 				17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */,
+				8A404FD5208A01CE00F2D5CF /* FileDownloader_private.h in Headers */,
 				17C1FEB21ACC42C4006B99B3 /* XlsxSerializer.h in Headers */,
 				17C1FEB31ACC42C4006B99B3 /* CSVReader.h in Headers */,
 				6967917D1D9E8AEE002CA4BA /* BinReaderWriterDefines.h in Headers */,
@@ -314,7 +321,7 @@
 		17E17ED41AC453F800BEA2EA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 			};
 			buildConfigurationList = 17E17ED71AC453F800BEA2EA /* Build configuration list for PBXProject "ASCOfficeDocxFile2Lib" */;
@@ -351,6 +358,7 @@
 				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
 				690FE0851E9BBD68004B26D0 /* Readers.cpp in Sources */,
 				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
+				8A404FD3208A01AF00F2D5CF /* FileDownloader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,7 +397,7 @@
 					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = ASCOfficeDocxFile2Lib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -428,7 +436,7 @@
 					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = ASCOfficeDocxFile2Lib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -446,12 +454,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -497,12 +507,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

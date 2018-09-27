@@ -32,9 +32,9 @@
 
 #include "OOXParagraphReader.h"
 
+#include "OOXTextItemReader.h"
 #include "OOXpPrFrameReader.h"
 #include "OOXpPrTabReader.h"
-#include "OOXTableReader.h"
 
 #include "../RtfOle.h"
 
@@ -456,6 +456,117 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 					oSubParReader.Parse2( oParam, oOutputParagraph, CcnfStyle(), poExternalStyle );	
 				}
 			}
+		}break;
+		case OOX::et_w_commentRangeStart:
+		case OOX::et_w_commentReference:
+		{
+			OOX::Logic::CCommentRangeStart * pCommentStart = dynamic_cast<OOX::Logic::CCommentRangeStart*>(m_ooxElement);
+						
+			if(pCommentStart->m_oId.IsInit())
+			{
+				int nId = pCommentStart->m_oId->GetValue();				
+				std::map<int, OOXReader::_comment>::iterator pFind = oParam.oReader->m_mapComments.find( nId );
+
+				if( pFind ==  oParam.oReader->m_mapComments.end())
+				{
+					RtfAnnotElemPtr oNewAnnotElem ( new RtfAnnotElem(1) );
+					oNewAnnotElem->m_sValue = std::to_wstring(0x7700000 + nId);
+
+					OOXReader::_comment comment;
+					comment.ref		= oNewAnnotElem->m_sValue;
+					comment.index	= oParam.oReader->m_mapComments.size();
+
+					oParam.oReader->m_mapComments.insert(std::make_pair( nId, comment));
+					oOutputParagraph.AddItem( oNewAnnotElem );
+				}
+			}
+		}break;
+		case OOX::et_w_commentRangeEnd:
+		{
+			OOX::Logic::CCommentRangeEnd * pCommentEnd = dynamic_cast<OOX::Logic::CCommentRangeEnd*>(m_ooxElement);
+
+			int nId = pCommentEnd->m_oId->GetValue();
+			
+			std::map<int, OOXReader::_comment>::iterator pFindRef = oParam.oReader->m_mapComments.find( nId );
+			
+			if( pFindRef != oParam.oReader->m_mapComments.end())
+			{
+				RtfAnnotElemPtr oNewAnnotElem ( new RtfAnnotElem(2) );
+				oNewAnnotElem->m_sValue = pFindRef->second.ref;
+				oOutputParagraph.AddItem( oNewAnnotElem );
+			
+				//find comment and add info
+				std::map<int, int>::iterator pFindComment = oParam.oDocx->m_pComments->m_mapComments.find(nId);
+
+				if (pFindComment != oParam.oDocx->m_pComments->m_mapComments.end())
+				{
+					if ( pFindComment->second < oParam.oDocx->m_pComments->m_arrComments.size() && pFindComment->second >= 0)
+					{
+						OOX::CComment* oox_comment = oParam.oDocx->m_pComments->m_arrComments[pFindComment->second];
+						if (oox_comment)
+						{
+							if (oox_comment->m_oAuthor.IsInit())
+							{
+								RtfAnnotElemPtr oNewAnnotAuthor ( new RtfAnnotElem(4) );
+								oNewAnnotAuthor->m_sValue = *oox_comment->m_oAuthor;
+								oOutputParagraph.AddItem( oNewAnnotAuthor );
+							}
+							if (oox_comment->m_oInitials.IsInit())
+							{
+								RtfAnnotElemPtr oNewAnnotAuthorId ( new RtfAnnotElem(5) );
+								oNewAnnotAuthorId->m_sValue = *oox_comment->m_oInitials;
+								oOutputParagraph.AddItem( oNewAnnotAuthorId );
+							}
+
+							RtfAnnotationPtr oNewAnnotContent(new RtfAnnotation());
+							
+							oNewAnnotContent->m_oRef = RtfAnnotElemPtr ( new RtfAnnotElem(3) );
+							oNewAnnotContent->m_oRef->m_sValue = pFindRef->second.ref;
+							
+							if (oox_comment->m_oDate.IsInit())
+							{
+								oNewAnnotContent->m_oDate = RtfAnnotElemPtr ( new RtfAnnotElem(6) );
+
+								int nDate = RtfUtility::convertDateTime(oox_comment->m_oDate->GetValue());
+								oNewAnnotContent->m_oDate->m_sValue =  std::to_wstring(nDate);
+							}
+
+							OOXTextItemReader oTextItemReader;
+							oTextItemReader.m_oTextItems = oNewAnnotContent->m_oContent;
+							
+							for (size_t i = 0; i < oox_comment->m_arrItems.size(); ++i)
+							{
+								if (oParam.oDocx->m_pCommentsExt)
+								{
+									OOX::Logic::CParagraph *pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(oox_comment->m_arrItems[i]);
+									if ((pParagraph) && (pParagraph->m_oParaId.IsInit()))
+									{
+										std::map<int, int>::iterator pFindPara = oParam.oDocx->m_pCommentsExt->m_mapComments.find(pParagraph->m_oParaId->GetValue());
+										if (pFindPara != oParam.oDocx->m_pCommentsExt->m_mapComments.end())
+										{
+											oParam.oReader->m_mapCommentsPara.insert(std::make_pair( pParagraph->m_oParaId->GetValue(), pFindRef->second.index));
+
+											if (oParam.oDocx->m_pCommentsExt->m_arrComments[pFindPara->second]->m_oParaIdParent.IsInit())
+											{
+												std::map<int, int>::iterator pFindParent = oParam.oReader->m_mapCommentsPara.find(oParam.oDocx->m_pCommentsExt->m_arrComments[pFindPara->second]->m_oParaIdParent->GetValue());
+												if (pFindParent != oParam.oReader->m_mapCommentsPara.end())
+												{
+													oNewAnnotContent->m_oParent = RtfAnnotElemPtr ( new RtfAnnotElem(7) );
+													oNewAnnotContent->m_oParent->m_sValue =  std::to_wstring( pFindParent->second - pFindRef->second.index);
+												}
+											}
+										}
+									}
+								}
+								oTextItemReader.Parse(oox_comment->m_arrItems[i], oParam);
+							}							
+
+							oOutputParagraph.AddItem( oNewAnnotContent );
+						}
+					}
+				}
+			}
+
 		}break;
         default:
             break;

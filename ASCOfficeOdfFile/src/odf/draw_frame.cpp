@@ -38,9 +38,9 @@
 
 #include <boost/regex.hpp>
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/odf/odf_document.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <odf/odf_document.h>
 
 #include "serialize_elements.h"
 #include "style_graphic_properties.h"
@@ -90,7 +90,7 @@ const wchar_t * draw_image::name = L"image";
 void draw_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_image_attlist_.add_attributes(Attributes);
-    common_xlink_attlist_.add_attributes(Attributes);
+    xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -122,7 +122,7 @@ std::wostream & draw_chart::text_to_stream(std::wostream & _Wostream) const
 void draw_chart::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_chart_attlist_.add_attributes(Attributes);
-    common_xlink_attlist_.add_attributes(Attributes);
+    xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -266,7 +266,7 @@ const wchar_t * draw_object::name = L"object";
 void draw_object::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_object_attlist_.add_attributes(Attributes);
-    common_xlink_attlist_.add_attributes(Attributes);
+    xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_object::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -274,11 +274,11 @@ void draw_object::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     if CP_CHECK_NAME(L"office", L"document")
     {
 		//embedded
-		odf_document_ = odf_document_ptr( new odf_document(Reader));
+		odf_document_ = odf_document_ptr( new odf_document(Reader, NSDirectory::GetTempPath()));
     }
 }
 
-// draw:object
+// draw:object-ole
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_object_ole::ns = L"draw";
 const wchar_t * draw_object_ole::name = L"object-ole";
@@ -287,7 +287,7 @@ void draw_object_ole::add_attributes( const xml::attributes_wc_ptr & Attributes 
 {
 	CP_APPLY_ATTR(L"draw:class-id", draw_class_id_);
 
-    common_xlink_attlist_.add_attributes(Attributes);
+    xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_object_ole::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -362,7 +362,7 @@ std::wstring draw_object::office_convert(odf_document_ptr odfDocument, int type)
 		{	    
 			outputDocx.write(objectOutPath);
 
-			href_result = common_xlink_attlist_.href_.get_value_or(L"Object");
+			href_result = xlink_attlist_.href_.get_value_or(L"Object");
 			int pos = href_result.find(L"./");
 			if (pos >= 0) href_result = href_result.substr(2);
 			
@@ -381,7 +381,7 @@ std::wstring draw_object::office_convert(odf_document_ptr odfDocument, int type)
 		{	    
 			outputXlsx.write(objectOutPath);
 
-			href_result = common_xlink_attlist_.href_.get_value_or(L"Object");
+			href_result = xlink_attlist_.href_.get_value_or(L"Object");
 			int pos = href_result.find(L"./");
 			if (pos >= 0) href_result = href_result.substr(2);
 			
@@ -393,7 +393,7 @@ std::wstring draw_object::office_convert(odf_document_ptr odfDocument, int type)
 		std::wstring temp_file = folderPath + FILE_SEPARATOR_STR + href_result;
 
 		COfficeUtils oCOfficeUtils(NULL);
-		oCOfficeUtils.CompressFileOrDirectory(objectOutPath.c_str(), temp_file.c_str(), true);
+		oCOfficeUtils.CompressFileOrDirectory(objectOutPath, temp_file, true);
 	}	
     NSDirectory::DeleteDirectory(objectOutPath);
 	
@@ -423,14 +423,36 @@ void draw_plugin::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"draw:mime-type", draw_mime_type_);
 
-    common_xlink_attlist_.add_attributes(Attributes);
+    xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_plugin::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_); 
 }
+// draw:control
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_control::ns = L"draw";
+const wchar_t * draw_control::name = L"control";
 
+void draw_control::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"xml:id", xml_id_);
+	CP_APPLY_ATTR(L"draw:caption-id", caption_id_);
+	CP_APPLY_ATTR(L"draw:control", control_id_);
+
+ 	draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
+	draw_attlists_.position_.add_attributes(Attributes);
+	draw_attlists_.rel_size_.add_attributes(Attributes);
+}
+
+void draw_control::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"draw", L"glue-point")
+    {
+        CP_CREATE_ELEMENT(draw_glue_point_);
+    }   
+}
 
 }
 }

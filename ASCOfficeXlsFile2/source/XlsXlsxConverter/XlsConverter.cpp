@@ -915,9 +915,9 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			//if (header->biWidth % 2 != 0 && sz_bitmap < size -offset)
 			//	header->biWidth++;
 			
-			int stride = (size - offset) / header->biHeight;
+			int stride =  -(size - offset) / header->biHeight;
 
-			if (stride >= header->biWidth && header->biBitCount >= 24)
+			if (-stride >= header->biWidth && header->biBitCount >= 24)
 			{
 				bPNG = true;
 			}

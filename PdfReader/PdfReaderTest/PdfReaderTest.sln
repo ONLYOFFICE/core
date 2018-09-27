@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfReaderTest", "PdfReaderTest.vcproj", "{5F337F52-E630-456E-9081-730A62A89684}"
+	ProjectSection(ProjectDependencies) = postProject
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D} = {62C7E428-E07C-4C13-A92B-2536D6442C9D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfReader", "..\PdfReader.vcproj", "{62C7E428-E07C-4C13-A92B-2536D6442C9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		DLL-Import Debug|Win32 = DLL-Import Debug|Win32
+		DLL-Import Debug|x64 = DLL-Import Debug|x64
+		DLL-Import Release|Win32 = DLL-Import Release|Win32
+		DLL-Import Release|x64 = DLL-Import Release|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F337F52-E630-456E-9081-730A62A89684}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.Debug|Win32.Build.0 = Debug|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.Debug|x64.ActiveCfg = Debug|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.DLL-Import Debug|Win32.ActiveCfg = Debug|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.DLL-Import Debug|Win32.Build.0 = Debug|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.DLL-Import Debug|x64.ActiveCfg = Debug|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.DLL-Import Release|Win32.ActiveCfg = Release|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.DLL-Import Release|Win32.Build.0 = Release|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.DLL-Import Release|x64.ActiveCfg = Release|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.Release|Win32.ActiveCfg = Release|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.Release|Win32.Build.0 = Release|Win32
+		{5F337F52-E630-456E-9081-730A62A89684}.Release|x64.ActiveCfg = Release|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.Debug|Win32.Build.0 = Debug|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.Debug|x64.ActiveCfg = Debug|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.DLL-Import Debug|Win32.ActiveCfg = Debug|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.DLL-Import Debug|Win32.Build.0 = Debug|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.DLL-Import Debug|x64.ActiveCfg = Debug|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.DLL-Import Release|Win32.ActiveCfg = Release|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.DLL-Import Release|Win32.Build.0 = Release|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.DLL-Import Release|x64.ActiveCfg = Release|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.Release|Win32.ActiveCfg = Release|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.Release|Win32.Build.0 = Release|Win32
+		{62C7E428-E07C-4C13-A92B-2536D6442C9D}.Release|x64.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

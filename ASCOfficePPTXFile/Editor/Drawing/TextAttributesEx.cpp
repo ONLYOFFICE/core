@@ -210,6 +210,12 @@ namespace NSPresentationEditor
 					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
 						spaceBefore = m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore;				
 				}
+
+				if (bulletChar.is_init() && !bulletFontRef.is_init())
+				{
+					//Demo-The-Winter-Olympics.ppt
+					//стоит ли брать с предыдущего уровня?
+				}
 				
 				if (!m_arParagraphs[nIndexP].m_oPFRun.hasBullet.is_init())
 				{
@@ -237,9 +243,9 @@ namespace NSPresentationEditor
 				if (!m_arParagraphs[nIndexP].m_oPFRun.spaceBefore.is_init())
 					m_arParagraphs[nIndexP].m_oPFRun.spaceBefore = spaceBefore;
 
-				m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();				
 				if (m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
 				{
+					m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();				
 					m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperties();
 
 					int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();

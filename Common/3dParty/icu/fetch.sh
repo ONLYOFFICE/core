@@ -59,6 +59,12 @@ else
   svn export http://source.icu-project.org/repos/icu/tags/release-$ICU_MAJOR_VER-$ICU_MINOR_VER/icu4c ./icu
 fi
 
+# Workaround for building icu older than 60.0
+# on systems without xlocale.h (removed from glibc since 2.26)
+# See https://sourceware.org/glibc/wiki/Release/2.26#Removal_of_.27xlocale.h.27
+# See https://bugs.archlinux.org/task/55246
+sed -i 's/xlocale/locale/' ./icu/source/i18n/digitlst.cpp
+
 cd ./icu/source/
 
 if [ ! -f "./Makefile" ]

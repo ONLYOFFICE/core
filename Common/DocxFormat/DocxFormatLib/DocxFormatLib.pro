@@ -17,13 +17,7 @@ CONFIG += core_x2t
 include(../../../Common/base.pri)
 
 DEFINES +=  UNICODE _UNICODE \
-            _USE_LIBXML2_READER_ \
-            LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
-
-INCLUDEPATH += \
-    ../../../DesktopEditor/freetype-2.5.2/include \
-    ../../../DesktopEditor/xml/libxml2/include
 
 #BOOST
 include($$PWD/../../3dParty/boost/boost.pri)
@@ -211,6 +205,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Table/Autofilter.h \
     ../Source/XlsxFormat/Table/Table.h \
     ../Source/XlsxFormat/Workbook/BookViews.h \
+	../Source/XlsxFormat/Workbook/CalcPr.h \
     ../Source/XlsxFormat/Workbook/DefinedNames.h \
     ../Source/XlsxFormat/Workbook/Sheets.h \
     ../Source/XlsxFormat/Workbook/Workbook.h \

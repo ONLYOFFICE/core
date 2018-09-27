@@ -33,8 +33,8 @@
 #include <iostream>
 #include "style_table_properties.h"
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
 #include "serialize_elements.h"
 #include "datatypes/borderstyle.h"
@@ -207,29 +207,45 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 {
     std::wostream & strm = Context.output_stream();
 
+	double page_width = 0;
+	
+	const page_layout_instance * pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();
+	if ((pp) && (pp->properties()))
+	{
+		style_page_layout_properties_attlist & attr_page = pp->properties()->attlist_;
+		if (attr_page.fo_page_width_)
+		{
+			page_width = attr_page.fo_page_width_->get_value_unit(odf_types::length::pt);
+		}
+		if (attr_page.common_horizontal_margin_attlist_.fo_margin_left_)
+		{
+			page_width -= attr_page.common_horizontal_margin_attlist_.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt);
+		}
+		if (attr_page.common_horizontal_margin_attlist_.fo_margin_right_)
+		{
+			page_width -= attr_page.common_horizontal_margin_attlist_.fo_margin_right_->get_length().get_value_unit(odf_types::length::pt);
+		}
+	}	
     if (attlist_.style_column_width_)
     {
 		double kf_max_width_ms = 1.;
 
-		const page_layout_instance * pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();//
-		if ((pp) && (pp->properties()))
-		{
-			style_page_layout_properties_attlist & attr_page = pp->properties()->attlist_;
-			if (attr_page.fo_page_width_)
-			{
-				int val =  0.5 + 20.0 * attr_page.fo_page_width_->get_value_unit(length::pt);
-				if (val > 31680.)
-					kf_max_width_ms = 31680./val;
-			}
-		}
+		int val =  0.5 + 20.0 * page_width;
+		if (val > 31680.)
+			kf_max_width_ms = 31680./val;
 
-		int val = attlist_.style_column_width_->get_value_unit(length::pt);
-
-		double width = 0.5 + 20.0 * val * kf_max_width_ms;
+		double width = 0.5 + 20.0 * attlist_.style_column_width_->get_value_unit(length::pt) * kf_max_width_ms;
 
 		Context.get_table_context().add_column_width(width);
         strm << L"<w:gridCol w:w=\"" << (int)(width) << "\"/>";
     }
+	else if ((attlist_.style_rel_column_width_) && (attlist_.style_rel_column_width_->get_unit() == length::rel))
+	{
+		double width = 0.5 + 20.0 * page_width * attlist_.style_rel_column_width_->get_value() / 65534.;
+		
+		Context.get_table_context().add_column_width(width);
+        strm << L"<w:gridCol w:w=\"" << (int)(width) << "\"/>";
+	}
 	else
 	{
 		Context.get_table_context().add_column_width(0);

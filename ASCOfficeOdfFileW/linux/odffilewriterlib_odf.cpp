@@ -29,6 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
+
+#include "../source/OdfFormat/office_document.cpp"
 #include "../source/OdfFormat/calcext_elements.cpp"
 #include "../source/OdfFormat/draw_base.cpp"
 #include "../source/OdfFormat/draw_frame.cpp"
@@ -93,3 +102,4 @@
 #include "../source/OdfFormat/style_presentation.cpp"
 #include "../source/OdfFormat/office_scripts.cpp"
 #include "../source/OdfFormat/office_event_listeners.cpp"
+#include "../source/utils.cpp"

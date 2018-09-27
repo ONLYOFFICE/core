@@ -135,35 +135,101 @@ namespace DocFileFormat
 
 		}
 	}
-	HRESULT OpenXmlPackage::SaveEmbeddedObject( const std::wstring& fileName, const std::string& data )
+	bool OpenXmlPackage::SaveEmbeddedObject( const std::wstring& fileName, const OleObjectFileStructure& object )
 	{
-		NSFile::CFileBinary file;
-		file.CreateFileW(fileName);
-		file.WriteFile((BYTE*)data.c_str(), (_UINT32)data.size());
-		file.CloseFile();
-		return S_OK;
+		if (object.bNativeOnly)
+		{
+			POLE::Storage * storageOut = new POLE::Storage(fileName.c_str());			
+			if ( (storageOut) && (storageOut->open(true, true)))
+			{
+				_UINT32 zero = 0, str_size = 0;
+			//Ole
+				BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+				POLE::Stream oStream3(storageOut, L"\001Ole", true, 20);
+				oStream3.write(dataOleInfo, 20);
+				oStream3.flush();
+			//CompObj
+				BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff
+					,0x30,0x08,0x02
+					//,0x0a,0x00,0x03
+					,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
+				POLE::Stream oStream1(storageOut, L"\001CompObj", true, 28 +	(object.clsid.length() + 5) + 
+																				(object.clsid.length() + 5) + 
+																				(object.clsid.length() + 5) + 4 * 4);
+				oStream1.write(dataCompObjHeader, 28);
+
+				str_size = object.clsid.length() + 1;
+				oStream1.write((BYTE*)&str_size, 4);
+				oStream1.write((BYTE*)object.clsid.c_str(), object.clsid.length());
+				oStream1.write((BYTE*)&zero, 1);
+
+				str_size = object.clsid.length() + 1;
+				oStream1.write((BYTE*)&str_size, 4);
+				oStream1.write((BYTE*)object.clsid.c_str(), object.clsid.length());
+				oStream1.write((BYTE*)&zero, 1);
+				
+				str_size = object.clsid.length() + 1;
+				oStream1.write((BYTE*)&str_size, 4);
+				oStream1.write((BYTE*)object.clsid.c_str(), object.clsid.length());
+				oStream1.write((BYTE*)&zero, 1);
+
+				_UINT32 nUnicodeMarker = 0x71B239F4;
+				oStream1.write((BYTE*)&nUnicodeMarker, 4); 
+
+				oStream1.write((BYTE*)&zero, 4); // UnicodeUserType
+				oStream1.write((BYTE*)&zero, 4); // UnicodeClipboardFormat
+				oStream1.write((BYTE*)&zero, 4); // 
+				oStream1.flush();
+
+			//ObjInfo
+				BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x01,0x00};//{0x00,0x00,0x03,0x00,0x0D,0x00};
+				POLE::Stream oStream2(storageOut, L"\003ObjInfo", true, 6);
+				oStream2.write(dataObjInfo, 6);
+				oStream2.flush();
+
+			//Ole10Native
+				size_t nativeDataSize = object.data.length();
+
+				POLE::Stream streamData(storageOut, L"\001Ole10Native", true, nativeDataSize + 4);
+				streamData.write((BYTE*)&nativeDataSize, 4);
+				streamData.write((BYTE*)object.data.c_str(), nativeDataSize);
+				streamData.flush();
+
+				storageOut->close();
+				delete storageOut;
+			}
+		}
+		else
+		{
+			NSFile::CFileBinary file;
+			file.CreateFileW(fileName);
+			file.WriteFile((BYTE*)object.data.c_str(), (_UINT32)object.data.size());
+			file.CloseFile();
+		}
+		return true;
 	}
-	HRESULT OpenXmlPackage::SaveOLEObject( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure )
+
+	bool OpenXmlPackage::SaveOLEObject( const std::wstring& fileName, const OleObjectFileStructure& object )
 	{
-		if (docFile == NULL) return S_FALSE;
+		if (docFile == NULL) return false;
 
 		POLE::Storage *storageOut = new POLE::Storage(fileName.c_str());
-		if (storageOut == NULL) return S_FALSE;
+		if (storageOut == NULL) return false;
 		
 		if (storageOut->open(true, true)==false)
 		{	
 			delete storageOut;
-			return S_FALSE;
+			return false;
 		}
 
 		POLE::Storage *storageInp = docFile->GetStorage()->GetStorage();
 
 		{
-			POLE::Stream* oleStorage = new POLE::Stream(storageInp, oleObjectFileStructure.objectID);
+			POLE::Stream* oleStorage = new POLE::Stream(storageInp, object.objectID);
 
 			if (oleStorage)
 			{
-				std::wstring path = L"ObjectPool/" + oleObjectFileStructure.objectID;
+				std::wstring path = L"ObjectPool/" + object.objectID;
 
 				std::list<std::wstring> entries = storageInp->entries_with_prefix(path);
 				for (std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it)
@@ -201,7 +267,7 @@ namespace DocFileFormat
 
 		storageOut->close();
 		delete storageOut;
-		return S_OK;
+		return true;
 	}
 	void OpenXmlPackage::RegisterDocPr()
 	{

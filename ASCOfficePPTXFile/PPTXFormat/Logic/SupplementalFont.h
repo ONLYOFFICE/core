@@ -50,8 +50,8 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"script", script);
-				node.ReadAttributeBase(L"typeface", typeface);
+				XmlMacroReadAttributeBase(node, L"script", script);
+				XmlMacroReadAttributeBase(node, L"typeface", typeface);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

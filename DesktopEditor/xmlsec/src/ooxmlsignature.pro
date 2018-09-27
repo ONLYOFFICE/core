@@ -16,8 +16,7 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-CONFIG += core_static_link_xml_full
-include($$CORE_ROOT_DIR/DesktopEditor/xml/build/qt/libxml2.pri)
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel
 
 DEFINES -= UNICODE
 

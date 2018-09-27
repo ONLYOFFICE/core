@@ -33,9 +33,9 @@
 #include "anim_elements.h"
 
 #include <boost/make_shared.hpp>
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 

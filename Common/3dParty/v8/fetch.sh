@@ -22,7 +22,7 @@ else
 cd v8
 fi
 
-gclient sync
+gclient sync --no-history
 
 os=$(uname -s)
 platform=""

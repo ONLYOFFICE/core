@@ -37,49 +37,6 @@
 
 namespace NSPresentationEditor
 {
-    const double c_dMasterUnitsToInchKoef		= 1.0 / 576;
-    const double c_dInchToMillimetreKoef		= 25.4;
-    const double c_dMasterUnitsToMillimetreKoef = c_dMasterUnitsToInchKoef * c_dInchToMillimetreKoef;
-
-    class CMetricInfo
-    {
-    public:
-        DWORD m_lUnitsHor;
-        DWORD m_lUnitsVer;
-
-        DWORD m_lMillimetresHor;
-        DWORD m_lMillimetresVer;
-
-    public:
-        CMetricInfo()
-        {
-            m_lUnitsHor = 5000;
-            m_lUnitsVer = 5000;
-
-            m_lMillimetresHor = 5000;
-            m_lMillimetresVer = 5000;
-        }
-
-        CMetricInfo& operator =(const CMetricInfo& oSrc)
-        {
-            m_lUnitsHor = oSrc.m_lUnitsHor;
-            m_lUnitsVer = oSrc.m_lUnitsVer;
-            m_lMillimetresHor = oSrc.m_lMillimetresHor;
-            m_lMillimetresVer = oSrc.m_lMillimetresVer;
-
-            return *this;
-        }
-
-        void SetUnitsContainerSize(DWORD lSizeX, DWORD lSizeY)
-        {
-            m_lUnitsHor = lSizeX;
-            m_lUnitsVer = lSizeY;
-
-            m_lMillimetresHor = (DWORD)(m_lUnitsHor * c_dMasterUnitsToMillimetreKoef);
-            m_lMillimetresVer = (DWORD)(m_lUnitsVer * c_dMasterUnitsToMillimetreKoef);
-        }
-    };
-
     class CDoubleRect
     {
     public:
@@ -88,13 +45,18 @@ namespace NSPresentationEditor
         double right;
         double bottom;
 
-    public:
-        CDoubleRect()
-        {
+		void Clear()
+		{
             left	= 0;
             top		= 0;
             right	= 0;
-            bottom	= 0;
+            bottom	= 0;	
+		}
+
+        CDoubleRect()
+        {
+			Clear();
+
         }
         CDoubleRect& operator=(const CDoubleRect& oSrc)
         {
@@ -140,11 +102,15 @@ namespace NSPresentationEditor
         public:
             double dX;
             double dY;
-        public:
-            CPointD()
-            {
+
+			void Clear()
+			{
                 dX = 0;
                 dY = 0;
+			}
+            CPointD()
+            {
+				Clear();
             }
 
             CPointD& operator= (const CPointD& oSrc)
@@ -161,7 +127,7 @@ namespace NSPresentationEditor
             }
         };
 
-    public:
+
         double m_dLeft;
         double m_dTop;
         double m_dWidth;
@@ -180,9 +146,8 @@ namespace NSPresentationEditor
         LONG m_lOriginalWidth;
         LONG m_lOriginalHeight;
 
-    public:
-        CGeomShapeInfo()
-        {
+		void Clear()
+		{
             m_dLeft = 0;
             m_dTop = 0;
             m_dWidth = 720;
@@ -200,6 +165,11 @@ namespace NSPresentationEditor
 
             m_lOriginalWidth	= 0;
             m_lOriginalHeight	= 0;
+		}
+
+        CGeomShapeInfo()
+        {
+			Clear();
         }
         ~CGeomShapeInfo()
         {

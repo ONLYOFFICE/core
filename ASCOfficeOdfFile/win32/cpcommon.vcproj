@@ -47,7 +47,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				WarningLevel="3"
@@ -318,6 +318,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\bibliography.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\bibliography.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\bool.cpp"
 				>
 			</File>
@@ -351,6 +359,10 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\datatypes\calcext_type.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\calcext_type.h"
 				>
 			</File>
 			<File
@@ -439,6 +451,14 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\datatypes\color.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\commandtype.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\commandtype.h"
 				>
 			</File>
 			<File
@@ -851,6 +871,14 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\datatypes\styleleadercolor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\stylenumformat.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\stylenumformat.h"
 				>
 			</File>
 			<File

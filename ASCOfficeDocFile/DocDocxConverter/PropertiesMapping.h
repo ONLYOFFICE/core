@@ -39,8 +39,7 @@
 #include "ShadingDescriptor.h"
 #include "SinglePropertyModifier.h"
 
-
-#include "../../OfficeUtils/src/ASCOfficeCriticalSection.h" //for linux make inside
+#include "../../DesktopEditor/graphics/TemporaryCS.h"
 
 namespace DocFileFormat
 {
@@ -75,7 +74,7 @@ namespace DocFileFormat
 
 		XMLTools::CStringXmlWriter* m_pXmlWriter;
 
-		static std::map<unsigned char, std::wstring>	brcTypeMap;		
-		static OfficeCriticalSection					brcTypeMapLock;
+        static std::map<unsigned char, std::wstring>	 brcTypeMap;
+        static NSCriticalSection::CRITICAL_SECTION_SMART brcTypeMapLock;
 	};
 }

@@ -34,8 +34,6 @@
 #include "PptShape.h"
 #include "PresetShapesHeader.h"
 
-const double EMU_MM = 36000;
-
 //-------------------------------------------------------------------------------
 #define CREATE_BY_SPT(SHAPE_TYPE, CLASS_SHAPE_NAME)								\
 	case SHAPE_TYPE: { pShape = new CLASS_SHAPE_NAME(); break; }				\

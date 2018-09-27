@@ -136,17 +136,17 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"algn", algn);
-				node.ReadAttributeBase(L"defTabSz", defTabSz);
-				node.ReadAttributeBase(L"eaLnBrk", eaLnBrk);
-				node.ReadAttributeBase(L"fontAlgn", fontAlgn);
-				node.ReadAttributeBase(L"hangingPunct", hangingPunct);
-				node.ReadAttributeBase(L"indent", indent);
-				node.ReadAttributeBase(L"latinLnBrk", latinLnBrk);
-				node.ReadAttributeBase(L"lvl", lvl);
-				node.ReadAttributeBase(L"marL", marL);
-				node.ReadAttributeBase(L"marR", marR);
-				node.ReadAttributeBase(L"rtl", rtl);
+				XmlMacroReadAttributeBase(node, L"algn", algn);
+				XmlMacroReadAttributeBase(node, L"defTabSz", defTabSz);
+				XmlMacroReadAttributeBase(node, L"eaLnBrk", eaLnBrk);
+				XmlMacroReadAttributeBase(node, L"fontAlgn", fontAlgn);
+				XmlMacroReadAttributeBase(node, L"hangingPunct", hangingPunct);
+				XmlMacroReadAttributeBase(node, L"indent", indent);
+				XmlMacroReadAttributeBase(node, L"latinLnBrk", latinLnBrk);
+				XmlMacroReadAttributeBase(node, L"lvl", lvl);
+				XmlMacroReadAttributeBase(node, L"marL", marL);
+				XmlMacroReadAttributeBase(node, L"marR", marR);
+				XmlMacroReadAttributeBase(node, L"rtl", rtl);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -168,7 +168,7 @@ namespace PPTX
 						else if (_T("defRPr") == strName)
 							defRPr = oNode;
 						else if (_T("tabLst") == strName)
-							oNode.LoadArray(_T("a:tab"), tabLst);
+							XmlMacroLoadArray(oNode, _T("a:tab"), tabLst, Tab);
 					}
 				}
 				

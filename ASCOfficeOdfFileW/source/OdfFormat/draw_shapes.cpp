@@ -41,9 +41,9 @@
 #include <boost/regex.h>
 #include <boost/lexical_cast.hpp>
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 #include "style_graphic_properties.h"
 

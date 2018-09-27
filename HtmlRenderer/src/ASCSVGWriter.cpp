@@ -67,7 +67,7 @@ namespace NSHtmlRenderer
         m_pFontManager = NULL;
         if (bIsInitializeFonts)
         {
-            m_pFontManager = new CFontManager();
+            m_pFontManager = NSFonts::NSFontManager::Create();
             m_pFontManager->Initialize();
         }
 
@@ -80,7 +80,7 @@ namespace NSHtmlRenderer
 	{
 		RELEASEOBJECT(m_pSimpleGraphicsConverter);
 		if(m_bDeleteFontManager)
-			RELEASEOBJECT(m_pFontManager);
+            NSBase::Release(m_pFontManager);
 		RELEASEOBJECT(m_pPen);
 		RELEASEOBJECT(m_pBrush);
 		RELEASEOBJECT(m_pFont);
@@ -89,6 +89,47 @@ namespace NSHtmlRenderer
 		RELEASEOBJECT(m_pTransform);
 		RELEASEOBJECT(m_pFullTransform);
 		RELEASEOBJECT(m_pVectorWriter);
+	}
+	void CASCSVGWriter::Reset()
+	{
+        m_dDpiX = 72;
+        m_dDpiY	= 72;
+
+		m_dWidth = 100;
+		m_dHeight = 100;
+		m_bIsRaster = false;
+
+		m_lClipMode = c_nClipRegionTypeWinding;
+
+		RELEASEOBJECT(m_pSimpleGraphicsConverter);
+
+		RELEASEOBJECT(m_pPen);
+		RELEASEOBJECT(m_pBrush);
+		RELEASEOBJECT(m_pFont);
+		RELEASEOBJECT(m_pInstalledFont);
+		RELEASEOBJECT(m_pBaseTransform);
+		RELEASEOBJECT(m_pTransform);
+		RELEASEOBJECT(m_pFullTransform);
+		RELEASEOBJECT(m_pVectorWriter);
+
+		m_pSimpleGraphicsConverter = new Aggplus::CGraphicsPathSimpleConverter();
+		m_pSimpleGraphicsConverter->SetRenderer(this);
+
+		m_dTransformAngle = 0.0;
+
+		m_pPen = new NSStructures::CPen();
+		m_pBrush = new NSStructures::CBrush();
+		m_pFont = new NSStructures::CFont();
+		m_pInstalledFont = new NSStructures::CFont();
+
+		m_pBaseTransform = new Aggplus::CMatrix();
+		m_pTransform = new Aggplus::CMatrix();
+		m_pFullTransform = new Aggplus::CMatrix();
+
+		m_pVectorWriter = new NSHtmlRenderer::CSVGGraphicsWriter();
+		m_pVectorWriter->m_pSimpleConverter  = m_pSimpleGraphicsConverter;
+		m_pVectorWriter->m_pFullTransform	= m_pFullTransform;
+		m_pVectorWriter->SetSettings(m_pPen, m_pBrush, m_pSimpleGraphicsConverter);
 	}
 
 	HRESULT CASCSVGWriter::get_Type(LONG* lType)
@@ -884,12 +925,12 @@ namespace NSHtmlRenderer
 		return S_OK;
 	}
 	// --------------------------------------------------------------------------------------------
-	void CASCSVGWriter::SetFontManager(CFontManager* pFontManager)
+    void CASCSVGWriter::SetFontManager(NSFonts::IFontManager* pFontManager)
 	{
 		if(NULL != pFontManager)
 		{
 			if(m_bDeleteFontManager)
-				RELEASEOBJECT(m_pFontManager);
+                NSBase::Release(m_pFontManager);
 			m_pFontManager = pFontManager;
 			m_bDeleteFontManager = false;
 		}
@@ -985,10 +1026,10 @@ namespace NSHtmlRenderer
 			m_pFontManager->LoadFontFromFile(m_pFont->Path, (float)dSizeFont, m_dDpiX, m_dDpiY, 0);
 		}
 
-		if (bIsTransform && NULL != m_pFontManager->m_pFont)
+        if (bIsTransform && NULL != m_pFontManager->GetFile())
 		{
-			m_pFontManager->m_pFont->SetFontMatrix(m_dTextScale, 0, 0, m_dTextScale, 0, 0);
-			m_pFontManager->m_pFont->CheckTextMatrix();
+            m_pFontManager->GetFile()->SetFontMatrix(m_dTextScale, 0, 0, m_dTextScale, 0, 0);
+            m_pFontManager->GetFile()->CheckTextMatrix();
 		}
 
 		*m_pInstalledFont = *m_pFont;

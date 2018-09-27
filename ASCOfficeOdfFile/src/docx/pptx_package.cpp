@@ -34,7 +34,7 @@
 #include "pptx_package.h"
 #include "pptx_output_xml.h"
 
-#include <cpdoccore/utf8cpp/utf8.h>
+#include <utf8cpp/utf8.h>
 
 namespace cpdoccore { 
 namespace oox {
@@ -455,13 +455,18 @@ void ppt_files::write(const std::wstring & RootPath)
     }
 	{
         comments_->set_main_document(get_main_document());
-        comments_->write(path);
+        comments_->write( path );
     }
     if (authors_comments_)
     {
 		rels_files_.add( relationship( L"auId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors", L"commentAuthors.xml" ) );
-        authors_comments_->write(path);
+        authors_comments_->write( path );
     }
+	if (jsaProject_)
+	{
+		rels_files_.add( relationship(L"jsaId", L"http://schemas.onlyoffice.com/jsaProject", L"jsaProject.bin" ) );
+		jsaProject_->write( path );
+	}
 	rels_files_.write(path);
 }
 
@@ -504,7 +509,7 @@ void ppt_files::add_notesMaster(slide_content_ptr slide)
 {
     notesMaster_files_.add_slide(slide);
 }
-void ppt_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
+void ppt_files::set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{
@@ -531,6 +536,10 @@ void ppt_files::add_charts(chart_content_ptr chart)
 void ppt_files::add_theme(pptx_xml_theme_ptr theme)
 {
     themes_files_.add_theme(theme);
+}
+void ppt_files::add_jsaProject(const std::string &content)
+{
+	jsaProject_ = package::simple_element::create(L"jsaProject.bin", content);
 }
 }
 }

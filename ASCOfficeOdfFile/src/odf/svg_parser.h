@@ -38,7 +38,7 @@
 
 #include <boost/regex.hpp>
 
-#include "../../include/cpdoccore/CPOptional.h"
+#include "../../include/CPOptional.h"
 
 namespace svg_path
 {

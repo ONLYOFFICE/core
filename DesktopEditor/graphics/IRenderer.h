@@ -34,9 +34,9 @@
 
 #pragma once
 
+#include <string>
 #include "../common/IGrObject.h"
 #include "Matrix.h"
-#include <string>
 
 // тип в DrawPath
 const long c_nStroke			= 0x0001;

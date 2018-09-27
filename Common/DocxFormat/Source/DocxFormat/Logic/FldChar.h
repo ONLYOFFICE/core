@@ -58,7 +58,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -111,8 +111,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:type"), m_oType );
-				oNode.ReadAttributeBase( _T("w:val"),  m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:type"), m_oType );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),  m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -174,7 +174,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"),  m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),  m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -227,8 +227,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:type"), m_oType );
-				oNode.ReadAttributeBase( _T("w:val"),  m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:type"), m_oType );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),  m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -290,7 +290,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"),  m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),  m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -787,9 +787,9 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:dirty"),       m_oDirty );
-				oNode.ReadAttributeBase( _T("w:fldCharType"), m_oFldCharType );
-				oNode.ReadAttributeBase( _T("w:fldLock"),     m_oFldLock );
+				XmlMacroReadAttributeBase( oNode, _T("w:dirty"),       m_oDirty );
+				XmlMacroReadAttributeBase( oNode, _T("w:fldCharType"), m_oFldCharType );
+				XmlMacroReadAttributeBase( oNode, _T("w:fldLock"),     m_oFldLock );
 
 				XmlUtils::CXmlNode oChild;
 				WritingElement_ReadNode( oNode, oChild, _T("w:ffData"), m_oFFData );

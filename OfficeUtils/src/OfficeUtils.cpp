@@ -60,7 +60,7 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std
 }
 
 
-HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const std::wstring& _outputFile, bool bSorted, short level)
+HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const std::wstring& _outputFile, bool bSorted, int method, short level)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
     std::wstring name = _name;//CorrectPathW(_name);
@@ -73,7 +73,7 @@ HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const s
 	HRESULT result = S_FALSE;
 	if(NSDirectory::Exists(name))
 	{
-		if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, level ) == 0 )
+        if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, method, level ) == 0 )
 		{
 			result = S_OK;
 		}
@@ -84,7 +84,7 @@ HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const s
 	}
 	else if(NSFile::CFileBinary::Exists(name))
 	{
-		if ( ZLibZipUtils::ZipFile( name.c_str(), outputFile.c_str(), level ) == 0 )
+        if ( ZLibZipUtils::ZipFile( name.c_str(), outputFile.c_str(), method, level ) == 0 )
 		{
 			result = S_OK;
 		}
@@ -214,4 +214,161 @@ HRESULT COfficeUtils::GetFilesSize(const std::wstring& _zipFile, const std::wstr
 	{
 		return S_FALSE;
 	}
+}
+
+class CDeflate_private
+{
+public:
+    z_stream m_stream;
+
+public:
+    CDeflate_private()
+    {
+        memset(&m_stream, 0x00, sizeof(z_stream));
+    }
+};
+
+CDeflate::CDeflate()
+{
+    m_internal = new CDeflate_private();
+}
+CDeflate::~CDeflate()
+{
+    delete m_internal;
+}
+
+void CDeflate::SetIn(BYTE* next_in, UINT avail_in, ULONG total_in)
+{
+    m_internal->m_stream.next_in = next_in;
+    m_internal->m_stream.avail_in = avail_in;
+
+    if (-1 != total_in)
+        m_internal->m_stream.total_in = total_in;
+}
+
+void CDeflate::SetOut(BYTE* next_out, UINT avail_out, ULONG total_out)
+{
+    m_internal->m_stream.next_out = next_out;
+    m_internal->m_stream.avail_out = avail_out;
+
+    if (-1 != total_out)
+        m_internal->m_stream.total_out = total_out;
+}
+
+UINT CDeflate::GetAvailIn()
+{
+    return m_internal->m_stream.avail_in;
+}
+
+UINT CDeflate::GetAvailOut()
+{
+    return m_internal->m_stream.avail_out;
+}
+
+void CDeflate::Init(int level, int stream_size)
+{
+    deflateInit_(&m_internal->m_stream, level, ZLIB_VERSION, (stream_size == -1) ? sizeof(z_stream) : stream_size);
+}
+
+int CDeflate::Process(int flush)
+{
+    return deflate(&m_internal->m_stream, flush);
+}
+
+void CDeflate::End()
+{
+    deflateEnd(&m_internal->m_stream);
+}
+
+///////////////////////////////////////////
+class CInflate_private
+{
+public:
+    z_stream m_stream;
+
+public:
+    CInflate_private()
+    {
+        memset(&m_stream, 0x00, sizeof(z_stream));
+    }
+};
+
+CInflate::CInflate()
+{
+    m_internal = new CInflate_private();
+}
+CInflate::~CInflate()
+{
+    delete m_internal;
+}
+
+void CInflate::SetIn(BYTE* next_in, UINT avail_in, ULONG total_in)
+{
+    m_internal->m_stream.next_in = next_in;
+    m_internal->m_stream.avail_in = avail_in;
+
+    if (-1 != total_in)
+        m_internal->m_stream.total_in = total_in;
+}
+
+void CInflate::SetOut(BYTE* next_out, UINT avail_out, ULONG total_out)
+{
+    m_internal->m_stream.next_out = next_out;
+    m_internal->m_stream.avail_out = avail_out;
+
+    if (-1 != total_out)
+        m_internal->m_stream.total_out = total_out;
+}
+
+UINT CInflate::GetAvailIn()
+{
+    return m_internal->m_stream.avail_in;
+}
+
+UINT CInflate::GetAvailOut()
+{
+    return m_internal->m_stream.avail_out;
+}
+
+void CInflate::Init()
+{
+    inflateInit(&m_internal->m_stream);
+}
+void CInflate::Init2()
+{
+    inflateInit2(&m_internal->m_stream,-MAX_WBITS);
+}
+int CInflate::Process(int flush)
+{
+    return inflate(&m_internal->m_stream, flush);
+}
+
+void CInflate::End()
+{
+    inflateEnd(&m_internal->m_stream);
+}
+
+void CInflate::ClearFuncs()
+{
+    m_internal->m_stream.zalloc = Z_NULL;
+    m_internal->m_stream.zfree  = Z_NULL;
+    m_internal->m_stream.opaque = Z_NULL;
+}
+
+namespace  NSZip
+{
+    bool Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen, BYTE* pDstBuffer, ULONG& lDstBufferLen)
+    {
+        try
+        {
+            if (Z_OK == uncompress(pDstBuffer, &lDstBufferLen, pSrcBuffer, lSrcBufferLen))
+            {
+                return true;
+            }
+        }
+        catch(...)
+        {
+        }
+        return false;
+    }
 }

@@ -34,7 +34,7 @@
 #include <string>
 #include <vector>
 
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 
 #include "office_elements_create.h"
 

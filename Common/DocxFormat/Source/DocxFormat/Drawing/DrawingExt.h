@@ -154,7 +154,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-                oNode.ReadAttributeBase( _T("uri"), m_sUri );
+				XmlMacroReadAttributeBase(oNode, _T("uri"), m_sUri );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual std::wstring toXML() const;

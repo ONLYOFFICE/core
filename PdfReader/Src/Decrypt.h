@@ -38,6 +38,7 @@
 
 namespace PdfReader
 {
+	class StandardSecurityHandler;
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// Decrypt
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -45,37 +46,20 @@ namespace PdfReader
 	class Decrypt
 	{
 	public:
-
 		// Строим FileKey. Параметр <sFileKey> должен иметь место как минимум под 16 байт. Проверяем <seOwnerPassword> и <seUserPassword>
 		// и возвращаем true, если какой-нибудь корректен. Пишем <pbOwnerPasswordValide> = true, если <seOwnerPassword> был правильный.  
 		// Один какой-нибудь или оба пароля могут быть NULL, что мы будем понимать как пустую строку.
-		static bool MakeFileKey(int nEncVersion, int nEncRevision, int nKeyLength, StringExt *seOwnerKey, StringExt *seUserKey, int nPermissions, StringExt *seFileID, StringExt *seOwnerPassword, StringExt *seUserPassword, unsigned char *sFileKey, bool bEncryptMetadata, bool *pbOwnerPasswordValid);
+		static bool MakeFileKey(StandardSecurityHandler *handler, const std::wstring &ownerPassword, const std::wstring &userPassword);
 
 	private:
 
-		static bool MakeFileKey2(int nEncVersion, int nEncRevision, int nKeyLength, StringExt *seOwnerKey, StringExt *seUserKey, int nPermissions, StringExt *seFileID, StringExt *seUserPassword, unsigned char *sFileKey, bool bEncryptMetadata);
+		static bool MakeFileKey3(const std::string &sPassword, unsigned char *pHash, int nHashSize, unsigned char *pHash2 = NULL, int nHashSize2 = 0);
+		static bool MakeFileKey2(StandardSecurityHandler *handler, const std::string &userPassword);
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// DecryptStream
 	//-------------------------------------------------------------------------------------------------------------------------------
-
-	struct DecryptRC4State
-	{
-		unsigned char sState[256];
-		unsigned char unX;
-		unsigned char unY;
-		int           nBuffer;
-	};
-
-	struct DecryptAESState
-	{
-		unsigned int  arrW[44];
-		unsigned char sState[16];
-		unsigned char sCBC[16];
-		unsigned char sBuffer[16];
-		int           nBufferIndex;
-	};
 
 	class DecryptStream : public FilterStream
 	{
@@ -98,13 +82,11 @@ namespace PdfReader
 
 		CryptAlgorithm m_eCryptType;
 		int            m_nObjectKeyLength;
-		unsigned char  m_sObjectKey[16 + 9];
+		unsigned char  m_sObjectKey[(16 + 9) * 2];
 
-		union
-		{
-			DecryptRC4State oRC4;
-			DecryptAESState oAES;
-		} m_oState;
+		unsigned char*	m_pUncryptedData;
+		unsigned int	m_pUncryptedDataSize;
+		unsigned int	m_pUncryptedDataPosition;
 	};
 }
 

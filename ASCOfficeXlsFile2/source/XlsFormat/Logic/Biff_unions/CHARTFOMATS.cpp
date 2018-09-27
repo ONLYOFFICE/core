@@ -258,7 +258,7 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 			if (cf.dataLabExt) 
 			{
 				m_arChartFormats.push_back(cf);
-				cf.attachedLABEL = NULL;
+				cf.attachedLABEL = XLS::BaseObjectPtr();
 			}
 			cf.dataLabExt = elements_.front();
 		}
@@ -267,7 +267,7 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 			if (cf.attachedLABEL)
 			{
 				m_arChartFormats.push_back(cf);
-				cf.dataLabExt = NULL;
+				cf.dataLabExt = XLS::BaseObjectPtr();
 			}
 			cf.attachedLABEL = elements_.front();
 		}

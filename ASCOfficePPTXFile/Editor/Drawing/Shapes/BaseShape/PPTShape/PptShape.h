@@ -231,7 +231,7 @@ public:
         return FALSE;
     }
 
-    virtual std::wstring ToXML(CGeomShapeInfo& GeomInfo, CMetricInfo& MetricInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)
+    virtual std::wstring ToXML(CGeomShapeInfo& GeomInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)
     {
         if ((_T("") != m_strPathLimoX) || _T("") != m_strPathLimoY)
         {
@@ -240,7 +240,7 @@ public:
             m_oPath.SetCoordsize(21600, 21600);
         }
 
-        return m_oPath.ToXml(GeomInfo, StartTime, EndTime, Pen, Brush, MetricInfo, NSBaseShape::ppt);
+        return m_oPath.ToXml(GeomInfo, StartTime, EndTime, Pen, Brush, NSBaseShape::ppt);
     }
 
     virtual void ReCalculate()

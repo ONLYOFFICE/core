@@ -47,6 +47,10 @@
 		17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFC2C31BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp */; };
 		698AF5051C0766200080D889 /* unicode_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 698AF5031C0766200080D889 /* unicode_util.cpp */; };
 		7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */; };
+		8A493EAC20E4B7EC00D478DC /* Metadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A493EAA20E4B7EB00D478DC /* Metadata.cpp */; };
+		8ABC65A3208A1EFA00E96FFE /* pro_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */; };
+		8ABC65A5208A1F1B00E96FFE /* pro_Fonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */; };
+		8ABC65A7208A1F3A00E96FFE /* MetafileToRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -118,6 +122,13 @@
 		7C560F6F1AA71A91000E5860 /* libPdfWriter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPdfWriter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AscEditorPDFPrinter.h; sourceTree = "<group>"; };
 		7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AscEditorPDFPrinter.mm; sourceTree = "<group>"; };
+		8A493EAA20E4B7EB00D478DC /* Metadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Metadata.cpp; path = ../../../PdfWriter/Src/Metadata.cpp; sourceTree = "<group>"; };
+		8A493EAB20E4B7EC00D478DC /* Metadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Metadata.h; path = ../../../PdfWriter/Src/Metadata.h; sourceTree = "<group>"; };
+		8A7E89E020E6211000E06CBE /* ICCProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICCProfile.h; path = ../../../PdfWriter/Src/ICCProfile.h; sourceTree = "<group>"; };
+		8ABC65A1208A1EF400E96FFE /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Image.h; path = ../../graphics/pro/Image.h; sourceTree = "<group>"; };
+		8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Image.cpp; path = ../../graphics/pro/pro_Image.cpp; sourceTree = "<group>"; };
+		8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pro_Fonts.cpp; path = ../../graphics/pro/pro_Fonts.cpp; sourceTree = "<group>"; };
+		8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetafileToRenderer.cpp; path = ../../graphics/MetafileToRenderer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +149,7 @@
 				698AF5041C0766200080D889 /* unicode_util.h */,
 				7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */,
 				7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */,
+				8A7E89E020E6211000E06CBE /* ICCProfile.h */,
 				17FFC2C11BAB15CE00D91F59 /* PdfRenderer.h */,
 				17FFC2C01BAB15CE00D91F59 /* PdfRenderer.cpp */,
 				17FFC2C41BAB163500D91F59 /* OnlineOfficeBinToPdf.h */,
@@ -156,6 +168,7 @@
 				176E573C1BB0057700276C19 /* BgraFrame.h */,
 				176E573D1BB0057700276C19 /* ImageFileFormatChecker.cpp */,
 				176E573E1BB0057700276C19 /* ImageFileFormatChecker.h */,
+				8ABC65A1208A1EF400E96FFE /* Image.h */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -192,6 +205,8 @@
 				176285CB1BAAFC3B00AEDA07 /* Encrypt.h */,
 				176285CC1BAAFC3B00AEDA07 /* EncryptDictionary.cpp */,
 				176285CD1BAAFC3B00AEDA07 /* EncryptDictionary.h */,
+				8ABC65A2208A1EFA00E96FFE /* pro_Image.cpp */,
+				8ABC65A4208A1F1B00E96FFE /* pro_Fonts.cpp */,
 				176285CE1BAAFC3B00AEDA07 /* Font.cpp */,
 				176285CF1BAAFC3B00AEDA07 /* Font.h */,
 				176285D01BAAFC3B00AEDA07 /* Font14.cpp */,
@@ -206,6 +221,9 @@
 				176285D91BAAFC3B00AEDA07 /* Image.h */,
 				176285DA1BAAFC3B00AEDA07 /* Info.cpp */,
 				176285DB1BAAFC3B00AEDA07 /* Info.h */,
+				8ABC65A6208A1F3A00E96FFE /* MetafileToRenderer.cpp */,
+				8A493EAA20E4B7EB00D478DC /* Metadata.cpp */,
+				8A493EAB20E4B7EC00D478DC /* Metadata.h */,
 				176285DC1BAAFC3B00AEDA07 /* Objects.cpp */,
 				176285DD1BAAFC3B00AEDA07 /* Objects.h */,
 				176285DE1BAAFC3B00AEDA07 /* Outline.cpp */,
@@ -251,7 +269,7 @@
 		7C560F671AA71A91000E5860 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ascensio System";
 				TargetAttributes = {
 					7C560F6E1AA71A91000E5860 = {
@@ -308,12 +326,16 @@
 				176285FA1BAAFC3B00AEDA07 /* Pages.cpp in Sources */,
 				17FFC2C21BAB15CE00D91F59 /* PdfRenderer.cpp in Sources */,
 				176285F51BAAFC3B00AEDA07 /* GState.cpp in Sources */,
+				8ABC65A7208A1F3A00E96FFE /* MetafileToRenderer.cpp in Sources */,
 				176285ED1BAAFC3B00AEDA07 /* Destination.cpp in Sources */,
 				17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */,
 				176285FE1BAAFC3B00AEDA07 /* Utils.cpp in Sources */,
+				8ABC65A3208A1EFA00E96FFE /* pro_Image.cpp in Sources */,
 				7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */,
+				8ABC65A5208A1F1B00E96FFE /* pro_Fonts.cpp in Sources */,
 				698AF5051C0766200080D889 /* unicode_util.cpp in Sources */,
 				176285F81BAAFC3B00AEDA07 /* Objects.cpp in Sources */,
+				8A493EAC20E4B7EC00D478DC /* Metadata.cpp in Sources */,
 				176285F91BAAFC3B00AEDA07 /* Outline.cpp in Sources */,
 				176285F01BAAFC3B00AEDA07 /* EncryptDictionary.cpp in Sources */,
 				176285FB1BAAFC3B00AEDA07 /* Pattern.cpp in Sources */,
@@ -345,12 +367,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -396,12 +420,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -432,6 +458,8 @@
 		7C560F841AA71A91000E5860 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -460,7 +488,7 @@
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -472,6 +500,8 @@
 		7C560F851AA71A91000E5860 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -500,7 +530,7 @@
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

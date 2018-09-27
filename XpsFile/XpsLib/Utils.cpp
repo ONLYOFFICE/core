@@ -34,6 +34,7 @@
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
+#include <math.h>
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846

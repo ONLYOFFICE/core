@@ -40,7 +40,7 @@ namespace DocFileFormat
 
 		//read the user initials (LPXCharBuffer9)
 
-		if (reader->olderVersion)
+		if (reader->nWordVersion > 0)
 		{
 			short cch = reader->ReadByte();
 		
@@ -58,7 +58,8 @@ namespace DocFileFormat
 		}
 		else
 		{
-			short cch = reader->ReadInt16();
+			short cch = reader->ReadInt16(); 
+
 
 			unsigned char *chars = reader->ReadBytes(18, true);
 
@@ -67,10 +68,31 @@ namespace DocFileFormat
 			newObject->m_AuthorIndex = reader->ReadUInt16();
 
 			//skip 4 bytes
-			reader->ReadBytes(4, false);
+			unsigned int skip = reader->ReadUInt32();
 
-			newObject->m_BookmarkId = reader->ReadInt32();
+			newObject->m_BookmarkId = reader->ReadInt32(); //-1 - comment is on a length zero text range in the Main Document
 			RELEASEARRAYOBJECTS(chars);
+		}
+
+
+		return static_cast<ByteStructure*>(newObject);
+	}
+	ByteStructure* AnnotationReferenceExDescriptor::ConstructObject(VirtualStreamReader* reader, int length)
+	{
+		AnnotationReferenceExDescriptor *newObject = new AnnotationReferenceExDescriptor();
+
+		if (reader->nWordVersion > 0)
+		{
+
+		}
+		else
+		{
+			m_nDTTM					= reader->ReadUInt32(); 
+			reader->ReadUInt16(); //padding1
+			m_nDepth				= reader->ReadUInt32(); 
+			m_nDiatrdParent			= reader->ReadUInt32(); 
+			unsigned int flag		= reader->ReadUInt32(); 
+			m_fInkAtn = GETBIT(flag, 1);
 		}
 
 

@@ -38,110 +38,83 @@ namespace DocFileFormat
 {
 	HeaderAndFooterTable::HeaderAndFooterTable (FileInformationBlock* fib, POLE::Stream* pTableStream)
 	{
-		VirtualStreamReader tableReader (pTableStream, fib->m_FibWord97.fcPlcfHdd, fib->m_bOlderVersion);
+		m_nCurrentIndex = 0;
+
+		VirtualStreamReader tableReader (pTableStream, fib->m_FibWord97.fcPlcfHdd, fib->m_nWordVersion);
 
 		if (fib->m_FibWord97.fcPlcfHdd > tableReader.GetSize()) return;
 
 		unsigned int tableSize	=	fib->m_FibWord97.lcbPlcfHdd / 4;//in bytes
 
-		if ( ( tableSize > 0 ) && ( fib->m_RgLw97.ccpHdr > 0 ) )
+		if ( tableSize < 1  || fib->m_RgLw97.ccpHdr <1 )
+			return;
+
+		int* table = new int[tableSize];
+
+		for (unsigned int i = 0; i < tableSize; ++i)
 		{
-			int* table			=	new int[tableSize];
-
-			for (unsigned int i = 0; i < tableSize; ++i)
-			{
-				table[i]		=	tableReader.ReadInt32();
-			}
-
-			int initialPos		=	fib->m_RgLw97.ccpText + fib->m_RgLw97.ccpFtn;
-
-
-			//the first 6 _entries are about footnote and endnote formatting
-			//so skip these _entries
-			int pos = (fib->m_FibBase.fComplex || !fib->m_bOlderVersion) ? 6 : 0;
-			
-			int count			=	( tableSize - pos - 2) / 6;
-			
-			for (int i = 0; i < count; ++i)
-			{
-				//Even Header
-				if ( table[pos] == table[pos + 1] )
-				{
-					m_arEvenHeaders.push_back( NULL );
-				}
-				else
-				{
-					m_arEvenHeaders.push_back( new CharacterRange( ( initialPos + table[pos] ), ( table[pos + 1] - table[pos] ) ) );
-				}
-
-				pos++;
-
-				//Odd Header
-				if ( table[pos] == table[pos + 1] )
-				{
-					m_arOddHeaders.push_back( NULL );
-				}
-				else
-				{
-					m_arOddHeaders.push_back( new CharacterRange( ( initialPos + table[pos] ), ( table[pos + 1] - table[pos] ) ) );
-				}
-
-				pos++;
-
-				//Even Footer
-				if ( table[pos] == table[pos + 1] )
-				{
-					m_arEvenFooters.push_back( NULL );
-				}
-				else
-				{
-					m_arEvenFooters.push_back( new CharacterRange( ( initialPos + table[pos] ), ( table[pos + 1] - table[pos] ) ) );
-				}
-
-				pos++;
-
-				//Odd Footer
-				if ( table[pos] == table[pos + 1] )
-				{
-					m_arOddFooters.push_back( NULL );
-				}
-				else
-				{
-					m_arOddFooters.push_back( new CharacterRange( ( initialPos + table[pos] ), ( table[pos + 1] - table[pos] ) ) );
-				}
-
-				pos++;
-
-				//First Page Header
-				if ( table[pos] == table[pos + 1] )
-				{
-					m_arFirstHeaders.push_back (NULL);
-				}
-				else
-				{
-					m_arFirstHeaders.push_back (new CharacterRange( ( initialPos + table[pos] ), ( table[pos + 1] - table[pos] ) ));
-				}
-
-				pos++;
-
-				if (pos >= tableSize)
-					break;
-
-				//First Page Footers
-				if ( table[pos] == table[pos + 1] )
-				{
-					m_arFirstFooters.push_back( NULL );
-				}
-				else
-				{
-					m_arFirstFooters.push_back( new CharacterRange( ( initialPos + table[pos] ), ( table[pos + 1] - table[pos] ) ) );
-				}
-
-				pos++;
-			}
-
-			RELEASEARRAYOBJECTS(table);
+			table[i] = tableReader.ReadInt32();
 		}
+
+		int initialPos = fib->m_RgLw97.ccpText + fib->m_RgLw97.ccpFtn;
+
+		int count	=	0;
+		int pos		= (fib->m_FibBase.fComplex || fib->m_nWordVersion == 0) ? 6 : 0;
+				//the first 6 _entries are about footnote and endnote formatting -Word97 so skip these		
+
+		std::vector<std::vector<CharacterRange*>*> arHeadersFooters;
+		
+		if (fib->m_nWordVersion == 2)
+		{
+			count =	( tableSize - 1);
+		}
+		else
+		{
+			count =	( tableSize - pos - 1) / 6;
+
+			arHeadersFooters.push_back(&m_arEvenHeaders);
+			arHeadersFooters.push_back(&m_arOddHeaders);
+			arHeadersFooters.push_back(&m_arEvenFooters);
+			arHeadersFooters.push_back(&m_arOddFooters);
+			arHeadersFooters.push_back(&m_arFirstHeaders);
+			arHeadersFooters.push_back(&m_arFirstFooters);
+		}
+		
+		for (int i = 0; i < count; ++i)
+		{
+	//Even Header
+			if (fib->m_nWordVersion == 2)
+			{
+				if ( table[pos] == table[pos + 1] )
+				{
+					m_arCommonHeadersFooters.push_back( NULL );
+				}
+				else
+				{
+					m_arCommonHeadersFooters.push_back( new CharacterRange( initialPos + table[pos], table[pos + 1] - table[pos]) );
+				}
+				pos++;
+			}
+			else
+			{
+				for (size_t j = 0; j < 6; j++)
+				{
+					if ( table[pos] == table[pos + 1] )
+					{
+						arHeadersFooters[j]->push_back( NULL );
+					}
+					else
+					{
+						arHeadersFooters[j]->push_back( new CharacterRange( initialPos + table[pos], table[pos + 1] - table[pos]) );
+					}
+					pos++;
+
+					if (pos >= tableSize) break;
+				}
+			}
+			if (pos >= tableSize) break;
+		}
+		RELEASEARRAYOBJECTS(table);
 	}
 
 	HeaderAndFooterTable::~HeaderAndFooterTable()
@@ -152,5 +125,7 @@ namespace DocFileFormat
 		for_each (m_arFirstHeaders.begin(), m_arFirstHeaders.end(), DeleteDynamicObject());
 		for_each (m_arOddFooters.begin(),   m_arOddFooters.end(),   DeleteDynamicObject());
 		for_each (m_arOddHeaders.begin(),   m_arOddHeaders.end(),   DeleteDynamicObject());
+
+		for_each (m_arCommonHeadersFooters.begin(), m_arCommonHeadersFooters.end(), DeleteDynamicObject());		
 	}
 }

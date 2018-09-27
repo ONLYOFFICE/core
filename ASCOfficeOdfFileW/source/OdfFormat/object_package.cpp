@@ -30,16 +30,18 @@
  *
  */
 
-#include <cpdoccore/utf8cpp/utf8.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <utf8cpp/utf8.h>
+#include <xml/simple_xml_writer.h>
 
 #include "object_package.h"
 #include "mediaitems.h"
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../../Common/3dParty/cryptopp/osrng.h"
 
 namespace cpdoccore 
 {
@@ -51,12 +53,14 @@ namespace odf_writer
 		{
 			if (utf8_)
 			{
-				utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
+				content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(Content);
 			}else
 				content_utf8_ = std::string( Content.begin(), Content.end());
 		}
-
-		void simple_element::write(const std::wstring & RootPath)
+		simple_element::simple_element(const std::wstring & FileName, const std::string & Content) : file_name_(FileName), utf8_(false), content_utf8_(Content)
+		{
+		}
+		void simple_element::write(const std::wstring & RootPath, bool add_padding)
 		{
 			NSFile::CFileBinary file;
 			
@@ -65,9 +69,34 @@ namespace odf_writer
 				if (utf8_) 
 				{
 					std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-					file.WriteFile((BYTE*)root.c_str(), root.length());
+					file.WriteFile((BYTE*)root.c_str(), (DWORD)root.length());
+					if (add_padding)
+					{
+						CryptoPP::RandomPool prng;
+						
+						CryptoPP::SecByteBlock padding(1024);
+						CryptoPP::OS_GenerateRandomBlock(false, padding, padding.size());
+						prng.IncorporateEntropy(padding, padding.size());
+
+						std::string padding_start	= "<!-- ";
+						std::string padding_end		= "-->";
+						
+						file.WriteFile((BYTE*)padding_start.c_str(), (DWORD)padding_start.length());
+//--------------------------------
+						int nLength = 0;
+						char *pData = NULL;
+						NSFile::CBase64Converter::Encode(padding.data(), padding.size(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
+						if (pData)
+						{
+							file.WriteFile((BYTE*)pData, nLength);
+							delete []pData; pData = NULL;
+						}
+//--------------------------------
+						file.WriteFile((BYTE*)padding_end.c_str(), (DWORD)padding_end.length());
+						
+					}
 				}
-				file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
+				file.WriteFile((BYTE*)content_utf8_.c_str(), (DWORD)content_utf8_.length());
 
 				file.CloseFile();
 			}
@@ -89,21 +118,30 @@ namespace odf_writer
 //-------------------------------------------------------------------------------
 		void manifect_file::add_rels(rels  & r)
 		{
-			std::vector<relationship> & rels = r.relationships();
-			for (size_t i = 0; i < rels.size(); i++)
+			for (size_t i = 0; i < r.relationships_.size(); i++)
 			{
-				rels_.add(rels[i]);
+				rels_.add(r.relationships_[i]);
 			}
 		}
 		manifect_file::manifect_file(std::wstring t)
 		{
 			type_ = t;
 		}
+		binary_file::binary_file(const std::wstring &file_name, const std::string &value)
+		{
+			file_name_	= file_name;
+			value_		= value;
+		}	
+		void binary_file::write(const std::wstring & RootPath, bool add_padding)
+		{
+			simple_element elm(file_name_, value_);
+			elm.write(RootPath, false);
+		}
 		mimetype_file::mimetype_file(std::wstring t)
 		{
 			type_ = t;
 		}	
-		void mimetype_file::write(const std::wstring & RootPath)
+		void mimetype_file::write(const std::wstring & RootPath, bool add_padding)
 		{
 			std::wstringstream resStream;
 			
@@ -111,9 +149,9 @@ namespace odf_writer
 			resStream << type_;
 
 			simple_element elm(L"mimetype", resStream.str(),false);
-			elm.write(RootPath);
+			elm.write(RootPath, false);
 		}
-		void manifect_file::write(const std::wstring & RootPath)
+		void manifect_file::write(const std::wstring & RootPath, bool add_padding)
 		{
 			std::wstringstream resStream;
 			
@@ -129,10 +167,10 @@ namespace odf_writer
 			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"META-INF";
             NSDirectory::CreateDirectory(path);
 			simple_element elm(L"manifest.xml", resStream.str());
-			elm.write(path);
+			elm.write(path, false);
 		}
 
-		void meta_file::write(const std::wstring & RootPath)
+		void meta_file::write(const std::wstring & RootPath, bool add_padding)
 		{
 			std::wstringstream resStream;
 			CP_XML_WRITER(resStream)
@@ -157,7 +195,10 @@ namespace odf_writer
 					{  
 						CP_XML_NODE(L"meta:generator")
 						{
-							CP_XML_STREAM() << L"ONLYOFFICE";
+							std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+							if (sApplication.empty())
+								sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+							CP_XML_STREAM() << sApplication;
 #if defined(INTVER)
 							std::string s = VALUE2STR(INTVER);
 							CP_XML_STREAM() << L"/" << std::wstring (s.begin(), s.end() );
@@ -175,14 +216,14 @@ namespace odf_writer
 			}
 		    
 			simple_element elm(L"meta.xml", resStream.str());
-			elm.write(RootPath);
+			elm.write(RootPath, add_padding);
 		}
 //-------------------------------------------------------------------------------
-		media::media(_mediaitems & mediaitems, const std::wstring internal_folder, int type) : mediaitems_(mediaitems), type_(type), folder_(internal_folder)
+		media_files::media_files(_mediaitems & mediaitems, const std::wstring internal_folder, int type) : mediaitems_(mediaitems), type_(type), folder_(internal_folder)
 		{    
 		}
 
-		void media::write(const std::wstring & RootPath)
+		void media_files::write(const std::wstring & RootPath, bool add_padding)
 		{
 			OOX::CPath path (RootPath + (folder_.empty() ? L"" : FILE_SEPARATOR_STR) + folder_);
             NSDirectory::CreateDirectory(path.GetPath());
@@ -204,48 +245,48 @@ namespace odf_writer
 //-------------------------------------------------------------------------------
 		void object_files::set_content(content_content_ptr & _content)
 		{
-			content_.set_content(_content);
-			meta_ = element_ptr(new meta_file());
+			content.set_content(_content);
+			meta = element_ptr(new meta_file());
 		}
 		void object_files::set_mediaitems(_mediaitems & mediaitems)
 		{
 			if (mediaitems.count_image > 0)
 			{
-				pictures_ = element_ptr( new media(mediaitems, L"Pictures", 1) );
+				pictures = element_ptr( new media_files(mediaitems, L"Pictures", 1) );
 			}
 			if (mediaitems.count_media > 0)
 			{
-				media_ = element_ptr( new media(mediaitems, L"Media", 2) );
+				media = element_ptr( new media_files(mediaitems, L"Media", 2) );
 			}
 			if (mediaitems.count_object > 0)
 			{
-				oleObjects_ = element_ptr( new media(mediaitems, L"", 3) );
+				oleObjects = element_ptr( new media_files(mediaitems, L"", 3) );
 			}
 			if (mediaitems.count_object > 0)
 			{
-				imageObjects_ = element_ptr( new media(mediaitems, L"ObjectReplacements", 4) );
+				imageObjects = element_ptr( new media_files(mediaitems, L"ObjectReplacements", 4) );
 			}
 		}
 		void object_files::set_styles(content_simple_ptr & _content)
 		{
-			styles_.set_content(_content);
+			styles.set_content(_content);
 		}
 		void object_files::set_settings(content_simple_ptr & _content)
 		{
-			settings_.set_content(_content);
+			settings.set_content(_content);
 		}
-		void object_files::write(const std::wstring & RootPath)
+		void object_files::write(const std::wstring & RootPath, bool add_padding)
 		{
-			content_.write(RootPath);		
-			styles_.write(RootPath);
-			settings_.write(RootPath);
+			content.write(RootPath, add_padding);		
+			styles.write(RootPath, add_padding);
+			settings.write(RootPath, add_padding);
 			
-			if (meta_)		meta_->write(RootPath);
+			if (meta)			meta->write(RootPath, add_padding);
 
-			if (media_) media_->write(RootPath);
-			if (pictures_) pictures_->write(RootPath);
-			if (oleObjects_) oleObjects_->write(RootPath);
-			if (imageObjects_) imageObjects_->write(RootPath);
+			if (media)			media->write(RootPath, add_padding);
+			if (pictures)		pictures->write(RootPath, add_padding);
+			if (oleObjects)		oleObjects->write(RootPath, add_padding);
+			if (imageObjects)	imageObjects->write(RootPath, add_padding);
 		}
 
 		void odf_document::add_object(element_ptr _object, bool root)
@@ -266,29 +307,44 @@ namespace odf_writer
 		{
 			dynamic_cast<manifect_file*>(manifest_.get())->add_rels(r);
 		}
+		void odf_document::add_binary(const std::wstring &file_name, const std::string &value)
+		{
+			objects_.push_back(element_ptr(new binary_file(file_name, value)));
+			
+			rels rels_;
+			rels_.add(relationship(std::wstring(L"application/binary"), file_name));			
+			set_rels(rels_);
+		}
 
 		odf_document::odf_document(std::wstring type)
 		{
 			manifest_	=	element_ptr(new manifect_file(type));
 			mimetype_	=	element_ptr(new mimetype_file(type));
 		}
-		void odf_document::write(const std::wstring & RootPath)
+		void odf_document::write_manifest(const std::wstring & RootPath)
 		{
-			if (base_)base_->write(RootPath);
+			if (mimetype_)	
+				mimetype_->write(RootPath);
+			if (manifest_)	
+				manifest_->write(RootPath);
+		}
+		void odf_document::write(const std::wstring & RootPath, bool add_padding)
+		{
+			if (base_)base_->write(RootPath, add_padding);
 			
 			for (size_t i = 0; i < objects_.size(); i++)
 			{		
 				std::wstring path = RootPath + FILE_SEPARATOR_STR + objects_[i]->local_path;
                 NSDirectory::CreateDirectory(path);
 				
-				objects_[i]->write(path);
+				objects_[i]->write(path, add_padding);
 			}
-			if (manifest_)	manifest_->write(RootPath);
-			if (mimetype_)  mimetype_->write(RootPath);
-			if (settings_)	settings_->write(RootPath);			
+			if (manifest_)	manifest_->write(RootPath, add_padding);
+			if (mimetype_)  mimetype_->write(RootPath, add_padding);
+			if (settings_)	settings_->write(RootPath, add_padding);			
 		}
 		
-		void content_file::write(const std::wstring & RootPath)
+		void content_file::write(const std::wstring & RootPath, bool add_padding)
 		{
 			std::wstringstream resStream;
 			CP_XML_WRITER(resStream)
@@ -339,24 +395,24 @@ namespace odf_writer
 					CP_XML_ATTR(L"office:version",		L"1.2");				
 	
 					CP_XML_NODE(L"office:font-face-decls");
-					if (content_)
+					if (content)
 					{
-						CP_XML_STREAM() << content_->styles_str();
+						CP_XML_STREAM() << content->styles_str();
 					}
 					CP_XML_NODE(L"office:body")
 					{
-						if (content_)
+						if (content)
 						{
-							CP_XML_STREAM() << content_->content_str();
+							CP_XML_STREAM() << content->content_str();
 						}
 					}
 				}
 			}
 		    
 			simple_element elm(L"content.xml", resStream.str());
-			elm.write(RootPath);
+			elm.write(RootPath, add_padding);
 		}
-		void styles_file::write(const std::wstring & RootPath)
+		void styles_file::write(const std::wstring & RootPath, bool add_padding)
 		{
 			std::wstringstream resStream;
 			CP_XML_WRITER(resStream)
@@ -414,9 +470,9 @@ namespace odf_writer
 			}
 		    
 			simple_element elm(L"styles.xml", resStream.str());
-			elm.write(RootPath);
+			elm.write(RootPath, add_padding);
 		}
-		void settings_file::write(const std::wstring & RootPath)
+		void settings_file::write(const std::wstring & RootPath, bool add_padding)
 		{
 			std::wstringstream resStream;
 			CP_XML_WRITER(resStream)
@@ -438,7 +494,7 @@ namespace odf_writer
 			}
 		    
 			simple_element elm(L"settings.xml", resStream.str());
-			elm.write(RootPath);
+			elm.write(RootPath, add_padding);
 		}
 	}
 }

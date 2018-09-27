@@ -33,7 +33,7 @@
 #include "docx_conversion_context.h"
 #include "logging.h"
 #include <iostream>
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 #include "../odf/odfcontext.h"
 
 namespace cpdoccore { 
@@ -94,8 +94,16 @@ std::wstring docx_table_state::current_row_style() const
 
 double docx_table_state::get_current_cell_width()
 {
-	if (current_table_column_ < columns_width_.size())
-		return columns_width_[current_table_column_];
+	if (current_table_column_ + columns_spanned_num_ < columns_width_.size())
+	{
+		//return columns_width_[current_table_column_];
+		double res = 0;
+		for (int i = 0; i < columns_spanned_num_ + 1; i++)
+		{
+			res += columns_width_[current_table_column_ + i];
+		}
+		return res;
+	}
 	else
 		return 0;
 }

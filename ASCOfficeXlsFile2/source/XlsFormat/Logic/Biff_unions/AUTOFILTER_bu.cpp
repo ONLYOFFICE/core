@@ -165,7 +165,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 		int pos = ref.find(sheet_name);
 		if (pos >= 0)
 		{
-			pos = ref.find(L"!");
+			pos = ref.rfind(L"!");
 			if (pos > 0)
 				ref.erase(0, pos + 1);
 		}

@@ -37,6 +37,7 @@
 #include "../CommonInclude.h"
 
 #include "BookViews.h"
+#include "CalcPr.h"
 #include "DefinedNames.h"
 #include "Sheets.h"
 #include "WorkbookPr.h"
@@ -47,7 +48,6 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		//необработанные child:
-		//<calcPr>
 		//<customWorkbookViews>
 		//<extLst>
 		//<fileRecoveryPr>
@@ -129,6 +129,8 @@ namespace OOX
 
 							if ( _T("bookViews") == sName )
 								m_oBookViews = oReader;
+							else if ( _T("calcPr") == sName )
+								m_oCalcPr = oReader;
 							else if ( _T("definedNames") == sName )
 								m_oDefinedNames = oReader;
 							else if ( _T("sheets") == sName )
@@ -156,8 +158,9 @@ namespace OOX
 					m_oExternalReferences->toXML(sXml);
 				if(m_oDefinedNames.IsInit())
 					m_oDefinedNames->toXML(sXml);
+				if(m_oCalcPr.IsInit())
+					m_oCalcPr->toXML(sXml);
 
-				sXml.WriteString(_T("<calcPr calcId=\"145621\"/>"));
 				if(m_oPivotCachesXml.IsInit())
 					sXml.WriteString(m_oPivotCachesXml.get());
 				sXml.WriteString(_T("</workbook>"));
@@ -226,6 +229,22 @@ namespace OOX
 					pWorkbookView->m_oWindowHeight->SetValue(9720);
 				}
 			}
+			LONG GetActiveSheetIndex()
+			{
+				LONG lActiveSheet = 0;
+				std::wstring sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
+				// Get active sheet
+				if ( m_oBookViews.IsInit() && !m_oBookViews->m_arrItems.empty())
+				{
+					if (m_oBookViews->m_arrItems.front()->m_oActiveTab.IsInit())
+					{
+						lActiveSheet =  m_oBookViews->m_arrItems.front()->m_oActiveTab->GetValue();
+						if (0 > lActiveSheet)
+							lActiveSheet = 0;
+					}
+				}
+				return lActiveSheet;
+			}
 		private:
 			CPath											m_oReadPath;
 
@@ -236,6 +255,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
 			nullable<std::wstring>							m_oPivotCachesXml;
+            nullable<OOX::Spreadsheet::CCalcPr>				m_oCalcPr;
 			
 			bool											m_bMacroEnabled;
 		};

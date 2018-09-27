@@ -33,8 +33,8 @@
 
 #include "Converter.h"
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPOptional.h>
 
 namespace OOX 
 {
@@ -135,9 +135,8 @@ namespace Oox2Odf
 		~XlsxConverter();
 
 		virtual void convertDocument();
-		virtual void write(const std::wstring & path);
 		
- 		virtual OOX::IFileContainer						*current_document();
+		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual PPTX::Theme								*oox_theme();
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);
@@ -150,8 +149,6 @@ namespace Oox2Odf
 		
 		odf_writer::ods_conversion_context		*ods_context;
 
-		odf_writer::package::odf_document		*output_document;
-
 		void convert_sheets();
 		void convert_styles();		
 		
@@ -163,7 +160,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
-		void convert(OOX::Spreadsheet::CRow					*oox_row);
+		void convert(OOX::Spreadsheet::CRow					*oox_row, OOX::Spreadsheet::CRow *oox_row_prev);
 		void convert(OOX::Spreadsheet::CCell				*oox_cell);
 
 		void convert(OOX::Spreadsheet::CRun					*oox_text_run);

@@ -87,7 +87,7 @@ namespace DocFileFormat
 		bool isSectionEnd		( int cp );
 	// Writes a Paragraph that starts at the given cp and 
 	// ends at the next paragraph end mark or section end mark
-		int writeParagraph( int cp ); 
+		int writeParagraph( int cp, int cpEnd ); 
 	// Writes a Paragraph that starts at the given cpStart and 
 	// ends at the given cpEnd
 		int writeParagraph( int initialCp, int cpEnd, bool sectionEnd, bool lastBad = false );

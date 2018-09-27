@@ -47,6 +47,18 @@
 		17C1FEF81ACC4A67006B99B3 /* IRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9133C1AC58F000096D788 /* IRenderer.h */; };
 		17C1FEF91ACC4A67006B99B3 /* GlyphString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913701AC58F400096D788 /* GlyphString.h */; };
 		17C1FEFA1ACC4A67006B99B3 /* Graphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913311AC58F000096D788 /* Graphics.h */; };
+		8A404F8A2089F1BB00F2D5CF /* pro_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404F7F2089F1BA00F2D5CF /* pro_Image.cpp */; };
+		8A404F8B2089F1BB00F2D5CF /* Fonts.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404F802089F1BA00F2D5CF /* Fonts.h */; };
+		8A404F8C2089F1BB00F2D5CF /* pro_Fonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404F812089F1BA00F2D5CF /* pro_Fonts.cpp */; };
+		8A404F8F2089F1BB00F2D5CF /* pro_Graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404F842089F1BA00F2D5CF /* pro_Graphics.cpp */; };
+		8A404F902089F1BB00F2D5CF /* Graphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404F852089F1BA00F2D5CF /* Graphics.h */; };
+		8A404F922089F1BB00F2D5CF /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404F872089F1BA00F2D5CF /* Image.h */; };
+		8A404FC42089FF0800F2D5CF /* MetafileToRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FBF2089FF0700F2D5CF /* MetafileToRenderer.h */; };
+		8A404FC52089FF0800F2D5CF /* MetafileToRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC02089FF0700F2D5CF /* MetafileToRenderer.cpp */; };
+		8A404FC62089FF0800F2D5CF /* MetafileToGraphicsRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC12089FF0700F2D5CF /* MetafileToGraphicsRenderer.cpp */; };
+		8A404FC72089FF0800F2D5CF /* MetafileToGraphicsRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FC22089FF0700F2D5CF /* MetafileToGraphicsRenderer.h */; };
+		8A404FC82089FF0800F2D5CF /* MetafileToRendererCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FC32089FF0700F2D5CF /* MetafileToRendererCheck.h */; };
+		8A404FD7208A020D00F2D5CF /* BaseThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FD6208A020D00F2D5CF /* BaseThread.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,6 +103,18 @@
 		17D9136E1AC58F400096D788 /* FontPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontPath.h; sourceTree = "<group>"; };
 		17D9136F1AC58F400096D788 /* GlyphString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlyphString.cpp; sourceTree = "<group>"; };
 		17D913701AC58F400096D788 /* GlyphString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlyphString.h; sourceTree = "<group>"; };
+		8A404F7F2089F1BA00F2D5CF /* pro_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pro_Image.cpp; sourceTree = "<group>"; };
+		8A404F802089F1BA00F2D5CF /* Fonts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fonts.h; sourceTree = "<group>"; };
+		8A404F812089F1BA00F2D5CF /* pro_Fonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pro_Fonts.cpp; sourceTree = "<group>"; };
+		8A404F842089F1BA00F2D5CF /* pro_Graphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pro_Graphics.cpp; sourceTree = "<group>"; };
+		8A404F852089F1BA00F2D5CF /* Graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Graphics.h; sourceTree = "<group>"; };
+		8A404F872089F1BA00F2D5CF /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
+		8A404FBF2089FF0700F2D5CF /* MetafileToRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetafileToRenderer.h; path = ../../../graphics/MetafileToRenderer.h; sourceTree = "<group>"; };
+		8A404FC02089FF0700F2D5CF /* MetafileToRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetafileToRenderer.cpp; path = ../../../graphics/MetafileToRenderer.cpp; sourceTree = "<group>"; };
+		8A404FC12089FF0700F2D5CF /* MetafileToGraphicsRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetafileToGraphicsRenderer.cpp; path = ../../../graphics/MetafileToGraphicsRenderer.cpp; sourceTree = "<group>"; };
+		8A404FC22089FF0700F2D5CF /* MetafileToGraphicsRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetafileToGraphicsRenderer.h; path = ../../../graphics/MetafileToGraphicsRenderer.h; sourceTree = "<group>"; };
+		8A404FC32089FF0700F2D5CF /* MetafileToRendererCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetafileToRendererCheck.h; path = ../../../graphics/MetafileToRendererCheck.h; sourceTree = "<group>"; };
+		8A404FD6208A020D00F2D5CF /* BaseThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseThread.cpp; path = ../../../graphics/BaseThread.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,12 +147,14 @@
 		17D913171AC58E750096D788 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
+				8A404F7C2089F1BA00F2D5CF /* pro */,
 				17D9135F1AC58F400096D788 /* fontengine */,
 				17D913241AC58F000096D788 /* AggPlusEnums.h */,
 				17D913251AC58F000096D788 /* aggplustypes.h */,
 				17D913261AC58F000096D788 /* ArrowHead.cpp */,
 				17D913271AC58F000096D788 /* ArrowHead.h */,
 				17D913281AC58F000096D788 /* BaseThread.h */,
+				8A404FD6208A020D00F2D5CF /* BaseThread.cpp */,
 				17D913291AC58F000096D788 /* Brush.cpp */,
 				17D9132A1AC58F000096D788 /* Brush.h */,
 				17D9132B1AC58F000096D788 /* Clip.cpp */,
@@ -147,6 +173,11 @@
 				17D9133C1AC58F000096D788 /* IRenderer.h */,
 				17D9133D1AC58F000096D788 /* Matrix.cpp */,
 				17D9133E1AC58F000096D788 /* Matrix.h */,
+				8A404FC12089FF0700F2D5CF /* MetafileToGraphicsRenderer.cpp */,
+				8A404FC22089FF0700F2D5CF /* MetafileToGraphicsRenderer.h */,
+				8A404FC02089FF0700F2D5CF /* MetafileToRenderer.cpp */,
+				8A404FBF2089FF0700F2D5CF /* MetafileToRenderer.h */,
+				8A404FC32089FF0700F2D5CF /* MetafileToRendererCheck.h */,
 				17D9133F1AC58F000096D788 /* structures.h */,
 				17D913401AC58F000096D788 /* TemporaryCS.cpp */,
 				17D913411AC58F000096D788 /* TemporaryCS.h */,
@@ -176,6 +207,20 @@
 			path = ../../../fontengine;
 			sourceTree = "<group>";
 		};
+		8A404F7C2089F1BA00F2D5CF /* pro */ = {
+			isa = PBXGroup;
+			children = (
+				8A404F7F2089F1BA00F2D5CF /* pro_Image.cpp */,
+				8A404F802089F1BA00F2D5CF /* Fonts.h */,
+				8A404F812089F1BA00F2D5CF /* pro_Fonts.cpp */,
+				8A404F842089F1BA00F2D5CF /* pro_Graphics.cpp */,
+				8A404F852089F1BA00F2D5CF /* Graphics.h */,
+				8A404F872089F1BA00F2D5CF /* Image.h */,
+			);
+			name = pro;
+			path = ../../../graphics/pro;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -188,17 +233,23 @@
 				17C1FEE51ACC4A67006B99B3 /* Color.h in Headers */,
 				17C1FEE61ACC4A67006B99B3 /* structures.h in Headers */,
 				17C1FEE71ACC4A67006B99B3 /* aggplustypes.h in Headers */,
+				8A404FC72089FF0800F2D5CF /* MetafileToGraphicsRenderer.h in Headers */,
 				17C1FEE81ACC4A67006B99B3 /* FontFile.h in Headers */,
 				17C1FEE91ACC4A67006B99B3 /* TemporaryCS.h in Headers */,
 				17C1FEEA1ACC4A67006B99B3 /* ApplicationFontsWorker.h in Headers */,
 				17C1FEEB1ACC4A67006B99B3 /* FontManager.h in Headers */,
+				8A404FC82089FF0800F2D5CF /* MetafileToRendererCheck.h in Headers */,
+				8A404F8B2089F1BB00F2D5CF /* Fonts.h in Headers */,
 				17C1FEEC1ACC4A67006B99B3 /* Matrix.h in Headers */,
+				8A404F902089F1BB00F2D5CF /* Graphics.h in Headers */,
 				17C1FEED1ACC4A67006B99B3 /* BaseThread.h in Headers */,
 				17C1FEEE1ACC4A67006B99B3 /* Clip.h in Headers */,
 				17C1FEEF1ACC4A67006B99B3 /* AggPlusEnums.h in Headers */,
 				17C1FEF01ACC4A67006B99B3 /* Defines.h in Headers */,
 				17C1FEF11ACC4A67006B99B3 /* ArrowHead.h in Headers */,
 				17C1FEF21ACC4A67006B99B3 /* Timer.h in Headers */,
+				8A404F922089F1BB00F2D5CF /* Image.h in Headers */,
+				8A404FC42089FF0800F2D5CF /* MetafileToRenderer.h in Headers */,
 				17C1FEF31ACC4A67006B99B3 /* GraphicsRenderer.h in Headers */,
 				17C1FEF41ACC4A67006B99B3 /* ImageFilesCache.h in Headers */,
 				17C1FEF51ACC4A67006B99B3 /* Brush.h in Headers */,
@@ -236,7 +287,7 @@
 		17D9130D1AC58E750096D788 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 			};
 			buildConfigurationList = 17D913101AC58E750096D788 /* Build configuration list for PBXProject "graphics" */;
@@ -262,20 +313,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				17C1FED11ACC4A67006B99B3 /* Matrix.cpp in Sources */,
+				8A404F8A2089F1BB00F2D5CF /* pro_Image.cpp in Sources */,
 				17C1FED21ACC4A67006B99B3 /* ApplicationFonts.cpp in Sources */,
 				17C1FED31ACC4A67006B99B3 /* FontFile.cpp in Sources */,
 				17C1FED41ACC4A67006B99B3 /* ApplicationFonts_ios.mm in Sources */,
 				17C1FED51ACC4A67006B99B3 /* ApplicationFontsWorker.cpp in Sources */,
+				8A404FD7208A020D00F2D5CF /* BaseThread.cpp in Sources */,
 				17C1FED61ACC4A67006B99B3 /* Clip.cpp in Sources */,
 				17C1FED71ACC4A67006B99B3 /* FontPath.cpp in Sources */,
 				17C1FED81ACC4A67006B99B3 /* Brush.cpp in Sources */,
 				17C1FED91ACC4A67006B99B3 /* Graphics.cpp in Sources */,
+				8A404F8F2089F1BB00F2D5CF /* pro_Graphics.cpp in Sources */,
 				17C1FEDA1ACC4A67006B99B3 /* GraphicsPath.cpp in Sources */,
 				17C1FEDB1ACC4A67006B99B3 /* Image.cpp in Sources */,
 				17C1FEDC1ACC4A67006B99B3 /* GlyphString.cpp in Sources */,
 				17C1FEDD1ACC4A67006B99B3 /* FontManager.cpp in Sources */,
 				17C1FEDE1ACC4A67006B99B3 /* ArrowHead.cpp in Sources */,
+				8A404FC52089FF0800F2D5CF /* MetafileToRenderer.cpp in Sources */,
 				17C1FEDF1ACC4A67006B99B3 /* TemporaryCS.cpp in Sources */,
+				8A404F8C2089F1BB00F2D5CF /* pro_Fonts.cpp in Sources */,
+				8A404FC62089FF0800F2D5CF /* MetafileToGraphicsRenderer.cpp in Sources */,
 				17C1FEE01ACC4A67006B99B3 /* GraphicsRenderer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,7 +363,7 @@
 					"$(PROJECT_DIR)/../../agg-2.4/include",
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = graphics_ios;
 				SDKROOT = iphoneos;
 			};
@@ -335,7 +392,7 @@
 					"$(PROJECT_DIR)/../../agg-2.4/include",
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = graphics_ios;
 				SDKROOT = iphoneos;
 			};
@@ -353,12 +410,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -404,12 +463,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

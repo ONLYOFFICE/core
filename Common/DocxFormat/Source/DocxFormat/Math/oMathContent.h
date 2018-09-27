@@ -653,7 +653,7 @@ namespace OOX
 			}
 			virtual void  fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("m:alnAt"), m_alnAt );
+				XmlMacroReadAttributeBase( oNode, _T("m:alnAt"), m_alnAt );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1910,7 +1910,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("m:val"), m_val );
+				XmlMacroReadAttributeBase( oNode, _T("m:val"), m_val );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -3016,7 +3016,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("xml:space"), m_oSpace );
+				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
@@ -3444,10 +3444,10 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:date"),   m_oDate  );
-				oNode.ReadAttributeBase( _T("w:id"),     m_oId );
-				oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+				XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate  );
+				XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
 
 				m_oRun = oNode;
 			}
@@ -3536,10 +3536,10 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:date"),   m_oDate  );
-				oNode.ReadAttributeBase( _T("w:id"),     m_oId );
-				oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+				XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate  );
+				XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
 
 				m_oRun = oNode;
 			}

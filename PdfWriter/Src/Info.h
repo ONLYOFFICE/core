@@ -61,9 +61,10 @@ namespace PdfWriter
 		int  nHour;
 		int  nMinutes;
 		int  nSeconds;
-		char nInd;
 		int  nOffHour;
 		int  nOffMinutes;
+
+		void AppendToString(std::string &s) const;
 	};
 
 	class CXref;
@@ -76,6 +77,9 @@ namespace PdfWriter
 		const char* GetInfo(EInfoType eType);
 		void        SetInfo(EInfoType eType, const TDate& oDate);
 		void        SetCreationTime();
+		TDate       GetDate();
+	private:
+		TDate m_oDate;
 	};
 }
 #endif // _PDF_WRITER_SRC_INFO_H

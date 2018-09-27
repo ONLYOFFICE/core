@@ -4,6 +4,21 @@
 #include "../source/ECMACryptFile.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+
+	#if defined(_DEBUG)
+		//#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+	#else
+		//#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+	#endif
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	std::wstring srcFileName	= L"D:\\test\\_crypted\\test-111.docx";
@@ -29,11 +44,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	COfficeFileFormatChecker fileChecker;
 
-	std::wstring sDocumentID;
+	std::wstring sDocumentID = fileChecker.getDocumentID(L"d:/test/_pdf/Test3-pdfa-my.pdf");
 	
-	if (fileChecker.isMS_OFFCRYPTOFormatFile(dstFileName, sDocumentID))
-	{
-	}
 	return 0;
 }
 

@@ -47,7 +47,8 @@ style_instance::style_instance(
 		bool IsDefault,
 		const std::wstring & ParentStyleName,
 		const std::wstring & NextStyleName,
-		const std::wstring & DataStyleName
+		const std::wstring & DataStyleName,
+		const std::wstring & StyleClass
 		) :
 	container_		(Container),
     name_			(Name),
@@ -56,6 +57,7 @@ style_instance::style_instance(
     is_automatic_	(IsAutomatic),
     is_default_		(IsDefault),
     next_name_		(NextStyleName),
+	style_class_	(StyleClass),
     next_			(Container->style_by_name(NextStyleName, style_type_, false)),
     data_style_name_(DataStyleName)
 {
@@ -69,7 +71,7 @@ style_instance::style_instance(
    
 style_instance * styles_container::hyperlink_style()
 {
-    if (hyperlink_style_pos_ > 0)
+    if (hyperlink_style_pos_ > 0 && hyperlink_style_pos_ < instances_.size())
         return instances_[hyperlink_style_pos_].get();
     else
         return NULL;
@@ -83,7 +85,8 @@ void styles_container::add_style(	const std::wstring & Name,
 									bool IsDefault,
 									const std::wstring & ParentStyleName_,
 									const std::wstring & NextStyleName,
-									const std::wstring & DataStyleName)
+									const std::wstring & DataStyleName,
+									const std::wstring & StyleClass)
 {
 	std::wstring ParentStyleName = ParentStyleName_;
 
@@ -91,9 +94,8 @@ void styles_container::add_style(	const std::wstring & Name,
 	{
 		ParentStyleName = L"";//иначе в коде возможно зацикливание.
 	}
-    style_instance_ptr newStyle = style_instance_ptr( 
-        new style_instance(this, Name, Type, Content, IsAutomatic, IsDefault, ParentStyleName, NextStyleName, DataStyleName) 
-        );
+    style_instance_ptr newStyle = style_instance_ptr( new style_instance(this, Name, Type, Content, IsAutomatic, IsDefault, 
+							ParentStyleName, NextStyleName, DataStyleName, StyleClass));
 
     instances_.push_back(newStyle);
     int pos = static_cast<int>(instances_.size() - 1);
@@ -179,6 +181,10 @@ bool style_instance::is_default() const
 const std::wstring & style_instance::data_style_name() const
 {
     return data_style_name_;
+}
+const std::wstring & style_instance::style_class() const
+{
+    return style_class_;
 }
 
 style_instance * styles_container::style_by_name(const std::wstring & Name, style_family::type Type, bool object_in_styles) const
@@ -327,7 +333,7 @@ page_layout_instance::page_layout_instance(const style_page_layout * StylePageLa
 
 const std::wstring & page_layout_instance::name() const
 {     
-    return style_page_layout_->attlist_.get_style_name();
+    return style_page_layout_->style_name_;
 }
 
 style_page_layout_properties * page_layout_instance::properties() const
@@ -365,6 +371,11 @@ void page_layout_instance::docx_serialize(std::wostream & strm, oox::docx_conver
         _CP_OPT(length) bottom = attr.fo_min_height_ ? attr.fo_min_height_ : attr.svg_height_;
         Context.get_header_footer_context().set_footer(bottom);
     }
+
+	if ( style_page_layout_->style_page_usage_.get_type() == page_usage::Mirrored )
+	{
+		Context.set_settings_property(odf_reader::_property(L"mirrorMargins",true));
+	}
 	
 	style_page_layout_properties * props = properties();
     if (props)
@@ -439,7 +450,7 @@ const page_layout_instance * page_layout_container::page_layout_first() const
 bool page_layout_container::compare_page_properties(const std::wstring & master1, const std::wstring & master2)
 {
 	const page_layout_instance *page_layout1 = page_layout_by_style(master1);
-	const page_layout_instance *page_layout2 = page_layout_by_style(master1);
+	const page_layout_instance *page_layout2 = page_layout_by_style(master2);
 
 	if (!page_layout1 || !page_layout2) return true;
 	if (!page_layout1->style_page_layout_ || !page_layout1->style_page_layout_) return true;
@@ -447,7 +458,9 @@ bool page_layout_container::compare_page_properties(const std::wstring & master1
 	style_page_layout_properties *props1 = dynamic_cast<style_page_layout_properties*>(page_layout1->style_page_layout_->style_page_layout_properties_.get());
 	style_page_layout_properties *props2 = dynamic_cast<style_page_layout_properties*>(page_layout2->style_page_layout_->style_page_layout_properties_.get());
 	
-	if (!props1 || !props1) return true;
+	if (!props1 || !props2) return true;
+
+	if (props1 == props2) return true;
 
 	return props1->attlist_.compare(props2->attlist_);
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -33,61 +33,65 @@
 #define _BUILD_MATRIX_H_
 
 #include "AggPlusEnums.h"
-#include "../agg-2.4/include/agg_trans_affine.h"
+#include "./config.h"
 
 namespace Aggplus
 {
+    class CMatrix_private;
+    class GRAPHICS_DECL CMatrix
+    {
+    public:
+        CMatrix(double m11, double m12, double m21, double m22, double dx, double dy);
+        CMatrix();
+        CMatrix(const CMatrix& oSrc);
 
-class CMatrix  
-{
-	friend class CGraphics;
-	friend class CGraphicsPath;
+        ~CMatrix();
 
-public:
-	CMatrix(double m11, double m12, double m21, double m22, double dx, double dy);
-	CMatrix();
-    CMatrix(const CMatrix& oSrc);
-	
-	~CMatrix();
-	
-	void Translate(double offsetX, double offsetY, MatrixOrder order = MatrixOrderPrepend);
-	void Scale(double scaleX, double scaleY, MatrixOrder order = MatrixOrderPrepend);
-	void Shear(double shearX, double shearY, MatrixOrder order = MatrixOrderPrepend);
+        void Translate(double offsetX, double offsetY, MatrixOrder order = MatrixOrderPrepend);
+        void Scale(double scaleX, double scaleY, MatrixOrder order = MatrixOrderPrepend);
+        void Shear(double shearX, double shearY, MatrixOrder order = MatrixOrderPrepend);
 
-	void TransformVectors(PointF* pts, int count);
-	void TransformPoints(PointF* pts, int count);
-	void TransformPoint(double& x, double& y);
+        void TransformVectors(PointF* pts, int count);
+        void TransformPoints(PointF* pts, int count);
+        void TransformPoint(double& x, double& y);
+        void TransformPoints(PointF* dst, const PointF* src, int count);
 
-	void Rotate(double angle, MatrixOrder order = MatrixOrderPrepend);
-	void RotateAt(double angle, const PointF &center, MatrixOrder order = MatrixOrderPrepend);
-	void RotateAt(double angle, double x, double y, MatrixOrder order = MatrixOrderPrepend);
+        void Rotate(double angle, MatrixOrder order = MatrixOrderPrepend);
+        void RotateAt(double angle, const PointF &center, MatrixOrder order = MatrixOrderPrepend);
+        void RotateAt(double angle, double x, double y, MatrixOrder order = MatrixOrderPrepend);
 
-	void Multiply(const CMatrix* matrix, MatrixOrder order = MatrixOrderPrepend);
+        void Multiply(const CMatrix* matrix, MatrixOrder order = MatrixOrderPrepend);
 
-	double OffsetX() const;
-	double OffsetY() const;
-	
-	Status GetElements(float* m) const;
-	Status GetElements(double* m) const;
+        double OffsetX() const;
+        double OffsetY() const;
 
-	void Reset();
-	bool IsIdentity() const;
-	bool IsIdentity2() const;
+        double sx() const;
+        double sy() const;
+        double shx() const;
+        double shy() const;
+        double tx() const;
+        double ty() const;
+        double rotation();
+        void SetElements(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx = 0, const double& ty = 0);
 
-	const CMatrix& operator=(const CMatrix& Src);
+        Status GetElements(float* m) const;
+        Status GetElements(double* m) const;
 
-	Status Invert();
+        void Reset();
+        bool IsIdentity(const double& eps = 0.00001) const;
+        bool IsIdentity2(const double& eps = 0.00001) const;
 
-	//Temp
-	//Used in X_BrushLinearGradient constructor
-	double z_Rotation() const;
+        static bool IsEqual(const CMatrix* m1, const CMatrix* m2, const double& eps = 0.001, bool bIsOnlyMain = false);
 
-	void TransformPoints( PointF* dst, const PointF* src, int count ) const;
+        const CMatrix& operator=(const CMatrix& Src);
 
-public:
-	agg::trans_affine m_agg_mtx;
-};
+        Status Invert();
 
+        double z_Rotation() const;
+
+    public:
+        CMatrix_private* m_internal;
+    };
 }
 
 #endif // _BUILD_MATRIX_H_

@@ -43,6 +43,7 @@ namespace PdfWriter
 	class CXref;
 	class CStream;
 	class CEncrypt;
+	class CDocument;
 
 	typedef enum
 	{
@@ -76,7 +77,8 @@ namespace PdfWriter
 		dict_type_ANNOTATION   = 0x08,
 		dict_type_ENCRYPT      = 0x09,
 		dict_type_EXT_GSTATE   = 0x0A,
-		dict_type_EXT_GSTATE_R = 0x0B  /* read only object */
+		dict_type_EXT_GSTATE_R = 0x0B,  /* read only object */
+		dict_type_METADATA     = 0x0C
 	} EDictType;
 
 	class CObjectBase
@@ -390,7 +392,7 @@ namespace PdfWriter
 	{
 	public:
 
-		CXref(unsigned int unOffset);
+		CXref(CDocument* pDocument, unsigned int unOffset);
 		~CXref();
 
 		TXrefEntry* GetEntry(unsigned int unIndex) const;
@@ -405,6 +407,7 @@ namespace PdfWriter
 		{
 			return m_pTrailer;
 		}
+		bool        IsPDFA() const;
 
 	private:
 
@@ -416,6 +419,7 @@ namespace PdfWriter
 		unsigned int             m_unAddr;
 		CXref*                   m_pPrev;
 		CDictObject*             m_pTrailer;
+		CDocument*               m_pDocument;
 	};
 }
 

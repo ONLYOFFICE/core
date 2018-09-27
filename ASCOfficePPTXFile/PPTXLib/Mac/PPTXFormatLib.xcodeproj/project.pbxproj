@@ -831,6 +831,7 @@
 		696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */; };
 		696791831D9E8B81002CA4BA /* MathParaWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791811D9E8B81002CA4BA /* MathParaWrapper.h */; };
 		697DFC1E200F51A700F0A9AF /* WavAudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */; };
+		8A9FACE120777BA7007787F6 /* Structures.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9FACE020777BA7007787F6 /* Structures.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1661,6 +1662,7 @@
 		696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathParaWrapper.cpp; sourceTree = "<group>"; };
 		696791811D9E8B81002CA4BA /* MathParaWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathParaWrapper.h; sourceTree = "<group>"; };
 		697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WavAudioFile.cpp; sourceTree = "<group>"; };
+		8A9FACE020777BA7007787F6 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Structures.h; path = Drawing/Structures.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2272,6 +2274,7 @@
 				17D91A211AC5A4DF0096D788 /* PPTXWriter.h */,
 				17D91A221AC5A4DF0096D788 /* WMFToImageConverter.h */,
 				17D91A231AC5A4DF0096D788 /* XmlWriter.h */,
+				8A9FACE020777BA7007787F6 /* Structures.h */,
 			);
 			name = Editor;
 			path = ../../Editor;
@@ -2787,6 +2790,7 @@
 				69656F061FC2FF800028C4BA /* CSnip2DiagRect.h in Headers */,
 				17C1FCF51ACC429D006B99B3 /* HslEffect.h in Headers */,
 				69656DDA1FC2FF800028C4BA /* AccentCallout1Type.h in Headers */,
+				8A9FACE120777BA7007787F6 /* Structures.h in Headers */,
 				17C1FCF61ACC429D006B99B3 /* NotesTextViewPr.h in Headers */,
 				69656EA51FC2FF800028C4BA /* CDonut.h in Headers */,
 				17C1FCF71ACC429D006B99B3 /* AlphaCeiling.h in Headers */,
@@ -3545,7 +3549,7 @@
 		17063B5B1AC5708E0056A3F1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 			};
 			buildConfigurationList = 17063B5E1AC5708E0056A3F1 /* Build configuration list for PBXProject "PPTXFormatLib" */;
@@ -3637,12 +3641,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -3688,12 +3694,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -3756,7 +3764,7 @@
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source",
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = PPTXFormatLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -3798,7 +3806,7 @@
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source",
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = PPTXFormatLib_ios;
 				SDKROOT = iphoneos;
 			};

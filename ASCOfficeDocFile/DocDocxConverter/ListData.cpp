@@ -32,6 +32,8 @@
 
 #include "ListData.h"
 
+#include <boost/make_shared.hpp>
+
 #include <algorithm> 
 #include <functional> 
 #include <cctype>
@@ -44,6 +46,11 @@ namespace DocFileFormat
 		for_each(rglvl->begin(), rglvl->end(), DeleteDynamicObject());
 
 		RELEASEOBJECT(rglvl);
+	}
+
+	ListDataPtr ListData::create(VirtualStreamReader* reader, int length)
+	{
+		return boost::make_shared<ListData>(reader, length);
 	}
 
 	// Parses the StreamReader to retrieve a ListData
@@ -80,9 +87,85 @@ namespace DocFileFormat
 
 		grfhic		= reader->ReadByte();
 	}
+	NumberingDescriptorPtr NumberingDescriptor::create(unsigned char * data, int length)
+	{
+		return boost::make_shared<NumberingDescriptor>(data, length);
+	}
+	bool NumberingDescriptor::operator == (const NumberingDescriptor & val) const
+	{
+		const bool res =     
+		nfc				== val.nfc &&
+		cbTextBefore	== val.cbTextBefore &&
+		cbTextAfter		== val.cbTextAfter &&
+		jc				== val.jc &&
+		fPrev			== val.fPrev &&
+		fHang			== val.fHang &&
+		fSetBold		== val.fSetBold &&
+		fSetItalic		== val.fSetItalic &&
+		fSetSmallCaps	== val.fSetSmallCaps &&
+		fSetCaps		== val.fSetCaps &&
+		fSetStrike		== val.fSetStrike &&
+		fSetKul			== val.fSetKul &&
+		fPrevSpace		== val.fPrevSpace &&
+		fBold			== val.fBold &&
+		fItalic			== val.fItalic &&
+		fSmallCaps		== val.fSmallCaps &&
+		fCaps			== val.fCaps &&
+		fStrike			== val.fStrike &&
+		kul				== val.kul &&
+		ico				== val.ico &&
+		ftc				== val.ftc &&
+		hps				== val.hps &&
+		iStartAt		== val.iStartAt &&
+		dxaIndent		== val.dxaIndent &&
+		dxaSpace		== val.dxaSpace &&
+		fNumber1		== val.fNumber1 &&
+		fNumberAcross	== val.fNumberAcross &&
+		fRestartHdn		== val.fRestartHdn &&
+		fSpareX			== val.fSpareX;
 
+		return res;
+	}
+	bool NumberingDescriptor::operator == (const NumberingDescriptorPtr & val) const
+	{
+		if (!val) return false;
+		const bool res =     
+		nfc				== val->nfc &&
+		cbTextBefore	== val->cbTextBefore &&
+		cbTextAfter		== val->cbTextAfter &&
+		jc				== val->jc &&
+		fPrev			== val->fPrev &&
+		fHang			== val->fHang &&
+		fSetBold		== val->fSetBold &&
+		fSetItalic		== val->fSetItalic &&
+		fSetSmallCaps	== val->fSetSmallCaps &&
+		fSetCaps		== val->fSetCaps &&
+		fSetStrike		== val->fSetStrike &&
+		fSetKul			== val->fSetKul &&
+		fPrevSpace		== val->fPrevSpace &&
+		fBold			== val->fBold &&
+		fItalic			== val->fItalic &&
+		fSmallCaps		== val->fSmallCaps &&
+		fCaps			== val->fCaps &&
+		fStrike			== val->fStrike &&
+		kul				== val->kul &&
+		ico				== val->ico &&
+		ftc				== val->ftc &&
+		hps				== val->hps &&
+		iStartAt		== val->iStartAt &&
+		dxaIndent		== val->dxaIndent &&
+		dxaSpace		== val->dxaSpace &&
+		fNumber1		== val->fNumber1 &&
+		fNumberAcross	== val->fNumberAcross &&
+		fRestartHdn		== val->fRestartHdn &&
+		fSpareX			== val->fSpareX;
+
+		return res;
+
+	}
 	NumberingDescriptor::NumberingDescriptor( unsigned char * data, int length )
 	{
+		id				= 0;
 		nfc				= FormatUtils::BytesToUChar(data, 0, length);
 		cbTextBefore	= FormatUtils::BytesToUChar(data, 1, length);
 		cbTextAfter		= FormatUtils::BytesToUChar(data, 2, length);
@@ -152,37 +235,53 @@ namespace DocFileFormat
 	}
 	OutlineListDescriptor::OutlineListDescriptor( unsigned char * data, int length )
 	{
-		int pos = 0;
+		if (length < 212)
+		{
+			//int sz  =  FormatUtils::BytesToUChar(data, 0, length);
+			int pos = 0;
 
-		for (int i = 0 ; i < 9; i++)
-		{
-            lvl[i].Parse(data + pos, length - pos);
-			pos += 16;
+			for (int i = 0 ; i < 9; i++)
+			{
+				lvl[i].Parse(data + pos, 1);
+				pos += 1;
+			}
 		}
+		else
+		{
+			int pos = 0;
 
-        fRestartHdr	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		fSpareOlst2	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		fSpareOlst3	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		fSpareOlst4	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		
-		short strLen = length - pos;
-		
-		while (strLen > 0)
-		{
-			if (data[strLen + 20 - 1] != 0)
-				break;
-			strLen--;
+			for (int i = 0 ; i < 9; i++)
+			{
+				lvl[i].Parse(data + pos, length - pos);
+				pos += 16;
+			}
+
+			fRestartHdr	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			fSpareOlst2	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			fSpareOlst3	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			fSpareOlst4	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			
+			short strLen = length - pos;
+			
+			while (strLen > 0)
+			{
+				if (data[strLen + 20 - 1] != 0)
+					break;
+				strLen--;
+			}
+			if (strLen > 0)
+			{
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
+			}	
 		}
-		if (strLen > 0)
-		{
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
-		}	
 	}
 
 	ByteStructure* OutlineListDescriptor::ConstructObject(VirtualStreamReader* reader, int length)
 	{
-		unsigned char *data = reader->ReadBytes(212, true);
-		OutlineListDescriptor *newObject = new OutlineListDescriptor(data, 212);
+		int sz = GetSize(reader->nWordVersion);
+
+		unsigned char *data = reader->ReadBytes(sz, true);
+		OutlineListDescriptor *newObject = new OutlineListDescriptor(data, sz);
 
 		delete []data;
 

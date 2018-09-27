@@ -2674,5 +2674,80 @@ namespace SimpleTypes
 			SimpleType_FromString     (EDdeValueType)
 			SimpleType_Operator_Equal (CDdeValueType)
 		};
+
+		enum ECalcMode
+		{
+			calcmodeAuto			=  0,
+			calcmodeAutoNoTable	=  1,
+			calcmodeManual		=  2,
+		};
+
+		template<ECalcMode eDefValue = calcmodeAuto>
+		class CCalcMode : public CSimpleType<ECalcMode, eDefValue>
+		{
+		public:
+			CCalcMode() {}
+
+			virtual ECalcMode FromString(std::wstring &sValue)
+			{
+				if      ( _T("auto")      == sValue ) this->m_eValue = calcmodeAuto;
+				else if ( _T("autoNoTable")  == sValue ) this->m_eValue = calcmodeAutoNoTable;
+				else if ( _T("manual")     == sValue ) this->m_eValue = calcmodeManual;
+				else                                    this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual std::wstring       ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case calcmodeAuto : return _T("auto");break;
+				case calcmodeAutoNoTable : return _T("autoNoTable");break;
+				case calcmodeManual : return _T("manual");break;
+				default : return _T("auto");
+
+				}
+			}
+
+			SimpleType_FromString     (ECalcMode)
+			SimpleType_Operator_Equal (CCalcMode)
+		};
+
+		enum ERefMode
+		{
+			refmodeA1	=  0,
+			refmodeR1C1	=  1
+		};
+
+		template<ERefMode eDefValue = refmodeA1>
+		class CRefMode : public CSimpleType<ERefMode, eDefValue>
+		{
+		public:
+			CRefMode() {}
+
+			virtual ERefMode FromString(std::wstring &sValue)
+			{
+				if      ( _T("A1")    == sValue ) this->m_eValue = refmodeA1;
+				else if ( _T("R1C1")  == sValue ) this->m_eValue = refmodeR1C1;
+				else                              this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual std::wstring       ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case refmodeA1 : return _T("A1");break;
+				case refmodeR1C1 : return _T("R1C1");break;
+				default : return _T("A1");
+
+				}
+			}
+
+			SimpleType_FromString     (ERefMode)
+			SimpleType_Operator_Equal (CRefMode)
+		};
 	};// Spreadsheet
 } // SimpleTypes

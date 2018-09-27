@@ -31,10 +31,11 @@
  */
 
 #include "../../DesktopEditor/common/Types.h"
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
 #include <string>
 
 struct ProgressCallback;
 
-int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, bool bOnlyPresentation, const ProgressCallback* CallBack);
+_UINT32 ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* CallBack);
 
-int ConvertOTF2ODF(const std::wstring & dstPath);
+_UINT32 ConvertOTF2ODF(const std::wstring & otfPath);

@@ -59,7 +59,6 @@
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
-using namespace NSGuidesVML;
 
 void DUMP_MESSAGE_TO_FILE(const char* strMessage)
 {
@@ -171,7 +170,7 @@ namespace NS_DWC_Common
 				alpha = (BYTE)(XmlUtils::GetDouble(str) * 256);
 			}
 			else
-				alpha = (BYTE)XmlUtils::GetDouble(opacityStr) * 256;
+				alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) * 256);
 		}
 		return alpha;
 	}
@@ -853,6 +852,10 @@ bool CElementProps::CopyProperty(ASC_VARIANT& oDst, const ASC_VARIANT& oSrc)
 	}
 	return true;
 }
+
+namespace NSBinPptxRW
+{
+
 CDrawingConverter::CElement::CElement()
 {
 	m_pElement	= NULL;
@@ -1591,7 +1594,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 	OOX::CDiagramData*		pDiagramData	= NULL;
 	OOX::CDiagramDrawing*	pDiagramDrawing	= NULL;
 
-	oNode.ReadAttributeBase(L"r:dm", id_data);
+    XmlMacroReadAttributeBase(oNode, L"r:dm", id_data);
 	
 	if (id_data.IsInit())
 	{
@@ -2048,7 +2051,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					int R = 255,	G = 255,	B = 255;
 
 					nullable_string sFillColor;
-					oNodeShape.ReadAttributeBase(L"fillcolor", sFillColor);
+                    XmlMacroReadAttributeBase(oNodeShape, L"fillcolor", sFillColor);
 					if (sFillColor.is_init())
 					{
 						eFillType = etSolidFill;
@@ -2071,7 +2074,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					{
 						// default color for vml = white
 						nullable_string sFilled;
-						oNodeShape.ReadAttributeBase(L"filled", sFilled);
+                        XmlMacroReadAttributeBase(oNodeShape, L"filled", sFilled);
 						if (!sFilled.is_init() || (*sFilled != L"false") && *sFilled != L"f")
 						{
 							eFillType = etSolidFill;
@@ -2136,21 +2139,21 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							}
 
 							nullable_string sFitPath;
-							oNodeP.ReadAttributeBase(L"fitpath", sFitPath);
+                            XmlMacroReadAttributeBase(oNodeP, L"fitpath", sFitPath);
 							if (sFitPath.is_init() && (*sFitPath == L"true" || *sFitPath == L"t"))
 							{
 								bFitPath = true;
 							}
 
 							nullable_string sFitShape;
-							oNodeP.ReadAttributeBase(L"fitshape", sFitShape);
+                            XmlMacroReadAttributeBase(oNodeP, L"fitshape", sFitShape);
 							if (sFitShape.is_init() && (*sFitShape == L"true" || *sFitShape == L"t"))
 							{
 								bFitShape = true;
 							}
 
 							nullable_string sTrim;
-							oNodeP.ReadAttributeBase(L"trim", sTrim);
+                            XmlMacroReadAttributeBase(oNodeP, L"trim", sTrim);
 							if (sTrim.is_init() && (*sTrim == L"true" || *sTrim == L"t"))
 							{
 								bTrimTextPath = true;
@@ -2161,6 +2164,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							nullable_string sOpacity;
 							nullable_string sOpacity2;
 							nullable_string sColor2;
+							nullable_string sColor;
 							nullable_string sType;
 							nullable_string sFocus;
 							nullable_string sFocusSize;
@@ -2168,15 +2172,16 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							nullable_string sAngle;
 							nullable_string sColors;
 
-							oNodeP.ReadAttributeBase(L"opacity"			, sOpacity);
-							oNodeP.ReadAttributeBase(L"opacity2"		, sOpacity2);
-							oNodeP.ReadAttributeBase(L"color2"			, sColor2);
-							oNodeP.ReadAttributeBase(L"type"			, sType);
-							oNodeP.ReadAttributeBase(L"focus"			, sFocus);
-							oNodeP.ReadAttributeBase(L"focussize"		, sFocusSize);
-							oNodeP.ReadAttributeBase(L"focusposition"	, sFocusPosition);
-							oNodeP.ReadAttributeBase(L"angle"			, sAngle);
-							oNodeP.ReadAttributeBase(L"colors"			, sColors);
+                            XmlMacroReadAttributeBase(oNodeP, L"opacity"		, sOpacity);
+                            XmlMacroReadAttributeBase(oNodeP, L"opacity2"		, sOpacity2);
+                            XmlMacroReadAttributeBase(oNodeP, L"color"			, sColor);
+                            XmlMacroReadAttributeBase(oNodeP, L"color2"			, sColor2);
+                            XmlMacroReadAttributeBase(oNodeP, L"type"			, sType);
+                            XmlMacroReadAttributeBase(oNodeP, L"focus"			, sFocus);
+                            XmlMacroReadAttributeBase(oNodeP, L"focussize"		, sFocusSize);
+                            XmlMacroReadAttributeBase(oNodeP, L"focusposition"	, sFocusPosition);
+                            XmlMacroReadAttributeBase(oNodeP, L"angle"			, sAngle);
+                            XmlMacroReadAttributeBase(oNodeP, L"colors"			, sColors);
 
 							if (sType.is_init())
 							{
@@ -2196,22 +2201,52 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							{
 								nFocus = _wtoi(sFocus->c_str())/100.0;
 							}
+
 							if (sOpacity.is_init())
 							{
 								bOpacity	= true;
 								lAlpha		= NS_DWC_Common::getOpacityFromString(*sOpacity);
 								oMod.name	= L"alpha";
-								oMod.val	= (int)(lAlpha * 100000.0 / 255.0);
+								oMod.val	= (int)((1 - lAlpha/ 255.0) * 100000.0 );
 
 								if (arColors.at(0)->is_init())
 									arColors.at(0)->Color->Modifiers.push_back(oMod);
+							}
+							if (sColor.is_init())
+							{
+								NSPresentationEditor::CColor color;
+								if (sColor->find(L"fill") != -1)
+								{
+									std::wstring sColorEffect = *sColor;
+									if (sColorEffect.length() > 5)
+										sColorEffect = sColorEffect.substr(5);
+
+									int resR, resG, resB;
+									GetColorWithEffect(sColorEffect, R, G, B, resR, resG, resB);
+
+									color.R = resR;
+									color.G = resG;
+									color.B = resB;
+								}
+								else
+								{
+									color = NS_DWC_Common::getColorFromString(*sColor);
+								}
+								PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
+								oColor->Color = new PPTX::Logic::SrgbClr();
+								oColor->Color->SetRGB(color.R, color.G, color.B);
+
+								if (bOpacity)
+									oColor->Color->Modifiers.push_back(oMod);
+
+								arColors[0] = oColor;
 							}
 							if (sOpacity2.is_init())
 							{
 								bOpacity2	= true;
 								lAlpha		= NS_DWC_Common::getOpacityFromString(*sOpacity2);
 								oMod.name	= L"alpha";
-								oMod2.val	= (int)(lAlpha * 100000.0 / 255.0);
+								oMod2.val	= (int)((1 - lAlpha/ 255.) * 100000.);
 								
 								if (arColors.at(1)->is_init())
 									arColors.at(1)->Color->Modifiers.push_back(oMod2);
@@ -2347,9 +2382,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					nullable_string sStrokeWeight;
 					nullable_string sStroked;				
 	               
-					oNodeShape.ReadAttributeBase(L"strokecolor",    sStrokeColor);
-					oNodeShape.ReadAttributeBase(L"strokeweight",   sStrokeWeight);
-					oNodeShape.ReadAttributeBase(L"stroked",        sStroked);
+                    XmlMacroReadAttributeBase(oNodeShape, L"strokecolor",    sStrokeColor);
+                    XmlMacroReadAttributeBase(oNodeShape, L"strokeweight",   sStrokeWeight);
+                    XmlMacroReadAttributeBase(oNodeShape, L"stroked",        sStroked);
 
 		//textFill
 					strRPr += L"<w14:textFill>";
@@ -2860,10 +2895,12 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			pShape->signatureLine = pPPTShape->m_oSignatureLine;
 		}
 
-		if (!pPPTShape->IsWordArt())
-			CheckPenShape(elem, oNodeShape, pPPTShape);		
+		//if (!pPPTShape->IsWordArt())
+		CheckPenShape(elem, oNodeShape, pPPTShape);		
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
+
+		CheckBorderShape(elem, oNodeShape, pPPTShape);
 	}
 }
 
@@ -3401,7 +3438,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
     nullable_bool isAllowInCell;
     nullable_string sAllowInCell;
 
-    oNode.ReadAttributeBase(L"o:allowincell", sAllowInCell);
+    XmlMacroReadAttributeBase(oNode, L"o:allowincell", sAllowInCell);
     if (sAllowInCell.is_init())
     {
         if ((L"f" == *sAllowInCell) || (L"false"== *sAllowInCell))
@@ -3412,7 +3449,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	nullable_bool isAllowOverlap;
     nullable_string sAllowOverlap;
 	
-	oNode.ReadAttributeBase(L"o:allowoverlap", sAllowOverlap);
+    XmlMacroReadAttributeBase(oNode, L"o:allowoverlap", sAllowOverlap);
 	if (sAllowOverlap.is_init())
     {
         if ((L"f" == *sAllowOverlap) || (L"false"== *sAllowOverlap))
@@ -3914,6 +3951,84 @@ void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wst
 	*pMainProps = new std::wstring();
 	**pMainProps = strMainProps;
 }
+void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
+{
+	if (!oElem) return;
+
+	PPTX::Logic::Shape* pShape		= dynamic_cast<PPTX::Logic::Shape*>	(oElem->GetElem().operator ->());
+	PPTX::Logic::Pic*	pPicture	= dynamic_cast<PPTX::Logic::Pic*>	(oElem->GetElem().operator ->());
+
+	PPTX::Logic::SpPr *pSpPr = NULL;
+
+	if (pShape)		pSpPr = &pShape->spPr; 	
+	if (pPicture)	pSpPr = &pPicture->spPr;
+
+	if (!pSpPr) return;
+	
+	if ( (pSpPr->ln.IsInit()) && (pSpPr->ln->Fill.m_type != PPTX::Logic::UniFill::noFill) )
+		return; //дублирование обрамлением линией
+
+	nullable_string sColorBorder;
+    XmlMacroReadAttributeBase(oNode, L"o:borderleftcolor", sColorBorder);
+	
+	XmlUtils::CXmlNode oNodeBorder = oNode.ReadNode(L"w10:borderleft");
+
+	if (oNodeBorder.IsValid())
+	{
+		pSpPr->ln.Init();
+		nullable_int nWidthBorder;
+        XmlMacroReadAttributeBase(oNode, L"width", nWidthBorder);
+		
+		nullable_string sTypeBorder;
+        XmlMacroReadAttributeBase(oNode, L"type", sTypeBorder);
+
+		if (sTypeBorder.IsInit())
+		{
+			SimpleTypes::CBorderType<> borderType;
+			borderType.FromString(sTypeBorder.get());
+			
+			if (borderType.GetValue() > 0 && 
+				borderType.GetValue() < 6)
+			{
+				pSpPr->ln->prstDash.Init();
+				pSpPr->ln->prstDash->val = new PPTX::Limit::PrstDashVal();
+				switch(borderType.GetValue())
+				{
+					case SimpleTypes::bordertypeDash:			pSpPr->ln->prstDash->val->SetBYTECode(3); break;
+					case SimpleTypes::bordertypeDashDotDot:		pSpPr->ln->prstDash->val->SetBYTECode(5); break;
+					case SimpleTypes::bordertypeDashDotStroked:	pSpPr->ln->prstDash->val->SetBYTECode(1); break;
+					case SimpleTypes::bordertypeDashedSmall:	pSpPr->ln->prstDash->val->SetBYTECode(0); break;
+					case SimpleTypes::bordertypeDot:			pSpPr->ln->prstDash->val->SetBYTECode(2); break;
+					case SimpleTypes::bordertypeDotDash:		pSpPr->ln->prstDash->val->SetBYTECode(1); break;
+				}
+			}
+
+		}
+		if (nWidthBorder.IsInit())
+		{
+			pSpPr->ln->w = *nWidthBorder * g_emu_koef;//pt to emu
+		}
+		if (sColorBorder.IsInit())
+		{
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+            pSolid->m_namespace = L"a";
+			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+			
+			if (std::wstring::npos != sColorBorder->find(L"#"))
+			{
+				pSolid->Color.Color->SetHexString(sColorBorder->substr(1));
+			}
+			else
+			{
+				//"red", L"black" , .. to color
+			}
+
+			pSpPr->ln->Fill.m_type	= PPTX::Logic::UniFill::solidFill;
+			pSpPr->ln->Fill.Fill	= pSolid;
+
+		}
+	}
+}
 
 void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
 {
@@ -3934,7 +4049,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
     int B = 255;
 
 	nullable_string sFillColor;
-	oNode.ReadAttributeBase(L"fillcolor", sFillColor);
+    XmlMacroReadAttributeBase(oNode, L"fillcolor", sFillColor);
 	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
 	{
 		NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
@@ -3960,7 +4075,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
     }
 
 	nullable_string sFilled;
-	oNode.ReadAttributeBase(L"filled", sFilled);
+    XmlMacroReadAttributeBase(oNode, L"filled", sFilled);
 	if (sFilled.is_init())
 	{
         if (*sFilled == L"false" || *sFilled == L"f")
@@ -3982,7 +4097,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 	}
 
 	nullable_string sOpacity;
-    oNode.ReadAttributeBase(L"opacity", sOpacity);
+    XmlMacroReadAttributeBase(oNode, L"opacity", sOpacity);
 	if (sOpacity.is_init())
 	{
 		BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
@@ -4001,13 +4116,13 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 	if (oNodeFill.IsValid() && !pPPTShape->IsWordArt())
 	{
 		nullable_string sType;
-		oNodeFill.ReadAttributeBase(L"type", sType);
+        XmlMacroReadAttributeBase(oNodeFill, L"type", sType);
 
 		sOpacity.reset();
-        oNodeFill.ReadAttributeBase(L"opacity", sOpacity);
+        XmlMacroReadAttributeBase(oNodeFill, L"opacity", sOpacity);
 
 		nullable_string sColor;
-		oNodeFill.ReadAttributeBase(L"color", sColor);
+        XmlMacroReadAttributeBase(oNodeFill, L"color", sColor);
 		if (sColor.is_init())
 		{
 			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor);
@@ -4026,7 +4141,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		if (!sColor.is_init()) sColor = sFillColor;
 
 		nullable_string sRid;
-		oNodeFill.ReadAttributeBase(L"r:id", sRid);
+        XmlMacroReadAttributeBase(oNodeFill, L"r:id", sRid);
 		if (sRid.is_init())
 		{		
 			PPTX::Logic::BlipFill* pBlipFill = NULL;
@@ -4055,16 +4170,16 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			}
 		}		
 		nullable_string sRotate;
-		oNodeFill.ReadAttributeBase(L"rotate", sRotate);
+        XmlMacroReadAttributeBase(oNodeFill, L"rotate", sRotate);
 
 		nullable_string sMethod;
-		oNodeFill.ReadAttributeBase(L"method", sMethod);
+        XmlMacroReadAttributeBase(oNodeFill, L"method", sMethod);
 		
 		nullable_string sColor2;
-		oNodeFill.ReadAttributeBase(L"color2", sColor2);
+        XmlMacroReadAttributeBase(oNodeFill, L"color2", sColor2);
 		
 		nullable_string sFocus;
-		oNodeFill.ReadAttributeBase(L"focus", sFocus);
+        XmlMacroReadAttributeBase(oNodeFill, L"focus", sFocus);
 		//
         if (sType.is_init() && (*sType == L"gradient" || *sType == L"gradientradial" || *sType == L"gradientRadial"))
 		{
@@ -4169,15 +4284,18 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		if (oNodeFillID.IsValid())
 		{
 			nullable_string sRid;
-			oNodeFillID.ReadAttributeBase(L"r:id", sRid);
+            XmlMacroReadAttributeBase(oNodeFillID, L"r:id", sRid);
 			
 			nullable_string sRelid;
-			oNodeFillID.ReadAttributeBase(L"o:relid", sRelid);
+            XmlMacroReadAttributeBase(oNodeFillID, L"o:relid", sRelid);
 
-			if (sRid.is_init() || sRelid.is_init())
+			nullable_string sPictId;
+            XmlMacroReadAttributeBase(oNodeFillID, L"r:pict", sPictId);
+
+			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init())
 			{			
 				nullable_string sType;
-				oNodeFillID.ReadAttributeBase(L"type", sType);
+                XmlMacroReadAttributeBase(oNodeFillID, L"type", sType);
 
 				PPTX::Logic::BlipFill* pBlipFill = NULL;
 				
@@ -4195,7 +4313,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
                 pBlipFill->m_namespace = L"a";
 				pBlipFill->blip = new PPTX::Logic::Blip();
 
-                std::wstring sId = sRid.IsInit() ? *sRid : (sRelid.IsInit() ? *sRelid : L"");
+				std::wstring sId = sRid.IsInit() ? *sRid : (sRelid.IsInit() ? *sRelid : (sPictId.IsInit() ? *sPictId : L""));
 				pBlipFill->blip->embed = new OOX::RId(sId);
 
                 if (sType.is_init() && *sType == L"tile")
@@ -4307,7 +4425,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 
 	// attributes
 	nullable_string sStrokeColor;
-	oNode.ReadAttributeBase(L"strokecolor", sStrokeColor);
+    XmlMacroReadAttributeBase(oNode, L"strokecolor", sStrokeColor);
 	if (sStrokeColor.is_init())
 	{
 		NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
@@ -4325,7 +4443,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 	}
 
 	nullable_string sStrokeWeight;
-	oNode.ReadAttributeBase(L"strokeweight", sStrokeWeight);
+    XmlMacroReadAttributeBase(oNode, L"strokeweight", sStrokeWeight);
 	if (sStrokeWeight.is_init())
 	{
 		if (!pSpPr->ln.is_init())
@@ -4344,7 +4462,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 	}
 
 	nullable_string sStroked;
-	oNode.ReadAttributeBase(L"stroked", sStroked);
+    XmlMacroReadAttributeBase(oNode, L"stroked", sStroked);
 	if (sStroked.is_init())
 	{
         if (*sStroked == L"false" || *sStroked == L"f")
@@ -4368,8 +4486,15 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
     XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"v:stroke");
 	if (oNodeStroke.IsValid())
 	{
+		nullable_string sStrokeOn;
+        XmlMacroReadAttributeBase(oNodeStroke, L"on", sStrokeOn);
+		if (sStrokeOn.is_init())
+		{
+			sStroked.reset();
+			sStroked = sStrokeOn;
+		}
 		sStrokeColor.reset();
-		oNodeStroke.ReadAttributeBase(L"strokecolor", sStrokeColor);
+        XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor);
 		if (sStrokeColor.is_init())
 		{
 			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
@@ -4387,7 +4512,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sStrokeDashStyle;
-		oNodeStroke.ReadAttributeBase(L"dashstyle", sStrokeDashStyle);
+        XmlMacroReadAttributeBase(oNodeStroke, L"dashstyle", sStrokeDashStyle);
 		if (sStrokeDashStyle.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4410,7 +4535,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sEndArraw;
-        oNodeStroke.ReadAttributeBase(L"endarrow", sEndArraw);
+        XmlMacroReadAttributeBase(oNodeStroke, L"endarrow", sEndArraw);
 		if (sEndArraw.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4428,7 +4553,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sEndArrawLen;
-        oNodeStroke.ReadAttributeBase(L"endarrowlength", sEndArrawLen);
+        XmlMacroReadAttributeBase(oNodeStroke, L"endarrowlength", sEndArrawLen);
 		if (sEndArrawLen.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4444,7 +4569,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sEndArrawWidth;
-        oNodeStroke.ReadAttributeBase(L"endarrowwidth", sEndArrawWidth);
+        XmlMacroReadAttributeBase(oNodeStroke, L"endarrowwidth", sEndArrawWidth);
 		if (sEndArrawWidth.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4460,7 +4585,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sStartArraw;
-        oNodeStroke.ReadAttributeBase(L"startarrow", sStartArraw);
+        XmlMacroReadAttributeBase(oNodeStroke, L"startarrow", sStartArraw);
 		if (sStartArraw.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4478,7 +4603,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sStartArrawLen;
-        oNodeStroke.ReadAttributeBase(L"startarrowlength", sStartArrawLen);
+        XmlMacroReadAttributeBase(oNodeStroke, L"startarrowlength", sStartArrawLen);
 		if (sStartArrawLen.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4494,7 +4619,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sStartArrawWidth;
-        oNodeStroke.ReadAttributeBase(L"startarrowwidth", sStartArrawWidth);
+        XmlMacroReadAttributeBase(oNodeStroke, L"startarrowwidth", sStartArrawWidth);
 		if (sStartArrawWidth.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4510,7 +4635,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sEndCap;
-        oNodeStroke.ReadAttributeBase(L"endcap", sEndCap);
+        XmlMacroReadAttributeBase(oNodeStroke, L"endcap", sEndCap);
 		if (sEndCap.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4522,7 +4647,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		}
 
 		nullable_string sLineJoin;
-        oNodeStroke.ReadAttributeBase(L"joinstyle", sLineJoin);
+        XmlMacroReadAttributeBase(oNodeStroke, L"joinstyle", sLineJoin);
 		if (sLineJoin.is_init())
 		{
 			if (!pSpPr->ln.is_init())
@@ -4866,7 +4991,7 @@ void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 		
 		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, false, bSignature);
+		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, NULL, false, bSignature);
 	}
 }
 
@@ -4921,7 +5046,7 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 							run->SetText(node1.GetText());
 							
 							std::vector<std::wstring > attNames, attValues;
-							node1.ReadAllAttributes(attNames,attValues);
+                            node1.GetAllAttributes(attNames,attValues);
 
 							if (attNames.size() > 0)
 							{
@@ -4979,10 +5104,10 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 	double dKoef = 72.0 / (36000 * 25.4);
     if (L"wp:inline" == oNode.GetName())
 	{
-		nullable_int margT; oNode.ReadAttributeBase(L"distT", margT);
-		nullable_int margB; oNode.ReadAttributeBase(L"distB", margB);
-		nullable_int margL; oNode.ReadAttributeBase(L"distL", margL);
-		nullable_int margR; oNode.ReadAttributeBase(L"distR", margR);
+        nullable_int margT; XmlMacroReadAttributeBase(oNode, L"distT", margT);
+        nullable_int margB; XmlMacroReadAttributeBase(oNode, L"distB", margB);
+        nullable_int margL; XmlMacroReadAttributeBase(oNode, L"distL", margL);
+        nullable_int margR; XmlMacroReadAttributeBase(oNode, L"distR", margR);
 
 		if (margL.is_init())
             oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
@@ -5006,14 +5131,14 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 	else
 	{
         oWriter.WriteAttributeCSS(L"position", L"absolute");
-		nullable_int margT; oNode.ReadAttributeBase(L"distT", margT);
-		nullable_int margB; oNode.ReadAttributeBase(L"distB", margB);
-		nullable_int margL; oNode.ReadAttributeBase(L"distL", margL);
-		nullable_int margR; oNode.ReadAttributeBase(L"distR", margR);
+        nullable_int margT; XmlMacroReadAttributeBase(oNode, L"distT", margT);
+        nullable_int margB; XmlMacroReadAttributeBase(oNode, L"distB", margB);
+        nullable_int margL; XmlMacroReadAttributeBase(oNode, L"distL", margL);
+        nullable_int margR; XmlMacroReadAttributeBase(oNode, L"distR", margR);
 
-		nullable_bool behindDoc;	oNode.ReadAttributeBase(L"behindDoc", behindDoc);
-		nullable_bool allowOverlap; oNode.ReadAttributeBase(L"allowOverlap", allowOverlap);
-		nullable_bool layoutInCell; oNode.ReadAttributeBase(L"layoutInCell", layoutInCell);
+        nullable_bool behindDoc;	XmlMacroReadAttributeBase(oNode, L"behindDoc", behindDoc);
+        nullable_bool allowOverlap; XmlMacroReadAttributeBase(oNode, L"allowOverlap", allowOverlap);
+        nullable_bool layoutInCell; XmlMacroReadAttributeBase(oNode, L"layoutInCell", layoutInCell);
 
 		if (margL.is_init())
             oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
@@ -5024,7 +5149,7 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 		if (margB.is_init())
             oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-bottom", dKoef * (*margB));
 
-		nullable_int64 zIndex; oNode.ReadAttributeBase(L"relativeHeight", zIndex);
+        nullable_int64 zIndex; XmlMacroReadAttributeBase(oNode, L"relativeHeight", zIndex);
 		if (zIndex.is_init())
         {
             _INT64 z_index = *zIndex;
@@ -5565,10 +5690,11 @@ smart_ptr<OOX::IFileContainer> CDrawingConverter::GetRels()
 {
 	return *m_pBinaryWriter->m_pCurrentContainer;
 }
-void CDrawingConverter::SetFontManager(CFontManager* pFontManager)
+void CDrawingConverter::SetFontManager(NSFonts::IFontManager* pFontManager)
 {
 	if(NULL != m_pBinaryWriter && NULL != m_pBinaryWriter->m_pCommon && NULL != m_pBinaryWriter->m_pCommon->m_pMediaManager)
 	{
 		m_pBinaryWriter->m_pCommon->m_pMediaManager->SetFontManager(pFontManager);
 	}
+}
 }

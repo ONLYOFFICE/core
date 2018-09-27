@@ -34,7 +34,7 @@
 
 #include <boost/regex.hpp>
 
-#include <cpdoccore/xml/utils.h>
+#include <xml/utils.h>
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"

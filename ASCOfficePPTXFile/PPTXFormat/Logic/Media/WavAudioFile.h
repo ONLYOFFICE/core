@@ -81,7 +81,7 @@ namespace PPTX
 				m_name	= XmlUtils::GetNameNoNS(node.GetName());
 
 				embed	= node.GetAttribute(_T("r:embed"));
-				node.ReadAttributeBase(L"name", name);
+				XmlMacroReadAttributeBase(node, L"name", name);
 			}
 
 			virtual std::wstring toXML() const

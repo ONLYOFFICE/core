@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "FileDownloader.h"
+#include "FileDownloader_private.h"
 
 
 #include <wininet.h>
@@ -108,14 +108,14 @@ protected:
         m_sFilePath = std::wstring( sTempFile );
 
         // Открываем сессию
-        HINTERNET hInternetSession = InternetOpen ( L"Mozilla/4.0 (compatible; MSIE 5.0; Windows 98)", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 );
+        HINTERNET hInternetSession = InternetOpenW ( L"Mozilla/4.0 (compatible; MSIE 5.0; Windows 98)", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 );
         if ( NULL == hInternetSession )
             return S_FALSE;
 
         // Заголовок запроса ( пока содержит 0 байт ( необходимо для проверки ) )
         std::wstring sHTTPHdr = L"Range: bytes=0-0";
         // Открываем ссылку для проверки на ее существование, а также на возможность чтения частями
-        HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternetSession, sFileUrl.c_str(), sHTTPHdr.c_str(), -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
+        HINTERNET hInternetOpenURL = InternetOpenUrlW ( hInternetSession, sFileUrl.c_str(), sHTTPHdr.c_str(), -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
         if ( NULL != hInternetOpenURL )
         {
             // Открытие произошло, проверяем ответ
@@ -211,7 +211,7 @@ protected:
         // Заголовок запроса ( содержит nEndByte - nStartByte байт )
         std::wstring sHTTPHdr = L"Range: bytes=" + std::to_wstring(nStartByte) + L"-" + std::to_wstring(nEndByte);
         // Открываем ссылку для закачки
-        HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternet, sFileURL.c_str(), sHTTPHdr.c_str(), -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
+        HINTERNET hInternetOpenURL = InternetOpenUrlW ( hInternet, sFileURL.c_str(), sHTTPHdr.c_str(), -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
         if ( NULL == hInternetOpenURL )
             return -1;
         // Открытие произошло, проверяем ответ
@@ -338,11 +338,11 @@ protected:
             m_pFile = NULL;
         }
         // Скачиваем файл
-        return URLDownloadToFile (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
+        return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
     }
 };
 
-CFileDownloader::CFileDownloader(std::wstring sFileUrl, bool bDelete)
+CFileDownloader_private::CFileDownloader_private(std::wstring sFileUrl, bool bDelete)
 {
     m_pInternal = new CFileDownloaderBaseWin(sFileUrl, bDelete);
 }

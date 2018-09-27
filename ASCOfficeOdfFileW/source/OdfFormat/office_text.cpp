@@ -32,8 +32,8 @@
 
 #include "office_text.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -89,14 +89,34 @@ void office_text_attlist::serialize(CP_ATTR_NODE)
 }
 void office_text::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    if (is_text_content(Ns, Name))
-    {
-        CP_CREATE_ELEMENT(content_);
-    }
+ 	if CP_CHECK_NAME(L"office", L"forms") 
+	{
+		CP_CREATE_ELEMENT(forms_);
+	}
 	else if CP_CHECK_NAME(L"text", L"tracked-changes") 
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+		CP_CREATE_ELEMENT(table_content_validations_);
+	}
+	else if CP_CHECK_NAME(L"text", L"user-field-decls")
+	{
+		CP_CREATE_ELEMENT(user_fields_);
+	}
+	else if CP_CHECK_NAME(L"text", L"sequence-decls")
+	{
+		CP_CREATE_ELEMENT(sequences_);
+	}
+	else if CP_CHECK_NAME(L"text", L"variable-decls")
+	{
+		CP_CREATE_ELEMENT(variables_);
+	}
+	else if (is_text_content(Ns, Name))
+    {
+        CP_CREATE_ELEMENT(content_);
+    }
     else
         CP_NOT_APPLICABLE_ELM();
 }
@@ -107,6 +127,10 @@ void office_text::add_child_element( const office_element_ptr & child_element)
 
 	switch(child_element->get_type())
 	{
+		case typeTextSequenceDecls:
+		{
+			sequences_ = child_element;	
+		}break;
 		case typeTextTrackedChanges:
 		{
 			tracked_changes_ = child_element;	
@@ -129,6 +153,9 @@ void office_text::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {
 			office_text_attlist_.serialize(CP_GET_XML_NODE());
+
+			if (sequences_)
+				sequences_->serialize(CP_XML_STREAM());
 
 			if (tracked_changes_)
 				tracked_changes_->serialize(CP_XML_STREAM());

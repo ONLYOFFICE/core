@@ -65,7 +65,7 @@ namespace PPTX
 			ClrMru.clear();
 			XmlUtils::CXmlNode oNodeClr;
 			if (oNode.GetNode(_T("p:clrMru"), oNodeClr))
-				oNodeClr.LoadArray(_T("*"), ClrMru);
+                XmlMacroLoadArray(oNodeClr, _T("*"), ClrMru, Logic::UniColor);
 
 			showPr = oNode.ReadNode(_T("p:showPr"));
 			if(showPr.is_init())
@@ -78,7 +78,7 @@ namespace PPTX
 		}
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			pWriter->StartRecord(NSMainTables::PresProps);
+			pWriter->StartRecord(NSBinPptxRW::NSMainTables::PresProps);
 
 			pWriter->WriteRecordArray(0, 0, ClrMru);
 			pWriter->WriteRecord2(1, showPr);

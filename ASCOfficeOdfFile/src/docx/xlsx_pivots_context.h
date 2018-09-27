@@ -31,8 +31,8 @@
  */
 #pragma once
 #include "oox_package.h"
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPScopedPtr.h>
+#include <CPOptional.h>
 
 namespace cpdoccore {
 namespace oox {

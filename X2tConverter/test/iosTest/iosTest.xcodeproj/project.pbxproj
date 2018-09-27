@@ -23,6 +23,7 @@
 		69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69920A401E016F9700E7E6EE /* libX2tConverter.a */; };
 		699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 699690721E2F925200B620CD /* libc++abi.tbd */; };
 		69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = 69BE370B1F60129600CBA47B /* crypted.xlsx */; };
+		8A94F3CB207CE7D600EC05D2 /* test.csv in Resources */ = {isa = PBXBuildFile; fileRef = 8A94F3C9207CE7D600EC05D2 /* test.csv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +59,6 @@
 		17DAB68B1ACC371F005AF479 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		17DAB70D1ACC3B90005AF479 /* demo.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = demo.docx; sourceTree = "<group>"; };
 		6905975F1CA137D000000D4D /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../../build/Mac/X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
-		6911A96B1F6044770061AB4D /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = /Volumes/Storage/sources/core/X2tConverter/build/Mac/X2tConverter/X2tConverter/../../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<absolute>"; };
 		6967BEB21E27D5BE00A129E2 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		697CDFE72049649800C2638C /* empty.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty.docx; sourceTree = "<group>"; };
 		697CDFE92049649800C2638C /* empty.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty.xlsx; sourceTree = "<group>"; };
@@ -66,6 +66,14 @@
 		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
 		699690721E2F925200B620CD /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
 		69BE370B1F60129600CBA47B /* crypted.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = crypted.xlsx; sourceTree = "<group>"; };
+		8A1045C420F4B55E005A0F61 /* libicudata.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicudata.58.dylib; path = ../../../Common/3dParty/icu/mac_64/build/libicudata.58.dylib; sourceTree = "<group>"; };
+		8A1045C520F4B55F005A0F61 /* libicuuc.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicuuc.58.dylib; path = ../../../Common/3dParty/icu/mac_64/build/libicuuc.58.dylib; sourceTree = "<group>"; };
+		8A94F3C9207CE7D600EC05D2 /* test.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.csv; sourceTree = "<group>"; };
+		8A9FAD36207781C5007787F6 /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = ../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<group>"; };
+		8AED79AA20F50164008BB78E /* libicui18n.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicui18n.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicui18n.a"; sourceTree = "<group>"; };
+		8AED79AC20F50164008BB78E /* libicuio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuio.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicuio.a"; sourceTree = "<group>"; };
+		8AED79AD20F50164008BB78E /* libicutu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicutu.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicutu.a"; sourceTree = "<group>"; };
+		8AED79AE20F50164008BB78E /* libicuuc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuuc.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicuuc.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,7 +93,7 @@
 		17C1FB191ACC3E3B006B99B3 /* SDK */ = {
 			isa = PBXGroup;
 			children = (
-				6911A96B1F6044770061AB4D /* OfficeFileErrorDescription.h */,
+				8A9FAD36207781C5007787F6 /* OfficeFileErrorDescription.h */,
 				6905975F1CA137D000000D4D /* X2tConverter.h */,
 			);
 			name = SDK;
@@ -146,6 +154,7 @@
 				17DAB70D1ACC3B90005AF479 /* demo.docx */,
 				697CDFE72049649800C2638C /* empty.docx */,
 				697CDFE92049649800C2638C /* empty.xlsx */,
+				8A94F3C9207CE7D600EC05D2 /* test.csv */,
 			);
 			name = Files;
 			sourceTree = "<group>";
@@ -153,6 +162,12 @@
 		6967BEB11E27D5BE00A129E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8AED79AA20F50164008BB78E /* libicui18n.a */,
+				8AED79AC20F50164008BB78E /* libicuio.a */,
+				8AED79AD20F50164008BB78E /* libicutu.a */,
+				8AED79AE20F50164008BB78E /* libicuuc.a */,
+				8A1045C420F4B55E005A0F61 /* libicudata.58.dylib */,
+				8A1045C520F4B55F005A0F61 /* libicuuc.58.dylib */,
 				698810C41F4DA87A00E4C541 /* libcryptopp.a */,
 				699690721E2F925200B620CD /* libc++abi.tbd */,
 				6967BEB21E27D5BE00A129E2 /* libiconv.tbd */,
@@ -195,7 +210,7 @@
 		17DAB6701ACC371E005AF479 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 				TargetAttributes = {
 					17DAB6771ACC371E005AF479 = {
@@ -244,6 +259,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A94F3CB207CE7D600EC05D2 /* test.csv in Resources */,
 				69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */,
 				17DAB6871ACC371F005AF479 /* Main.storyboard in Resources */,
 				17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */,
@@ -312,12 +328,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -344,7 +362,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -369,12 +387,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -394,7 +414,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -417,7 +437,7 @@
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -442,7 +462,7 @@
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";

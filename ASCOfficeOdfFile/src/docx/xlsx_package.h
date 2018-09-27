@@ -33,12 +33,15 @@
 
 #include "oox_package.h"
 
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPNoncopyable.h>
 
 #include "xlsx_drawings.h"
 #include "xlsx_comments.h"
 
-class CApplicationFonts;
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore { 
 namespace oox {
@@ -222,13 +225,14 @@ public:
     void set_sharedStrings	(element_ptr Element);
 	void set_connections	(element_ptr Element);
     void add_sheet			(sheet_content_ptr sheet);
-    void set_media			(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);    
+    void set_media			(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
     void set_drawings		(element_ptr Element);
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);
     void add_charts			(chart_content_ptr chart);
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
+	void add_jsaProject		(const std::string &content);
 
 private:
     rels_files				rels_files_;
@@ -248,6 +252,7 @@ private:
 	element_ptr		vml_drawings_;
 	element_ptr		comments_;
 	element_ptr		connections_;
+    element_ptr		jsaProject_;
 };
 
 class xlsx_document : public document

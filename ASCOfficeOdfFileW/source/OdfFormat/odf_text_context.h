@@ -43,7 +43,23 @@
 namespace cpdoccore {
 namespace odf_writer
 {
+	enum _typeField
+	{
+		fieldUnknown = 0,
+		fieldHyperlink,
+		fieldPage,
+		fieldNumPages,
+		fieldTime,
+		fieldPageRef,
+		fieldSeq,
+		fieldXE,
 
+		fieldBibliography = 0xff + 1,
+		fieldIndex,
+		fieldIllustration,
+		fieldTable,
+		fieldToc
+	};	
 class odf_conversion_context;
 class odf_style_context;
 class paragraph;
@@ -80,7 +96,7 @@ public:
 	void start_element		(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element		();
  	
-	void start_field		(int type);
+	bool start_field		(int type, const std::wstring& value);
 	void end_field			();
 
 	void start_span			(bool styled = false); 
@@ -139,6 +155,7 @@ private:
 	std::wstring			parent_span_style_;
 	std::wstring			parent_paragraph_style_;
 };
+typedef shared_ptr<odf_text_context>::Type		odf_text_context_ptr;
 
 }
 }

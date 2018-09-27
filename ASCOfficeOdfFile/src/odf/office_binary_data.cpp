@@ -32,8 +32,8 @@
 
 #include "office_binary_data.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -67,7 +67,6 @@ std::wstring office_binary_data::write_to(const std::wstring & path)
 {
 	std::wstring result;
 
-	NSFile::CBase64Converter base64;
 	int nLength = 0;
 	unsigned char *pData = NULL;
 

@@ -156,9 +156,8 @@ namespace DocFileFormat
 			}break;
 
 				//div id
-			case sprmTIpgp:
+			case sprmTIpgp:// = PGPInfo.ipgpSelf (PGPInfo structure describes the border and margin properties)
 			{
-                appendValueElement( _trPr, L"divId", FormatUtils::IntToWideString( FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize ) ), true );
 			}break;
 
 				//borders 80 exceptions

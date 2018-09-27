@@ -97,7 +97,7 @@ public:
 		if (m_oHeader.RecInstance == 0x01)
 		{
 			BYTE* pDataUncompress = new BYTE[decompressedSize];
-            NSZLib::Decompress(pData, compressedSize, pDataUncompress, decompressedSize);
+            NSZip::Decompress(pData, compressedSize, pDataUncompress, decompressedSize);
 
 			delete []pData;
 			pData = pDataUncompress;

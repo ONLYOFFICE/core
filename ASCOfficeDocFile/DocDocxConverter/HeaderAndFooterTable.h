@@ -34,10 +34,12 @@
 #include "CharacterRange.h"
 #include "FileInformationBlock.h"
 
-#define GET_CHARS_RANGE(NAME) inline CharacterRange* Get##NAME(int nIndex)	{\
+#define GET_CHARS_RANGE(NAME) inline CharacterRange* Get##NAME(int nIndex)\
+{\
 	if (m_ar##NAME.empty())					return NULL;	\
 	if (nIndex < (int)m_ar##NAME.size())	return m_ar##NAME[nIndex];\
-	return NULL;	}	\
+	return NULL;	\
+}\
 
 namespace DocFileFormat
 {
@@ -54,8 +56,17 @@ namespace DocFileFormat
 		GET_CHARS_RANGE (EvenFooters);
 		GET_CHARS_RANGE (OddFooters);
 
+	inline CharacterRange* GetNextHeaderFooter()
+	{
+		if (m_nCurrentIndex < m_arCommonHeadersFooters.size())	
+			return m_arCommonHeadersFooters[m_nCurrentIndex++];
+		
+		return NULL;
+	}
 	private: 
-
+		size_t							m_nCurrentIndex;
+		std::vector<CharacterRange*>	m_arCommonHeadersFooters;
+	
 		std::vector<CharacterRange*> m_arFirstHeaders;
 		std::vector<CharacterRange*> m_arEvenHeaders;
 		std::vector<CharacterRange*> m_arOddHeaders;

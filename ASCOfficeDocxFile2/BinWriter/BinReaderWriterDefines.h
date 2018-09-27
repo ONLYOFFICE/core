@@ -201,7 +201,17 @@ extern int g_nCurFormatVersion;
 		StyleLink = 23,
 		lvl_NumFmt = 24,
 		NumFmtVal = 25,
-		NumFmtFormat = 26
+		NumFmtFormat = 26,
+		Num_LvlOverride = 27,
+		StartOverride = 28,
+		ILvl = 29,
+		Tentative = 30,
+		Tplc = 31,
+		IsLgl = 32,
+		LvlLegacy = 33,
+		Legacy = 34,
+		LegacyIndent = 35,
+		LegacySpace = 36
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
@@ -261,7 +271,15 @@ extern int g_nCurFormatVersion;
 		Style_unhideWhenUsed = 14,
 		Style_RowPr = 15,
 		Style_CellPr = 16,
-		Style_TblStylePr = 17
+		Style_TblStylePr = 17,
+		Style_Link = 18,
+		Style_CustomStyle = 19,
+		Style_Aliases = 20,
+		Style_AutoRedefine = 21,
+		Style_Locked = 22,
+		Style_Personal = 23,
+		Style_PersonalCompose = 24,
+		Style_PersonalReply = 25
 	};}
 	namespace c_oSerProp_tblStylePrType{enum c_oSerProp_tblStylePrType
 	{
@@ -427,7 +445,8 @@ extern int g_nCurFormatVersion;
 		textDirection = 11,
 		hideMark = 12,
 		noWrap = 13,
-		tcFitText = 14
+		tcFitText = 14,
+		HMerge = 15
 	};}
 	namespace c_oSerProp_secPrType{enum c_oSerProp_secPrType
 	{
@@ -743,7 +762,10 @@ extern int g_nCurFormatVersion;
 		MathPr = 2,
 		TrackRevisions = 3,
 		FootnotePr = 4,
-		EndnotePr = 5
+		EndnotePr = 5,
+		SdtGlobalColor = 6,
+		SdtGlobalShowHighlight = 7,
+		Compat = 8
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1078,7 +1100,9 @@ extern int g_nCurFormatVersion;
 		TabIndex = 32,
 		Tag = 33,
 		Temporary = 34,
-		MultiLine = 35
+		MultiLine = 35,
+		Appearance = 36,
+		Color = 37
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{
@@ -1126,6 +1150,13 @@ extern int g_nCurFormatVersion;
 		DisplacedByCustomXml = 2,
 		ColFirst = 3,
 		ColLast = 4
+	};}
+	namespace c_oSerCompat{enum c_oSerCompat
+	{
+		CompatSetting = 0,
+		CompatName = 1,
+		CompatUri = 2,
+		CompatValue = 3
 	};}
 }
 

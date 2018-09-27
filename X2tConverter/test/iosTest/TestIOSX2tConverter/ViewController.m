@@ -52,6 +52,12 @@
 {
     [super viewDidLoad];
     
+    NSLog(@"x2t version converter: %@", [X2tConverter version]);
+    
+    NSLog(@"%@", [X2tConverter delimiters]);
+    NSLog(@"%@", [X2tConverter encodingings]);
+
+    [self testCSV];
     [self testDOCX];
     [self testXLSX];
 }
@@ -188,6 +194,30 @@
         }
         
         NSLog(@"xlst output : %@", fullFileNameTo);
+    }
+}
+
+- (void)testCSV {
+    
+    {
+        NSLog(@"==================== OPEN CSV ====================");
+        
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"csv"];
+        
+        NSString* fullFileName = path;
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@test.bin", NSTemporaryDirectory()];
+        NSString* fontsPath = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        conv.delimiter = @(4);
+        conv.encoding = @(46);
+        int result = [conv sdk_csv2xlst_bin:fullFileName nsTo:fullFileNameTo nsFontPath:fontsPath];
+        if (result != 0) {
+            NSLog(@"ERROR OPEN CSV : %d",result);
+        } else {
+            NSLog(@"csv output : %@", fullFileNameTo);
+        }
     }
 }
 

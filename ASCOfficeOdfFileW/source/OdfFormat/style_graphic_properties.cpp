@@ -33,7 +33,7 @@
 #include <iostream>
 #include "style_graphic_properties.h"
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 namespace cpdoccore { 
 

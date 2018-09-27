@@ -319,6 +319,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 									if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
 									else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+									else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
 																		
 									if (!sIdImageFileCache.empty())
 									{
@@ -366,10 +367,10 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		if (oox_picture->blipFill.srcRect.IsInit() && Width > 0 && Height >0 )
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->l.get_value_or(L"0")) * Width	/100.	/currentSystemDPI,
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->t.get_value_or(L"0")) * Height	/100.	/currentSystemDPI,
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->r.get_value_or(L"0")) * Width	/100.	/currentSystemDPI, 
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->b.get_value_or(L"0")) * Height	/100.	/currentSystemDPI);
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->l.get_value_or(L"0")) * Width	/100.	/ 96.,
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->t.get_value_or(L"0")) * Height	/100.	/ 96.,
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->r.get_value_or(L"0")) * Width	/100.	/ 96., 
+				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->b.get_value_or(L"0")) * Height	/100.	/ 96.);
 		}		
 
 		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
@@ -623,9 +624,9 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 					//docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
 					
-                    for (std::vector<OOX::WritingElement*>::iterator	it = oox_shape->oTextBoxShape->m_arrItems.begin(); it != oox_shape->oTextBoxShape->m_arrItems.end(); ++it)
+                    for (size_t i = 0; i < oox_shape->oTextBoxShape->m_arrItems.size(); i++)
 					{
-						docx_converter->convert(*it);
+						docx_converter->convert(oox_shape->oTextBoxShape->m_arrItems[i]);
 				
 						convert(oox_shape->oTextBoxBodyPr.GetPointer());
 						
@@ -991,10 +992,10 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 		if (oox_bitmap_fill->srcRect.IsInit() && Width > 0  && Height > 0)//часть изображения
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
-				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 ) /100. * Width / currentSystemDPI,
-                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 ) /100. * Height/ currentSystemDPI,
-                (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) /100. * Width / currentSystemDPI,
-                (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) /100. * Height/ currentSystemDPI);
+				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 ) /100. * Width / 96.,
+                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 ) /100. * Height/ 96.,
+                (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) /100. * Width / 96.,
+                (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) /100. * Height/ 96.);
 		}
 		if (oox_bitmap_fill->tile.IsInit())
 		{
@@ -1300,7 +1301,7 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		}
 	}
 
-	if (oox_bodyPr->fromWordArt.IsInit() && oox_bodyPr->prstTxWarp.IsInit())
+	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
 	{
 		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
 		{
@@ -1806,7 +1807,7 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (drawing)	//from styles drawing impossible(  ... todoooo ??? 
 	{	
 		if ((oox_run_pr->Fill.is<PPTX::Logic::GradFill>()) ||
-			((oox_run_pr->ln.IsInit()) && (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)))
+			(oox_run_pr->ln.IsInit() /*&& (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)*/))
 		{
 			drawing->change_text_box_2_wordart();
 		}
@@ -1815,13 +1816,13 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		{
 			if (oox_run_pr->Fill.is_init())
 			{
-				drawing->start_area_properties();
+				drawing->start_area_properties(true);
 					convert(&oox_run_pr->Fill);
 				drawing->end_area_properties();
 			}
 			if (oox_run_pr->ln.is_init())
 			{
-				drawing->start_line_properties();
+				drawing->start_line_properties(true);
 				if (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill )
 				{
 					drawing->set_line_dash_preset(6);

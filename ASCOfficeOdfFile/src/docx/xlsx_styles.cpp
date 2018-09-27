@@ -30,7 +30,6 @@
  *
  */
 
-#include <boost/foreach.hpp>
 #include "../odf/style_text_properties.h"
 #include "../odf/style_paragraph_properties.h"
 
@@ -223,11 +222,11 @@ namespace
 void xlsx_style_manager::Impl::serialize_xf(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName)
 {
     std::vector<xlsx_xf> xfs_;
-            
-    BOOST_FOREACH(const xlsx_xf & xfRecord, xfArray)
-    {
-        xfs_.push_back(xfRecord);
-    }
+   
+	for (boost::unordered_set<xlsx_xf, boost::hash<xlsx_xf>>::iterator it = xfArray.begin(); it != xfArray.end(); ++it)
+	{
+        xfs_.push_back(*it);
+	}
 
     std::sort(xfs_.begin(), xfs_.end(), compare_xlsx_xf());
 

@@ -30,8 +30,8 @@
  *
  */
 
-#include "../../include/cpdoccore/CPSharedPtr.h"
-#include "../../include/cpdoccore/xml/sax.h"
+#include "../../include/CPSharedPtr.h"
+#include "../../include/xml/sax.h"
 #include "sax_xmllite.h"
 #include <sstream>
 

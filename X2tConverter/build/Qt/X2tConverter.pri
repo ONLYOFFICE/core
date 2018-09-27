@@ -40,13 +40,10 @@ core_linux_64 {
 
 DEFINES += UNICODE \
     _UNICODE \
-    _USE_LIBXML2_READER_ \
     #DISABLE_FILE_DOWNLOADER \
     FILTER_FLATE_DECODE_ENABLED \
-    CXIMAGE_DONT_DECLARE_TCHAR \
     DONT_WRITE_EMBEDDED_FONTS \
-    AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
-    LIBXML_READER_ENABLED
+    AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
@@ -57,19 +54,9 @@ DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 DEFINES += FILE_FORMAT_CHECKER_WITH_MACRO
 
-core_windows {
-    INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
-}
-core_mac {
-    INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
-}
-
-INCLUDEPATH += ../../../DesktopEditor/xml/build/qt
-
-
-INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
-INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
-INCLUDEPATH += ../../../DesktopEditor/agg-2.4/include
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
+DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
 
 INCLUDEPATH += $$PWD/../../../Common/DocxFormat
 DEPENDPATH += $$PWD/../../../Common/DocxFormat
@@ -90,13 +77,10 @@ DEPENDPATH += $$PWD/../../../ASCOfficeDocxFile2
 
 SOURCES +=  ../../src/cextracttools.cpp \
             ../../../Common/OfficeFileFormatChecker2.cpp \
-            ../../src/ASCConverters.cpp \
-            ../../../DesktopEditor/xml/src/xmllight.cpp \
-    ../../../DesktopEditor/xml/src/xmldom.cpp
+            ../../src/ASCConverters.cpp
 HEADERS +=  ../../src/cextracttools.h \
             ../../../Common/OfficeFileFormatChecker.h \
-            ../../src/ASCConverters.h \
-            ../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h
+            ../../src/ASCConverters.h
 
 
 #Xls file
@@ -121,10 +105,6 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
-#office utils
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOfficeUtils
-#graphics
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics
 #doctrenderer
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
 #HtmlRenderer
@@ -145,22 +125,9 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 #BOOST
 CONFIG += core_boost_regex
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
-include($$PWD/../../../Common/3dParty/curl/curl.pri)
 
 core_windows {
     LIBS += -lAdvapi32
-    LIBS += -lurlmon
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxml
-}
-
-core_linux {
-    LIBS += -lz
-    LIBS += -lxml2
-}
-
-mac {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxml
-    LIBS += -framework AppKit
 }
 ########################################################
 

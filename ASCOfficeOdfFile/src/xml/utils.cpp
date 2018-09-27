@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../include/cpdoccore/xml/utils.h"
+#include "../../include/xml/utils.h"
 
 #include <boost/regex.hpp>
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
@@ -96,9 +96,9 @@ std::string replace_xml_to_text_ImplRegEx(const std::string & Text)
     return boost::regex_replace(Text, replace_xml_to_text_expr, replace_xml_to_text_fmt, boost::match_default | boost::format_all);
 }
 
-std::wstring replace_text_to_xml_ImplReplace(const std::wstring & Text)
+std::wstring replace_text_to_xml_ImplReplace(const std::wstring & Text, bool dDeleteUnicode)
 {
-    return XmlUtils::EncodeXmlString(Text);
+    return XmlUtils::EncodeXmlString(Text, dDeleteUnicode);
 }
 
 std::string replace_text_to_xml_ImplReplace(const std::string & Text)
@@ -164,9 +164,9 @@ std::wstring replace_amp_text_to_xml(const std::wstring & Text)
 {
     return details::replace_amp_text_to_xml_ImplReplace(Text);                
 }
-std::wstring replace_text_to_xml(const std::wstring & Text)
+std::wstring replace_text_to_xml(const std::wstring & Text, bool dDeleteUnicode)
 {
-    return details::replace_text_to_xml_ImplReplace(Text);                
+    return details::replace_text_to_xml_ImplReplace(Text, dDeleteUnicode);                
 }
 
 std::string replace_text_to_xml(const std::string & Text)

@@ -36,16 +36,13 @@
 #include "odf_comment_context.h"
 #include "odf_notes_context.h"
 #include "odf_table_context.h"
+#include "odf_text_context.h"
 
-namespace cpdoccore { 
-namespace odf_writer {
-
+namespace cpdoccore 
+{ 
+namespace odf_writer 
+{
 class office_text;
-
-class odf_text_context;
-
-typedef shared_ptr<odf_text_context>::Type		odf_text_context_ptr;
-typedef shared_ptr<odf_drawing_context>::Type	odf_drawing_context_ptr;
 
 struct odt_section_state
 {
@@ -93,11 +90,34 @@ public:
 	void start_hyperlink	(std::wstring ref);
 	void end_hyperlink		();
 
+	void start_sequence ();
+	void end_sequence ();
+
+	void start_table_of_content ();
+	void end_table_of_content ();
+
+	void start_bibliography ();
+	void end_bibliography ();
+	
+	void start_alphabetical_index ();
+	void end_alphabetical_index ();
+	
+	void start_illustration_index ();
+	void end_illustration_index ();
+
+	void start_table_index ();
+	void end_table_index ();
+
+	void start_index_field();
+	void end_index_field();
+
 	void start_field		(bool in_span);
 	void end_field			();
 	void separate_field		();
-	void set_field_instr	(std::wstring instr);
-
+	void add_field_instr	(const std::wstring &instr);
+	void set_field_instr	();
+	std::map<std::wstring, std::wstring> parse_instr_options(const std::wstring& value);
+	
 	void start_run			(bool styled = false);
 	void end_run			();
 
@@ -182,19 +202,34 @@ private:
 	std::vector<odf_element_state>		current_root_elements_; // for section, if needed
 	std::vector<odt_section_state>		sections_;
 
+	std::map<std::wstring, int>			mapSequenceDecls;
+
 	void add_to_root();
 
 	struct _field_state
 	{
+		_typeField		type = fieldUnknown;
+
 		std::wstring	name;
-		bool			enabled;	
-		int				type;
 		std::wstring	value;
+
 		std::wstring	format;
-		bool			started;
-		bool			in_span;
-		bool			result;
-	}current_field_;
+		std::wstring	instrText;
+
+		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
+		bool			in_span = false;
+		bool			result = false; //after separate
+		bool			bHyperlinks	= false;
+		bool			bHidePageNumbers = false;
+		std::wstring	captionSEQ;
+		std::wstring	title;
+		std::vector<std::wstring> arStyleLevels;
+		int				outline_levels = 0;
+		std::vector<int> arTemplateTypes;//text, link, tab ....
+		int				tabLeader = 0;//dot
+	};
+
+	std::vector<_field_state> current_fields;
 	
 	struct _text_changes_state
 	{

@@ -48,8 +48,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"id", id);
-				node.ReadAttributeBase(L"collapse", collapse);
+                XmlMacroReadAttributeBase(node, L"id", id);
+                XmlMacroReadAttributeBase(node, L"collapse", collapse);
 			}
 			virtual std::wstring toXML() const
 			{
@@ -62,12 +62,12 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				pWriter->WriteBYTE(g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 				pWriter->WriteString2(0, id);
 				pWriter->WriteBool2(1, collapse);
 
-				pWriter->WriteBYTE(g_nodeAttributeEnd);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

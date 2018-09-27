@@ -69,7 +69,7 @@ public:
 	{
 		m_oCurrentUser.FromAtom(pCurrentUser);
 
-		DWORD offsetToEdit = m_oCurrentUser.m_nOffsetToCurrentEdit;
+		_UINT32 offsetToEdit = m_oCurrentUser.m_nOffsetToCurrentEdit;
 		SRecordHeader oHeader;
 		CRecordUserEditAtom oUserAtom;
 

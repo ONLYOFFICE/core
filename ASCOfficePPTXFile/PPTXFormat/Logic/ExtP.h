@@ -180,8 +180,8 @@ namespace PPTX
 							XmlUtils::CXmlNode trim = oNode.ReadNodeNoNS(L"trim");
 							if (trim.IsValid())
 							{
-								trim.ReadAttributeBase(L"st", st);
-								trim.ReadAttributeBase(L"end", end);
+								XmlMacroReadAttributeBase(trim, L"st", st);
+								XmlMacroReadAttributeBase(trim, L"end", end);
 							}
 						}
 						else if (L"compatExt" == strName)

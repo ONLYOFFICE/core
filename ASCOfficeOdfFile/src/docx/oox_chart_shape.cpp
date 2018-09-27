@@ -30,8 +30,8 @@
  *
  */
 #include <boost/functional.hpp>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <CPOptional.h>
+#include <xml/simple_xml_writer.h>
 
 #include "oox_chart_shape.h"
 #include "oox_drawing.h"

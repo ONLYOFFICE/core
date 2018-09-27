@@ -54,43 +54,164 @@ namespace DocFileFormat
 	/// Parses the streams to retrieve a StyleSheet.
 	StyleSheet::StyleSheet (FileInformationBlock* fib, POLE::Stream* tableStream, POLE::Stream* dataStream) : stshi(NULL), Styles(NULL)
 	{
-		VirtualStreamReader tableReader( tableStream, fib->m_FibWord97.fcStshf, fib->m_bOlderVersion);
+		VirtualStreamReader tableReader( tableStream, fib->m_FibWord97.fcStshf, fib->m_nWordVersion);
 
-		//read size of the STSHI
-		int stshiLengthBytesSize = 2;
-		unsigned char* stshiLengthBytes = tableReader.ReadBytes( stshiLengthBytesSize, true );
-		short cbStshi = FormatUtils::BytesToInt16( stshiLengthBytes, 0, stshiLengthBytesSize );
-		RELEASEARRAYOBJECTS( stshiLengthBytes );
-
-		//read the bytes of the STSHI
-        tableReader.Seek( ( fib->m_FibWord97.fcStshf + 2 ), 0/*STREAM_SEEK_SET*/ );
-		unsigned char* stshi = tableReader.ReadBytes( cbStshi, true );
-
-		//parses STSHI
-		this->stshi = new StyleSheetInformation( stshi, cbStshi );
-		RELEASEARRAYOBJECTS( stshi );
+		short cbStshi = fib->m_FibWord97.lcbStshf;
+		//unsigned char* test = tableReader.ReadBytes( cbStshi, true );
 
 		//create list of STDs
 		Styles = new std::vector<StyleSheetDescription*>();
 
-		for ( int i = 0; i < this->stshi->cstd; i++ )
+		if (fib->m_nWordVersion < 2)
 		{
-			//get the cbStd
-			unsigned short cbStd = tableReader.ReadUInt16();
+			//read size of the STSHI
+			int stshiLengthBytesSize = 2;
+			unsigned char* stshiLengthBytes = tableReader.ReadBytes( stshiLengthBytesSize, true );
+			short cbStshi = FormatUtils::BytesToInt16( stshiLengthBytes, 0, stshiLengthBytesSize );
+			RELEASEARRAYOBJECTS( stshiLengthBytes );
+		
+			//read the bytes of the STSHI        
+			tableReader.Seek( ( fib->m_FibWord97.fcStshf + 2 ), 0/*STREAM_SEEK_SET*/ );
+			unsigned char* stshi = tableReader.ReadBytes( cbStshi, true );
 
-			if ( cbStd != 0 )
+			//parses STSHI
+			this->stshi = new StyleSheetInformation( stshi, cbStshi );
+			RELEASEARRAYOBJECTS( stshi );
+
+			for ( int i = 0; i < this->stshi->cstd; i++ )
 			{
-				//read the STD bytes
-				unsigned char* std = tableReader.ReadBytes( cbStd, true );
+				//get the cbStd
+				unsigned short cbStd = tableReader.ReadUInt16();
 
-				//parse the STD bytes
-				Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_bOlderVersion) );
+				if ( cbStd != 0 )
+				{
+					//read the STD bytes
+					unsigned char* std = tableReader.ReadBytes( cbStd, true );
 
-				RELEASEARRAYOBJECTS( std );
+					//parse the STD bytes
+					Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_nWordVersion) );
+
+					RELEASEARRAYOBJECTS( std );
+				}
+				else
+				{
+					Styles->push_back( NULL );
+				}
 			}
-			else
+		}
+		else
+		{
+			unsigned short i, sz = 0;
+			tableReader.ReadUInt16();
+			
+			unsigned short sz_names = tableReader.ReadUInt16();
+			sz = 2;
+			while(sz < sz_names)
 			{
-				Styles->push_back( NULL );
+				unsigned short sz_name = tableReader.ReadByte(); sz++;
+		
+				StyleSheetDescription* std = new StyleSheetDescription();
+
+				if (sz_name != 0 && sz_name < 0xde)
+				{
+					//user style
+					unsigned char *bytes = tableReader.ReadBytes( sz_name, true );
+					FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &std->xstzName, bytes, sz_name, ENCODING_WINDOWS_1250 );
+					RELEASEARRAYOBJECTS( bytes );
+				}
+				// ms style
+				else if (sz_name == 0)
+				{
+					//defpr
+				}
+				else
+				{
+					int ind = 255 - sz_name;
+					std::wstring names [] = {L"Normal", L"Heading1", L"Heading2", L"Heading3", L"Heading4", L"Heading5", L"Heading6", L"Heading7", 
+						L"Heading8", L"Heading9", L"FootnoteText", L"FootnoteReference", L"Header", L"Footer", L"IndexHeading", L"LineNumber"};
+					_StyleIdentifier sti[] = {Normal, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Heading7, Heading8, Heading9,
+					FootnoteText, FootnoteReference, Header, Footer, IndexHeading, LineNumber};
+					
+					std->sti = sti[ind];
+					std->xstzName = names[ind];
+				}
+//	0	Normal	standard PAP(standard PAP has all fields cleared to 0), standard CHP ( chp.hps = 20, all other fields set to 0).
+//
+//	255	Normal indent 	pap.dxaLeft = 720.
+///* Heading levels */
+//	254	heading 1	pap.dyaBefore = 240 (12 points), chp.fBold = negation of Normal style's chp.fBold, chp.kul = 1 (single underline), chp.hps = 24, chp.ftc = 2 .
+//	253	heading 2	pap.dyaBefore = 120 (6 points), chp.fBold = negation of Normal style's chp.fBold, chp.hps = 24,  chp.ftc = 2
+//	252	heading 3	pap.dxaLeft = 360, chp.fBold = negation of Normal style's chp.fBold, chp.hps = 24; 
+//	251	heading 4	pap.dxaLeft = 360, chp.kul = 1 (single underline), chp.hps = 24; 
+//	250	heading 5	pap.dxaLeft = 720, chp.fBold = negation of Normal style's chp.fBold, chp.hps = 20; 
+//	249	heading 6	pap.dxaLeft = 720, chp.kul = 1 (single underline), chp.hps = 20; 
+//	248	heading 7	pap.dxaLeft = 720, chp.fItalic = negation of Normal style's chp.fItalic, chp.hps = 20; 
+//	247	heading 8	pap.dxaLeft = 720, chp.fItalic = negation of Normal style's chp.fItalic, chp.hps = 20; 
+//	246	heading 9	pap.dxaLeft = 720, chp.fItalic = negation of Normal style's chp.fItalic, chp.hps = 20; 
+//	245	footnote text	chp.hps = 20
+//	244	footnote reference	chp.hps = 16; hpsPos = 6
+//	243	header	When running a U.S. system file:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] = 3 * 1440, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 6* 1440, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0; 
+//			When running an International metric system:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] =3969, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 8504, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0;
+//	242	footer	When running a U.S. system file:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] = 3 * 1440, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 6* 1440, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0; 
+//			When running an International metric system:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] =3969, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 8504, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0;
+//	241	index heading 	same as properties for Normal style (stc == 0)
+//	240	line number	same as properties for Normal style (stc == 0)
+
+				Styles->push_back(std);
+
+				sz += sz_name < 0xde ? sz_name : 0;			
+			}
+			unsigned short sz_chpxs = tableReader.ReadUInt16();
+			i = 0;
+			sz = 2;
+			while(sz < sz_chpxs)
+			{
+				unsigned short sz_chpx = tableReader.ReadByte();
+				sz++;
+
+				if (Styles->size() <= i)
+				{
+					StyleSheetDescription* std = new StyleSheetDescription();
+					Styles->push_back(std);
+				}
+				if (sz_chpx != 0 && sz_chpx != 255)
+				{				
+					unsigned char *bytes = tableReader.ReadBytes( sz_chpx, true );
+					Styles->at(i)->chpx = new CharacterPropertyExceptions( bytes, sz_chpx , fib->m_nWordVersion); 
+					RELEASEARRAYOBJECTS( bytes );
+					sz += sz_chpx;			
+				}
+				i++;
+			}			
+ 			unsigned short sz_papxs = tableReader.ReadUInt16();
+			i = 0;
+			sz = 2;
+			while(sz < sz_papxs)
+			{
+				unsigned short sz_papx = tableReader.ReadByte();
+				sz++;
+
+				if ( sz_papx != 255)
+				{				
+					unsigned char *bytes = tableReader.ReadBytes( sz_papx, true );
+					Styles->at(i)->papx = new ParagraphPropertyExceptions( bytes, sz_papx, tableStream, fib->m_nWordVersion );
+					RELEASEARRAYOBJECTS( bytes );
+				
+					sz += sz_papx;			
+				}
+				i++;
+			}			
+ 			unsigned short sz_Estcps = tableReader.ReadUInt16();
+			i = 0;
+			sz = 2;
+			while(sz < sz_Estcps)
+			{
+				Styles->at(i++)->istdBase = tableReader.ReadByte();
+				sz += 1;	
 			}
 		}
 	}

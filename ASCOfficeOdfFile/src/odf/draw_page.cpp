@@ -32,17 +32,17 @@
 
 #include "draw_page.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 #include "calcs_styles.h"
 #include "draw_common.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 

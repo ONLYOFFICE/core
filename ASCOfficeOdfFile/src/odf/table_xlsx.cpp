@@ -32,11 +32,11 @@
 
 #include "table.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/utils.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -328,7 +328,7 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		table_table_source* table_source = dynamic_cast<table_table_source*>( table_table_source_.get() );
 		if ( table_source)
 		{
-			if (table_source->table_linked_source_attlist_.common_xlink_attlist_.href_)return;
+			if (table_source->table_linked_source_attlist_.xlink_attlist_.href_)return;
 		} 
 
 	}
@@ -835,7 +835,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		
 		const int sharedStringId = content_.xlsx_convert(Context, &textFormatProperties);
 
-		if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
+		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
 			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 			
 		if (skip_next_cell)break;
@@ -846,7 +846,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			std::wstring ref = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
 			if (attlist_.table_content_validation_name_)
 			{
-				Context.get_dataValidations_context().activate(*attlist_.table_content_validation_name_, ref);
+				Context.get_dataValidations_context().activate(*attlist_.table_content_validation_name_, /*ref*/Context.current_table_column(), Context.current_table_row());
 			}   
 			CP_XML_WRITER(strm)
             {
@@ -1087,7 +1087,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
     
 	is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle) ? true : false;
 
-	if ( content_.elements_.size() > 0	|| 
+	if ( content_.elements_.size() > 0	|| attlist_.table_content_validation_name_ || 
 		!formula.empty()	||
 		(	t_val == oox::XlsxCellType::n										&& !number_val.empty()) || 
 		(	t_val == oox::XlsxCellType::b										&& bool_val) ||
@@ -1111,6 +1111,10 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
     {
         Context.start_table_covered_cell ();
 		
+		if (attlist_.table_content_validation_name_)
+		{
+			Context.get_dataValidations_context().activate(*attlist_.table_content_validation_name_, /*ref*/Context.current_table_column(), Context.current_table_row());
+		}
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 		

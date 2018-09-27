@@ -110,7 +110,7 @@ namespace PPTX
 				return;
 			}
 
-			oNode.ReadAttributeBase(_T("name"), name);
+			XmlMacroReadAttributeBase(oNode, _T("name"), name);
 
 			themeElements = oNode.ReadNode(_T("a:themeElements"));
 			themeElements.SetParentFilePointer(this);
@@ -135,7 +135,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNodeList;
 			if (oNode.GetNode(_T("a:extraClrSchemeLst"), oNodeList))
 			{
-				oNodeList.LoadArray(_T("a:extraClrScheme"), extraClrSchemeLst);
+				XmlMacroLoadArray(oNodeList, _T("a:extraClrScheme"), extraClrSchemeLst, nsTheme::ExtraClrScheme);
 			}
 
 			size_t count = extraClrSchemeLst.size();

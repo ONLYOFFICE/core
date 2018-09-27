@@ -124,13 +124,13 @@ namespace PPTX
 				if (node.GetNode(_T("a:tableStyleId"), oNode))
 					TableStyleId = oNode.GetTextExt();
 
-				node.ReadAttributeBase(L"rtl", Rtl);
-				node.ReadAttributeBase(L"firstRow", FirstRow);
-				node.ReadAttributeBase(L"firstCol", FirstCol);
-				node.ReadAttributeBase(L"lastRow", LastRow);
-				node.ReadAttributeBase(L"lastCol", LastCol);
-				node.ReadAttributeBase(L"bandRow", BandRow);
-				node.ReadAttributeBase(L"bandCol", BandCol);
+				XmlMacroReadAttributeBase(node, L"rtl", Rtl);
+				XmlMacroReadAttributeBase(node, L"firstRow", FirstRow);
+				XmlMacroReadAttributeBase(node, L"firstCol", FirstCol);
+				XmlMacroReadAttributeBase(node, L"lastRow", LastRow);
+				XmlMacroReadAttributeBase(node, L"lastCol", LastCol);
+				XmlMacroReadAttributeBase(node, L"bandRow", BandRow);
+				XmlMacroReadAttributeBase(node, L"bandCol", BandCol);
 
 				FillParentPointersForChilds();
 			}

@@ -516,7 +516,7 @@ public:
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
 			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
         pCStringWriter->WriteString(L"<w:rPr>");
 		if(bRStyle)
@@ -780,14 +780,22 @@ public:
     std::wstring Name;
     std::wstring Id;
 	BYTE byteType;
-	bool bDefault;
+	bool Default;
+	bool Custom;
+	std::wstring Aliases;
     std::wstring BasedOn;
     std::wstring NextId;
+	std::wstring Link;
 	bool qFormat;
 	long uiPriority;
 	bool hidden;
 	bool semiHidden;
 	bool unhideWhenUsed;
+	bool autoRedefine;
+	bool locked;
+	bool personal;
+	bool personalCompose;
+	bool personalReply;
     std::wstring TextPr;
     std::wstring ParaPr;
     std::wstring TablePr;
@@ -795,24 +803,38 @@ public:
     std::wstring CellPr;
     std::vector<std::wstring> TblStylePr;
 
+	bool bDefault;
+	bool bCustom;
 	bool bqFormat;
 	bool buiPriority;
 	bool bhidden;
 	bool bsemiHidden;
 	bool bunhideWhenUsed;
+	bool bautoRedefine;
+	bool blocked;
+	bool bpersonal;
+	bool bpersonalCompose;
+	bool bpersonalReply;
+
 public:
 	docStyle()
 	{
 		byteType = styletype_Paragraph;
 		bDefault = false;
+		bCustom = false;
 
 		bqFormat = false;
 		buiPriority = false;
 		bhidden = false;
 		bsemiHidden = false;
 		bunhideWhenUsed = false;
+		bautoRedefine = false;
+		blocked = false;
+		bpersonal = false;
+		bpersonalCompose = false;
+		bpersonalReply = false;
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
         std::wstring sType;
 		switch(byteType)
@@ -826,10 +848,35 @@ public:
 		{
             std::wstring sStyle = L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + Id + L"\"";
 			if(bDefault)
-                sStyle += L" w:default=\"1\"";
+			{
+				if(Default)
+					sStyle += L" w:default=\"1\"";
+				else
+					sStyle += L" w:default=\"0\"";
+			}
+			if(bCustom)
+			{
+				if(Custom)
+					sStyle += L" w:customStyle=\"1\"";
+				else
+					sStyle += L" w:customStyle=\"0\"";
+			}
 
             sStyle += L">";
             pCStringWriter->WriteString(sStyle);
+			if(!Aliases.empty())
+			{
+				pCStringWriter->WriteString(L"<w:aliases w:val=\"");
+				pCStringWriter->WriteEncodeXmlString(Aliases);
+				pCStringWriter->WriteString(L"\"/>");
+			}
+			if(bautoRedefine)
+			{
+				if(autoRedefine)
+					pCStringWriter->WriteString(L"<w:autoRedefine/>");
+				else
+					pCStringWriter->WriteString(L"<w:autoRedefine val=\"false\"/>");
+			}
             if(!Name.empty())
 			{
                 pCStringWriter->WriteString(L"<w:name w:val=\"" + Name + L"\"/>");
@@ -841,6 +888,40 @@ public:
             if(!NextId.empty())
 			{
                 pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
+			}
+			if(bpersonal)
+			{
+				if(personal)
+					pCStringWriter->WriteString(L"<w:personal/>");
+				else
+					pCStringWriter->WriteString(L"<w:personal val=\"false\"/>");
+			}
+			if(bpersonalCompose)
+			{
+				if(personalCompose)
+					pCStringWriter->WriteString(L"<w:personalCompose/>");
+				else
+					pCStringWriter->WriteString(L"<w:personalCompose val=\"false\"/>");
+			}
+			if(bpersonalReply)
+			{
+				if(personalReply)
+					pCStringWriter->WriteString(L"<w:personalReply/>");
+				else
+					pCStringWriter->WriteString(L"<w:personalReply val=\"false\"/>");
+			}
+			if(!Link.empty())
+			{
+				pCStringWriter->WriteString(L"<w:link w:val=\"");
+				pCStringWriter->WriteEncodeXmlString(Link);
+				pCStringWriter->WriteString(L"\"/>");
+			}
+			if(blocked)
+			{
+				if(locked)
+					pCStringWriter->WriteString(L"<w:locked/>");
+				else
+					pCStringWriter->WriteString(L"<w:locked val=\"false\"/>");
 			}
 			if(bqFormat)
 			{
@@ -909,7 +990,7 @@ public:
 class tblStylePr
 {
 public:
-	XmlUtils::CStringWriter Writer;
+	NSStringUtils::CStringBuilder Writer;
 	BYTE Type;
 	bool bType;
 public:
@@ -969,7 +1050,7 @@ public:
 		bHeight = false;
 		bPaddings = false;
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
 		if(bType)
 		{
@@ -1030,7 +1111,7 @@ public:
 //	tblPr()
 //	{
 //	}
-//	void Write(CStringWriter*  pCStringWriter)
+//	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 //	{
 //	}
 //};
@@ -1050,7 +1131,7 @@ public:
 		bW = false;
 		bWDocx = false;
 	}
-    void Write(XmlUtils::CStringWriter& pCStringWriter, const std::wstring& sName)
+	void Write(NSStringUtils::CStringBuilder& pCStringWriter, const std::wstring& sName)
 	{
 		pCStringWriter.WriteString(Write(sName));
 	}
@@ -1104,7 +1185,7 @@ public:
 		bValue = false;
 		bThemeColor = false;
 	}
-    void Write(std::wstring sName, XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
+	void Write(std::wstring sName, NSStringUtils::CStringBuilder*  pCStringWriter, bool bCell)
 	{
 		if(bValue)
 		{
@@ -1195,7 +1276,7 @@ public:
 	{
 		return !(bLeft || bTop || bRight || bBottom || bInsideV || bInsideH || bBetween);
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter, bool bCell)
 	{
 		if(bLeft)
             oLeft.Write(L"w:left", pCStringWriter, bCell);
@@ -1230,16 +1311,24 @@ public:
 class docLvl
 {
 public:
+	long ILvl;
 	long Format;
 	BYTE Jc;
 	std::vector<docLvlText*> Text;
 	long Restart;
 	long Start;
 	BYTE Suff;
-	XmlUtils::CStringWriter ParaPr;
-	XmlUtils::CStringWriter TextPr;
+	NSStringUtils::CStringBuilder ParaPr;
+	NSStringUtils::CStringBuilder TextPr;
     std::wstring PStyle;
+	bool Tentative;
+	unsigned long Tplc;
+	bool IsLgl;
+	bool Legacy;
+	long LegacyIndent;
+	unsigned long LegacySpace;
 
+	bool bILvl;
 	bool bFormat;
 	bool bJc;
 	bool bText;
@@ -1249,8 +1338,17 @@ public:
 	bool bParaPr;
 	bool bTextPr;
 	bool bPStyle;
+	bool bTentative;
+	bool bTplc;
+	bool bIsLgl;
+	bool bLvlLegacy;
+	bool bLegacy;
+	bool bLegacyIndent;
+	bool bLegacySpace;
+
 	docLvl()
 	{
+		bILvl = false;
 		bFormat = false;
 		bJc = false;
 		bText = false;
@@ -1260,6 +1358,13 @@ public:
 		bParaPr = false;
 		bTextPr = false;
 		bPStyle = false;
+		bTentative = false;
+		bTplc = false;
+		bIsLgl = false;
+		bLvlLegacy = false;
+		bLegacy = false;
+		bLegacyIndent = false;
+		bLegacySpace = false;
 	}
 	~docLvl()
 	{
@@ -1268,9 +1373,27 @@ public:
 			delete Text[i];
 		}
 	}
-	void Write(XmlUtils::CStringWriter& oWriter, int index)
+	void Write(NSStringUtils::CStringBuilder& oWriter)
 	{
-        oWriter.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(index) + L"\">");
+		oWriter.WriteString(L"<w:lvl");
+		if(bILvl)
+		{
+			oWriter.WriteString(L" w:ilvl=\"" + std::to_wstring(ILvl) + L"\"");
+		}
+		if(bTentative)
+		{
+			if(Tentative)
+				oWriter.WriteString(L" w:tentative=\"1\"");
+			else
+				oWriter.WriteString(L" w:tentative=\"0\"");
+		}
+		if(bTplc)
+		{
+			oWriter.WriteString(L" w:tplc=\"");
+			oWriter.WriteString(XmlUtils::IntToString(Tplc, L"%08X"));
+			oWriter.WriteString(L"\"");
+		}
+		oWriter.WriteString(L">");
 		if(bStart)
 		{
             oWriter.WriteString(L"<w:start w:val=\"" + std::to_wstring(Start) + L"\"/>");
@@ -1294,7 +1417,7 @@ public:
                 oWriter.WriteString(L"<w:numFmt w:val=\"" + sFormat + L"\"/>");
 			}
 		}
-		if(bRestart && 0 == Restart)
+		if(bRestart)
 		{
             oWriter.WriteString(L"<w:lvlRestart w:val=\"" + std::to_wstring(Restart) + L"\"/>");
 		}
@@ -1302,6 +1425,13 @@ public:
 		{
             std::wstring sStyleName = XmlUtils::EncodeXmlString(PStyle);
             oWriter.WriteString(L"<w:pStyle w:val=\"" + sStyleName + L"\"/>");
+		}
+		if(bIsLgl)
+		{
+			if(IsLgl)
+				oWriter.WriteString(L"<w:isLgl/>");
+			else
+				oWriter.WriteString(L"<w:isLgl w:val=\"false\"/>");
 		}
 		if(bSuff)
 		{
@@ -1341,6 +1471,30 @@ public:
 
 			oWriter.WriteString(sTextXml);
 		}
+		if(bLvlLegacy)
+		{
+			 oWriter.WriteString(L"<w:legacy");
+			 if(bLegacy)
+			 {
+				 if(Legacy)
+					 oWriter.WriteString(L" w:legacy=\"1\"");
+				 else
+					 oWriter.WriteString(L" w:legacy=\"0\"");
+			 }
+			 if(bLegacyIndent)
+			 {
+				 oWriter.WriteString(L" w:legacyIndent=\"");
+				 oWriter.WriteString(std::to_wstring(LegacyIndent));
+				 oWriter.WriteString(L"\"");
+			 }
+			 if(bLegacySpace)
+			 {
+				 oWriter.WriteString(L" w:legacySpace=\"");
+				 oWriter.WriteString(std::to_wstring(LegacySpace));
+				 oWriter.WriteString(L"\"");
+			 }
+			 oWriter.WriteString(L"/>");
+		}
 		if(bJc)
 		{
             std::wstring sJc;
@@ -1367,6 +1521,48 @@ public:
         oWriter.WriteString(L"</w:lvl>");
 	}
 };
+class docLvlOverride
+{
+public:
+	long ILvl;
+	long StartOverride;
+	docLvl* Lvl;
+
+	bool bILvl;
+	bool bStartOverride;
+	docLvlOverride()
+	{
+		bILvl = false;
+		bStartOverride = false;
+		Lvl = NULL;
+	}
+	~docLvlOverride()
+	{
+		RELEASEOBJECT(Lvl);
+	}
+	void Write(NSStringUtils::CStringBuilder& oWriter)
+	{
+		oWriter.WriteString(L"<w:lvlOverride");
+		if (bILvl)
+		{
+			oWriter.WriteString(L" w:ilvl=\"");
+			oWriter.WriteString(std::to_wstring(ILvl));
+			oWriter.WriteString(L"\"");
+		}
+		oWriter.WriteString(L">");
+		if (bStartOverride)
+		{
+			oWriter.WriteString(L"<w:startOverride w:val=\"");
+			oWriter.WriteString(std::to_wstring(StartOverride));
+			oWriter.WriteString(L"\"/>");
+		}
+		if(NULL != Lvl)
+		{
+			Lvl->Write(oWriter);
+		}
+		oWriter.WriteString(L"</w:lvlOverride>");
+	}
+};
 class docANum
 {
 public:
@@ -1387,7 +1583,7 @@ public:
 			delete Lvls[i];
 		}
 	}
-	void Write(XmlUtils::CStringWriter& oWriterANum)
+	void Write(NSStringUtils::CStringBuilder& oWriterANum)
 	{
 		if(bId)
 		{
@@ -1404,7 +1600,7 @@ public:
 			}
 			for(int i = 0, length = (int)Lvls.size(); i < length; ++i)
 			{
-				Lvls[i]->Write(oWriterANum, i);
+				Lvls[i]->Write(oWriterANum);
 			}
             oWriterANum.WriteString(L"</w:abstractNum>");
 		}
@@ -1415,6 +1611,7 @@ class docNum
 public:
 	long AId;
 	long Id;
+	std::vector<docLvlOverride*> LvlOverrides;
 
 	bool bAId;
 	bool bId;
@@ -1423,12 +1620,21 @@ public:
 		bAId = false;
 		bId = false;
 	}
-	void Write(XmlUtils::CStringWriter& oWriterNumList)
+	~docNum()
+	{
+		for(size_t i = 0; i < LvlOverrides.size(); ++i){
+			RELEASEOBJECT(LvlOverrides[i]);
+		}
+	}
+	void Write(NSStringUtils::CStringBuilder& oWriterNumList)
 	{
 		if(bAId && bId)
 		{
-            oWriterNumList.WriteString(L"<w:num w:numId=\"" + std::to_wstring(Id) + L"\"><w:abstractNumId w:val=\"" +
-                                       std::to_wstring(AId) + L"\"/></w:num>");
+            oWriterNumList.WriteString(L"<w:num w:numId=\"" + std::to_wstring(Id) + L"\"><w:abstractNumId w:val=\"" + std::to_wstring(AId) + L"\"/>");
+			for(size_t i = 0; i < LvlOverrides.size(); ++i){
+				LvlOverrides[i]->Write(oWriterNumList);
+			}
+			oWriterNumList.WriteString(L"</w:num>");
 		}
 	}
 };
@@ -1444,7 +1650,7 @@ public:
 		sName = name;
 		bGridAfter = false;
 	}
-	void Write(XmlUtils::CStringWriter& writer)
+	void Write(NSStringUtils::CStringBuilder& writer)
 	{
 		if(bGridAfter && nGridAfter > 0)
 		{
@@ -1461,7 +1667,7 @@ public:
     std::wstring href;
     std::wstring anchor;
     std::wstring tooltip;
-	XmlUtils::CStringWriter writer;
+	NSStringUtils::CStringBuilder writer;
     static WriteHyperlink* Parse(std::wstring fld)
 	{
 		WriteHyperlink* res = NULL;
@@ -1540,7 +1746,7 @@ public:
         }
 		return res;
 	}
-	void Write(XmlUtils::CStringWriter& wr)
+	void Write(NSStringUtils::CStringBuilder& wr)
 	{
         if(false == rId.empty())
 		{
@@ -1586,7 +1792,6 @@ public:
 };
 class CComment{
 private:
-    typedef std::wstring (*funcArg)(CComment* pComment);
 	IdCounter& m_oParaIdCounter;
 	IdCounter& m_oFormatIdCounter;
 public:
@@ -1647,13 +1852,13 @@ public:
 		}
 		return sRes;
 	}
-    std::wstring writeTemplates(funcArg fReadFunction)
+	std::wstring writeTemplates(bool isExt)
 	{
         std::wstring sRes;
-        sRes += (fReadFunction(this));
+		sRes += isExt ? writeContentExt(this) : writeContent(this);
 		
 		for(size_t i = 0; i < replies.size(); ++i)
-            sRes += (fReadFunction(replies[i]));
+			sRes += isExt ? writeContentExt(replies[i]) : writeContent(replies[i]);
 		return sRes;
 	}
     static std::wstring writeRef(CComment* pComment, const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter)
@@ -1737,25 +1942,22 @@ public:
             sRes += L"\"";
 		}
         sRes += L">";
-        if(false == pComment->Text.empty())
+		std::wstring sText = pComment->Text;
+
+		XmlUtils::replace_all(sText, L"\r", L"");
+
+		bool bFirst = true;
+		int nPrevIndex = 0;
+		for (int i = 0; i < (int)sText.length(); i++)
 		{
-            std::wstring sText = pComment->Text;
-
-            XmlUtils::replace_all(sText, L"\r", L"");
-
-            bool bFirst = true;
-			int nPrevIndex = 0;
-            for (int i = 0; i < (int)sText.length(); i++)
+			wchar_t cToken = sText[i];
+			if('\n' == cToken)
 			{
-                wchar_t cToken = sText[i];
-				if('\n' == cToken)
-				{
-					bFirst = writeContentWritePart(pComment, sText, nPrevIndex, i, bFirst, sRes);
-					nPrevIndex = i + 1;
-				}
+				bFirst = writeContentWritePart(pComment, sText, nPrevIndex, i, bFirst, sRes);
+				nPrevIndex = i + 1;
 			}
-            writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), bFirst, sRes);
 		}
+		writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), bFirst, sRes);
         sRes += L"</w:comment>";
 		return sRes;
 	}
@@ -1845,7 +2047,7 @@ public:
         std::wstring sRes;
         for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-            sRes += (it->second->writeTemplates(CComment::writeContent));
+			sRes += it->second->writeTemplates(false);
 		}
 		return sRes;
 	}
@@ -1854,7 +2056,7 @@ public:
         std::wstring sRes;
         for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-            sRes += (it->second->writeTemplates(CComment::writeContentExt));
+			sRes += it->second->writeTemplates(true);
 		}
 		return sRes;
 	}
@@ -2450,7 +2652,7 @@ public: CFramePr()
 	{
 		return !(bDropCap || bH || bHAnchor || bHRule || bHSpace || bLines || bVAnchor || bVSpace || bW || bWrap || bX || bXAlign || bY || bYAlign);
 	}
-	void Write(XmlUtils::CStringWriter& oStringWriter)
+	void Write(NSStringUtils::CStringBuilder& oStringWriter)
 	{
         oStringWriter.WriteString(L"<w:framePr");
 		if(bDropCap)
@@ -2588,7 +2790,7 @@ public:
     std::wstring    sDocLocation;
     std::wstring    sTgtFrame;
 
-	XmlUtils::CStringWriter writer;
+	NSStringUtils::CStringBuilder writer;
 
 	bool bHistory;
 public:
@@ -2596,43 +2798,64 @@ public:
 	{
 		bHistory = false;
 	}
-	void Write(XmlUtils::CStringWriter& wr)
+	void Write(NSStringUtils::CStringBuilder& wr)
 	{
-        if(false == rId.empty())
+		wr.WriteString(L"<w:hyperlink");
+		if(!rId.empty())
 		{
-            std::wstring sCorrect_rId       = XmlUtils::EncodeXmlString(rId);
-            std::wstring sCorrect_tooltip   = XmlUtils::EncodeXmlString(sTooltip);
-            std::wstring sCorrect_anchor    = XmlUtils::EncodeXmlString(sAnchor);
-
-            std::wstring sStart = L"<w:hyperlink r:id=\"" + sCorrect_rId + L"\"";
-            if(false == sTooltip.empty())
-			{
-                sStart += L" w:tooltip=\"";
-                sStart += sCorrect_tooltip;
-                sStart += L"\"";
-			}
-            if(false == sAnchor.empty())
-			{
-                sStart += L" w:anchor=\"";
-                sStart += sCorrect_anchor;
-                sStart += L"\"";
-			}
-            sStart += L" w:history=\"1\">";
-			wr.WriteString(sStart);
-			wr.Write(writer);
-            wr.WriteString(L"</w:hyperlink>");
+			wr.WriteString(L" r:id=\"");
+			wr.WriteEncodeXmlString(rId);
+			wr.WriteString(L"\"");
 		}
+		if(!sTooltip.empty())
+		{
+			wr.WriteString(L" w:tooltip=\"");
+			wr.WriteEncodeXmlString(sTooltip);
+			wr.WriteString(L"\"");
+		}
+		if(!sAnchor.empty())
+		{
+			wr.WriteString(L" w:anchor=\"");
+			wr.WriteEncodeXmlString(sAnchor);
+			wr.WriteString(L"\"");
+		}
+		if (bHistory)
+		{
+			if (History)
+			{
+				wr.WriteString(L" w:history=\"1\"");
+			}
+			else
+			{
+				wr.WriteString(L" w:history=\"0\"");
+			}
+		}
+		if (!sDocLocation.empty())
+		{
+			wr.WriteString(L" w:docLocation=\"");
+			wr.WriteEncodeXmlString(sDocLocation);
+			wr.WriteString(L"\"");
+		}
+		if (!sTgtFrame.empty())
+		{
+			wr.WriteString(L" w:tgtFrame=\"");
+			wr.WriteEncodeXmlString(sTgtFrame);
+			wr.WriteString(L"\"");
+		}
+		wr.WriteString(L">");
+		wr.Write(writer);
+		wr.WriteString(L"</w:hyperlink>");
 	}
 };
 class CFldSimple{
 public:
     std::wstring sInstr;
-	XmlUtils::CStringWriter writer;
+	NSStringUtils::CStringBuilder writer;
 public:
 	CFldSimple()
 	{
 	}
-	void Write(XmlUtils::CStringWriter& wr)
+	void Write(NSStringUtils::CStringBuilder& wr)
 	{
         if(false == sInstr.empty())
 		{
@@ -2657,14 +2880,14 @@ public:
 	long* vMergeOrigin;
 
 	rPr* RPr;
-	XmlUtils::CStringWriter* PPr;
+	NSStringUtils::CStringBuilder* PPr;
 	SectPr* sectPr;
 	CWiterTblPr* tblPr;
-    XmlUtils::CStringWriter* tblGridChange;
-	XmlUtils::CStringWriter* trPr;
-	XmlUtils::CStringWriter* tcPr;
-	XmlUtils::CStringWriter* content;
-	XmlUtils::CStringWriter* contentRun;
+	NSStringUtils::CStringBuilder* tblGridChange;
+	NSStringUtils::CStringBuilder* trPr;
+	NSStringUtils::CStringBuilder* tcPr;
+	NSStringUtils::CStringBuilder* content;
+	NSStringUtils::CStringBuilder* contentRun;
 	TrackRevision()
 	{
 		Id = NULL;
@@ -2701,11 +2924,11 @@ public:
 	}
     std::wstring ToString(std::wstring sName)
 	{
-		XmlUtils::CStringWriter writer;
+		NSStringUtils::CStringBuilder writer;
 		Write(&writer, sName);
 		return writer.GetData();
 	}
-    void Write(XmlUtils::CStringWriter*  pCStringWriter, std::wstring sName)
+	void Write(NSStringUtils::CStringBuilder*  pCStringWriter, std::wstring sName)
 	{
 		if(IsNoEmpty())
 		{

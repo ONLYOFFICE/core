@@ -33,8 +33,6 @@ core_mac {
 LIBS += $$DESTDIR -lUnicodeConverter
 }
 
-
-INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
 

@@ -156,18 +156,23 @@ namespace utils
 		row = getRowAdderssInv(strRow)+1;
 
 	}
-};
+}
 struct ods_element_state
 {
-	office_element_ptr elm;
+    ods_element_state(){}
+    ods_element_state(office_element_ptr &elm_, unsigned int repeated_, const std::wstring &style_name_, office_element_ptr &style_elm_, double size_, size_t level_)
+        : elm(elm_), repeated(repeated_), style_name(style_name_), style_elm(style_elm_), size(size_), level(level_)
+    {}
+
+    office_element_ptr elm;
 	
-    short repeated;
+    unsigned int repeated = 1;
 	std::wstring style_name;
 	office_element_ptr style_elm;
 
-	double size;
+    double size = 0;
 
-    short level;
+    size_t level = 1;
 	
 	std::wstring cell_style_name;
 };
@@ -177,10 +182,10 @@ struct ods_cell_state : ods_element_state
     int col;
     int row;
 
-    short hyperlink_idx;
-    short comment_idx;
+    int hyperlink_idx = -1;
+    int comment_idx = -1;
 	
-	bool empty;
+    bool empty = true;
 };
 
 struct ods_hyperlink_state
@@ -197,11 +202,12 @@ struct ods_comment_state
 	std::wstring author;
 
 	office_element_ptr elm;
-	//style graphic
+
+	bool used = false;
 };
 struct ods_shared_formula_state
 {
-	short index;
+	unsigned int index;
 	std::wstring formula;
 	std::wstring ref;
 
@@ -248,7 +254,7 @@ public:
         void set_table_dimension(int col, int row);
 		void set_print_range(std::wstring range);
 
-    void add_column(office_element_ptr & elm, short repeated ,office_element_ptr & style);
+    void add_column(office_element_ptr & elm, unsigned int repeated ,office_element_ptr & style);
 		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
 		void set_column_hidden(bool val);
@@ -264,15 +270,16 @@ public:
 	void start_headers(office_element_ptr & elm);
 	void end_headers();
 
-    void add_row(office_element_ptr & elm, short repeated , office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+    void add_row(office_element_ptr & elm, unsigned int repeated , office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
 		void set_row_hidden(bool Val);
 		void set_row_optimal_height(bool val);
 		void set_row_height(double height);
 		void set_row_default_cell_style(std::wstring & style_name);
+		void add_row_repeated();
 
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
-    void add_default_cell(short repeated);
+    void add_default_cell(unsigned int repeated);
 
 	void set_cell_format_value(odf_types::office_value_type::type value_type);
     void set_cell_type(int type);
@@ -318,8 +325,10 @@ public:
 	bool	is_cell_hyperlink	();
     int		is_cell_hyperlink	(int col, int row);
 	bool	is_cell_comment		();
-    int		is_cell_comment		(int col, int row, short repeate_col = 1);
+    int		is_cell_comment		(int col, int row, unsigned int repeate_col = 1);
 	int		is_row_comment		(int row, int repeate_row = 1);
+
+	unsigned int get_last_row_repeated ();
 
 	ods_hyperlink_state & current_hyperlink();
 

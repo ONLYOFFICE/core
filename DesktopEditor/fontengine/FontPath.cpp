@@ -46,7 +46,7 @@
 // 3. Открытый SubPaths c двумя или более точками
 //    [m_nCurSubpath < m_nPointsCount - 1]
 
-CFontPath::CFontPath() 
+CFontPath::CFontPath() : NSFonts::IFontPath()
 {
 	m_pPoints = NULL;
 	m_pFlags = NULL;
@@ -57,7 +57,7 @@ CFontPath::CFontPath()
 	m_nHintsCount = m_nHintsSize = 0;
 }
 
-CFontPath::CFontPath(CFontPath *pPath) 
+CFontPath::CFontPath(CFontPath *pPath) : NSFonts::IFontPath()
 {
 	m_nPointsCount = pPath->m_nPointsCount;
 	m_nSize = pPath->m_nSize;
@@ -248,7 +248,7 @@ INT CFontPath::GetCurPoint(double *pdX, double *pdY)
 	return TRUE;
 }
 
-INT CFontPath::ToInterface(ISimpleGraphicsPath* pPath)
+int CFontPath::ToInterface(NSFonts::ISimpleGraphicsPath* pPath)
 {
 	if ( !pPath  )
 		return FALSE;

@@ -34,11 +34,12 @@
 
 #include <boost/ref.hpp>
 
-#include <cpdoccore/utf8cpp/utf8.h>
+#include <utf8cpp/utf8.h>
 
 #include "mediaitems.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 
@@ -46,17 +47,19 @@ namespace cpdoccore {
 namespace oox {
 namespace package {
 
-static void ConvertSvmToImage(std::wstring &file_svm, std::wstring &file_png, CApplicationFonts *pAppFonts)
+static void ConvertSvmToImage(std::wstring &file_svm, std::wstring &file_png, NSFonts::IApplicationFonts *pAppFonts)
 {
-	MetaFile::CMetaFile oMetaFile(pAppFonts);
+    MetaFile::IMetaFile* pMetaFile = MetaFile::Create(pAppFonts);
 
-	if (oMetaFile.LoadFromFile(file_svm.c_str()))
+    if (pMetaFile->LoadFromFile(file_svm.c_str()))
 	{
 		double w, h, x, y;
-		oMetaFile.GetBounds(&x, &y, &w, &h);
-		oMetaFile.ConvertToRaster(file_png.c_str(), 4, w);
-		oMetaFile.Close();
+        pMetaFile->GetBounds(&x, &y, &w, &h);
+        pMetaFile->ConvertToRaster(file_png.c_str(), 4, w);
+        pMetaFile->Close();
 	}
+
+    RELEASEOBJECT(pMetaFile);
 }
 
 static std::wstring get_mime_type(const std::wstring & extension)
@@ -191,20 +194,25 @@ void content_types_file::set_media(mediaitems & _Mediaitems)
 
 /////////////////////////////////////////////////////////////////////////
 
-simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName)
+simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName), bXml(true)
 {
     utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
 }
-
+simple_element::simple_element(const std::wstring & FileName, const std::string & Content) : file_name_(FileName), content_utf8_(Content), bXml(false)
+{
+}
 void simple_element::write(const std::wstring & RootPath)
 {
-	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  file_name_;
+	std::wstring name_ = RootPath + FILE_SEPARATOR_STR + file_name_;
 
 	NSFile::CFileBinary file;
 	if ( file.CreateFileW(name_) == true)
 	{
-		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-		file.WriteFile((BYTE*)root.c_str(), root.length());
+		if (bXml)
+		{
+			std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+			file.WriteFile((BYTE*)root.c_str(), root.length());
+		}
 		file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
 		file.CloseFile();
 	}
@@ -252,30 +260,34 @@ void rels_files::add(std::wstring const & Id,
 {
     return add(relationship(Id, Type, Target, TargetMode));
 }
-///////////////////////////////////////////
-
+//-----------------------------------------------------------------------------------------------
 chart_content::chart_content() : rels_(rels_file::create(L""))
 {
         
 }
-
 _CP_PTR(chart_content) chart_content::create()
 {
     return boost::make_shared<chart_content>();
 }
-
 void chart_content::add_rel(relationship const & r)
 {
     rels_->get_rels().add(r);
 }
-
-///////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------
+_CP_PTR(customXml_content) customXml_content::create(const std::wstring &item, const std::wstring &props)
+{
+    return boost::make_shared<customXml_content>(item, props);
+}
+//-----------------------------------------------------------------------------------------------
 element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
 {
     return boost::make_shared<simple_element>(FileName, Content);
 }
-
-////////////
+element_ptr simple_element::create(const std::wstring & FileName, const std::string & Content)
+{
+    return boost::make_shared<simple_element>(FileName, Content);
+}
+//-----------------------------------------------------------------------------------------------
 
 void core_file::write(const std::wstring & RootPath)
 {
@@ -301,7 +313,11 @@ void app_file::write(const std::wstring & RootPath)
     resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
         L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
    
-	resStream << L"<Application>ONLYOFFICE"; 
+	resStream << L"<Application>";
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+	if (sApplication.empty())
+		sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+	resStream << sApplication;
 #if defined(INTVER)
 	std::string s = VALUE2STR(INTVER);
 	resStream << L"/" << std::wstring(s.begin(), s.end()) ;
@@ -331,7 +347,7 @@ void docProps_files::write(const std::wstring & RootPath)
 ////////////
 
 
-media::media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts) : mediaitems_(_Mediaitems), appFonts_(pAppFonts)
+media::media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts) : mediaitems_(_Mediaitems), appFonts_(pAppFonts)
 {    
 }
 

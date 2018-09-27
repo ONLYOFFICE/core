@@ -462,42 +462,61 @@ void odf_text_context::end_list()
 
 	list_state_.levels.pop_back();
 }
-///////////////////////////////////////////////////////////////////////////////////////////  LIST
-void odf_text_context::start_field(int type)
+//------------------------------------------------------------------------------------------  LIST
+
+bool odf_text_context::start_field(int type, const std::wstring& value)
 {
-	if (single_paragraph_ == true) return;
+	if (single_paragraph_ == true) return false;
 
 	office_element_ptr elm;
-	if (type == 2)
+
+	switch(type)
 	{
-		create_element(L"text", L"page-number", elm, odf_context_);
-		text_page_number *page_numb = dynamic_cast<text_page_number*>(elm.get());
-		if (page_numb)
+		case fieldXE:
 		{
-			page_numb->text_select_page_ = L"current";
+			create_element(L"text", L"alphabetical-index-mark", elm, odf_context_);
+			text_alphabetical_index_mark *index = dynamic_cast<text_alphabetical_index_mark*>(elm.get());
+			if (index)
+			{
+				index->key1_ = value;
+				index->string_value_ = value;
+			}
+		}break;
+		case fieldPage:
+		{
+			create_element(L"text", L"page-number", elm, odf_context_);
+			text_page_number *page_numb = dynamic_cast<text_page_number*>(elm.get());
+			if (page_numb)
+			{
+				page_numb->text_select_page_ = L"current";
 
-            if (    (odf_context_->page_layout_context()) &&
-                    (odf_context_->page_layout_context()->last_layout()) &&
-                    (odf_context_->page_layout_context()->last_layout()->page_number_format))
-            {
+				if (    (odf_context_->page_layout_context()) &&
+						(odf_context_->page_layout_context()->last_layout()) &&
+						(odf_context_->page_layout_context()->last_layout()->page_number_format))
+				{
 
-                page_numb->common_num_format_attlist_.style_num_format_ = odf_context_->page_layout_context()->last_layout()->page_number_format;
-            }
-		}	
+					page_numb->common_num_format_attlist_.style_num_format_ = odf_context_->page_layout_context()->last_layout()->page_number_format;
+				}
+			}	
+		}break;
+		case fieldNumPages:
+		{
+			create_element(L"text", L"page-count", elm, odf_context_);
+		}break;
+		case fieldTime:
+		{
+			create_element(L"text", L"date", elm, odf_context_);
+		}break;
 	}
-	if (type == 3)
-	{
-		create_element(L"text", L"page-count", elm, odf_context_);
-	}
-	if (type == 4)
-	{
-		create_element(L"text", L"date", elm, odf_context_);
-	}
+
 	if (elm)
 	{
 		in_field_ = true;
 		start_element(elm);
+	
+		return true;
 	}
+	return false;
 }
 
 void odf_text_context::end_field()

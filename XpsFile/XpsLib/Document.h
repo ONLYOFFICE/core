@@ -47,7 +47,7 @@ namespace XPS
 	class CDocument
 	{
 	public:
-		CDocument(CFontManager* pFontManager);
+        CDocument(NSFonts::IFontManager* pFontManager);
 		~CDocument();
 
 		bool ReadFromPath(const std::wstring& wsPath);
@@ -62,7 +62,7 @@ namespace XPS
 		std::wstring                             m_wsPath;					      
 		std::map<int, XPS::Page*>                m_mPages;
 		CFontList                                m_oFontList;
-		CFontManager*                            m_pFontManager;
+        NSFonts::IFontManager*                   m_pFontManager;
 		std::map<std::wstring, CStaticResource*> m_mStaticResources;
 	};	
 }

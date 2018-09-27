@@ -273,6 +273,65 @@ public:
 /////////////////////////////////////////////////////////
 	}
 };
+class oox_shape_Wave : public oox_shape
+{
+public:
+	oox_shape_Wave()
+	{
+		odf_type_name	=L"ooxml-wave";
+
+		modifiers		= L"12500 0";
+		enhanced_path	= L"M ?f13 ?f2 C ?f17 ?f4 ?f18 ?f5 ?f15 ?f2 L ?f20 ?f6 C ?f22 ?f8 ?f21 ?f7 ?f19 ?f6 Z N";
+		text_areas		= L"?f27 ?f29 ?f28 ?f30";
+		glue_points		= L"?f35 ?f10 ?f19 ?f6 ?f28 ?f14 ?f38 ?f6";
+		view_box		= L"0 0 0 0";
+		
+        add(L"f0", L"if(0-$0 ,0,if(20000-$0 ,$0 ,20000))"); 
+		add(L"f1", L"if(-10000-$1 ,-10000,if(10000-$1 ,$1 ,10000))"); 
+		add(L"f2", L"logheight*?f0 /100000"); 
+		add(L"f3", L"?f2 *10/3"); 
+		add(L"f4", L"?f2 +0-?f3 "); 
+		add(L"f5", L"?f2 +?f3 -0"); 
+		add(L"f6", L"logheight+0-?f2 "); 
+		add(L"f7", L"?f6 +0-?f3 "); 
+		add(L"f8", L"?f6 +?f3 -0"); 
+		add(L"f9", L"logwidth*?f1 /100000"); 
+		add(L"f10", L"logwidth*?f1 /50000"); 
+		add(L"f11", L"abs(?f9 )"); 
+		add(L"f12", L"if(?f10 ,0,?f10 )"); 
+		add(L"f13", L"0+0-?f12 "); 
+		add(L"f14", L"if(?f10 ,?f10 ,0)"); 
+		add(L"f15", L"logwidth+0-?f14 "); 
+		add(L"f16", L"(?f12 +?f15 )/3"); 
+		add(L"f17", L"?f13 +?f16 -0"); 
+		add(L"f18", L"(?f17 +?f15 )/2"); 
+		add(L"f19", L"0+?f14 -0"); 
+		add(L"f20", L"logwidth+?f12 -0"); 
+		add(L"f21", L"?f19 +?f16 -0"); 
+		add(L"f22", L"(?f21 +?f20 )/2"); 
+		add(L"f23", L"logwidth+0-?f11"); 
+		add(L"f24", L"logwidth/2"); 
+		add(L"f25", L"?f24 +?f9 -0"); 
+		add(L"f26", L"?f24 +0-?f9 "); 
+		add(L"f27", L"max(?f13 ,?f19 )"); 
+		add(L"f28", L"min(?f15 ,?f20 )"); 
+		add(L"f29", L"logheight*?f0 /50000"); 
+		add(L"f30", L"logheight+0-?f29 "); 
+		add(L"f31", L"logheight"); 
+		add(L"f32", L"logheight/2");
+/////////////////////////////////////////////////////////	
+		_handle h1, h2;
+		h1.position = L"0 ?f2";
+		h1.y_maximum= L"20000";
+		h1.y_minimum= L"0";
+		handles.push_back(h1);
+
+		h2.position = L"?f25 ?f31";
+		h2.x_maximum= L"10000";
+		h2.x_minimum= L"-10000";
+		handles.push_back(h2);
+	}
+};
 class oox_shape_DoubleWave : public oox_shape
 {
 public:
@@ -995,8 +1054,6 @@ public:
 		handles.push_back(h2);
 	}
 };
-
-
 class oox_shape_Chord : public oox_shape
 {
 public:
@@ -1482,4 +1539,55 @@ public:
 		h.x_maximum = L"50000";
 		handles.push_back(h);
 	}
-};}
+};
+class oox_shape_bracketPair : public oox_shape
+{
+public:
+	oox_shape_bracketPair()
+	{
+		odf_type_name	=L"ooxml-bracketPair";
+
+		//enhanced_path	= L"M 0 ?f2 L ?f3 0 L ?f11 ?f4 L ?f2 ?f10 Z S N M ?f2 ?f10 L 0 ?f2 M ?f3 0 L ?f11 ?f4 F N";
+		enhanced_path	= L"M 0 ?f2 G ?f2 ?f2 ?f12 ?f13 L ?f3 0 G ?f2 ?f2 ?f14 ?f15 L ?f11 ?f4 G ?f2 ?f2 ?f16 ?f17 L ?f2 ?f10 G ?f2 ?f2 ?f18 ?f19 Z S N M ?f2 ?f10 G ?f2 ?f2 ?f20 ?f21 L 0 ?f2 G ?f2 ?f2 ?f22 ?f23 M ?f3 0 G ?f2 ?f2 ?f24 ?f25 L ?f11 ?f4 G ?f2 ?f2 ?f26 ?f27 F N";
+		text_areas		= L"?f5 ?f5 ?f6 ?f7";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"23051";
+		
+		add(L"f0", L"if(0-$0 ,0,if(50000-$0 ,$0 ,50000))"); 
+		add(L"f1", L"min(logwidth,logheight)"); 
+		add(L"f2", L"?f1 *?f0 /100000"); 
+		add(L"f3", L"logwidth+0-?f2 "); 
+		add(L"f4", L"logheight+0-?f2 "); 
+		add(L"f5", L"?f2 *29289/100000"); 
+		add(L"f6", L"logwidth+0-?f5 "); 
+		add(L"f7", L"logheight+0-?f5 "); 
+		add(L"f8", L"logwidth/2"); 
+		add(L"f9", L"logheight/2"); 
+		add(L"f10", L"logheight"); 
+		add(L"f11", L"logwidth"); 
+		add(L"f12", L"(10800000)/60000.0"); 
+		add(L"f13", L"(5400000)/60000.0"); 
+		add(L"f14", L"(16200000)/60000.0"); 
+		add(L"f15", L"(5400000)/60000.0"); 
+		add(L"f16", L"(0)/60000.0"); 
+		add(L"f17", L"(5400000)/60000.0"); 
+		add(L"f18", L"(5400000)/60000.0"); 
+		add(L"f19", L"(5400000)/60000.0"); 
+		add(L"f20", L"(5400000)/60000.0"); 
+		add(L"f21", L"(5400000)/60000.0"); 
+		add(L"f22", L"(10800000)/60000.0"); 
+		add(L"f23", L"(5400000)/60000.0"); 
+		add(L"f24", L"(16200000)/60000.0"); 
+		add(L"f25", L"(5400000)/60000.0"); 
+		add(L"f26", L"(0)/60000.0"); 
+		add(L"f27", L"(5400000)/60000.0");
+/////////////////////////////////////////////////////////
+		_handle h1;
+
+		h1.position = L"0 ?f2";
+		h1.y_minimum = L"0";
+		h1.y_maximum = L"50000";
+		handles.push_back(h1);
+	}
+};
+}

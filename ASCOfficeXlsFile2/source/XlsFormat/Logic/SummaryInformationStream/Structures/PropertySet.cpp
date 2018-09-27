@@ -44,9 +44,9 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 {
 	stream->seekFromBegin(property_set_offset);
 
-	unsigned int Size;
+	_UINT32 Size, NumProperties;
+
 	*stream >> Size;
-	unsigned int NumProperties;
 	*stream >> NumProperties;
 	
 	std::vector<PropertyIdentifierAndOffset> prop_offsets;
@@ -62,24 +62,19 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 		prop_offsets.push_back(prop_offset);
 	}
 
-    code_page = 0;
+	PropertyFactory factory;
 	for(size_t i = 0; i < prop_offsets.size(); ++i)
 	{
 		if (stream->getStreamPointer() - property_set_offset > Size)
 			break;
-		PropertyPtr property_ = PropertyFactory::ReadProperty(prop_offsets[i].PropertyIdentifier, stream, property_set_offset + prop_offsets[i].Offset);
+		PropertyPtr property_ = factory.ReadProperty(prop_offsets[i].PropertyIdentifier, stream, property_set_offset + prop_offsets[i].Offset);
+		
 		if(property_) // Skip the property if the corresponding class is not implemented
 		{
-			properties.insert(std::make_pair(property_->Type, property_));
-
-            PropertyCodePagePtr property_CodePage = boost::dynamic_pointer_cast<PropertyCodePage>(property_);
-			if(property_CodePage)
-			{
-				code_page = property_CodePage->code_page;
-			}
+			properties.insert(std::make_pair(property_->prop_type, property_));
 		}
 	}
-
+    code_page = factory.code_page;
 }
 
 const unsigned short PropertySet::GetCodePage()

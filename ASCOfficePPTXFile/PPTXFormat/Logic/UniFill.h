@@ -40,6 +40,7 @@
 #include "Fills/GradFill.h"
 #include "Fills/PattFill.h"
 #include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 namespace PPTX
 {

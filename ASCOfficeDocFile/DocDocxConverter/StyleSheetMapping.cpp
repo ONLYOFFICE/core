@@ -35,8 +35,8 @@
 
 namespace DocFileFormat
 {
-	std::map<std::wstring, std::wstring>	StyleSheetMapping::m_mapStyleId;
-	OfficeCriticalSection				StyleSheetMapping::m_mapStyleIdLock;
+    std::map<std::wstring, std::wstring>	  StyleSheetMapping::m_mapStyleId;
+    NSCriticalSection::CRITICAL_SECTION_SMART StyleSheetMapping::m_mapStyleIdLock;
 
 	StyleSheetMapping::StyleSheetMapping( ConversionContext* ctx ) : AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() )
 	{
@@ -234,41 +234,44 @@ namespace DocFileFormat
 
 	void StyleSheetMapping::writeRunDefaults( StyleSheet* sheet )
 	{
-        m_pXmlWriter->WriteNodeBegin( L"w:rPrDefault" );
-        m_pXmlWriter->WriteNodeBegin( L"w:rPr" );
+		if ((sheet->stshi) && (!sheet->stshi->rgftcStandardChpStsh.empty()))
+		{
+			m_pXmlWriter->WriteNodeBegin( L"w:rPrDefault" );
+			m_pXmlWriter->WriteNodeBegin( L"w:rPr" );
 
-		//write default fonts
-        m_pXmlWriter->WriteNodeBegin( L"w:rFonts", TRUE );
+			//write default fonts
+			m_pXmlWriter->WriteNodeBegin( L"w:rFonts", TRUE );
 
-		FontFamilyName* ffnAscii = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[0] ) );
-		if (ffnAscii)
-            m_pXmlWriter->WriteAttribute( L"w:ascii", FormatUtils::XmlEncode(ffnAscii->xszFtn, true));
+			FontFamilyName* ffnAscii = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[0] ) );
+			if (ffnAscii)
+				m_pXmlWriter->WriteAttribute( L"w:ascii", FormatUtils::XmlEncode(ffnAscii->xszFtn, true));
 
-		FontFamilyName* ffnAsia = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[1] ) );
-		if (ffnAsia)
-            m_pXmlWriter->WriteAttribute( L"w:eastAsia", FormatUtils::XmlEncode(ffnAsia->xszFtn, true));
+			FontFamilyName* ffnAsia = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[1] ) );
+			if (ffnAsia)
+				m_pXmlWriter->WriteAttribute( L"w:eastAsia", FormatUtils::XmlEncode(ffnAsia->xszFtn, true));
 
-		FontFamilyName* ffnAnsi = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[2] ) );
-		if (ffnAnsi)
-            m_pXmlWriter->WriteAttribute( L"w:hAnsi", FormatUtils::XmlEncode(ffnAnsi->xszFtn, true));
+			FontFamilyName* ffnAnsi = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[2] ) );
+			if (ffnAnsi)
+				m_pXmlWriter->WriteAttribute( L"w:hAnsi", FormatUtils::XmlEncode(ffnAnsi->xszFtn, true));
 
-		FontFamilyName* ffnComplex = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[3] ) );
-		if (ffnComplex)
-            m_pXmlWriter->WriteAttribute( L"w:cs", FormatUtils::XmlEncode(ffnComplex->xszFtn, true));
+			FontFamilyName* ffnComplex = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[3] ) );
+			if (ffnComplex)
+				m_pXmlWriter->WriteAttribute( L"w:cs", FormatUtils::XmlEncode(ffnComplex->xszFtn, true));
 
-        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
-        m_pXmlWriter->WriteNodeEnd( L"w:rFonts" );
+			m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+			m_pXmlWriter->WriteNodeEnd( L"w:rFonts" );
 
-		LanguageId langid(this->m_document->FIB->m_FibBase.lid);
-		std::wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
+			LanguageId langid(this->m_document->FIB->m_FibBase.lid);
+			std::wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
 
-        m_pXmlWriter->WriteNodeBegin( L"w:lang", TRUE );
-        m_pXmlWriter->WriteAttribute( L"w:val", langcode);
-        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
-        m_pXmlWriter->WriteNodeEnd( L"w:lang" );
+			m_pXmlWriter->WriteNodeBegin( L"w:lang", TRUE );
+			m_pXmlWriter->WriteAttribute( L"w:val", langcode);
+			m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+			m_pXmlWriter->WriteNodeEnd( L"w:lang" );
 
-        m_pXmlWriter->WriteNodeEnd( L"w:rPr" );
-        m_pXmlWriter->WriteNodeEnd( L"w:rPrDefault" );
+			m_pXmlWriter->WriteNodeEnd( L"w:rPr" );
+			m_pXmlWriter->WriteNodeEnd( L"w:rPrDefault" );
+		}
 	}
 
 	/*========================================================================================================*/

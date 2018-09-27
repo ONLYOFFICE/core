@@ -35,12 +35,12 @@
 #include <vector>
 #include <iosfwd>
 
-#include <cpdoccore/CPNoncopyable.h>
-#include <cpdoccore/xml/attributes.h>
+#include <CPNoncopyable.h>
+#include <xml/attributes.h>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPWeakPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPWeakPtr.h>
+#include <CPOptional.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -96,11 +96,11 @@ public:
     style_paragraph_properties *	get_style_paragraph_properties()	const;
     style_table_properties *		get_style_table_properties()		const;
     style_section_properties *		get_style_section_properties()		const;
-    style_table_cell_properties *	get_style_table_cell_properties()	const;
     style_table_row_properties *	get_style_table_row_properties()	const;
     style_table_column_properties * get_style_table_column_properties() const;
     style_chart_properties *		get_style_chart_properties()		const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
+    style_table_cell_properties *	get_style_table_cell_properties		(bool always =false);
 
 private:
 	odf_types::style_family style_family_;
@@ -136,7 +136,7 @@ public:
 
     odf_types::style_family style_family_;
 
-    style_content style_content_;
+    style_content content_;
 
     friend class odf_document;
 
@@ -251,6 +251,7 @@ private:
  
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
+
 //  style_draw_fill_image
 class draw_fill_image : public office_element_impl<draw_fill_image>
 {
@@ -281,7 +282,6 @@ typedef weak_ptr<style>::Type style_weak_ptr;
 typedef std::vector< style_weak_ptr > style_weak_ptr_array;
 typedef std::vector< style_ptr > style_ptr_array;
 
-//  style
 ///         style:style
 class style : public office_element_impl<style>
 {
@@ -302,7 +302,6 @@ private:
     virtual void add_text(const std::wstring & Text);
     
 public:
-    // attr
     std::wstring			style_name_;
     bool					style_auto_update_;	// default = false
     
@@ -317,7 +316,7 @@ public:
     _CP_OPT( std::wstring ) style_class_;
     _CP_OPT( std::wstring ) style_default_outline_level_; 
 
-    style_content				style_content_;
+    style_content				content_;
     office_element_ptr_array	style_map_;
 
     friend class odf_document;
@@ -776,18 +775,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_section_properties);
 
-///         style-page-layout-attlist
-class style_page_layout_attlist
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    const std::wstring & get_style_name() const { return style_name_; }
-
-    std::wstring			style_name_;
-    odf_types::page_usage	style_page_usage_; // default All
-        
-};
-
 /// style:header-style
 class style_header_style : public office_element_impl<style_header_style>
 {
@@ -842,7 +829,8 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
-	style_page_layout_attlist	attlist_;
+    std::wstring				style_name_;
+    odf_types::page_usage		style_page_usage_; // default All
 
     office_element_ptr			style_page_layout_properties_;
     office_element_ptr			style_header_style_;

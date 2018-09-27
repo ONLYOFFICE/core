@@ -135,7 +135,14 @@ namespace OOX
 			}
 			else
 			{
-				oRels.Registration( pPair->first, pExt );
+				if (pExt.IsInit())
+				{
+					oRels.Registration( pPair->first, pExt );
+				}
+				else if ((pMedia.IsInit()) && (pMedia->IsExternal()))
+				{
+					oRels.Registration( pPair->first, pMedia->type(), pMedia->filename().GetPath(), true);
+				}
 			}
 		}
 	}
@@ -290,28 +297,28 @@ namespace OOX
 		return rId;
 	}
 
-	void IFileContainer::Add (const OOX::RId& rId, smart_ptr<OOX::File>& pFile)
+	void IFileContainer::AssignOutputFilename(smart_ptr<OOX::File>& pFile)
 	{
 		bool bEnumerated		= pFile->type().Enumerated();
 		bool bEnumeratedGlobal	= pFile->type().EnumeratedGlobal();
 
-		if(true == bEnumeratedGlobal || true == bEnumerated)
+		if((true == bEnumeratedGlobal || true == bEnumerated) && pFile->m_sOutputFilename.empty())
 		{
 			int nIndex = 0;
 
 			if(true == bEnumeratedGlobal)
 			{
-                boost::unordered_map<std::wstring, size_t>::const_iterator pNamePair = m_mapEnumeratedGlobal.find (pFile->type().OverrideType());
+				boost::unordered_map<std::wstring, size_t>::const_iterator pNamePair = m_mapEnumeratedGlobal.find (pFile->type().OverrideType());
 				if (pNamePair != m_mapEnumeratedGlobal.end())
 					nIndex = pNamePair->second;
 			}
 			else
 			{
-                boost::unordered_map<std::wstring, size_t>::const_iterator pNamePair = m_mapAddNamePair.find (pFile->type().OverrideType());
+				boost::unordered_map<std::wstring, size_t>::const_iterator pNamePair = m_mapAddNamePair.find (pFile->type().OverrideType());
 				if (pNamePair != m_mapAddNamePair.end())
-					nIndex = pNamePair->second;	
+					nIndex = pNamePair->second;
 			}
-			
+
 			nIndex++;
 
 			if(true == bEnumeratedGlobal)
@@ -323,12 +330,12 @@ namespace OOX
 				}
 			}
 
-            std::wstring sPath = pFile->DefaultFileName().GetPath();
-            int nDotIndex = sPath.rfind('.');
+			std::wstring sPath = pFile->DefaultFileName().GetPath();
+			int nDotIndex = sPath.rfind('.');
 			if(-1 != nDotIndex && nDotIndex > 0)
 			{
-                std::wstring sDigit = std::to_wstring( nIndex);
-                sPath.insert(sPath.begin() + nDotIndex, sDigit.begin(), sDigit.end());
+				std::wstring sDigit = std::to_wstring( nIndex);
+				sPath.insert(sPath.begin() + nDotIndex, sDigit.begin(), sDigit.end());
 			}
 			pFile->m_sOutputFilename = sPath;
 			if(true == bEnumeratedGlobal)
@@ -336,6 +343,11 @@ namespace OOX
 			else
 				m_mapAddNamePair [pFile->type().OverrideType()] = nIndex;
 		}
+	}
+
+	void IFileContainer::Add (const OOX::RId& rId, smart_ptr<OOX::File>& pFile)
+	{
+		AssignOutputFilename(pFile);
 
 		m_lMaxRid = (std::max)( m_lMaxRid, rId.getNumber() );
 		

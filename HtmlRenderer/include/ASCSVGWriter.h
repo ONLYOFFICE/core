@@ -33,13 +33,9 @@
 #define _ASC_HTMLRENDERER_SVG_WRITER_H_
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
 
-namespace Aggplus
-{
-	class CMatrix;
-	class CGraphicsPathSimpleConverter;
-}
-class CFontManager;
 namespace NSHtmlRenderer
 {
     class CSVGGraphicsWriter;
@@ -55,10 +51,11 @@ namespace NSHtmlRenderer
     class CASCSVGWriter : public IRenderer
 	{
 	public:
-                CASCSVGWriter(bool bIsInitializeFonts = true);
+		CASCSVGWriter(bool bIsInitializeFonts = true);
 		~CASCSVGWriter();
 
-	public:
+		void Reset();
+
 		// тип рендерера-----------------------------------------------------------------------------
 		HRESULT get_Type(LONG* lType);
 		//-------- Функции для работы со страницей --------------------------------------------------
@@ -186,14 +183,14 @@ namespace NSHtmlRenderer
 		HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 	public:
 
-		void SetFontManager(CFontManager* pFontManager);
+		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
 	private:
 
 		NSHtmlRenderer::CSVGGraphicsWriter*			m_pVectorWriter;
 
 		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-		CFontManager*				m_pFontManager;					// менеджер шрифтов
+		NSFonts::IFontManager*		m_pFontManager;					// менеджер шрифтов
 		bool						m_bDeleteFontManager;	
 
 		Aggplus::CMatrix*			m_pBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)

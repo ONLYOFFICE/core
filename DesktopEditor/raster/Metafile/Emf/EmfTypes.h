@@ -184,6 +184,10 @@
 
 #define EMR_MAX                        122
 
+#else
+
+#include <windows.h>
+
 #endif
 
 #ifndef EMR_SMALLTEXTOUT
@@ -398,6 +402,7 @@ namespace MetaFile
 		int          cyDest;
 	};
 
+
 #define TEmfXForm TXForm
 	//struct TEmfXForm
 	//{
@@ -482,6 +487,27 @@ namespace MetaFile
 	//		dY = _dX * M12 + _dY * M22 + Dy;
 	//	}
 	//};
+
+	struct TEmfStretchBLT
+	{
+		TEmfRectL    Bounds;
+		int          xDest;
+		int          yDest;
+		int          cxDest;
+		int          cyDest;
+		unsigned int BitBltRasterOperation;
+		int          xSrc;
+		int          ySrc;
+		TXForm       XformSrc;
+		TEmfColor    BkColorSrc;
+		unsigned int UsageSrc;
+		unsigned int offBmiSrc;
+		unsigned int cbBmiSrc;
+		unsigned int offBitsSrc;
+		unsigned int cbBitsSrc;
+		int          cxSrc;
+		int          cySrc;
+	};
 
 	struct TEmfEmrText
 	{

@@ -38,6 +38,8 @@ namespace PdfWriter
 {
 	class CPageTree;
 	class CDestination;
+	class CMetadata;
+	class CInfoDict;
 
 	class CCatalog : public CDictObject
 	{
@@ -50,10 +52,17 @@ namespace PdfWriter
 		void         SetPageMode(EPageMode eMode);
 		void         SetOpenAction(CDestination* pOpenAction);
 		void         AddPageLabel(unsigned int unIndex, CDictObject* pPageLabel);
+		CMetadata*   AddMetadata(CXref* pXref, CInfoDict* pInfo);
 		EDictType    GetDictType() const
 		{
 			return dict_type_CATALOG;
 		}
+	};
+
+	class CStructureTreeRoot : public CDictObject
+	{
+	public:
+		CStructureTreeRoot(CXref* pXref);
 	};
 }
 

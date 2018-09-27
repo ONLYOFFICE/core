@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -32,10 +32,24 @@
 
 #import <Foundation/Foundation.h>
 
+@interface Encoding : NSObject
+@property (assign) NSInteger index;
+@property (assign) NSInteger codePage;
+@property (strong) NSString* name;
+@property (strong) NSString* displayName;
+@end
+
 @interface X2tConverter : NSObject
+
++ (NSString *)version;
 
 @property (strong) NSString* password;
 @property (assign) BOOL isNoBase64;
+@property (strong) NSNumber* delimiter;
+@property (assign) NSNumber* encoding;
+
++ (NSArray <NSString *> *)delimiters;
++ (NSArray <Encoding *> *)encodingings;
 
 - (int)sdk_docx2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 - (int)sdk_docx2doct:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
@@ -54,8 +68,11 @@
 
 - (int)sdk_csv2xlst:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 - (int)sdk_csv2xlsx:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
+- (int)sdk_csv2xlst_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsFontPath:(NSString*)nsFontPath;
 - (int)sdk_xlst2csv:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 - (int)sdk_xlsx2csv:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
+
+- (int)txt2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 
 - (int)sdk_dir2zip:(NSString*)nsFrom nsTo:(NSString*)nsTo;
 - (int)sdk_zip2dir:(NSString*)nsFrom nsTo:(NSString*)nsTo;

@@ -409,6 +409,7 @@ namespace NExtractTools
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
 		boost::unordered_map<int, InputLimit> m_mapInputLimits;
+		bool* m_bIsPDFA;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 	public:
@@ -437,6 +438,7 @@ namespace NExtractTools
 			m_sDocumentID = NULL;
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
+			m_bIsPDFA = NULL;
 
 			m_bOutputConvertCorrupted = false;
 		}
@@ -465,6 +467,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sDocumentID);
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
+			RELEASEOBJECT(m_bIsPDFA);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -628,6 +631,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_bIsNoBase64);
 									m_bIsNoBase64 = new bool(XmlUtils::GetBoolean2(sValue));
 								}
+								else if(_T("m_bIsPDFA") == sName)
+								{
+									RELEASEOBJECT(m_bIsPDFA);
+									m_bIsPDFA = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -669,7 +677,7 @@ namespace NExtractTools
 								oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
 								oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
 							}
-							for (int j = 0; j < aTypes.size(); ++j)
+							for (size_t j = 0; j < aTypes.size(); ++j)
 							{
 								m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
 							}
@@ -706,6 +714,10 @@ namespace NExtractTools
 		bool getIsNoBase64() const
 		{
 			return (NULL != m_bIsNoBase64) ? (*m_bIsNoBase64) : true;
+		}
+		bool getIsPDFA() const
+		{
+			return (NULL != m_bIsPDFA) ? (*m_bIsPDFA) : false;
 		}
         std::wstring getXmlOptions()
 		{
@@ -987,7 +999,7 @@ namespace NExtractTools
         }
         return str;
     }
-	static int getReturnErrorCode(int nDefine)
+	static int getReturnErrorCode(_UINT32 nDefine)
 	{
         return 0 == nDefine ? 0 : nDefine - AVS_ERROR_FIRST - AVS_FILEUTILS_ERROR_FIRST;
 	}
@@ -1158,7 +1170,7 @@ namespace NExtractTools
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
                             const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
-    int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
+    _UINT32 apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
 #endif
 }
 #endif // CEXTRACTTOOLS_H

@@ -32,75 +32,110 @@
 // PdfReaderTest.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
-#include "../PdfReader.h"
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include <vector>
 #include <string>
-#include "windows.h"
-#include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include <iostream>
+#include <tchar.h>
 
-std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
+#include "../PdfReader.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/common/Directory.h"
+
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+
+	#if defined(_DEBUG)
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/HtmlRenderer.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/CryptoPPLib.lib")
+	#else
+		#pragma comment(lib, "../../build/lib/win_32/HtmlRenderer.lib")
+		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
+		#pragma comment(lib, "../../build/lib/win_32/CryptoPPLib.lib")
+	#endif
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
+
+HRESULT convert_single(PdfReader::CPdfReader& oReader, const std::wstring & srcFileName, const std::wstring & sPassword)
 {
-	std::vector<std::wstring> vwsNames;
-
-	std::wstring wsSearchPath = wsFolder;
-	wsSearchPath.append(L"*.");
-	wsSearchPath.append(wsExt);
-
-	WIN32_FIND_DATA oFindData;
-	HANDLE hFind = ::FindFirstFile(wsSearchPath.c_str(), &oFindData);
-	if (hFind != INVALID_HANDLE_VALUE)
+	if (oReader.LoadFromFile(srcFileName.c_str(), L"", sPassword, sPassword))
 	{
-		do
-		{
-			if (!(oFindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-			{
-				vwsNames.push_back(oFindData.cFileName);
-			}
-		} while (::FindNextFile(hFind, &oFindData));
-		::FindClose(hFind);
-	}
-	return vwsNames;
-}
-void ConvertFolder(PdfReader::CPdfReader& oReader, std::wstring wsFolderPath)
-{
-	oReader.Close();
+		int nPagesCount = oReader.GetPagesCount();
 
-	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"pdf");
-	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
-	{
-		std::wstring wsFilePath = wsFolderPath;
-		wsFilePath.append(vFiles.at(nIndex));
-		std::wstring wsFilePathName = (wsFilePath.substr(0, wsFilePath.size() - 4));
-		if (oReader.LoadFromFile(wsFilePath.c_str(), NULL, NULL, NULL))
-		{
-			int nPagesCount = oReader.GetPagesCount();
+		for (int nPageIndex = 0; nPageIndex < nPagesCount; nPageIndex++)
+		{			
+			int nRasterWCur = 1000;
+			int nRasterHCur = 1000;
 
-			for (int nPageIndex = 0; nPageIndex < nPagesCount; nPageIndex++)
-			{
-				std::wstring wsDstFilePath = wsFilePathName + L"_" + std::to_wstring(nPageIndex) + L".png";
-				oReader.ConvertToRaster(nPageIndex, wsDstFilePath.c_str(), 4);
-				printf("%d of %d %S page %d / %d\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str(), nPageIndex, nPagesCount);
-			}
-			oReader.Close();
+			double dPageDpiX, dPageDpiY;
+			double dWidth, dHeight;
+			oReader.GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+			double dKoef1 = nRasterWCur / dWidth;
+			double dKoef2 = nRasterHCur / dHeight;
+			if (dKoef1 > dKoef2)
+				dKoef1 = dKoef2;
+
+			nRasterWCur = (int)(dWidth * dKoef1 + 0.5);
+			nRasterHCur = (int)(dHeight * dKoef1 + 0.5);
+
+			std::wstring wsFilePathName = NSFile::GetDirectoryName(srcFileName);
+			std::wstring wsDstFilePath = srcFileName + L"_" + std::to_wstring(nPageIndex + 1) + L".png";
+
+			oReader.ConvertToRaster(nPageIndex, wsDstFilePath.c_str(), 4, nRasterWCur, nRasterHCur);
 		}
-		else
-		{
-			printf("%d of %d %S error %d\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str(), oReader.GetError());
-		}		
+		oReader.Close();
+		
+		return S_OK;
 	}
+	
+	return S_FALSE;
+}
+HRESULT convert_directory(PdfReader::CPdfReader& oReader, std::wstring pathName, const std::wstring & sPassword)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<std::wstring> arFiles = NSDirectory::GetFiles(pathName, false);
+
+	for (size_t i = 0; i < arFiles.size(); i++)
+	{
+		hr = convert_single(oReader, arFiles[i], sPassword);
+
+		printf("%d of %d %S \tresult = %d\n", i + 1, arFiles.size(), arFiles[i].c_str(), hr);
+
+	}
+	return S_OK;
 }
 
-void main()
+int _tmain(int argc, _TCHAR* argv[])
 {
-	CApplicationFonts oFonts;
-	oFonts.Initialize();
+	if (argc < 2) return 1;
 
-	PdfReader::CPdfReader oPdfReader(&oFonts);
-	oPdfReader.SetTempFolder(L"D://Test Files//Temp//");
-	oPdfReader.SetCMapFolder(L"D://Subversion//AVS//Redist//AVSOfficeStudio//CMaps//");
-	ConvertFolder(oPdfReader, L"D://Test Files//3//");
+	NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
+	pApplicationFonts->Initialize();
+
+	PdfReader::CPdfReader oPdfReader(pApplicationFonts);
+
+	HRESULT hr = S_FALSE;
+
+	std::wstring sPassword = argc > 2 ? argv[2] : L"";
+
+	if (NSFile::CFileBinary::Exists(argv[1]))
+	{	
+		hr = convert_single(oPdfReader, argv[1], sPassword);
+	}
+	else if (NSDirectory::Exists(argv[1]))
+	{
+		hr = convert_directory(oPdfReader, argv[1], sPassword);
+	}	
+	return hr;
 }
 

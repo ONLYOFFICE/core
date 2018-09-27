@@ -33,8 +33,8 @@
 
 #include "Converter.h"
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPOptional.h>
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
 
@@ -117,6 +117,7 @@ namespace ComplexTypes
 		class CTblWidth;
 		class CPageBorder;
 		class CTrackChange;
+		class CShading;
 	}
 }
 namespace cpdoccore 
@@ -144,9 +145,8 @@ namespace Oox2Odf
 		~DocxConverter();
 
 		virtual void convertDocument();
-		virtual void write(const std::wstring & path);
 		
- 		virtual OOX::IFileContainer						*current_document();
+		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();
 		virtual PPTX::Theme								*oox_theme();
 		virtual PPTX::Logic::ClrMap						*oox_clrMap();
@@ -165,7 +165,6 @@ namespace Oox2Odf
 			bool							bContinue = false;
 		}												*current_section_properties;
 		OOX::CDocx										*docx_document;
-		cpdoccore::odf_writer::package::odf_document	*output_document;
 		
 		odf_writer::odt_conversion_context				*odt_context;
         OOX::Logic::CSectionProperty					*last_section_properties;
@@ -221,6 +220,7 @@ namespace Oox2Odf
 		void convert(OOX::Drawing::CInline				*oox_inline);
 	
 		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
+		void convert(ComplexTypes::Word::CShading		*shading,		_CP_OPT(odf_types::color)			& odf_color);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf_types::color)			& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length_or_percent) & odf_size);

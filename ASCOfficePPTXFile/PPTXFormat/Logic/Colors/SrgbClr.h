@@ -96,7 +96,7 @@ namespace PPTX
                 }
 
 				Modifiers.clear();
-				node.LoadArray(_T("*"), Modifiers);
+                XmlMacroLoadArray(node, _T("*"), Modifiers, ColorModifier);
 			}
 			virtual void fromXMLScRgb(XmlUtils::CXmlNode& node)
 			{
@@ -109,7 +109,7 @@ namespace PPTX
 				blue	= (unsigned char)(255 * scRGB_to_sRGB(cblue / 100000.0));
 
 				Modifiers.clear();
-				node.LoadArray(_T("*"), Modifiers);
+                XmlMacroLoadArray(node, _T("*"), Modifiers, ColorModifier);
 			}
 			virtual std::wstring toXML() const
 			{
@@ -190,7 +190,7 @@ namespace PPTX
 			}
 
 		protected:
-			virtual void FillParentPointersForChilds(){};
+            virtual void FillParentPointersForChilds(){}
 		};
 	} // namespace Logic
 } // namespace PPTX

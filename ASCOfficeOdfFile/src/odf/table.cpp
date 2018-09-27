@@ -33,13 +33,13 @@
 #include "table.h"
 
 #include <boost/make_shared.hpp>
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 
 #include "odfcontext.h"
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 
 namespace cpdoccore { 
@@ -112,7 +112,7 @@ void table_table_source_attlist::add_attributes( const xml::attributes_wc_ptr & 
 
 void table_linked_source_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	common_xlink_attlist_.add_attributes(Attributes);
+	xlink_attlist_.add_attributes(Attributes);
 
     CP_APPLY_ATTR(L"table:filter-name", table_filter_name_);
     CP_APPLY_ATTR(L"table:filter-options", table_filter_options_);
@@ -142,7 +142,9 @@ const wchar_t * table_table::name = L"table";
 
 void table_table::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    table_table_attlist_.add_attributes(Attributes);
+	CP_APPLY_ATTR(L"table:style-name",	element_style_name);
+
+	table_table_attlist_.add_attributes(Attributes);
 }
 
 void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -162,7 +164,8 @@ void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     else if ((L"table" == Ns && L"table-row-group" == Name) ||
               (L"table" == Ns && L"table-rows" == Name) ||
               (L"table" == Ns && L"table-row" == Name) ||
-              (L"table" == Ns && L"table-header-rows" == Name))
+              (L"table" == Ns && L"table-header-rows" == Name)||
+              (L"text" == Ns && L"soft-page-break" == Name))
     {
         table_rows_and_groups_.add_child_element(Reader, Ns, Name, getContext());
     }
@@ -378,6 +381,10 @@ bool table_table_cell::empty()
 {
 	if (!content_.elements_.empty()) return false;
 	if (attlist_.table_formula_) return false;
+	if (attlist_.table_style_name_) return false;
+	
+	if (attlist_extra_.table_number_columns_spanned_ > 1) return false;
+	if (attlist_extra_.table_number_rows_spanned_ > 1) return false;
 
 	return true;
 }
@@ -533,7 +540,8 @@ void table_rows::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
     {
         CP_CREATE_ELEMENT_SIMPLE(table_table_rows_);
     } 
-    else if CP_CHECK_NAME(L"table", L"table-row")
+    else if (CP_CHECK_NAME(L"table", L"table-row") || CP_CHECK_NAME(L"text", L"soft-page-break"))
+
     {
         CP_CREATE_ELEMENT_SIMPLE(table_table_row_);    
     }
@@ -605,7 +613,8 @@ void table_rows_no_group::add_child_element( xml::sax * Reader, const std::wstri
 }
 void table_rows_no_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
-    if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row"))
+    if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row") ||
+		CP_CHECK_NAME(L"text", L"soft-page-break"))
     {
         if (!was_header_)
             table_rows_1_.add_child_element(Reader, Ns, Name, Context);
@@ -639,7 +648,8 @@ void table_rows_and_groups::add_child_element( xml::sax * Reader, const std::wst
     {
         CP_CREATE_ELEMENT_SIMPLE(content_);
     } 
-    else if (L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name) )
+    else if ((L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name)) ||
+		(L"text" == Ns && L"soft-page-break" == Name))
     {
 		bool add_new_no_group = false;
 		if (content_.empty())	add_new_no_group = true;

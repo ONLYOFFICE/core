@@ -131,9 +131,6 @@ namespace NSPresentationEditor
             m_bStroke	= (1 == XmlUtils::GetInteger(oXmlNode.GetAttributeOrValue(_T("stroke"), _T("0"))));
             m_bFill	= (1 == XmlUtils::GetInteger(oXmlNode.GetAttributeOrValue(_T("fill"), _T("0"))));
 
-            m_dWidthMM	= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("widthmm"), _T("210")));
-            m_dHeightMM = XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("heightmm"), _T("190")));
-
             m_dAngle	= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("angle"), _T("0")));
             m_lFlags	= XmlUtils::GetInteger(oXmlNode.GetAttributeOrValue(_T("flags"), _T("0")));
 
@@ -169,9 +166,6 @@ namespace NSPresentationEditor
             m_bFill		= false;
             m_bStroke	= true;
 
-            m_dWidthMM	= 210;
-            m_dHeightMM = 190;
-
             m_dAngle	= 0;
             m_lFlags	= 0;
         }
@@ -188,10 +182,7 @@ namespace NSPresentationEditor
             if (NULL == pRenderer)
                 return;
 
-            pRenderer->put_Width((float)m_dWidthMM);
-            pRenderer->put_Height((float)m_dHeightMM);
-
-            // вообще можно каждый раз выставлять pen/brush.
+			// вообще можно каждый раз выставлять pen/brush.
             // но у нас сейчас pen и brush выставляются в shape
 
             pRenderer->SetCommandParams(m_dAngle, m_oBounds.left, m_oBounds.top, m_oBounds.GetWidth(), m_oBounds.GetHeight(), m_lFlags);
@@ -919,8 +910,6 @@ namespace NSPresentationEditor
         bool m_bFill;
         bool m_bStroke;
 
-        double m_dWidthMM;
-        double m_dHeightMM;
 
         double m_dAngle;
         CDoubleRect m_oBounds;

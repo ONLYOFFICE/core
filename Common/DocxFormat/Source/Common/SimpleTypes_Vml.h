@@ -3403,9 +3403,10 @@ namespace SimpleTypes
 			std::wstring result;
 			for (size_t i = 0 ; i < sText.length(); i++)
 			{
-				if (XmlUtils::IsUnicodeSymbol(sText[i]) == true)
+				WCHAR wChar = sText[i];
+				if (XmlUtils::IsUnicodeSymbol(wChar) == true && wChar > 0x20)
 				{
-					result += sText[i];
+					result += wChar;
 				}
 			}
 			return result;
@@ -3469,6 +3470,7 @@ namespace SimpleTypes
 			cssptVTextReverse			= 1212,
 			cssptVTextSpacingMode		= 1213,
 			cssptVTextSpacing			= 1214,
+			cssptHTextAlign				= 1215,
 		};
 
 		enum ECssFlip
@@ -3671,6 +3673,7 @@ namespace SimpleTypes
 			ECssTextDecoration   eTextDecoration;
 			ECssVTextAlign       eVTextAlign;
 			ECssVTextSpacingMode eVTextSpacingMode;
+			ECssVTextAlign       eHTextAlign;
 		};
 		class CCssProperty
 		{
@@ -3849,7 +3852,8 @@ namespace SimpleTypes
 						{
 							if      ( _T("text-decoration") == sProperty )	m_eType = cssptTextDecoration;
 							else if ( _T("top")             == sProperty )	m_eType = cssptTop;
-							else												m_eType = cssptUnknown;
+							else if ( _T("text-align")		== sProperty )	m_eType = cssptHTextAlign;
+							else											m_eType = cssptUnknown;
 
 							break;
 						}
@@ -3946,6 +3950,7 @@ namespace SimpleTypes
 				case cssptVTextSpacing					: ReadValue_Double( sValue ); break;
 				case csspctMsoWidthPercent				: ReadValue_Double( sValue ); break;				
 				case csspctMsoHeightPercent				: ReadValue_Double( sValue ); break;
+				case cssptHTextAlign					: ReadValue_VTextAlign( sValue ); break;
 				};
 			}
 

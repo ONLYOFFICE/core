@@ -35,7 +35,8 @@
 namespace DocFileFormat
 {
 	/// Parses the bytes to retrieve a StyleSheetInformation
-	StyleSheetInformation::StyleSheetInformation (unsigned char* bytes, int size)
+	StyleSheetInformation::StyleSheetInformation (unsigned char* bytes, int size) : 
+		cstd(0), cbSTDBaseInFile(0), fStdStylenamesWritten(false), stiMaxWhenSaved(0), istdMaxFixedWhenSaved(0), nVerBuiltInNamesWhenSaved(0), cbLSD(0)
 	{
 		if ((0 != size) || (NULL != bytes))
 		{

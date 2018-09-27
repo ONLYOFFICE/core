@@ -33,12 +33,12 @@
 
 #include <iosfwd>
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/CPNoncopyable.h>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPWeakPtr.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <CPNoncopyable.h>
+#include <CPSharedPtr.h>
+#include <CPWeakPtr.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 #include "office_elements.h"
 
@@ -68,12 +68,6 @@ public:
 
 	_CP_OPT(unsigned int)		outline_level_; //from header attr
 
-};
-
-
-template <class ElementT> 
-class text_content_impl : public office_element_impl<ElementT>
-{
 };
 
 

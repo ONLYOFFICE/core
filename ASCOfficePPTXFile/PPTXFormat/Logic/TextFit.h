@@ -68,8 +68,8 @@ namespace PPTX
 					nullable_string sFontScale;
 					nullable_string sLnSpcRed;
 
-					oNode.ReadAttributeBase(L"fontScale", sFontScale);
-					oNode.ReadAttributeBase(L"lnSpcReduction", sLnSpcRed);
+					XmlMacroReadAttributeBase(oNode, L"fontScale", sFontScale);
+					XmlMacroReadAttributeBase(oNode, L"lnSpcReduction", sLnSpcRed);
 
 					if (sFontScale.is_init())
 					{
@@ -149,8 +149,8 @@ namespace PPTX
 					nullable_string sFontScale;
 					nullable_string sLnSpcRed;
 
-					node.ReadAttributeBase(L"fontScale", sFontScale);
-					node.ReadAttributeBase(L"lnSpcReduction", sLnSpcRed);
+					XmlMacroReadAttributeBase(node, L"fontScale", sFontScale);
+					XmlMacroReadAttributeBase(node, L"lnSpcReduction", sLnSpcRed);
 
 					Normalize(sFontScale, sLnSpcRed);
 				}

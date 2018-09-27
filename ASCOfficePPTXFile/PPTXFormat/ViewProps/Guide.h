@@ -48,8 +48,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"orient", orient);
-				node.ReadAttributeBase(L"pos", pos);
+                XmlMacroReadAttributeBase(node, L"orient", orient);
+                XmlMacroReadAttributeBase(node, L"pos", pos);
 				
 				Normalize();
 			}
@@ -64,12 +64,12 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				pWriter->WriteBYTE(g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 				pWriter->WriteInt2(0, pos);
 				pWriter->WriteLimit2(1, orient);
 
-				pWriter->WriteBYTE(g_nodeAttributeEnd);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Microsoft documentation for VCXPROJ file format is located at -->
+  <!-- the following URL. The documentation leaves a lot to be desired. -->
+  <!-- https://msdn.microsoft.com/en-us/library/2208a1f2.aspx -->
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -34,16 +37,24 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-
+  <!-- Microsoft documentation clearly shows the Global property group -->
+  <!-- preceeds the import of Cpp.Default.props and Cpp.props -->
+  <!-- https://msdn.microsoft.com/en-us/library/2208a1f2.aspx -->
   <PropertyGroup Label="Globals">
     <ProjectGuid>{09cdac08-e6ae-48a9-8de7-0fbc779eebde}</ProjectGuid>
     <RootNamespace>cryptest</RootNamespace>
-    <PlatformToolset>v100</PlatformToolset>
     <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
+  <!-- Use DefaultPlatformToolset after Microsoft.Cpp.Default.props -->
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <!-- Set DefaultPlatformToolset to v100 (VS2010) if not defined -->
+  <PropertyGroup Label="EmptyDefaultPlatformToolset">
+    <DefaultPlatformToolset Condition=" '$(DefaultPlatformToolset)' == '' ">v100</DefaultPlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="PlatformToolset">
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
@@ -52,7 +63,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <!-- End of Visual Studio boilerplate -->
-
   <!-- All Configurations -->
   <PropertyGroup Label="All Configurations">
     <ConfigurationType>Application</ConfigurationType>
@@ -62,7 +72,6 @@
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-
   <!-- Intermediate and Output directories -->
   <!-- Cryptlib and Cryptest need extra care due to Non-DLL/DLL configs -->
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'" Label="Non-DLL Directories">
@@ -77,13 +86,13 @@
     <OutDir>$(Platform)\DLL_Output\Release\</OutDir>
     <IntDir>$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
-
   <!-- All Configurations -->
   <ItemDefinitionGroup Label="All Configurations">
     <ClCompile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ErrorReporting>None</ErrorReporting>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4231; 4251; 4275; 4355; 4505</DisableSpecificWarnings>
       <PrecompiledHeader />
       <PrecompiledHeadeFile />
     </ClCompile>
@@ -97,7 +106,6 @@
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-
   <!-- Debug Configurations -->
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='DLL-Import Debug'" Label="Debug Configuration">
     <ClCompile>
@@ -113,7 +121,6 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
-
   <!-- Release Configurations -->
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='DLL-Import Release'" Label="Release Configuration">
     <ClCompile>
@@ -135,7 +142,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
-
   <!-- DLL-Import Overrides for Preprocessor and Libraries -->
   <ItemDefinitionGroup Condition="'$(Configuration)'=='DLL-Import Debug'" Label="DLL Debug Configuration">
     <ClCompile>
@@ -155,7 +161,6 @@
       <AdditionalDependencies>cryptopp.lib;cryptlib.lib;Ws2_32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-
   <!-- X86 Configurations -->
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'" Label="X86 Configuration">
     <ClCompile>
@@ -166,21 +171,16 @@
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
-
   <!-- X64 Configurations -->
   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'" Label="X64 Configuration">
-    <ClCompile>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-    </ClCompile>
     <Link>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
-
   <!-- FIPS Validated Warning -->
   <ItemDefinitionGroup Label="FIPS Warning">
     <PreBuildEvent Condition="'$(Configuration)'=='DLL-Import Debug' Or '$(Configuration)'=='DLL-Import Release'">
-	  <Command>
+      <Command>
         echo *************************************************************************
         echo This configuration requires cryptopp.dll. You can build it yourself using
         echo the cryptdll project, or obtain a pre-built, FIPS 140-2 validated DLL. If
@@ -190,7 +190,12 @@
       </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-
+  <!-- Target for Appvoyer                           -->
+  <!-- The rule copies cryptest.exe to the project   -->
+  <!-- root directory so it can be executed in place -->
+  <Target Name="CopyCryptestToRoot">
+    <Exec Command="copy $(Platform)\Output\$(Configuration)\cryptest.exe $(SolutionDir)" />
+  </Target>
   <!-- Source Files -->
   <ItemGroup>
     <ClCompile Include="adhoc.cpp" />
@@ -199,20 +204,22 @@
     <ClCompile Include="datatest.cpp" />
     <ClCompile Include="dlltest.cpp" />
     <ClCompile Include="fipsalgt.cpp" />
-    <ClCompile Include="regtest.cpp" />
+    <ClCompile Include="regtest1.cpp" />
+    <ClCompile Include="regtest2.cpp" />
+    <ClCompile Include="regtest3.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="validat0.cpp" />
     <ClCompile Include="validat1.cpp" />
     <ClCompile Include="validat2.cpp" />
     <ClCompile Include="validat3.cpp" />
+    <ClCompile Include="validat4.cpp" />
   </ItemGroup>
-
   <!-- Header Files -->
   <ItemGroup>
     <ClInclude Include="bench.h" />
     <ClInclude Include="factory.h" />
     <ClInclude Include="validate.h" />
   </ItemGroup>
-
   <!-- Test Files -->
   <ItemGroup>
     <None Include="TestVectors\aes.txt" />
@@ -220,6 +227,7 @@
     <None Include="TestVectors\blake2.txt" />
     <None Include="TestVectors\blake2b.txt" />
     <None Include="TestVectors\blake2s.txt" />
+    <None Include="TestVectors\aria.txt" />
     <None Include="TestVectors\camellia.txt" />
     <None Include="TestVectors\ccm.txt" />
     <None Include="TestVectors\chacha.txt" />
@@ -227,11 +235,13 @@
     <None Include="TestVectors\dlies.txt" />
     <None Include="TestVectors\dsa.txt" />
     <None Include="TestVectors\dsa_1363.txt" />
+    <None Include="TestVectors\dsa_rfc6979.txt" />
     <None Include="TestVectors\eax.txt" />
     <None Include="TestVectors\esign.txt" />
     <None Include="TestVectors\gcm.txt" />
     <None Include="TestVectors\hkdf.txt" />
     <None Include="TestVectors\hmac.txt" />
+    <None Include="TestVectors\kalyna.txt" />
     <None Include="TestVectors\mars.txt" />
     <None Include="TestVectors\nr.txt" />
     <None Include="TestVectors\panama.txt" />
@@ -244,16 +254,24 @@
     <None Include="TestVectors\seal.txt" />
     <None Include="TestVectors\seed.txt" />
     <None Include="TestVectors\sha.txt" />
+    <None Include="TestVectors\sha2.txt" />
     <None Include="TestVectors\sha3.txt" />
     <None Include="TestVectors\shacal2.txt" />
+    <None Include="TestVectors\simon.txt" />
+    <None Include="TestVectors\siphash.txt" />
+    <Text Include="TestVectors\sm3.txt" />
+    <None Include="TestVectors\sm4.txt" />
     <None Include="TestVectors\sosemanuk.txt" />
+    <None Include="TestVectors\speck.txt" />
     <None Include="TestVectors\tea.txt" />
+    <None Include="TestVectors\threefish.txt" />
     <None Include="TestVectors\ttmac.txt" />
     <None Include="TestVectors\vmac.txt" />
     <None Include="TestVectors\wake.txt" />
     <None Include="TestVectors\whrlpool.txt" />
     <None Include="TestData\3desval.dat" />
     <None Include="TestData\3wayval.dat" />
+    <None Include="TestData\aria.dat" />
     <None Include="TestData\camellia.dat" />
     <None Include="TestData\cast128v.dat" />
     <None Include="TestData\cast256v.dat" />

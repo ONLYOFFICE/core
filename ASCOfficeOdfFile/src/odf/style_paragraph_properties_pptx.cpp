@@ -32,7 +32,7 @@
 
 #include <iostream>
 #include "style_paragraph_properties.h"
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "../docx/pptx_conversion_context.h"
 #include "datatypes/borderstyle.h"
@@ -635,7 +635,7 @@ void style_tab_stop::pptx_convert(oox::pptx_conversion_context & Context)
 
 void style_paragraph_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    style_paragraph_properties_content_.pptx_convert(Context);
+    content_.pptx_convert(Context);
 }
 
 

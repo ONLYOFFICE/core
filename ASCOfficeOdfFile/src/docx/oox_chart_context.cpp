@@ -32,7 +32,7 @@
 
 
 #include <vector>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "oox_rels.h"
 #include "oox_chart_context.h"
@@ -70,7 +70,14 @@ void oox_chart_context::reset_fill(oox::_oox_fill &f)
 		rels_.push_back(_rel(isInternal, f.bitmap->rId, ref, typeImage));
 	}
 }
-
+void oox_chart_context::set_externalData(const std::wstring & href)
+{
+	bool isInternal = true;
+	std::wstring href_out;
+	
+	externalDataId_ = mediaitems_.add_or_find(href, typeMsObject, isInternal, href_out);
+	rels_.push_back(_rel(isInternal, externalDataId_, href_out, typeMsObject));
+}
 std::wostream & oox_chart_context::chartData()
 {
     return impl_->chartData_;
@@ -78,7 +85,7 @@ std::wostream & oox_chart_context::chartData()
 
 void oox_chart_context::dump_rels(rels & Rels)
 {
-	for (int i = 0; i < rels_.size(); i++)
+	for (size_t i = 0; i < rels_.size(); i++)
     {
 		_rel & r = rels_[i];
 
@@ -88,8 +95,7 @@ void oox_chart_context::dump_rels(rels & Rels)
 						r.rid,
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
 						r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
-						(r.is_internal ? L"" : L"External")
-						) 
+						(r.is_internal ? L"" : L"External")) 
 				);
 		}
 		else if (r.type == typeHyperlink)
@@ -99,6 +105,15 @@ void oox_chart_context::dump_rels(rels & Rels)
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
 						r.ref,
 						L"External")
+			);
+		}
+		else if (r.type == typeMsObject)
+		{
+			Rels.add(relationship(
+						r.rid,
+						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package",
+						r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
+						(r.is_internal ? L"" : L"External"))
 			);
 		}
 	}
@@ -199,10 +214,21 @@ void oox_chart_context::serialize(std::wostream & strm)
 					}
 				}
 			}
+
+			if (externalDataId_.empty() == false)
+			{
+				CP_XML_NODE(L"c:externalData")
+				{
+					CP_XML_ATTR(L"r:id", externalDataId_);
+					CP_XML_NODE(L"c:autoUpdate")
+					{
+						CP_XML_ATTR(L"val", false);
+					}
+				}
+			}
 		}
 	}
 }
-
 oox_chart_context::~oox_chart_context()
 {
 }

@@ -142,7 +142,7 @@ namespace DocFileFormat
 	{
 		newXmlString.clear();
 
-		std::wstring sTempFolder = m_ctx->_doc->m_sTempFolder;
+		std::wstring sTempFolder = m_context->_doc->m_sTempFolder;
 		if (sTempFolder.empty())
 		{
             sTempFolder = NSFile::CFileBinary::GetTempPath();
@@ -211,7 +211,7 @@ namespace DocFileFormat
 
 	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture) : PropertiesMapping(writer)
 	{
-		m_ctx				=	ctx;
+		m_context			=	ctx;
 		m_isOlePreview		=	olePreview;
 		m_imageData			=	NULL;
 		m_nImageId			=	0;
@@ -229,7 +229,18 @@ namespace DocFileFormat
 	{
 		RELEASEOBJECT(m_imageData);
 	}
+	std::wstring VMLPictureMapping::GetShapeID(const Shape* pShape) const
+	{
+		std::wstring strXmlAttr;
 
+		if (NULL != pShape)
+		{
+			strXmlAttr += std::wstring(L"_x0000_i");
+			strXmlAttr += FormatUtils::IntToWideString(pShape->GetShapeID());
+		}
+
+		return strXmlAttr;
+	}
 	void VMLPictureMapping::Apply( IVisitable* visited  )
 	{
 		PictureDescriptor* pict = dynamic_cast<PictureDescriptor*>(visited);
@@ -248,13 +259,14 @@ namespace DocFileFormat
 		std::vector<OptionEntryPtr> options;
 		
 		PictureFrameType type;
+		Shape* pShape = NULL;
 		if ((pict->shapeContainer || pict->blipStoreEntry) && pict->shapeContainer->Children.size() > 0)
 		{
-			Shape* shape	=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
-			options			=	pict->shapeContainer->ExtractOptions();
+			pShape	=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
+			options	=	pict->shapeContainer->ExtractOptions();
 
 			//v:shapetype
-			type.SetType(shape->Instance);
+			type.SetType(pShape->Instance);
 			
 			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, m_isInlinePicture );
 
@@ -265,13 +277,16 @@ namespace DocFileFormat
 		{
 			type.SetType(msosptPictureFrame);
 		}
-		m_pXmlWriter->WriteNodeBegin( L"v:shape", true );
+		m_pXmlWriter->WriteNodeBegin( L"v:shape", true );		
+
+		//m_shapeId = GetShapeID(pShape); - todooo одинаковые картинки (одинаковый spid) - Anexo№3.doc
 		
 
-		count_vml_objects++;
-
 		if (m_shapeId.empty())
-			m_shapeId =	L"_x0000_s" + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		{
+			m_context->_doc->GetOfficeArt()->m_uLastShapeId++;
+			m_shapeId =	L"_x0000_i" + FormatUtils::IntToWideString(m_context->_doc->GetOfficeArt()->m_uLastShapeId);
+		}
 		
 		m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
 		
@@ -309,24 +324,28 @@ namespace DocFileFormat
 				}break;
 //BORDERS
 			case borderBottomColor:
+				if (!pict->brcBottom)
 				{
 					RGBColor bottomColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", L"#" + bottomColor.SixDigitHexCode);
 				}
 				break;
 			case borderLeftColor:
+				if (!pict->brcLeft)
 				{  
 					RGBColor leftColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", L"#" + leftColor.SixDigitHexCode);
 				}  
 				break;
 			case borderRightColor:
+				if (!pict->brcRight)
 				{  
 					RGBColor rightColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderrightcolor",  L"#" + rightColor.SixDigitHexCode);
 				}
 				break;
 			case borderTopColor:
+				if (!pict->brcTop)
 				{
 					RGBColor topColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", L"#" + topColor.SixDigitHexCode);
@@ -414,6 +433,7 @@ namespace DocFileFormat
 		}
 
 		strStyle +=  L"width:"  + strWidth + L"pt;" + L"height:" + strHeight + L"pt;";
+
 		m_pXmlWriter->WriteAttribute( L"style", strStyle);
 
 		if (m_isOlePreview)
@@ -425,21 +445,37 @@ namespace DocFileFormat
             m_pXmlWriter->WriteAttribute( L"o:bullet", L"1" );
 		}
 
+		{//borders color		
+			if (pict->brcTop)
+				m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcTop->cv, L"#%06x") : pict->brcTop->ico);
+			if (pict->brcLeft)
+				m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcLeft->cv, L"#%06x") : pict->brcLeft->ico);
+			if (pict->brcBottom)
+				m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcBottom->cv, L"#%06x") : pict->brcBottom->ico);
+			if (pict->brcRight)
+				m_pXmlWriter->WriteAttribute( L"o:borderrightcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcRight->cv, L"#%06x") : pict->brcRight->ico);
+
+		}
 		m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 		
+		//v:imageData
 		if (CopyPicture(pict))
 		{
-			//v:imageData
 			appendValueAttribute(m_imageData, L"r:id", L"rId" + FormatUtils::IntToWideString(m_nImageId));
 			appendValueAttribute(m_imageData, L"o:title", L"" );
 			m_pXmlWriter->WriteString(m_imageData->GetXMLString());
 		}
 
+
 		{//borders			
 			writePictureBorder( L"bordertop",		pict->brcTop );
 			writePictureBorder( L"borderleft",		pict->brcLeft );
 			writePictureBorder( L"borderbottom",	pict->brcBottom );
-			writePictureBorder( L"borderright",	pict->brcRight );
+			writePictureBorder( L"borderright",		pict->brcRight );
 		}
 
 		m_pXmlWriter->WriteNodeEnd( L"v:shape" );
@@ -476,12 +512,16 @@ namespace DocFileFormat
 				WmfPlaceableFileHeader oWmfHeader = {};
 				oMetaHeader.ToWMFHeader(&oWmfHeader);
 				
-				int lLenHeader = 114 + 22;
+				int lLenHeader = 22 + (pict->embeddedDataHeader ? 114 : 0);
 
 				unsigned char *newData = new unsigned char[pict->embeddedDataSize + lLenHeader];
 				
 				memcpy(newData, (unsigned char *)(&oWmfHeader), 22);
-				memcpy(newData + 22, pict->embeddedDataHeader, 114 );
+
+				if (pict->embeddedDataHeader)
+				{
+					memcpy(newData + 22, pict->embeddedDataHeader, 114 );
+				}
 				
 				memcpy(newData + lLenHeader, pict->embeddedData, pict->embeddedDataSize);
 
@@ -490,10 +530,10 @@ namespace DocFileFormat
 				pict->embeddedData = newData;
 
 			}
-			m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipDIB), 
+			m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipDIB), 
 					std::vector<unsigned char>(pict->embeddedData, (pict->embeddedData + pict->embeddedDataSize)), Global::msoblipDIB));
 			
-			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, btWin32);
+			m_nImageId	=	m_context->_docx->RegisterImage(m_caller, btWin32);
 			result	=	true;
 		}
 		else if ((oBlipEntry != NULL) && (oBlipEntry->Blip != NULL))
@@ -510,7 +550,7 @@ namespace DocFileFormat
 						unsigned char *newData	= NULL;
 						int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
 						
-						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<unsigned char>(newData, (newData + newDataSize))));
+						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<unsigned char>(newData, (newData + newDataSize))));
 						
 						RELEASEARRAYOBJECTS(newData);
 					}
@@ -526,7 +566,7 @@ namespace DocFileFormat
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
 					if (bitBlip)
 					{
-						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
+						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
 							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
 					}
 				}break;			
@@ -537,7 +577,7 @@ namespace DocFileFormat
 				}break;
 			}
 
-			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, oBlipEntry->btWin32);
+			m_nImageId	=	m_context->_docx->RegisterImage(m_caller, oBlipEntry->btWin32);
 			result	=	true;
 		}
 

@@ -37,7 +37,7 @@ class CRecordWAVAudioEmbeddedContainer : public CRecordsContainer
 public:
 	CRecordExMediaAtom	m_oMedia;
 	
-	DWORD				m_nSoundID;
+	_UINT32				m_nSoundID;
 	LONG				m_nDuration;
 
 public:

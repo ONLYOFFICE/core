@@ -336,7 +336,15 @@ namespace OOX
 				{
 					sName = oReader.GetName();
 					if ( L"w:comment" == sName )
-						m_arrComments.push_back( new CComment(oReader) );
+					{
+						CComment* pComment = new CComment(oReader);
+
+						if ((pComment) && (pComment->m_oId.IsInit()))
+						{
+							m_mapComments.insert( std::make_pair( pComment->m_oId->GetValue(), m_arrComments.size()));
+						}
+						m_arrComments.push_back( pComment );
+					}
 				}
 			}
 		}
@@ -357,7 +365,8 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-		std::vector<CComment*> m_arrComments;
+		std::vector<CComment*>	m_arrComments;
+		std::map<int, int>		m_mapComments; //id, index
 
 	};
 	class CCommentExt : public WritingElement
@@ -401,10 +410,9 @@ namespace OOX
 		}
 
 	public:
-	// Attributes
-		nullable<SimpleTypes::CLongHexNumber<> > m_oParaId;
-		nullable<SimpleTypes::CLongHexNumber<> > m_oParaIdParent;
-		nullable<SimpleTypes::COnOff<> > m_oDone;
+		nullable<SimpleTypes::CLongHexNumber<> >	m_oParaId;
+		nullable<SimpleTypes::CLongHexNumber<> >	m_oParaIdParent;
+		nullable<SimpleTypes::COnOff<> >			m_oDone;
 	};
 
 	class CCommentsExt : public OOX::File
@@ -449,7 +457,14 @@ namespace OOX
 				{
 					sName = oReader.GetName();
 					if ( L"w15:commentEx" == sName )
-						m_arrComments.push_back( new CCommentExt(oReader) );
+					{
+						CCommentExt* pCommentExt = new CCommentExt(oReader);
+						if ((pCommentExt) && (pCommentExt->m_oParaId.IsInit()))
+						{
+							m_mapComments.insert( std::make_pair( pCommentExt->m_oParaId->GetValue(), m_arrComments.size()));
+							m_arrComments.push_back( pCommentExt );
+						}
+					}
 				}
 			}
 		}
@@ -470,7 +485,8 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-		std::vector<CCommentExt*> m_arrComments;
+		std::vector<CCommentExt*>	m_arrComments;
+		std::map<int, int>			m_mapComments; //paraId, index
 	};
 
 	class CPresenceInfo : public WritingElement

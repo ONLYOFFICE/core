@@ -32,11 +32,15 @@
 
 #import "X2tConverter.h"
 
+#include "version.h"
+
 #include "cextracttools.h"
 #include "ASCConverters.h"
 
 #include <iostream>
 #include <fstream>
+
+#include "../../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 static std::wstring nsstring_to_wstring(NSString* nsstring)
 {
@@ -44,6 +48,10 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     NSData* data = [nsstring dataUsingEncoding:encode];
     return std::wstring((wchar_t*) data.bytes, data.length / sizeof(wchar_t));
 }
+
+@implementation Encoding
+
+@end
 
 @implementation X2tConverter
 
@@ -88,11 +96,20 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
-    if (self.password) {
-        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    if (nil != self.password && self.password.length > 0) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.docx";
+
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::doct_bin2docx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
+        }
+        
+        return AVS_FILEUTILS_ERROR_CONVERT;
+        
+    } else {
+        return NExtractTools::doct_bin2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
     }
-    
-    return NExtractTools::doct_bin2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
 - (int)sdk_doct2docx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
     std::wstring from = nsstring_to_wstring(nsFrom);
@@ -111,6 +128,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::doct2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
+
 - (int)sdk_xlsx2xlst_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -153,7 +171,20 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
-    return NExtractTools::xlst_bin2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    if (nil != self.password && self.password.length > 0) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.xlsx";
+
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::xlst_bin2xlsx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
+        }
+        
+        return AVS_FILEUTILS_ERROR_CONVERT;
+        
+    } else {
+        return NExtractTools::xlst_bin2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    }
 }
 - (int)sdk_xlst2xlsx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
     std::wstring from = nsstring_to_wstring(nsFrom);
@@ -168,6 +199,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::xlst2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
+
 - (int)sdk_pptx2pptt_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -198,7 +230,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::pptx2pptt(from, to, temp, oInputParams);
 }
-- (int)sdk_pptt_bin2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir{
+- (int)sdk_pptt_bin2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
     std::wstring temp = nsstring_to_wstring(nsTemp);
@@ -208,7 +240,20 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     
-    return NExtractTools::pptt_bin2pptx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    if (nil != self.password && self.password.length > 0) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.pptx";
+        
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::pptt_bin2pptx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
+        }
+        
+        return AVS_FILEUTILS_ERROR_CONVERT;
+        
+    } else {
+        return NExtractTools::pptt_bin2pptx(from, to, temp, bFromChanges, themeDir, oInputParams);
+    }
 }
 - (int)sdk_pptt2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir{
     std::wstring from = nsstring_to_wstring(nsFrom);
@@ -222,6 +267,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::pptt2pptx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
+
 - (int)sdk_csv2xlst:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -248,12 +294,33 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     if (self.password) {
         oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
     }
     
     return NExtractTools::csv2xlsx(from, to, temp, oInputParams);
+}
+- (int)sdk_csv2xlst_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.delimiter != nil) {
+        oInputParams.m_nCsvDelimiter = new int(self.delimiter.intValue);
+    }
+    if (self.encoding != nil) {
+        oInputParams.m_nCsvTxtEncoding = new int(self.encoding.intValue);
+    }
+    
+    oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV);
+    oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET);
+    
+    return NExtractTools::csv2xlst_bin(from, to, oInputParams);
 }
 - (int)sdk_xlst2csv:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
@@ -264,6 +331,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     return NExtractTools::xlst2csv(from, to, temp, oInputParams);
 }
@@ -276,8 +344,28 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     return NExtractTools::xlsx2csv(from, to, temp, oInputParams);
+}
+
+- (int)txt2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+
+    if (self.encoding != nil) {
+        oInputParams.m_nCsvTxtEncoding = new int(self.encoding.intValue);
+    }
+    
+    oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT);
+    oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_CANVAS_WORD);
+    
+    return NExtractTools::txt2doct_bin(from, to, temp, oInputParams);
 }
 
 - (int)sdk_dir2zip:(NSString*)nsFrom nsTo:(NSString*)nsTo {
@@ -291,6 +379,36 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     std::wstring to = nsstring_to_wstring(nsTo);
     
     return NExtractTools::zip2dir(from, to);
+}
+
++ (NSArray <NSString *> *)delimiters {
+    NSMutableArray *values = [[NSMutableArray alloc]init];
+    
+    [values addObject:[NSString stringWithFormat:@"\t"]];
+    [values addObject:[NSString stringWithFormat:@";"]];
+    [values addObject:[NSString stringWithFormat:@":"]];
+    [values addObject:[NSString stringWithFormat:@","]];
+    [values addObject:[NSString stringWithFormat:@" "]];
+    
+    return values;
+}
+
++ (NSArray <Encoding *> *)encodingings {
+    NSMutableArray *values = [[NSMutableArray alloc]init];
+    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i) {
+        Encoding *encoding = [[Encoding alloc]init];
+        encoding.index = NSUnicodeConverter::Encodings[i].Index;
+        encoding.codePage = NSUnicodeConverter::Encodings[i].WindowsCodePage;
+        encoding.name = [NSString stringWithFormat:@"%s", NSUnicodeConverter::Encodings[i].Name];
+        encoding.displayName = [NSString stringWithFormat:@"%s", NSUnicodeConverter::Encodings[i].DisplayName];
+        [values addObject:encoding];
+    }
+    
+    return values;
+}
+
++ (NSString *)version {
+    return [[NSString alloc] initWithUTF8String:X2T_VERSION];
 }
 
 @end

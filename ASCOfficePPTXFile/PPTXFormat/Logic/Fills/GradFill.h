@@ -121,12 +121,12 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-				node.ReadAttributeBase(L"flip", flip);
-				node.ReadAttributeBase(L"rotWithShape", rotWithShape);
+				XmlMacroReadAttributeBase(node, L"flip", flip);
+				XmlMacroReadAttributeBase(node, L"rotWithShape", rotWithShape);
 
 				XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(_T("gsLst"));
 				if (oNode.IsValid())
-					oNode.LoadArray(_T("*"), GsLst);
+					XmlMacroLoadArray(oNode, _T("*"), GsLst, Gs);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))

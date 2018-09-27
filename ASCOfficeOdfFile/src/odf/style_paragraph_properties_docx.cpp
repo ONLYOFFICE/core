@@ -34,7 +34,7 @@
 
 #include "style_paragraph_properties.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "../docx/docx_conversion_context.h"
 
@@ -415,131 +415,106 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
             Context.set_page_break_after(true);
         }
     }
-	if (style_tab_stops_)	
-		style_tab_stops_->docx_convert(Context);
+
+	Context.get_tabs_context().docx_convert(Context);
+
+	//if (style_tab_stops_)	
+	//{
+	//	style_tab_stops_->docx_convert(Context);
+	//}
 }
 void style_tab_stops::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (style_tab_stops_.size()<1)return;
+	if (content_.empty()) return;
 	std::wstringstream & _pPr = Context.get_styles_context().paragraph_nodes();
  
     _pPr << L"<w:tabs>";
-
-	if (style_tab_stops_.size() > 0)
-	{
-		for (size_t i = 0; i < style_tab_stops_.size(); i++)
+		for (size_t i = 0; i < content_.size(); i++)
 		{
-			style_tab_stops_[i]->docx_convert(Context);
+			content_[i]->docx_convert(Context);
 		}
-	}
     _pPr << L"</w:tabs>";
 }
-
-void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
+	
+void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool clear)
 {
     std::wstringstream & _pPr = Context.get_styles_context().paragraph_nodes();
 
-    _pPr << L"<w:tab ";
+    _pPr << L"<w:tab";
 
 	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оО
-	
+		
 	int tab_pos = (int)( 20.0 * style_position_.get_value_unit(length::pt) ) ;
 	int min_tab_pos = (int)( 20.0 * def_tab.get_value_unit(length::pt) ) ;
 
 	int margin_left_pos = Context.get_margin_left();
 
-	if ((style_type_) && (style_type_->get_type() == style_type::Right))
-	{
-		tab_pos += margin_left_pos;
-	}
+	tab_pos += margin_left_pos;
 
 	if (tab_pos < min_tab_pos)
 		tab_pos = min_tab_pos;
-    
-    _pPr << L"w:pos=\"" << tab_pos << "\" ";
-    
-    {
-        std::wstring val = L"left"; //????
-        if (style_type_)
-        {
-            switch(style_type_->get_type())
-            {
-            case style_type::Left:
-                val = L"left";
-                break;
-            case style_type::Center:
-                val = L"center";
-                break;
-            case style_type::Right:
-                val = L"right";
-                break;
-            case style_type::Char:
-                val = L"decimal";            
-                break;
-            }
-        }
-        if (!val.empty())
-            _pPr << L"w:val=\"" << val << "\" ";
-    }
 
-    {
-        std::wstring leader;
+	std::wstring val = clear ? L"clear" : L"left"; //????
+	if (style_type_ && !clear)
+	{
+		switch(style_type_->get_type())
+		{
+			case style_type::Left:	val = L"left";		break;
+			case style_type::Center:val = L"center";	break;
+			case style_type::Right:	val = L"right";		break;
+			case style_type::Char:	val = L"decimal";	break;
+		}
+	}
+	_pPr << L" w:val=\"" << val << "\"";
+    _pPr << L" w:pos=\"" << tab_pos << "\"";
+	
+	std::wstring leader;
 
-        if ((style_leader_type_ && style_leader_type_->get_type() == line_type::None) ||
-            (style_leader_style_ && style_leader_style_->get_type() == line_style::None))
-        {
-            leader = L"none";
-        }
-        else if (!style_leader_type_ || style_leader_type_ && style_leader_type_->get_type() != line_type::None)
-        {
-            if (style_leader_style_)
-            {
-                switch(style_leader_style_->get_type())
-                {
-                case line_style::None:
-                    leader = L"";
-                    break;
-                case line_style::Solid:
-                    if (style_leader_text_)
-                    {
-                        if (*style_leader_text_ == L"-")
-                            leader = L"hyphen";
-                        else if (*style_leader_text_ == L"_")
-                            leader = L"underscore";
-                    }
-                    break;
-                case line_style::Dotted:
-                    leader = L"dot";
-                    break;
-                case line_style::Dash:
-                    leader = L"hyphen";
-                    break;
-                case line_style::LongDash:
-                    leader = L"middleDot";
-                    break;
-                case line_style::DotDash:
-                    leader = L"middleDot";
-                    break;
-                case line_style::DotDotDash:
-                    leader = L"middleDot";
-                    break;
-                case line_style::Wave:
-                    leader = L"middleDot";
-                    break;
-                }
-            }
-        }
-
-        if (!leader.empty())
-            _pPr << L"w:leader=\"" << leader << "\" ";
-    }
-    
-    _pPr << L" />";
+	if ((style_leader_type_ && style_leader_type_->get_type() == line_type::None) ||
+		(style_leader_style_ && style_leader_style_->get_type() == line_style::None))
+	{
+		leader = L"none";
+	}
+	else if (!style_leader_type_ || style_leader_type_ && style_leader_type_->get_type() != line_type::None)
+	{
+		if (style_leader_style_)
+		{
+			switch(style_leader_style_->get_type())
+			{
+			case line_style::None:			leader.clear();			break;
+			case line_style::Solid:
+			{
+				if (style_leader_text_)
+				{
+					if (*style_leader_text_ == L"-")
+						leader = L"hyphen";
+					else if (*style_leader_text_ == L"_")
+						leader = L"underscore";
+				}
+			}break;
+			case line_style::Dotted:		leader = L"dot";		break;
+			case line_style::Dash:			leader = L"hyphen";		break;
+			case line_style::LongDash:		leader = L"middleDot";	break;
+			case line_style::DotDash:		leader = L"middleDot";	break;
+			case line_style::DotDotDash:	leader = L"middleDot";	break;
+			case line_style::Wave:			leader = L"middleDot";	break;
+			}
+		}
+	}
+	if (!clear && !leader.empty())
+	{
+		_pPr << L" w:leader=\"" << leader << "\"";
+	}
+	_pPr << L"/>";
+}
+void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
+{
+	docx_convert(Context, false);
 }
 
 void style_paragraph_properties::docx_convert(oox::docx_conversion_context & Context)
 {
-    style_paragraph_properties_content_.docx_convert(Context);
+    content_.docx_convert(Context);
 }
 
 

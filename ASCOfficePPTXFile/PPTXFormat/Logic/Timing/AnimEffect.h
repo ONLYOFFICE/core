@@ -50,9 +50,9 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"filter", filter);
-				node.ReadAttributeBase(L"prLst", prLst);
-				node.ReadAttributeBase(L"transition", transition);
+                XmlMacroReadAttributeBase(node, L"filter", filter);
+                XmlMacroReadAttributeBase(node, L"prLst", prLst);
+                XmlMacroReadAttributeBase(node, L"transition", transition);
 
 				cBhvr		= node.ReadNode(_T("p:cBhvr"));
 				progress	= node.ReadNodeNoNS(_T("progress"));

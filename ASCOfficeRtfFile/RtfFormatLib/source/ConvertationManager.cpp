@@ -39,6 +39,8 @@
 #include "Writer/OOXWriter.h"
 #include "Reader/OOXReader.h"
 
+#include "../../../Common/OfficeFileErrorDescription.h"
+
 const double g_cdMaxReadRtfPercent = 0.70;
 const double g_cdMaxWriteRtfPercent = 0.30;
 const double g_cdMaxReadOoxPercent = 0.70;
@@ -50,7 +52,7 @@ const double g_cdMaxWriteOoxPercent = 0.30;
     #pragma comment(lib, "Gdi32.lib")
 #endif
 
-HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath )
+_UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath )
 {
     m_bParseFirstItem = true;
 
@@ -91,11 +93,11 @@ HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
 
     if( true == succes )
-        return S_OK;
+        return 0;
     else
-        return S_FALSE;
+        return AVS_FILEUTILS_ERROR_CONVERT;
 }
-HRESULT RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath )
+_UINT32 RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath )
 {
     m_bParseFirstItem = true;
 
@@ -127,8 +129,8 @@ HRESULT RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std:
     NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
     NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
 
-    if( true == succes) return S_OK;
-    return S_FALSE;
+    if( true == succes) return 0;
+    return AVS_FILEUTILS_ERROR_CONVERT;
 }
 void RtfConvertationManager::OnCompleteItemRtf()
 {

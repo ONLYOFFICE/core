@@ -44,13 +44,14 @@ namespace OOX
 	public:
 		Media(OOX::Document *pMain, bool bDocument = true) : File(pMain)
 		{
+			m_bExist	= false;
 			m_bExternal = false;
 			m_bDocument = bDocument;
 		}
 		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false) : File(pMain)
 		{
 			m_bExternal	= bExternal;			
-			m_filename	= filename;
+			read(filename);
 		}
 		virtual ~Media()
 		{
@@ -62,14 +63,16 @@ namespace OOX
 		virtual void read(const CPath& filename)
 		{
 			m_filename = filename;
+			m_bExist = NSFile::CFileBinary::Exists(m_filename.GetPath());
 		}
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 		{
 		}
 		void set_filename(const std::wstring & file_path, bool bExternal)
 		{
+			read(file_path);
+			
 			m_bExternal			= bExternal;
-			m_filename			= file_path;
 			m_sOutputFilename	= m_filename.GetFilename();
 		}
 		void set_filename(CPath & file_path, bool bExternal)
@@ -77,6 +80,11 @@ namespace OOX
 			m_bExternal			= bExternal;
 			m_filename			= file_path;
 			m_sOutputFilename	= file_path.GetFilename();
+			m_bExist = NSFile::CFileBinary::Exists(m_filename.GetPath());
+		}
+		bool IsExist()
+		{
+			return m_bExist;
 		}
 		bool IsExternal()
 		{
@@ -105,6 +113,7 @@ namespace OOX
 		}
 	protected:
 		CPath	m_filename;
+		bool	m_bExist;
 		bool	m_bExternal;
 		bool	m_bDocument; //for upper/lower level rels (defaultDirectory)
 	};

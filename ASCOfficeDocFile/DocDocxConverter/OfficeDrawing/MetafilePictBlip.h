@@ -67,7 +67,6 @@ public:
 	BYTE compression;
 	BYTE filter;
 
-public:
 	CMetaHeader()
 	{
 		cbSize = cbSave = 0;
@@ -77,48 +76,6 @@ public:
 		rcBounds.bottom = rcBounds.left = rcBounds.right = rcBounds.top = 0;
 
 	}
-
-
-	//void ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
-	//{
-	//	if (NULL == pHeader)
-	//		return;
-
-	//	pHeader->iType				= 0x00000001;
-	//	pHeader->nSize				= 88;
-
-	//	pHeader->rclBounds.left		= rcBounds.left;
-	//	pHeader->rclBounds.top		= rcBounds.top;
-	//	pHeader->rclBounds.right	= rcBounds.right;
-	//	pHeader->rclBounds.bottom	= rcBounds.bottom;
-
-	//	// нужно перевести в мм
-	//	pHeader->rclFrame.left		= rcBounds.left;
-	//	pHeader->rclFrame.top		= rcBounds.top;
-	//	pHeader->rclFrame.right		= rcBounds.right;
-	//	pHeader->rclFrame.bottom	= rcBounds.bottom;
-
-	//	pHeader->dSignature			= 0x464D4520;
-	//	pHeader->nVersion			= 0x00010000;
-	//	pHeader->nBytes				= cbSize;
-
-	//	pHeader->nRecords			= 1;
-	//	pHeader->nHandles			= 0;
-
-	//	pHeader->sReserved			= 0;
-
-	//	pHeader->nDescription		= 0;
-	//	pHeader->offDescription		= 0;
-
-	//	pHeader->nPalEntries		= 0;
-
-	//	pHeader->szlDevice.cx		= 200;
-	//	pHeader->szlDevice.cy		= 200;
-
-	//	// нужно перевести в мм
-	//	pHeader->szlMillimeters.cx	= 100;
-	//	pHeader->szlMillimeters.cy	= 100;
-	//}
 
 	void ToWMFHeader(WmfPlaceableFileHeader* pHeader)
 	{

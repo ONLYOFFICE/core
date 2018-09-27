@@ -49,6 +49,7 @@
 #include "Media/VbaProject.h"
 #include "Media/JsaProject.h"
 #include "HeaderFooter.h"
+#include "CustomXml.h"
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
@@ -76,5 +77,24 @@ namespace OOX {
 		}
 		
 		return NULL;
-	}	
+	}
+	const std::wstring CDocx::GetCustomSettings() const
+	{
+		if (NULL != m_pDocument)
+		{
+			std::vector<smart_ptr<OOX::File>>& container = m_pDocument->GetContainer();
+			for (size_t i = 0; i < container.size(); ++i)
+			{
+				if (OOX::FileTypes::CustomXml == container[i]->type())
+				{
+					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].operator->());
+					if(OOX::CSettingsCustom::GetSchemaUrl() == pCustomXml->GetSchemaUrl())
+					{
+						return pCustomXml->m_sXml;
+					}
+				}
+			}
+		}
+		return L"";
+	}
 }

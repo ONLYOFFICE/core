@@ -37,7 +37,7 @@
 
 namespace XPS
 {
-	CDocument::CDocument(CFontManager* pFontManager)
+    CDocument::CDocument(NSFonts::IFontManager* pFontManager)
 	{		
 		m_pFontManager = pFontManager;
 		m_mPages.clear();

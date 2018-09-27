@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,13 +35,14 @@
 #include <map>
 #include <set>
 
-#include "./ApplicationFonts.h"
+#include "../graphics/pro/Fonts.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
+#include "../common/Array.h"
 #include "../common/StringBuilder.h"
 
 #ifndef ASC_APPLICATION_FONTS_NO_THUMBNAILS
-#include "../graphics/GraphicsRenderer.h"
+#include "../graphics/pro/Graphics.h"
 #endif
 
 #include "./application_generate_fonts_common.h"
@@ -153,7 +154,7 @@ namespace NSCommon
         }
     };
 
-    class CSymbolSimpleChecker : public CApplicationFontsSymbolsChecker
+    class CSymbolSimpleChecker : public NSFonts::CApplicationFontsSymbolsChecker
     {
     public:
         int m_nMaxSymbols;
@@ -182,7 +183,7 @@ namespace NSCommon
         }
     };
 
-    class CSymbolSimpleChecker2 : public CApplicationFontsSymbolsChecker
+    class CSymbolSimpleChecker2 : public NSFonts::CApplicationFontsSymbolsChecker
     {
     public:
         int m_nMaxSymbols;
@@ -255,7 +256,7 @@ namespace NSCommon
                 int nCount = 1;
                 ++tmp;
 
-                while (nMask == *tmp && tmp < tmpLast)
+                while (tmp < tmpLast && nMask == *tmp)
                 {
                     ++tmp;
                     nCount++;
@@ -324,18 +325,18 @@ namespace NSCommon
         }
     };
     
-    static void SaveAllFontsJS(CApplicationFonts& applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin)
+    static void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin)
     {
-        CArray<CFontInfo*>* pList = applicationFonts.GetList()->GetFonts();
-        int nCount = pList->GetCount();
+        std::vector<NSFonts::CFontInfo*>* pList = applicationFonts->GetList()->GetFonts();
+        int nCount = pList->size();
         
         // сначала строим массив всех файлов шрифтов
         std::map<std::wstring, LONG> mapFontFiles;
         std::map<LONG, std::wstring> mapFontFiles2;
         LONG lFontFiles = 0;
-        for (int i = 0; i < nCount; ++i)
+        for (std::vector<NSFonts::CFontInfo*>::iterator i = pList->begin(); i != pList->end(); i++)
         {
-            CFontInfo* pInfo = pList->operator [](i);
+            NSFonts::CFontInfo* pInfo = *i;
             
             if (mapFontFiles.find(pInfo->m_wsFontPath) == mapFontFiles.end())
             {
@@ -350,9 +351,9 @@ namespace NSCommon
         std::map<std::wstring, CFontInfoJS> mapFonts;
         CArray<std::wstring> arrFonts;
         
-        for (int i = 0; i < nCount; ++i)
+        for (std::vector<NSFonts::CFontInfo*>::iterator i = pList->begin(); i != pList->end(); i++)
         {
-            CFontInfo* pInfo = (CFontInfo*)pList->operator [](i);
+            NSFonts::CFontInfo* pInfo = *i;
             std::wstring strPath = pInfo->m_wsFontPath;
             std::wstring strName = pInfo->m_wsFontName;
             
@@ -462,9 +463,9 @@ namespace NSCommon
 #ifndef ASC_APPLICATION_FONTS_NO_THUMBNAILS
         if (L"" != strFolderThumbnails)
         {
-            CFontManager* pManager = applicationFonts.GenerateFontManager();
-            CFontsCache* pCache = new CFontsCache();
-            pCache->SetStreams(applicationFonts.GetStreams());
+            NSFonts::IFontManager* pManager = applicationFonts->GenerateFontManager();
+            NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
+            pCache->SetStreams(applicationFonts->GetStreams());
             pManager->SetOwnerCache(pCache);
             
             for (int iX = 1; iX <= 2; ++iX)
@@ -491,13 +492,13 @@ namespace NSCommon
                     pImageData[i] = 0;
                 }
                 
-                CGraphicsRenderer oRenderer;
-                oRenderer.CreateFromBgraFrame(&oFrame);
+                NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+                pRenderer->CreateFromBgraFrame(&oFrame);
                 
-                oRenderer.SetFontManager(pManager);
+                pRenderer->SetFontManager(pManager);
                 
-                oRenderer.put_Width(lWidthPix * 25.4 / dDpi);
-                oRenderer.put_Height(lHeightPix * 25.4 / dDpi);
+                pRenderer->put_Width(lWidthPix * 25.4 / dDpi);
+                pRenderer->put_Height(lHeightPix * 25.4 / dDpi);
                 
                 for (int index = 0; index < nCountFonts; ++index)
                 {
@@ -532,64 +533,92 @@ namespace NSCommon
                     if (mapFontFiles2.end() != pPair2)
                         strFontPath = pPair2->second;
                     
-                    oRenderer.put_FontPath(strFontPath);
-                    oRenderer.put_FontFaceIndex(lFaceIndex);
+                    pRenderer->put_FontPath(strFontPath);
+                    pRenderer->put_FontFaceIndex(lFaceIndex);
                     pManager->LoadFontFromFile(strFontPath, lFaceIndex, 14, dDpi, dDpi);
                     
-                    bool bIsSymbol = FALSE;
+                    bool bIsSymbol = false;
+                    NSFonts::IFontFile* pFile = pManager->GetFile();
                     
-                    if (pManager->m_pFont)
-                    {
-                        bIsSymbol = (-1 != (pManager->m_pFont->m_nSymbolic)) ? true : false;
-                        
-                        if (!bIsSymbol)
-                        {
-                            TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(pManager->m_pFont->m_pFace, ft_sfnt_os2);
-                            
-                            int y = 0;
-                            ++y;
-                            
-                            if (NULL != pOS2)
-                            {
-                                if (0 == (pOS2->ulCodePageRange1 & 0xF0000000))
-                                    bIsSymbol = true;
-                            }
-                        }
-                    }
+                    if (pFile)
+                        bIsSymbol = pFile->IsSymbolic(false);
+                    
+                    std::wstring sFontName = pPair->second.m_sName;
                     
                     if (bIsSymbol)
                     {
-                        CFontSelectFormat oSelectFormat;
+                        NSFonts::CFontSelectFormat oSelectFormat;
                         oSelectFormat.wsName = new std::wstring(L"Courier New");
-                        CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);
+                        NSFonts::CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);
                         
                         if (NULL != pInfoCur)
                         {
                             pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
                         }
-                        oRenderer.put_FontPath(pInfoCur->m_wsFontPath);
-                        oRenderer.put_FontFaceIndex(0);
+                        pRenderer->put_FontPath(pInfoCur->m_wsFontPath);
+                        pRenderer->put_FontFaceIndex(0);
+                    }
+                    else if (pFile)
+                    {
+                        int nFontNameLen = (int)sFontName.length();
+                        bool bIsPresentAll = true;
+                        
+                        for (int nC = 0; nC < nFontNameLen; nC++)
+                        {
+                            int nCMapIndex = 0;
+                            int nGid = pFile->SetCMapForCharCode(sFontName.at(nC), &nCMapIndex);
+                            if (0 >= nGid)
+                            {
+                                bIsPresentAll = false;
+                                break;
+                            }
+                            else
+                            {
+                                double offsetG = pFile->GetCharWidth(nGid);
+                                if (offsetG < 0.0001)
+                                {
+                                    bIsPresentAll = false;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!bIsPresentAll)
+                        {
+                            NSFonts::CFontSelectFormat oSelectFormat;
+                            oSelectFormat.wsName = new std::wstring(L"Arial");
+                            NSFonts::CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);
+                            
+                            if (NULL != pInfoCur)
+                            {
+                                pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
+                            }
+                            pRenderer->put_FontPath(pInfoCur->m_wsFontPath);
+                            pRenderer->put_FontFaceIndex(0);
+                        }
                     }
                     
-                    oRenderer.PathCommandStart();
-                    oRenderer.BeginCommand(c_nClipType);
-                    oRenderer.PathCommandRect(0, 25.4 * (index * lH1_px) / dDpi, dW_mm, 25.4 * lH1_px / dDpi);
-                    oRenderer.EndCommand(c_nClipType);
-                    oRenderer.PathCommandEnd();
+                    pRenderer->PathCommandStart();
+                    pRenderer->BeginCommand(c_nClipType);
+                    pRenderer->PathCommandRect(0, 25.4 * (index * lH1_px) / dDpi, dW_mm, 25.4 * lH1_px / dDpi);
+                    pRenderer->EndCommand(c_nClipType);
+                    pRenderer->PathCommandEnd();
                     
-                    oRenderer.put_FontStringGID(FALSE);
-                    oRenderer.put_FontCharSpace(0);
-                    oRenderer.put_FontSize(14);
+                    pRenderer->put_FontStringGID(FALSE);
+                    pRenderer->put_FontCharSpace(0);
+                    pRenderer->put_FontSize(14);
                     
-                    oRenderer.CommandDrawText(pPair->second.m_sName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
+                    pRenderer->CommandDrawText(sFontName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
                     
-                    oRenderer.BeginCommand(c_nResetClipType);
-                    oRenderer.EndCommand(c_nResetClipType);
+                    pRenderer->BeginCommand(c_nResetClipType);
+                    pRenderer->EndCommand(c_nResetClipType);
                     
-                    oRenderer.CloseFont();
+                    pRenderer->CloseFont();
                     pCache->Clear();
-                    applicationFonts.GetStreams()->Clear();
+                    applicationFonts->GetStreams()->Clear();                    
                 }
+
+                RELEASEOBJECT(pRenderer);
                 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";
                 if (iX == 1)
@@ -728,7 +757,7 @@ namespace NSCommon
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimHei", 33));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Meiryo", 34));
 
-                CApplicationFontsSymbols oApplicationChecker;
+                NSFonts::CApplicationFontsSymbols oApplicationChecker;
 
                 std::vector<CFontPriority> arrFontsPriority;
                 std::map<std::wstring, int> mapFontsPriority;
@@ -942,7 +971,7 @@ namespace NSCommon
             {
                 BYTE* pData = NULL;
                 LONG lLen = 0;
-                applicationFonts.GetList()->ToBuffer(&pData, &lLen, L"", false);
+                applicationFonts->GetList()->ToBuffer(&pData, &lLen, L"", false);
                 
                 char* cData64 = NULL;
                 int nData64Dst = 0;
@@ -968,7 +997,7 @@ namespace NSCommon
         {
             BYTE* pData = NULL;
             LONG lLen = 0;
-            applicationFonts.GetList()->ToBuffer(&pData, &lLen, L"", false);
+            applicationFonts->GetList()->ToBuffer(&pData, &lLen, L"", false);
             
             NSFile::CFileBinary oFile;
             oFile.CreateFileW(strFontSelectionBin);

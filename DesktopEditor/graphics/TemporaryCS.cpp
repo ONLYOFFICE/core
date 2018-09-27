@@ -32,6 +32,23 @@
 #include "TemporaryCS.h"
 #include "../common/Types.h"
 
+namespace NSCriticalSection
+{
+    class CRITICAL_SECTION_NATIVE
+    {
+    public:
+        CRITICAL_SECTION_NATIVE()
+        {
+        }
+        virtual ~CRITICAL_SECTION_NATIVE()
+        {
+        }
+
+        virtual void Enter() = 0;
+        virtual void Leave() = 0;
+    };
+}
+
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
 
 #include "windows.h"
@@ -139,6 +156,27 @@ namespace NSCriticalSection
 		if (NULL != m_pCS)
 			m_pCS->Leave();
 	}
+
+    CRITICAL_SECTION_SMART::CRITICAL_SECTION_SMART()
+    {
+        m_pCS = new CRITICAL_SECTION();
+        m_pCS->InitializeCriticalSection();
+    }
+    CRITICAL_SECTION_SMART::~CRITICAL_SECTION_SMART()
+    {
+        m_pCS->DeleteCriticalSection();
+        RELEASEOBJECT(m_pCS);
+    }
+    void CRITICAL_SECTION_SMART::Enter()
+    {
+        if (NULL != m_pCS)
+            m_pCS->Enter();
+    }
+    void CRITICAL_SECTION_SMART::Leave()
+    {
+        if (NULL != m_pCS)
+            m_pCS->Leave();
+    }
 }
 
 CTemporaryCS::CTemporaryCS(NSCriticalSection::CRITICAL_SECTION* cs)

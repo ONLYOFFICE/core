@@ -30,13 +30,17 @@
  *
  */
 
-#include "EmfFile.h"
-
 #include "../../../common/String.h"
 #include "../../../fontengine/FontManager.h"
 
+#include "EmfFile.h"
+
 #ifdef _DEBUG
-	#include <iostream>
+    #include <iostream>
+#endif
+
+#if defined(DrawText)
+#undef DrawText
 #endif
 
 namespace MetaFile
@@ -225,6 +229,7 @@ static const struct ActionNamesEmf
 				case EMR_BITBLT:            Read_EMR_BITBLT(); break;
 				case EMR_STRETCHDIBITS:     Read_EMR_STRETCHDIBITS(); break;
 				case EMR_SETDIBITSTODEVICE: Read_EMR_SETDIBITSTODEVICE(); break;
+				case EMR_STRETCHBLT:        Read_EMR_STRETCHBLT(); break;
 					//-----------------------------------------------------------
 					// 2.3.2 Clipping
 					//-----------------------------------------------------------
@@ -372,24 +377,8 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::TranslatePoint(int nX, int nY, double& dX, double &dY)
 	{
-		TEmfWindow* pWindow   = m_pDC->GetWindow();
-		TEmfWindow* pViewport = m_pDC->GetViewport();
-
-		dX = (double)((double)(nX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
-		dY = (double)((double)(nY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
-
-		// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
-		// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
-		TRect* pBounds = GetDCBounds();
-		double dT = pBounds->nTop;
-		double dL = pBounds->nLeft;
-
-		TEmfXForm* pInverse   = GetInverseTransform();
-		TEmfXForm* pTransform = GetTransform();
-		pTransform->Apply(dX, dY);
-		dX -= dL;
-		dY -= dT;
-		pInverse->Apply(dX, dY);
+		dX = (double)nX;
+		dY = (double)nY;
 	}
 	bool CEmfFile::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 	{
@@ -934,6 +923,27 @@ static const struct ActionNamesEmf
 		{
 			// TODO: Нужно реализовать обрезку картинки по параметрам oBitmap.iStartScan и oBitmap.cScans
 			DrawImage(oBitmap.Bounds.lLeft, oBitmap.Bounds.lTop, oBitmap.Bounds.lRight - oBitmap.Bounds.lLeft, oBitmap.Bounds.lBottom - oBitmap.Bounds.lTop, pBgraBuffer, ulWidth, ulHeight);
+		}
+
+		if (pBgraBuffer)
+			delete[] pBgraBuffer;
+	}
+	void CEmfFile::Read_EMR_STRETCHBLT()
+	{
+		TEmfStretchBLT oBitmap;
+		m_oStream >> oBitmap;
+
+		BYTE* pBgraBuffer = NULL;
+		unsigned int ulWidth, ulHeight;
+
+		unsigned int unSkip = 108; // sizeof(TEmfStretchBLT) + 8 неправильно считает, из-з TXForm, там double, а в Emf они по 4 байта
+		if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, unSkip, &pBgraBuffer, &ulWidth, &ulHeight))
+		{
+			if (m_pOutput)
+			{
+				ProcessRasterOperation(oBitmap.BitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
+				DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+			}
 		}
 
 		if (pBgraBuffer)

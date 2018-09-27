@@ -32,9 +32,9 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 #include "office_elements.h"
 #include "office_elements_create.h"
 
@@ -56,7 +56,7 @@ class common_svg_font_face_xlink_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
-	odf_types::common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist xlink_attlist_;
 };
 //  svg:font-face-uri
 class svg_font_face_uri : public office_element_impl<svg_font_face_uri>

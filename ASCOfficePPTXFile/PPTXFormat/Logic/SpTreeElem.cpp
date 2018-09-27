@@ -416,7 +416,7 @@ namespace PPTX
 			return _T("");
 		}
 
-		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const
+		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId) const
 		{
 			if (m_elem.IsInit() == false) return;
 
@@ -425,17 +425,17 @@ namespace PPTX
 				case OOX::et_a_Shape:
 				{
 					smart_ptr<PPTX::Logic::Shape> oShape = m_elem.smart_dynamic_cast<PPTX::Logic::Shape>();
-					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap);
+					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);
 				}break;
 				case OOX::et_pic:
 				{
 					smart_ptr<PPTX::Logic::Pic> oPic = m_elem.smart_dynamic_cast<PPTX::Logic::Pic>();
-					if (oPic.IsInit()) oPic->toXmlWriterVML(pWriter, oTheme, oClrMap);
+					if (oPic.IsInit()) oPic->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);
 				}break;
 				case OOX::et_p_ShapeTree:
 				{
 					smart_ptr<PPTX::Logic::SpTree> oSpTree = m_elem.smart_dynamic_cast<PPTX::Logic::SpTree>();
-					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap);
+					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);
 				}break;
 				default:
 					break;

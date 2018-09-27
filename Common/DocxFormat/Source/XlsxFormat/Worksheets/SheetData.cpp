@@ -182,26 +182,30 @@ void OOX::Spreadsheet::CCell::PrepareForBinaryWriter()
 		}
 		else if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
 		{
-			if(!xlsx->m_pSharedStrings)
-				xlsx->CreateSharedStrings();
-
-			std::wstring sValue;
-			if(m_oValue.IsInit())
-				sValue = m_oValue->ToString();
-			//добавляем в SharedStrings
-			CSi* pSi = new CSi();
-			CText* pText =  new CText();
-			pText->m_sText = sValue;
-			pSi->m_arrItems.push_back(pText);
-			int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
-			//меняем значение ячейки
-			m_oValue.Init();
-            m_oValue->m_sText = std::to_wstring(nIndex);
-			//меняем тип ячейки
-			if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
+			if (m_oValue.IsInit())
 			{
-				m_oType.Init();
-				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+				if(!xlsx->m_pSharedStrings)
+					xlsx->CreateSharedStrings();
+				//добавляем в SharedStrings
+				CSi* pSi = new CSi();
+				CText* pText =  new CText();
+				pText->m_sText = m_oValue->ToString();
+				pSi->m_arrItems.push_back(pText);
+				int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
+				//меняем значение ячейки
+				m_oValue.Init();
+				m_oValue->m_sText = std::to_wstring(nIndex);
+				//меняем тип ячейки
+				if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
+				{
+					m_oType.Init();
+					m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+				}
+			}
+			else
+			{
+				m_oValue.reset();
+				m_oType.reset();
 			}
 		}
 		else if(SimpleTypes::Spreadsheet::celltypeBool == m_oType->GetValue())

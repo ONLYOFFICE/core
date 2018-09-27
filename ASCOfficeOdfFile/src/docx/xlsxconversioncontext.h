@@ -54,7 +54,10 @@
 
 #include "mediaitems.h"
 
-class CApplicationFonts;
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore {
 
@@ -153,6 +156,8 @@ public:
 	void add_conditional_format_color		(std::wstring col);
 	void add_conditional_format_entry		(int type, std::wstring value);
 	void set_conditional_format_dataBar		(_CP_OPT(int) min, _CP_OPT(int) max);
+
+	void add_jsaProject	(const std::string &content);
 //------------------------------------------------------------------------------------
 
     odf_reader::odf_document * root()
@@ -194,7 +199,7 @@ private:
     const odf_reader::office_element	*spreadsheet_;
     odf_reader::odf_document			*odf_document_;
 
-    CApplicationFonts					*applicationFonts_;
+    NSFonts::IApplicationFonts			*applicationFonts_;
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;

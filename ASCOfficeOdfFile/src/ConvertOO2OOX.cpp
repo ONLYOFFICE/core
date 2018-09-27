@@ -41,9 +41,9 @@
 #include "../src/docx/pptx_conversion_context.h"
 #include "../src/docx/xlsxconversioncontext.h"
 
-#include "../include/cpdoccore/odf/odf_document.h"
+#include "../include/odf/odf_document.h"
 
-int ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+_UINT32 ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::xlsx_document outputXlsx;
 	cpdoccore::oox::xlsx_conversion_context conversionContext( &inputOdf);
@@ -56,7 +56,7 @@ int ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::w
 	outputXlsx.write(dstPath);
     return 0;
 }
-int ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+_UINT32 ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::docx_document	outputDocx;
     cpdoccore::oox::docx_conversion_context conversionContext(&inputOdf);
@@ -70,7 +70,7 @@ int ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::w
 		
     return 0;
 }
-int ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+_UINT32 ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::pptx_document	outputPptx;
     cpdoccore::oox::pptx_conversion_context conversionContext(&inputOdf);
@@ -83,28 +83,38 @@ int ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::w
 
     return 0;
 }
-int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, bool bOnlyPresentation, const ProgressCallback* CallBack)
+_UINT32 ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* CallBack)
 {
-	int nResult = 0;
+	_UINT32 nResult = 0;
 
 	try 
     {
-		cpdoccore::odf_reader::odf_document inputOdf(srcPath, CallBack);
+		cpdoccore::odf_reader::odf_document inputOdf(srcPath, tempPath, password, CallBack);
 		
-		int type = inputOdf.get_office_mime_type();
-		bool encrypted = inputOdf.get_encrypted();
+		int type		= inputOdf.get_office_mime_type();
+		bool bEncrypted	= inputOdf.get_encrypted();
+		bool bError		= inputOdf.get_error();
 
-		if (encrypted) return AVS_ERROR_DRM;
-
-		if (bOnlyPresentation && type != 3)return AVS_ERROR_UNEXPECTED;
+		if (bError)
+		{
+			if (bEncrypted)
+			{
+				if (password.empty())	return AVS_ERROR_DRM;
+				else					return AVS_ERROR_PASSWORD;
+			}
+			else
+			{
+				return AVS_ERROR_FILEFORMAT;
+			}
+		}
 
 		switch (type)
 		{
 		case 1:
-			nResult = ConvertOdt2Docx(inputOdf,dstPath, fontsPath);
+			nResult = ConvertOdt2Docx(inputOdf, dstPath, fontsPath);
 			break;
 		case 2:
-			nResult = ConvertOds2Xlsx(inputOdf,dstPath, fontsPath);
+			nResult = ConvertOds2Xlsx(inputOdf, dstPath, fontsPath);
 			break;
 		case 3:
 			nResult = ConvertOdp2Pptx(inputOdf, dstPath, fontsPath);
@@ -124,9 +134,9 @@ int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath,
 
 }
 
-int ConvertOTF2ODF(const std::wstring & srcPath)
+_UINT32 ConvertOTF2ODF(const std::wstring & srcPath)
 {
-	int nResult = 0;
+	_UINT32 nResult = 0;
 	
 	std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
 	std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";

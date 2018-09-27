@@ -135,28 +135,24 @@ namespace NSPresentationEditor
 		return _T("body");
 	}
 
-	class CShapeWriter : public IRenderer
+	class CShapeWriter
 	{
 	private:
-		void ParseXmlAlternative(const std::wstring & xml);
-
 		NSPresentationEditor::CStringWriter		m_oWriterPath;
 		NSPresentationEditor::CStringWriter		m_oWriterVML;
 		NSPresentationEditor::CStringWriter		m_oWriter;
-		NSPresentationEditor::CDoubleRect		m_oBounds;
-		NSPresentationEditor::CDoubleRect		m_oTextRect;
-		NSPresentationEditor::CMetricInfo		m_oMetricInfo;
 
-		NSPresentationEditor::CShapeElement*	m_pShapeElement;
-		NSPresentationEditor::CImageElement*	m_pImageElement;
+		NSPresentationEditor::CElementPtr		m_pElement;
 		
 		NSPresentationEditor::CRelsGenerator*	m_pRels;
+
+		NSPresentationEditor::CTheme*			m_pTheme;
 
         LONG									m_lNextShapeID;
 
 		bool									m_bWordArt;
 		bool									m_bTextBox;
-
+		
 		std::wstring							m_xmlGeomAlternative;
 		std::wstring							m_xmlTxBodyAlternative;
 		std::wstring							m_xmlAlternative;
@@ -178,13 +174,16 @@ namespace NSPresentationEditor
 
 		bool SetElement(CElementPtr pElem);
 //--------------------------------------------------------------------
-            std::wstring	ConvertShape	();
+			std::wstring	ConvertGroup	();
+			std::wstring	ConvertShape	();
             std::wstring	ConvertImage	();
             std::wstring	ConvertLine		(CPen		& pen);
             std::wstring	ConvertShadow	(CShadow	& shadow);
             std::wstring	ConvertBrush	(CBrush		& brush);
 			std::wstring	ConvertLineEnd	(unsigned char cap, unsigned char length, unsigned char width);
     static	std::wstring	ConvertColor	(CColor		& color, long alpha);
+
+	void	ParseXmlAlternative(const std::wstring & xml);
 // тип рендерера-----------------------------------------------------------------------------
     virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------
@@ -267,8 +266,8 @@ namespace NSPresentationEditor
     virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
 
 //-------- Маркеры для команд ---------------------------------------------------------------
-	virtual HRESULT BeginCommand(const DWORD& lType);
-	virtual HRESULT EndCommand(const DWORD& lType)	;
+	virtual HRESULT BeginCommand(const _UINT32& lType);
+	virtual HRESULT EndCommand(const _UINT32& lType)	;
 
 //-------- Функции для работы с Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y);
@@ -294,8 +293,8 @@ namespace NSPresentationEditor
 	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255);	
 
 // transform --------------------------------------------------------------------------------
-	virtual HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags);
-	virtual HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags);
+	virtual HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, _UINT32* lFlags);
+	virtual HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, _UINT32 lFlags);
 	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6);
 	virtual HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF);
 	virtual HRESULT ResetTransform();
@@ -356,7 +355,7 @@ namespace NSPresentationEditor
 		{
 			if (NULL == m_pFontManager)
 			{
-				m_pFontManager = new CFontManager();
+                m_pFontManager = NSFonts::NSFontManager::Create();
 				m_pFontManager->Initialize();
 			}
 
@@ -378,7 +377,7 @@ namespace NSPresentationEditor
 	public:
 
 		Aggplus::CGraphicsPathSimpleConverter*		m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-		CFontManager*								m_pFontManager;					// менеджер шрифтов
+        NSFonts::IFontManager*						m_pFontManager;					// менеджер шрифтов
 
 		Aggplus::CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 		Aggplus::CMatrix							m_oTransform;		// текущая матрица преобразований рендерера
@@ -400,9 +399,6 @@ namespace NSPresentationEditor
 		CEdgeText						m_oEdge;
 
 		CFont							m_oInstalledFont;
-
-		double							m_dWidth;
-		double							m_dHeight;
 
 	public:
 		inline void MoveTo(const double& dX, const double& dY)
@@ -453,8 +449,8 @@ namespace NSPresentationEditor
 			m_oWriterPath.WriteString(str);
 		}
 
+		void WriteGroupInfo();
 		void WriteShapeInfo();
-
 		void WriteImageInfo();
 		void WriteTextInfo();
 	};

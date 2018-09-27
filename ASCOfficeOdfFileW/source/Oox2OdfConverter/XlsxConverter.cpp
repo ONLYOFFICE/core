@@ -84,15 +84,6 @@ XlsxConverter::~XlsxConverter()
 	if (xlsx_document)		delete xlsx_document;	xlsx_document	= NULL;
 	if (output_document)	delete output_document;	output_document = NULL;
 }
-void XlsxConverter::write(const std::wstring & path)
-{
-	if (!output_document)return;
-	output_document->write(path);
-
-	delete output_document; output_document = NULL;
-
-	if (UpdateProgress(1000000))return;
-}
 odf_writer::odf_conversion_context* XlsxConverter::odf_context()
 {
 	return ods_context;
@@ -214,6 +205,9 @@ void XlsxConverter::convert_sheets()
 			convert(Workbook->m_oDefinedNames->m_arrItems[i]);
 		}
 	}
+//-----------------------------------------------------------------------------------------------------------------
+	OoxConverter::convert(xlsx_document->m_pJsaProject);
+
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 {
@@ -307,7 +301,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		ods_context->start_rows();
 			for (size_t row = 0 ; row < oox_sheet->m_oSheetData->m_arrItems.size(); row++)
 			{
-				convert(oox_sheet->m_oSheetData->m_arrItems[row]);
+				convert(oox_sheet->m_oSheetData->m_arrItems[row], row > 0 ? oox_sheet->m_oSheetData->m_arrItems[row - 1] : NULL);
 				
 				if ( oox_sheet->m_oSheetData->m_arrItems[row] )
 					delete oox_sheet->m_oSheetData->m_arrItems[row];
@@ -489,11 +483,125 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
+void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::CRow *oox_row_prev)
 {
 	if (oox_row == NULL)return;
 
 	int row_number = oox_row->m_oR.IsInit() ? oox_row->m_oR->GetValue() : -1;
+
+	if (oox_row_prev)
+	{
+		if (oox_row_prev->m_arrItems.empty() && 
+			oox_row->m_arrItems.empty())
+		{
+			bool bEqual = true;
+
+			if (oox_row->m_oCollapsed.IsInit())
+			{
+				if (oox_row_prev->m_oCollapsed.IsInit())
+				{
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oCustomFormat.IsInit())
+			{
+				if (oox_row_prev->m_oCustomFormat.IsInit())
+				{
+					if (oox_row->m_oCustomFormat->GetValue() != oox_row_prev->m_oCustomFormat->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oCustomHeight.IsInit())
+			{
+				if (oox_row_prev->m_oCustomHeight.IsInit())
+				{
+					if (oox_row->m_oCustomHeight->GetValue() != oox_row_prev->m_oCustomHeight->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}			
+			if (bEqual && oox_row->m_oHidden.IsInit())
+			{
+				if (oox_row_prev->m_oHidden.IsInit())
+				{
+					if (oox_row->m_oHidden->GetValue() != oox_row_prev->m_oHidden->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oHt.IsInit())
+			{
+				if (oox_row_prev->m_oHt.IsInit())
+				{
+					if (oox_row->m_oHt->GetValue() != oox_row_prev->m_oHt->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oOutlineLevel.IsInit())
+			{
+				if (oox_row_prev->m_oOutlineLevel.IsInit())
+				{
+					if (oox_row->m_oOutlineLevel->GetValue() != oox_row_prev->m_oOutlineLevel->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oPh.IsInit())
+			{
+				if (oox_row_prev->m_oPh.IsInit())
+				{
+					if (oox_row->m_oPh->GetValue() != oox_row_prev->m_oPh->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oR.IsInit())
+			{
+				if (oox_row_prev->m_oR.IsInit())
+				{
+					if (oox_row->m_oR->GetValue() != oox_row_prev->m_oR->GetValue() + 1) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oS.IsInit())
+			{
+				if (oox_row_prev->m_oS.IsInit())
+				{
+					if (oox_row->m_oS->GetValue() != oox_row_prev->m_oS->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oThickBot.IsInit())
+			{
+				if (oox_row_prev->m_oThickBot.IsInit())
+				{
+					if (oox_row->m_oThickBot->GetValue() != oox_row_prev->m_oThickBot->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oThickTop.IsInit())
+			{
+				if (oox_row_prev->m_oThickTop.IsInit())
+				{
+					if (oox_row->m_oThickTop->GetValue() != oox_row_prev->m_oThickTop->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+			if (bEqual && oox_row->m_oDyDescent.IsInit())
+			{
+				if (oox_row_prev->m_oDyDescent.IsInit())
+				{
+					if (oox_row->m_oDyDescent->GetValue() != oox_row_prev->m_oDyDescent->GetValue()) bEqual = false;
+				}
+				else bEqual = false;
+			}
+
+			if (bEqual)
+			{
+				if (false == ods_context->current_table().is_row_comment(row_number, 1))
+				{
+					ods_context->add_row_repeated();
+					return;
+				}
+			}
+		}
+	}
 
 	bool _default = true;
 	

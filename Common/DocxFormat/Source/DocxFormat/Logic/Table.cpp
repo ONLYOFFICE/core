@@ -101,7 +101,7 @@ namespace OOX
 		}
 		void CTblGridChange::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:id"),     m_oId );
+            XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
 
 			XmlUtils::CXmlNode oNode_tblGrid;
 
@@ -174,10 +174,10 @@ namespace OOX
 		}
 		void CTblPrExChange::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-			oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-			oNode.ReadAttributeBase( _T("w:id"),     m_oId );
-			oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+            XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
+            XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate );
+            XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
+            XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
 
 			XmlUtils::CXmlNode oNode_tblPrEx;
 
@@ -461,10 +461,10 @@ namespace OOX
 
 		void CTr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:rsidDel"), m_oRsidDel );
-			oNode.ReadAttributeBase( _T("w:rsidR"),   m_oRsidR );
-			oNode.ReadAttributeBase( _T("w:rsidRPr"), m_oRsidRPr );
-			oNode.ReadAttributeBase( _T("w:rsidTr"),  m_oRsidTr );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidDel"), m_oRsidDel );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidR"),   m_oRsidR );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidRPr"), m_oRsidRPr );
+            XmlMacroReadAttributeBase( oNode, _T("w:rsidTr"),  m_oRsidTr );
 
 			XmlUtils::CXmlNodes oChilds;
 			int nNumCol = 0;
@@ -712,7 +712,7 @@ namespace OOX
 
 		void CTc::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:id"), m_sId );
+            XmlMacroReadAttributeBase( oNode, _T("w:id"), m_sId );
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )

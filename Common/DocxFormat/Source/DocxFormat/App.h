@@ -38,6 +38,7 @@
 #include "../Base/Nullable.h"
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
+#include "../../../../DesktopEditor/common/SystemUtils.h"
 
 namespace OOX
 {
@@ -412,6 +413,21 @@ namespace OOX
 		virtual const CPath DefaultFileName() const
 		{
 			return type().DefaultFileName();
+		}
+		void SetDefaults()
+		{
+			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sApplication.empty())
+				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+			SetApplication(sApplication);
+#if defined(INTVER)
+            SetAppVersion(VALUE2STR(INTVER));
+#endif
+			SetDocSecurity(0);
+			SetScaleCrop(false);
+			SetLinksUpToDate(false);
+			SetSharedDoc(false);
+			SetHyperlinksChanged(false);
 		}
         void SetApplication(const std::wstring& sVal)
 		{

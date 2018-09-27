@@ -50,7 +50,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"shadeToTitle", shadeToTitle);
+                XmlMacroReadAttributeBase(node, L"shadeToTitle", shadeToTitle);
 				Fill.GetFillFrom(node);
 				EffectList.GetEffectListFrom(node);
 

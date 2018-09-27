@@ -34,10 +34,10 @@
 #include <iosfwd>
 #include <string>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPOptional.h>
 
-#include <cpdoccore/xml/nodetype.h>
+#include <xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -256,7 +256,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
-	odf_types::common_xlink_attlist  common_xlink_attlist_;
+	odf_types::common_xlink_attlist  xlink_attlist_;
 
     friend class text_list_level_style_image;
 

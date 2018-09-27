@@ -69,10 +69,10 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"t", t);
-				node.ReadAttributeBase(L"b", b);
-				node.ReadAttributeBase(L"l", l);
-				node.ReadAttributeBase(L"r", r);
+				XmlMacroReadAttributeBase(node, L"t", t);
+				XmlMacroReadAttributeBase(node, L"b", b);
+				XmlMacroReadAttributeBase(node, L"l", l);
+				XmlMacroReadAttributeBase(node, L"r", r);
 			}
 			virtual std::wstring toXML() const
 			{

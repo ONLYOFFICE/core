@@ -34,10 +34,8 @@
 #include <string>
 #include <iostream>
 
-#include <boost/foreach.hpp>
-
-#include "../../include/cpdoccore/xml/attributes.h"
-#include "../../include/cpdoccore/xml/sax.h"
+#include "../../include/xml/attributes.h"
+#include "../../include/xml/sax.h"
 
 namespace cpdoccore {
 namespace xml {

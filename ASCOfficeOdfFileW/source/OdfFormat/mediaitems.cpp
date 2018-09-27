@@ -36,7 +36,7 @@
 #include <boost/regex.h>
 #include <boost/algorithm/string/case_conv.hpp>
 
-#include <cpdoccore/xml/utils.h>
+#include <xml/utils.h>
 
 #include "mediaitems_utils.h"
 

@@ -212,6 +212,10 @@ int SUPBOOK::serialize(std::wostream & strm)
 int SUPBOOK::serialize_book(std::wostream & strm)
 {
 	SupBook *book = dynamic_cast<SupBook*>(m_SupBook.get());
+
+    if (book->virtPath.empty())
+        return 0;
+
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"externalBook")
@@ -219,7 +223,7 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
 			CP_XML_ATTR(L"r:id", L"rId1"); 
 			
-			sExternPathLink = book->virtPath.back();
+            sExternPathLink = book->virtPath.back();
 			
 			if (!m_arXCT.empty() && !book->rgst.empty())
 			{	
@@ -355,6 +359,10 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 int SUPBOOK::serialize_dde(std::wostream & strm)
 {
 	SupBook *book = dynamic_cast<SupBook*>(m_SupBook.get());
+
+    if (book->virtPath.empty())
+        return 0;
+
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"ddeLink")

@@ -38,6 +38,7 @@
 #include "office_spreadsheet.h"
 #include "office_presentation.h"
 #include "office_scripts.h"
+#include "office_forms.h"
 #include "office_settings.h"
 #include "paragraph_elements.h"
 #include "office_binary_data.h"

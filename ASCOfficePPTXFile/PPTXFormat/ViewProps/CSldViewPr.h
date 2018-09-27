@@ -68,11 +68,12 @@ namespace PPTX
 
 				CViewPr = node.ReadNode(_T("p:cViewPr"));
 
-				node.ReadNode(_T("p:guideLst")).LoadArray(_T("p:guide"), GuideLst);
+                XmlUtils::CXmlNode oNodeLst = node.ReadNode(_T("p:guideLst"));
+                XmlMacroLoadArray(oNodeLst, _T("p:guide"), GuideLst, Guide);
 
-				node.ReadAttributeBase(L"showGuides", attrShowGuides);
-				node.ReadAttributeBase(L"snapToGrid", attrSnapToGrid);
-				node.ReadAttributeBase(L"snapToObjects", attrSnapToObjects);
+                XmlMacroReadAttributeBase(node, L"showGuides", attrShowGuides);
+                XmlMacroReadAttributeBase(node, L"snapToGrid", attrSnapToGrid);
+                XmlMacroReadAttributeBase(node, L"snapToObjects", attrSnapToObjects);
 
 				FillParentPointersForChilds();
 			}

@@ -13,7 +13,7 @@ if [ -d "$SCRIPTPATH/v8/third_party/binutils/Linux_ia32/Release" ]; then
 fi
 
 cd "$SCRIPTPATH/v8"
-gclient sync
+gclient sync --no-history
 
 if [ -d "$SCRIPTPATH/v8/third_party/binutils/Linux_x64/Release/bin" ]; then
 cd "$SCRIPTPATH/v8/third_party/binutils/Linux_x64/Release/bin"

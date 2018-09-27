@@ -38,22 +38,31 @@ namespace DocFileFormat
 {
 	PropertyExceptions::~PropertyExceptions()
 	{
-		RELEASEOBJECT( this->grpprl );
+		RELEASEOBJECT( grpprl );
 	}
 
-	PropertyExceptions::PropertyExceptions(): grpprl(NULL)
+	PropertyExceptions::PropertyExceptions() : grpprl(NULL)
 	{
-		this->grpprl = new std::list<SinglePropertyModifier>();
+		grpprl = new std::list<SinglePropertyModifier>();
 	}
 
-	PropertyExceptions::PropertyExceptions( const std::list<SinglePropertyModifier>& grpprl )
+	PropertyExceptions::PropertyExceptions( const std::list<SinglePropertyModifier>& _grpprl ) : grpprl(NULL)
 	{
-		this->grpprl = new std::list<SinglePropertyModifier>( grpprl );
+		grpprl = new std::list<SinglePropertyModifier>( _grpprl );
 	}
 
-	PropertyExceptions::PropertyExceptions( unsigned char* bytes, int size, bool oldVersion ) : grpprl(NULL)
+	PropertyExceptions::PropertyExceptions( unsigned char* bytes, int size, int nWordVersion ) : grpprl(NULL)
 	{
-		this->grpprl = new std::list<SinglePropertyModifier>();
+		if (nWordVersion >= 2)//word 2.0 or 1.0
+			return;
+
+		ReadExceptions(bytes, size, nWordVersion);
+	}
+	void PropertyExceptions::ReadExceptions(unsigned char* bytes, int size, int nWordVersion)
+	{
+ 		RELEASEOBJECT( grpprl );
+
+		grpprl = new std::list<SinglePropertyModifier>();
 
 		if ( ( bytes == NULL ) || ( size == 0 ) ) return;
 
@@ -62,24 +71,28 @@ namespace DocFileFormat
 		int sprmStart = 0;
 		bool goOn = true;
 
-		int opCodeSize = (oldVersion ? 1 : 2);
+		int opCodeSize = (nWordVersion > 0) ? 1 : 2;
 
 		while ( goOn )
 		{
-			if ( ( sprmStart + opCodeSize ) < size )
+			if ( ( sprmStart + opCodeSize ) <= size )
 			{
-				unsigned short code  = oldVersion ? FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
-													FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
+				unsigned short code  = (nWordVersion > 0) ?	FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
+															FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
 
-				if (oldVersion && code == 0) 
+				OperationCode opCode = (OperationCode)(nWordVersion == 2 ?  OpCode93To95[code] : code);
+				
+				if (nWordVersion > 0 && opCode == 0) 
 				{
 					sprmStart++;
 					continue;
-				}
-				OperationCode opCode = (OperationCode)code;
+				}				
+
+				//if (nWordVersion == 2)
+				//	bytes[sprmStart]= (unsigned char)opCode;
 				short opSize = -1;
 
-				if (oldVersion)
+				if (nWordVersion > 0)
 				{
 					opSize = (short)SinglePropertyModifier::GetOldOperandSize( (unsigned char)opCode );
 				}
@@ -142,25 +155,32 @@ namespace DocFileFormat
 					}
 				}
 
+				if (opSize < 0)
+				{
+					break;
+				}
+
 				//length is 2byte for the opCode, lenByte for the length, opSize for the length of the operand
 				int sprmBytesSize = opCodeSize + lenByte + opSize;
 				unsigned char* sprmBytes = NULL;
 
 				sprmBytes = new unsigned char[sprmBytesSize];
 
-				if ( size >= ( sprmStart + sprmBytesSize ) )
+				//if ( size >= ( sprmStart + sprmBytesSize ) )
 				{
-					memcpy( sprmBytes, ( bytes + sprmStart ), sprmBytesSize );
+					int sz = (std::min)(sprmBytesSize, size - sprmStart);
 
-					SinglePropertyModifier sprm( sprmBytes, sprmBytesSize, oldVersion );
+					memcpy( sprmBytes, ( bytes + sprmStart ), sz );
+
+					SinglePropertyModifier sprm( sprmBytes, sz, nWordVersion);
 					grpprl->push_back( sprm );
 
-					sprmStart += sprmBytesSize;
+					sprmStart += sz;
 				}
-				else
-				{
-					goOn = false;
-				}
+				//else
+				//{
+				//	goOn = false;
+				//}
 
 				RELEASEARRAYOBJECTS( sprmBytes );
 			}

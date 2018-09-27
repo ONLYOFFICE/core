@@ -15,7 +15,6 @@ PWD_ROOT_DIR = $$PWD
 
 CONFIG += core_x2t
 include(../../../../Common/base.pri)
-include(../../../../Common/3dParty/curl/curl.pri)
 
 core_windows {
     QMAKE_CXXFLAGS_RELEASE += -Ob0
@@ -26,24 +25,14 @@ include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
 DEFINES += UNICODE \
     _UNICODE \
-    _USE_LIBXML2_READER_ \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
     #DISABLE_FILE_DOWNLOADER \
-    CXIMAGE_DONT_DECLARE_TCHAR \
-    DONT_WRITE_EMBEDDED_FONTS \
-    CXIMAGE_DONT_DECLARE_TCHAR \
-    LIBXML_READER_ENABLED
-
-core_windows {
-    INCLUDEPATH += ../../../../OfficeUtils/src/zlib-1.2.3
-}
+    DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += \
-    ../../../../DesktopEditor/freetype-2.5.2/include \
     ../../../../Common/ASCDocxFormat/Source/Utility \
     ../../../../Common/ASCDocxFormat/Source/XML \
-    ../../../../Common/ASCDocxFormat/Source \
-    ../../../../DesktopEditor/xml/libxml2/include
+    ../../../../Common/ASCDocxFormat/Source
 
 core_release {
 SOURCES += \
@@ -641,16 +630,3 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/accentbordercallout3type.h \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/accentbordercallout90type.h \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/arctype.h
-
-core_windows {
-    SOURCES += \
-        ../../../../Common/FileDownloader/FileDownloader_win.cpp
-}
-core_linux {
-    SOURCES += \
-        ../../../../Common/FileDownloader/FileDownloader_curl.cpp
-}
-core_mac {
-    OBJECTIVE_SOURCES += \
-        ../../../../Common/FileDownloader/FileDownloader_mac.mm
-}

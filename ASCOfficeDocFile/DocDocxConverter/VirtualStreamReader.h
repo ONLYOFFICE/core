@@ -39,8 +39,8 @@
 class VirtualStreamReader : public IBinaryReader
 {
 public:
-	VirtualStreamReader (POLE::Stream* _stream, ULONG _position , bool _olderVersion) : 
-				olderVersion(_olderVersion), stream(_stream), position(_position)
+	VirtualStreamReader (POLE::Stream* _stream, ULONG _position , int _nWordVersion) : 
+				nWordVersion(_nWordVersion), stream(_stream), position(_position)
 	{
 		if ( stream == NULL )return;
 
@@ -192,7 +192,8 @@ public:
 
 		unsigned char* xstz = NULL;
 		unsigned char* cch	= NULL;
-		if (olderVersion)
+		
+		if (nWordVersion > 0)
 		{
 			int cchSize = 1;
 			cch = ReadBytes( cchSize, true );
@@ -285,7 +286,7 @@ public:
 
 		return result;
 	}
-	bool			olderVersion;
+	int			nWordVersion;
 private:
 
 	POLE::uint64			position;

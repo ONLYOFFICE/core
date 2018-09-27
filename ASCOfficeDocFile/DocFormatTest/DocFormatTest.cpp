@@ -31,6 +31,8 @@
  */
 #include <iostream>
 
+#include "../../Common/OfficeFileFormatChecker.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
@@ -44,11 +46,28 @@
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
+
+	#if defined(_DEBUG)
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+	#else
+		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
+	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
 HRESULT convert_single(std::wstring srcFileName)
 {
+	COfficeFileFormatChecker checker;
+
+	if (false == checker.isOfficeFile(srcFileName)) return S_FALSE;	
+	
+	if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC != checker.nFileType &&
+		AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT  != checker.nFileType) return S_FALSE;
+	
 	HRESULT hr = S_OK;
 
 	std::wstring outputDir		= NSDirectory::GetFolderPath(srcFileName);	
@@ -74,7 +93,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	if (hRes == S_OK)
 	{
 		COfficeUtils oCOfficeUtils(NULL);
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath, -1);
+		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath, true);
 	}
 	
 	NSDirectory::DeleteDirectory(dstTempPath);

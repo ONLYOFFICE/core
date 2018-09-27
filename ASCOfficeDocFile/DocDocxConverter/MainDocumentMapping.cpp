@@ -59,22 +59,27 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteAttribute(L"xmlns:w",		OpenXmlNamespaces::WordprocessingML );
 		m_pXmlWriter->WriteAttribute(L"xmlns:v",		OpenXmlNamespaces::VectorML );
 		m_pXmlWriter->WriteAttribute(L"xmlns:o",		OpenXmlNamespaces::Office );
-		m_pXmlWriter->WriteAttribute(L"xmlns:w10",		OpenXmlNamespaces::OfficeWord );
 		m_pXmlWriter->WriteAttribute(L"xmlns:r",		OpenXmlNamespaces::Relationships );
+		m_pXmlWriter->WriteAttribute(L"xmlns:w10",		OpenXmlNamespaces::OfficeWord );
 		m_pXmlWriter->WriteAttribute(L"xmlns:m",		L"http://schemas.openxmlformats.org/officeDocument/2006/math");
 
-		//m_pXmlWriter->WriteAttribute(L"xmlns:wpc",	L"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
-		//m_pXmlWriter->WriteAttribute(L"xmlns:mc",		L"http://schemas.openxmlformats.org/markup-compatibility/2006"); 
-		//m_pXmlWriter->WriteAttribute(L"xmlns:wp14",	L"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing");
-		//m_pXmlWriter->WriteAttribute(L"xmlns:wp",		L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
-		//m_pXmlWriter->WriteAttribute(L"xmlns:w14",	L"http://schemas.microsoft.com/office/word/2010/wordml");
-		//m_pXmlWriter->WriteAttribute(L"xmlns:wpg",	L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup");
-		//m_pXmlWriter->WriteAttribute(L"xmlns:wpi",	L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk");
-		//m_pXmlWriter->WriteAttribute(L"xmlns:wne",	L"http://schemas.microsoft.com/office/word/2006/wordml");
-		//m_pXmlWriter->WriteAttribute(L"xmlns:wps",	L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape");
-		//m_pXmlWriter->WriteAttribute(L"mc:Ignorable", L"w14 wp14");
-		
-		m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+		m_pXmlWriter->WriteAttribute(L"xmlns:wpc",		L"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
+		m_pXmlWriter->WriteAttribute(L"xmlns:cx",		L"http://schemas.microsoft.com/office/drawing/2014/chartex");
+		m_pXmlWriter->WriteAttribute(L"xmlns:cx1",		L"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex");
+		m_pXmlWriter->WriteAttribute(L"xmlns:mc",		L"http://schemas.openxmlformats.org/markup-compatibility/2006"); 
+		m_pXmlWriter->WriteAttribute(L"xmlns:wp14",		L"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing");
+		m_pXmlWriter->WriteAttribute(L"xmlns:wp",		L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+		m_pXmlWriter->WriteAttribute(L"xmlns:w14",		L"http://schemas.microsoft.com/office/word/2010/wordml");
+		m_pXmlWriter->WriteAttribute(L"xmlns:w15",		L"http://schemas.microsoft.com/office/word/2012/wordml");
+		m_pXmlWriter->WriteAttribute(L"xmlns:w16se",	L"http://schemas.microsoft.com/office/word/2015/wordml/symex");
+		m_pXmlWriter->WriteAttribute(L"xmlns:wpg",		L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup");
+		m_pXmlWriter->WriteAttribute(L"xmlns:wpi",		L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk");
+		m_pXmlWriter->WriteAttribute(L"xmlns:wne",		L"http://schemas.microsoft.com/office/word/2006/wordml");
+		m_pXmlWriter->WriteAttribute(L"xmlns:wps",		L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape");
+		m_pXmlWriter->WriteAttribute(L"mc:Ignorable",	L"w14 w15 w16se wp14");
+	
+
+		  m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 		if ((m_document->GetOfficeArt()) && (m_document->GetOfficeArt()->GetShapeBackgound()))
 		{
@@ -110,7 +115,7 @@ namespace DocFileFormat
 		int countText		=	m_document->FIB->m_RgLw97.ccpText;
 		int countTextRel	=	m_document->FIB->m_RgLw97.ccpText - 1;
 							
-		while (cp < countText)
+		while (cp < countText && cp >= 0)
 		{
 			fc = m_document->FindFileCharPos(cp);
 				
@@ -120,7 +125,7 @@ namespace DocFileFormat
 
 			if (papx)
 			{
-				TableInfo tai(papx);
+				TableInfo tai(papx, m_document->nWordVersion);
 				if (tai.fInTable)
 				{
 					int cpStart = cp;
@@ -135,7 +140,7 @@ namespace DocFileFormat
 				else
 				{
 					//this PAPX is for a normal paragraph
-					cp = writeParagraph(cp);
+					cp = writeParagraph(cp, countTextRel);
 				}
 			}
 			else

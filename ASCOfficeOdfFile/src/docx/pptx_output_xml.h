@@ -32,9 +32,9 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPSharedPtr.h>
+#include <CPScopedPtr.h>
+#include <CPNoncopyable.h>
 
 #include "oox_rels.h"
 

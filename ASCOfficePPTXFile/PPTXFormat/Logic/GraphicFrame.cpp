@@ -300,7 +300,7 @@ namespace PPTX
 					}
 					else if (L"legacyDrawing" == strName)
 					{
-						oNode.ReadAttributeBase(L"spid", vmlSpid);
+                        XmlMacroReadAttributeBase(oNode, L"spid", vmlSpid);
 						result = true;
 					}
 					else
@@ -760,6 +760,7 @@ namespace PPTX
 			if (file.CreateFileW(olePic->blipFill.blip->oleFilepathImage))
 			{
 				file.WriteFile(binImagePngChartReplacement, 6171);
+				//file.WriteFile(binImageWmfChartReplacement, 2274);
 				file.CloseFile();
 			}
 
@@ -909,7 +910,7 @@ L"<Override PartName=\"/xl/chartsheets/sheet1.xml\" ContentType=\"application/vn
 //-------------------------------------------------------
 			std::wstring sPackedXlsx = sTempDirectory + FILE_SEPARATOR_STR + _T("xlsx_package.xlsx");
 
-			if (S_OK != oCOfficeUtils.CompressFileOrDirectory(sUnpackedXlsx, sPackedXlsx)) return L"";
+			if (S_OK != oCOfficeUtils.CompressFileOrDirectory(sUnpackedXlsx, sPackedXlsx, true)) return L"";
 
 			NSDirectory::DeleteDirectory(sUnpackedXlsx);
 			return sPackedXlsx;

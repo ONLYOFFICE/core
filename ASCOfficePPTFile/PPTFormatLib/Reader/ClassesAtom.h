@@ -38,12 +38,12 @@ using namespace NSOfficePPT;
 class CUserEdit
 { 
 public:
-	DWORD m_nOffsetLastEdit; 
-	DWORD m_nOffsetPersistDirectory;  
+	_UINT32 m_nOffsetLastEdit; 
+	_UINT32 m_nOffsetPersistDirectory;  
 	                          
-	DWORD m_nDocumentRef; 
-	DWORD m_nEncryptRef;
-	DWORD m_nMaxPersistWritten;
+	_UINT32 m_nDocumentRef; 
+	_UINT32 m_nEncryptRef;
+	_UINT32 m_nMaxPersistWritten;
 
 	CUserEdit()
 	{
@@ -81,7 +81,7 @@ class CCurrentUser
 { 
 public:
 	bool			m_bIsEncrypt;  
-	DWORD			m_nOffsetToCurrentEdit;
+	_UINT32			m_nOffsetToCurrentEdit;
 	std::wstring	m_sName;
 
 	CCurrentUser()

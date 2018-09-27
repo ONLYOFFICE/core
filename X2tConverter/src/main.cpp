@@ -116,7 +116,7 @@ static std::wstring utf8_to_unicode(const char *src)
 	if (argc >= 3) sArg2 = std::wstring(argv [2]);
 #endif
 
-	int result = 0;
+	_UINT32 result = 0;
     std::wstring sXmlExt = _T(".xml");
     if((sArg1.length() > 3) && (sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length())))
 	{

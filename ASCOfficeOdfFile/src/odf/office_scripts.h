@@ -32,9 +32,9 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -58,7 +58,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    office_element_ptr_array office_script_;
+    office_element_ptr_array content_;
 
     // office-event-listeners ?
     

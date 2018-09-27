@@ -1135,7 +1135,7 @@ public:
 		m_poShading.SetDefault();
 		m_poBorder.SetDefault();
 
-		m_pOldCharProp = RtfCharPropertyPtr(NULL);
+		m_pOldCharProp = RtfCharPropertyPtr();
 	}
 	void Merge( RtfCharProperty& oCharPr )
 	{
@@ -2464,7 +2464,7 @@ public:
 		DEFAULT_PROPERTY( m_nTrAuth)
 		DEFAULT_PROPERTY( m_nTrDate)
 
-		m_pOldRowProperty = RtfRowPropertyPtr(NULL);
+		m_pOldRowProperty = RtfRowPropertyPtr();
 	}
 	bool IsValid()
 	{
@@ -2731,7 +2731,7 @@ public:
 
 		m_bHidden			= false;
 		m_bOldList			= false;
-		m_pOldParagraphProp = RtfParagraphPropertyPtr(NULL);
+		m_pOldParagraphProp = RtfParagraphPropertyPtr();
 	}
 	void Merge( RtfParagraphProperty& oParPr )
 	{

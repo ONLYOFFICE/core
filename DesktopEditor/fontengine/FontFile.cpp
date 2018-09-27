@@ -33,7 +33,7 @@
 #include "internal/internal.h"
 #include "internal/ftobjs.h"
 #include "../common/Types.h"
-#include "../common/String.h"
+#include "../common/File.h"
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -914,6 +914,25 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
     return oSizes;
 }
 
+double CFontFile::GetCharWidth(int gid)
+{
+    if (!m_pFace)
+        return 0;
+
+    if (0 != FT_Load_Glyph(m_pFace, gid, 40970))
+        return 0;
+
+    FT_Glyph pGlyph = NULL;
+    if (0 != FT_Get_Glyph(m_pFace->glyph, &pGlyph))
+        return 0;
+
+    double dRet = (double)(m_pFace->glyph->linearHoriAdvance * m_dUnitsKoef / m_pFace->units_per_EM);
+
+    FT_Done_Glyph(pGlyph);
+
+    return dRet;
+}
+
 INT CFontFile::GetString(CGlyphString& oString)
 {
 	int nCountGlyph = oString.GetLength();
@@ -1671,13 +1690,13 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 	return TRUE;
 }
 
-std::wstring CFontFile::GetFontFormat() const
+std::wstring CFontFile::GetFontFormat()
 {
 	if (!m_pFace)
 		return L"";
 
 	const char* sFormat = FT_Get_X11_Font_Format(m_pFace);
-	return NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)sFormat, strlen(sFormat));
+    return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFormat, strlen(sFormat));
 }
 unsigned int CFontFile::GetNameIndex(const std::wstring& wsName) const
 {
@@ -1772,7 +1791,7 @@ static int GlyphPathCubicTo(const FT_Vector *pFirstControlPoint, const FT_Vector
 	return 0;
 }
 
-CFontPath* CFontFile::GetGlyphPath(int nCode) 
+NSFonts::IFontPath* CFontFile::GetGlyphPath(int nCode)
 { 
 	FT_UInt unGID = SetCMapForCharCode2( nCode );
 	if (unGID <= 0)
@@ -1828,4 +1847,25 @@ bool CFontFile::IsBold()
 		return false;
 
 	return ((m_pFace->style_flags & FT_STYLE_FLAG_BOLD) != 0) ? true : false;
+}
+
+bool CFontFile::IsSymbolic(bool bIsOS2Check)
+{
+    if (!m_pFace)
+        return false;
+
+    bool bIsSymbol = (-1 != m_nSymbolic) ? true : false;
+
+    if (!bIsSymbol && bIsOS2Check)
+    {
+        TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+
+        if (NULL != pOS2)
+        {
+            if (0 == (pOS2->ulCodePageRange1 & 0xF0000000))
+                bIsSymbol = true;
+        }
+    }
+
+    return bIsSymbol;
 }

@@ -33,8 +33,8 @@
 
 #include <iosfwd>
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/CPOptional.h>
+#include <xml/attributes.h>
+#include <CPOptional.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -88,6 +88,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+	void docx_convert(oox::docx_conversion_context & Context, bool clear = false);
+
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
@@ -96,8 +98,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
-    odf_types::length						style_position_;
+public:
+	odf_types::length						style_position_;
     _CP_OPT(odf_types::style_type)			style_type_;
     _CP_OPT(wchar_t)						style_char_;
 
@@ -124,20 +126,17 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
     
-    size_t size() const { return style_tab_stops_.size(); }
-
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
+    office_element_ptr_array	content_;
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void add_text(const std::wstring & Text){}
 
-private:
-    office_element_ptr_array style_tab_stops_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stops);
@@ -164,7 +163,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    _CP_OPT(odf_types::common_xlink_attlist) common_xlink_attlist_;
+    _CP_OPT(odf_types::common_xlink_attlist) xlink_attlist_;
         
 };
 
@@ -191,7 +190,7 @@ public:
     _CP_OPT(std::wstring)						filter_name_;
     _CP_OPT(odf_types::percent)					draw_opacity_;
 
-    _CP_OPT(odf_types::common_xlink_attlist)	common_xlink_attlist_;
+    _CP_OPT(odf_types::common_xlink_attlist)	xlink_attlist_;
     office_element_ptr							office_binary_data_;
 
 };
@@ -212,52 +211,55 @@ public:
     
 	void xlsx_convert(std::wostream & strm, bool in_draw);
 
-    _CP_OPT(odf_types::line_width) fo_line_height_;                 // +
-	_CP_OPT(odf_types::length) style_line_height_at_least_;         // +
-    _CP_OPT(odf_types::length) style_line_spacing_;                 // +
-    _CP_OPT(bool) style_font_independent_line_spacing_; // ???
-    _CP_OPT(odf_types::text_align) fo_text_align_;                  // +
-    _CP_OPT(odf_types::text_align) fo_text_align_last_;
-    _CP_OPT(bool) style_justify_single_word_;
-    _CP_OPT(odf_types::keep_together) fo_keep_together_;            // +
-    _CP_OPT(unsigned int) fo_widows_;                    // +
-    _CP_OPT(unsigned int) fo_orphans_;
-    office_element_ptr  style_tab_stops_;                       // +
-    _CP_OPT(odf_types::length) style_tab_stop_distance_;
-    _CP_OPT(odf_types::hyphenation_keep) fo_hyphenation_keep_;
-    _CP_OPT(odf_types::integer_or_nolimit) fo_hyphenation_ladder_count_;
-    office_element_ptr style_drop_cap_;
-    _CP_OPT(bool) style_register_true_;
-    _CP_OPT(odf_types::length_or_percent) fo_margin_left_;      // +
-    _CP_OPT(odf_types::length_or_percent) fo_margin_right_;     // +
-    _CP_OPT(odf_types::length_or_percent) fo_text_indent_;      // +
-    _CP_OPT(bool) style_auto_text_indent_;           // ???
-    _CP_OPT(odf_types::length_or_percent) fo_margin_top_;       // +
-    _CP_OPT(odf_types::length_or_percent) fo_margin_bottom_;    // +
-    _CP_OPT(odf_types::length_or_percent) fo_margin_;
-    _CP_OPT(odf_types::fo_break) fo_break_before_;              // +
-    _CP_OPT(odf_types::fo_break) fo_break_after_;
-    _CP_OPT(odf_types::background_color) fo_background_color_;
-    office_element_ptr style_background_image_;
+    _CP_OPT(unsigned int)			outline_level_;
 
-	_CP_OPT(odf_types::border_style) fo_border_;                // +
-	_CP_OPT(odf_types::border_style) fo_border_top_;            // +
-    _CP_OPT(odf_types::border_style) fo_border_bottom_;         // +
-    _CP_OPT(odf_types::border_style) fo_border_left_;           // +
-    _CP_OPT(odf_types::border_style) fo_border_right_;          // +
-
-    _CP_OPT( odf_types::border_widths ) style_border_line_width_;       // +
+    _CP_OPT(odf_types::line_width)	fo_line_height_;           
+	_CP_OPT(odf_types::length)		style_line_height_at_least_;   
+    _CP_OPT(odf_types::length)		style_line_spacing_;           
+    _CP_OPT(bool)					style_font_independent_line_spacing_; // ???
+    _CP_OPT(odf_types::text_align)	fo_text_align_;            
+    _CP_OPT(odf_types::text_align)	fo_text_align_last_;
+    _CP_OPT(bool)					style_justify_single_word_;
+    _CP_OPT(odf_types::keep_together)		fo_keep_together_;      
+    _CP_OPT(unsigned int)					fo_widows_;              
+    _CP_OPT(unsigned int)					fo_orphans_;
+    _CP_OPT(odf_types::length)				style_tab_stop_distance_;
+    _CP_OPT(odf_types::hyphenation_keep)	fo_hyphenation_keep_;
+    _CP_OPT(odf_types::integer_or_nolimit)	fo_hyphenation_ladder_count_;
+    _CP_OPT(bool)							style_register_true_;
+    _CP_OPT(odf_types::length_or_percent)	fo_margin_left_;
+    _CP_OPT(odf_types::length_or_percent)	fo_margin_right_;
+    _CP_OPT(odf_types::length_or_percent)	fo_text_indent_;
+    _CP_OPT(bool)							style_auto_text_indent_;           // ???
+    _CP_OPT(odf_types::length_or_percent)	fo_margin_top_; 
+    _CP_OPT(odf_types::length_or_percent)	fo_margin_bottom_;
+    _CP_OPT(odf_types::length_or_percent)	fo_margin_;
+    _CP_OPT(odf_types::fo_break)			fo_break_before_;        
+    _CP_OPT(odf_types::fo_break)			fo_break_after_;
+    _CP_OPT(odf_types::background_color)	fo_background_color_;
     
-    _CP_OPT( odf_types::border_widths ) style_border_line_width_top_;   // +
-    _CP_OPT( odf_types::border_widths ) style_border_line_width_bottom_;// +
-    _CP_OPT( odf_types::border_widths ) style_border_line_width_left_;  // +
-    _CP_OPT( odf_types::border_widths ) style_border_line_width_right_; // +
+	office_element_ptr						style_background_image_;
+    office_element_ptr						style_drop_cap_;
+    office_element_ptr						style_tab_stops_;         
 
-    _CP_OPT(odf_types::length)			fo_padding_;                 // +
-    _CP_OPT(odf_types::length)			fo_padding_top_;             // +
-    _CP_OPT(odf_types::length)			fo_padding_bottom_;          // +
-    _CP_OPT(odf_types::length)			fo_padding_left_;            // +
-    _CP_OPT(odf_types::length)			fo_padding_right_;           // +
+	_CP_OPT(odf_types::border_style) fo_border_;          
+	_CP_OPT(odf_types::border_style) fo_border_top_;      
+    _CP_OPT(odf_types::border_style) fo_border_bottom_;   
+    _CP_OPT(odf_types::border_style) fo_border_left_;     
+    _CP_OPT(odf_types::border_style) fo_border_right_;    
+
+    _CP_OPT( odf_types::border_widths ) style_border_line_width_; 
+    
+    _CP_OPT( odf_types::border_widths ) style_border_line_width_top_;   
+    _CP_OPT( odf_types::border_widths ) style_border_line_width_bottom_;
+    _CP_OPT( odf_types::border_widths ) style_border_line_width_left_;  
+    _CP_OPT( odf_types::border_widths ) style_border_line_width_right_; 
+
+    _CP_OPT(odf_types::length)			fo_padding_;           
+    _CP_OPT(odf_types::length)			fo_padding_top_;       
+    _CP_OPT(odf_types::length)			fo_padding_bottom_;    
+    _CP_OPT(odf_types::length)			fo_padding_left_;      
+    _CP_OPT(odf_types::length)			fo_padding_right_;     
     _CP_OPT(odf_types::shadow_type)		style_shadow_;
     _CP_OPT(odf_types::keep_together)	fo_keep_with_next_;  
     _CP_OPT(bool)						text_number_lines_;
@@ -289,7 +291,7 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-    const paragraph_format_properties & content() const { return style_paragraph_properties_content_; }
+    paragraph_format_properties content_;
 
 public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
@@ -301,7 +303,6 @@ private:
 
 
 private:
-    paragraph_format_properties style_paragraph_properties_content_;
 
 };
 

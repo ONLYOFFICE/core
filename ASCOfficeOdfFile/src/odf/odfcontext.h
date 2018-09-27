@@ -64,7 +64,8 @@ public:
         bool							IsDefault,
         const std::wstring				& ParentStyleName,
         const std::wstring				& NextStyleName,
-        const std::wstring				& DataStyleName
+        const std::wstring				& DataStyleName,
+		const std::wstring				& StyleClass
         );
 
 
@@ -77,6 +78,7 @@ public:
     const std::wstring				& next_name()	const;
      const styles_container			* container()	const { return container_; }
     const std::wstring				& data_style_name() const;
+    const std::wstring				& style_class() const;
  
 	bool							is_automatic()	const;
     bool							is_default()	const;
@@ -90,6 +92,7 @@ private:
     bool							is_automatic_;    
     bool							is_default_;
 
+    std::wstring					style_class_;
     std::wstring					parent_name_;
     std::wstring					next_name_;
     mutable style_instance			* parent_;
@@ -145,7 +148,8 @@ public:
 					bool							IsDefault,
 					const std::wstring				& ParentStyleName,
 					const std::wstring				& NextStyleName,
-					const std::wstring				& DataStyleName);
+					const std::wstring				& DataStyleName,
+					const std::wstring				& StyleClass);
 
     void add_master_page_name(const std::wstring & StyleName, const std::wstring & MasterPageName);
 

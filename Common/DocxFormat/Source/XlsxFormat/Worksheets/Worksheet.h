@@ -90,6 +90,8 @@ namespace OOX
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
 			void PrepareToWrite();
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
+			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual const OOX::FileType type() const
 			{
 				return OOX::Spreadsheet::FileTypes::Worksheet;
@@ -112,6 +114,7 @@ namespace OOX
 
 		public:
 			bool	m_bPrepareForBinaryWriter;
+			bool	m_bWriteDirectlyToFile;
 
 			nullable<OOX::Spreadsheet::CCols>						m_oCols;
 			nullable<OOX::Spreadsheet::CDimension>					m_oDimension;
@@ -135,6 +138,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CHeaderFooter>				m_oHeaderFooter;
 			nullable<OOX::Spreadsheet::CLegacyDrawingHFWorksheet>	m_oLegacyDrawingHF;
 			nullable<OOX::Spreadsheet::CPictureWorksheet>			m_oPicture;
+			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oRowBreaks;
+			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oColBreaks;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

@@ -34,6 +34,7 @@
 
 #include "Common.h"
 #include <vector>
+#include <math.h>
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 namespace NSHtmlRenderer
@@ -415,7 +416,7 @@ namespace NSHtmlRenderer
 
             WriteClip();
 
-            double dScaleTransform = (pTransform->m_agg_mtx.sx + pTransform->m_agg_mtx.sy) / 2.0;
+            double dScaleTransform = (pTransform->sx() + pTransform->sy()) / 2.0;
             int nPenW		= int(m_pPen->Size * dScaleTransform);
 
             if (0 == nPenW)

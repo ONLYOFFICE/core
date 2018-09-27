@@ -31,9 +31,42 @@
  */
 #pragma once
 
+namespace NSPresentationEditor
+{
+	class CTheme;
+}
 class CStylesWriter
 {
 public:
+	CStylesWriter(NSPresentationEditor::CTheme* m_pTheme);
+	CStylesWriter();
+
+	NSPresentationEditor::CTheme* m_pTheme;
+	
+	void ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CStringWriter& oWriter, int nCount = 10)
+	{
+		for (int i = 0; i < nCount; ++i)
+		{
+			if (oStyles.m_pLevels[i].is_init())
+				ConvertStyleLevel(oStyles.m_pLevels[i].get(), oWriter, i);
+		}
+	}
+	std::wstring ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, const int& nLevel)
+	{
+		NSPresentationEditor::CStringWriter oWriter;
+		ConvertStyleLevel(oLevel, oWriter, nLevel);
+		return oWriter.GetData();
+	}
+
+	void ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel,
+		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel);
+
+    std::wstring ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, int nCount = 10)
+	{
+		NSPresentationEditor::CStringWriter oWriter;
+		ConvertStyles(oStyles, oWriter, nCount);
+		return oWriter.GetData();
+	}
 	AVSINLINE static std::wstring GetTextAnchor(const WORD& value)
 	{
 		if (0 == value)			return L"t";
@@ -88,28 +121,5 @@ public:
 		return L"auto";
 	}
 
-    static std::wstring ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CMetricInfo& oMetricInfo, int nCount = 10)
-	{
-		NSPresentationEditor::CStringWriter oWriter;
-		ConvertStyles(oStyles, oMetricInfo, oWriter, nCount);
-		return oWriter.GetData();
-	}
-	static void ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CMetricInfo& oMetricInfo, 
-		NSPresentationEditor::CStringWriter& oWriter, int nCount = 10)
-	{
-		for (int i = 0; i < nCount; ++i)
-		{
-			if (oStyles.m_pLevels[i].is_init())
-				ConvertStyleLevel(oStyles.m_pLevels[i].get(), oMetricInfo, oWriter, i);
-		}
-	}
-    static std::wstring ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CMetricInfo& oMetricInfo, const int& nLevel)
-	{
-		NSPresentationEditor::CStringWriter oWriter;
-		ConvertStyleLevel(oLevel, oMetricInfo, oWriter, nLevel);
-		return oWriter.GetData();
-	}
 
-	static void ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CMetricInfo& oMetricInfo,
-		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel);
 };

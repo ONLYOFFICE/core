@@ -33,12 +33,12 @@
 #include "math_token_elements.h"
 #include "style_text_properties.h"
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/xml/utils.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
+#include <xml/utils.h>
 
 namespace cpdoccore { 
 

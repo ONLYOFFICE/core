@@ -124,12 +124,12 @@ namespace DocFileFormat
 			else if (_isInlineShape)
 			{
                 m_pXmlWriter->WriteString(L"<v:formulas><v:f eqn=\"if lineDrawn pixelLineWidth 0\"/>\
-											 <v:f eqn=\"sum @0 1 0\"/><v:f eqn=\"sum 0 0 @1\"/>\
-											 <v:f eqn=\"prod @2 1 2\"/><v:f eqn=\"prod @3 21600 pixelWidth\"/>\
-											 <v:f eqn=\"prod @3 21600 pixelHeight\"/><v:f eqn=\"sum @0 0 1\"/>\
-											 <v:f eqn=\"prod @6 1 2\"/><v:f eqn=\"prod @7 21600 pixelWidth\"/>\
-											 <v:f eqn=\"sum @8 21600 0\"/><v:f eqn=\"prod @7 21600 pixelHeight\"/>\
-                                             <v:f eqn=\"sum @10 21600 0\"/></v:formulas>");
+<v:f eqn=\"sum @0 1 0\"/><v:f eqn=\"sum 0 0 @1\"/>\
+<v:f eqn=\"prod @2 1 2\"/><v:f eqn=\"prod @3 21600 pixelWidth\"/>\
+<v:f eqn=\"prod @3 21600 pixelHeight\"/><v:f eqn=\"sum @0 0 1\"/>\
+<v:f eqn=\"prod @6 1 2\"/><v:f eqn=\"prod @7 21600 pixelWidth\"/>\
+<v:f eqn=\"sum @8 21600 0\"/><v:f eqn=\"prod @7 21600 pixelHeight\"/>\
+<v:f eqn=\"sum @10 21600 0\"/></v:formulas>");
 			}
 
 			// Path

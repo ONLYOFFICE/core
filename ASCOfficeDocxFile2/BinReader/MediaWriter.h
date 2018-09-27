@@ -38,7 +38,7 @@ namespace Writers
 {
 	class MediaWriter
 	{
-		XmlUtils::CStringWriter	m_oWriter;
+		NSStringUtils::CStringBuilder	m_oWriter;
         std::wstring            m_sDir;
         std::wstring            m_sMediaDir;
 	public:
@@ -69,7 +69,7 @@ namespace Writers
 			{
 				rewind(pFile);
 				BYTE* pData = new BYTE[size];
-				DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, size, pFile);
+				_UINT32 dwSizeRead = (_UINT32)fread((void*)pData, 1, size, pFile);
 				if(dwSizeRead > 0)
 				{
                     std::wstring sNewImagePath = AddImageGetNewPath();

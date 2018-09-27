@@ -32,12 +32,12 @@
 
 #include "table.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 #include "style_table_properties.h"
 
@@ -69,15 +69,32 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
     const std::wstring styleName = attlist_.table_style_name_.get_value_or(L"");
     const std::wstring defaultCellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
 
+    const style_instance * inst = 
+        Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableRow,Context.process_headers_footers_);
+	
+	style_table_cell_properties* cell_props = NULL;
+	style_table_row_properties* row_props = NULL;
+	if (inst && inst->content())
+	{
+		cell_props = inst->content()->get_style_table_cell_properties(true);
+		row_props = inst->content()->get_style_table_row_properties();
+
+		if ((row_props) && (row_props->attlist_.common_background_color_attlist_.fo_background_color_))
+		{
+			if (!cell_props->attlist_.common_background_color_attlist_.fo_background_color_)
+				cell_props->attlist_.common_background_color_attlist_.fo_background_color_ = row_props->attlist_.common_background_color_attlist_.fo_background_color_;
+		}
+	}
     for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
         _Wostream << L"<w:tr>";
-        const style_instance * inst = 
-            Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableRow,Context.process_headers_footers_);
         
         _Wostream << L"<w:trPr>";        
 			_Wostream << L"<w:cantSplit w:val=\"false\" />"; 
-			if (inst && inst->content())inst->content()->docx_convert(Context);
+
+			if (cell_props)
+				cell_props->docx_convert(Context);
+
         _Wostream << L"</w:trPr>";
 
         Context.get_table_context().start_row(styleName, defaultCellStyle);
@@ -144,6 +161,16 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
 
+	std::wstring sDumpPageProperties;
+	if (false == Context.get_paragraph_state())
+	{
+		std::wstringstream strm;
+		if (Context.process_page_properties(strm))
+		{
+			sDumpPageProperties = strm.str();
+		}
+	}
+
 	bool sub_table = table_table_attlist_.table_is_sub_table_.get_value_or(false);
 	//todooo придумать как сделать внешние границы sub-таблицы границами внешней ячейки (чтоб слияние произошло)
 	
@@ -173,6 +200,15 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_table_context().end_table();
 	_Wostream << L"</w:tbl>";
+
+	if (false == sDumpPageProperties.empty())
+	{			
+		Context.output_stream() << L"<w:p>";
+		Context.output_stream() << L"<w:pPr>";
+			Context.output_stream() << sDumpPageProperties;
+		Context.output_stream() << L"</w:pPr>";
+		Context.output_stream() << L"</w:p>";
+	}
 }
 
 void table_columns::docx_convert(oox::docx_conversion_context & Context)
@@ -285,28 +321,45 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
                 );
         }        		
 
+		if (attlist_extra_.table_number_columns_spanned_ > 1)
+        {
+            _Wostream << L"<w:gridSpan w:val=\"" << attlist_extra_.table_number_columns_spanned_ << "\"/>";
+            Context.get_table_context().set_columns_spanned(attlist_extra_.table_number_columns_spanned_ - 1);
+        }	
 		double width = Context.get_table_context().get_current_cell_width();
-
+		
 		if (width > 0.01)
 		{
 			_Wostream << L"<w:tcW w:w=\"" << (int)width << L"\" w:type=\"dxa\"/>";
 		}
 		
-		if (attlist_extra_.table_number_columns_spanned_ > 1)
-        {
-            _Wostream << L"<w:gridSpan w:val=\"" << attlist_extra_.table_number_columns_spanned_ << "\"/>";
-            Context.get_table_context().set_columns_spanned(attlist_extra_.table_number_columns_spanned_ - 1);
-        }
+
 
 		const style_instance * inst = 
-            Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableCell,Context.process_headers_footers_);
+            Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableCell, Context.process_headers_footers_);
         
-        if (inst && inst->content())
-        {
-            if (inst->content()->get_style_table_cell_properties())
-            {
-                inst->content()->get_style_table_cell_properties()->docx_convert(Context);            
-            }
+        const std::wstring & currentRowStyle = Context.get_table_context().current_row_style();
+
+        const style_instance * inst_row = 
+            Context.root()->odf_context().styleContainer().style_by_name(currentRowStyle, style_family::TableRow, Context.process_headers_footers_);
+
+		style_table_cell_properties *row_cell_props = NULL;
+		if (inst_row && inst_row->content())
+		{
+			row_cell_props = inst_row->content()->get_style_table_cell_properties();
+		}
+		if (inst && inst->content())
+		{
+			style_table_cell_properties merge_cell_props;
+
+			style_table_cell_properties * cell_props = inst->content()->get_style_table_cell_properties();
+
+			if (row_cell_props)
+				merge_cell_props.attlist_.apply_from(row_cell_props->attlist_);
+			if (cell_props)
+				merge_cell_props.attlist_.apply_from(cell_props->attlist_);
+            
+			merge_cell_props.docx_convert(Context);            
 
             if (inst->content()->get_style_text_properties())
             {
@@ -322,7 +375,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
                 Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
 
             if (const style_instance * inst = 
-                Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyle, style_family::TableCell,Context.process_headers_footers_))
+                Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyle, style_family::TableCell, Context.process_headers_footers_))
             {
                 if (const style_content * content = inst->content())
                 {
@@ -340,7 +393,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
             const std::wstring & defaultCellStyle = Context.get_table_context().get_default_cell_style_row();
 
             if (const style_instance * inst = 
-                Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyle, style_family::TableCell,Context.process_headers_footers_))
+                Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyle, style_family::TableCell, Context.process_headers_footers_))
             {
                 if (const style_content * content = inst->content())
                 {

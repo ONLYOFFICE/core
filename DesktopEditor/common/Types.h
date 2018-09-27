@@ -83,7 +83,7 @@ typedef T_LONG64    __int64;
 
 typedef T_ULONG64   ULONG64;
 typedef T_LONG64    LONG64;
-typedef T_ULONG64     UINT64;
+typedef T_ULONG64   UINT64;
 #else
 
 #ifdef __APPLE__
@@ -101,6 +101,9 @@ typedef T_ULONG64   UINT64;
 #if (!defined (_MAC) && (!defined(MIDL_PASS) || defined(__midl)) && (!defined(_M_IX86) || (defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64)))
 typedef __int64				T_LONG64;
 typedef unsigned __int64	T_ULONG64;
+typedef T_ULONG64   ULONG64;
+typedef T_LONG64    LONG64;
+typedef T_ULONG64   UINT64;
 #else
 #if defined(_MAC) && defined(_MAC_INT_64)
 typedef __int64				T_LONG64;

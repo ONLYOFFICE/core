@@ -48,8 +48,13 @@ namespace DocFileFormat
 
 	RevisionData::RevisionData( CharacterPropertyExceptions* chpx ) : Dttm(), Isbt(0), Type(NoRevision), Changes(NULL), RsidDel(0), RsidProp(0), Rsid(0)
 	{
+		if (!chpx) return;
+		if (!chpx->grpprl)
+			return;
+
 		bool collectRevisionData = true;
-		this->Changes = new std::list<SinglePropertyModifier>();
+		
+		Changes = new std::list<SinglePropertyModifier>();
 
 		for ( std::list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 		{

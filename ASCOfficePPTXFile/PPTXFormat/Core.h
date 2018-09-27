@@ -39,8 +39,6 @@
 #include "Limit/ContentStatus.h"
 #include "FileTypes.h"
 
-using namespace NSBinPptxRW;
-
 namespace PPTX
 {
 	class Core : public WrapperFile
@@ -63,12 +61,12 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-			oNode.ReadNodeValueBase(_T("dc:title"), title);
-			oNode.ReadNodeValueBase(_T("dc:creator"), creator);
-			oNode.ReadNodeValueBase(_T("cp:lastModifiedBy"), lastModifiedBy);
-			oNode.ReadNodeValueBase(_T("cp:revision"), revision);
-			oNode.ReadNodeValueBase(_T("dcterms:modified"), modified);
-			oNode.ReadNodeValueBase(_T("dcterms:created"), created);
+            XmlMacroReadNodeValueBase(oNode, _T("dc:title"), title);
+            XmlMacroReadAttributeBase(oNode, _T("dc:creator"), creator);
+            XmlMacroReadAttributeBase(oNode, _T("cp:lastModifiedBy"), lastModifiedBy);
+            XmlMacroReadAttributeBase(oNode, _T("cp:revision"), revision);
+            XmlMacroReadAttributeBase(oNode, _T("dcterms:modified"), modified);
+            XmlMacroReadAttributeBase(oNode, _T("dcterms:created"), created);
 
 	//		created = PPTX::DateTime::Parse(document.Root.element("created").text().ToString());
 	//			modified = PPTX::DateTime::Parse(document.Root.element("modified").text().ToString());
@@ -105,9 +103,9 @@ namespace PPTX
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			pWriter->StartRecord(NSMainTables::Core);
+			pWriter->StartRecord(NSBinPptxRW::NSMainTables::Core);
 
-			pWriter->WriteBYTE(g_nodeAttributeStart);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 			pWriter->WriteString2(0, title);
 			pWriter->WriteString2(1, creator);
@@ -116,7 +114,7 @@ namespace PPTX
 			pWriter->WriteString2(4, created);
 			pWriter->WriteString2(5, modified);
 
-			pWriter->WriteBYTE(g_nodeAttributeEnd);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->EndRecord();
 		}

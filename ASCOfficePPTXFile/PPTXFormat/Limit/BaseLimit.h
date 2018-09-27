@@ -35,25 +35,11 @@
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 
-#if !defined(_WIN32) && !defined (_WIN64)
-#include "../../../DesktopEditor/common/Types.h"
-#define _USE_STRING_OPERATOR						\
+#define _USE_STRING_OPERATOR                            \
     virtual void operator=(const std::wstring& value)	\
-    {												\
-        set(value);									\
+    {                                                   \
+        set(value);                                     \
     }
-
-#else
-#define _USE_STRING_OPERATOR						\
-    virtual void operator=(const std::wstring& value)	\
-    {												\
-        set(value);									\
-    }												\
-    virtual void operator=(const BSTR& value)		\
-    {												\
-        set((std::wstring)value);						\
-    }
-#endif // #if !defined(_WIN32) && !defined (_WIN64)
 
 
 

@@ -116,7 +116,7 @@ namespace OOX
 			{
 				return L"";
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)

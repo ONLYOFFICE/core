@@ -32,14 +32,29 @@
 #ifndef NATIVECONTROL
 #define NATIVECONTROL
 
-#include "memorystream.h"
 #include <map>
-#include "../fontengine/ApplicationFonts.h"
 #include <iostream>
+
+#include "../graphics/pro/Fonts.h"
 #include "../../graphics/Timer.h"
 #include "../../common/Directory.h"
-#include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../common/Array.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+
+#include "memorystream.h"
 #include "../../fontengine/application_generate_fonts_common.h"
+
+#if defined(CreateDirectory)
+#undef CreateDirectory
+#endif
+
+#if defined(GetTempPath)
+#undef GetTempPath
+#endif
+
+#if defined(CreateFile)
+#undef CreateFile
+#endif
 
 class CZipWorker
 {
@@ -372,18 +387,17 @@ public:
     {
         if (0 == m_map_fonts.size())
         {
-            CApplicationFonts oApplication;
+            NSFonts::IApplicationFonts* pApplication = NSFonts::NSApplication::Create();
             if (m_strFontsDirectory == L"")
-                oApplication.Initialize();
+                pApplication->Initialize();
             else
-                oApplication.InitializeFromFolder(m_strFontsDirectory);
+                pApplication->InitializeFromFolder(m_strFontsDirectory);
 
-            CArray<CFontInfo*>* pFonts = oApplication.GetList()->GetFonts();
+            std::vector<NSFonts::CFontInfo*>* pFonts = pApplication->GetList()->GetFonts();
 
-            int nCount = pFonts->GetCount();
-            for (int nIndex = 0; nIndex < nCount; ++nIndex)
+            for (std::vector<NSFonts::CFontInfo*>::iterator i = pFonts->begin(); i < pFonts->end(); i++)
             {
-                CFontInfo* pCurrent = pFonts->operator [](nIndex);
+                NSFonts::CFontInfo* pCurrent = *i;
 
                 size_t pos1 = pCurrent->m_wsFontPath.find_last_of(wchar_t('/'));
                 size_t pos2 = pCurrent->m_wsFontPath.find_last_of(wchar_t('\\'));
@@ -410,13 +424,17 @@ public:
                 }
             }
 
-            CFontSelectFormat oFormat;
+            NSFonts::CFontSelectFormat oFormat;
             oFormat.wsName = new std::wstring(L"Arial");
 
             m_sDefaultFont = L"";
-            CFontInfo* pInfo = oApplication.GenerateFontManager()->GetFontInfoByParams(oFormat);
+            NSFonts::IFontManager* pManager = pApplication->GenerateFontManager();
+            NSFonts::CFontInfo* pInfo = pManager->GetFontInfoByParams(oFormat);
             if (NULL != pInfo)
                 m_sDefaultFont = pInfo->m_wsFontPath;
+
+            RELEASEINTERFACE(pManager);
+            RELEASEOBJECT(pApplication);
         }
     }
 };
@@ -1140,6 +1158,29 @@ public:
 };
 #endif
 
+#ifdef V8_OS_XP
+
+class ExternalMallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
+{
+public:
+    virtual void* Allocate(size_t length)
+    {
+        void* ret = malloc(length);
+        memset(ret, 0, length);
+        return ret;
+    }
+    virtual void* AllocateUninitialized(size_t length)
+    {
+        return malloc(length);
+    }
+    virtual void Free(void* data, size_t length)
+    {
+        free(data);
+    }
+};
+
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 class CV8Initializer
 {
@@ -1153,11 +1194,19 @@ public:
         std::wstring sPrW = NSFile::GetProcessPath();
         std::string sPrA = U_TO_UTF8(sPrW);
 
+#ifndef V8_OS_XP
         v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
         v8::V8::InitializeExternalStartupData(sPrA.c_str());
         m_platform = v8::platform::CreateDefaultPlatform();
         v8::V8::InitializePlatform(m_platform);
         v8::V8::Initialize();
+#else
+        m_platform = v8::platform::CreateDefaultPlatform();
+        v8::V8::InitializePlatform(m_platform);
+
+        v8::V8::Initialize();
+        v8::V8::InitializeICU();
+#endif
     }
     ~CV8Initializer()
     {
@@ -1175,7 +1224,11 @@ public:
     v8::Isolate* CreateNew()
     {
         v8::Isolate::CreateParams create_params;
+#ifndef V8_OS_XP
         m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+#else
+        m_pAllocator = new ExternalMallocArrayBufferAllocator();
+#endif
         create_params.array_buffer_allocator = m_pAllocator;
         return v8::Isolate::New(create_params);
     }

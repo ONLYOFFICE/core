@@ -234,6 +234,7 @@ static DWORD GetSysColor(const int nIndex)
 
 
 #else
+	#include <windows.h>
 
 	#ifndef COLOR_HOTLIGHT
 		#define COLOR_HOTLIGHT          26
@@ -254,6 +255,5 @@ static DWORD GetSysColor(const int nIndex)
 	#ifndef COLOR_MENUBAR
 		#define COLOR_MENUBAR           30
 	#endif
-
 #endif //#ifndef _WIN32
 #endif // #ifndef _ASC_WIN_API

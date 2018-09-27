@@ -47,7 +47,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				WarningLevel="3"
@@ -1520,6 +1520,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\odf\odf_elements_type.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\odfcontext.cpp"
 				>
 			</File>
@@ -1572,15 +1576,27 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\odf\office_elements_type.h"
-				>
-			</File>
-			<File
 				RelativePath="..\src\odf\office_event_listeners.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\src\odf\office_event_listeners.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\office_forms.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\office_forms.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\office_meta.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\office_meta.h"
 				>
 			</File>
 			<File

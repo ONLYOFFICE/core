@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPNoncopyable.h>
 
 namespace cpdoccore {
 namespace oox {

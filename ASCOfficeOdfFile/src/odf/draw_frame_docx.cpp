@@ -30,6 +30,7 @@
  *
  */
 
+#include "office_forms.h"
 #include "draw_frame.h"
 
 #include <ostream>
@@ -38,7 +39,8 @@
 
 #include <boost/regex.hpp>
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
+#include <xml/utils.h>
 
 #include "serialize_elements.h"
 
@@ -46,7 +48,10 @@
 #include "odf_document_impl.h"
 
 #include "draw_common.h"
+
 #include "../docx/docx_drawing.h"
+#include "../docx/xlsx_package.h"
+
 #include "chart_build_oox.h"
 
 #include "calcs_styles.h"
@@ -55,6 +60,7 @@
 #include "datatypes/borderstyle.h"
 
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 namespace cpdoccore { 
 
@@ -768,6 +774,20 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 			style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 			if (defaultStyle)instances.push_back(defaultStyle);
 		}
+		else if (styleInst->content())
+		{
+			style_paragraph_properties *para_props = styleInst->content()->get_style_paragraph_properties();
+			if ((para_props) && (para_props->content_.style_writing_mode_))
+			{
+				switch(para_props->content_.style_writing_mode_->get_type())
+				{
+					case writing_mode::TbLr:
+						drawing->additional.push_back(odf_reader::_property(L"text_vert", 2)); break;
+					case writing_mode::TbRl:
+						drawing->additional.push_back(odf_reader::_property(L"text_vert", 1)); break;
+				}
+			}
+		}
 		
 		instances.push_back(styleInst);
 	}
@@ -864,7 +884,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		}
 
     }
-	drawing->number_wrapped_paragraphs=graphicProperties.style_number_wrapped_paragraphs_.
+	drawing->number_wrapped_paragraphs = graphicProperties.style_number_wrapped_paragraphs_.
 									get_value_or( integer_or_nolimit( integer_or_nolimit::NoLimit) ).get_value();
 	if (anchor && anchor->get_type() == anchor_type::AsChar && drawing->posOffsetV< 0)
 	{
@@ -880,7 +900,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
 		std::wstring href = drawing->fill.bitmap->xlink_href_;
-		drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+		drawing->fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	}
 
 ////////////////////////////////////////////////////
@@ -1051,10 +1071,10 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	bool runState	= Context.get_run_state();
 	bool paraState	= Context.get_paragraph_state();
-	bool keepState	= Context.get_paragraph_keep();
 
-	//Context.set_run_state		(false);	
-	Context.set_paragraph_state	(false);	
+	Context.reset_context_state();
+	Context.set_run_state		(runState);	
+	//Context.set_paragraph_state	(false);	
 
 	bool new_run = false;
 	
@@ -1086,17 +1106,18 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	Context.set_paragraph_state(paraState);		
+	//Context.set_paragraph_state(paraState);		
+	Context.back_context_state();
 
 	Context.get_drawing_context().stop_shape();
 }
 
 void draw_image::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!common_xlink_attlist_.href_)
+	if (!xlink_attlist_.href_)
 		return;
  
-	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 	int pos_replaicement	= href.find(L"ObjectReplacements"); 
 
     const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
@@ -1122,19 +1143,14 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
   
-	bool runState	= Context.get_run_state			();	
-	bool pState		= Context.get_paragraph_state	();
-	
-	Context.set_run_state		(false);
-	Context.set_paragraph_state	(false);		
+	Context.reset_context_state();
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);
     }
 
-	Context.set_run_state		(runState);
-	Context.set_paragraph_state	(pState);
+	Context.back_context_state();
 
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 	Context.set_stream_man(prev);
@@ -1155,7 +1171,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing->fill.type = 2;
 	drawing->fill.bitmap->isInternal = false;
-    drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+    drawing->fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	drawing->fill.bitmap->bStretch = true;
 
     const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
@@ -1188,12 +1204,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 	
-	bool pState		= Context.get_paragraph_state	();
-	bool runState	= Context.get_run_state			();
-	bool keepState	= Context.get_paragraph_keep	();
-	
-	Context.set_run_state		(false);
-	Context.set_paragraph_state	(false);		
+	Context.reset_context_state();
 
 	bool drState = Context.get_drawing_state_content();
 	
@@ -1207,10 +1218,8 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 	Context.set_stream_man(prev);
 	
-	Context.set_run_state				(runState);
-	Context.set_paragraph_state			(pState);		
 	Context.set_drawing_state_content	(drState);
-	Context.set_paragraph_keep			(keepState);
+	Context.back_context_state();
 
 //---------------------------------------------------------------------------------------------------------
 
@@ -1226,7 +1235,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 
 	const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
 	
-	drawing->additional.push_back(_property(L"text-content",content));
+	drawing->additional.push_back(_property(L"text-content", content));
 	Context.get_drawing_context().clear_stream_frame();
 
 /////////
@@ -1241,12 +1250,27 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		size_t min_y = get_value_emu(draw_text_box_attlist_.fo_min_height_->get_length());
 		if (drawing->cy < min_y) 
 		{
-			auto_fit_text = true;
 			drawing->cy = min_y;
 		}
-		if (drawing->cy < 36000) auto_fit_shape = true;
+		//if (drawing->cy < 36000)
+		//{
+		//	auto_fit_shape = true;
+		//}
+		auto_fit_shape = true;
 	}
-
+	else if ((frame->draw_frame_attlist_.fo_min_height_) && (draw_text_box_attlist_.fo_min_height_->get_type()==length_or_percent::Length))
+	{
+		size_t min_y = get_value_emu(frame->draw_frame_attlist_.fo_min_height_->get_length());
+		if (drawing->cy < min_y) 
+		{
+			drawing->cy = min_y;
+		}
+		auto_fit_shape = true;
+	}
+	else if ((frame->common_draw_attlists_.rel_size_.style_rel_height_) && (frame->common_draw_attlists_.rel_size_.style_rel_height_->get_type() == percent_or_scale::ScaleMin))
+	{
+		auto_fit_shape = true;
+	}
 	
 	if ((draw_text_box_attlist_.fo_min_width_) && (draw_text_box_attlist_.fo_min_width_->get_type()==length_or_percent::Length))
 	{
@@ -1256,7 +1280,11 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 			auto_fit_text = true;
 			drawing->cx = min_x;
 		}
-		if (drawing->cx < 36000) auto_fit_shape = true;
+		if (drawing->cx < 36000)
+		{
+			auto_fit_text = false;
+			auto_fit_shape = true;
+		}
 	}
 
 
@@ -1277,6 +1305,12 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (auto_fit_text)
 		drawing->additional.push_back(_property(L"fit-to-size",	auto_fit_text));
+
+	if (drawing->cx < 1 && drawing->cy < 1)
+	{
+		drawing->cx = 10;
+		drawing->cy = 10;
+	}
 }
 void draw_g::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1310,11 +1344,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(drawing.content_group_);
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 	
-	bool pState		= Context.get_paragraph_state	();
-	bool runState	= Context.get_run_state			();
-	
-	Context.set_paragraph_state	(false);		
-	Context.set_run_state		(false);
+	Context.reset_context_state();
 		
 	for (size_t i = 0; i < content_.size(); i++)
     {
@@ -1324,8 +1354,8 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	drawing.content_group_ = temp_stream.str();
 	
 	Context.set_stream_man		(prev);
-	Context.set_run_state		(runState);
-	Context.set_paragraph_state	(pState);
+	Context.back_context_state();
+
 //--------------------------------------------------
 	Context.get_drawing_context().get_size_group	(drawing.cx	, drawing.cy);
 	Context.get_drawing_context().get_position_group(drawing.x	, drawing.y);
@@ -1358,8 +1388,8 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------
     std::wostream & strm = Context.output_stream();
 
-	runState	= Context.get_run_state();	
-	pState		= Context.get_paragraph_state();
+	bool runState	= Context.get_run_state();	
+	bool pState		= Context.get_paragraph_state();
 
 	if (!Context.get_drawing_context().in_group() && !pState)
 	{
@@ -1400,8 +1430,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
     Context.get_drawing_context().start_frame(this);
     
     const _CP_OPT(std::wstring) name = 
-        common_draw_attlists_.shape_with_text_and_styles_.
-        common_shape_draw_attlist_.draw_name_;
+        common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_;
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Object"));
 	
@@ -1421,10 +1450,8 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 //-----------------------------------------------------------------------------------------------------
 	bool runState	= Context.get_run_state();
 	bool paraState	= Context.get_paragraph_state();
-	bool keepState	= Context.get_paragraph_keep();
 
-	Context.set_run_state		(false);	
-	Context.set_paragraph_state	(false);	
+	Context.reset_context_state();
 
 	if (!Context.get_drawing_context().in_group() && !runState)
 	{
@@ -1446,9 +1473,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	Context.set_run_state		(runState);
-	Context.set_paragraph_state	(paraState);	
-	Context.set_paragraph_keep	(keepState);
+	Context.back_context_state();
 
 	Context.get_drawing_context().stop_frame();
 }
@@ -1457,17 +1482,18 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 {
     try 
 	{
-        std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+        std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
+		std::wstring tempPath	= Context.root()->get_temp_folder();
+		std::wstring odfPath	= Context.root()->get_folder();
 
 		if (!odf_document_ && !href.empty())
 		{			
-			std::wstring folderPath = Context.root()->get_folder();
-			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+			std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
 
 			// normalize path ???? todooo
 			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-			odf_document_ = odf_document_ptr(new odf_document(objectPath, NULL));    
+			odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L"", NULL));    
 		}
 //---------------------------------------------------------------------------------------------------------------------
 		draw_frame*				frame			= NULL;
@@ -1479,6 +1505,30 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		{
 			process_build_object process_build_object_(objectBuild, odf_document_->odf_context());
 			contentSubDoc->accept(process_build_object_); 
+
+			if (objectBuild.table_table_)
+			{
+				oox::xlsx_conversion_context xlsx_context(odf_document_.get());
+				cpdoccore::oox::package::xlsx_document outputXlsx;
+	
+				xlsx_context.set_output_document (&outputXlsx);
+
+				xlsx_context.start_document();
+					objectBuild.table_table_->xlsx_convert(xlsx_context);
+				xlsx_context.end_document();
+				
+				std::wstring href_folder = tempPath + FILE_SEPARATOR_STR + L"temp_xlsx";
+				NSDirectory::CreateDirectory(href_folder);
+				outputXlsx.write(href_folder);
+
+				std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems().count_object + 1) + L".xlsx";
+				
+				COfficeUtils oCOfficeUtils(NULL);
+				if (S_OK == oCOfficeUtils.CompressFileOrDirectory(href_folder, odfPath + FILE_SEPARATOR_STR + href, true))
+				{				
+					objectBuild.embeddedData = href;
+				}
+			}
 
 			objectBuild.docx_convert(Context);		
 			
@@ -1497,7 +1547,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			drawing->type = oox::typeChart;
 			
 			bool isMediaInternal = true;        
-			drawing->objectId = Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+			drawing->objectId = Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
 		}
 		else if (objectBuild.object_type_ == 2 ) //embedded text
 		{	
@@ -1555,7 +1605,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				bool isMediaInternal = true;        
 				
 				href += FILE_SEPARATOR_STR + href_new;
-				drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+				drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
 				drawing->objectProgId	= L"Excel.Sheet.12";
 			}
 		}
@@ -1578,7 +1628,7 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	use_image_replace = true;
 
 //------------------------------------------------
-	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 	std::wstring folderPath = Context.root()->get_folder();
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
@@ -1593,10 +1643,140 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	drawing->type			=  oox::typeOleObject;
 	
 	bool isMediaInternal	= true;        
-	drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+	drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
 
 	drawing->objectProgId	= detectObject(objectPath); 
 }
+void draw_control::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!control_id_) return;
 
+	oox::text_forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
+	if (state.id.empty()) return;
+
+	if ((state.type == 6 || state.type == 4) && state.element)
+	{
+		return state.element->docx_convert_sdt(Context, this);
+	}
+
+	Context.get_drawing_context().start_shape(NULL);    
+	Context.get_drawing_context().add_name_object(state.name.empty() ? L"Control" : state.name);
+
+//--------------------------------------------------------------------------------------------------
+	oox::_docx_drawing drawing = oox::_docx_drawing();
+
+	drawing.type	= oox::typeShape;
+	drawing.id		= Context.get_drawing_context().get_current_shape_id();
+	drawing.name	= Context.get_drawing_context().get_current_object_name();
+	drawing.inGroup	= Context.get_drawing_context().in_group();
+	drawing.sub_type = 1;
+	
+//---------------------------------------------------------------------------------------------------------
+ 		oox::StreamsManPtr prev = Context.get_stream_man();
+		
+		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_shape());
+		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
+		
+		Context.reset_context_state();
+
+		bool drState = Context.get_drawing_state_content();
+		
+		Context.set_drawing_state_content(true);
+
+		Context.start_paragraph(false);
+		
+		if (draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+		{	
+			text::paragraph_attrs attrs_;
+			attrs_.text_style_name_ = *draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
+
+			int textStyle = Context.process_paragraph_attr(&attrs_);
+		}	
+		
+		if (state.element)
+		{
+			state.element->docx_convert_sdt(Context, this);
+			//state.element->docx_convert_field(Context, this);
+		}
+		else
+		{	
+			std::wstring text;
+			if (!state.label.empty())		text =  state.label;
+			else if (!state.value.empty())	text =  state.value;
+
+			Context.add_new_run(L"");
+				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+				Context.output_stream() << xml::utils::replace_text_to_xml( text, true );
+				Context.output_stream() << L"</w:t>";
+			Context.finish_run();
+		}
+		Context.finish_paragraph();
+		
+		Context.get_drawing_context().get_text_stream_shape() = temp_stream.str();
+		Context.set_stream_man(prev);
+		
+		Context.set_drawing_state_content	(drState);
+		
+		Context.back_context_state();
+
+		const std::wstring & content = Context.get_drawing_context().get_text_stream_shape();
+		
+		drawing.additional.push_back(_property(L"text-content",content));
+		Context.get_drawing_context().clear_stream_shape();
+
+		drawing.additional.push_back(_property(L"text-padding-left", 0.));
+		drawing.additional.push_back(_property(L"text-padding-top", 0.));
+		drawing.additional.push_back(_property(L"text-padding-right", 0.));
+		drawing.additional.push_back(_property(L"text-padding-bottom", 0.));
+	
+//---------------------------------------------------------------------------------------------------------
+
+/////////
+	common_draw_docx_convert(Context, draw_attlists_, &drawing);
+/////////
+
+    std::wostream & strm = Context.output_stream();
+
+	bool pState		= Context.get_paragraph_state();
+	bool runState	= Context.get_run_state();
+	bool keepState	= Context.get_paragraph_keep();
+
+	//Context.set_run_state		(false);	
+	Context.set_paragraph_state	(false);	
+
+	bool new_run = false;
+	
+	if ((pState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
+	{
+	}
+	else
+	{
+		if (!Context.get_drawing_context().in_group() && !runState)
+		{
+			if (!pState)
+			{
+				Context.start_paragraph();
+			}
+			Context.add_new_run(L"");
+
+			new_run = true;
+		}
+	}
+
+	drawing.serialize(strm/*, Context.get_drawing_state_content()*/);
+
+	if (new_run)
+	{
+		Context.finish_run();
+		if (!pState)
+		{
+			Context.finish_paragraph();
+		}
+	}
+
+	Context.set_paragraph_state(pState);	
+
+	Context.get_drawing_context().stop_shape();
+}
 }
 }

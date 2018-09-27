@@ -44,7 +44,7 @@ namespace DocFileFormat
 		bool fInnerTableCell;
 		unsigned int iTap;
 
-		TableInfo( ParagraphPropertyExceptions* papx ):
+		TableInfo( ParagraphPropertyExceptions* papx, int  nWordVersion):
 				fInTable(false), fTtp(false), fInnerTtp(false), fInnerTableCell(false), iTap(0)
 		{
 			if ( papx != NULL )

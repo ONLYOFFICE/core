@@ -54,7 +54,8 @@ namespace CRYPT_METHOD
 		RC4,
 		AES_CBC,
 		AES_CFB,
-		AES_ECB
+		AES_ECB,
+		Blowfish_CFB
 	};
 }
 namespace CRYPT
@@ -104,8 +105,25 @@ struct _ecmaCryptData
 //..........
 
 	bool fDocProps = true;
-
 };
+struct _odfCryptData
+{
+	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+	
+	CRYPT_METHOD::_hashAlgorithm	start_hashAlgorithm = CRYPT_METHOD::SHA1;
+	int								start_hashSize		= 20;
+
+	int			spinCount	= 1024;
+	int			keySize		= 16;
+
+	std::string saltValue;
+	std::string initializationVector;
+	
+	std::string						checksum;
+	int								checksum_size = 1024;
+	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+};
+//---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 
 {
 public:
@@ -152,5 +170,35 @@ private:
 	_ecmaCryptData	cryptData;
 	bool			bVerify;
 };
+
+class ODFDecryptor
+{
+public:
+	ODFDecryptor();
+	virtual ~ODFDecryptor(){}
+
+	void SetCryptData(_odfCryptData &data);
+	
+	bool Decrypt (const std::wstring &wpassword, unsigned char* data_inp, int size_inp, unsigned char*& data_out, int &size_out);
+
+private:
+	_odfCryptData	cryptData;
+	bool			bVerify;
+};
+class ODFEncryptor 
+{
+public:
+	ODFEncryptor(){}
+	virtual ~ODFEncryptor(){}
+	
+	void SetCryptData(_odfCryptData &data);
+	void GetCryptData(_odfCryptData &data);
+
+	int Encrypt (const std::wstring &password, unsigned char* data, int  size, unsigned char*& data_out);
+
+private:
+	_odfCryptData	cryptData;
+};
+
 
 }

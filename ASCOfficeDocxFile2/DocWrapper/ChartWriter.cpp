@@ -599,7 +599,7 @@ namespace BinXlsxRW{
 						//как в CsvReader - подозрительный код
 						WCHAR *pEndPtr;
 						wcstod(val.c_str(), &pEndPtr);
-						if (NULL != *pEndPtr)
+						if (0 != *pEndPtr)
 						{
 							// Не число
 							aSharedStrings.push_back(val);

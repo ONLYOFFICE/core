@@ -32,8 +32,8 @@
 
 #include "odf_rels.h"
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -45,23 +45,38 @@ void relationship::serialize(std::wostream & _Wostream)
     {
         CP_XML_NODE(L"manifest:file-entry")
         {
-            CP_XML_ATTR(L"manifest:full-path", target());
-            CP_XML_ATTR(L"manifest:media-type", type());
-        }    
+            CP_XML_ATTR(L"manifest:full-path", target_);
+
+			if (target_ == L"/")
+			{
+				CP_XML_ATTR(L"manifest:version", L"1.2");
+			}
+            CP_XML_ATTR(L"manifest:media-type", type_);
+			
+			if (size_ >= 0)
+			{
+				CP_XML_ATTR(L"manifest:size", size_);
+			}
+
+			if (!encryption_.empty())
+			{
+				CP_XML_STREAM() << encryption_;
+			}
+       }    
     }
 }
 
 void rels::serialize(std::wostream & strm)
 {
-	for (size_t i = 0; i < relationship_.size(); i++)
+	for (size_t i = 0; i < relationships_.size(); i++)
     {
-        relationship_[i].serialize(strm);
+        relationships_[i].serialize(strm);
 	}
 }
 
 void rels::add(relationship const & r)
 {
-    relationships().push_back(r);
+    relationships_.push_back(r);
 }
 
 }

@@ -57,29 +57,29 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"accel", accel);
-				node.ReadAttributeBase(L"afterEffect", afterEffect);
-				node.ReadAttributeBase(L"autoRev", autoRev);
-				node.ReadAttributeBase(L"bldLvl", bldLvl);
-				node.ReadAttributeBase(L"decel", decel);
-				node.ReadAttributeBase(L"display", display);
-				node.ReadAttributeBase(L"dur", dur);
-				node.ReadAttributeBase(L"evtFilter", evtFilter);
-				node.ReadAttributeBase(L"fill", fill);
-				node.ReadAttributeBase(L"grpId", grpId);
-				node.ReadAttributeBase(L"id", id);
-				node.ReadAttributeBase(L"masterRel", masterRel);
-				node.ReadAttributeBase(L"nodePh", nodePh);
-				node.ReadAttributeBase(L"nodeType", nodeType);
-				node.ReadAttributeBase(L"presetClass", presetClass);
-				node.ReadAttributeBase(L"presetID", presetID);
-				node.ReadAttributeBase(L"presetSubtype", presetSubtype);
-				node.ReadAttributeBase(L"repeatCount", repeatCount);
-				node.ReadAttributeBase(L"repeatDur", repeatDur);
-				node.ReadAttributeBase(L"restart", restart);
-				node.ReadAttributeBase(L"spd", spd);
-				node.ReadAttributeBase(L"syncBehavior", syncBehavior);
-				node.ReadAttributeBase(L"tmFilter", tmFilter);
+                XmlMacroReadAttributeBase(node, L"accel", accel);
+                XmlMacroReadAttributeBase(node, L"afterEffect", afterEffect);
+                XmlMacroReadAttributeBase(node, L"autoRev", autoRev);
+                XmlMacroReadAttributeBase(node, L"bldLvl", bldLvl);
+                XmlMacroReadAttributeBase(node, L"decel", decel);
+                XmlMacroReadAttributeBase(node, L"display", display);
+                XmlMacroReadAttributeBase(node, L"dur", dur);
+                XmlMacroReadAttributeBase(node, L"evtFilter", evtFilter);
+                XmlMacroReadAttributeBase(node, L"fill", fill);
+                XmlMacroReadAttributeBase(node, L"grpId", grpId);
+                XmlMacroReadAttributeBase(node, L"id", id);
+                XmlMacroReadAttributeBase(node, L"masterRel", masterRel);
+                XmlMacroReadAttributeBase(node, L"nodePh", nodePh);
+                XmlMacroReadAttributeBase(node, L"nodeType", nodeType);
+                XmlMacroReadAttributeBase(node, L"presetClass", presetClass);
+                XmlMacroReadAttributeBase(node, L"presetID", presetID);
+                XmlMacroReadAttributeBase(node, L"presetSubtype", presetSubtype);
+                XmlMacroReadAttributeBase(node, L"repeatCount", repeatCount);
+                XmlMacroReadAttributeBase(node, L"repeatDur", repeatDur);
+                XmlMacroReadAttributeBase(node, L"restart", restart);
+                XmlMacroReadAttributeBase(node, L"spd", spd);
+                XmlMacroReadAttributeBase(node, L"syncBehavior", syncBehavior);
+                XmlMacroReadAttributeBase(node, L"tmFilter", tmFilter);
 
 				stCondLst	= node.ReadNode(_T("p:stCondLst"));
 				endCondLst	= node.ReadNode(_T("p:endCondLst"));

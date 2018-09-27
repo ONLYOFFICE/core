@@ -29,6 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include "HtmlFile.h"
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"

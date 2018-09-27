@@ -39,9 +39,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.h>
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/odf/odf_document.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <odf/odf_document.h>
 
 #include "serialize_elements.h"
 
@@ -203,7 +203,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+    std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 
 	if (href.empty() && office_binary_data_)
 	{
@@ -234,7 +234,7 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+    const std::wstring href = xlink_attlist_.href_.get_value_or(L"");
     Context.get_drawing_context().set_chart(href);
 
  	for (size_t i = 0 ; i < content_.size(); i++)
@@ -264,17 +264,18 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	try 
 	{
-		std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+		std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 		
 		if (!odf_document_ && !href.empty())
 		{			
+			std::wstring tempPath	= Context.root()->get_temp_folder();
 			std::wstring folderPath = Context.root()->get_folder();
 			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 			// normalize path ???? todooo
 			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-			odf_document_ = odf_document_ptr(new odf_document(objectPath, NULL));    
+			odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L"", NULL));    
 		}
 		office_element *contentSubDoc = odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
 		if (!contentSubDoc)
@@ -290,7 +291,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 //---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1) //диаграмма
 		{		
-			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"chart");
+			const std::wstring href_draw = xlink_attlist_.href_.get_value_or(L"chart");
 			objectBuild.xlsx_convert(Context);
 			
 			Context.get_drawing_context().set_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
@@ -351,7 +352,7 @@ void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 {	
 	Context.get_drawing_context().set_use_image_replacement();
 
-	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 	std::wstring folderPath = Context.root()->get_folder();
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 

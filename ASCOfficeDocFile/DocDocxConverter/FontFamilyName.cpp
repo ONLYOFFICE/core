@@ -69,14 +69,22 @@ namespace DocFileFormat
 		newObject->prq			= (unsigned char)	FormatUtils::BitmaskToInt	( ffid, 0x03 );
 		newObject->fTrueType	=					FormatUtils::BitmaskToBool	( ffid, 0x04 );
 		newObject->ff			= (unsigned char)	FormatUtils::BitmaskToInt	( ffid, 0x70 );
-		newObject->wWeight		= reader->ReadInt16();
-		newObject->chs			= reader->ReadByte();
 
 		//int sz_fonts = 150; //..  нужно генерить уникальное todooo
+		int szAlt = 0;
+		if (reader->nWordVersion == 2)
+		{
+			newObject->wWeight = reader->ReadByte();
+		}
+		else
+		{
+			newObject->wWeight		= reader->ReadInt16();
+			newObject->chs			= reader->ReadByte();
 		
-		int szAlt = reader->ReadByte();
+			szAlt = reader->ReadByte();
+		}
 
-		if (!reader->olderVersion)
+		if (reader->nWordVersion == 0)
 		{
 			//read the 10 bytes panose
 			newObject->panoseSize = 10;
@@ -97,7 +105,7 @@ namespace DocFileFormat
 
 		unsigned char *bytes = reader->ReadBytes( (int)( strEnd - strStart ), true );
 
-		if (reader->olderVersion)
+		if (reader->nWordVersion > 0)
 		{
 			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszFtn), bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250 );
 		}
@@ -131,7 +139,7 @@ namespace DocFileFormat
 
 			bytes = reader->ReadBytes( (int)( strEnd - strStart ), true );
 
-			if (reader->olderVersion)
+			if (reader->nWordVersion > 0)
 			{
 				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszAlt), bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250);
 			}
@@ -151,7 +159,7 @@ namespace DocFileFormat
     {
 	  long strStart = reader->GetPosition();
       
-	  if (reader->olderVersion)
+	  if (reader->nWordVersion > 0)
 	  {//ansi string only
 		  while ( reader->ReadByte() != 0 )
 		  {

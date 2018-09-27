@@ -34,6 +34,7 @@
 		6967B1C21E27B4B800A129E2 /* OOXDocumentWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B19F1E27B4B800A129E2 /* OOXDocumentWriter.cpp */; };
 		6967B1C31E27B4B800A129E2 /* OOXWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B1A81E27B4B800A129E2 /* OOXWriter.cpp */; };
 		69ACB6D31E7A983400096E94 /* svg_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69ACB6D11E7A983400096E94 /* svg_parser.cpp */; };
+		8A404FBE2089FE2D00F2D5CF /* StringBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FBD2089FE2C00F2D5CF /* StringBuilder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -170,6 +171,7 @@
 		6967B1C81E27B8F900A129E2 /* BaseShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseShape.h; path = ../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/BaseShape.h; sourceTree = "<group>"; };
 		69ACB6D11E7A983400096E94 /* svg_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = svg_parser.cpp; path = ../../../../ASCOfficeOdfFile/src/odf/svg_parser.cpp; sourceTree = "<group>"; };
 		69ACB6D21E7A983400096E94 /* svg_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = svg_parser.h; path = ../../../../ASCOfficeOdfFile/src/odf/svg_parser.h; sourceTree = "<group>"; };
+		8A404FBD2089FE2C00F2D5CF /* StringBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringBuilder.cpp; path = ../../../../DesktopEditor/common/StringBuilder.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -342,6 +344,7 @@
 				6967B1981E27B4B800A129E2 /* RtfToken.h */,
 				6967B1991E27B4B800A129E2 /* RtfWriter.cpp */,
 				6967B19A1E27B4B800A129E2 /* RtfWriter.h */,
+				8A404FBD2089FE2C00F2D5CF /* StringBuilder.cpp */,
 				6967B19B1E27B4B800A129E2 /* UniversalConverterUtils.h */,
 				6967B19C1E27B4B800A129E2 /* Utils.h */,
 				6967B19D1E27B4B800A129E2 /* Writer */,
@@ -394,7 +397,7 @@
 		6967B1211E27B44D00A129E2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = OnlyOffce;
 				TargetAttributes = {
 					6967B1281E27B44D00A129E2 = {
@@ -438,6 +441,7 @@
 				6967B1C11E27B4B800A129E2 /* RtfWriter.cpp in Sources */,
 				6967B1B91E27B4B800A129E2 /* RtfOldList.cpp in Sources */,
 				6967B1BF1E27B4B800A129E2 /* RtfSection.cpp in Sources */,
+				8A404FBE2089FE2D00F2D5CF /* StringBuilder.cpp in Sources */,
 				6967B1B71E27B4B800A129E2 /* RtfGlobalTables.cpp in Sources */,
 				6967B1BC1E27B4B800A129E2 /* RtfPicture.cpp in Sources */,
 				6967B1AE1E27B4B800A129E2 /* OOXMathReader.cpp in Sources */,
@@ -472,6 +476,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -479,6 +484,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -525,6 +531,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -532,6 +539,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -586,7 +594,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -620,7 +628,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

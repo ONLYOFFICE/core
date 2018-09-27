@@ -56,8 +56,8 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:displayText"), m_sDisplayText );
-				oNode.ReadAttributeBase( _T("w:value"),       m_sValue );
+				XmlMacroReadAttributeBase( oNode, _T("w:displayText"), m_sDisplayText );
+				XmlMacroReadAttributeBase( oNode, _T("w:value"),       m_sValue );
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -119,9 +119,9 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:prefixMappings"), m_sPrefixMappings );
-				oNode.ReadAttributeBase( _T("w:storeItemID"),    m_sStoreItemID );
-				oNode.ReadAttributeBase( _T("w:xpath"),          m_sXPath );
+				XmlMacroReadAttributeBase( oNode, _T("w:prefixMappings"), m_sPrefixMappings );
+				XmlMacroReadAttributeBase( oNode, _T("w:storeItemID"),    m_sStoreItemID );
+				XmlMacroReadAttributeBase( oNode, _T("w:xpath"),          m_sXPath );
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -190,7 +190,7 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -235,7 +235,7 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -279,7 +279,7 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -324,7 +324,7 @@ namespace ComplexTypes
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:multiLine"), m_oMultiLine );
+				XmlMacroReadAttributeBase( oNode, _T("w:multiLine"), m_oMultiLine );
 			}
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -355,6 +355,54 @@ namespace ComplexTypes
 		public:
 
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oMultiLine;
+		};
+		//--------------------------------------------------------------------------------
+		// SdtAppearance 2.5.4.2 ([MS-DOCX])
+		//--------------------------------------------------------------------------------
+		class CSdtAppearance : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CSdtAppearance)
+			CSdtAppearance()
+			{
+			}
+			virtual ~CSdtAppearance()
+			{
+			}
+
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
+			{
+				XmlMacroReadAttributeBase( oNode, _T("w15:val"), m_oVal );
+			}
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual std::wstring ToString() const
+			{
+				std::wstring sResult;
+				if(m_oVal.IsInit())
+				{
+					sResult = _T("w15:val=\"") + m_oVal->ToString() + _T("\"");
+				}
+
+				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w15:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			nullable<SimpleTypes::CSdtAppearance<>> m_oVal;
 		};
 
 	} // Word
@@ -391,7 +439,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:lastValue"), m_sLastValue );
+				XmlMacroReadAttributeBase( oNode, _T("w:lastValue"), m_sLastValue );
 
 				XmlUtils::CXmlNodes oChilds;
 				if ( oNode.GetNodes( _T("w:listItem"), oChilds ) )
@@ -493,7 +541,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:fullDate"), m_oFullDate );
+				XmlMacroReadAttributeBase( oNode, _T("w:fullDate"), m_oFullDate );
 
 				XmlUtils::CXmlNode oChild;
 
@@ -675,7 +723,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:lastValue"), m_sLastValue );
+				XmlMacroReadAttributeBase( oNode, _T("w:lastValue"), m_sLastValue );
 
 				XmlUtils::CXmlNodes oChilds;
 				if ( oNode.GetNodes( _T("w:listItem"), oChilds ) )
@@ -913,6 +961,9 @@ namespace OOX
 				if ( oNode.GetNode( _T("w:alias"), oChild ) )
 					m_oAlias = oChild;
 
+				if ( oNode.GetNode( _T("w15:appearance"), oChild ) )
+					m_oAppearance = oChild;
+
 				if ( oNode.GetNode( _T("w:bibliography"), oChild ) )
 					m_eType = sdttypeBibliography;
 
@@ -924,6 +975,8 @@ namespace OOX
 					m_oComboBox = oChild;
 					m_eType = sdttypeComboBox;
 				}
+				if ( oNode.GetNode( _T("w15:color"), oChild ) )
+					m_oColor = oChild;
 
 				if ( oNode.GetNode( _T("w:dataBinding"), oChild ) )
 					m_oDataBinding = oChild;
@@ -1012,6 +1065,8 @@ namespace OOX
 
 					if      ( _T("w:alias") == sName )
 						m_oAlias = oReader;
+					else if( _T("w15:appearance") == sName )
+						m_oAppearance = oReader;
 					else if ( _T("w:bibliography") == sName )
 						m_eType = sdttypeBibliography;
 					else if ( sdttypeUnknown == m_eType && _T("w:citation") == sName )
@@ -1021,6 +1076,8 @@ namespace OOX
 						m_oComboBox = oReader;
 						m_eType = sdttypeComboBox;
 					}
+					else if ( _T("w15:color") == sName )
+						m_oColor = oReader;
 					else if ( _T("w:dataBinding") == sName )
 						m_oDataBinding = oReader;
 					else if ( sdttypeUnknown == m_eType && _T("w:date") == sName )
@@ -1082,6 +1139,8 @@ namespace OOX
 
 				WritingElement_WriteNode_2( m_oRPr );
 				WritingElement_WriteNode_1( L"<w:alias ",         m_oAlias );
+				WritingElement_WriteNode_1( L"<w15:appearance ",  m_oAppearance );
+				WritingElement_WriteNode_1( L"<w15:color ",		  m_oColor );
 				WritingElement_WriteNode_1( L"<w:id ",            m_oId );
 				WritingElement_WriteNode_1( L"<w:label ",         m_oLabel );
 				WritingElement_WriteNode_1( L"<w:tabIndex ",      m_oTabIndex );
@@ -1192,7 +1251,9 @@ namespace OOX
 
 			// Nodes
 			nullable<ComplexTypes::Word::String                       > m_oAlias;
+			nullable<ComplexTypes::Word::CSdtAppearance					> m_oAppearance;
 			nullable<OOX::Logic::CSdtComboBox                           > m_oComboBox;
+			nullable<ComplexTypes::Word::CColor							> m_oColor;
 			nullable<ComplexTypes::Word::CDataBinding                   > m_oDataBinding;
 			nullable<OOX::Logic::CDate                                  > m_oDate;
 			nullable<OOX::Logic::CSdtDocPart                            > m_oDocPartList;

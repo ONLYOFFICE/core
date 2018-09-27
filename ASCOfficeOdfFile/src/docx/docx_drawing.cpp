@@ -31,7 +31,7 @@
  */
 
 #include "docx_drawing.h"
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 #include "../odf/datatypes/custom_shape_types_convert.h"
 
 namespace cpdoccore {
@@ -209,8 +209,8 @@ void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 					CP_XML_NODE(L"pic:cNvPr")
 					{
 						//CP_XML_ATTR(L"desc text",L"");
-						CP_XML_ATTR(L"id",val.id);
-						CP_XML_ATTR(L"name",val.name);
+						CP_XML_ATTR(L"id", val.id + 1);
+						CP_XML_ATTR(L"name", val.name);
 					}
 					CP_XML_NODE(L"pic:cNvPicPr")
 					{
@@ -316,7 +316,7 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 		CP_XML_NODE(L"wp:docPr")
 		{
 			CP_XML_ATTR(L"name",	val.name);
-			CP_XML_ATTR(L"id",		val.id + 1);
+			CP_XML_ATTR(L"id",		0xf000 + val.id + 1);
 			
 			oox_serialize_action(CP_XML_STREAM(), val.action);
 		}
@@ -398,8 +398,8 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 							CP_XML_ATTR(L"cy", val.cy);
 						}
 
-						serialize_null_extent(CP_XML_STREAM());
 					}
+					serialize_null_extent(CP_XML_STREAM());
 				}
 				else//anchor
 				{
@@ -607,6 +607,42 @@ void docx_serialize_object(std::wostream & strm, _docx_drawing & val)
 	}
 }
 
+void docx_serialize_control(std::wostream & strm, _docx_drawing & val)
+{
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"w:pict")
+		{
+			CP_XML_NODE(L"v:shape")
+			{
+				CP_XML_ATTR(L"id", L"control_" + val.objectId); 
+
+				std::wstring style_str;	// = L"width:730.6pt; height:261.8pt";
+
+				style_str += L"width:"	+ boost::lexical_cast<std::wstring>(val.cx / 12700.) + L"pt;";
+				style_str += L"height:" + boost::lexical_cast<std::wstring>(val.cy / 12700.) + L"pt;";
+
+				CP_XML_ATTR(L"style", style_str);
+
+				if (val.fill.bitmap)
+				{
+					CP_XML_NODE(L"v:imagedata")
+					{
+						CP_XML_ATTR(L"o:title", val.name);
+						CP_XML_ATTR(L"r:id",	val.fill.bitmap->rId);
+					}
+				}
+			}
+			CP_XML_NODE(L"w:control")
+			{
+				CP_XML_ATTR(L"w:name",		val.name);
+				CP_XML_ATTR(L"w:shapeid",	L"control_" + val.objectId); 
+				CP_XML_ATTR(L"r:id",		val.objectId); 
+			}
+		}
+	}
+}
+
 void _docx_drawing::serialize(std::wostream & strm/*, bool insideOtherDrawing*/)
 {
 	if (type == typeUnknown) return;
@@ -618,6 +654,10 @@ void _docx_drawing::serialize(std::wostream & strm/*, bool insideOtherDrawing*/)
 		type == typeOleObject)
 	{
 		docx_serialize_object(strm, *this);
+	}
+	else if (type == typeControl)
+	{
+		docx_serialize_control(strm, *this);
 	}
 	else
 	{

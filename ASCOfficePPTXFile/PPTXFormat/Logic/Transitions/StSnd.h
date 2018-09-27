@@ -49,13 +49,13 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"loop", loop);
+                XmlMacroReadAttributeBase(node, L"loop", loop);
 
 				XmlUtils::CXmlNode oNode;
 				node.GetNode(_T("p:snd"), oNode);
 
-				oNode.ReadAttributeBase(L"r:embed", embed);
-				oNode.ReadAttributeBase(L"name", name);
+                XmlMacroReadAttributeBase(oNode, L"r:embed", embed);
+                XmlMacroReadAttributeBase(oNode, L"name", name);
 
 				FillParentPointersForChilds();
 			}

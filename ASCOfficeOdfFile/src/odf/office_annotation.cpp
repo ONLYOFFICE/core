@@ -32,14 +32,14 @@
 
 #include "office_annotation.h"
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/utils.h>
+#include <xml/attributes.h>
+#include <xml/utils.h>
 
 #include "serialize_elements.h"
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 #include "odfcontext.h"
 
 #include "calcs_styles.h"
@@ -148,7 +148,7 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_run_state(runState);
 	Context.set_paragraph_state(pState);
 	
-	Context.get_comments_context().start_comment(temp_stream.str(), author,date);//content, date, author
+	Context.get_comments_context().start_comment(temp_stream.str(), author, date, runState);//content, date, author
 	
 	Context.dump_hyperlinks(Context.get_comments_context().get_rels(), oox::hyperlinks::comment_place);
 		

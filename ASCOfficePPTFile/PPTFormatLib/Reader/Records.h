@@ -146,7 +146,6 @@ class IRecord
 public:
 	SRecordHeader m_oHeader;
 
-public:
 	virtual ~IRecord(){}
 	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream) = 0;
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) = 0;
@@ -186,10 +185,8 @@ IRecord* CreateByType(SRecordHeader oHeader);
 
 class CRecordsContainer : public CUnknownRecord
 {
-protected:
-	std::vector<IRecord*> m_arRecords;
-
 public:
+	std::vector<IRecord*> m_arRecords;
 
 	CRecordsContainer() : m_arRecords()
 	{

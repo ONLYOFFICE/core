@@ -32,97 +32,111 @@
 #pragma once
 
 #include "OleObject.h"
+#include "WordDocument.h"
 
 namespace DocFileFormat
 {
-OleObject::OleObject( const CharacterPropertyExceptions* chpx, StructuredStorageReader* docStorage, bool bOlderVersion_ )
-	: bLinked(false), updateMode(NoLink), bOlderVersion(bOlderVersion_), isEquation(false), isEmbedded (false)
+OleObject::OleObject( const CharacterPropertyExceptions* chpx, WordDocument* document)
+							: bLinked(false), updateMode(NoLink), isEquation(false), isEmbedded (false), oleStorage(NULL)
 {
-	if (!docStorage) return;
+	if (!document) return;
 	if (!chpx) return;
+	
+	nWordVersion = document->nWordVersion;		
 
+	ObjectId = getOleEntryName( chpx );	
+
+	StructuredStorageReader* docStorage = document->GetStorage();
+	
 	oleStorage = docStorage->GetStorage();
 	if (!oleStorage) return;
-	  
-	HRESULT res = S_OK;
+
+	std::wstring sObjectId( ObjectId.begin(), ObjectId.end() );
+
+	std::wstring name = L"ObjectPool/" + sObjectId + L"/";
 	
-	POLE::Stream* ObjectPoolStorage = new POLE::Stream(oleStorage, L"ObjectPool");
-
-	if (ObjectPoolStorage)
+	bool bOle		= processOleStream( name + L"Ole" );
+	bool bCompObj	= bLinked ? processLinkInfoStream( name + L"LinkInfo" ): 
+								processCompObjStream( name + L"CompObj" );
+	if (bOle || bCompObj)
 	{
-		ObjectId = getOleEntryName( chpx );
-		
-		std::wstring sObjectId( ObjectId.begin(), ObjectId.end() );
-		{		
-			std::wstring name = L"ObjectPool/" + sObjectId + L"/";
-			processOleStream(  name + L"Ole"  );
-
-			if ( bLinked )
-			{
-			  processLinkInfoStream( name +  L"LinkInfo"  );
-			}
-			else
-			{
-			  processCompObjStream(  name +  L"CompObj"  );
-			}
-			
-			processPICStream(  name +  L"PIC"  );
-
-			processEquationNativeStream(  name +  L"Equation Native"  );
-		}
-		delete  ObjectPoolStorage;
+		processPICStream( name + L"PIC" );
+		processMETAStream( name + L"META" );
+		processEquationNativeStream( name + L"Equation Native" );
 	}
+	else if (nWordVersion > 0)
+	{
+		int fc = pictureDesciptor.GetFcPic( chpx );
+
+		if ( fc >= 0 )
+		{
+			POLE::Stream* pOleStream = document->GetDocumentStream();
+			pictureDesciptor.parse( pOleStream, fc, 0xffffff, nWordVersion);
+		
+			VirtualStreamReader reader(pOleStream, pOleStream->tell(), nWordVersion);
+
+			int pos = reader.GetPosition();
+
+			short a1 = reader.ReadInt16();
+			short a2 = reader.ReadInt16();
+			short a3 = reader.ReadInt16();
+
+			int lcb = reader.ReadInt32();
+			//short a4 = reader.ReadInt16();
+			//short a5 = reader.ReadInt16();
+			//short a6 = reader.ReadInt16();
+			//short a7 = reader.ReadInt16();
+			int lcb1 = reader.ReadInt32();
+
+			ClipboardFormat = Program = reader.ReadLengthPrefixedAnsiString(0xffff);
+
+			short a10 = reader.ReadInt16();
+			short a11 = reader.ReadInt16();
+			short a12 = reader.ReadInt16();
+			short a14 = reader.ReadInt16();
+
+			//int lcb = 5000;//reader.ReadInt32();
+
+			int szHeader  = reader.GetPosition() - pos;
+			int szData  = reader.ReadInt32();
+			if (szData > lcb)
+			{
+				szData = szData >> 16;
+			}
+			unsigned char* bytes = reader.ReadBytes( szData, true );
+			if (bytes && szData < 0xffff)
+			{
+				emeddedData = std::string((char*)bytes, szData);
+				delete []bytes;
+			}
+		}
+
+	}
+
 }
 
-void OleObject::processLinkInfoStream( const std::wstring& linkStream )
+bool OleObject::processLinkInfoStream( const std::wstring& linkStream )
 {
 	try
 	{
-	  POLE::Stream* pLinkStream = NULL;
-	  HRESULT res = S_OK;
+		POLE::Stream* pLinkStream = NULL;
+		HRESULT res = S_OK;
 
-	  pLinkStream = //oleStorage->stream(linkStream);
-		  new POLE::Stream(oleStorage, linkStream);
+		pLinkStream = new POLE::Stream(oleStorage, linkStream);
 
-	  if ( pLinkStream )
-	  {
-		VirtualStreamReader reader( pLinkStream, 0, false);
+		if ( pLinkStream )
+		{
+			VirtualStreamReader reader( pLinkStream, 0, false);
+			processLinkInfoStream(reader);
 
-		//there are two versions of the Link string, one contains ANSI characters, the other contains
-		//unicode characters.
-		//Both strings seem not to be standardized:
-		//The length prefix is a character count EXCLUDING the terminating zero
-
-		//Read the ANSI version
-		short cch = reader.ReadInt16();
-		unsigned char* str = reader.ReadBytes( cch, true );
-		FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, cch, ENCODING_WINDOWS_1250 );
-		RELEASEARRAYOBJECTS( str );
-	        
-		//skip the terminating zero of the ANSI string
-		//even if the characters are ANSI chars, the terminating zero has 2 bytes
-		reader.ReadBytes( 2, false );
-
-		//skip the next 4 bytes (flags?)
-		reader.ReadBytes( 4, false );
-
-		//Read the Unicode version
-		this->Link.clear();
-
-		cch = reader.ReadInt16();
-		str = reader.ReadBytes( ( cch * 2 ), true );
-		FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, ( cch * 2 ), ENCODING_UTF16 );
-		RELEASEARRAYOBJECTS( str );
-
-		//skip the terminating zero of the Unicode string
-		reader.ReadBytes( 2, false );
-
-		delete pLinkStream;
-	  }
+			delete pLinkStream;
+			return true;
+		}
 	}
 	catch (...)
 	{
 	}
+	return false;
 }
       
 void OleObject::processEquationNativeStream( const std::wstring& eqStream )
@@ -155,7 +169,32 @@ void OleObject::processEquationNativeStream( const std::wstring& eqStream )
 	{
 	}
 }
+void OleObject::processMETAStream( const std::wstring& metaStream )
+{
+	try
+	{
+		HRESULT res = S_OK;
 
+		POLE::Stream* pMETAStream = new POLE::Stream(oleStorage, metaStream);
+
+		if ( pMETAStream )
+		{
+			pictureDesciptor.Type = wmf;
+			VirtualStreamReader reader( pMETAStream, 0, false);
+
+			pictureDesciptor.mfp.mm		= reader.ReadUInt16();
+			pictureDesciptor.mfp.xExt	= reader.ReadUInt16();
+			pictureDesciptor.mfp.yExt	= reader.ReadUInt16();
+			pictureDesciptor.mfp.hMf	= reader.ReadUInt16();
+			
+			pictureDesciptor.embeddedDataSize	= reader.GetSize() - 8;
+			pictureDesciptor.embeddedData		= reader.ReadBytes( pictureDesciptor.embeddedDataSize, true );
+		}
+	}
+	catch (...)
+	{
+	}
+}
 void OleObject::processPICStream( const std::wstring& picStream )
 {
 	try
@@ -170,20 +209,54 @@ void OleObject::processPICStream( const std::wstring& picStream )
 
 			int sz = reader.GetSize();
 
-			int cbHeader	=	reader.ReadUInt32();
+			int cbHeader =	reader.ReadUInt32();
 
-			reader.ReadBytes(4, false);
+			unsigned char* bytes = NULL;
+				
+			pictureDesciptor.mfp.mm		=	reader.ReadInt16();
+			pictureDesciptor.mfp.xExt	=	reader.ReadInt16();
+			pictureDesciptor.mfp.yExt	=	reader.ReadInt16();
+			pictureDesciptor.mfp.hMf	=	reader.ReadInt16();
 
-			int x							=	reader.ReadUInt32();
-			int y							=	reader.ReadUInt32();
-			pictureDesciptor.dyaGoal		=	reader.ReadUInt32();
-			pictureDesciptor.dxaGoal		=	reader.ReadUInt32();
+			int x	=	reader.ReadUInt32();
+			int y	=	reader.ReadUInt32();
+
+			pictureDesciptor.dxaGoal	=	reader.ReadUInt32();
+			pictureDesciptor.dyaGoal	=	reader.ReadUInt32();
 	
-			reader.ReadBytes(20, false);
+			unsigned char* data = reader.ReadBytes(16, true);
+			delete []data;
 			
 			pictureDesciptor.mx		=	reader.ReadUInt32();
 			pictureDesciptor.my		=	reader.ReadUInt32();
 
+			pictureDesciptor.dxaCropLeft		=	reader.ReadInt32();
+			pictureDesciptor.dyaCropTop			=	reader.ReadInt32();
+			pictureDesciptor.dxaCropRight		=	reader.ReadInt32();
+			pictureDesciptor.dyaCropBottom		=	reader.ReadInt32();
+
+		// borders
+			int bytesCount = (nWordVersion > 0) ? 2 : 4;
+			
+			bytes =	reader.ReadBytes( bytesCount, true );
+			pictureDesciptor.brcTop	= new BorderCode( bytes, bytesCount );
+			RELEASEARRAYOBJECTS( bytes );
+
+			bytes =	reader.ReadBytes( bytesCount, true );
+			pictureDesciptor.brcLeft = new BorderCode( bytes, bytesCount );
+			RELEASEARRAYOBJECTS( bytes );
+
+			bytes =	reader.ReadBytes( bytesCount, true );
+			pictureDesciptor.brcBottom = new BorderCode( bytes, bytesCount );
+			RELEASEARRAYOBJECTS( bytes );
+
+			bytes =	reader.ReadBytes( bytesCount, true );
+			pictureDesciptor.brcRight =	new BorderCode( bytes, bytesCount );
+			RELEASEARRAYOBJECTS( bytes );
+			
+			int etc = sz - reader.GetPosition();
+			unsigned char* data2 = reader.ReadBytes(etc, true);
+			delete []data2;			
 		}
 	}
 	catch (...)
@@ -191,7 +264,7 @@ void OleObject::processPICStream( const std::wstring& picStream )
 	}
 }
 
-void OleObject::processCompObjStream( const std::wstring& compStream )
+bool OleObject::processCompObjStream( const std::wstring& compStream )
 {
 	try
 	{
@@ -199,36 +272,23 @@ void OleObject::processCompObjStream( const std::wstring& compStream )
 
 		POLE::Stream* pCompStream = new POLE::Stream(oleStorage, compStream);
 
-		if ( pCompStream )
+		if ( (pCompStream) && (!pCompStream->fail()) )
 		{
 			VirtualStreamReader reader( pCompStream, 0, false);
+			processCompObjStream(reader);
 
-			//skip the CompObjHeader
-			reader.ReadBytes( 28, false );
-
-			unsigned int sz_obj = reader.GetSize() - reader.GetPosition();
-
-			if (sz_obj > 4)
-			{
-				UserType = reader.ReadLengthPrefixedAnsiString(sz_obj);
-
-				sz_obj = reader.GetSize() - reader.GetPosition();
-				if (sz_obj > 4)
-					ClipboardFormat	= reader.ReadLengthPrefixedAnsiString(sz_obj);
-
-				sz_obj = reader.GetSize() - reader.GetPosition();
-				if (sz_obj > 4)
-					Program = reader.ReadLengthPrefixedAnsiString(sz_obj);
-			}
 			delete pCompStream;
+
+			return true;
 		}
 	}
 	catch (...)
 	{
 	}
+	return false;
 }
 
-void OleObject::processOleStream( const std::wstring& oleStreamName )
+bool OleObject::processOleStream( const std::wstring& oleStreamName )
 {
 	try
 	{
@@ -237,45 +297,86 @@ void OleObject::processOleStream( const std::wstring& oleStreamName )
 
 	  pOleStream  = new POLE::Stream(oleStorage, oleStreamName);
 
-	  if ( pOleStream )
+	  if ( (pOleStream) && (!pOleStream->fail()))
 	  {
-		  VirtualStreamReader reader( pOleStream, 0, false );
+			VirtualStreamReader reader( pOleStream, 0, false );
+			processOleStream(reader);
 
-		//skip version
-		reader.ReadBytes( 4, false );
+			delete pOleStream;
 
-		//read the embedded/linked flag
-		int flag = reader.ReadInt32();
-		bLinked = FormatUtils::BitmaskToBool( flag, 0x1 );
-
-		//Link update option
-		this->updateMode = (LinkUpdateOption)reader.ReadInt32();
-
-		switch ( this->updateMode )
-		{
-		  case NoLink:
-		  {
-			this->UpdateMode = L"NoLink";
-		  }
-		  break;
-	      
-		  case Always:
-		  {
-			this->UpdateMode = L"Always";
-		  }
-		  break;
-		  
-		  case OnCall:
-		  {
-			this->UpdateMode = L"OnCall";
-		  }
-		  break;
+			return true;
 		}
-		delete pOleStream;
-	  }
 	}
 	catch (...)
 	{ 
+	}
+
+	return false;
+}
+
+void OleObject::processOleStream( VirtualStreamReader& reader )
+{
+	//skip version
+	reader.ReadBytes( 4, false );
+
+	//read the embedded/linked flag
+	int flag = reader.ReadInt32();
+	bLinked = FormatUtils::BitmaskToBool( flag, 0x1 );
+
+	//Link update option
+	this->updateMode = (LinkUpdateOption)reader.ReadInt32();
+
+	switch ( this->updateMode )
+	{
+		case NoLink:	UpdateMode = L"NoLink"; break;	
+		case Always:	UpdateMode = L"Always"; break;	
+		case OnCall:	UpdateMode = L"OnCall"; break;	
+
+	}
+}
+void OleObject::processLinkInfoStream( VirtualStreamReader& reader )
+{
+	short cch = reader.ReadInt16();
+	unsigned char* str = reader.ReadBytes( cch, true );
+	FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, cch, ENCODING_WINDOWS_1250 );
+	RELEASEARRAYOBJECTS( str );
+    
+	//skip the terminating zero of the ANSI string
+	//even if the characters are ANSI chars, the terminating zero has 2 bytes
+	reader.ReadBytes( 2, false );
+
+	//skip the next 4 bytes (flags?)
+	reader.ReadBytes( 4, false );
+
+	//Read the Unicode version
+	this->Link.clear();
+
+	cch = reader.ReadInt16();
+	str = reader.ReadBytes( ( cch * 2 ), true );
+	FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, ( cch * 2 ), ENCODING_UTF16 );
+	RELEASEARRAYOBJECTS( str );
+
+	//skip the terminating zero of the Unicode string
+	reader.ReadBytes( 2, false );
+}
+void OleObject::processCompObjStream( VirtualStreamReader& reader )
+{
+	//skip the CompObjHeader
+	reader.ReadBytes( 28, false );
+
+	unsigned int sz_obj = reader.GetSize() - reader.GetPosition();
+
+	if (sz_obj > 4)
+	{
+		UserType = reader.ReadLengthPrefixedAnsiString(sz_obj);
+
+		sz_obj = reader.GetSize() - reader.GetPosition();
+		if (sz_obj > 4)
+			ClipboardFormat	= reader.ReadLengthPrefixedAnsiString(sz_obj);
+
+		sz_obj = reader.GetSize() - reader.GetPosition();
+		if (sz_obj > 4)
+			Program = reader.ReadLengthPrefixedAnsiString(sz_obj);
 	}
 }
 

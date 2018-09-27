@@ -34,10 +34,10 @@
 
 #include "odf_document_impl.h"
 
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/CPString.h>
-#include <cpdoccore/xml/sax.h>
-#include <cpdoccore/common/readdocelement.h>
+#include <odf/odf_document.h>
+#include <CPString.h>
+#include <xml/sax.h>
+#include <common/readdocelement.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -54,7 +54,9 @@
 #include "office_annotation.h"
 #include "office_settings.h"
 #include "office_scripts.h"
+#include "office_forms.h"
 #include "office_event_listeners.h"
+#include "office_meta.h"
 
 #include "styles.h"
 #include "style_regions.h"
@@ -85,6 +87,8 @@
 
 #include "../progressCallback.h"
 
+#include "../../../OfficeCryptReader/source/CryptTransform.h"
+
 #define PROGRESSEVENT_ID 0
 
 namespace cpdoccore { 
@@ -106,6 +110,23 @@ content_xml_t_ptr odf_document::Impl::read_file_content(xml::sax * reader_owner)
 
     return result;
 }
+std::string odf_document::Impl::read_binary(const std::wstring & Path)
+{
+	std::string result;
+
+	NSFile::CFileBinary file;	
+	if (file.OpenFile(Path))
+	{	
+		DWORD size = file.GetFileSize();
+		result.resize(size);
+
+		file.ReadFile((BYTE*)result.c_str(), size, size);
+		file.CloseFile();
+
+		result[size] = 0;
+	}
+	return result;
+}
 
 content_xml_t_ptr odf_document::Impl::read_file_content(const std::wstring & Path)
 {
@@ -119,11 +140,12 @@ content_xml_t_ptr odf_document::Impl::read_file_content(const std::wstring & Pat
 
     return result;
 }
-odf_document::Impl::Impl(xml::sax * Reader): 
-			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0)
+odf_document::Impl::Impl(xml::sax * Reader, const std::wstring & tempPath): 
+			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0), bError(false)
 {
 	office_mime_type_ = 0;
-	encrypted = false;
+
+	tmp_folder_original_ = tempPath;
 
 	content_xml_ = read_file_content(Reader);
 	
@@ -138,50 +160,35 @@ odf_document::Impl::Impl(xml::sax * Reader):
 		_CP_LOG << L"[info] parse manifest" << std::endl;
 		parse_manifests(content_xml_->get_content());
 
+		_CP_LOG << L"[info] parse meta" << std::endl;
+		parse_meta(content_xml_->get_content());
+
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(content_xml_->get_content());
 			
-		tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+		tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
 	}
 }
 
-odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* CallBack) : 
-			context_(new odf_read_context()), pCallBack(CallBack), bUserStopConvert (0)
+odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* callBack) : 
+			context_(new odf_read_context()), pCallBack(callBack), bUserStopConvert (0), bError(false)
 {
 	office_mime_type_ = 0;
-	encrypted = false;
+
+	tmp_folder_original_ = tempPath;
 
 	if (NSDirectory::Exists(srcPath))
 	{
 		base_folder_ = srcPath; 
 
-		std::wstring content_xml	= srcPath + FILE_SEPARATOR_STR + L"content.xml";
-		std::wstring styles_xml		= srcPath + FILE_SEPARATOR_STR + L"styles.xml";
-		std::wstring meta_xml		= srcPath + FILE_SEPARATOR_STR + L"meta.xml";
-		std::wstring settings_xml	= srcPath + FILE_SEPARATOR_STR + L"settings.xml";
 		std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
 		std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";
 
-		_CP_LOG << L"[info] read manifest.xml" << std::endl;
-		manifest_xml_ = read_file_content(manifest_xml);
-
-		  _CP_LOG << L"[info] read settings.xml" << std::endl;
-		settings_xml_ = read_file_content(settings_xml);
-
-		_CP_LOG << L"[info] read content.xml" << std::endl;
-		content_xml_ = read_file_content(content_xml);
-
-		  _CP_LOG << L"[info] read styles.xml" << std::endl;
-		styles_xml_ = read_file_content(styles_xml);
-
 		_CP_LOG << L"[info] read mimetype" << std::endl;
 		NSFile::CFileBinary::ReadAllTextUtf8(mimetype_xml, mimetype_content_file_); 
-//----------------------------------------------------------------------------------------
-		_CP_LOG << L"[info] parse fonts" << std::endl;
-		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
 
-		_CP_LOG << L"[info] parse styles" << std::endl;
-		parse_styles(styles_xml_ ? styles_xml_->get_content() : NULL);
+		_CP_LOG << L"[info] read manifest.xml" << std::endl;
+		manifest_xml_ = read_file_content(manifest_xml);
 
 		_CP_LOG << L"[info] parse manifest" << std::endl;
 		parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
@@ -191,9 +198,58 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 			office_mime_type_ = GetMimetype(mimetype_content_file_);
 		}
 
+		if (false == map_encryptions_.empty())
+		{
+			if (password.empty())
+			{
+				bError = true;
+				return;
+			}
+
+			//decrypt files
+			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
+
+			bError = !decrypt_folder(password, base_folder_, tmp_folder_);
+
+			if (bError)
+				return;
+
+			base_folder_ = tmp_folder_;
+		}
+
+		std::wstring content_xml	= base_folder_ + FILE_SEPARATOR_STR + L"content.xml";
+		std::wstring styles_xml		= base_folder_ + FILE_SEPARATOR_STR + L"styles.xml";
+		std::wstring meta_xml		= base_folder_ + FILE_SEPARATOR_STR + L"meta.xml";
+		std::wstring settings_xml	= base_folder_ + FILE_SEPARATOR_STR + L"settings.xml";
+		
+		std::wstring jsaProject_bin	= base_folder_ + FILE_SEPARATOR_STR + L"jsaProject.bin";
+
+//-----------------------------------------------------------------------------------------------------
+		  _CP_LOG << L"[info] read settings.xml" << std::endl;
+		settings_xml_ = read_file_content(settings_xml);
+
+		_CP_LOG << L"[info] read content.xml" << std::endl;
+		content_xml_ = read_file_content(content_xml);
+
+		_CP_LOG << L"[info] read styles.xml" << std::endl;
+		styles_xml_ = read_file_content(styles_xml);
+
+		_CP_LOG << L"[info] read meta.xml" << std::endl;
+		meta_xml_ = read_file_content(meta_xml);
+		
+		jsaProject_bin_ = read_binary(jsaProject_bin);
+//----------------------------------------------------------------------------------------
+		_CP_LOG << L"[info] parse fonts" << std::endl;
+		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
+
+		_CP_LOG << L"[info] parse styles" << std::endl;
+		parse_styles(styles_xml_ ? styles_xml_->get_content() : NULL);
+
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
 
+		_CP_LOG << L"[info] parse meta" << std::endl;
+		parse_meta(meta_xml_ ? meta_xml_->get_content() : NULL);
 	}
 	else 
 	{
@@ -214,7 +270,7 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 			_CP_LOG << L"[info] parse settings" << std::endl;
 			parse_settings(content_xml_->get_content());
 
-			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
 		}
 	}
 
@@ -225,11 +281,200 @@ odf_document::Impl::~Impl()
 	if (!tmp_folder_.empty())
 		NSDirectory::DeleteDirectory(tmp_folder_);
 }
+
+bool odf_document::Impl::decrypt_folder (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath)
+{
+	std::vector<std::wstring> arFiles		= NSDirectory::GetFiles(srcPath, false);
+	std::vector<std::wstring> arDirectories	= NSDirectory::GetDirectories(srcPath);
+	
+	bool result = true;
+	for (size_t i = 0; i < arFiles.size(); ++i)
+	{
+		result = false;
+		std::wstring sFileName = NSFile::GetFileName(arFiles[i]);
+		
+		std::map<std::wstring, std::pair<office_element_ptr, int>>::iterator pFind;
+		if (false == map_encryptions_.empty())
+		{
+			pFind = map_encryptions_.find(arFiles[i]);
+			if ( pFind != map_encryptions_.end() )
+			{
+				result = decrypt_file(password, arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
+				
+				if (false == result)
+					break;
+			}
+		}
+		if (!result && false == map_encryptions_extra_.empty())
+		{
+			pFind = map_encryptions_extra_.find(arFiles[i]);
+			if ( pFind != map_encryptions_.end() )
+			{
+				result = decrypt_file(password, arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
+				
+				if (false == result)
+					break;
+			}
+		}
+		if (!result) 
+		{
+			NSFile::CFileBinary::Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
+			result = true;
+		}
+	}
+	for (size_t i = 0; result && i < arDirectories.size(); ++i)
+	{
+		std::wstring sDirName = NSFile::GetFileName(arDirectories[i]);
+		
+		NSDirectory::CreateDirectory(dstPath + FILE_SEPARATOR_STR + sDirName);
+
+		result = decrypt_folder(password, arDirectories[i], dstPath + FILE_SEPARATOR_STR + sDirName);
+	}
+	return result;
+}
+std::string DecodeBase64(const std::wstring & value1)
+{
+	int nLength = 0;
+	unsigned char *pData = NULL;
+	std::string result;
+
+	std::string value(value1.begin(), value1.end());
+
+	NSFile::CBase64Converter::Decode(value.c_str(), value.length(), pData, nLength);
+	if (pData)
+	{
+		result = std::string((char*)pData, nLength);
+		delete []pData; pData = NULL;
+	}
+	return result;
+}
+bool odf_document::Impl::decrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr element, int file_size )
+{
+	manifest_encryption_data* encryption_data = dynamic_cast<manifest_encryption_data*>(element.get());
+	if (!encryption_data) return false;
+
+	manifest_algorithm*				algorithm = dynamic_cast<manifest_algorithm*>(encryption_data->algorithm_.get());
+	manifest_key_derivation*		key_derivation = dynamic_cast<manifest_key_derivation*>(encryption_data->key_derivation_.get());
+	manifest_start_key_generation*	start_key_generation = dynamic_cast<manifest_start_key_generation*>(encryption_data->start_key_generation_.get());
+
+	CRYPT::_odfCryptData	cryptData;
+	
+	if (key_derivation)
+	{
+		cryptData.saltValue	= DecodeBase64(key_derivation->salt_);	
+		cryptData.spinCount = key_derivation->iteration_count_;	
+		cryptData.keySize	= key_derivation->key_size_;	
+	}
+//------------------------------------------------------------------------------------------
+	if (start_key_generation)
+	{
+		if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"sha"))
+		{
+			if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"512"))
+			{
+				cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA512;
+			}
+			if (std::wstring::npos != start_key_generation->start_key_generation_name_.find(L"256"))
+			{
+				cryptData.start_hashAlgorithm = CRYPT_METHOD::SHA256;
+			}
+		}
+		cryptData.start_hashSize = start_key_generation->key_size_;
+	}
+//------------------------------------------------------------------------------------------
+	if (algorithm)
+	{
+		cryptData.initializationVector = DecodeBase64(algorithm->initialisation_vector_);
+
+		if (std::wstring::npos != algorithm->algorithm_name_.find(L"aes"))
+		{
+			if (std::wstring::npos != algorithm->algorithm_name_.find(L"cbc"))
+				cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
+			else
+				cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_ECB;//??
+		}
+		else if (std::wstring::npos != algorithm->algorithm_name_.find(L"blowfish"))
+		{
+			cryptData.cipherAlgorithm	= CRYPT_METHOD::Blowfish_CFB;
+		}
+	}
+//------------------------------------------------------------------------------------------
+	if (encryption_data)
+	{
+		cryptData.checksum = DecodeBase64(encryption_data->checksum_);
+
+		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+		if (std::wstring::npos != encryption_data->checksum_type_.find(L"sha"))
+		{
+			if (std::wstring::npos != encryption_data->checksum_type_.find(L"512"))
+			{
+				cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA512;
+			}
+			if (std::wstring::npos != encryption_data->checksum_type_.find(L"256"))
+			{
+				cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+			}
+		}
+
+		size_t nPosChecksumSize = encryption_data->checksum_type_.find(L"-");
+		if (std::wstring::npos == nPosChecksumSize)
+			nPosChecksumSize = encryption_data->checksum_type_.find(L"/");
+		if (std::wstring::npos != nPosChecksumSize)
+		{
+			std::wstring strSize = encryption_data->checksum_type_.substr(nPosChecksumSize + 1);
+			if (strSize == L"1k")
+			{
+				cryptData.checksum_size = 1024;
+			}
+			else
+			{
+				//???
+			}
+		}
+	}
+
+	NSFile::CFileBinary file_inp;
+
+	if (false == file_inp.OpenFile(srcPath))
+		return false;
+
+	DWORD dwSizeRead = 0;
+	_UINT64 lengthRead = file_inp.GetFileSize();
+
+	unsigned char* data		= new unsigned char[lengthRead];
+	unsigned char* data_out	= NULL;
+	
+	file_inp.ReadFile(data, lengthRead, dwSizeRead); 
+	file_inp.CloseFile();
+//------------------------------------------------------------------------------------------
+	CRYPT::ODFDecryptor decryptor;
+	decryptor.SetCryptData(cryptData);
+	
+	bool result = decryptor.Decrypt(password, data, dwSizeRead, data_out, file_size);
+	delete []data;
+
+//------------------------------------------------------------------------------------------------------------
+	if (result && data_out)
+	{
+		NSFile::CFileBinary file_out;
+        file_out.CreateFileW(dstPath);
+		file_out.WriteFile(data_out, file_size);
+		file_out.CloseFile();
+	
+		delete []data_out;			
+	}
+	return result;
+}
+const std::wstring & odf_document::Impl::get_temp_folder() const 
+{
+	return tmp_folder_original_; 
+}
 const std::wstring & odf_document::Impl::get_folder() const 
 {
 	if (!base_folder_.empty())	return base_folder_; 
 	else return tmp_folder_;
 }
+
 bool odf_document::Impl::UpdateProgress(long nComplete)
 {
 	if (pCallBack)
@@ -341,8 +586,23 @@ void odf_document::Impl::parse_manifests(office_element *element)
 
 		manifest_entry * entry = dynamic_cast<manifest_entry *>(elm.get());
 		if (!entry)continue;
+		
+		if (entry->encryption_data_)
+		{
+			std::wstring file_path = entry->full_path_;
 
-		if (entry->full_path_ == L"content.xml" && entry->encryption_) encrypted = true;
+			XmlUtils::replace_all( file_path, L"/", FILE_SEPARATOR_STR);
+			file_path = base_folder_ + FILE_SEPARATOR_STR + file_path;
+
+			if (0 == entry->full_path_.find(L"Basic/")) //Cuaderno de notas 1.2.ods
+			{
+				map_encryptions_extra_.insert(std::make_pair(file_path, std::make_pair(entry->encryption_data_, entry->size)));
+			}
+			else
+			{
+				map_encryptions_.insert(std::make_pair(file_path, std::make_pair(entry->encryption_data_, entry->size)));
+			}
+		}
 
 		if (entry->full_path_ == L"/")
 		{
@@ -433,7 +693,26 @@ void odf_document::Impl::parse_settings(office_element *element)
 				}
 			}
 		}	
+	}
 }
+
+void odf_document::Impl::parse_meta(office_element *element)
+{
+	office_document_base * document = dynamic_cast<office_document_base *>( element );
+	if (!document)	return;
+
+	office_meta * meta = dynamic_cast<office_meta*>(document->office_meta_.get());
+	if (!meta)	return;
+
+	for (size_t i = 0; i < meta->meta_user_defined_.size(); i++)
+	{	
+		meta_user_defined * user_defined = dynamic_cast<meta_user_defined*>(meta->meta_user_defined_[i].get());
+		if (!user_defined) continue;
+
+		if (user_defined->meta_name_.empty()) continue;
+		
+		context_->Settings().add_user_defined(user_defined->meta_name_, user_defined->content_);
+	}
 }
 
 void odf_document::Impl::parse_styles(office_element *element)
@@ -488,12 +767,13 @@ void odf_document::Impl::parse_styles(office_element *element)
 					(	L"common:" + styleInst->style_name_,
 						styleInst->style_display_name_.get_value_or(L""),
 						styleInst->style_family_.get_type(),
-						&(styleInst->style_content_),
+						&(styleInst->content_),
 						true,
 						false,
 						styleInst->style_parent_style_name_.get_value_or(L""),
 						styleInst->style_next_style_name_.get_value_or(L""),
-						styleInst->style_data_style_name_.get_value_or(L"")
+						styleInst->style_data_style_name_.get_value_or(L""),
+						styleInst->style_class_.get_value_or(L"")
                     );
             }
             // list styles
@@ -567,12 +847,13 @@ void odf_document::Impl::parse_styles(office_element *element)
                 context_->styleContainer().add_style(L"",
 					L"",
                     styleInst->style_family_.get_type(), 
-                    &(styleInst->style_content_),
+                    &(styleInst->content_),
                     false,
                     true,
                     L"",
                     L"",
-                    L"");                                            
+                    L"",
+					L"");                                            
             }
 			for (size_t i = 0; i < docStyles->style_presentation_page_layout_.size(); i++)
 			{	
@@ -604,12 +885,13 @@ void odf_document::Impl::parse_styles(office_element *element)
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
-                    &(styleInst->style_content_),
+                    &(styleInst->content_),
                     false,
                     false,
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L"")
+                    styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_class_.get_value_or(L"")
                     );
             }
 
@@ -754,12 +1036,13 @@ void odf_document::Impl::parse_styles(office_element *element)
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
-                    &(styleInst->style_content_),
+                    &(styleInst->content_),
                     true,
                     false,
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L"")                    
+                    styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_class_.get_value_or(L"")
                     );
             }
 
@@ -820,6 +1103,8 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
     Context.process_list_styles();
 	if (UpdateProgress(850000)) return false;
 
+	Context.add_jsaProject(jsaProject_bin_);
+
 	return true;
 }
 bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context) 
@@ -844,6 +1129,7 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
         Context.process_styles();
  		if (UpdateProgress(800000)) return false;
       
+		Context.add_jsaProject(jsaProject_bin_);
     }
     catch(boost::exception & ex)
     {
@@ -889,6 +1175,8 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
 
         Context.end_document();
 		if (UpdateProgress(850000)) return false;
+		
+		Context.add_jsaProject(jsaProject_bin_);
 	}
     catch(boost::exception & ex)
     {

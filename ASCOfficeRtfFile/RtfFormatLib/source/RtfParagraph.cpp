@@ -131,9 +131,13 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		if( NULL != m_oOldList )
 			bCanConvertToNumbering = m_oOldList->CanConvertToNumbering();
 
-		std::wstring sParaId = XmlUtils::IntToString(++poOOXWriter->m_nextParaId, L"%08X");
-		sResult += L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">";
-		sResult += L"<w:pPr>";
+		sResult += L"<w:p";
+		if (oRenderParameter.nType == RENDER_TO_OOX_PARAM_COMMENT)
+		{
+			std::wstring sParaId = XmlUtils::IntToString(++poOOXWriter->m_nextParaId, L"%08X");
+			sResult += L" w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\"";
+		}
+		sResult += L"><w:pPr>";
 		
 		m_oProperty.m_bOldList = (NULL != m_oOldList);
 		

@@ -92,7 +92,7 @@
 		69EC66B91E0176F2003527E2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = OnlyOffce;
 				TargetAttributes = {
 					69EC66C01E0176F2003527E2 = {
@@ -144,6 +144,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -151,6 +152,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -197,6 +199,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -204,6 +207,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -249,10 +253,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/include/,
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/**",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/common",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/i18n",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/io",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/common/**",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/i18n",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/io",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -278,10 +281,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/include/,
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/**",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/common",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/i18n",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/io",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/common/**",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/i18n",
+					"$(PROJECT_DIR)/../../../Common/3dParty/icu/mac_64/icu/source/io",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -35,7 +35,7 @@
 
 #include <vector>
 #include <boost/lexical_cast.hpp>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "../formulasconvert/formulasconvert.h"
 namespace cpdoccore {
@@ -61,7 +61,9 @@ namespace oox {
   						case 3: CP_XML_ATTR(L"type", L"min");		break;
  						case 4: CP_XML_ATTR(L"type", L"max");		break; //todooo ext - autoMax
  						case 5: CP_XML_ATTR(L"type", L"min");		break;
- 						case 6: CP_XML_ATTR(L"type", L"formula");	break;						
+ 						case 6: CP_XML_ATTR(L"type", L"formula");	break;	
+						case 7: CP_XML_ATTR(L"type", L"percentile");break;//BOA PARA ESTUDAR - JOGAR LOTOFACIL minha predileta 1.ods
+							
 					}
 					if (val)
 					{

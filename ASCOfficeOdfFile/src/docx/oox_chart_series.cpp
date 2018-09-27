@@ -34,7 +34,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/ref.hpp>
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 #include "../odf/style_text_properties.h"
 
 #include "xlsx_utils.h"
@@ -70,17 +70,12 @@ void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & f
 
 	if (ind == 0)
 	{
-		if (std::wstring::npos != value.find(L"local-table")) return;
-		
 		values_[ind].strRef_.formula	= converter.convert_chart_distance(value);
 		values_[ind].strRef_.present	= true;
 		values_[ind].present			= true;
 	}
 	else
 	{
-		if (std::wstring::npos != value.find(L"local-table") && !bLocalTable_ ) return; 
-			//в xlsx низя .... нужно сделать тогда отдельную  table.xml
-
 		values_[ind].numRef_.formula		= converter.convert_chart_distance(value);
 		values_[ind].numRef_.present		= true;
 		values_[ind].numRef_.formatCode		= formatCode;

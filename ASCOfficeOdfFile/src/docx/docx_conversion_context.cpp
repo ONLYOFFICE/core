@@ -30,18 +30,17 @@
  *
  */
 
-
-#include <boost/foreach.hpp>
-
 #include <iostream>
 
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/utils.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
 
 #include "docx_conversion_context.h"
 
 #include "../odf/odfcontext.h"
+#include "../odf/text_content.h"
+#include "../odf/calcs_styles.h"
 #include "../odf/style_paragraph_properties.h"
 #include "../odf/style_text_properties.h"
 #include "../odf/style_table_properties.h"
@@ -51,7 +50,7 @@
 #include "oox_rels.h"
 #include "logging.h"
 
-#include "../../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 static int current_id_changes = 0;
@@ -100,7 +99,7 @@ void text_tracked_context::start_change (std::wstring id)
 }
 void text_tracked_context::end_change ()
 {
-	mapChanges_.insert( std::pair<std::wstring, _state>(current_state_.id, current_state_));
+	mapChanges_.insert( std::make_pair(current_state_.id, current_state_));
 
 	current_state_.clear();
 }
@@ -130,17 +129,63 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 		return 	current_state_; //empty
 }
 //----------------------------------------------------------------------------------------------------------------
+void text_forms_context::start_element (int type)
+{
+	current_state_.clear();
 
+	current_state_.type	= type;
+}
+void text_forms_context::set_id (const std::wstring& id)
+{
+	current_state_.id = id;
+}
+void text_forms_context::set_name (const std::wstring& name)
+{
+	current_state_.name	= name;
+}
+void text_forms_context::set_label (const std::wstring& label)
+{
+	current_state_.label = label;
+}
+void text_forms_context::set_uuid (const std::wstring& uuid)
+{
+	current_state_.uuid	= uuid;
+}
+void text_forms_context::set_value (const std::wstring &value)
+{
+	current_state_.value = value;
+}
+void text_forms_context::set_element(odf_reader::form_element *elm)
+{
+	current_state_.element = elm;
+}
+void text_forms_context::end_element ()
+{
+	mapElements_.insert( std::make_pair(current_state_.id, current_state_));
+
+	current_state_.clear();
+}
+text_forms_context::_state& text_forms_context::get_state_element (std::wstring id)
+{
+	std::map<std::wstring, _state>::iterator it = mapElements_.find(id);
+	
+	if (it != mapElements_.end())
+	{
+		return it->second;
+	}
+	else 
+		return 	current_state_; //empty
+}
+//----------------------------------------------------------------------------------------------------------------
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
 	next_dump_page_properties_	(false),
 	page_break_					(false),
 	page_break_after_			(false),
 	page_break_before_			(false),
-	in_run_						(false),
 	in_automatic_style_			(false),
-	in_paragraph_				(false),
 	in_header_					(false),
 	in_drawing_content_			(false),
+	in_table_content_			(false),
 	text_tracked_context_		(*this),
 	table_context_				(*this),
 	output_document_			(NULL),
@@ -148,7 +193,6 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	new_list_style_number_		(0),
 	current_margin_left_		(0),
 	is_rtl_						(false),
-	is_paragraph_keep_			(false),
 	is_delete_text_				(false),
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
@@ -158,7 +202,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	odf_document_				(OdfDocument)
 {
 	streams_man_		= streams_man::create(temp_stream_);
-	applicationFonts_	= new CApplicationFonts();
+    applicationFonts_	= NSFonts::NSApplication::Create();
 }
 docx_conversion_context::~docx_conversion_context()
 {
@@ -200,14 +244,14 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 }
 void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
-    if (!in_run_)
+    if (!state_.in_run_)
     {
-        in_run_ = true;
+        state_.in_run_ = true;
 		output_stream() << L"<w:r>";
 
-		if (!text_properties_stack_.empty() || parenStyleId.length() > 0)
+		if (!state_.text_properties_stack_.empty() || parenStyleId.length() > 0)
 		{
-			if (!text_properties_stack_.empty())
+			if (!state_.text_properties_stack_.empty())
 			{
 				odf_reader::style_text_properties_ptr textProp = this->current_text_properties();
 				get_styles_context().start();
@@ -225,49 +269,54 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 
 void docx_conversion_context::start_paragraph(bool is_header)
 {
-	if (in_paragraph_)
+	if (state_.in_paragraph_)
 		finish_paragraph();
 
 	output_stream() << L"<w:p>";
 
 	in_header_		= is_header;
-	in_paragraph_	= true;
     is_rtl_			= false; 
 	
+	state_.in_paragraph_ = true;
 	start_changes();
 }
 
 void docx_conversion_context::finish_paragraph()
 {
-	if (in_paragraph_)
+	if (state_.in_paragraph_)
 	{
 		end_changes();
 
 		output_stream() << L"</w:p>";
 	}
 	
-	in_paragraph_		= false;
 	in_header_			= false;
-	is_paragraph_keep_	= false;
+	state_.is_paragraph_keep_	= false;
+	state_.in_paragraph_		= false;
 }
 
 
 void docx_conversion_context::finish_run()
 {
-    if (in_run_)
-    {
-        output_stream() << L"</w:r>";
-        in_run_ = false;
-		if (get_comments_context().state()==2)
-		{
-			output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\" />";
-			
-			add_element_to_run();
-				output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\" />";			
-				get_comments_context().state(0);
-			finish_run();
-		}
-    }
+    if (false == state_.in_run_) return;
+
+	if (get_comments_context().state() == 4)
+	{
+		output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
+		get_comments_context().state(0);
+	}
+	output_stream() << L"</w:r>";
+    state_.in_run_ = false;
+	
+	if (get_comments_context().state() == 2)
+	{
+		output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\"/>";
+		
+		add_element_to_run();
+			output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
+			get_comments_context().state(0);
+		finish_run();
+	}
 }
 void docx_conversion_context::start_math_formula()
 {
@@ -283,6 +332,281 @@ void docx_conversion_context::end_math_formula()
 		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
 	}
 }
+void docx_conversion_context::start_sdt(int type)
+{
+	in_table_content_ = true;
+
+	table_content_context_.type_table_content = type;
+
+	if (table_content_context_.type_table_content < 4)
+	{
+		output_stream() << L"<w:sdt><w:sdtPr>";
+		if (table_content_context_.type_table_content == 3)
+		{
+			output_stream() << L"<w:bibliography/>";
+		}
+		else
+		{
+			output_stream() << L"<w:docPartObj><w:docPartGallery w:val=\"";
+			
+			if (table_content_context_.type_table_content == 1) output_stream() << L"Table of Contents";
+			if (table_content_context_.type_table_content == 2) output_stream() << L"List od Illustrations";
+
+			output_stream() << L"\"/><w:docPartUnique/></w:docPartObj>";
+
+		}
+		output_stream() << L"</w:sdtPr><w:sdtContent>";
+	}
+}
+
+void docx_conversion_context::start_index_content()
+{
+	if (!in_table_content_) return;
+
+	start_paragraph(false);
+
+	std::wstring sInstrText;
+
+	if (table_content_context_.type_table_content == 3)
+	{
+		sInstrText = L" BIBLIOGRAPHY "; 
+	}
+	else if (table_content_context_.type_table_content == 5)
+	{
+		sInstrText = L" INDEX"; 
+		if (table_content_context_.bSeparators)
+			sInstrText += L" \\h \"A\""; 
+	}
+	else
+	{
+		sInstrText += L" TOC";
+	
+		bool bLink = false, bPages = false;
+
+		if (table_content_context_.current_template.empty())
+		{
+			bLink = true;
+			bPages = true;
+		}
+		else
+		{
+			for (size_t i = 0; i < table_content_context_.current_template.size(); i++)
+			{
+				for (size_t j = 0; j < table_content_context_.current_template[i].content.size(); j++)
+				{
+					if (table_content_context_.current_template[i].content[j] == 3) bLink = true;
+					if (table_content_context_.current_template[i].content[j] == 6) bPages = true;
+				}
+			}
+		}
+
+		if (bLink)
+			sInstrText += L" \\h";
+
+		if (table_content_context_.type_table_content == 1)
+			sInstrText += L" \\f \\u";
+		else 
+			sInstrText += L" \\z";
+
+		if (table_content_context_.min_outline_level > 0)
+		{
+			if (table_content_context_.max_outline_level > 9)
+				table_content_context_.max_outline_level = 9;
+
+			sInstrText += L" \\o \"" +	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
+										std::to_wstring(table_content_context_.max_outline_level) + L"\"";
+			if (!bPages)
+				sInstrText += L" \\n "+	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
+										std::to_wstring(table_content_context_.max_outline_level);
+		}
+		if (false == table_content_context_.outline_level_styles.empty())
+		{
+			sInstrText += L" \\t \"";
+
+			for (std::map<int, std::wstring>::iterator it = table_content_context_.outline_level_styles.begin(); 
+														it != table_content_context_.outline_level_styles.end(); ++it)
+			{
+				sInstrText += it->second + L";" + std::to_wstring(it->first) + L";";
+			}
+
+			sInstrText += L"\"";
+		}
+
+		if (!table_content_context_.caption_sequence_name.empty())
+		{
+			 sInstrText += L" \\c \"" + table_content_context_.caption_sequence_name + L"\""; 
+		}
+	}
+	start_field(sInstrText, L"");
+	
+	finish_paragraph();
+}
+void docx_conversion_context::end_index_content()
+{
+	if (!in_table_content_) return;
+
+	start_paragraph(false);
+	end_field();
+	
+	finish_paragraph();
+}
+void docx_conversion_context::start_field(const std::wstring & sInstrText, const std::wstring & sName)
+{
+	output_stream() << L"<w:r>";
+	output_stream() << L"<w:fldChar w:fldCharType=\"begin\">";
+
+	if (!sName.empty())
+	{
+		output_stream() << L"<w:ffData><w:name w:val=\"" << sName << L"\"/><w:enabled/><w:calcOnExit w:val=\"0\"/></w:ffData>";
+	}
+	output_stream() << L"</w:fldChar>";
+	output_stream() << L"</w:r>";
+	output_stream() << L"<w:r>";
+	output_stream() << L"<w:instrText xml:space=\"preserve\">" << XmlUtils::EncodeXmlString(sInstrText) << L" </w:instrText>";
+	output_stream() << L"</w:r>";
+	output_stream() << L"<w:r>";
+
+	output_stream() << L"<w:fldChar w:fldCharType=\"separate\"/>";
+	output_stream() << L"</w:r>";
+
+	if (!sName.empty())
+	{
+		start_bookmark(sName);
+	}
+	fields_names_stack_.push_back(sName);
+}
+void docx_conversion_context::end_field()
+{
+	if (fields_names_stack_.empty()) return;
+
+	output_stream() << L"<w:r>";
+	output_stream() << L"<w:fldChar w:fldCharType=\"end\"/>";
+	output_stream() << L"</w:r>";	
+
+	std::wstring sName = fields_names_stack_.back();
+	fields_names_stack_.pop_back();
+
+	if (!sName.empty())
+	{
+		end_bookmark(sName);
+	}
+}
+void docx_conversion_context::end_sdt()
+{
+	if (!in_table_content_) return;
+
+	if (table_content_context_.type_table_content < 4)
+	{
+		output_stream() << L"</w:sdtContent></w:sdt>";
+	}
+	in_table_content_ = false;
+	table_content_context_.clear_all();
+}
+void docx_conversion_context::start_index_element()
+{
+	table_content_context_.clear_current_content_template_index();
+}
+void docx_conversion_context::end_index_element()
+{
+	table_content_context_.clear_current_content_template_index();
+}
+void docx_conversion_context::add_bibliography_item	(const std::wstring & item)
+{
+	arBibliography.push_back(item);
+}
+void docx_conversion_context::start_bookmark (const std::wstring &name)
+{
+	std::map<std::wstring, int>::iterator pFind = mapBookmarks.find(name);
+
+	int id = -1;
+	if (pFind == mapBookmarks.end())
+	{
+		id = mapBookmarks.size() + 1;
+		mapBookmarks.insert(std::make_pair(name, id));
+	}
+	else
+	{
+		id = pFind->second;
+	}
+
+	finish_run();
+	output_stream() << L"<w:bookmarkStart w:id=\"" << std::to_wstring(id) << L"\" w:name=\"" << XmlUtils::EncodeXmlString(name) << L"\"/>";
+}
+
+void docx_conversion_context::end_bookmark (const std::wstring &name)
+{
+	std::map<std::wstring, int>::iterator pFind = mapBookmarks.find(name);
+
+	int id = -1;
+	if (pFind == mapBookmarks.end())
+	{
+		return; //???
+	}
+	else
+	{
+		id = pFind->second;
+	}
+	finish_run();
+	output_stream() << L"<w:bookmarkEnd w:id=\"" << std::to_wstring(id) << L"\"/>";
+}
+
+void docx_conversion_context::start_alphabetical_index (const std::wstring &id)
+{
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>>::iterator pFind = mapAlphabeticals.find(id);
+
+	if (pFind != mapAlphabeticals.end()) return;
+
+	std::vector<odf_reader::office_element_ptr> texts;
+	mapAlphabeticals.insert(std::make_pair(id, texts));
+
+	current_alphabetic_index_ = id;
+}
+void docx_conversion_context::add_alphabetical_index_text (odf_reader::office_element_ptr & elem)
+{
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>>::iterator pFind = mapAlphabeticals.find(current_alphabetic_index_);
+	if (pFind == mapAlphabeticals.end())
+	{
+		return; 
+	}
+	pFind->second.push_back(elem);
+}
+void docx_conversion_context::end_alphabetical_index (const std::wstring &id)
+{
+	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>>::iterator pFind = mapAlphabeticals.find(id);
+
+	if (pFind == mapAlphabeticals.end())
+	{
+		return; 
+	}
+	finish_run();
+
+	output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
+	output_stream() << L"<w:r><w:instrText>XE \"";
+	
+	ElementType type;
+	for (size_t i = 0; i < pFind->second.size(); i++)
+	{
+		type = pFind->second[i]->get_type();
+		pFind->second[i]->text_to_stream(output_stream());
+	}
+
+	output_stream() << L"\"</w:instrText></w:r>";
+
+	output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+	
+	for (size_t i = 0; i < pFind->second.size(); i++)
+	{
+		pFind->second[i]->docx_convert(*this);
+	}
+ 	
+	mapAlphabeticals.erase(pFind);
+	
+	if (mapAlphabeticals.empty())
+		current_alphabetic_index_.clear();
+	else
+		current_alphabetic_index_ = mapAlphabeticals.begin()->first; // todooo vector+map+level
+}
+
 
 void docx_conversion_context::start_chart(std::wstring  name)
 {
@@ -304,10 +628,27 @@ oox_chart_context & docx_conversion_context::current_chart()
         throw std::runtime_error("internal error");
     }
 }
+void docx_conversion_context::reset_context_state()
+{
+	keep_state_.push_back(state_);
+	
+	state_.in_paragraph_		= false;
+	state_.in_run_				= false;
+	state_.is_paragraph_keep_	= false;
+	
+	state_.text_properties_stack_.clear();
+}
+void docx_conversion_context::back_context_state()
+{
+	state_ = keep_state_.back();
+	keep_state_.pop_back();
+}
+
 void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 {
 	finish_run();
-	if (get_comments_context().state()==1)
+	if (get_comments_context().state() == 1 ||
+		get_comments_context().state() == 4)//??? comment in run
 	{
 		output_stream() << L"<w:commentRangeStart w:id=\"" << get_comments_context().current_id() << L"\" />";
 		get_comments_context().state(2);//active
@@ -333,15 +674,9 @@ hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 	return hyperlinks_.last();
 }
 
-
 void docx_conversion_context::dump_hyperlinks(rels & Rels, hyperlinks::_type_place type)
 {
     hyperlinks_.dump_rels(Rels, type);
-}
-
-void docx_conversion_context::dump_mediaitems(rels & Rels)
-{
-    mediaitems_.dump_rels(Rels);
 }
 
 void docx_conversion_context::dump_headers_footers(rels & Rels) const
@@ -353,12 +688,6 @@ void docx_conversion_context::dump_notes(rels & Rels) const
 {
     notes_context_.dump_rels(Rels);
 }
-
-std::wstring docx_conversion_context::add_mediaitem(const std::wstring & uri, RelsType type, bool & isInternal, std::wstring & ref)
-{
-	return mediaitems_.add_or_find(uri, type, isInternal, ref); 
-}
-
 void docx_conversion_context::start_document()
 {
     streams_man_ = streams_man::create(document_xml_);
@@ -381,7 +710,11 @@ void docx_conversion_context::start_document()
 	output_stream() << L"xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" "; 
 	output_stream() << L"xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" ";
 	output_stream() << L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
-	output_stream() << L"mc:Ignorable=\"w14 wp14\">";
+	output_stream() << L"xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" ";
+	output_stream() << L"xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" ";
+	output_stream() << L"xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" ";
+	output_stream() << L"xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" ";
+	output_stream() << L"mc:Ignorable=\"w14 w15 w16se wne wp14\">";
 
 
 	//apply page-default prop
@@ -394,7 +727,7 @@ void docx_conversion_context::end_document()
     output_stream() << L"</w:document>";
 
     output_document_->get_word_files().set_document	( package::simple_element::create(L"document.xml", document_xml_.str()) );
-	output_document_->get_word_files().set_settings	( package::simple_element::create(L"settings.xml",dump_settings_document()));
+	output_document_->get_word_files().set_settings	( package::simple_element::create(L"settings.xml", dump_settings_document()));
 	output_document_->get_word_files().set_media	( mediaitems_, applicationFonts_);
 	output_document_->get_word_files().set_comments	( comments_context_);
     output_document_->get_word_files().set_headers_footers( headers_footers_);
@@ -403,6 +736,7 @@ void docx_conversion_context::end_document()
 	content_file_.set_media( mediaitems_);
 
 ////////////////////////////////////////////////////////////////////////////
+	dump_bibliography();
 	dump_hyperlinks (notes_context_.footnotesRels(), hyperlinks::footnote_place);
 	dump_hyperlinks (notes_context_.endnotesRels(), hyperlinks::endnote_place);
    
@@ -419,13 +753,66 @@ void docx_conversion_context::end_document()
 	
 	}    
 ////////////////////////////////
-	//content->add_rel(relationship(dId, kType, dName));
-
 	output_document_->get_word_files().update_rels(*this);
 /////////////////////////////////////
 	
 }
+void docx_conversion_context::dump_bibliography()
+{
+	if (arBibliography.empty()) return;
 
+	std::wstringstream output(L"");
+    CP_XML_WRITER(output)
+    {
+        CP_XML_NODE(L"b:Sources")
+        {
+			CP_XML_ATTR(L"Version",	6);
+			CP_XML_ATTR(L"StyleName", L"APA");
+			CP_XML_ATTR(L"SelectedStyle", L"\\APASixthEditionOfficeOnline.xsl");
+			CP_XML_ATTR(L"xmlns",	L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography");
+			CP_XML_ATTR(L"xmlns:b",	L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography");
+
+			for (size_t i = 0; i < arBibliography.size(); i++)
+			{
+				CP_XML_NODE(L"b:Source")
+				{				
+					CP_XML_STREAM() << arBibliography[i];
+					CP_XML_NODE(L"b:RefOrder")
+					{
+						CP_XML_STREAM() << std::to_wstring(i + 1);
+					}
+				}
+			}
+		}
+	}
+	std::wstringstream output_props(L"");
+    CP_XML_WRITER(output_props)
+    {
+        CP_XML_NODE(L"ds:datastoreItem")
+        {
+			CP_XML_ATTR(L"xmlns:ds", L"http://schemas.openxmlformats.org/officeDocument/2006/customXml");
+			CP_XML_ATTR(L"ds:itemID", L"{28C8D49A-D84A-4837-A0AC-8E2C3AE46B82}");
+
+			CP_XML_NODE(L"ds:schemaRefs")
+			{
+				CP_XML_NODE(L"ds:schemaRef")
+				{
+					CP_XML_ATTR(L"ds:uri", L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography");
+				}
+			}
+		}
+	}
+
+	package::customXml_content_ptr content = package::customXml_content::create(output.str(), output_props.str());
+	int id = output_document_->add_customXml(content);
+
+	const std::wstring sRId			= std::wstring(L"cstId") + std::to_wstring(id);
+	const std::wstring sRel			= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml";
+	const std::wstring sFileRef		= std::wstring(L"../customXml/item") + std::to_wstring(id) + L".xml";
+
+	output_document_->get_word_files().add_rels(relationship(sRId, sRel, sFileRef));
+
+}
 
 std::wstring  docx_conversion_context::dump_settings_document()
 {
@@ -449,20 +836,24 @@ std::wstring  docx_conversion_context::dump_settings_document()
             _CP_OPT(std::wstring)  strVal;
             _CP_OPT(int)   intVal;
 
-			if (odf_reader::GetProperty(settings_properties_,L"evenAndOddHeaders",boolVal))
+			if (odf_reader::GetProperty(settings_properties_,L"evenAndOddHeaders", boolVal))
 			{
 				CP_XML_NODE(L"w:evenAndOddHeaders");
 			}
-			if (odf_reader::GetProperty(settings_properties_,L"displayBackgroundShape",boolVal))
+			if (odf_reader::GetProperty(settings_properties_,L"displayBackgroundShape", boolVal))
 			{
 				CP_XML_NODE(L"w:displayBackgroundShape");
 			}
-			if (odf_reader::GetProperty(settings_properties_,L"zoom",intVal))
+			if (odf_reader::GetProperty(settings_properties_,L"zoom", intVal))
 			{
 				CP_XML_NODE(L"w:zoom")
 				{
 					CP_XML_ATTR(L"w:percent",intVal.get());
 				}
+			}
+			if (odf_reader::GetProperty(settings_properties_,L"mirrorMargins", boolVal))
+			{
+				CP_XML_NODE(L"w:mirrorMargins");
 			}
 		}
 	}
@@ -557,22 +948,24 @@ xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" 
 mc:Ignorable=\"w14 wp14\">";
 
     std::vector<int> numIds;
-	BOOST_FOREACH(odf_reader::list_style_instance_ptr & inst, list_styles.instances())
-    {
-        odf_reader::office_element_ptr_array & content = inst->get_text_list_style()->get_content();
+
+	odf_reader::list_style_container::instances_array & arListStyles = list_styles.instances();
+	for (size_t i = 0; i < arListStyles.size(); i++)
+   {
+        odf_reader::office_element_ptr_array & content = arListStyles[i]->get_text_list_style()->get_content();
 
 		if (content.size() < 1) 
 			continue;
        
-		const int abstractNumId = list_styles.id_by_name(inst->get_style_name());
+		const int abstractNumId = list_styles.id_by_name(arListStyles[i]->get_style_name());
         
         strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
         numIds.push_back(abstractNumId);		
        
-		for (size_t i = 0; i < (std::min)( content.size(), (size_t)9); i++)
+        for (size_t j = 0; j < (std::min)( content.size(), (size_t)9); j++)
         {
-            start_text_list_style(inst->get_text_list_style()->get_style_name());
-            content[i]->docx_convert(*this);
+            start_text_list_style(arListStyles[i]->get_text_list_style()->get_style_name());
+            content[j]->docx_convert(*this);
             // TODO
             end_text_list_style();        
         }
@@ -603,21 +996,25 @@ void docx_conversion_context::process_fonts()
         odf_reader::odf_read_context & context =  doc->odf_context();
         odf_reader::fonts_container & fonts = context.fontContainer();
 
-        BOOST_FOREACH(odf_reader::font_instance_ptr & inst, fonts.instances())
+		odf_reader::fonts_container::instances_array &arFonts = fonts.instances();
+		for (size_t i = 0; i < arFonts.size(); i++)
         {
-            strm << L"<w:font w:name=\"" << inst->name() << L"\" >";
+			if (!arFonts[i]) continue;
+			if (arFonts[i]->name().empty()) continue;
 
-            if (!inst->charset().empty())
-                strm << L"<w:charset w:val=\"" << inst->charset() <<"\" />";
+            strm << L"<w:font w:name=\"" << arFonts[i]->name() << L"\" >";
 
-            if (!inst->family().empty())
-                strm << L"<w:family w:val=\"" << inst->family() << "\" />";
+            if (!arFonts[i]->charset().empty())
+                strm << L"<w:charset w:val=\"" << arFonts[i]->charset() <<"\" />";
 
-            if (!inst->pitch().empty())
-                strm << L"<w:pitch w:val=\"" << inst->pitch() << "\" />";
+            if (!arFonts[i]->family().empty())
+                strm << L"<w:family w:val=\"" << arFonts[i]->family() << "\" />";
 
-            if (!inst->alt_name().empty())
-                strm << L"<w:altName w:val=\"" << inst->alt_name() << "\" />";
+            if (!arFonts[i]->pitch().empty())
+                strm << L"<w:pitch w:val=\"" << arFonts[i]->pitch() << "\" />";
+
+            if (!arFonts[i]->alt_name().empty())
+                strm << L"<w:altName w:val=\"" << arFonts[i]->alt_name() << "\" />";
 
             strm << L"</w:font>";
         }
@@ -648,9 +1045,11 @@ void docx_conversion_context::process_styles()
         odf_reader::styles_container & styles = context.styleContainer();
 
         // add all styles to the map
-        BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
+		odf_reader::styles_container::instances_array &arStyles = styles.instances();
+		for (size_t i = 0; i < arStyles.size(); i++)
         {
-            styles_map_.get(inst->name(), inst->type());
+			if (!arStyles[i]) continue;
+            styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
         }
 
         _Wostream << L"<w:docDefaults>";
@@ -660,60 +1059,86 @@ void docx_conversion_context::process_styles()
             _Wostream << L"<w:pPrDefault>";
             if ( odf_reader::style_content * content = defaultParStyle->content())
             {
+				if (content->get_style_paragraph_properties())
+				{
+					if(content->get_style_paragraph_properties()->content_.fo_background_color_)
+					{
+						odf_types::background_color color = *content->get_style_paragraph_properties()->content_.fo_background_color_;
+						if ((color.get_type() != odf_types::background_color::Transparent && 
+							color.get_color() == odf_types::color(L"ffffff")) ||
+							(color.get_type() == odf_types::background_color::Transparent))
+						{
+							content->get_style_paragraph_properties()->content_.fo_background_color_ = boost::none;
+						}
+					}
+				}
                 get_styles_context().start_process_style(defaultParStyle);
                 content->docx_convert(*this);
 				get_styles_context().end_process_style();
 			}
             _Wostream << L"</w:pPrDefault>";
         }
-
+        if (odf_reader::style_instance * defaultParStyle = styles.style_default_by_type(odf_types::style_family::Text))
+        {
+            _Wostream << L"<w:rPrDefault>";
+            if ( odf_reader::style_content * content = defaultParStyle->content())
+            {
+                get_styles_context().start_process_style(defaultParStyle);
+                content->docx_convert(*this);
+				get_styles_context().end_process_style();
+			}
+            _Wostream << L"</w:rPrDefault>";
+        }
         _Wostream << L"</w:docDefaults>";
 
-        BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
-        {
-            if (!inst->is_automatic() && 
+		for (size_t i = 0; i < arStyles.size(); i++)
+		{
+            if (!arStyles[i]->is_automatic() && 
 					(
-					inst->type() == odf_types::style_family::Paragraph ||
-					inst->type() == odf_types::style_family::Text
+					arStyles[i]->type() == odf_types::style_family::Paragraph ||
+					arStyles[i]->type() == odf_types::style_family::Text
 					))
             {
-                const std::wstring id = styles_map_.get(inst->name(), inst->type());
-                _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(inst->type()) << L"\""; 
-				if (!inst->is_default())
+                const std::wstring id = styles_map_.get(arStyles[i]->name(), arStyles[i]->type());
+                _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(arStyles[i]->type()) << L"\""; 
+				if (!arStyles[i]->is_default())
 				{
 					_Wostream << L" w:customStyle=\"1\"";
 				}
 				_Wostream << L">";
 
-                const std::wstring displayName = StyleDisplayName(inst->name(), inst->type());
+                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->type());
 
                 _Wostream << L"<w:name w:val=\"" << displayName << L"\" />";
 
-                if (odf_reader::style_instance * baseOn = inst->parent())
+                if (odf_reader::style_instance * baseOn = arStyles[i]->parent())
                 {
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
-                else if (!inst->is_default() && styles_map_.check(L"", inst->type()))
+                else if (!arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
                 {
-                    const std::wstring basedOnId = styles_map_.get(L"", inst->type());
+                    const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
 
-                if (odf_reader::style_instance * next = inst->next())
+                if (odf_reader::style_instance * next = arStyles[i]->next())
                 {
                     const std::wstring nextId = styles_map_.get(next->name(), next->type());
                     _Wostream << L"<w:next w:val=\"" << nextId << "\" />";
                 }
-                else if (inst->is_default())
+                else if (arStyles[i]->is_default())
                 {
                     // self
                     _Wostream << L"<w:next w:val=\"" << id << "\" />";
                 }
 
-                if (odf_reader::style_content * content = inst->content())
+                if (odf_reader::style_content * content = arStyles[i]->content())
                 {
-                    get_styles_context().start_process_style(inst.get());
+					get_tabs_context().clear();
+					odf_reader::calc_tab_stops(arStyles[i].get(), get_tabs_context());
+					
+					get_styles_context().start_process_style(arStyles[i].get());
                     content->docx_convert(*this, true);
                     get_styles_context().end_process_style();
                 }
@@ -843,7 +1268,7 @@ bool docx_conversion_context::process_page_properties(std::wostream & strm)
 
 		if (page_layout_instance_) 
 		{
-				page_layout_instance_->docx_serialize(strm, *this);
+			page_layout_instance_->docx_serialize(strm, *this);
 		}
 		else
 		{
@@ -868,13 +1293,13 @@ bool docx_conversion_context::process_page_properties(std::wostream & strm)
 
 void docx_conversion_context::end_process_style_content(bool in_styles)
 {
-   docx_serialize_paragraph_style(output_stream(), automatic_parent_style_, in_styles);
+   serialize_paragraph_style(output_stream(), automatic_parent_style_, in_styles);
     
     if (automatic_parent_style_.empty())
         styles_context_.docx_serialize_text_style( output_stream(), L"", text_tracked_context_.dumpRPr_);
 }
 
-void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles)
+void docx_conversion_context::serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles)
  //in_styles = true -> styles.xml
 //почему то конструкция <pPr><rPr/></pPr><rPr/> "не работает" в части в rPr в ms2010 )
 {
@@ -919,7 +1344,7 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 					}
 				}
 				CP_XML_STREAM() << paragraph_style.str();
-				docx_serialize_list_properties(CP_XML_STREAM());
+				serialize_list_properties(CP_XML_STREAM());
 				
 
 				if ((run_style.tellp() > 0 && in_styles == false) || !get_text_tracked_context().dumpRPrInsDel_.empty())
@@ -952,7 +1377,8 @@ void docx_conversion_context::start_automatic_style(const std::wstring & ParentI
 void docx_conversion_context::end_automatic_style()
 {
     in_automatic_style_ = false;
-    automatic_parent_style_ = L"";
+    automatic_parent_style_.clear();
+	tabs_context_.clear();
 }
 
 bool docx_conversion_context::in_automatic_style()
@@ -962,21 +1388,22 @@ bool docx_conversion_context::in_automatic_style()
 
 void docx_conversion_context::push_text_properties(const odf_reader::style_text_properties * TextProperties)
 {
-    text_properties_stack_.push_back(TextProperties);
+    state_.text_properties_stack_.push_back(TextProperties);
 }
 
 void docx_conversion_context::pop_text_properties()
 {
-    text_properties_stack_.pop_back();
+    state_.text_properties_stack_.pop_back();
 }
 
 odf_reader::style_text_properties_ptr docx_conversion_context::current_text_properties()
 {
     odf_reader::style_text_properties_ptr cur = boost::make_shared<odf_reader::style_text_properties>();
-    BOOST_FOREACH(const odf_reader::style_text_properties * prop, text_properties_stack_)
+
+	for (size_t i = 0; i < state_.text_properties_stack_.size(); i++)
     {
-        if (prop)
-            cur->content().apply_from( prop->content() );
+        if (state_.text_properties_stack_[i])
+            cur->content().apply_from( state_.text_properties_stack_[i]->content() );
     }
     return cur;
 }
@@ -1125,8 +1552,231 @@ std::wstring docx_conversion_context::find_list_rename(const std::wstring & List
 void docx_conversion_context::end_list_item()
 {
 }
+int docx_conversion_context::process_text_attr(odf_reader::text::paragraph_attrs *Attr)
+{
+	if ( Attr->text_style_name_.empty() ) return 0;
 
-void docx_conversion_context::docx_serialize_list_properties(std::wostream & strm)
+	odf_reader::style_instance * styleInst =
+				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_);
+
+	if (!styleInst) return 0;
+
+	if (false == styleInst->is_automatic()) return 0;
+
+    odf_reader::style_content *styleContent = styleInst->content();
+    
+	if (!styleContent) return 0;
+
+	push_text_properties(styleContent->get_style_text_properties());
+	return 1;
+}
+int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_attrs *Attr)
+{
+	if (!Attr) return 0;
+
+	bool in_drawing	= false;
+
+ 	if (get_drawing_context().get_current_shape() || get_drawing_context().get_current_frame())
+	{
+		in_drawing = true;
+	}
+	
+	if (false == Attr->text_style_name_.empty())
+    {
+		if (in_table_content_ && Attr->text_style_name_.empty())
+		{
+			table_content_context_.set_current_level(Attr->text_style_name_);
+		}
+		if (odf_reader::style_instance * styleInst =
+				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_)
+            )
+        {
+            process_page_break_after(styleInst);
+            if (styleInst->is_automatic())
+            {
+                if (odf_reader::style_content * styleContent = styleInst->content())
+                {
+                    std::wstring id;
+					//office_element_ptr parent_tab_stops_;
+                    if (const odf_reader::style_instance * parentStyleContent = styleInst->parent())
+					{
+						std::wstring parent_name = parentStyleContent->name();
+                        id = styles_map_.get( parent_name, parentStyleContent->type() );
+
+						if (in_table_content_ && table_content_context_.empty_current_table_content_level_index())
+						{
+							table_content_context_.set_current_level(parent_name);
+						}
+					}
+
+                    start_automatic_style(id);
+
+					odf_reader::calc_tab_stops(styleInst, get_tabs_context());
+					
+					//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
+					odf_reader::paragraph_format_properties properties = odf_reader::calc_paragraph_properties_content(styleInst);
+					if (properties.style_writing_mode_)
+					{
+						odf_types::writing_mode::type type = properties.style_writing_mode_->get_type();
+						switch(type)
+						{
+						case odf_types::writing_mode::RlTb:
+						case odf_types::writing_mode::TbRl:
+						case odf_types::writing_mode::Rl:
+							set_rtl(true);
+							break;
+						default:
+							set_rtl(false);
+						}
+					}
+					set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
+                    
+					styleContent->docx_convert(*this);                
+                   
+					end_automatic_style();
+
+                    push_text_properties(styleContent->get_style_text_properties());
+
+					if (!get_section_context().dump_.empty()
+						&& !get_table_context().in_table()
+						&& (get_process_note() == oox::docx_conversion_context::noNote)
+						&& !in_drawing)
+					{
+						output_stream() << L"<w:pPr>";
+						if (is_paragraph_header() )
+						{
+							output_stream() << get_section_context().dump_;
+							get_section_context().dump_.clear();
+
+							output_stream() << L"</w:pPr>";
+							finish_paragraph();
+							start_paragraph();
+							if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							{
+								output_stream() << L"<w:pPr>";
+									output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+								output_stream() << L"</w:pPr>";
+							}					
+						}
+						else
+						{
+							output_stream() << get_section_context().dump_;
+							get_section_context().dump_.clear();
+							if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+							{
+								output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+							}
+							output_stream() << L"</w:pPr>";
+						}
+					}
+					else if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+					{
+						output_stream() << L"<w:pPr>";
+							output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+						output_stream() << L"</w:pPr>";
+					}
+					return 1;
+                }            
+            }
+            else
+            {
+                const std::wstring id = styles_map_.get( styleInst->name(), styleInst->type() );
+                output_stream() << L"<w:pPr>";
+//todooo причесать			
+					if (!get_section_context().dump_.empty()
+						&& !get_table_context().in_table()
+						&& (get_process_note() == oox::docx_conversion_context::noNote)
+						&& !in_drawing)
+					{
+						if (is_paragraph_header() )
+						{
+							output_stream() << get_section_context().dump_;
+							get_section_context().dump_.clear();
+
+							output_stream() << L"</w:pPr>";
+							finish_paragraph();
+							start_paragraph();					
+							output_stream() << L"<w:pPr>";
+						}
+						else
+						{
+							output_stream() << get_section_context().dump_;
+							get_section_context().dump_.clear();
+						}
+					}
+
+					output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
+
+					if (!get_text_tracked_context().dumpPPr_.empty())
+					{
+						output_stream() << get_text_tracked_context().dumpPPr_;
+						get_text_tracked_context().dumpPPr_.clear();
+					}
+
+					serialize_list_properties(output_stream());
+					
+					if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+					{
+						output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\" />";
+					}
+
+					if (!get_text_tracked_context().dumpRPrInsDel_.empty())
+					{
+						output_stream() << L"<w:rPr>";
+							output_stream() << get_text_tracked_context().dumpRPrInsDel_;
+							get_text_tracked_context().dumpRPrInsDel_.clear();
+						output_stream() << L"</w:rPr>";
+					}
+                output_stream() << L"</w:pPr>";
+				return 2;
+			}
+		}
+	}
+	if (!get_section_context().dump_.empty() 
+		&& !get_table_context().in_table()
+		&& (get_process_note() == oox::docx_conversion_context::noNote)
+		&& !in_drawing)
+	{
+        output_stream() << L"<w:pPr>";
+			output_stream() << get_section_context().dump_;
+			get_section_context().dump_.clear();
+			//todooo выяснить реальны ли заголовки без стилей и свойств
+		output_stream() << L"</w:pPr>";
+		return 3;
+	}
+
+    return 0;
+}
+
+
+void docx_conversion_context::process_page_break_after(const odf_reader::style_instance * styleInst)
+{
+    if (styleInst)
+    {
+        const odf_reader::style_instance * inst = styleInst;
+        while (inst)
+        {
+            if (inst->content() && inst->content()->get_style_paragraph_properties())
+            {
+                _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
+                if (fo_break_val)
+                {
+					if (fo_break_val->get_type() == odf_types::fo_break::Page)
+                    {
+                        set_page_break_after(true);     
+                        break;
+                    }
+                    else if (fo_break_val->get_type() == odf_types::fo_break::Auto)
+                    {
+                        break;                    
+                    }
+                }
+            }
+            inst = inst->parent();
+        }
+    }
+}
+void docx_conversion_context::serialize_list_properties(std::wostream & strm)
 {
     if (!list_style_stack_.empty())
     {
@@ -1186,10 +1836,7 @@ namespace
 {
     // обработка Header/Footer
     // конвертируем содержимое header/footer и сохраняем результат в виде строки
-    void process_one_header_footer(docx_conversion_context & Context,
-        const std::wstring & styleName,
-        odf_reader::office_element * elm,
-        headers_footers::Type type)
+    void process_one_header_footer(docx_conversion_context & Context, const std::wstring & styleName, odf_reader::office_element *elm, headers_footers::Type type)
     {
         if (!elm) return;
         
@@ -1203,17 +1850,11 @@ namespace
 		//слить если есть mediaitems, добавить релсы и обнулить их для основного документа.
 		rels internal_rels;
 
-		Context.dump_mediaitems(internal_rels);
+		Context.get_mediaitems().dump_rels(internal_rels);
 		Context.dump_hyperlinks(internal_rels, hyperlinks::document_place);
 
 		Context.get_headers_footers().add(styleName, dbgStr, type, internal_rels);
-
-		if (type == headers_footers::headerLeft || type == headers_footers::footerLeft)
-		{
-			Context.set_settings_property(odf_reader::_property(L"evenAndOddHeaders",true));
-		}
-   }
-
+	}
 }
 void docx_conversion_context::set_settings_property(const odf_reader::_property & prop)
 {
@@ -1235,21 +1876,39 @@ void docx_conversion_context::process_headers_footers()
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 
     // проходим по всем page layout
-    BOOST_FOREACH(const odf_reader::style_master_page* page, pageLayouts.master_pages())
-    {
-        const std::wstring & styleName = page->attlist_.style_name_.get_value_or( L"" );
-        const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);
-        add_page_properties(masterPageNameLayout);
-		
-		process_one_header_footer(*this, styleName, page->style_header_.get(), headers_footers::header);
-        process_one_header_footer(*this, styleName, page->style_footer_.get(), headers_footers::footer );
-        process_one_header_footer(*this, styleName, page->style_header_first_.get(), headers_footers::headerFirst);
-        process_one_header_footer(*this, styleName, page->style_footer_first_.get(), headers_footers::footerFirst );
-        process_one_header_footer(*this, styleName, page->style_header_left_.get(), headers_footers::headerLeft );
-        process_one_header_footer(*this, styleName, page->style_footer_left_.get(), headers_footers::footerLeft );
+	std::vector<odf_reader::style_master_page*> & master_pages = pageLayouts.master_pages();
 
-		if (!page->style_header_ && !page->style_footer_ && !page->style_header_first_ && !page->style_footer_first_
-			&& !page->style_header_left_ && !page->style_footer_left_)
+	bool bOddEvenPages = false;
+	for (size_t i = 0; i < master_pages.size(); i++)
+	{
+		if (master_pages[i]->style_header_left_ || master_pages[i]->style_footer_left_)
+			bOddEvenPages = true;
+	}
+	if (bOddEvenPages)
+	{
+		set_settings_property(odf_reader::_property(L"evenAndOddHeaders", true));
+	}
+ 	for (size_t i = 0; i < master_pages.size(); i++)
+	{
+        const std::wstring & styleName = master_pages[i]->attlist_.style_name_.get_value_or( L"" );
+        const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);
+       
+		add_page_properties(masterPageNameLayout);
+		
+		process_one_header_footer(*this, styleName, master_pages[i]->style_header_.get(),		headers_footers::header);
+        process_one_header_footer(*this, styleName, master_pages[i]->style_footer_.get(),		headers_footers::footer );
+        process_one_header_footer(*this, styleName, master_pages[i]->style_header_first_.get(),	headers_footers::headerFirst);
+        process_one_header_footer(*this, styleName, master_pages[i]->style_footer_first_.get(),	headers_footers::footerFirst );
+        process_one_header_footer(*this, styleName, master_pages[i]->style_header_left_.get(),	headers_footers::headerLeft );
+        process_one_header_footer(*this, styleName, master_pages[i]->style_footer_left_.get(),	headers_footers::footerLeft );
+
+		if (bOddEvenPages && !master_pages[i]->style_header_left_)
+			process_one_header_footer(*this, styleName, master_pages[i]->style_header_.get(),	headers_footers::headerLeft);
+		if (bOddEvenPages && !master_pages[i]->style_footer_left_)
+			process_one_header_footer(*this, styleName, master_pages[i]->style_footer_.get(),	headers_footers::footerLeft );
+
+		if (!master_pages[i]->style_header_ && !master_pages[i]->style_footer_ && !master_pages[i]->style_header_first_ && !master_pages[i]->style_footer_first_
+			&& !master_pages[i]->style_header_left_ && !master_pages[i]->style_footer_left_)
 		{
 			//отключенные колонтитулы
 			rels rels_;
@@ -1312,14 +1971,14 @@ void docx_conversion_context::add_note_reference ()
 
 typedef std::map<std::wstring, text_tracked_context::_state>::iterator map_changes_iterator;
 
-void docx_conversion_context::start_text_changes (std::wstring id)
+void docx_conversion_context::start_text_changes (const std::wstring &id)
 {
 	text_tracked_context::_state  &state_add = text_tracked_context_.get_tracked_change(id);
 	if (state_add.id != id) return;
 	
 	map_current_changes_.insert(std::pair<std::wstring, text_tracked_context::_state> (id, state_add));
 
-	if (in_paragraph_ && ( state_add.type == 1 || state_add.type == 2 ))
+	if (state_.in_paragraph_ && ( state_add.type == 1 || state_add.type == 2 ))
 	{
 		map_changes_iterator it = map_current_changes_.find(id);
 		text_tracked_context::_state  &state = it->second;
@@ -1479,7 +2138,7 @@ void docx_conversion_context::end_changes()
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
 }
-void docx_conversion_context::end_text_changes (std::wstring id)
+void docx_conversion_context::end_text_changes (const std::wstring &id)
 {
 	if (map_current_changes_.empty()) return;
 
@@ -1491,7 +2150,7 @@ void docx_conversion_context::end_text_changes (std::wstring id)
 	
 	if (state.active)
 	{
-		if (in_paragraph_)
+		if (state_.in_paragraph_)
 			finish_run();
 		
 		if (state.type	== 1)	output_stream() << L"</w:ins>";
@@ -1504,11 +2163,20 @@ void docx_conversion_context::add_user_field(const std::wstring & name, const st
 {
 	map_user_fields.insert(std::make_pair(name, value));
 }
+
 std::wstring docx_conversion_context::get_user_field(const std::wstring & name)
 {
 	std::map<std::wstring, std::wstring>::iterator pFind = map_user_fields.find(name);
 
 	return pFind != map_user_fields.end() ? pFind->second : L"";
+}
+
+void docx_conversion_context::add_jsaProject(const std::string &content)
+{
+	if (content.empty()) return;
+	
+	output_document_->get_word_files().add_jsaProject(content);
+	output_document_->get_content_types_file().add_or_find_default(L"bin");
 }
 
 }

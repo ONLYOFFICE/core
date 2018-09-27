@@ -52,8 +52,6 @@ namespace DocFileFormat
 			{
 				m_context->_docx->RegisterComments();
 
-				int index = 0; 
-
                 m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
                 m_pXmlWriter->WriteNodeBegin( L"w:comments", TRUE );
 
@@ -63,33 +61,60 @@ namespace DocFileFormat
                 m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
                 m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
                 m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wpc", L"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" ); 
+                m_pXmlWriter->WriteAttribute( L"xmlns:cx", L"http://schemas.microsoft.com/office/drawing/2014/chartex"  );
+                m_pXmlWriter->WriteAttribute( L"xmlns:cx1", L"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex"  );
+                m_pXmlWriter->WriteAttribute( L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:m", L"http://schemas.openxmlformats.org/officeDocument/2006/math" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wp14", L"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w14", L"http://schemas.microsoft.com/office/word/2010/wordml" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w15", L"http://schemas.microsoft.com/office/word/2012/wordml" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w16se", L"http://schemas.microsoft.com/office/word/2015/wordml/symex" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wpg", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wpi", L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wne", L"http://schemas.microsoft.com/office/word/2006/wordml" );
+                m_pXmlWriter->WriteAttribute( L"xmlns:wps", L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape" );
+                m_pXmlWriter->WriteAttribute( L"mc:Ignorable", L"w14 w15 w16se wp14");
+
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				int cp = m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn + m_document->FIB->m_RgLw97.ccpHdr;
 
 				size_t count = m_document->AnnotationsReferencePlex->Elements.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t index = 0; index < count; ++index)
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
+					AnnotationReferenceExDescriptor* atrdPost10 = m_document->AnnotationsReferenceExPlex ? static_cast<AnnotationReferenceExDescriptor*>(m_document->AnnotationsReferenceExPlex->Elements[index]) : NULL;
 
-					unsigned short index_author = atrdPre10->GetAuthorIndex();
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
-					if (index_author < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
+					if (atrdPre10->m_BookmarkId < 0)
+					{
+						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 + count + 1024 ));
+					}
+					else
+					{
+						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
+					}
+					if (atrdPost10)
+					{
+						//!!!TODO!!!
+						/*//ATRDpost10 is optional and not saved in all files
+						if (doc.AnnotationReferenceExtraTable != null && 
+						doc.AnnotationReferenceExtraTable.Count > index)
+						{
+						AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
+						atrdPost10.Date.Convert(new DateMapping(_writer));
+						}*/	
+					}
+					if (atrdPre10->m_AuthorIndex < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
 					{
 						m_pXmlWriter->WriteAttribute( L"w:author",
-							FormatUtils::XmlEncode(m_document->AnnotationOwners->at( index_author ) ));
+							FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->m_AuthorIndex ) ));
 					}
-                    m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->GetUserInitials());
+                    m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->m_UserInitials);
 
-					//!!!TODO!!!
-					/*//ATRDpost10 is optional and not saved in all files
-					if (doc.AnnotationReferenceExtraTable != null && 
-					doc.AnnotationReferenceExtraTable.Count > index)
-					{
-					AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
-					atrdPost10.Date.Convert(new DateMapping(_writer));
-					}*/
+
 
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
@@ -99,7 +124,7 @@ namespace DocFileFormat
 						if (fc < 0) break;
 
 						ParagraphPropertyExceptions* papx = findValidPapx(fc);
-						TableInfo tai(papx);
+						TableInfo tai(papx, m_document->nWordVersion);
 
 						if ( tai.fInTable )
 						{
@@ -111,13 +136,11 @@ namespace DocFileFormat
 						else
 						{
 							//this PAPX is for a normal paragraph
-							cp = writeParagraph(cp);
+							cp = writeParagraph(cp, 0x7fffffff);
 						}
 					}
 
                     m_pXmlWriter->WriteNodeEnd(L"w:comment" );
-
-					++index;
 				}
 
                 m_pXmlWriter->WriteNodeEnd( L"w:comments" );

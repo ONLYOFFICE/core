@@ -32,7 +32,7 @@
 #ifndef _BUILD_CLIP_H_
 #define _BUILD_CLIP_H_
 
-#include "GraphicsPath.h"
+#include "GraphicsPath_private.h"
 
 #include "../agg-2.4/include/agg_basics.h"
 #include "../agg-2.4/include/agg_rendering_buffer.h"

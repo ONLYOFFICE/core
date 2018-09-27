@@ -33,8 +33,8 @@
 #define _CPDOCCORE_OOX_PACKAGE_H_75f74d15
 
 #include <vector>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPSharedPtr.h>
+#include <CPNoncopyable.h>
 
 #include "docx_content_type.h"
 #include "oox_rels.h"
@@ -42,7 +42,10 @@
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
-class CApplicationFonts;
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore { 
 namespace oox {
@@ -58,7 +61,7 @@ typedef std::vector<element_ptr> element_ptr_array;
 class document;
 
 
-//  element
+//------------------------------------------------------------------------
 class element
 {
 public:
@@ -96,19 +99,23 @@ public:
     simple_element(const std::wstring & FileName, const std::wstring & Content);
     static element_ptr create(const std::wstring & FileName, const std::wstring & Content);
 
-public:
-    virtual void write(const std::wstring & RootPath);
+    simple_element(const std::wstring & FileName, const std::string & Content);
+    static element_ptr create(const std::wstring & FileName, const std::string & Content);
+
+	virtual void write(const std::wstring & RootPath);
 
 private:
     std::wstring file_name_;
     std::string content_utf8_;
 
+	bool bXml;
+
 };
 
+//------------------------------------------------------------------------
 class rels_file;
 typedef boost::shared_ptr<rels_file> rels_file_ptr;
 
-// rels_file
 class rels_file : public element
 {
 public:
@@ -129,7 +136,7 @@ private:
     rels			rels_;
 };
 
-// rels_files
+//------------------------------------------------------------------------
 class rels_files : public element
 {
 public:
@@ -147,13 +154,29 @@ private:
     rels_file_ptr rels_file_;
 };
 
+//------------------------------------------------------------------------
+class customXml_content;
+typedef _CP_PTR(customXml_content) customXml_content_ptr;
 
-////////////////////////////////////////
-///\class chart_files
+class customXml_content : boost::noncopyable
+{
+public:
+	customXml_content(const std::wstring &item, const std::wstring &props) : content_item(item), content_props(props) {}
+	static _CP_PTR(customXml_content) create(const std::wstring &item, const std::wstring &props);
+
+    std::wstring	item()	{ return content_item; }
+    std::wstring	props() { return content_props; }
+	
+	friend class	customXml_files;
+private:
+    std::wstring	content_item;
+    std::wstring	content_props;
+};
+///------------------------------------------------------------------------
 class chart_content;
 typedef _CP_PTR(chart_content) chart_content_ptr;
 
-class chart_content : noncopyable
+class chart_content : boost::noncopyable
 {
 public:
     chart_content();
@@ -166,7 +189,7 @@ private:
     std::wstringstream content_;
     rels_file_ptr rels_;
 };
-/////////////////////////////////
+//------------------------------------------------------------------------
 class document : public element
 {
 public:
@@ -202,14 +225,14 @@ private:
 class media : public element
 {
 public:
-    media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);
+    media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
     mediaitems			& mediaitems_;
-	CApplicationFonts	* appFonts_;
+    NSFonts::IApplicationFonts	* appFonts_;
         
 };
 

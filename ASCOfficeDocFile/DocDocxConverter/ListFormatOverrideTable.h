@@ -49,7 +49,7 @@ namespace DocFileFormat
       {
 	    if ( fib->m_FibWord97.lcbPlfLfo > 0 )
         {
-	      VirtualStreamReader reader( tableStream, fib->m_FibWord97.fcPlfLfo, fib->m_bOlderVersion);
+	      VirtualStreamReader reader( tableStream, fib->m_FibWord97.fcPlfLfo, fib->m_nWordVersion);
             
 		  if (fib->m_FibWord97.fcPlfLfo > reader.GetSize()) return;
             

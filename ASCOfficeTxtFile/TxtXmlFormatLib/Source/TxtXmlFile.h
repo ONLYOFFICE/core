@@ -51,8 +51,8 @@ class CTxtXmlFile : public TxtXml::ITxtXmlEvent
 public:
 	virtual bool Progress(long ID, long Percent);
 
-    HRESULT txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions);
-    HRESULT txt_SaveToFile	(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions);
+    _UINT32 txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions);
+    _UINT32 txt_SaveToFile	(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions);
 
 	CTxtXmlFile();
 

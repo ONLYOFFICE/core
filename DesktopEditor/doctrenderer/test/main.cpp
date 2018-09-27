@@ -33,7 +33,7 @@
 
 #ifdef USE_PDF_RENDERER
 #include "../../../PdfWriter/PdfRenderer.h"
-#include "../../fontengine/ApplicationFonts.h"
+#include "../../graphics/pro/Fonts.h"
 #endif
 
 int main(int argc, char *argv[])

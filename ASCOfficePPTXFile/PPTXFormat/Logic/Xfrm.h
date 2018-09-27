@@ -112,33 +112,33 @@ namespace PPTX
 			{
 				m_ns = XmlUtils::GetNamespace(node.GetName());
 
-				node.ReadAttributeBase(L"flipH", flipH);
-				node.ReadAttributeBase(L"flipV", flipV);
-				node.ReadAttributeBase(L"rot", rot);
+				XmlMacroReadAttributeBase(node, L"flipH", flipH);
+				XmlMacroReadAttributeBase(node, L"flipV", flipV);
+				XmlMacroReadAttributeBase(node, L"rot", rot);
 
 				XmlUtils::CXmlNode oNodeOff;
 				if(node.GetNode(_T("a:off"), oNodeOff))
 				{
-					oNodeOff.ReadAttributeBase(L"x", offX);
-					oNodeOff.ReadAttributeBase(L"y", offY);
+					XmlMacroReadAttributeBase(oNodeOff, L"x", offX);
+					XmlMacroReadAttributeBase(oNodeOff, L"y", offY);
 				}
 				XmlUtils::CXmlNode oNodeExt;
 				if(node.GetNode(_T("a:ext"), oNodeExt))
 				{
-					oNodeExt.ReadAttributeBase(L"cx", extX);
-					oNodeExt.ReadAttributeBase(L"cy", extY);
+					XmlMacroReadAttributeBase(oNodeExt, L"cx", extX);
+					XmlMacroReadAttributeBase(oNodeExt, L"cy", extY);
 				}
 				XmlUtils::CXmlNode oNodeChOff;
 				if(node.GetNode(_T("a:chOff"), oNodeChOff))
 				{
-					oNodeChOff.ReadAttributeBase(L"x", chOffX);
-					oNodeChOff.ReadAttributeBase(L"y", chOffY);
+					XmlMacroReadAttributeBase(oNodeChOff, L"x", chOffX);
+					XmlMacroReadAttributeBase(oNodeChOff, L"y", chOffY);
 				}
 				XmlUtils::CXmlNode oNodeChExt;
 				if(node.GetNode(_T("a:chExt"), oNodeChExt))
 				{
-					oNodeChExt.ReadAttributeBase(L"cx", chExtX);
-					oNodeChExt.ReadAttributeBase(L"cy", chExtY);
+					XmlMacroReadAttributeBase(oNodeChExt, L"cx", chExtX);
+					XmlMacroReadAttributeBase(oNodeChExt, L"cy", chExtY);
 				}
 				Normalize();
 			}

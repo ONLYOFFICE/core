@@ -85,7 +85,7 @@ namespace BinXlsxRW{
 		sMediaPath = pathMediaDir.GetPath();
 		sEmbedPath = pathEmbedDir.GetPath();
 	}
-    int CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
+    _UINT32 CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
         std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
 
@@ -100,11 +100,11 @@ namespace BinXlsxRW{
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;		
 		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);
 	}
-    int CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
+    _UINT32 CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);
-		CFontManager* pFontManager = pFontPicker->get_FontManager();
+        NSFonts::IFontManager* pFontManager = pFontPicker->get_FontManager();
 		DocWrapper::FontProcessor fp;
 		fp.setFontManager(pFontManager);
 		
@@ -136,7 +136,7 @@ namespace BinXlsxRW{
 		oOfficeDrawingConverter.SetFontPicker(pFontPicker);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
-		int result = oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
+		_UINT32 result = oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
 
 		RELEASEOBJECT(pFontPicker);
 		return result;

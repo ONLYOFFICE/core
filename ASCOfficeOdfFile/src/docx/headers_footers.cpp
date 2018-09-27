@@ -31,7 +31,6 @@
  */
 
 #include "headers_footers.h"
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
 namespace cpdoccore { 
@@ -88,12 +87,12 @@ std::wstring get_rel_type(headers_footers::Type _Type)
 
 void headers_footers::dump_rels(rels & Rels) const//внешние релсы
 {
-    BOOST_FOREACH(const instances_map::value_type & instAr, instances_)
+	for (boost::unordered_map<std::wstring, instances_array>::const_iterator it = instances_.begin(); it != instances_.end(); ++it)
     {
-        BOOST_FOREACH(const instance_ptr & inst, instAr.second)
+		for (size_t i = 0; i < it->second.size(); i++)
         {
-			if (inst->type_ == none) continue;
-            Rels.add( relationship( inst->id_,  get_rel_type(inst->type_),  inst->name_, L"" ) );
+			if (it->second[i]->type_ == none) continue;
+            Rels.add( relationship( it->second[i]->id_,  get_rel_type(it->second[i]->type_),  it->second[i]->name_, L"" ) );
         }
     }        
 }
@@ -107,9 +106,13 @@ bool headers_footers::write_sectPr(const std::wstring & StyleName, bool next_pag
 
 	bool first	=	false, left	=	false;
 	bool res	=	false;
+
+	instances_array & pFind = instances_.at(StyleName);
    
-	BOOST_FOREACH(const instance_ptr & inst, instances_.at(StyleName))
+	for (size_t i = 0; i < pFind.size(); i++)
     {
+		instance_ptr & inst = pFind[i];
+
         std::wstring type = L"default";
 		
 		if ( inst->type_ == headerFirst || inst->type_ == footerFirst )

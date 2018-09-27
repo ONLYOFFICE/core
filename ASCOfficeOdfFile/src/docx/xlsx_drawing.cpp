@@ -31,8 +31,8 @@
  */
 
 #include "xlsx_drawing.h"
-#include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/xml/utils.h>
+#include <xml/simple_xml_writer.h>
+#include <xml/utils.h>
 
 #include "../odf/datatypes/custom_shape_types_convert.h"
 
@@ -54,7 +54,7 @@ void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val)
 	odf_reader::GetProperty ( val.additional ,L"text-content", strTextContent);
 
 	if (!strTextContent)return;
-	if (strTextContent.get().length()<1)return;
+	if (strTextContent->empty())return;
    
 	CP_XML_WRITER(strm)
     {
@@ -65,7 +65,7 @@ void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val)
 			CP_XML_NODE(L"a:lstStyle");
 			if (strTextContent)
 			{				
-				CP_XML_STREAM() << strTextContent.get();
+				CP_XML_STREAM() << *strTextContent;
 			}
 		}
     }

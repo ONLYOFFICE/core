@@ -141,7 +141,7 @@ namespace NSHtmlRenderer
     class CGraphicsDumper
     {
     public:
-        CGraphicsRenderer*		m_pRenderer;
+        NSGraphics::IGraphicsRenderer*		m_pRenderer;
         CBgraFrame*             m_pFrame;
 
         double					m_dWidth;
@@ -204,7 +204,7 @@ namespace NSHtmlRenderer
             BYTE* pBuffer = m_pFrame->get_Data();
             memset(pBuffer, 0xFF, 4 * m_lWidthPix * m_lHeightPix);
 
-            m_pRenderer = new CGraphicsRenderer();
+            m_pRenderer = NSGraphics::Create();
             m_pRenderer->put_Width(m_dWidth);
             m_pRenderer->put_Height(m_dHeight);
             m_pRenderer->CreateFromBgraFrame(m_pFrame);
@@ -1093,7 +1093,7 @@ namespace NSHtmlRenderer
 
 
     public:
-        void WriteFonts(::CFontManager* pFontManager, const std::wstring& strFolderDst, bool bIsGid = false)
+        void WriteFonts(NSFonts::IFontManager* pFontManager, const std::wstring& strFolderDst, bool bIsGid = false)
         {
             std::wstring sDstF = strFolderDst;
             NSDirectory::CreateDirectory(sDstF);
@@ -1115,8 +1115,9 @@ namespace NSHtmlRenderer
 
                 std::wstring sName = L"";
 
-                int nNameLen = (int)pFontManager->m_sName.length();
-                const wchar_t* pNameStr = pFontManager->m_sName.c_str();
+                std::wstring sNameSrc = pFontManager->GetName();
+                int nNameLen = (int)sNameSrc.length();
+                const wchar_t* pNameStr = sNameSrc.c_str();
                 for (int i = 0; i < nNameLen; ++i)
                 {
                     if ((pNameStr[i] >= 'a' && pNameStr[i] <= 'z') ||
@@ -1248,7 +1249,7 @@ namespace NSHtmlRenderer
 
         bool m_bIsGids;
 
-        CApplicationFonts*      m_pApplicationFonts;
+        NSFonts::IApplicationFonts*      m_pApplicationFonts;
 
     public:
 
@@ -1322,7 +1323,7 @@ namespace NSHtmlRenderer
             m_bIsOnlyTextMode = false;
         }
 
-        void SetApplicationFonts(CApplicationFonts* pFonts)
+        void SetApplicationFonts(NSFonts::IApplicationFonts* pFonts)
         {
             m_pApplicationFonts = pFonts;
         }
@@ -1673,15 +1674,12 @@ namespace NSHtmlRenderer
 
         NSHtmlRenderer::CImageInfo GenerateImageID(IGrObject* pGrObject)
         {
-            Aggplus::CImage* pImage = (Aggplus::CImage*)pGrObject;
-
             CBgraFrame* pFrame = new CBgraFrame();
-            pFrame->put_Width((int)pImage->GetWidth());
-            pFrame->put_Height((int)pImage->GetHeight());
-            pFrame->put_Stride((int)pImage->GetStride());
-            pFrame->put_Data(pImage->GetData());
+            pFrame->FromImage(pGrObject, false);
 
             NSHtmlRenderer::CImageInfo _info = GenerateImageID(pFrame, true);
+
+            pFrame->put_Data(NULL);
             RELEASEOBJECT(pFrame);
             return _info;
         }
@@ -1800,8 +1798,8 @@ namespace NSHtmlRenderer
         {
             SetTransformToDocument(true);
 
-            if (fabs(m_pTransform->m_agg_mtx.shx) < 0.0000001 && fabs(m_pTransform->m_agg_mtx.shy) < 0.0000001 &&
-                m_pTransform->m_agg_mtx.sx >= 0 && m_pTransform->m_agg_mtx.sy >= 0)
+            if (fabs(m_pTransform->shx()) < 0.0000001 && fabs(m_pTransform->shy()) < 0.0000001 &&
+                m_pTransform->sx() >= 0 && m_pTransform->sy() >= 0)
             {
                 double xx = x;
                 double yy = y;
@@ -1843,13 +1841,12 @@ namespace NSHtmlRenderer
                     m_oPage.WriteDouble(w);
                     m_oPage.WriteDouble(h);
 
-                    agg::trans_affine* t = &m_pTransform->m_agg_mtx;
-                    m_oPage.WriteDouble(t->sx);
-                    m_oPage.WriteDouble(t->shy);
-                    m_oPage.WriteDouble(t->shx);
-                    m_oPage.WriteDouble(t->sy);
-                    m_oPage.WriteDouble(t->tx);
-                    m_oPage.WriteDouble(t->ty);
+                    m_oPage.WriteDouble(m_pTransform->sx());
+                    m_oPage.WriteDouble(m_pTransform->shy());
+                    m_oPage.WriteDouble(m_pTransform->shx());
+                    m_oPage.WriteDouble(m_pTransform->sy());
+                    m_oPage.WriteDouble(m_pTransform->tx());
+                    m_oPage.WriteDouble(m_pTransform->ty());
                 }
                 else
                 {
@@ -1861,13 +1858,12 @@ namespace NSHtmlRenderer
                     m_oPage.WriteDouble(w);
                     m_oPage.WriteDouble(h);
 
-                    agg::trans_affine* t = &m_pTransform->m_agg_mtx;
-                    m_oPage.WriteDouble(t->sx);
-                    m_oPage.WriteDouble(t->shy);
-                    m_oPage.WriteDouble(t->shx);
-                    m_oPage.WriteDouble(t->sy);
-                    m_oPage.WriteDouble(t->tx);
-                    m_oPage.WriteDouble(t->ty);
+                    m_oPage.WriteDouble(m_pTransform->sx());
+                    m_oPage.WriteDouble(m_pTransform->shy());
+                    m_oPage.WriteDouble(m_pTransform->shx());
+                    m_oPage.WriteDouble(m_pTransform->sy());
+                    m_oPage.WriteDouble(m_pTransform->tx());
+                    m_oPage.WriteDouble(m_pTransform->ty());
                 }
             }
         }
@@ -1987,10 +1983,7 @@ namespace NSHtmlRenderer
 
             if (bIsFromGraphics)
             {
-                if ((fabs(1 - m_oLastTransform.m_agg_mtx.sx) < __g_matrix_eps) &&
-                    (fabs(0 - m_oLastTransform.m_agg_mtx.shx) < __g_matrix_eps) &&
-                    (fabs(0 - m_oLastTransform.m_agg_mtx.shy) < __g_matrix_eps) &&
-                    (fabs(1 - m_oLastTransform.m_agg_mtx.sy) < __g_matrix_eps))
+                if (m_oLastTransform.IsIdentity2(__g_matrix_eps))
                 {
                     // ничего делать не нужно
                 }
@@ -2006,47 +1999,31 @@ namespace NSHtmlRenderer
                 {
                     m_oLastTransform = *m_pTransform;
 
-                    agg::trans_affine* m = &m_pTransform->m_agg_mtx;
                     //m_oPage.Write(CMetafile::ctSetTransform, m->sx, m->shy, m->shx, m->sy, m->tx, m->ty);
                     m_oPage.WriteCommandType(CMetafile::ctSetTransform);
-                    m_oPage.WriteDouble(m->sx);
-                    m_oPage.WriteDouble(m->shy);
-                    m_oPage.WriteDouble(m->shx);
-                    m_oPage.WriteDouble(m->sy);
-                    m_oPage.WriteDouble(m->tx);
-                    m_oPage.WriteDouble(m->ty);
+                    m_oPage.WriteDouble(m_pTransform->sx());
+                    m_oPage.WriteDouble(m_pTransform->shy());
+                    m_oPage.WriteDouble(m_pTransform->shx());
+                    m_oPage.WriteDouble(m_pTransform->sy());
+                    m_oPage.WriteDouble(m_pTransform->tx());
+                    m_oPage.WriteDouble(m_pTransform->ty());
                     return;
                 }
 
-                if ((fabs(m_pTransform->m_agg_mtx.sx - m_oLastTransform.m_agg_mtx.sx) < __g_matrix_eps) &&
-                    (fabs(m_pTransform->m_agg_mtx.shx - m_oLastTransform.m_agg_mtx.shx) < __g_matrix_eps) &&
-                    (fabs(m_pTransform->m_agg_mtx.shy - m_oLastTransform.m_agg_mtx.shy) < __g_matrix_eps) &&
-                    (fabs(m_pTransform->m_agg_mtx.sy - m_oLastTransform.m_agg_mtx.sy) < __g_matrix_eps) &&
-                    (fabs(m_pTransform->m_agg_mtx.tx - m_oLastTransform.m_agg_mtx.tx) < __g_matrix_eps) &&
-                    (fabs(m_pTransform->m_agg_mtx.ty - m_oLastTransform.m_agg_mtx.ty) < __g_matrix_eps))
+                if (Aggplus::CMatrix::IsEqual(m_pTransform, &m_oLastTransform, __g_matrix_eps, false))
                 {
                     // ничего делать не нужно
                     return;
                 }
 
-                if ((fabs(1 - m_pTransform->m_agg_mtx.sx) < __g_matrix_eps) &&
-                    (fabs(0 - m_pTransform->m_agg_mtx.shx) < __g_matrix_eps) &&
-                    (fabs(0 - m_pTransform->m_agg_mtx.shy) < __g_matrix_eps) &&
-                    (fabs(1 - m_pTransform->m_agg_mtx.sy) < __g_matrix_eps) &&
-                    (fabs(1 - m_oLastTransform.m_agg_mtx.sx) < __g_matrix_eps) &&
-                    (fabs(0 - m_oLastTransform.m_agg_mtx.shx) < __g_matrix_eps) &&
-                    (fabs(0 - m_oLastTransform.m_agg_mtx.shy) < __g_matrix_eps) &&
-                    (fabs(1 - m_oLastTransform.m_agg_mtx.sy) < __g_matrix_eps))
+                if (m_pTransform->IsIdentity2(__g_matrix_eps) && m_oLastTransform.IsIdentity2(__g_matrix_eps))
                 {
                     // ничего делать не нужно
                     m_oLastTransform.Reset();
                 }
                 else
                 {
-                    if ((fabs(1 - m_pTransform->m_agg_mtx.sx) < __g_matrix_eps) &&
-                        (fabs(0 - m_pTransform->m_agg_mtx.shx) < __g_matrix_eps) &&
-                        (fabs(0 - m_pTransform->m_agg_mtx.shy) < __g_matrix_eps) &&
-                        (fabs(1 - m_pTransform->m_agg_mtx.sy) < __g_matrix_eps))
+                    if (m_pTransform->IsIdentity2(__g_matrix_eps))
                     {
                         // ничего делать не нужно
                         m_oPage.WriteCommandType(CMetafile::ctResetTransform);
@@ -2056,15 +2033,14 @@ namespace NSHtmlRenderer
 
                     m_oLastTransform = *m_pTransform;
 
-                    agg::trans_affine* m = &m_pTransform->m_agg_mtx;
                     //m_oPage.Write(CMetafile::ctSetTransform, m->sx, m->shy, m->shx, m->sy, m->tx, m->ty);
                     m_oPage.WriteCommandType(CMetafile::ctSetTransform);
-                    m_oPage.WriteDouble(m->sx);
-                    m_oPage.WriteDouble(m->shy);
-                    m_oPage.WriteDouble(m->shx);
-                    m_oPage.WriteDouble(m->sy);
-                    m_oPage.WriteDouble(m->tx);
-                    m_oPage.WriteDouble(m->ty);
+                    m_oPage.WriteDouble(m_pTransform->sx());
+                    m_oPage.WriteDouble(m_pTransform->shy());
+                    m_oPage.WriteDouble(m_pTransform->shx());
+                    m_oPage.WriteDouble(m_pTransform->sy());
+                    m_oPage.WriteDouble(m_pTransform->tx());
+                    m_oPage.WriteDouble(m_pTransform->ty());
                 }
             }
         }
@@ -2145,7 +2121,7 @@ namespace NSHtmlRenderer
                 RELEASEARRAYOBJECTS(pOutput);
             }
 
-            ::CFontManager* pFontManager = m_pApplicationFonts->GenerateFontManager();
+            NSFonts::IFontManager* pFontManager = m_pApplicationFonts->GenerateFontManager();
             m_oDstFontGenerator.WriteFonts(pFontManager, m_strDstDirectoryFiles + L"/fonts", m_bIsGids);
             RELEASEOBJECT(pFontManager);
         }

@@ -801,43 +801,88 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	if (impl_->current_drawing_state_.elements_.empty())	return false;
 
 	draw_text_box* t = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
-	if (!t) return false;
-//------------------------------------------------------------------------
-	office_element_ptr draw_elm = impl_->create_draw_element(7);
-	
-	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
-	if (draw == NULL)	return false;
-
-	size_t sz = impl_->current_level_.size();
-	if (sz < 2)			return false;
-
-	size_t sz_state = impl_->current_drawing_state_.elements_.size();
-	if (sz_state < 2)	return false;
-
-	if (sz > 2) //в группе ??
+	if (t)
 	{
-		draw_base* draw_old = dynamic_cast<draw_base*>(impl_->current_level_[sz-2].get());
-		if (draw_old)
+	//------------------------------------------------------------------------
+		office_element_ptr draw_elm = impl_->create_draw_element(7);
+		
+		draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
+		if (draw == NULL)	return false;
+
+		size_t sz = impl_->current_level_.size();
+		if (sz < 2)			return false;
+
+		size_t sz_state = impl_->current_drawing_state_.elements_.size();
+		if (sz_state < 2)	return false;
+
+		if (sz > 2) //в группе ??
 		{
-			draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
+			draw_base* draw_old = dynamic_cast<draw_base*>(impl_->current_level_[sz-2].get());
+			if (draw_old)
+			{
+				draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
+			}
 		}
+	//----------------------------------------------
+
+		odf_element_state state = impl_->current_drawing_state_.elements_[sz_state - 2];
+		state.elm = draw_elm;
+
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = state.style_name;
+
+		impl_->current_level_.erase (impl_->current_level_.end() - 2, impl_->current_level_.end());
+		impl_->current_level_.push_back(draw_elm);
+
+		impl_->current_drawing_state_.elements_.erase(impl_->current_drawing_state_.elements_.end() - 2, impl_->current_drawing_state_.elements_.end());
+		impl_->current_drawing_state_.elements_.push_back( state);
+
+		impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
+
+		if (sz == 2)	impl_->root_element_ = draw_elm;
+		return true;
 	}
-//----------------------------------------------
+	draw_base* s = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_.back().elm.get());
+	if (s)
+	{
+	//------------------------------------------------------------------------
+		office_element_ptr draw_elm = impl_->create_draw_element(7);
+		
+		draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
+		if (draw == NULL)	return false;
 
-	odf_element_state state = impl_->current_drawing_state_.elements_[sz_state - 2];
-	state.elm = draw_elm;
+		size_t sz = impl_->current_level_.size();
+		if (sz < 1)			return false;
 
-	draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = state.style_name;
+		size_t sz_state = impl_->current_drawing_state_.elements_.size();
+		if (sz_state < 1)	return false;
 
-	impl_->current_level_.erase (impl_->current_level_.end() - 2, impl_->current_level_.end());
-	impl_->current_level_.push_back(draw_elm);
+		if (sz > 1) //в группе ??
+		{
+			draw_base* draw_old = dynamic_cast<draw_base*>(impl_->current_level_[sz - 1].get());
+			if (draw_old)
+			{
+				draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
+			}
+		}
+	//----------------------------------------------
 
-	impl_->current_drawing_state_.elements_.erase(impl_->current_drawing_state_.elements_.end() - 2, impl_->current_drawing_state_.elements_.end());
-	impl_->current_drawing_state_.elements_.push_back( state);
+		odf_element_state state = impl_->current_drawing_state_.elements_[sz_state - 1];
+		state.elm = draw_elm;
 
-	impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = state.style_name;
 
-	if (sz == 2)	impl_->root_element_ = draw_elm;
+		impl_->current_level_.erase (impl_->current_level_.end() - 1, impl_->current_level_.end());
+		impl_->current_level_.push_back(draw_elm);
+
+		impl_->current_drawing_state_.elements_.erase(impl_->current_drawing_state_.elements_.end() - 1, impl_->current_drawing_state_.elements_.end());
+		impl_->current_drawing_state_.elements_.push_back( state);
+
+		impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
+
+		if (sz == 1)	impl_->root_element_ = draw_elm;
+		return true;
+	}
+
 	return true;
 }
 
@@ -1055,6 +1100,7 @@ bool odf_drawing_context::isLineShape()
 	case 48:	//SimpleTypes::shapetypeCurvedConnector3:
 	case 49:	//SimpleTypes::shapetypeCurvedConnector4:
 	case 50:	//SimpleTypes::shapetypeCurvedConnector5:
+	case 31:	//SimpleTypes::shapetypeBracketPair
 		return true;
 	case 1000:
 		if (impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_.get_value_or(draw_fill(draw_fill::solid)).get_type() == draw_fill::none)
@@ -1132,7 +1178,7 @@ void odf_drawing_context::end_element()
 	impl_->current_level_.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::start_area_properties()
+void odf_drawing_context::start_area_properties(bool reset)
 {
 	impl_->current_drawing_part_ = Area;
 }
@@ -1140,9 +1186,11 @@ void odf_drawing_context::end_area_properties()
 {
 	impl_->current_drawing_part_ = Unknown;
 }
-void odf_drawing_context::start_line_properties()
+void odf_drawing_context::start_line_properties(bool reset)
 {
 	impl_->current_drawing_part_ = Line;
+	if (reset)
+		impl_->current_graphic_properties->draw_stroke_ = boost::none;
 }
 void odf_drawing_context::end_line_properties()
 {

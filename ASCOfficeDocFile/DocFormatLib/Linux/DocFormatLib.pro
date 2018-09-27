@@ -21,13 +21,7 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
         _UNICODE \
-        _USE_LIBXML2_READER_ \
-        LIBXML_READER_ENABLED \
-        DONT_WRITE_EMBEDDED_FONTS \
-
-INCLUDEPATH += \
-	../../../DesktopEditor/freetype-2.5.2/include \
-	../../../DesktopEditor/xml/libxml2/include
+        DONT_WRITE_EMBEDDED_FONTS
 
 core_mac {
     #QMAKE_MAC_SDK = macosx10.11

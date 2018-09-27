@@ -36,7 +36,7 @@
 
 namespace NSFontDictionary
 {
-	static bool CorrectParamsFromDictionary(CFontSelectFormat& oFormat)
+	static bool CorrectParamsFromDictionary(NSFonts::CFontSelectFormat& oFormat)
 	{
 		if (NULL == oFormat.wsName)
 			return false;
@@ -267,7 +267,7 @@ namespace NSFontDictionary
 			return false;
 
 		// name - делаем ascii, чтобы сработал подбор
-		oFormat.Destroy2();
+		oFormat.Destroy(true);
 
 		LONG nLen = (LONG)strlen(pFont->m_name);
 

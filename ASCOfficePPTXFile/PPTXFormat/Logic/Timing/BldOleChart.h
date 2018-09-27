@@ -50,9 +50,9 @@ namespace PPTX
 			{
 				spid		= node.GetAttribute(_T("spid"));
 				grpId		= node.ReadAttributeInt(L"grpId");
-				node.ReadAttributeBase(L"uiExpand", uiExpand);
-				node.ReadAttributeBase(L"bld", bld);
-				node.ReadAttributeBase(L"animBg", animBg);
+                XmlMacroReadAttributeBase(node, L"uiExpand", uiExpand);
+                XmlMacroReadAttributeBase(node, L"bld", bld);
+                XmlMacroReadAttributeBase(node, L"animBg", animBg);
 
 				Normalize();
 

@@ -34,13 +34,13 @@
 #include <string>
 #include <vector>
 
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPSharedPtr.h>
 
 #include "oox_rels.h"
 #include "docx_content_type.h"
 #include "oox_package.h"
 
-class CApplicationFonts;
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -103,8 +103,17 @@ private:
 
 };
 
-//  xl_charts_files
-class docx_charts_files  : public element
+class customXml_files : public element
+{
+public:
+	customXml_files(){}
+
+    int add_customXml(customXml_content_ptr customXml);
+    virtual void write(const std::wstring & RootPath);
+   
+    std::vector<customXml_content_ptr> customXmls_;
+};
+class docx_charts_files : public element
 {
 public:
 	docx_charts_files(){}
@@ -130,12 +139,15 @@ public:
     void set_numbering	(element_ptr Element);
     void set_settings	(element_ptr Element);
     bool has_numbering	();
-    void set_media			(mediaitems			& _Mediaitems, CApplicationFonts *pAppFonts);
+    void set_media			(mediaitems			& _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
     void set_headers_footers(headers_footers	& HeadersFooters);
     void set_notes			(notes_context		& notesContext);
     void set_comments		(comments_context	& commentsContext);
 
 	void add_charts(chart_content_ptr chart);
+	void add_jsaProject(const std::string &content);
+
+	void add_rels(relationship const & r);
 
 private:
 	docx_charts_files	charts_files_;
@@ -152,6 +164,7 @@ private:
     element_ptr notes_;
     element_ptr settings_;
     element_ptr comments_;
+    element_ptr jsaProject_;
 
 };
 
@@ -165,11 +178,13 @@ public:
 			word_files			& get_word_files()			{ return word_files_; }
     virtual content_types_file	& get_content_types_file()	{ return content_type_file_; }
    
-	virtual void write(const std::wstring & RootPath);
+	void write(const std::wstring & RootPath);
+	int add_customXml(customXml_content_ptr customXml);
 
 private:
     docx_content_types_file	content_type_file_;
     word_files				word_files_;
+	customXml_files			customXml_files_;
     rels_files				rels_files_;
     docProps_files			docProps_files_;
 };

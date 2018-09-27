@@ -194,7 +194,7 @@ namespace PPTX
 		}
 		std::wstring ChartRec::toXML() const
 		{
-			if (!id_data.is_init() || NULL == m_bData)
+			if (!id_data.is_init() || false == m_bData)
 				return L"";
             std::wstring strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + id_data->ToString() + L"\"/>";
@@ -203,7 +203,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 		}
 		void ChartRec::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			if (!id_data.is_init() || NULL == m_bData)
+			if (!id_data.is_init() || false == m_bData)
 				return;
 			
             std::wstring strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \

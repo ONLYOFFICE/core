@@ -71,7 +71,7 @@ namespace DocFileFormat
 			if (fc < 0) break;
 
 			ParagraphPropertyExceptions* papx = findValidPapx( fc );
-			TableInfo tai( papx );
+			TableInfo tai( papx, m_document->nWordVersion );
 
 			if ( tai.fInTable )
 			{
@@ -84,7 +84,7 @@ namespace DocFileFormat
 			else
 			{
 				//this PAPX is for a normal paragraph
-				cp = writeParagraph( cp );
+				cp = writeParagraph( cp, 0x7fffffff );
 			}
 		}
 

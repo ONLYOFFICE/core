@@ -37,6 +37,7 @@
 #include "office_elements_create.h"
 
 #include "length.h"
+#include "stylenumformat.h"
 
 namespace cpdoccore {
 namespace odf_writer {
@@ -106,7 +107,7 @@ public:
 	_CP_OPT(odf_types::length) header_size_;
 	_CP_OPT(odf_types::length) footer_size_;
 
-	_CP_OPT(std::wstring) page_number_format;
+	_CP_OPT(odf_types::style_numformat) page_number_format;
 
 private:
 	std::wstring	style_oox_name_;

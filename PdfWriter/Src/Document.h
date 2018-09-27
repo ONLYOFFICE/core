@@ -36,9 +36,17 @@
 #include <string>
 #include "Types.h"
 
-#include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
+
+#include <ft2build.h>
+#include FT_OUTLINE_H
+#include FT_SIZES_H
+#include FT_GLYPH_H
+#include FT_TRUETYPE_IDS_H
 #include FT_TRUETYPE_TABLES_H
+#include FT_XFREE86_H
+#include FT_ADVANCES_H
 
 #ifdef CreateFont
 #undef CreateFont
@@ -82,10 +90,13 @@ namespace PdfWriter
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath);
 			              
-		void              SetEncryptionMode(EEncryptMode eMode, unsigned int unKeyLen = 0);
-		void              SetPassword(const char* sOwnerPassword, const char* sUserPassword);
+        void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void              SetPermission(unsigned int unPermission);
 		void              SetCompressionMode(unsigned int unMode);
+		void			  SetDocumentID(const std::wstring & wsDocumentID);
+
+		void              SetPDFAConformanceMode(bool isPDFA);
+		bool              IsPDFA() const;
 			              
 		CPage*            AddPage();
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
@@ -115,7 +126,7 @@ namespace PdfWriter
 					  
 		char*             GetTTFontTag();
 		void              AddFreeTypeFont(CFontCidTrueType* pFont);
-		FT_Library        GetFreeTypeLibrary();
+        FT_Library        GetFreeTypeLibrary();
 		CExtGrState*      FindExtGrState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		void              SaveToStream(CStream* pStream);
 		void              PrepareEncryption();
@@ -163,6 +174,8 @@ namespace PdfWriter
 		CDictObject*                   m_pTransparencyGroup;
 		std::vector<CFontCidTrueType*> m_vFreeTypeFonts;
 		FT_Library                     m_pFreeTypeLibrary;
+		bool                           m_bPDFAConformance;
+		std::wstring				   m_wsDocumentID;
 
 		friend class CFontCidTrueType;
 	};

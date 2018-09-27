@@ -75,6 +75,8 @@ namespace DocFileFormat
 		BYTE itcFirst		= 0;
 		BYTE itcLim			= 0;
 
+		bool bTableW = false;
+
 		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
 			switch( iter->OpCode )
@@ -105,8 +107,8 @@ namespace DocFileFormat
 				break;
 
 				case sprmTTableWidth:
-				{				//preferred table width
-
+				{	
+	//preferred table width
 					unsigned char fts = iter->Arguments[0];
 					short width = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 
@@ -119,6 +121,8 @@ namespace DocFileFormat
 					tblW.AppendAttribute( w );
 
 					_tblPr->AppendChild( tblW );
+
+					bTableW = true;
 				}
 				break;
 				case sprmTMerge:
@@ -386,8 +390,20 @@ namespace DocFileFormat
 				break;
 			}
 		}
+		if (false == bTableW)
+		{
+            XMLTools::XMLElement tblW( L"w:tblW");
 
-		//indent
+            XMLTools::XMLAttribute w( L"w:w", L"0");
+			XMLTools::XMLAttribute type( L"w:type", L"auto" );
+
+			tblW.AppendAttribute( type );
+			tblW.AppendAttribute( w );
+
+			_tblPr->AppendChild( tblW );
+		}
+
+	//indent
 		if ( tblIndent != 0 )
 		{
             XMLTools::XMLElement tblInd( L"w:tblInd");
@@ -401,7 +417,7 @@ namespace DocFileFormat
 			_tblPr->AppendChild( tblInd );
 		}
 
-		//append floating props
+	//append floating props
 		if ( tblpPr.GetAttributeCount() > 0 )
 		{
 			_tblPr->AppendChild( tblpPr );

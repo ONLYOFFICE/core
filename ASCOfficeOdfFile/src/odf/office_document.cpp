@@ -32,8 +32,8 @@
 
 #include "office_document.h"
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 #include "../docx/docx_conversion_context.h"
@@ -74,7 +74,9 @@ void office_document_base::add_child_element( xml::sax * Reader, const std::wstr
         CP_CREATE_ELEMENT(office_scripts_);
     else if CP_CHECK_NAME(L"office", L"settings")
         CP_CREATE_ELEMENT(office_settings_);
-    else if CP_CHECK_NAME(L"manifest", L"file-entry")
+     else if CP_CHECK_NAME(L"office", L"meta")
+        CP_CREATE_ELEMENT(office_meta_);
+   else if CP_CHECK_NAME(L"manifest", L"file-entry")
         CP_CREATE_ELEMENT(manifests_);
 	else
         CP_NOT_APPLICABLE_ELM();
@@ -128,34 +130,111 @@ const wchar_t * office_document_settings::name = L"document-settings";
 
 // manifest:manifest
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * manifest_manifest::ns = L"manifest";
+const wchar_t * manifest_manifest::ns	= L"manifest";
 const wchar_t * manifest_manifest::name = L"manifest";
 
 // manifest:file-entry
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * manifest_entry::ns = L"manifest";
-const wchar_t * manifest_entry::name = L"file-entry";
+const wchar_t * manifest_entry::ns		= L"manifest";
+const wchar_t * manifest_entry::name	= L"file-entry";
 
 void manifest_entry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"manifest:media-type", media_type_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:full-path", full_path_, std::wstring(L""));
+	CP_APPLY_ATTR(L"manifest:size",	size, 0);
 }
 void manifest_entry::add_child_element(cpdoccore::xml::sax *Reader, const std::wstring &Ns, const std::wstring &Name)
 {
 	if CP_CHECK_NAME(L"manifest", L"encryption-data")
-        CP_CREATE_ELEMENT(encryption_);
+	{
+        CP_CREATE_ELEMENT(encryption_data_);
+	}
 }
-// manifest:file-entry
+// manifest:encryption-data
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * manifest_encryption_data::ns = L"manifest";
 const wchar_t * manifest_encryption_data::name = L"encryption-data";
 
 void manifest_encryption_data::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"manifest:checksum", manifest_checksum_, std::wstring(L""));
-    CP_APPLY_ATTR(L"manifest:checksum-type", manifest_checksum_type_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:checksum", checksum_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:checksum-type", checksum_type_, std::wstring(L""));
 
+	size_t nFind = checksum_type_.find(L"#");	
+	if (nFind != std::wstring::npos)
+	{
+		checksum_type_ = checksum_type_.substr(nFind + 1);
+	}
+	checksum_type_ = XmlUtils::GetLower(checksum_type_);
+}
+void manifest_encryption_data::add_child_element(cpdoccore::xml::sax *Reader, const std::wstring &Ns, const std::wstring &Name)
+{
+	if CP_CHECK_NAME(L"manifest", L"algorithm")
+	{
+        CP_CREATE_ELEMENT(algorithm_);
+	}
+	else if CP_CHECK_NAME(L"manifest", L"key-derivation")
+	{
+        CP_CREATE_ELEMENT(key_derivation_);
+	}
+	else if CP_CHECK_NAME(L"manifest", L"start-key-generation")
+	{
+        CP_CREATE_ELEMENT(start_key_generation_);
+	}
+}
+// manifest:algorithm
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * manifest_algorithm::ns = L"manifest";
+const wchar_t * manifest_algorithm::name = L"algorithm";
+
+void manifest_algorithm::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"manifest:algorithm-name", algorithm_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:initialisation-vector", initialisation_vector_, std::wstring(L""));
+
+	size_t nFind = algorithm_name_.find(L"#");
+	if (nFind != std::wstring::npos)
+	{
+		algorithm_name_ = algorithm_name_.substr(nFind + 1);
+	}
+	algorithm_name_ = XmlUtils::GetLower(algorithm_name_);
+}
+// manifest:key-derivation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * manifest_key_derivation::ns = L"manifest";
+const wchar_t * manifest_key_derivation::name = L"key-derivation";
+
+void manifest_key_derivation::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"manifest:key-derivation-name", key_derivation_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:key-size", key_size_, 16);
+    CP_APPLY_ATTR(L"manifest:iteration-count", iteration_count_, 1024);
+    CP_APPLY_ATTR(L"manifest:salt", salt_, std::wstring(L""));
+	
+	size_t nFind = key_derivation_name_.find(L"#");	
+	if (nFind != std::wstring::npos)
+	{
+		key_derivation_name_ = key_derivation_name_.substr(nFind + 1);
+	}
+	key_derivation_name_ = XmlUtils::GetLower(key_derivation_name_);
+}
+// manifest:start-key-generation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * manifest_start_key_generation::ns = L"manifest";
+const wchar_t * manifest_start_key_generation::name = L"start-key-generation";
+
+void manifest_start_key_generation::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"manifest:start-key-generation-name", start_key_generation_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:key-size", key_size_, 20);
+
+	size_t nFind = start_key_generation_name_.find(L"#");
+	if (nFind != std::wstring::npos)
+	{
+		start_key_generation_name_ = start_key_generation_name_.substr(nFind + 1);
+	}
+	start_key_generation_name_ = XmlUtils::GetLower(start_key_generation_name_);
 }
 }
 }

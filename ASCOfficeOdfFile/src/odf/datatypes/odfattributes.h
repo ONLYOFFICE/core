@@ -32,8 +32,8 @@
 #ifndef _CPDOCCORE_ODFATTRIBUTES_H_
 #define _CPDOCCORE_ODFATTRIBUTES_H_
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/CPOptional.h>
+#include <xml/attributes.h>
+#include <CPOptional.h>
 #include "errors.h"
 #include <logging.h>
 

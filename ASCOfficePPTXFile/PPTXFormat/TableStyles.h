@@ -58,7 +58,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-			oNode.ReadAttributeBase(L"def", def);
+            XmlMacroReadAttributeBase(oNode, L"def", def);
 
 			Styles.clear();
 			Logic::TableStyle Style;

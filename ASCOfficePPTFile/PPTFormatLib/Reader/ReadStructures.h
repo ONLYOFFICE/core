@@ -33,16 +33,11 @@
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h"
 #include "SlidePersist.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 
 using namespace NSPresentationEditor;
 
-
-namespace NSZLib
-{
-    bool Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen,
-								BYTE* pDstBuffer, ULONG& lDstBufferLen);
-}
 namespace CRYPT
 {
 	class ECMADecryptor;
@@ -127,34 +122,34 @@ namespace Gdiplus
 
     typedef struct
     {
-        DWORD   iType;              // Record type EMR_HEADER
-        DWORD   nSize;              // Record size in bytes.  This may be greater
+        _UINT32   iType;              // Record type EMR_HEADER
+        _UINT32   nSize;              // Record size in bytes.  This may be greater
                                     // than the sizeof(ENHMETAHEADER).
         RECT   rclBounds;          // Inclusive-inclusive bounds in device units
         RECT   rclFrame;           // Inclusive-inclusive Picture Frame .01mm unit
-        DWORD   dSignature;         // Signature.  Must be ENHMETA_SIGNATURE.
-        DWORD   nVersion;           // Version number
-        DWORD   nBytes;             // Size of the metafile in bytes
-        DWORD   nRecords;           // Number of records in the metafile
+        _UINT32   dSignature;         // Signature.  Must be ENHMETA_SIGNATURE.
+        _UINT32   nVersion;           // Version number
+        _UINT32   nBytes;             // Size of the metafile in bytes
+        _UINT32   nRecords;           // Number of records in the metafile
         WORD    nHandles;           // Number of handles in the handle table
                                     // Handle index zero is reserved.
         WORD    sReserved;          // Reserved.  Must be zero.
-        DWORD   nDescription;       // Number of chars in the unicode desc string
+        _UINT32   nDescription;       // Number of chars in the unicode desc string
                                     // This is 0 if there is no description string
-        DWORD   offDescription;     // Offset to the metafile description record.
+        _UINT32   offDescription;     // Offset to the metafile description record.
                                     // This is 0 if there is no description string
-        DWORD   nPalEntries;        // Number of entries in the metafile palette.
+        _UINT32   nPalEntries;        // Number of entries in the metafile palette.
         SIZE   szlDevice;          // Size of the reference device in pels
         SIZE   szlMillimeters;     // Size of the reference device in millimeters
     } ENHMETAHEADER3;
 
     typedef struct
     {
-        DWORD          Key;            // GDIP_WMF_PLACEABLEKEY
+        _UINT32          Key;            // GDIP_WMF_PLACEABLEKEY
         short           Hmf;            // Metafile HANDLE number (always 0)
         PWMFRect16      BoundingBox;    // Coordinates in metafile units
         short           Inch;           // Number of metafile units per inch
-        DWORD          Reserved;       // Reserved (always 0)
+        _UINT32          Reserved;       // Reserved (always 0)
         short           Checksum;       // Checksum value for previous 10 WORDs
     }WmfPlaceableFileHeader;
 }
@@ -163,10 +158,10 @@ class CMetaHeader
 {
 
 public:
-	DWORD cbSize;
+	_UINT32 cbSize;
 	RECT rcBounds;
 	POINT ptSize;
-	DWORD cbSave;
+	_UINT32 cbSave;
 	BYTE compression;
 	BYTE filter;
 
@@ -235,7 +230,7 @@ public:
 		{
 			ULONG lSize = lUncompressSize;
 			m_pMetaFile = new BYTE[lUncompressSize];
-            bool bRes	= NSZLib::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
+            bool bRes	= NSZip::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
 			if (bRes)
 			{
 				m_lMetaFileSize = (LONG)lSize;

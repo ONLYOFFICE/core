@@ -37,7 +37,7 @@
 #include "../docx/xlsx_utils.h"
 #include <boost/foreach.hpp>
 #include <boost/function.hpp>
-#include <cpdoccore/CPString.h>
+#include <CPString.h>
 
 #include "visitor.h"
 #include "table.h"

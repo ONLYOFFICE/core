@@ -44,7 +44,10 @@
 
 #include "mediaitems.h"
 
-class CApplicationFonts;
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore {
 
@@ -103,6 +106,8 @@ public:
 	void start_theme(std::wstring & name);
 	void end_theme();
 
+	void add_jsaProject(const std::string &content);
+
 	std::pair<int,int> add_author_comments(std::wstring author);
 
 	pptx_slide_context & get_slide_context() { return pptx_slide_context_; }
@@ -152,7 +157,7 @@ private:
 
 	package::pptx_document		* output_document_; 
     odf_reader::odf_document	* odf_document_;    
-	CApplicationFonts           * applicationFonts_;
+    NSFonts::IApplicationFonts  * applicationFonts_;
 
     pptx_slide_context		pptx_slide_context_;
 	pptx_text_context		pptx_text_context_;

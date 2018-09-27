@@ -414,6 +414,7 @@ namespace OOX
         et_a_buSzPts,
         et_a_buSzTx,
 
+		et_ds_schemaRefs, // <ds:shemeRefs>
         et_ds_schemaRef, // <ds:shemeRef>	
 		
 		et_m_acc, //m:acc
@@ -1004,6 +1005,7 @@ namespace OOX
 		et_x_Borders, // <borders>
 		et_x_Border,
 		et_x_BorderProp,
+		et_x_CalcPr, // <calcPr>
 		et_x_CellStyles,
 		et_x_CellStyle,
 		et_x_CellStyleXfs,
@@ -1119,6 +1121,8 @@ namespace OOX
 		et_x_PictureWorksheet,
 		et_x_HeaderFooterWorksheet,
 		et_x_HeaderFooterElementWorksheet,
+		et_x_Break,
+		et_x_RowColBreaks,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

@@ -199,7 +199,7 @@ namespace CSVReader
 
 		WCHAR *pEndPtr;
         double dValue = wcstod(sText.c_str(), &pEndPtr);
-		if (NULL != *pEndPtr)
+		if (0 != *pEndPtr)
 		{
 			// Не число
 			pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
@@ -225,7 +225,7 @@ namespace CSVReader
 		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-	int ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
+	_UINT32 ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
 	{
 		NSFile::CFileBinary oFile;
 		if (false == oFile.OpenFile(sFileName)) return AVS_FILEUTILS_ERROR_CONVERT;

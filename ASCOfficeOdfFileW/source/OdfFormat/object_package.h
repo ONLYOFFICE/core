@@ -33,8 +33,8 @@
 
 #include <vector>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPNoncopyable.h>
+#include <CPSharedPtr.h>
+#include <CPNoncopyable.h>
 
 #include "odf_rels.h"
 
@@ -44,8 +44,6 @@ namespace cpdoccore
 namespace odf_writer 
 {
 	class _mediaitems;//picture & media
-
-	class rels;
 	
 	namespace package 
 	{
@@ -91,7 +89,7 @@ namespace odf_writer
 		public:
 			virtual ~element() = 0;
 
-			virtual void write(const std::wstring & RootPath) = 0;
+			virtual void write(const std::wstring & RootPath, bool add_padding = false) = 0;
 			std::wstring local_path;
 		private:
 			element * element_;
@@ -104,38 +102,41 @@ namespace odf_writer
 		class simple_element : public element
 		{
 		public:
+			simple_element(const std::wstring & FileName, const std::string & Content);
 			simple_element(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
+			
 			static element_ptr create(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
+			static element_ptr create(const std::wstring & FileName, const std::string & Content);
 
-			virtual void write(const std::wstring & RootPath);
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 
 		private:
-			std::wstring file_name_;
-			std::string content_utf8_;
-			bool utf8_;
+			std::wstring	file_name_;
+			std::string		content_utf8_;
+			bool			utf8_;
 
 		};
 
 		class meta_file : public element
 		{
 		public:
-			virtual void write(const std::wstring & RootPath);
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 		};
 
 		class content_file : public element
 		{
 		public:
-			void set_content(content_content_ptr & c){content_ = c;}
-			virtual void write(const std::wstring & RootPath);
+			void set_content(content_content_ptr & c){content = c;}
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 			
-			content_content_ptr content_;
+			content_content_ptr content;
 		};
 
 		class styles_file : public element
 		{
 		public:
 			void set_content(content_simple_ptr & c) {content_ = c;}
-			virtual void write(const std::wstring & RootPath);
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 			content_simple_ptr content_;
 		};
 		
@@ -143,7 +144,7 @@ namespace odf_writer
 		{
 		public:
 			void set_content(content_simple_ptr & c) {content_ = c;}
-			virtual void write(const std::wstring & RootPath);
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 			content_simple_ptr content_;
 		};
 		
@@ -152,12 +153,26 @@ namespace odf_writer
 		public:
 			manifect_file(std::wstring type);
 			
-			virtual void write(const std::wstring & RootPath);       
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
 			void add_rels(rels & r); 
+
+			rels *get_rels() {return &rels_;}
 
 		private:
 			rels rels_;
 			std::wstring type_;
+
+		};
+		class binary_file : public element
+		{
+		public:
+			binary_file(const std::wstring &file_name, const std::string &value);
+			
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
+
+		private:
+			std::string value_;
+			std::wstring file_name_;
 
 		};
 		class mimetype_file : public element
@@ -165,17 +180,17 @@ namespace odf_writer
 		public:
 			mimetype_file(std::wstring type);
 			
-			virtual void write(const std::wstring & RootPath);       
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
 
 		private:
 			std::wstring type_;
 
 		};
-		class media : public element
+		class media_files : public element
 		{
 		public:
-			media(_mediaitems & mediaitems, const std::wstring internal_folder, int type);
-			virtual void write(const std::wstring & RootPath);
+			media_files(_mediaitems & mediaitems, const std::wstring internal_folder, int type);
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 
 		private:
 			_mediaitems&	mediaitems_;
@@ -195,19 +210,19 @@ namespace odf_writer
 			
 			void set_mediaitems	(_mediaitems & mediaitems);    
 
-			virtual void write(const std::wstring & RootPath);
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 
 		private:
-			content_file	content_;			
-			settings_file	settings_;
-			styles_file		styles_;
+			content_file	content;			
+			settings_file	settings;
+			styles_file		styles;
 			
-			element_ptr		meta_;
+			element_ptr		meta;
 
-			element_ptr		media_;
-			element_ptr		pictures_;
-			element_ptr		oleObjects_;
-			element_ptr		imageObjects_;
+			element_ptr		media;
+			element_ptr		pictures;
+			element_ptr		oleObjects;
+			element_ptr		imageObjects;
 		};		
 		class odf_document : public element
 		{
@@ -215,11 +230,14 @@ namespace odf_writer
 			odf_document(std::wstring type);
 			
 			void add_object(element_ptr _object,bool root = false);
+			void add_binary(const std::wstring &file_name, const std::string &value);
 			
 			void set_rels(rels & r);
 			
-			virtual void write(const std::wstring & RootPath);
+			virtual void write(const std::wstring & RootPath, bool add_padding = false);
+			void write_manifest(const std::wstring & RootPath);
 
+			manifect_file* get_manifest() {return dynamic_cast<manifect_file*>(manifest_.get());}
 		private:
 			element_ptr					base_;
 			std::vector<element_ptr>	objects_;

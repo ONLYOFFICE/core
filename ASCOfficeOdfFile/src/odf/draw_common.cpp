@@ -36,8 +36,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/odf/odf_document.h>
+#include <xml/attributes.h>
+#include <odf/odf_document.h>
 
 #include "serialize_elements.h"
 
@@ -51,20 +51,23 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 #include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace _image_file_
 {
-    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, CApplicationFonts	* appFonts)
+    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, NSFonts::IApplicationFonts* appFonts)
 	{
-		CBgraFrame image;
-		MetaFile::CMetaFile meta_file(appFonts);
+		if (!appFonts) return false;
 
-		if ( meta_file.LoadFromFile(fileName))
+		CBgraFrame image;
+        MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
+
+        bool bRet = false;
+        if ( meta_file->LoadFromFile(fileName))
 		{
 			double dX = 0, dY = 0, dW = 0, dH = 0;
-			meta_file.GetBounds(&dX, &dY, &dW, &dH);
+            meta_file->GetBounds(&dX, &dY, &dW, &dH);
 			
 			Width  = dW;
 			Height = dH;
@@ -74,13 +77,13 @@ namespace _image_file_
 			Width  = image.get_Width();
 			Height = image.get_Height();
 
-			return true;
+            bRet = true;
 		}
 
-
-		return false;
+        RELEASEOBJECT(meta_file);
+        return bRet;
 	}
-};
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace cpdoccore { 
 
@@ -98,7 +101,7 @@ int get_value_emu(double pt)
 {
     return static_cast<int>((pt* 360000 * 2.54) / 72);
 } 
-bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, CApplicationFonts	* appFonts)
+bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts	* appFonts)
 {
     memset(clip_rect, 0, 4*sizeof(double));
 
@@ -411,11 +414,11 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 	{
 		if (style_background_image * image = dynamic_cast<style_background_image *>(style_image.get()))
 		{
-			if ((image) && (image->common_xlink_attlist_))
+			if ((image) && (image->xlink_attlist_))
 			{
 				fill.type	= 2;
 				fill.bitmap = oox::oox_bitmap_fill::create();
-				fill.bitmap->xlink_href_ = image->common_xlink_attlist_->href_.get_value_or(L"");
+				fill.bitmap->xlink_href_ = image->xlink_attlist_->href_.get_value_or(L"");
 				if (image->style_repeat_)
 				{
 					switch(image->style_repeat_->get_type())
@@ -549,7 +552,7 @@ void draw_a::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
 }
 void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	common_xlink_attlist_.add_attributes(Attributes);
+	xlink_attlist_.add_attributes(Attributes);
 
     CP_APPLY_ATTR(L"office:name"				, office_name_				, std::wstring(L""));
     CP_APPLY_ATTR(L"office:target-frame-name"	, office_target_frame_name_);
@@ -561,7 +564,7 @@ void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	Context.get_drawing_context().start_action(L"");
-		Context.get_drawing_context().set_link(common_xlink_attlist_.href_.get_value_or(L""));
+		Context.get_drawing_context().set_link(xlink_attlist_.href_.get_value_or(L""));
  	Context.get_drawing_context().end_action();
    
 	for (size_t i = 0; i < content_.size(); i++)
@@ -572,7 +575,7 @@ void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().start_action(L"");
-		Context.get_slide_context().set_link(common_xlink_attlist_.href_.get_value_or(L""));
+		Context.get_slide_context().set_link(xlink_attlist_.href_.get_value_or(L""));
  	Context.get_slide_context().end_action();
   
 	for (size_t i = 0; i < content_.size(); i++)
@@ -582,7 +585,7 @@ void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
-	std::wstring rId = Context.add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
+	std::wstring rId = Context.add_hyperlink(xlink_attlist_.href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
 	
 	for (size_t i = 0; i < content_.size(); i++)
 	{

@@ -17,15 +17,10 @@ DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
 
-CONFIG += build_all_zlib build_zlib_as_sources
-include(../OfficeUtils/OfficeUtils.pri)
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
-CONFIG += build_cximage_zlib_disable
-include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
-include(../DesktopEditor/xml/build/qt/libxml2.pri)
-
-#UnicodeConverter
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+DEFINES += CRYPTOPP_DISABLE_ASM
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 core_windows {
 

@@ -33,9 +33,8 @@
 #include "xlsx_fonts.h"
 #include "xlsx_font.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
-#include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
 
@@ -79,9 +78,9 @@ void xlsx_fonts::Impl::serialize(std::wostream & _Wostream) const
 {
     std::vector<xlsx_font> fonts;
             
-    BOOST_FOREACH(const xlsx_font & fnt, fonts_)
+	for (boost::unordered_set<xlsx_font, boost::hash<xlsx_font>>::iterator it = fonts_.begin(); it != fonts_.end(); ++it)
     {
-        fonts.push_back(fnt);
+        fonts.push_back(*it);
     }
 
     std::sort(fonts.begin(), fonts.end(), compare_xlsx_fonts());
@@ -91,6 +90,7 @@ void xlsx_fonts::Impl::serialize(std::wostream & _Wostream) const
         CP_XML_NODE(L"fonts")
         {
             CP_XML_ATTR(L"count", fonts.size());
+			
 			for (size_t i = 0; i < fonts.size(); ++i)
 			{
 				xlsx_serialize(CP_XML_STREAM(), fonts[i]);

@@ -62,6 +62,10 @@ namespace NSCommon
 	class nullable_double;
 	class nullable_sizet;
 }
+namespace NSStringUtils
+{
+	class CStringBuilder;
+}
 namespace PPTX
 {
 	class Theme;
@@ -85,7 +89,6 @@ namespace NSFontCutter
 
 namespace NSBinPptxRW
 {
-	class CStringWriter;
 	class CCommonWriter;
 	class CSeekTableEntry;
 
@@ -400,7 +403,7 @@ namespace NSBinPptxRW
 	class CRelsGenerator
 	{
 	private:
-		CStringWriter*								m_pWriter;
+		NSStringUtils::CStringBuilder*				m_pWriter;
 		std::map<std::wstring, _relsGeneratorInfo>	m_mapImages;
 		std::map<std::wstring, int>					m_mapLinks;
 	public:

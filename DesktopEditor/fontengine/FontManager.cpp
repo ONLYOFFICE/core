@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -36,33 +36,19 @@
 #include FT_LCD_FILTER_H
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-CFontStream::CFontStream()
+CFontStream::CFontStream() : NSFonts::IFontStream()
 {
 	m_pData	= NULL;
 	m_lSize = 0;
-	m_lRef = 1;
     m_bIsAttach = false;
 }
 CFontStream::~CFontStream()
 {
     if (!m_bIsAttach)
-	RELEASEARRAYOBJECTS(m_pData);
+        RELEASEARRAYOBJECTS(m_pData);
 }
 
-int CFontStream::AddRef()
-{
-	++m_lRef;
-	return m_lRef;
-}
-int CFontStream::Release()
-{
-	int ret = --m_lRef;
-	if (0 == m_lRef)
-		delete this;
-	return ret;
-}
-
-INT CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
+int CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 {
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(strFileName))
@@ -95,7 +81,7 @@ INT CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 	return true;
 }
 
-CApplicationFontStreams::CApplicationFontStreams()
+CApplicationFontStreams::CApplicationFontStreams() : NSFonts::IApplicationFontStreams()
 {
 }
 CApplicationFontStreams::~CApplicationFontStreams()
@@ -103,7 +89,7 @@ CApplicationFontStreams::~CApplicationFontStreams()
     Clear();
 }
 
-CFontStream* CApplicationFontStreams::GetStream(const std::wstring &strFile)
+NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &strFile)
 {
 	CFontStream* pStream = m_mapStreams[strFile];
 
@@ -126,14 +112,15 @@ void CApplicationFontStreams::Clear()
     for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
     {
         CFontStream* pFile = iter->second;
-        RELEASEOBJECT(pFile);
+        RELEASEINTERFACE(pFile);
     }
     m_mapStreams.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-CFontFile* CFontManager::LoadFontFile(FT_Library library, CFontStream* pStream, LONG lFaceIndex)
+NSFonts::IFontFile* NSFonts::IFontManager::LoadFontFile(NSFonts::CLibrary& library, NSFonts::IFontStream* pStreamI, int lFaceIndex)
 {
+    CFontStream* pStream = (CFontStream*)pStreamI;
 	FT_Open_Args oOpenArgs;
 	oOpenArgs.flags			= FT_OPEN_MEMORY | FT_OPEN_PARAMS;
 	oOpenArgs.memory_base	= pStream->m_pData;
@@ -153,7 +140,7 @@ CFontFile* CFontManager::LoadFontFile(FT_Library library, CFontStream* pStream, 
 	oOpenArgs.num_params = 4;
 
 	FT_Face pFace;
-	if ( FT_Open_Face( library, &oOpenArgs, lFaceIndex, &pFace ) )
+    if ( FT_Open_Face( library.m_internal->m_library, &oOpenArgs, lFaceIndex, &pFace ) )
 		return NULL;
 
 	::free(pParams);
@@ -184,7 +171,7 @@ CFontFile* CFontManager::LoadFontFile(FT_Library library, CFontStream* pStream, 
 	return pFont;
 }
 
-CFontFile* CFontsCache::LockFont(FT_Library library, const std::wstring& strFileName, const LONG& lFaceIndex, const double& dSize)
+NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std::wstring& strFileName, const int& lFaceIndex, const double& dSize)
 {
 	if (NULL == m_pApplicationFontStreams)
 		return NULL;
@@ -202,8 +189,8 @@ CFontFile* CFontsCache::LockFont(FT_Library library, const std::wstring& strFile
 	if (NULL != pFile)
 		return pFile;
 
-	CFontStream* pStream = m_pApplicationFontStreams->GetStream(strFileName);
-	pFile = CFontManager::LoadFontFile(library, pStream, lFaceIndex);
+    CFontStream* pStream = (CFontStream*)m_pApplicationFontStreams->GetStream(strFileName);
+    pFile = (CFontFile*)CFontManager::LoadFontFile(library, pStream, lFaceIndex);
 	if (NULL == pFile)
 		return NULL;
 
@@ -233,7 +220,7 @@ CFontFile* CFontsCache::LockFont(FT_Library library, const std::wstring& strFile
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-CFontManager::CFontManager()
+CFontManager::CFontManager() : NSFonts::IFontManager()
 {
 	m_pLibrary = NULL;
 	FT_Init_FreeType(&m_pLibrary);
@@ -245,7 +232,6 @@ CFontManager::CFontManager()
 
 	m_bStringGID = FALSE;
 	m_nLOAD_MODE = 40968;
-	m_lRef = 1;
 
 	m_nRENDER_MODE = FT_RENDER_MODE_NORMAL;
 
@@ -266,10 +252,14 @@ CFontManager::~CFontManager()
 	}
 	RELEASEOBJECT(m_pOwnerCache);
 }
-void CFontManager::SetOwnerCache(CFontsCache* pCache)
+void CFontManager::SetOwnerCache(NSFonts::IFontsCache* pCache)
 {
-	m_pOwnerCache = pCache;
+    m_pOwnerCache = (CFontsCache*)pCache;
 }
+
+NSFonts::IFontsCache* CFontManager::GetCache() { return m_pOwnerCache; }
+NSFonts::IApplicationFonts* CFontManager::GetApplication() { return m_pApplication; }
+NSFonts::IFontFile* CFontManager::GetFile() { return m_pFont; }
 
 void CFontManager::AfterLoad()
 {
@@ -347,7 +337,7 @@ INT CFontManager::LoadString2(const unsigned int* pGids, const unsigned int& nGi
     return TRUE;
 }
 
-INT CFontManager::LoadString3(const LONG& gid, const float &fX, const float &fY)
+INT CFontManager::LoadString3(const int& gid, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -360,7 +350,7 @@ INT CFontManager::LoadString3(const LONG& gid, const float &fX, const float &fY)
 	return TRUE;
 }
 
-INT CFontManager::LoadString3C(const LONG& gid, const float &fX, const float &fY)
+INT CFontManager::LoadString3C(const int& gid, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -373,7 +363,7 @@ INT CFontManager::LoadString3C(const LONG& gid, const float &fX, const float &fY
 	return TRUE;
 }
 
-INT CFontManager::LoadString2C(const LONG& code, const float &fX, const float &fY)
+INT CFontManager::LoadString2C(const int& code, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -392,6 +382,19 @@ TFontCacheSizes CFontManager::MeasureChar(const LONG &lUnicode)
 		return oRet;
 	}
 	return m_pFont->GetChar(lUnicode);
+}
+
+TBBoxAdvance CFontManager::MeasureChar2(const LONG& lUnicode)
+{
+    TBBoxAdvance ret;
+    if (NULL == m_pFont)
+        return ret;
+
+    TFontCacheSizes sizes = m_pFont->GetChar(lUnicode);
+    ret.box = sizes.oBBox;
+    ret.fAdvanceX = sizes.fAdvanceX;
+    ret.fAdvanceY = sizes.fAdvanceY;
+    return ret;
 }
 
 int CFontManager::GetKerning(UINT unPrevGID, UINT unGID)
@@ -565,7 +568,7 @@ void CFontManager::SetCharSpacing(const double &dCharSpacing)
 	m_pFont->SetCharSpacing(m_fCharSpacing);
 }
 
-INT CFontManager::GetStringPath(ISimpleGraphicsPath* pInterface)
+INT CFontManager::GetStringPath(NSFonts::ISimpleGraphicsPath* pInterface)
 {
 	if (NULL == pInterface)
 		return FALSE;
@@ -586,11 +589,11 @@ INT CFontManager::GetStringPath(ISimpleGraphicsPath* pInterface)
 		{
 			if (glyphstateNormal == pCurGlyph->eState)
 			{
-				pPath = m_pFont->GetGlyphPath(pCurGlyph->lUnicode);
+                pPath = (CFontPath*)m_pFont->GetGlyphPath(pCurGlyph->lUnicode);
 			}
 			else
 			{
-				pPath = m_pFont->m_pDefaultFont->GetGlyphPath(pCurGlyph->lUnicode);
+                pPath = (CFontPath*)m_pFont->m_pDefaultFont->GetGlyphPath(pCurGlyph->lUnicode);
 			}
 		}
 
@@ -613,40 +616,28 @@ INT CFontManager::GetStringPath(ISimpleGraphicsPath* pInterface)
 	return TRUE;
 }
 
-int CFontManager::AddRef()
+NSFonts::CFontInfo* CFontManager::GetFontInfoByParams(NSFonts::CFontSelectFormat& oFormat, bool bIsDictionaryUse)
 {
-	++m_lRef;
-	return m_lRef;
-}
-int CFontManager::Release()
-{
-	int ret = --m_lRef;
-	if (0 == m_lRef)
-		delete this;
-	return ret;
-}
-CFontInfo* CFontManager::GetFontInfoByParams(CFontSelectFormat& oFormat, bool bIsDictionaryUse)
-{
-	CFontInfo* pRes = NULL;
+    NSFonts::CFontInfo* pRes = NULL;
 	if (NULL != m_pApplication)
 	{
 		pRes = m_pApplication->GetList()->GetByParams(oFormat, bIsDictionaryUse);
 	}
 	return pRes;
 }
-CArray<CFontInfo*> CFontManager::GetAllStylesByFontName(const std::wstring& strName)
+std::vector<NSFonts::CFontInfo*> CFontManager::GetAllStylesByFontName(const std::wstring& strName)
 {
-	CArray<CFontInfo*> aRes;
+    std::vector<NSFonts::CFontInfo*> aRes;
 	if (NULL != m_pApplication)
-		aRes = m_pApplication->GetList()->GetAllByName(strName);
+        aRes = ((CFontList*)(m_pApplication->GetList()))->GetAllByName(strName);
 	return aRes;
 }
-INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
+INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize, const int& lStyle, const double& dDpiX, const double& dDpiY)
 {
 	if (NULL == m_pApplication)
 		return FALSE;
 
-	CFontSelectFormat oFormat;
+    NSFonts::CFontSelectFormat oFormat;
 	oFormat.wsName = new std::wstring(sName);
 
     oFormat.bBold = new INT(FALSE);
@@ -657,7 +648,7 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 	if (lStyle & 0x02)
 		*oFormat.bItalic = TRUE;
 
-	CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat);
+    NSFonts::CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat);
 	if (NULL == pInfo)
 		return FALSE;
 
@@ -683,11 +674,13 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
 	if (NULL == m_pApplication)
 		return FALSE;
 
-	CFontsCache* pCache		= (m_pOwnerCache != NULL) ? m_pOwnerCache : m_pApplication->GetCache();
+    CFontsCache* pCache		= (CFontsCache*)((m_pOwnerCache != NULL) ? m_pOwnerCache : m_pApplication->GetCache());
 	
-	m_pFont = pCache->LockFont(m_pLibrary, sPath, lFaceIndex, dSize);
-        if (NULL == m_pFont)
-            return FALSE;
+    NSFonts::CLibrary library;
+    library.m_internal->m_library = m_pLibrary;
+    m_pFont = (CFontFile*)pCache->LockFont(library, sPath, lFaceIndex, dSize);
+    if (NULL == m_pFont)
+        return FALSE;
 
 	m_pFont->m_pFontManager = this;
 	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
@@ -701,12 +694,14 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
 	return TRUE;
 }
 
-INT CFontManager::LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
+INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
 {
 	if (NULL == pCache)
 		return FALSE;
 
-	m_pFont = pCache->LockFont(m_pLibrary, sPath, lFaceIndex, dSize);
+    NSFonts::CLibrary library;
+    library.m_internal->m_library = m_pLibrary;
+    m_pFont = (CFontFile*)pCache->LockFont(library, sPath, lFaceIndex, dSize);
 	m_pFont->m_pFontManager = this;
 	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
 
@@ -728,14 +723,14 @@ void CFontManager::CloseFont()
     }
 }
 
-std::wstring CFontManager::GetFontType() const
+std::wstring CFontManager::GetFontType()
 {
 	if (!m_pFont)
 		return L"";
 
 	return m_pFont->GetFontFormat();
 }
-unsigned int CFontManager::GetNameIndex(const std::wstring& wsName) const
+unsigned int CFontManager::GetNameIndex(const std::wstring& wsName)
 {
 	if (!m_pFont)
 		return 0;
@@ -751,4 +746,32 @@ void CFontManager::SetSubpixelRendering(const bool& hmul, const bool& vmul)
         m_nRENDER_MODE = FT_RENDER_MODE_LCD_V;
     else
         m_nRENDER_MODE = FT_RENDER_MODE_NORMAL;
+}
+
+void CFontManager::GetFace(double& d0, double& d1, double& d2)
+{
+    d0 = 2048;
+    d1 = 0;
+    d2 = 0;
+    
+    if (m_pFont)
+    {
+        TT_OS2* os2 = NULL;
+        TT_Header* header = NULL;
+        if (m_pFont->m_pFace)
+        {
+            if ((header = (TT_Header*)FT_Get_Sfnt_Table(m_pFont->m_pFace, ft_sfnt_head)) != NULL)
+            {
+                d1 = header->yMax;
+                d2 = header->yMin;
+                d0 = header->Units_Per_EM;
+            }
+            
+            if ((os2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFont->m_pFace, ft_sfnt_os2)) != NULL && os2->version != 0xFFFFU)
+            {
+                d1 = os2->usWinAscent;
+                d2 = -os2->usWinDescent;
+            }
+        }
+    }
 }

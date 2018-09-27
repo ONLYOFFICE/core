@@ -53,6 +53,10 @@
 #include "../DocxFormat/Diagram/DiagramDrawing.h"
 #include "../DocxFormat/Diagram/DiagramData.h"
 
+#ifdef CreateFile
+#undef CreateFile
+#endif
+
 namespace OOX
 {
 	namespace Spreadsheet

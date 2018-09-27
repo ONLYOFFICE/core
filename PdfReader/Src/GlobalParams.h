@@ -38,8 +38,7 @@
 #include "CharTypes.h"
 
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
-#include "../../DesktopEditor/fontengine/FontManager.h"
-
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace PdfReader
 {
@@ -80,8 +79,8 @@ namespace PdfReader
 		void               SetTempFolder(const wchar_t* wsTempFolder);
 		std::wstring       FindFontFile(StringExt* seFontName, wchar_t** pwsExts);
 		void               SetCMapFolder(const wchar_t* wsDir);
-		void               SetFontManager(CFontManager* pFontManager);
-		CFontManager*      GetFontManager() const;
+        void               SetFontManager(NSFonts::IFontManager* pFontManager);
+        NSFonts::IFontManager*      GetFontManager() const;
 		std::wstring       GetBuiltinFontPath(StringExt* seFontName) const;
 
 	private:
@@ -96,7 +95,7 @@ namespace PdfReader
 		std::wstring            m_wsCMapDirectory;       // Путь к папке с CMap файлами
 		std::wstring            m_wsTempDirectory;
 
-		CFontManager*           m_pFontManager;
+        NSFonts::IFontManager*  m_pFontManager;
 		std::wstring            m_arrBuiltinFontsPath[14]; // Пути к стандартным 14 шрифтам
 	};
 }

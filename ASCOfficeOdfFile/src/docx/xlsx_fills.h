@@ -32,9 +32,9 @@
 #pragma once
 
 #include <string>
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 #include <iosfwd>
-#include <cpdoccore/CPScopedPtr.h>
+#include <CPScopedPtr.h>
 #include "xlsx_fill.h"
 
 namespace cpdoccore { 

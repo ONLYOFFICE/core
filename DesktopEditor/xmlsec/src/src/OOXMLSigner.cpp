@@ -69,7 +69,7 @@ public:
     std::string GetHashXml(const std::wstring& xml)
     {
         std::string sXmlSigned = U_TO_UTF8(xml);
-        sXmlSigned = CXmlCanonicalizator::Execute(sXmlSigned, XML_C14N_1_0);
+        sXmlSigned = XmlUtils::NSXmlCanonicalizator::Execute(sXmlSigned, XmlUtils::XML_C14N_1_0);
         return m_certificate->GetHash(sXmlSigned, m_certificate->GetHashAlg());
     }
 
@@ -517,7 +517,7 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         sSignedXml += sXml;
         sSignedXml += L"</xd:SignedProperties>";
 
-        std::string sXmlTmp = CXmlCanonicalizator::Execute(U_TO_UTF8(sSignedXml), XML_C14N_1_0);
+        std::string sXmlTmp = XmlUtils::NSXmlCanonicalizator::Execute(U_TO_UTF8(sSignedXml), XmlUtils::XML_C14N_1_0);
 
         m_signed_info.WriteString("<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">");
         m_signed_info.WriteString("<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>");
@@ -568,7 +568,7 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
 
         std::string sSignedInfoData = m_signed_info.GetData();
         std::string sSignedXml = "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedInfoData + "</SignedInfo>";
-        sSignedXml = CXmlCanonicalizator::Execute(sSignedXml, XML_C14N_1_0);
+        sSignedXml = XmlUtils::NSXmlCanonicalizator::Execute(sSignedXml, XmlUtils::XML_C14N_1_0);
         sSignedXml = m_certificate->Sign(sSignedXml);
 
         NSStringUtils::CStringBuilder builderResult;

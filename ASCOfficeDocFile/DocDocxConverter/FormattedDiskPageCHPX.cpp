@@ -52,8 +52,8 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	FormattedDiskPageCHPX::FormattedDiskPageCHPX( POLE::Stream* wordStream, int offset, bool oldVersion  ):
-																FormattedDiskPage(), rgb(NULL), grpchpxSize(NULL), grpchpx(NULL) 
+	FormattedDiskPageCHPX::FormattedDiskPageCHPX( POLE::Stream* wordStream, int offset, int nWordVersion ):
+																FormattedDiskPage(), rgb(NULL), grpchpxSize(0), grpchpx(NULL) 
 	{
 		Type = Character;
 		WordStream = wordStream;
@@ -80,7 +80,6 @@ namespace DocFileFormat
 			j += 4;
 		}
 
-		//create arrays
 		grpchpxSize		= crun;
 		rgb				= new unsigned char[crun];
 		grpchpx			= new CharacterPropertyExceptions*[grpchpxSize];
@@ -104,11 +103,10 @@ namespace DocFileFormat
 
 				//read the bytes of chpx
 				chpx = new unsigned char[cb];
-				//Array.Copy(bytes, (wordOffset * 2) + 1, chpx, 0, chpx.Length);
 				memcpy( chpx, ( bytes + (wordOffset * 2) + 1 ), cb );
 
 				//parse CHPX and fill grpchpx
-				grpchpx[i] = new CharacterPropertyExceptions( chpx, cb, oldVersion);
+				grpchpx[i] = new CharacterPropertyExceptions( chpx, cb, nWordVersion);
 
 				RELEASEARRAYOBJECTS( chpx );
 			}
@@ -139,7 +137,7 @@ namespace DocFileFormat
 		}
 		//there are n offsets and n-1 fkp's in the bin table
 
-		if (fib->m_bOlderVersion)
+		if (fib->m_nWordVersion > 0)
 		{
 			int				n		= ( ( (int)fib->m_FibWord97.lcbPlcfBteChpx - 8 ) / 6 ) + 1;
 	
@@ -162,7 +160,7 @@ namespace DocFileFormat
 				int offset = fkpnr * 512;
 
 				//parse the FKP and add it to the list
-				CHPXlist->push_back( new FormattedDiskPageCHPX( wordStream, offset, fib->m_bOlderVersion ) );
+				CHPXlist->push_back( new FormattedDiskPageCHPX( wordStream, offset, fib->m_nWordVersion ) );
 			}
 		}
 		else
@@ -178,7 +176,7 @@ namespace DocFileFormat
 				int offset = fkpnr * 512;
 
 				//parse the FKP and add it to the list
-				CHPXlist->push_back( new FormattedDiskPageCHPX( wordStream, offset, fib->m_bOlderVersion ) );
+				CHPXlist->push_back( new FormattedDiskPageCHPX( wordStream, offset, fib->m_nWordVersion ) );
 			}
 		}
 

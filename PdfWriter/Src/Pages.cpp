@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -238,7 +238,7 @@ namespace PdfWriter
 			pGrState = pPrev;
 		}
 	}
-	void          CPage::SetWidth(double dValue)
+    void CPage::SetWidth(double dValue)
 	{
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(2, dValue);
@@ -247,7 +247,7 @@ namespace PdfWriter
 	{
 		return GetMediaBox().fRight;
 	}
-	void          CPage::SetHeight(double dValue)
+    void CPage::SetHeight(double dValue)
 	{
         dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(3, dValue);
@@ -258,7 +258,7 @@ namespace PdfWriter
 	}
 	TBox          CPage::GetMediaBox()
 	{
-		TBox oMediaBox ={ 0, 0, 0, 0 };
+		TBox oMediaBox = TRect( 0, 0, 0, 0 );
 
 		CArrayObject* pArray = GetMediaBoxItem();
 
@@ -285,7 +285,7 @@ namespace PdfWriter
 
 		return oMediaBox;
 	}
-	void          CPage::SetMediaBoxValue(unsigned int unIndex, double dValue)
+    void CPage::SetMediaBoxValue(unsigned int unIndex, double dValue)
 	{
 		CArrayObject* pArray = GetMediaBoxItem();
 		if (!pArray)
@@ -330,7 +330,7 @@ namespace PdfWriter
 	{
 		return Get("Rotate");
 	}
-	void          CPage::AddResource()
+    void CPage::AddResource()
 	{
 		CDictObject* pResource = new CDictObject();
 		if (!pResource)
@@ -351,7 +351,7 @@ namespace PdfWriter
 		pProcset->Add(new CNameObject("ImageC"));
 		pProcset->Add(new CNameObject("ImageI"));
 	}
-	void          CPage::BeforeWrite()
+    void CPage::BeforeWrite()
 	{
 		if (grmode_PATH == m_eGrMode)
 			EndPath();
@@ -364,16 +364,16 @@ namespace PdfWriter
 			GrRestore();
 		}
 	}
-	void          CPage::SetGrMode(EGrMode eMode)
+    void CPage::SetGrMode(EGrMode eMode)
 	{
 		m_eGrMode = eMode;
 		// TODO: Сделать проверку плохих ситуаций
 	}
-	void          CPage::CheckGrMode(EGrMode eMode)
+    void CPage::CheckGrMode(EGrMode eMode)
 	{
 		// TODO: Сделать проверку плохих ситуаций
 	}
-	void          CPage::MoveTo (double dX, double dY)
+    void CPage::MoveTo (double dX, double dY)
 	{
 		// Operator   : m
 		// Description: Начинаем новый subpath, передвигая текущий указатель в точку (x, y)(она же стартовая). 
@@ -387,7 +387,7 @@ namespace PdfWriter
 		m_oCurPos.Set(dX, dY);
 		m_oStartPos = m_oCurPos;
 	}
-	void          CPage::LineTo (double dX, double dY)
+    void CPage::LineTo (double dX, double dY)
 	{
 		// Operator   : l
 		// Description: Добавляем линию от текущей точки до точки (x, y). Текущую точку выставляем (х, у).
@@ -400,7 +400,7 @@ namespace PdfWriter
 
 		m_oCurPos.Set(dX, dY);
 	}
-	void          CPage::CurveTo(double dX1, double dY1, double dX2, double dY2, double dX3, double dY3)
+    void CPage::CurveTo(double dX1, double dY1, double dX2, double dY2, double dX3, double dY3)
 	{
 		// Operator   : c
 		// Description: Добавляем кривую Безье(кубическую). Начинается кривая в текущей позиции, заканчивается
@@ -423,7 +423,7 @@ namespace PdfWriter
 
 		m_oCurPos.Set(dX3, dY3);
 	}
-	void          CPage::Ellipse(double dX, double dY, double dXRay, double dYRay)
+    void CPage::Ellipse(double dX, double dY, double dXRay, double dYRay)
 	{
 		SetGrMode(grmode_PATH);
 
@@ -440,7 +440,7 @@ namespace PdfWriter
 		m_oCurPos.Set(dX - dXRay, dY);
 		m_oStartPos = m_oCurPos;
 	}
-	void          CPage::EllipseArc(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection)
+    void CPage::EllipseArc(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection)
 	{
 		CheckGrMode(grmode_PATH);
 	
@@ -505,7 +505,7 @@ namespace PdfWriter
 		m_oCurPos.Set(dEndX, dEndY);
 		m_oStartPos = m_oCurPos;
 	}
-	void          CPage::EllipseArcTo(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection)
+    void CPage::EllipseArcTo(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection)
 	{
 		// Проверяем эллипс на невырожденность
 		if (dXRad < 0.001 || dYRad < 0.001)
@@ -562,7 +562,7 @@ namespace PdfWriter
 			}
 		}
 	}
-	void          CPage::ClosePath()
+    void CPage::ClosePath()
 	{
 		// Operator   : h
 		// Description: Закрываем subpath, соединяя текущую точку с начальной прямой линией. Если subpath
@@ -571,7 +571,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("h\012");
 		m_oCurPos = m_oStartPos;
 	}
-	void          CPage::Stroke()
+    void CPage::Stroke()
 	{
 		// Operator   : S
 		// Description: Обводим path.
@@ -580,7 +580,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("S\012");
 		m_oCurPos.Reset();
 	}
-	void          CPage::Fill()
+    void CPage::Fill()
 	{
 		// Operator   : f
 		// Description: Заливка path по правилу Nonzero Winding Number Rule(см. спецификацию PDF Part1: PDF 1.7 
@@ -589,7 +589,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("f\012");
 		m_oCurPos.Reset();
 	}
-	void          CPage::EoFill()
+    void CPage::EoFill()
 	{
 		// Operator   : f*
 		// Description: Заливка path по правилу Even-Odd Rule(см. спецификацию PDF Part1: PDF 1.7 стр. 137, 
@@ -598,7 +598,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("f*\012");
 		m_oCurPos.Reset();
 	}
-	void          CPage::FillStroke()
+    void CPage::FillStroke()
 	{
 		// Operator   : B
 		// Description: Заливка и обоводка path, используя правило для заливки Nonzero Winding Number Rule(см. 
@@ -609,7 +609,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("B\012");
 		m_oCurPos.Reset();
 	}
-	void          CPage::EoFillStroke()
+    void CPage::EoFillStroke()
 	{
 		// Operator   : B*
 		// Description: Заливка и обоводка path, используя правило для заливки Even-Odd Rule(см. 
@@ -620,7 +620,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("B*\012");
 		m_oCurPos.Reset();
 	}
-	void          CPage::EndPath()
+    void CPage::EndPath()
 	{
 		// Operator   : n
 		// Description: Закрываем path, не заливая и не обводя его. Этот оператор используется прежде всего для 
@@ -629,7 +629,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("n\012");
 		m_oCurPos.Reset();
 	}
-	void          CPage::SetLineWidth(double dLineWidth)
+    void CPage::SetLineWidth(double dLineWidth)
 	{
 		// Operator   : w 
 		// Descriprion: устанавливаем толщину линии
@@ -639,7 +639,7 @@ namespace PdfWriter
 		m_pStream->WriteStr(" w\012");
 		m_pGrState->m_dLineWidth = dLineWidth;
 	}
-	void          CPage::SetLineCap(ELineCapStyle eLineCap)
+    void CPage::SetLineCap(ELineCapStyle eLineCap)
 	{
 		// Operator   : J 
 		// Descriprion: устанавливаем вид окончания линии (LineCapStyle)
@@ -649,7 +649,7 @@ namespace PdfWriter
 		m_pStream->WriteStr(" J\012");
 		m_pGrState->m_eLineCap = eLineCap;
 	}
-	void          CPage::SetLineJoin(ELineJoinStyle eLineJoin)
+    void CPage::SetLineJoin(ELineJoinStyle eLineJoin)
 	{
 		// Operator   : j
 		// Descriprion: устанавливаем вид соединения линий (LineJoinStyle)
@@ -658,7 +658,7 @@ namespace PdfWriter
 		m_pStream->WriteStr(" j\012");
 		m_pGrState->m_eLineJoin = eLineJoin;
 	}
-	void          CPage::SetMiterLimit(double dMiterLimit)
+    void CPage::SetMiterLimit(double dMiterLimit)
 	{
 		// Operator   : M
 		// Descriprion: устанавливаем MiterLimit - константа, относящаяся к виду соединения линий
@@ -667,7 +667,7 @@ namespace PdfWriter
 		m_pStream->WriteStr(" M\012");
 		m_pGrState->m_dMiterLimit = dMiterLimit;
 	}
-	void          CPage::SetDash(const double* pPattern, unsigned int unCount, double dPhase)
+    void CPage::SetDash(const double* pPattern, unsigned int unCount, double dPhase)
 	{
 		// Operator   : d
 		// Descriprion: устанавливаем вид линий (DashMode)
@@ -700,7 +700,7 @@ namespace PdfWriter
 
 		m_pGrState->m_oDashMode.Set(pPattern, unCount, dPhase);
 	}
-	void          CPage::SetFlat(double dFlatness)
+    void CPage::SetFlat(double dFlatness)
 	{
 		// Operator   : i
 		// Descriprion: устанавливаем порог ошибки линии (Flatness tolerance)
@@ -709,7 +709,7 @@ namespace PdfWriter
 		m_pStream->WriteStr(" i\012");
 		m_pGrState->m_dFlatness = dFlatness;
 	}
-	void          CPage::GrSave()
+    void CPage::GrSave()
 	{
 		// Operator   : q
 		// Description: сохраняем текущий GState в графическом стеке
@@ -721,7 +721,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 		m_pGrState = pState;
 	}
-	void          CPage::GrRestore()
+    void CPage::GrRestore()
 	{
 		// Operator   : Q
 		// Description: Восстанавливаем GState, удаляя самый последний GState, и делаем данный GState текущим
@@ -736,7 +736,7 @@ namespace PdfWriter
 
 		m_pStream->WriteStr("Q\012");
 	}
-	void          CPage::SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB)
+    void CPage::SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB)
 	{
 		// Operator   : RG
 		// Description: Устанавливаем цветовое пространтсво для обводки в DeviceRGB и устанавливаем цвет для 
@@ -757,7 +757,7 @@ namespace PdfWriter
 		m_pGrState->m_oStrokeColor.g = dG;
 		m_pGrState->m_oStrokeColor.b = dB;
 	}
-	void          CPage::SetFillColor(unsigned char unR, unsigned char unG, unsigned char unB)
+    void CPage::SetFillColor(unsigned char unR, unsigned char unG, unsigned char unB)
 	{
 		// Operator   : rg
 		// Description: Устанавливаем цветовое пространтсво для заливки в DeviceRGB и устанавливаем цвет для 
@@ -778,7 +778,7 @@ namespace PdfWriter
 		m_pGrState->m_oFillColor.g = dG;
 		m_pGrState->m_oFillColor.b = dB;
 	}
-	void          CPage::Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+    void CPage::Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		// Operator   : cm
 		// Description: меняем матрицу преобразований (CTM - Current Transformation Matrix)
@@ -806,7 +806,7 @@ namespace PdfWriter
 		m_pGrState->m_oMatrix.x   =   dX * oCTM.m11 + dY * oCTM.m21 + oCTM.x;
 		m_pGrState->m_oMatrix.y   =   dX * oCTM.m12 + dY * oCTM.m22 + oCTM.y;
 	}
-	void          CPage::SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+    void CPage::SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		CMatrix oInverse = m_pGrState->m_oMatrix.Inverse();
 
@@ -821,7 +821,7 @@ namespace PdfWriter
 		if (!oResult.IsIdentity())
 			Concat(oResult.m11, oResult.m12, oResult.m21, oResult.m22, oResult.x, oResult.y);
 	}
-	void          CPage::Clip()
+    void CPage::Clip()
 	{
 		// Operator   : W
 		// Description: Изменяем текущий clipping path, пересакая его с текущим path, ипользуя правило Nonzero 
@@ -829,7 +829,7 @@ namespace PdfWriter
 		SetGrMode(grmode_CLIP);
 		m_pStream->WriteStr("W\012");
 	}
-	void          CPage::Eoclip()
+    void CPage::Eoclip()
 	{
 		// Operator   : W*
 		// Description: Изменяем текущий clipping path, пересакая его с текущим path, ипользуя правило Even-Odd 
@@ -837,8 +837,11 @@ namespace PdfWriter
 		SetGrMode(grmode_CLIP);
 		m_pStream->WriteStr("W*\012");
 	}
-	void          CPage::SetExtGrState(CExtGrState* pState)
+    void CPage::SetExtGrState(CExtGrState* pState)
 	{
+		if (!pState)
+			return;
+
 		// Operator   : gs
 		// Description: устанавливаем сразу все настройки данного графического состояния(ExtGState)
 
@@ -883,7 +886,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-	void          CPage::AddAnnotation(CAnnotation* pAnnot)
+    void CPage::AddAnnotation(CAnnotation* pAnnot)
 	{
 		CArrayObject* pArray = (CArrayObject*)Get("Annots");
 		if (!pArray)
@@ -897,7 +900,7 @@ namespace PdfWriter
 	
 	    return pArray->Add(pAnnot);
 	}
-	void          CPage::BeginText()
+    void CPage::BeginText()
 	{
 		// Operator   : BT
 		// Description: Начало текста
@@ -907,7 +910,7 @@ namespace PdfWriter
 		m_oTextPos.Reset();
 		m_oTextMatrix.Reset();
 	}
-	void          CPage::EndText()
+    void CPage::EndText()
 	{
 		// Operator   : ET
 		// Description: Окончание текста
@@ -915,7 +918,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("ET\012");	
 		SetGrMode(grmode_PAGE);
 	}
-	void          CPage::MoveTextPos(double dX, double dY)
+    void CPage::MoveTextPos(double dX, double dY)
 	{
 		// Operator   : Td
 		// Description: Переходим к началу следующей линии, сдвигаясь от начала текущей на ( fX, fY ).
@@ -930,7 +933,7 @@ namespace PdfWriter
 		m_oTextMatrix.y += dX * m_oTextMatrix.m12 + dY * m_oTextMatrix.m22;
 		m_oTextPos.Set(m_oTextMatrix.x, m_oTextMatrix.y);
 	}
-	void          CPage::ShowText(const BYTE* sText, unsigned int unLen)
+    void CPage::ShowText(const BYTE* sText, unsigned int unLen)
 	{
 		// Operator   : Tj
 		// Description: Показать текстовую строку.
@@ -938,7 +941,7 @@ namespace PdfWriter
 		WriteText(sText, unLen);
 		m_pStream->WriteStr(" Tj\012");
 	}
-	void          CPage::WriteText(const BYTE* sText, unsigned int unLen)
+    void CPage::WriteText(const BYTE* sText, unsigned int unLen)
 	{
 		EFontType eType = m_pFont->GetFontType();
 		if (fontCIDType0 == eType || fontCIDType0C == eType || fontCIDType0COT == eType || fontCIDType2 == eType || fontCIDType2OT == eType)
@@ -952,7 +955,7 @@ namespace PdfWriter
 			m_pStream->WriteEscapeText(sText, unLen);
 		}
 	}
-	void          CPage::DrawText(double dXpos, double dYpos, const BYTE* sText, unsigned int unLen)
+    void CPage::DrawText(double dXpos, double dYpos, const BYTE* sText, unsigned int unLen)
 	{
 		CheckGrMode(grmode_TEXT);
 
@@ -973,7 +976,7 @@ namespace PdfWriter
 		MoveTextPos(dX, dY);
 		ShowText(sText, unLen);
 	}
-	void          CPage::DrawTextLine(const CTextLine* pTextLine)
+    void CPage::DrawTextLine(const CTextLine* pTextLine)
 	{
 		if (!pTextLine)
 			return;
@@ -1025,7 +1028,7 @@ namespace PdfWriter
 			m_pStream->WriteStr("]TJ\012");
 		}
 	}
-	void          CPage::SetCharSpace(double dValue)
+    void CPage::SetCharSpace(double dValue)
 	{
 		// Operator   : Tc
 		// Description: Устанавливаем расстояние между буквами
@@ -1035,7 +1038,7 @@ namespace PdfWriter
 		m_pStream->WriteReal(dValue);
 		m_pStream->WriteStr(" Tc\012");
 	}
-	void          CPage::SetHorizontalScalling(double dValue)
+    void CPage::SetHorizontalScalling(double dValue)
 	{
 		// Operator   : Tz
 		// Description: Устанавливаем горизонтальное растяжение/сжатие
@@ -1045,7 +1048,7 @@ namespace PdfWriter
 		m_pStream->WriteReal(dValue);
 		m_pStream->WriteStr(" Tz\012");
 	}
-	void          CPage::SetFontAndSize(CFontDict* pFont, double dSize)
+    void CPage::SetFontAndSize(CFontDict* pFont, double dSize)
 	{
 		// Operator   : Tf
 		// Description: Устанавливаем фонт и размер фонта
@@ -1094,7 +1097,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-	void          CPage::SetTextRenderingMode(ETextRenderingMode eMode)
+    void CPage::SetTextRenderingMode(ETextRenderingMode eMode)
 	{
 		// Operator   : Tr
 		// Description: Устанавливаем тип закрашивания символов (TextRenderingMode)
@@ -1102,7 +1105,7 @@ namespace PdfWriter
 		m_pStream->WriteInt((int)eMode);
 		m_pStream->WriteStr(" Tr\012");
 	}
-	void          CPage::SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+    void CPage::SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		// Operator   : Tm
 		// Description: Устанавливаем матрицу преобразования для текста.
@@ -1129,7 +1132,7 @@ namespace PdfWriter
 		m_oTextMatrix.y = dY;
 		m_oTextPos.Set(m_oTextMatrix.x, m_oTextMatrix.y);
 	}
-	void          CPage::ExecuteXObject(CXObject* pXObject)
+    void CPage::ExecuteXObject(CXObject* pXObject)
 	{
 		const char* sXObjectName = GetXObjectName(pXObject);
 
@@ -1139,7 +1142,7 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName(sXObjectName);
 		m_pStream->WriteStr(" Do\012");
 	}
-	void          CPage::DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight)
+    void CPage::DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight)
 	{
 		GrSave();
 		Concat(dWidth, 0, 0, dHeight, dX, dY);
@@ -1177,7 +1180,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-	void          CPage::DrawShading(CShading* pShading)
+    void CPage::DrawShading(CShading* pShading)
 	{
 		// Operator   : sh
 		// Description: отрисовываем градиент
@@ -1189,13 +1192,13 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName(sShadingName);
 		m_pStream->WriteStr(" sh\012");
 	}
-	void          CPage::SetStrokeAlpha(unsigned char unAlpha)
+    void CPage::SetStrokeAlpha(unsigned char unAlpha)
 	{
 		CExtGrState* pExtGrState = m_pDocument->GetStrokeAlpha((double)(unAlpha / 255.0));
 		if (pExtGrState)
 			SetExtGrState(pExtGrState);
 	}
-	void          CPage::SetFillAlpha(unsigned char unAlpha)
+    void CPage::SetFillAlpha(unsigned char unAlpha)
 	{
 		CExtGrState* pExtGrState = m_pDocument->GetFillAlpha((double)(unAlpha / 255.0));
 		if (pExtGrState)
@@ -1263,7 +1266,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-	void          CPage::SetPatternColorSpace(CImageTilePattern* pPattern)
+    void CPage::SetPatternColorSpace(CImageTilePattern* pPattern)
 	{
 		// Operator   : csn
 		// Description: задаем паттерн для рисования
@@ -1276,7 +1279,7 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName(sPatternName);
 		m_pStream->WriteStr(" scn\012");		
 	}
-	void          CPage::SetFilter(unsigned int unFiler)
+    void CPage::SetFilter(unsigned int unFiler)
 	{
 		if (m_pContents)
 			m_pContents->SetFilter(unFiler);
@@ -1285,7 +1288,7 @@ namespace PdfWriter
 	{
 		return &m_pGrState->m_oMatrix;
 	}
-	void          CPage::AddGroup(CDictObject* pDict)
+    void CPage::AddGroup(CDictObject* pDict)
 	{
 		Add("Group", pDict);
 	}

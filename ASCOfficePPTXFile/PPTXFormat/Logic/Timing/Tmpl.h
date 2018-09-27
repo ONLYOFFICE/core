@@ -49,7 +49,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				tnLst	= node.ReadNode(_T("p:tnLst"));
-				node.ReadAttributeBase(L"lvl", lvl);
+                XmlMacroReadAttributeBase(node, L"lvl", lvl);
 				FillParentPointersForChilds();
 			}
 

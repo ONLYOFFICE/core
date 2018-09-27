@@ -34,8 +34,8 @@
 
 #include "pptx_package.h"
 
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
 
 #include <iostream>
 
@@ -45,7 +45,7 @@
 
 #include "pptx_default_serializes.h"
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore { 
 
@@ -72,7 +72,7 @@ pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odf
 	,last_idx_placeHolder	(1)
 	,last_uniq_big_id		(1)
 {
-    applicationFonts_ = new CApplicationFonts();
+    applicationFonts_ = NSFonts::NSApplication::Create();
 }
 
 pptx_conversion_context::~pptx_conversion_context()
@@ -694,12 +694,17 @@ void pptx_conversion_context::start_chart(std::wstring name)
 	//этот контекст нужно передавать в файл
 
 }
-
 void pptx_conversion_context::end_chart()
 {
 	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
 	//излишняя инфа
 }
-
+void pptx_conversion_context::add_jsaProject(const std::string &content)
+{
+	if (content.empty()) return;
+	
+	output_document_->get_ppt_files().add_jsaProject(content);
+	output_document_->get_content_types_file().add_or_find_default(L"bin");
+}
 }
 }

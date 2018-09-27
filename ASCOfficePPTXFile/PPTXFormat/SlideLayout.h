@@ -98,12 +98,12 @@ namespace PPTX
 			if(hf.is_init())
 				hf->SetParentFilePointer(this);
 
-			oNode.ReadAttributeBase(L"matchingName", matchingName);
-			oNode.ReadAttributeBase(L"preserve", preserve);
-			oNode.ReadAttributeBase(L"showMasterPhAnim", showMasterPhAnim);
-			oNode.ReadAttributeBase(L"showMasterSp", showMasterSp);
-			oNode.ReadAttributeBase(L"type", attrType);
-			oNode.ReadAttributeBase(L"userDrawn", userDrawn);
+            XmlMacroReadAttributeBase(oNode, L"matchingName", matchingName);
+            XmlMacroReadAttributeBase(oNode, L"preserve", preserve);
+            XmlMacroReadAttributeBase(oNode, L"showMasterPhAnim", showMasterPhAnim);
+            XmlMacroReadAttributeBase(oNode, L"showMasterSp", showMasterSp);
+            XmlMacroReadAttributeBase(oNode, L"type", attrType);
+            XmlMacroReadAttributeBase(oNode, L"userDrawn", userDrawn);
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{

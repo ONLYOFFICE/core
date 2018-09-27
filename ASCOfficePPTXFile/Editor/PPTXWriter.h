@@ -32,6 +32,7 @@
 #pragma once
 #include "Converter.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
@@ -323,7 +324,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			pPair = m_mainTables.find(NSMainTables::NotesMastersRels);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesMastersRels);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -377,7 +378,7 @@ namespace NSBinPptxRW
 				m_arSlideMasters_Theme[i].m_lThemeIndex = arThemesDst[i];
 			}			
 	// themes
-			pPair = m_mainTables.find(NSMainTables::Themes);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Themes);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_oReader.m_strFolderThemes;
@@ -420,7 +421,7 @@ namespace NSBinPptxRW
 			}
 
 	// slideMasters
-			pPair = m_mainTables.find(NSMainTables::SlideMasters);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideMasters);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_strDstFolder  + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slideMasters");
@@ -472,7 +473,7 @@ namespace NSBinPptxRW
 			}
 
 	// slideLayouts
-			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideLayouts);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR+ _T("ppt")  + FILE_SEPARATOR_STR + _T("slideLayouts");
@@ -507,7 +508,7 @@ namespace NSBinPptxRW
 				}
 			}
 	// notes
-			pPair = m_mainTables.find(NSMainTables::NotesSlides);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesSlides);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -556,7 +557,7 @@ namespace NSBinPptxRW
 				}
 			}
 	// noteMasters
-			pPair = m_mainTables.find(NSMainTables::NotesMasters);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesMasters);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -601,7 +602,7 @@ namespace NSBinPptxRW
 			}
 	// slides
 			int nComment = 1;
-			pPair = m_mainTables.find(NSMainTables::Slides);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Slides);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slides");
@@ -658,7 +659,7 @@ namespace NSBinPptxRW
             if (false)
 			{
 				// app
-				pPair = m_mainTables.find(NSMainTables::App);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::App);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -666,7 +667,7 @@ namespace NSBinPptxRW
 				}
 
 				// core
-				pPair = m_mainTables.find(NSMainTables::Core);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Core);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -674,7 +675,7 @@ namespace NSBinPptxRW
 				}
 
 				// tableStyles
-				pPair = m_mainTables.find(NSMainTables::TableStyles);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -682,7 +683,7 @@ namespace NSBinPptxRW
 				}
 
 				// presProps
-				pPair = m_mainTables.find(NSMainTables::PresProps);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -690,7 +691,7 @@ namespace NSBinPptxRW
 				}
 
 				// viewProps
-				pPair = m_mainTables.find(NSMainTables::ViewProps);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::ViewProps);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -707,7 +708,7 @@ namespace NSBinPptxRW
 				CreateDefaultViewProps();
 
 		// presProps
-				pPair = m_mainTables.find(NSMainTables::PresProps);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -718,7 +719,7 @@ namespace NSBinPptxRW
 					CreateDefaultPresProps();
 				}
 
-				pPair = m_mainTables.find(NSMainTables::TableStyles);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -771,7 +772,7 @@ namespace NSBinPptxRW
 			
 	// presentation
 			bool bIsAuthors = false;
-			pPair = m_mainTables.find(NSMainTables::Presentation);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Presentation);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder		= m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt");
@@ -1027,7 +1028,9 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			std::wstring sApplication = L"ONLYOFFICE";
+			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sApplication.empty())
+				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 #if defined(INTVER)
             std::string s = VALUE2STR(INTVER);
             sApplication += L"/" + std::wstring(s.begin(), s.end());

@@ -35,7 +35,7 @@
 class CRecordOutlineTextRefAtom : public CUnknownRecord
 {
 public:
-	DWORD m_nIndex;
+	_UINT32 m_nIndex;
 
 	
 	CRecordOutlineTextRefAtom()

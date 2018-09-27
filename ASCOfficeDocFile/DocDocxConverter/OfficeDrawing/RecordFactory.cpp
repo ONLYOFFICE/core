@@ -76,7 +76,7 @@ namespace DocFileFormat
 			{
 				result = pRecord->NewObject (reader, size, typeCode, version, instance);
 				if (result)
-					result->SiblingIdx			=	siblingIdx;
+					result->SiblingIdx		=	siblingIdx;
 				RELEASEOBJECT(pRecord);
 			}
 		}

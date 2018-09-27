@@ -32,9 +32,9 @@
 
 #include "font_face.h"
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
+#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 
@@ -134,7 +134,7 @@ void svg_font_face_name::add_text(const std::wstring & Text)
 
 void common_svg_font_face_xlink_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    common_xlink_attlist_.add_attributes(Attributes);
+    xlink_attlist_.add_attributes(Attributes);
 }
 
 // svg:definition-src

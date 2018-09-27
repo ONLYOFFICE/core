@@ -44,6 +44,14 @@
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
+
+	#if defined(_DEBUG)
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+	#else
+		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
@@ -77,6 +85,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 	std::wstring srcTempPath;
+	std::wstring srcTempPath2 = NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	if (fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT		||
 		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS	||
@@ -96,16 +105,17 @@ HRESULT convert_single(std::wstring srcFileName)
 	}
     _CP_LOG << L"[info] " << srcFileName << std::endl;
 	
-	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", false, NULL);
+	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", srcTempPath2, L"password", NULL);
 
 	if (srcTempPath != srcFileName)
 	{
 		NSDirectory::DeleteDirectory(srcTempPath);
 	}
+	NSDirectory::DeleteDirectory(srcTempPath2);
 
 	if (nResult == 0)
 	{   
-		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), true))
+		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath, dstPath, true))
 			nResult = -2;
 	}
 	

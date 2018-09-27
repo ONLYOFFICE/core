@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -32,17 +32,12 @@
 #ifndef _BUILD_FONT_ENGINE_FONTMANAGER_H_
 #define _BUILD_FONT_ENGINE_FONTMANAGER_H_
 
-#include "FontFile.h"
 #include <map>
 #include <list>
+#include "FontFile.h"
 
-class CFontSelectFormat;
-class CFontInfo;
-class CFontStream
+class CFontStream : public NSFonts::IFontStream
 {
-private:
-	int m_lRef;
-
 public:
 	BYTE*	m_pData;
 	LONG	m_lSize;
@@ -52,15 +47,11 @@ public:
 	CFontStream();
 	virtual ~CFontStream();
 
-	virtual int AddRef();
-	virtual int Release();
-	
-
 public:
-	virtual INT CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
+    virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
 };
 
-class CApplicationFontStreams
+class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 {
 private:
 	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
@@ -68,37 +59,37 @@ private:
 public:
 
 	CApplicationFontStreams();
-	~CApplicationFontStreams();
+    virtual ~CApplicationFontStreams();
 
 public:
-	CFontStream* GetStream(const std::wstring& strFile);
+    NSFonts::IFontStream* GetStream(const std::wstring& strFile);
 	void CheckStreams(std::map<std::wstring, bool>& mapFiles);
 	void Clear();
 };
 
-class CFontsCache
+class CFontsCache : public NSFonts::IFontsCache
 {
 	friend class CFontManager;
 	friend class CApplicationFonts;
 private:
 	std::map<std::string, CFontFile*>	m_mapFiles;
-	CApplicationFontStreams*			m_pApplicationFontStreams;
+    NSFonts::IApplicationFontStreams*	m_pApplicationFontStreams;
 
 private:
     std::list<std::string>              m_arFiles;
     int m_lCacheSize;
     
 public:
-    CFontsCache()
+    CFontsCache() : NSFonts::IFontsCache()
     {
         m_pApplicationFontStreams = NULL;
         m_lCacheSize = -1;
     }
-    ~CFontsCache()
+    virtual ~CFontsCache()
     {
         Clear();
     }
-    void Clear()
+    virtual void Clear()
     {
         for (std::map<std::string, CFontFile*>::iterator iter = m_mapFiles.begin(); iter != m_mapFiles.end(); ++iter)
         {
@@ -110,7 +101,7 @@ public:
         if (-1 != m_lCacheSize)
             m_arFiles.clear();
     }
-    void SetCacheSize(const int& lMaxSize)
+    virtual void SetCacheSize(const int& lMaxSize)
     {
         if (lMaxSize <= 0)
             m_lCacheSize = -1;
@@ -119,16 +110,15 @@ public:
     }
 
 public:
-	inline void SetStreams(CApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }
-	CFontFile* LockFont(FT_Library library, const std::wstring& strFileName, const LONG& lFaceIndex, const double& dSize);	
+    virtual void SetStreams(NSFonts::IApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }
+    virtual NSFonts::IFontFile* LockFont(NSFonts::CLibrary& library, const std::wstring& strFileName, const int& lFaceIndex, const double& dSize);
 };
 
 class CApplicationFonts;
-class CFontManager
+class CFontManager : public NSFonts::IFontManager
 {
 	friend class CApplicationFonts;
-private:
-	int m_lRef;
+
 public:
 	FT_Library		m_pLibrary;
 	
@@ -157,55 +147,67 @@ public:
 	~CFontManager();
 
 public:
-	void AfterLoad();
-	void Initialize();
+    virtual void AfterLoad();
 
-	void SetOwnerCache(CFontsCache* pCache);
+    virtual void Initialize();
+    virtual void SetOwnerCache(NSFonts::IFontsCache* pCache);
 
-	double UpdateSize(const double& dOldSize, const double& dDpi, const double& dNewDpi);
+    virtual NSFonts::IFontsCache* GetCache();
+    virtual NSFonts::IApplicationFonts* GetApplication();
+    virtual NSFonts::IFontFile* GetFile();
+
+    virtual double GetCharSpacing() { return m_fCharSpacing; }
+    virtual void SetCharSpacing(const double &dCharSpacing);
+
+    virtual int GetStringGID() { return m_bStringGID; }
+    virtual void SetStringGID(const int& bStringGID);
+
+    virtual int GetUnitsPerEm() { return m_lUnits_Per_Em; }
+    virtual int GetAscender() { return m_lAscender; }
+    virtual int GetDescender() { return m_lDescender; }
+    virtual int GetLineHeight() { return m_lLineHeight; }
+
+    virtual std::wstring GetName() { return m_sName; }
+
+    virtual double UpdateSize(const double& dOldSize, const double& dDpi, const double& dNewDpi);
 	
-	INT LoadString1(const std::wstring& wsBuffer, const float& fX, const float& fY);	
-	INT LoadString2(const std::wstring& wsBuffer, const float& fX, const float& fY);
-    INT LoadString1(const unsigned int* pGids, const unsigned int& nGidsCount, const float& fX, const float& fY);
-    INT LoadString2(const unsigned int* pGids, const unsigned int& nGidsCount, const float& fX, const float& fY);
-	INT LoadString3(const LONG& gid, const float& fX, const float& fY);
-	INT LoadString3C(const LONG& gid, const float& fX, const float& fY);
-	INT LoadString2C(const LONG& wsBuffer, const float& fX, const float& fY);
+    virtual INT LoadString1(const std::wstring& wsBuffer, const float& fX, const float& fY);
+    virtual INT LoadString2(const std::wstring& wsBuffer, const float& fX, const float& fY);
+    virtual INT LoadString1(const unsigned int* pGids, const unsigned int& nGidsCount, const float& fX, const float& fY);
+    virtual INT LoadString2(const unsigned int* pGids, const unsigned int& nGidsCount, const float& fX, const float& fY);
+    virtual INT LoadString3(const int& gid, const float& fX, const float& fY);
+    virtual INT LoadString3C(const int& gid, const float& fX, const float& fY);
+    virtual INT LoadString2C(const int& wsBuffer, const float& fX, const float& fY);
 
-	int GetKerning(UINT unPrevGID, UINT unGID);
-	INT GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
+    virtual int GetKerning(UINT unPrevGID, UINT unGID);
+    virtual INT GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
 
-    TFontCacheSizes MeasureChar(const LONG& lUnicode);
-	TBBox MeasureString();
-	TBBox MeasureString2();
+    virtual TFontCacheSizes MeasureChar(const LONG& lUnicode);
+
+    virtual TBBoxAdvance MeasureChar2(const LONG& lUnicode);
+    virtual TBBox MeasureString();
+    virtual TBBox MeasureString2();
 	
-	INT GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY);
+    virtual INT GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY);
 
-    INT SetTextMatrix(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
-	INT SetTextMatrix2(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
-	void SetStringGID(const INT& bStringGID);
-	void SetCharSpacing(const double &dCharSpacing);
+    virtual INT SetTextMatrix(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
+    virtual INT SetTextMatrix2(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
 
-	INT GetStringPath(ISimpleGraphicsPath* pPath);
+    virtual INT GetStringPath(NSFonts::ISimpleGraphicsPath* pPath);
 
-	// addref/release
-	virtual int AddRef();
-	virtual int Release();
+    virtual NSFonts::CFontInfo* GetFontInfoByParams(NSFonts::CFontSelectFormat& oFormat, bool bIsDictionaryUse = true);
+    virtual std::vector<NSFonts::CFontInfo*> GetAllStylesByFontName(const std::wstring& strName);
+    virtual INT LoadFontByName(const std::wstring& sName, const double& dSize, const int& lStyle, const double& dDpiX, const double& dDpiY);
+    virtual INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
+    virtual INT LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
+    virtual void CloseFont();
 
-	CFontInfo* GetFontInfoByParams(CFontSelectFormat& oFormat, bool bIsDictionaryUse = true);
-	CArray<CFontInfo*> GetAllStylesByFontName(const std::wstring& strName);
-	INT LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
-	INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
-	INT LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
-    void CloseFont();
+    virtual std::wstring GetFontType();
+    virtual unsigned int GetNameIndex(const std::wstring& wsName);
 
-	std::wstring GetFontType() const;
-	unsigned int GetNameIndex(const std::wstring& wsName) const;
-
-    void SetSubpixelRendering(const bool& hmul, const bool& vmul);
-	
-public:
-	static CFontFile* LoadFontFile(FT_Library library, CFontStream* pStream, LONG lFaceIndex);
+    virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
+    
+    virtual void GetFace(double& d0, double& d1, double& d2);
 };
 
 #endif // _BUILD_FONT_ENGINE_FONTMANAGER_H_

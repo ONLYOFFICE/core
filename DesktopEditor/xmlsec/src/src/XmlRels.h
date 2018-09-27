@@ -1,7 +1,10 @@
 #ifndef _XML_RELS_H_
 #define _XML_RELS_H_
 
-#include "./XmlCanonicalizator.h"
+#include "../../../xml/include/xmlutils.h"
+#include "../../../common/StringBuilder.h"
+#include "../../../common/File.h"
+#include "../../../common/Directory.h"
 
 class COOXMLRelationship
 {

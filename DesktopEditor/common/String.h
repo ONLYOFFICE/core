@@ -32,69 +32,77 @@
 #ifndef _BUILD_STRING_CROSSPLATFORM_H_
 #define _BUILD_STRING_CROSSPLATFORM_H_
 
-#include "CPEncodings/CodePage.h"
+#include <string>
+#include <string.h>
 #include <vector>
 #include <sstream>
 #include <algorithm>
 
+#include "../../Common/kernel_config.h"
 
-#ifdef __linux__
-    #include <string.h>
+#ifdef USE_STRING_FORMAT
+#include <stdarg.h>
+namespace NSStrings
+{
+    static std::string format(const char *fmt, ...)
+    {
+        va_list args;
+        va_start(args, fmt);
+        std::vector<char> v(1024);
+        while (true)
+        {
+            va_list args2;
+            va_copy(args2, args);
+            int res = vsnprintf(v.data(), v.size(), fmt, args2);
+            if ((res >= 0) && (res < static_cast<int>(v.size())))
+            {
+                va_end(args);
+                va_end(args2);
+                return std::string(v.data());
+            }
+            size_t size;
+            if (res < 0)
+                size = v.size() * 2;
+            else
+                size = static_cast<size_t>(res) + 1;
+            v.clear();
+            v.resize(size);
+            va_end(args2);
+        }
+    }
+
+    static std::wstring format(const wchar_t *fmt, ...)
+    {
+        va_list args;
+        va_start(args, fmt);
+        std::vector<wchar_t> v(1024);
+        while (true)
+        {
+            va_list args2;
+            va_copy(args2, args);
+            int res = vswprintf(v.data(), v.size(), fmt, args2);
+            if ((res >= 0) && (res < static_cast<int>(v.size())))
+            {
+                va_end(args);
+                va_end(args2);
+                return std::wstring(v.data());
+            }
+            size_t size;
+            if (res < 0)
+                size = v.size() * 2;
+            else
+                size = static_cast<size_t>(res) + 1;
+            v.clear();
+            v.resize(size);
+            va_end(args2);
+        }
+    }
+}
 #endif
 
 namespace NSStringExt
 {
-#define NSSTRING_COMMON_CP(UnicodeMapCP, lCount, pData) \
-	for (long i = 0; i < lCount; ++i)\
-	{\
-		unsigned char unChar = (unsigned char)pData[i];\
-		if (unChar < MSCP_FIRST_CHAR || unChar > MSCP_LAST_CHAR)\
-			pUnicode[i] = (wchar_t)unChar;\
-		else\
-			pUnicode[i] = (wchar_t)(UnicodeMapCP[unChar - MSCP_FIRST_CHAR]);\
-	}
-// end define
-
-	static void NSSTRING_WITHLEADBYTE_CP(wchar_t** ppUnicode, unsigned short LEAD_CHAR, const unsigned short* UnicodeMapCP, const TCodePagePair* UnicodeMapWithLeadByte, long lCount, const unsigned char* pData)
-	{
-		int nLeadByte = -1;
-		int nUnicodePos = 0;
-		for (long i = 0; i < lCount; ++i)
-		{
-			unsigned char  unCode = (unsigned char)pData[i];
-			unsigned short ushUnicode = UnicodeMapCP[unCode];
-			if (-1 == nLeadByte)
-			{
-				if (LEAD_CHAR != ushUnicode)
-				{
-					(*ppUnicode)[nUnicodePos++] = ushUnicode;
-					nLeadByte = -1;
-				}
-				else
-				{
-					nLeadByte = unCode;
-				}
-			}
-			else
-			{
-				unsigned short ushCode = (nLeadByte << 8) | unCode;
-				TCodePagePair *pPair = (TCodePagePair*)UnicodeMapWithLeadByte;
-				while (0xFFFF != pPair->ushCode)
-				{
-					if (ushCode == pPair->ushCode)
-					{
-						(*ppUnicode)[nUnicodePos++] = pPair->ushUnicode;
-						break;
-					}
-					pPair++;
-				}
-				nLeadByte = -1;
-			}
-		}
-		(*ppUnicode)[nUnicodePos++] = 0x0000;
-	}
-
-	class CConverter
+    class KERNEL_DECL CConverter
 	{
 	public:
 		typedef enum
@@ -119,264 +127,16 @@ namespace NSStringExt
 			SINGLE_BYTE_ENCODING_CP866   = 0xFF  // OEM_CHARSET             255 (xFF) // Проверить, что OEM соответствует CP866
 		} ESingleByteEncoding;
 
-		static std::wstring GetUnicodeFromSingleByteString(const unsigned char* pData, long lCount, ESingleByteEncoding eType = SINGLE_BYTE_ENCODING_DEFAULT)
-		{
-			wchar_t* pUnicode = new wchar_t[lCount + 1];
-			if (!pUnicode)
-				return std::wstring(L"");
+        static std::wstring GetUnicodeFromSingleByteString(const unsigned char* pData, long lCount, ESingleByteEncoding eType = SINGLE_BYTE_ENCODING_DEFAULT);
+        static std::wstring GetUnicodeFromUTF16(const unsigned short* pData, long lCount);
+        static std::wstring GetUnicodeFromUTF32(const unsigned int* pData, long lCount);
+        static unsigned int* GetUtf32FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen);
+        static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen);
+	};	
+}
 
-			switch (eType)
-			{
-				default:
-				case SINGLE_BYTE_ENCODING_DEFAULT:
-				{
-					for (long i = 0; i < lCount; ++i)
-						pUnicode[i] = (wchar_t)(unsigned char)pData[i];
-
-					break;
-				}
-				case SINGLE_BYTE_ENCODING_SYMBOL:
-				{
-					// Добавляем 0xF000 к кодам всех символов
-					for (long i = 0; i < lCount; ++i)
-					{
-						pUnicode[i] = (wchar_t)(0xF000 | (unsigned char)pData[i]);
-					}
-
-					break;
-				}
-                case SINGLE_BYTE_ENCODING_CP866: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP866, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP874: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP874, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1250: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1250, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1251: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1251, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1252: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1252, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1253: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1253, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1254: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1254, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1255: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1255, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1256: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1256, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1257: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1257, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1258: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1258, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP932: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP932_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP932, c_aoUnicodeMapCP932WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP936: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP936_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP936, NSStringExt::c_aoUnicodeMapCP936WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP949: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP949_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP949, NSStringExt::c_aoUnicodeMapCP949WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP950: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP950_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP950, NSStringExt::c_aoUnicodeMapCP950WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1361:NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP1361_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP1361, NSStringExt::c_aoUnicodeMapCP1361WithLeadByte, lCount, pData); break;
-			}
-
-			pUnicode[lCount] = 0;
-			std::wstring s(pUnicode);
-
-			if (pUnicode)
-				delete[] pUnicode;
-
-			return s;
-		}
-		static std::wstring GetUnicodeFromUTF16(const unsigned short* pData, long lCount)
-		{
-			if (0 == lCount)
-				return L"";
-
-			if (2 == sizeof(wchar_t))
-				return std::wstring((wchar_t*)pData, lCount);
-
-			wchar_t* pUnicode = new wchar_t[lCount + 1];
-			if (!pUnicode)
-				return L"";
-
-			wchar_t* pCur = pUnicode;
-			int nCurPos = 0;
-			while (nCurPos < lCount)
-			{
-				int nLeading = pData[nCurPos]; nCurPos++;
-				if (nLeading < 0xD800 || nLeading > 0xDFFF)
-				{
-					*pCur = (wchar_t)nLeading;
-					pCur++;
-				}
-				else
-				{
-					if (nCurPos >= lCount)
-						break;
-					
-					int nTrailing = pData[nCurPos]; nCurPos++;
-					if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
-					{
-						*pCur =		(wchar_t)(((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
-						*pCur +=	(wchar_t) (0x10000);
-						pCur++;
-					}
-				}
-			}
-
-			if (0 == pCur - pUnicode)
-				return L"";
-
-			std::wstring sRet(pUnicode, pCur - pUnicode);
-
-			if (pUnicode)
-				delete[] pUnicode;
-
-			return sRet;
-		}
-		static std::wstring GetUnicodeFromUTF32(const unsigned int* pData, long lCount)
-		{
-			if (0 == lCount)
-				return L"";
-
-			if (4 == sizeof(wchar_t))
-				return std::wstring((wchar_t*)pData, lCount);
-
-			wchar_t* pUnicode = new wchar_t[2 * lCount + 1];
-			if (!pUnicode)
-				return L"";
-
-			wchar_t* pCur = pUnicode;
-
-			memset(pUnicode, 0x00, sizeof(wchar_t) * (2 * lCount + 1));
-			for (long lIndex = 0; lIndex < lCount; lIndex++)
-			{
-				unsigned int unUnicode = pData[lIndex];
-				if (unUnicode < 0x10000)
-				{
-					*pCur = unUnicode;
-					pCur++;
-				}
-				else
-				{
-					unUnicode = unUnicode - 0x10000;
-					*pCur = 0xD800 | (unUnicode >> 10);
-					pCur++;
-					*pCur = 0xDC00 | (unUnicode & 0x3FF);
-					pCur++;
-				}
-			}			
-
-			if (0 == pCur - pUnicode)
-				return L"";
-
-			std::wstring sRet(pUnicode, pCur - pUnicode);
-
-			if (pUnicode)
-				delete[] pUnicode;
-
-			return sRet;
-		}
-		static unsigned int* GetUtf32FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
-		{
-			if (wsUnicodeText.size() <= 0)
-				return NULL;
-
-			unsigned int* pUnicodes = new unsigned int[wsUnicodeText.size()];
-			if (!pUnicodes)
-				return NULL;
-
-			unsigned int* pOutput = pUnicodes;
-			unLen = 0;
-			if (2 == sizeof(wchar_t))
-			{
-				const wchar_t* wsEnd = wsUnicodeText.c_str() + wsUnicodeText.size();
-				wchar_t* wsInput = (wchar_t*)wsUnicodeText.c_str();
-
-				wchar_t wLeading, wTrailing;
-				unsigned int unCode;
-				while (wsInput < wsEnd)
-				{
-					wLeading = *wsInput++;
-					if (wLeading < 0xD800 || wLeading > 0xDFFF)
-					{
-						pUnicodes[unLen++] = (unsigned int)wLeading;
-					}
-					else if (wLeading >= 0xDC00)
-					{
-						// Такого не должно быть
-						continue;
-					}
-					else
-					{
-						unCode = (wLeading & 0x3FF) << 10;
-						wTrailing = *wsInput++;
-						if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
-						{
-							// Такого не должно быть
-							continue;
-						}
-						else
-						{
-							pUnicodes[unLen++] = (unCode | (wTrailing & 0x3FF) + 0x10000);
-						}
-					}
-				}
-			}
-			else
-			{
-				unLen = (unsigned int)wsUnicodeText.size();
-				for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
-				{
-					pUnicodes[unIndex] = (unsigned int)wsUnicodeText.at(unIndex);
-				}
-			}
-
-			return pUnicodes;
-		}
-		static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
-		{
-			unsigned int unTextLen = (unsigned int)wsUnicodeText.size();
-			if (unTextLen <= 0)
-				return NULL;
-
-			unsigned short* pUtf16 = NULL;
-			unLen = 0;
-			if (2 == sizeof(wchar_t))
-			{
-				pUtf16 = new unsigned short[unTextLen];
-				if (!pUtf16)
-					return NULL;
-
-				unLen = unTextLen;
-				for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
-				{
-					pUtf16[unIndex] = (unsigned short)wsUnicodeText.at(unIndex);
-				}
-			}
-			else
-			{
-				pUtf16 = new unsigned short[2 * unTextLen + 1];
-				if (!pUtf16)
-					return NULL;
-
-				unsigned short* pCur = pUtf16;
-				memset(pUtf16, 0x00, sizeof(unsigned short) * (2 * unTextLen + 1));
-				
-				for (unsigned int lIndex = 0; lIndex < unTextLen; lIndex++)
-				{
-					unsigned int unUnicode = wsUnicodeText.at(lIndex);
-					if (unUnicode < 0x10000)
-					{
-						*pCur = unUnicode;
-						pCur++;
-					}
-					else
-					{
-						unUnicode = unUnicode - 0x10000;
-						*pCur = 0xD800 | (unUnicode >> 10);
-						pCur++;
-						*pCur = 0xDC00 | (unUnicode & 0x3FF);
-						pCur++;
-					}
-				}
-
-				unLen = (unsigned int)(pCur - pUtf16);
-				if (!unLen)
-				{
-					delete[] pUtf16;
-					return NULL;
-				}
-			}
-
-			return pUtf16;
-		}
-	};
-
+namespace NSStringExt
+{
 	static std::vector<std::wstring>& Split(const std::wstring& wsString, wchar_t nDelim, std::vector<std::wstring> &arrElements)
 	{
 		std::wstringstream wStringStream(wsString);
@@ -452,14 +212,14 @@ namespace NSStringExt
 
 		return arrElements;
 	}
-        static inline void ToLower(std::string& wsString)
-        {
-                std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towlower);
-        }
-        static inline void ToUpper(std::string& wsString)
-        {
-                std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towupper);
-        }
+	static inline void ToLower(std::string& wsString)
+	{
+			std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towlower);
+	}
+	static inline void ToUpper(std::string& wsString)
+	{
+			std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towupper);
+	}
 	static inline void ToLower(std::wstring& wsString)
 	{
 		std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towlower);
@@ -473,12 +233,12 @@ namespace NSStringExt
 		int nFromLen	= (int)wsFrom.length();
 		int nToLen		= (int)wsTo.length();
 		size_t nPos		= -nToLen;
-		
+
 		while (std::wstring::npos != (nPos = wsString.find(wsFrom, nPos + nToLen)))
 		{
 			wsString.replace(nPos, nFromLen, wsTo);
 		}
 	}
-};
+}
 
 #endif // _BUILD_STRING_CROSSPLATFORM_H_

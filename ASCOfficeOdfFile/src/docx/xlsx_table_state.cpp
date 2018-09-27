@@ -29,8 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <odf/odf_document.h>
+#include <xml/simple_xml_writer.h>
 
 #include "logging.h"
 
@@ -220,7 +220,9 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 
     // в случае если объединение имеет место добавляем запись о нем
     if (columnsSpanned != 0 || rowsSpanned != 0)
-        xlsx_merge_cells_.add_merge(current_table_column_, current_table_row_, columnsSpanned, rowsSpanned);
+	{
+		xlsx_merge_cells_.add_merge(current_table_column_, current_table_row_, columnsSpanned, rowsSpanned);
+	}
 
     if ( current_columns_spaned() > 0 )
     {

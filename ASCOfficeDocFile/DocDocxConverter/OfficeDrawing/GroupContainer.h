@@ -65,7 +65,7 @@ namespace DocFileFormat
 					{
 						// the child is a shape
 						ShapeContainer* shape = static_cast<ShapeContainer*>(groupChild);
-						shape->Index = i;
+						shape->m_nIndex = i;
 						this->Children[i] = shape;
 					}
 				}

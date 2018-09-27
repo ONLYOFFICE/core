@@ -1,5 +1,9 @@
-VERSION = 2.4.527.0
+
+VERSION = $$cat(version.txt)
 DEFINES += INTVER=$$VERSION
+
+QMAKE_TARGET_COMPANY = $$cat(copyright.txt)
+QMAKE_TARGET_COPYRIGHT = $$cat(copyright.txt) (c) 2018
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
@@ -52,6 +56,7 @@ mac {
 # DEFINES
 core_windows {
     DEFINES += WIN32 _WIN32
+    DEFINES += NOMINMAX
 }
 core_win_64 {
     DEFINES += WIN64 _WIN64

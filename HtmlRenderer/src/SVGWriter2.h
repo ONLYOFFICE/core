@@ -34,7 +34,7 @@
 
 #include "Common2.h"
 #include "SVGWriter.h"
-#include "../../DesktopEditor/graphics/GraphicsRenderer.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 
 #define SVG_INLINE_MAX_SIZE		500000 // 500Kb
 #define SVG_TO_RASTER_MIN_SIZE 50000000 // 1Mb
@@ -47,7 +47,7 @@ namespace NSHtmlRenderer
 	class CRendererGr
 	{
 	public:
-        CGraphicsRenderer*		m_pRenderer;
+        NSGraphics::IGraphicsRenderer*		m_pRenderer;
         CBgraFrame*             m_pFrame;
 		
         double					m_dWidth;
@@ -113,7 +113,7 @@ namespace NSHtmlRenderer
                 m_pFrame->put_Data(pData);
 			}
 
-            m_pRenderer = new CGraphicsRenderer();
+            m_pRenderer = NSGraphics::Create();
 			
 			m_pRenderer->put_Width(m_dWidth);
 			m_pRenderer->put_Height(m_dHeight);
@@ -883,9 +883,8 @@ namespace NSHtmlRenderer
 				if (m_pBrush->TextureMode == c_BrushTextureModeStretch || true)
 				{
 					// 1) пишем паттерн
-					agg::trans_affine* mtx = &m_pTransform->m_agg_mtx;
-					double _tx = mtx->tx * m_dCoordsScaleX;
-					double _ty = mtx->ty * m_dCoordsScaleY;
+                    double _tx = m_pTransform->tx() * m_dCoordsScaleX;
+                    double _ty = m_pTransform->ty() * m_dCoordsScaleY;
 
                     double _w = w * m_dCoordsScaleX;
                     double _h = h * m_dCoordsScaleY;
@@ -901,13 +900,13 @@ namespace NSHtmlRenderer
                     m_oDocument.AddCharSafe(' ');
                     m_oDocument.AddInt(round(_h));
                     m_oDocument.WriteString(L"\" transform=\"matrix(");
-                    m_oDocument.AddDouble(mtx->sx, 3);
+                    m_oDocument.AddDouble(m_pTransform->sx(), 3);
                     m_oDocument.AddCharSafe(',');
-                    m_oDocument.AddDouble(mtx->shy, 3);
+                    m_oDocument.AddDouble(m_pTransform->shy(), 3);
                     m_oDocument.AddCharSafe(',');
-                    m_oDocument.AddDouble(mtx->shx, 3);
+                    m_oDocument.AddDouble(m_pTransform->shx(), 3);
                     m_oDocument.AddCharSafe(',');
-                    m_oDocument.AddDouble(mtx->sy, 3);
+                    m_oDocument.AddDouble(m_pTransform->sy(), 3);
                     m_oDocument.AddCharSafe(',');
                     m_oDocument.AddDouble(_tx, 3);
                     m_oDocument.AddCharSafe(',');
@@ -1080,16 +1079,12 @@ namespace NSHtmlRenderer
 			double dCentreX = x + w / 2.0;
 			double dCentreY = y + h / 2.0;
 
-            agg::trans_affine* mtx = &m_pTransform->m_agg_mtx;
-            bool bIsNoNeedTransform =  agg::is_equal_eps(mtx->sx,  1.0, 0.0001) &&
-                                       agg::is_equal_eps(mtx->shy, 0.0, 0.0001) &&
-                                       agg::is_equal_eps(mtx->shx, 0.0, 0.0001) &&
-                                       agg::is_equal_eps(mtx->sy,  1.0, 0.0001);
+            bool bIsNoNeedTransform = m_pTransform->IsIdentity2(0.0001);
 
 			if (bIsNoNeedTransform)
 			{
-				double _x = x + m_pTransform->m_agg_mtx.tx;
-				double _y = y + m_pTransform->m_agg_mtx.ty;
+                double _x = x + m_pTransform->tx();
+                double _y = y + m_pTransform->ty();
 
 				_x *= m_dCoordsScaleX;
 				_y *= m_dCoordsScaleY;
@@ -1144,8 +1139,8 @@ namespace NSHtmlRenderer
 			}
 			else
 			{
-				double _tx = m_pTransform->m_agg_mtx.tx * m_dCoordsScaleX;
-				double _ty = m_pTransform->m_agg_mtx.ty * m_dCoordsScaleY;
+                double _tx = m_pTransform->tx() * m_dCoordsScaleX;
+                double _ty = m_pTransform->ty() * m_dCoordsScaleY;
 
 				double _x = x * m_dCoordsScaleX;
 				double _y = y * m_dCoordsScaleY;
@@ -1174,13 +1169,13 @@ namespace NSHtmlRenderer
                         m_oDocument.AddInt(oInfo.m_lID);
                         m_oDocument.WriteString(L".jpg\" preserveAspectRatio=\"none\" transform=\"matrix(/>", 53);
 
-                        m_oDocument.AddDouble(mtx->sx, 3);
+                        m_oDocument.AddDouble(m_pTransform->sx(), 3);
                         m_oDocument.AddCharSafe(',');
-                        m_oDocument.AddDouble(mtx->shy, 3);
+                        m_oDocument.AddDouble(m_pTransform->shy(), 3);
                         m_oDocument.AddCharSafe(',');
-                        m_oDocument.AddDouble(mtx->shx, 3);
+                        m_oDocument.AddDouble(m_pTransform->shx(), 3);
                         m_oDocument.AddCharSafe(',');
-                        m_oDocument.AddDouble(mtx->sy, 3);
+                        m_oDocument.AddDouble(m_pTransform->sy(), 3);
                         m_oDocument.AddCharSafe(',');
                         m_oDocument.AddDouble(_tx, 3);
                         m_oDocument.AddCharSafe(',');
@@ -1209,13 +1204,13 @@ namespace NSHtmlRenderer
                         m_oDocument.AddInt(oInfo.m_lID);
                         m_oDocument.WriteString(L".png\" preserveAspectRatio=\"none\" transform=\"matrix(/>", 53);
 
-                        m_oDocument.AddDouble(mtx->sx, 3);
+                        m_oDocument.AddDouble(m_pTransform->sx(), 3);
                         m_oDocument.AddCharSafe(',');
-                        m_oDocument.AddDouble(mtx->shy, 3);
+                        m_oDocument.AddDouble(m_pTransform->shy(), 3);
                         m_oDocument.AddCharSafe(',');
-                        m_oDocument.AddDouble(mtx->shx, 3);
+                        m_oDocument.AddDouble(m_pTransform->shx(), 3);
                         m_oDocument.AddCharSafe(',');
-                        m_oDocument.AddDouble(mtx->sy, 3);
+                        m_oDocument.AddDouble(m_pTransform->sy(), 3);
                         m_oDocument.AddCharSafe(',');
                         m_oDocument.AddDouble(_tx, 3);
                         m_oDocument.AddCharSafe(',');

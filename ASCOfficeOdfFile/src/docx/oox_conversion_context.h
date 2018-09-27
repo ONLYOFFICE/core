@@ -33,6 +33,8 @@
 
 #include <sstream>
 #include <iosfwd>
+#include <map>
+#include <vector>
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
@@ -40,14 +42,41 @@
 
 namespace cpdoccore { 
 
+namespace oox{
+
+	class docx_conversion_context;
+	class pptx_conversion_context;
+};
+
 namespace odf_reader
 {
 	class	style_instance;
 	class	style_text_properties;
 	class	fonts_container;
 	typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
+	
+	class	office_element;
+	typedef boost::shared_ptr<office_element> office_element_ptr;
 };
 
+class tabs_context : boost::noncopyable
+{
+public:
+
+	std::vector<odf_reader::office_element_ptr> tabs;
+	std::map<double, odf_reader::office_element_ptr> clear_tabs;
+
+	void clear()
+	{
+		tabs.clear();
+		clear_tabs.clear();
+	}
+
+	void reset();
+
+	void add(const odf_reader::office_element_ptr & element);
+	void docx_convert(oox::docx_conversion_context & Context);
+};
 class styles_context : boost::noncopyable
 {
 public:

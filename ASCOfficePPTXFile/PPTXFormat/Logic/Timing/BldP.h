@@ -53,13 +53,13 @@ namespace PPTX
 
 				spid				= node.GetAttribute(_T("spid"));
 				grpId				= node.ReadAttributeInt(L"grpId");
-				node.ReadAttributeBase(L"uiExpand", uiExpand);
-				node.ReadAttributeBase(L"build", build);
-				node.ReadAttributeBase(L"bldLvl", bldLvl);
-				node.ReadAttributeBase(L"animBg", animBg);
-				node.ReadAttributeBase(L"autoUpdateAnimBg", autoUpdateAnimBg);
-				node.ReadAttributeBase(L"rev", rev);
-				node.ReadAttributeBase(L"advAuto", advAuto);
+                XmlMacroReadAttributeBase(node, L"uiExpand", uiExpand);
+                XmlMacroReadAttributeBase(node, L"build", build);
+                XmlMacroReadAttributeBase(node, L"bldLvl", bldLvl);
+                XmlMacroReadAttributeBase(node, L"animBg", animBg);
+                XmlMacroReadAttributeBase(node, L"autoUpdateAnimBg", autoUpdateAnimBg);
+                XmlMacroReadAttributeBase(node, L"rev", rev);
+                XmlMacroReadAttributeBase(node, L"advAuto", advAuto);
 
 				Normalize();
 

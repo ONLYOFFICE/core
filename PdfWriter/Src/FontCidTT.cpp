@@ -35,7 +35,7 @@
 #include "Utils.h"
 #include "FontTTWriter.h"
 
-#include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
 
 #include <string>
@@ -61,7 +61,6 @@ namespace PdfWriter
 
 			if (FT_Set_Charmap(pFace, pCharMap))
 				continue;
-
 			FT_Encoding pEncoding = pCharMap->encoding;
 
 			if (FT_ENCODING_UNICODE == pEncoding)
@@ -90,7 +89,7 @@ namespace PdfWriter
 
 		return nCharIndex;
 	}
-	static int            GetSymbolicCmapIndex(FT_Face pFace)
+	static int GetSymbolicCmapIndex(FT_Face pFace)
 	{
 		TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table(pFace, ft_sfnt_os2);
 		if (NULL == pOs2 || 0xFFFF == pOs2->version)
@@ -157,9 +156,10 @@ namespace PdfWriter
 		if (m_pFaceMemory)
 			delete[] m_pFaceMemory;
 	}
-	void           CFontCidTrueType::CreateCIDFont2(CDictObject* pFont)
+	void CFontCidTrueType::CreateCIDFont2(CDictObject* pFont)
 	{
 		m_pFont = pFont;
+		pFont->Add("Type", "Font");
 		pFont->Add("Subtype", "CIDFontType2");
 
 		CDictObject* pSystemInfo = new CDictObject();
@@ -207,6 +207,11 @@ namespace PdfWriter
 		pFont->Add("CIDToGIDMap", pCIDToGIDMapDict);
 		pCIDToGIDMapDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pCidToGidMapStream = pCIDToGIDMapDict->GetStream();
+
+		if (m_pXref->IsPDFA())
+		{
+			pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
+		}
 	}
 	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids)
 	{
@@ -294,7 +299,6 @@ namespace PdfWriter
 						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
 				}
 			}
-
 			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
 			pEncodedString[2 * unIndex + 1] = ushCode & 0xFF;
 		}
@@ -307,8 +311,48 @@ namespace PdfWriter
 
 		return m_vWidths.at(ushCode);
 	}
-	void           CFontCidTrueType::BeforeWrite()
+	void CFontCidTrueType::BeforeWrite()
 	{
+		if (m_pFontDescriptor)
+		{
+			CDictObject* pCIDSet = (CDictObject*)m_pFontDescriptor->Get("CIDSet");			
+			if (pCIDSet)
+			{
+#ifndef FILTER_FLATE_DECODE_DISABLED
+				pCIDSet->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+				CStream* pStream = pCIDSet->GetStream();
+
+				unsigned int unBytes = (m_ushCodesCount) / 8;
+
+				if (unBytes * 8 < m_ushCodesCount)
+					unBytes++;
+
+				if (1 == unBytes)
+				{
+					BYTE nValue = 0xFF;
+					nValue = (BYTE)(nValue << (8 - m_ushCodesCount));
+					nValue &= 0x7F;
+					pStream->WriteChar(nValue);
+				}
+				else
+				{
+					BYTE nStartValue = 0x7F, nMidValue = 0xFF;
+					pStream->WriteChar(nStartValue);
+
+					for (unsigned int unIndex = 0; unIndex < unBytes - 2; ++unIndex)
+					{
+						pStream->WriteChar(nMidValue);
+					}
+
+					BYTE nEndValue = 0xFF;
+					nEndValue = (BYTE)(nEndValue << (unBytes * 8 - m_ushCodesCount));
+
+					pStream->WriteChar(nEndValue);
+				}
+			}
+		}
+
 		if (m_pFontFile)
 		{
 			unsigned short* pCodeToGid;
@@ -349,7 +393,7 @@ namespace PdfWriter
 			WriteToUnicode();
 		}
 	}
-	bool           CFontCidTrueType::GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** ppWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount)
+	bool CFontCidTrueType::GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** ppWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount)
 	{
 		*ppCodeToGid  = NULL;
 		*ppWidths     = NULL;
@@ -397,7 +441,7 @@ namespace PdfWriter
 		unGlyphsCount = m_nGlyphsCount;
 		return true;
 	}
-	void           CFontCidTrueType::WriteToUnicode()
+	void CFontCidTrueType::WriteToUnicode()
 	{
 		CStream* pS = m_pToUnicodeStream;
 
@@ -433,7 +477,7 @@ namespace PdfWriter
 		pS->WriteStr("endbfchar\n");
 		m_pToUnicodeStream->WriteStr(c_sToUnicodeFooter);
 	}
-	void           CFontCidTrueType::CloseFontFace()
+	void CFontCidTrueType::CloseFontFace()
 	{
 		if (m_pFace)
 		{
@@ -443,7 +487,7 @@ namespace PdfWriter
 
 		RELEASEARRAYOBJECTS(m_pFaceMemory);
 	}
-	bool           CFontCidTrueType::OpenFontFace()
+	bool CFontCidTrueType::OpenFontFace()
 	{
 		if (m_pFace)
 		{
@@ -465,6 +509,7 @@ namespace PdfWriter
 			return false;
 
 		FT_New_Memory_Face(pLibrary, m_pFaceMemory, dwFileSize, m_unFontIndex, &m_pFace);
+
 		if (!m_pFace)
 		{
 			RELEASEARRAYOBJECTS(m_pFaceMemory);

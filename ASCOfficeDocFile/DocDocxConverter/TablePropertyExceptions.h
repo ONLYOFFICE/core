@@ -41,8 +41,8 @@ namespace DocFileFormat
 	{
 	public:
 		/// Parses the bytes to retrieve a TAPX
-		TablePropertyExceptions(unsigned char* bytes, int size, bool oldVersion) : 
-							PropertyExceptions(bytes, size, oldVersion), m_bSkipShading97 (FALSE)
+		TablePropertyExceptions(unsigned char* bytes, int size, int nWordVersion) : 
+							PropertyExceptions(bytes, size, nWordVersion), m_bSkipShading97 (FALSE)
 		{
 			//not yet implemented
 		}
@@ -53,10 +53,10 @@ namespace DocFileFormat
 		}
 
 		/// Extracts the TAPX SPRMs out of a PAPX
-		TablePropertyExceptions (ParagraphPropertyExceptions* papx, POLE::Stream* dataStream, bool oldVersion) : 
+		TablePropertyExceptions (ParagraphPropertyExceptions* papx, POLE::Stream* dataStream, int nWordVersion) : 
 																									PropertyExceptions()
 		{
-			VirtualStreamReader oBinReader(dataStream, 0, oldVersion);
+			VirtualStreamReader oBinReader(dataStream, 0, nWordVersion);
 
 			m_bSkipShading97	=	FALSE;
 
@@ -87,7 +87,7 @@ namespace DocFileFormat
 					unsigned char* grpprlBytes = oBinReader.ReadBytes(grpprlSize, true);
 
 					//parse the grpprl
-					PropertyExceptions externalPx(grpprlBytes, grpprlSize, oldVersion);
+					PropertyExceptions externalPx(grpprlBytes, grpprlSize, nWordVersion);
 
 					for (std::list<SinglePropertyModifier>::iterator oIter = externalPx.grpprl->begin(); oIter != externalPx.grpprl->end(); ++oIter)
 					{

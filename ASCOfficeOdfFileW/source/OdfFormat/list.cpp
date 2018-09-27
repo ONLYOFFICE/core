@@ -32,11 +32,11 @@
 
 #include "list.h"
 
-#include <cpdoccore/xml/xmlchar.h>
+#include <xml/xmlchar.h>
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/utils.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/attributes.h>
+#include <xml/utils.h>
+#include <xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 namespace odf_writer {

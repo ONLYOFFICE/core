@@ -102,17 +102,16 @@ namespace DocFileFormat
 
 	struct OleObjectFileStructure
 	{
+		bool bNativeOnly = false;
+		
 		std::wstring ext;
 		std::wstring objectID;
         std::wstring clsid;
 
 		std::string	data;
 
-		OleObjectFileStructure(){}
-
-
         OleObjectFileStructure( const std::wstring& _ext, const std::wstring& _objectID, const std::wstring&/*REFCLSID*/ _clsid ):
-		ext(_ext), objectID(_objectID), clsid(_clsid){}
+					ext(_ext), objectID(_objectID), clsid(_clsid){}
 
 	};
 
@@ -162,8 +161,8 @@ namespace DocFileFormat
 		void SaveToFile( const std::wstring& outputDir, const std::wstring& fileName, const std::wstring& XMLContent );
 		void SaveToFile( const std::wstring& outputDir, const std::wstring& fileName, const void* buf, unsigned int size );
 
-		HRESULT SaveOLEObject		( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
-		HRESULT SaveEmbeddedObject	( const std::wstring& fileName, const std::string& data );
+		bool SaveOLEObject( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
+		bool SaveEmbeddedObject( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
 
 		void RegisterDocPr();
 		void RegisterDocument();

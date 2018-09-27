@@ -32,11 +32,11 @@
 
 
 #include "styles.h"
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
-#include <cpdoccore/odf/odf_document.h>
+#include <odf/odf_document.h>
 
 #include <iostream>
 
@@ -176,9 +176,12 @@ style_section_properties * style_content::get_style_section_properties() const
     return dynamic_cast<style_section_properties *>(style_section_properties_.get());
 }
 
-style_table_cell_properties * style_content::get_style_table_cell_properties() const
+style_table_cell_properties * style_content::get_style_table_cell_properties(bool always)
 {
-    return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
+	if (!style_table_cell_properties_ && always)
+		style_table_cell_properties_ = boost::make_shared<style_table_cell_properties>();
+
+	return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
 }
 
 style_table_row_properties * style_content::get_style_table_row_properties() const
@@ -303,7 +306,7 @@ void default_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void default_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    style_content_.add_child_element(Reader, Ns, Name, getContext());
+    content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
 void default_style::add_text(const std::wstring & Text)
@@ -433,7 +436,7 @@ void style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const
         CP_CREATE_ELEMENT(style_map_);
     }
     else
-        style_content_.add_child_element(Reader, Ns, Name, getContext());
+        content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
 void style::add_text(const std::wstring & Text)
@@ -853,11 +856,6 @@ void style_footer_style::add_child_element( xml::sax * Reader, const std::wstrin
     }
 }
 
-void style_page_layout_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"style:name", style_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"style:page-usage", style_page_usage_, page_usage(page_usage::All));    
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_page_layout::ns = L"style";
@@ -870,7 +868,8 @@ std::wostream & style_page_layout::text_to_stream(std::wostream & _Wostream) con
 
 void style_page_layout::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    attlist_.add_attributes(Attributes);
+    CP_APPLY_ATTR(L"style:name", style_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"style:page-usage", style_page_usage_, page_usage(page_usage::All));    
 }
 
 void style_page_layout::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -1535,7 +1534,7 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
 
 	for (size_t i = 0; i <  content_.size(); i++)
     {
-		if (content_[i]->get_type() == odf_reader::typeDrawFrame)
+		if (content_[i]->get_type() == typeDrawFrame)
 		{
 			draw_frame* frame = dynamic_cast<draw_frame *>(content_[i].get());
 			if (frame)

@@ -74,7 +74,7 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"idx", idx);
+				XmlMacroReadAttributeBase(node, L"idx", idx);
 				Color.GetColorFrom(node);
 
 				FillParentPointersForChilds();

@@ -32,10 +32,10 @@
 #ifndef _BUILD_GRAPHICS_RENDERER_H_
 #define _BUILD_GRAPHICS_RENDERER_H_
 
-#include "IRenderer.h"
 #include "Graphics.h"
 #include "ImageFilesCache.h"
 #include "../raster/BgraFrame.h"
+#include "./pro/Graphics.h"
 
 class IGraphicsRenderer_State
 {
@@ -52,7 +52,7 @@ public:
     }
 };
 
-class CGraphicsRenderer : public IRenderer
+class CGraphicsRenderer : public NSGraphics::IGraphicsRenderer
 {
 private:
 	CFontManager*			m_pFontManager;
@@ -94,14 +94,14 @@ private:
 
 public:
 	CGraphicsRenderer();
-	~CGraphicsRenderer();
+    virtual ~CGraphicsRenderer();
 
 public:
-	void SetImageCache(CImageFilesCache* pCache);
-	void SetFontManager(CFontManager* pManager = NULL);
-	void CheckFontManager();
+    virtual void SetImageCache(NSImages::IImageFilesCache* pCache);
+    virtual void SetFontManager(NSFonts::IFontManager* pManager = NULL);
+    virtual void CheckFontManager();
 	
-	CFontManager* GetFontManager();
+    virtual NSFonts::IFontManager* GetFontManager();
 	BYTE* GetPixels(LONG& lWidth, LONG& lHeight);
 
 	void ClearInstallFont();
@@ -119,8 +119,8 @@ public:
 
 	void SaveBrush(NSStructures::CBrush& oBrush) { oBrush = m_oBrush; }
 	void RestoreBrush(const NSStructures::CBrush& oBrush) { m_oBrush = oBrush; }
-	void SetSwapRGB(bool bValue){ if (m_pRenderer) m_pRenderer->m_bSwapRGB = bValue; }
-    void SetTileImageDpi(const double& dDpi) { if (m_pRenderer) m_pRenderer->m_dDpiTile = dDpi; }
+    virtual void SetSwapRGB(bool bValue){ if (m_pRenderer) m_pRenderer->m_bSwapRGB = bValue; }
+    virtual void SetTileImageDpi(const double& dDpi) { if (m_pRenderer) m_pRenderer->m_dDpiTile = dDpi; }
 
     void Save();
     void Restore();
@@ -270,7 +270,7 @@ public:
 	}
 
 public:
-    void CloseFont()
+    virtual void CloseFont()
     {
         if (NULL != m_pFontManager)
             m_pFontManager->CloseFont();
@@ -286,7 +286,7 @@ protected:
 	Aggplus::CBrush* CreateBrush(NSStructures::CBrush* pBrush);
 
 public:
-	void CreateFromBgraFrame(CBgraFrame* pFrame);
+    virtual void CreateFromBgraFrame(CBgraFrame* pFrame);
 	void Create(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL);
 	void CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL);
 
@@ -298,11 +298,11 @@ public:
 	{
 		return m_pRenderer->GetTransform();
 	}
-	inline void SetCoordTransformOffset(double dOffsetX, double dOffsetY)
+    virtual void SetCoordTransformOffset(double dOffsetX, double dOffsetY)
 	{
 		Aggplus::CMatrix* pCoord = m_pRenderer->GetCoordTransform();
-		pCoord->m_agg_mtx.tx = dOffsetX;
-		pCoord->m_agg_mtx.ty = dOffsetY;
+		pCoord->m_internal->m_agg_mtx.tx = dOffsetX;
+		pCoord->m_internal->m_agg_mtx.ty = dOffsetY;
 
 		m_pRenderer->CalculateFullTransform();
 	}

@@ -48,7 +48,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"isNarration", isNarration);
+                XmlMacroReadAttributeBase(node, L"isNarration", isNarration);
 				cMediaNode	= node.ReadNode(_T("p:cMediaNode"));
 
 				FillParentPointersForChilds();

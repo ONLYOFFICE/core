@@ -43,7 +43,7 @@
 
 #include "style_paragraph_properties.h"
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 
 namespace cpdoccore { 
@@ -60,7 +60,7 @@ odf_conversion_context::odf_conversion_context(_office_type_document type_, pack
 	output_document_	= outputDocument;
 	current_object_		= 0;
 
-    applicationFonts_	= new CApplicationFonts();
+    applicationFonts_	= NSFonts::NSApplication::Create();
 
 }
 odf_conversion_context::~odf_conversion_context()
@@ -165,7 +165,7 @@ void odf_conversion_context::end_document()
 			if (isRoot)object_files->local_path = L"/";
 			rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
 
-			output_document_->add_object(package::element_ptr(object_files),isRoot);
+			output_document_->add_object(package::element_ptr(object_files), isRoot);
 		}
 
 	}

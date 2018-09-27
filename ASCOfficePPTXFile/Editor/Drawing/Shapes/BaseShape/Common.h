@@ -38,6 +38,9 @@
 
 #include <boost/algorithm/string.hpp>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;
 const double RadKoef = M_PI/10800000.0;

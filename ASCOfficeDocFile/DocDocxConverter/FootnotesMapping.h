@@ -63,7 +63,35 @@ namespace DocFileFormat
                 m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
                 m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
                 m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
+				m_pXmlWriter->WriteAttribute( L"xmlns:wpc", L"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" );
+				m_pXmlWriter->WriteAttribute( L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+				m_pXmlWriter->WriteAttribute( L"xmlns:wp14", L"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing");
+				m_pXmlWriter->WriteAttribute( L"xmlns:wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+				m_pXmlWriter->WriteAttribute( L"xmlns:w14", L"http://schemas.microsoft.com/office/word/2010/wordml" );
+				m_pXmlWriter->WriteAttribute( L"xmlns:wpg", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" );
+				m_pXmlWriter->WriteAttribute( L"xmlns:wpi", L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk" );
+				m_pXmlWriter->WriteAttribute( L"xmlns:wne", L"http://schemas.microsoft.com/office/word/2006/wordml" );
+				m_pXmlWriter->WriteAttribute( L"xmlns:wps", L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape" );
+				m_pXmlWriter->WriteAttribute( L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main" );
+				m_pXmlWriter->WriteAttribute( L"xmlns:m", L"http://schemas.openxmlformats.org/officeDocument/2006/math" );
+				m_pXmlWriter->WriteAttribute( L"mc:Ignorable", L"w14 wp14" );
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+                
+				//m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
+				//m_pXmlWriter->WriteAttribute( L"w:type", L"separator");
+				//m_pXmlWriter->WriteAttribute( L"w:id", L"-1");
+				//m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+
+				//m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:separator/></w:r></w:p>");
+				//m_pXmlWriter->WriteNodeEnd( L"w:footnote");
+
+				//m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
+				//m_pXmlWriter->WriteAttribute( L"w:type", L"continuationSeparator");
+				//m_pXmlWriter->WriteAttribute( L"w:id", L"0");
+				//m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+
+				//m_pXmlWriter->WriteString(L"<w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r></w:r><w:r><w:continuationSeparator/></w:r></w:p>");
+				//m_pXmlWriter->WriteNodeEnd( L"w:footnote");
 
 				int cp = m_document->FIB->m_RgLw97.ccpText;
 
@@ -81,7 +109,7 @@ namespace DocFileFormat
 						if (fc < 0) break;
 
 						ParagraphPropertyExceptions* papx = findValidPapx( fc );
-						TableInfo tai( papx );
+						TableInfo tai( papx, m_document->nWordVersion );
 
 						if ( tai.fInTable )
 						{
@@ -93,7 +121,7 @@ namespace DocFileFormat
 						else
 						{
 							//this PAPX is for a normal paragraph
-							cp = writeParagraph( cp );
+							cp = writeParagraph( cp, 0x7fffffff );
 						}
 						while (cp <= cpStart)	//conv_fQioC665ib4ngHkDGY4__docx.doc
 							cp++;

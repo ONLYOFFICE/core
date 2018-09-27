@@ -35,12 +35,12 @@
 #include <vector>
 #include <iosfwd>
 
-#include <cpdoccore/CPNoncopyable.h>
-#include <cpdoccore/xml/attributes.h>
+#include <CPNoncopyable.h>
+#include <xml/attributes.h>
 
-#include <cpdoccore/CPSharedPtr.h>
+#include <CPSharedPtr.h>
 
-#include <cpdoccore/CPOptional.h>
+#include <CPOptional.h>
 
 #include "styles_list.h"
 #include "style_map.h"

@@ -59,10 +59,10 @@ namespace PPTX
 				name	= node.GetAttribute(_T("name"));
 				spid	= node.GetAttribute(_T("spid"));
 				
-				node.ReadAttributeBase(L"rId"		, rId);
-				node.ReadAttributeBase(L"width"		, width);
-				node.ReadAttributeBase(L"height"	, height);
-				node.ReadAttributeBase(L"showAsIcon", showAsIcon);				
+                XmlMacroReadAttributeBase(node, L"rId"		, rId);
+                XmlMacroReadAttributeBase(node, L"width"		, width);
+                XmlMacroReadAttributeBase(node, L"height"	, height);
+                XmlMacroReadAttributeBase(node, L"showAsIcon", showAsIcon);
 
 				pic = node.ReadNode(_T("p:pic"));
 

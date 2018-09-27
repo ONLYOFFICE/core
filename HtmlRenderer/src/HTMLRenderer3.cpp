@@ -50,8 +50,8 @@ namespace NSHtmlRenderer
 
         Aggplus::CGraphicsPathSimpleConverter 	m_oSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
 
-        CApplicationFonts   m_oApplicationFonts;
-        ::CFontManager*     m_pFontManager;                                     // менеджер шрифтов
+        NSFonts::IApplicationFonts* m_pApplicationFonts;
+        NSFonts::IFontManager*      m_pFontManager;                                     // менеджер шрифтов
 
         Aggplus::CMatrix			m_oTransform;		// текущая матрица преобразований рендерера
         double						m_dTransformAngle;
@@ -87,7 +87,8 @@ namespace NSHtmlRenderer
         {
             // initialize move to CreateOfficeFile (custom directory support)
             //m_oApplicationFonts.Initialize();
-            m_oApplicationFonts.GetCache()->SetCacheSize(16);
+            m_pApplicationFonts = NSFonts::NSApplication::Create();
+            m_pApplicationFonts->GetCache()->SetCacheSize(16);
 
             m_lLastSavedPage = 0;
             m_oDocument.SetUpdater(this);
@@ -103,7 +104,7 @@ namespace NSHtmlRenderer
             m_pFontManager = NULL;
 
             m_oWriter.SetSimpleConverter(&m_oSimpleGraphicsConverter, &m_oTransform);
-            m_oWriter.SetApplicationFonts(&m_oApplicationFonts);
+            m_oWriter.SetApplicationFonts(m_pApplicationFonts);
 
             m_bIsMetafileDrawing = false;
             m_bIsTextGraphicType = false;
@@ -122,6 +123,7 @@ namespace NSHtmlRenderer
         }
         ~CASCHTMLRenderer3_Private()
         {
+            RELEASEOBJECT(m_pApplicationFonts);
             RELEASEARRAYOBJECTS(m_pTempUnicodes);
         }
 
@@ -219,7 +221,7 @@ namespace NSHtmlRenderer
         {
             if (NULL == m_pFontManager)
             {
-                m_pFontManager = m_oApplicationFonts.GenerateFontManager();
+                m_pFontManager = m_pApplicationFonts->GenerateFontManager();
             }
 
             double dPix = m_oFont.CharSpace * 96 / 25.4;
@@ -1147,24 +1149,17 @@ namespace NSHtmlRenderer
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.SetTransform(m1, m2, m3, m4, m5, m6);
 
-        agg::trans_affine* paff = &m_pInternal->m_oTransform.m_agg_mtx;
-        paff->sx = m1;
-        paff->shy = m2;
-        paff->shx = m3;
-        paff->sy = m4;
-        paff->tx = m5;
-        paff->ty = m6;
+        m_pInternal->m_oTransform.SetElements(m1, m2, m3, m4, m5, m6);
         return S_OK;
     }
     HRESULT CASCHTMLRenderer3::GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
     {
-        agg::trans_affine* paff = &m_pInternal->m_oTransform.m_agg_mtx;
-        *pdA = paff->sx;
-        *pdB = paff->shy;
-        *pdC = paff->shx;
-        *pdD = paff->sy;
-        *pdE = paff->tx;
-        *pdF = paff->ty;
+        *pdA = m_pInternal->m_oTransform.sx();
+        *pdB = m_pInternal->m_oTransform.shy();
+        *pdC = m_pInternal->m_oTransform.shx();
+        *pdD = m_pInternal->m_oTransform.sy();
+        *pdE = m_pInternal->m_oTransform.tx();
+        *pdF = m_pInternal->m_oTransform.ty();
         return S_OK;
     }
     HRESULT CASCHTMLRenderer3::ResetTransform()
@@ -1234,9 +1229,9 @@ namespace NSHtmlRenderer
     HRESULT CASCHTMLRenderer3::CreateOfficeFile(std::wstring bsFileName, const std::wstring& fontsDir)
     {
         if (fontsDir.empty())
-            m_pInternal->m_oApplicationFonts.Initialize();
+            m_pInternal->m_pApplicationFonts->Initialize();
         else
-            m_pInternal->m_oApplicationFonts.InitializeFromFolder(fontsDir);
+            m_pInternal->m_pApplicationFonts->InitializeFromFolder(fontsDir);
 
         m_pInternal->m_strDstFile = bsFileName;
 
@@ -1270,14 +1265,14 @@ namespace NSHtmlRenderer
         m_pInternal->m_oWriter.CreateFile(strDir, strName);
         m_pInternal->m_oWriter.WriteStartDocument();
 
-        m_pInternal->m_oWriter.m_oSmartText.m_oFontManager.Init(&m_pInternal->m_oApplicationFonts);
+        m_pInternal->m_oWriter.m_oSmartText.m_oFontManager.Init(m_pInternal->m_pApplicationFonts);
 
         m_pInternal->m_lCurrentPage = -1;
         m_pInternal->m_bPageOpened = false;
 
-        m_pInternal->m_pFontManager = m_pInternal->m_oApplicationFonts.GenerateFontManager();
-        CFontsCache* pGraphicsFontCache = new CFontsCache();
-        pGraphicsFontCache->SetStreams(m_pInternal->m_oApplicationFonts.GetStreams());
+        m_pInternal->m_pFontManager = m_pInternal->m_pApplicationFonts->GenerateFontManager();
+        NSFonts::IFontsCache* pGraphicsFontCache = NSFonts::NSFontCache::Create();
+        pGraphicsFontCache->SetStreams(m_pInternal->m_pApplicationFonts->GetStreams());
         pGraphicsFontCache->SetCacheSize(16);
         m_pInternal->m_pFontManager->SetOwnerCache(pGraphicsFontCache);
 

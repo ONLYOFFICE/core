@@ -52,7 +52,8 @@ public:
         None,
         Lowercase,
         Uppercase,
-        Capitalize
+        Capitalize,
+		Underline
     };
     
     text_transform()

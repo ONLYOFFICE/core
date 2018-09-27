@@ -31,96 +31,45 @@
  */
 #pragma once
 
-#include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/graphics/BaseThread.h"
+#include <string>
+#include "../kernel_config.h"
 
-class CFileDownloaderBase
-{
-public :
-    CFileDownloaderBase(std::wstring sFileUrl, bool bDelete = true)
-    {
-        m_sFilePath = L"";
-        m_sFileUrl  = sFileUrl;
-        m_bComplete = false;
-        m_bDelete   = bDelete;
-    }
-    virtual ~CFileDownloaderBase ()
-    {
-        if ( m_sFilePath.length() > 0 && m_bDelete )
-        {
-            NSFile::CFileBinary::Remove(m_sFilePath);
-            m_sFilePath = L"";
-        }
-    }
-
-    virtual int DownloadFile() = 0;
-
-public:
-    std::wstring    m_sFilePath;       // Путь к сохраненному файлу на диске
-    std::wstring    m_sFileUrl;        // Ссылка на скачивание файла
-
-    bool            m_bComplete;       // Закачался файл или нет
-    bool            m_bDelete;         // Удалять ли файл в деструкторе
-
-};
-
-class CFileDownloader : public NSThreads::CBaseThread
+class CFileDownloader_private;
+class KERNEL_DECL CFileDownloader
 {
 protected:
     // создаем в зависимости от платформы
-    CFileDownloaderBase* m_pInternal;
+    CFileDownloader_private* m_pInternal;
+
+#ifdef _MAC
+    static bool m_bIsARCEnabled;
+#endif
 
 public:
     CFileDownloader(std::wstring sFileUrl, bool bDelete = true);
-    virtual ~CFileDownloader()
-    {
-        Stop();
-        if (NULL != m_pInternal)
-            delete m_pInternal;
-    }
+    virtual ~CFileDownloader();
 
-    void SetFilePath(const std::wstring& sPath)
-    {
-        m_pInternal->m_sFilePath = sPath;
-    }
-    std::wstring GetFilePath()
-    {
-        return m_pInternal->m_sFilePath;
-    }
-    bool IsFileDownloaded()
-    {
-        return m_pInternal->m_bComplete;
-    }
+    void SetFilePath(const std::wstring& sPath);
+    std::wstring GetFilePath();
+    bool IsFileDownloaded();
 
-    bool DownloadSync()
-    {
-        this->Start( 1 );
-        while ( this->IsRunned() )
-        {
-            NSThreads::Sleep( 10 );
-        }
-        return IsFileDownloaded();
-    }
+    bool DownloadSync();
 
-protected :
+    void Start(int lPriority);
+    void Suspend();
+    void Resume();
+    void Stop();
 
-    virtual DWORD ThreadProc ()
-    {
-        m_pInternal->m_bComplete = false;
+    int IsSuspended();
+    int IsRunned();
+    int GetError();
 
-        if ( true )
-        {
-            int hrResultAll = m_pInternal->DownloadFile();
+    int GetPriority();
 
-            if (0 != hrResultAll)
-            {
-                m_bRunThread = FALSE;
-                return 0;
-            }
-        }
+    void CheckSuspend();
 
-        m_pInternal->m_bComplete = true;
-        m_bRunThread = FALSE;
-        return 0;
-    }
+#ifdef _MAC
+    static void SetARCEnabled(const bool& enabled);
+    static bool GetARCEnabled();
+#endif
 };

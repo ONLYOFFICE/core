@@ -32,10 +32,9 @@
 
 #include "xlsx_borders.h"
 
-#include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include <xml/simple_xml_writer.h>
 
 #include "xlsx_border.h"
 #include "../odf/datatypes/length.h"
@@ -203,9 +202,9 @@ public:
     {
         std::vector<xlsx_border> inst_array;
 
-        BOOST_FOREACH(const xlsx_border & inst, borders_)
+		for (boost::unordered_set<xlsx_border, boost::hash<xlsx_border>>::iterator it = borders_.begin(); it != borders_.end(); ++it)
         {
-            inst_array.push_back(inst);
+            inst_array.push_back(*it);
         }
 
         std::sort(inst_array.begin(), inst_array.end(), compare_());
@@ -215,9 +214,10 @@ public:
             CP_XML_NODE(L"borders")
             {
                 CP_XML_ATTR(L"count", inst_array.size());
-                BOOST_FOREACH( xlsx_border & border, inst_array)
+				
+				for (size_t i = 0; i < inst_array.size(); i++)
                 {
-                    cpdoccore::oox::xlsx_serialize(CP_XML_STREAM(), border);
+                    cpdoccore::oox::xlsx_serialize(CP_XML_STREAM(), inst_array[i]);
                 }
             }
         }

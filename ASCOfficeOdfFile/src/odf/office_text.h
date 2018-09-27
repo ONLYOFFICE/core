@@ -32,9 +32,9 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 #include "office_elements.h"
 #include "office_elements_create.h"
 
@@ -67,6 +67,7 @@ private:
 	office_element_ptr			user_fields_;
 	office_element_ptr			variables_;
  	office_element_ptr			sequences_;
+	//office_element_ptr		forms_; -> content
    
 	office_element_ptr_array	content_;
 };

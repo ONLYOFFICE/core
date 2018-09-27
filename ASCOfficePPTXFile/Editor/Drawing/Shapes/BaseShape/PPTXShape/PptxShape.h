@@ -485,19 +485,19 @@ public:
         return FALSE;
     }
 
-    virtual std::wstring ToXML(CGeomShapeInfo& GeomInfo, CMetricInfo& MetricInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)
+    virtual std::wstring ToXML(CGeomShapeInfo& GeomInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)
     {
         FManager.SetWidthHeight(GeomInfo.m_dWidth, GeomInfo.m_dHeight);
         ReCalculate();
 
-        return m_oPath.ToXml(GeomInfo, StartTime, EndTime, Pen, Brush, MetricInfo, NSBaseShape::pptx);
+        return m_oPath.ToXml(GeomInfo, StartTime, EndTime, Pen, Brush, NSBaseShape::pptx);
     }
-    virtual void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo)
+    virtual void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore)
     {
         FManager.SetWidthHeight(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight);
         ReCalculate();
 
-        m_oPath.ToRenderer(pRenderer, pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, GetClassType());
+        m_oPath.ToRenderer(pRenderer, pGeomInfo, dStartTime, dEndTime, pPen, pFore, GetClassType());
     }
 
     virtual void ReCalculate()

@@ -35,8 +35,8 @@
 #include <iosfwd>
 #include <string>
 
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#include <CPSharedPtr.h>
+#include <CPOptional.h>
 
 namespace cpdoccore {
 namespace oox {

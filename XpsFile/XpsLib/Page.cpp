@@ -50,33 +50,33 @@
 
 namespace XPS
 {
-	static double GetAdvanceX(CFontManager* pFontManager, const unsigned int& unUnicode, const unsigned int& unGid, const bool& bGid)
+    static double GetAdvanceX(NSFonts::IFontManager* pFontManager, const unsigned int& unUnicode, const unsigned int& unGid, const bool& bGid)
 	{
 		if (bGid)
 		{
 			pFontManager->SetStringGID(TRUE);
-			return pFontManager->MeasureChar(unGid).fAdvanceX;
+            return pFontManager->MeasureChar2(unGid).fAdvanceX;
 		}
 		else
 		{
 			pFontManager->SetStringGID(FALSE);
-			return pFontManager->MeasureChar(unUnicode).fAdvanceX;
+            return pFontManager->MeasureChar2(unUnicode).fAdvanceX;
 		}
 	}
-	static double GetAdvanceY(CFontManager* pFontManager, const unsigned int& unUnicode, const unsigned int& unGid, const bool& bGid)
+    static double GetAdvanceY(NSFonts::IFontManager* pFontManager, const unsigned int& unUnicode, const unsigned int& unGid, const bool& bGid)
 	{
 		if (bGid)
 		{
 			pFontManager->SetStringGID(TRUE);
-			return pFontManager->MeasureChar(unGid).fAdvanceY;
+            return pFontManager->MeasureChar2(unGid).fAdvanceY;
 		}
 		else
 		{
 			pFontManager->SetStringGID(FALSE);
-			return pFontManager->MeasureChar(unUnicode).fAdvanceY;
+            return pFontManager->MeasureChar2(unUnicode).fAdvanceY;
 		}
 	}	
-	Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, CFontManager* pFontManager, CDocument* pDocument)
+    Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, NSFonts::IFontManager* pFontManager, CDocument* pDocument)
 	{
 		m_wsPagePath   = wsPagePath;
 		m_wsRootPath   = wsRootPath;
@@ -633,13 +633,13 @@ namespace XPS
 		double dFontKoef = dFontSize / 100.0;
 
 		bool bNeedItalic = false, bNeedBold = false;
-		if (m_pFontManager->m_pFont && m_pFontManager->m_pFont->m_pFace)
+        NSFonts::IFontFile* pFile = m_pFontManager->GetFile();
+        if (pFile)
 		{
-			FT_Face pFace = m_pFontManager->m_pFont->m_pFace;
-			if (!(pFace->style_flags & FT_STYLE_FLAG_ITALIC) && bForceItalic)
+            if (!pFile->IsItalic() && bForceItalic)
 				bNeedItalic = true;
 
-			if (!(pFace->style_flags & FT_STYLE_FLAG_BOLD) && bForceBold)
+            if (!pFile->IsBold() && bForceBold)
 			{
 				LONG lTextColor, lTextAlpha;
 				pRenderer->get_BrushColor1(&lTextColor);

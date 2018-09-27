@@ -32,11 +32,11 @@
 #pragma once
 
 #include "IVisitable.h"
-#include "StructuredStorageReader.h"
 #include "PictureDescriptor.h"
 
 namespace DocFileFormat
 {
+	class WordDocument;
 	class OleObject: public IVisitable
 	{
 		friend class OleObjectMapping;  
@@ -48,7 +48,7 @@ namespace DocFileFormat
 			Always = 1,
 			OnCall = 3
 		};	
-		bool				bOlderVersion;				
+		int					nWordVersion;				
 		bool				bLinked;		// The the value is true, the object is a linked object
 		
 		std::wstring		ObjectId;
@@ -68,17 +68,22 @@ namespace DocFileFormat
 		
 		PictureDescriptor	pictureDesciptor;
 
-		OleObject( const CharacterPropertyExceptions* chpx, StructuredStorageReader* docStorage, bool bOlderVersion_ );
+		OleObject( const CharacterPropertyExceptions* chpx, WordDocument* document);
 		virtual ~OleObject() {}
 
 	private:
 		POLE::Storage	*oleStorage;
 	  
-		void processLinkInfoStream		( const std::wstring& linkStream );      
+		bool processLinkInfoStream		( const std::wstring& linkStream );      
 		void processEquationNativeStream( const std::wstring& eqStream );
 		void processPICStream			( const std::wstring& picStream );
-		void processCompObjStream		( const std::wstring& compStream );
-		void processOleStream			( const std::wstring& oleStreamName );
+		void processMETAStream			( const std::wstring& metaStream );
+		bool processCompObjStream		( const std::wstring& compStream );
+		bool processOleStream			( const std::wstring& oleStreamName );
+
+		void processOleStream			( VirtualStreamReader& reader );
+		void processLinkInfoStream		( VirtualStreamReader& reader );
+		void processCompObjStream		( VirtualStreamReader& reader );
 
 		std::wstring getOleEntryName	( const CharacterPropertyExceptions* chpx );
 };

@@ -42,6 +42,11 @@ namespace OOX
 	class WritingElement;
 }
 
+namespace NSFonts
+{
+	class IApplicationFonts;
+}
+
 struct _section
 {
 	RtfSectionPtr								props;
@@ -74,6 +79,8 @@ public:
 
 //для того чтобы конвертировать старый формат List в Numbering
 	std::vector<RtfOldListPtr> m_aOldLists;
+	
+	NSFonts::IApplicationFonts* m_pAppFonts;
 
 private: 
 	std::vector<int>	m_aShapeId;
@@ -126,7 +133,10 @@ public:
 		}
 		return nShapeId;
 	}
+	
 	RtfDocument();
+	virtual ~RtfDocument();
+	
 	int GetType();
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);

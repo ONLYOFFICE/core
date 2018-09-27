@@ -85,7 +85,7 @@ namespace DocFileFormat
 		IndividualFootnotesPlex(NULL), FootnoteReferenceCharactersPlex(NULL), IndividualEndnotesPlex(NULL),
 		EndnoteReferenceCharactersPlex(NULL), FieldsPlex(NULL), FootnoteDocumentFieldsPlex(NULL),
 		EndnoteDocumentFieldsPlex(NULL), HeadersAndFootersDocumentFieldsPlex(NULL), HeaderStoriesPlex(NULL),
-		AnnotationsReferencePlex(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
+		AnnotationsReferencePlex(NULL), AnnotationsReferenceExPlex(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
 		TextboxIndividualPlex(NULL),AssocNames(NULL), BookmarkAnnotNames(NULL), Captions(NULL), AutoCaptions(NULL), ListPlex(NULL),
 		OfficeDrawingPlex(NULL), OfficeDrawingPlexHeader(NULL), SectionPlex(NULL), BookmarkStartPlex(NULL), BookmarkEndPlex(NULL),
 		AutoTextPlex(NULL), AllPapxFkps(NULL), AllChpxFkps(NULL), AllPapx(NULL), AllPapxVector(NULL), AllSepx(NULL), Styles(NULL), listTable(NULL),
@@ -97,10 +97,11 @@ namespace DocFileFormat
 		
 		m_pStorage			= NULL;
 		officeArtContent	= NULL;
-		bOlderVersion		= false;
+		nWordVersion		= 0;
 		
 		bDocumentCodePage	= false;
 		nDocumentCodePage	= ENCODING_WINDOWS_1250;
+		nFontsCodePage		= ENCODING_WINDOWS_1250;
 	}
 
 	WordDocument::~WordDocument()
@@ -116,7 +117,7 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
-	long WordDocument::LoadDocument(const std::wstring & fileName, const std::wstring & password)
+	_UINT32 WordDocument::LoadDocument(const std::wstring & fileName, const std::wstring & password)
 	{
 		m_sFileName = fileName;
 		m_sPassword = password;
@@ -131,8 +132,11 @@ namespace DocFileFormat
 
 		if (m_pStorage->SetFile (m_sFileName.c_str()) == false)
 		{
-			Clear();
-            return AVS_ERROR_FILEFORMAT;
+			if (false == LoadDocumentFlat())
+			{
+				Clear();
+				return AVS_ERROR_FILEFORMAT;
+			}
 		}
 //-----------------------------------------------------------------------------------------------------------------
 		if (m_pStorage->GetStream (L"WordDocument", &WordDocumentStream) == false)
@@ -141,20 +145,30 @@ namespace DocFileFormat
             return AVS_ERROR_FILEFORMAT;
 		}
 //-------------------------------------------------------------------------------------------------------------------
-		FIB	 =	new FileInformationBlock(VirtualStreamReader(WordDocumentStream,0, false ));
+		FIB	 =	new FileInformationBlock(VirtualStreamReader(WordDocumentStream, 0, false ));
 
 		if (FIB->m_FibBase.nFib)
 		{
             if (FIB->m_FibBase.nFib <= Fib1995)
 			{
-				bOlderVersion = FIB->m_bOlderVersion = true;
+				nWordVersion = FIB->m_nWordVersion = 1;
+				
+				if (FIB->m_FibBase.nFib <= Fib1989)
+				{
+					nWordVersion = FIB->m_nWordVersion = 2;
+				}
 			}
 		}
 		else
 		{
             if (FIB->m_FibNew.nFibNew <= Fib1995 && FIB->m_FibNew.nFibNew > 0)
 			{
-				bOlderVersion = FIB->m_bOlderVersion = true;
+				nWordVersion = FIB->m_nWordVersion = 1;
+
+				if (FIB->m_FibNew.nFibNew <= Fib1989)
+				{
+					nWordVersion = FIB->m_nWordVersion = 2;
+				}
 			}
 		}
 		bool res = false;
@@ -221,7 +235,7 @@ namespace DocFileFormat
 				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 			}
 			
-			FIB->reset(VirtualStreamReader(WordDocumentStream, bOlderVersion ? 36 : 68, false));
+			FIB->reset(VirtualStreamReader(WordDocumentStream, (nWordVersion > 0) ? 36 : 68, false));
 		}
 
 //------------------------------------------------------------------------------------------------------------------
@@ -255,7 +269,7 @@ namespace DocFileFormat
 				bDocumentCodePage = true;
 			}
 		}
-		if (!bOlderVersion)
+		if (nWordVersion == 0)
 		{
 			nDocumentCodePage = ENCODING_UTF16;
 			bDocumentCodePage = true;
@@ -272,20 +286,20 @@ namespace DocFileFormat
 			DataStream = NULL;
 		}
 
-		if (TableStream->size() < 1 && bOlderVersion)
+		if (TableStream->size() < 1 && nWordVersion > 0)
 		{
 			RELEASEOBJECT(TableStream);
 			m_pStorage->GetStream (L"WordDocument", &TableStream);
 		}
 
-		RevisionAuthorTable	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfRMark,		FIB->m_FibWord97.lcbSttbfRMark,			bOlderVersion);
-		FontTable			=	new StringTable<FontFamilyName>	(TableStream, FIB->m_FibWord97.fcSttbfFfn,			FIB->m_FibWord97.lcbSttbfFfn,			bOlderVersion);
-		BookmarkNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfBkmk,			FIB->m_FibWord97.lcbSttbfBkmk,			bOlderVersion);
-		AutoTextNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfGlsy,			FIB->m_FibWord97.lcbSttbfGlsy,			bOlderVersion);
-		AssocNames			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAssoc,		FIB->m_FibWord97.lcbSttbfAssoc,			bOlderVersion);
-		BookmarkAnnotNames	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAtnBkmk,		FIB->m_FibWord97.lcbSttbfAtnBkmk,		bOlderVersion);
-		Captions			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfCaption,		FIB->m_FibWord97.lcbSttbfCaption,		bOlderVersion);
-		AutoCaptions		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAutoCaption,	FIB->m_FibWord97.lcbSttbfAutoCaption,	bOlderVersion);
+		RevisionAuthorTable	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfRMark,		FIB->m_FibWord97.lcbSttbfRMark,			nWordVersion);
+		FontTable			=	new StringTable<FontFamilyName>	(TableStream, FIB->m_FibWord97.fcSttbfFfn,			FIB->m_FibWord97.lcbSttbfFfn,			nWordVersion);
+		BookmarkNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfBkmk,			FIB->m_FibWord97.lcbSttbfBkmk,			nWordVersion);
+		AutoTextNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfGlsy,			FIB->m_FibWord97.lcbSttbfGlsy,			nWordVersion);
+		AssocNames			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAssoc,		FIB->m_FibWord97.lcbSttbfAssoc,			nWordVersion);
+		BookmarkAnnotNames	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAtnBkmk,		FIB->m_FibWord97.lcbSttbfAtnBkmk,		nWordVersion);
+		Captions			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfCaption,		FIB->m_FibWord97.lcbSttbfCaption,		nWordVersion);
+		AutoCaptions		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAutoCaption,	FIB->m_FibWord97.lcbSttbfAutoCaption,	nWordVersion);
 
 		if (m_pCallFunc)
 		{
@@ -304,46 +318,51 @@ namespace DocFileFormat
 		// Read all needed PLCFs
 		if (FIB->m_RgLw97.ccpFtn > 0)
 		{
-			IndividualFootnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcffndTxt, FIB->m_FibWord97.lcbPlcffndTxt, bOlderVersion);
-			FootnoteReferenceCharactersPlex	=	new Plex<FootnoteDescriptor>(FootnoteDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcffndRef, FIB->m_FibWord97.lcbPlcffndRef, bOlderVersion);
+			FootnoteReferenceCharactersPlex	=	new Plex<FootnoteDescriptor>(FootnoteDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcffndRef, FIB->m_FibWord97.lcbPlcffndRef, nWordVersion);
+			IndividualFootnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcffndTxt, FIB->m_FibWord97.lcbPlcffndTxt, nWordVersion);
 		}
 	
-		if (FIB->m_FibWord97.lcbPlcPad > 0)
+		if (nWordVersion > 0 && FIB->m_FibWord97.lcbPlcPad > 0)
 		{
-			OutlineListDescriptorPlex		=	new Plex<OutlineListDescriptor>(OutlineListDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcPad, FIB->m_FibWord97.lcbPlcPad, bOlderVersion);
+			OutlineListDescriptorPlex =	new Plex<OutlineListDescriptor>(OutlineListDescriptor::GetSize(nWordVersion),	TableStream, FIB->m_FibWord97.fcPlcPad, FIB->m_FibWord97.lcbPlcPad, nWordVersion);
 		}
 
 		if (FIB->m_RgLw97.ccpEdn > 0)
 		{
-			IndividualEndnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcfendTxt, FIB->m_FibWord97.lcbPlcfendTxt, bOlderVersion);
-			EndnoteReferenceCharactersPlex	=	new Plex<EndnoteDescriptor>(EndnoteDescriptor::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfendRef, FIB->m_FibWord97.lcbPlcfendRef, bOlderVersion);
+			EndnoteReferenceCharactersPlex	=	new Plex<EndnoteDescriptor>(EndnoteDescriptor::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfendRef, FIB->m_FibWord97.lcbPlcfendRef, nWordVersion);
+			IndividualEndnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcfendTxt, FIB->m_FibWord97.lcbPlcfendTxt, nWordVersion);
 		}
 
 		if (FIB->m_RgLw97.ccpHdr > 0)
 		{
-			HeaderStoriesPlex				=	new Plex<EmptyStructure>( EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfHdd, FIB->m_FibWord97.lcbPlcfHdd, bOlderVersion);
+			HeaderStoriesPlex =	new Plex<EmptyStructure>( EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfHdd, FIB->m_FibWord97.lcbPlcfHdd, nWordVersion);
 		}
 
-		if (FIB->m_RgLw97.ccpAtn > 0)
+        if (FIB->m_RgLw97.ccpAtn > 0)
 		{
-			AnnotationsReferencePlex		=	new Plex<AnnotationReferenceDescriptor>(AnnotationReferenceDescriptor::GetSize(bOlderVersion), TableStream, FIB->m_FibWord97.fcPlcfandRef, FIB->m_FibWord97.lcbPlcfandRef, bOlderVersion);
-			IndividualCommentsPlex			=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfandTxt,		FIB->m_FibWord97.lcbPlcfandTxt,		bOlderVersion);
+			AnnotationsReferencePlex		=	new Plex<AnnotationReferenceDescriptor>(AnnotationReferenceDescriptor::GetSize(nWordVersion), TableStream, FIB->m_FibWord97.fcPlcfandRef, FIB->m_FibWord97.lcbPlcfandRef, nWordVersion);
+			IndividualCommentsPlex			=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfandTxt,		FIB->m_FibWord97.lcbPlcfandTxt,		nWordVersion);
 		}
-		OfficeDrawingPlex					=	new Plex<Spa>				(Spa::GetSize(bOlderVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaMom,		FIB->m_FibWord97.lcbPlcSpaMom,		bOlderVersion);
-		OfficeDrawingPlexHeader				=	new Plex<Spa>				(Spa::GetSize(bOlderVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaHdr,		FIB->m_FibWord97.lcbPlcSpaHdr,		bOlderVersion);
 
-		TextboxIndividualPlex				=	new Plex<FTXBXS>			(FTXBXS::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	bOlderVersion);
+		if (FIB->m_FibWord2002.lcbAtrdExtra > 0)
+		{
+			AnnotationsReferenceExPlex	=	new Plex<AnnotationReferenceExDescriptor>(AnnotationReferenceExDescriptor::GetSize(nWordVersion), TableStream, FIB->m_FibWord2002.fcAtrdExtra, FIB->m_FibWord2002.lcbAtrdExtra, nWordVersion);
+		}
+		OfficeDrawingPlex					=	new Plex<Spa>				(Spa::GetSize(nWordVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaMom,		FIB->m_FibWord97.lcbPlcSpaMom,		nWordVersion);
+		OfficeDrawingPlexHeader				=	new Plex<Spa>				(Spa::GetSize(nWordVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaHdr,		FIB->m_FibWord97.lcbPlcSpaHdr,		nWordVersion);
 
-		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfSed,		FIB->m_FibWord97.lcbPlcfSed,		bOlderVersion);
+		TextboxIndividualPlex				=	new Plex<FTXBXS>			(FTXBXS::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	nWordVersion);
+
+		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::GetSize(nWordVersion),	TableStream, FIB->m_FibWord97.fcPlcfSed,		FIB->m_FibWord97.lcbPlcfSed,		nWordVersion);
 		
-		BookmarkStartPlex					=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfBkf,		FIB->m_FibWord97.lcbPlcfBkf,		bOlderVersion);
-		BookmarkEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBkl,		FIB->m_FibWord97.lcbPlcfBkl,		bOlderVersion);
+		BookmarkStartPlex					=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfBkf,		FIB->m_FibWord97.lcbPlcfBkf,		nWordVersion);
+		BookmarkEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBkl,		FIB->m_FibWord97.lcbPlcfBkl,		nWordVersion);
 
-		TextboxBreakPlex					=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxBkd,	FIB->m_FibWord97.lcbPlcfTxbxBkd,	bOlderVersion);
-		TextboxBreakPlexHeader				=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxHdrBkd, FIB->m_FibWord97.lcbPlcfTxbxHdrBkd, bOlderVersion);
+		TextboxBreakPlex					=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxBkd,	FIB->m_FibWord97.lcbPlcfTxbxBkd,	nWordVersion);
+		TextboxBreakPlexHeader				=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxHdrBkd, FIB->m_FibWord97.lcbPlcfTxbxHdrBkd, nWordVersion);
 
-		AnnotStartPlex						=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfAtnBkf,		FIB->m_FibWord97.lcbPlcfAtnBkf,		bOlderVersion);
-		AnnotEndPlex							=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfAtnBkl,		FIB->m_FibWord97.lcbPlcfAtnBkl,		bOlderVersion);
+		AnnotStartPlex						=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfAtnBkf,		FIB->m_FibWord97.lcbPlcfAtnBkf,		nWordVersion);
+		AnnotEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfAtnBkl,		FIB->m_FibWord97.lcbPlcfAtnBkl,		nWordVersion);
 		
 
 		for (size_t i = 0; i < BookmarkStartPlex->Elements.size(); ++i)
@@ -354,20 +373,25 @@ namespace DocFileFormat
 				BookmarkStartEndCPs.push_back(std::make_pair(BookmarkStartPlex->CharacterPositions[i], BookmarkEndPlex->CharacterPositions[pBookmark->GetIndex()]));
 			}
 		}
-		for (size_t i = 0; i < AnnotStartPlex->Elements.size(); ++i)
+		for (size_t i = 0; AnnotStartPlex && i < AnnotStartPlex->Elements.size(); ++i)
 		{
-			BookmarkFirst* pBookmark		=	static_cast<BookmarkFirst*>(AnnotStartPlex->Elements[i]);
+			BookmarkFirst* pBookmark = static_cast<BookmarkFirst*>(AnnotStartPlex->Elements[i]);
 			if (pBookmark)
 			{
-				AnnotStartEndCPs.push_back(std::make_pair(AnnotStartPlex->CharacterPositions[i], AnnotEndPlex->CharacterPositions[pBookmark->GetIndex()]));
+				short ind = pBookmark->GetIndex();
+				if (i < AnnotStartPlex->CharacterPositions.size() -1 )
+				{
+					AnnotStartEndCPs.push_back(std::make_pair(AnnotStartPlex->CharacterPositions[i], AnnotEndPlex->CharacterPositions[i + 1]));
+				}
 			}
 		}
-		AutoTextPlex						=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfGlsy,   FIB->m_FibWord97.lcbPlcfGlsy, bOlderVersion);
-		FieldsPlex							=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldMom, FIB->m_FibWord97.lcbPlcfFldMom, bOlderVersion);
-		FootnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldFtn, FIB->m_FibWord97.lcbPlcfFldFtn, bOlderVersion);
-		EndnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldEdn, FIB->m_FibWord97.lcbPlcfFldEdn, bOlderVersion);
-		HeadersAndFootersDocumentFieldsPlex	=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldHdr, FIB->m_FibWord97.lcbPlcfFldHdr, bOlderVersion);
-		ListPlex							=	new Plex<ListNumCache>	(ListNumCache::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBteLvc, FIB->m_FibWord97.lcbPlcfBteLvc, bOlderVersion);
+
+		AutoTextPlex						=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfGlsy,   FIB->m_FibWord97.lcbPlcfGlsy, nWordVersion);
+		FieldsPlex							=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldMom, FIB->m_FibWord97.lcbPlcfFldMom, nWordVersion);
+		FootnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldFtn, FIB->m_FibWord97.lcbPlcfFldFtn, nWordVersion);
+		EndnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldEdn, FIB->m_FibWord97.lcbPlcfFldEdn, nWordVersion);
+		HeadersAndFootersDocumentFieldsPlex	=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldHdr, FIB->m_FibWord97.lcbPlcfFldHdr, nWordVersion);
+		ListPlex							=	new Plex<ListNumCache>	(ListNumCache::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBteLvc, FIB->m_FibWord97.lcbPlcfBteLvc, nWordVersion);
 		
 		if (m_pCallFunc)
 		{
@@ -399,7 +423,7 @@ namespace DocFileFormat
 			AnnotationOwners		=	new AnnotationOwnerList		(FIB, TableStream);
 		}
 
-		if (m_pCallFunc)
+        if (m_pCallFunc)
 		{
 			m_pCallFunc->OnProgress(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 300000 );
 
@@ -412,28 +436,29 @@ namespace DocFileFormat
 				return AVS_ERROR_FILEFORMAT;
 			}
 		}
-		if (!bDocumentCodePage && FontTable)
+		if (FontTable)
 		{
 			std::unordered_map<int, int> fonts_charsets;
+			bool bFontsCodePage = false;
 
-			for ( std::vector<ByteStructure*>::iterator iter = FontTable->Data.begin();!bDocumentCodePage &&  iter != FontTable->Data.end(); iter++ )
+            for ( size_t i = 0; FIB->m_FibWord97.lcbClx > 0 && !bFontsCodePage &&  i < FontTable->Data.size(); ++i)
 			{
-				FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
+                FontFamilyName* font = dynamic_cast<FontFamilyName*>( FontTable->Data[i]);
 				if (!font) continue;
 
 				if (fonts_charsets.find(font->chs) == fonts_charsets.end())
 				{
 					fonts_charsets.insert(std::make_pair(font->chs, font->ff));
 					
-					for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
-					{
-						if (aCodePages[i][0] == font->chs && font->chs != 0)
-						{
-							nDocumentCodePage = aCodePages[i][1];
-							bDocumentCodePage = true;
-							break;
-						}
-					}	
+                    for (size_t j = 0 ; j < 32; j++)
+                    {
+                        if (aCodePages[j][0] == font->chs && font->chs > 2)
+                        {
+                            nFontsCodePage = aCodePages[j][1];
+                            bFontsCodePage = true;
+                            break;
+                        }
+                    }
 				}
 			}
 		}
@@ -445,30 +470,37 @@ namespace DocFileFormat
 			m_PieceTable	= new PieceTable (FIB, TableStream, WordDocumentStream );
 			Text			= m_PieceTable->GetAllEncodingText (WordDocumentStream);
 		}
-		else
+		
+        if (FIB->m_FibWord97.lcbClx < 1 || ((Text) && (Text->empty())))
 		{
 			int cb = FIB->m_FibBase.fcMac - FIB->m_FibBase.fcMin;
 
-			unsigned char *bytes = new unsigned char[cb];
+			if (cb > 0)
+			{
+				FIB->m_FibBase.fComplex = false;
+				unsigned char *bytes = new unsigned char[cb];
 
-			WordDocumentStream->seek (FIB->m_FibBase.fcMin);
-			WordDocumentStream->read (bytes, cb);
+				WordDocumentStream->seek (FIB->m_FibBase.fcMin);
+				WordDocumentStream->read (bytes, cb);
 
-			Text = new std::vector<wchar_t>();
-			FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(Text, bytes, cb, nDocumentCodePage);
+				RELEASEOBJECT(Text);
+				Text = new std::vector<wchar_t>();
 
-			RELEASEARRAYOBJECTS(bytes);
+				FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t>>(Text, bytes, cb, nFontsCodePage != ENCODING_WINDOWS_1250 ? nFontsCodePage : nDocumentCodePage);
+
+				RELEASEARRAYOBJECTS(bytes);
+			}
 		}
 
 		if (BookmarkNames)
 		{
-			for (unsigned int i = 0; i < BookmarkStartEndCPs.size(); ++i)
+			for (size_t i = 0; i < BookmarkStartEndCPs.size(); ++i)
 			{
 				WideString* bookmarkName = static_cast<WideString*>(BookmarkNames->operator[]( i ));
 
                 if ( ( bookmarkName != NULL ) && ( *bookmarkName == L"_PictureBullets" ) )
 				{
-					for (unsigned int j = BookmarkStartEndCPs[i].first, k = 0; j < Text->size(); ++j, ++k )
+					for (size_t j = BookmarkStartEndCPs[i].first, k = 0; j < Text->size(); ++j, ++k )
 					{
 						if ( Text->at( j ) == 1 )
 						{
@@ -514,20 +546,20 @@ namespace DocFileFormat
 		{
 			AllSepx = new std::map<int, SectionPropertyExceptions*>();
 
-			for (unsigned int i = 0; i < SectionPlex->Elements.size(); ++i)
+			for (size_t i = 0; i < SectionPlex->Elements.size(); ++i)
 			{
 				//Read the SED
 				SectionDescriptor* sed = static_cast<SectionDescriptor*>(SectionPlex->Elements.at(i));
 				int cp = SectionPlex->CharacterPositions[i + 1];
 
 				//Get the SEPX
-				VirtualStreamReader wordReader( WordDocumentStream, sed->fcSepx, bOlderVersion);
+				VirtualStreamReader wordReader( WordDocumentStream, sed->fcSepx, nWordVersion);
 
 				//!!!TODO: cbSepx is the size in bytes of the rest properties part!!!
-				short cbSepx	=	wordReader.ReadInt16();
-				unsigned char* bytes		=	wordReader.ReadBytes( ( cbSepx /*- 2*/ ), true );
+				short cbSepx			=	nWordVersion == 2 ? wordReader.ReadByte() : wordReader.ReadInt16();
+				unsigned char* bytes	=	wordReader.ReadBytes( ( cbSepx /*- 2*/ ), true );
 
-				AllSepx->insert( std::pair<int, SectionPropertyExceptions*>( cp, new SectionPropertyExceptions( bytes, ( cbSepx /*- 2*/ ), bOlderVersion ) ) );
+				AllSepx->insert( std::pair<int, SectionPropertyExceptions*>( cp, new SectionPropertyExceptions( bytes, ( cbSepx /*- 2*/ ), nWordVersion ) ) );
 
 				RELEASEARRAYOBJECTS( bytes );
 			}
@@ -549,6 +581,70 @@ namespace DocFileFormat
 
 		return 0;
 	}
+	bool WordDocument::LoadDocumentFlat()
+	{
+		NSFile::CFileBinary file;
+
+		if (false == file.OpenFile(m_sFileName)) return false;
+
+		DWORD sz_read = 0;
+		unsigned short wIdent = 0;
+		file.ReadFile((BYTE*)&wIdent, 2, sz_read);
+
+		if ( wIdent != 0xA5EC && wIdent != 0xA5DC && wIdent != 0xA5DB)
+		{
+			file.CloseFile();
+			return false;
+		}
+		file.SeekFile(0);
+
+		if (m_sTempFolder.empty())
+		{
+            m_sTempFolder = NSFile::CFileBinary::GetTempPath();
+		}
+		m_sTempDecryptFileName	= m_sTempFolder + FILE_SEPARATOR_STR + L"~tempFile.doc";
+		
+		POLE::Storage *storageOut	= new POLE::Storage(m_sTempDecryptFileName.c_str());
+
+		if (!storageOut)
+		{
+			file.CloseFile();
+			return false;
+		}
+		
+		if (!storageOut->open(true, true))
+		{
+			file.CloseFile();
+			delete storageOut;
+			return false;
+		}
+		DWORD size_stream = file.GetFileSize();
+
+		POLE::Stream *streamNew = new POLE::Stream(storageOut, L"WordDocument", true, size_stream);
+		if (!streamNew) return false;
+
+		unsigned char* data_stream = new unsigned char[size_stream];
+		file.ReadFile(data_stream, size_stream, size_stream);
+
+		streamNew->write(data_stream, size_stream);
+
+		RELEASEARRAYOBJECTS(data_stream);
+
+		streamNew->flush();
+				
+		delete streamNew;
+
+		storageOut->close();
+		delete storageOut;
+		file.CloseFile();
+
+//reset streams
+		RELEASEOBJECT(WordDocumentStream);
+		
+		m_pStorage->SetFile(m_sTempDecryptFileName.c_str());
+		
+		return true;
+	}	
 	bool WordDocument::DecryptOfficeFile(CRYPT::Decryptor* Decryptor)
 	{
 		if (m_sTempFolder.empty())
@@ -610,6 +706,7 @@ namespace DocFileFormat
 		}
 		return true;
 	}
+
 	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
 	{
 		std::list<std::wstring> entries, entries_files, entries_dir;
@@ -682,7 +779,7 @@ namespace DocFileFormat
 		
 		if ( std::wstring::npos != streamName_open.find(L"WordDocument") )
 		{
-			size_data_store = bOlderVersion ? 36 : 68;
+			size_data_store = (nWordVersion > 0) ? 36 : 68;
 			data_store = new unsigned char[size_data_store];
 		}
 		
@@ -692,7 +789,7 @@ namespace DocFileFormat
 		size_t			size_block	= 0x200;
 		unsigned long	block		= 0;
 
-		for (POLE::uint64 pos = /*bOlderVersion ? size_data_store :*/ 0; pos < size_stream; pos += size_block, block++)
+		for (POLE::uint64 pos = /*(nWordVersion > 0) ? size_data_store :*/ 0; pos < size_stream; pos += size_block, block++)
 		{
 			if (pos + size_block > size_stream)
 				size_block = size_stream - pos;
@@ -722,7 +819,7 @@ namespace DocFileFormat
 
 	void WordDocument::Clear()
 	{
-		bOlderVersion	=	false;
+		nWordVersion =	0;
 		
 		if (AllPapxFkps)
 		{
@@ -778,6 +875,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(HeaderStoriesPlex);
 		RELEASEOBJECT(IndividualCommentsPlex);
 		RELEASEOBJECT(AnnotationsReferencePlex);
+		RELEASEOBJECT(AnnotationsReferenceExPlex);
 		RELEASEOBJECT(TextboxBreakPlex);
 		RELEASEOBJECT(TextboxBreakPlexHeader);
 		RELEASEOBJECT(OfficeDrawingPlex);

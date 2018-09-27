@@ -39,9 +39,14 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
+#if defined(_WIN32) || defined(__WIN64)
+	#include "Windows.h"
+#else
+    #include "iconv.h"
+#endif
+
 namespace AUX
 {
-
 const int normalizeColumn(const int column)
 {
 	int norm_col = column;
@@ -445,54 +450,106 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 	}
 	return numeric;
 }
-
-const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
+std::wstring toStdWStringSystem(std::string ansi_string, const unsigned int code_page)
 {
-    std::string sCodePage;
-    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
-    {
-        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
-        {
-            sCodePage = NSUnicodeConverter::Encodings[i].Name;
-            break;
-        }
-    }
-    if (sCodePage.empty())
-        sCodePage = "CP" + std::to_string(code_page);
+    bool ansi = true;
+    std::wstring sResult;
 
-    NSUnicodeConverter::CUnicodeConverter oConverter;
-    return oConverter.toUnicode(ansi_string, sCodePage.c_str());
+    size_t insize = ansi_string.length();
+	char* inptr = (char*)ansi_string.c_str();
+
+	if (code_page > 0)
+    {
+#if defined (_WIN32) || defined (_WIN64)
+		int outsize_with_0 = MultiByteToWideChar(code_page, 0, inptr, -1, NULL, NULL);
+		sResult.resize(outsize_with_0); 
+		if (MultiByteToWideChar(code_page, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
+        {
+			sResult.erase(outsize_with_0 - 1);
+            ansi = false;
+        }
+#elif defined(__linux__)
+        std::string sCodepage =  "CP" + std::to_string(code_page);
+
+        iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
+        if (ic != (iconv_t) -1)
+        {
+			sResult.resize(insize);
+			char* outptr = (char*)sResult.c_str();
+
+            size_t nconv = 0, avail = (insize) * sizeof(wchar_t), outsize = insize;
+            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+            if (nconv == 0)
+            {
+                if (avail > 0)
+                {
+                    outsize = outsize - avail/sizeof(wchar_t);
+                    sResult.erase(sResult.begin() + outsize);
+                }
+                ansi = false;
+            }
+            iconv_close(ic);
+        }
+#endif
+    }
+    if (ansi)
+        sResult = std::wstring(ansi_string.begin(), ansi_string.end());
+
+    return sResult;
 }
-const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
+std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
 {
     std::string sCodePage;
-    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
-    {
-        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
-        {
-            sCodePage = NSUnicodeConverter::Encodings[i].Name;
-            break;
-        }
-    }
-    if (sCodePage.empty())
-        sCodePage = "CP" + std::to_string(code_page);
+	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
+	if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
+	{
+		sCodePage = pFind->second;
+	}
 
-    NSUnicodeConverter::CUnicodeConverter oConverter;
-    return oConverter.toUnicode(ansi, size, sCodePage.c_str());
+	if (!sCodePage.empty())
+	{
+		NSUnicodeConverter::CUnicodeConverter oConverter;
+		return oConverter.toUnicode(ansi_string, sCodePage.c_str());
+	}
+	else
+	{
+		NSUnicodeConverter::CUnicodeConverter oConverter;
+		return oConverter.toUnicode(ansi_string, code_page);
+	}
 }
-const std::string toStdString(std::wstring wide_string, const unsigned int code_page)
+std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
 {
     std::string sCodePage;
-    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
-    {
-        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
-        {
-            sCodePage = NSUnicodeConverter::Encodings[i].Name;
-            break;
-        }
-    }
-    if (sCodePage.empty())
+	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
+	if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
+	{
+		sCodePage = pFind->second;
+	}
+
+	if (!sCodePage.empty())
+	{
+		NSUnicodeConverter::CUnicodeConverter oConverter;
+		return oConverter.toUnicode(ansi, size, sCodePage.c_str());
+	}
+	else
+	{
+		NSUnicodeConverter::CUnicodeConverter oConverter;
+		return oConverter.toUnicode(ansi, size, code_page);
+	}
+}
+std::string toStdString(std::wstring wide_string, const unsigned int code_page)
+{
+    std::string sCodePage;
+	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
+	if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
+	{
+		sCodePage = pFind->second;
+	}
+
+    if (sCodePage.empty() && code_page > 0)
+	{
         sCodePage = "CP" + std::to_string(code_page);
+	}
 
     NSUnicodeConverter::CUnicodeConverter oConverter;
     return oConverter.fromUnicode(wide_string, sCodePage.c_str());

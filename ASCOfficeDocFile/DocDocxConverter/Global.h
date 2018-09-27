@@ -38,10 +38,30 @@ namespace Global
 	static const wchar_t ColorIdentifier[17][12] = 
 	{
         L"auto",
+        L"000000",//L"black",
+        L"0000FF",//L"blue",
+        L"00FFFF",//L"cyan",
+		L"00FF00",// L"green",
+        L"FF00FF",//L"magenta",
+        L"FF0000",//L"red",
+        L"FFFF00",//L"yellow",
+        L"FFFFFF",//L"white",
+        L"darkBlue",
+        L"darkCyan",
+        L"darkGreen",
+        L"darkMagenta",
+        L"darkRed",
+        L"darkYellow",
+        L"darkGray",
+        L"lightGray"
+	};
+	static const wchar_t ColorNameIdentifier[17][12] = 
+	{
+        L"auto",
         L"black",
         L"blue",
         L"cyan",
-        L"green",
+		L"green",
         L"magenta",
         L"red",
         L"yellow",
@@ -55,7 +75,6 @@ namespace Global
         L"darkGray",
         L"lightGray"
 	};
-
 	static const wchar_t UnderlineCode[56][16] =
 	{
         L"none",

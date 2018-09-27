@@ -35,7 +35,7 @@
 #include "../odf/datatypes/length.h"
 #include "xlsx_utils.h"
 
-//#include <cpdoccore/formulasconvert.h>
+//#include <formulasconvert.h>
 
 namespace cpdoccore { 
 namespace oox {

@@ -43,22 +43,32 @@
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
+
+	#if defined(_DEBUG)
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
+	#else
+		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
+	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-int _tmain(int argc, _TCHAR* argv[])
+HRESULT convert_single(std::wstring srcFileName)
 {
-//#ifdef _DEBUG
-//		_CrtDumpMemoryLeaks();
-//#endif
-		
-	if (argc < 2) return 1;
+	//COfficeFileFormatChecker checker;
 
-	std::wstring sSrcPpt	= argv[1];
-	std::wstring sDstPptx;
+	//if (false == checker.isOfficeFile(srcFileName)) return S_FALSE;	
+	//
+	//if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT != checker.nFileType) return S_FALSE;
+	
+	HRESULT hr = S_OK;
 
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sSrcPpt);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(srcFileName);	
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstPath;
 
 	std::wstring tempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
@@ -68,26 +78,61 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	bool bMacros = true;
 	
-	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"password", bMacros);
+	HRESULT hRes = pptFile.LoadFromFile(srcFileName, dstTempPath, L"password", bMacros);
 	
 	if (bMacros)
 	{
-		sDstPptx = sSrcPpt + L"-my.pptm";
+		dstPath = srcFileName + L"-my.pptm";
 	}
 	else
 	{
-		sDstPptx = sSrcPpt + L"-my.pptx";
+		dstPath = srcFileName + L"-my.pptx";
 
 	}
 	if (hRes == S_OK)
 	{
-		COfficeUtils oCOfficeUtils(NULL);		
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstPptx, -1);
+		COfficeUtils oCOfficeUtils(NULL);
+		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath, true);
 	}
-		
+	
 	NSDirectory::DeleteDirectory(dstTempPath);
 	NSDirectory::DeleteDirectory(tempPath);
 
 	return hRes;
+}
+
+
+HRESULT convert_directory(std::wstring pathName)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<std::wstring> arFiles = NSDirectory::GetFiles(pathName, false);
+
+	for (size_t i = 0; i < arFiles.size(); i++)
+	{
+		convert_single(arFiles[i]);
+	}
+	return S_OK;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+//#ifdef _DEBUG
+//		_CrtDumpMemoryLeaks();
+//#endif
+
+	if (argc < 2) return 1;
+
+	HRESULT hr = -1;
+	if (NSFile::CFileBinary::Exists(argv[1]))
+	{	
+		hr = convert_single(argv[1]);
+	}
+	else if (NSDirectory::Exists(argv[1]))
+	{
+		hr = convert_directory(argv[1]);
+	}
+
+	return hr;
 }
 

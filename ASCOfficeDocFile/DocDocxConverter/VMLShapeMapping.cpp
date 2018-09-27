@@ -235,10 +235,11 @@ namespace DocFileFormat
 
 		m_shapeId = GetShapeID(pShape);
 
-		count_vml_objects++;
-
 		if (m_shapeId.empty())
-			m_shapeId =	std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		{
+			m_context->_doc->GetOfficeArt()->m_uLastShapeId++;
+			m_shapeId =	std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(m_context->_doc->GetOfficeArt()->m_uLastShapeId);
+		}
 		
 		m_pXmlWriter->WriteAttribute ( L"id", m_shapeId );
 
@@ -249,7 +250,7 @@ namespace DocFileFormat
 				freeform =	false;
 				m_pXmlWriter->WriteAttribute( L"type", (std::wstring(L"#") + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())));
 			}
-			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)));
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->m_nIndex)));
 
 			if (pShape->is<LineType>())
 			{
@@ -1312,7 +1313,7 @@ namespace DocFileFormat
 		//write the blip
 		if (oBlip)
 		{
-			VirtualStreamReader reader(m_context->_doc->WordDocumentStream, oBlip->foDelay, m_context->_doc->FIB->m_bOlderVersion);
+			VirtualStreamReader reader(m_context->_doc->WordDocumentStream, oBlip->foDelay, m_context->_doc->nWordVersion);
 
 			switch (oBlip->btWin32)
 			{
@@ -2265,9 +2266,10 @@ namespace DocFileFormat
 		TwipsValue w( primitive->dxa );
 		TwipsValue h( primitive->dya );
 
-		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		m_context->_doc->GetOfficeArt()->m_uLastShapeId++;
+
+		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(m_context->_doc->GetOfficeArt()->m_uLastShapeId);
 		
-		count_vml_objects++;
 		//m_pXmlWriter->WriteAttribute ( L"id")	, strId);
 		m_pXmlWriter->WriteAttribute ( L"o:spid", strId);
 

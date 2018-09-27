@@ -34,6 +34,7 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 #include "../BinWriter/BinWriters.h"
 #include "../BinReader/Readers.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
@@ -67,7 +68,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 
 	COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 	pFontPicker->Init(m_sFontDir);
-	CFontManager* pFontManager = pFontPicker->get_FontManager();
+    NSFonts::IFontManager* pFontManager = pFontPicker->get_FontManager();
 	DocWrapper::FontProcessor fp;
 	fp.setFontManager(pFontManager);
 	
@@ -298,7 +299,10 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				OOX::CApp* pApp = new OOX::CApp(NULL);
 				if (pApp)
 				{
-					pApp->SetApplication(L"ONLYOFFICE");
+					std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+					if (sApplication.empty())
+						sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+					pApp->SetApplication(sApplication);
 #if defined(INTVER)
                     pApp->SetAppVersion(VALUE2STR(INTVER));
 #endif
@@ -341,7 +345,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& o
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
 	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_pCurFileWriter->m_pComments);
-	int res = oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
+	oBinary_DocumentTableReader.ReadDocumentContentOut(nLength);
 
     sOutputXml = oTempContentWriter.m_oContent.GetData();
 	return true;
@@ -433,13 +437,13 @@ bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBi
 	if(OOX::et_m_oMathPara == eType)
 	{
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMathPara>")));
-		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathOMathPara, &oBinary_DocumentTableReader, NULL);
+		oBinary_DocumentTableReader.ReadMathOMathParaOut(nLength);
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMathPara>")));
 	}
 	else if(OOX::et_m_oMath == eType)
 	{
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMath>")));
-		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathArg, &oBinary_DocumentTableReader, NULL);
+		oBinary_DocumentTableReader.ReadMathArgOut(nLength);
         oTempContentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMath>")));
 	}
 

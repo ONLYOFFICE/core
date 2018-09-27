@@ -45,6 +45,8 @@
 #include "Pivot/PivotCacheDefinition.h"
 #include "Pivot/PivotCacheRecords.h"
 
+#include "../../../../DesktopEditor/common/SystemUtils.h"
+
 OOX::Spreadsheet::CXlsx::~CXlsx()
 {
     if(bDeleteWorkbook)			RELEASEOBJECT(m_pWorkbook);
@@ -123,7 +125,10 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
 //CApp
     OOX::CApp* pApp = new OOX::CApp(this);
 
-    pApp->SetApplication(L"ONLYOFFICE");
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+	if (sApplication.empty())
+		sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+	pApp->SetApplication(sApplication);
 
 #if defined(INTVER)
     pApp->SetAppVersion(VALUE2STR(INTVER));
@@ -309,13 +314,15 @@ void OOX::Spreadsheet::CXlsx::PrepareWorkbook()
 		{
 			pFont->m_oRFont.Init();
 			pFont->m_oRFont->m_sVal = _T("Calibri");
+
+			if(false == pFont->m_oScheme.IsInit())
+			{
+				pFont->m_oScheme.Init();
+				pFont->m_oScheme->m_oFontScheme.Init();
+				pFont->m_oScheme->m_oFontScheme->SetValue(SimpleTypes::Spreadsheet::fontschemeMinor);
+			}
 		}
-		if(false == pFont->m_oScheme.IsInit())
-		{
-			pFont->m_oScheme.Init();
-			pFont->m_oScheme->m_oFontScheme.Init();
-			pFont->m_oScheme->m_oFontScheme->SetValue(SimpleTypes::Spreadsheet::fontschemeMinor);
-		}
+
 		if(false == pFont->m_oSz.IsInit() || false == pFont->m_oSz->m_oVal.IsInit())
 		{
 			pFont->m_oSz.Init();
@@ -421,26 +428,31 @@ void OOX::Spreadsheet::CXlsx::PrepareWorksheet(CWorksheet* pWorksheet)
 					}
 					else if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == pCell->m_oType->GetValue())
 					{
-						if(!m_pSharedStrings) CreateSharedStrings();
-
-						std::wstring sValue;
-						if(pCell->m_oValue.IsInit())
-							sValue = pCell->m_oValue->ToString();
-						//добавляем в SharedStrings
-						CSi* pSi = new CSi();
-						CText* pText =  new CText();
-						pText->m_sText = sValue;
-						pSi->m_arrItems.push_back(pText);
-
-						int nIndex = m_pSharedStrings->AddSi(pSi);
-						//меняем значение ячейки
-						pCell->m_oValue.Init();
-                        pCell->m_oValue->m_sText = std::to_wstring(nIndex);
-						//меняем тип ячейки
-						if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
+						if (pCell->m_oValue.IsInit())
 						{
-							pCell->m_oType.Init();
-							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+							if(!m_pSharedStrings) CreateSharedStrings();
+
+							//добавляем в SharedStrings
+							CSi* pSi = new CSi();
+							CText* pText =  new CText();
+							pText->m_sText = pCell->m_oValue->ToString();
+							pSi->m_arrItems.push_back(pText);
+
+							int nIndex = m_pSharedStrings->AddSi(pSi);
+							//меняем значение ячейки
+							pCell->m_oValue.Init();
+							pCell->m_oValue->m_sText = std::to_wstring(nIndex);
+							//меняем тип ячейки
+							if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
+							{
+								pCell->m_oType.Init();
+								pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+							}
+						}
+						else
+						{
+							pCell->m_oValue.reset();
+							pCell->m_oType.reset();
 						}
 					}
 					else if(SimpleTypes::Spreadsheet::celltypeBool == pCell->m_oType->GetValue())

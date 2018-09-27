@@ -32,9 +32,9 @@
 #pragma once
 
 #include <iosfwd>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 #include "office_elements.h"
 #include "office_elements_create.h"
 
@@ -72,7 +72,7 @@ class presentation_event_listener_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	odf_types::common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist xlink_attlist_;
 
 	_CP_OPT(std::wstring)	script_event_name_;
 	_CP_OPT(std::wstring)	presentation_action_;

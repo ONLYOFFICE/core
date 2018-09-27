@@ -42,7 +42,8 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
-
+#include "../../../DesktopEditor/common/SystemUtils.h"
+#include "../../../Common/OfficeFileErrorDescription.h"
 namespace NSBinPptxRW
 {
 	class  CDrawingConverter;
@@ -105,10 +106,10 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 }
 
 
-HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
+_UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
 {
     Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, false, NULL, L"");
-	if (pDocxWriter == NULL) return S_FALSE;
+	if (pDocxWriter == NULL) return AVS_FILEUTILS_ERROR_CONVERT;
 
     CreateDocxEmpty(sDstPath, pDocxWriter);
 
@@ -126,7 +127,7 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 	}
 	catch(...)
 	{
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
 	pDocxWriter->m_oDocumentWriter.Write(); //overwrite document.xml
@@ -134,11 +135,11 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 	delete pDocxWriter;
 	pDocxWriter = NULL;
 
-	return S_OK;
+	return 0;
 }
 
 
-HRESULT CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions)
+_UINT32 CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions)
 {
 	try
 	{
@@ -169,10 +170,10 @@ HRESULT CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 	}
 	catch(...)
 	{
-		return S_FALSE;
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
-  return S_OK;
+  return 0;
 }
 
 
@@ -218,7 +219,10 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	OOX::CApp* pApp = new OOX::CApp(NULL);
 	if (pApp)
 	{
-		pApp->SetApplication(L"ONLYOFFICE");
+		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+		if (sApplication.empty())
+			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+		pApp->SetApplication(sApplication);
 #if defined(INTVER)
         pApp->SetAppVersion(VALUE2STR(INTVER));
 #endif

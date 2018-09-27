@@ -39,7 +39,7 @@ namespace Writers
 {
 	class DocumentWriter : public ContentWriter
 	{
-		XmlUtils::CStringWriter	m_oWriter;
+		NSStringUtils::CStringBuilder	m_oWriter;
 		HeaderFooterWriter&		m_oHeaderFooterWriter;
 	public:
          std::wstring			m_sDir;
@@ -66,12 +66,13 @@ xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawin
 xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
 xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
 xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
 xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
 xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 wp14\">")));
+mc:Ignorable=\"w14 w15 wp14\">")));
 
                 oFile.WriteStringUTF8(m_oBackground.GetData());
 

@@ -77,7 +77,7 @@ namespace DocFileFormat
 		//this papx has no istd, so use PX to parse it
 		unsigned char *bytes	= reader->ReadBytes( cbGrpprlPapx, true );
 
-		PropertyExceptions* px	= new PropertyExceptions( bytes, cbGrpprlPapx, reader->olderVersion);
+		PropertyExceptions* px	= new PropertyExceptions( bytes, cbGrpprlPapx, reader->nWordVersion);
 		grpprlPapx				= new ParagraphPropertyExceptions( *(px->grpprl) );
 
 		RELEASEOBJECT( px );
@@ -85,7 +85,7 @@ namespace DocFileFormat
 
 		//read the group of chpx sprms
 		bytes = reader->ReadBytes( cbGrpprlChpx, true );
-		grpprlChpx = new CharacterPropertyExceptions( bytes, cbGrpprlChpx, reader->olderVersion );
+		grpprlChpx = new CharacterPropertyExceptions( bytes, cbGrpprlChpx, reader->nWordVersion );
 		RELEASEARRAYOBJECTS( bytes );
 
 		//read the number text
@@ -116,6 +116,10 @@ namespace DocFileFormat
 
     void NumberingLevelDescriptor::Parse(unsigned char * data, int length )
     {
+		if (length < 16)
+		{
+			return;
+		}
         bEnabled        = true;
 
         nfc				= FormatUtils::BytesToUChar(data, 0, length);

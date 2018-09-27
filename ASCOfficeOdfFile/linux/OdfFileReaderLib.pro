@@ -21,14 +21,9 @@ include($$PWD/../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
             _UNICODE \
-            _USE_LIBXML2_READER_ \
-            LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += ../include
-INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
-INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
-INCLUDEPATH += ../../DesktopEditor/xml/build/qt
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
@@ -78,9 +73,11 @@ SOURCES += \
     ../src/odf/office_event_listeners.cpp \
     ../src/odf/office_presentation.cpp \
     ../src/odf/office_scripts.cpp \
+    ../src/odf/office_forms.cpp \
     ../src/odf/office_settings.cpp \
     ../src/odf/office_spreadsheet.cpp \
     ../src/odf/office_text.cpp \
+    ../src/odf/office_meta.cpp \
     ../src/odf/paragraph_elements.cpp \
     ../src/odf/ruby.cpp \
     ../src/odf/search_table_cell.cpp \
@@ -189,6 +186,7 @@ SOURCES += \
     ../src/odf/datatypes/styleverticalrel.cpp \
     ../src/odf/datatypes/stylewrap.cpp \
     ../src/odf/datatypes/stylewrapcontourmode.cpp \
+    ../src/odf/datatypes/stylenumformat.cpp \
     ../src/odf/datatypes/tablealign.cpp \
     ../src/odf/datatypes/tablecentering.cpp \
     ../src/odf/datatypes/tablemode.cpp \
@@ -216,6 +214,8 @@ SOURCES += \
     ../src/odf/datatypes/tablefunction.cpp \
     ../src/odf/datatypes/tableorder.cpp \
     ../src/odf/datatypes/dategroup.cpp \
+    ../src/odf/datatypes/bibliography.cpp \
+    ../src/odf/datatypes/commandtype.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
@@ -340,9 +340,11 @@ HEADERS += \
     ../src/odf/office_event_listeners.h \
     ../src/odf/office_presentation.h \
     ../src/odf/office_scripts.h \
+    ../src/odf/office_forms.h \
     ../src/odf/office_settings.h \
     ../src/odf/office_spreadsheet.h \
     ../src/odf/office_text.h \
+    ../src/odf/office_meta.h \
     ../src/odf/paragraph_elements.h \
     ../src/odf/ruby.h \
     ../src/odf/search_table_cell.h \
@@ -377,6 +379,7 @@ HEADERS += \
     ../src/odf/datatypes/mathvariant.h \
     ../src/odf/calcext_elements.h \
     ../src/odf/table_database_ranges.h \
+    ../src/odfcommandtype.h \
     ../src/odf/datatypes/anchortype.h \
     ../src/odf/datatypes/backgroundcolor.h \
     ../src/odf/datatypes/bool.h \
@@ -450,6 +453,7 @@ HEADERS += \
     ../src/odf/datatypes/styleverticalpos.h \
     ../src/odf/datatypes/styleverticalrel.h \
     ../src/odf/datatypes/stylewrap.h \
+    ../src/odf/datatypes/stylenumformat.h \
     ../src/odf/datatypes/stylewrapcontourmode.h \
     ../src/odf/datatypes/tablealign.h \
     ../src/odf/datatypes/tablecentering.h \
@@ -553,27 +557,27 @@ HEADERS += \
     ../src/docx/xlsx_utils.h \
     ../src/docx/xlsx_xf.h \
     ../include/logging.h \
-    ../include/cpdoccore/CPColorUtils.h \
-    ../include/cpdoccore/CPNoncopyable.h \
-    ../include/cpdoccore/CPOptional.h \
-    ../include/cpdoccore/CPScopedPtr.h \
-    ../include/cpdoccore/CPSharedPtr.h \
-    ../include/cpdoccore/CPString.h \
-    ../include/cpdoccore/CPWeakPtr.h \
-    ../include/cpdoccore/common/readdocelement.h \
-    ../include/cpdoccore/common/readstring.h \
-    ../include/cpdoccore/common/writedocelement.h \
-    ../include/cpdoccore/odf/odf_document.h \
-    ../include/cpdoccore/odf/odfformat.h \
-    ../include/cpdoccore/utf8cpp/utf8/checked.h \
-    ../include/cpdoccore/utf8cpp/utf8/core.h \
-    ../include/cpdoccore/utf8cpp/utf8/unchecked.h \
-    ../include/cpdoccore/utf8cpp/utf8.h \
-    ../include/cpdoccore/xml/attributes.h \
-    ../include/cpdoccore/xml/nodetype.h \
-    ../include/cpdoccore/xml/sax.h \
-    ../include/cpdoccore/xml/simple_xml_writer.h \
-    ../include/cpdoccore/xml/utils.h \
-    ../include/cpdoccore/xml/xmlchar.h \
-    ../include/cpdoccore/xml/xmlelement.h
+    ../include/CPColorUtils.h \
+    ../include/CPNoncopyable.h \
+    ../include/CPOptional.h \
+    ../include/CPScopedPtr.h \
+    ../include/CPSharedPtr.h \
+    ../include/CPString.h \
+    ../include/CPWeakPtr.h \
+    ../include/common/readdocelement.h \
+    ../include/common/readstring.h \
+    ../include/common/writedocelement.h \
+    ../include/odf/odf_document.h \
+    ../include/odf/odfformat.h \
+    ../include/utf8cpp/utf8/checked.h \
+    ../include/utf8cpp/utf8/core.h \
+    ../include/utf8cpp/utf8/unchecked.h \
+    ../include/utf8cpp/utf8.h \
+    ../include/xml/attributes.h \
+    ../include/xml/nodetype.h \
+    ../include/xml/sax.h \
+    ../include/xml/simple_xml_writer.h \
+    ../include/xml/utils.h \
+    ../include/xml/xmlchar.h \
+    ../include/xml/xmlelement.h
 

@@ -33,10 +33,10 @@
 
 #include <iosfwd>
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/CPOptional.h>
-#include <cpdoccore/xml/xmlelement.h>
-#include <cpdoccore/xml/nodetype.h>
+#include <xml/attributes.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -243,6 +243,8 @@ public:
     static const ElementType type = typeStyleTableCellProperties;
 
     CPDOCCORE_DEFINE_VISITABLE();
+
+	style_table_cell_properties() {}
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 

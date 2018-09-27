@@ -138,7 +138,6 @@
 		17C1FC3B1ACC4250006B99B3 /* FldSimple.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0611AC4262700F28F8B /* FldSimple.h */; };
 		17C1FC3D1ACC4250006B99B3 /* Unit.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A00D1AC4262700F28F8B /* Unit.h */; };
 		17C1FC3E1ACC4250006B99B3 /* UnknowTypeFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0971AC4262700F28F8B /* UnknowTypeFile.h */; };
-		17C1FC401ACC4250006B99B3 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A00F1AC4262700F28F8B /* Utils.h */; };
 		17C1FC411ACC4250006B99B3 /* Align.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E69FF81AC4262700F28F8B /* Align.h */; };
 		17C1FC431ACC4250006B99B3 /* ConditionalFormatting.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1891AC4262800F28F8B /* ConditionalFormatting.h */; };
 		17C1FC441ACC4250006B99B3 /* Xlsx.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1901AC4262800F28F8B /* Xlsx.h */; };
@@ -183,7 +182,6 @@
 		17C1FC781ACC4250006B99B3 /* Pict.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0681AC4262700F28F8B /* Pict.h */; };
 		17C1FC791ACC4250006B99B3 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01E1AC4262700F28F8B /* App.h */; };
 		17C1FC7A1ACC4250006B99B3 /* DateTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1431AC4262800F28F8B /* DateTime.h */; };
-		17C1FC7B1ACC4250006B99B3 /* ExternalVideo.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0461AC4262700F28F8B /* ExternalVideo.h */; };
 		17C1FC7C1ACC4250006B99B3 /* ChartSerialize.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1501AC4262800F28F8B /* ChartSerialize.h */; };
 		17C1FC7D1ACC4250006B99B3 /* rPr.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A16A1AC4262800F28F8B /* rPr.h */; };
 		17C1FC7E1ACC4250006B99B3 /* ExternalLinkPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1611AC4262800F28F8B /* ExternalLinkPath.h */; };
@@ -197,8 +195,6 @@
 		17C1FC8B1ACC4250006B99B3 /* WorksheetChildOther.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A18E1AC4262800F28F8B /* WorksheetChildOther.h */; };
 		17C1FC8C1ACC4250006B99B3 /* Table.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0751AC4262700F28F8B /* Table.h */; };
 		17C1FC8D1ACC4250006B99B3 /* OMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A07E1AC4262700F28F8B /* OMath.h */; };
-		17C1FC8E1ACC4250006B99B3 /* ExternalImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0451AC4262700F28F8B /* ExternalImage.h */; };
-		17C1FC8F1ACC4250006B99B3 /* ExternalAudio.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0441AC4262700F28F8B /* ExternalAudio.h */; };
 		17C1FC901ACC4250006B99B3 /* FileTypes_Spreadsheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1651AC4262800F28F8B /* FileTypes_Spreadsheet.h */; };
 		17C1FC911ACC4250006B99B3 /* FileTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A04C1AC4262700F28F8B /* FileTypes.h */; };
 		17C1FC931ACC4250006B99B3 /* Annotations.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0591AC4262700F28F8B /* Annotations.h */; };
@@ -222,6 +218,11 @@
 		69E6AC8D2031ACA900795D9D /* VbaProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 69E6AC8B2031ACA900795D9D /* VbaProject.h */; };
 		69E6AC8F2031B72500795D9D /* Worksheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69E6AC8E2031B72500795D9D /* Worksheet.cpp */; };
 		69F181EC1C7734A700B2952B /* strings_hack_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181EA1C7734A700B2952B /* strings_hack_printf.h */; };
+		8A218DBF20FCC770006589C2 /* StreamWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A218DBD20FCC76F006589C2 /* StreamWriter.h */; };
+		8A218DC020FCC770006589C2 /* StreamWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A218DBE20FCC770006589C2 /* StreamWriter.cpp */; };
+		8A404FCA2089FF7E00F2D5CF /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC92089FF7E00F2D5CF /* Base64.cpp */; };
+		8A404FCC2089FFE700F2D5CF /* Directory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCB2089FFE700F2D5CF /* Directory.cpp */; };
+		8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCD208A001D00F2D5CF /* Path.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -258,7 +259,6 @@
 		17E6A00B1AC4262700F28F8B /* SimpleTypes_Word.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleTypes_Word.h; sourceTree = "<group>"; };
 		17E6A00C1AC4262700F28F8B /* Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Size.h; sourceTree = "<group>"; };
 		17E6A00D1AC4262700F28F8B /* Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unit.h; sourceTree = "<group>"; };
-		17E6A00F1AC4262700F28F8B /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		17E6A0101AC4262700F28F8B /* Wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wrap.cpp; sourceTree = "<group>"; };
 		17E6A0111AC4262700F28F8B /* Wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wrap.h; sourceTree = "<group>"; };
 		17E6A0121AC4262700F28F8B /* ZIndex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZIndex.cpp; sourceTree = "<group>"; };
@@ -274,9 +274,6 @@
 		17E6A0281AC4262700F28F8B /* Docx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Docx.h; sourceTree = "<group>"; };
 		17E6A0411AC4262700F28F8B /* Endnote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Endnote.h; sourceTree = "<group>"; };
 		17E6A0431AC4262700F28F8B /* External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = External.h; sourceTree = "<group>"; };
-		17E6A0441AC4262700F28F8B /* ExternalAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExternalAudio.h; sourceTree = "<group>"; };
-		17E6A0451AC4262700F28F8B /* ExternalImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExternalImage.h; sourceTree = "<group>"; };
-		17E6A0461AC4262700F28F8B /* ExternalVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExternalVideo.h; sourceTree = "<group>"; };
 		17E6A0471AC4262700F28F8B /* HyperLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HyperLink.h; sourceTree = "<group>"; };
 		17E6A0481AC4262700F28F8B /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		17E6A0491AC4262700F28F8B /* FileFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileFactory.cpp; sourceTree = "<group>"; };
@@ -448,6 +445,11 @@
 		69E6AC8B2031ACA900795D9D /* VbaProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VbaProject.h; sourceTree = "<group>"; };
 		69E6AC8E2031B72500795D9D /* Worksheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Worksheet.cpp; sourceTree = "<group>"; };
 		69F181EA1C7734A700B2952B /* strings_hack_printf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strings_hack_printf.h; path = ../../Common/DocxFormat/Source/Base/strings_hack_printf.h; sourceTree = "<group>"; };
+		8A218DBD20FCC76F006589C2 /* StreamWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamWriter.h; sourceTree = "<group>"; };
+		8A218DBE20FCC770006589C2 /* StreamWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StreamWriter.cpp; sourceTree = "<group>"; };
+		8A404FC92089FF7E00F2D5CF /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64.cpp; path = ../../../../DesktopEditor/common/Base64.cpp; sourceTree = "<group>"; };
+		8A404FCB2089FFE700F2D5CF /* Directory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Directory.cpp; path = ../../../../DesktopEditor/common/Directory.cpp; sourceTree = "<group>"; };
+		8A404FCD208A001D00F2D5CF /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Path.cpp; path = ../../../../DesktopEditor/common/Path.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -523,6 +525,7 @@
 				17E69FF21AC4262700F28F8B /* Types_32.h */,
 				17E69FF31AC4262700F28F8B /* unicode_util.cpp */,
 				17E69FF41AC4262700F28F8B /* unicode_util.h */,
+				8A404FC92089FF7E00F2D5CF /* Base64.cpp */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -537,6 +540,7 @@
 				17E69FFA1AC4262700F28F8B /* Color.h */,
 				17E69FFB1AC4262700F28F8B /* Common.h */,
 				17E69FFC1AC4262700F28F8B /* ComplexTypes.h */,
+				8A404FCB2089FFE700F2D5CF /* Directory.cpp */,
 				17E69FFE1AC4262700F28F8B /* Index.cpp */,
 				17E69FFF1AC4262700F28F8B /* Index.h */,
 				17E6A0001AC4262700F28F8B /* NumFormat.cpp */,
@@ -553,7 +557,7 @@
 				17E6A00B1AC4262700F28F8B /* SimpleTypes_Word.h */,
 				17E6A00C1AC4262700F28F8B /* Size.h */,
 				17E6A00D1AC4262700F28F8B /* Unit.h */,
-				17E6A00F1AC4262700F28F8B /* Utils.h */,
+				8A404FCD208A001D00F2D5CF /* Path.cpp */,
 				17E6A0101AC4262700F28F8B /* Wrap.cpp */,
 				17E6A0111AC4262700F28F8B /* Wrap.h */,
 				17E6A0121AC4262700F28F8B /* ZIndex.cpp */,
@@ -633,9 +637,6 @@
 			isa = PBXGroup;
 			children = (
 				17E6A0431AC4262700F28F8B /* External.h */,
-				17E6A0441AC4262700F28F8B /* ExternalAudio.h */,
-				17E6A0451AC4262700F28F8B /* ExternalImage.h */,
-				17E6A0461AC4262700F28F8B /* ExternalVideo.h */,
 				17E6A0471AC4262700F28F8B /* HyperLink.h */,
 			);
 			path = External;
@@ -928,6 +929,8 @@
 				17E6B3C01AC4298500F28F8B /* Path.h */,
 				17E6B3C11AC4298500F28F8B /* Types.h */,
 				69F181EA1C7734A700B2952B /* strings_hack_printf.h */,
+				8A218DBE20FCC770006589C2 /* StreamWriter.cpp */,
+				8A218DBD20FCC76F006589C2 /* StreamWriter.h */,
 			);
 			name = common;
 			path = ../../../../DesktopEditor/common;
@@ -973,6 +976,7 @@
 				17C1FBEE1ACC4250006B99B3 /* MergeCells.h in Headers */,
 				17C1FBEF1ACC4250006B99B3 /* Docx.h in Headers */,
 				17C1FBF11ACC4250006B99B3 /* SimpleTypes_OMath.h in Headers */,
+				8A218DBF20FCC770006589C2 /* StreamWriter.h in Headers */,
 				17C1FBF21ACC4250006B99B3 /* StringOutput.h in Headers */,
 				17C1FBF41ACC4250006B99B3 /* Image.h in Headers */,
 				17C1FBF51ACC4250006B99B3 /* Dir.h in Headers */,
@@ -1035,7 +1039,6 @@
 				17C1FC3B1ACC4250006B99B3 /* FldSimple.h in Headers */,
 				17C1FC3D1ACC4250006B99B3 /* Unit.h in Headers */,
 				17C1FC3E1ACC4250006B99B3 /* UnknowTypeFile.h in Headers */,
-				17C1FC401ACC4250006B99B3 /* Utils.h in Headers */,
 				17C1FC411ACC4250006B99B3 /* Align.h in Headers */,
 				17C1FC431ACC4250006B99B3 /* ConditionalFormatting.h in Headers */,
 				17C1FC441ACC4250006B99B3 /* Xlsx.h in Headers */,
@@ -1085,7 +1088,6 @@
 				17C1FC781ACC4250006B99B3 /* Pict.h in Headers */,
 				17C1FC791ACC4250006B99B3 /* App.h in Headers */,
 				17C1FC7A1ACC4250006B99B3 /* DateTime.h in Headers */,
-				17C1FC7B1ACC4250006B99B3 /* ExternalVideo.h in Headers */,
 				17C1FC7C1ACC4250006B99B3 /* ChartSerialize.h in Headers */,
 				17C1FC7D1ACC4250006B99B3 /* rPr.h in Headers */,
 				17C1FC7E1ACC4250006B99B3 /* ExternalLinkPath.h in Headers */,
@@ -1100,8 +1102,6 @@
 				17C1FC8B1ACC4250006B99B3 /* WorksheetChildOther.h in Headers */,
 				17C1FC8C1ACC4250006B99B3 /* Table.h in Headers */,
 				17C1FC8D1ACC4250006B99B3 /* OMath.h in Headers */,
-				17C1FC8E1ACC4250006B99B3 /* ExternalImage.h in Headers */,
-				17C1FC8F1ACC4250006B99B3 /* ExternalAudio.h in Headers */,
 				17C1FC901ACC4250006B99B3 /* FileTypes_Spreadsheet.h in Headers */,
 				17C1FC911ACC4250006B99B3 /* FileTypes.h in Headers */,
 				17C1FC931ACC4250006B99B3 /* Annotations.h in Headers */,
@@ -1138,7 +1138,7 @@
 		17E69FD41AC4259800F28F8B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 			};
 			buildConfigurationList = 17E69FD71AC4259800F28F8B /* Build configuration list for PBXProject "DocxFormatLib" */;
@@ -1178,9 +1178,11 @@
 				17C1FBA01ACC4250006B99B3 /* TxtFile.cpp in Sources */,
 				69E6AC8F2031B72500795D9D /* Worksheet.cpp in Sources */,
 				17C1FBA11ACC4250006B99B3 /* SectionProperty.cpp in Sources */,
+				8A404FCA2089FF7E00F2D5CF /* Base64.cpp in Sources */,
 				17C1FBA31ACC4250006B99B3 /* Color.cpp in Sources */,
 				17C1FBA41ACC4250006B99B3 /* Docx.cpp in Sources */,
 				17C1FBA51ACC4250006B99B3 /* ZIndex.cpp in Sources */,
+				8A404FCC2089FFE700F2D5CF /* Directory.cpp in Sources */,
 				17C1FBA61ACC4250006B99B3 /* ParagraphProperty.cpp in Sources */,
 				17C1FBA71ACC4250006B99B3 /* NumFormat.cpp in Sources */,
 				17C1FBA81ACC4250006B99B3 /* SystemUtility.cpp in Sources */,
@@ -1192,6 +1194,7 @@
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,
 				17C1FBB11ACC4250006B99B3 /* Position.cpp in Sources */,
 				69E6AC8C2031ACA900795D9D /* VbaProject.cpp in Sources */,
+				8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */,
 				691C3E131F20C3D500F1775E /* File.cpp in Sources */,
 				17C1FBB21ACC4250006B99B3 /* Vml.cpp in Sources */,
 				17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */,
@@ -1202,6 +1205,7 @@
 				17C1FBBA1ACC4250006B99B3 /* SimpleTypes_Word.cpp in Sources */,
 				17C1FBBB1ACC4250006B99B3 /* MathEquation.cpp in Sources */,
 				17C1FBBC1ACC4250006B99B3 /* Wrap.cpp in Sources */,
+				8A218DC020FCC770006589C2 /* StreamWriter.cpp in Sources */,
 				17C1FBBD1ACC4250006B99B3 /* Common.cpp in Sources */,
 				1732414A1BBEC90000E67992 /* pole.cpp in Sources */,
 				17C1FBBE1ACC4250006B99B3 /* IFileContainer.cpp in Sources */,
@@ -1250,7 +1254,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -1292,7 +1296,7 @@
 					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -1310,12 +1314,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1361,12 +1367,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

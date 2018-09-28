@@ -363,11 +363,11 @@ namespace NSPresentationEditor
 
 			if (_T("") == m_oFont.Path)
 			{
-				m_pFontManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
+				m_pFontManager->LoadFontByName(m_oFont.Name, m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
 			}
 			else
 			{
-				m_pFontManager->LoadFontFromFile(m_oFont.Path, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
+				m_pFontManager->LoadFontFromFile(m_oFont.Path, 0, m_oFont.Size, m_dDpiX, m_dDpiY);
             }
 
 			m_oInstalledFont = m_oFont;

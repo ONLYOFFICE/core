@@ -82,7 +82,7 @@ namespace BinXlsxRW
 		elem.toXML(oStreamWriter); \
 		}
 
-	#define SEEK_TO_POS_END2(elem) \
+	#define SEEK_TO_POS_END2() \
 		}
 
 	class ImageObject
@@ -2761,7 +2761,7 @@ namespace BinXlsxRW
 
 								int nAuthorId;
 								if(pFind != mapByAuthors.end())
-									nAuthorId = pFind->second;
+									nAuthorId = (int)pFind->second;
 								else
 								{
 									nAuthorId = (int)mapByAuthors.size();

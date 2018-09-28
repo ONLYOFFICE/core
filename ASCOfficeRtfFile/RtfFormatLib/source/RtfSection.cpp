@@ -319,7 +319,7 @@ std::wstring RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{	
 		for( size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
 		{
-			sResult += L"\\colno" + std::to_wstring( i + 1 );
+			sResult += L"\\colno" + std::to_wstring( (int)i + 1 );
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol, sResult, L"colsr" )
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth, sResult, L"colw" )
 		}
@@ -917,7 +917,7 @@ mc:Ignorable=\"w14 w15 w16se wp14\">";
 	
     if (file.CreateFile(sFilePath) == S_OK)
 	{            
-        file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+        file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		file.CloseFile();
 	}
 

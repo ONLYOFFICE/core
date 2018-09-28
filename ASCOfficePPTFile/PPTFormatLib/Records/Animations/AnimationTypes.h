@@ -680,9 +680,9 @@ namespace Animations
 
 			if ( WCHAR* pString = new WCHAR [ m_oHeader.RecLen / 2 ] )
 			{
-				UINT res = pStream->read ((unsigned char*) pString, ( m_oHeader.RecLen / 2 ) * 2) ;
+				POLE::uint64 res = pStream->read ((unsigned char*) pString, ( m_oHeader.RecLen / 2 ) * 2) ;
 				
-				if (res >0)
+				if (res > 0)
 				{		
 					if (sizeof(wchar_t) == 4)
 					{

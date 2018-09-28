@@ -278,23 +278,23 @@ bool OOXDocumentWriter::SaveBySection()
 					}
 					else
 					{
-						int nFind = -1, nFindPict = -1, pos = sXml.size();
+						size_t nFind, nFindPict, pos = sXml.size();
 
 						do
 						{
 							nFindPict	= sXml.rfind(L"<w:pict>", pos);
 							nFind		= sXml.rfind(L"</w:pPr>", pos);
 							pos = nFindPict - 1;
-						}while(nFindPict > 0 && nFind > nFindPict);
+						}while(nFind != std::wstring::npos && nFindPict != std::wstring::npos && nFind > nFindPict);
 
-						if( -1 != nFind)
+						if( nFind != std::wstring::npos)
 						{
 							sXml.insert( nFind, sXmlSectProp );
 						}
 						else
 						{
-							int Find = sXml.rfind( L"<w:p>" );
-							if( -1 != nFind )
+							nFind = sXml.rfind( L"<w:p>" );
+							if( std::wstring::npos != nFind )
 								sXml.insert( nFind + 5, L"<w:pPr>" + sXmlSectProp + L"</w:pPr>" );
 						}
 					}
@@ -347,24 +347,24 @@ bool OOXDocumentWriter::SaveByItem()
 			{
                 sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
 				
-				int nFind = -1, nFindPict = -1, pos = sXml.size();
+				size_t nFind, nFindPict, pos = sXml.size();
 
 				do
 				{
 					nFindPict	= sXml.rfind(L"<w:pict>", pos);
 					nFind		= sXml.rfind(L"</w:pPr>", pos);
 					pos = nFindPict - 1;
-				}while(nFindPict > 0 && nFind > nFindPict);
+				}while(std::wstring::npos != nFind && std::wstring::npos != nFindPict && nFind > nFindPict);
 
 
-				if( -1 != nFind)
+				if( std::wstring::npos != nFind )
 				{
 					sXml.insert( nFind, sectPr );
 				}
 				else
 				{
-					int Find = sXml.rfind( L"<w:p>" );
-					if( -1 != nFind )
+					size_t Find = sXml.rfind( L"<w:p>" );
+					if( std::wstring::npos != nFind )
 						sXml.insert( nFind + 5, L"<w:pPr>" + sectPr + L"</w:pPr>" );
 				}
 			}

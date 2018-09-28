@@ -344,7 +344,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				}
 
 				if (fill->m_oOpacity.IsInit())
-					pOutput->m_nFillOpacity = fill->m_oOpacity->GetValue() * 100;
+					pOutput->m_nFillOpacity =  (int)(fill->m_oOpacity->GetValue() * 100);
 
 				switch(fill->m_oType.GetValue())
 				{
@@ -368,7 +368,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				}
 				if (fill->m_oFocus.IsInit())
 				{
-					pOutput->m_nFillFocus = fill->m_oFocus->GetValue();
+					pOutput->m_nFillFocus =  (int)(fill->m_oFocus->GetValue());
 				}
 				if (fill->m_oFocusPosition.IsInit())
 				{
@@ -430,7 +430,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						//делаем crop
 						if( image_data->m_oCropLeft.IsInit() )
 						{
-							float nCropLeft = image_data->m_oCropLeft->GetValue();
+							double nCropLeft = image_data->m_oCropLeft->GetValue();
 							//pOutput->m_oPicture->m_nCropL = nCropLeft * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
 							pOutput->m_oPicture->m_nCropL = (int)(nCropLeft * pOutput->m_oPicture->m_nWidthGoal);
 							pOutput->m_nCropFromLeft = (int)(nCropLeft * 65536);
@@ -438,7 +438,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						}
 						if( image_data->m_oCropRight.IsInit())
 						{
-							float nCropRight =image_data->m_oCropRight->GetValue();
+							double nCropRight =image_data->m_oCropRight->GetValue();
 							//pOutput->m_oPicture->m_nCropR = nCropRight * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
 							pOutput->m_oPicture->m_nCropR = (int)(nCropRight * pOutput->m_oPicture->m_nWidthGoal);
 							pOutput->m_nCropFromRight = (int)(nCropRight * 65536);
@@ -450,7 +450,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 					{
 						if( image_data->m_oCropTop.IsInit() )
 						{
-							float nCropTop = image_data->m_oCropTop->GetValue();
+							double nCropTop = image_data->m_oCropTop->GetValue();
 							//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
 							pOutput->m_oPicture->m_nCropT = (int)(nCropTop * pOutput->m_oPicture->m_nHeightGoal);
 							pOutput->m_nCropFromTop = (int)(nCropTop * 65536);
@@ -458,7 +458,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						}
 						if( image_data->m_oCropBottom.IsInit())
 						{
-							float nCropBottom = image_data->m_oCropBottom->GetValue();
+							double nCropBottom = image_data->m_oCropBottom->GetValue();
 							//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
 							pOutput->m_oPicture->m_nCropB = (int)(nCropBottom * pOutput->m_oPicture->m_nHeightGoal);
 							pOutput->m_nCropFromBottom = (int)(nCropBottom * 65536);
@@ -731,7 +731,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 
 	if (opacity)
 	{
-		pOutput->m_nFillOpacity = *opacity;
+		pOutput->m_nFillOpacity =  (int)(*opacity);
 	}
 }
 bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BlipFill *oox_bitmap_fill)
@@ -1026,11 +1026,11 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 	
 	if (type == 1)
 	{
-		if (fmt_index < 1000 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst.size()) 
+		if (fmt_index < 1000 && fmt_index < (int)oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst.size()) 
 		{
 			Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst[fmt_index], &color);
 		}
-		else if (fmt_index > 1000 && ((fmt_index-1000) < oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst.size()))
+		else if (fmt_index > 1000 && ((fmt_index-1000) < (int)oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst.size()))
 		{
 			fmt_index -= 1000; 
 
@@ -1038,7 +1038,7 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 		}
 	}
 
-	if (type == 2 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst.size())
+	if (type == 2 && fmt_index < (int)oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst.size())
 	{
 		Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst[fmt_index], &color);
 	}
@@ -2303,7 +2303,7 @@ void OOXShapeReader::ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object)
 			POLE::Stream *stream = new POLE::Stream(storage, *it);
 			if (stream)
 			{
-				ole1Writer.NativeDataSize = stream->size();
+				ole1Writer.NativeDataSize = (_UINT32)stream->size();
 
 				ole1Writer.NativeData = new unsigned char[ole1Writer.NativeDataSize];
 				stream->read(ole1Writer.NativeData, ole1Writer.NativeDataSize);

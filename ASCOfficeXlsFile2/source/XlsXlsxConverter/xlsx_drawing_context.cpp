@@ -64,7 +64,7 @@ namespace oox {
 				if (lMinF <= point.x)
 				{
 					int index = (_UINT32)point.x - 0x80000000;
-					if (index >= 0 && index < arGuides.size())
+					if (index >= 0 && index < (int)arGuides.size())
 					{
 						point.x = arGuides[index].m_param_value3;
 					}
@@ -72,7 +72,7 @@ namespace oox {
 				if (lMinF <= point.y)
 				{
 					int index = (_UINT32)point.y - 0x80000000;
-					if (index >= 0 && index < arGuides.size())
+					if (index >= 0 && index < (int)arGuides.size())
 					{
 						point.y = arGuides[index].m_param_value3;
 					}

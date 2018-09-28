@@ -112,7 +112,7 @@ namespace DocFileFormat
 					if (lMinF <= point.x)
 					{
 						int index = (DWORD)point.x - 0x80000000;
-						if (index >= 0 && index < guides.size())
+						if (index >= 0 && index < (int)guides.size())
 						{
 							point.x = guides[index].param3;
 						}
@@ -120,7 +120,7 @@ namespace DocFileFormat
 					if (lMinF <= point.y)
 					{
 						int index = (DWORD)point.y - 0x80000000;
-						if (index >= 0 && index < guides.size())
+						if (index >= 0 && index < (int)guides.size())
 						{
 							point.y = guides[index].param3;
 						}

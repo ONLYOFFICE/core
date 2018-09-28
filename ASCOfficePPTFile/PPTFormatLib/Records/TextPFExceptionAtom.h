@@ -55,7 +55,7 @@ public:
 		m_oPFRun.LoadFromStream(pStream, false);
 
 		// это на всякий случай...
-		int current_pos = pStream->tell();
+		POLE::uint64 current_pos = pStream->tell();
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}
 

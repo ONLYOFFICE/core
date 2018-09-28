@@ -730,13 +730,14 @@ private:
     std::wstring	m_sData;
 	bool			m_bBin;
     BYTE*			m_pbBin;
-	int				m_nBinLength;
+	size_t			m_nBinLength;
 
 public: 
 	RtfPictureReader( RtfReader& oReader, RtfShape& oShape ) : m_oShape(oShape)
 	{
 		m_bBin = false;
 		m_pbBin = NULL;
+		m_nBinLength = 0;
 	}
 	~RtfPictureReader()
 	{

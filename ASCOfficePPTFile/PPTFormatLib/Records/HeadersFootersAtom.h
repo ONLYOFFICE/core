@@ -153,7 +153,7 @@ public:
 	
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		int lPosition = pStream->tell();
+		POLE::uint64 lPosition = pStream->tell();
 
 		CRecordGenericDateMetaAtom::ReadFromStream(oHeader, pStream);
 
@@ -164,7 +164,7 @@ public:
 		else if (oHeader.RecLen >4)
 		{
 			m_FormatID = StreamUtils::ReadBYTE(pStream);
-			StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
+			StreamUtils::StreamSeek((long)(lPosition + m_oHeader.RecLen), pStream);
 		}
 	}
 };

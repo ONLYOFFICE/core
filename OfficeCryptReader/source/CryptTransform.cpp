@@ -978,6 +978,19 @@ bool ODFDecryptor::Decrypt(const std::wstring & wspassword, unsigned char* data_
 
 	bVerify	= (pChecksum == pOutHash);
 
+	if (!bVerify && pOut.size < cryptData.checksum_size + 16)
+	{
+		for (int i = 0; !bVerify && i < pOut.size; i++)
+		{
+			_buf pOutLimit2(pOut.size - i, true);
+			memcpy(pOutLimit2.ptr, pOut.ptr, pOut.size - i);
+
+			_buf pOutHash2 = HashAppend(pOutLimit2, empty, cryptData.checksum_hashAlgorithm);
+
+			bVerify	= (pChecksum == pOutHash2);
+		}
+	}
+
 	try
 	{
 		if (bVerify)

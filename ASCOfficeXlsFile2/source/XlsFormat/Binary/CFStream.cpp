@@ -76,7 +76,7 @@ void CFStream::read(void* buf, const size_t size)
 void CFStream::copy( std::wstring streamNameCreate, POLE::Storage * storageOut)
 {
 	stream_->seek(0);
-	int size_stream = stream_->size();
+	int size_stream = (int)stream_->size();
 
 	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamNameCreate, true, size_stream);
 	if (!streamNew) return;
@@ -152,7 +152,7 @@ const bool CFStream::isEOF() const
 const unsigned long CFStream::getStreamPointer() const
 {
 	POLE::uint64 pos = stream_->tell();
-	return pos;
+	return (unsigned long)pos;
 }
 
 
@@ -180,7 +180,7 @@ void CFStream::seekToEnd()
 // Stream current size
 const unsigned long CFStream::getStreamSize() const
 {
-	return stream_->size();
+	return (unsigned long)stream_->size();
 }
 
 

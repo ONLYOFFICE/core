@@ -1438,8 +1438,8 @@ namespace MathEquation
 				}
 				else if (eType == commandBrackets)
 				{
-					MBRACKETSTYPE ebType;
-					EndBrackets(ebType, false,false);
+					MBRACKETSTYPE ebType = MBRACKETSTYPE::bracketsAngle; //???
+					EndBrackets(ebType, false, false);
 				}
 			}
 			virtual void BeginAngleBracketsWithSeparator(MANGLEBRACKETSWITHSEPARATORTYPE eType)

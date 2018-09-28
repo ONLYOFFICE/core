@@ -474,7 +474,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
 					OOXReader::_comment comment;
 					comment.ref		= oNewAnnotElem->m_sValue;
-					comment.index	= oParam.oReader->m_mapComments.size();
+					comment.index	= (int)oParam.oReader->m_mapComments.size();
 
 					oParam.oReader->m_mapComments.insert(std::make_pair( nId, comment));
 					oOutputParagraph.AddItem( oNewAnnotElem );
@@ -500,7 +500,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
 				if (pFindComment != oParam.oDocx->m_pComments->m_mapComments.end())
 				{
-					if ( pFindComment->second < oParam.oDocx->m_pComments->m_arrComments.size() && pFindComment->second >= 0)
+					if ( pFindComment->second < (int)oParam.oDocx->m_pComments->m_arrComments.size() && pFindComment->second >= 0)
 					{
 						OOX::CComment* oox_comment = oParam.oDocx->m_pComments->m_arrComments[pFindComment->second];
 						if (oox_comment)
@@ -1483,7 +1483,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 
 	if( m_ooxRunProps->m_oSz.IsInit() && m_ooxRunProps->m_oSz->m_oVal.IsInit())
-		oOutputProperty.m_nFontSize = 2 * m_ooxRunProps->m_oSz->m_oVal->ToPoints();
+		oOutputProperty.m_nFontSize = (int)(2 * m_ooxRunProps->m_oSz->m_oVal->ToPoints());
 
 	if (m_ooxRunProps->m_oItalic.IsInit())
 		oOutputProperty.m_bItalic = m_ooxRunProps->m_oItalic->m_oVal.ToBool() ? 1 : 0;

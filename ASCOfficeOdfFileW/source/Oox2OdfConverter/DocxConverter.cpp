@@ -3733,7 +3733,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 
 	if (pFind == docx_document->m_pComments->m_mapComments.end()) return;
 
-	if ( pFind->second < docx_document->m_pComments->m_arrComments.size() && pFind->second >= 0)
+	if ( pFind->second < (int)docx_document->m_pComments->m_arrComments.size() && pFind->second >= 0)
 	{
 		OOX::CComment* oox_comment = docx_document->m_pComments->m_arrComments[pFind->second];
 		

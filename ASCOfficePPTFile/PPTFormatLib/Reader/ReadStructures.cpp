@@ -200,14 +200,14 @@ namespace NSStreamReader
 		if (bCLevels_)
 			oRun.CLevels = StreamUtils::ReadSHORT(pStream);
 		if (bDefaultTabSize_)
-			oRun.DefaultTabSize = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			oRun.DefaultTabSize = (long)(StreamUtils::ReadSHORT(pStream) * dScaleX);
 		
 		if (bTabStops_)
         {
             WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
 			oRun.tabsStops.clear();
 
-            for (int i = 0; i < (int)tabStopsCount; ++i)
+            for (WORD i = 0; i < tabStopsCount; ++i)
             {
 				WORD tabPos		= StreamUtils::ReadWORD(pStream) ;
 				WORD tabType	= StreamUtils::ReadWORD(pStream) ;
@@ -732,8 +732,8 @@ void CMetaHeader::ToPICTHeader(BYTE *& pHeader, int & size)
 {
 	short 		myRowBytes;
 	short 		*picPtr;
-	short 		iii;
-	long 		handleSize;
+//	short 		iii;
+//	long 		handleSize;
 
 	myRowBytes = cbSize & 0x3fff; 
 

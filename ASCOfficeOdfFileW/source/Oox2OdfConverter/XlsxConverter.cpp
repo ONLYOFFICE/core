@@ -708,7 +708,7 @@ void XlsxConverter::convert_sharing_string(int number)
 	const OOX::Spreadsheet::CSharedStrings *SharedStrings= xlsx_document->m_pSharedStrings;
 	if (!SharedStrings) return;
 
-    if (number >=0 && number < SharedStrings->m_arrItems.size())
+    if (number >= 0 && number < (int)SharedStrings->m_arrItems.size())
 
     convert(SharedStrings->m_arrItems[number]);
 }
@@ -1024,7 +1024,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 	{
 		int	table_id = oox_book_views->m_oActiveTab->GetValue();
 
-		if (table_id >= 0 && table_id < Workbook->m_oSheets->m_arrItems.size())
+		if (table_id >= 0 && table_id < (int)Workbook->m_oSheets->m_arrItems.size())
 		{
 			ods_context->settings_context()->add_property(L"ActiveTable", L"string", 
 				Workbook->m_oSheets->m_arrItems[table_id]->m_oName.get2());

@@ -76,7 +76,7 @@ public:
 	{
 		m_oHeader = oHeader;
 
-		int pos_start_record = pStream->tell();
+		POLE::uint64 pos_start_record = pStream->tell();
 
 		unsigned short vMajor = StreamUtils::ReadWORD(pStream);
 		unsigned short vMinor = StreamUtils::ReadWORD(pStream);
@@ -105,7 +105,7 @@ public:
 			bStandard				= false;
 			crypt_data_aes.bAgile	= false;
 
-			unsigned short flags = StreamUtils::ReadDWORD(pStream);
+			_UINT32 flags = StreamUtils::ReadDWORD(pStream);
 			unsigned char *pDataRead = NULL;
 
 			bool fCryptoAPI	= GETBIT(flags, 1);
@@ -124,8 +124,8 @@ public:
 			int Reserved1	= StreamUtils::ReadDWORD(pStream);
 			int Reserved2	= StreamUtils::ReadDWORD(pStream);
 
-			int pos		= pStream->tell();
-			int size	= pStream->size();
+			POLE::uint64 pos	= pStream->tell();
+			POLE::uint64 size	= pStream->size();
 
 			std::vector<char> dataCSPName;
 			while(pos  < size - 1)
@@ -188,8 +188,8 @@ public:
 			//	case 0x0018:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB; break;
 			//}
 		}
-		int pos_end_record = pStream->tell();
+		POLE::uint64 pos_end_record = pStream->tell();
 
-		int sz_header = pos_end_record - pos_start_record;
+		//int sz_header = (pos_end_record - pos_start_record);
 	}
 };

@@ -568,7 +568,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	
 	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-	for (int i = 0; i < distance_inp.size(); i++)
+	for (size_t i = 0; i < distance_inp.size(); i++)
 	{
 		std::wstring sheet;
 		std::vector<std::wstring> range;
@@ -576,7 +576,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 
 		boost::algorithm::split(range, distance_inp[i], boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-		for (int j = 0 ; j < range.size(); j++)
+		for (size_t j = 0 ; j < range.size(); j++)
 		{
 			int pos = range[j].find('!'); 
 			if (0 <= pos)
@@ -588,7 +588,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 
 		}
 		std::wstring cells_out;
-		for (int c = 0; c < cells.size(); c++)
+		for (size_t c = 0; c < cells.size(); c++)
 		{
 			if (!sheet.empty())
 				cells_out += sheet + L".";

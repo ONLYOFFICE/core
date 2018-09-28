@@ -1042,7 +1042,7 @@ namespace DocFileFormat
 				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
-					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_endnoteNr]);
 					if (desc && desc->aEndIdx == 0)
 					{
 						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");

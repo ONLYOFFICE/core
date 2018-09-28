@@ -67,13 +67,23 @@ namespace PPTX
 			{
 				return _T("<a:alphaFloor/>");
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(L"<a:alphaFloor/>");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_ALPHAFLOOR);
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Seek(_e);
+			}
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

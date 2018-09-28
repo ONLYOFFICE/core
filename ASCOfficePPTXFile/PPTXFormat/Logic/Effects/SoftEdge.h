@@ -79,7 +79,14 @@ namespace PPTX
 				oAttr.Write(_T("rad"), rad);
 				return XmlUtils::CreateNode(_T("a:softEdge"), oAttr);
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:softEdge");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"rad", rad);
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"a:softEdge");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_SOFTEDGE);
@@ -89,6 +96,25 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->EndRecord();
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (_at == 0) rad = (size_t)pReader->GetULong(); 
+					else break;
+				}
+				pReader->Seek(_e);
 			}
 		public:
 			nullable_sizet	rad;

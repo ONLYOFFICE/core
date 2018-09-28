@@ -1258,22 +1258,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\PPTXFormat\Logic\EffectDag.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\PPTXFormat\Logic\EffectLst.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\PPTXFormat\Logic\EffectProperties.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\PPTXFormat\Logic\EffectStyle.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\.\PPTXFormat\Logic\FillStyle.h"
 					>
 				</File>
@@ -1578,6 +1562,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\PPTXFormat\Logic\UniFill.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\.\PPTXFormat\Logic\UniFill.h"
 					>
 				</File>
@@ -1655,6 +1643,10 @@
 					</File>
 					<File
 						RelativePath="..\.\PPTXFormat\Logic\Fills\Blip.h"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\Fills\BlipFill.cpp"
 						>
 					</File>
 					<File
@@ -1886,6 +1878,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\PPTXFormat\Logic\EffectDag.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\.\PPTXFormat\Logic\EffectDag.h"
 						>
 					</File>
@@ -1894,11 +1890,23 @@
 						>
 					</File>
 					<File
+						RelativePath="..\PPTXFormat\Logic\EffectLst.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\.\PPTXFormat\Logic\EffectLst.h"
 						>
 					</File>
 					<File
+						RelativePath="..\PPTXFormat\Logic\EffectProperties.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\.\PPTXFormat\Logic\EffectProperties.h"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\EffectStyle.cpp"
 						>
 					</File>
 					<File

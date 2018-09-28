@@ -73,7 +73,97 @@ namespace PPTX
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteArray(Effects);
 
-			return XmlUtils::CreateNode(m_name, oAttr, oValue);
+			return XmlUtils::CreateNode(m_name.empty() ? L"a:effectDag" : m_name, oAttr, oValue);
+		}
+		void EffectDag::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			//effectLst, effectDag, cont
+
+			pWriter->StartNode(m_name.empty() ? L"a:effectDag" : m_name);
+				pWriter->StartAttributes();
+					pWriter->WriteAttribute(L"name", name);
+					pWriter->WriteAttribute(L"type", type);
+				pWriter->EndAttributes();
+
+				for (size_t i = 0; i < Effects.size(); i++)
+				{
+					Effects[i].toXmlWriter(pWriter);
+				}
+			pWriter->EndNode(m_name.empty() ? L"a:effectDag" : m_name);
+		}
+		void EffectDag::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(EFFECT_TYPE_DAG);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString2(0, name);
+			pWriter->WriteLimit2(1, type);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->StartRecord(0);				
+				size_t len = Effects.size();
+				pWriter->WriteSize_t1(0, len);
+				
+				for (size_t i = 0; i < len; ++i)
+				{
+					pWriter->WriteRecord1(1, Effects[i]); // id неважен
+				}
+				pWriter->EndRecord();
+
+			pWriter->EndRecord();
+		}
+		void EffectDag::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			pReader->Skip(4); // len
+			BYTE _type = pReader->GetUChar(); 
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1);
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+						name = pReader->GetString2(); break;
+					case 1:
+					{
+						type = new Limit::EffectContainerType();
+						type->SetBYTECode(pReader->GetChar()); 
+					}break;
+				}
+			}
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						ULONG count_effects = pReader->GetULong();
+						for (ULONG _eff = 0; _eff < count_effects; ++_eff)
+						{
+							pReader->Skip(1); // type 
+
+							Effects.push_back(UniEffect());
+							Effects.back().fromPPTY(pReader);
+
+							if (false == Effects.back().is_init())
+							{
+								Effects.pop_back();
+							}
+						}
+					}break;
+					default:
+						break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
 		}
 
 		void EffectDag::FillParentPointersForChilds()

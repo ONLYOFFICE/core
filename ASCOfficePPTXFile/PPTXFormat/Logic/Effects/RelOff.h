@@ -84,18 +84,49 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("a:relOff"), oAttr);
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:relOff");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"tx", tx);
+				pWriter->WriteAttribute(L"ty", ty);
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"a:relOff");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_RELOFF);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 				pWriter->WriteInt2(0, tx);
-				pWriter->WriteInt2(0, ty);
+				pWriter->WriteInt2(1, ty);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:	tx	= pReader->GetLong(); break;
+						case 1:	ty	= pReader->GetLong(); break;
+					}
+
+				}
+				pReader->Seek(_end_rec);
+			}	
 
 		public:
 			nullable_int	tx;

@@ -43,7 +43,6 @@ namespace PPTX
 		}
 		MathParaWrapper& MathParaWrapper::operator=(const MathParaWrapper& oSrc)
 		{
-			//todo
 			parentFile		= oSrc.parentFile;
 			parentElement	= oSrc.parentElement;
 

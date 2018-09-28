@@ -133,8 +133,8 @@ _UINT32 CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 	}
 
     m_strDirectory = sSrcFileName;
-    int nIndex = m_strDirectory.rfind(FILE_SEPARATOR_CHAR);
-	if (-1 != nIndex)
+    size_t nIndex = m_strDirectory.rfind(FILE_SEPARATOR_CHAR);
+	if (std::wstring::npos != nIndex)
 		m_strDirectory = m_strDirectory.substr(0, nIndex);
 
 	return 0;

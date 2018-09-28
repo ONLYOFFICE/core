@@ -67,6 +67,11 @@ namespace PPTX
 					return 1;
 				return 0;
 			}
+			virtual void SetBYTECode(const BYTE& val)
+			{
+				if (val == 0)	m_strValue = L"sib";
+				else			m_strValue = L"tree";
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

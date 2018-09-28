@@ -44,7 +44,8 @@ SOURCES += \
     ../../../PPTXFormat/Logic/Media/WavAudioFile.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
-    ../../../PPTXFormat/Logic/Table/TableCell.cpp \
+    ../../../PPTXFormat/Logic/Fills/BlipFill.cpp \
+     ../../../PPTXFormat/Logic/Table/TableCell.cpp \
     ../../../PPTXFormat/Logic/Timing/BuildNodeBase.cpp \
     ../../../PPTXFormat/Logic/Timing/TimeNodeBase.cpp \
     ../../../PPTXFormat/Logic/Transitions/TransitionBase.cpp \
@@ -70,6 +71,7 @@ SOURCES += \
     ../../../PPTXFormat/Logic/SpTreeElem.cpp \
     ../../../PPTXFormat/Logic/TxBody.cpp \
     ../../../PPTXFormat/Logic/UniColor.cpp \
+    ../../../PPTXFormat/Logic/UniFill.cpp \
     ../../../PPTXFormat/Logic/UniEffect.cpp \
     ../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
     ../../../PPTXFormat/Logic/Controls.cpp \

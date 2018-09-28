@@ -74,32 +74,11 @@ namespace PPTX
 			}
 
             virtual void fromXML(XmlUtils::CXmlNode& node);
-
             virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_DAG);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, name);
-				pWriter->WriteLimit2(1, type);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->StartRecord(0);
-				ULONG len = (ULONG)Effects.size();
-				pWriter->WriteULONG(len);
-				
-				for (ULONG i = 0; i < len; ++i)
-				{
-					pWriter->WriteRecord1(1, Effects[i]);
-				}
-
-				pWriter->EndRecord();
-
-				pWriter->EndRecord();
-			}
-
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 		public:
 			std::vector<UniEffect>						Effects;
 			nullable_string								name;

@@ -165,7 +165,7 @@ namespace NSPresentationEditor
 
 			if (pElement->m_lPlaceholderUserStr >= 0 && ind >= 0)
 			{
-				if (pElement->m_lPlaceholderUserStr < placeholdersReplaceString[ind].size())
+				if (pElement->m_lPlaceholderUserStr < (int)placeholdersReplaceString[ind].size())
 					pShape->SetUpTextPlaceholder( placeholdersReplaceString[ind][pElement->m_lPlaceholderUserStr] );
 				else pShape->SetUpTextPlaceholder(L"");	
 			}

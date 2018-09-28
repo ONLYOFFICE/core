@@ -76,18 +76,24 @@ namespace PPTX
 				}
 				FillParentPointersForChilds();
 			}
-
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cont = node.ReadNode(_T("a:cont"));
 				FillParentPointersForChilds();
 			}
-
 			virtual std::wstring toXML() const
 			{
 				return _T("<a:alphaMod>") + cont.toXML() + _T("</a:alphaMod>");
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:alphaMod");
+				pWriter->EndAttributes();
+				
+				cont.toXmlWriter(pWriter);
 
+				pWriter->EndNode(L"a:alphaMod");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_ALPHAMOD);
@@ -96,7 +102,38 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+				}
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							cont.m_name = L"a:cont";
+							cont.fromPPTY(pReader);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
 		public:
 			EffectDag cont;
 		protected:

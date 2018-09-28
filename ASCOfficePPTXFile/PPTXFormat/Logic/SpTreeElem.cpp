@@ -37,6 +37,7 @@
 #include "CxnSp.h"
 #include "SpTree.h"
 #include "GraphicFrame.h"
+#include "Effects/AlphaModFix.h"
 
 #include "../SlideMaster.h"
 

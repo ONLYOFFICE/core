@@ -408,7 +408,7 @@ std::wstring  oox2odf_converter::Impl::replace_arguments(boost::wsmatch const & 
 {
 	std::wstring out;
 
-	int sz = what.size();
+	size_t sz = what.size();
 
     if (what[1].matched)
     {
@@ -607,7 +607,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	}
 	std::wstring result;
 
-	for (int i = 0 ; i < distance_out.size(); i++)
+	for (size_t i = 0 ; i < distance_out.size(); i++)
 	{
 		result += distance_out[i];
 		result += L" ";
@@ -743,7 +743,7 @@ int oox2odf_converter::get_count_value_points(std::wstring expr)
 	XmlUtils::replace_all( expr, L")", L"");
 	boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-	for (long i=0; i < splitted.size(); i++)
+	for (size_t i=0; i < splitted.size(); i++)
 	{
 		int res = splitted[i].find(L"!");
 		if (res > 0) splitted[i] = splitted[i].substr(res+1, splitted[i].size()-res);

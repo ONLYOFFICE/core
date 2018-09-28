@@ -86,7 +86,7 @@ math_variant::math_variant(const std::wstring & Value) :  none_(true)
 	std::vector< std::wstring > splitted;
 	boost::algorithm::split(splitted, Value, boost::algorithm::is_any_of(L" \t"), boost::algorithm::token_compress_on);
 
-	for (int i = 0 ; i < splitted.size(); i++)
+	for (size_t i = 0 ; i < splitted.size(); i++)
 	{
 		if (splitted[i] == L"bold")
 		{

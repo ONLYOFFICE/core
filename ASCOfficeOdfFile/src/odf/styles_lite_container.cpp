@@ -170,7 +170,7 @@ int settings_container::get_views_count()
 
 int settings_container::get_table_view_count(int ind, std::wstring name)
 {
-	if (ind < 0 || ind >= impl_->views.size()) return 0;
+	if (ind < 0 || ind >= (int)impl_->views.size()) return 0;
 	
     boost::unordered_map<std::wstring, int>::const_iterator i = impl_->views[ind].map_tables.find(name);
 	
@@ -211,13 +211,13 @@ std::pair<std::wstring, std::wstring> settings_container::get_table_view(int ind
 	
 	if (index		< 0) return value;
 	if (index_view	< 0 || 
-		index_view	>= impl_->views.size()) return value;
+		index_view	>= (int)impl_->views.size()) return value;
 	
     boost::unordered_map<std::wstring, int>::const_iterator i = impl_->views[index_view].map_tables.find(table_name);
 	
 	if (i == impl_->views[index_view].map_tables.end()) return value;
 		
-	if (index < impl_->views[index_view].tables[i->second].array_.size())
+	if (index < (int)impl_->views[index_view].tables[i->second].array_.size())
 	{
 		value.first		= impl_->views[index_view].tables[i->second].array_[index].name;
 		value.second	= impl_->views[index_view].tables[i->second].array_[index].value;
@@ -242,7 +242,7 @@ _CP_OPT(std::wstring) settings_container::find_view_by_name(const std::wstring &
 {
 	_CP_OPT(std::wstring) value;
 
-	if (ind < 0 || ind >= impl_->views.size())
+	if (ind < 0 || ind >= (int)impl_->views.size())
 	{
 		boost::unordered_map<std::wstring, int>::const_iterator i = impl_->common_view.map_.find(name);
 	    

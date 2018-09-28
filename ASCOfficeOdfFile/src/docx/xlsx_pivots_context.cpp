@@ -540,7 +540,7 @@ void xlsx_pivots_context::Impl::sort_fields()
 					}
 					else
 					{
-						if (count_items_row < current_.fields[i].caches.size())
+						if (count_items_row < (int)current_.fields[i].caches.size())
 							bAddRepeateRow = true;
 					}
 				}
@@ -772,7 +772,7 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 						{	
 							int fld = 0, ind_fld = current_.fields[ind_field_dirty].references_field < 0 ? ind_field_dirty : 
 														current_.fields[ind_field_dirty].references_field;
-							for (size_t k = 0; k < ind_fld; k++)
+							for (int k = 0; k < ind_fld; k++)
 							{
 								if (current_.fields[k].type != 7 ) fld++;
 							}
@@ -815,7 +815,7 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 							}
 							std::wstring name;
 
-							if (ind_field_dirty >= 0 && ind_field_dirty < current_.fields.size())
+							if (ind_field_dirty >= 0 && ind_field_dirty < (int)current_.fields.size())
 							{
 								switch(current_.fields[ind_field_dirty].function)
 								{
@@ -1470,7 +1470,7 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value, bool sh
 	if (index < 0)
 		index = impl_->current_.fields.back().caches.size();
 
-	while (index > impl_->current_.fields.back().caches.size())
+	while (index > (int)impl_->current_.fields.back().caches.size())
 	{
 		Impl::_field_value f(L"", L"m", true);
 

@@ -98,7 +98,7 @@ double docx_table_state::get_current_cell_width()
 	{
 		//return columns_width_[current_table_column_];
 		double res = 0;
-		for (int i = 0; i < columns_spanned_num_ + 1; i++)
+		for (unsigned int i = 0; i < columns_spanned_num_ + 1; i++)
 		{
 			res += columns_width_[current_table_column_ + i];
 		}

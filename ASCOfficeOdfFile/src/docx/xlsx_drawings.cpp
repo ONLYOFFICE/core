@@ -104,7 +104,7 @@ public:
 					CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
 					CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
-					for (int i = 0 ; i < xlsx_drawings_.size(); i++)
+					for (size_t i = 0 ; i < xlsx_drawings_.size(); i++)
 					{
 						xlsx_drawings_[i].serialize(CP_XML_STREAM());
 					}

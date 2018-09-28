@@ -70,7 +70,7 @@ public:
 	bool			filter;
 	bool			withHeader;
 
-	std::vector<std::pair<int, bool>> bySort;  //field + order
+	std::vector<std::pair<size_t, bool>> bySort;  //field + order
 	
 	void serialize_sort			(std::wostream & _Wostream);
 	void serialize_autofilter	(std::wostream & _Wostream);

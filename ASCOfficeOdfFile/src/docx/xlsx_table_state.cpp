@@ -195,7 +195,7 @@ std::wstring xlsx_table_state::default_row_cell_style() const
 
 std::wstring xlsx_table_state::default_column_cell_style() const
 {
-	if (current_table_column_ + 1 < column_default_cell_style_name_.size())
+	if (current_table_column_ + 1 < (int)column_default_cell_style_name_.size())
 		return column_default_cell_style_name_.at(current_table_column_ + 1);
 	else
 	{
@@ -241,7 +241,7 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
             rows_spanned_.push_back(xlsx_row_spanned());   
     }
 
-    if (rows_spanned_.size() <= current_table_column_)
+    if ((int)rows_spanned_.size() <= current_table_column_)
     {
         _CP_LOG << L"[warning] set_rows_spanned error\n";
     }

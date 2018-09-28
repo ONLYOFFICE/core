@@ -66,7 +66,7 @@ void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 				NSFile::CFileBinary file;
 				
 				file.CreateFileW(sOle2Name);
-				file.WriteFile(data, size);
+				file.WriteFile(data, (DWORD)size);
 				file.CloseFile();
 
 				delete []data;
@@ -1318,8 +1318,14 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 {
 	if (!rowProps) return false;
 	
-    if ( "trowd"				== sCommand )	rowProps->SetDefaultRtf();
-    else if ( "nesttableprops"	== sCommand )	rowProps->SetDefaultRtf();
+    if ( "trowd" == sCommand )
+	{
+		rowProps->SetDefaultRtf();
+	}
+    else if ( "nesttableprops" == sCommand )
+	{
+		rowProps->SetDefaultRtf();
+	}
 	
     COMMAND_RTF_INT	( "irow",			rowProps->m_nIndex,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT	( "irowband",		rowProps->m_nBandIndex,	sCommand, hasParameter, parameter )
@@ -1804,7 +1810,7 @@ void RtfOleBinReader::GetData( BYTE** ppData, long& nSize)
 	}	
 	for (size_t i = start; i < m_arData.size(); i++)
 	{
-		nSize += m_arData[i].length();
+		nSize += (long)m_arData[i].length();
 	}
 	
 	(*ppData) = new BYTE[ nSize];
@@ -2482,6 +2488,10 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 	}
 	else
 	{
+		if (false == aRows.empty() || false == aCells.empty()) // bug 39172
+		{
+			AddItem( m_oCurParagraph, oReader, false, false );
+		}
 		//if (pSection)
 		//	m_oCurParagraph->m_oProperty.m_pSection = pSection;
 	}
@@ -2948,8 +2958,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		//m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
 	}
     COMMAND_RTF_SPECIAL_CHAR( "column",	m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_column )
-    COMMAND_RTF_SPECIAL_CHAR( "line",		m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_line )
-    COMMAND_RTF_SPECIAL_CHAR( "line",		m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_line )
+    COMMAND_RTF_SPECIAL_CHAR( "line",	m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_line )
     else if ( "lbr" == sCommand )
 	{
 		if ( hasParameter )

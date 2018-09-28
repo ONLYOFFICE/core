@@ -55,6 +55,10 @@
 		69DA32F81CEE100E00E10AF0 /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32611CEE09BB00E10AF0 /* libPPTXFormatLib_ios.a */; };
 		69DA32F91CEE100E00E10AF0 /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32491CEE094A00E10AF0 /* libraster_ios.a */; };
 		69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69EC66D21E01770D003527E2 /* libUnicodeConverter.a */; };
+		8A35A6EE215E5F46005CC806 /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A35A6EC215E5F46005CC806 /* xmlutils.h */; };
+		8A35A6F3215E5F62005CC806 /* xmldom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A6F0215E5F62005CC806 /* xmldom.cpp */; };
+		8A35A6F4215E5F62005CC806 /* xmllight_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A35A6F1215E5F62005CC806 /* xmllight_private.h */; };
+		8A35A6F5215E5F62005CC806 /* xmllight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A6F2215E5F62005CC806 /* xmllight.cpp */; };
 		8A9FAC2B207772E1007787F6 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A9FAC27207772CC007787F6 /* libicu.a */; };
 		8ADB5F4220C52EFE00B72D37 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ADB5F4120C52EFE00B72D37 /* version.h */; };
 /* End PBXBuildFile section */
@@ -463,6 +467,10 @@
 		69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = ../../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UnicodeConverter.xcodeproj; path = ../../../../UnicodeConverter/build/UnicodeConverter/UnicodeConverter.xcodeproj; sourceTree = "<group>"; };
+		8A35A6EC215E5F46005CC806 /* xmlutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlutils.h; path = ../../../../../DesktopEditor/xml/include/xmlutils.h; sourceTree = "<group>"; };
+		8A35A6F0215E5F62005CC806 /* xmldom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmldom.cpp; path = ../../../../../DesktopEditor/xml/src/xmldom.cpp; sourceTree = "<group>"; };
+		8A35A6F1215E5F62005CC806 /* xmllight_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmllight_private.h; path = ../../../../../DesktopEditor/xml/src/xmllight_private.h; sourceTree = "<group>"; };
+		8A35A6F2215E5F62005CC806 /* xmllight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmllight.cpp; path = ../../../../../DesktopEditor/xml/src/xmllight.cpp; sourceTree = "<group>"; };
 		8A9FAC22207772CC007787F6 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = icu/icu.xcodeproj; sourceTree = "<group>"; };
 		8ADB5F4120C52EFE00B72D37 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -642,6 +650,7 @@
 		6967AFA51E27918600A129E2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				8A35A6EF215E5F4A005CC806 /* XmlUtils */,
 				6967B1181E27A9D500A129E2 /* OfficeFileFormatChecker */,
 				6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */,
 				6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */,
@@ -789,6 +798,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8A35A6EF215E5F4A005CC806 /* XmlUtils */ = {
+			isa = PBXGroup;
+			children = (
+				8A35A6F0215E5F62005CC806 /* xmldom.cpp */,
+				8A35A6F1215E5F62005CC806 /* xmllight_private.h */,
+				8A35A6F2215E5F62005CC806 /* xmllight.cpp */,
+				8A35A6EC215E5F46005CC806 /* xmlutils.h */,
+			);
+			name = XmlUtils;
+			sourceTree = "<group>";
+		};
 		8A9FAC23207772CC007787F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -807,6 +827,8 @@
 				6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */,
 				8ADB5F4220C52EFE00B72D37 /* version.h in Headers */,
 				6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */,
+				8A35A6F4215E5F62005CC806 /* xmllight_private.h in Headers */,
+				8A35A6EE215E5F46005CC806 /* xmlutils.h in Headers */,
 				6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */,
 				6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */,
 				17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */,
@@ -1214,7 +1236,9 @@
 			files = (
 				17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */,
 				6967B1101E27A65600A129E2 /* OfficeFileFormatChecker2.cpp in Sources */,
+				8A35A6F3215E5F62005CC806 /* xmldom.cpp in Sources */,
 				6967BEB01E27D16A00A129E2 /* ASCConverters_ios.cpp in Sources */,
+				8A35A6F5215E5F62005CC806 /* xmllight.cpp in Sources */,
 				6967AFB01E2793A500A129E2 /* cextracttools.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1479,9 +1503,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
 					PPTX_DEF,
 					PPT_DEF,
 					ENABLE_PPT_TO_PPTX_CONVERT,
@@ -1528,9 +1549,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
 					PPTX_DEF,
 					PPT_DEF,
 					ENABLE_PPT_TO_PPTX_CONVERT,

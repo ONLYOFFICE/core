@@ -572,15 +572,9 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					LINUX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					PPT_DEF,
-					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
-					_XCODE,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -605,15 +599,9 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					LINUX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					PPT_DEF,
-					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
-					_XCODE,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

@@ -65,7 +65,7 @@ public:
                 {
                     CP_XML_ATTR(L"count", merges_.size());
 
-                    for (int i = 0 ; i < merges_.size(); i++)
+                    for (size_t i = 0 ; i < merges_.size(); i++)
                     {
 						merge & m = merges_[i];
 

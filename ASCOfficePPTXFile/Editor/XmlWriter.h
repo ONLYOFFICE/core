@@ -479,6 +479,7 @@ namespace NSBinPptxRW
             WriteDWORD(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
+#if defined (_WIN32) || defined(_WIN64)
 		AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const size_t& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
@@ -488,6 +489,7 @@ namespace NSBinPptxRW
             WriteSIZET(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
+#endif
 		AVSINLINE void WriteAttributeDWORD_hex(const std::wstring& strAttributeName, const DWORD& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
@@ -608,7 +610,7 @@ namespace NSBinPptxRW
             if (value.IsInit())
                 WriteAttribute(strName, *value);
         }
-        AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_sizet& value)
+		AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_sizet& value)
         {
             if (value.IsInit())
                 WriteAttribute(strName, *value);

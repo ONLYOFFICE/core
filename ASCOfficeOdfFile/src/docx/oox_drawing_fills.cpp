@@ -292,7 +292,7 @@ void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val, co
 			{
 				CP_XML_NODE(ns + L":gsLst")
 				{
-					for (int i = 0; i < val.gradient->colors.size(); i++)
+					for (size_t i = 0; i < val.gradient->colors.size(); i++)
 					{
 						oox_gradient_fill::_color_position & col = val.gradient->colors[i];
 						CP_XML_NODE(ns + L":gs")

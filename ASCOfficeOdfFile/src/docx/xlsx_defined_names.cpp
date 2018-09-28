@@ -78,7 +78,7 @@ public:
             {
                 CP_XML_NODE(L"definedNames")
                 {
-                    for (int i = 0 ; i < content_.size(); i++)
+                    for (size_t i = 0 ; i < content_.size(); i++)
                     {
                         CP_XML_NODE(L"definedName")
                         {

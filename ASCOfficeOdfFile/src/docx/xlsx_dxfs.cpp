@@ -90,7 +90,7 @@ void xlsx_dxfs::serialize(std::wostream & _Wostream)  const
         {
             CP_XML_ATTR(L"count", impl_->dxf_array.size());
 			
-			for (int i = 0; i < impl_->dxf_array.size(); i++)
+			for (size_t i = 0; i < impl_->dxf_array.size(); i++)
             {
 				CP_XML_NODE(L"dxf")
 				{

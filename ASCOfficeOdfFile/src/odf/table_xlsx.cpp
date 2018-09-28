@@ -323,6 +323,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
 
+	if (office_forms_)
+	{
+		office_forms_->xlsx_convert(Context);
+	}
+
 	if (table_table_source_)
 	{
 		table_table_source* table_source = dynamic_cast<table_table_source*>( table_table_source_.get() );
@@ -756,7 +761,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             double s;
             if (oox::parseTime(tv, h, m, s))
             {
-				boost::int64_t intTime = oox::convertTime(h, m, s);
+				boost::int64_t intTime = (boost::int64_t)oox::convertTime(h, m, s);
 				if (intTime > 0)
 				{
 					number_val = boost::lexical_cast<std::wstring>(intTime);

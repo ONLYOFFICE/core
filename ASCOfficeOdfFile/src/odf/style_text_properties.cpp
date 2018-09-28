@@ -226,7 +226,7 @@ int text_format_properties_content::process_font_style(const _CP_OPT(font_style)
 }
 void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_context & Context)
 {
-	styles_context & styles_context_ = Context.get_text_context().get_styles_context();
+	oox::styles_context & styles_context_ = Context.get_text_context().get_styles_context();
 	CP_XML_WRITER(styles_context_.text_style())
 	{  
 		if (fo_color_)
@@ -948,7 +948,7 @@ void text_format_properties_content::docx_serialize(std::wostream & _rPr, fonts_
 
 void text_format_properties_content::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	styles_context	& styles_context_	= Context.get_text_context().get_styles_context();
+	oox::styles_context	& styles_context_	= Context.get_text_context().get_styles_context();
 	fonts_container & fonts_			= Context.root()->odf_context().fontContainer();	  
 
 	drawing_serialize(styles_context_.text_style(), styles_context_.extern_node(), fonts_, styles_context_.get_current_processed_style(), styles_context_.hlinkClick());
@@ -1244,7 +1244,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
 
 			 if (fontSize < 1)
-				 fontSize = Context.get_drop_cap_context().FontSize / 7.52;
+				 fontSize = (int)(Context.get_drop_cap_context().FontSize / 7.52);
 		 }
 		 else
 		 {

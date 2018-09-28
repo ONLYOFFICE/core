@@ -158,6 +158,8 @@ public:
 	void set_conditional_format_dataBar		(_CP_OPT(int) min, _CP_OPT(int) max);
 
 	void add_jsaProject	(const std::string &content);
+
+	void add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props);
 //------------------------------------------------------------------------------------
 
     odf_reader::odf_document * root()
@@ -172,8 +174,9 @@ public:
     xlsx_text_context           & get_text_context()		{ return xlsx_text_context_; }
     xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
     const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
-    xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }
-   
+    xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }   
+	forms_context				& get_forms_context()		{ return forms_context_; }
+
     oox_chart_context           & current_chart();
 	math_context				& get_math_context()			 { return math_context_; }
     num_format_context          & get_num_format_context()		 { return num_format_context_; }
@@ -210,16 +213,20 @@ private:
     size_t                              default_style_;
     mediaitems                          mediaitems_;
 	std::multimap<std::wstring, int>	mapPivotsTableView_;
-  
+
+ 	std::map<std::wstring, std::wstring>control_props_; 
+ 
     xlsx_style_manager              xlsx_style_;
     xlsx_defined_names              xlsx_defined_names_;
     xlsx_table_context              xlsx_table_context_;
     xlsx_text_context               xlsx_text_context_;
-	math_context					math_context_;
 	xlsx_pivots_context				xlsx_pivots_context_;
     xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     xlsx_comments_context_handle    xlsx_comments_context_handle_;
 	xlsx_dataValidations_context	xlsx_dataValidations_context_;
+	
+	math_context					math_context_;
+	forms_context					forms_context_;
 };
 
 }

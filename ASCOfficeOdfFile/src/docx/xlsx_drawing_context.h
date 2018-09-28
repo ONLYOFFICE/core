@@ -95,6 +95,7 @@ public:
 		void set_chart		(const std::wstring & path);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
 		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
+		void set_control	(const std::wstring & ctrlPropId);
 		void set_text_box	();
 	void end_frame();
 

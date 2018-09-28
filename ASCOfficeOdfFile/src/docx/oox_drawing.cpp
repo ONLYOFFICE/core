@@ -124,8 +124,14 @@ static const std::wstring _ooxDashStyle[]=
 	L"sysDashDotDot"
 };
 
-void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop, bool always_draw)
+void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop, bool always_draw, const std::wstring &ns)
 {
+	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
+	std::wstring ns_node = L"a:ln";
+	
+	if (ns == L"w14")
+		ns_node = L"w14:textOutline";
+
 	_CP_OPT(std::wstring)	strStrokeColor; 
 	_CP_OPT(int)			iStroke;
 	_CP_OPT(double)			dStrokeWidth;
@@ -143,30 +149,30 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 
 	CP_XML_WRITER(strm)
     {
-        CP_XML_NODE(L"a:ln")
+        CP_XML_NODE(ns_node)
         { 
-			std::wstring color, dash_style, fill = L"a:solidFill" ;
+			std::wstring color, dash_style, fill = ns + L":solidFill" ;
 
 			if (strStrokeColor) color = *strStrokeColor;
 
 			if (iStroke)
 			{
-				if (iStroke.get() == 0 || bWordArt) fill = L"a:noFill";
+				if (iStroke.get() == 0 || bWordArt) fill = ns + L":noFill";
 				else dash_style =  _ooxDashStyle[iStroke.get()];	
 			}
 			
-			if ((dStrokeWidth) && (*dStrokeWidth >= 0) && fill != L"a:noFill")
+			if ((dStrokeWidth) && (*dStrokeWidth >= 0) && fill != ns + L":noFill")
 			{
 				int val = dStrokeWidth.get() * 12700;	//in emu (1 pt = 12700)
 				if (val < 10)	val = 12700;
 				
-				CP_XML_ATTR(L"w", val);
+				CP_XML_ATTR2(ns_att + L"w", val);
 				if (color.length()<1)color = L"729FCF";
 			}
 		
 			CP_XML_NODE(fill)
 			{ 			
-				if (fill != L"a:noFill")
+				if (fill != ns + L":noFill")
 				{
 					if ( color.empty() )
 					{
@@ -174,47 +180,49 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 						else				color = L"FFFFFF";
 					}
 					
-					CP_XML_NODE(L"a:srgbClr")
+					CP_XML_NODE(ns + L":srgbClr")
 					{
-						CP_XML_ATTR(L"val",color);
+						CP_XML_ATTR2(ns_att + L"val",color);
 						
 						if (dStrokeOpacity)	
 						{
-							CP_XML_NODE(L"a:alpha")
+							CP_XML_NODE(ns + L":alpha")
 							{
-								CP_XML_ATTR(L"val", (int)(*dStrokeOpacity * 1000));
+								CP_XML_ATTR2(ns_att + L"val", (int)(*dStrokeOpacity * 1000));
 							}
 						}
 					}
 				}
 			}
-			if (fill != L"a:noFill")
+			if (fill != ns + L":noFill")
 			{
 				_CP_OPT(std::wstring)	strVal;
 
 				if (dash_style.length() > 0 && dash_style != L"solid")
 				{
-					CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val", dash_style);}	
+					CP_XML_NODE(ns + L":prstDash"){CP_XML_ATTR2(ns_att + L"val", dash_style);}	
 				}
 				odf_reader::GetProperty(prop,L"marker-start", strVal);	
 				if (strVal)
 				{
-					CP_XML_NODE(L"a:headEnd"){CP_XML_ATTR(L"type", strVal.get());}
+					CP_XML_NODE(ns + L":headEnd"){CP_XML_ATTR2(ns_att + L"type", strVal.get());}
 				}
 				odf_reader::GetProperty(prop,L"marker-end",strVal);	
 				if (strVal)
 				{
-					CP_XML_NODE(L"a:tailEnd"){CP_XML_ATTR(L"type",strVal.get());}
+					CP_XML_NODE(ns + L":tailEnd"){CP_XML_ATTR2(ns_att + L"type",strVal.get());}
 				}
 			}
 		}
     }
 }
-void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & shapeGeomPreset)
+void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & shapeGeomPreset, const std::wstring &ns)
 {
+	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
+
 	CP_XML_WRITER(strm)
     {
-		CP_XML_NODE(L"a:avLst")
+		CP_XML_NODE(ns + L":avLst")
 		{
 			_CP_OPT(std::wstring) strModifiers;
 			odf_reader::GetProperty(prop, L"oox-draw-modifiers", strModifiers);
@@ -268,20 +276,20 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				{
 					if (values[i].empty()) continue;
 					
-					CP_XML_NODE(L"a:gd")
+					CP_XML_NODE(ns + L":gd")
 					{
 						if (names.size() > i)
 						{
-							CP_XML_ATTR(L"name", names[i]);
+							CP_XML_ATTR2(ns_att + L"name", names[i]);
 						}
 						else
 						{
 							if (values.size() > 1)
-								CP_XML_ATTR(L"name", L"adj" + std::to_wstring(i + 1));
+								CP_XML_ATTR2(ns_att + L"name", L"adj" + std::to_wstring(i + 1));
 							else
-								CP_XML_ATTR(L"name", L"adj");
+								CP_XML_ATTR2(ns_att + L"name", L"adj");
 						}						
-						CP_XML_ATTR(L"fmla", L"val " + values[i]);
+						CP_XML_ATTR2(ns_att + L"fmla", L"val " + values[i]);
 					}
 				}
 			}

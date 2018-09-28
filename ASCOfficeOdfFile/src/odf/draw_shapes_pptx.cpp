@@ -162,13 +162,22 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	}
 ////////////////////////////////////////////////////////////////////////////////////
 	Context.get_text_context().start_object();
+	
+	if (enhanced_geometry_)
+		enhanced_geometry_->pptx_convert(Context);
+
+	if (word_art_)
+	{
+		//set fill & stroke to text
+	}
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }
 	std::wstring text_content_ = Context.get_text_context().end_object();
 
-	if (text_content_.length()>0)
+	if (!text_content_.empty())
 	{
 		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 	}

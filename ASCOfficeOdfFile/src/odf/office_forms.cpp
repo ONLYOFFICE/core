@@ -40,6 +40,7 @@
 
 #include "serialize_elements.h"
 
+#include "../formulasconvert/formulasconvert.h"
 namespace cpdoccore { 
 namespace odf_reader {
 
@@ -63,6 +64,13 @@ void office_forms::docx_convert(oox::docx_conversion_context & Context)
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);
+    }
+}
+void office_forms::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->xlsx_convert(Context);
     }
 }
 // form:form
@@ -117,6 +125,13 @@ void form_form::docx_convert(oox::docx_conversion_context & Context)
         content_[i]->docx_convert(Context);
     }
 }
+void form_form::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->xlsx_convert(Context);
+    }
+}
 // form:properties
 //----------------------------------------------------------------------------------
 const wchar_t * form_properties::ns = L"form";
@@ -132,6 +147,10 @@ void form_properties::docx_convert(oox::docx_conversion_context & Context)
  //   {
  //       content_[i]->docx_convert(Context);
  //   }
+}
+void form_properties::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+
 }
 // form:property
 //----------------------------------------------------------------------------------
@@ -165,6 +184,13 @@ void form_list_property::docx_convert(oox::docx_conversion_context & Context)
         content_[i]->docx_convert(Context);
     }
 }
+void form_list_property::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->xlsx_convert(Context);
+    }
+}
 // form:list-value
 //----------------------------------------------------------------------------------
 const wchar_t * form_list_value::ns = L"form";
@@ -194,6 +220,7 @@ void form_element::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"form:title",		title_);
 	CP_APPLY_ATTR(L"form:value",		value_);
 	CP_APPLY_ATTR(L"form:current-value",current_value_);
+	CP_APPLY_ATTR(L"form:dropdown",		dropdown_);
 	CP_APPLY_ATTR(L"xml:id",			xml_id_);
 	CP_APPLY_ATTR(L"xforms:bind",		xforms_bind_);
 }
@@ -224,6 +251,21 @@ void form_element::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_forms_context().end_element();
 
 }
+void form_element::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	std::wstring id = id_ ? *id_ : (xml_id_ ? *xml_id_ : L"");
+	Context.get_forms_context().set_id(id);
+
+	if (name_)						Context.get_forms_context().set_name(*name_);
+	if (label_)						Context.get_forms_context().set_label(*label_);
+	
+	if (current_value_)				Context.get_forms_context().set_value(*current_value_);
+	else if (value_)				Context.get_forms_context().set_value(*value_);
+	
+	if (control_implementation_)	Context.get_forms_context().set_uuid(*control_implementation_);
+
+	Context.get_forms_context().end_element();
+}
 // form:button
 //----------------------------------------------------------------------------------
 const wchar_t * form_button::ns = L"form";
@@ -239,7 +281,27 @@ void form_button::docx_convert(oox::docx_conversion_context & Context)
 
 	form_element::docx_convert(Context);
 }
+void form_button::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(1);
 
+	form_element::xlsx_convert(Context);
+}
+void form_button::serialize_control_props(std::wostream & strm)
+{
+	formulasconvert::odf2oox_converter converter;
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", L"Button");
+
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");			
+		}
+	}}
 // form:text
 //----------------------------------------------------------------------------------
 const wchar_t * form_text::ns = L"form";
@@ -256,6 +318,30 @@ void form_text::docx_convert(oox::docx_conversion_context & Context)
 
 	form_element::docx_convert(Context);
 }
+void form_text::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(2);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_text::serialize_control_props(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", L"EditBox");
+
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");
+			
+			if (value_)
+				CP_XML_ATTR(L"val", *value_);
+		}
+	}}
 void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
 {
 	if (!draw) return;
@@ -333,6 +419,30 @@ void form_checkbox::docx_convert(oox::docx_conversion_context & Context)
 
 	form_element::docx_convert(Context);
 }
+void form_checkbox::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_checkbox::serialize_control_props(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", L"CheckBox");
+			if (current_state_)
+				CP_XML_ATTR(L"checked", L"Checked");
+
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");			
+		}
+	}
+}
 void form_checkbox::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
 {
 	if (!draw) return;
@@ -405,6 +515,9 @@ const wchar_t * form_combobox::name = L"combobox";
 void form_combobox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	form_element::add_attributes(Attributes);
+	
+	CP_APPLY_ATTR(L"form:source-cell-range", source_cell_range_);
+	CP_APPLY_ATTR(L"form:list-source", list_source_);
 }
 void form_combobox::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -423,6 +536,42 @@ void form_combobox::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
+}
+void form_combobox::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(4);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_combobox::serialize_control_props(std::wostream & strm)
+{
+	formulasconvert::odf2oox_converter converter;
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+			CP_XML_ATTR(L"objectType", L"Drop");
+			CP_XML_ATTR(L"dropStyle", L"combo");
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");
+			
+			if (linked_cell_)
+			{
+				std::wstring fmla = converter.convert_named_expr(*linked_cell_);
+				CP_XML_ATTR(L"fmlaLink", fmla);
+			}
+			if (source_cell_range_)
+			{
+				std::wstring fmla = converter.convert_named_expr(*source_cell_range_);
+				CP_XML_ATTR(L"fmlaRange", fmla);
+			}
+			//CP_XML_ATTR(L"sel", L"3");
+			if (value_)
+				CP_XML_ATTR(L"val", *value_);
+		}
+	}
 }
 void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
 {
@@ -489,12 +638,59 @@ const wchar_t * form_listbox::name = L"listbox";
 void form_listbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	form_element::add_attributes(Attributes);
+	
+	CP_APPLY_ATTR(L"form:source-cell-range", source_cell_range_);
+	CP_APPLY_ATTR(L"form:list-source", list_source_);
+	CP_APPLY_ATTR(L"form:list-source-type", list_source_type_);
+	CP_APPLY_ATTR(L"form:list-linkage-type", list_linkage_type_);
 }
 void form_listbox::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.get_forms_context().start_element(5);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
+}
+void form_listbox::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(5);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_listbox::serialize_control_props(std::wostream & strm)
+{
+	formulasconvert::odf2oox_converter converter;
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", L"List");
+			if ((dropdown_) && (dropdown_->get()))
+			{
+				CP_XML_ATTR(L"dropStyle", L"combo");
+			}
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");
+			
+			if (linked_cell_)
+			{
+				std::wstring fmla = converter.convert_named_expr(*linked_cell_);
+				CP_XML_ATTR(L"fmlaLink", fmla);
+			}
+			if (source_cell_range_)
+			{
+				std::wstring fmla = converter.convert_named_expr(*source_cell_range_);
+				CP_XML_ATTR(L"fmlaRange", fmla);
+			}
+			//CP_XML_ATTR(L"sel", L"3");
+			if (value_)
+				CP_XML_ATTR(L"val", *value_);
+
+		}
+	}
 }
 // form:button
 //----------------------------------------------------------------------------------
@@ -511,6 +707,16 @@ void form_date::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
+}
+void form_date::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_date::serialize_control_props(std::wostream & strm)
+{
 }
 void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
 {

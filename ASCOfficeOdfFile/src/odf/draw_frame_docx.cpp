@@ -51,6 +51,7 @@
 
 #include "../docx/docx_drawing.h"
 #include "../docx/xlsx_package.h"
+#include "../docx/oox_conversion_context.h"
 
 #include "chart_build_oox.h"
 
@@ -854,8 +855,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
         }
 
         if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough 
-            && styleRunThrough && styleRunThrough->get_type() == run_through::Background
-            )
+            && styleRunThrough && styleRunThrough->get_type() == run_through::Background)
         {
            drawing-> behindDoc = L"1";            
         }
@@ -895,7 +895,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 //////////////////////////////////////////
 	bool bTxbx = (drawing->sub_type == 1);
 
-	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing->fill, bTxbx);	
+	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles(),drawing->fill, bTxbx);	
 
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
@@ -1039,7 +1039,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	if (drawing.sub_type !=5 )//line
 	{
-		drawing.additional.push_back(_property(L"text-content",Context.get_drawing_context().get_text_stream_shape()));
+		drawing.additional.push_back(_property(L"text-content", Context.get_drawing_context().get_text_stream_shape()));
 	}
 
 	Context.get_drawing_context().clear_stream_shape();
@@ -1054,7 +1054,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 		bad_shape_ = false;
 	}
 
-	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional,L"stroke"))//бывает что и не определено ничего 
+	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional, L"stroke"))//бывает что и не определено ничего 
 	{
 		drawing.fill.solid = oox::oox_solid_fill::create();
 		drawing.fill.solid->color = L"729FCF";
@@ -1205,7 +1205,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 	
 	Context.reset_context_state();
-
+	
 	bool drState = Context.get_drawing_state_content();
 	
 	Context.set_drawing_state_content(true);
@@ -1353,7 +1353,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
     }
 	drawing.content_group_ = temp_stream.str();
 	
-	Context.set_stream_man		(prev);
+	Context.set_stream_man(prev);	
 	Context.back_context_state();
 
 //--------------------------------------------------
@@ -1558,6 +1558,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
 
 			bool in_frame	= !drawing->isInline;
+			
 			bool runState	= Context.get_run_state();
 			bool pState		= Context.get_paragraph_state();
 			
@@ -1651,7 +1652,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (!control_id_) return;
 
-	oox::text_forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
+	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
 
 	if ((state.type == 6 || state.type == 4) && state.element)
@@ -1685,10 +1686,10 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
 		Context.start_paragraph(false);
 		
-		if (draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+		if (common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
 		{	
 			text::paragraph_attrs attrs_;
-			attrs_.text_style_name_ = *draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
+			attrs_.text_style_name_ = *common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_;
 
 			int textStyle = Context.process_paragraph_attr(&attrs_);
 		}	
@@ -1732,7 +1733,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 //---------------------------------------------------------------------------------------------------------
 
 /////////
-	common_draw_docx_convert(Context, draw_attlists_, &drawing);
+	common_draw_docx_convert(Context, common_draw_attlists_, &drawing);
 /////////
 
     std::wostream & strm = Context.output_stream();

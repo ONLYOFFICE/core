@@ -86,23 +86,27 @@ public:
 	bool					add_or_find_default	(const std::wstring & extension);
 	bool					add_or_find_override(const std::wstring & fileName);
 	void					set_media			(mediaitems & _Mediaitems);
-    content_type_content *	content				();
+    content_type *	content				();
 
 private:
-    content_type_content	content_type_content_;
+    content_type	content_type_content_;
     std::wstring			filename_;
 };
+
+class simple_element;
+typedef boost::shared_ptr<simple_element> simple_element_ptr;
 
 class simple_element : public element
 {
 public:
     simple_element(const std::wstring & FileName, const std::wstring & Content);
-    static element_ptr create(const std::wstring & FileName, const std::wstring & Content);
+    static simple_element_ptr create(const std::wstring & FileName, const std::wstring & Content);
 
     simple_element(const std::wstring & FileName, const std::string & Content);
-    static element_ptr create(const std::wstring & FileName, const std::string & Content);
+    static simple_element_ptr create(const std::wstring & FileName, const std::string & Content);
 
 	virtual void write(const std::wstring & RootPath);
+	std::wstring get_filename() {return file_name_;}
 
 private:
     std::wstring file_name_;
@@ -111,7 +115,6 @@ private:
 	bool bXml;
 
 };
-
 //------------------------------------------------------------------------
 class rels_file;
 typedef boost::shared_ptr<rels_file> rels_file_ptr;

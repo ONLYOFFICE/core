@@ -182,6 +182,10 @@ void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     {
         CP_CREATE_ELEMENT(conditional_formats_);    
     }
+	else if CP_CHECK_NAME(L"office", L"forms")
+    {
+        CP_CREATE_ELEMENT(office_forms_);    
+    }
 	else 
         CP_NOT_APPLICABLE_ELM();
 }

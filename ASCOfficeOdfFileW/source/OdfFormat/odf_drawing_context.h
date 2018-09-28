@@ -93,7 +93,9 @@ public:
 	void set_horizontal_pos	(double offset_pt);
 
 	void set_default_wrap_style();
-	void set_wrap_style		(odf_types::style_wrap::type  style);
+	void set_wrap_style(odf_types::style_wrap::type  style);
+	void set_wrap_contour();
+
 	void set_overlap		(bool val);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////

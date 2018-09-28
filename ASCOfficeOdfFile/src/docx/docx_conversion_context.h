@@ -572,47 +572,6 @@ private:
 	std::map<std::wstring, _state>	mapChanges_;
 };
 
-class text_forms_context
-{
-public:
-	struct _state
-	{
-		std::wstring				id;
-		std::wstring				name;
-		int							type = 0; //enum?
-		std::wstring				label;
-		std::wstring				uuid;
-		std::wstring				value;
-		odf_reader::form_element*	element = NULL;
-	
-		void clear()
-		{
-			type = 0;
-			id.clear();
-			name.clear();
-			label.clear();
-			value.clear();
-			uuid.clear();
-			element = NULL;
-		}
-	};
-	text_forms_context(){}
-
-	void start_element	(int type);
-		void set_id		(const std::wstring& id);
-		void set_name	(const std::wstring& name);
-		void set_label	(const std::wstring& label);
-		void set_uuid	(const std::wstring& uuid);
-		void set_value	(const std::wstring& value);
-		void set_element(odf_reader::form_element *elm);
-	void end_element	();
-
-	_state& get_state_element (std::wstring id);
-
-private:
-	_state							current_state_;
-	std::map<std::wstring, _state>	mapElements_;
-};
 class table_content_context
 {
 public:
@@ -797,7 +756,7 @@ public:
 
 	void add_element_to_run		(std::wstring parenStyleId = _T(""));
     void finish_run				();
-	void add_new_run			(std::wstring parentStyleId = _T(""));
+	void add_new_run			(std::wstring parentStyleId = _T(""));    
   
     void start_paragraph		(bool is_header = false);
     void finish_paragraph		();
@@ -936,10 +895,12 @@ public:
 	section_context		& get_section_context()		{ return section_context_; }
 	notes_context		& get_notes_context()		{ return notes_context_; }
 	text_tracked_context& get_text_tracked_context(){ return text_tracked_context_; }
-	text_forms_context	& get_forms_context()		{ return text_forms_context_; }
+	forms_context		& get_forms_context()		{ return forms_context_; }
 	tabs_context		& get_tabs_context()		{ return tabs_context_;}
 	
 	table_content_context	& get_table_content_context()	{ return table_content_context_;}
+
+	void set_drawing_text_props (const std::wstring &props);
 
     void docx_convert_delayed	();
     void add_delayed_element	(odf_reader::office_element * Elm);
@@ -981,10 +942,10 @@ public:
 	void add_alphabetical_index_text (odf_reader::office_element_ptr & elem);
 
 	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
-    headers_footers			& get_headers_footers()			{ return headers_footers_; }
+   
+	headers_footers			& get_headers_footers()			{ return headers_footers_; }
 	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
-
-	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
+	drop_cap_context		& get_drop_cap_context()		{return drop_cap_context_;}
 	
 	styles_map	styles_map_;
 	bool		process_headers_footers_;
@@ -1002,6 +963,8 @@ private:
 		bool in_paragraph_ = false;
 		bool in_run_ = false;
 		bool is_paragraph_keep_ = false; 
+
+		std::wstring drawing_text_props_;
 
 		std::vector< const odf_reader::style_text_properties*> text_properties_stack_;
 	}state_;
@@ -1029,7 +992,7 @@ private:
     header_footer_context	header_footer_context_;
     notes_context			notes_context_;
 	text_tracked_context	text_tracked_context_;
-	text_forms_context		text_forms_context_;
+	forms_context			forms_context_;
 	tabs_context			tabs_context_;
 	table_content_context	table_content_context_;
        

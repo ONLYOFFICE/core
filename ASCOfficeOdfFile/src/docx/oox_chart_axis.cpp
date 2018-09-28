@@ -171,7 +171,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 			if (content_.dimension_ == L"y")
 				CP_XML_ATTR(L"val",L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
 		}
-		//oox_serialize_ln(_Wostream,content_.graphic_properties_);
+		//oox_serialize_ln(_Wostream, content_.graphic_properties_);
 
 		odf_reader::GetProperty(content_.properties_, L"num_format", strVal);
 		odf_reader::GetProperty(content_.properties_, L"link-data-style-to-source", boolVal);

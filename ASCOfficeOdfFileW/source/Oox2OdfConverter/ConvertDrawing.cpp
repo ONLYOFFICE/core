@@ -593,7 +593,7 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 			if (oox_shape->txBody.IsInit())		bodyPr = oox_shape->txBody->bodyPr.GetPointer();
 			else								bodyPr = oox_shape->oTextBoxBodyPr.GetPointer();
 			
-			if (bodyPr && bodyPr->fromWordArt.get_value_or(false))
+			if ((bodyPr) && (bodyPr->prstTxWarp.IsInit()))
 			{
 				int wordart_type = convert(bodyPr->prstTxWarp.GetPointer());
 				if (wordart_type > 0) type = wordart_type;
@@ -782,9 +782,16 @@ void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
 int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
 {
 	if (oox_text_preset == NULL) return -1;
-	if (oox_text_preset->prst.GetBYTECode() ==  SimpleTypes::textshapetypeTextNoShape) return 2000;
-
-	return 2001 + oox_text_preset->prst.GetBYTECode();
+	
+	if (oox_text_preset->prst.GetBYTECode() == SimpleTypes::textshapetypeTextNoShape ||
+		oox_text_preset->prst.GetBYTECode() == SimpleTypes::textshapetypeTextPlain) // в зависимости от других настроек
+	{
+		return 2000;
+	}
+	else
+	{
+		return 2001 + oox_text_preset->prst.GetBYTECode();
+	}
 }
 void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 {
@@ -1067,8 +1074,13 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;
 			
-            convert(&oox_grad_fill->GsLst[0].color,hexColorEnd, opacityEnd, nARGB);
-            convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size()-1].color,hexColorStart, opacityStart, nARGB);
+            convert(&oox_grad_fill->GsLst[0].color, hexColorEnd, opacityEnd, nARGB);
+            convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() - 1].color, hexColorStart, opacityStart, nARGB);
+
+			if (hexColorEnd == hexColorStart && opacityEnd == opacityStart && oox_grad_fill->GsLst.size() > 2)
+			{
+				convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() / 2].color, hexColorStart, opacityStart, nARGB);
+			}
 			
 			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
 			odf_context()->drawing_context()->set_gradient_end	(hexColorEnd,	opacityEnd);
@@ -1253,6 +1265,16 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 {
 	if (!oox_bodyPr) return;
 
+	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
+	{
+		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
+		{
+			if (oox_bodyPr->prstTxWarp->avLst[i].fmla.IsInit())
+			{
+				odf_context()->drawing_context()->add_modifier(oox_bodyPr->prstTxWarp->avLst[i].fmla.get());
+			}
+		}
+	}
 	if (oox_bodyPr->vert.IsInit())
 	{
 		odf_context()->drawing_context()->set_textarea_writing_mode (oox_bodyPr->vert->GetBYTECode());
@@ -1287,7 +1309,7 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 	switch(oox_bodyPr->Fit.type)
 	{
 		case  PPTX::Logic::TextFit::FitSpAuto:
-		{//изменяемы размеры			
+		{//изменяемы размеры шейпа под текст			
 			odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
 		}break;
 		case  PPTX::Logic::TextFit::FitNo:
@@ -1298,17 +1320,6 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		}break;
 		default:
 		{
-		}
-	}
-
-	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
-	{
-		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
-		{
-			if (oox_bodyPr->prstTxWarp->avLst[i].fmla.IsInit())
-			{
-				odf_context()->drawing_context()->add_modifier(oox_bodyPr->prstTxWarp->avLst[i].fmla.get());
-			}
 		}
 	}
 }

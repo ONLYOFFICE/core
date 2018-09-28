@@ -318,7 +318,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							}
 						}
 					}
-					else if (values_[i].strRef_.present > 0 && !bLocalTable_)
+					else if (values_[i].strRef_.present && !bLocalTable_)
 					{
 						CP_XML_NODE(L"c:strRef")
 						{

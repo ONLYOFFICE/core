@@ -492,6 +492,10 @@ void xlsx_table_state::serialize_ole_objects(std::wostream & strm)
 {
     return xlsx_drawing_context_.get_drawings()->serialize_objects(strm);
 }
+void xlsx_table_state::serialize_controls(std::wostream & strm)
+{
+    return xlsx_drawing_context_.get_drawings()->serialize_controls(strm);
+}
 void xlsx_table_state::serialize_hyperlinks(std::wostream & strm)
 {
     return xlsx_hyperlinks_.xlsx_serialize(strm);

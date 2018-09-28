@@ -647,9 +647,9 @@ public:
 
     office_element_ptr			table_shapes_;
 	office_element_ptr_array	table_named_;
+	office_element_ptr			office_forms_;
     //office-dde-source
     //table-scenario
-    //office-forms
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table);
 

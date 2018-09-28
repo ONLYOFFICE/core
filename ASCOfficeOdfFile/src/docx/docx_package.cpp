@@ -243,7 +243,7 @@ void customXml_files::write(const std::wstring & RootPath)
 		const std::wstring fileNameItem = std::wstring(L"item") + std::to_wstring(i+1) + L".xml";
 		const std::wstring fileNameProps = std::wstring(L"itemProps") + std::to_wstring(i+1) + L".xml";
        
-		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();           
+		content_type * contentTypes = get_main_document()->get_content_types_file().content();           
         contentTypes->add_override(std::wstring(L"/customXml/") + fileNameProps, 
 							L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml");
 
@@ -280,7 +280,7 @@ void docx_charts_files::write(const std::wstring & RootPath)
         const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(count) + L".xml";
 		const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
        
-		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();           
+		content_type * contentTypes = get_main_document()->get_content_types_file().content();           
         contentTypes->add_override(std::wstring(L"/word/charts/") + fileName, kWSConType);
 
         package::simple_element(fileName, charts_[i]->str()).write(path);

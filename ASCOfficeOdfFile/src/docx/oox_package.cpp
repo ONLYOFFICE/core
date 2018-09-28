@@ -123,7 +123,7 @@ void content_types_file::write(const std::wstring & RootPath)
     elm.write(RootPath);
 }
 
-content_type_content * content_types_file::content()
+content_type * content_types_file::content()
 { 
 	return &content_type_content_;
 }
@@ -132,7 +132,7 @@ bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
 	std::vector<default_content_type> & defaults = content_type_content_.get_default();
 	
-	for (int i = 0 ; i < defaults.size(); i++)
+	for (size_t i = 0 ; i < defaults.size(); i++)
 	{
 		if (defaults[i].extension() == extension)
 			return true;
@@ -279,11 +279,11 @@ _CP_PTR(customXml_content) customXml_content::create(const std::wstring &item, c
     return boost::make_shared<customXml_content>(item, props);
 }
 //-----------------------------------------------------------------------------------------------
-element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
+simple_element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
 {
     return boost::make_shared<simple_element>(FileName, Content);
 }
-element_ptr simple_element::create(const std::wstring & FileName, const std::string & Content)
+simple_element_ptr simple_element::create(const std::wstring & FileName, const std::string & Content)
 {
     return boost::make_shared<simple_element>(FileName, Content);
 }

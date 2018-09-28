@@ -121,7 +121,15 @@ public:
 			xlsx_drawings_[i].serialize_object(strm);
 		}
     }
-    
+	void serialize_controls(std::wostream & strm) 
+    {
+		for (size_t i = 0 ; i < xlsx_drawings_.size(); i++)
+		{
+			if (xlsx_drawings_[i].type != typeControl) continue;
+
+			xlsx_drawings_[i].serialize_control(strm);
+		}
+    }    
     bool empty() const
     {
         return (xlsx_drawings_.empty());
@@ -192,6 +200,10 @@ void xlsx_drawings::serialize(std::wostream & strm)
 void xlsx_drawings::serialize_objects(std::wostream & strm)
 {
     impl_->serialize_objects(strm);
+}
+void xlsx_drawings::serialize_controls(std::wostream & strm)
+{
+    impl_->serialize_controls(strm);
 }
 
 bool xlsx_drawings::empty() const

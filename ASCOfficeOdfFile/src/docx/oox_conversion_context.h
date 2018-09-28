@@ -56,9 +56,55 @@ namespace odf_reader
 	typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
 	
 	class	office_element;
+	class	form_element;
 	typedef boost::shared_ptr<office_element> office_element_ptr;
 };
 
+namespace oox {
+class forms_context
+{
+public:
+	struct _state
+	{
+		std::wstring				id;
+		std::wstring				name;
+		int							type = 0; //enum?
+		std::wstring				label;
+		std::wstring				uuid;
+		std::wstring				value;
+		odf_reader::form_element*	element = NULL;
+
+		std::wstring				ctrlPropId;
+	
+		void clear()
+		{
+			type = 0;
+			id.clear();
+			name.clear();
+			label.clear();
+			value.clear();
+			uuid.clear();
+			ctrlPropId.clear();
+			element = NULL;
+		}
+	};
+	forms_context(){}
+
+	void start_element	(int type);
+		void set_id		(const std::wstring& id);
+		void set_name	(const std::wstring& name);
+		void set_label	(const std::wstring& label);
+		void set_uuid	(const std::wstring& uuid);
+		void set_value	(const std::wstring& value);
+		void set_element(odf_reader::form_element *elm);
+	void end_element	();
+
+	_state& get_state_element (std::wstring id);
+
+private:
+	_state							current_state_;
+	std::map<std::wstring, _state>	mapElements_;
+};
 class tabs_context : boost::noncopyable
 {
 public:
@@ -95,6 +141,7 @@ public:
 
 	std::wstring & extern_node(){return extern_node_;}
 	std::wstring & hlinkClick(){return hlinkClick_;}
+	std::wstring & text_style_ext(){return text_style_ext_;}
 
 	const odf_reader::style_instance * get_current_processed_style() const { return current_processed_style_; }
    
@@ -106,6 +153,7 @@ private:
 	
 	std::wstring				extern_node_;
 	std::wstring				hlinkClick_;
+	std::wstring				text_style_ext_;
 
     std::wstringstream			list_style_;
     std::wstringstream			text_style_;
@@ -115,7 +163,6 @@ private:
 };
 
 
-namespace oox {
 	
 	class math_context : boost::noncopyable
 	{

@@ -188,8 +188,10 @@ void xlsx_conversion_context::end_document()
         }
 
     }
-	//добавляем диаграммы
-
+	for (std::map<std::wstring, std::wstring>::iterator it = control_props_.begin(); it != control_props_.end(); ++it)
+	{
+		output_document_->get_xl_files().add_control_props( package::simple_element::create(it->first, it->second) );
+	}
     for (size_t i = 0; i < charts_.size(); i++)
     {
 		package::chart_content_ptr content = package::chart_content::create();
@@ -444,7 +446,8 @@ void xlsx_conversion_context::end_table()
 	
 	get_table_context().serialize_hyperlinks			(current_sheet().hyperlinks());
     get_table_context().serialize_ole_objects			(current_sheet().ole_objects());
-	
+    get_table_context().serialize_controls				(current_sheet().controls());
+
 	get_table_context().dump_rels_hyperlinks			(current_sheet().sheet_rels());
 	get_table_context().dump_rels_ole_objects			(current_sheet().sheet_rels());
 
@@ -498,6 +501,17 @@ void xlsx_conversion_context::end_table()
         current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
     }    
     get_table_context().end_table();
+}
+void xlsx_conversion_context::add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props)
+{
+	if (rid.empty()) return;
+	if (props.empty()) return;
+
+	control_props_.insert(std::make_pair(target, props));
+
+	current_sheet().sheet_rels().add(oox::relationship(rid,
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/ctrlProp",
+			L"../ctrlProps/" + target));
 }
 
 void xlsx_conversion_context::start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax)

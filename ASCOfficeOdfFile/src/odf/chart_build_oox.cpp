@@ -232,11 +232,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 		
-		bool pState		= Context.get_paragraph_state	();
-		bool runState	= Context.get_run_state			();
-
-		Context.set_paragraph_state	(false);		
-		Context.set_run_state		(false);
+		Context.reset_context_state();
 
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
 		
@@ -246,9 +242,9 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 
 		Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 		
-		Context.set_stream_man		(prev);
-		Context.set_run_state		(runState);
-		Context.set_paragraph_state	(pState);	
+		Context.set_stream_man(prev);
+		
+		Context.back_context_state();	
 	}
 	else if(object_type_ == 4 && office_spreadsheet_)
 	{

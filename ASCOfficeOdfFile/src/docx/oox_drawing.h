@@ -118,8 +118,8 @@ namespace oox {
     };   
 	typedef _CP_PTR(_oox_drawing) oox_drawing_ptr;
 
-	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
-	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset);
+	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false, const std::wstring &ns = L"a");
+	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset, const std::wstring &ns = L"a");
     void oox_serialize_action	(std::wostream & strm, const _action_desc & val);
     
 }

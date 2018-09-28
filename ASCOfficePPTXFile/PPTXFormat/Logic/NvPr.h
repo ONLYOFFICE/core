@@ -224,7 +224,6 @@ namespace PPTX
 						}
 						default:
 						{
-							// TODO:
 							pReader->SkipRecord();
 							break;
 						}

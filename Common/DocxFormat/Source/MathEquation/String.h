@@ -85,7 +85,7 @@ namespace MathEquation
 		void Append(unsigned short ushUnicode)
 		{
 			char oChars[2];
-			oChars[0] = ushUnicode; oChars[1] = 0x00;
+			oChars[0] = (char)ushUnicode; oChars[1] = 0x00;
 			Value += std::string((char*)&oChars);
 		}
 

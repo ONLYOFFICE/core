@@ -150,10 +150,7 @@ namespace PPTX
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("contourW"), contourW);
 				pWriter->WriteAttribute(_T("extrusionH"), extrusionH);
-				if (prstMaterial.IsInit())
-				{
-					pWriter->WriteAttribute(_T("prstMaterial"), prstMaterial->get());
-				}
+				pWriter->WriteAttribute(_T("prstMaterial"), prstMaterial);
 				pWriter->WriteAttribute(_T("z"), z);
 				pWriter->EndAttributes();
 				

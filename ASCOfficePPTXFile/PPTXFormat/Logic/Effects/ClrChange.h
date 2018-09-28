@@ -109,7 +109,20 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("a:clrChange"), oAttr, oValue);
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:clrChange");
+				pWriter->EndAttributes();
+					pWriter->StartNode(L"a:clrFrom");
+						pWriter->EndAttributes();
+						ClrFrom.toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:clrFrom");
+					pWriter->StartNode(L"a:clrTo");
+						pWriter->EndAttributes();
+						ClrTo.toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:clrTo");
+				pWriter->EndNode(L"a:clrChange");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_CLRCHANGE);
@@ -123,7 +136,46 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+							useA = pReader->GetBool(); break;
+					}
+				}
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							ClrFrom.fromPPTY(pReader);							
+						}break;
+						case 1:
+						{
+							ClrTo.fromPPTY(pReader);							
+						}break;
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
 		public:
 			UniColor		ClrFrom;
 			UniColor		ClrTo;

@@ -498,7 +498,7 @@ void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
 		if (oox_grpSpPr->xfrm->chOffY.IsInit())
 			ch_y = oox_grpSpPr->xfrm->chOffY.get() / 12700.;
 
-		int group_level = odf_context()->drawing_context()->get_group_level();
+		size_t group_level = odf_context()->drawing_context()->get_group_level();
 
 		odf_context()->drawing_context()->get_position(ext_x, ext_y);
 
@@ -1506,8 +1506,8 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 		convert(&buClr.Color, hexColor, opacity);
 		if (!hexColor.empty())
 		{		
-			int res = 0;
-			if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+			if (std::wstring::npos == hexColor.find(L"#"))
+				hexColor = std::wstring(L"#") + hexColor;
 			if (text_properties) text_properties->content_.fo_color_ = odf_types::color(hexColor);
 		}
 	}
@@ -1653,7 +1653,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 	if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
 	
-	while (odf_context()->text_context()->list_state_.levels.size() > list_level)
+	while ((int)odf_context()->text_context()->list_state_.levels.size() > list_level)
 	{
 		odf_context()->text_context()->end_list();
 	}	
@@ -1679,9 +1679,9 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		list_level++;
 
-		if (odf_context()->text_context()->list_state_.levels.size() < list_level)
+		if ((int)odf_context()->text_context()->list_state_.levels.size() < list_level)
 		{
-			while (odf_context()->text_context()->list_state_.levels.size() < list_level)
+			while ((int)odf_context()->text_context()->list_state_.levels.size() < list_level)
 			{
 				odf_context()->text_context()->start_list(list_style_name);
 				odf_context()->text_context()->start_list_item();
@@ -1870,8 +1870,8 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	}	
 	if (!hexColorText.empty())
 	{		
-		int res = 0;
-		if ((res = hexColorText.find(L"#")) < 0) hexColorText = std::wstring(L"#") + hexColorText;
+		if (std::wstring::npos == hexColorText.find(L"#"))
+			hexColorText = std::wstring(L"#") + hexColorText;
 		text_properties->content_.fo_color_ = odf_types::color(hexColorText);
 	}
 //---------------------------------------
@@ -1942,8 +1942,8 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (oox_run_pr->lang.IsInit())
 	{
         std::wstring oox_language =  oox_run_pr->lang.get(), oox_country;
-        int res = oox_language.find(L"-");
-        if (res >= 0)
+        size_t res = oox_language.find(L"-");
+		if (res != std::wstring::npos)
 		{
             oox_country = oox_language.substr(res + 1);
             oox_language = oox_language.substr(0, res);
@@ -2293,7 +2293,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 		if (index < 1000)
 		{
 			index -= 1;
-			if ((index >= 0) || (index < theme->themeElements.fmtScheme.fillStyleLst.size()))
+			if ((index >= 0) || (index < (int)theme->themeElements.fmtScheme.fillStyleLst.size()))
 			{
 				fill = &theme->themeElements.fmtScheme.fillStyleLst[index];		
 			}
@@ -2301,7 +2301,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 		else if (index > 1000)
 		{
 			index -= 1001;
-			if ((index >= 0) || (index < theme->themeElements.fmtScheme.bgFillStyleLst.size()))
+			if ((index >= 0) || (index < (int)theme->themeElements.fmtScheme.bgFillStyleLst.size()))
 			{
 				fill = &theme->themeElements.fmtScheme.bgFillStyleLst[index];		
 			}
@@ -2312,7 +2312,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	else if (type == 2)
 	{
 		index -= 1;
-		if ((index >= 0) || (index < theme->themeElements.fmtScheme.lnStyleLst.size()))
+		if (index >= 0 || index < (int)theme->themeElements.fmtScheme.lnStyleLst.size())
 		{
 			convert(&theme->themeElements.fmtScheme.lnStyleLst[index], nARGB);		
 		}
@@ -2320,7 +2320,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	else if (type == 3)
 	{
 		index -= 1;
-		if ((index >= 0) || (index < theme->themeElements.fmtScheme.effectStyleLst.size()))
+		if ((index >= 0) || (index < (int)theme->themeElements.fmtScheme.effectStyleLst.size()))
 		{
 			convert(&theme->themeElements.fmtScheme.effectStyleLst[index]);		
 		}

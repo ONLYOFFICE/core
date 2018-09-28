@@ -128,7 +128,6 @@ bool OOXReader::Parse()
 }
 std::wstring OOXReader::GetFolder( std::wstring sDocPath )
 {
-    int nLastSlash = sDocPath.rfind('\\');
-    std::wstring sLeft = sDocPath.substr(0, nLastSlash  );
-	return sLeft;
+    size_t nLastSlash = sDocPath.rfind('\\');
+	return nLastSlash != std::wstring::npos ? sDocPath.substr(0, nLastSlash ) : sDocPath;
 }

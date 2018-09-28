@@ -336,7 +336,11 @@ namespace NSBinPptxRW
         {
             m_oWriter.WriteString(std::to_wstring(val));
         }
-        AVSINLINE void WriteDWORD_hex(const DWORD& val)
+        AVSINLINE void WriteSIZET(const size_t& val)
+        {
+            m_oWriter.WriteString(std::to_wstring((unsigned int)val));
+        }
+		AVSINLINE void WriteDWORD_hex(const DWORD& val)
         {
             m_oWriter.WriteString(XmlUtils::IntToString(val, L"%x"));
         }
@@ -475,7 +479,16 @@ namespace NSBinPptxRW
             WriteDWORD(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttributeDWORD_hex(const std::wstring& strAttributeName, const DWORD& val)
+		AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const size_t& val)
+        {
+            m_oWriter.WriteString(g_bstr_node_space);
+            m_oWriter.WriteString(strAttributeName);
+            m_oWriter.WriteString(g_bstr_node_equal);
+            m_oWriter.WriteString(g_bstr_node_quote);
+            WriteSIZET(val);
+            m_oWriter.WriteString(g_bstr_node_quote);
+        }
+		AVSINLINE void WriteAttributeDWORD_hex(const std::wstring& strAttributeName, const DWORD& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -591,6 +604,11 @@ namespace NSBinPptxRW
     public:
         // ATTRIBUTES --------------------------------------------------------------------------
         AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_int& value)
+        {
+            if (value.IsInit())
+                WriteAttribute(strName, *value);
+        }
+        AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_sizet& value)
         {
             if (value.IsInit())
                 WriteAttribute(strName, *value);

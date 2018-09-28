@@ -611,7 +611,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 	}break;
 	case lineWidth:
 	{
-		pElement->m_oPen.Size	= (double)pProperty->m_lValue;
+		pElement->m_oPen.Size	= pProperty->m_lValue;
 		pElement->m_bLine		= true;				
 	}break;
 	case lineStyle:

@@ -190,14 +190,14 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		
         std::wstring sInsertText = m_pInsert->m_pTextItems->RenderToOOX( oNewParam );
 		
-        int nIndex = sInsertText.find( L"HYPERLINK" );
-		if( -1 != nIndex )
+        size_t nIndex = sInsertText.find( L"HYPERLINK" );
+		if( std::wstring::npos != nIndex )
 		{
             std::wstring sHyperlink = sInsertText;
             sHyperlink.erase( nIndex, 9/*(int)_tcslen( L"HYPERLINK" )*/ );
 
-            int nSplash = sHyperlink.find( L"\\" );
-			if (nSplash > 0)
+            size_t nSplash = sHyperlink.find( L"\\" );
+			if (std::wstring::npos != nSplash)
 			{
                 sHyperlink = sHyperlink.substr(0, nSplash);
 			}

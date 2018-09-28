@@ -64,11 +64,11 @@ public:
         //face name - utf16 string with 0, 64 bytes always allocated
         unsigned char utf16FaceName[64+2] = {};
 
-        ULONG lReadByte = pStream->read(utf16FaceName, 64);
+        POLE::uint64 lReadByte = pStream->read(utf16FaceName, 64);
 
         if (sizeof(wchar_t) == 4)
         {
-            int lLen  = 0;
+            ULONG lLen  = 0;
             for (lLen = 0; lLen < lReadByte; lLen +=2)
                 if (utf16FaceName[lLen] == 0)break;
 

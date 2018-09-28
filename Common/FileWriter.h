@@ -182,7 +182,7 @@ namespace NFileWriter
 				dwFrom += (DWORD)m_oFile.GetPosition();
 			}
 
-			if (m_oFile.SetPosition(lPosition) != S_OK)
+			if (m_oFile.SetPosition((ULONG)lPosition) != S_OK)
 				throw 1;
 
 		}

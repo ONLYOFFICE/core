@@ -75,7 +75,29 @@ namespace PPTX
 		UniEffect::~UniEffect()
 		{
 		}
+		void UniEffect::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (Effect.is_init())
+				Effect->toPPTY(pWriter);
+		}
+		void UniEffect::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			ULONG rec_len = pReader->GetULong();
+			if (0 == rec_len)
+				return;
+			
+			BYTE rec = pReader->GetUChar();
 
+			switch(rec)
+			{
+			case EFFECT_TYPE_ALPHAMODFIX:	Effect = new PPTX::Logic::AlphaModFix(); break;
+			case EFFECT_TYPE_DUOTONE:		Effect = new PPTX::Logic::Duotone(); break;
+			}
+			if (Effect.is_init())
+				Effect->fromPPTY(pReader);
+			else
+				pReader->SkipRecord();
+		}
 		UniEffect::UniEffect(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
@@ -365,11 +387,5 @@ namespace PPTX
 			else Effect.reset();
 		}
 
-		std::wstring UniEffect::toXML() const
-		{
-			if (Effect.IsInit())
-				return Effect->toXML();
-			return _T("");
-		}
 	} // namespace Logic
 } // namespace PPTX

@@ -2038,16 +2038,16 @@ namespace SimpleTypes
         }
 		double ToMM() const
         {
-            return Emu_To_Mm( this->m_eValue );
+            return Emu_To_Mm( (double)this->m_eValue );
         }
 
         double ToInches()
         {
-            return Emu_To_Inch( this->m_eValue );
+            return Emu_To_Inch( (double)this->m_eValue );
         }
         double ToTwips()
         {
-            return Emu_To_Twips( this->m_eValue );
+            return Emu_To_Twips( (double)this->m_eValue );
         }
 		double FromEmu(const __int64& nEmu)
 		{
@@ -5921,7 +5921,7 @@ namespace SimpleTypes
 		}
 		double ToMM() const
 		{
-            return Emu_To_Mm( this->m_eValue );
+            return Emu_To_Mm( (double)this->m_eValue );
 		}
 		double ToInches()
 		{
@@ -6180,7 +6180,7 @@ namespace SimpleTypes
 		}
 		double ToMM() const 
 		{
-            return Emu_To_Mm( this->m_eValue );
+            return Emu_To_Mm( (double)this->m_eValue );
 		}
 
 		double ToInches()

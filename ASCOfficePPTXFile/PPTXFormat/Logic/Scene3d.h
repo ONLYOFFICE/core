@@ -123,21 +123,18 @@ namespace PPTX
 						case 0:
 						{
 							camera = new Logic::Camera();
-							camera->fromPPTY(pReader);
-							break;
-						}
+							camera->fromPPTY(pReader);							
+						}break;
 						case 1:
 						{
 							lightRig = new Logic::LightRig();
-							lightRig->fromPPTY(pReader);
-							break;
-						}
+							lightRig->fromPPTY(pReader);							
+						}break;
 						case 2:
 						{
 							backdrop = new Logic::Backdrop();
-							backdrop->fromPPTY(pReader);
-							break;
-						}
+							backdrop->fromPPTY(pReader);							
+						}break;
 						default:
 							break;
 					}

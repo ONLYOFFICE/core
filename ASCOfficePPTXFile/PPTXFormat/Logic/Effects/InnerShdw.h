@@ -108,7 +108,19 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("a:innerShdw"), oAttr, Color.toXML());
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:innerShdw");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"blurRad", blurRad);
+				pWriter->WriteAttribute(L"dist", dist);
+				pWriter->WriteAttribute(L"dir", dir);
+				pWriter->EndAttributes();
+				
+				Color.toXmlWriter(pWriter);
 
+				pWriter->EndNode(L"a:innerShdw");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_INNERSHDW);
@@ -123,7 +135,44 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:	dir = pReader->GetLong(); break;
+						case 1:	dist = pReader->GetLong(); break;
+						case 2:	blurRad = pReader->GetLong(); break;
+					}
+				}
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							Color.fromPPTY(pReader);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}	
 		public:
 			UniColor Color;
 

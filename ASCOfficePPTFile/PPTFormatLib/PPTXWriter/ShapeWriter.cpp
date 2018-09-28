@@ -92,7 +92,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	if (pPF->tabStops.size() > 0)
 	{
 		oWriter.WriteString(L"<a:tabLst>");
-		for (int t = 0 ; t < pPF->tabStops.size(); t++)
+		for (size_t t = 0 ; t < pPF->tabStops.size(); t++)
 		{
 			std::wstring strTabPos = std::to_wstring(pPF->tabStops[t].first);
 			oWriter.WriteString(L"<a:tab pos=\"" + strTabPos + L"\"");
@@ -440,7 +440,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 		brush_writer.WriteString(L"<a:gradFill><a:gsLst>");
 		if (brush.ColorsPosition.empty() == false)
 		{
-			for (int i = 0; i < brush.ColorsPosition.size(); i++)
+			for (size_t i = 0; i < brush.ColorsPosition.size(); i++)
 			{
 				std::wstring str = std::to_wstring( (int)(brush.ColorsPosition[i].second * 1000));
 				
@@ -465,11 +465,11 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 			if (brush.LinearAngle < -180)	brush.LinearAngle += 180;
 			if (brush.LinearAngle > 180)	brush.LinearAngle -= 180;
 
-			int val = (90 - brush.LinearAngle) ;
+			double val = (90 - brush.LinearAngle) ;
 			if (val < 0)	val = 0;
 			if (val > 360)	val -= 360;
 			
-			std::wstring str = std::to_wstring(val * 60000);
+			std::wstring str = std::to_wstring((int)(val * 60000));
 			brush_writer.WriteString(str);
 		}
 		brush_writer.WriteString(L"\" scaled=\"1\"/>");
@@ -957,7 +957,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(pShapeElement->m_pShape->getBaseShape().get());
             std::wstring strVal;
 
-			for (int i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
+			for (size_t i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
 			{
 				switch(pShapeElement->m_lShapeType)
 				{
@@ -1387,12 +1387,12 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertGroup()
 			std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top) +
 			L"\"/>");
 
-		int width	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
-		int height	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
+		double width	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
+		double height	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
 
 		if ( width > 0 || height > 0 )
 		{
-            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring(width) + L"\" cy=\"" + std::to_wstring(height) + L"\"/>");
+            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
 		}
 
 		m_oWriter.WriteString(L"<a:chOff x=\"" + std::to_wstring((int)pGroupElement->m_rcGroupAnchor.left) + 
@@ -1496,12 +1496,12 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 			std::to_wstring(pShapeElement->m_bChildAnchorEnabled ? (int)pShapeElement->m_rcChildAnchor.top : (int)pShapeElement->m_rcAnchor.top) +
 			L"\"/>");
 
-		int width	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetWidth() : pShapeElement->m_rcAnchor.GetWidth();
-		int height	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetHeight() : pShapeElement->m_rcAnchor.GetHeight();
+		double width	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetWidth() : pShapeElement->m_rcAnchor.GetWidth();
+		double height	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetHeight() : pShapeElement->m_rcAnchor.GetHeight();
 
 		if ( width > 0 || height > 0 )
 		{
-            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring(width) + L"\" cy=\"" + std::to_wstring(height) + L"\"/>");
+            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
 		}
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
@@ -1710,12 +1710,12 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertImage()
 			std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.top : (int)pImageElement->m_rcAnchor.top) +
 			L"\"/>");
 
-		int width	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth();
-		int height	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight();
+		double width	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth();
+		double height	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight();
 		
 		if ( width > 0 || height > 0 )
 		{
-            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring(width) + L"\" cy=\"" + std::to_wstring(height) + L"\"/>");
+            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
 		}
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
@@ -1811,7 +1811,7 @@ HRESULT NSPresentationEditor::CShapeWriter::get_PenSize(double* dSize)
 }
 HRESULT NSPresentationEditor::CShapeWriter::put_PenSize(const double& dSize)
 {
-	m_oPen.Size = dSize * 25.4 / 96.0;
+	m_oPen.Size = (long)(dSize * 25.4 / 96.0);
 	return S_OK;
 }
 HRESULT NSPresentationEditor::CShapeWriter::get_PenDashStyle(BYTE* val)

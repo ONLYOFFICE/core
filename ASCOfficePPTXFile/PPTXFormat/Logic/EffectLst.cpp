@@ -94,6 +94,103 @@ namespace PPTX
 			str += _T("</a:effectLst>");
 			return str;
 		}
+		void EffectLst::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"a:effectLst");
+			pWriter->EndAttributes();
+			
+			pWriter->Write(blur);
+			pWriter->Write(fillOverlay);
+			pWriter->Write(glow);
+			pWriter->Write(innerShdw);
+			pWriter->Write(outerShdw);
+			pWriter->Write(prstShdw);
+			pWriter->Write(reflection);
+			pWriter->Write(softEdge);
+
+			pWriter->EndNode(L"a:effectLst");
+		}
+		void EffectLst::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(EFFECTPROPERTIES_TYPE_LIST);
+
+			pWriter->WriteRecord2(0, blur);
+			pWriter->WriteRecord2(1, fillOverlay);
+			pWriter->WriteRecord2(2, glow);
+			pWriter->WriteRecord2(3, innerShdw);
+			pWriter->WriteRecord2(4, outerShdw);
+			pWriter->WriteRecord2(5, prstShdw);
+			pWriter->WriteRecord2(6, reflection);
+			pWriter->WriteRecord2(7, softEdge);
+
+			pWriter->EndRecord();
+		}
+		void EffectLst::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			pReader->Skip(4); // len
+			BYTE _type = pReader->GetUChar(); 
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1);
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+			}
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						blur = new Logic::Blur();
+						blur->fromPPTY(pReader);							
+					}break;
+					case 1:
+					{
+						fillOverlay = new Logic::FillOverlay();
+						fillOverlay->fromPPTY(pReader);							
+					}break;
+					case 2:
+					{
+						glow = new Logic::Glow();
+						glow->fromPPTY(pReader);							
+					}break;
+					case 3:
+					{
+						innerShdw = new Logic::InnerShdw();
+						innerShdw->fromPPTY(pReader);							
+					}break;
+					case 4:
+					{
+						outerShdw = new Logic::OuterShdw();
+						outerShdw->fromPPTY(pReader);							
+					}break;
+					case 5:
+					{
+						prstShdw = new Logic::PrstShdw();
+						prstShdw->fromPPTY(pReader);							
+					}break;
+					case 6:
+					{
+						reflection = new Logic::Reflection();
+						reflection->fromPPTY(pReader);							
+					}break;
+					case 7:
+					{
+						softEdge = new Logic::SoftEdge();
+						softEdge->fromPPTY(pReader);							
+					}break;
+					default:
+						break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}	
 
 		void EffectLst::FillParentPointersForChilds()
 		{

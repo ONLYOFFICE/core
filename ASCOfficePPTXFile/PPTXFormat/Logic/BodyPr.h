@@ -482,7 +482,6 @@ namespace PPTX
 					}
 					}
 				}
-				// TODO: пока записи не поддерживаем
 				pReader->Seek(_end_rec);
 			}
 

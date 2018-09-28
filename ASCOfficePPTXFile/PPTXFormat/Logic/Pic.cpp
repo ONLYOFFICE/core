@@ -1060,7 +1060,7 @@ namespace PPTX
 				
 				if ( mediaFile.IsInit() == false && !nvPicPr.nvPr.extLst.empty())
 				{
-					//todooo - почему везде нулевой то? - сделать по всем поиск по uri
+					//todooo - почему везде нулевой то? - сделать поиск по всем uri
 					file = parentFileAs<Slide>().Find(nvPicPr.nvPr.extLst[0].link.get());
 				}		
 			}//удалять ли c UnknownType ???? (если не найден щас генерится)

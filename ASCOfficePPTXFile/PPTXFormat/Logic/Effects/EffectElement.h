@@ -80,9 +80,16 @@ namespace PPTX
 				if (!ref.IsInit())
 					return _T("<a:effect/>");
 
-				return _T("<a:effect ref=\"") + *ref + _T("\" />");
+				return _T("<a:effect ref=\"") + *ref + _T("\"/>");
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:effect");
+				pWriter->StartAttributes();
+					pWriter->WriteAttribute(L"ref", ref);
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"a:effect");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_ELEMENT);
@@ -93,7 +100,26 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (_at == 0)
+						ref = pReader->GetString2();
+					else break;
+				}
+				pReader->Seek(_end_rec);
+			}
 		public:
 			nullable_string		ref;
 		protected:

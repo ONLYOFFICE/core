@@ -229,7 +229,7 @@ public:
 	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
-	std::vector< std::pair<int, int> >	m_aWrapPoints;
+	std::vector< std::pair<__int64, __int64> >	m_aWrapPoints;
 //textbox
 	TextItemContainerPtr	m_aTextItems;
 	RtfPicturePtr			m_oPicture;

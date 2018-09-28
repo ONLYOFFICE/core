@@ -63,18 +63,27 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-
 			virtual std::wstring toXML() const
 			{
 				return _T("<a:grayscl/>");
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(L"<a:grayscl/>");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_GRAYSCL);
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Seek(_e);
+			}
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

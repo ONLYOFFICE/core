@@ -264,6 +264,8 @@ namespace oox
         case msosptActionButtonSound : 			return L"actionButtonSound";
 		case msosptActionButtonMovie : 			return L"actionButtonMovie";
         case msosptLeftArrow : 					return L"leftArrow";
+		default:
+			break;
 		}
         return L"";
 	}
@@ -426,6 +428,8 @@ namespace oox
         //case msosptActionButtonDocument : 	return L"actionButtonDocument";
         //case msosptActionButtonSound : 		return L"actionButtonSound";
         //case msosptActionButtonMovie : 		return L"actionButtonMovie";
+		default:
+			break;
 		}
         return L"";
 	}
@@ -481,6 +485,8 @@ namespace oox
         case msosptTextSlantDown : 				return L"textSlantDown";
         case msosptTextCanUp : 					return L"textCanUp";
         case msosptTextCanDown : 				return L"textCanDown";
+		default:
+			break;
 		}
         return L"";
 	}

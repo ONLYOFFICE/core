@@ -697,6 +697,8 @@ namespace DocFileFormat
 					{
 						isPictureBullet = FormatUtils::BitmaskToBool(FormatUtils::BytesToUInt16(iter->Arguments, 0, iter->argumentsSize), 0x1);  
 					}break;
+					default:
+						break;
 				}
 			}
 

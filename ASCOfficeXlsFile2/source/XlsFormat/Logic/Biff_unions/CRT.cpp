@@ -298,6 +298,8 @@ const bool CRT::loadContent(BinProcessor& proc)
 		case typeRadarArea:	m_iChartType = CHART_TYPE_RadarArea;	break;
 		case typeBopPop:	m_iChartType = CHART_TYPE_BopPop;		break;		
 		case typeScatter:	m_iChartType = CHART_TYPE_Scatter;		break;
+		default:
+			break;
 	}
 	
 	return true;

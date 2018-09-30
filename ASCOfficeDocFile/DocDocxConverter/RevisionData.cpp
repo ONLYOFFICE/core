@@ -117,6 +117,8 @@ namespace DocFileFormat
 					this->RsidDel = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
 				}
 				break;
+			default:
+				break;
 			}
 
 			//put the sprm on the revision stack

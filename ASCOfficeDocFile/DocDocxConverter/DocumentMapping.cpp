@@ -1348,6 +1348,8 @@ namespace DocFileFormat
 					{
 						iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
 					}break;
+					default:
+						break;
 				}
 			}
 			if (nestingLevel == iTap_current)
@@ -1377,6 +1379,8 @@ namespace DocFileFormat
 
 							AddBoundary(boundary2, max_boundary, boundaries);
 						}break;
+						default:
+							break;
 					}
 				}
 			}

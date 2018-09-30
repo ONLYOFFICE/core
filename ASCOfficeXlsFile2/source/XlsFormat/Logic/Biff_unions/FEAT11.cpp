@@ -147,6 +147,8 @@ const bool FEAT11::loadContent(BinProcessor& proc)
 			{
 				m_arFEAT.back().m_SORTDATA12 = elements_.front();
 			}break;
+			default:
+				break;
 		}
 		elements_.pop_front();
 	}

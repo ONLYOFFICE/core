@@ -1288,6 +1288,8 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 				case typeBoolErr:	type_val = 2; break;
 				case typeBlank:		type_val = 3; break;
 				case typeLabel:		type_val = 4; break;
+				default:
+					break;
 				}
 
 				series_cash = si_in;

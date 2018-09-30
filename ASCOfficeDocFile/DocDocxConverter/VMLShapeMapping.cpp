@@ -168,6 +168,8 @@ namespace DocFileFormat
 							m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
 					}
 					break;
+					default:
+						break;
 				}
 			}
 
@@ -1682,6 +1684,8 @@ namespace DocFileFormat
 				{
 					appendStyleProperty(oStyle, L"mso-wrap-distance-top", (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(L"pt")));
 				}break;
+			default:
+				break;
 			}
 		}
 		
@@ -1819,12 +1823,12 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-			default:	return L"none";
 			case 1:		return L"block";
 			case 2:		return L"classic";
 			case 3:		return L"diamond";
 			case 4:		return L"oval";
 			case 5:		return L"open";
+			default:	return L"none";
 		}
 	}
 
@@ -1832,9 +1836,9 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-			default:	return L"short";
 			case 1:		return L"medium";
 			case 2:		return L"long";
+			default:	return L"short";
 		}
 	}
 
@@ -1842,9 +1846,9 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-			default:	return L"narrow";
 			case 1:		return L"medium";
 			case 2:		return L"wide";
+			default:	return L"narrow";
 		}
 	}
 

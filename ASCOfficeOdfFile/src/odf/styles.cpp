@@ -109,6 +109,8 @@ std::wstring process_border(const border_style	& borderStyle,
         case border_style::inset:       w_val = L"inset";  break;
         case border_style::outset:      w_val = L"outset";  break;
         case border_style::hidden:      w_val = L"nil";     break;
+		default:
+			break;
         }
     }
     std::wstring res;

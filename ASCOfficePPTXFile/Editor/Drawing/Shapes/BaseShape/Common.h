@@ -98,7 +98,7 @@ namespace NSStringUtils
 			pArrayResults.clear();
 
 
-		boost::algorithm::split(pArrayResults, strSource, boost::algorithm::is_any_of(strDelimeters), boost::algorithm::token_compress_on);
+		boost::algorithm::split(pArrayResults, strSource, boost::algorithm::is_any_of(strDelimeters.c_str()), boost::algorithm::token_compress_on);
 		
 		while (pArrayResults.size() > 0)
 		{

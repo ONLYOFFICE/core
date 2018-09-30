@@ -332,7 +332,7 @@ namespace PPTX
 
 						if (oRelsGeneratorInfo.nImageRId > 0)
 						{
-							embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
+							embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
 						}
 						pReader->Skip(1); // end attribute						
 					}break;

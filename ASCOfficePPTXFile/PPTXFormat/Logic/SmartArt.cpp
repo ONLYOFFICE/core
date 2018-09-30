@@ -219,7 +219,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 
 			m_lChartNumber = pReader->m_lChartNumber;
 			pReader->m_lChartNumber++;
-			int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_nDocumentType);
+			unsigned int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_nDocumentType);
 
 			BinXlsxRW::CXlsxSerializer		oXlsxSerializer;
 			NSBinPptxRW::CDrawingConverter	oDrawingConverter;
@@ -248,7 +248,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			oDrawingConverter.m_pReader			= pOldReader;
 			oDrawingConverter.m_pImageManager	= pOldImageManager;
 
-			id_data = new OOX::RId((size_t)lId);
+			id_data = new OOX::RId(lId);
 		}
 	} // namespace Logic
 } // namespace PPTX

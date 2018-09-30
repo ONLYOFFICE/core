@@ -822,23 +822,27 @@ void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 					length = odf_types::length(odt_context->page_layout_context()->current_page_width_ / 2, length::pt);
 					type = 1;	
 				}break;					
-				case SimpleTypes::ptabalignmentLeft:		type = 6;	break;//??
 				case SimpleTypes::ptabalignmentRight:
 				{
 					length = odf_types::length(odt_context->page_layout_context()->current_page_width_, length::pt);
 					type = 4;	
 				}break;
+				case SimpleTypes::ptabalignmentLeft:	
+				default:
+					type = 6;	break;//??
 			}
 		}
 		if (oox_ptab->m_oLeader.IsInit())
 		{
 			switch(oox_ptab->m_oLeader->GetValue())
 			{
-				case SimpleTypes::ptableaderDot:			leader = 0;	break;
 				case SimpleTypes::ptableaderHyphen:			leader = 2;	break;
 				case SimpleTypes::ptableaderMiddleDot:		leader = 3;	break;
 				case SimpleTypes::ptableaderNone:			leader = 4;	break;
 				case SimpleTypes::ptableaderUnderscore:		leader = 5;	break;
+				case SimpleTypes::ptableaderDot:
+				default:
+															leader = 0;	break;
 			}
 		}
 
@@ -1450,6 +1454,8 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 				case SimpleTypes::shdPct87: kf = 0.87; break;
 				case SimpleTypes::shdPct90: kf = 0.90; break;
 				case SimpleTypes::shdPct95: kf = 0.95; break;
+				default:
+						break;
 			}
 			ucR = (BYTE)(ucR * (1 - kf)); ucB = (BYTE)(ucB * (1 - kf)); ucG = (BYTE)(ucG * (1 - kf));
 		}

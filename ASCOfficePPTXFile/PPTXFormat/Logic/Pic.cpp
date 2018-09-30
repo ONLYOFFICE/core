@@ -938,7 +938,7 @@ namespace PPTX
 						nvPicPr.nvPr.extLst.push_back(ext);
 					}
 
-                    int nRId = -1;
+                    unsigned int nRId = 0;
 					if (blipFill.additionalFile.is<OOX::Audio>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"audioFile");

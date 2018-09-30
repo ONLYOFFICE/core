@@ -1484,7 +1484,7 @@ namespace NSBinPptxRW
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
-	int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
+	unsigned int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
 	{
 		std::wstring strChart = L"charts/chart" + std::to_wstring(nChartNumber) + L".xml";
 
@@ -1503,7 +1503,7 @@ namespace NSBinPptxRW
 		return m_lNextRelsID - 1;
 	}	
 
-	int CRelsGenerator::WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode)
+	unsigned int CRelsGenerator::WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode)
 	{
 		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
 
@@ -1516,16 +1516,16 @@ namespace NSBinPptxRW
 		return m_lNextRelsID - 1;
 	}
 
-	int CRelsGenerator::WriteHyperlink(const std::wstring& strLink, const bool& bIsActionInit)
+	unsigned int CRelsGenerator::WriteHyperlink(const std::wstring& strLink, const bool& bIsActionInit)
 	{
-		std::map<std::wstring, int>::iterator pPair = m_mapLinks.find(strLink);
+		std::map<std::wstring, unsigned int>::iterator pPair = m_mapLinks.find(strLink);
 
 		if (m_mapLinks.end() != pPair)
 		{
 			return pPair->second;				
 		}
 
-		m_mapLinks.insert(std::pair<std::wstring, int>(strLink, m_lNextRelsID));
+		m_mapLinks.insert(std::pair<std::wstring, unsigned int>(strLink, m_lNextRelsID));
 		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
 
 		std::wstring sLink = XmlUtils::EncodeXmlString(strLink);

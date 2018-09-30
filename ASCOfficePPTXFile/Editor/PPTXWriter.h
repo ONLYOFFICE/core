@@ -799,7 +799,7 @@ namespace NSBinPptxRW
 				m_oReader.m_pRels->WriteMasters(nCountMasters);
 				m_oReader.m_pRels->WriteThemes(nCountThemes);
 
-				size_t nCurrentRels = m_oReader.m_pRels->m_lNextRelsID;
+				unsigned int nCurrentRels = m_oReader.m_pRels->m_lNextRelsID;
 
 				m_oPresentation.sldIdLst.clear();
 				for (LONG i = 0; i < nCountSlides; ++i)

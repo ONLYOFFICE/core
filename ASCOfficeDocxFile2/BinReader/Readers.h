@@ -3899,7 +3899,7 @@ public:
 			oFile.WriteFile(pData, length);
 			oFile.CloseFile();
 
-			long lId;
+			unsigned int lId = 0;
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::JsaProject.RelationType(), sJsaProject.GetPath(), L"", &lId);
 			m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(sJsaProject.GetExtention(false));
 		}
@@ -4526,7 +4526,7 @@ public:
 			READ1_DEF(length, res, this->ReadParagraphContent, NULL);
 			if (!pHyperlink->sLink.empty())
 			{
-				long rId;
+				unsigned int rId;
 				std::wstring sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
 				m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, std::wstring(_T("External")), &rId);
 				pHyperlink->rId = L"rId" + std::to_wstring(rId);
@@ -6877,7 +6877,7 @@ public:
                 std::wstring sNewImgRel = _T("media/") + sNewImgName;
 
                 sNewImgRel = XmlUtils::EncodeXmlString(sNewImgRel);
-				long rId;
+				unsigned int rId;
                 m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, std::wstring(), &rId);
                 odocImg.srId = L"rId" + std::to_wstring(rId);
 				//odocImg.srId = m_oMediaWriter.m_poDocumentRelsWriter->AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), sNewImgRel, false);
@@ -7418,7 +7418,7 @@ public:
 				if (oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace))
 				{
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
-					long rIdXlsx;
+					unsigned int rIdXlsx;
 					std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
 
 					m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
@@ -7445,7 +7445,7 @@ public:
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
-				long rIdChart;
+				unsigned int rIdChart;
                 std::wstring bstrChartRelType = OOX::FileTypes::Chart.RelationType();
 				
 				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
@@ -8552,7 +8552,7 @@ public:
 				m_oBufferedStream.Seek(nDocumentOffset);
 
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-				long stamdartRId;
+				unsigned int stamdartRId;
                
 				m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles",		L"styles.xml",		L"", &stamdartRId);
                 m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings",	L"settings.xml",	L"", &stamdartRId);
@@ -8580,19 +8580,19 @@ public:
 
 				if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering", L"numbering.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml", L"/word", L"numbering.xml");
 				}
                 if(false == m_oFileWriter.m_oFootnotesWriter.IsEmpty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes", L"footnotes.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", L"/word", L"footnotes.xml");
 				}
                 if(false == m_oFileWriter.m_oEndnotesWriter.IsEmpty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes", L"endnotes.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml", L"/word", L"endnotes.xml");
 				}
@@ -8601,7 +8601,7 @@ public:
 					Writers::HdrFtrItem* pHeader = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[i];
 					if(false == pHeader->IsEmpty())
 					{
-						long rId;
+						unsigned int rId;
                         m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header", pHeader->m_sFilename, std::wstring(), &rId);
                         pHeader->rId = L"rId" + std::to_wstring( rId );
 						
@@ -8613,7 +8613,7 @@ public:
 					Writers::HdrFtrItem* pFooter = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters[i];
 					if(false == pFooter->IsEmpty())
 					{
-						long rId;
+						unsigned int rId;
                         m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer", pFooter->m_sFilename, std::wstring(), &rId);
                         pFooter->rId = L"rId" + std::to_wstring( rId );
 						
@@ -8623,7 +8623,7 @@ public:
 				if(!oSettingsCustom.IsEmpty()){
 					std::wstring sFilename = m_oFileWriter.m_oCustomXmlWriter.WriteCustomXml(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
 					std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + sFilename;
-					long rId;
+					unsigned int rId;
 					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
 				}
 
@@ -8644,19 +8644,19 @@ public:
                 
 				if(false == oCommentsWriter.m_sComment.empty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", L"comments.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml", L"/word", L"comments.xml");
 				}
                 if(false == oCommentsWriter.m_sCommentExt.empty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended", L"commentsExtended.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml", L"/word", L"commentsExtended.xml");
 				}
                 if(false == oCommentsWriter.m_sPeople.empty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/people", L"people.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml", L"/word", L"people.xml");
 				}

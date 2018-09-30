@@ -329,7 +329,7 @@ void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 	if (vml_shape->m_oAllowInCell.GetValue())
 	{
 	}
-	odf_context()->drawing_context()->set_overlap(vml_shape->m_oAllowOverlap.GetValue());
+	odf_context()->drawing_context()->set_overlap(vml_shape->m_oAllowOverlap.GetBool());
 	
 	if (vml_shape->m_oPath.IsInit())
 	{

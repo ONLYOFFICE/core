@@ -186,7 +186,7 @@ namespace PPTX
 					id = _T("");
 				else
 				{
-					LONG lId = pReader->m_pRels->WriteHyperlink(strUrl, action.is_init());
+					unsigned int lId = pReader->m_pRels->WriteHyperlink(strUrl, action.is_init());
 
 					id = L"rId" + std::to_wstring(lId);
 				}

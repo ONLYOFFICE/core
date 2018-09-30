@@ -46,7 +46,7 @@ namespace OOX
 		{
 			bNumber = false;
 		}
-		RId(const size_t id) : m_id(id)
+		RId(const unsigned int id) : m_id(id)
 		{
 			bNumber = true;
 		}
@@ -119,7 +119,7 @@ namespace OOX
 		{
 			return ToString();
 		}
-		AVSINLINE size_t getNumber() const { return m_id; }
+		AVSINLINE unsigned int getNumber() const { return m_id; }
 
 		const RId	next() const
 		{
@@ -143,7 +143,7 @@ namespace OOX
             pWriter->WriteStringW(ToString());
 		}
 	private:
-		size_t			m_id;
+		unsigned int	m_id;
 		std::wstring	m_sId;
 		mutable bool	bNumber;
 	};

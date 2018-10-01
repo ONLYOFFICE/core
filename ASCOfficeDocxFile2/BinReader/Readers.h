@@ -103,10 +103,17 @@ public:
 #ifndef READ1_DEF
 	#define READ1_DEF(stLen, res, fReadFunction, arg) {\
 		long read1defCurPos = 0;\
+		long read1defstart_pos = m_oBufferedStream.GetPos();\
 		while(read1defCurPos < (long)stLen)\
 		{\
 			BYTE read1defType = m_oBufferedStream.GetUChar();\
-			long read1defLength =  m_oBufferedStream.GetLong();\
+			ULONG read1defLength = m_oBufferedStream.GetULong();\
+			if (read1defLength + read1defCurPos > (ULONG)stLen)\
+			{\
+				m_oBufferedStream.Seek(read1defstart_pos + stLen);\
+				res = c_oSerConstants::ReadOk;\
+				break;\
+			}\
 			res = fReadFunction(read1defType, read1defLength, arg);\
 			if(res == c_oSerConstants::ReadUnknown)\
 			{\

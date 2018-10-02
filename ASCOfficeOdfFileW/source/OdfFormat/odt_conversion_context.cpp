@@ -530,7 +530,42 @@ void odt_conversion_context::end_index_field()
 	text_context()->end_element();
 	text_context()->end_element();
 }
+void odt_conversion_context::start_bookmark (int id, const std::wstring& name)
+{
+	office_element_ptr bookmark_elm;
+	create_element(L"text", L"bookmark-start", bookmark_elm, this);
 
+	text_bookmark_start* bookmark = dynamic_cast<text_bookmark_start*>(bookmark_elm.get());
+	if (bookmark)
+	{
+		bookmark->text_name_ = name;
+
+		std::map<int, std::wstring>::iterator pFind = mapBookmarks.find(id);
+		if (pFind == mapBookmarks.end())
+		{
+			mapBookmarks.insert(std::make_pair(id, name));
+		}
+		text_context()->start_element(bookmark_elm);
+		text_context()->end_element();	
+	}
+}
+void odt_conversion_context::end_bookmark (int id)
+{
+	std::map<int, std::wstring>::iterator pFind = mapBookmarks.find(id);
+	if (pFind == mapBookmarks.end()) return;
+
+	office_element_ptr bookmark_elm;
+	create_element(L"text", L"bookmark-end", bookmark_elm, this);
+
+	text_bookmark_end* bookmark = dynamic_cast<text_bookmark_end*>(bookmark_elm.get());
+	if (bookmark)
+	{
+		bookmark->text_name_ = pFind->second;
+		
+		text_context()->start_element(bookmark_elm);
+		text_context()->end_element();	
+	}
+}
 void odt_conversion_context::start_hyperlink(std::wstring ref)
 {
 	office_element_ptr hyperlink_elm;

@@ -21,6 +21,10 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	std::wstring password = L"password";
+	ECMACryptFile crypt_file;
+	bool result = false, bDataIntegrity = false;
+
 	std::wstring srcFileName	= L"D:\\test\\_crypted\\test-111.docx";
 	std::wstring dstFileName	= srcFileName + L"-mycrypt.docx";
 	std::wstring dstFileName2	= dstFileName + L".oox";
@@ -31,21 +35,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	//std::wstring srcFileName	= L"D:\\test\\_crypted\\test.docx";
 	//std::wstring dstFileName3	= srcFileName + L"-mycrypt1.docx";
 
-	std::wstring password = L"574446f1-6aa0-860a-0296-787a87a214bb";
-
-	ECMACryptFile crypt_file;
-	bool result = false, bDataIntegrity = false;
-		
-	//result = crypt_file.DecryptOfficeFile(srcFileName, dstFileName, password, bDataIntegrity);
-	//result = crypt_file.EncryptOfficeFile(dstFileName, dstFileName2, password);
-	
+	//std::wstring srcFileName1	= L"D:\\test\\_crypted\\test-111.docx-ms.docx";
+	//std::wstring dstFileName1	= srcFileName1 + L".oox";
+	//result = crypt_file.DecryptOfficeFile(srcFileName1, dstFileName1, password, bDataIntegrity);
+			
 	result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
 	result = crypt_file.DecryptOfficeFile(dstFileName, dstFileName2, password, bDataIntegrity);
-	
-	COfficeFileFormatChecker fileChecker;
-
-	std::wstring sDocumentID = fileChecker.getDocumentID(L"d:/test/_pdf/Test3-pdfa-my.pdf");
-	
+		
 	return 0;
 }
-

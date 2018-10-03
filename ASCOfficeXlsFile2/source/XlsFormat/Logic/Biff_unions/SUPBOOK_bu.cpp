@@ -110,9 +110,9 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 		ExternDocName* docName = dynamic_cast<ExternDocName*>(extern_name.body.get());
 		if(docName)
 		{
-			if (docName->ixals > 0 && !supbook.rgst.empty())
+			if (docName->ixals > 0 && docName->ixals < supbook.rgst.size())
 			{
-				name = supbook.rgst[docName->ixals];
+				name = supbook.rgst[docName->ixals - 1];
 			}
 			else
 			{

@@ -78,7 +78,14 @@ public:
 
 		return rdUShort;
 	}
-
+	void WriteUInt16(unsigned short val)
+	{
+		if (m_Data)
+		{
+			((unsigned short *)(m_Data + m_Position))[0] = val;
+			m_Position	+=	sizeof(unsigned short);
+		}
+	}
 	virtual short ReadInt16()
 	{
 		short rdShort = 0;
@@ -104,7 +111,14 @@ public:
 
 		return rdInt;
 	}
-
+	void WriteInt32(_INT32 val)
+	{
+		if (m_Data)
+		{
+			((_INT32 *)(m_Data + m_Position))[0] = val;
+			m_Position	+=	sizeof(_INT32);
+		}
+	}
 	virtual unsigned int ReadUInt32()
 	{
 		int rdUInt = 0;
@@ -117,7 +131,22 @@ public:
 
 		return rdUInt;
 	}
-
+	void WriteByte(unsigned char val)
+	{
+		if (m_Data)
+		{
+			m_Data[m_Position] = val;
+			m_Position	+= 1;
+		}
+	}
+	void WriteUInt32(_UINT32 val)
+	{
+		if (m_Data)
+		{
+			((_UINT32 *)(m_Data + m_Position))[0] = val;
+			m_Position	+=	sizeof(_UINT32);
+		}
+	}
 	virtual unsigned char ReadByte()
 	{
 		unsigned char rdByte = 0;
@@ -159,6 +188,14 @@ public:
 
 		return pBytes;
 	}
+	void WriteBytes(unsigned char* pData, int size)
+	{
+		if (m_Data)
+		{
+			memcpy(m_Data + m_Position, pData, size);
+			m_Position += size;
+		}
+	}
 
 	virtual unsigned long GetPosition() const
 	{
@@ -172,7 +209,7 @@ public:
 
     virtual int Seek (int offset, int origin = 0/*STREAM_SEEK_SET*/)
 	{
-		if ( (m_Data != NULL) && (offset > 0) && ((unsigned int)offset < m_Size) )
+		if ( (m_Data != NULL) && (offset >= 0) && ((unsigned int)offset < m_Size) )
 			return m_Position = offset;
 
 		return 0;

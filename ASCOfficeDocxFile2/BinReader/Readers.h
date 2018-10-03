@@ -100,9 +100,6 @@ public:
 		RELEASEOBJECT(m_oRPr)
 	}
 };
-#ifdef READ1_DEF // разные для xlsx и docx
-	#undef READ1_DEF
-#endif
 #define READ1_DEF(stLen, res, fReadFunction, arg) {\
 	long read1defCurPos = 0;\
 		while(read1defCurPos < (long)stLen)\
@@ -120,9 +117,6 @@ public:
 		read1defCurPos += read1defLength + 5;\
 	}\
 }
-#ifdef READ2_DEF // разные для xlsx и docx
-	#undef READ2_DEF
-#endif
 #define READ2_DEF(stLen, res, fReadFunction, arg) {\
 	long read2defCurPos = 0;\
 		while(read2defCurPos < (long)stLen)\
@@ -159,9 +153,6 @@ public:
 		read2defCurPos += read2defRealLen + read2defCurPosShift;\
 	}\
 }
-#ifdef READ_TABLE_DEF // разные для xlsx и docx
-	#undef READ_TABLE_DEF
-#endif
 #define READ_TABLE_DEF(res, fReadFunction, arg) {\
 	res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
 	if (c_oSerConstants::ReadOk == res) {\
@@ -172,9 +163,6 @@ public:
 		}\
 	}\
 }
-#ifdef READ_TABLE_DEF // разные для xlsx и docx
-	#undef READ_TABLE_DEF
-#endif
 #define READ1_TRACKREV(type, length, poResult) \
 	if(c_oSerProp_RevisionType::Author == type)\
 	{\

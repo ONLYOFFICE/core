@@ -205,26 +205,26 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 	CRYPT::_odfCryptData	cryptData;
 //-----------------------
 //aes
-	cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
-	cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
-	cryptData.start_hashSize		= 32;
+	//cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
+	//cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
+	//cryptData.start_hashSize		= 32;
 
-	cryptData.spinCount	= 100000;
-	cryptData.keySize	= 32;
-
-	cryptData.checksum_size = 1024;
-	cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
-//-----------------------
-//blowfish
-	//cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
-	//cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
-	//cryptData.start_hashSize		= 20;
-
-	//cryptData.spinCount	= 1024;
-	//cryptData.keySize	= 16;
+	//cryptData.spinCount	= 100000;
+	//cryptData.keySize	= 32;
 
 	//cryptData.checksum_size = 1024;
-	//cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+	//cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+//-----------------------
+//blowfish
+	cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
+	cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
+	cryptData.start_hashSize		= 20;
+
+	cryptData.spinCount	= 1024;
+	cryptData.keySize	= 7;//16;
+
+	cryptData.checksum_size = 1024;
+	cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
 //-----------------------
 	NSFile::CFileBinary file;
 

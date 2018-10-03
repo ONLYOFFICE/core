@@ -369,6 +369,22 @@ public:
         return s;
     }
 
+    void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
+    }
+
+    void MakeBase64_NOCRLF(std::string& value)
+    {
+        string_replaceA(value, "\r", "");
+        string_replaceA(value, "\n", "");
+    }
+
     friend class COOXMLVerifier;
 
 public:
@@ -396,6 +412,8 @@ public:
             return OOXML_SIGNATURE_NOTSUPPORTED;
 
         std::string sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+        MakeBase64_NOCRLF(sValue);
+
         std::string sCalcValue = "";
 
         XmlUtils::CXmlNode nodeTransform = node.ReadNode(L"Transforms");
@@ -404,6 +422,7 @@ public:
             // simple hash
             sCalcValue = m_cert->GetHash(sFile, nAlg);
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+            MakeBase64_NOCRLF(sValue);
         }
         else
         {
@@ -419,6 +438,7 @@ public:
 
             sCalcValue = m_cert->GetHash(sXml, nAlg);
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+            MakeBase64_NOCRLF(sValue);
         }
 
         if (sCalcValue != sValue)
@@ -437,6 +457,7 @@ public:
             sURI = sURI.substr(1);
 
         std::string sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+        MakeBase64_NOCRLF(sValue);
 
         CXmlTransforms oTransforms;
 
@@ -451,6 +472,7 @@ public:
             // simple hash
             sCalcValue = m_cert->GetHash(sFile, nAlg);
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+            MakeBase64_NOCRLF(sValue);
         }
         else
         {
@@ -466,6 +488,7 @@ public:
 
             sCalcValue = m_cert->GetHash(sXml, nAlg);
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+            MakeBase64_NOCRLF(sValue);
         }
 #endif
 

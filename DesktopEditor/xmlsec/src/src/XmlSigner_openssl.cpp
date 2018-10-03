@@ -167,6 +167,11 @@ public:
         return sNameW;
     }
 
+    std::wstring GetIssuerName()
+    {
+        return GetSignerName();
+    }
+
     std::string GetCertificateBase64()
     {
         if (NULL == m_cert)
@@ -830,6 +835,11 @@ std::wstring CCertificate_openssl::GetSignerName()
     return m_internal->GetSignerName();
 }
 
+std::wstring CCertificate_openssl::GetIssuerName()
+{
+    return m_internal->GetIssuerName();
+}
+
 std::string CCertificate_openssl::GetCertificateBase64()
 {
     return m_internal->GetCertificateBase64();
@@ -912,6 +922,11 @@ std::vector<int> CCertificate_openssl::GetHashAlgs()
 int CCertificate_openssl::GetHashAlg()
 {
     return m_internal->GetHashAlg();
+}
+
+bool CCertificate_openssl::IsGOST()
+{
+    return false;
 }
 
 namespace NSOpenSSL

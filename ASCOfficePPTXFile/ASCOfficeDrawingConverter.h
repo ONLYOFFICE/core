@@ -257,7 +257,7 @@ namespace NSBinPptxRW
         HRESULT SetAdditionalParam(const std::wstring& ParamName, BYTE *pArray, size_t szCount);
         HRESULT GetAdditionalParam(const std::wstring& ParamName, BYTE **pArray, size_t& szCount);
 
-		void WriteRels				(const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, long* lId);
+		void WriteRels				(const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, unsigned int* lId);
 		void Registration			(const std::wstring& sType, const std::wstring& oDirectory, const std::wstring& oFilename);
 
         void SetFontManager         (NSFonts::IFontManager* pFontManager);

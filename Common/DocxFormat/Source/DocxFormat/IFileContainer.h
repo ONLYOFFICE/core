@@ -70,7 +70,7 @@ namespace OOX
 		boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mapContainer;
 
         boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
-        size_t														m_lMaxRid;
+        unsigned int												m_lMaxRid;
 
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;

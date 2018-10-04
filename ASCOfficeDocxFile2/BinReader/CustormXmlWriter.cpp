@@ -66,7 +66,7 @@ namespace Writers
 		NSDirectory::CreateDirectories(sCustomXmlRelsDir);
 
 		m_pDrawingConverter->SetDstContentRels();
-		long lId;
+		unsigned int lId;
 		m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXmlProps.RelationType(), sCustomXMLPropsFilename, L"", &lId);
 		m_pDrawingConverter->SaveDstContentRels(sCustomXmlRelsDir + FILE_SEPARATOR_STR + sCustomXmlFilename + L".rels");
 

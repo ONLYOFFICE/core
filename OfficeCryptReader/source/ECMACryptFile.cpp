@@ -37,6 +37,7 @@
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
@@ -289,7 +290,8 @@ bool ReadXmlEncryptionInfo(const std::string & xml_string, _ecmaCryptData & cryp
 
 	if (keyData.cipherAlgorithm == "AES")
 	{
-		if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+		//if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
 		if (keyData.cipherChaining == "ChainingModeCFB")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CFB;
 	}
 	else if (keyData.cipherAlgorithm == "RC4")
@@ -298,13 +300,16 @@ bool ReadXmlEncryptionInfo(const std::string & xml_string, _ecmaCryptData & cryp
 	}
 	else if (keyData.cipherAlgorithm == "DES")
 	{
-		cryptData.cipherAlgorithm = CRYPT_METHOD::DES_ECB;
+		cryptData.cipherAlgorithm = CRYPT_METHOD::DES_CBC;
+		//if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::DES_CBC;
+		if (keyData.cipherChaining == "ChainingModeECB")	cryptData.cipherAlgorithm = CRYPT_METHOD::DES_ECB;
 	}
-	if (keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
-	if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
-	if (keyData.hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
-	if (keyData.hashAlgorithm == "SHA384")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA384;
-	if (keyData.hashAlgorithm == "SHA512")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
+	if		(keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
+	else if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
+	else if (keyData.hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
+	else if (keyData.hashAlgorithm == "SHA384")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA384;
+	else if (keyData.hashAlgorithm == "SHA512")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
+	else if (keyData.hashAlgorithm == "MD5")	cryptData.hashAlgorithm = CRYPT_METHOD::MD5;
 
 	return true;
 }
@@ -359,6 +364,7 @@ bool WriteXmlEncryptionInfo(const _ecmaCryptData & cryptData, std::string & xml_
 		case CRYPT_METHOD::SHA256:	keyData.hashAlgorithm = "SHA256";	break;
 		case CRYPT_METHOD::SHA384:	keyData.hashAlgorithm = "SHA384";	break;
 		case CRYPT_METHOD::SHA512:	keyData.hashAlgorithm = "SHA512";	break;
+		case CRYPT_METHOD::MD5:		keyData.hashAlgorithm = "MD5";		break;
 	}
 
 	std::vector<_keyEncryptor>	keyEncryptors;
@@ -452,12 +458,19 @@ bool WriteStandartEncryptionInfo(unsigned char* data, int &size, _ecmaCryptData 
 
 	KeySize = (cryptData.keySize == 5) ? 0 : cryptData.keySize * 8;
 	
+	std::string provider;// to utf16
 	switch(cryptData.cipherAlgorithm)
 	{
 		case CRYPT_METHOD::RC4:
 		{
 			ProviderType = 0x0001; 
 			AlgID = 0x6801;
+		}break;
+		case CRYPT_METHOD::DES_ECB:
+		case CRYPT_METHOD::DES_CBC:
+		{
+			ProviderType = 0;//0x0018; 
+			AlgID = 0x6601;
 		}break;
 		case CRYPT_METHOD::AES_ECB:
 		case CRYPT_METHOD::AES_CBC:
@@ -472,10 +485,20 @@ bool WriteStandartEncryptionInfo(unsigned char* data, int &size, _ecmaCryptData 
 			break;
 		}break;
 	}
+	//ProviderType = 0x0018;
+
+	switch(ProviderType)
+	{
+	case 0x0001: provider = "Microsoft Strong Cryptographic Provider"; break;
+	case 0x0018: provider = "Microsoft Enhanced RSA and AES Cryptographic Provider"; break;
+	}
 	switch(cryptData.hashAlgorithm)
 	{
 		case CRYPT_METHOD::MD5:		AlgIDHash = 0x8003; break;
 		case CRYPT_METHOD::SHA1:	AlgIDHash = 0x8004; break;
+		case CRYPT_METHOD::SHA256:	AlgIDHash = 0x8004; break;
+		case CRYPT_METHOD::SHA384:	AlgIDHash = 0x800D; break;
+		case CRYPT_METHOD::SHA512:	AlgIDHash = 0x800E; break;
 	}
 
 	mem_stream.WriteUInt32(Flags);
@@ -486,8 +509,6 @@ bool WriteStandartEncryptionInfo(unsigned char* data, int &size, _ecmaCryptData 
 	mem_stream.WriteUInt32(ProviderType);
 	mem_stream.WriteUInt32(Reserved1);
 	mem_stream.WriteUInt32(Reserved2);
-
-	std::string provider = "Microsoft Enhanced RSA and AES Cryptographic Provider";// to utf16
 
 	for (size_t i = 0; i < provider.length(); ++i)
 	{
@@ -508,8 +529,8 @@ bool WriteStandartEncryptionInfo(unsigned char* data, int &size, _ecmaCryptData 
 
 	mem_stream.WriteUInt32((_UINT32)cryptData.hashSize);
 			
-	int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20; //RC4 | AES
-	mem_stream.WriteBytes((unsigned char*)cryptData.encryptedVerifierValue.c_str(), szEncryptedVerifierHash);
+	//int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20; //RC4 | AES(DES) ..  md5?
+	mem_stream.WriteBytes((unsigned char*)cryptData.encryptedVerifierValue.c_str(), cryptData.encryptedVerifierValue.length()/*szEncryptedVerifierHash*/);
 
 	size = mem_stream.GetPosition();
 
@@ -562,8 +583,10 @@ bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & 
 
 	cryptData.hashSize = mem_stream.ReadUInt32();
 			
-	int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20; // RC4 | AES
-	cryptData.encryptedVerifierValue = std::string((char*)data + mem_stream.GetPosition(), szEncryptedVerifierHash);
+	unsigned long szEncryptedVerifierHash		= (ProviderType == 0x0001) ? 0x14 : 0x20; // RC4 | AES(DES)
+	unsigned long szEncryptedVerifierHashMax	= mem_stream.GetSize() - mem_stream.GetPosition();
+
+	cryptData.encryptedVerifierValue = std::string((char*)data + mem_stream.GetPosition(), (std::max)(szEncryptedVerifierHash, szEncryptedVerifierHashMax));
 	mem_stream.ReadBytes(szEncryptedVerifierHash, false);
 
 	pos = mem_stream.GetPosition();
@@ -576,6 +599,12 @@ bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & 
 	case 0x0000:
 	case 0x8004:
 		cryptData.hashAlgorithm = CRYPT_METHOD::SHA1; break;
+	case 0x800C:
+		cryptData.hashAlgorithm = CRYPT_METHOD::SHA256; break;
+	case 0x800D:
+		cryptData.hashAlgorithm = CRYPT_METHOD::SHA384; break;
+	case 0x800E:
+		cryptData.hashAlgorithm = CRYPT_METHOD::SHA512; break;
 	}
 	cryptData.spinCount = 50000;
 
@@ -585,6 +614,10 @@ bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & 
 		cryptData.cipherAlgorithm = CRYPT_METHOD::RC4;		
 		if (KeySize == 0)	cryptData.keySize = 5; //40 bit
 		else				cryptData.keySize = KeySize / 8;
+		break;
+	case 0x6601:	
+		cryptData.cipherAlgorithm = CRYPT_METHOD::DES_ECB;		
+		cryptData.keySize = 8; 
 		break;
 	case 0x660E:	
 		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
@@ -613,26 +646,42 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 {
 	_ecmaCryptData cryptData;
 	
-	//cryptData.bAgile			= true;
-	//cryptData.cipherAlgorithm	= CRYPT_METHOD::DES_ECB;
-	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
-	//cryptData.keySize			= 0x08;
-	//cryptData.hashSize			= 0x40;
-	//cryptData.blockSize			= 0x10;
-	//cryptData.saltSize			= 0x10;
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMethodEncrypt);
+
+	if (sApplication == L"Weak")
+	{
+		cryptData.bAgile			= false;
+		cryptData.cipherAlgorithm	= CRYPT_METHOD::DES_ECB;
+		cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
+		cryptData.keySize			= 0x08;
+		cryptData.hashSize			= 0x14;
+		cryptData.blockSize			= 0x10;
+		cryptData.saltSize			= 0x10;
+		cryptData.spinCount			= 50000;
+	}
+	else
+	{
+		cryptData.bAgile			= true;
+		cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
+		cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
+		cryptData.keySize			= 0x20;
+		cryptData.hashSize			= 0x40;
+		cryptData.blockSize			= 0x10;
+		cryptData.saltSize			= 0x10;
+		cryptData.spinCount			= 100000;
+	}
+	//cryptData.bAgile				= true;
+	//cryptData.cipherAlgorithm		= CRYPT_METHOD::DES_CBC;
+	////cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
+	////cryptData.keySize			= 0x08;
+	////cryptData.hashSize			= 0x40;
+	////cryptData.blockSize			= 0x10;
+	////cryptData.saltSize			= 0x10;
 	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
-	//cryptData.keySize			= 0x08;
+	//cryptData.keySize				= 0x08;
 	//cryptData.hashSize			= 0x14;
 	//cryptData.blockSize			= 0x10;
 	//cryptData.saltSize			= 0x10;
-
-	cryptData.bAgile			= true;
-	cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
-	cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
-	cryptData.keySize			= 0x20;
-	cryptData.hashSize			= 0x40;
-	cryptData.blockSize			= 0x10;
-	cryptData.saltSize			= 0x10;
 
 	//cryptData.bAgile			= false;
 	//cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_ECB;
@@ -643,10 +692,19 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	//cryptData.saltSize		= 0x10;
 	//cryptData.spinCount		= 50000;
 
-	//cryptData.bAgile			= false;
-	//cryptData.cipherAlgorithm	= CRYPT_METHOD::RC4;
+	//cryptData.bAgile				= false;
+	//cryptData.cipherAlgorithm		= CRYPT_METHOD::RC4;
 	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
-	//cryptData.keySize			= 7;
+	//cryptData.keySize				= 7;
+	//cryptData.hashSize			= 0x14;
+	//cryptData.blockSize			= 0x10;
+	//cryptData.saltSize			= 0x10;
+	//cryptData.spinCount			= 50000;
+
+	//cryptData.bAgile				= false;
+	//cryptData.cipherAlgorithm		= CRYPT_METHOD::DES_ECB;
+	//cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
+	//cryptData.keySize				= 0x08;
 	//cryptData.hashSize			= 0x14;
 	//cryptData.blockSize			= 0x10;
 	//cryptData.saltSize			= 0x10;

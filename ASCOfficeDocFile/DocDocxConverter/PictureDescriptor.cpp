@@ -244,6 +244,8 @@ namespace DocFileFormat
 			case sprmOldCFData:
 			case sprmCFData:
 				break;
+			default:
+				break;
 			}
 		}
 

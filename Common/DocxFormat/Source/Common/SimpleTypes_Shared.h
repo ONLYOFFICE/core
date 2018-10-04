@@ -1239,6 +1239,11 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
+		bool GetBool()
+		{
+			return this->m_eValue == booleanTrue;
+		}
+
         virtual std::wstring    ToString  () const
 		{
             switch(this->m_eValue)

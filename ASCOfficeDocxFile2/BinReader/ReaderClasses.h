@@ -2153,7 +2153,7 @@ class CDrawingProperty
 public:
 	bool			bObject;
     std::wstring	sObjectProgram;	
-    long			nObjectId;
+    unsigned int	nObjectId;
     BYTE			nObjectType;
 	
 	long    DataPos;

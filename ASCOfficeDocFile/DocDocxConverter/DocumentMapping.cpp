@@ -1042,7 +1042,7 @@ namespace DocFileFormat
 				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
-					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_endnoteNr]);
 					if (desc && desc->aEndIdx == 0)
 					{
 						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
@@ -1348,6 +1348,8 @@ namespace DocFileFormat
 					{
 						iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
 					}break;
+					default:
+						break;
 				}
 			}
 			if (nestingLevel == iTap_current)
@@ -1377,6 +1379,8 @@ namespace DocFileFormat
 
 							AddBoundary(boundary2, max_boundary, boundaries);
 						}break;
+						default:
+							break;
 					}
 				}
 			}

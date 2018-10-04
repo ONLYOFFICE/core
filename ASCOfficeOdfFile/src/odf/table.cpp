@@ -381,11 +381,12 @@ void table_table_cell::add_child_element( xml::sax * Reader, const std::wstring 
 void table_table_cell::add_text(const std::wstring & Text)
 {
 }
-bool table_table_cell::empty()
+bool table_table_cell::empty(bool bWithStyle)
 {
 	if (!content_.elements_.empty()) return false;
 	if (attlist_.table_formula_) return false;
-	if (attlist_.table_style_name_) return false;
+	
+	if (bWithStyle && attlist_.table_style_name_) return false;
 	
 	if (attlist_extra_.table_number_columns_spanned_ > 1) return false;
 	if (attlist_extra_.table_number_rows_spanned_ > 1) return false;
@@ -454,7 +455,7 @@ bool table_table_row::empty()
 
 	return false;
 }
-bool table_table_row::empty_content_cells()
+bool table_table_row::empty_content_cells(bool bWithCellStyle)
 {
 	bool res = true;
 	
@@ -467,7 +468,7 @@ bool table_table_row::empty_content_cells()
 			res = false;
 			break;
 		}
-		if (cell && cell->empty() == false)
+		if (cell && cell->empty(bWithCellStyle) == false)
 		{
 			res = false;
 			break;

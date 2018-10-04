@@ -288,6 +288,14 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			convert(dynamic_cast<OOX::Logic::CFldSimple*>(oox_unknown));
 		}break;
+		case OOX::et_w_bookmarkStart:
+		{
+			convert(dynamic_cast<OOX::Logic::CBookmarkStart*>(oox_unknown));
+		}break;
+		case OOX::et_w_bookmarkEnd:
+		{
+			convert(dynamic_cast<OOX::Logic::CBookmarkEnd*>(oox_unknown));
+		}break;
 		case OOX::et_w_r:
 		{
 			convert(dynamic_cast<OOX::Logic::CRun*>(oox_unknown));
@@ -388,12 +396,6 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_w_tc:
 		{
 			convert(dynamic_cast<OOX::Logic::CTc*>(oox_unknown));
-		}break;
-		case OOX::et_w_bookmarkStart:
-		{
-		}break;
-		case OOX::et_w_bookmarkEnd:
-		{
 		}break;
 		default:
 		{
@@ -799,6 +801,23 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 		odt_context->end_change(id_change_properties, 3); //todooo change int type to enum
 
 }
+void DocxConverter::convert(OOX::Logic::CBookmarkStart *oox_bookmark_start)
+{
+	if (!oox_bookmark_start) return;
+	
+	if (oox_bookmark_start->m_sName.IsInit() == false) return;
+	if (oox_bookmark_start->m_oId.IsInit() == false) return;
+
+	odt_context->start_bookmark(oox_bookmark_start->m_oId->GetValue(), *oox_bookmark_start->m_sName);
+}
+void DocxConverter::convert(OOX::Logic::CBookmarkEnd *oox_bookmark_end)
+{
+	if (!oox_bookmark_end) return;
+	
+	if (oox_bookmark_end->m_oId.IsInit() == false) return;
+
+	odt_context->end_bookmark(oox_bookmark_end->m_oId->GetValue());
+}
 
 void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 {
@@ -822,23 +841,27 @@ void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 					length = odf_types::length(odt_context->page_layout_context()->current_page_width_ / 2, length::pt);
 					type = 1;	
 				}break;					
-				case SimpleTypes::ptabalignmentLeft:		type = 6;	break;//??
 				case SimpleTypes::ptabalignmentRight:
 				{
 					length = odf_types::length(odt_context->page_layout_context()->current_page_width_, length::pt);
 					type = 4;	
 				}break;
+				case SimpleTypes::ptabalignmentLeft:	
+				default:
+					type = 6;	break;//??
 			}
 		}
 		if (oox_ptab->m_oLeader.IsInit())
 		{
 			switch(oox_ptab->m_oLeader->GetValue())
 			{
-				case SimpleTypes::ptableaderDot:			leader = 0;	break;
 				case SimpleTypes::ptableaderHyphen:			leader = 2;	break;
 				case SimpleTypes::ptableaderMiddleDot:		leader = 3;	break;
 				case SimpleTypes::ptableaderNone:			leader = 4;	break;
 				case SimpleTypes::ptableaderUnderscore:		leader = 5;	break;
+				case SimpleTypes::ptableaderDot:
+				default:
+															leader = 0;	break;
 			}
 		}
 
@@ -854,7 +877,7 @@ void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 
 	odt_context->text_context()->add_tab(ref);
 }
-void DocxConverter::convert(OOX::Logic::CSym	*oox_sym)
+void DocxConverter::convert(OOX::Logic::CSym *oox_sym)
 {
 	if (oox_sym == NULL) return;
 	if (oox_sym->m_oChar.IsInit() == false) return;
@@ -1450,6 +1473,8 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 				case SimpleTypes::shdPct87: kf = 0.87; break;
 				case SimpleTypes::shdPct90: kf = 0.90; break;
 				case SimpleTypes::shdPct95: kf = 0.95; break;
+				default:
+						break;
 			}
 			ucR = (BYTE)(ucR * (1 - kf)); ucB = (BYTE)(ucB * (1 - kf)); ucG = (BYTE)(ucG * (1 - kf));
 		}

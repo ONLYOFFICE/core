@@ -110,7 +110,7 @@ namespace DocFileFormat
 	typedef struct FibWord2
 	{
 		unsigned int Spare  = 0;
-		unsigned char rgwSpare0[3];
+		unsigned short rgwSpare0[3];
 
 		unsigned int fcPlcMcr = 0;
 		unsigned int lcbPlcMcr = 0;
@@ -1312,10 +1312,10 @@ namespace DocFileFormat
 			
 			flag16 = reader.ReadUInt16(); //10
 			
-			m_FibBase.fDot				= (flag16 & 0x0001) >> 2;
-			m_FibBase.fGlsy				= (flag16 & 0x0002) >> 1;
-			m_FibBase.fComplex			= (flag16 & 0x0004) >> 2;
-            m_FibBase.fHasPic			= (flag16 & 0x0008) >> 3;
+			m_FibBase.fDot				= ((flag16 & 0x0001) >> 2) != 0;
+			m_FibBase.fGlsy				= ((flag16 & 0x0002) >> 1) != 0;
+			m_FibBase.fComplex			= ((flag16 & 0x0004) >> 2) != 0;
+            m_FibBase.fHasPic			= ((flag16 & 0x0008) >> 3) != 0;
             m_FibBase.cQuickSaves		= (WORD)(((int)flag16 & 0x00F0) >> 4);
             m_FibBase.fEncrypted		= FormatUtils::BitmaskToBool((int)flag16, 0x0100);
 			m_FibBase.fWhichTblStm		= FormatUtils::BitmaskToBool((int)flag16, 0x0200);

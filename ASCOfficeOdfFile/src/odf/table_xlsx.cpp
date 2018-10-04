@@ -84,7 +84,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
 		return;
 	}
-	if (attlist_.table_number_rows_repeated_ > 0x0f00 && empty_content_cells() || bEndTable)//0xf000 - conv_KDZO3J3xLIbZ5fC0HR0__xlsx.ods
+	if (attlist_.table_number_rows_repeated_ > 0x0f00 && empty_content_cells(false) || bEndTable)//0xf000 - conv_KDZO3J3xLIbZ5fC0HR0__xlsx.ods
 	{
 		Context.get_table_context().state()->set_end_table();
 		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);

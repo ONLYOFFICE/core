@@ -275,7 +275,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -345,7 +345,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -547,7 +547,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -643,7 +643,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -702,7 +702,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -768,7 +768,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -824,7 +824,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -921,7 +921,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -982,7 +982,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1037,7 +1037,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1113,7 +1113,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1238,7 +1238,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1291,7 +1291,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1352,7 +1352,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1452,7 +1452,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1512,7 +1512,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1577,7 +1577,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1672,7 +1672,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1740,7 +1740,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1795,7 +1795,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1886,7 +1886,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2021,7 +2021,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2079,7 +2079,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2149,7 +2149,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2225,7 +2225,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2343,7 +2343,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2406,7 +2406,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2469,7 +2469,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2531,7 +2531,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-			if ( sValue.length() <= 0 )
+			if ( sValue.empty() )
                     return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2612,7 +2612,7 @@ namespace SimpleTypes
 			{
                     this->m_eValue = eDefValue;
 
-				if ( sValue.length() <= 0 )
+				if ( sValue.empty() )
                        return this->m_eValue;
 
                     if      ( _T("Button") == sValue ) this->m_eValue = vmlclientdataobjecttypeButton;
@@ -2688,7 +2688,7 @@ namespace SimpleTypes
 			{
                     this->m_eValue = eDefValue;
 
-				if ( sValue.length() <= 0 )
+				if ( sValue.empty() )
                        return this->m_eValue;
 
 				wchar_t wChar = sValue[0];
@@ -2802,7 +2802,7 @@ namespace SimpleTypes
 
 				this->m_eValue = eDefValue;
 
-				if ( sValue.length() <= 0 )
+				if ( sValue.empty() )
                        return this->m_eValue;
 
 				sValue = XmlUtils::GetLower(sValue);

@@ -89,6 +89,9 @@ public:
 
 	void start_hyperlink	(std::wstring ref);
 	void end_hyperlink		();
+	
+	void start_bookmark		(int id, const std::wstring& name);
+	void end_bookmark		(int id);
 
 	void start_sequence ();
 	void end_sequence ();
@@ -203,6 +206,7 @@ private:
 	std::vector<odt_section_state>		sections_;
 
 	std::map<std::wstring, int>			mapSequenceDecls;
+	std::map<int, std::wstring>			mapBookmarks;
 
 	void add_to_root();
 

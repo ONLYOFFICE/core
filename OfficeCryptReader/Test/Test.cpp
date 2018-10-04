@@ -41,11 +41,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			
 	result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
 	result = crypt_file.DecryptOfficeFile(dstFileName, dstFileName2, password, bDataIntegrity);
-	
-	COfficeFileFormatChecker fileChecker;
-
-	std::wstring sDocumentID = fileChecker.getDocumentID(L"d:/test/_pdf/Test3-pdfa-my.pdf");
-	
+		
 	return 0;
 }
-

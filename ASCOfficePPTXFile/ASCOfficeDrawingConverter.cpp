@@ -5654,7 +5654,7 @@ HRESULT CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
 
 	return S_OK;
 }
-void CDrawingConverter::WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode, LONG* lId)
+void CDrawingConverter::WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode, unsigned int* lId)
 {
 	if (NULL == lId)				return;
 	if (NULL == m_pReader)			return;

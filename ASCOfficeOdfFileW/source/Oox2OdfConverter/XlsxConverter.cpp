@@ -1255,7 +1255,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 			width	= odf_types::length(297, odf_types::length::mm);
 			height	= odf_types::length(420, odf_types::length::mm);
 			break;
-			//todooo
+		default:
+			break;
+		//todooo
 		}
 	}
 	ods_context->page_layout_context()->set_page_size(width, height);

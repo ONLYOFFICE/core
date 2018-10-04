@@ -100,101 +100,87 @@ public:
 		RELEASEOBJECT(m_oRPr)
 	}
 };
-#ifndef READ1_DEF
-	#define READ1_DEF(stLen, res, fReadFunction, arg) {\
-		long read1defCurPos = 0;\
-		long read1defstart_pos = m_oBufferedStream.GetPos();\
+#define READ1_DEF(stLen, res, fReadFunction, arg) {\
+	long read1defCurPos = 0;\
 		while(read1defCurPos < (long)stLen)\
+	{\
+		BYTE read1defType = m_oBufferedStream.GetUChar();\
+		long read1defLength =  m_oBufferedStream.GetLong();\
+		res = fReadFunction(read1defType, read1defLength, arg);\
+		if(res == c_oSerConstants::ReadUnknown)\
 		{\
-			BYTE read1defType = m_oBufferedStream.GetUChar();\
-			ULONG read1defLength = m_oBufferedStream.GetULong();\
-			if (read1defLength + read1defCurPos > (ULONG)stLen)\
-			{\
-				m_oBufferedStream.Seek(read1defstart_pos + stLen);\
-				res = c_oSerConstants::ReadOk;\
-				break;\
-			}\
-			res = fReadFunction(read1defType, read1defLength, arg);\
-			if(res == c_oSerConstants::ReadUnknown)\
-			{\
-				m_oBufferedStream.GetPointer(read1defLength);\
-				res = c_oSerConstants::ReadOk;\
-			}\
-			else if(res != c_oSerConstants::ReadOk)\
-				break;\
-			read1defCurPos += read1defLength + 5;\
+			m_oBufferedStream.GetPointer(read1defLength);\
+			res = c_oSerConstants::ReadOk;\
 		}\
-	}
-#endif
-#ifndef READ2_DEF
-	#define READ2_DEF(stLen, res, fReadFunction, arg) {\
-		long read2defCurPos = 0;\
+		else if(res != c_oSerConstants::ReadOk)\
+			break;\
+		read1defCurPos += read1defLength + 5;\
+	}\
+}
+#define READ2_DEF(stLen, res, fReadFunction, arg) {\
+	long read2defCurPos = 0;\
 		while(read2defCurPos < (long)stLen)\
+	{\
+		BYTE read2defType = m_oBufferedStream.GetUChar();\
+		long read2defLenType =  m_oBufferedStream.GetUChar();\
+		int read2defCurPosShift = 2;\
+		int read2defRealLen;\
+		switch(read2defLenType)\
 		{\
-			BYTE read2defType = m_oBufferedStream.GetUChar();\
-			long read2defLenType =  m_oBufferedStream.GetUChar();\
-			int read2defCurPosShift = 2;\
-			int read2defRealLen;\
-			switch(read2defLenType)\
-			{\
-			case c_oSerPropLenType::Null:		read2defRealLen = 0;break;\
-			case c_oSerPropLenType::Byte:		read2defRealLen = 1;break;\
-			case c_oSerPropLenType::Short:		read2defRealLen = 2;break;\
-			case c_oSerPropLenType::Three:		read2defRealLen = 3;break;\
-			case c_oSerPropLenType::Long:\
-			case c_oSerPropLenType::Double:		read2defRealLen = 4;break;\
-			case c_oSerPropLenType::Variable:\
-				read2defRealLen = m_oBufferedStream.GetLong();\
-				read2defCurPosShift += 4;\
-				break;\
-			case c_oSerPropLenType::Double64:	read2defRealLen = 8;break;\
-			case c_oSerPropLenType::Long64:		read2defRealLen = 8;break;\
-			default:res = c_oSerConstants::ErrorUnknown;break;\
-			}\
-			if(res == c_oSerConstants::ReadOk)\
-				res = fReadFunction(read2defType, read2defRealLen, arg);\
-			if(res == c_oSerConstants::ReadUnknown)\
-			{\
-				m_oBufferedStream.GetPointer(read2defRealLen);\
-				res = c_oSerConstants::ReadOk;\
-			}\
-			else if(res != c_oSerConstants::ReadOk)\
-				break;\
-			read2defCurPos += read2defRealLen + read2defCurPosShift;\
+		case c_oSerPropLenType::Null:		read2defRealLen = 0;break;\
+		case c_oSerPropLenType::Byte:		read2defRealLen = 1;break;\
+		case c_oSerPropLenType::Short:		read2defRealLen = 2;break;\
+		case c_oSerPropLenType::Three:		read2defRealLen = 3;break;\
+		case c_oSerPropLenType::Long:\
+		case c_oSerPropLenType::Double:		read2defRealLen = 4;break;\
+		case c_oSerPropLenType::Variable:\
+			read2defRealLen = m_oBufferedStream.GetLong();\
+			read2defCurPosShift += 4;\
+			break;\
+		case c_oSerPropLenType::Double64:	read2defRealLen = 8;break;\
+		case c_oSerPropLenType::Long64:		read2defRealLen = 8;break;\
+		default:res = c_oSerConstants::ErrorUnknown;break;\
 		}\
-	}
-#endif
-#ifndef READ_TABLE_DEF
-	#define READ_TABLE_DEF(res, fReadFunction, arg) {\
-		res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+		if(res == c_oSerConstants::ReadOk)\
+			res = fReadFunction(read2defType, read2defRealLen, arg);\
+		if(res == c_oSerConstants::ReadUnknown)\
+		{\
+			m_oBufferedStream.GetPointer(read2defRealLen);\
+			res = c_oSerConstants::ReadOk;\
+		}\
+		else if(res != c_oSerConstants::ReadOk)\
+			break;\
+		read2defCurPos += read2defRealLen + read2defCurPosShift;\
+	}\
+}
+#define READ_TABLE_DEF(res, fReadFunction, arg) {\
+	res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
+	if (c_oSerConstants::ReadOk == res) {\
+		long readtabledefLen = m_oBufferedStream.GetLong();\
+		res = m_oBufferedStream.Peek(readtabledefLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
 		if (c_oSerConstants::ReadOk == res) {\
-			long readtabledefLen = m_oBufferedStream.GetLong();\
-			res = m_oBufferedStream.Peek(readtabledefLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
-			if (c_oSerConstants::ReadOk == res) {\
-				READ1_DEF(readtabledefLen, res, fReadFunction, arg);\
-			}\
+			READ1_DEF(readtabledefLen, res, fReadFunction, arg);\
 		}\
-	}
-#endif
-#ifndef READ1_TRACKREV
-	#define READ1_TRACKREV(type, length, poResult) \
-		if(c_oSerProp_RevisionType::Author == type)\
-		{\
-			poResult->Author = m_oBufferedStream.GetString3(length);\
-		}\
-		else if(c_oSerProp_RevisionType::Date == type)\
-		{\
-			poResult->Date = m_oBufferedStream.GetString3(length);\
-		}\
-		else if(c_oSerProp_RevisionType::Id == type)\
-		{\
-			poResult->Id = new long(m_oBufferedStream.GetLong());\
-		}\
-		else if(c_oSerProp_RevisionType::UserId == type)\
-		{\
-			poResult->UserId = m_oBufferedStream.GetString3(length);\
-		}
-#endif
+	}\
+}
+#define READ1_TRACKREV(type, length, poResult) \
+	if(c_oSerProp_RevisionType::Author == type)\
+	{\
+		poResult->Author = m_oBufferedStream.GetString3(length);\
+	}\
+	else if(c_oSerProp_RevisionType::Date == type)\
+	{\
+		poResult->Date = m_oBufferedStream.GetString3(length);\
+	}\
+	else if(c_oSerProp_RevisionType::Id == type)\
+	{\
+		poResult->Id = new long(m_oBufferedStream.GetLong());\
+    }\
+    else if(c_oSerProp_RevisionType::UserId == type)\
+    {\
+        poResult->UserId = m_oBufferedStream.GetString3(length);\
+    }
+
 	void InnerColorToOOX(rPr& oRPr, ComplexTypes::Word::CColor& oColor);
 
 	class Binary_CommonReader
@@ -3906,7 +3892,7 @@ public:
 			oFile.WriteFile(pData, length);
 			oFile.CloseFile();
 
-			long lId;
+			unsigned int lId = 0;
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::JsaProject.RelationType(), sJsaProject.GetPath(), L"", &lId);
 			m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(sJsaProject.GetExtention(false));
 		}
@@ -4533,7 +4519,7 @@ public:
 			READ1_DEF(length, res, this->ReadParagraphContent, NULL);
 			if (!pHyperlink->sLink.empty())
 			{
-				long rId;
+				unsigned int rId;
 				std::wstring sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
 				m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, std::wstring(_T("External")), &rId);
 				pHyperlink->rId = L"rId" + std::to_wstring(rId);
@@ -6884,7 +6870,7 @@ public:
                 std::wstring sNewImgRel = _T("media/") + sNewImgName;
 
                 sNewImgRel = XmlUtils::EncodeXmlString(sNewImgRel);
-				long rId;
+				unsigned int rId;
                 m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, std::wstring(), &rId);
                 odocImg.srId = L"rId" + std::to_wstring(rId);
 				//odocImg.srId = m_oMediaWriter.m_poDocumentRelsWriter->AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), sNewImgRel, false);
@@ -7425,7 +7411,7 @@ public:
 				if (oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace))
 				{
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
-					long rIdXlsx;
+					unsigned int rIdXlsx;
 					std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
 
 					m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
@@ -7452,7 +7438,7 @@ public:
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
-				long rIdChart;
+				unsigned int rIdChart;
                 std::wstring bstrChartRelType = OOX::FileTypes::Chart.RelationType();
 				
 				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
@@ -8559,7 +8545,7 @@ public:
 				m_oBufferedStream.Seek(nDocumentOffset);
 
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-				long stamdartRId;
+				unsigned int stamdartRId;
                
 				m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles",		L"styles.xml",		L"", &stamdartRId);
                 m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings",	L"settings.xml",	L"", &stamdartRId);
@@ -8587,19 +8573,19 @@ public:
 
 				if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering", L"numbering.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml", L"/word", L"numbering.xml");
 				}
                 if(false == m_oFileWriter.m_oFootnotesWriter.IsEmpty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes", L"footnotes.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", L"/word", L"footnotes.xml");
 				}
                 if(false == m_oFileWriter.m_oEndnotesWriter.IsEmpty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes", L"endnotes.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml", L"/word", L"endnotes.xml");
 				}
@@ -8608,7 +8594,7 @@ public:
 					Writers::HdrFtrItem* pHeader = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[i];
 					if(false == pHeader->IsEmpty())
 					{
-						long rId;
+						unsigned int rId;
                         m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header", pHeader->m_sFilename, std::wstring(), &rId);
                         pHeader->rId = L"rId" + std::to_wstring( rId );
 						
@@ -8620,7 +8606,7 @@ public:
 					Writers::HdrFtrItem* pFooter = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters[i];
 					if(false == pFooter->IsEmpty())
 					{
-						long rId;
+						unsigned int rId;
                         m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer", pFooter->m_sFilename, std::wstring(), &rId);
                         pFooter->rId = L"rId" + std::to_wstring( rId );
 						
@@ -8630,7 +8616,7 @@ public:
 				if(!oSettingsCustom.IsEmpty()){
 					std::wstring sFilename = m_oFileWriter.m_oCustomXmlWriter.WriteCustomXml(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
 					std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + sFilename;
-					long rId;
+					unsigned int rId;
 					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
 				}
 
@@ -8651,19 +8637,19 @@ public:
                 
 				if(false == oCommentsWriter.m_sComment.empty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", L"comments.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml", L"/word", L"comments.xml");
 				}
                 if(false == oCommentsWriter.m_sCommentExt.empty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended", L"commentsExtended.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml", L"/word", L"commentsExtended.xml");
 				}
                 if(false == oCommentsWriter.m_sPeople.empty())
 				{
-					long rId;
+					unsigned int rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/people", L"people.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml", L"/word", L"people.xml");
 				}

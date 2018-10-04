@@ -65,6 +65,7 @@
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 #define PROGRESSEVENT_ID	0
 
@@ -203,28 +204,37 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 {
 	CRYPT::ODFEncryptor		encryptor;
 	CRYPT::_odfCryptData	cryptData;
-//-----------------------
-//aes
-	cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
-	cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
-	cryptData.start_hashSize		= 32;
 
-	cryptData.spinCount	= 100000;
-	cryptData.keySize	= 32;
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMethodEncrypt);
 
-	cryptData.checksum_size = 1024;
-	cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+	if (sApplication == L"Weak")
+	{
 //-----------------------
 //blowfish
-	//cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
-	//cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
-	//cryptData.start_hashSize		= 20;
+		cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
+		cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
+		cryptData.start_hashSize		= 20;
 
-	//cryptData.spinCount	= 1024;
-	//cryptData.keySize	= 16;
+		cryptData.spinCount	= 1024;
+		cryptData.keySize	= 7;//16;
 
-	//cryptData.checksum_size = 1024;
-	//cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+		cryptData.checksum_size = 1024;
+		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+	}
+	else
+	{
+//-----------------------
+//aes
+		cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
+		cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
+		cryptData.start_hashSize		= 32;
+
+		cryptData.spinCount	= 100000;
+		cryptData.keySize	= 32;
+
+		cryptData.checksum_size = 1024;
+		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+	}
 //-----------------------
 	NSFile::CFileBinary file;
 

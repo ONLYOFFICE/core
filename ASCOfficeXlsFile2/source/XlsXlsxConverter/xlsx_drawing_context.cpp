@@ -182,6 +182,8 @@ namespace oox {
 					{
 						strVmlPath += L"e";
 					}break;	
+					default:
+						break;
 				}
 			}
 

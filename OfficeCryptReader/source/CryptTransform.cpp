@@ -390,6 +390,10 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 	}
 	else if (algorithm == CRYPT_METHOD::DES_CBC)
 	{
+		if (!iv.ptr)
+		{
+			iv = _buf(16, true);
+		}
 		DES::Encryption desEncryption(key.ptr, key.size == 7 ? 8 : key.size);
 		StreamTransformation *modeEncryption = new CipherModeFinalTemplate_ExternalCipher<CBC_Encryption>(desEncryption, iv.ptr ); 
 		if (!data_out.ptr)
@@ -405,6 +409,10 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 	}
 	else if (algorithm == CRYPT_METHOD::DES_ECB)
 	{
+		if (!iv.ptr)
+		{
+			iv = _buf(16, true);
+		}
 		DES::Encryption desEncryption(key.ptr, key.size == 7 ? 8 : key.size);
 		StreamTransformation *modeEncryption = new CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>(desEncryption, iv.ptr ); 
 		if (!data_out.ptr)
@@ -480,6 +488,10 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 	}
 	else if (algorithm == CRYPT_METHOD::DES_CBC)
 	{
+		if (!iv.ptr)
+		{
+			iv = _buf(16, true);
+		}
 		DES::Decryption desDecryption(key.ptr, key.size == 7 ? 8 : key.size);
 		StreamTransformation *modeDecryption = new CipherModeFinalTemplate_ExternalCipher<CBC_Decryption>(desDecryption, iv.ptr );
 		StreamTransformationFilter stfDecryptor(*modeDecryption, new ArraySink( data_out.ptr, data_out.size), padding);
@@ -491,6 +503,10 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 	}
 	else if (algorithm == CRYPT_METHOD::DES_ECB)
 	{
+		if (!iv.ptr)
+		{
+			iv = _buf(16, true);
+		}
 		DES::Decryption desDecryption(key.ptr, key.size == 7 ? 8 : key.size);
 		StreamTransformation *modeDecryption = new CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>(desDecryption, iv.ptr );
 		StreamTransformationFilter stfDecryptor(*modeDecryption, new ArraySink( data_out.ptr, data_out.size), padding);

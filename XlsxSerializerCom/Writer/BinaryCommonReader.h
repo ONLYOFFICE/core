@@ -37,7 +37,7 @@
 
 namespace BinXlsxRW {
 
-	#define READ_TABLE_DEF(res, fReadFunction, arg) {\
+#define READ_TABLE_DEF(res, fReadFunction, arg) {\
 		res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;\
 		if (c_oSerConstants::ReadOk == res) {\
 			long readtabledefLen = m_oBufferedStream.GetLong();\
@@ -47,65 +47,66 @@ namespace BinXlsxRW {
 			}\
 		}\
 	}
-	#define READ1_DEF(stLen, res, fReadFunction, arg) {\
-		long read1defCurPos = 0;\
-		long read1defstart_pos = m_oBufferedStream.GetPos();\
-		while(read1defCurPos < (long)stLen)\
-		{\
-			BYTE read1defType = m_oBufferedStream.GetUChar();\
-			ULONG read1defLength = m_oBufferedStream.GetULong();\
-			if (read1defLength + read1defCurPos > (ULONG)stLen)\
-			{\
-				m_oBufferedStream.Seek(read1defstart_pos + stLen);\
-				res = c_oSerConstants::ReadOk;\
-				break;\
-			}\
-			res = fReadFunction(read1defType, read1defLength, arg);\
-			if(res == c_oSerConstants::ReadUnknown)\
-			{\
-				m_oBufferedStream.GetPointer(read1defLength);\
-				res = c_oSerConstants::ReadOk;\
-			}\
-			else if(res != c_oSerConstants::ReadOk)\
-				break;\
-			read1defCurPos += read1defLength + 5;\
-		}\
-	}
 
-	#define READ2_DEF_SPREADSHEET(stLen, res, fReadFunction, arg) {\
-		long read2defCurPos = 0;\
-		while(read2defCurPos < stLen)\
+#define READ1_DEF(stLen, res, fReadFunction, arg) {\
+	long read1defCurPos = 0;\
+	long read1defstart_pos = m_oBufferedStream.GetPos();\
+	while(read1defCurPos < (long)stLen)\
+	{\
+		BYTE read1defType = m_oBufferedStream.GetUChar();\
+		ULONG read1defLength = m_oBufferedStream.GetULong();\
+		if (read1defLength + read1defCurPos > (ULONG)stLen)\
 		{\
-			BYTE read2defType = m_oBufferedStream.GetUChar();\
-			long read2defLenType =  m_oBufferedStream.GetUChar();\
-			int read2defCurPosShift = 2;\
-			int read2defRealLen;\
-			switch(read2defLenType)\
-			{\
-			case c_oSerPropLenType::Null: read2defRealLen = 0;break;\
-			case c_oSerPropLenType::Byte: read2defRealLen = 1;break;\
-			case c_oSerPropLenType::Short: read2defRealLen = 2;break;\
-			case c_oSerPropLenType::Three: read2defRealLen = 3;break;\
-			case c_oSerPropLenType::Long: read2defRealLen = 4;break;\
-			case c_oSerPropLenType::Double: read2defRealLen = 8;break;\
-			case c_oSerPropLenType::Variable:\
-				read2defRealLen = m_oBufferedStream.GetLong();\
-				read2defCurPosShift += 4;\
-				break;\
-			default:res = c_oSerConstants::ErrorUnknown;break;\
-			}\
-			if(res == c_oSerConstants::ReadOk)\
-				res = fReadFunction(read2defType, read2defRealLen, arg);\
-			if(res == c_oSerConstants::ReadUnknown)\
-			{\
-				m_oBufferedStream.GetPointer(read2defRealLen);\
-				res = c_oSerConstants::ReadOk;\
-			}\
-			else if(res != c_oSerConstants::ReadOk)\
-				break;\
-			read2defCurPos += read2defRealLen + read2defCurPosShift;\
+			m_oBufferedStream.Seek(read1defstart_pos + stLen);\
+			res = c_oSerConstants::ReadOk;\
+			break;\
 		}\
-	}
+		res = fReadFunction(read1defType, read1defLength, arg);\
+		if(res == c_oSerConstants::ReadUnknown)\
+		{\
+			m_oBufferedStream.GetPointer(read1defLength);\
+			res = c_oSerConstants::ReadOk;\
+		}\
+		else if(res != c_oSerConstants::ReadOk)\
+			break;\
+		read1defCurPos += read1defLength + 5;\
+	}\
+}
+
+#define READ2_DEF(stLen, res, fReadFunction, arg) {\
+	long read2defCurPos = 0;\
+	while(read2defCurPos < stLen)\
+	{\
+		BYTE read2defType = m_oBufferedStream.GetUChar();\
+		long read2defLenType =  m_oBufferedStream.GetUChar();\
+		int read2defCurPosShift = 2;\
+		int read2defRealLen;\
+		switch(read2defLenType)\
+		{\
+		case c_oSerPropLenType::Null: read2defRealLen = 0;break;\
+		case c_oSerPropLenType::Byte: read2defRealLen = 1;break;\
+		case c_oSerPropLenType::Short: read2defRealLen = 2;break;\
+		case c_oSerPropLenType::Three: read2defRealLen = 3;break;\
+		case c_oSerPropLenType::Long: read2defRealLen = 4;break;\
+		case c_oSerPropLenType::Double: read2defRealLen = 8;break;\
+		case c_oSerPropLenType::Variable:\
+			read2defRealLen = m_oBufferedStream.GetLong();\
+			read2defCurPosShift += 4;\
+			break;\
+		default:res = c_oSerConstants::ErrorUnknown;break;\
+		}\
+		if(res == c_oSerConstants::ReadOk)\
+			res = fReadFunction(read2defType, read2defRealLen, arg);\
+		if(res == c_oSerConstants::ReadUnknown)\
+		{\
+			m_oBufferedStream.GetPointer(read2defRealLen);\
+			res = c_oSerConstants::ReadOk;\
+		}\
+		else if(res != c_oSerConstants::ReadOk)\
+			break;\
+		read2defCurPos += read2defRealLen + read2defCurPosShift;\
+	}\
+}
 
 	class Binary_CommonReader
 	{

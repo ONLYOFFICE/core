@@ -186,7 +186,7 @@ namespace BinXlsxRW{
 					pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
 
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
-					long rId;
+					unsigned int rId;
 					std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
 					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 

@@ -78,7 +78,7 @@ namespace PPTX
 			{
 				if (rad.IsInit())
 				{
-                    std::wstring str = L"<a:alphaOutset rad=\"" + std::to_wstring(*rad) + L"\"/>";
+                    std::wstring str = L"<a:alphaOutset rad=\"" + std::to_wstring((unsigned int)*rad) + L"\"/>";
 					return str;
 				}
 

@@ -384,7 +384,7 @@ namespace PPTX
 												if (!pFill->blip.is_init())
 													pFill->blip = new PPTX::Logic::Blip();
 
-												pFill->blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
+												pFill->blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
 												if (pFill->blip.is_init())
 													pFill->blip->m_namespace = _T("a");
 

@@ -204,12 +204,12 @@ namespace XmlUtils
             return 0;
         }
     }
-    AVSINLINE static size_t  GetUInteger(const std::wstring& string)
+    AVSINLINE static unsigned int GetUInteger(const std::wstring& string)
     {
         if (string.empty()) return 0;
         try
         {
-            return (size_t) _wtoi(string.c_str());
+            return (unsigned int) _wtoi(string.c_str());
         }
         catch(...)
         {
@@ -217,7 +217,7 @@ namespace XmlUtils
 
         try
         {
-            return (size_t) _wtoi64(string.c_str());
+            return (unsigned int) _wtoi64(string.c_str());
         }
         catch(...)
         {

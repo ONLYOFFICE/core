@@ -36,17 +36,6 @@ namespace BinDocxRW
 {
 const double eps     = 0.001;
 
-const int Page_Width     = 210;
-const int Page_Height    = 297;
-
-const int X_Left_Margin   = 30;  // 3   cm
-const int X_Right_Margin  = 15;  // 1.5 cm
-const int Y_Bottom_Margin = 20;  // 2   cm
-const int Y_Top_Margin    = 20;  // 2   cm
-
-const double Y_Default_Header = 12.5; // 1.25 cm расстояние от верха страницы до верха верхнего колонтитула
-const double Y_Default_Footer = 12.5; // 1.25 cm расстояние от низа страницы до низа нижнего колонтитула
-
 const int shd_Clear = 0;
 const int shd_Nil   = 1;
 
@@ -311,7 +300,9 @@ extern int g_nCurFormatVersion;
 		RowBandSize = 15,
 		ColBandSize = 16,
 		tblCaption = 17,
-		tblDescription = 18
+		tblDescription = 18,
+		TableIndTwips = 19,
+		TableCellSpacingTwips = 20
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{
@@ -328,7 +319,9 @@ extern int g_nCurFormatVersion;
 		VertAnchor = 3,
 		TblpY = 4,
 		TblpYSpec = 5,
-		Paddings = 6
+		Paddings = 6,
+		TblpXTwips = 7,
+		TblpYTwips = 8
 	};}
 	namespace c_oSerProp_pPrType{enum c_oSerProp_pPrType
 	{
@@ -365,7 +358,14 @@ extern int g_nCurFormatVersion;
 		numPr_Ins =  32,
 		pPrChange = 33,
 		outlineLvl = 34,
-		Tab_Item_Leader = 35
+		Tab_Item_Leader = 35,
+		Ind_LeftTwips = 36,
+		Ind_RightTwips = 37,
+		Ind_FirstLineTwips = 38,
+		Spacing_LineTwips = 39,
+		Spacing_BeforeTwips = 40,
+		Spacing_AfterTwips = 41,
+		Tab_Item_PosTwips = 42
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -406,7 +406,9 @@ extern int g_nCurFormatVersion;
 		Ins = 34,
 		rPrChange = 35,
 		MoveFrom = 36,
-		MoveTo = 37
+		MoveTo = 37,
+		SpacingTwips = 38,
+		PositionHps = 39
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -427,7 +429,9 @@ extern int g_nCurFormatVersion;
 		TableHeader = 14,
 		Del = 15,
 		Ins = 16,
-		trPrChange = 17
+		trPrChange = 17,
+		TableCellSpacingTwips = 18,
+		Height_ValueTwips = 19
 	};}
 	namespace c_oSerProp_cellPrType{enum c_oSerProp_cellPrType
 	{
@@ -517,7 +521,8 @@ extern int g_nCurFormatVersion;
 		tblGridChange = 9,
 		Sdt = 10,
 		BookmarkStart = 11,
-		BookmarkEnd = 12
+		BookmarkEnd = 12,
+		tblGrid_ItemTwips = 13
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -607,26 +612,37 @@ extern int g_nCurFormatVersion;
 		SizeRelV = 28,
 		Embedded = 29,
 		GraphicFramePr = 30,
-		DocPr = 31
+		DocPr = 31,
+		DistBEmu = 32,
+		DistLEmu = 33,
+		DistREmu = 34,
+		DistTEmu = 35
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
 		Left = 0,
 		Top = 1,
 		Right = 2,
-		Bottom = 3
+		Bottom = 3,
+		LeftEmu = 4,
+		TopEmu = 5,
+		RightEmu = 6,
+		BottomEmu = 7
 	};}
 	namespace c_oSerExtent{enum c_oSerExtent
 	{
 		Cx = 0,
-		Cy = 1
+		Cy = 1,
+		CxEmu = 2,
+		CyEmu = 3
 	};}
 	namespace c_oSerPosHV{enum c_oSerPosHV
 	{
 		RelativeFrom	= 0,
 		Align			= 1,
 		PosOffset		= 2,
-		PctOffset		= 3
+		PctOffset		= 3,
+		PosOffsetEmu	= 4
 	};}
 	namespace c_oSerSizeRelHV{enum c_oSerSizeRelHV
 	{
@@ -636,7 +652,9 @@ extern int g_nCurFormatVersion;
 	namespace c_oSerSimplePos{enum c_oSerSimplePos
 	{
 		X = 0,
-		Y = 1
+		Y = 1,
+		XEmu = 2,
+		YEmu = 3
 	};}
 	namespace c_oSerWrapSquare{enum c_oSerWrapSquare
 	{
@@ -645,20 +663,28 @@ extern int g_nCurFormatVersion;
 		DistR = 2,
 		DistB = 3,
 		WrapText = 4,
-		EffectExtent = 5
+		EffectExtent = 5,
+		DistLEmu = 6,
+		DistTEmu = 7,
+		DistREmu = 8,
+		DistBEmu = 9
 	};}
 	namespace c_oSerWrapThroughTight{enum c_oSerWrapThroughTight
 	{
 		DistL = 0,
 		DistR = 1,
 		WrapText = 2,
-		WrapPolygon = 3
+		WrapPolygon = 3,
+		DistLEmu = 4,
+		DistREmu = 5
 	};}
 	namespace c_oSerWrapTopBottom{enum c_oSerWrapTopBottom
 	{
 		DistT = 0,
 		DistB = 1,
-		EffectExtent = 2
+		EffectExtent = 2,
+		DistTEmu = 3,
+		DistBEmu = 4
 	};}
 	namespace c_oSerWrapPolygon{enum c_oSerWrapPolygon
 	{
@@ -670,7 +696,9 @@ extern int g_nCurFormatVersion;
 	namespace c_oSerPoint2D{enum c_oSerPoint2D
 	{
 		X = 0,
-		Y = 1
+		Y = 1,
+		XEmu = 2,
+		YEmu = 3
 	};}
 	namespace c_oSerBorderType{enum c_oSerBorderType
 	{
@@ -678,7 +706,9 @@ extern int g_nCurFormatVersion;
 		Space = 1,
 		Size = 2,
 		Value = 3,
-		ColorTheme = 4
+		ColorTheme = 4,
+		SpacePoint = 5,
+		Size8Point = 6
 	};}
 	namespace c_oSerShdType{enum c_oSerShdType
 	{
@@ -691,7 +721,11 @@ extern int g_nCurFormatVersion;
 		left = 0,
 		top = 1,
 		right = 2,
-		bottom = 3
+		bottom = 3,
+		leftTwips = 4,
+		topTwips = 5,
+		rightTwips = 6,
+		bottomTwips = 7
 	};}
 	namespace c_oSerMarginsType{enum c_oSerMarginsType
 	{
@@ -725,7 +759,9 @@ extern int g_nCurFormatVersion;
 	{
 		W = 0,
 		H = 1,
-		Orientation = 2
+		Orientation = 2,
+		WTwips = 3,
+		HTwips = 4
 	};}
 	namespace c_oSer_pgMarType{enum c_oSer_pgMarType
 	{
@@ -734,7 +770,13 @@ extern int g_nCurFormatVersion;
 		Right = 2,
 		Bottom = 3,
 		Header = 4,
-		Footer = 5
+		Footer = 5,
+		LeftTwips = 6,
+		TopTwips = 7,
+		RightTwips = 8,
+		BottomTwips = 9,
+		HeaderTwips = 10,
+		FooterTwips = 11
 	};}
 	namespace c_oSer_ColorType{enum c_oSer_ColorType
 	{
@@ -765,7 +807,8 @@ extern int g_nCurFormatVersion;
 		EndnotePr = 5,
 		SdtGlobalColor = 6,
 		SdtGlobalShowHighlight = 7,
-		Compat = 8
+		Compat = 8,
+		DefaultTabStopTwips = 9
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -860,7 +903,8 @@ extern int g_nCurFormatVersion;
 	namespace c_oSer_OMathBottomNodesValType{enum c_oSer_OMathBottomNodesValType
 	{		
 		Val = 0,
-		AlnAt = 1
+		AlnAt = 1,
+		ValTwips = 2
 	};}
 	namespace c_oSer_OMathContentType{enum c_oSer_OMathContentType
 	{		

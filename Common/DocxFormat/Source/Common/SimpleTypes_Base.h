@@ -165,6 +165,10 @@ namespace SimpleTypes
 		{
 			return (long)Pt_To_Dx(m_dValue);
 		}
+		long ToHps() const
+		{
+			return (long)(m_dValue * 2);
+		}
 		unsigned long ToUnsignedTwips() const
 		{
 			return (unsigned long)Pt_To_Dx(m_dValue);

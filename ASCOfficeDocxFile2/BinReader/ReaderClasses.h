@@ -42,15 +42,15 @@ class SectPr
 {
 public: 
     std::wstring sHeaderFooterReference;
-	double W;
-	double H;
+	long W;
+	long H;
 	BYTE cOrientation;
-	double Left;
-	double Top;
-	double Right;
-	double Bottom;
-	double Header;
-	double Footer;
+	long Left;
+	long Top;
+	long Right;
+	long Bottom;
+	long Header;
+	long Footer;
 	bool TitlePg;
 	bool EvenAndOddHeaders;
 	BYTE SectionType;
@@ -61,6 +61,13 @@ public:
     std::wstring footnotePr;
     std::wstring endnotePr;
 
+	bool bW;
+	bool bH;
+	bool bOrientation;
+	bool bLeft;
+	bool bTop;
+	bool bRight;
+	bool bBottom;
 	bool bHeader;
 	bool bFooter;
 	bool bTitlePg;
@@ -69,18 +76,16 @@ public:
 	bool bPageNumStart;
 	SectPr()
 	{
-		W = Page_Width;
-		H = Page_Height;
-		cOrientation = orientation_Portrait;
-		Left = 30;
-		Top = 20;
-		Right = 15;
-		Bottom = 20;
-		Header = 12.5;
-		Footer = 12.5;
 		sHeaderFooterReference = _T("");
 		cols = _T("<w:cols w:space=\"708\"/>");
 
+		bW = false;
+		bH = false;
+		bOrientation = false;
+		bLeft = false;
+		bTop = false;
+		bRight = false;
+		bBottom = false;
 		bHeader = false;
 		bFooter = false;
 		bTitlePg = false;
@@ -91,14 +96,6 @@ public:
     std::wstring Write()
 	{
         std::wstring sRes = _T("");
-		long nWidth = SerializeCommon::Round(W * g_dKoef_mm_to_twips);
-		long nHeight = SerializeCommon::Round(H * g_dKoef_mm_to_twips);
-		long nMLeft = SerializeCommon::Round(Left * g_dKoef_mm_to_twips);
-		long nMTop = SerializeCommon::Round(Top * g_dKoef_mm_to_twips);
-		long nMRight = SerializeCommon::Round(Right * g_dKoef_mm_to_twips);
-		long nMBottom = SerializeCommon::Round(Bottom * g_dKoef_mm_to_twips);
-		long nMHeader = SerializeCommon::Round(Header * g_dKoef_mm_to_twips);
-		long nMFooter = SerializeCommon::Round(Footer * g_dKoef_mm_to_twips);
 
         if(!sHeaderFooterReference.empty())
             sRes += sHeaderFooterReference;
@@ -120,19 +117,41 @@ public:
 			}
             sRes += L"<w:type w:val=\"" + sType + L"\"/>";
 		}
-        sRes += L"<w:pgSz w:w=\"" + std::to_wstring(nWidth) + L"\" w:h=\"" + std::to_wstring(nHeight) + L"\"";
-		if(orientation_Portrait != cOrientation)
-            sRes += L" w:orient=\"landscape\"";
-		sRes += L"/>";
+		if((bW && bH) || bOrientation)
+		{
+			sRes += L"<w:pgSz";
+			if(bW && bH)
+			{
+				sRes += L" w:w=\"" + std::to_wstring(W) + L"\" w:h=\"" + std::to_wstring(H) + L"\"";
+			}
+			if(bOrientation)
+			{
+				if(orientation_Portrait != cOrientation)
+					sRes += L" w:orient=\"landscape\"";
+				else
+					sRes += L" w:orient=\"portrait\"";
+			}
 
-        sRes += L"<w:pgMar w:top=\"" + std::to_wstring(nMTop) + L"\" w:right=\"" + std::to_wstring(nMRight) +
-                    L"\" w:bottom=\"" + std::to_wstring(nMBottom) + L"\" w:left=\"" + std::to_wstring(nMLeft) + L"\" w:gutter=\"0\"";
+			sRes += L"/>";
+		}
 
-        if(bHeader)
-            sRes += L" w:header=\"" + std::to_wstring(nMHeader) + L"\"";
-		if(bFooter)
-            sRes += L" w:footer=\"" + std::to_wstring(nMFooter) + L"\"";
-        sRes += L"/>";
+		if(bLeft || bTop || bRight || bBottom || bHeader || bFooter)
+		{
+			sRes += L"<w:pgMar";
+			if(bTop)
+				sRes += L" w:top=\"" + std::to_wstring(Top) + L"\"";
+			if(bRight)
+				sRes += L" w:right=\"" + std::to_wstring(Right) + L"\"";
+			if(bBottom)
+				sRes += L" w:bottom=\"" + std::to_wstring(Bottom) + L"\"";
+			if(bLeft)
+				sRes += L" w:left=\"" + std::to_wstring(Left) + L"\"";
+			if(bHeader)
+				sRes += L" w:header=\"" + std::to_wstring(Header) + L"\"";
+			if(bFooter)
+				sRes += L" w:footer=\"" + std::to_wstring(Footer) + L"\"";
+			sRes += L" w:gutter=\"0\"/>";
+		}
         if(!pgBorders.empty())
             sRes += pgBorders;
 
@@ -245,6 +264,7 @@ class Spacing
 public:
 	bool bLineRule;
 	bool bLine;
+	bool bLineTwips;
 	bool bAfter;
 	bool bBefore;
 	bool bAfterAuto;
@@ -252,14 +272,16 @@ public:
 
 	BYTE LineRule;
 	double Line;
-	double After;
-	double Before;
+	long LineTwips;
+	long After;
+	long Before;
 	bool AfterAuto;
 	bool BeforeAuto;
 	Spacing()
 	{
 		bLineRule = false;
 		bLine = false;
+		bLineTwips = false;
 		bAfter = false;
 		bBefore = false;
 		bAfterAuto = false;
@@ -401,7 +423,7 @@ class Tab
 {
 public:
 	BYTE Val;
-	double Pos;
+	long Pos;
 	BYTE Leader;
 	bool bLeader;
 	Tab()
@@ -435,11 +457,11 @@ public:
 	docRGB HighLight;
     std::wstring Shd;
     std::wstring RStyle;
-	double Spacing;
+	long Spacing;
 	bool DStrikeout;
 	bool Caps;
 	bool SmallCaps;
-	double Position;
+	long Position;
 	BYTE FontHint;
 	bool BoldCs;
 	bool ItalicCs;
@@ -680,13 +702,11 @@ public:
 		}
 		if(bSpacing)
 		{
-			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * Spacing);
-            pCStringWriter->WriteString(L"<w:spacing w:val=\"" + std::to_wstring(nSpacing) + L"\"/>");
+			pCStringWriter->WriteString(L"<w:spacing w:val=\"" + std::to_wstring(Spacing) + L"\"/>");
 		}
 		if(bPosition)
 		{
-			long nPosition = SerializeCommon::Round( g_dKoef_mm_to_hps * Position);
-            std::wstring sPosition = L"<w:position w:val=\"" + std::to_wstring(nPosition) + L"\"/>";
+			std::wstring sPosition = L"<w:position w:val=\"" + std::to_wstring(Position) + L"\"/>";
 			pCStringWriter->WriteString(sPosition);
 		}
 		if(bFontSize)
@@ -1040,6 +1060,26 @@ public:
 class PaddingsToWrite
 {
 public:
+	long Left;
+	long Top;
+	long Right;
+	long Bottom;
+
+	bool bLeft;
+	bool bTop;
+	bool bRight;
+	bool bBottom;
+public: PaddingsToWrite()
+		{
+			bLeft = false;
+			bTop = false;
+			bRight = false;
+			bBottom = false;
+		}
+};
+class PaddingsToWriteMM
+{
+public:
 	double Left;
 	double Top;
 	double Right;
@@ -1049,7 +1089,7 @@ public:
 	bool bTop;
 	bool bRight;
 	bool bBottom;
-public: PaddingsToWrite()
+public: PaddingsToWriteMM()
 		{
 			bLeft = false;
 			bTop = false;
@@ -1066,7 +1106,7 @@ public:
 	double Y;
 	double Width;
 	double Height;
-	PaddingsToWrite Paddings;
+	PaddingsToWriteMM Paddings;
 	int m_nDocPr;
 
 	bool bMediaId;
@@ -1205,8 +1245,8 @@ class docBorder
 {
 public:
 	docRGB Color;
-	double Space;
-	double Size;
+	long Space;
+	long Size;
 	BYTE Value;
 	CThemeColor ThemeColor;
 
@@ -1239,13 +1279,11 @@ public:
 			}
 			if(bSize)
 			{
-				long nSize = SerializeCommon::Round(g_dKoef_mm_to_eightpoint * Size);
-                pCStringWriter->WriteString(L" w:sz=\"" + std::to_wstring(nSize) + L"\"");
+				pCStringWriter->WriteString(L" w:sz=\"" + std::to_wstring(Size) + L"\"");
 			}
 			if(bSpace)
 			{
-				long nSpace = SerializeCommon::Round(g_dKoef_mm_to_pt * Space);
-                pCStringWriter->WriteString(L" w:space=\"" + std::to_wstring(nSpace) + L"\"");
+				pCStringWriter->WriteString(L" w:space=\"" + std::to_wstring(Space) + L"\"");
 			}
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
@@ -2112,8 +2150,8 @@ public:
 class CDrawingPropertyWrapPoint
 {
 public:
-	double X;
-	double Y;
+	__int64 X;
+	__int64 Y;
 
 	bool bX;
 	bool bY;
@@ -2160,29 +2198,29 @@ public:
     long    DataLength;
     BYTE    Type;
     bool    BehindDoc;
-    double  DistL;
-    double  DistT;
-    double  DistR;
-    double  DistB;
+	__int64  DistL;
+	__int64  DistT;
+	__int64  DistR;
+	__int64  DistB;
     bool    LayoutInCell;
 	unsigned long RelativeHeight;
     bool    BSimplePos;
-    double  EffectExtentL;
-    double  EffectExtentT;
-    double  EffectExtentR;
-    double  EffectExtentB;
-    double  Width;
-    double  Height;
+	__int64  EffectExtentL;
+	__int64  EffectExtentT;
+	__int64  EffectExtentR;
+	__int64  EffectExtentB;
+	__int64  Width;
+	__int64  Height;
     BYTE    PositionHRelativeFrom;
     BYTE    PositionHAlign;
-    double  PositionHPosOffset;
-    double  PositionHPctOffset;
+	__int64  PositionHPosOffset;
+	double  PositionHPctOffset;
     BYTE    PositionVRelativeFrom;
     BYTE    PositionVAlign;
-    double  PositionVPosOffset;
+	__int64  PositionVPosOffset;
     double  PositionVPctOffset;
-    double  SimplePosX;
-    double  SimplePosY;
+	__int64  SimplePosX;
+	__int64  SimplePosY;
     std::wstring sChartRels;
     std::wstring sSizeRelH;
     std::wstring sSizeRelV;
@@ -2272,24 +2310,17 @@ public:
         {
             if(bWidth && bHeight)
             {
-                __int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
-                __int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-
                 if(false == bChart)
                     sXml += L"<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(emuWidth) + L"\" cy=\"" + std::to_wstring(emuHeight) + L"\"/>";
+distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";
                 else
                     sXml += L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\
-<wp:extent cx=\"" + std::to_wstring(emuWidth) + L"\" cy=\"" + std::to_wstring(emuHeight) + L"\"/>";
+<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";
 
                 if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
-                    __int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
-                    __int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
-                    __int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
-                    __int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
-                    sXml += L"<wp:effectExtent l=\"" + std::to_wstring(emuEffectExtentL) + L"\" t=\"" + std::to_wstring(emuEffectExtentT) +
-                             L"\" r=\"" + std::to_wstring(emuEffectExtentR) + L"\" b=\"" + std::to_wstring(emuEffectExtentB) + L"\"/>";
+					sXml += L"<wp:effectExtent l=\"" + std::to_wstring(EffectExtentL) + L"\" t=\"" + std::to_wstring(EffectExtentT) +
+							 L"\" r=\"" + std::to_wstring(EffectExtentR) + L"\" b=\"" + std::to_wstring(EffectExtentB) + L"\"/>";
                 }
 
                 if(!sDocPr.empty())
@@ -2331,13 +2362,13 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 __int64 emuDistB = 0;
 
                 if(bDistL)
-                    emuDistL = (__int64)(g_dKoef_mm_to_emu * DistL);
+					emuDistL = DistL;
                 if(bDistT)
-                    emuDistT = (__int64)(g_dKoef_mm_to_emu * DistT);
+					emuDistT = DistT;
                 if(bDistR)
-                    emuDistR = (__int64)(g_dKoef_mm_to_emu * DistR);
+					emuDistR = DistR;
                 if(bDistB)
-                    emuDistB = (__int64)(g_dKoef_mm_to_emu * DistB);
+					emuDistB = DistB;
                 int nSimplePos = 0;
                 if(bBSimplePos && BSimplePos)
                     nSimplePos = 1;
@@ -2366,10 +2397,10 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 
                 __int64 emuX = 0;
                 if(bSimplePosX)
-                    emuX = (__int64)(g_dKoef_mm_to_emu * SimplePosX);
+					emuX = SimplePosX;
                 __int64 emuY = 0;
                 if(bSimplePosY)
-                    emuY = (__int64)(g_dKoef_mm_to_emu * SimplePosY);
+					emuY = SimplePosY;
                 sXml += L"<wp:simplePos x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
 
                 if(bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
@@ -2400,8 +2431,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                     }
                     else if(bPositionHPosOffset)
                     {
-                        __int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionHPosOffset);
-                        sContent = L"<wp:posOffset>" + std::to_wstring(emuPosOffset) + L"</wp:posOffset>";
+						sContent = L"<wp:posOffset>" + std::to_wstring(PositionHPosOffset) + L"</wp:posOffset>";
                     }
                     else if(bPositionHPctOffset)
                     {
@@ -2438,8 +2468,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                     }
                     else if(bPositionVPosOffset)
                     {
-                        __int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionVPosOffset);
-                        sContent = L"<wp:posOffset>" + std::to_wstring(emuPosOffset) + L"</wp:posOffset>";
+						sContent = L"<wp:posOffset>" + std::to_wstring(PositionVPosOffset) + L"</wp:posOffset>";
                     }
                     else if(bPositionVPctOffset)
                     {
@@ -2448,20 +2477,13 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                     }
                     sXml += L"<wp:positionV relativeFrom=\"" + sRelativeFrom + L"\">" + sContent + L"</wp:positionV>";
                 }
-                __int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
-                __int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-
-                sXml += L"<wp:extent cx=\"" + std::to_wstring(emuWidth) + L"\" cy=\"" + std::to_wstring(emuHeight)+ L"\"/>";
+				sXml += L"<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height)+ L"\"/>";
 
                 if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
-                    __int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
-                    __int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
-                    __int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
-                    __int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
-                    sXml += L"<wp:effectExtent l=\"" + std::to_wstring(emuEffectExtentL) +
-                                          L"\" t=\"" + std::to_wstring(emuEffectExtentT) + L"\" r=\"" + std::to_wstring(emuEffectExtentR) +
-                                          L"\" b=\"" + std::to_wstring(emuEffectExtentB) + L"\"/>";
+					sXml += L"<wp:effectExtent l=\"" + std::to_wstring(EffectExtentL) +
+										  L"\" t=\"" + std::to_wstring(EffectExtentT) + L"\" r=\"" + std::to_wstring(EffectExtentR) +
+										  L"\" b=\"" + std::to_wstring(EffectExtentB) + L"\"/>";
                 }
                 if(bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
                 {
@@ -2492,9 +2514,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 
                         if(DrawingPropertyWrap.bStart && DrawingPropertyWrap.Start.bX && DrawingPropertyWrap.Start.bY)
                         {
-                            __int64 emuX = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.X);
-                            __int64 emuY = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.Y);
-                            sXml += L"<wp:start x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
+							sXml += L"<wp:start x=\"" + std::to_wstring(DrawingPropertyWrap.Start.X) + L"\" y=\"" + std::to_wstring(DrawingPropertyWrap.Start.Y) + L"\"/>";
                         }
 
                         for(size_t i = 0; i < DrawingPropertyWrap.Points.size(); ++i)
@@ -2502,9 +2522,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                             CDrawingPropertyWrapPoint* pWrapPoint = DrawingPropertyWrap.Points[i];
                             if(pWrapPoint->bX && pWrapPoint->bY)
                             {
-                                __int64 emuX = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->X);
-                                __int64 emuY = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->Y);
-                                sXml += L"<wp:lineTo x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
+								sXml += L"<wp:lineTo x=\"" + std::to_wstring(pWrapPoint->X) + L"\" y=\"" + std::to_wstring(pWrapPoint->Y) + L"\"/>";
                             }
                         }
                         sXml += L"</wp:wrapPolygon>";

@@ -455,7 +455,13 @@ public:
 		case c_oSerProp_rPrType::Spacing:
 			{
 				orPr->bSpacing = true;
-				orPr->Spacing = m_oBufferedStream.GetDouble();
+				orPr->Spacing = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+			}
+			break;
+		case c_oSerProp_rPrType::SpacingTwips:
+			{
+				orPr->bSpacing = true;
+				orPr->Spacing = m_oBufferedStream.GetLong();
 			}
 			break;
 		case c_oSerProp_rPrType::DStrikeout:
@@ -479,7 +485,13 @@ public:
 		case c_oSerProp_rPrType::Position:
 			{
 				orPr->bPosition = true;
-				orPr->Position = m_oBufferedStream.GetDouble();
+				orPr->Position = SerializeCommon::Round( g_dKoef_mm_to_hps * m_oBufferedStream.GetDouble());
+			}
+			break;
+		case c_oSerProp_rPrType::PositionHps:
+			{
+				orPr->bPosition = true;
+				orPr->Position = m_oBufferedStream.GetLong();
 			}
 			break;
 		case c_oSerProp_rPrType::FontHint:
@@ -723,12 +735,12 @@ public:
 			{
 				Spacing oSpacing;
 				READ2_DEF(length, res, this->ReadSpacing, &oSpacing);
-				if(oSpacing.bLine || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
+				if(oSpacing.bLine || oSpacing.bLineTwips || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
 				{
                     pCStringWriter->WriteString(std::wstring(L"<w:spacing"));
 					BYTE bLineRule = linerule_Auto;
 					//проверяется bLine, а не bLineRule чтобы всегда писать LineRule, если есть w:line
-					if(oSpacing.bLine)
+					if(oSpacing.bLine || oSpacing.bLineTwips)
 					{
 						if(oSpacing.bLineRule)
 							bLineRule = oSpacing.LineRule;
@@ -756,10 +768,13 @@ public:
 						}
 						pCStringWriter->WriteString(sLine);
 					}
+					else if(oSpacing.bLineTwips)
+					{
+						pCStringWriter->WriteString(L" w:line=\"" + std::to_wstring(oSpacing.LineTwips) + L"\"");
+					}
 					if(oSpacing.bAfter)
 					{
-						long After = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.After);
-                        std::wstring sAfter = L" w:after=\"" + std::to_wstring(After) + L"\"";
+						std::wstring sAfter = L" w:after=\"" + std::to_wstring(oSpacing.After) + L"\"";
 						pCStringWriter->WriteString(sAfter);
 					}
 					if(oSpacing.bAfterAuto)
@@ -771,8 +786,7 @@ public:
 					}
 					if(oSpacing.bBefore)
 					{
-						long Before = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.Before);
-                        std::wstring sBefore = L" w:before=\"" + std::to_wstring(Before) + L"\"";
+						std::wstring sBefore = L" w:before=\"" + std::to_wstring(oSpacing.Before) + L"\"";
 						pCStringWriter->WriteString(sBefore);
 					}
 					if(oSpacing.bBeforeAuto)
@@ -816,7 +830,6 @@ public:
 					for(size_t i = 0; i < nLen; ++i)
 					{
 						Tab& oTab = oTabs.m_aTabs[i];
-						long nTab = SerializeCommon::Round( g_dKoef_mm_to_twips * oTab.Pos);
                         std::wstring sVal;
 						switch(oTab.Val)
 						{
@@ -825,7 +838,7 @@ public:
                             case g_tabtype_clear:   sVal = L"clear";   break;
                             default:                sVal = L"left";    break;
 						}
-						pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(nTab) + L"\"");
+						pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(oTab.Pos) + L"\"");
 						if (oTab.bLeader)
 						{
 							std::wstring sLeader;
@@ -937,6 +950,11 @@ public:
                 pCStringWriter->WriteString(L" w:left=\"" + std::to_wstring(nIndLeft) + L"\"");
 				break;
 			}
+		case c_oSerProp_pPrType::Ind_LeftTwips:
+			{
+				pCStringWriter->WriteString(L" w:left=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
+				break;
+			}
 		case c_oSerProp_pPrType::Ind_Right:
 			{
 				double dIndRight = m_oBufferedStream.GetDouble();
@@ -945,15 +963,31 @@ public:
                 pCStringWriter->WriteString(L" w:right=\"" + std::to_wstring(nIndRight) + L"\"");
 				break;
 			}
+		case c_oSerProp_pPrType::Ind_RightTwips:
+			{
+				pCStringWriter->WriteString(L" w:right=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
+				break;
+			}
 		case c_oSerProp_pPrType::Ind_FirstLine:
 			{
 				double dIndFirstLine = m_oBufferedStream.GetDouble();
 				long nIndFirstLine = SerializeCommon::Round(dIndFirstLine * g_dKoef_mm_to_twips);
                 std::wstring sIndFirstLine;
-				if(nIndFirstLine > 0)
+				if(nIndFirstLine >= 0)
                     sIndFirstLine = L" w:firstLine =\"" + std::to_wstring(nIndFirstLine) + L"\"";
 				else
                     sIndFirstLine = L" w:hanging=\"" + std::to_wstring(-nIndFirstLine) + L"\"";
+				pCStringWriter->WriteString(sIndFirstLine);
+				break;
+			}
+		case c_oSerProp_pPrType::Ind_FirstLineTwips:
+			{
+				long nIndFirstLine = m_oBufferedStream.GetLong();
+				std::wstring sIndFirstLine;
+				if(nIndFirstLine >= 0)
+					sIndFirstLine = L" w:firstLine =\"" + std::to_wstring(nIndFirstLine) + L"\"";
+				else
+					sIndFirstLine = L" w:hanging=\"" + std::to_wstring(-nIndFirstLine) + L"\"";
 				pCStringWriter->WriteString(sIndFirstLine);
 				break;
 			}
@@ -973,17 +1007,29 @@ public:
 			pSpacing->bLine = true;
 			pSpacing->Line = m_oBufferedStream.GetDouble();
 			break;
+		case c_oSerProp_pPrType::Spacing_LineTwips:
+			pSpacing->bLineTwips = true;
+			pSpacing->LineTwips = m_oBufferedStream.GetLong();
+			break;
 		case c_oSerProp_pPrType::Spacing_LineRule:
 			pSpacing->bLineRule = true;
 			pSpacing->LineRule = m_oBufferedStream.GetUChar();
 			break;
 		case c_oSerProp_pPrType::Spacing_Before:
 			pSpacing->bBefore = true;
-			pSpacing->Before = m_oBufferedStream.GetDouble();
+			pSpacing->Before = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+			break;
+		case c_oSerProp_pPrType::Spacing_BeforeTwips:
+			pSpacing->bBefore = true;
+			pSpacing->Before = m_oBufferedStream.GetLong();
 			break;
 		case c_oSerProp_pPrType::Spacing_After:
 			pSpacing->bAfter = true;
-			pSpacing->After = m_oBufferedStream.GetDouble();
+			pSpacing->After = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+			break;
+		case c_oSerProp_pPrType::Spacing_AfterTwips:
+			pSpacing->bAfter = true;
+			pSpacing->After = m_oBufferedStream.GetLong();
 			break;
 		case c_oSerProp_pPrType::Spacing_BeforeAuto:
 			pSpacing->bBeforeAuto = true;
@@ -1020,7 +1066,9 @@ public:
 		if(c_oSerProp_pPrType::Tab_Item_Val == type)
 			poTabItem->Val = m_oBufferedStream.GetUChar();
 		else if(c_oSerProp_pPrType::Tab_Item_Pos == type)
-			poTabItem->Pos = m_oBufferedStream.GetDouble();
+			poTabItem->Pos = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		else if(c_oSerProp_pPrType::Tab_Item_PosTwips == type)
+			poTabItem->Pos = m_oBufferedStream.GetLong();
 		else if(c_oSerProp_pPrType::Tab_Item_Leader == type)
 		{
 			poTabItem->bLeader = true;
@@ -1113,12 +1161,22 @@ public:
 		else if( c_oSerBorderType::Space == type )
 		{
 			odocBorder->bSpace = true;
-			odocBorder->Space = m_oBufferedStream.GetDouble();
+			odocBorder->Space = SerializeCommon::Round(g_dKoef_mm_to_pt * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSerBorderType::SpacePoint == type )
+		{
+			odocBorder->bSpace = true;
+			odocBorder->Space = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSerBorderType::Size == type )
 		{
 			odocBorder->bSize = true;
-			odocBorder->Size = m_oBufferedStream.GetDouble();
+			odocBorder->Size = SerializeCommon::Round(g_dKoef_mm_to_eightpoint * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSerBorderType::Size8Point == type )
+		{
+			odocBorder->bSize = true;
+			odocBorder->Size = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSerBorderType::Value == type )
 		{
@@ -1374,15 +1432,28 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSer_pgSzType::Orientation == type )
 		{
+			pSectPr->bOrientation = true;
 			pSectPr->cOrientation = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_pgSzType::W == type )
 		{
-			pSectPr->W = m_oBufferedStream.GetDouble();
+			pSectPr->bW = true;
+			pSectPr->W = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgSzType::WTwips == type )
+		{
+			pSectPr->bW = true;
+			pSectPr->W = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_pgSzType::H == type )
 		{
-			pSectPr->H = m_oBufferedStream.GetDouble();
+			pSectPr->bH = true;
+			pSectPr->H = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgSzType::HTwips == type )
+		{
+			pSectPr->bH = true;
+			pSectPr->H = m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1394,29 +1465,63 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSer_pgMarType::Left == type )
 		{
-			pSectPr->Left = m_oBufferedStream.GetDouble();
+			pSectPr->bLeft = true;
+			pSectPr->Left = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgMarType::LeftTwips == type )
+		{
+			pSectPr->bLeft = true;
+			pSectPr->Left = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_pgMarType::Top == type )
 		{
-			pSectPr->Top = m_oBufferedStream.GetDouble();
+			pSectPr->bTop = true;
+			pSectPr->Top = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgMarType::TopTwips == type )
+		{
+			pSectPr->bTop = true;
+			pSectPr->Top = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_pgMarType::Right == type )
 		{
-			pSectPr->Right = m_oBufferedStream.GetDouble();
+			pSectPr->bRight = true;
+			pSectPr->Right = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgMarType::RightTwips == type )
+		{
+			pSectPr->bRight = true;
+			pSectPr->Right = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_pgMarType::Bottom == type )
 		{
-			pSectPr->Bottom = m_oBufferedStream.GetDouble();
+			pSectPr->bBottom = true;
+			pSectPr->Bottom = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgMarType::BottomTwips == type )
+		{
+			pSectPr->bBottom = true;
+			pSectPr->Bottom = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_pgMarType::Header == type )
 		{
 			pSectPr->bHeader = true;
-			pSectPr->Header = m_oBufferedStream.GetDouble();
+			pSectPr->Header = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgMarType::HeaderTwips == type )
+		{
+			pSectPr->bHeader = true;
+			pSectPr->Header = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_pgMarType::Footer == type )
 		{
 			pSectPr->bFooter = true;
-			pSectPr->Footer = m_oBufferedStream.GetDouble();
+			pSectPr->Footer = SerializeCommon::Round(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+		}
+		else if( c_oSer_pgMarType::FooterTwips == type )
+		{
+			pSectPr->bFooter = true;
+			pSectPr->Footer = m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1716,6 +1821,10 @@ public:
 			long nInd = SerializeCommon::Round( g_dKoef_mm_to_twips * dInd);
             pWiterTblPr->TableInd = L"<w:tblInd w:w=\"" + std::to_wstring(nInd) + L"\" w:type=\"dxa\"/>";
 		}
+		else if( c_oSerProp_tblPrType::TableIndTwips == type )
+		{
+			pWiterTblPr->TableInd = L"<w:tblInd w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\" w:type=\"dxa\"/>";
+		}
 		else if( c_oSerProp_tblPrType::TableW == type )
 		{
 			docW odocW;
@@ -1814,6 +1923,10 @@ public:
 			dSpacing /=2;
 			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
             pWiterTblPr->TableCellSpacing = L"<w:tblCellSpacing w:w=\"" + std::to_wstring(nSpacing) + L"\" w:type=\"dxa\"/>";
+		}
+		else if( c_oSerProp_tblPrType::TableCellSpacingTwips == type )
+		{
+			pWiterTblPr->TableCellSpacing = L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\" w:type=\"dxa\"/>";
 		}
 		else if( c_oSerProp_tblPrType::tblCaption == type )
 		{
@@ -1959,6 +2072,10 @@ public:
 
             pCStringWriter->WriteString(L" w:tblpX=\"" + std::to_wstring(nX) + L"\"");
 		}
+		else if( c_oSer_tblpPrType2::TblpXTwips == type )
+		{
+			pCStringWriter->WriteString(L" w:tblpX=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
+		}
 		else if( c_oSer_tblpPrType2::TblpXSpec == type )
 		{
             std::wstring sXml;
@@ -1991,6 +2108,10 @@ public:
 			long nY = SerializeCommon::Round( g_dKoef_mm_to_twips * dY);
 
             pCStringWriter->WriteString(L" w:tblpY=\"" + std::to_wstring(nY) + L"\"");
+		}
+		else if( c_oSer_tblpPrType2::TblpYTwips == type )
+		{
+			pCStringWriter->WriteString(L" w:tblpY=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
 		}
 		else if( c_oSer_tblpPrType2::TblpYSpec == type )
 		{
@@ -2087,6 +2208,10 @@ public:
 
             pCStringWriter->WriteString(L"<w:tblCellSpacing w:w=\"" + std::to_wstring(nSpacing) + L"\" w:type=\"dxa\"/>");
 		}
+		else if( c_oSerProp_rowPrType::TableCellSpacingTwips == type )
+		{
+			pCStringWriter->WriteString(L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\" w:type=\"dxa\"/>");
+		}
 		else if( c_oSerProp_rowPrType::Height == type )
 		{
 			RowHeight val;
@@ -2179,6 +2304,10 @@ public:
 		{
 			double dHeight = m_oBufferedStream.GetDouble();
 			pHeight->nHeight = SerializeCommon::Round( g_dKoef_mm_to_twips * dHeight);
+		}
+		else if( c_oSerProp_rowPrType::Height_ValueTwips == type )
+		{
+			pHeight->nHeight = m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2358,12 +2487,20 @@ public:
 
             pCStringWriter->WriteString(L" w:leftFromText=\"" + std::to_wstring(nLeft) + L"\"");
 		}
+		else if (c_oSerPaddingType::leftTwips == type)
+		{
+			pCStringWriter->WriteString(L" w:leftFromText=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
+		}
 		else if (c_oSerPaddingType::top == type)
 		{
 			double dTop = m_oBufferedStream.GetDouble();
 			long nTop = SerializeCommon::Round( g_dKoef_mm_to_twips * dTop);
 
             pCStringWriter->WriteString(L" w:topFromText=\"" + std::to_wstring(nTop) + L"\"");
+		}
+		else if (c_oSerPaddingType::topTwips == type)
+		{
+			pCStringWriter->WriteString(L" w:topFromText=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
 		}
 		else if (c_oSerPaddingType::right == type)
 		{
@@ -2372,12 +2509,20 @@ public:
 
             pCStringWriter->WriteString(L" w:rightFromText=\"" + std::to_wstring(nRight) + L"\"");
 		}
+		else if (c_oSerPaddingType::rightTwips == type)
+		{
+			pCStringWriter->WriteString(L" w:rightFromText=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
+		}
 		else if (c_oSerPaddingType::bottom == type)
 		{
 			double dBottom = m_oBufferedStream.GetDouble();
 			long nBottom = SerializeCommon::Round( g_dKoef_mm_to_twips * dBottom);
 
             pCStringWriter->WriteString(L" w:bottomFromText=\"" + std::to_wstring(nBottom) + L"\"");
+		}
+		else if (c_oSerPaddingType::bottomTwips == type)
+		{
+			pCStringWriter->WriteString(L" w:bottomFromText=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3294,9 +3439,11 @@ public:
 		{
 			double dDefTabStop = m_oBufferedStream.GetDouble();
 			long nDefTabStop = SerializeCommon::Round(dDefTabStop * g_dKoef_mm_to_twips);
-            std::wstring sXml;
-
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:defaultTabStop w:val=\"" + std::to_wstring(nDefTabStop) + L"\"/>");
+		}
+		else if ( c_oSer_SettingsType::DefaultTabStopTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:defaultTabStop w:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
 		}
 		else if ( c_oSer_SettingsType::MathPr == type )
 		{	
@@ -3582,6 +3729,10 @@ public:
 
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:interSp m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
+		else if ( c_oSer_OMathBottomNodesValType::ValTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:interSp m:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -3614,6 +3765,10 @@ public:
 
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:intraSp m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
+		else if ( c_oSer_OMathBottomNodesValType::ValTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:intraSp m:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -3626,6 +3781,10 @@ public:
 			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
 
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:lMargin m:val=\"" + std::to_wstring(lVal) + L"\"/>");
+		}
+		else if ( c_oSer_OMathBottomNodesValType::ValTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:lMargin m:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3678,6 +3837,10 @@ public:
 
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:postSp m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
+		else if ( c_oSer_OMathBottomNodesValType::ValTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:postSp m:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -3691,6 +3854,10 @@ public:
 
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:preSp m:val=\"" + std::to_wstring(lVal)+ L"\"/>");
 		}
+		else if ( c_oSer_OMathBottomNodesValType::ValTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:preSp m:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -3703,6 +3870,10 @@ public:
 			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
 
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:rMargin m:val=\"" + std::to_wstring(lVal) + L"\"/>");
+		}
+		else if ( c_oSer_OMathBottomNodesValType::ValTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:rMargin m:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3733,6 +3904,10 @@ public:
 			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
 
             m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:wrapIndent m:val=\"" + std::to_wstring(lVal) + L"\"/>");
+		}
+		else if ( c_oSer_OMathBottomNodesValType::ValTwips == type )
+		{
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:wrapIndent m:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7131,6 +7306,10 @@ public:
 
             pCStringWriter->WriteString(L"<w:gridCol w:w=\"" + std::to_wstring(ngridCol)+ L"\"/>");
 		}
+		else if( c_oSerDocTableType::tblGrid_ItemTwips == type )
+		{
+			pCStringWriter->WriteString(L"<w:gridCol w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong())+ L"\"/>");
+		}
 		else if( c_oSerDocTableType::tblGridChange == type )
 		{
 			TrackRevision oTrackRevision;
@@ -7471,22 +7650,42 @@ public:
 		else if ( c_oSerImageType2::DistL == type )
 		{
 			pDrawingProperty->bDistL = true;
-			pDrawingProperty->DistL = m_oBufferedStream.GetDouble();
+			pDrawingProperty->DistL = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerImageType2::DistLEmu == type )
+		{
+			pDrawingProperty->bDistL = true;
+			pDrawingProperty->DistL = (__int64)m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerImageType2::DistT == type )
 		{
 			pDrawingProperty->bDistT = true;
-			pDrawingProperty->DistT = m_oBufferedStream.GetDouble();
+			pDrawingProperty->DistT = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerImageType2::DistTEmu == type )
+		{
+			pDrawingProperty->bDistT = true;
+			pDrawingProperty->DistT = (__int64)m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerImageType2::DistR == type )
 		{
 			pDrawingProperty->bDistR = true;
-			pDrawingProperty->DistR = m_oBufferedStream.GetDouble();
+			pDrawingProperty->DistR = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerImageType2::DistREmu == type )
+		{
+			pDrawingProperty->bDistR = true;
+			pDrawingProperty->DistR = (__int64)m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerImageType2::DistB == type )
 		{
 			pDrawingProperty->bDistB = true;
-			pDrawingProperty->DistB = m_oBufferedStream.GetDouble();
+			pDrawingProperty->DistB = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerImageType2::DistBEmu == type )
+		{
+			pDrawingProperty->bDistB = true;
+			pDrawingProperty->DistB = (__int64)m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerImageType2::LayoutInCell == type )
 		{
@@ -7726,22 +7925,42 @@ public:
 		if ( c_oSerEffectExtent::Left == type )
 		{
 			pDrawingProperty->bEffectExtentL = true;
-			pDrawingProperty->EffectExtentL = m_oBufferedStream.GetDouble();
+			pDrawingProperty->EffectExtentL = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerEffectExtent::LeftEmu == type )
+		{
+			pDrawingProperty->bEffectExtentL = true;
+			pDrawingProperty->EffectExtentL = (__int64)m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerEffectExtent::Top == type )
 		{
 			pDrawingProperty->bEffectExtentT = true;
-			pDrawingProperty->EffectExtentT = m_oBufferedStream.GetDouble();
+			pDrawingProperty->EffectExtentT = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerEffectExtent::TopEmu == type )
+		{
+			pDrawingProperty->bEffectExtentT = true;
+			pDrawingProperty->EffectExtentT = (__int64)m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerEffectExtent::Right == type )
 		{
 			pDrawingProperty->bEffectExtentR = true;
-			pDrawingProperty->EffectExtentR = m_oBufferedStream.GetDouble();
+			pDrawingProperty->EffectExtentR = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerEffectExtent::RightEmu == type )
+		{
+			pDrawingProperty->bEffectExtentR = true;
+			pDrawingProperty->EffectExtentR = (__int64)m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerEffectExtent::Bottom == type )
 		{
 			pDrawingProperty->bEffectExtentB = true;
-			pDrawingProperty->EffectExtentB = m_oBufferedStream.GetDouble();
+			pDrawingProperty->EffectExtentB = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerEffectExtent::BottomEmu == type )
+		{
+			pDrawingProperty->bEffectExtentB = true;
+			pDrawingProperty->EffectExtentB = (__int64)m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7754,12 +7973,22 @@ public:
 		if ( c_oSerExtent::Cx == type )
 		{
 			pDrawingProperty->bWidth = true;
-			pDrawingProperty->Width = m_oBufferedStream.GetDouble();
+			pDrawingProperty->Width = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerExtent::CxEmu == type )
+		{
+			pDrawingProperty->bWidth = true;
+			pDrawingProperty->Width = (__int64)m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerExtent::Cy == type )
 		{
 			pDrawingProperty->bHeight = true;
-			pDrawingProperty->Height = m_oBufferedStream.GetDouble();
+			pDrawingProperty->Height = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerExtent::CyEmu == type )
+		{
+			pDrawingProperty->bHeight = true;
+			pDrawingProperty->Height = (__int64)m_oBufferedStream.GetULong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7782,7 +8011,12 @@ public:
 		else if ( c_oSerPosHV::PosOffset == type )
 		{
 			pDrawingProperty->bPositionHPosOffset = true;
-			pDrawingProperty->PositionHPosOffset = m_oBufferedStream.GetDouble();
+			pDrawingProperty->PositionHPosOffset = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerPosHV::PosOffsetEmu == type )
+		{
+			pDrawingProperty->bPositionHPosOffset = true;
+			pDrawingProperty->PositionHPosOffset = (__int64)m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerPosHV::PctOffset == type )
 		{
@@ -7810,7 +8044,12 @@ public:
 		else if ( c_oSerPosHV::PosOffset == type )
 		{
 			pDrawingProperty->bPositionVPosOffset = true;
-			pDrawingProperty->PositionVPosOffset = m_oBufferedStream.GetDouble();
+			pDrawingProperty->PositionVPosOffset = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerPosHV::PosOffsetEmu == type )
+		{
+			pDrawingProperty->bPositionVPosOffset = true;
+			pDrawingProperty->PositionVPosOffset = (__int64)m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerPosHV::PctOffset == type )
 		{
@@ -7828,12 +8067,22 @@ public:
 		if ( c_oSerSimplePos::X == type )
 		{
 			pDrawingProperty->bSimplePosX = true;
-			pDrawingProperty->SimplePosX = m_oBufferedStream.GetDouble();
+			pDrawingProperty->SimplePosX = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerSimplePos::XEmu == type )
+		{
+			pDrawingProperty->bSimplePosX = true;
+			pDrawingProperty->SimplePosX = (__int64)m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerSimplePos::Y == type )
 		{
 			pDrawingProperty->bSimplePosY = true;
-			pDrawingProperty->SimplePosY = m_oBufferedStream.GetDouble();
+			pDrawingProperty->SimplePosY = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerSimplePos::YEmu == type )
+		{
+			pDrawingProperty->bSimplePosY = true;
+			pDrawingProperty->SimplePosY = (__int64)m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7929,12 +8178,22 @@ public:
 		if ( c_oSerPoint2D::X == type )
 		{
 			pWrapPoint->bX = true;
-			pWrapPoint->X = m_oBufferedStream.GetDouble();
+			pWrapPoint->X = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerPoint2D::XEmu == type )
+		{
+			pWrapPoint->bX = true;
+			pWrapPoint->X = (__int64)m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerPoint2D::Y == type )
 		{
 			pWrapPoint->bY = true;
-			pWrapPoint->Y = m_oBufferedStream.GetDouble();
+			pWrapPoint->Y = (__int64)(g_dKoef_mm_to_emu * m_oBufferedStream.GetDouble());
+		}
+		else if ( c_oSerPoint2D::YEmu == type )
+		{
+			pWrapPoint->bY = true;
+			pWrapPoint->Y = (__int64)m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

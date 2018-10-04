@@ -585,7 +585,7 @@ bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & 
 	unsigned long szEncryptedVerifierHash		= (ProviderType == 0x0001) ? 0x14 : 0x20; // RC4 | AES(DES)
 	unsigned long szEncryptedVerifierHashMax	= mem_stream.GetSize() - mem_stream.GetPosition();
 
-	cryptData.encryptedVerifierValue = std::string((char*)data + mem_stream.GetPosition(), max(szEncryptedVerifierHash, szEncryptedVerifierHashMax));
+	cryptData.encryptedVerifierValue = std::string((char*)data + mem_stream.GetPosition(), (std::max)(szEncryptedVerifierHash, szEncryptedVerifierHashMax));
 	mem_stream.ReadBytes(szEncryptedVerifierHash, false);
 
 	pos = mem_stream.GetPosition();

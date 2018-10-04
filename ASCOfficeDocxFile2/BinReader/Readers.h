@@ -2831,7 +2831,8 @@ public:
 		}
 		else if(c_oSer_sts::Style_Default == type)
 		{
-			odocStyle->bDefault = (0 != m_oBufferedStream.GetUChar());
+			odocStyle->bDefault = true;
+			odocStyle->Default = m_oBufferedStream.GetBool();
 		}
 		else if(c_oSer_sts::Style_BasedOn == type)
 		{

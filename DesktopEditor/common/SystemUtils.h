@@ -41,6 +41,8 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvApplicationNameDefault = L"ONLYOFFICE";
 	static const wchar_t* gc_EnvCompanyName = L"COMPANY_NAME";
 	static const wchar_t* gc_EnvCompanyNameDefault = L"Ascensio System SIA Copyright (c) 2018";
+	static const wchar_t* gc_EnvMethodEncrypt = L"METHOD_CRYPT";
+	static const wchar_t* gc_EnvMethodEncryptDefault = L"Strong";
 
 	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
 }

@@ -37,6 +37,7 @@
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
@@ -645,6 +646,30 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 {
 	_ecmaCryptData cryptData;
 	
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMethodEncrypt);
+
+	if (sApplication == L"Weak")
+	{
+		cryptData.bAgile			= false;
+		cryptData.cipherAlgorithm	= CRYPT_METHOD::DES_ECB;
+		cryptData.hashAlgorithm		= CRYPT_METHOD::SHA1;
+		cryptData.keySize			= 0x08;
+		cryptData.hashSize			= 0x14;
+		cryptData.blockSize			= 0x10;
+		cryptData.saltSize			= 0x10;
+		cryptData.spinCount			= 50000;
+	}
+	else
+	{
+		cryptData.bAgile			= true;
+		cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
+		cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
+		cryptData.keySize			= 0x20;
+		cryptData.hashSize			= 0x40;
+		cryptData.blockSize			= 0x10;
+		cryptData.saltSize			= 0x10;
+		cryptData.spinCount			= 100000;
+	}
 	//cryptData.bAgile				= true;
 	//cryptData.cipherAlgorithm		= CRYPT_METHOD::DES_CBC;
 	////cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
@@ -657,14 +682,6 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	//cryptData.hashSize			= 0x14;
 	//cryptData.blockSize			= 0x10;
 	//cryptData.saltSize			= 0x10;
-
-	cryptData.bAgile			= true;
-	cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
-	cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
-	cryptData.keySize			= 0x20;
-	cryptData.hashSize			= 0x40;
-	cryptData.blockSize			= 0x10;
-	cryptData.saltSize			= 0x10;
 
 	//cryptData.bAgile			= false;
 	//cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_ECB;

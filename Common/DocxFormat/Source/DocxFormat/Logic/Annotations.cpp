@@ -314,6 +314,8 @@ namespace OOX
 					pItem = new COMath( oReader );
 				else if ( _T("m:oMathPara") == sName )
 					pItem = new COMathPara( oReader );
+				else if ( _T("m:r") == sName )
+					pItem = new CMRun( oReader );
 				else if ( _T("w:permEnd") == sName )
 					pItem = new CPermEnd( oReader );
 				else if ( _T("w:permStart") == sName )
@@ -410,6 +412,8 @@ namespace OOX
 					pItem = new COMath( oReader );
 				else if ( _T("m:oMathPara") == sName )
 					pItem = new COMathPara( oReader );
+				else if ( _T("m:r") == sName )
+					pItem = new CMRun( oReader );
 				else if ( _T("w:permEnd") == sName )
 					pItem = new CPermEnd( oReader );
 				else if ( _T("w:permStart") == sName )

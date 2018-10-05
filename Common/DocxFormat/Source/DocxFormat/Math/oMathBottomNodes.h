@@ -315,6 +315,20 @@ namespace OOX
 			nullable<TMathBottomType> m_val;			
 		};
 
+		template<class TMathBottomType, class NodeType>
+		inline void CMathBottomNodesExFromXML(CMathBottomNodes<TMathBottomType>& v, NodeType& oNode)
+		{
+			v.fromXML( oNode );
+			v.sNodeName	= v.GetMathNodeName(v.getType());
+		}
+		template<class NodeType>
+		inline void CMathBottomNodesExFromXML(CMathBottomNodes<SimpleTypes::COnOff<>>& v, NodeType& oNode)
+		{
+			v.m_val.Init();
+			v.m_val->FromBool(true);
+			v.fromXML( oNode );
+			v.sNodeName	= v.GetMathNodeName(v.getType());
+		}
 
 		template <typename TMathBottomType, EElementType EnumType = OOX::et_Unknown>
 		class CMathBottomNodesEx : public CMathBottomNodes<TMathBottomType>
@@ -322,13 +336,11 @@ namespace OOX
 		public:
 			CMathBottomNodesEx(XmlUtils::CXmlNode& oNode)
 			{
-                CMathBottomNodes<TMathBottomType>::fromXML( oNode );
-                CMathBottomNodes<TMathBottomType>::sNodeName	= CMathBottomNodes<TMathBottomType>::GetMathNodeName(getType());
+				CMathBottomNodesExFromXML(*this, oNode);
 			}
 			CMathBottomNodesEx(XmlUtils::CXmlLiteReader& oReader)
 			{
-                CMathBottomNodes<TMathBottomType>::fromXML( oReader );
-                CMathBottomNodes<TMathBottomType>::sNodeName	= CMathBottomNodes<TMathBottomType>::GetMathNodeName(getType());
+				CMathBottomNodesExFromXML(*this, oReader);
 			}
 			virtual EElementType getType() const
 			{

@@ -304,6 +304,9 @@ namespace PPTX
 					{
 						LONG _embed_data_size	= pReader->GetLong();
 						LONG _end_embed_data	= pReader->GetPos() + _embed_data_size + 4;
+
+						if (_embed_data_size < 1) 
+							break;
 //------------------------------------------------------------------
 						std::wstring sDstEmbedded = pReader->m_pRels->m_pManager->GetDstMedia();
 						int nPos = (int)sDstEmbedded.rfind(wchar_t('m'));

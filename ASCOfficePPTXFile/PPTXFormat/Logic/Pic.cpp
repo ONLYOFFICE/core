@@ -330,7 +330,22 @@ namespace PPTX
 						{
 							pReader->Seek(pReader->GetPos() - 4); //roll back to size record
 							std::wstring sXmlContent;
-							pReader->m_pMainDocument->getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
+							if (pReader->m_pMainDocument)
+							{
+								pReader->m_pMainDocument->getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
+							}
+							else
+							{
+								BinDocxRW::CDocxSerializer		oDocxSerializer;
+								NSBinPptxRW::CDrawingConverter	oDrawingConverter;
+
+								oDrawingConverter.SetMainDocument(&oDocxSerializer);
+				
+								//oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(oDrawingConverter.m_pBinaryWriter, &oFontProcessor, &oDrawingConverter, NULL);
+								oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", false, 111, false, &oDrawingConverter, L"");
+
+								oDocxSerializer.getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
+							}
 
 							if (!sXmlContent.empty())
 							{

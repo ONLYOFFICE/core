@@ -46,6 +46,12 @@ public:
 		std::vector<BaseObjectPtr>	m_arCRN;
 	};
 
+	struct _def_name
+	{
+		std::wstring fmla;
+		int sheetId;
+	};
+
 	SUPBOOK();
 	~SUPBOOK();
 
@@ -65,11 +71,13 @@ public:
 
 	GlobalWorkbookInfoPtr		global_info;
 
-	std::vector<std::wstring>	arNames;
 	bool						IsExternal();
 	
 	std::wstring				sExternPathLink;	
 	int							nExternIndex;
+
+	std::map<std::wstring, _def_name>	mapNamesExt;
+	std::vector<std::wstring>			arNames;
 
 private:
 	int serialize_book(std::wostream & strm);

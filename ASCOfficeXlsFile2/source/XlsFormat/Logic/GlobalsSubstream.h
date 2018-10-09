@@ -94,6 +94,7 @@ private:
 	void LoadHFPicture();
 	void UpdateXti();
 	void UpdateDefineNames();
+	void UpdateExternalDefineNames();
 };
 
 } // namespace XLS

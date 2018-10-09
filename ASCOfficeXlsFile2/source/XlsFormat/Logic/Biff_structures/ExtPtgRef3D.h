@@ -48,12 +48,13 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	ExtSheetPair iTabs;
 	RgceLocRel loc;
 	const CellRef& cell_base_ref;
+	
+	GlobalWorkbookInfoPtr	global_info;
 };
 
 } // namespace XLS

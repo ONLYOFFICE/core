@@ -153,6 +153,7 @@ public:
 		double						defaultRowHeight = 14.4;
 	};
 	std::vector<_sheet_info>		sheets_info;
+	std::vector<std::wstring>		external_sheets_info; //current
 
 	std::pair<float, float>			defaultDigitFontSize;
     NSFonts::IApplicationFonts*     applicationFonts;

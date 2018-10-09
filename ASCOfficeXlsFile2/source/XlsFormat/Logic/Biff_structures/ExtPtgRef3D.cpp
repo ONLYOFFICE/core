@@ -51,15 +51,37 @@ BiffStructurePtr ExtPtgRef3D::clone()
 
 void ExtPtgRef3D::load(CFRecord& record)
 {
+	global_info = record.getGlobalWorkbookInfo();
+
 	record >> iTabs >> loc;
 }
 
 
 void ExtPtgRef3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref )
 {
-	Log::info("ExtPtgRef3D record is not implemented.");
-	
-	ptg_stack.push(L"#REF!");
+	std::wstring cell_ref = loc.toString();
+
+	std::wstring strRange;
+	if(-1 == iTabs.itabFirst)
+	{
+		strRange = L"#REF";
+	}
+	else if (iTabs.itabFirst < global_info->external_sheets_info.size())
+	{
+		strRange = XMLSTUFF::name2sheet_name(global_info->external_sheets_info[iTabs.itabFirst], L"");
+		if (iTabs.itabFirst != iTabs.itabLast && iTabs.itabLast < global_info->external_sheets_info.size() )
+		{
+			strRange += XMLSTUFF::name2sheet_name(global_info->external_sheets_info[iTabs.itabLast], L"");
+		}
+	}
+	else
+	{
+		return;
+	}
+	if (!strRange.empty()) strRange += L"!";
+
+	ptg_stack.push(strRange + cell_ref);
+
 }
 
 

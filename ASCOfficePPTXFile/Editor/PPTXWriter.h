@@ -235,7 +235,7 @@ namespace NSBinPptxRW
 				nCountSlides = m_oReader.GetLong();
 			}
 
-			if (0 == nCountThemes || 0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/) //rev 60054 - презентация без слайдов
+			if (/*0 == nCountThemes || */0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/) //rev 60054 - презентация без слайдов
 			{
 				return;
 			}
@@ -353,7 +353,11 @@ namespace NSBinPptxRW
 			}
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
-				arThemesSave[m_arSlideMasters_Theme[i].m_lThemeIndex] = true;
+				int ind = m_arSlideMasters_Theme[i].m_lThemeIndex;
+				if (ind < arThemesSave.size())
+				{
+					arThemesSave[ind] = true;
+				}
 			}
 
 			for (size_t i = 0; i < m_arNotesMasters_Theme.size(); i++)
@@ -365,7 +369,7 @@ namespace NSBinPptxRW
 				}
 			}
 			LONG lCurrectTheme = 0;
-			for (LONG i = 0; i < nCountMasters; ++i)
+			for (LONG i = 0; i < nCountMasters && i < arThemesSave.size(); ++i)
 			{
 				if (!arThemesSave[i])
 					continue;
@@ -373,7 +377,7 @@ namespace NSBinPptxRW
 				++lCurrectTheme;
 			}
 			// теперь нужно перебить ссылки
-			for (LONG i = 0; i < nCountMasters; ++i)
+			for (LONG i = 0; i < nCountMasters && i < arThemesDst.size(); ++i)
 			{
 				m_arSlideMasters_Theme[i].m_lThemeIndex = arThemesDst[i];
 			}			

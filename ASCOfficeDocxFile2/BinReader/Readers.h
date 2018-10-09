@@ -2976,7 +2976,8 @@ public:
 		}
 		else if(c_oSer_sts::Style_Default == type)
 		{
-			odocStyle->bDefault = (0 != m_oBufferedStream.GetUChar());
+			odocStyle->bDefault = true;
+			odocStyle->Default = m_oBufferedStream.GetBool();
 		}
 		else if(c_oSer_sts::Style_BasedOn == type)
 		{
@@ -4144,6 +4145,12 @@ public:
 			READ1_DEF(length, res, this->ReadMathArg, poResult);
             m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMath>")));
 		}
+		else if ( c_oSerParType::MRun == type )
+		{
+			GetRunStringWriter().WriteString(std::wstring(_T("<m:r>")));
+			READ1_DEF(length, res, this->ReadMathMRun, poResult);
+			GetRunStringWriter().WriteString(std::wstring(_T("</m:r>")));
+		}
 		else if ( c_oSerParType::Hyperlink == type )
 		{
 			CHyperlink oHyperlink;
@@ -4766,6 +4773,12 @@ public:
 			READ1_DEF(length, res, this->ReadMathDelimiter, poResult);
             GetRunStringWriter().WriteString(std::wstring(_T("</m:d>")));
 		}
+		else if ( c_oSer_OMathContentType::Del == type )
+		{
+			TrackRevision oTrackRevision;
+			READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
+		}
 		else if ( c_oSer_OMathContentType::EqArr == type )
 		{			
             GetRunStringWriter().WriteString(std::wstring(_T("<m:eqArr>")));
@@ -4789,6 +4802,12 @@ public:
             GetRunStringWriter().WriteString(std::wstring(_T("<m:groupChr>")));
 			READ1_DEF(length, res, this->ReadMathGroupChr, poResult);
             GetRunStringWriter().WriteString(std::wstring(_T("</m:groupChr>")));
+		}
+		else if ( c_oSer_OMathContentType::Ins == type )
+		{
+			TrackRevision oTrackRevision;
+			READ1_DEF(length, res, this->ReadDelIns, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
 		}
 		else if ( c_oSer_OMathContentType::LimLow == type )
 		{			

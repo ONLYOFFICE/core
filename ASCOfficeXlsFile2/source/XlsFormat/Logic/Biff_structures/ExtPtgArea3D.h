@@ -53,7 +53,9 @@ public:
 
 	ExtSheetPair	iTabs;
 	RgceAreaRel		area;
-	const CellRef& cell_base_ref;
+	
+	const CellRef			&cell_base_ref;
+	GlobalWorkbookInfoPtr	global_info;
 };
 
 } // namespace XLS

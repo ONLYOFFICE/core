@@ -3432,6 +3432,14 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
+				case OOX::et_m_r:
+					{
+						OOX::Logic::CMRun* pMRun = static_cast<OOX::Logic::CMRun*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MRun);
+						WriteMathRunContent(pMRun);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
 				default:
 					break;
 				}
@@ -4041,6 +4049,14 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
+				case OOX::et_w_del:
+					{
+						OOX::Logic::CDel* pDel = static_cast<OOX::Logic::CDel*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Del);
+						WriteDel(*pDel);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
 				case OOX::et_m_eqArr:
 					{
 						OOX::Logic::CEqArr* pEqArr = static_cast<OOX::Logic::CEqArr*>(item);
@@ -4090,6 +4106,14 @@ namespace BinDocxRW
 						if ( pGroupChr->m_oElement.IsInit() )
 							WriteMathElement(pGroupChr->m_oElement.get());
 
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_ins:
+					{
+						OOX::Logic::CIns* pIns = static_cast<OOX::Logic::CIns*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Ins);
+						WriteIns(*pIns);
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}

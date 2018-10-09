@@ -85,21 +85,17 @@ namespace DocFileFormat
 		int getCurrentSection	(int cp);
 //---------------------------------
 		bool isSectionEnd		( int cp );
-	// Writes a Paragraph that starts at the given cp and 
-	// ends at the next paragraph end mark or section end mark
+
 		int writeParagraph( int cp, int cpEnd ); 
-	// Writes a Paragraph that starts at the given cpStart and 
-	// ends at the given cpEnd
 		int writeParagraph( int initialCp, int cpEnd, bool sectionEnd, bool lastBad = false );
-	// Writes a Paragraph RSID
-		void writeParagraphRsid( const ParagraphPropertyExceptions* papx );
-	// Writes a run with the given characters and CHPX
 		int writeRun( std::vector<wchar_t>* chars, CharacterPropertyExceptions* chpx, int initialCp );
-	// Writes the given text to the document	
-		int	 writeText			( std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
+		int	writeText			( std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
+		void writeParagraphRsid	( const ParagraphPropertyExceptions* papx );
 		void writeTextElement	( const std::wstring& text, const std::wstring& textType );
         void writeTextStart		( const std::wstring& textType, bool preserve_space);
 		void writeTextEnd		( const std::wstring& textType );
+		void writeField			(const std::wstring& sFieldString, int cpFieldStart, int cpFieldEnd);
+
 		
 		std::vector<int> searchBookmarks( std::vector<wchar_t>* chars, int initialCp );
 		std::vector<int> searchAnnot(std::vector<wchar_t>* chars, int initialCp);

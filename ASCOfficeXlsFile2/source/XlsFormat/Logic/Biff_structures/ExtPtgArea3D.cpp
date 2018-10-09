@@ -51,15 +51,34 @@ BiffStructurePtr ExtPtgArea3D::clone()
 
 void ExtPtgArea3D::load(CFRecord& record)
 {
+	global_info = record.getGlobalWorkbookInfo();
+
 	record >> iTabs >> area;
 }
 
 
 void ExtPtgArea3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	Log::info("ExtPtgArea3D record is not implemented.");
+	std::wstring strRange;
+
+	std::wstring range_ref = area.toString();
 	
-	ptg_stack.push(L"#REF!");
+	if(-1 == iTabs.itabFirst)
+	{
+		strRange = L"#REF";
+	}
+	else if (iTabs.itabFirst < global_info->external_sheets_info.size())
+	{
+		strRange = XMLSTUFF::name2sheet_name(global_info->external_sheets_info[iTabs.itabFirst], L"");
+		if (iTabs.itabFirst != iTabs.itabLast && iTabs.itabLast < global_info->external_sheets_info.size() )
+		{
+			strRange += XMLSTUFF::name2sheet_name(global_info->external_sheets_info[iTabs.itabLast], L"");
+		}
+	}
+	if (!strRange.empty()) strRange += L"!";
+
+	ptg_stack.push(strRange + range_ref);		
+
 }
 
 

@@ -98,6 +98,12 @@
 #include "Biff_records/DXF.h"
 #include "Biff_records/SupBook.h"
 #include "Biff_records/NameCmt.h"
+#include "Biff_records/SupBook.h"
+#include "Biff_records/ExternName.h"
+#include "Biff_records/ExternSheet.h"
+#include "Biff_records/Continue.h"
+//#include "Biff_records/XCT.h"
+//#include "Biff_records/CRN.h"
 
 #include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
@@ -575,6 +581,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	LoadHFPicture();	
 	UpdateXti();
 	UpdateDefineNames();
+	UpdateExternalDefineNames();
 
 	return true;
 }
@@ -663,7 +670,7 @@ void GlobalsSubstream::UpdateXti()
 					{
 						strRange = L"#REF";
 					}
-					else
+					else if (xti->itabFirst < global_info_->sheets_info.size())
 					{
 						strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
 						if (xti->itabFirst != xti->itabLast)
@@ -677,6 +684,14 @@ void GlobalsSubstream::UpdateXti()
 				{
 					val_1.link = XMLSTUFF::xti_indexes2sheet_name(xti->itabFirst, xti->itabLast, info->rgst, val_1.link); 
 				}
+			}
+			else if (xti->itabFirst == -1)
+			{
+				//sheet not found
+			}
+			else if (xti->itabFirst == -2)
+			{
+				//Workbook-level
 			}
 			global_info_->arXti_External.push_back(val_1);
 		}
@@ -746,6 +761,48 @@ void GlobalsSubstream::UpdateDefineNames()
 			}
 		}
 		global_info_->arDefineNames.push_back(name);// для имен функций - todooo ... не все функции корректны !! БДИ !!
+	}
+}
+void GlobalsSubstream::UpdateExternalDefineNames()
+{
+	for (size_t s = 0; s < m_arSUPBOOK.size(); s++)
+	{
+		SUPBOOK* SUPBOOK_ = dynamic_cast<SUPBOOK*>(m_arSUPBOOK[s].get());
+		if (!SUPBOOK_) continue;
+
+		SupBook *supbook = dynamic_cast<SupBook*>(SUPBOOK_->m_SupBook.get());
+		if (!supbook) continue;
+
+		global_info_->external_sheets_info.clear();
+
+		for (size_t i = 0; i < supbook->rgst.size(); i++)
+		{
+			global_info_->external_sheets_info.push_back(supbook->rgst[i]);
+		}
+
+		for (size_t i = 0; i < SUPBOOK_->m_arExternName.size(); i++)
+		{
+			ExternName *externName = dynamic_cast<ExternName*>(SUPBOOK_->m_arExternName[i].get());
+			if (!externName) continue;
+			
+			ExternDocName* docName = dynamic_cast<ExternDocName*>(externName->body.get());
+			if(docName)
+			{
+				if (docName->ixals > 0 && docName->ixals < supbook->rgst.size())
+				{
+				}
+				else
+				{
+					SUPBOOK::_def_name def_name;
+					def_name.fmla		= docName->nameDefinition.getAssembledFormula();
+					
+					if (false == def_name.fmla.empty())
+					{
+						SUPBOOK_->mapNamesExt.insert(std::make_pair(docName->extName.value(), def_name));
+					}
+				}
+			}
+		}
 	}
 }
 int GlobalsSubstream::serialize_protection(std::wostream & _stream)

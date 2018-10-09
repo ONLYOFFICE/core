@@ -52,8 +52,6 @@ void ExtPtgAreaErr3D::load(CFRecord& record)
 
 void ExtPtgAreaErr3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	Log::info("ExtPtgAreaErr3D record is not implemented.");
-
 	ptg_stack.push(L"#REF!");
 }
 

@@ -1497,7 +1497,11 @@ namespace PPTX
 			if(oleObject->m_oId.IsInit())
 			{
 				if (blipFill.blip.IsInit() == false)
+				{
 					blipFill.blip.Init();
+					blipFill.stretch.Init();
+					blipFill.stretch->fillRect.Init();
+				}
 				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
             XmlMacroReadAttributeBase(node, L"spid",	oleObject->m_sShapeId);

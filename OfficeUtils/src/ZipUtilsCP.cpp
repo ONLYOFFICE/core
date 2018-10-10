@@ -58,7 +58,9 @@ namespace ZLibZipUtils
 #endif
       
 #if defined(_WIN32) || defined (_WIN64)
-	  zipFile zf = zipOpen( filename, APPEND_STATUS_CREATE );
+	  zlib_filefunc64_def ffunc;
+	  fill_win32_filefunc64W(&ffunc);
+	  zipFile zf = zipOpen2_64(filename, APPEND_STATUS_CREATE, NULL, &ffunc);
 #else
 	  BYTE* pUtf8 = NULL;
 	  LONG lLen = 0;
@@ -78,7 +80,9 @@ namespace ZLibZipUtils
 #endif
       
 #if defined(_WIN32) || defined (_WIN64)
-	  unzFile uf = unzOpen (filename);
+	  zlib_filefunc64_def ffunc;
+	  fill_win32_filefunc64W(&ffunc);
+	  unzFile uf = unzOpen2_64(filename, &ffunc);
 #else
 	  BYTE* pUtf8 = NULL;
 	  LONG lLen = 0;

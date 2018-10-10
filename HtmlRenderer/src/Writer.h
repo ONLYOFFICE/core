@@ -1143,6 +1143,8 @@ namespace NSHtmlRenderer
                 int symbolsCount = 0;
                 oCur.GenerateArray(symbols, symbolsCount);
 
+                // есть проблема с композитными глифами (буква ё). пока отключу конвертацию
+                lFontConverterFlag = 0;
                 oFontConverter.ToOTF(oCur.m_strFontPath, strTempFont, (unsigned int*)symbols, symbolsCount, sName, lFontConverterFlag); // TRUETYPE only
 
                 RELEASEARRAYOBJECTS(symbols);

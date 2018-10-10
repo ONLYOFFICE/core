@@ -60,9 +60,12 @@ core_windows {
 
 LIB_GRAPHICS_PRI_PATH = $$PWD/../..
 
+FREETYPE_VERSION=2.5.2
+
 INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/agg-2.4/include \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/include \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/include \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/include/freetype \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
     $$LIB_GRAPHICS_PRI_PATH/cximage/png \
@@ -134,45 +137,46 @@ SOURCES += \
 
 SOURCES += $$PWD/graphics_pri.cpp
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftbbox.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftgxval.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftlcdfil.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftmm.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftotval.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftpatent.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftpfr.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftsynth.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/fttype1.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftwinfnt.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftxf86.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/pcf/pcf.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/pfr/pfr.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/psaux/psaux.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/pshinter/pshinter.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/psnames/psmodule.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/raster/raster.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/sfnt/sfnt.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/truetype/truetype.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/type1/type1.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/cid/type1cid.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/type42/type42.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/winfonts/winfnt.c \
+SOURCES += \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftbbox.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftgxval.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftlcdfil.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftmm.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftotval.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftpatent.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftpfr.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftsynth.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/fttype1.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftwinfnt.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftxf86.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/pcf/pcf.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/pfr/pfr.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/psaux/psaux.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/pshinter/pshinter.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/psnames/psmodule.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/raster/raster.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/sfnt/sfnt.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/truetype/truetype.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/type1/type1.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/cid/type1cid.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/type42/type42.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/winfonts/winfnt.c \
     \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/autofit/autofit.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/bdf/bdf.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/cff/cff.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftbase.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftbitmap.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/cache/ftcache.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftfstype.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftgasp.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftglyph.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/gzip/ftgzip.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftinit.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/lzw/ftlzw.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftstroke.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftsystem.c \
-    $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/smooth/smooth.c
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/autofit/autofit.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/bdf/bdf.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/cff/cff.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftbase.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftbitmap.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/cache/ftcache.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftfstype.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftgasp.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftglyph.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/gzip/ftgzip.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftinit.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/lzw/ftlzw.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftstroke.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/base/ftsystem.c \
+    $$LIB_GRAPHICS_PRI_PATH/freetype-$$FREETYPE_VERSION/src/smooth/smooth.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \

@@ -952,9 +952,9 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 			delete oRgbColor;
 		}
 	}
-    for (std::vector<OOX::WritingElement*>::iterator it = vml_common->m_arrItems.begin(); it != vml_common->m_arrItems.end(); ++it)
+    for (size_t i = 0; i < vml_common->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(vml_common->m_arrItems[i]);
 	}
 
 	if (vml_common->m_oFilled.IsInit() && vml_common->m_oFilled->GetValue() == SimpleTypes::booleanFalse)

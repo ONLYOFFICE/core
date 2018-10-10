@@ -688,8 +688,8 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 
 	bool bLine = odf_context()->drawing_context()->isLineShape();
 
-	if (custGeom && !custGeom->cxnLst.empty())
-		bLine = true;
+	//if (custGeom && !custGeom->cxnLst.empty())
+	//	bLine = true;
 
 	odf_context()->drawing_context()->start_area_properties();
 	{
@@ -2293,7 +2293,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 		if (index < 1000)
 		{
 			index -= 1;
-			if ((index >= 0) || (index < (int)theme->themeElements.fmtScheme.fillStyleLst.size()))
+			if (index >= 0 && index < (int)theme->themeElements.fmtScheme.fillStyleLst.size())
 			{
 				fill = &theme->themeElements.fmtScheme.fillStyleLst[index];		
 			}
@@ -2301,7 +2301,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 		else if (index > 1000)
 		{
 			index -= 1001;
-			if ((index >= 0) || (index < (int)theme->themeElements.fmtScheme.bgFillStyleLst.size()))
+			if (index >= 0 && index < (int)theme->themeElements.fmtScheme.bgFillStyleLst.size())
 			{
 				fill = &theme->themeElements.fmtScheme.bgFillStyleLst[index];		
 			}
@@ -2312,15 +2312,15 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	else if (type == 2)
 	{
 		index -= 1;
-		if (index >= 0 || index < (int)theme->themeElements.fmtScheme.lnStyleLst.size())
+		if (index >= 0 && index < (int)theme->themeElements.fmtScheme.lnStyleLst.size())
 		{
 			convert(&theme->themeElements.fmtScheme.lnStyleLst[index], nARGB);		
 		}
 	}
-	else if (type == 3)
+	else if (type == 3) 
 	{
 		index -= 1;
-		if ((index >= 0) || (index < (int)theme->themeElements.fmtScheme.effectStyleLst.size()))
+		if (index >= 0 && index < (int)theme->themeElements.fmtScheme.effectStyleLst.size())
 		{
 			convert(&theme->themeElements.fmtScheme.effectStyleLst[index]);		
 		}

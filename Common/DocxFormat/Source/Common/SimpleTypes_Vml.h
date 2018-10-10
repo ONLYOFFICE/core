@@ -4106,10 +4106,16 @@ namespace SimpleTypes
 
             void ReadValue_Rotation(std::wstring& sValue)
             {
-                    m_oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+				m_oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
 
-				if (sValue.find(_T("fd")) != -1)
-					m_oValue.dValue /= 6000;
+				if (sValue.find(_T("fd")) != std::wstring::npos)
+				{
+					m_oValue.dValue /= 6000.;
+				}
+				else if (sValue.find(_T("f")) == sValue.length() - 1)
+				{
+					m_oValue.dValue /= 65536.;
+				}
 			}
 
 			void ReadValue_Double(std::wstring& sValue)

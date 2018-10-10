@@ -3000,6 +3000,11 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
 		wrap_set = true;
 	}
+	else if (oox_anchor->m_oWrapNone.IsInit())
+	{
+		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::None);
+		wrap_set = true;
+	}
 	else if (oox_anchor->m_oAllowOverlap.IsInit())
 	{
 		odt_context->drawing_context()->set_overlap(oox_anchor->m_oAllowOverlap->ToBool());
@@ -4363,13 +4368,22 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 	}
 	else if (oox_table_pr->m_oTblLayout.IsInit() && oox_table_pr->m_oTblLayout->m_oType.IsInit())
 	{
-		table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(0,odf_types::length::cm);
+		table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(0, odf_types::length::cm);
 		
 		table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
 	}
-	//if(oox_table_pr->m_oJc.IsInit() && oox_table_pr->m_oJc->m_oVal.IsInit())
-	//{
-	//}
+	if(oox_table_pr->m_oJc.IsInit() && oox_table_pr->m_oJc->m_oVal.IsInit())
+	{
+		switch(oox_table_pr->m_oJc->m_oVal->GetValue())
+		{
+		case 0: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Center); break;
+		case 2: 
+		case 3: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left); break;
+		case 1: 
+		case 4: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Right); break;
+		default: break;
+		}
+	}
 	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidiVisual;
 	//nullable<ComplexTypes::Word::CShading                        > m_oShade;
     //nullable<ComplexTypes::Word::std::wstring_                        > m_oTblCaption;

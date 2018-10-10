@@ -838,11 +838,19 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	} 
 	if (!drawing->isInline)
     {
+		drawing->relativeHeight	= L"2";
+        drawing->behindDoc		= L"0";
+
+		if (((drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough) ||
+			!drawing->styleWrap) && styleRunThrough && styleRunThrough->get_type() == run_through::Background)
+        {
+           drawing->behindDoc = L"1";  
+		   if (!drawing->styleWrap)
+			   drawing->styleWrap = style_wrap(style_wrap::RunThrough);
+
+        }
 		if (!drawing->styleWrap)
 			drawing->styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
-
-        drawing->relativeHeight	= L"2";
-        drawing->behindDoc		= L"0";
 
         _CP_OPT(int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
        
@@ -853,13 +861,6 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
             else
 				drawing->relativeHeight = std::to_wstring( 2 + *zIndex );
         }
-
-        if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough 
-            && styleRunThrough && styleRunThrough->get_type() == run_through::Background)
-        {
-           drawing-> behindDoc = L"1";            
-        }
-
         drawing->margin_rect[0] = GetMargin(graphicProperties, sideLeft);
         drawing->margin_rect[1] = GetMargin(graphicProperties, sideTop);
         drawing->margin_rect[2] = GetMargin(graphicProperties, sideRight);

@@ -13,7 +13,7 @@
 */
 
 
-#if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))
+#if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(_WIN64)) && (!defined(__APPLE__))
         #ifndef __USE_FILE_OFFSET64
                 #define __USE_FILE_OFFSET64
         #endif
@@ -48,7 +48,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
 # include <direct.h>
 # include <io.h>
 #else
@@ -60,7 +60,7 @@
 
 #include "zip.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
         #define USEWIN32IOAPI
         #include "iowin32.h"
 #endif
@@ -70,7 +70,7 @@
 #define WRITEBUFFERSIZE (16384)
 #define MAXFILENAME (256)
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
 uLong filetime(f, tmzip, dt)
     char *f;                /* name of file to get info on */
     tm_zip *tmzip;             /* return value: access, modific. and creation times */
@@ -94,7 +94,7 @@ uLong filetime(f, tmzip, dt)
   return ret;
 }
 #else
-#ifdef unix || __APPLE__
+#if defined(unix) || defined(_LINUX) || defined(__APPLE__)
 uLong filetime(f, tmzip, dt)
     char *f;               /* name of file to get info on */
     tm_zip *tmzip;         /* return value: access, modific. and creation times */
@@ -163,6 +163,7 @@ int check_exist_file(filename)
     return ret;
 }
 
+#ifndef BUILD_ZLIB_AS_SOURCES
 void do_banner()
 {
     printf("MiniZip 1.1, demo of zLib + MiniZip64 package, written by Gilles Vollant\n");
@@ -179,6 +180,7 @@ void do_help()
            "  -9  Compress better\n\n" \
            "  -j  exclude path. store only the file name.\n\n");
 }
+#endif
 
 /* calculate the CRC32 of a file,
    because to encrypt a file, we need known the CRC32 of the file before */
@@ -243,6 +245,7 @@ int isLargeFile(const char* filename)
  return largeFile;
 }
 
+#ifndef BUILD_ZLIB_AS_SOURCES
 int main(argc,argv)
     int argc;
     char *argv[];
@@ -518,3 +521,4 @@ int main(argc,argv)
     free(buf);
     return 0;
 }
+#endif

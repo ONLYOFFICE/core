@@ -12,7 +12,7 @@
          Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 */
 
-#if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))
+#if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(_WIN64)) && (!defined(__APPLE__))
         #ifndef __USE_FILE_OFFSET64
                 #define __USE_FILE_OFFSET64
         #endif
@@ -46,7 +46,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
 # include <direct.h>
 # include <io.h>
 #else
@@ -61,7 +61,7 @@
 #define WRITEBUFFERSIZE (8192)
 #define MAXFILENAME (256)
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
 #define USEWIN32IOAPI
 #include "iowin32.h"
 #endif
@@ -85,7 +85,7 @@ void change_file_date(filename,dosdate,tmu_date)
     uLong dosdate;
     tm_unz tmu_date;
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
   HANDLE hFile;
   FILETIME ftm,ftLocal,ftCreate,ftLastAcc,ftLastWrite;
 
@@ -97,7 +97,7 @@ void change_file_date(filename,dosdate,tmu_date)
   SetFileTime(hFile,&ftm,&ftLastAcc,&ftm);
   CloseHandle(hFile);
 #else
-#ifdef unix || __APPLE__
+#if defined(unix) || defined(_LINUX) || defined(__APPLE__)
   struct utimbuf ut;
   struct tm newdate;
   newdate.tm_sec = tmu_date.tm_sec;
@@ -120,12 +120,27 @@ void change_file_date(filename,dosdate,tmu_date)
 
 /* mymkdir and change_file_date are not 100 % portable
    As I don't know well Unix, I wait feedback for the unix portion */
+#ifdef __APPLE__
 
+#if defined(_IOS) || defined(_MAC)
+#include <sys/stat.h>
+#endif
+
+int mymkdir(const char*  dirname)
+{
+#if defined(_IOS) || defined(_MAC)
+	return mkdir (dirname, (mode_t)0775);
+#else
+	return sys_mkdir (dirname);
+#endif
+}
+
+#else
 int mymkdir(dirname)
     const char* dirname;
 {
     int ret=0;
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
     ret = _mkdir(dirname);
 #elif unix
     ret = mkdir (dirname,0775);
@@ -134,6 +149,7 @@ int mymkdir(dirname)
 #endif
     return ret;
 }
+#endif
 
 int makedir (newdir)
     char *newdir;
@@ -185,6 +201,7 @@ int makedir (newdir)
   return 1;
 }
 
+#ifndef BUILD_ZLIB_AS_SOURCES
 void do_banner()
 {
     printf("MiniUnz 1.01b, demo of zLib + Unz package written by Gilles Vollant\n");
@@ -202,6 +219,7 @@ void do_help()
            "  -o  overwrite files without prompting\n" \
            "  -p  extract crypted file using password\n\n");
 }
+#endif
 
 void Display64BitsSize(ZPOS64_T n, int size_char)
 {
@@ -531,6 +549,7 @@ int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,passwo
 }
 
 
+#ifndef BUILD_ZLIB_AS_SOURCES
 int main(argc,argv)
     int argc;
     char *argv[];
@@ -638,7 +657,7 @@ int main(argc,argv)
         ret_value = do_list(uf);
     else if (opt_do_extract==1)
     {
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
         if (opt_extractdir && _chdir(dirname))
 #else
         if (opt_extractdir && chdir(dirname))
@@ -658,3 +677,4 @@ int main(argc,argv)
 
     return ret_value;
 }
+#endif

@@ -93,6 +93,7 @@ public:
 	_CP_OPT(odf_types::Bool)						draw_auto_grow_height_;
 	_CP_OPT(odf_types::Bool)						draw_auto_grow_width_;
     
+	_CP_OPT(odf_types::Bool)						style_shrink_to_fit_;
 	_CP_OPT(odf_types::Bool)						draw_fit_to_size_;
 	_CP_OPT(odf_types::Bool)						draw_fit_to_contour_;
     _CP_OPT(std::wstring)							draw_wrap_influence_on_position_;

@@ -658,6 +658,7 @@ std::map<std::wstring, std::wstring> odt_conversion_context::parse_instr_options
 
 void odt_conversion_context::add_field_instr(const std::wstring &instr)
 {
+	if (current_fields.empty()) return;
 	current_fields.back().instrText += instr;
 }
 void odt_conversion_context::set_field_instr()
@@ -824,7 +825,7 @@ void odt_conversion_context::set_field_instr()
 }
 void odt_conversion_context::start_field(bool in_span)
 {
-	if (false == current_fields.empty() && current_fields.back().status == 0)
+	if (false == current_fields.empty() && current_fields.back().status == 0 && current_fields.back().instrText.empty() )
 		return; //start_field из sdt 
 
 	_field_state field;

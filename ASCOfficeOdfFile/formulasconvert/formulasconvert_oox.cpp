@@ -465,6 +465,10 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 		boost::wregex(L"(?!([a-zA-Z]+\\d*\\())(([a-zA-Z]+\\!)?\\$?[a-zA-Z]*\\$?\\d*(\\:\\$?[a-zA-Z]*\\$?\\d*){0,1})"),
 		&oox2odf_converter::Impl::replace_arguments, boost::match_default | boost::format_all);
 
+	//SUBTOTAL(109,Expense31[Amount])
+	XmlUtils::replace_all( res, L"[", L"KVADRATIN");
+	XmlUtils::replace_all( res, L"]", L"KVADRATOUT");
+
 	if (res1 == res)
 	{
 		XmlUtils::replace_all( res1, L"KAVYCHKA", L"\""); //IMCONJUGATE_emb.xlsx

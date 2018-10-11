@@ -483,9 +483,17 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 					odf_context()->drawing_context()->set_gradient_start(*sRgbColor1, no_set);
 				if (sRgbColor2)
 					odf_context()->drawing_context()->set_gradient_end(*sRgbColor2, no_set);
+				else
+					odf_context()->drawing_context()->set_gradient_end(L"#ffffff", no_set);
 
+				if (vml_fill->m_oAngle.IsInit())
+				{
+					odf_context()->drawing_context()->set_gradient_angle(vml_fill->m_oAngle->GetValue() + 90);
+				}
 				if (vml_fill->m_oFocusPosition.IsInit())
+				{
 					odf_context()->drawing_context()->set_gradient_center(vml_fill->m_oFocusPosition->GetX(), vml_fill->m_oFocusPosition->GetY());
+				}
 			
 			odf_context()->drawing_context()->end_gradient_style();
 		}break;

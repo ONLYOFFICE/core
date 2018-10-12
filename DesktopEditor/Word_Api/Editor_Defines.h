@@ -764,6 +764,8 @@
 #define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
 #define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
 
+#define ASC_MENU_EVENT_TYPE_GO_TO_INTERNAL_LINK     5000
+
 #define ASC_SOCKET_EVENT_TYPE_OPEN                  10000
 #define ASC_SOCKET_EVENT_TYPE_ON_CLOSE              10010
 #define ASC_SOCKET_EVENT_TYPE_MESSAGE               10020

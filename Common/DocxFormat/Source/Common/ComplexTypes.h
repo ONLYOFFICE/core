@@ -704,7 +704,7 @@ namespace ComplexTypes
                 std::wstring sResult;
 
 				if ( m_sVal.IsInit() )
-					sResult += XmlUtils::EncodeXmlString(m_sVal.get(), false);
+					sResult += m_sVal.get();
 
 				return sResult;
 			}

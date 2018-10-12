@@ -548,6 +548,10 @@
 #define shd_Clear			0
 #define shd_Nil				1
 
+#define c_oAscHyperlinkType_InternalLink            0
+#define c_oAscHyperlinkType_WebLink                 1
+#define c_oAscHyperlinkType_RangeLink               2
+
 #define c_oAscContextMenuTypes_Common				0	// Обычное контекстное меню
 #define c_oAscContextMenuTypes_ChangeHdrFtr			1	// Специальное контестное меню для попадания в колонтитул
 

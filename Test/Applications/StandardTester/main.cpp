@@ -251,6 +251,7 @@ public:
 
         m_format = oChecker.nFileType;
 
+#if 0
         std::map<int, bool>::iterator find = m_pInternal->m_formats.find(m_format);
         if ((find == m_pInternal->m_formats.end()) || (find->second == false))
         {
@@ -258,6 +259,7 @@ public:
             m_pInternal->OnConvertFile(this, -1);
             return 0;
         }
+#endif
 
         std::wstring sProcess = NSFile::GetProcessDirectory();
 
@@ -307,6 +309,8 @@ public:
         std::wstring sExe = sProcess + L"/x2t";
         int nReturnCode = NSX2T::Convert(sExe, sTempFileForParams);
 
+        NSFile::CFileBinary::Remove(sTempFileForParams);
+
         if (0 == nReturnCode)
         {
             COfficeUtils oUtils;
@@ -314,10 +318,129 @@ public:
                 NSFile::CFileBinary::Remove(sFileDst);
         }
 
+        if (!m_pInternal->m_bIsStandard)
+        {
+            // смотрим разницу
+            std::wstring strDirIn = NSFile::GetDirectoryName(m_file);
+            std::wstring strDirOut = sDirectoryDst;
+
+            std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/DIFF";
+            std::wstring strDiffs = strDiffsMain + L"/" + NSFile::GetFileName(m_file);
+
+            int nCountInPages = GetPagesCount(strDirIn);
+            int nCountOutPages = GetPagesCount(strDirOut);
+
+            if (nCountInPages != nCountOutPages)
+            {
+                if (!NSDirectory::Exists(strDiffsMain))
+                    NSDirectory::CreateDirectory(strDiffsMain);
+                if (!NSDirectory::Exists(strDiffs))
+                    NSDirectory::CreateDirectory(strDiffs);
+
+                if (nCountInPages > nCountOutPages)
+                    nCountInPages = nCountOutPages;
+
+                std::wstring sFilePagesDiff = strDiffs + L"/pages_count";
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(sFilePagesDiff);
+                oFile.CloseFile();
+
+                std::cout << "file (page count) : " << U_TO_UTF8(strDiffs) << std::endl;
+            }
+
+            for (int nPage = 0; nPage < nCountInPages; ++nPage)
+            {
+                std::wstring sPageI = strDirIn + L"/image" + std::to_wstring(nPage + 1) + L".png";
+                std::wstring sPageO = strDirOut + L"/image" + std::to_wstring(nPage + 1) + L".png";
+                std::wstring sPageDiff = strDiffs + L"/image" + std::to_wstring(nPage + 1) + L".png";
+
+                CBgraFrame frameI;
+                frameI.OpenFile(sPageI);
+
+                CBgraFrame frameO;
+                frameO.OpenFile(sPageO);
+
+                int nW_I = frameI.get_Width();
+                int nH_I = frameI.get_Height();
+
+                int nW_O = frameO.get_Width();
+                int nH_O = frameO.get_Height();
+
+                if (nW_I != nW_O || nH_I != nH_O)
+                {
+                    if (!NSDirectory::Exists(strDiffsMain))
+                        NSDirectory::CreateDirectory(strDiffsMain);
+                    if (!NSDirectory::Exists(strDiffs))
+                        NSDirectory::CreateDirectory(strDiffs);
+
+                    std::wstring sFilePagesDiff = sPageDiff;
+                    NSFile::CFileBinary oFile;
+                    oFile.CreateFileW(sPageDiff);
+                    oFile.WriteStringUTF8(L"sizes!");
+                    oFile.CloseFile();
+
+                    std::cout << "file (sizes) : " << U_TO_UTF8(sPageDiff) << ", (" << nW_I << ", " << nH_I << "), (" << nW_O << ", " << nH_O << ")" << std::endl;
+                    continue;
+                }
+
+                BYTE* pDataI = frameI.get_Data();
+                BYTE* pDataO = frameO.get_Data();
+                size_t sizeMemory = 4 * nW_I * nH_I;
+
+                if (0 == memcmp(pDataI, pDataO, sizeMemory))
+                    continue;
+
+                sizeMemory = nW_I * nH_I;
+
+                for (size_t pix = 0; pix < sizeMemory; ++pix)
+                {
+                    if (pDataI[0] != pDataO[0] || pDataI[1] != pDataO[1] || pDataI[2] != pDataO[2])
+                    {
+                        if (pDataO[0] == 0x00 && pDataO[1] == 0x00 && pDataO[2] == 0xFF)
+                        {
+                            pDataO[0] = 0xFF;
+                            pDataO[1] = 0x00;
+                            pDataO[2] = 0x00;
+                        }
+                        else
+                        {
+                            pDataO[0] = 0x00;
+                            pDataO[1] = 0x00;
+                            pDataO[2] = 0xFF;
+                        }
+                    }
+                    pDataI += 4;
+                    pDataO += 4;
+                }
+
+                if (!NSDirectory::Exists(strDiffsMain))
+                    NSDirectory::CreateDirectory(strDiffsMain);
+                if (!NSDirectory::Exists(strDiffs))
+                    NSDirectory::CreateDirectory(strDiffs);
+
+                frameO.SaveFile(sPageDiff, 4);
+
+                std::cout << "file (diffs) : " << U_TO_UTF8(sPageDiff) << std::endl;
+            }
+        }
+
         m_bRunThread = FALSE;
 
         m_pInternal->OnConvertFile(this, nReturnCode);
         return 0;
+    }
+
+    int GetPagesCount(const std::wstring& dir)
+    {
+        int nCount = 0;
+        std::vector<std::wstring> files = NSDirectory::GetFiles(dir, false);
+        for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
+        {
+            std::wstring sExt = NSFile::GetFileExtention(*i);
+            if (sExt == L"png")
+                ++nCount;
+        }
+        return nCount;
     }
 };
 
@@ -369,7 +492,7 @@ void CInternalWorker::Cancel()
 }
 
 #define ONLYOFFICE_FONTS_VERSION_ 1
-void CheckFonts()
+void CheckFonts(const bool& bIsUseSystemFonts, std::vector<std::wstring>& arDirs)
 {
     std::vector<std::string> strFonts;
     std::wstring strDirectory = NSFile::GetProcessDirectory() + L"/fonts";
@@ -434,8 +557,13 @@ void CheckFonts()
     NSFonts::IApplicationFonts* oApplicationF = NSFonts::NSApplication::Create();
     std::vector<std::wstring> strFontsW_Cur;
 
-    if (true)
+    if (bIsUseSystemFonts)
         strFontsW_Cur = oApplicationF->GetSetupFontFiles();
+
+    for (std::vector<std::wstring>::iterator i = arDirs.begin(); i != arDirs.end(); i++)
+    {
+        NSDirectory::GetFiles2(*i, strFontsW_Cur, true);
+    }
 
 #if defined(_LINUX)
     std::wstring sHome = GetHomeDirectory();
@@ -524,6 +652,17 @@ std::wstring CorrectDir(const std::wstring& sDir)
     return sDir.substr(pos1, pos2 - pos1);
 }
 
+/*
+ *
+ * --input="input-standard-files-dir"
+ * --output="output-dir"
+ * --standard // generate standarts
+ * --use-system-fonts="0/1/false/true"
+ * --font-dirs="C:\\Windows\\Fonts;/usr/share/fonts;"
+ * --cores=4
+ *
+ */
+
 #ifdef WIN32
 int wmain(int argc, wchar_t** argv)
 #else
@@ -534,6 +673,8 @@ int main(int argc, char** argv)
     bool bIsStandard = false;
     std::wstring strInputFolder = L"";
     std::wstring strOutputFolder = L"";
+    bool bIsUseSystemFonts = true;
+    int nCores = 1;
 
     for (int i = 0; i < argc; ++i)
     {
@@ -572,15 +713,63 @@ int main(int argc, char** argv)
             {
                 bIsStandard = true;
             }
+            else if (sKey == L"--use-system-fonts")
+            {
+                if (sValue == L"0" || sValue == L"false")
+                    bIsUseSystemFonts = false;
+            }
+            else if (sKey == L"--font-dirs")
+            {
+                const wchar_t* src = sValue.c_str();
+                const wchar_t* limit = src + sValue.length();
+
+                const wchar_t* srcPrev = src;
+                while (src < limit)
+                {
+                    if (*src == ';')
+                    {
+                        if (srcPrev != src)
+                        {
+                            arFontsDirs.push_back(std::wstring(srcPrev, src - srcPrev));
+                        }
+                        src++;
+                        srcPrev = src;
+                    }
+                    else
+                        src++;
+                }
+
+                if (src > srcPrev)
+                {
+                    arFontsDirs.push_back(std::wstring(srcPrev, src - srcPrev));
+                }
+            }
+            else if (sKey == L"--cores")
+            {
+                nCores = std::stoi(sValue);
+                if (nCores < 1)
+                    nCores = 1;
+            }
         }
     }
 
-    CheckFonts();
+    DWORD dwTime1 = NSTimers::GetTickCount();
 
-#if 1
-    strInputFolder = L"D:\\standard";
-    strOutputFolder = L"D:\\standard\\out";
-    bIsStandard = true;
+    CheckFonts(bIsUseSystemFonts, arFontsDirs);
+
+#if 0
+    if (true)
+    {
+        strInputFolder = L"D:\\standard";
+        strOutputFolder = L"D:\\standard\\out";
+        bIsStandard = true;
+    }
+    else
+    {
+        strInputFolder = L"D:\\standard\\out";
+        strOutputFolder = L"D:\\standard\\check";
+        bIsStandard = false;
+    }
 #endif
 
     CInternalWorker oWorker;
@@ -591,9 +780,14 @@ int main(int argc, char** argv)
     if (!NSDirectory::Exists(strOutputFolder))
         NSDirectory::CreateDirectories(strOutputFolder);
 
-    oWorker.Start(4);
+    oWorker.Start(nCores);
     while (oWorker.IsWork())
         NSThreads::Sleep(500);
+
+    DWORD dwTime2 = NSTimers::GetTickCount();
+
+    DWORD dwTimeDelta = (dwTime2 - dwTime1) / 1000;
+    std::cout << "time: " << dwTimeDelta << std::endl;
 
     return 0;
 }

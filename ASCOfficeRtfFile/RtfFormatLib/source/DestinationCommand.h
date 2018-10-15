@@ -1656,6 +1656,7 @@ public:
 	
 	void Finalize( RtfReader& oReader);
 
+	void EndRows(RtfReader& oReader);
 	void ExecuteNumberChar( RtfDocument& oDocument, RtfReader& oReader, RtfAbstractReader& oAbstrReader, int nWinChar, int nMacChar )
 	 {
 		 RtfFont oFont;

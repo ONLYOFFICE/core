@@ -30,6 +30,7 @@ public:
     bool m_bIsStandard;
 
     NSCriticalSection::CRITICAL_SECTION m_oCS;
+    NSCriticalSection::CRITICAL_SECTION m_oCS_OfficeUtils;
 
 public:
     CInternalWorker()
@@ -55,10 +56,12 @@ public:
         m_nCurrentComplete = 0;
 
         m_oCS.InitializeCriticalSection();
+        m_oCS_OfficeUtils.InitializeCriticalSection();
     }
     ~CInternalWorker()
     {
         m_oCS.DeleteCriticalSection();
+        m_oCS_OfficeUtils.DeleteCriticalSection();
     }
 
     CConverter* GetNextConverter();
@@ -313,6 +316,8 @@ public:
 
         if (0 == nReturnCode)
         {
+            CTemporaryCS oCS(&m_pInternal->m_oCS_OfficeUtils);
+
             COfficeUtils oUtils;
             if (S_OK == oUtils.ExtractToDirectory(sFileDst, sDirectoryDst, NULL, 0))
                 NSFile::CFileBinary::Remove(sFileDst);
@@ -467,6 +472,9 @@ CConverter* CInternalWorker::GetNextConverter()
 void CInternalWorker::OnConvertFile(CConverter* pConverter, int nCode)
 {
     CTemporaryCS oCS(&m_oCS);
+
+    std::cout << "file (complete) : " << U_TO_UTF8(m_files[m_nCurrentComplete]) << ", code : " << nCode << std::endl;
+
     ++m_nCurrentComplete;
 
     RELEASEOBJECT(pConverter);

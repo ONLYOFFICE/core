@@ -373,6 +373,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_p_ShapeTree:
 			case OOX::et_a_GroupShape:
 			case OOX::et_w_GroupShape:
+			case OOX::et_lc_LockedCanvas:
 			{
 				convert(dynamic_cast<PPTX::Logic::SpTree *>(oox_unknown));				
 			}break;

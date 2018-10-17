@@ -58,9 +58,10 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				std::wstring ns = m_namespace;
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					ns = L"xdr";
+				std::wstring namespace_ = m_namespace;
+				
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			 namespace_ = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) namespace_ = L"a";
 
 				if (!noChangeAspect.is_init() &&
 					!noGrp.is_init() &&
@@ -70,11 +71,11 @@ namespace PPTX
 					!noSelect.is_init() &&
 					!noUngrp.is_init())
 				{
-					pWriter->WriteString(L"<" + ns + L":cNvGrpSpPr/>");
+					pWriter->WriteString(L"<" + namespace_ + L":cNvGrpSpPr/>");
 					return;
 				}
 
-				pWriter->WriteString(L"<" + ns + L":cNvGrpSpPr>");
+				pWriter->WriteString(L"<" + namespace_ + L":cNvGrpSpPr>");
 
 				pWriter->StartNode(_T("a:grpSpLocks"));
 
@@ -90,7 +91,7 @@ namespace PPTX
 				
 				pWriter->EndNode(_T("a:grpSpLocks"));
 
-				pWriter->WriteString(L"</" + ns + L":cNvGrpSpPr>");
+				pWriter->WriteString(L"</" + namespace_ + L":cNvGrpSpPr>");
 			}
 
 			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const

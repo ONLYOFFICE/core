@@ -1924,7 +1924,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 
 		for (size_t i = 0; i < m_ooxGroup->SpTreeElems.size() ; i++ )
 		{
-			if (m_ooxGroup->SpTreeElems[i].getType() == OOX::et_p_ShapeTree)
+			if (m_ooxGroup->SpTreeElems[i].getType() == OOX::et_p_ShapeTree ||
+				m_ooxGroup->SpTreeElems[i].getType() == OOX::et_lc_LockedCanvas)
 			{
 				RtfShapePtr pNewShape( new RtfShape() );
 				pNewShape->m_bIsGroup = true;

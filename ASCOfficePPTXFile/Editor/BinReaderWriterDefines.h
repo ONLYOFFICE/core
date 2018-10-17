@@ -190,6 +190,7 @@ namespace NSBinPptxRW
 #define SPTREE_TYPE_OLE					6
 #define SPTREE_TYPE_VIDEO				7
 #define SPTREE_TYPE_AUDIO				8
+#define SPTREE_TYPE_LOCKED_CANVAS		9
 
 static BYTE SchemeClr_GetBYTECode(const std::wstring& sValue)
 {
@@ -274,9 +275,9 @@ static std::wstring SchemeClr_GetStringCode(const BYTE& val)
 #define XMLWRITER_DOC_TYPE_PPTX         0
 #define XMLWRITER_DOC_TYPE_DOCX         1
 #define XMLWRITER_DOC_TYPE_XLSX         2
-#define XMLWRITER_DOC_TYPE_CHART        3
-#define XMLWRITER_DOC_TYPE_WORDART      4
-#define XMLWRITER_DOC_TYPE_DOCX_CHILD   5
+#define XMLWRITER_DOC_TYPE_CHART		3
+#define XMLWRITER_DOC_TYPE_WORDART		4
+#define XMLWRITER_DOC_TYPE_GRAPHICS		5
 
 #define XMLWRITER_RECORD_TYPE_SPPR	0
 #define XMLWRITER_RECORD_TYPE_CLRMAPOVR	1

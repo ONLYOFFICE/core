@@ -351,14 +351,12 @@ namespace PPTX
 			nvGraphicFramePr.toXmlWriter(pWriter);
             
 			if (xfrm.IsInit() && pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
-			{
-				std::wstring namespace_ = m_namespace;			
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
+			{				
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->m_ns = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)						xfrm->m_ns = L"a";
 				
-				xfrm->m_ns = namespace_;
 				xfrm->toXmlWriter(pWriter);
 			}
-
 			if (table.is_init())
 			{
 				pWriter->WriteString (L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">");
@@ -378,6 +376,7 @@ namespace PPTX
 			
 			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)	namespace_ = L"wpg";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)							namespace_ = L"a";
 
 			pWriter->StartNode(namespace_ + L":graphicFrame");
 

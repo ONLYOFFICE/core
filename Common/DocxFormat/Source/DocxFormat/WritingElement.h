@@ -357,6 +357,8 @@ namespace OOX
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
 
+		et_lc_LockedCanvas,	// <lc:lockedCanvas> 
+
 		et_graphicFrame,	// <...:graphicFrame>
 		et_pic,				// <...:pic>
 		et_cxnSp,			// <...:cxnSp>

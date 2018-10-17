@@ -1346,21 +1346,10 @@ std::wstring CDrawingConverter::ObjectToDrawingML(const std::wstring& sXml, int 
 
 	oXmlWriter.WriteString(strMainProps);
 
-	if (oElem.is<PPTX::Logic::SpTree>())
-	{
-        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
-	}
-	else if (oElem.is<PPTX::Logic::Pic>())
-	{
-        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-	}
-	else
-	{
-        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
-	}
+	std::wstring uri = oElem.GetUriElem();
+
+	oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"" + uri + L"\">");
+
 	oElem.toXmlWriter(&oXmlWriter);
     oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
 
@@ -4855,24 +4844,12 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
         oXmlWriter.WriteString(L"<w:drawing>");
 		oXmlWriter.WriteString(strMainProps);
 
-		if (oElem.is<PPTX::Logic::SpTree>())
-		{
-            oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-    <a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
-		}
-		else if (oElem.is<PPTX::Logic::Pic>())
-		{
-            oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-    <a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-		}
-		else
-		{
-            oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
-    <a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
-		}
+		std::wstring uri = oElem.GetUriElem();
+		
+		oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"" + uri + L"\">");
+
 		oElem.toXmlWriter(&oXmlWriter);
-        oXmlWriter.WriteString(L"</a:graphicData>\
-    </a:graphic>");
+        oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
 
 		oXmlWriter.WriteString(strMainPropsTail);
         oXmlWriter.WriteString(bIsInline ? L"</wp:inline>" : L"</wp:anchor>");

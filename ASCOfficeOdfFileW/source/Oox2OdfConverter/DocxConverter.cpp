@@ -352,6 +352,7 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 		case OOX::et_w_GroupShape:
 		case OOX::et_p_ShapeTree:
+		case OOX::et_lc_LockedCanvas:
 		{
 			convert(dynamic_cast<PPTX::Logic::SpTree*>(oox_unknown));
 		}break;

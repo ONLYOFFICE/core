@@ -752,6 +752,7 @@ namespace PPTX
 			
 			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"pic";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) namespace_ = L"a";
 
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
 				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)

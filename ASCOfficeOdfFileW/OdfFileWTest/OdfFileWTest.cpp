@@ -96,7 +96,7 @@ HRESULT convert_single(std::wstring srcFileName)
 
 	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", NULL);
 
-	std::wstring sPassword = L"password";
+	std::wstring sPassword;// = L"password";
 	
 	converter.convert();
 	converter.write(dstTempPath, srcTempPath, sPassword, L"hiuh56f56tfy7g");

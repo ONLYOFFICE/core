@@ -1094,11 +1094,10 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		else
 		{
 			paragraphProps->m_bInTable = 1;
-			if ( PROP_DEF == paragraphProps->m_nItap )
+			if ( PROP_DEF == paragraphProps->m_nItap)
 				paragraphProps->m_nItap = 1;
 		}
 	}
-    COMMAND_RTF_BOOL( "intbl", paragraphProps->m_bInTable,	sCommand, hasParameter, parameter )
     else if ( "itap" == sCommand && hasParameter)
 	{
 		//if (parameter == 0 && paragraphProps->m_bInTable && paragraphProps->m_nItap > 0)
@@ -2340,6 +2339,32 @@ bool RtfOldListReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReade
 		return false;
 	return true;
 }
+void RtfParagraphPropDestination::EndRows(RtfReader& oReader)
+{
+	RtfTableRowPtr oNewTableRow ( new RtfTableRow() );
+	oNewTableRow->m_oProperty = oReader.m_oState->m_oRowProperty;
+
+	for( int k = (int)aCells.size() - 1; k >= 0 ; k-- )
+	{
+		if ( aCellItaps[k] == nCurItap )
+		{
+			oNewTableRow->InsertItem( aCells[k], 0 );
+			
+			aCells.erase(aCells.begin() + k);
+			aCellItaps.erase(aCellItaps.begin() + k);
+		}
+		else
+			break;
+	}
+	//для каждого cell в row добавляем их свойства
+	for( int i = 0; i < oNewTableRow->GetCount() && i < oNewTableRow->m_oProperty.GetCount() ; i++ )
+	{
+		oNewTableRow->operator [](i)->m_oProperty = oNewTableRow->m_oProperty[i];
+	}
+	//Добавляем временный row
+	aRows.push_back( oNewTableRow );
+	aRowItaps.push_back( nCurItap );
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
 void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReader, bool bEndCell, bool bEndRow )
@@ -2351,6 +2376,8 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 	{
 		if ( nCurItap > 0 ) //Если до этого были только параграфы в таблицах - завершаем таблицу
 		{
+			if (bEndRow) EndRows(oReader); //ê¡ñ¿ó¿ñπá½∞¡á∩ »α«úαá¼¼á.rtf
+
 			RtfTablePtr oNewTable ( new RtfTable() );
 			oNewTable->m_oProperty = oCurRowProperty;
 
@@ -2416,30 +2443,10 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 			aItaps.push_back( oItem->m_oProperty.m_nItap );
 		}
 		nCurItap = oItem->m_oProperty.m_nItap;
-		//закончилась строка
+
 		if ( bEndRow )
 		{
-			RtfTableRowPtr oNewTableRow ( new RtfTableRow() );
-			oNewTableRow->m_oProperty = oReader.m_oState->m_oRowProperty;
-
-			for( int k = (int)aCells.size() - 1; k >= 0 ; k-- )
-			{
-				if ( aCellItaps[k] == nCurItap )
-				{
-					oNewTableRow->InsertItem( aCells[k], 0 );
-					
-					aCells.erase(aCells.begin() + k);
-					aCellItaps.erase(aCellItaps.begin() + k);
-				}
-				else
-					break;
-			}
-			//для каждого cell в row добавляем их свойства
-			for( int i = 0; i < (int)oNewTableRow->GetCount() && i < oNewTableRow->m_oProperty.GetCount() ; i++ )
-				oNewTableRow->operator [](i)->m_oProperty = oNewTableRow->m_oProperty[i];
-			//Добавляем временный row
-			aRows.push_back( oNewTableRow );
-			aRowItaps.push_back( nCurItap );
+			EndRows(oReader);
 		}
 		else
 		{

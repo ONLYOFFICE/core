@@ -230,10 +230,11 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 	else
 	{
 		//open office dont support defined names in chart formula 
+		// 7501214.xlsx  - частичное заполнение local-table
 		int col = -1, row = -1;
 		utils::parsing_ref( refs[0], col, row);
 		
-		if (col < 0 && row < 0)
+		if (col < 0 && row < 0 && (odf_context_->type != SpreadsheetDocument))
 		{
 			local_table_enabled_	= true;
 			//find defined name ????
@@ -1587,7 +1588,9 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 
 		int col1 = -1, col2 = -1, row1 = -1, row2 = -1;
 
-		if (refs.size() < 1) return;			
+		if (refs.size() < 1) return;	
+		if (refs[0].empty()) return;
+
 		utils::parsing_ref( refs[0], col1, row1);
 		
 		if (refs.size() > 1) 
@@ -1694,7 +1697,7 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
 
 		add = false;
 
-		if (cells[i].row  > curr_row + 1 && !header)
+		if (cells[i].row  > curr_row + 1/* && !header*/)
 		{	
 			office_element_ptr row_elm;
 

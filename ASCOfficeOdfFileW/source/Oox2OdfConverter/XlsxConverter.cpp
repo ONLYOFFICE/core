@@ -1115,10 +1115,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 				std::wstring ref(selection->m_oActiveCell.get());
 				odf_writer::utils::parsing_ref (ref, ActiveCellX, ActiveCellY);
 
-				if (ActiveCellX >= 0 && ActiveCellY >= 0)
+				if (ActiveCellX > 0 && ActiveCellY > 0)
 				{
-					ods_context->settings_context()->add_property(L"CursorPositionX", L"int", std::to_wstring(ActiveCellX));
-					ods_context->settings_context()->add_property(L"CursorPositionY", L"int", std::to_wstring(ActiveCellY));
+					ods_context->settings_context()->add_property(L"CursorPositionX", L"int", std::to_wstring(ActiveCellX - 1));
+					ods_context->settings_context()->add_property(L"CursorPositionY", L"int", std::to_wstring(ActiveCellY - 1));
 				}
 			}
 			if (selection->m_oSqref.IsInit())
@@ -1983,16 +1983,37 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	if (!oox_anchor) return;
 
 ////////////////// 
-	if (oox_anchor->m_oFrom.IsInit() || oox_anchor->m_oTo.IsInit())
+	if (oox_anchor->m_oFrom.IsInit() || oox_anchor->m_oTo.IsInit() || 
+		oox_anchor->m_oPos.IsInit() || oox_anchor->m_oExt.IsInit())
 	{
 		oox_table_position from={}, to={};
 		
-		convert(oox_anchor->m_oFrom.GetPointer(),	&from);	
-		convert(oox_anchor->m_oTo.GetPointer(),		&to);
+		double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
-		double x1=0, y1=0, x2=0, y2=0;
-		ods_context->current_table().convert_position(from, x1, y1);
-		ods_context->current_table().convert_position(to,	x2, y2);
+		if (oox_anchor->m_oFrom.IsInit())
+		{
+			convert(oox_anchor->m_oFrom.GetPointer(), &from);	
+			ods_context->current_table().convert_position(from, x1, y1);
+		}
+		else if (oox_anchor->m_oPos.IsInit()) 
+		{
+			if (oox_anchor->m_oPos->m_oX.IsInit())
+				x1 = oox_anchor->m_oPos->m_oX->GetValue();
+			if (oox_anchor->m_oPos->m_oY.IsInit())
+				y1 = oox_anchor->m_oPos->m_oY->GetValue();
+		}
+		if (oox_anchor->m_oTo.IsInit())
+		{
+			convert(oox_anchor->m_oTo.GetPointer(), &to);
+			ods_context->current_table().convert_position(to, x2, y2);
+		}
+		else if (oox_anchor->m_oExt.IsInit())
+		{
+			if (oox_anchor->m_oExt->m_oCx.IsInit())
+				x2 = x1 + oox_anchor->m_oExt->m_oCx->GetValue();
+			if (oox_anchor->m_oExt->m_oCy.IsInit())
+				y2 = y1 + oox_anchor->m_oExt->m_oCy->GetValue();
+		}
 		
 		ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
 	}

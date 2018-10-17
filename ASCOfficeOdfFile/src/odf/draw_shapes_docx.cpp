@@ -103,6 +103,7 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 			{
 				std::wstring href = fill.bitmap->xlink_href_;
 				fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
+				fill.bitmap->name_space = L"w14";
 			}
 
 			std::wstringstream strm_fill, strm_ln;

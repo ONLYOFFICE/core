@@ -346,7 +346,7 @@ void odf_drawing_context::set_background_state(bool Val)
 void odf_drawing_context::check_anchor()
 {
 	return;
-	if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && (impl_->anchor_settings_.run_through_) && (impl_->anchor_settings_.run_through_->get_type() == run_through::Background))
+	if ((/*impl_->is_footer_ || impl_->is_header_ ||*/ impl_->is_background_) && (impl_->anchor_settings_.run_through_) && (impl_->anchor_settings_.run_through_->get_type() == run_through::Background))
 	{
 		set_anchor(anchor_type::Char);
 		//подозрительно на подложку страницы
@@ -1317,7 +1317,7 @@ void odf_drawing_context::set_no_fill()
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && 
+		if ((/*impl_->is_footer_ || impl_->is_header_ ||*/ impl_->is_background_) && 
 			(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_) && 
 			(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
 		{
@@ -1367,7 +1367,7 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 			//impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor); - default transparent
 			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
 			
-			if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && 
+			if ((/*impl_->is_footer_ || impl_->is_header_ ||*/ impl_->is_background_) && 
 				(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_) && 
 				(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
 			{
@@ -2391,7 +2391,7 @@ void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(d
 //------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_image(std::wstring odf_path)
 {	
-	if (impl_->is_footer_ || impl_->is_header_ || impl_->is_background_)
+	if (/*impl_->is_footer_ || impl_->is_header_ ||*/ impl_->is_background_)//AstraIntlCaseStudyFinal0.docx
 	{
 		start_shape(142/*SimpleTypes::shapetypeRect*/);
 		start_bitmap_style();
@@ -2514,7 +2514,10 @@ void odf_drawing_context::set_text_box_min_size(bool val)
 	if (impl_->current_graphic_properties)
 	{
 		impl_->current_graphic_properties->draw_auto_grow_height_ = true;
-		impl_->current_graphic_properties->draw_auto_grow_width_ = true; 
+		//impl_->current_graphic_properties->draw_auto_grow_width_ = true; //Example_2.xlsx
+		
+		impl_->current_graphic_properties->draw_fit_to_size_ = false;
+		impl_->current_graphic_properties->style_shrink_to_fit_ = false;
 	}	
 	
 	if (impl_->current_drawing_state_.elements_.empty()) return;
@@ -2675,7 +2678,7 @@ void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
 
 void odf_drawing_context::end_image()
 {
-	if (impl_->is_footer_ || impl_->is_header_ || impl_->is_background_)
+	if (/*impl_->is_footer_ || impl_->is_header_ ||*/ impl_->is_background_)
 	{
 		end_bitmap_style();
 		end_shape();

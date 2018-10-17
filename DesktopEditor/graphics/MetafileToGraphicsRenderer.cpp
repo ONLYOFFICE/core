@@ -51,6 +51,9 @@ namespace NSOnlineOfficeBinToPdf
         int m_nRasterW;
         int m_nRasterH;
 
+        double m_dDpiX;
+        double m_dDpiY;
+
         std::vector<std::wstring> m_arTempFiles;
 
     public:
@@ -70,6 +73,9 @@ namespace NSOnlineOfficeBinToPdf
 
             m_nRasterW = 100;
             m_nRasterH = 100;
+
+            m_dDpiX = 96.0;
+            m_dDpiY = 96.0;
         }
 
         ~CMetafileToRenderterRaster_private()
@@ -228,6 +234,14 @@ namespace NSOnlineOfficeBinToPdf
                 nRasterW = (int)(w * dKoef1 + 0.5);
                 nRasterH = (int)(h * dKoef1 + 0.5);
             }
+            else if (2 == m_internal->m_nSaveType)
+            {
+                double w = oInfo.arSizes[nPageIndex].width;
+                double h = oInfo.arSizes[nPageIndex].height;
+
+                nRasterW = (int)((w * m_internal->m_dDpiX / 25.4) + 0.5);
+                nRasterH = (int)((h * m_internal->m_dDpiY / 25.4) + 0.5);
+            }
 
             oFrame.put_Width(nRasterW);
             oFrame.put_Height(nRasterH);
@@ -346,5 +360,10 @@ namespace NSOnlineOfficeBinToPdf
     void CMetafileToRenderterRaster::SetIsOnlyFirst(const bool& value)
     {
         m_internal->m_bIsOnlyFirst = value;
+    }
+    void CMetafileToRenderterRaster::SetOutputDpi(const double& dDpiX, const double& dDpiY)
+    {
+        m_internal->m_dDpiX = dDpiX;
+        m_internal->m_dDpiY = dDpiY;
     }
 }

@@ -80,11 +80,20 @@ std::wstring convert_date(const std::wstring & oox_date)
 	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
 
 	////to for example, "1899-12-31T05:37:46.66569
-	std::wstring date_str = boost::lexical_cast<std::wstring>(date_.year())
+	std::wstring date_str;
+
+	try
+	{
+		date_str = boost::lexical_cast<std::wstring>(date_.year())
 							+ L"-" +
 							(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month().as_number()) 
 							+ L"-" +
 							(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
+	}
+	catch(...)
+	{
+		date_str = oox_date;
+	}
 	return date_str;
 }
 
@@ -471,21 +480,21 @@ void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 
 office_element_ptr  & ods_table_state::current_row_element()
 {
-	if (rows_.size()>0)
+	if (false == rows_.empty())
 		return rows_.back().elm;
 	else
 		throw;
 }
 office_element_ptr  & ods_table_state::current_cell_element()
 {
-	if (cells_size_ >0)
+	if (cells_size_ > 0)
 		return cells_.back().elm;
 	else
 		throw;
 }
 ods_hyperlink_state & ods_table_state::current_hyperlink()
 {
-	if ((cells_size_ >0 && hyperlinks_.size()>0) && (cells_.back().hyperlink_idx>=0) )
+	if ((cells_size_ >0 && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
 	{
 		return hyperlinks_[cells_.back().hyperlink_idx];
 	}

@@ -930,8 +930,8 @@ void odf_drawing_context::end_shape()
 		{
 			std::wstring strTransform;
 
-			odf_types::length x11 = (line->draw_line_attlist_.svg_x1_.get() + line->draw_line_attlist_.svg_x2_.get()) / 2;
-			odf_types::length y11 = (line->draw_line_attlist_.svg_y1_.get() + line->draw_line_attlist_.svg_y2_.get()) / 2;
+			odf_types::length x11 = (line->draw_line_attlist_.svg_x1_.get() + line->draw_line_attlist_.svg_x2_.get()) / 2.;
+			odf_types::length y11 = (line->draw_line_attlist_.svg_y1_.get() + line->draw_line_attlist_.svg_y2_.get()) / 2.;
 
 			//if (impl_->current_drawing_state_.in_group_)
 			{

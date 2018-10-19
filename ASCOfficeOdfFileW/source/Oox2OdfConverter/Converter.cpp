@@ -61,6 +61,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SmartArt.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/AlphaModFix.h"
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
@@ -444,14 +445,42 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<PPTX::Logic::EffectStyle*>(oox_unknown));
 			}break;
-			//case OOX::et_a_alphaModFix:
-			//{
-			//	OOX::Drawing::CAlphaModulateFixedEffect* pAlpha= dynamic_cast<OOX::Drawing::CAlphaModulateFixedEffect*>(oox_unknown);
-			//	if (pAlpha)
-			//	{
-			//		odf_context()->drawing_context()->set_opacity(pAlpha->m_oAmt.GetValue());
-			//	}
-			//}break;
+			case OOX::et_a_alphaModFix:
+			{
+				convert(dynamic_cast<PPTX::Logic::AlphaModFix*>(oox_unknown));
+			}break;
+			case OOX::et_a_blur:
+			{
+				convert(dynamic_cast<PPTX::Logic::Blur*>(oox_unknown));
+			}break;
+			case OOX::et_a_fillOverlay:
+			{
+				convert(dynamic_cast<PPTX::Logic::FillOverlay*>(oox_unknown));
+			}break;
+			case OOX::et_a_glow:
+			{
+				convert(dynamic_cast<PPTX::Logic::Glow*>(oox_unknown));
+			}break;
+			case OOX::et_a_innerShdw:
+			{
+				convert(dynamic_cast<PPTX::Logic::InnerShdw*>(oox_unknown));
+			}break;
+			case OOX::et_a_outerShdw:
+			{
+				convert(dynamic_cast<PPTX::Logic::OuterShdw*>(oox_unknown));
+			}break;
+			case OOX::et_a_reflection:
+			{
+				convert(dynamic_cast<PPTX::Logic::Reflection*>(oox_unknown));
+			}break;
+			case OOX::et_a_softEdge:
+			{
+				convert(dynamic_cast<PPTX::Logic::SoftEdge*>(oox_unknown));
+			}break;
+			case OOX::et_a_effectDag:
+			{
+				convert(dynamic_cast<PPTX::Logic::EffectDag*>(oox_unknown));
+			}break;
 			case OOX::et_v_imagedata:
 			{
 				convert(dynamic_cast<OOX::Vml::CImageData*>(oox_unknown));

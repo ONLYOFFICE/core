@@ -926,6 +926,37 @@ void odf_drawing_context::end_shape()
 		if (line->draw_line_attlist_.svg_y1_ && impl_->current_drawing_state_.svg_height_ && !line->draw_line_attlist_.svg_y2_)
 			line->draw_line_attlist_.svg_y2_ = line->draw_line_attlist_.svg_y1_.get() + impl_->current_drawing_state_.svg_height_.get();
 		
+		if (impl_->current_drawing_state_.rotateAngle_)
+		{
+			std::wstring strTransform;
+
+			odf_types::length x11 = (line->draw_line_attlist_.svg_x1_.get() + line->draw_line_attlist_.svg_x2_.get()) / 2;
+			odf_types::length y11 = (line->draw_line_attlist_.svg_y1_.get() + line->draw_line_attlist_.svg_y2_.get()) / 2;
+
+			//if (impl_->current_drawing_state_.in_group_)
+			{
+				if (line->draw_line_attlist_.svg_x1_&& line->draw_line_attlist_.svg_y1_)
+				{
+					strTransform += std::wstring(L" translate(-") +	boost::lexical_cast<std::wstring>(x11)
+											+ std::wstring(L",-") + boost::lexical_cast<std::wstring>(y11)
+											+ std::wstring(L")" ); 
+				}
+
+			}
+			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle_.get()) + std::wstring(L")");
+			if (line->draw_line_attlist_.svg_x1_&& line->draw_line_attlist_.svg_y1_)
+			{
+				strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(x11)
+										+ std::wstring(L",") + boost::lexical_cast<std::wstring>(y11)
+										+ std::wstring(L")" ); 
+			}
+			if (strTransform.empty() == false)
+			{
+				line->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_ = strTransform;
+			}
+
+			impl_->current_drawing_state_.rotateAngle_ = boost::none;
+		}
 		impl_->current_drawing_state_.svg_height_ = boost::none;
 		impl_->current_drawing_state_.svg_width_ = boost::none;
 		

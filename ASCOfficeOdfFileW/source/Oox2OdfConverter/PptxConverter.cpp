@@ -1297,7 +1297,8 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 		if (oox_background->bgPr.IsInit())
 		{
 			OoxConverter::convert(&oox_background->bgPr->Fill);
-	//EffectProperties		EffectList; 
+	
+			convert(oox_background->bgPr->EffectList.List.GetPointer());
 	//nullable_bool			shadeToTitle;
 		}
 		else if (oox_background->bgRef.IsInit())

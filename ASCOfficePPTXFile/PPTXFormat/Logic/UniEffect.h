@@ -87,7 +87,6 @@ namespace PPTX
 				if(is_init())
 					Effect->SetParentPointer(pParent);
 			};
-		private:
 			smart_ptr<WrapperWritingElement> Effect;
 		protected:
 			virtual void FillParentPointersForChilds(){};

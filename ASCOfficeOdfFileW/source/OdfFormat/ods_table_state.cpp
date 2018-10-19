@@ -838,8 +838,8 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-    int row_span =0;
-    int col_span =0;
+    int row_span = 0;
+    int col_span = 0;
 
 	if (ref_cells.size() ==2)
 	{
@@ -859,7 +859,7 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
 		row_span = col_span = 1;//???
 	}
 
-	if (col_span >0 && row_span > 0)
+	if (col_span > 0 && row_span > 0)
 	{
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 		if (cell == NULL)return;
@@ -1053,7 +1053,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 
 void ods_table_state::end_cell()
 {
-	if ( cells_size_  <1)return;
+	if ( cells_size_  < 1)return;
 
     if (cells_.back().comment_idx >= 0)
 	{

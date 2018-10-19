@@ -43,6 +43,8 @@
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
+
 #include "../OdfFormat/ods_conversion_context.h"
 
 #include "../OdfFormat/odf_text_context.h"
@@ -1117,8 +1119,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 
 				if (ActiveCellX > 0 && ActiveCellY > 0)
 				{
-					ods_context->settings_context()->add_property(L"CursorPositionX", L"int", std::to_wstring(ActiveCellX - 1));
-					ods_context->settings_context()->add_property(L"CursorPositionY", L"int", std::to_wstring(ActiveCellY - 1));
+					ods_context->settings_context()->add_property(L"CursorPositionX",	L"int", std::to_wstring(ActiveCellX - 1));
+					ods_context->settings_context()->add_property(L"CursorPositionY",	L"int", std::to_wstring(ActiveCellY - 1));
+					ods_context->settings_context()->add_property(L"PositionLeft",		L"int", std::to_wstring(0));
+					ods_context->settings_context()->add_property(L"PositionRight",		L"int", std::to_wstring(0));
+					ods_context->settings_context()->add_property(L"PositionTop",		L"int", std::to_wstring(0));
+					ods_context->settings_context()->add_property(L"PositionBottom",	L"int", std::to_wstring(ActiveCellY > 30 ? ActiveCellY - 2 : 0));
 				}
 			}
 			if (selection->m_oSqref.IsInit())
@@ -2121,10 +2127,77 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 			odf_ref_image = odf_context()->add_imageobject(pathImage);
 		}
 //--------------------------------------------------------------------------------------------------
-		if (!bAnchor || odf_ref_image.empty())
+		if ((!bAnchor || odf_ref_image.empty()) && object->m_oShapeId.IsInit() && (oox_sheet->m_oLegacyDrawing.IsInit()) && (oox_sheet->m_oLegacyDrawing->m_oId.IsInit()))
 		{
-			//from vml drawing or oox drawing
-			//m_oShapeId;
+			//todooo вынести отдельно если понадобится еще для чего
+			OOX::CVmlDrawing *pVmlDrawing = NULL;
+            smart_ptr<OOX::File> oFileV = oox_sheet->Find(oox_sheet->m_oLegacyDrawing->m_oId->GetValue());
+			if (oFileV.IsInit() && OOX::FileTypes::VmlDrawing == oFileV->type())
+			{
+				pVmlDrawing = (OOX::CVmlDrawing*)oFileV.operator->();
+			}
+			OOX::WritingElement* pShapeElem	= NULL;
+			std::wstring sShapeId = L"_x0000_s" + std::to_wstring(object->m_oShapeId->GetValue());
+			if (pVmlDrawing)
+			{
+                boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
+				
+				if (pFind != pVmlDrawing->m_mapShapes.end())
+				{
+					pShapeElem	= pFind->second.pElement;
+				}			
+			}
+			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
+
+			for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+			{
+				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				if(!bAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
+				{
+					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
+
+					SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+					OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
+
+					pClientData->toCellAnchor(pCellAnchor);
+					
+					oox_table_position from = {}, to = {};
+					convert(pCellAnchor->m_oFrom.GetPointer(),	&from);	
+					convert(pCellAnchor->m_oTo.GetPointer(),	&to);
+					delete pCellAnchor;
+
+					double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+					ods_context->current_table().convert_position(from, x1, y1);
+					ods_context->current_table().convert_position(to,	x2, y2);
+						
+					ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
+				}
+				if(OOX::et_v_imagedata == pChildElemShape->getType())
+				{
+					OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
+										
+					std::wstring sIdImageFileCache;
+					if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+					else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+					else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
+														
+					if (!sIdImageFileCache.empty())
+					{
+						//ищем физический файл ( rId относительно vml_drawing)									
+						smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
+						
+						if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
+						{
+							OOX::Image* pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+							
+							if (pImageFileCache && odf_ref_image.empty())
+							{
+								odf_ref_image = odf_context()->add_imageobject(pImageFileCache->filename().GetPath());
+							}
+						}
+					}
+				}
+			}
 		}
 //--------------------------------------------------------------------------------------------------
 		ods_context->drawing_context()->start_drawing();

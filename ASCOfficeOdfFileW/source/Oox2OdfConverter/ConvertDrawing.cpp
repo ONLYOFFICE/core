@@ -45,6 +45,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/AlphaModFix.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/PrstClr.h"
@@ -513,9 +514,11 @@ void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
 		if (oox_grpSpPr->xfrm->rot.IsInit())
 			odf_context()->drawing_context()->set_group_rotate(oox_grpSpPr->xfrm->rot.get() / 60000.);
 	}
+
+	convert(oox_grpSpPr->EffectList.List.GetPointer());
+	convert(oox_grpSpPr->scene3d.GetPointer());
+	
 	//UniFill					Fill;
-	//EffectProperties			EffectList;
-	//nullable<Scene3d>			scene3d;
 }
 
 void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
@@ -713,23 +716,14 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	}
 	odf_context()->drawing_context()->end_line_properties();
 //-----------------------------------------------------------------------------------------------------------------------------
-	PPTX::Logic::EffectLst*	effectLst = NULL;
+	PPTX::Logic::EffectLst*	effectLst = dynamic_cast<PPTX::Logic::EffectLst*>(oox_spPr->EffectList.List.GetPointer());
 	
-	if (oox_spPr->EffectList.is<PPTX::Logic::EffectLst>())
-	{
-		effectLst = &oox_spPr->EffectList.as<PPTX::Logic::EffectLst>();
-	}
-
 	if		(effectLst)		convert(effectLst);
 	else if (oox_sp_style)	convert(&oox_sp_style->effectRef, 3);
 
-	//convert(oox_spPr->ExtLst.GetPointer());
+	convert(oox_spPr->scene3d.GetPointer());
+	convert(oox_spPr->sp3d.GetPointer());
 
-	//nullable<OOX::Drawing::CEffectContainer>          EffectDag;
-
-	//nullable<OOX::Drawing::COfficeArtExtensionList>   ExtLst;
-	//nullable<OOX::Drawing::CScene3D>                  Scene3D;
-	//nullable<OOX::Drawing::CShape3D>                  Sp3D;	
 //-----------------------------------------------------------------------------------------------------------------------------
 }
 
@@ -844,14 +838,60 @@ void OoxConverter::convert(PPTX::Logic::AhPolar *oox_handle)
 {
 	if (!oox_handle) return;
 }
+void OoxConverter::convert(PPTX::Logic::EffectDag *oox_effect_dag)
+{
+	if (!oox_effect_dag) return;
 
+	//type - sib, value
+	for (size_t i = 0; i < oox_effect_dag->Effects.size(); ++i)
+	{
+		convert(oox_effect_dag->Effects[i].Effect.operator->());
+	}
+}
 void OoxConverter::convert(PPTX::Logic::EffectLst *oox_effect_list)
 {
 	if (!oox_effect_list) return;
 
+	convert(oox_effect_list->blur.GetPointer());
+	convert(oox_effect_list->fillOverlay.GetPointer());
+	convert(oox_effect_list->glow.GetPointer());
+	convert(oox_effect_list->reflection.GetPointer());
+	convert(oox_effect_list->softEdge.GetPointer());
 	convert(oox_effect_list->innerShdw.GetPointer());
 	convert(oox_effect_list->outerShdw.GetPointer());
 	convert(oox_effect_list->prstShdw.GetPointer());
+}
+void OoxConverter::convert(PPTX::Logic::AlphaModFix *oox_alpha)
+{
+	if (oox_alpha == NULL) return;
+	if (false == oox_alpha->amt.IsInit()) return;
+
+	odf_context()->drawing_context()->set_opacity(oox_alpha->amt.get() / 1000.);
+}
+void OoxConverter::convert(PPTX::Logic::Blur *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::FillOverlay *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::Reflection *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::Glow *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::SoftEdge *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
 }
 void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow)
 {
@@ -991,10 +1031,10 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
                 odf_context()->drawing_context()->set_bitmap_link(pathImage);
 				//...
 			}
-			//for (size_t i = 0 ; i < oox_bitmap_fill->blip->m_arrEffects.size(); i++)
-			//{
-			//	convert(oox_bitmap_fill->blip->m_arrEffects[i]);
-			//}
+			for (size_t i = 0 ; i < oox_bitmap_fill->blip->Effects.size(); i++)
+			{
+				convert(oox_bitmap_fill->blip->Effects[i].Effect.operator->());
+			}
 		}
 		if (oox_bitmap_fill->srcRect.IsInit() && Width > 0  && Height > 0)//часть изображения
 		{

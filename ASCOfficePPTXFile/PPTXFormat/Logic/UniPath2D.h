@@ -140,7 +140,6 @@ namespace PPTX
 			template<class T> T& as() {return static_cast<T&>(*Path2D);}
 			template<class T> const T& as() const {return static_cast<const T&>(*Path2D);}
 
-		public:
 			smart_ptr<PathBase> Path2D;
 		protected:
 			virtual void FillParentPointersForChilds(){};

@@ -334,7 +334,7 @@ void ods_conversion_context::add_merge_cells(const std::wstring & ref)
 	int end_col = -1, end_row = -1;
 
 	utils::parsing_ref (ref_cells[0], start_col, start_row);
-	utils::parsing_ref (ref_cells[1], end_col,	  end_row);
+	utils::parsing_ref (ref_cells[1], end_col, end_row);
 
 	current_table().set_merge_cells(start_col,start_row, end_col, end_row);
 
@@ -376,7 +376,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	}
 
 	office_element_ptr cell_elm;
-	create_element(L"table", L"table-cell",cell_elm,this);
+	create_element(L"table", L"table-cell", cell_elm, this);
 	
 	current_table().start_cell(cell_elm, style_elm);
 	

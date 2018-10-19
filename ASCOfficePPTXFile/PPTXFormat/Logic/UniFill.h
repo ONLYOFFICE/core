@@ -121,8 +121,6 @@ namespace PPTX
 				}
 			}
 
-
-		public:
 			smart_ptr<WrapperWritingElement>	Fill;
 			enum Type {notInit, noFill, solidFill, gradFill, blipFill, pattFill, grpFill};
 			Type								m_type;

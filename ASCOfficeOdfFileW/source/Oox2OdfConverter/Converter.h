@@ -294,6 +294,7 @@ namespace PPTX
 		class SolidFill;
 		class PattFill;
 		class EffectLst;
+		class EffectDag;
 		class FontRef;
 		class StyleRef;
 		class Ln;
@@ -328,12 +329,18 @@ namespace PPTX
 		class QuadBezTo;
 		class CubicBezTo;
 		class Close;
+		class AhXY;
+		class AhPolar;
 		class EffectStyle;
 		class InnerShdw;
 		class OuterShdw;
 		class PrstShdw;
-		class AhXY;
-		class AhPolar;
+		class AlphaModFix;
+		class Blur;
+		class FillOverlay;
+		class Glow;
+		class Reflection;
+		class SoftEdge;
 	}
 }
 
@@ -448,12 +455,19 @@ public:
 		void convert(PPTX::Logic::Close							*oox_geom_path);
 		void convert(PPTX::Logic::AhXY							*oox_handle);
 		void convert(PPTX::Logic::AhPolar						*oox_handle);
+		
 		void convert(PPTX::Logic::EffectStyle					*oox_effect);
 		void convert(PPTX::Logic::EffectLst						*oox_effect_list);
+		void convert(PPTX::Logic::EffectDag						*oox_effect_dag);
 		void convert(PPTX::Logic::InnerShdw						*oox_effect);
 		void convert(PPTX::Logic::OuterShdw						*oox_effect);
 		void convert(PPTX::Logic::PrstShdw						*oox_effect);
-		
+		void convert(PPTX::Logic::AlphaModFix					*oox_effect);
+		void convert(PPTX::Logic::Blur							*oox_effect);
+		void convert(PPTX::Logic::FillOverlay					*oox_effect);
+		void convert(PPTX::Logic::Glow							*oox_effect);
+		void convert(PPTX::Logic::Reflection					*oox_effect);
+		void convert(PPTX::Logic::SoftEdge						*oox_effect);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);

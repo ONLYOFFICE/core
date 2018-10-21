@@ -2076,14 +2076,24 @@ void odf_drawing_context::set_line_tail(int type, int len, int width)
 
 	impl_->current_graphic_properties->draw_marker_end_ = add_marker_style(type);
 
-	switch(width)
+	if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 	{
-	case 0://lineendwidthLarge
-		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.4, length::cm); break;
-	case 1://lineendwidthMedium
-		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.3, length::cm); break;
-	case 2://lineendwidthSmall
-		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.2, length::cm); break;
+		double sz_x =impl_->current_drawing_state_.svg_width_->get_value_unit(odf_types::length::pt);
+		double sz_y =impl_->current_drawing_state_.svg_height_->get_value_unit(odf_types::length::pt);
+
+		impl_->current_graphic_properties->draw_marker_end_width_ = length((std::max)(sz_x, sz_y) / 10., odf_types::length::pt); 
+	}
+	if (!impl_->current_graphic_properties->draw_marker_end_width_)
+	{
+		switch(width)
+		{
+		case 0://lineendwidthLarge
+			impl_->current_graphic_properties->draw_marker_end_width_ = length(0.4, length::cm); break;
+		case 1://lineendwidthMedium
+			impl_->current_graphic_properties->draw_marker_end_width_ = length(0.3, length::cm); break;
+		case 2://lineendwidthSmall
+			impl_->current_graphic_properties->draw_marker_end_width_ = length(0.2, length::cm); break;
+		}
 	}
 }
 void odf_drawing_context::set_line_head(int type, int len, int width)
@@ -2092,14 +2102,24 @@ void odf_drawing_context::set_line_head(int type, int len, int width)
 	
 	impl_->current_graphic_properties->draw_marker_start_ = add_marker_style(type);
 
-	switch(width)
+	if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 	{
-	case 0://lineendwidthLarge
-		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.4, length::cm); break;
-	case 1://lineendwidthMedium
-		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.3, length::cm); break;
-	case 2://lineendwidthSmall
-		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.2, length::cm); break;
+		double sz_x =impl_->current_drawing_state_.svg_width_->get_value_unit(odf_types::length::pt);
+		double sz_y =impl_->current_drawing_state_.svg_height_->get_value_unit(odf_types::length::pt);
+
+		impl_->current_graphic_properties->draw_marker_start_width_ = length((std::max)(sz_x, sz_y) / 10., odf_types::length::pt); 
+	}
+	if (!impl_->current_graphic_properties->draw_marker_start_width_)
+	{
+		switch(width)
+		{
+			case 0://lineendwidthLarge
+				impl_->current_graphic_properties->draw_marker_start_width_ = length(0.4, length::cm); break;
+			case 1://lineendwidthMedium
+				impl_->current_graphic_properties->draw_marker_start_width_ = length(0.3, length::cm); break;
+			case 2://lineendwidthSmall
+				impl_->current_graphic_properties->draw_marker_start_width_ = length(0.2, length::cm); break;
+		}
 	}
 }
 

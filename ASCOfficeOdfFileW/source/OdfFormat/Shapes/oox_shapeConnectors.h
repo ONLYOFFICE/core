@@ -33,5 +33,16 @@
 
 namespace cpdoccore 
 {
+class oox_shape_StraightConnector1 : public oox_shape
+{
+public:
+	oox_shape_StraightConnector1()
+	{
+		odf_type_name	=L"ooxml-straightConnector1";
+
+		enhanced_path	= L"M 0 0 L 21600 21600 N";
+		view_box		= L"0 0 21600 21600";  
+	}
+};
 
 }

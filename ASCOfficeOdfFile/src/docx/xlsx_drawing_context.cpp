@@ -202,20 +202,25 @@ void xlsx_drawing_context::end_group()
 {
 	if (impl_->groups_.size() < 1) return;
 
-	_rect & group_rect = impl_->groups_.back()->svg_rect_.get();
-
-	group_rect.cy -= group_rect.y;
-	group_rect.cx -= group_rect.x;
-
-	for (size_t i = 0; i < impl_->groups_.back()->child_objects_.size(); i++)
+	if (impl_->groups_.back()->svg_rect_)
 	{
-		_rect & r = impl_->groups_.back()->child_objects_[i].svg_rect_.get();
-		
-		r.y -= group_rect.y;
-		r.x -= group_rect.x;
+		_rect & group_rect = impl_->groups_.back()->svg_rect_.get();
+
+		group_rect.cy -= group_rect.y;
+		group_rect.cx -= group_rect.x;
+
+		for (size_t i = 0; i < impl_->groups_.back()->child_objects_.size(); i++)
+		{
+			if (!impl_->groups_.back()->child_objects_[i].svg_rect_) continue;
+
+			_rect & r = impl_->groups_.back()->child_objects_[i].svg_rect_.get();
+			
+			r.y -= group_rect.y;
+			r.x -= group_rect.x;
+		}
 	}
 	
-	if (impl_->groups_.back()->in_group_)
+	if (impl_->groups_.back()->in_group_ && impl_->groups_.back()->svg_rect_)
 	{
 		_rect & objct_rect = impl_->groups_.back()->svg_rect_.get();
 		
@@ -251,7 +256,8 @@ void xlsx_drawing_context::start_drawing(std::wstring const & name)
 
 void xlsx_drawing_context::end_drawing()
 {
-	if (impl_->object_description_.in_group_)
+	if (impl_->object_description_.in_group_ && 
+				impl_->object_description_.svg_rect_)
 	{
 		_rect & objct_rect = impl_->object_description_.svg_rect_.get();
 		_rect & group_rect = impl_->groups_.back()->svg_rect_.get();

@@ -41,6 +41,9 @@ X2tConverter.depends = \
     OdfFileWriterLib \
     XlsFormatLib
 
+# build the project sequentially as listed in SUBDIRS !
+CONFIG += ordered
+
 # for run in qt from this solution
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH
 include(../../../Common/3dParty/icu/icu.pri)

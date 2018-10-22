@@ -328,7 +328,7 @@ void ods_conversion_context::add_merge_cells(const std::wstring & ref)
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-	if (ref_cells.size() !=2) return;//тута однозначно .. по правилам оох
+	if (ref_cells.size() != 2) return;//тута однозначно .. по правилам оохml
 
 	int start_col = -1, start_row = -1;
 	int end_col = -1, end_row = -1;
@@ -336,20 +336,28 @@ void ods_conversion_context::add_merge_cells(const std::wstring & ref)
 	utils::parsing_ref (ref_cells[0], start_col, start_row);
 	utils::parsing_ref (ref_cells[1], end_col, end_row);
 
-	current_table().set_merge_cells(start_col,start_row, end_col, end_row);
+	current_table().set_merge_cells(start_col, start_row, end_col, end_row);
 
 }
 
 void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 {
-	int col = 0, row = 0;
-	utils::parsing_ref ( ref, col,row);
+	int col = 0, row = 0, spanned_rows = 0, spanned_cols = 0;
+	utils::parsing_ref ( ref, col, row);
 
-	if (col > current_table().current_column()+1)
+	bool bCovered = false;
+	bool bSpanned = current_table().isSpannedCell(col, row, spanned_cols, spanned_rows);
+
+	if (!bSpanned)
 	{
-		int repeated = col - current_table().current_column() -1;
+		bCovered = current_table().isCoveredCell(col, row);
+	}
+
+	if (col > current_table().current_column() + 1)
+	{
+		int repeated = col - current_table().current_column() - 1;
 		
-		current_table().add_default_cell(repeated);
+		current_table().add_default_cell(repeated);//, bCovered);
 	}
 
 	office_element_ptr style_elm;
@@ -360,7 +368,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	if ( xfd_style >=0)
 	{
 		odf_style_state_ptr  style_state;
-		styles_context()->find_odf_style_state(xfd_style, style_family::TableCell,style_state, false, true);
+		styles_context()->find_odf_style_state(xfd_style, style_family::TableCell, style_state, false, true);
 		if (style_state)
 		{
 			style_elm = style_state->get_office_element();
@@ -376,11 +384,26 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	}
 
 	office_element_ptr cell_elm;
-	create_element(L"table", L"table-cell", cell_elm, this);
+
+	if (bCovered)
+	{
+		create_element(L"table", L"covered-table-cell", cell_elm, this);
+	}
+	else
+	{
+		create_element(L"table", L"table-cell", cell_elm, this);
+	}
 	
 	current_table().start_cell(cell_elm, style_elm);
-	
-	current_table().set_cell_format_value(format_value_type);
+
+	if (bSpanned)
+	{
+		current_table().set_cell_spanned(spanned_cols, spanned_rows);
+	}
+	if (!bCovered)
+	{
+		current_table().set_cell_format_value(format_value_type);
+	}
 }
 
 void ods_conversion_context::end_cell()
@@ -412,12 +435,12 @@ void ods_conversion_context::end_columns()
 	//add default last column  - ЕСЛИ они не прописаны в исходном (1024 - от  балды)
 	//вопрос - если и добавлять то  с каким стилем???
 	//if (current_table().current_column() < 1 )
-	//	add_column(current_table().current_column()+1,1024,0,true);
+	//	add_column(current_table().current_column() + 1,1024, 0, true);
 	//else
-    int repeat = (std::max)(current_table().dimension_columns,1024) - current_table().current_column();
+    int repeat = (std::max)(current_table().dimension_columns, 1024) - current_table().current_column();
 	if (repeat < 0) repeat = 1;
 	
-	add_column(current_table().current_column()+1,repeat,0,true);
+	add_column(current_table().current_column() + 1, repeat, 0, true);
 }
 void ods_conversion_context::start_rows()
 {

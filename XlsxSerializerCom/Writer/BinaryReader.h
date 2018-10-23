@@ -72,17 +72,22 @@
 namespace BinXlsxRW 
 {
 	#define SEEK_TO_POS_START(type) \
-		nPos = aSeekPositions[2 * type - 1]; \
-		length = aSeekPositions[2 * type]; \
-		if (nPos > 0) \
+		pFind = mapPos.find(type); \
+		if (pFind != mapPos.end()) \
 		{ \
-			m_oBufferedStream.Seek(nPos); \
+			for (size_t i = 0; i < pFind->second.size() - 1; i+=2) \
+			{ \
+				nPos = pFind->second[i]; \
+				length = pFind->second[i + 1]; \
+				m_oBufferedStream.Seek(nPos); \
 
 	#define SEEK_TO_POS_END(elem) \
-		elem.toXML(oStreamWriter); \
+				elem.toXML(oStreamWriter); \
+			} \
 		}
 
 	#define SEEK_TO_POS_END2() \
+			} \
 		}
 
 	class ImageObject
@@ -2571,10 +2576,8 @@ namespace BinXlsxRW
 
 				m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML = (long)(1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1);
 
-				//todo bigger then last int c_oSerWorksheetsTypes::
-				_UINT32 aSeekPositions[2 * 256];
-				memset(aSeekPositions, 0, (2 * 256) * sizeof(_UINT32));
-				READ1_DEF(length, res, this->ReadWorksheetSeekPositions, aSeekPositions);
+				boost::unordered_map<BYTE, std::vector<unsigned int>> mapPos;
+				READ1_DEF(length, res, this->ReadWorksheetSeekPositions, &mapPos);
 
 				m_pCurWorksheet->m_bWriteDirectlyToFile = true;
 				m_oWorkbook.AssignOutputFilename(oCurWorksheetFile);
@@ -2584,7 +2587,7 @@ namespace BinXlsxRW
 				NSFile::CStreamWriter oStreamWriter;
 				oStreamWriter.CreateFileW(sWsPath);
 				m_pCurStreamWriter = &oStreamWriter;
-				res = ReadWorksheet(aSeekPositions, oStreamWriter, poResult);
+				res = ReadWorksheet(mapPos, oStreamWriter, poResult);
 				oStreamWriter.CloseFile();
 
 				if(m_pCurSheet->m_oName.IsInit())
@@ -2606,16 +2609,28 @@ namespace BinXlsxRW
 		}
 		int ReadWorksheetSeekPositions(BYTE type, long length, void* poResult)
 		{
-			_UINT32* aSeekPositions = static_cast<_UINT32*>(poResult);
-			aSeekPositions[2 * type - 1] = m_oBufferedStream.GetPos();
-			aSeekPositions[2 * type] = length;
+			boost::unordered_map<BYTE, std::vector<unsigned int>>* mapPos = static_cast<boost::unordered_map<BYTE, std::vector<unsigned int>>*>(poResult);
+			boost::unordered_map<BYTE, std::vector<unsigned int>>::iterator pFind = mapPos->find(type);
+			if(pFind != mapPos->end())
+			{
+				pFind->second.push_back(m_oBufferedStream.GetPos());
+				pFind->second.push_back(length);
+			}
+			else
+			{
+				std::vector<unsigned int> data;
+				data.push_back(m_oBufferedStream.GetPos());
+				data.push_back(length);
+				(*mapPos)[type] = data;
+			}
 			return c_oSerConstants::ReadUnknown;
 		}
-		int ReadWorksheet(_UINT32* aSeekPositions, NSFile::CStreamWriter& oStreamWriter, void* poResult)
+		int ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, NSFile::CStreamWriter& oStreamWriter, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
 			m_pCurWorksheet->toXMLStart(oStreamWriter);
 			LONG nOldPos = m_oBufferedStream.GetPos();
+			boost::unordered_map<BYTE, std::vector<unsigned int>>::iterator pFind;
 			LONG nPos;
 			LONG length;
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetPr);

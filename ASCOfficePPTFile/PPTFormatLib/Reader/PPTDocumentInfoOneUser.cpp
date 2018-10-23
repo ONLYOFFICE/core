@@ -2015,7 +2015,7 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 
 			if (pGroup)
 			{
-				LoadGroupShapeContainer(pGroup, NULL, NULL, pLayout, pThemeWrapper, pMasterWrapper);
+				LoadGroupShapeContainer(pGroup, NULL, pTheme, pLayout, pThemeWrapper, pMasterWrapper);
 			}
 			else
 			{

@@ -297,6 +297,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			}
 		ods_context->end_columns();
 
+	//мержи
+	for (size_t mrg = 0 ; oox_sheet->m_oMergeCells.IsInit() && mrg < oox_sheet->m_oMergeCells->m_arrItems.size(); mrg++)
+	{
+		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
+			ods_context->add_merge_cells(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get());
+	}
 	//строки
 	if (oox_sheet->m_oSheetData.IsInit() )
 	{
@@ -313,12 +319,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		oox_sheet->m_oSheetData.reset();
 	}
 
-	//мержи
-	for (size_t mrg = 0 ; oox_sheet->m_oMergeCells.IsInit() && mrg < oox_sheet->m_oMergeCells->m_arrItems.size(); mrg++)
-	{
-		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
-			ods_context->add_merge_cells(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get());
-		}
 	if (oox_sheet->m_oDrawing.IsInit() && oox_sheet->m_oDrawing->m_oId.IsInit())
 	{
 		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
@@ -1765,12 +1765,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 	
 	if(color->m_oThemeColor.IsInit() && xlsx_document->m_pTheme.IsInit())
 	{
-		DWORD argb = xlsx_document->m_pTheme->themeElements.clrScheme.GetARGBFromScheme(color->m_oThemeColor->ToString());
+		DWORD bgra = xlsx_document->m_pTheme->themeElements.clrScheme.GetARGBFromScheme(color->m_oThemeColor->ToString());
 		
-		ucR = (argb & 0x0000FF); 
-		ucB = (argb & 0x00FF00)	>> 8; 
-		ucG = (argb & 0xFF0000)	>> 16; 
-		ucA = argb >> 24; 
+		ucB = (bgra & 0x0000FF); 
+		ucG = (bgra & 0x00FF00)	>> 8; 
+		ucR = (bgra & 0xFF0000)	>> 16; 
+		ucA = bgra >> 24; 
 		
 		result = true;
 	}

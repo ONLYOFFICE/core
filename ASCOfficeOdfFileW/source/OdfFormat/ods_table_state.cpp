@@ -1430,17 +1430,21 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		
 		std::wstring operator_;
 		bool s = false;
+		bool split = false;
 		if (condition->attr_.calcext_value_)//есть опреатор
 		{
 			operator_ = *condition->attr_.calcext_value_;
-			int f = operator_.find(L"("); 
-			if (f > 0) 
+			int f_start = operator_.find(L"("); 
+			int f_end = operator_.rfind(L")"); 
+			if (f_start > 0) 
 			{
-				s= true; 
-				operator_ = operator_.substr(0,operator_.length() - 2);
+				if (f_start < f_end - 1) split = true;
+				s = true; 
+				operator_ = operator_.substr(0, f_end);
 			}
 		}		
-		condition->attr_.calcext_value_= operator_ + (s ? L"(": L"") + odfFormula + (s ? L")": L"");
+		operator_ += (split ? L"," : L"") + odfFormula + (s ? L")" : L"");
+		condition->attr_.calcext_value_= operator_;
 	}
 }
 void ods_table_state::set_conditional_style_name(std::wstring style_name)

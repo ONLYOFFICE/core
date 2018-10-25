@@ -1504,12 +1504,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf_writer::style_ta
 			convert(fill->m_oPatternFill->m_oFgColor.GetPointer(), 
 				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
 		}
-		else if (fill->m_oPatternFill->m_oBgColor.IsInit())
+		if (fill->m_oPatternFill->m_oBgColor.IsInit() && !cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_)
 		{
 			convert(fill->m_oPatternFill->m_oBgColor.GetPointer(), 
 				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
 		}
-		else if (fill->m_oPatternFill->m_oPatternType.IsInit())
+		if (fill->m_oPatternFill->m_oPatternType.IsInit() && !cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_)
 		{
 			switch(fill->m_oPatternFill->m_oPatternType->GetValue())
 			{

@@ -98,6 +98,8 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar();
 				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
 
 				ULONG count = pReader->GetULong();

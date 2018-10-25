@@ -134,10 +134,21 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
     xlsx_comments_context_	(Context->get_comments_context_handle()),
     table_column_last_width_(0.0),
 	in_cell(false),
-	bEndTable(false)
+	bEndTable_(false),
+	bRTL_(false)
 
 {        
-	memset(&group_row_,0,sizeof(_group_row));
+	odf_reader::style_table_properties	* table_prop = NULL;
+	odf_reader::style_instance			* tableStyle = context_->root()->odf_context().styleContainer().style_by_name(table_style_, odf_types::style_family::Table, false);
+	
+	if ((tableStyle) && (tableStyle->content()))
+		table_prop = tableStyle->content()->get_style_table_properties();
+
+	if ((table_prop) && (table_prop->content().common_writing_mode_attlist_.style_writing_mode_))
+	{
+		if (table_prop->content().common_writing_mode_attlist_.style_writing_mode_->get_type() == odf_types::writing_mode::RlTb)
+			bRTL_ = true;
+	}
 }
     
 void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
@@ -147,6 +158,11 @@ void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & 
 
     columns_count_ += repeated;
     columns_.push_back(repeated);
+}
+
+void xlsx_table_state::set_rtl(bool val)
+{
+	bRTL_ = val;
 }
 
 unsigned int xlsx_table_state::columns_count() const
@@ -421,6 +437,9 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 				{
 					CP_XML_ATTR(L"workbookViewId", 0);
 
+					if (bRTL_)
+						CP_XML_ATTR(L"rightToLeft", 1); 
+
 					std::wstring s_col, s_row;
 					for (int i = 0; i < odfContext.Settings().get_table_view_count(0, tableName_); i++)
 					{
@@ -458,7 +477,6 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 				}
 			}
 			//	-showRowColHeaders
-			//	-rightToLeft
 		} 
 
 		double default_height = (2 * context_->getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.

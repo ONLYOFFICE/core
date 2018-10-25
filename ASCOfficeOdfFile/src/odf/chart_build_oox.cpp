@@ -744,6 +744,9 @@ void process_build_object::visit(chart_title& val)
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)
     {
         t.pos_x = val.attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
+	}
+	if (val.attlist_.common_draw_position_attlist_.svg_y_)
+	{
 		t.pos_y = val.attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
 	}
 	t.bEnabled = true;

@@ -95,7 +95,7 @@ namespace formulasconvert {
 
 	bool odf2oox_converter::Impl::find_first_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref)
 	{
-		boost::wregex re(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.([a-zA-Z\\$]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
+                boost::wregex re(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.([\\w^0-9\\$]+\\d+)(?::\\.([\\w^0-9]+\\d+)){0,1}\\]");
 		boost::wsmatch result;
 		bool b = boost::regex_search(expr, result, re);
 
@@ -211,7 +211,7 @@ namespace formulasconvert {
 	}
 	std::wstring odf2oox_converter::Impl::replace_named_ref_formater1(boost::wsmatch const & what)
 	{
-		boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
+		boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]+\\${0,1}\\d+)(?::\\.(\\${0,1}[\\w^0-9]+\\${0,1}\\d+)){0,1}");
 
 		std::wstring expr = what[1].str();
 		const std::wstring res = boost::regex_replace(
@@ -235,7 +235,7 @@ namespace formulasconvert {
 	{
 		convert_with_TableName = withTableName;
 
-		boost::wregex complexRef(L"\\[(?:\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}\\]");
+		boost::wregex complexRef(L"\\[(?:\$)?([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]");
 		/*
 									 [     $   Sheet2          . A1								 : ( $   Sheet2)? . B5                    ]
 		*/
@@ -252,7 +252,7 @@ namespace formulasconvert {
 		convert_with_TableName = withTableName;
 		
 		//boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
-		boost::wregex complexRef(L"\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}");
+		boost::wregex complexRef(L"\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}");
 	
 		const std::wstring res = boost::regex_replace(
 			expr,
@@ -492,9 +492,9 @@ namespace formulasconvert {
 			XmlUtils::replace_all( workstr, L"FDIST(", L"_xlfn.F.DIST(");
 			// ROUNDUP( - тут в oox 2 параметра - разрядность нужно - ,0) - EV Requirements v2.2.3.ods
 			
-			int res_find=0;
-			if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+			if (std::wstring::npos != workstr.find(L"CONCATINATE"))
 			{
+				bool l = true;
 				//могут быть частично заданы диапазоны
 				//todooo
 			}	

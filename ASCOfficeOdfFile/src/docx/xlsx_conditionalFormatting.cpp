@@ -148,7 +148,10 @@ public:
                                 //CP_XML_ATTR(L"aboveAverage"	, 0);
 								if (c.rules[j].type == 1)
 								{
-									CP_XML_ATTR(L"type", *c.rules[j].formula_type);									
+									if (c.rules[j].formula_type)
+										CP_XML_ATTR(L"type", *c.rules[j].formula_type);
+									else
+										CP_XML_ATTR(L"type", L"cellIs");
 									if ((c.rules[j].formula) && (!c.rules[j].formula->empty()))
 									{
 										CP_XML_NODE(L"formula")
@@ -177,13 +180,11 @@ public:
 										{
 											c.rules[j].cfvo[k].serialize(CP_XML_STREAM());
 										}
-										if (c.rules[j].color.size() > 0)
+
+										CP_XML_NODE(L"color")
 										{
-											CP_XML_NODE(L"color")
-											{
-												CP_XML_ATTR(L"rgb", c.rules[j].color[0]);
-											}
-										}										
+											CP_XML_ATTR(L"rgb", !c.rules[j].color.empty() ? c.rules[j].color[0] : L"FF000000");
+										}
 									}
 								}
 								else if (c.rules[j].type == 3)
@@ -245,7 +246,7 @@ void xlsx_conditionalFormatting_context::add(std::wstring ref)
 	formulasconvert::odf2oox_converter converter;
 	impl_->conditionalFormattings_.push_back(conditionalFormatting());
 	
-	impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false, L";");
+	impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false, L" ");
 }
 
 void xlsx_conditionalFormatting_context::add_rule(int type)
@@ -260,7 +261,17 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	int pos = -1;
 	std::wstring val;
 	
-	if ( 0 <= (pos = f.find(L"formula-is(")))
+	if ( f == L"unique")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"uniqueValues";
+		impl_->conditionalFormattings_.back().rules.back().formula = L"0";
+	}
+	else if ( f == L"duplicate")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
+		impl_->conditionalFormattings_.back().rules.back().formula = L"0";
+	}	
+	else if ( 0 <= (pos = f.find(L"formula-is(")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		val = f.substr(11, f.size() - 12);
@@ -292,6 +303,26 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
 	}
+	else if (0 <= (pos = f.find(L"contains-text")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
+
+		std::wstring text = f.substr(14, f.length() - 15);
+
+		if (std::wstring::npos != text.find(L"IF(") || 
+			std::wstring::npos != text.find(L"AND(") ||
+			std::wstring::npos != text.find(L"NOT(") ||
+			std::wstring::npos != text.find(L"LEN(") ||
+			std::wstring::npos != text.find(L"TRIM(") ||
+			std::wstring::npos != text.find(L"ISERROR(") ||
+			std::wstring::npos != text.find(L"SEARCH("))
+		{
+			impl_->conditionalFormattings_.back().rules.back().text = L"";
+			impl_->conditionalFormattings_.back().rules.back().formula = converter.convert(text);
+		}
+		else
+			impl_->conditionalFormattings_.back().rules.back().text = text;
+	}
 	else if (0 <= (pos = f.find(L"top")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"top10";
@@ -302,13 +333,9 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		if (0 <= (pos = f.find(L"(")))
 		{
 			val = f.substr(pos + 1, f.length() - pos - 2);
-			impl_->conditionalFormattings_.back().rules.back().rank = boost::lexical_cast<int>(val);
+			if (!val.empty())
+				impl_->conditionalFormattings_.back().rules.back().rank = boost::lexical_cast<int>(val);
 		}	
-	}
-	else if (0 <= (pos = f.find(L"contains-text")))
-	{
-		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
-		impl_->conditionalFormattings_.back().rules.back().text			= f.substr(15, f.length() - 17);
 	}
 	else
 	{
@@ -398,7 +425,11 @@ void xlsx_conditionalFormatting_context::add_sfv(int type, std::wstring value)
 		
 		impl_->conditionalFormattings_.back().rules.back().formula.reset(); 
 	}
-	else if (!value.empty()) cfvo.val = value;
+	else
+	{
+		if (!value.empty()) cfvo.val = value;
+		else cfvo.val = L"0";
+	}
 
 	impl_->conditionalFormattings_.back().rules.back().cfvo.push_back(cfvo);
 }

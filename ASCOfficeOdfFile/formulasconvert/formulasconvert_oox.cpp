@@ -474,7 +474,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 	
 	std::wstring res = boost::regex_replace(
 		res1,
-		boost::wregex(L"(?!([a-zA-Z]+\\d*\\())(([a-zA-Z]+\\!)?\\$?[a-zA-Z]*\\$?\\d*(\\:\\$?[a-zA-Z]*\\$?\\d*){0,1})"),
+		boost::wregex(L"(?!([\\w^0-9]+\\d*\\())(([\\w^0-9]+\\!)?\\$?[\\w^0-9]*\\$?\\d*(\\:\\$?[\\w^0-9]*\\$?\\d*){0,1})"),
 		&oox2odf_converter::Impl::replace_arguments, boost::match_default | boost::format_all);
 
 	//SUBTOTAL(109,Expense31[Amount])

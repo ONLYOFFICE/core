@@ -37,9 +37,9 @@
 namespace cpdoccore {
 namespace oox {
 
-	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false), bTile(false), isInternal(true)
+	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false), bTile(false), isInternal(true), bGrayscale(false)
 	{
-		memset(cropRect,0,sizeof(double)*4);
+		memset(cropRect, 0, sizeof(double)*4);
 	}
 	
 	oox_bitmap_fill_ptr oox_bitmap_fill::create(){return boost::make_shared<oox_bitmap_fill>();}
@@ -189,7 +189,11 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 					{
 						CP_XML_ATTR2(ns_att + L"amt", (int)(*val.opacity * 1000));
 					}
-				}		
+				}
+				if (val.bitmap->bGrayscale)
+				{
+					CP_XML_NODE(ns + L":grayscl");
+				}
 			}
 			if (val.bitmap->bCrop)
 			{

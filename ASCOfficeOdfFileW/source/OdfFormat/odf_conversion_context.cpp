@@ -41,6 +41,7 @@
 #include "odf_conversion_context.h"
 #include "odf_rels.h"
 
+#include "styles.h"
 #include "style_paragraph_properties.h"
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
@@ -263,25 +264,42 @@ void odf_conversion_context::process_settings(_object & object, bool isRoot)
 }
 
 void odf_conversion_context::process_styles(_object & object, bool isRoot)
-{
+{		
+	create_element(L"office", L"font-face-decls", object.content_styles, this, true);
+
+	for (boost::unordered_map<std::wstring, int>::const_iterator it = object.mapFonts.begin(); it != object.mapFonts.end(); ++it)
+	{
+		office_element_ptr font_elm;
+		create_element(L"style", L"font-face", font_elm, this, true);
+
+		style_font_face* font = dynamic_cast<style_font_face*>(font_elm.get());
+		
+		if (font)
+		{
+			font->style_name_		= it->first;
+			font->svg_font_family_	= it->first;
+
+			object.content_styles.back()->add_child_element(font_elm);
+		}
+	}
+
+	object.styles.push_back(object.content_styles.back()); //копия
+
 	create_element(L"office", L"styles", object.styles, this, true);//общие стили
 	
 	object.style_context->process_office_styles(object.styles.back());
 	page_layout_context()->process_office_styles(object.styles.back());
-	
+
 	if (isRoot)
 	{	
-		create_element(L"office", L"font-face-decls", object.styles, this, true);
-		
 		create_element(L"office", L"automatic-styles", object.styles, this, true);
 		object.style_context->process_automatic_for_styles(object.styles.back());
 		page_layout_context()->process_automatic_for_styles(object.styles.back());
 
 		create_element(L"office", L"master-styles", object.styles, this, true);
-		page_layout_context()->process_master_styles(object.styles.back());
-		
-		create_element(L"office", L"font-face-decls", object.content_styles, this, true);
+		page_layout_context()->process_master_styles(object.styles.back());	
 	}
+
 
 	create_element(L"office", L"automatic-styles", object.content_styles, this, true);
 	object.style_context->process_automatic_styles(object.content_styles.back());
@@ -289,7 +307,7 @@ void odf_conversion_context::process_styles(_object & object, bool isRoot)
 
 office_element_ptr odf_conversion_context::start_tabs()
 {
-	create_element(L"style", L"tab-stops", temporary_.elm, this,true);
+	create_element(L"style", L"tab-stops", temporary_.elm, this, true);
 	return temporary_.elm;
 }
 std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name)
@@ -389,6 +407,19 @@ void odf_conversion_context::end_tabs()
 	temporary_.style_elm	= office_element_ptr();
 	temporary_.style_name	= L"";
 
+}
+void odf_conversion_context::add_font(const std::wstring& font_name)
+{
+	if (objects_.empty())return;
+
+	if (objects_[current_object_].mapFonts.find(font_name) == objects_[current_object_].mapFonts.end())
+	{
+		objects_[current_object_].mapFonts.insert(std::make_pair(font_name, 1));
+	}
+	else
+	{
+		objects_[current_object_].mapFonts[font_name]++;
+	}
 }
 }
 }

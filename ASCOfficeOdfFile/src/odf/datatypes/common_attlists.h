@@ -111,6 +111,14 @@ public:
 
 	_CP_OPT(length_or_percent)	draw_fill_image_width_;
 	_CP_OPT(length_or_percent)	draw_fill_image_height_;
+
+    _CP_OPT(std::wstring)		draw_color_mode_;
+    _CP_OPT(odf_types::percent)	draw_contrast_;
+    _CP_OPT(odf_types::percent)	draw_luminance_;
+    _CP_OPT(odf_types::percent)	draw_gamma_;
+    _CP_OPT(odf_types::percent)	draw_red_;
+    _CP_OPT(odf_types::percent)	draw_green_;
+    _CP_OPT(odf_types::percent)	draw_blue_;
 };
 
 // common-horizontal-margin-attlist

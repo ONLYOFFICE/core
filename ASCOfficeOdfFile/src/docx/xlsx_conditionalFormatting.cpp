@@ -36,8 +36,10 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <xml/simple_xml_writer.h>
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "../formulasconvert/formulasconvert.h"
+
 namespace cpdoccore {
 namespace oox {
 
@@ -312,13 +314,17 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		if (std::wstring::npos != text.find(L"IF(") || 
 			std::wstring::npos != text.find(L"AND(") ||
 			std::wstring::npos != text.find(L"NOT(") ||
-			std::wstring::npos != text.find(L"LEN(") ||
-			std::wstring::npos != text.find(L"TRIM(") ||
 			std::wstring::npos != text.find(L"ISERROR(") ||
 			std::wstring::npos != text.find(L"SEARCH("))
 		{
 			impl_->conditionalFormattings_.back().rules.back().text = L"";
 			impl_->conditionalFormattings_.back().rules.back().formula = converter.convert(text);
+		}
+		else if (std::wstring::npos != text.find(L"LEN(TRIM(") && 
+			std::wstring::npos != text.find(L"=0"))
+		{
+			impl_->conditionalFormattings_.back().rules.back().text = L"";
+			impl_->conditionalFormattings_.back().rules.back().formula = L"0";
 		}
 		else
 			impl_->conditionalFormattings_.back().rules.back().text = text;
@@ -388,6 +394,8 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
 			val = f.substr(8, f.length() - 9);
 			
+			XmlUtils::replace_all(val, L"(", L"");
+			XmlUtils::replace_all(val, L")", L"");
 			if (0 <= (pos = val.find(L",")))
 			{
 				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr( val.substr(pos + 1) );

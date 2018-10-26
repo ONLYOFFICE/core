@@ -62,6 +62,8 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SmartArt.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/AlphaModFix.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/Grayscl.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/Duotone.h"
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
@@ -476,6 +478,14 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_a_softEdge:
 			{
 				convert(dynamic_cast<PPTX::Logic::SoftEdge*>(oox_unknown));
+			}break;
+			case OOX::et_a_grayscl:
+			{
+				convert(dynamic_cast<PPTX::Logic::Grayscl*>(oox_unknown));
+			}break;
+			case OOX::et_a_duotone:
+			{
+				convert(dynamic_cast<PPTX::Logic::Duotone*>(oox_unknown));
 			}break;
 			case OOX::et_a_effectDag:
 			{

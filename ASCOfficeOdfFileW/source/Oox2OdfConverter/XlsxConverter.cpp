@@ -1480,6 +1480,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont *font, odf_writer::style_tex
 	if ((font->m_oStrike.IsInit()) && (font->m_oStrike->m_oVal.ToBool()))
 		text_properties->content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 
+	ods_context->add_font(font_name);
 	ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
 }
 

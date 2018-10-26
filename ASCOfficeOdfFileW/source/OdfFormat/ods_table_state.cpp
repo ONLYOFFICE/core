@@ -1434,9 +1434,9 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		if (condition->attr_.calcext_value_)//есть опреатор
 		{
 			operator_ = *condition->attr_.calcext_value_;
-			int f_start = operator_.find(L"("); 
-			int f_end = operator_.rfind(L")"); 
-			if (f_start > 0) 
+			size_t f_start = operator_.find(L"("); 
+			size_t f_end = operator_.rfind(L")"); 
+			if (f_start != std::wstring::npos && f_end != std::wstring::npos) 
 			{
 				if (f_start < f_end - 1) split = true;
 				s = true; 

@@ -647,19 +647,36 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		
 		odf_reader::odf_read_context & odfContext = root()->odf_context();
 		
-		instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
-		instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf_types::style_family::TableCell,false));
-
-		odf_reader::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
-
-		if (textFormatProperties.style_font_name_)
-			font_name = textFormatProperties.style_font_name_.get();
-		else if (textFormatProperties.style_font_name_complex_)
-			font_name = textFormatProperties.style_font_name_complex_.get();
-		else if (textFormatProperties.style_font_name_asian_)
-			font_name = textFormatProperties.style_font_name_asian_.get();
+		odf_reader::style_instance *inst = odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+		if (inst) instances.push_back(inst);
+		
+		inst = odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false);
+		if (inst) instances.push_back(inst);
 		else
-			font_name = L"Arial";
+		{
+			inst = odfContext.styleContainer().style_by_name(L"Normal", odf_types::style_family::TableCell, false);
+			if (inst) instances.push_back(inst);
+		}
+
+		odf_reader::text_format_properties_content textFormatProperties	= calc_text_properties_content(instances);
+
+		if (textFormatProperties.fo_font_family_)
+			font_name = textFormatProperties.fo_font_family_.get();
+		else
+		{
+			std::wstring style_font_name;
+			if (textFormatProperties.style_font_name_)				style_font_name = textFormatProperties.style_font_name_.get();
+			else if (textFormatProperties.style_font_name_complex_)	style_font_name = textFormatProperties.style_font_name_complex_.get();
+			else if (textFormatProperties.style_font_name_asian_)	style_font_name = textFormatProperties.style_font_name_asian_.get();
+			
+			odf_reader::fonts_container & fonts = odf_document_->odf_context().fontContainer();
+			odf_reader::font_instance * font = fonts.font_by_style_name(style_font_name);
+			if (font)
+			{
+				font_name = font->name();
+			}
+		}
+		if (font_name.empty()) font_name = L"Arial";
 
 		if ((textFormatProperties.fo_font_size_) && (textFormatProperties.fo_font_size_->get_type() == odf_types::font_size::Length))
 			font_size = (int)(0.5 + textFormatProperties.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));

@@ -1371,5 +1371,85 @@ void style_presentation_page_layout::serialize(std::wostream & strm)
 		}
 	}
 }
+//-------------------------------------------------------------------------------------------------
+const wchar_t * office_font_face_decls::ns = L"office";
+const wchar_t * office_font_face_decls::name = L"font-face-decls";
+
+void office_font_face_decls::add_child_element( const office_element_ptr & child)
+{
+	content_.push_back(child);
+}
+void office_font_face_decls::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"style", L"font-face")
+    {
+        CP_CREATE_ELEMENT(content_);
+    }
+}
+void office_font_face_decls::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+const wchar_t * style_font_face::ns = L"style";
+const wchar_t * style_font_face::name = L"font-face";
+
+void style_font_face::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:name",					style_name_);
+			CP_XML_ATTR_OPT(L"style:font-adornments",		style_font_adornments_);
+			CP_XML_ATTR_OPT(L"style:font-family-generic",	style_font_family_generic_);
+			CP_XML_ATTR_OPT(L"style:font-pitch",			style_font_pitch_);
+			CP_XML_ATTR_OPT(L"style:font-charset",			style_font_charset_);
+
+			CP_XML_ATTR_OPT(L"svg:font-family",             svg_font_family_);
+			CP_XML_ATTR_OPT(L"svg:font-style",              svg_font_style_);
+			CP_XML_ATTR_OPT(L"svg:font-variant",            svg_font_variant_);
+			CP_XML_ATTR_OPT(L"svg:font-weight",             svg_font_weight_);
+			CP_XML_ATTR_OPT(L"svg:font-stretch",            svg_font_stretch_);
+			CP_XML_ATTR_OPT(L"svg:font-size",               svg_font_size_);
+			CP_XML_ATTR_OPT(L"svg:unicode-range",           svg_unicode_range_);
+			CP_XML_ATTR_OPT(L"svg:units-per-em",            svg_units_per_em_);
+			CP_XML_ATTR_OPT(L"svg:panose-1",                svg_panose_1_);
+			CP_XML_ATTR_OPT(L"svg:stemv",                   svg_stemv_);
+			CP_XML_ATTR_OPT(L"svg:stemh",                   svg_stemh_);
+			CP_XML_ATTR_OPT(L"svg:slope",                   svg_slope_);
+			CP_XML_ATTR_OPT(L"svg:cap-height",              svg_cap_height_);
+			CP_XML_ATTR_OPT(L"svg:x-height",                svg_x_height_);
+			CP_XML_ATTR_OPT(L"svg:accent-height",           svg_accent_height_);
+			CP_XML_ATTR_OPT(L"svg:ascent",                  svg_ascent_);
+			CP_XML_ATTR_OPT(L"svg:descent",                 svg_descent_);
+			CP_XML_ATTR_OPT(L"svg:widths",                  svg_widths_);
+			CP_XML_ATTR_OPT(L"svg:bbox",                    svg_bbox_);
+			CP_XML_ATTR_OPT(L"svg:ideographic",             svg_ideographic_);
+			CP_XML_ATTR_OPT(L"svg:alphabetic",              svg_alphabetic_);
+			CP_XML_ATTR_OPT(L"svg:mathematical",            svg_mathematical_);
+			CP_XML_ATTR_OPT(L"svg:hanging",                 svg_hanging_);
+			CP_XML_ATTR_OPT(L"svg:v-ideographic",           svg_v_ideographic_);
+			CP_XML_ATTR_OPT(L"svg:v-alphabetic",            svg_v_alphabetic_);
+			CP_XML_ATTR_OPT(L"svg:v-mathematical",          svg_v_mathematical_);
+			CP_XML_ATTR_OPT(L"svg:v-hanging",               svg_v_hanging_);
+			CP_XML_ATTR_OPT(L"svg:underline-position",      svg_underline_position_);
+			CP_XML_ATTR_OPT(L"svg:underline-thickness",     svg_underline_thickness_);
+			CP_XML_ATTR_OPT(L"svg:strikethrough-position",  svg_strikethrough_position_);
+			CP_XML_ATTR_OPT(L"svg:strikethrough-thickness", svg_strikethrough_thickness_);
+			CP_XML_ATTR_OPT(L"svg:overline-position",       svg_overline_position_);
+			CP_XML_ATTR_OPT(L"svg:overline-thickness",      svg_overline_thickness_);
+		}
+	}
+}
+
 }
 }

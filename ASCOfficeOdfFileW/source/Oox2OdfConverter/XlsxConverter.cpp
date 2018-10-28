@@ -2269,9 +2269,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			}
 			if (oox_cond_rule->m_oOperator.IsInit()) 
 				ods_context->current_table().set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
+
+			if (oox_cond_rule->m_oText.IsInit()) 
+				ods_context->current_table().set_conditional_text(oox_cond_rule->m_oText.get2());
 			
-				for (size_t i=0; i< oox_cond_rule->m_arrItems.size(); i++)
-					convert(oox_cond_rule->m_arrItems[i]);
+			for (size_t i=0; i< oox_cond_rule->m_arrItems.size(); i++)
+				convert(oox_cond_rule->m_arrItems[i]);
 		}	
 		ods_context->current_table().end_conditional_rule();
 	}

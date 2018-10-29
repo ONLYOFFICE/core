@@ -69,7 +69,7 @@ public:
 
 bool			oox2odf_converter::Impl::isFindBaseCell_ = false;
 std::wstring	oox2odf_converter::Impl::table_name_ = L"";
-void replace_tmp_back(std::wstring &expr)
+void oox_replace_tmp_back(std::wstring &expr)
 {
 	XmlUtils::replace_all( expr, L"ТОСHKA", L".");
 	XmlUtils::replace_all( expr, L"VOSKL", L"!");
@@ -85,7 +85,7 @@ void replace_tmp_back(std::wstring &expr)
 	XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
 }
 
-void replace_tmp(std::wstring &expr)
+void oox_replace_tmp(std::wstring &expr)
 {
 	XmlUtils::replace_all( expr, L".", L"ТОСHKA");
 	XmlUtils::replace_all( expr, L"!", L"VOSKL");
@@ -222,11 +222,11 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	{		
 		std::wstring &d = distance[i];
 
-		replace_tmp(d);
+		oox_replace_tmp(d);
 		
 		replace_cells_range(d);
 
-		replace_tmp_back(d);
+		oox_replace_tmp_back(d);
 			
 		out = out + d + std::wstring(L";");
 	}
@@ -237,7 +237,7 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 
 	if (table_name_.empty() == false)
 	{
-		replace_tmp_back(table_name_);
+		oox_replace_tmp_back(table_name_);
 	}
 }
 
@@ -400,13 +400,13 @@ std::wstring oox2odf_converter::Impl::convert_scobci(boost::wsmatch const & what
     if (what[1].matched)
     {
         std::wstring inner = what[1].str();
-        replace_tmp(inner);
+        oox_replace_tmp(inner);
 		return inner;
 	}
     else if (what[2].matched)
     {
         std::wstring inner = what[2].str();
-        replace_tmp(inner);
+        oox_replace_tmp(inner);
 		return inner;
 	}
     else if (what[3].matched)
@@ -491,7 +491,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 			boost::match_default | boost::format_all);
 	}
 
-	replace_tmp_back(res);
+	oox_replace_tmp_back(res);
 
 	replace_vertical(res);   
 	replace_semicolons(res);
@@ -500,7 +500,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 
 	if (table_name_.empty() == false)
 	{
-		replace_tmp_back(table_name_);
+		oox_replace_tmp_back(table_name_);
 	}
 
     return std::wstring(L"of:=") + res;
@@ -529,7 +529,7 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 	     
 	}
 
-    replace_tmp_back( res);
+    oox_replace_tmp_back( res);
 
 	replace_vertical(res);
 	replace_semicolons(res);

@@ -1194,6 +1194,8 @@ public:
         std::wstring sPrW = NSFile::GetProcessPath();
         std::string sPrA = U_TO_UTF8(sPrW);
 
+        m_pAllocator = NULL;
+
 #ifndef V8_OS_XP
         v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
         v8::V8::InitializeExternalStartupData(sPrA.c_str());
@@ -1213,7 +1215,8 @@ public:
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
         delete m_platform;
-        delete m_pAllocator;
+        if (m_pAllocator)
+            delete m_pAllocator;
     }
 
     v8::ArrayBuffer::Allocator* getAllocator()

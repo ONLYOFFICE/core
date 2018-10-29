@@ -60,6 +60,12 @@
 #include "noteclass.h"
 #include "gradientstyle.h"
 #include "hatchstyle.h"
+#include "fontstyle.h"
+#include "fontvariant.h"
+#include "fontweight.h"
+#include "fontstretch.h"
+#include "fontfamilygeneric.h"
+#include "fontpitch.h"
 
 #include "common_attlists.h"
 
@@ -864,5 +870,87 @@ CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout)
 
 //----------------------------------------------------------------------------------------------------
 
+//  style:font-face
+class style_font_face : public office_element_impl<style_font_face>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleFontFace;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void serialize(std::wostream & strm);
+	virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element		( const office_element_ptr & child){}
+	//todooo <svg:definition-src> and <svg:font-face-src>
+    
+    _CP_OPT(std::wstring)						style_name_;
+    _CP_OPT(std::wstring)						style_font_adornments_;
+    _CP_OPT(odf_types::font_family_generic)		style_font_family_generic_;
+    _CP_OPT(odf_types::font_pitch)				style_font_pitch_;
+    _CP_OPT(std::wstring)						style_font_charset_;
+    
+    _CP_OPT(std::wstring)				svg_font_family_;
+    _CP_OPT(odf_types::font_style)		svg_font_style_;
+    _CP_OPT(odf_types::font_variant)	svg_font_variant_;
+    _CP_OPT(odf_types::font_weight)		svg_font_weight_;
+    _CP_OPT(odf_types::font_stretch)	svg_font_stretch_;
+    _CP_OPT(odf_types::length)		svg_font_size_;
+    _CP_OPT(std::wstring)			svg_unicode_range_;
+    _CP_OPT(int)					svg_units_per_em_;
+    _CP_OPT(std::wstring)			svg_panose_1_;
+    _CP_OPT(int)					svg_stemv_;
+    _CP_OPT(int)					svg_stemh_;
+    _CP_OPT(int)					svg_slope_;
+    _CP_OPT(int)					svg_cap_height_;
+    _CP_OPT(int)					svg_x_height_;
+    _CP_OPT(int)					svg_accent_height_;
+    _CP_OPT(int)					svg_ascent_;
+    _CP_OPT(int)					svg_descent_;
+    _CP_OPT(std::wstring)			svg_widths_;
+    _CP_OPT(std::wstring)			svg_bbox_;
+    _CP_OPT(int)					svg_ideographic_;
+    _CP_OPT(int)					svg_alphabetic_;
+    _CP_OPT(int)					svg_mathematical_;
+    _CP_OPT(int)					svg_hanging_;
+    _CP_OPT(int)					svg_v_ideographic_;
+    _CP_OPT(int)					svg_v_alphabetic_;
+    _CP_OPT(int)					svg_v_mathematical_;
+    _CP_OPT(int)					svg_v_hanging_;
+    _CP_OPT(int)					svg_underline_position_;
+    _CP_OPT(int)					svg_underline_thickness_;
+    _CP_OPT(int)					svg_strikethrough_position_;
+    _CP_OPT(int)					svg_strikethrough_thickness_;
+    _CP_OPT(int)					svg_overline_position_;
+    _CP_OPT(int)					svg_overline_thickness_;
+
+    office_element_ptr_array		svg_font_face_uri_; 
+    office_element_ptr_array		svg_font_face_name_;   
+    office_element_ptr				svg_definition_src_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(style_font_face);
+
+//  office-font-face-decls
+class office_font_face_decls : public office_element_impl<office_font_face_decls>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeOfficeFontFaceDecls;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void serialize(std::wostream & strm);
+    virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child);
+
+    office_element_ptr_array content_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(office_font_face_decls);
 }
 } 

@@ -538,8 +538,11 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	drawing.fill.bitmap		= oox_bitmap_fill::create();
 	drawing.fill.type		= 2;
 	
-	_CP_OPT(std::wstring) sTextContent;
+	_CP_OPT(std::wstring)	sTextContent, sColorMode;
+	
 	GetProperty(obj.additional_, L"text-content", sTextContent);
+	GetProperty(obj.additional_, L"color-mode", sColorMode);
+
 	if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
 	{
 		drawing.type		= typeShape;
@@ -549,6 +552,9 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
 	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL);
 	drawing.fill.bitmap->bStretch = true;
+	
+	if ((sColorMode) && (*sColorMode == L"greyscale"))
+		drawing.fill.bitmap->bGrayscale	= true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
 	std::wstring ref;/// это ссылка на выходной внешний объект

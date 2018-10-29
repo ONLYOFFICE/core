@@ -164,6 +164,10 @@ void draw_g::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			if (!common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_)
+				common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = L"";
+			//брееед ... иначе либра не показывает группу!!!
+
 			common_draw_attlists_.serialize(CP_GET_XML_NODE());
 
 			for (size_t i = 0; i < content_.size(); i++)

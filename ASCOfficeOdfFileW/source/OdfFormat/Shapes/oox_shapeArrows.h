@@ -203,14 +203,14 @@ public:
 		_handle h1, h2;
 
 		h1.position = L"?f8 ?f13";
-		h1.y_minimum = L"0";
-		h1.y_maximum = L"100000";
+		h1.x_minimum = L"0";
+		h1.x_maximum = L"100000";
 		
 		handles.push_back(h1);
 
  		h2.position = L"0 ?f5";
-		h2.x_minimum = L"0";
-		h2.x_maximum = L"?f1";
+		h2.y_minimum = L"0";
+		h2.y_maximum = L"?f1";
 		handles.push_back(h2);
 	}
 };

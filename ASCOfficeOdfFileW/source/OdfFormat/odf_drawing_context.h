@@ -158,6 +158,8 @@ public:
 	void set_program(std::wstring program);
 
 	bool isLineShape();
+	bool isCustomClosed();
+
 	void corrected_line_fill();
 
 	office_element_ptr & get_root_element();
@@ -224,6 +226,7 @@ public:
 	//void end_shadow_properties();
 // пока одной функией ..
 	void set_shadow	(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y = -1);
+	void set_grayscale();
 
 	void set_text					(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);

@@ -191,6 +191,7 @@ struct odf_drawing_state
 		path_				= L"";
 		view_box_			= L"";
 		path_last_command_	= L"";
+		path_closed_		= false;
 
 		replacement_		= L"";
 		oox_shape_preset_	= -1;
@@ -199,7 +200,7 @@ struct odf_drawing_state
 		in_group_			= false;
 		text_box_tableframe_= false;
 
-		flipH_ = flipV_		= false;
+		flipH_ = flipV_ = false;
 
 	}
 	std::vector<odf_element_state>	elements_;
@@ -229,6 +230,7 @@ struct odf_drawing_state
 	std::wstring				path_;
 	std::wstring				view_box_;
 	std::wstring				path_last_command_;
+	bool						path_closed_;
 	oox_shape_ptr				oox_shape_;
 //----------------------------------------------------------
 	int oox_shape_preset_;
@@ -385,6 +387,8 @@ void odf_drawing_context::start_group()
 	//если группа топовая - то данные если не записать - сотруться
 	if (!impl_->current_drawing_state_.name_.empty())
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
+	else
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = L"";
 	if (impl_->current_drawing_state_.z_order_ >= 0)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 	//if (!impl_->current_drawing_state_.description_.empty())
@@ -392,7 +396,6 @@ void odf_drawing_context::start_group()
 	if (impl_->current_drawing_state_.hidden_)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
 	
-	impl_->current_drawing_state_.name_		= L"";
 	impl_->current_drawing_state_.z_order_	= -1;
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -427,6 +430,9 @@ void odf_drawing_context::start_group()
 
 	if (group)
 	{
+		if ((impl_->anchor_settings_.anchor_type_) && (impl_->anchor_settings_.anchor_type_->get_type() == anchor_type::Page) && level == 0)
+			impl_->anchor_settings_.anchor_type_ = anchor_type::Paragraph;
+
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 		impl_->anchor_settings_.anchor_type_ = boost::none;
 	}
@@ -844,7 +850,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		if (sz == 2)	impl_->root_element_ = draw_elm;
 		return true;
 	}
-	draw_base* s = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_.back().elm.get());
+	draw_rect* s = dynamic_cast<draw_rect*>(impl_->current_drawing_state_.elements_.back().elm.get());
 	if (s)
 	{
 	//------------------------------------------------------------------------
@@ -886,7 +892,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		return true;
 	}
 
-	return true;
+	return false;
 }
 
 void odf_drawing_context::end_shape()
@@ -1125,6 +1131,11 @@ void odf_drawing_context::end_shape()
 	end_element();
 }
 
+bool odf_drawing_context::isCustomClosed()
+{
+	return impl_->current_drawing_state_.path_closed_;
+}
+
 bool odf_drawing_context::isLineShape()
 {
 	if (impl_->current_level_.empty()) return false;
@@ -1149,6 +1160,7 @@ bool odf_drawing_context::isLineShape()
 	case 49:	//SimpleTypes::shapetypeCurvedConnector4:
 	case 50:	//SimpleTypes::shapetypeCurvedConnector5:
 	case 31:	//SimpleTypes::shapetypeBracketPair
+	case 18:	//SimpleTypes::shapetypeArc
 		return true;
 	case 1000:
 		if (impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_.get_value_or(draw_fill(draw_fill::solid)).get_type() == draw_fill::none)
@@ -1278,6 +1290,12 @@ void odf_drawing_context::set_opacity(double percent_)
 		impl_->current_graphic_properties->svg_stroke_opacity_ = percent(percent_);
 		break;
 	}
+}
+void odf_drawing_context::set_grayscale()
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = L"greyscale";
 }
 void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y )
 {
@@ -1450,6 +1468,8 @@ void odf_drawing_context::add_path_element(std::wstring command, std::wstring st
 
 	impl_->current_drawing_state_.path_ += strE + L" ";
 
+	if (command == L"Z") 
+		impl_->current_drawing_state_.path_closed_ = true;
 	if (command == L"N") 
 		impl_->current_drawing_state_.path_last_command_.clear();
 }

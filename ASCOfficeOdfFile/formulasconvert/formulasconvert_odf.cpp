@@ -358,43 +358,43 @@ namespace formulasconvert {
 	
 		return L"";
 	}
-void replace_tmp_back(std::wstring &expr)
-{
-	XmlUtils::replace_all( expr, L"ТОСHKA", L".");
-	XmlUtils::replace_all( expr, L"VOSKL", L"!");
+	void odf_replace_tmp_back(std::wstring &expr)
+	{
+		XmlUtils::replace_all( expr, L"ТОСHKA", L".");
+		XmlUtils::replace_all( expr, L"VOSKL", L"!");
 
-	XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
-	XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
+		XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
+		XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
 
-	XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
-	XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
-	
-	XmlUtils::replace_all( expr, L"PROBEL", L" ");
-	XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
-	XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
-}
-void replace_tmp(std::wstring &expr)
-{
-	XmlUtils::replace_all( expr, L".", L"ТОСHKA");
-	XmlUtils::replace_all( expr, L"!", L"VOSKL");
+		XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
+		XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
+		
+		XmlUtils::replace_all( expr, L"PROBEL", L" ");
+		XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
+		XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+	}
+	void odf_replace_tmp(std::wstring &expr)
+	{
+		XmlUtils::replace_all( expr, L".", L"ТОСHKA");
+		XmlUtils::replace_all( expr, L"!", L"VOSKL");
 
-	XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
-	XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
+		XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
+		XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
 
-	XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
-	XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
-	
-	XmlUtils::replace_all( expr, L" ", L"PROBEL");
-	XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
-	XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
-}
+		XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
+		XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
+		
+		XmlUtils::replace_all( expr, L" ", L"PROBEL");
+		XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
+		XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+	}
 	std::wstring convert_scobci(boost::wsmatch const & what)
 	{
 		if (what[1].matched)
 		{
 			std::wstring inner = what[1].str();
 
-			replace_tmp(inner);
+			odf_replace_tmp(inner);
 
 			return inner;
 		}
@@ -402,7 +402,7 @@ void replace_tmp(std::wstring &expr)
 		{
 			std::wstring inner = what[2].str();
 			
-			replace_tmp(inner);
+			odf_replace_tmp(inner);
 
 			return inner;
 		}
@@ -526,7 +526,7 @@ void replace_tmp(std::wstring &expr)
 
 
 	//-----------------------------------------------------------
-		replace_tmp_back(workstr);
+		odf_replace_tmp_back(workstr);
 
 		return workstr;
 	}

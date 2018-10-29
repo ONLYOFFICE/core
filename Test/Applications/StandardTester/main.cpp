@@ -236,6 +236,7 @@ public:
     CConverter(CInternalWorker* pWorker) : NSThreads::CBaseThread()
     {
         m_pInternal = pWorker;
+        m_format = -1;
     }
     virtual ~CConverter()
     {
@@ -244,15 +245,23 @@ public:
 
     virtual DWORD ThreadProc()
     {
-        COfficeFileFormatChecker oChecker;
-        if (!oChecker.isOfficeFile(m_file))
+        bool bIsOfficeFile = true;
+        if (true)
+        {
+            CTemporaryCS oCS(&m_pInternal->m_oCS_OfficeUtils);
+
+            COfficeFileFormatChecker oChecker;
+            bIsOfficeFile = oChecker.isOfficeFile(m_file);
+            if (bIsOfficeFile)
+                m_format = oChecker.nFileType;
+        }
+
+        if (!bIsOfficeFile)
         {
             m_bRunThread = FALSE;
             m_pInternal->OnConvertFile(this, -1);
             return 0;
         }
-
-        m_format = oChecker.nFileType;
 
 #if 0
         std::map<int, bool>::iterator find = m_pInternal->m_formats.find(m_format);

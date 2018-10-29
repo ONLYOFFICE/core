@@ -175,6 +175,8 @@ CGraphicsRenderer::CGraphicsRenderer() : NSGraphics::IGraphicsRenderer()
 
 	m_dGlobalAlpha			= 1.0;
     m_bGlobalAlphaEnabled	= false;
+
+    m_dGammaStroke = -1;
 }
 CGraphicsRenderer::~CGraphicsRenderer()
 {
@@ -943,7 +945,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 
 	if (bIsStroke)
 	{
-		m_pRenderer->DrawPath(&m_oPen, m_pPath);
+        m_pRenderer->DrawPath(&m_oPen, m_pPath, m_dGammaStroke);
 	}
 	
 	return S_OK;
@@ -1322,6 +1324,11 @@ void CGraphicsRenderer::AddRect(const double& x, const double& y, const double& 
 	m_pPath->LineTo(x + w, y + h);
 	m_pPath->LineTo(x, y + h);
 	m_pPath->CloseFigure();
+}
+
+void CGraphicsRenderer::SetGammaStroke(double value)
+{
+    m_dGammaStroke = value;
 }
 
 // SAVE/RESTORE section

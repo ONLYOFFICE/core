@@ -372,8 +372,14 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->t.get_value_or(L"0")) * Height	/100.	/ 96.,
 				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->r.get_value_or(L"0")) * Width	/100.	/ 96., 
 				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->b.get_value_or(L"0")) * Height	/100.	/ 96.);
-		}		
-
+		}
+		if (oox_picture->blipFill.blip.IsInit())
+		{
+			for (size_t i = 0 ; i < oox_picture->blipFill.blip->Effects.size(); i++)
+			{
+				convert(oox_picture->blipFill.blip->Effects[i].Effect.operator->());
+			}
+		}
 		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
 		OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
@@ -691,8 +697,8 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 
 	bool bLine = odf_context()->drawing_context()->isLineShape();
 
-	//if (custGeom && !custGeom->cxnLst.empty())
-	//	bLine = true;
+	if (custGeom && !custGeom->cxnLst.empty() && !odf_context()->drawing_context()->isCustomClosed())
+		bLine = true;
 
 	odf_context()->drawing_context()->start_area_properties();
 	{
@@ -889,6 +895,17 @@ void OoxConverter::convert(PPTX::Logic::Glow *oox_effect)
 
 }
 void OoxConverter::convert(PPTX::Logic::SoftEdge *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::Grayscl *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+	odf_context()->drawing_context()->set_grayscale();
+}
+void OoxConverter::convert(PPTX::Logic::Duotone *oox_effect)
 {
 	if (oox_effect == NULL) return;
 
@@ -1892,17 +1909,26 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	PPTX::Logic::GradFill*	gradFill	= NULL;
 	PPTX::Logic::SolidFill*	solidFill	= NULL;
 
-	if (oox_run_pr->Fill.is<PPTX::Logic::GradFill>())
+	if (oox_run_pr->ln.is_init())
+	{
+		drawing->start_line_properties(true);
+		if (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() == OOX::et_a_solidFill )
+		{	
+			solidFill = &oox_run_pr->ln->Fill.as<PPTX::Logic::SolidFill>();
+		}
+	}
+	if (!solidFill && oox_run_pr->Fill.is<PPTX::Logic::GradFill>())
 	{
 		gradFill = &oox_run_pr->Fill.as<PPTX::Logic::GradFill>();
 	}
+	else if (!solidFill && oox_run_pr->Fill.is<PPTX::Logic::SolidFill>())
+	{
+		solidFill = &oox_run_pr->Fill.as<PPTX::Logic::SolidFill>();
+	}	
+	
 	if (gradFill && !gradFill->GsLst.empty())
 	{
 		convert(&gradFill->GsLst[0].color, hexColorText, opacityText);
-	}
-	if (oox_run_pr->Fill.is<PPTX::Logic::SolidFill>())
-	{
-		solidFill = &oox_run_pr->Fill.as<PPTX::Logic::SolidFill>();
 	}
 	if (solidFill)
 	{

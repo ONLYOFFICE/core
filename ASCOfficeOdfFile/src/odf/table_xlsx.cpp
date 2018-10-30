@@ -431,8 +431,8 @@ namespace {
 // see ECMA-376 page 1768
 
 double pixToSize(double pixels, double maxDigitSize)
-{
-	return (int(( pixels - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9;
+{ 
+	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9; // * 9525. * 72.0 / (360000.0 * 2.54);
 }
 double cmToChars (double cm)
 {

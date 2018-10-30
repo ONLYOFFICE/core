@@ -185,12 +185,12 @@ void odf_table_context::end_table()
 	//последние объединенные ячейки ..
 	for (size_t i = 0 ; i < impl_->current_table().columns.size(); i++)
 	{
-		impl_->current_table().current_column = i + 1;
+		impl_->current_table().current_column = (int)i + 1;
 		set_cell_row_span_restart();
 	}
 	for (size_t i = 0 ; i < impl_->current_table().rows.size(); i++)
 	{
-		impl_->current_table().current_row = i + 1;
+		impl_->current_table().current_row = (int)i + 1;
 		set_cell_column_span_restart();
 	}
 	style * style_ = dynamic_cast<style *>(impl_->current_table().table.style_elm.get());
@@ -432,7 +432,7 @@ int odf_table_context::count_columns ()
 {
 	if (impl_->empty()) return 0;
 
-	return impl_->current_table().columns.size();
+	return (int)impl_->current_table().columns.size();
 }
 int odf_table_context::count_rows ()
 {
@@ -498,7 +498,7 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 		table_table_cell * cell = dynamic_cast<table_table_cell *>(state_row.spanned_column_cell[0].get());
 		if (!cell)return;
 
-		cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = state_row.spanned_column_cell.size();	
+		cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = (unsigned int)state_row.spanned_column_cell.size();	
 		state_row.spanned_column_cell.clear();
 	}
 
@@ -511,7 +511,7 @@ void odf_table_context::set_cell_column_span_restart()
 	int row = impl_->current_table().current_row - 1;
 	odf_row_state & state = impl_->current_table().rows[row];
 	
-	int sz = state.spanned_column_cell.size();	
+	unsigned int sz = (unsigned int)state.spanned_column_cell.size();	
 	if (sz  > 1)
 	{
 		table_table_cell * cell = dynamic_cast<table_table_cell *>(state.spanned_column_cell[0].get());
@@ -567,7 +567,7 @@ void odf_table_context::set_cell_row_span_restart()
 	int col = impl_->current_table().current_column - 1;
 	odf_column_state & state = impl_->current_table().columns[col];
 
-	int sz = state.spanned_row_cell.size();
+	unsigned int sz = (unsigned int)state.spanned_row_cell.size();
 	
 	if (sz  > 1)
 	{

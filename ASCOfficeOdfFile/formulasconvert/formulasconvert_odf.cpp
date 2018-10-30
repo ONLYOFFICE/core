@@ -358,35 +358,52 @@ namespace formulasconvert {
 	
 		return L"";
 	}
+	void odf_replace_tmp_back(std::wstring &expr)
+	{
+		XmlUtils::replace_all( expr, L"ТОСHKA", L".");
+		XmlUtils::replace_all( expr, L"VOSKL", L"!");
+
+		XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
+		XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
+
+		XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
+		XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
+		
+		XmlUtils::replace_all( expr, L"PROBEL", L" ");
+		XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
+		XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+	}
+	void odf_replace_tmp(std::wstring &expr)
+	{
+		XmlUtils::replace_all( expr, L".", L"ТОСHKA");
+		XmlUtils::replace_all( expr, L"!", L"VOSKL");
+
+		XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
+		XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
+
+		XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
+		XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
+		
+		XmlUtils::replace_all( expr, L" ", L"PROBEL");
+		XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
+		XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+	}
 	std::wstring convert_scobci(boost::wsmatch const & what)
 	{
 		if (what[1].matched)
 		{
 			std::wstring inner = what[1].str();
-			XmlUtils::replace_all( inner, L".", L"ТОСHKA");
-			XmlUtils::replace_all( inner, L"(", L"SCOBCAIN");
-			XmlUtils::replace_all( inner, L")", L"SCOBCAOUT");
 
-			XmlUtils::replace_all( inner, L"[", L"KVADRATIN");
-			XmlUtils::replace_all( inner, L"]", L"KVADRATOUT");
-			
-			XmlUtils::replace_all( inner, L" ", L"PROBEL");
-			XmlUtils::replace_all( inner, L"'", L"APOSTROF");
+			odf_replace_tmp(inner);
+
 			return inner;
 		}
 		else if (what[2].matched)
 		{
 			std::wstring inner = what[2].str();
-			XmlUtils::replace_all( inner, L".", L"ТОСHKA");
-
-			XmlUtils::replace_all( inner, L"(", L"SCOBCAIN");
-			XmlUtils::replace_all( inner, L")", L"SCOBCAOUT");
-
- 			XmlUtils::replace_all( inner, L"[", L"KVADRATIN");
-			XmlUtils::replace_all( inner, L"]", L"KVADRATOUT");
 			
-			XmlUtils::replace_all( inner, L" ", L"PROBEL");
-			XmlUtils::replace_all( inner, L"\"", L"KAVYCHKA");
+			odf_replace_tmp(inner);
+
 			return inner;
 		}
 		else if (what[3].matched)
@@ -509,18 +526,7 @@ namespace formulasconvert {
 
 
 	//-----------------------------------------------------------
- 		XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
-		XmlUtils::replace_all( workstr, L"APOSTROF"	, L"'");
-		XmlUtils::replace_all( workstr, L"ТОСHKA"	, L".");
-
-		XmlUtils::replace_all( workstr, L"SCOBCAIN"	, L"(");
-		XmlUtils::replace_all( workstr, L"SCOBCAOUT"	, L")");
-
-		XmlUtils::replace_all( workstr, L"KVADRATIN"	, L"[");
-		XmlUtils::replace_all( workstr, L"KVADRATOUT", L"]");
-
-		XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
-		XmlUtils::replace_all( workstr, L"KAVYCHKA"	, L"\"");
+		odf_replace_tmp_back(workstr);
 
 		return workstr;
 	}

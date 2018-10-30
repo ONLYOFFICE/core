@@ -341,6 +341,8 @@ namespace PPTX
 		class Glow;
 		class Reflection;
 		class SoftEdge;
+		class Grayscl;
+		class Duotone;
 	}
 }
 
@@ -468,6 +470,8 @@ public:
 		void convert(PPTX::Logic::Glow							*oox_effect);
 		void convert(PPTX::Logic::Reflection					*oox_effect);
 		void convert(PPTX::Logic::SoftEdge						*oox_effect);
+		void convert(PPTX::Logic::Grayscl						*oox_effect);
+		void convert(PPTX::Logic::Duotone						*oox_effect);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);

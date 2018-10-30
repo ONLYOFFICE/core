@@ -240,10 +240,10 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 		xlsx_merge_cells_.add_merge(current_table_column_, current_table_row_, columnsSpanned, rowsSpanned);
 	}
 
-    if ( current_columns_spaned() > 0 )
-    {
-        _CP_LOG << L"[warning] current columns spanned > 0\n";
-    }
+    //if ( current_columns_spaned() > 0 )
+    //{
+    //    _CP_LOG << L"[warning] current columns spanned > 0\n";
+    //}
 
     columns_spanned_num_ = static_cast<int>(columnsSpanned);
 
@@ -263,10 +263,10 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
     }
     else
     {
-        if (rows_spanned_[current_table_column_].num() > 0)
-        {
-            _CP_LOG << L"[warning] current rows spanned > 0\n";
-        }
+        //if (rows_spanned_[current_table_column_].num() > 0)
+        //{
+        //    _CP_LOG << L"[warning] current rows spanned > 0\n";
+        //}
         rows_spanned_[current_table_column_].num(static_cast<unsigned int>(rowsSpanned));
         rows_spanned_[current_table_column_].column_spanned(static_cast<unsigned int>(columnsSpanned));
         for (size_t i = 0; i <= columns_spanned_num_; ++i)

@@ -1393,18 +1393,18 @@ void ods_table_state::start_conditional_rule(int rule_type)
 			}
 			switch(rule_type)
 			{
-				case 4: condition->attr_.calcext_value_	= L"contains-text( )"; break;
-				case 5: condition->attr_.calcext_value_	= L"is-error"; break;
-				case 6: condition->attr_.calcext_value_	= L"contains-text()"; break;
-				case 8: condition->attr_.calcext_value_	= L"duplicate"; break;
-				case 9: condition->attr_.calcext_value_	= L"formula-is()"; break;
-				case 11: condition->attr_.calcext_value_	= L"not-contains-text( )"; break;
-				case 12: condition->attr_.calcext_value_	= L"is-no-error"; break;
+				case 0:	condition->attr_.calcext_value_		= L"above-average";		break;
+				case 1:	condition->attr_.calcext_value_		= L"begins-with()";		break;
+				case 4: condition->attr_.calcext_value_		= L"contains-text()";	break;
+				case 5: condition->attr_.calcext_value_		= L"is-error";			break;
+				case 6: condition->attr_.calcext_value_		= L"contains-text()";	break;
+				case 8: condition->attr_.calcext_value_		= L"duplicate";			break;
+				case 9: condition->attr_.calcext_value_		= L"formula-is()";		break;
+				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
+				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
-				case 15: condition->attr_.calcext_value_	= L"top-elements()"; break;//bottom-elements ???
-				case 16: condition->attr_.calcext_value_	= L"unique"; break;
-				case 0: /*aboveAverage*/
-				case 1: /*beginsWith*/
+				case 15: condition->attr_.calcext_value_	= L"top-elements()";	break;//bottom-elements ???
+				case 16: condition->attr_.calcext_value_	= L"unique";			break;
 				case 2: /*cellIs*/
 				default:	break;							
 			}
@@ -1422,38 +1422,61 @@ void ods_table_state::end_conditional_rule()
 
 void ods_table_state::set_conditional_formula(std::wstring formula)
 {
-	calcext_condition* condition	= dynamic_cast<calcext_condition*>	 (current_level_.back().get());
+	calcext_condition* condition = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 
-	if (condition)
-	{
-		std::wstring odfFormula = formulas_converter_table.convert_conditional_formula(formula);
+	if (!condition) return;
+
+	std::wstring odfFormula = formulas_converter_table.convert_conditional_formula(formula);
 		
-		std::wstring operator_;
-		bool s = false;
-		bool split = false;
-		if (condition->attr_.calcext_value_)//есть опреатор
-		{
-			operator_ = *condition->attr_.calcext_value_;
-			int f_start = operator_.find(L"("); 
-			int f_end = operator_.rfind(L")"); 
-			if (f_start > 0) 
-			{
-				if (f_start < f_end - 1) split = true;
-				s = true; 
-				operator_ = operator_.substr(0, f_end);
-			}
-		}		
-		operator_ += (split ? L"," : L"") + odfFormula + (s ? L")" : L"");
-		condition->attr_.calcext_value_= operator_;
+	std::wstring operator_;
+	bool s = false;
+	bool split = false;
+
+	operator_ = condition->attr_.calcext_value_.get_value_or(L"");
+
+	size_t f_start = operator_.find(L"("); 
+	size_t f_end = operator_.rfind(L")"); 
+	if (f_start != std::wstring::npos && f_end != std::wstring::npos) 
+	{
+		if (f_start < f_end - 1) split = true;
+		s = true; 
+		operator_ = operator_.substr(0, f_end);
 	}
+	operator_ += (split ? L"," : L"") + odfFormula + (s ? L")" : L"");
+
+	if (std::wstring::npos == operator_.find(L"contains-text") || !split)
+		condition->attr_.calcext_value_= operator_;
 }
-void ods_table_state::set_conditional_style_name(std::wstring style_name)
+void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
 {
 	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 	calcext_date_is*	date_is		 = dynamic_cast<calcext_date_is*>	 (current_level_.back().get());
 
 	if (condition)	condition->attr_.calcext_apply_style_name_	= style_name;
 	if (date_is)	date_is->attr_.calcext_style_				= style_name;
+}
+void ods_table_state::set_conditional_text(const std::wstring &text)
+{
+	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
+
+	if ((condition->attr_.calcext_value_) && (std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text")))
+	{
+		std::wstring operator_;
+		bool s = false;
+		bool split = false;
+
+		operator_ = *condition->attr_.calcext_value_;
+		size_t f_start = operator_.find(L"("); 
+		size_t f_end = operator_.rfind(L")"); 
+		if (f_start != std::wstring::npos && f_end != std::wstring::npos) 
+		{
+			if (f_start < f_end - 1) split = true;
+			s = true; 
+			operator_ = operator_.substr(0, f_end);
+		}		
+		operator_ += (split ? L"," : L"") + std::wstring(L"\"") + text + L"\"" + (s ? L")" : L"");
+		condition->attr_.calcext_value_= operator_;
+	}
 }
 void ods_table_state::set_conditional_operator(int _operator)
 {
@@ -1462,16 +1485,16 @@ void ods_table_state::set_conditional_operator(int _operator)
 	{
 		switch(_operator)
 		{
-		case 0:	condition->attr_.calcext_value_ = L"begins-with()";	break;
-		case 1:	condition->attr_.calcext_value_ = L"between()";		break;
-		case 2:	condition->attr_.calcext_value_ = L"contains-text()"; break;
+		case 0:	condition->attr_.calcext_value_ = L"begins-with()";		break;
+		case 1:	condition->attr_.calcext_value_ = L"between()";			break;
+		case 2:	condition->attr_.calcext_value_ = L"contains-text()";	break;
 		case 3:	condition->attr_.calcext_value_ = L"ends-with()";		break;
-		case 4:	condition->attr_.calcext_value_ = L"=";				break;
-		case 5:	condition->attr_.calcext_value_ = L">";				break;
+		case 4:	condition->attr_.calcext_value_ = L"=";					break;
+		case 5:	condition->attr_.calcext_value_ = L">";					break;
 		case 6:	condition->attr_.calcext_value_ = L">=";				break;
-		case 7:	condition->attr_.calcext_value_ = L"<";				break;
+		case 7:	condition->attr_.calcext_value_ = L"<";					break;
 		case 8:	condition->attr_.calcext_value_ = L"<=";				break;
-		case 9:	condition->attr_.calcext_value_ = L"not-between()";	 break;
+		case 9:	condition->attr_.calcext_value_ = L"not-between()";		break;
 		case 10:condition->attr_.calcext_value_ = L"not-contains-text()"; break;
 		case 11:condition->attr_.calcext_value_ = L"!=";				break;
 		}

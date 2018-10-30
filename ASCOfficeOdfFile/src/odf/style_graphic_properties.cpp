@@ -122,6 +122,10 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	if (draw_fit_to_size_)		properties.push_back(_property(L"fit-to-size",		*draw_fit_to_size_));
 	if (draw_fit_to_contour_)	properties.push_back(_property(L"fit-to-contour",	*draw_fit_to_contour_));
 
+	if (common_draw_fill_attlist_.draw_color_mode_)
+	{
+		properties.push_back(_property(L"color-mode", *common_draw_fill_attlist_.draw_color_mode_));
+	}
 	if (common_padding_attlist_.fo_padding_)
 	{
 		properties.push_back(_property(L"text-padding-left",	common_padding_attlist_.fo_padding_->get_value_unit(length::emu)));

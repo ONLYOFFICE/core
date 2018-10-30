@@ -106,6 +106,13 @@ void common_draw_fill_attlist::add_attributes( const xml::attributes_wc_ptr & At
 	CP_APPLY_ATTR(L"draw:fill-image-width",		draw_fill_image_width_);
 	CP_APPLY_ATTR(L"draw:fill-image-height",	draw_fill_image_height_);
 
+	CP_APPLY_ATTR(L"draw:color-mode",	draw_color_mode_);
+	CP_APPLY_ATTR(L"draw:contrast",		draw_contrast_);
+	CP_APPLY_ATTR(L"draw:luminance",	draw_luminance_);
+	CP_APPLY_ATTR(L"draw:gamma",		draw_gamma_);
+	CP_APPLY_ATTR(L"draw:red",			draw_red_);
+	CP_APPLY_ATTR(L"draw:green",		draw_green_);
+	CP_APPLY_ATTR(L"draw:blue",			draw_blue_);
 }
 void common_draw_fill_attlist::serialize(CP_ATTR_NODE)
 {
@@ -130,6 +137,13 @@ void common_draw_fill_attlist::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"draw:fill-image-width",		draw_fill_image_width_);
 	CP_XML_ATTR_OPT(L"draw:fill-image-height",		draw_fill_image_height_);
 
+	CP_XML_ATTR_OPT(L"draw:color-mode",		draw_color_mode_);
+	CP_XML_ATTR_OPT(L"draw:contrast",		draw_contrast_);
+	CP_XML_ATTR_OPT(L"draw:luminance",		draw_luminance_);
+	CP_XML_ATTR_OPT(L"draw:gamma",			draw_gamma_);
+	CP_XML_ATTR_OPT(L"draw:red",			draw_red_);
+	CP_XML_ATTR_OPT(L"draw:green",			draw_green_);
+	CP_XML_ATTR_OPT(L"draw:blue",			draw_blue_);
 }
 
 void common_draw_fill_attlist::apply_from(const common_draw_fill_attlist & Other)
@@ -150,6 +164,14 @@ void common_draw_fill_attlist::apply_from(const common_draw_fill_attlist & Other
 
 	_CP_APPLY_PROP2(draw_fill_image_width_);
 	_CP_APPLY_PROP2(draw_fill_image_height_);
+     
+    _CP_APPLY_PROP2(draw_color_mode_);
+    _CP_APPLY_PROP2(draw_contrast_);
+    _CP_APPLY_PROP2(draw_luminance_);
+    _CP_APPLY_PROP2(draw_gamma_);
+	_CP_APPLY_PROP2(draw_red_);
+    _CP_APPLY_PROP2(draw_green_);
+    _CP_APPLY_PROP2(draw_blue_);
 }
 
 void common_horizontal_margin_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )

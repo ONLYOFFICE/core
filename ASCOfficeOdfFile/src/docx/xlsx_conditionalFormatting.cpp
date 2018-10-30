@@ -36,8 +36,10 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <xml/simple_xml_writer.h>
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "../formulasconvert/formulasconvert.h"
+
 namespace cpdoccore {
 namespace oox {
 
@@ -271,6 +273,10 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
 		impl_->conditionalFormattings_.back().rules.back().formula = L"0";
 	}	
+	else if ( f == L"above-average")
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"aboveAverage";
+	}
 	else if ( 0 <= (pos = f.find(L"formula-is(")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
@@ -312,16 +318,35 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		if (std::wstring::npos != text.find(L"IF(") || 
 			std::wstring::npos != text.find(L"AND(") ||
 			std::wstring::npos != text.find(L"NOT(") ||
-			std::wstring::npos != text.find(L"LEN(") ||
-			std::wstring::npos != text.find(L"TRIM(") ||
 			std::wstring::npos != text.find(L"ISERROR(") ||
 			std::wstring::npos != text.find(L"SEARCH("))
 		{
 			impl_->conditionalFormattings_.back().rules.back().text = L"";
 			impl_->conditionalFormattings_.back().rules.back().formula = converter.convert(text);
 		}
+		else if (std::wstring::npos != text.find(L"LEN(TRIM(") && 
+			std::wstring::npos != text.find(L"=0"))
+		{
+			impl_->conditionalFormattings_.back().rules.back().text = L"";
+			impl_->conditionalFormattings_.back().rules.back().formula = L"0";
+		}
 		else
+		{
+			impl_->conditionalFormattings_.back().rules.back().operator_ = L"containsText";
+			if ( 0 == text.find(L"\"") && text.length() - 1 == text.rfind(L"\""))
+			{
+				text = text.substr(1, text.length() - 2);
+			}
+			std::wstring ref = impl_->conditionalFormattings_.back().ref;
+			
+			size_t pos;
+			if ((pos = ref.find(L":")) != std::wstring::npos)
+			{
+				ref = ref.substr(0, pos);
+			}
 			impl_->conditionalFormattings_.back().rules.back().text = text;
+			impl_->conditionalFormattings_.back().rules.back().formula = L"NOT(ISERROR(SEARCH(\"" + text + L"\"," + ref + L")))";
+		}
 	}
 	else if (0 <= (pos = f.find(L"top")))
 	{
@@ -388,6 +413,8 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
 			val = f.substr(8, f.length() - 9);
 			
+			XmlUtils::replace_all(val, L"(", L"");
+			XmlUtils::replace_all(val, L")", L"");
 			if (0 <= (pos = val.find(L",")))
 			{
 				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr( val.substr(pos + 1) );

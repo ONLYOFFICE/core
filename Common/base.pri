@@ -17,6 +17,16 @@ win32 {
     CONFIG += core_windows
 }
 
+DST_ARCH=$$QMAKE_TARGET.arch
+isEqual(QT_MAJOR_VERSION, 5) {
+    DST_ARCH=$$QT_ARCH
+    # QT_ARCH uses 'i386' instead of 'x86',
+    # so map that value back to what we expect.
+    equals(DST_ARCH, i386) {
+        DST_ARCH=x86
+    }
+}
+
 win32:contains(QMAKE_TARGET.arch, x86_64): {
     CONFIG += core_win_64
 }
@@ -33,6 +43,11 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64): {
 linux-g++:!contains(QMAKE_HOST.arch, x86_64): {
     message("linux-32")
     CONFIG += core_linux_32
+}
+linux-g++:contains(DST_ARCH, arm): {
+    message("arm")
+    CONFIG += core_linux_arm
+    DEFINES += LINUX_ARM
 }
 }
 
@@ -92,6 +107,9 @@ core_linux_64 {
 }
 core_mac_64 {
     CORE_BUILDS_PLATFORM_PREFIX = mac_64
+}
+core_linux_arm {
+    CORE_BUILDS_PLATFORM_PREFIX = arm
 }
 
 core_debug {

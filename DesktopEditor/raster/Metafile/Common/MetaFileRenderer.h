@@ -155,7 +155,7 @@ namespace MetaFile
 			if (lLogicalFontHeight < 0.01)
 				lLogicalFontHeight = 18;
 
-			double dFontHeight = fabs(lLogicalFontHeight * m_dScaleY * m_pFile->GetPixelHeight() / 25.4 * 72);
+			double dFontHeight = fabs(lLogicalFontHeight * m_dScaleY / 25.4 * 72);
 
 			std::wstring wsFaceName = pFont->GetFaceName();
 			m_pRenderer->put_FontName(wsFaceName);
@@ -682,10 +682,9 @@ namespace MetaFile
 				return false;
 
 			int nColor = pPen->GetColor();
-			double dPixelWidth = m_pFile->GetPixelWidth();
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
-			double dWidth = pPen->GetWidth() * m_dScaleX * dPixelWidth;
+			double dWidth = pPen->GetWidth() * m_dScaleX;
 			if (dWidth <= 0.01)
 				dWidth = 0;
 
@@ -711,7 +710,7 @@ namespace MetaFile
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
 
-			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX * dPixelWidth;
+			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX;
 
 			// TODO: Реализовать PS_USERSTYLE
 			BYTE nDashStyle = Aggplus::DashStyleSolid;;

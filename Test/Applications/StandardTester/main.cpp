@@ -76,8 +76,13 @@ public:
         for (std::vector<std::wstring>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
         {
             std::wstring sExt = NSFile::GetFileExtention(*iter);
-            if (sExt == L"docx" || sExt == L"pptx" || sExt == L"xlsx")
+
+            if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" ||
+                sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
+                sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods")
+            {
                 m_files.push_back(*iter);
+            }
         }
         m_nCount = (int)m_files.size();
     }
@@ -406,35 +411,120 @@ public:
 
                 sizeMemory = nW_I * nH_I;
 
-                for (size_t pix = 0; pix < sizeMemory; ++pix)
+                int nEpsilonEps = 3;
+                int nEpsilonNatural = 5;
+
+                int nDivExist = 0;
+                for (int indexPixH = 0; indexPixH < nH_I; indexPixH++)
                 {
-                    if (pDataI[0] != pDataO[0] || pDataI[1] != pDataO[1] || pDataI[2] != pDataO[2])
+                    for (int indexPixW = 0; indexPixW < nW_I; indexPixW++)
                     {
-                        if (pDataO[0] == 0x00 && pDataO[1] == 0x00 && pDataO[2] == 0xFF)
+                        if (pDataI[0] != pDataO[0] || pDataI[1] != pDataO[1] || pDataI[2] != pDataO[2])
                         {
-                            pDataO[0] = 0xFF;
-                            pDataO[1] = 0x00;
-                            pDataO[2] = 0x00;
+                            // test epsilon natural
+                            if ((abs(pDataI[0] - pDataO[0]) < nEpsilonNatural) &&
+                                (abs(pDataI[1] - pDataO[1]) < nEpsilonNatural) &&
+                                (abs(pDataI[2] - pDataO[2]) < nEpsilonNatural))
+                            {
+                                pDataI += 4;
+                                pDataO += 4;
+                                continue;
+                            }
+
+                            // test epsilon left, right, top, bottom
+                            int nEpsUp = nEpsilonEps;
+                            if (indexPixH > 0)
+                            {
+                                BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH - 1) * nW_I + 4 * indexPixW;
+
+                                if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+                                    (abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+                                    (abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+                                {
+                                    nEpsUp = nEpsilonEps - 1;
+                                }
+                            }
+
+                            int nEpsDown = nEpsilonEps;
+                            if (indexPixH < (nH_I - 1))
+                            {
+                                BYTE* pByteI = frameI.get_Data() + 4 * (indexPixH + 1) * nW_I + 4 * indexPixW;
+
+                                if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+                                    (abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+                                    (abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+                                {
+                                    nEpsDown = nEpsilonEps - 1;
+                                }
+                            }
+
+                            int nEpsLeft = nEpsilonEps;
+                            if (indexPixW > 0)
+                            {
+                                BYTE* pByteI = pDataI - 4;
+
+                                if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+                                    (abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+                                    (abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+                                {
+                                    nEpsLeft = nEpsilonEps - 1;
+                                }
+                            }
+
+                            int nEpsRight = nEpsilonEps;
+                            if (indexPixW < (nW_I - 1))
+                            {
+                                BYTE* pByteI = pDataI + 4;
+
+                                if ((abs(pByteI[0] - pDataO[0]) < nEpsilonEps) &&
+                                    (abs(pByteI[1] - pDataO[1]) < nEpsilonEps) &&
+                                    (abs(pByteI[2] - pDataO[2]) < nEpsilonEps))
+                                {
+                                    nEpsRight = nEpsilonEps - 1;
+                                }
+                            }
+
+                            if ((nEpsLeft < nEpsilonEps) ||
+                                (nEpsRight < nEpsilonEps) ||
+                                (nEpsUp < nEpsilonEps) ||
+                                (nEpsDown < nEpsilonEps))
+                            {
+                                pDataI += 4;
+                                pDataO += 4;
+                                continue;
+                            }
+
+                            ++nDivExist;
+
+                            if (pDataO[0] == 0x00 && pDataO[1] == 0x00 && pDataO[2] == 0xFF)
+                            {
+                                pDataO[0] = 0xFF;
+                                pDataO[1] = 0x00;
+                                pDataO[2] = 0x00;
+                            }
+                            else
+                            {
+                                pDataO[0] = 0x00;
+                                pDataO[1] = 0x00;
+                                pDataO[2] = 0xFF;
+                            }
                         }
-                        else
-                        {
-                            pDataO[0] = 0x00;
-                            pDataO[1] = 0x00;
-                            pDataO[2] = 0xFF;
-                        }
+                        pDataI += 4;
+                        pDataO += 4;
                     }
-                    pDataI += 4;
-                    pDataO += 4;
                 }
 
-                if (!NSDirectory::Exists(strDiffsMain))
-                    NSDirectory::CreateDirectory(strDiffsMain);
-                if (!NSDirectory::Exists(strDiffs))
-                    NSDirectory::CreateDirectory(strDiffs);
+                if (nDivExist > 7)
+                {
+                    if (!NSDirectory::Exists(strDiffsMain))
+                        NSDirectory::CreateDirectory(strDiffsMain);
+                    if (!NSDirectory::Exists(strDiffs))
+                        NSDirectory::CreateDirectory(strDiffs);
 
-                frameO.SaveFile(sPageDiff, 4);
+                    frameO.SaveFile(sPageDiff, 4);
 
-                std::cout << "file (diffs) : " << U_TO_UTF8(sPageDiff) << std::endl;
+                    std::cout << "file (diffs) : " << U_TO_UTF8(sPageDiff) << std::endl;
+                }
             }
         }
 

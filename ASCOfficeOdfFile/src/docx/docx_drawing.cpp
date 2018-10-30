@@ -231,7 +231,7 @@ void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 					CP_XML_NODE(L"a:avLst");
 				}
 
-				oox_serialize_ln(CP_XML_STREAM(),val.additional);
+				oox_serialize_ln(CP_XML_STREAM(), val.additional);
 			}
 		}
 	}

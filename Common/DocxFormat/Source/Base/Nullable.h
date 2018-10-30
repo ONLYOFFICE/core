@@ -480,7 +480,7 @@ namespace NSCommon
 			RELEASEOBJECT(m_pPointer);
 
 			if ( !sValue.empty() )
-				m_pPointer = new size_t(XmlUtils::GetUInteger(sValue));
+				m_pPointer = new size_t((size_t)XmlUtils::GetUInteger(sValue));
 
 			return *this;
 		}

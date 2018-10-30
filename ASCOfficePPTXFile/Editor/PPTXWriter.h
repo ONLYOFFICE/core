@@ -235,7 +235,7 @@ namespace NSBinPptxRW
 				nCountSlides = m_oReader.GetLong();
 			}
 
-			if (0 == nCountThemes || 0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/) //rev 60054 - презентация без слайдов
+			if (/*0 == nCountThemes || */0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/) //rev 60054 - презентация без слайдов
 			{
 				return;
 			}
@@ -279,7 +279,7 @@ namespace NSBinPptxRW
 				{
 					int index = m_arSlideMasters_Theme[i].m_arLayouts[j];
 					
-					if (index >= 0 && index < m_arSlideLayouts_Master.size())
+					if (index >= 0 && index < (int)m_arSlideLayouts_Master.size())
 					{
 						m_arSlideLayouts_Master[index] = (LONG)i;
 					}
@@ -353,19 +353,23 @@ namespace NSBinPptxRW
 			}
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
-				arThemesSave[m_arSlideMasters_Theme[i].m_lThemeIndex] = true;
+				int ind = m_arSlideMasters_Theme[i].m_lThemeIndex;
+				if (ind < arThemesSave.size())
+				{
+					arThemesSave[ind] = true;
+				}
 			}
 
 			for (size_t i = 0; i < m_arNotesMasters_Theme.size(); i++)
 			{
 				int index = m_arNotesMasters_Theme[i];
-				if (index >= 0 && index < arThemesSave.size())
+				if (index >= 0 && index < (int)arThemesSave.size())
 				{
 					arThemesSave[index] = true;
 				}
 			}
 			LONG lCurrectTheme = 0;
-			for (LONG i = 0; i < nCountMasters; ++i)
+			for (LONG i = 0; i < nCountMasters && i < arThemesSave.size(); ++i)
 			{
 				if (!arThemesSave[i])
 					continue;
@@ -373,7 +377,7 @@ namespace NSBinPptxRW
 				++lCurrectTheme;
 			}
 			// теперь нужно перебить ссылки
-			for (LONG i = 0; i < nCountMasters; ++i)
+			for (LONG i = 0; i < nCountMasters && i < arThemesDst.size(); ++i)
 			{
 				m_arSlideMasters_Theme[i].m_lThemeIndex = arThemesDst[i];
 			}			
@@ -537,7 +541,7 @@ namespace NSBinPptxRW
 								break;
 							}
 						}
-						m_oReader.m_pRels->StartNotes(indexSlide);
+						m_oReader.m_pRels->StartNotes((int)indexSlide);
 						
 						m_arNotesSlides[i].fromPPTY(&m_oReader);
 
@@ -575,7 +579,7 @@ namespace NSBinPptxRW
 					m_arNotesMasters.push_back(elm);
 					
 					m_oReader.m_pRels->Clear();
-					m_oReader.m_pRels->StartThemeNotesMaster(m_arSlideMasters_Theme.size());
+					m_oReader.m_pRels->StartThemeNotesMaster((int)m_arSlideMasters_Theme.size());
 					
 					bNotesMasterPresent = true;
 					if (lCount > 0)
@@ -596,7 +600,7 @@ namespace NSBinPptxRW
 					}
 					else
 					{
-						CreateDefaultNotesMasters(m_arSlideMasters_Theme.size());
+						CreateDefaultNotesMasters((int)m_arSlideMasters_Theme.size());
 					}
 				}
 			}
@@ -799,7 +803,7 @@ namespace NSBinPptxRW
 				m_oReader.m_pRels->WriteMasters(nCountMasters);
 				m_oReader.m_pRels->WriteThemes(nCountThemes);
 
-				size_t nCurrentRels = m_oReader.m_pRels->m_lNextRelsID;
+				unsigned int nCurrentRels = m_oReader.m_pRels->m_lNextRelsID;
 
 				m_oPresentation.sldIdLst.clear();
 				for (LONG i = 0; i < nCountSlides; ++i)
@@ -892,7 +896,7 @@ namespace NSBinPptxRW
 	// themes
 			for (size_t i = 0; i < m_arThemes.size(); ++i)
 			{
-				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml", L"/ppt/theme", L"theme" + std::to_wstring(i + 1) + L".xml");
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml", L"/ppt/theme", L"theme" + std::to_wstring((int)i + 1) + L".xml");
 			}
 	// notes master
             if (!m_arNotesMasters.empty())
@@ -909,19 +913,19 @@ namespace NSBinPptxRW
 	// layouts
 			for (LONG i = 0; i < nCountLayouts; ++i)
 			{
-				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml", L"/ppt/slideLayouts", L"slideLayout" + std::to_wstring(i + 1) + L".xml");
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml", L"/ppt/slideLayouts", L"slideLayout" + std::to_wstring((int)i + 1) + L".xml");
 			}
 
 	// slides
 			for (size_t i = 0; i < m_arSlides.size(); ++i)
 			{
-				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml", L"/ppt/slides", L"slide" + std::to_wstring(i + 1) + L".xml");
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml", L"/ppt/slides", L"slide" + std::to_wstring((int)i + 1) + L".xml");
 			}
 
 	// notes
 			for (size_t i = 0; i < m_arNotesSlides.size(); ++i)
 			{
-				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", L"/ppt/notesSlides", L"notesSlide" + std::to_wstring(i + 1) + L".xml");
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", L"/ppt/notesSlides", L"notesSlide" + std::to_wstring((int)i + 1) + L".xml");
 			}
 
 	// slideComments

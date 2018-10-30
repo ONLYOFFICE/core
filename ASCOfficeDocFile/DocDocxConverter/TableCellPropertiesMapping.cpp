@@ -92,6 +92,8 @@ namespace DocFileFormat
 				{
 					iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
 				}break;
+				default:
+					break;
 			}
 		}
 		std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
@@ -318,6 +320,8 @@ namespace DocFileFormat
 					}
 				}
 				break;
+				default:
+					break;
 			}
 		}
 		if (_gridSpan <= 1 && nComputedCellWidth > _width && _width > 1)

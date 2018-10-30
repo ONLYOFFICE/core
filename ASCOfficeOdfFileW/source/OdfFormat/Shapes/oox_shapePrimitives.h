@@ -58,6 +58,7 @@
 //+	shapetypeTrapezoid
 //+ shapetypeBlockArc
 //+ shapetypeDonut
+//+ shapetypeFrame
 
 #include "../oox_shape_defines.h"
 
@@ -1590,4 +1591,36 @@ public:
 		handles.push_back(h1);
 	}
 };
+class oox_shape_Frame : public oox_shape
+{
+public:
+	oox_shape_Frame()
+	{
+		odf_type_name	=L"ooxml-frame";
+
+		modifiers		= L"12500";
+		enhanced_path	= L"M 0 0 L ?f8 0 ?f8 ?f7 0 ?f7 Z M ?f2 ?f2 L ?f2 ?f4 ?f3 ?f4 ?f3 ?f2 Z N";
+		text_areas		= L"?f2 ?f2 ?f3 ?f4";
+		view_box		= L"0 0 0 0";
+		
+		add(L"f0", L"if(0-$0 ,0,if(50000-$0 ,$0 ,50000))");
+		add(L"f1", L"min(logwidth,logheight)");
+		add(L"f2", L"?f1 *?f0 /100000");
+		add(L"f3", L"logwidth+0-?f2 ");
+		add(L"f4", L"logheight+0-?f2 ");
+		add(L"f5", L"logwidth/2");
+		add(L"f6", L"logheight/2");
+		add(L"f7", L"logheight");
+		add(L"f8", L"logwidth");
+
+ 		_handle h2;
+		
+		h2.position = L"?f2 0";
+		h2.y_maximum= L"50000";
+		handles.push_back(h2);
+
+/////////////////////////////////////////////////////////
+	}
+};
+
 }

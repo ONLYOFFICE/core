@@ -139,7 +139,25 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("a:outerShdw"), oAttr, oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:outerShdw");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"blurRad", blurRad);
+				pWriter->WriteAttribute(L"dist", dist);
+				pWriter->WriteAttribute(L"dir", dir);
+				pWriter->WriteAttribute(L"kx", kx);
+				pWriter->WriteAttribute(L"ky", ky);
+				pWriter->WriteAttribute(L"sx", sx);
+				pWriter->WriteAttribute(L"sy", sy);
+				pWriter->WriteAttribute(L"rotWithShape", rotWithShape);
+				pWriter->WriteAttribute(L"algn", algn);
+				pWriter->EndAttributes();
+				
+				Color.toXmlWriter(pWriter);
 
+				pWriter->EndNode(L"a:outerShdw");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_OUTERSHDW);
@@ -160,7 +178,54 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:	
+						{
+							algn = new Limit::RectAlign();
+							algn->SetBYTECode( pReader->GetChar()); 
+						}break;
+						case 1:	blurRad = pReader->GetLong(); break;
+						case 2:	dir		= pReader->GetLong(); break;
+						case 3:	dist	= pReader->GetLong(); break;
+						case 4:	kx		= pReader->GetLong(); break;
+						case 5:	ky		= pReader->GetLong(); break;
+						case 6:	sx		= pReader->GetLong(); break;
+						case 7:	sy		= pReader->GetLong(); break;
+						case 8:	rotWithShape = pReader->GetBool(); break;
+					}
+				}
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							Color.fromPPTY(pReader);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}	
 		public:
 			UniColor Color;
 

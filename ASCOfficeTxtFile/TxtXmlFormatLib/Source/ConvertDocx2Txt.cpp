@@ -180,7 +180,7 @@ namespace Docx2Txt
 	
 		if (pNumbering)
 		{
-			ListCount = pNumbering->m_arrNum.size();
+			ListCount = (int)pNumbering->m_arrNum.size();
 			Lists = new int[9 * ListCount];
 			if(Lists == NULL)
 				return;
@@ -387,7 +387,7 @@ namespace Docx2Txt
 			listNum--;
 			if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oNumId.IsInit()))
 			{
-				int abstractNumId = 0;
+				size_t abstractNumId = 0;
 				if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oAbstractNumId.IsInit()) &&
 							(pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal.IsInit()))
 					abstractNumId = pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal->GetValue();
@@ -401,7 +401,7 @@ namespace Docx2Txt
 					Lists[start + level]++;
 					
 					int ind_level = -1;
-					for (long i=0; i< abstractNum->m_arrLvl.size(); i++)//??? стоит ли???
+					for (size_t i = 0; i< abstractNum->m_arrLvl.size(); i++)//??? стоит ли???
 					{
 						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (abstractNum->m_arrLvl[i]->m_oIlvl->GetValue() == level))
 						{
@@ -584,9 +584,9 @@ namespace Docx2Txt
 		const std::wstring vld		= _T("vld");
 
 		std::wstring str_num = ToWString(number);
-		int len = str_num.size();
+		size_t len = str_num.size();
 		int digit;
-		for(int i = 0; i < len; i++)
+		for(size_t i = 0; i < len; i++)
 		{
 			digit = str_num[len - i - 1] - '0';
 			if(i > 2)

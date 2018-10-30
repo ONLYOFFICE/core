@@ -83,7 +83,14 @@ namespace PPTX
 				oAttr.Write(_T("thresh"), thresh);
 				return XmlUtils::CreateNode(_T("a:biLevel"), oAttr);
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:biLevel");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"thresh", thresh);
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"a:biLevel");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_BILEVEL);
@@ -94,7 +101,26 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (_at == 0)
+						thresh = pReader->GetLong(); 
+					else break;
+				}
+				pReader->Seek(_e);
+			}
 		public:
 			nullable_int  thresh;
 		protected:

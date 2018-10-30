@@ -415,7 +415,7 @@ namespace NSCustomShapesConvert
 			{
 				if (oArray[nIndex].empty()) continue;
 
-				if (nIndex < oPath.m_arParts.size() )
+				if (nIndex < (int)oPath.m_arParts.size() )
 				{
 					const CPartPath& oPart = oPath.m_arParts[nIndex];
 					m_lWidth = oPart.width;
@@ -604,7 +604,7 @@ namespace NSCustomShapesConvert
 									// дурацкий код. надо память перевыделить, а старую скопировать
 									// пока сделаю так, чтобы наверняка
 									int nNewSize = (int)oHandle.gdRef.y + 1;
-									while (arAdj.size() < nNewSize)
+									while ((int)arAdj.size() < nNewSize)
 										arAdj.push_back(0);
 								}
 

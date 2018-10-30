@@ -235,7 +235,7 @@ void CPPTFileReader::ReadPictures()
 		//if (pStream->isEOF()) случаются неверно записанные стримы 
 		//	break;
 
-		int pos = pStream->getStreamPointer();	
+		unsigned long pos = pStream->getStreamPointer();	
 		if (pos >= pStream->getStreamSize())
 			break;
 

@@ -101,7 +101,17 @@ namespace PPTX
 
 				return str;
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:fillOverlay");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"blend", blend.get());
+				pWriter->EndAttributes();
+				
+				Fill.toXmlWriter(pWriter);
 
+				pWriter->EndNode(L"a:fillOverlay");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_FILLOVERLAY);
@@ -114,7 +124,42 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar();
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+					
+					if (_at == 0)
+						blend.SetBYTECode(pReader->GetChar());
+					else break;
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							Fill.fromPPTY(pReader);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
 		public:
 			UniFill				Fill;
 			Limit::BlendMode	blend;

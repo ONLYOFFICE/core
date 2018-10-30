@@ -80,12 +80,13 @@ namespace CSVWriter
 	{
 		if (NULL == pFile || NULL == pWriteBuffer)
 			return;
-		INT nCountChars = sWriteString.length();
+		size_t nCountChars = sWriteString.length();
 		if (0 == nCountChars && !bIsEnd)
 			return;
 
-        const INT c_nSize = 1048576; // 1024 * 1024
-        const INT nSizeWchar = sizeof(WCHAR);
+        const size_t c_nSize = 1048576; // 1024 * 1024
+        const size_t nSizeWchar = sizeof(WCHAR);
+		
 		if (NULL == *pWriteBuffer)
 		{
 			*pWriteBuffer = new WCHAR[c_nSize];
@@ -105,7 +106,7 @@ namespace CSVWriter
                 const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
                 NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
                 std::string sFileDataA = oUnicodeConverter.fromUnicode(*pWriteBuffer, nCurrentIndex, oEncodindId.Name);
-                pFile->WriteFile((BYTE*)sFileDataA.c_str(), sizeof (CHAR) * sFileDataA.length());
+                pFile->WriteFile((BYTE*)sFileDataA.c_str(), (DWORD)sFileDataA.length());
 			}	
 			
 			memset(*pWriteBuffer, 0, nSizeWchar * c_nSize);
@@ -115,7 +116,7 @@ namespace CSVWriter
 		if (!bIsEnd)
 		{
 			memcpy(*pWriteBuffer + nCurrentIndex, sWriteString.c_str(), nCountChars * nSizeWchar);
-			nCurrentIndex += nCountChars;
+			nCurrentIndex += (int)nCountChars;
 		}
 	}
 	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter, bool bJSON)
@@ -131,7 +132,7 @@ namespace CSVWriter
 			if ( oXlsx.m_pWorkbook->m_oSheets.IsInit() && !oXlsx.m_pWorkbook->m_oSheets->m_arrItems.empty())
 			{
 				OOX::Spreadsheet::CSheet* pSheet = NULL;
-				if (lActiveSheet >= 0 && lActiveSheet < oXlsx.m_pWorkbook->m_oSheets->m_arrItems.size())
+				if (lActiveSheet >= 0 && lActiveSheet < (LONG)oXlsx.m_pWorkbook->m_oSheets->m_arrItems.size())
 				{
 					pSheet = oXlsx.m_pWorkbook-> m_oSheets->m_arrItems[lActiveSheet];
 				}
@@ -271,7 +272,7 @@ namespace CSVWriter
 				{
 					int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-					if (nValue >= 0 && nValue < m_oXlsx.m_pSharedStrings->m_arrItems.size())
+					if (nValue >= 0 && nValue < (int)m_oXlsx.m_pSharedStrings->m_arrItems.size())
 					{
 						OOX::Spreadsheet::CSi *pSi = m_oXlsx.m_pSharedStrings->m_arrItems[nValue];
 						if(NULL != pSi)

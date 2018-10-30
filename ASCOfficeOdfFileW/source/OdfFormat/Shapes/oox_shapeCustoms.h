@@ -33,7 +33,6 @@
 		//	shapetypeIrregularSeal1,
 		//	shapetypeIrregularSeal2,
 //	+	//	shapetypeSun,
-		//	shapetypeWave,
 namespace cpdoccore 
 {
 class oox_shape_sun : public oox_shape

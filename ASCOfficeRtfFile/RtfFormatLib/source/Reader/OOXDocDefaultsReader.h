@@ -68,7 +68,7 @@ public:
 			
 			opPrReader.m_bDefStyle = false;
 			
-			bool bStartNewSectoion;
+			//bool bStartNewSectoion;
 
             CcnfStyle style;
 			

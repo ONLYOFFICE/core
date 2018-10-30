@@ -188,10 +188,17 @@ namespace MetaFile
 			{
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
-				double dMmToPt = 25.4 / 72;
-				double dFHeight  = dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-				double dFDescent = dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-				double dFAscent  = dFHeight - std::abs(dFDescent);
+
+                double dMmToPt = 25.4 / 72;
+
+                double dFHeight = dFontHeight;
+                double dFDescent = dFontHeight;
+                if (pFontManager->m_pFont)
+                {
+                    dFHeight  *= pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
+                    dFDescent *= pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
+                }
+                double dFAscent  = dFHeight - std::abs(dFDescent);
 
 				if (NULL != pDx && unCharsCount > 1)
 				{

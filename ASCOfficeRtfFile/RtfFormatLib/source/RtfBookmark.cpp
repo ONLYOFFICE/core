@@ -158,7 +158,7 @@ std::wstring RtfAnnotElem::RenderToOOX(RenderParameter oRenderParameter)
 		int id = -1;
 		if (pFind == poCommentsWriter->m_mapComments.end())
 		{
-			id  = poCommentsWriter->m_mapComments.size() ;//+ 1;
+			id  = (int)poCommentsWriter->m_mapComments.size() ;//+ 1;
 			poCommentsWriter->AddComment(m_sValue, id);
 		}
 		else

@@ -450,7 +450,7 @@ namespace NSHtmlRenderer
             m_oCurrentInfo.m_lAscent = (USHORT)(lA);
             m_oCurrentInfo.m_lDescent = (USHORT)(lD);
             m_oCurrentInfo.m_lLineHeight = (USHORT)(lL);
-            m_oCurrentInfo.m_lUnitsPerEm = (USHORT)(lD);
+            m_oCurrentInfo.m_lUnitsPerEm = (USHORT)(lU);
         }
     };
 

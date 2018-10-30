@@ -147,8 +147,17 @@ namespace PPTX
 			{
 				std::map<std::wstring, Logic::UniColor>::const_iterator pPair = Scheme.find(str);
 				if (Scheme.end() == pPair)
-					return 0;
-				return pPair->second.GetARGB();
+				{//default color map extension
+					if (str == L"tx1")		pPair = Scheme.find(L"dk1");
+					else if (str == L"tx2") pPair = Scheme.find(L"dk2");
+					else if (str == L"bg1") pPair = Scheme.find(L"lt1");
+					else if (str == L"bg2") pPair = Scheme.find(L"lt1");
+					
+					if (Scheme.end() == pPair) return 0;
+					else return pPair->second.GetARGB();
+				}
+				else
+					return pPair->second.GetARGB();
 			}
 			virtual DWORD GetBGRAFromScheme(const std::wstring& str)const
 			{

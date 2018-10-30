@@ -125,6 +125,7 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"draw:fit-to-size",				draw_fit_to_size_);
 			CP_XML_ATTR_OPT(L"draw:fit-to-contour",				draw_fit_to_contour_);
 			CP_XML_ATTR_OPT(L"draw:ole-draw-aspect",			draw_ole_draw_aspect_);
+			CP_XML_ATTR_OPT(L"style:shrink-to-fit",				style_shrink_to_fit_);
 			
 			CP_XML_ATTR_OPT(L"draw:stroke",				draw_stroke_); 
 			CP_XML_ATTR_OPT(L"draw:stroke-dash",		draw_stroke_dash_); 

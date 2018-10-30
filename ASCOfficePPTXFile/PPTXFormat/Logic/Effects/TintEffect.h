@@ -88,7 +88,15 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("a:tint"), oAttr);
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:tint");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"hue", hue);
+				pWriter->WriteAttribute(L"amt", amt);
+				pWriter->EndAttributes();				
+				pWriter->EndNode(L"a:tint");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_TINTEFFECT);
@@ -100,7 +108,28 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:	amt = pReader->GetLong(); break;
+						case 1:	hue = pReader->GetLong(); break;
+					}
+				}
+				pReader->Seek(_e);
+			}
 		public:
 			nullable_int	amt;
 			nullable_int	hue;

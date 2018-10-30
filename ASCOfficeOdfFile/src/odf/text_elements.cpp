@@ -189,6 +189,8 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 	if (str_start > store_str.length()) str_start = store_str.length(); // это если на буквы в буквице разные стили
 
 	str = store_str.substr(str_start, str_size);
+
+	if (textStyle==1) Context.pop_text_properties();
 }
 
 size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)

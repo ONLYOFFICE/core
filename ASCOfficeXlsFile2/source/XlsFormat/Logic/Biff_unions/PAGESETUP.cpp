@@ -207,6 +207,8 @@ int PAGESETUP::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"right", std::to_wstring(right->num.data.value));
 						r= true;
 					}break;		
+				default:
+					break;
 				}
 			}
 			if (!header)	CP_XML_ATTR(L"header"	, 0.5);

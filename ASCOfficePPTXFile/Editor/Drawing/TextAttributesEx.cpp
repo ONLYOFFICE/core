@@ -37,17 +37,18 @@ namespace NSPresentationEditor
 
 	void CTextAttributesEx::RecalcParagraphsPPT()
 	{
-		for (int i = 0; i < m_arParagraphs.size(); ++i)
+		for (size_t i = 0; i < m_arParagraphs.size(); ++i)
 		{
 			bool split_paragraph = false;
-			for (int j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
+			for (size_t j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
 			{
-				int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
-				int s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
+				size_t lCountCFs	= m_arParagraphs[i].m_arSpans.size();
+				size_t s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
 				
-                int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)13);
+                size_t lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)13);
 
-				if( !split_paragraph && lFoundEnter >= 0 && (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
+				if( !split_paragraph && lFoundEnter != std::wstring::npos && 
+						(s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
 				{
 					split_paragraph = true;
 					// разбиваем параграф
@@ -58,7 +59,7 @@ namespace NSPresentationEditor
 						m_arParagraphs[i].m_arSpans.erase(m_arParagraphs[i].m_arSpans.begin() + (j + 1), m_arParagraphs[i].m_arSpans.begin() + lCountCFs );
 					}
 					
-					LONG lCountTx = m_arParagraphs[i].m_arSpans[j].m_strText.length();
+					size_t lCountTx = m_arParagraphs[i].m_arSpans[j].m_strText.length();
 					m_arParagraphs[i].m_arSpans[j].m_strText.erase(lFoundEnter, lCountTx - lFoundEnter);
 
 					if (j > 0)
@@ -73,8 +74,8 @@ namespace NSPresentationEditor
 						m_arParagraphs.insert(m_arParagraphs.begin() +i + 1, oNewPar);	
 				}
 
-                int lFoundBreak = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)11);
-				if( lFoundBreak >= 0)
+                size_t lFoundBreak = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)11);
+				if( lFoundBreak != std::wstring::npos)
 				{
 					// разбиваем span
 					CSpan next	= m_arParagraphs[i].m_arSpans[j];
@@ -250,7 +251,7 @@ namespace NSPresentationEditor
 
 					int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();
 
-					if (ref < pTheme->m_arFonts.size())
+					if (ref < (int)pTheme->m_arFonts.size())
 					{
 						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties->SetFont(pTheme->m_arFonts[ref]);
 					}

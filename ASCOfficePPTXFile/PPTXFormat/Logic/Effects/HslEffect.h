@@ -92,18 +92,53 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("a:hsl"), oAttr);
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:hsl");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"hue", hue);
+				pWriter->WriteAttribute(L"sat", sat);
+				pWriter->WriteAttribute(L"lum", lum);
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"a:hsl");
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_HSL);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 				pWriter->WriteInt2(0, hue);
-				pWriter->WriteInt2(0, lum);
-				pWriter->WriteInt2(0, sat);
+				pWriter->WriteInt2(1, lum);
+				pWriter->WriteInt2(2, sat);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->EndRecord();
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+							hue = pReader->GetLong(); break;
+						case 1:
+							lum = pReader->GetLong(); break;
+						case 2:
+							sat = pReader->GetLong(); break;
+					}
+				}
+				pReader->Seek(_e);
 			}
 		public:
 			nullable_int hue;

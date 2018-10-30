@@ -85,7 +85,8 @@ public:
 	odf_types::common_xlink_attlist			xlink_attlist_;
 	_CP_OPT(std::wstring)					draw_id_;				//используется для анимашек
   
-	office_element_ptr_array content_;
+	office_element_ptr_array			content_;
+	office_element_ptr					enhanced_geometry_;
 
 	bool								bad_shape_;
 	bool								word_art_;
@@ -621,6 +622,31 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_light);
+//----------------------------------------------------------------------------------------------
+class draw_control : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeDrawControl;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+
+	_CP_OPT(std::wstring)					xml_id_;
+	_CP_OPT(std::wstring)					caption_id_;
+	_CP_OPT(std::wstring)					control_id_;
+
+	office_element_ptr						draw_glue_point_;
+//<svg:desc>
+//<svg:title>
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_control);
 }
 }

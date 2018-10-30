@@ -44,6 +44,7 @@
 #include "./PPTXFormat/Logic/Colors/PrstClr.h"
 #include "./PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "./PPTXFormat/Logic/Colors/SysClr.h"
+#include "./PPTXFormat/Logic/Effects/AlphaModFix.h"
 #include "./PPTXFormat/PPTX.h"
 #include "./PPTXFormat/LegacyDiagramText.h"
 
@@ -3406,7 +3407,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	
 	if (oCssStyles.m_mapSettings.end() != pFind)
 	{
-		zIndex = parserPoint.FromString(pFind->second);
+		zIndex = (__int64)parserPoint.FromString(pFind->second);
 		
         _INT64 zIndex_ = *zIndex >= 0 ? *zIndex : -*zIndex;
 		
@@ -4006,7 +4007,7 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 		}
 		if (nWidthBorder.IsInit())
 		{
-			pSpPr->ln->w = *nWidthBorder * g_emu_koef;//pt to emu
+			pSpPr->ln->w = (int)(*nWidthBorder * g_emu_koef);//pt to emu
 		}
 		if (sColorBorder.IsInit())
 		{
@@ -5607,7 +5608,7 @@ HRESULT CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
 
 	return S_OK;
 }
-void CDrawingConverter::WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode, LONG* lId)
+void CDrawingConverter::WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode, unsigned int* lId)
 {
 	if (NULL == lId)				return;
 	if (NULL == m_pReader)			return;

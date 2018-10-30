@@ -484,6 +484,266 @@ namespace DocFileFormat
 		return result_cp;
 	}
 
+	void DocumentMapping::writeField(const std::wstring& sFieldString, int cpFieldStart, int cpFieldEnd)
+	{
+		_fieldLevels.push_back(fieldLevels());
+		
+		std::vector<std::wstring> arField;
+		boost::algorithm::split(arField, sFieldString, boost::algorithm::is_any_of(L"\\"), boost::algorithm::token_compress_on);
+		
+		std::wstring f;
+		std::wstring EMBED		( L"EMBED" );
+		std::wstring embed		( L"embed" );
+		std::wstring LINK		( L"LINK" );
+        std::wstring FORM		( L"FORM" );
+        std::wstring Excel		( L"Excel" );
+        std::wstring Word		( L"Word" );
+        std::wstring opendocument(L"opendocument" );
+        std::wstring Equation	( L"Equation" );
+        std::wstring MERGEFORMAT( L"MERGEFORMAT" );
+        std::wstring QUOTE		( L"QUOTE" );
+        std::wstring chart		( L"Chart" );
+        std::wstring PBrush		( L"PBrush" );
+        std::wstring TOC		( L"TOC" );
+        std::wstring HYPERLINK	( L"HYPERLINK" );
+        std::wstring PAGEREF	( L"PAGEREF" );
+        std::wstring PAGE		( L"PAGE" );
+        std::wstring SHAPE		( L"SHAPE" );
+
+		if (arField.empty() == false)
+			f = arField[0];
+		else
+			f = sFieldString;
+
+		bool bChart			= search( f.begin(), f.end(), chart.begin(),		chart.end())			!= f.end();
+		bool bEMBED			= search( f.begin(), f.end(), EMBED.begin(),		EMBED.end())			!= f.end() ||
+							  search( f.begin(), f.end(), embed.begin(),		embed.end())			!= f.end();
+		bool bLINK			= search( f.begin(), f.end(), LINK.begin(),			LINK.end())				!= f.end();
+		bool bOpendocument	= search( f.begin(), f.end(), opendocument.begin(), opendocument.end())		!= f.end();
+		bool bFORM			= search( f.begin(), f.end(), FORM.begin(),			FORM.end())				!= f.end();
+		bool bMERGEFORMAT	= search( f.begin(), f.end(), MERGEFORMAT.begin(),	MERGEFORMAT.end())		!= f.end();
+		bool bExcel			= search( f.begin(), f.end(), Excel.begin(),		Excel.end())			!= f.end();
+		bool bWord			= search( f.begin(), f.end(), Word.begin(),			Word.end())				!= f.end();
+		bool bHYPERLINK		= search( f.begin(), f.end(), HYPERLINK.begin(),	HYPERLINK.end())		!= f.end();
+		bool bQUOTE			= search( f.begin(), f.end(), QUOTE.begin(),		QUOTE.end())			!= f.end();
+		bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
+		bool bPAGE			= search( f.begin(), f.end(), PAGE.begin(),			PAGE.end())				!= f.end();
+		bool bTOC			= search( f.begin(), f.end(), TOC.begin(),			TOC.end())				!= f.end();
+		bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())				!= f.end();
+		
+		bool bPAGEREF = false; 
+		if (bHYPERLINK && arField.size() > 1)
+		{
+			std::wstring f1 = arField[1];
+			bPAGEREF	= search( f1.begin(), f1.end(), PAGEREF.begin(), PAGEREF.end())	!= f1.end();
+		}			
+
+		if (bTOC)
+			_bContentWrite = true;
+
+		if ( bFORM )
+		{
+			std::wstring FORMTEXT		( L" FORMTEXT" );
+			std::wstring FORMCHECKBOX	( L" FORMCHECKBOX" );
+			std::wstring FORMDROPDOWN	( L" FORMDROPDOWN" );
+			
+			m_pXmlWriter->WriteNodeBegin( L"w:fldChar" , true );
+            m_pXmlWriter->WriteAttribute( L"w:fldCharType" , L"begin" );
+            m_pXmlWriter->WriteNodeEnd( L"", true, false );
+
+			bool bFORMTEXT		= search( f.begin(), f.end(), FORMTEXT.begin(),		FORMTEXT.end())	!= f.end();
+			bool bFORMCHECKBOX	= search( f.begin(), f.end(), FORMCHECKBOX.begin(),	FORMCHECKBOX.end())	!= f.end();
+			bool bFORMDROPDOWN	= search( f.begin(), f.end(), FORMDROPDOWN.begin(),	FORMDROPDOWN.end())	!= f.end();
+
+			if (bFORMTEXT || bFORMCHECKBOX || bFORMDROPDOWN)
+			{
+				int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
+				if (cpPic < cpFieldEnd)
+				{
+					int fcPic = m_document->FindFileCharPos( cpPic );
+					std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+
+					if (chpxs)
+					{
+						CharacterPropertyExceptions* chpxSep = chpxs->front();
+						
+						FormFieldData ffdata (2, chpxSep, m_document->DataStream, false);
+						FormFieldDataMapping data_mapping(m_pXmlWriter, m_context, _caller);
+						ffdata.Convert(&data_mapping);
+						
+						RELEASEOBJECT( chpxs );
+					}
+				}
+			}
+
+            m_pXmlWriter->WriteNodeEnd( L"w:fldChar" );
+
+			_fieldLevels.back().bBegin = true;
+		}
+		else if ( ( bMERGEFORMAT || bExcel || bWord || bOpendocument )
+				&& 
+				( ( bEMBED || bLINK ) && bChart) )
+		{
+            m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
+                m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
+            m_pXmlWriter->WriteNodeEnd( L"", true, false );
+
+			int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
+
+            m_pXmlWriter->WriteNodeEnd( L"w:fldChar" );
+
+			_fieldLevels.back().bBegin = true;
+		}
+		else if (bHYPERLINK && bPAGEREF)
+		{
+			int cpFieldSep2 = cpFieldStart, cpFieldSep1 = cpFieldStart;
+			std::vector<std::wstring> toc;
+
+			if (arField.size() > 1)
+				f = arField[1];
+
+			if ( _bContentWrite )
+			{
+				m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
+					m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
+				m_pXmlWriter->WriteNodeEnd( L"", true );
+
+				_fieldLevels.back().bBegin = true;
+			}
+			else
+			{
+				for (size_t i = 1; i < arField.size(); i++)
+				{
+					std::wstring f1 = arField[1];
+					int d = (int)f1.find(PAGEREF);
+
+					if (d > 0)
+					{
+						_writeWebHidden = true;
+						std::wstring _writeTocLink =f1.substr(d + 9);
+						d = (int)_writeTocLink.find(L" ");
+						_writeTocLink = _writeTocLink.substr(0, d);
+						
+						_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor = \"");
+						_writeAfterRun +=	_writeTocLink;
+						_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
+
+						break;								
+						//cp = cpFieldSep1;
+					}
+					//cpFieldSep1 = cpFieldSep2;
+				}
+				_skipRuns = 5; //with separator
+			}
+		}
+		else if ( bEMBED ||	(bLINK && !bHYPERLINK)|| bQUOTE)						
+		{
+			int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::Picture);
+			int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::FieldSeparator);
+
+			if (cpPic < cpFieldEnd)
+			{
+				int fcPic = m_document->FindFileCharPos( cpPic );
+				std::list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+				
+				CharacterPropertyExceptions* chpxObj =	chpxs->front();
+
+				RevisionData oData = RevisionData(chpxObj);
+
+				CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
+				if(rPr)
+				{
+					chpxObj->Convert(rPr);
+					RELEASEOBJECT(rPr);
+				}					
+				XMLTools::CStringXmlWriter	oleWriter;
+				XMLTools::CStringXmlWriter	oleObjectWriter;
+				
+				VMLPictureMapping	oVmlMapper (m_context, &oleWriter, true, _caller);
+
+				if (!m_shapeIdOwner.empty())		//4571833.doc
+					oVmlMapper.m_shapeId = m_shapeIdOwner;
+
+				if (m_document->nWordVersion > 0)
+				{							
+					OleObject ole ( chpxObj, m_document);
+					
+                    oleWriter.WriteNodeBegin (L"w:object", true);
+                        oleWriter.WriteAttribute( L"w:dxaOrig", FormatUtils::IntToWideString( ( ole.pictureDesciptor.dxaGoal + ole.pictureDesciptor.dxaOrigin ) ));
+                        oleWriter.WriteAttribute( L"w:dyaOrig", FormatUtils::IntToWideString( ( ole.pictureDesciptor.dyaGoal + ole.pictureDesciptor.dyaOrigin ) ));
+                    oleWriter.WriteNodeEnd( L"", true, false );
+
+					ole.pictureDesciptor.Convert(&oVmlMapper);
+					OleObjectMapping oleObjectMapping( &oleObjectWriter, m_context, &ole.pictureDesciptor, _caller, oVmlMapper.m_shapeId);
+					
+					ole.Convert( &oleObjectMapping );
+
+					_lastOLEObject = oleObjectWriter.GetXmlString();
+				}
+				else
+				{
+					PictureDescriptor pic(chpxObj, m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
+					
+                    oleWriter.WriteNodeBegin (L"w:object", true);
+                        oleWriter.WriteAttribute( L"w:dxaOrig", FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ) );
+                        oleWriter.WriteAttribute( L"w:dyaOrig", FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ) );
+                    oleWriter.WriteNodeEnd( L"", true, false );
+					
+					pic.Convert(&oVmlMapper);
+					RELEASEOBJECT(chpxs);
+
+					if ( cpFieldSep < cpFieldEnd  && m_document->m_PieceTable)
+					{
+						int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
+						int fcFieldSep1 = m_document->FindFileCharPos( cpFieldSep );
+						
+						std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
+						CharacterPropertyExceptions* chpxSep = chpxs->front();
+						
+						OleObject ole ( chpxSep, m_document);
+						OleObjectMapping oleObjectMapping( &oleObjectWriter, m_context, &pic, _caller, oVmlMapper.m_shapeId );
+						
+						if (oVmlMapper.m_isEmbedded)
+						{
+							ole.isEquation		= oVmlMapper.m_isEquation;
+							ole.isEmbedded		= oVmlMapper.m_isEmbedded;
+							ole.emeddedData		= oVmlMapper.m_embeddedData;
+						}
+						ole.Convert( &oleObjectMapping );
+
+						_lastOLEObject = oleObjectWriter.GetXmlString();
+						
+						RELEASEOBJECT( chpxs );
+					}
+				}
+				oleWriter.WriteString( _lastOLEObject );
+                oleWriter.WriteNodeEnd( L"w:object" );
+
+				if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
+				{
+					//нельзя в Run писать oMath
+					//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
+					_writeAfterRun = oVmlMapper.m_equationXml;
+				}
+				else
+				{
+					m_pXmlWriter->WriteString(oleWriter.GetXmlString());
+				}	
+			}
+
+			_skipRuns		= 3;
+			_embeddedObject	= true;
+		}					
+		else
+		{
+            m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
+                m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
+            m_pXmlWriter->WriteNodeEnd( L"", true );
+
+			_fieldLevels.back().bBegin = true;
+		}
+	}
+
 	// Writes the given text to the document
 	int DocumentMapping::writeText(std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText)
 	{
@@ -576,289 +836,15 @@ namespace DocFileFormat
 			}
 			else if (TextMark::FieldBeginMark == code)
 			{
-				_fieldLevels.push_back(fieldLevels());
-
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 				
-				std::wstring f, sFieldString;
+				std::wstring sFieldString;
 				if (cpFieldEnd < (int)m_document->Text->size())
 					sFieldString = std::wstring( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
 
-				std::vector<std::wstring> arField;
-				boost::algorithm::split(arField, sFieldString, boost::algorithm::is_any_of(L"\\"), boost::algorithm::token_compress_on);
-				
-				std::wstring EMBED		( L"EMBED" );
-  				std::wstring embed		( L"embed" );
-				std::wstring LINK		( L"LINK" );
-                std::wstring FORM		( L"FORM" );
-                std::wstring Excel		( L"Excel" );
-                std::wstring Word		( L"Word" );
-                std::wstring opendocument(L"opendocument" );
-                std::wstring Equation	( L"Equation" );
-                std::wstring MERGEFORMAT( L"MERGEFORMAT" );
-                std::wstring QUOTE		( L"QUOTE" );
-                std::wstring chart		( L"Chart" );
-                std::wstring PBrush		( L"PBrush" );
-                std::wstring TOC		( L"TOC" );
-                std::wstring HYPERLINK	( L"HYPERLINK" );
-                std::wstring PAGEREF	( L"PAGEREF" );
-                std::wstring PAGE		( L"PAGE" );
-                std::wstring SHAPE		( L"SHAPE" );
+				writeField(sFieldString, cpFieldStart, cpFieldEnd);
 
-				if (arField.empty() == false)
-					f = arField[0];
-				else
-					f = sFieldString;
-
-				bool bChart			= search( f.begin(), f.end(), chart.begin(),		chart.end())			!= f.end();
-				bool bEMBED			= search( f.begin(), f.end(), EMBED.begin(),		EMBED.end())			!= f.end() ||
-									  search( f.begin(), f.end(), embed.begin(),		embed.end())			!= f.end();
-				bool bLINK			= search( f.begin(), f.end(), LINK.begin(),			LINK.end())				!= f.end();
-				bool bOpendocument	= search( f.begin(), f.end(), opendocument.begin(), opendocument.end())		!= f.end();
-				bool bFORM			= search( f.begin(), f.end(), FORM.begin(),			FORM.end())				!= f.end();
-				bool bMERGEFORMAT	= search( f.begin(), f.end(), MERGEFORMAT.begin(),	MERGEFORMAT.end())		!= f.end();
-				bool bExcel			= search( f.begin(), f.end(), Excel.begin(),		Excel.end())			!= f.end();
-				bool bWord			= search( f.begin(), f.end(), Word.begin(),			Word.end())				!= f.end();
-				bool bHYPERLINK		= search( f.begin(), f.end(), HYPERLINK.begin(),	HYPERLINK.end())		!= f.end();
-				bool bQUOTE			= search( f.begin(), f.end(), QUOTE.begin(),		QUOTE.end())			!= f.end();
-				bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
-				bool bPAGE			= search( f.begin(), f.end(), PAGE.begin(),			PAGE.end())				!= f.end();
-				bool bTOC			= search( f.begin(), f.end(), TOC.begin(),			TOC.end())				!= f.end();
-				bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())				!= f.end();
-				
-				bool bPAGEREF = false; 
-				if (bHYPERLINK && arField.size() > 1)
-				{
-					std::wstring f1 = arField[1];
-					bPAGEREF	= search( f1.begin(), f1.end(), PAGEREF.begin(), PAGEREF.end())	!= f1.end();
-				}			
-
-				if (bTOC)
-					_bContentWrite = true;
-
-				if ( bFORM )
-				{
-					std::wstring FORMTEXT		( L" FORMTEXT" );
-					std::wstring FORMCHECKBOX	( L" FORMCHECKBOX" );
-					std::wstring FORMDROPDOWN	( L" FORMDROPDOWN" );
-					
-					m_pXmlWriter->WriteNodeBegin( L"w:fldChar" , true );
-                    m_pXmlWriter->WriteAttribute( L"w:fldCharType" , L"begin" );
-                    m_pXmlWriter->WriteNodeEnd( L"", true, false );
-
-					bool bFORMTEXT		= search( f.begin(), f.end(), FORMTEXT.begin(),		FORMTEXT.end())	!= f.end();
-					bool bFORMCHECKBOX	= search( f.begin(), f.end(), FORMCHECKBOX.begin(),	FORMCHECKBOX.end())	!= f.end();
-					bool bFORMDROPDOWN	= search( f.begin(), f.end(), FORMDROPDOWN.begin(),	FORMDROPDOWN.end())	!= f.end();
-
-					if (bFORMTEXT || bFORMCHECKBOX || bFORMDROPDOWN)
-					{
-						int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
-						if (cpPic < cpFieldEnd)
-						{
-							int fcPic = m_document->FindFileCharPos( cpPic );
-							std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
-
-							if (chpxs)
-							{
-								CharacterPropertyExceptions* chpxSep = chpxs->front();
-								
-								FormFieldData ffdata (2, chpxSep, m_document->DataStream, false);
-								FormFieldDataMapping data_mapping(m_pXmlWriter, m_context, _caller);
-								ffdata.Convert(&data_mapping);
-								
-								RELEASEOBJECT( chpxs );
-							}
-						}
-					}
-
-                    m_pXmlWriter->WriteNodeEnd( L"w:fldChar" );
-
-					_fieldLevels.back().bBegin = true;
-				}
-				else if ( ( bMERGEFORMAT || bExcel || bWord || bOpendocument )
-						&& 
-						( ( bEMBED || bLINK ) && bChart) )
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
-                        m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
-                    m_pXmlWriter->WriteNodeEnd( L"", true, false );
-
-					int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
-
-                    m_pXmlWriter->WriteNodeEnd( L"w:fldChar" );
-
-					_fieldLevels.back().bBegin = true;
-				}
-				else if (bHYPERLINK && bPAGEREF)
-				{
-					int cpFieldSep2 = cpFieldStart, cpFieldSep1 = cpFieldStart;
-					std::vector<std::wstring> toc;
-
-					if (arField.size() > 1)
-						f = arField[1];
-
-					if ( _bContentWrite )
-					{
-						m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
-							m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
-						m_pXmlWriter->WriteNodeEnd( L"", true );
-
-						_fieldLevels.back().bBegin = true;
-					}
-					else
-					{
-						for (size_t i = 1; i < arField.size(); i++)
-						{
-							std::wstring f1 = arField[1];
-							int d = (int)f1.find(PAGEREF);
-
-							if (d > 0)
-							{
-								_writeWebHidden = true;
-								std::wstring _writeTocLink =f1.substr(d + 9);
-								d = (int)_writeTocLink.find(L" ");
-								_writeTocLink = _writeTocLink.substr(0, d);
-								
-								_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor = \"");
-								_writeAfterRun +=	_writeTocLink;
-								_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
-
-								break;								
-								//cp = cpFieldSep1;
-							}
-							//cpFieldSep1 = cpFieldSep2;
-						}
-						_skipRuns = 5; //with separator
-					}
-				}
-				//else if ( bHYPERLINK )
-				//{//todooo - выделение гиперссылки отдельно
-				//	std::vector<std::wstring> arRefs;
-				//	boost::algorithm::split(arRefs, f, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-				//	
-				//	std::wstring sLink = arRefs[2];
-				//	m_pXmlWriter->WriteNodeBegin( L"w:hyperlink", true );
-
-				//	int relID = m_context->_docx->RegisterHyperlink(_caller, sLink);
-				//	m_pXmlWriter->WriteAttribute( L"r:id", L"rId"+ FormatUtils::IntToWideString( relID ) );
-				//	m_pXmlWriter->WriteAttribute( L"w:history", 1 );
-				//	m_pXmlWriter->WriteNodeEnd( L"", true, false );
-
-				//	if (arRefs.size() > 2)
-				//	{
-				//		writeTextElement(arRefs[3].substr(1, arRefs[3].length() - 2), textType);
-				//	}
-				//	m_pXmlWriter->WriteNodeEnd( L"w:hyperlink", false, true );
-
-				//	_skipRuns = 1;
-				//}
-				else if ( bEMBED ||	(bLINK && !bHYPERLINK)|| bQUOTE)						
-				{
-					int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::Picture);
-					int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::FieldSeparator);
-
-					if (cpPic < cpFieldEnd)
-					{
-						int fcPic = m_document->FindFileCharPos( cpPic );
-						std::list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
-						
-						CharacterPropertyExceptions* chpxObj =	chpxs->front();
-
-						RevisionData oData = RevisionData(chpxObj);
-
-						CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
-						if(rPr)
-						{
-							chpxObj->Convert(rPr);
-							RELEASEOBJECT(rPr);
-						}					
-						XMLTools::CStringXmlWriter	oleWriter;
-						XMLTools::CStringXmlWriter	oleObjectWriter;
-						
-						VMLPictureMapping	oVmlMapper (m_context, &oleWriter, true, _caller);
-
-						if (!m_shapeIdOwner.empty())		//4571833.doc
-							oVmlMapper.m_shapeId = m_shapeIdOwner;
-
-						if (m_document->nWordVersion > 0)
-						{							
-							OleObject ole ( chpxObj, m_document);
-							
-                            oleWriter.WriteNodeBegin (L"w:object", true);
-                                oleWriter.WriteAttribute( L"w:dxaOrig", FormatUtils::IntToWideString( ( ole.pictureDesciptor.dxaGoal + ole.pictureDesciptor.dxaOrigin ) ));
-                                oleWriter.WriteAttribute( L"w:dyaOrig", FormatUtils::IntToWideString( ( ole.pictureDesciptor.dyaGoal + ole.pictureDesciptor.dyaOrigin ) ));
-                            oleWriter.WriteNodeEnd( L"", true, false );
-
-							ole.pictureDesciptor.Convert(&oVmlMapper);
-							OleObjectMapping oleObjectMapping( &oleObjectWriter, m_context, &ole.pictureDesciptor, _caller, oVmlMapper.m_shapeId);
-							
-							ole.Convert( &oleObjectMapping );
-
-							_lastOLEObject = oleObjectWriter.GetXmlString();
-						}
-						else
-						{
-							PictureDescriptor pic(chpxObj, m_document->DataStream, 0x7fffffff, m_document->nWordVersion);
-							
-                            oleWriter.WriteNodeBegin (L"w:object", true);
-                                oleWriter.WriteAttribute( L"w:dxaOrig", FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ) );
-                                oleWriter.WriteAttribute( L"w:dyaOrig", FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ) );
-                            oleWriter.WriteNodeEnd( L"", true, false );
-							
-							pic.Convert(&oVmlMapper);
-							RELEASEOBJECT(chpxs);
-
-							if ( cpFieldSep < cpFieldEnd  && m_document->m_PieceTable)
-							{
-								int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
-								int fcFieldSep1 = m_document->FindFileCharPos( cpFieldSep );
-								
-								std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
-								CharacterPropertyExceptions* chpxSep = chpxs->front();
-								
-								OleObject ole ( chpxSep, m_document);
-								OleObjectMapping oleObjectMapping( &oleObjectWriter, m_context, &pic, _caller, oVmlMapper.m_shapeId );
-								
-								if (oVmlMapper.m_isEmbedded)
-								{
-									ole.isEquation		= oVmlMapper.m_isEquation;
-									ole.isEmbedded		= oVmlMapper.m_isEmbedded;
-									ole.emeddedData		= oVmlMapper.m_embeddedData;
-								}
-								ole.Convert( &oleObjectMapping );
-
-								_lastOLEObject = oleObjectWriter.GetXmlString();
-								
-								RELEASEOBJECT( chpxs );
-							}
-						}
-						oleWriter.WriteString( _lastOLEObject );
-                        oleWriter.WriteNodeEnd( L"w:object" );
-
-						if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
-						{
-							//нельзя в Run писать oMath
-							//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
-							_writeAfterRun = oVmlMapper.m_equationXml;
-						}
-						else
-						{
-							m_pXmlWriter->WriteString(oleWriter.GetXmlString());
-						}	
-					}
-
-					_skipRuns		= 3;
-					_embeddedObject	= true;
-				}					
-				else
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
-                        m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-
-					_fieldLevels.back().bBegin = true;
-				}
 			}
 			else if (TextMark::FieldSeparator == code)
 			{
@@ -1042,7 +1028,7 @@ namespace DocFileFormat
 				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
-					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_endnoteNr]);
 					if (desc && desc->aEndIdx == 0)
 					{
 						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
@@ -1078,7 +1064,19 @@ namespace DocFileFormat
 
 			cp++;
 		}
+		if (std::wstring::npos != text.find(L"EMBED"))
+		{//если есть мааркер конца поля и маркер замещающей картинки и нету маркера начала
+			//О реорганизации территориальных органов ПФР с 01.11.2018.doc
+			int cpFieldStart	= initialCp;
+			int cpPic			= searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
+			int cpFieldEnd		= searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 
+			if (cpFieldStart < cpPic && cpPic < cpFieldEnd)
+			{
+				writeField(text, cpFieldStart, cpFieldEnd);
+				text.clear();
+			}
+		}
         if (!text.empty())
 		{
             //bool preserve_space = (text.find(L"\x20")) != text.npos) ? true : false;
@@ -1348,6 +1346,8 @@ namespace DocFileFormat
 					{
 						iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
 					}break;
+					default:
+						break;
 				}
 			}
 			if (nestingLevel == iTap_current)
@@ -1377,6 +1377,8 @@ namespace DocFileFormat
 
 							AddBoundary(boundary2, max_boundary, boundaries);
 						}break;
+						default:
+							break;
 					}
 				}
 			}

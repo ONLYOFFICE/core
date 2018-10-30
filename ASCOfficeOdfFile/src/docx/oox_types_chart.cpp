@@ -39,7 +39,7 @@ namespace oox {
 
 void oox_chart::set_cache_only (bool val)
 {
-	for (int i = 0 ; i < series_.size(); i++)
+	for (size_t i = 0 ; i < series_.size(); i++)
 	{
 		series_[i]->set_cache_only(val);
 	}

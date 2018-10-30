@@ -75,7 +75,62 @@ namespace PPTX
 		UniEffect::~UniEffect()
 		{
 		}
+		void UniEffect::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (Effect.is_init())
+				Effect->toPPTY(pWriter);
+		}
+		void UniEffect::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG pos = pReader->GetPos();
+			ULONG rec_len = pReader->GetULong();
+			if (0 == rec_len)
+				return;
+			
+			BYTE rec = pReader->GetUChar();
 
+			switch(rec)
+			{
+			case EFFECT_TYPE_ALPHAMODFIX:	Effect = new PPTX::Logic::AlphaModFix(); break;
+			case EFFECT_TYPE_DUOTONE:		Effect = new PPTX::Logic::Duotone(); break;
+			case EFFECT_TYPE_OUTERSHDW:		Effect = new PPTX::Logic::OuterShdw(); break;
+			case EFFECT_TYPE_GLOW:			Effect = new PPTX::Logic::Glow(); break;
+			case EFFECT_TYPE_XFRM:			Effect = new PPTX::Logic::XfrmEffect(); break;
+			case EFFECT_TYPE_BLUR:			Effect = new PPTX::Logic::Blur(); break;
+			case EFFECT_TYPE_PRSTSHDW:		Effect = new PPTX::Logic::PrstShdw(); break;
+			case EFFECT_TYPE_INNERSHDW:		Effect = new PPTX::Logic::InnerShdw(); break;
+			case EFFECT_TYPE_REFLECTION:	Effect = new PPTX::Logic::Reflection(); break;
+			case EFFECT_TYPE_SOFTEDGE:		Effect = new PPTX::Logic::SoftEdge(); break;
+			case EFFECT_TYPE_FILLOVERLAY:	Effect = new PPTX::Logic::FillOverlay(); break;
+			case EFFECT_TYPE_ALPHACEILING:	Effect = new PPTX::Logic::AlphaCeiling(); break;
+			case EFFECT_TYPE_ALPHAFLOOR:	Effect = new PPTX::Logic::AlphaFloor(); break;
+			case EFFECT_TYPE_TINTEFFECT:	Effect = new PPTX::Logic::TintEffect(); break;
+			case EFFECT_TYPE_RELOFF:		Effect = new PPTX::Logic::RelOff(); break;
+			case EFFECT_TYPE_LUM:			Effect = new PPTX::Logic::LumEffect(); break;
+			case EFFECT_TYPE_HSL:			Effect = new PPTX::Logic::HslEffect(); break;
+			case EFFECT_TYPE_GRAYSCL:		Effect = new PPTX::Logic::Grayscl(); break;
+			case EFFECT_TYPE_ALPHAREPL:		Effect = new PPTX::Logic::AlphaRepl(); break;
+			case EFFECT_TYPE_ALPHAOUTSET:	Effect = new PPTX::Logic::AlphaOutset(); break;
+			case EFFECT_TYPE_ALPHABILEVEL:	Effect = new PPTX::Logic::AlphaBiLevel(); break;
+			case EFFECT_TYPE_BILEVEL:		Effect = new PPTX::Logic::BiLevel(); break;
+			case EFFECT_TYPE_FILL:			Effect = new PPTX::Logic::FillEffect(); break;
+			case EFFECT_TYPE_CLRREPL:		Effect = new PPTX::Logic::ClrRepl(); break;
+			case EFFECT_TYPE_CLRCHANGE:		Effect = new PPTX::Logic::ClrChange(); break;
+			case EFFECT_TYPE_ALPHAINV:		Effect = new PPTX::Logic::AlphaInv(); break;
+			case EFFECT_TYPE_ALPHAMOD:		Effect = new PPTX::Logic::AlphaMod(); break;
+			case EFFECT_TYPE_BLEND:			Effect = new PPTX::Logic::Blend(); break;
+			}
+			
+			pReader->Seek(pos);
+			if (Effect.is_init())
+			{
+				Effect->fromPPTY(pReader);
+			}
+			else
+			{
+				pReader->SkipRecord();
+			}
+		}
 		UniEffect::UniEffect(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
@@ -365,11 +420,5 @@ namespace PPTX
 			else Effect.reset();
 		}
 
-		std::wstring UniEffect::toXML() const
-		{
-			if (Effect.IsInit())
-				return Effect->toXML();
-			return _T("");
-		}
 	} // namespace Logic
 } // namespace PPTX

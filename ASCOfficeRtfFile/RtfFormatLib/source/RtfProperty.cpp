@@ -1142,7 +1142,7 @@ void RtfListLevelProperty::SetLevelTextOOX(std::wstring sText)
 			m_sText += sText[i];
 		 nLevelOffsets++;
 	 }
-	 wchar_t ch = m_sText.length(); 
+	 wchar_t ch = (wchar_t)m_sText.length(); 
      m_sText.insert(m_sText.begin() + 0, ch );
 }
 

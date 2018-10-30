@@ -70,9 +70,7 @@ namespace DocFileFormat
 				case sprmTDefTable:
 				{
 					//SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
-				}
-				break;
-
+				}break;	
 				case sprmOldTTableHeader:
 				case sprmTTableHeader:
 				{						//header row
@@ -84,9 +82,7 @@ namespace DocFileFormat
                         XMLTools::XMLElement header( L"w:tblHeader" );
 						_trPr->AppendChild( header );
 					}
-				}
-				break;
-
+				}break;	
 				case sprmTWidthAfter:
 				{						//width after
                     XMLTools::XMLElement wAfter( L"w:wAfter" );
@@ -96,9 +92,7 @@ namespace DocFileFormat
                     XMLTools::XMLAttribute wAfterType( L"w:type", L"dxa" );
 					wAfter.AppendAttribute( wAfterType );
 					_trPr->AppendChild( wAfter, true );
-				}
-				break;
-
+				}break;	
 				case sprmTWidthBefore:
 				{						//width before
 					short before = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
@@ -113,9 +107,7 @@ namespace DocFileFormat
 						wBefore.AppendAttribute( wBeforeType );
 						_trPr->AppendChild( wBefore, true );
 					}
-				}
-				break;
-
+				}break;	
 				case sprmOldTDyaRowHeight:
 				case sprmTDyaRowHeight:
 				{						//row height
@@ -147,19 +139,19 @@ namespace DocFileFormat
 					_trPr->AppendChild( rowHeight );
 				}
 				break;
+				case sprmOldTFCantSplit:
+				case sprmTFCantSplit:
+				case sprmTFCantSplit90:
+				{						//can't split
+					appendFlagElement( _trPr, *iter, L"cantSplit", true );
+				}break;
 
-			case sprmOldTFCantSplit:
-			case sprmTFCantSplit:
-			case sprmTFCantSplit90:
-			{						//can't split
-                appendFlagElement( _trPr, *iter, L"cantSplit", true );
-			}break;
-
-				//div id
-			case sprmTIpgp:// = PGPInfo.ipgpSelf (PGPInfo structure describes the border and margin properties)
-			{
-			}break;
-
+					//div id
+				case sprmTIpgp:// = PGPInfo.ipgpSelf (PGPInfo structure describes the border and margin properties)
+				{
+				}break;
+				default:
+					break;
 				//borders 80 exceptions
 				//case SinglePropertyModifier.OperationCode.sprmTTableBorders80:
 				//    unsigned char[] brc80 = new unsigned char[4];

@@ -72,10 +72,10 @@ std::wostream & override_content_type::xml_to_stream(std::wostream & _Wostream) 
     return _Wostream;
 }
 
-const wchar_t * content_type_content::ns = L"";
-const wchar_t * content_type_content::name = L"Types";
+const wchar_t * content_type::ns = L"";
+const wchar_t * content_type::name = L"Types";
 
-std::wostream & content_type_content::xml_to_stream(std::wostream & _Wostream) const
+std::wostream & content_type::xml_to_stream(std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)
     {

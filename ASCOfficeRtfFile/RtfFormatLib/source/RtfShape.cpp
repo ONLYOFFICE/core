@@ -64,8 +64,8 @@ bool RtfShape::GetPictureResolution(RenderParameter oRenderParameter, int & Widt
 		double dX = 0, dY = 0, dW = 0, dH = 0;
         meta_file->GetBounds(&dX, &dY, &dW, &dH);
 		
-		Width  = dW;
-		Height = dH;
+		Width  = (int)dW;
+		Height = (int)dH;
 	}
 	else if ( image.OpenFile(fileName, 0 ))
 	{
@@ -567,7 +567,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	
 	if( !m_aPVerticles.empty())
 	{
-        sResult += L"{\\sp{\\sn pVerticies}{\\sv 8;" + std::to_wstring( m_aPVerticles.size() );
+        sResult += L"{\\sp{\\sn pVerticies}{\\sv 8;" + std::to_wstring( (int)m_aPVerticles.size() );
 		for (size_t i = 0; i < m_aPVerticles.size(); i ++ )
 		{
             sResult += L";(" + std::to_wstring(m_aPVerticles[i].first) + L","+ std::to_wstring(m_aPVerticles[i].second) + L")";
@@ -576,7 +576,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	}
     if( !m_aPSegmentInfo.empty())
     {
-        sResult += L"{\\sp{\\sn pSegmentInfo}{\\sv 2;" + std::to_wstring( m_aPSegmentInfo.size() );
+        sResult += L"{\\sp{\\sn pSegmentInfo}{\\sv 2;" + std::to_wstring( (int)m_aPSegmentInfo.size() );
         for (size_t i = 0; i < m_aPSegmentInfo.size(); i ++ )
             sResult += L";" + std::to_wstring( m_aPSegmentInfo[i] );
         sResult += L"}}";
@@ -625,7 +625,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 
 	if (!m_aFillShadeColors.empty())
 	{
-        sResult += L"{\\sp{\\sn fillShadeColors}{\\sv 8;" + std::to_wstring( m_aFillShadeColors.size() );
+        sResult += L"{\\sp{\\sn fillShadeColors}{\\sv 8;" + std::to_wstring((int)m_aFillShadeColors.size() );
 
 		std::sort(m_aFillShadeColors.begin(), m_aFillShadeColors.end(), sort_pair_second);
 		for (size_t i = 0; i < m_aFillShadeColors.size(); i ++ )
@@ -650,7 +650,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	if( !m_aWrapPoints.empty())
 	{
-        sResult += L"{\\sp{\\sn pWrapPolygonVertices}{\\sv 8;" + std::to_wstring(m_aWrapPoints.size());
+        sResult += L"{\\sp{\\sn pWrapPolygonVertices}{\\sv 8;" + std::to_wstring((int)m_aWrapPoints.size());
 		for( size_t i = 0; i < m_aWrapPoints.size(); i ++ )
             sResult += L";(" + std::to_wstring(m_aWrapPoints[i].first) + L"," + std::to_wstring(m_aWrapPoints[i].second) + L")";
 		sResult += L"}}";
@@ -752,13 +752,13 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 			for (size_t i = 0; i < nTempTextItemsCount; i++ )
 			{
 				ITextItemPtr piCurTextItem;
-				aTempTextItems->GetItem( piCurTextItem, i );
+				aTempTextItems->GetItem( piCurTextItem, (int)i );
 				if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
 				{
 					RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
 					if( NULL != poCurParagraph )
 					{
-						for (size_t j = 0; j < poCurParagraph->GetCount(); j++ )
+						for (int j = 0; j < poCurParagraph->GetCount(); j++ )
 						{
 							IDocumentElementPtr piCurIDocumentElement;
 							poCurParagraph->GetItem( piCurIDocumentElement, j );
@@ -988,13 +988,13 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		if (PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal 
 							 && PROP_DEF != (int)m_oPicture->m_dScaleX	&& PROP_DEF != (int)m_oPicture->m_dScaleY )//scale default = 100.
 		{
-			float nWidth = m_oPicture->m_nWidthGoal * m_oPicture->m_dScaleX / 100.f;
+			double nWidth = m_oPicture->m_nWidthGoal * m_oPicture->m_dScaleX / 100.f;
 			if( PROP_DEF != m_oPicture->m_nCropL )
 				nWidth -= m_oPicture->m_nCropL;
 			if( PROP_DEF != m_oPicture->m_nCropR )
 				nWidth -= m_oPicture->m_nCropR;
 
-			float nHeight = m_oPicture->m_nHeightGoal * m_oPicture->m_dScaleY / 100.f;
+			double nHeight = m_oPicture->m_nHeightGoal * m_oPicture->m_dScaleY / 100.f;
 			if( PROP_DEF != m_oPicture->m_nCropT )
 				nHeight -= m_oPicture->m_nCropT;
 			if( PROP_DEF != m_oPicture->m_nCropB )
@@ -1236,7 +1236,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			for (size_t i = 0 ; i < 10; i++)
 			{
 				if (PROP_DEF != m_nAdjustValue[i])
-					custom_shape->m_oCustomVML.LoadAdjusts(i + 1, m_nAdjustValue[i]);
+					custom_shape->m_oCustomVML.LoadAdjusts((long)i + 1, m_nAdjustValue[i]);
 			}
 			
 			if (PROP_DEF != m_nShapePath)

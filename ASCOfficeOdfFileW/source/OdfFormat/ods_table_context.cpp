@@ -259,6 +259,7 @@ void ods_table_context::start_table(office_element_ptr & elm)
 
 void ods_table_context::end_table()
 {
+	state().check_spanned_cells();
 }
 
 }

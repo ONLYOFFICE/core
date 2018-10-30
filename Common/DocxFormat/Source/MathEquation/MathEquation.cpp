@@ -118,7 +118,7 @@ int CEquationReader::Parse()
 int CEquationReader::HandleRecords()
 {
 	unsigned char nTag, nRecord;
-    _UINT16 nTabOffset;
+    //_UINT16 nTabOffset;
 
 	int nRet = 1;
 

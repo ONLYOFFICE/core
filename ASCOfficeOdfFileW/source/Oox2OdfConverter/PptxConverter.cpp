@@ -327,7 +327,7 @@ void PptxConverter::convert_slides()
 				if (slide->Layout->cSld.attrName.IsInit())	master_style_name += slide->Layout->cSld.attrName.get();
 				else if (slide->Layout->attrType.IsInit())	master_style_name += slide->Layout->attrType->get();
 				else
-					master_style_name += std::to_wstring(m_mapMasters.size());
+					master_style_name += std::to_wstring((int)m_mapMasters.size());
 				
 				odp_context->start_master_slide(master_style_name);
 					convert_common();
@@ -932,7 +932,7 @@ void PptxConverter::convert(PPTX::Logic::TableRow *oox_table_row)
 
 	for (size_t i = 0; i < oox_table_row->Cells.size(); i++)
 	{
-		convert(&oox_table_row->Cells[i], i);
+		convert(&oox_table_row->Cells[i], (int)i);
 	}
 	odp_context->slide_context()->end_table_row();
 }
@@ -1039,15 +1039,15 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ && del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = boost::none;
 
-				else if (border_inside_h && del_border<0)
+				else if (border_inside_h && !del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = *border_inside_h;
 			}
 			if (row != odp_context->slide_context()->table_context()->count_rows())
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ && del_border>=0)
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ && del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = boost::none;
 
-				else if (border_inside_h && del_border<0)
+				else if (border_inside_h && !del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = *border_inside_h;
 			}
 		}
@@ -1059,15 +1059,15 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ && del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = boost::none;
 
-				else if (border_inside_h && del_border<0)
+				else if (border_inside_h && !del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = *border_inside_h;
 			}
 			if (col != odp_context->slide_context()->table_context()->count_columns())
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ && del_border>=0)
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ && del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = boost::none;
 
-				else if (border_inside_h && del_border<0)
+				else if (border_inside_h && !del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = *border_inside_h;
 			}
 		}
@@ -1297,7 +1297,8 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 		if (oox_background->bgPr.IsInit())
 		{
 			OoxConverter::convert(&oox_background->bgPr->Fill);
-	//EffectProperties		EffectList; 
+	
+			convert(oox_background->bgPr->EffectList.List.GetPointer());
 	//nullable_bool			shadeToTitle;
 		}
 		else if (oox_background->bgRef.IsInit())
@@ -1333,7 +1334,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 	if (page_name.empty())
 	{
 		if (type == Slide)
-			page_name = L"Slide_" + std::to_wstring(odp_context->get_pages_count());
+			page_name = L"Slide_" + std::to_wstring((int)odp_context->get_pages_count());
 	}
 	odp_context->current_slide().set_page_name(page_name);
 

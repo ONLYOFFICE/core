@@ -57,8 +57,9 @@ public:
 
 	CRecordCurrentUserAtom() : m_nToken(0)
 	{
-		m_nRelVersion = m_nDocFileVersion = m_nMinorVersion = m_nMajorVersion = m_nLenUserName = m_nOffsetToCurEdit = 0;
-		m_nSize = m_nToken =0;
+		m_nSize = m_nRelVersion = m_nToken = m_nOffsetToCurEdit = 0;
+		m_nLenUserName = m_nDocFileVersion = 0;
+		m_nMinorVersion = m_nMajorVersion = 0;
 
 	}
 
@@ -72,9 +73,9 @@ public:
 
 		m_nSize				= StreamUtils::ReadDWORD(pStream);
 		
-		long sz = pStream->size() - pStream->tell();
+		long sz = (long)(pStream->size() - pStream->tell());
 
-		if (m_nSize >  sz )
+		if ((long)m_nSize >  sz )
 		{
 			m_nSize =  sz ;
 		}

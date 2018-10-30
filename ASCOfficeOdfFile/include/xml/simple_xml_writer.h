@@ -310,6 +310,7 @@ typedef xml::writer::element<wchar_t> xml_element;
 #define CP_XML_WRITER(STRM) if (bool _b_ = false) {} else for (xml_writer _xml_wr_((STRM));!_b_;_b_=true)
 #define CP_XML_NODE(NAME) if (bool _b_ = false) {} else for (xml_element _xml_node_(_xml_wr_, (NAME));!_b_;_b_=true)
 #define CP_XML_ATTR(NAME, VAL) _xml_node_.attr((NAME),(VAL))
+#define CP_XML_ATTR2(NAME, VAL) _xml_node_.attr((std::wstring(NAME).c_str()),(VAL))
 #define CP_XML_CONTENT(VAL) _xml_node_.contents((VAL))
 #define CP_XML_STREAM() _xml_node_.stream()
 

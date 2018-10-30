@@ -362,7 +362,7 @@ private:
 
 public:
 	bool empty();
-	bool empty_content_cells();
+	bool empty_content_cells(bool bWithCellStyle = true);
 
     table_table_row_attlist		attlist_;
     office_element_ptr_array	content_;					// table-table-cell or table-covered-table-cell
@@ -411,7 +411,7 @@ private:
 
 public:
 	bool last_cell_;
-	bool empty();
+	bool empty(bool bWithStyle = true);
 
     table_table_cell_attlist		attlist_;
     table_table_cell_attlist_extra	attlist_extra_;
@@ -647,9 +647,9 @@ public:
 
     office_element_ptr			table_shapes_;
 	office_element_ptr_array	table_named_;
+	office_element_ptr			office_forms_;
     //office-dde-source
     //table-scenario
-    //office-forms
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table);
 

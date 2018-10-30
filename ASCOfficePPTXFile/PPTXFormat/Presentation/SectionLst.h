@@ -74,6 +74,7 @@ namespace PPTX
 				pWriter->EndAttributes();
 
 				pWriter->StartNode(L"p14:sldIdLst");
+				pWriter->EndAttributes();
 					pWriter->WriteArray2(arSldIdLst);
 				pWriter->EndNode(L"p14:sldIdLst");
 

@@ -58,6 +58,7 @@ public:
 	std::wstringstream  dataValidations_;
 	std::wstringstream	ole_objects_;
 	std::wstringstream	page_props_;
+	std::wstringstream	controls_;
 
 	rels sheet_rels_;
 
@@ -136,6 +137,10 @@ std::wostream & xlsx_xml_worksheet::ole_objects()
 {
     return impl_->ole_objects_;
 }
+std::wostream & xlsx_xml_worksheet::controls()
+{
+    return impl_->controls_;
+}
 std::wostream & xlsx_xml_worksheet::page_properties()
 {
     return impl_->page_props_;
@@ -203,7 +208,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			
 			CP_XML_STREAM() << impl_->drawing_.str();
 			
-			if (impl_->commentsId_.length()>0)
+			if (!impl_->commentsId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawing")
 				{
@@ -215,6 +220,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                 CP_XML_NODE(L"oleObjects")
                 {
 					CP_XML_STREAM() << impl_->ole_objects_.str();
+                }
+            }
+			if (!impl_->controls_.str().empty())
+            {
+                CP_XML_NODE(L"controls")
+                {
+					CP_XML_STREAM() << impl_->controls_.str();
                 }
             }
 			CP_XML_STREAM() << impl_->picture_background_.str();

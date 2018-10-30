@@ -45,6 +45,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/AlphaModFix.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/PrstClr.h"
@@ -498,7 +499,7 @@ void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
 		if (oox_grpSpPr->xfrm->chOffY.IsInit())
 			ch_y = oox_grpSpPr->xfrm->chOffY.get() / 12700.;
 
-		int group_level = odf_context()->drawing_context()->get_group_level();
+		size_t group_level = odf_context()->drawing_context()->get_group_level();
 
 		odf_context()->drawing_context()->get_position(ext_x, ext_y);
 
@@ -513,9 +514,11 @@ void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
 		if (oox_grpSpPr->xfrm->rot.IsInit())
 			odf_context()->drawing_context()->set_group_rotate(oox_grpSpPr->xfrm->rot.get() / 60000.);
 	}
+
+	convert(oox_grpSpPr->EffectList.List.GetPointer());
+	convert(oox_grpSpPr->scene3d.GetPointer());
+	
 	//UniFill					Fill;
-	//EffectProperties			EffectList;
-	//nullable<Scene3d>			scene3d;
 }
 
 void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
@@ -593,7 +596,7 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 			if (oox_shape->txBody.IsInit())		bodyPr = oox_shape->txBody->bodyPr.GetPointer();
 			else								bodyPr = oox_shape->oTextBoxBodyPr.GetPointer();
 			
-			if (bodyPr && bodyPr->fromWordArt.get_value_or(false))
+			if ((bodyPr) && (bodyPr->prstTxWarp.IsInit()))
 			{
 				int wordart_type = convert(bodyPr->prstTxWarp.GetPointer());
 				if (wordart_type > 0) type = wordart_type;
@@ -688,8 +691,8 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 
 	bool bLine = odf_context()->drawing_context()->isLineShape();
 
-	if (custGeom && !custGeom->cxnLst.empty())
-		bLine = true;
+	//if (custGeom && !custGeom->cxnLst.empty())
+	//	bLine = true;
 
 	odf_context()->drawing_context()->start_area_properties();
 	{
@@ -713,23 +716,14 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	}
 	odf_context()->drawing_context()->end_line_properties();
 //-----------------------------------------------------------------------------------------------------------------------------
-	PPTX::Logic::EffectLst*	effectLst = NULL;
+	PPTX::Logic::EffectLst*	effectLst = dynamic_cast<PPTX::Logic::EffectLst*>(oox_spPr->EffectList.List.GetPointer());
 	
-	if (oox_spPr->EffectList.is<PPTX::Logic::EffectLst>())
-	{
-		effectLst = &oox_spPr->EffectList.as<PPTX::Logic::EffectLst>();
-	}
-
 	if		(effectLst)		convert(effectLst);
 	else if (oox_sp_style)	convert(&oox_sp_style->effectRef, 3);
 
-	//convert(oox_spPr->ExtLst.GetPointer());
+	convert(oox_spPr->scene3d.GetPointer());
+	convert(oox_spPr->sp3d.GetPointer());
 
-	//nullable<OOX::Drawing::CEffectContainer>          EffectDag;
-
-	//nullable<OOX::Drawing::COfficeArtExtensionList>   ExtLst;
-	//nullable<OOX::Drawing::CScene3D>                  Scene3D;
-	//nullable<OOX::Drawing::CShape3D>                  Sp3D;	
 //-----------------------------------------------------------------------------------------------------------------------------
 }
 
@@ -782,9 +776,16 @@ void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
 int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
 {
 	if (oox_text_preset == NULL) return -1;
-	if (oox_text_preset->prst.GetBYTECode() ==  SimpleTypes::textshapetypeTextNoShape) return 2000;
-
-	return 2001 + oox_text_preset->prst.GetBYTECode();
+	
+	if (oox_text_preset->prst.GetBYTECode() == SimpleTypes::textshapetypeTextNoShape ||
+		oox_text_preset->prst.GetBYTECode() == SimpleTypes::textshapetypeTextPlain) // в зависимости от других настроек
+	{
+		return 2000;
+	}
+	else
+	{
+		return 2001 + oox_text_preset->prst.GetBYTECode();
+	}
 }
 void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 {
@@ -837,14 +838,60 @@ void OoxConverter::convert(PPTX::Logic::AhPolar *oox_handle)
 {
 	if (!oox_handle) return;
 }
+void OoxConverter::convert(PPTX::Logic::EffectDag *oox_effect_dag)
+{
+	if (!oox_effect_dag) return;
 
+	//type - sib, value
+	for (size_t i = 0; i < oox_effect_dag->Effects.size(); ++i)
+	{
+		convert(oox_effect_dag->Effects[i].Effect.operator->());
+	}
+}
 void OoxConverter::convert(PPTX::Logic::EffectLst *oox_effect_list)
 {
 	if (!oox_effect_list) return;
 
+	convert(oox_effect_list->blur.GetPointer());
+	convert(oox_effect_list->fillOverlay.GetPointer());
+	convert(oox_effect_list->glow.GetPointer());
+	convert(oox_effect_list->reflection.GetPointer());
+	convert(oox_effect_list->softEdge.GetPointer());
 	convert(oox_effect_list->innerShdw.GetPointer());
 	convert(oox_effect_list->outerShdw.GetPointer());
 	convert(oox_effect_list->prstShdw.GetPointer());
+}
+void OoxConverter::convert(PPTX::Logic::AlphaModFix *oox_alpha)
+{
+	if (oox_alpha == NULL) return;
+	if (false == oox_alpha->amt.IsInit()) return;
+
+	odf_context()->drawing_context()->set_opacity(oox_alpha->amt.get() / 1000.);
+}
+void OoxConverter::convert(PPTX::Logic::Blur *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::FillOverlay *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::Reflection *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::Glow *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::SoftEdge *oox_effect)
+{
+	if (oox_effect == NULL) return;
+
 }
 void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow)
 {
@@ -984,10 +1031,10 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
                 odf_context()->drawing_context()->set_bitmap_link(pathImage);
 				//...
 			}
-			//for (size_t i = 0 ; i < oox_bitmap_fill->blip->m_arrEffects.size(); i++)
-			//{
-			//	convert(oox_bitmap_fill->blip->m_arrEffects[i]);
-			//}
+			for (size_t i = 0 ; i < oox_bitmap_fill->blip->Effects.size(); i++)
+			{
+				convert(oox_bitmap_fill->blip->Effects[i].Effect.operator->());
+			}
 		}
 		if (oox_bitmap_fill->srcRect.IsInit() && Width > 0  && Height > 0)//часть изображения
 		{
@@ -1067,8 +1114,13 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;
 			
-            convert(&oox_grad_fill->GsLst[0].color,hexColorEnd, opacityEnd, nARGB);
-            convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size()-1].color,hexColorStart, opacityStart, nARGB);
+            convert(&oox_grad_fill->GsLst[0].color, hexColorEnd, opacityEnd, nARGB);
+            convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() - 1].color, hexColorStart, opacityStart, nARGB);
+
+			if (hexColorEnd == hexColorStart && opacityEnd == opacityStart && oox_grad_fill->GsLst.size() > 2)
+			{
+				convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() / 2].color, hexColorStart, opacityStart, nARGB);
+			}
 			
 			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
 			odf_context()->drawing_context()->set_gradient_end	(hexColorEnd,	opacityEnd);
@@ -1253,6 +1305,16 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 {
 	if (!oox_bodyPr) return;
 
+	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
+	{
+		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
+		{
+			if (oox_bodyPr->prstTxWarp->avLst[i].fmla.IsInit())
+			{
+				odf_context()->drawing_context()->add_modifier(oox_bodyPr->prstTxWarp->avLst[i].fmla.get());
+			}
+		}
+	}
 	if (oox_bodyPr->vert.IsInit())
 	{
 		odf_context()->drawing_context()->set_textarea_writing_mode (oox_bodyPr->vert->GetBYTECode());
@@ -1287,7 +1349,7 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 	switch(oox_bodyPr->Fit.type)
 	{
 		case  PPTX::Logic::TextFit::FitSpAuto:
-		{//изменяемы размеры			
+		{//изменяемы размеры шейпа под текст			
 			odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
 		}break;
 		case  PPTX::Logic::TextFit::FitNo:
@@ -1298,17 +1360,6 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		}break;
 		default:
 		{
-		}
-	}
-
-	if ((oox_bodyPr->fromWordArt.IsInit() && (*oox_bodyPr->fromWordArt)) && oox_bodyPr->prstTxWarp.IsInit())
-	{
-		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
-		{
-			if (oox_bodyPr->prstTxWarp->avLst[i].fmla.IsInit())
-			{
-				odf_context()->drawing_context()->add_modifier(oox_bodyPr->prstTxWarp->avLst[i].fmla.get());
-			}
 		}
 	}
 }
@@ -1495,8 +1546,8 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 		convert(&buClr.Color, hexColor, opacity);
 		if (!hexColor.empty())
 		{		
-			int res = 0;
-			if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+			if (std::wstring::npos == hexColor.find(L"#"))
+				hexColor = std::wstring(L"#") + hexColor;
 			if (text_properties) text_properties->content_.fo_color_ = odf_types::color(hexColor);
 		}
 	}
@@ -1642,7 +1693,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 	if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
 	
-	while (odf_context()->text_context()->list_state_.levels.size() > list_level)
+	while ((int)odf_context()->text_context()->list_state_.levels.size() > list_level)
 	{
 		odf_context()->text_context()->end_list();
 	}	
@@ -1668,9 +1719,9 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		list_level++;
 
-		if (odf_context()->text_context()->list_state_.levels.size() < list_level)
+		if ((int)odf_context()->text_context()->list_state_.levels.size() < list_level)
 		{
-			while (odf_context()->text_context()->list_state_.levels.size() < list_level)
+			while ((int)odf_context()->text_context()->list_state_.levels.size() < list_level)
 			{
 				odf_context()->text_context()->start_list(list_style_name);
 				odf_context()->text_context()->start_list_item();
@@ -1859,8 +1910,8 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	}	
 	if (!hexColorText.empty())
 	{		
-		int res = 0;
-		if ((res = hexColorText.find(L"#")) < 0) hexColorText = std::wstring(L"#") + hexColorText;
+		if (std::wstring::npos == hexColorText.find(L"#"))
+			hexColorText = std::wstring(L"#") + hexColorText;
 		text_properties->content_.fo_color_ = odf_types::color(hexColorText);
 	}
 //---------------------------------------
@@ -1931,8 +1982,8 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (oox_run_pr->lang.IsInit())
 	{
         std::wstring oox_language =  oox_run_pr->lang.get(), oox_country;
-        int res = oox_language.find(L"-");
-        if (res >= 0)
+        size_t res = oox_language.find(L"-");
+		if (res != std::wstring::npos)
 		{
             oox_country = oox_language.substr(res + 1);
             oox_language = oox_language.substr(0, res);
@@ -2282,7 +2333,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 		if (index < 1000)
 		{
 			index -= 1;
-			if ((index >= 0) || (index < theme->themeElements.fmtScheme.fillStyleLst.size()))
+			if (index >= 0 && index < (int)theme->themeElements.fmtScheme.fillStyleLst.size())
 			{
 				fill = &theme->themeElements.fmtScheme.fillStyleLst[index];		
 			}
@@ -2290,7 +2341,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 		else if (index > 1000)
 		{
 			index -= 1001;
-			if ((index >= 0) || (index < theme->themeElements.fmtScheme.bgFillStyleLst.size()))
+			if (index >= 0 && index < (int)theme->themeElements.fmtScheme.bgFillStyleLst.size())
 			{
 				fill = &theme->themeElements.fmtScheme.bgFillStyleLst[index];		
 			}
@@ -2301,15 +2352,15 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	else if (type == 2)
 	{
 		index -= 1;
-		if ((index >= 0) || (index < theme->themeElements.fmtScheme.lnStyleLst.size()))
+		if (index >= 0 && index < (int)theme->themeElements.fmtScheme.lnStyleLst.size())
 		{
 			convert(&theme->themeElements.fmtScheme.lnStyleLst[index], nARGB);		
 		}
 	}
-	else if (type == 3)
+	else if (type == 3) 
 	{
 		index -= 1;
-		if ((index >= 0) || (index < theme->themeElements.fmtScheme.effectStyleLst.size()))
+		if (index >= 0 && index < (int)theme->themeElements.fmtScheme.effectStyleLst.size())
 		{
 			convert(&theme->themeElements.fmtScheme.effectStyleLst[index]);		
 		}

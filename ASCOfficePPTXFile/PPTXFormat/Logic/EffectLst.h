@@ -68,23 +68,10 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 
             virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECTPROPERTIES_TYPE_LIST);
-
-				pWriter->WriteRecord2(0, blur);
-				pWriter->WriteRecord2(1, fillOverlay);
-				pWriter->WriteRecord2(2, glow);
-				pWriter->WriteRecord2(3, innerShdw);
-				pWriter->WriteRecord2(4, outerShdw);
-				pWriter->WriteRecord2(5, prstShdw);
-				pWriter->WriteRecord2(6, reflection);
-				pWriter->WriteRecord2(7, softEdge);
-
-				pWriter->EndRecord();
-			}
-
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 		public:
 			nullable<Blur>			blur;
 			nullable<FillOverlay>	fillOverlay;

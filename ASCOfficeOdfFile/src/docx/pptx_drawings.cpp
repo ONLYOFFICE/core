@@ -55,7 +55,7 @@ public:
         pptx_drawings_.push_back(d);
 		
 		bool present = false;
-        for (int i = 0; i < pptx_drawing_rels_.size(); i++)
+        for (size_t i = 0; i < pptx_drawing_rels_.size(); i++)
         {		
 			if (pptx_drawing_rels_[i].rid == rid && pptx_drawing_rels_[i].ref == ref)
 				present = true;
@@ -83,7 +83,7 @@ public:
     {
 	
 		bool present = false;
-        for (int i = 0; i < pptx_drawing_rels_.size(); i++)
+        for (size_t i = 0; i < pptx_drawing_rels_.size(); i++)
         {		
 			if (pptx_drawing_rels_[i].rid == rid && pptx_drawing_rels_[i].ref == ref)
 				present = true;
@@ -96,7 +96,7 @@ public:
     }
 	void serialize(std::wostream & strm)
 	{
-		for (int i = 0; i < pptx_drawings_.size(); i++)
+		for (size_t i = 0; i < pptx_drawings_.size(); i++)
 		{
 			pptx_drawings_[i].serialize(strm);
 		}
@@ -109,7 +109,7 @@ public:
 
     void dump_rels(rels & Rels)
     {
-        for (int i = 0; i < pptx_drawing_rels_.size(); i++)
+        for (size_t i = 0; i < pptx_drawing_rels_.size(); i++)
         {
 			if (pptx_drawing_rels_[i].type == typeUnknown		|| 
 				pptx_drawing_rels_[i].type == typeTable			||

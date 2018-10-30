@@ -365,6 +365,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\XlsxSerializerCom\Writer\BinaryReader.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\XlsxSerializerCom\Common\BinReaderWriterDefines.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
 					>
 					<FileConfiguration
@@ -627,14 +635,6 @@
 		<Filter
 			Name="Common"
 			>
-			<File
-				RelativePath="..\..\..\XlsxSerializerCom\Writer\BinaryReader.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\XlsxSerializerCom\Common\BinReaderWriterDefines.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
 				>

@@ -277,9 +277,14 @@ public:
 		void set_row_default_cell_style(std::wstring & style_name);
 		void add_row_repeated();
 
+	bool isSpannedCell(int col, int row, int &spanned_cols, int &spanned_rows );
+	bool isCoveredCell(int col, int repeated_cols = 1);
+
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
     void add_default_cell(unsigned int repeated);
+
+	void check_spanned_cells();
 
 	void set_cell_format_value(odf_types::office_value_type::type value_type);
     void set_cell_type(int type);
@@ -287,6 +292,7 @@ public:
 	void set_cell_text(odf_text_context *text_context, bool cash_value = false);
 	void set_cell_formula(std::wstring &formula);
 	void set_cell_array_formula(std::wstring & formula, std::wstring ref);
+	void set_cell_spanned(int spanned_cols, int spanned_rows);
     void add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, int ind);
 	
 	static std::wstring replace_cell_row(boost::wsmatch const & what);
@@ -349,13 +355,28 @@ public:
 	std::vector<ods_comment_state>	comments_;
 private:
 
+	struct _spanned_info
+	{
+		int spanned_cols = 0;
+		int spanned_rows = 0;
+		int state = 0;
+	};
+	struct _covered_info
+	{
+		int start_col = 0;
+		int count_cols = 0;
+
+		int count_rows = 0; // от текущей строки
+	};
+	std::vector<_covered_info> current_covered_rows_;
+	int current_covered_cols_;
+
     odf_conversion_context * context_;   
 	
 	office_element_ptr	office_table_;
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
 	office_element_ptr	table_defined_expressions_;
 	
-
 	std::wstring row_default_cell_style_name_;
 
     static int current_table_column_;
@@ -366,6 +387,8 @@ private:
 
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
+
+	std::map<int, std::map<int, _spanned_info>> map_merged_cells;
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
 	

@@ -1231,7 +1231,7 @@ namespace SimpleTypes
 
         double  FromString(std::wstring &sValue, double dDefValue = 0)
 		{
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
 			{
 				m_dValue = dDefValue;
 				return m_dValue;

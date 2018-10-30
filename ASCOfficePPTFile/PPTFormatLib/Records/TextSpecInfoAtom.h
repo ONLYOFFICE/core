@@ -68,9 +68,9 @@ public:
 			NSStreamReader::Read(pStream, m_arrSIs.back());
 			lMemCount += m_arrSIs.back().lCount;
 
-			int sz = pStream->tell() - m_lOffsetInStream;
+			long sz = (long)(pStream->tell() - m_lOffsetInStream);
 
-			if (sz >= (int)m_oHeader.RecLen)
+			if (sz >= (long)m_oHeader.RecLen)
 				break;
 		}
 

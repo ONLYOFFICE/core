@@ -84,7 +84,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
 		return;
 	}
-	if (attlist_.table_number_rows_repeated_ > 0x0f00 && empty_content_cells() || bEndTable)//0xf000 - conv_KDZO3J3xLIbZ5fC0HR0__xlsx.ods
+	if (attlist_.table_number_rows_repeated_ > 0x0f00 && empty_content_cells(false) || bEndTable)//0xf000 - conv_KDZO3J3xLIbZ5fC0HR0__xlsx.ods
 	{
 		Context.get_table_context().state()->set_end_table();
 		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
@@ -322,6 +322,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring tableName		= table_table_attlist_.table_name_.get_value_or(L"");
 
     _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
+
+	if (office_forms_)
+	{
+		office_forms_->xlsx_convert(Context);
+	}
 
 	if (table_table_source_)
 	{
@@ -756,7 +761,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             double s;
             if (oox::parseTime(tv, h, m, s))
             {
-				boost::int64_t intTime = oox::convertTime(h, m, s);
+				boost::int64_t intTime = (boost::int64_t)oox::convertTime(h, m, s);
 				if (intTime > 0)
 				{
 					number_val = boost::lexical_cast<std::wstring>(intTime);

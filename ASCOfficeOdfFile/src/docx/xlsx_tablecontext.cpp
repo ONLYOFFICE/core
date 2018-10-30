@@ -336,6 +336,10 @@ void xlsx_table_context::serialize_ole_objects(std::wostream & _Wostream)
 {
     return state()->serialize_ole_objects(_Wostream);
 }
+void xlsx_table_context::serialize_controls(std::wostream & _Wostream)
+{
+    return state()->serialize_controls(_Wostream);
+}
 void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
 {
 	return state()->dump_rels_hyperlinks(Rels);

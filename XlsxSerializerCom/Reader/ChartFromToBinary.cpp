@@ -977,7 +977,7 @@ namespace BinXlsxRW
 			oThemeFile.m_sContent = xmlWriter.GetXmlString();
 			oThemeFile.Write(pathThemeOverrideFile.GetPath());
 
-			long rId;
+			unsigned int rId;
             m_pOfficeDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride")), sThemeOverrideRelsPath, std::wstring(), &rId);
 
             int nIndex = m_oSaveParams.sThemePath.rfind(FILE_SEPARATOR_CHAR); 

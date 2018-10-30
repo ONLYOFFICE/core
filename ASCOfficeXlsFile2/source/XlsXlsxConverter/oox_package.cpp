@@ -85,7 +85,7 @@ void content_types_file::write(const std::wstring & RootPath)
 
 bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
-	for (int i = 0 ; i < content_type_.get_default().size(); i++)
+	for (size_t i = 0 ; i < content_type_.get_default().size(); i++)
 	{
 		if (content_type_.get_default()[i].extension() == extension)
 			return true;

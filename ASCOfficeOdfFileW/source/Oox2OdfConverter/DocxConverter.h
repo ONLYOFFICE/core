@@ -97,6 +97,8 @@ namespace OOX
 		class CSdtContent;
 		class CBackground;
 		class CLockedCanvas;
+		class CBookmarkStart;
+		class CBookmarkEnd;
 
 	}
 	namespace Numbering
@@ -183,7 +185,7 @@ namespace Oox2Odf
 
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);
-		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"");
+		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"", bool bAlways = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
 		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::style_paragraph_properties	*paragraph_properties);
@@ -199,6 +201,8 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSym					*oox_sym);
 		void convert(OOX::Logic::CSmartTag				*oox_tag);		
 		void convert(OOX::Logic::CPTab					*oox_ptab);
+		void convert(OOX::Logic::CBookmarkStart			*oox_bookmark_start);
+		void convert(OOX::Logic::CBookmarkEnd			*oox_bookmark_end);
 		
 		int convert(ComplexTypes::Word::CTrackChange	*oox_change, int type);
 		void convert(OOX::Logic::CIns					*oox_ins);

@@ -284,7 +284,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 		
 			point.pos = 0;
 			if (image_style->draw_start_color_)		point.color_ref = image_style->draw_start_color_->get_hex_value();
-			if (image_style->draw_start_intensity_)	point.opacity	= image_style->draw_start_intensity_->get_value();
+			//if (image_style->draw_start_intensity_)	point.opacity	= image_style->draw_start_intensity_->get_value();
 
 			fill->colors.push_back(point);
 
@@ -300,7 +300,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 			
 			point.pos = 0;
 			if (image_style->draw_end_color_)		point.color_ref = image_style->draw_end_color_->get_hex_value();
-			if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
+			//if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
 	
 			fill->colors.push_back(point);
 
@@ -312,7 +312,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 
 			point.pos = 100;
 			if (image_style->draw_end_color_)		point.color_ref = image_style->draw_end_color_->get_hex_value();
-			if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
+			//if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
 	
 			fill->colors.push_back(point);
 		}break;
@@ -328,13 +328,13 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 			
 			point.pos = 0;
 			if (image_style->draw_start_color_)		point.color_ref = image_style->draw_start_color_->get_hex_value();
-			if (image_style->draw_start_intensity_)	point.opacity	= image_style->draw_start_intensity_->get_value();
+			//if (image_style->draw_start_intensity_)	point.opacity	= image_style->draw_start_intensity_->get_value();
 	
 			fill->colors.push_back(point);
 
 			point.pos = 100;
 			if (image_style->draw_end_color_)		point.color_ref = image_style->draw_end_color_->get_hex_value();
-			if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
+			//if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
 
 			fill->colors.push_back(point);
 

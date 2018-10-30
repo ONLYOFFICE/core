@@ -66,7 +66,7 @@ void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 				NSFile::CFileBinary file;
 				
 				file.CreateFileW(sOle2Name);
-				file.WriteFile(data, size);
+				file.WriteFile(data, (DWORD)size);
 				file.CloseFile();
 
 				delete []data;
@@ -1094,11 +1094,10 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		else
 		{
 			paragraphProps->m_bInTable = 1;
-			if ( PROP_DEF == paragraphProps->m_nItap )
+			if ( PROP_DEF == paragraphProps->m_nItap)
 				paragraphProps->m_nItap = 1;
 		}
 	}
-    COMMAND_RTF_BOOL( "intbl", paragraphProps->m_bInTable,	sCommand, hasParameter, parameter )
     else if ( "itap" == sCommand && hasParameter)
 	{
 		//if (parameter == 0 && paragraphProps->m_bInTable && paragraphProps->m_nItap > 0)
@@ -1318,8 +1317,14 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 {
 	if (!rowProps) return false;
 	
-    if ( "trowd"				== sCommand )	rowProps->SetDefaultRtf();
-    else if ( "nesttableprops"	== sCommand )	rowProps->SetDefaultRtf();
+    if ( "trowd" == sCommand )
+	{
+		rowProps->SetDefaultRtf();
+	}
+    else if ( "nesttableprops" == sCommand )
+	{
+		rowProps->SetDefaultRtf();
+	}
 	
     COMMAND_RTF_INT	( "irow",			rowProps->m_nIndex,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT	( "irowband",		rowProps->m_nBandIndex,	sCommand, hasParameter, parameter )
@@ -1804,7 +1809,7 @@ void RtfOleBinReader::GetData( BYTE** ppData, long& nSize)
 	}	
 	for (size_t i = start; i < m_arData.size(); i++)
 	{
-		nSize += m_arData[i].length();
+		nSize += (long)m_arData[i].length();
 	}
 	
 	(*ppData) = new BYTE[ nSize];
@@ -2334,6 +2339,32 @@ bool RtfOldListReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReade
 		return false;
 	return true;
 }
+void RtfParagraphPropDestination::EndRows(RtfReader& oReader)
+{
+	RtfTableRowPtr oNewTableRow ( new RtfTableRow() );
+	oNewTableRow->m_oProperty = oReader.m_oState->m_oRowProperty;
+
+	for( int k = (int)aCells.size() - 1; k >= 0 ; k-- )
+	{
+		if ( aCellItaps[k] == nCurItap )
+		{
+			oNewTableRow->InsertItem( aCells[k], 0 );
+			
+			aCells.erase(aCells.begin() + k);
+			aCellItaps.erase(aCellItaps.begin() + k);
+		}
+		else
+			break;
+	}
+	//для каждого cell в row добавляем их свойства
+	for( int i = 0; i < oNewTableRow->GetCount() && i < oNewTableRow->m_oProperty.GetCount() ; i++ )
+	{
+		oNewTableRow->operator [](i)->m_oProperty = oNewTableRow->m_oProperty[i];
+	}
+	//Добавляем временный row
+	aRows.push_back( oNewTableRow );
+	aRowItaps.push_back( nCurItap );
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
 void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReader, bool bEndCell, bool bEndRow )
@@ -2345,6 +2376,8 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 	{
 		if ( nCurItap > 0 ) //Если до этого были только параграфы в таблицах - завершаем таблицу
 		{
+			if (bEndRow) EndRows(oReader); //ê¡ñ¿ó¿ñπá½∞¡á∩ »α«úαá¼¼á.rtf
+
 			RtfTablePtr oNewTable ( new RtfTable() );
 			oNewTable->m_oProperty = oCurRowProperty;
 
@@ -2410,30 +2443,10 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 			aItaps.push_back( oItem->m_oProperty.m_nItap );
 		}
 		nCurItap = oItem->m_oProperty.m_nItap;
-		//закончилась строка
+
 		if ( bEndRow )
 		{
-			RtfTableRowPtr oNewTableRow ( new RtfTableRow() );
-			oNewTableRow->m_oProperty = oReader.m_oState->m_oRowProperty;
-
-			for( int k = (int)aCells.size() - 1; k >= 0 ; k-- )
-			{
-				if ( aCellItaps[k] == nCurItap )
-				{
-					oNewTableRow->InsertItem( aCells[k], 0 );
-					
-					aCells.erase(aCells.begin() + k);
-					aCellItaps.erase(aCellItaps.begin() + k);
-				}
-				else
-					break;
-			}
-			//для каждого cell в row добавляем их свойства
-			for( int i = 0; i < (int)oNewTableRow->GetCount() && i < oNewTableRow->m_oProperty.GetCount() ; i++ )
-				oNewTableRow->operator [](i)->m_oProperty = oNewTableRow->m_oProperty[i];
-			//Добавляем временный row
-			aRows.push_back( oNewTableRow );
-			aRowItaps.push_back( nCurItap );
+			EndRows(oReader);
 		}
 		else
 		{
@@ -2482,6 +2495,10 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 	}
 	else
 	{
+		if (false == aRows.empty() || false == aCells.empty()) // bug 39172
+		{
+			AddItem( m_oCurParagraph, oReader, false, false );
+		}
 		//if (pSection)
 		//	m_oCurParagraph->m_oProperty.m_pSection = pSection;
 	}
@@ -2948,8 +2965,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		//m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
 	}
     COMMAND_RTF_SPECIAL_CHAR( "column",	m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_column )
-    COMMAND_RTF_SPECIAL_CHAR( "line",		m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_line )
-    COMMAND_RTF_SPECIAL_CHAR( "line",		m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_line )
+    COMMAND_RTF_SPECIAL_CHAR( "line",	m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_line )
     else if ( "lbr" == sCommand )
 	{
 		if ( hasParameter )

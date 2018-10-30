@@ -590,7 +590,7 @@ public:
 	{
 		return (float)(1.0 * emu / (635 * 20.0));
 	}
-    static void WriteDataToFileBinary(std::wstring& sFilename, BYTE* pbData, int nLength)
+    static void WriteDataToFileBinary(std::wstring& sFilename, BYTE* pbData, size_t nLength)
 	{
 		if( NULL == pbData )
 			return;
@@ -598,7 +598,7 @@ public:
 		CFile file;
         if (file.CreateFile(sFilename) != S_OK) return;
 
-		file.WriteFile(pbData ,nLength);	
+		file.WriteFile(pbData, (DWORD)nLength);	
 		file.CloseFile();
 	}
     static void WriteDataToFile(std::wstring& sFilename, std::wstring& sData)

@@ -68,7 +68,7 @@ public:
     {
 		double length_pt =0;
  		
-		for (int i = 0; i < region_.size(); i++)
+		for (size_t i = 0; i < region_.size(); i++)
         {
 			region & r = region_[i];
             if (cell <= r.start_cell + r.count)
@@ -102,7 +102,7 @@ public:
 		if (pos < 0)//cs102.ods
 		{
 			int c_skip = 0, i = 0;
-			for (i = 0; i < region_.size(); i++)
+			for (i = 0; i < (int)region_.size(); i++)
 			{
 				if (region_[i].count + c_skip > offset)
 					break;
@@ -119,7 +119,7 @@ public:
 
 		}
         
-		for (int i = 0; i < region_.size(); i++)
+		for (size_t i = 0; i < region_.size(); i++)
         {
 			region & r = region_[i];
 			if (r.start_cell + r.count <= offset) 
@@ -172,7 +172,7 @@ public:
     }
     std::pair<int, double> search(double pos) 
     {
-		for (int i = 0; i < region_.size(); i++)
+		for (size_t i = 0; i < region_.size(); i++)
         {
 			region & r = region_[i];
 

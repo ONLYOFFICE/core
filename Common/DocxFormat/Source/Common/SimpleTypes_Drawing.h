@@ -751,7 +751,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -829,7 +829,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -967,7 +967,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1062,7 +1062,7 @@ namespace SimpleTypes
         {
             int nPos = (int)sValue.find( '%' );
             int nLen = (int)sValue.length();
-            if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
+            if ( -1 == nPos || nPos != (int)sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
 				{
@@ -1111,7 +1111,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1292,7 +1292,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1382,7 +1382,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1496,7 +1496,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1550,7 +1550,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1609,7 +1609,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1677,7 +1677,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1782,7 +1782,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1844,7 +1844,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1899,7 +1899,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -1955,7 +1955,7 @@ namespace SimpleTypes
             //todo странно что если пришло значение от 0 до 1, то m_dValue от 0 до 1. В других случаях от 0 до 100
             int nPos = (int)sValue.find( '%' );
             int nLen = (int)sValue.length();
-            if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
+            if ( -1 == nPos || nPos != (int)sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos )
 				{
@@ -2038,16 +2038,16 @@ namespace SimpleTypes
         }
 		double ToMM() const
         {
-            return Emu_To_Mm( this->m_eValue );
+            return Emu_To_Mm( (double)this->m_eValue );
         }
 
         double ToInches()
         {
-            return Emu_To_Inch( this->m_eValue );
+            return Emu_To_Inch( (double)this->m_eValue );
         }
         double ToTwips()
         {
-            return Emu_To_Twips( this->m_eValue );
+            return Emu_To_Twips( (double)this->m_eValue );
         }
 		double FromEmu(const __int64& nEmu)
 		{
@@ -2119,7 +2119,7 @@ namespace SimpleTypes
         {
             int nPos = (int)sValue.find( '%' );
             int nLen = (int)sValue.length();
-            if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
+            if ( -1 == nPos || nPos != (int)sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
 				{
@@ -2170,7 +2170,7 @@ namespace SimpleTypes
         {
             int nPos = (int)sValue.find( '%' );
             int nLen = (int)sValue.length();
-            if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
+            if ( -1 == nPos || nPos != (int)sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
 				{
@@ -2278,7 +2278,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -2642,7 +2642,7 @@ namespace SimpleTypes
             this->m_eValue = presetcolorvalBlack;
 			SetRGBA( 0, 0, 0, 255 );
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -3147,7 +3147,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -3231,7 +3231,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -3371,7 +3371,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -3714,7 +3714,7 @@ namespace SimpleTypes
         virtual EShemeColorVal FromString(std::wstring &sValue)
 		{
             this->m_eValue = eDefValue;
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -4022,7 +4022,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -4597,7 +4597,7 @@ namespace SimpleTypes
             this->m_eValue = systemcolorvalWindow;
 			SetRGBA( 0, 0, 0, 255 );
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -4764,7 +4764,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -4830,7 +4830,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -4931,7 +4931,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -4998,7 +4998,7 @@ namespace SimpleTypes
         {
             int nPos = (int)sValue.find( '%' );
             int nLen = (int)sValue.length();
-            if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
+            if ( -1 == nPos || nPos != (int)sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
 				{
@@ -5046,7 +5046,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -5445,7 +5445,7 @@ namespace SimpleTypes
         {
             int nPos = (int)sValue.find( '%' );
             int nLen = (int)sValue.length();
-            if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
+            if ( -1 == nPos || nPos != (int)sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
 				{
@@ -5580,7 +5580,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -5648,7 +5648,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -5703,7 +5703,7 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 
-            if ( sValue.length() <= 0 )
+            if ( sValue.empty() )
                 return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
@@ -5921,7 +5921,7 @@ namespace SimpleTypes
 		}
 		double ToMM() const
 		{
-            return Emu_To_Mm( this->m_eValue );
+            return Emu_To_Mm( (double)this->m_eValue );
 		}
 		double ToInches()
 		{
@@ -6180,7 +6180,7 @@ namespace SimpleTypes
 		}
 		double ToMM() const 
 		{
-            return Emu_To_Mm( this->m_eValue );
+            return Emu_To_Mm( (double)this->m_eValue );
 		}
 
 		double ToInches()

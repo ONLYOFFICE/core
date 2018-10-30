@@ -101,6 +101,10 @@ std::wstring static get_default_file_name(RelsType type)
         return L"video"; 
 	case typeAudio:
         return L"audio";
+	case typeControl:
+        return L"control";
+	case typeControlProps:
+        return L"controlProps";
 	default:
         return L"";
     }
@@ -180,6 +184,10 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		sub_path = L"embeddings/";
 	}
+	else if ( type == typeControlProps)
+	{
+		sub_path = L"ctrlProps/";
+	}
 	else 
 	{
 		isMediaInternal = is_internal(href, odf_packet_);
@@ -198,6 +206,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	else if ( type == typeSlide)		number = count_slide	+ 1;
 	else if ( type == typeMsObject ||
 			  type == typeOleObject)	number = count_object	+ 1;
+	else if ( type == typeControl)		number = count_control	+ 1;
 	else
 		number = items_.size() + 1;
 	
@@ -277,7 +286,19 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
     isInternal = isMediaInternal;
 	return id;
 }
+std::wstring mediaitems::add_control_props(std::wstring & oox_target)
+{
+    const bool isMediaInternal = true;
+  
+	count_control++;  
+	
+	std::wstring rId = std::wstring(L"ctrlId") + std::to_wstring(count_control);
 
+	oox_target = std::wstring(L"ctrlProp") + std::to_wstring(count_control) + L".xml";
+		
+	items_.push_back( item(L"", typeControlProps, oox_target, isMediaInternal, rId) );
+    return rId;
+}
 void mediaitems::dump_rels(rels & Rels)
 {
     for (size_t i = 0; i < items_.size(); i++)

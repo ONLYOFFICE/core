@@ -80,11 +80,20 @@ std::wstring convert_date(const std::wstring & oox_date)
 	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
 
 	////to for example, "1899-12-31T05:37:46.66569
-	std::wstring date_str = boost::lexical_cast<std::wstring>(date_.year())
+	std::wstring date_str;
+
+	try
+	{
+		date_str = boost::lexical_cast<std::wstring>(date_.year())
 							+ L"-" +
 							(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month().as_number()) 
 							+ L"-" +
 							(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
+	}
+	catch(...)
+	{
+		date_str = oox_date;
+	}
 	return date_str;
 }
 
@@ -256,7 +265,7 @@ void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated
 
     ods_element_state state(elm, repeated, style_name, style_elm, defaut_column_width_, current_level_.size());
   
-	if (repeated > 10000)repeated = 1024;//????
+	//if (repeated > 10000) repeated = 1024;//????
 
 	current_table_column_ += repeated;
     columns_.push_back(state);
@@ -335,6 +344,17 @@ void ods_table_state::add_row(office_element_ptr & elm, unsigned int repeated, o
 {
     current_table_column_	= 0; 
     current_table_row_		+= repeated;
+	current_covered_cols_	= 0;
+
+	for (size_t i = 0; i < current_covered_rows_.size(); ++i)
+	{
+		current_covered_rows_[i].count_rows--;
+		if (current_covered_rows_[i].count_rows <= 0)
+		{
+			current_covered_rows_.erase(current_covered_rows_.begin() + i);
+			i--;
+		}
+	}
 
 	current_level_.back()->add_child_element(elm);
 
@@ -364,6 +384,16 @@ void ods_table_state::add_row_repeated()
 	unsigned int t = rows_.back().repeated;
 	rows_.back().repeated++;
 	current_table_row_++;
+	
+	for (size_t i = 0; i < current_covered_rows_.size(); ++i)
+	{
+		current_covered_rows_[i].count_rows--;
+		if (current_covered_rows_[i].count_rows <= 0)
+		{
+			current_covered_rows_.erase(current_covered_rows_.begin() + i);
+			i--;
+		}
+	}
 	row->table_table_row_attlist_.table_number_rows_repeated_ = rows_.back().repeated;
 }
 void ods_table_state::set_row_hidden(bool Val)
@@ -471,21 +501,21 @@ void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 
 office_element_ptr  & ods_table_state::current_row_element()
 {
-	if (rows_.size()>0)
+	if (false == rows_.empty())
 		return rows_.back().elm;
 	else
 		throw;
 }
 office_element_ptr  & ods_table_state::current_cell_element()
 {
-	if (cells_size_ >0)
+	if (cells_size_ > 0)
 		return cells_.back().elm;
 	else
 		throw;
 }
 ods_hyperlink_state & ods_table_state::current_hyperlink()
 {
-	if ((cells_size_ >0 && hyperlinks_.size()>0) && (cells_.back().hyperlink_idx>=0) )
+	if ((cells_size_ >0 && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
 	{
 		return hyperlinks_[cells_.back().hyperlink_idx];
 	}
@@ -497,22 +527,24 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 {
 	current_row_element()->add_child_element(elm);
 	
-	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
-	if (cell == NULL)return;
-	
 	std::wstring style_name;
 
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
-	if (style)style_name = style->style_name_;
-	else style_name = row_default_cell_style_name_;
+	if (style)	style_name = style->style_name_;
+	else		style_name = row_default_cell_style_name_;
 
-	if (style_name.length() > 0 && style_name != get_column_default_cell_style(current_column())) 
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
+	if (cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
 	{
-		cell->table_table_cell_attlist_.table_style_name_=	style_name;
+		cell->table_table_cell_attlist_.table_style_name_ =	style_name;
 	}
-
+	table_covered_table_cell* covered_cell = dynamic_cast<table_covered_table_cell*>(elm.get());
+	if (covered_cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
+	{
+		covered_cell->table_table_cell_attlist_.table_style_name_ =	style_name;
+	}
 	ods_cell_state state;
-	
+
 	state.empty = true;
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
     state.row = current_table_row_;  state.col = current_table_column_ + 1;
@@ -523,6 +555,9 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
 	cells_size_++;
+	
+	if (current_covered_cols_ > 0 && covered_cell)
+		current_covered_cols_--;
 }
 
 void ods_table_state::set_cell_format_value(office_value_type::type value_type)
@@ -635,40 +670,133 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 	}
 }
 
-void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
+void ods_table_state::check_spanned_cells()
 {
-	//потом можно переделать (оптимизировать) - добавлять мержи при добавлении ячеек
-	//всяко выгоднее хранить данные о мержах, а не шерстить каждый раз ВСЕ ячейки для добавления фенечки
-	//todooo
-	//разобраться когда нужно писать covered_cell
-	if (end_col - start_col < 0)return;
-	if (end_row - start_row < 0)return;
-
-	int spanned_cols = end_col - start_col + 1;
-	int spanned_rows = end_row - start_row + 1;
-
-	if (spanned_cols > 10000)spanned_cols = 1024;
-
-	for (size_t i = 0; i < cells_.size(); ++i)
+	for (std::map<int, std::map<int, _spanned_info>>::iterator it = map_merged_cells.begin(); it != map_merged_cells.end(); ++it)
 	{
-		if (cells_[i].row > end_row) break;
+		for (std::map<int, _spanned_info>::iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+		{	
+			int start_row = it->first;
+			int end_row = it->first + jt->second.spanned_rows;
 
-		if (cells_[i].row >= start_row)
-		{
-			if (cells_[i].col >= start_col)
+			int start_col = jt->first;
+			int end_col = jt->first + jt->second.spanned_cols;
+
+			for (size_t i = 0; i < cells_.size(); ++i)
 			{
-				table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
-				if (cell_elm == NULL)return;
+				if (cells_[i].row > end_row) break;
 
-				cell_elm->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
-				cell_elm->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+				if (cells_[i].row >= start_row)
+				{
+					if (cells_[i].col >= start_col)
+					{
+						table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
+						if (cell_elm == NULL)break;
 
-				break;
+						cell_elm->table_table_cell_attlist_extra_.table_number_columns_spanned_ = jt->second.spanned_cols;
+						cell_elm->table_table_cell_attlist_extra_.table_number_rows_spanned_ = jt->second.spanned_rows;
+
+						break;
+					}
+				}
 			}
 		}
 	}
 }
 
+void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
+{
+	if (end_col - start_col < 0) return;
+	if (end_row - start_row < 0) return;
+
+	_spanned_info info;
+	
+	info.spanned_cols = end_col - start_col + 1;
+	info.spanned_rows = end_row - start_row + 1;
+
+	//if (info.spanned_cols > 10000) info.spanned_cols = 1024;
+
+	std::map<int, std::map<int, _spanned_info>>::iterator pFindRow = map_merged_cells.find(start_row);
+
+	if (pFindRow == map_merged_cells.end())
+	{
+		std::map<int, _spanned_info> mapCols;
+		mapCols.insert(std::make_pair(start_col, info));
+		
+		map_merged_cells.insert(std::make_pair(start_row, mapCols));
+	}
+	else
+	{
+		std::map<int, _spanned_info>::iterator pFindCol = pFindRow->second.find(start_col);
+		if (pFindCol == pFindRow->second.end())
+		{
+			pFindRow->second.insert(std::make_pair(start_col, info));
+			
+		}
+		//else нереально pFindCol->second.insert(info);
+	}
+}
+bool ods_table_state::isSpannedCell(int col, int row, int &spanned_cols, int &spanned_rows )
+{
+	spanned_cols = spanned_rows = 0;
+
+	std::map<int, std::map<int, _spanned_info>>::iterator pFindRow = map_merged_cells.find(row);
+
+	if (pFindRow != map_merged_cells.end())
+	{
+		std::map<int, _spanned_info>::iterator pFindCol = pFindRow->second.find(col);
+		if (pFindCol != pFindRow->second.end())
+		{
+			spanned_cols = pFindCol->second.spanned_cols;
+			spanned_rows = pFindCol->second.spanned_rows;
+
+			current_covered_cols_ = spanned_cols - 1;
+
+			if (spanned_rows > 1 && current_covered_cols_ > 0)
+			{
+				_covered_info info;
+				info.start_col = current_table_column_;
+				info.count_cols = spanned_cols;
+				
+				info.count_rows = spanned_rows - 1;
+				current_covered_rows_.push_back(info);
+			}
+
+			pFindRow->second.erase(pFindCol);
+
+			if (pFindRow->second.empty())
+			{
+				map_merged_cells.erase(pFindRow);
+			}
+
+			return true;
+		}
+	}
+	return false;
+}
+bool ods_table_state::isCoveredCell( int col, int repeated_cols)
+{
+	if (current_covered_cols_ > 0) return true;
+
+	for (size_t i = 0; i < current_covered_rows_.size(); i++)
+	{
+		if (current_covered_rows_[i].start_col <= col && col < current_covered_rows_[i].start_col + current_covered_rows_[i].count_cols)
+		{
+			current_covered_cols_ = current_covered_rows_[i].count_cols - (col - current_covered_rows_[i].start_col);
+			return true;
+		}
+	}
+
+	return false;
+}
+void ods_table_state::set_cell_spanned(int spanned_cols, int spanned_rows)
+{
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+	if (cell == NULL)return;
+
+	cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+	cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+}
 void ods_table_state::set_cell_formula(std::wstring & formula)
 {
 	if (formula.length() < 1)return;
@@ -829,8 +957,8 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-    int row_span =0;
-    int col_span =0;
+    int row_span = 0;
+    int col_span = 0;
 
 	if (ref_cells.size() ==2)
 	{
@@ -850,7 +978,7 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
 		row_span = col_span = 1;//???
 	}
 
-	if (col_span >0 && row_span > 0)
+	if (col_span > 0 && row_span > 0)
 	{
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 		if (cell == NULL)return;
@@ -1044,7 +1172,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 
 void ods_table_state::end_cell()
 {
-	if ( cells_size_  <1)return;
+	if ( cells_size_  < 1)return;
 
     if (cells_.back().comment_idx >= 0)
 	{
@@ -1061,6 +1189,8 @@ void ods_table_state::end_cell()
 
 void ods_table_state::add_default_cell( unsigned int repeated)
 {
+	if (repeated < 1) return;
+
     int comment_idx = is_cell_comment(current_table_column_ + 1, current_table_row_, repeated);
 	if (comment_idx  >= 0 && repeated > 1)
 	{
@@ -1075,32 +1205,120 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 	}
 
 //////////////////////////////////////////////////
+	std::map<int, std::map<int, _spanned_info>>::iterator pFindRow = map_merged_cells.find(current_table_row_);
+
+	bool bSpanned = false;
+	if (pFindRow != map_merged_cells.end())
+	{	
+		for (std::map<int, _spanned_info>::iterator it = pFindRow->second.begin(); !bSpanned && it != pFindRow->second.end(); ++it)
+		{
+			if (it->first < current_table_column_ + repeated + 1 && it->first >= current_table_column_ + 1)
+			{
+				if (repeated > 1)
+				{
+					//делим на 3 - до, с spanned, после;
+					int c = current_table_column_;
+
+					add_default_cell(it->first - c - 1);
+					add_default_cell(1);
+					add_default_cell(repeated + c + 1 - it->first);
+
+					return;
+				}
+				else
+				{
+					bSpanned = true;
+					break;
+				}
+			}
+		}
+	}
+
+	bool bCovered = false;
+	if (!bSpanned)
+	{
+		for (size_t i = 0; i < current_covered_rows_.size(); i++)
+		{
+			if (current_covered_rows_[i].start_col <= current_table_column_ && current_table_column_ + repeated <= current_covered_rows_[i].start_col + current_covered_rows_[i].count_cols)
+			{
+				current_covered_cols_ = current_covered_rows_[i].start_col + current_covered_rows_[i].count_cols - current_table_column_;
+				bCovered = true;
+				break;
+			}
+			else if (!(	current_table_column_ + repeated < current_covered_rows_[i].start_col || 
+						current_table_column_ > current_covered_rows_[i].start_col + current_covered_rows_[i].count_cols))
+			{
+				int c = current_table_column_;
+				int split = current_covered_rows_[i].start_col > current_table_column_ ? current_covered_rows_[i].start_col : 
+					current_covered_rows_[i].start_col + current_covered_rows_[i].count_cols;
+
+				if (split != current_table_column_ && split != current_table_column_ + repeated)
+				{
+					add_default_cell(split - c);
+					add_default_cell(repeated + c - split);
+					return;
+				}
+			}
+		}		
+	}
+
 	office_element_ptr default_cell_elm;
-	create_element(L"table", L"table-cell", default_cell_elm, context_);
+	if (bCovered)
+	{
+		create_element(L"table", L"covered-table-cell", default_cell_elm, context_);
+	}
+	else
+	{
+		create_element(L"table", L"table-cell", default_cell_elm, context_);
+	}
 
 	current_row_element()->add_child_element(default_cell_elm);
 	
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(default_cell_elm.get());
-	if (cell == NULL)return;
+	table_covered_table_cell* covered_cell = dynamic_cast<table_covered_table_cell*>(default_cell_elm.get());
+
+	if (bSpanned)
+	{
+		int spanned_rows = 0, spanned_cols = 0;
+		if (cell && isSpannedCell(current_table_column_, current_table_row_, spanned_cols, spanned_rows))
+		{
+			cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+			cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+		}
+	}
 	
  	ods_cell_state state;
 	
 	state.empty = true;
-	state.elm = default_cell_elm;  state.repeated = repeated; 
-    state.row=current_table_row_;  state.col =current_table_column_+ 1;
+	state.elm = default_cell_elm;  
+	state.repeated = repeated; 
+    state.row = current_table_row_;  
+	state.col = current_table_column_ + 1;
+
 	state.hyperlink_idx = is_cell_hyperlink(state.col, current_table_row_);
 	state.comment_idx = comment_idx;
 	
 	cells_.push_back(state);
 	cells_size_++;
 	
-	current_table_column_+= state.repeated;
+	current_table_column_ += state.repeated;
 
-	cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
+	if (cell)
+	{
+		cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
 
-	if (row_default_cell_style_name_.length() > 0)
-		cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+		if (!row_default_cell_style_name_.empty())
+			cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+	}
+	if (covered_cell)
+	{
+		covered_cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
 
+		if (!row_default_cell_style_name_.empty())
+			covered_cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+
+		current_covered_cols_ -= repeated;
+	}
 	end_cell();
 }
 ///////////////////////////////////////////////////
@@ -1212,17 +1430,21 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		
 		std::wstring operator_;
 		bool s = false;
+		bool split = false;
 		if (condition->attr_.calcext_value_)//есть опреатор
 		{
 			operator_ = *condition->attr_.calcext_value_;
-			int f = operator_.find(L"("); 
-			if (f > 0) 
+			int f_start = operator_.find(L"("); 
+			int f_end = operator_.rfind(L")"); 
+			if (f_start > 0) 
 			{
-				s= true; 
-				operator_ = operator_.substr(0,operator_.length() - 2);
+				if (f_start < f_end - 1) split = true;
+				s = true; 
+				operator_ = operator_.substr(0, f_end);
 			}
 		}		
-		condition->attr_.calcext_value_= operator_ + (s ? L"(": L"") + odfFormula + (s ? L")": L"");
+		operator_ += (split ? L"," : L"") + odfFormula + (s ? L")" : L"");
+		condition->attr_.calcext_value_= operator_;
 	}
 }
 void ods_table_state::set_conditional_style_name(std::wstring style_name)

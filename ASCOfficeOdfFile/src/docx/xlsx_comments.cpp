@@ -62,7 +62,7 @@ public:
 
 				CP_XML_NODE(L"authors")
 				{
-					for (int i = 0 ; i < author_list_.size(); i++)
+					for (size_t i = 0 ; i < author_list_.size(); i++)
 					{
 						const std::wstring & a = author_list_[i];
 						CP_XML_NODE(L"author")
@@ -74,7 +74,7 @@ public:
 
 				CP_XML_NODE(L"commentList")
 				{
-					for (int i = 0 ; i < xlsx_comment_.size(); i++)
+					for (size_t i = 0 ; i < xlsx_comment_.size(); i++)
 					{
 						const _xlsx_comment & c = xlsx_comment_[i];
 
@@ -107,7 +107,7 @@ public:
 			CP_XML_ATTR(L"xmlns:o", L"urn:schemas-microsoft-com:office:office");
 			CP_XML_ATTR(L"xmlns:x", L"urn:schemas-microsoft-com:office:excel");
  
-			for (int i = 0; i < xlsx_comment_.size(); i++)
+			for (size_t i = 0; i < xlsx_comment_.size(); i++)
 			{
 				const _xlsx_comment & c = xlsx_comment_[i];
 
@@ -222,7 +222,7 @@ public:
     void add(_xlsx_comment & c)
     {
 		bool find = false;
-		for (long i = 0; i < author_list_.size(); i++)
+		for (size_t i = 0; i < author_list_.size(); i++)
 		{		
 			if (c.author_ == author_list_[i])
 			{

@@ -352,7 +352,7 @@ std::pair<int,int> pptx_xml_authors_comments::add_or_find(std::wstring author)
 	int last_id=0;
 
 	bool find = false;
-	for (long i=0;i<list_.size();i++)
+	for (size_t i=0;i<list_.size();i++)
 	{		
 		if (author == list_[i].name)
 		{

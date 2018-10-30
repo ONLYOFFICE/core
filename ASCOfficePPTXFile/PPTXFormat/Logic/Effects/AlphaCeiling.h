@@ -59,7 +59,14 @@ namespace PPTX
 				pWriter->StartRecord(EFFECT_TYPE_ALPHACEILING);
 				pWriter->EndRecord();
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Seek(_e);
+			}
 			virtual OOX::EElementType getType() const
 			{
 				return OOX::et_a_alphaCeiling;
@@ -70,7 +77,10 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(L"<a:alphaCeiling/>");
+			}
 			virtual std::wstring toXML() const
 			{
 				return _T("<a:alphaCeiling/>");

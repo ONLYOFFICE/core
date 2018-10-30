@@ -283,14 +283,14 @@ public:
 			}
 			if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon.IsInit())
 			{
-				int nValueX, nValueY;
+				__int64 nValueX, nValueY;
  
 				if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart.IsInit())
 				{
 					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToEmu();
 					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToEmu();
 					
-					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
+					pOutput->m_aWrapPoints.push_back( std::pair<__int64,__int64>(nValueX, nValueY) );
 				}
 
 				for (size_t i = 0; i < m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo.size(); i++ )
@@ -298,7 +298,7 @@ public:
 					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToEmu();
 					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToEmu();
 					
-					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
+					pOutput->m_aWrapPoints.push_back( std::pair<__int64,__int64>(nValueX, nValueY) );
 				}
 			}
 		}

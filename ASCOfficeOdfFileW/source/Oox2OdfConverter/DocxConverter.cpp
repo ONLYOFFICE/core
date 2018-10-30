@@ -254,7 +254,7 @@ void DocxConverter::convert_document()
 					
 //----------------------------------------------------------------------------------------------------------
 
-	convert(docx_document->m_pDocument->m_oSectPr.GetPointer(), false, L"Standard");
+	convert(docx_document->m_pDocument->m_oSectPr.GetPointer(), false, L"Standard", true);
 	
 	odt_context->text_context()->clear_params();
 
@@ -287,6 +287,14 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_w_fldSimple:	
 		{
 			convert(dynamic_cast<OOX::Logic::CFldSimple*>(oox_unknown));
+		}break;
+		case OOX::et_w_bookmarkStart:
+		{
+			convert(dynamic_cast<OOX::Logic::CBookmarkStart*>(oox_unknown));
+		}break;
+		case OOX::et_w_bookmarkEnd:
+		{
+			convert(dynamic_cast<OOX::Logic::CBookmarkEnd*>(oox_unknown));
 		}break;
 		case OOX::et_w_r:
 		{
@@ -344,6 +352,7 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 		case OOX::et_w_GroupShape:
 		case OOX::et_p_ShapeTree:
+		case OOX::et_lc_LockedCanvas:
 		{
 			convert(dynamic_cast<PPTX::Logic::SpTree*>(oox_unknown));
 		}break;
@@ -388,12 +397,6 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_w_tc:
 		{
 			convert(dynamic_cast<OOX::Logic::CTc*>(oox_unknown));
-		}break;
-		case OOX::et_w_bookmarkStart:
-		{
-		}break;
-		case OOX::et_w_bookmarkEnd:
-		{
 		}break;
 		default:
 		{
@@ -799,6 +802,23 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 		odt_context->end_change(id_change_properties, 3); //todooo change int type to enum
 
 }
+void DocxConverter::convert(OOX::Logic::CBookmarkStart *oox_bookmark_start)
+{
+	if (!oox_bookmark_start) return;
+	
+	if (oox_bookmark_start->m_sName.IsInit() == false) return;
+	if (oox_bookmark_start->m_oId.IsInit() == false) return;
+
+	odt_context->start_bookmark(oox_bookmark_start->m_oId->GetValue(), *oox_bookmark_start->m_sName);
+}
+void DocxConverter::convert(OOX::Logic::CBookmarkEnd *oox_bookmark_end)
+{
+	if (!oox_bookmark_end) return;
+	
+	if (oox_bookmark_end->m_oId.IsInit() == false) return;
+
+	odt_context->end_bookmark(oox_bookmark_end->m_oId->GetValue());
+}
 
 void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 {
@@ -822,23 +842,27 @@ void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 					length = odf_types::length(odt_context->page_layout_context()->current_page_width_ / 2, length::pt);
 					type = 1;	
 				}break;					
-				case SimpleTypes::ptabalignmentLeft:		type = 6;	break;//??
 				case SimpleTypes::ptabalignmentRight:
 				{
 					length = odf_types::length(odt_context->page_layout_context()->current_page_width_, length::pt);
 					type = 4;	
 				}break;
+				case SimpleTypes::ptabalignmentLeft:	
+				default:
+					type = 6;	break;//??
 			}
 		}
 		if (oox_ptab->m_oLeader.IsInit())
 		{
 			switch(oox_ptab->m_oLeader->GetValue())
 			{
-				case SimpleTypes::ptableaderDot:			leader = 0;	break;
 				case SimpleTypes::ptableaderHyphen:			leader = 2;	break;
 				case SimpleTypes::ptableaderMiddleDot:		leader = 3;	break;
 				case SimpleTypes::ptableaderNone:			leader = 4;	break;
 				case SimpleTypes::ptableaderUnderscore:		leader = 5;	break;
+				case SimpleTypes::ptableaderDot:
+				default:
+															leader = 0;	break;
 			}
 		}
 
@@ -854,7 +878,7 @@ void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 
 	odt_context->text_context()->add_tab(ref);
 }
-void DocxConverter::convert(OOX::Logic::CSym	*oox_sym)
+void DocxConverter::convert(OOX::Logic::CSym *oox_sym)
 {
 	if (oox_sym == NULL) return;
 	if (oox_sym->m_oChar.IsInit() == false) return;
@@ -1450,6 +1474,8 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 				case SimpleTypes::shdPct87: kf = 0.87; break;
 				case SimpleTypes::shdPct90: kf = 0.90; break;
 				case SimpleTypes::shdPct95: kf = 0.95; break;
+				default:
+						break;
 			}
 			ucR = (BYTE)(ucR * (1 - kf)); ucB = (BYTE)(ucB * (1 - kf)); ucG = (BYTE)(ucG * (1 - kf));
 		}
@@ -1507,7 +1533,7 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 		}
 	}
 }
-void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool bSection, const std::wstring & master_name)
+void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool bSection, const std::wstring & master_name, bool bAlways)
 {
 	if (oox_section_pr == NULL) return;
 	current_section_properties = NULL;
@@ -1684,7 +1710,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;	
 	}
 	
-	if (continuous == false || oox_section_pr->m_oTitlePg.IsInit())
+	if (continuous == false || oox_section_pr->m_oTitlePg.IsInit() || bAlways)
 	{
 		OOX::Logic::CSectionProperty*	s = last_section_properties ? last_section_properties : oox_section_pr; 
 		
@@ -2244,51 +2270,95 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			text_properties->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
 
-	bool set_color = false;
-	if (oox_run_pr->m_oTextFill.getType() == OOX::et_a_gradFill || oox_run_pr->m_oTextOutline.IsInit())
-	{
-		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
-		if (drawing_context)
-		{
-			if (odf_context()->drawing_context()->change_text_box_2_wordart())
-			{
-				NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
-				NSCommon::smart_ptr<PPTX::Logic::SolidFill> solidFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
-				
-				odf_context()->drawing_context()->start_area_properties(true);				
-				if(gradFill.IsInit())
-				{		
-					OoxConverter::convert(gradFill.operator->());
-				}
-				else if (solidFill.IsInit())
-				{
-					OoxConverter::convert(solidFill.operator->());
-				}
-				else
-				{
-					odf_context()->drawing_context()->set_no_fill();
-				}
-				odf_context()->drawing_context()->end_area_properties();
-
-				if (oox_run_pr->m_oTextOutline.IsInit())
-				{
-					odf_context()->drawing_context()->start_line_properties(true);
-					OoxConverter::convert(oox_run_pr->m_oTextOutline.operator->());
-					odf_context()->drawing_context()->end_line_properties();
-				}
-
-				set_color = true;
-			}
-		}
-		else{}	//обычный текст .. градиент по телу абзаца (
-	}
+	odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();	
 	
-	if (!set_color && oox_run_pr->m_oColor.IsInit())
+	bool set_word_art = drawing_context ? drawing_context->is_wordart() : false;
+
+	NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+	NSCommon::smart_ptr<PPTX::Logic::SolidFill> solidFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+
+	bool bFillText =	(oox_run_pr->m_oTextFill.m_type != PPTX::Logic::UniFill::notInit) && 
+						(oox_run_pr->m_oTextFill.m_type != PPTX::Logic::UniFill::noFill);
+
+	bool bOutlineText = ((oox_run_pr->m_oTextOutline.is_init()) && 
+						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::notInit) && 
+						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::noFill));
+
+	bool bOutline	= oox_run_pr->m_oOutline.IsInit();
+	bool bColorText = !bOutline && (oox_run_pr->m_oColor.IsInit() && (oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorRGB));
+	
+	_CP_OPT(odf_types::color) color;
+
+	if (oox_run_pr->m_oColor.IsInit())
 	{
 		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
-			text_properties->content_.fo_color_ = odf_types::color(L"#000000");
+			color = odf_types::color(L"#000000");
 		else
-		   convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content_.fo_color_);
+		   convert(oox_run_pr->m_oColor.GetPointer(), color);
+		
+		text_properties->content_.fo_color_ = color;
+	}
+	if	(gradFill.is_init() || (bOutlineText && (bFillText || bColorText)))
+	{
+		set_word_art = true;	
+	}
+
+	if (drawing_context && set_word_art)
+	{
+		if (drawing_context->change_text_box_2_wordart())
+		{			
+			drawing_context->start_area_properties(true);				
+			if(gradFill.IsInit())
+			{		
+				OoxConverter::convert(gradFill.operator->());
+			}
+			else if (solidFill.IsInit())
+			{
+				OoxConverter::convert(solidFill.operator->());
+			}
+			else if (color)
+			{
+				drawing_context->set_solid_fill(color->get_hex_value());
+			}
+			else
+			{
+				drawing_context->set_no_fill();
+			}
+			drawing_context->end_area_properties();
+
+			if (oox_run_pr->m_oTextOutline.IsInit())
+			{
+				drawing_context->start_line_properties(true);
+				OoxConverter::convert(oox_run_pr->m_oTextOutline.operator->());
+				drawing_context->end_line_properties();
+			}
+		}
+		else
+		{
+			set_word_art = false;
+		}
+	}
+
+	std::wstring	hexString;
+	_CP_OPT(double) opacity;
+	if (bOutlineText)
+	{
+		text_properties->content_.style_text_outline_ = true;
+		
+		gradFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+		solidFill = oox_run_pr->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+	}
+	if (solidFill.is_init())
+	{
+		OoxConverter::convert(&solidFill->Color, hexString, opacity);
+	}
+	else if ((gradFill.is_init()) && (false == gradFill->GsLst.empty()))
+	{
+		OoxConverter::convert(&gradFill->GsLst[0].color, hexString, opacity);
+	}
+	if (!hexString.empty())
+	{
+		text_properties->content_.fo_color_ = hexString;	
 	}
 
     //text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::None); //нельзя..если будет выше наследуемого то подчеркивания не будет
@@ -2447,10 +2517,11 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oShd.IsInit())
 	{
 		_CP_OPT(odf_types::color) odf_color;
-		convert(oox_run_pr->m_oShd->m_oFill.GetPointer(), oox_run_pr->m_oShd->m_oThemeFill.GetPointer(),
-			oox_run_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_run_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
+		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
 		if (odf_color)
-			text_properties->content_.fo_background_color_ = *odf_color;
+		{
+			text_properties->content_.fo_background_color_= *odf_color;
+		}
 	}
 	if (oox_run_pr->m_oOutline.IsInit())
 		text_properties->content_.style_text_outline_ = true; //контур
@@ -2900,18 +2971,39 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	else if (oox_anchor->m_oWrapThrough.IsInit())//style:wrap="run-through" draw:wrap-influence-on-position style:wrap-contour
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::RunThrough);
+
 	}
 	else if (oox_anchor->m_oWrapTight.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
-		if (oox_anchor->m_oWrapTight->m_oWrapPolygon.IsInit())
+		bool bPolygon = oox_anchor->m_oWrapTight->m_oWrapPolygon.IsInit();
+
+		if (oox_anchor->m_oWrapTight->m_oWrapText.IsInit())
 		{
+			switch(oox_anchor->m_oWrapTight->m_oWrapText->GetValue())
+			{
+			case SimpleTypes::wraptextBothSides:
+			{
+				odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Dynamic);
+				if (bPolygon)
+				{
+					odt_context->drawing_context()->set_wrap_contour();					
+				}
+			}break;
+			case SimpleTypes::wraptextLargest:	odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Biggest); break;
+			case SimpleTypes::wraptextLeft:		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Left); break;
+			case SimpleTypes::wraptextRight:	odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Right); break;
+			}
 		}
-		wrap_set = true;
 	}
 	else if (oox_anchor->m_oWrapTopAndBottom.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
+		wrap_set = true;
+	}
+	else if (oox_anchor->m_oWrapNone.IsInit())
+	{
+		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::None);
 		wrap_set = true;
 	}
 	else if (oox_anchor->m_oAllowOverlap.IsInit())
@@ -3733,7 +3825,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 
 	if (pFind == docx_document->m_pComments->m_mapComments.end()) return;
 
-	if ( pFind->second < docx_document->m_pComments->m_arrComments.size() && pFind->second >= 0)
+	if ( pFind->second < (int)docx_document->m_pComments->m_arrComments.size() && pFind->second >= 0)
 	{
 		OOX::CComment* oox_comment = docx_document->m_pComments->m_arrComments[pFind->second];
 		
@@ -4277,13 +4369,22 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 	}
 	else if (oox_table_pr->m_oTblLayout.IsInit() && oox_table_pr->m_oTblLayout->m_oType.IsInit())
 	{
-		table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(0,odf_types::length::cm);
+		table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(0, odf_types::length::cm);
 		
 		table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
 	}
-	//if(oox_table_pr->m_oJc.IsInit() && oox_table_pr->m_oJc->m_oVal.IsInit())
-	//{
-	//}
+	if(oox_table_pr->m_oJc.IsInit() && oox_table_pr->m_oJc->m_oVal.IsInit())
+	{
+		switch(oox_table_pr->m_oJc->m_oVal->GetValue())
+		{
+		case 0: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Center); break;
+		case 2: 
+		case 3: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left); break;
+		case 1: 
+		case 4: table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Right); break;
+		default: break;
+		}
+	}
 	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidiVisual;
 	//nullable<ComplexTypes::Word::CShading                        > m_oShade;
     //nullable<ComplexTypes::Word::std::wstring_                        > m_oTblCaption;
@@ -4402,7 +4503,7 @@ void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr)
 	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWAfter;
 	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWBefore;
 }
-bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,odf_writer::style_table_cell_properties	* table_cell_properties)
+bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr, odf_writer::style_table_cell_properties *table_cell_properties)
 {
 	if (oox_table_cell_pr == NULL) return false;
 	if (table_cell_properties == NULL) return false;
@@ -4516,7 +4617,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	if (parent_name.length() > 0) 
 	{
 		odf_writer::style * style_ = NULL;		
-		if (odt_context->styles_context()->find_odf_style(parent_name,odf_types::style_family::TableCell,style_))
+		if (odt_context->styles_context()->find_odf_style(parent_name, odf_types::style_family::TableCell, style_))
 		{
 			parent_cell_properties = style_->content_.get_style_table_cell_properties();
 		}
@@ -4525,14 +4626,15 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	if (oox_table_cell_pr == NULL && is_base_styled == false && parent_cell_properties == NULL) return false;
 	
 	odt_context->styles_context()->create_style(L"",odf_types::style_family::TableCell, true, false, -1); 	
-	odf_writer::style_table_cell_properties *cell_properties = odt_context->styles_context()->last_state()->get_table_cell_properties();
+	
+	odf_writer::style_table_cell_properties *cell_properties		= odt_context->styles_context()->last_state()->get_table_cell_properties();
 
 	if (cell_properties == NULL) return false;
 
 	if (is_base_styled)
 	{
-		odf_writer::style_text_properties		* text_properties		= odt_context->styles_context()->last_state()->get_text_properties();
-		odf_writer::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
+		odf_writer::style_text_properties		*text_properties		= odt_context->styles_context()->last_state()->get_text_properties();
+		odf_writer::style_paragraph_properties	*paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
 		
 		if (col < 0) col=odt_context->table_context()->current_column()+1;
 		int row=odt_context->table_context()->current_row();

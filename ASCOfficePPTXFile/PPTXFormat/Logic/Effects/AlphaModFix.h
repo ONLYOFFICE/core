@@ -83,21 +83,37 @@ namespace PPTX
 					return L"<a:alphaModFix amt=\"" + std::to_wstring(*amt) + L"\"/>";
 				}
 
-				return _T("<a:alphaModFix/>");
+				return L"";
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (amt.is_init())
-				{
-					pWriter->StartNode(_T("a:alphaModFix"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("amt"), amt);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:alphaModFix"));
-				}
+				pWriter->StartNode(L"a:alphaModFix");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"amt", amt);
+				pWriter->EndAttributes();
+				pWriter->EndNode(L"a:alphaModFix");
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar(); 
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
 
+				pReader->Skip(1);
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (_at == 0)
+						amt = pReader->GetLong(); 
+					else break;
+				}
+				pReader->Seek(_e);
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_ALPHAMODFIX);

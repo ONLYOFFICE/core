@@ -108,7 +108,7 @@ namespace OOX
                             {
                                 const std::string srIdRecordsA( srIdRecords.begin(), srIdRecords.end() );
                                 std::string rIdAttr = " r:id=\""+ srIdRecordsA +"\"";
-                                m_nDataLength = length + rIdAttr.length();
+                                m_nDataLength = length + (long)rIdAttr.length();
                                 m_pData = new BYTE[m_nDataLength];
                                 long nTreshold = 220;
                                 memcpy(m_pData, pData, nTreshold);

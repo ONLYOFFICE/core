@@ -100,9 +100,9 @@ namespace NSBinPptxRW
 
 	struct _relsGeneratorInfo
 	{
-		int			nImageRId;
-		int			nOleRId;
-		int			nMediaRId;
+		unsigned int nImageRId;
+		unsigned int nOleRId;
+		unsigned int nMediaRId;
 		
 		std::wstring sFilepathMedia;
 		std::wstring sFilepathOle;
@@ -110,9 +110,9 @@ namespace NSBinPptxRW
 	
 		_relsGeneratorInfo()
 		{
-			nImageRId	= -1;
-			nOleRId		= -1;
-			nMediaRId	= -1;
+			nImageRId	= 0;
+			nOleRId		= 0;
+			nMediaRId	= 0;
 		}
 	};
 
@@ -405,9 +405,9 @@ namespace NSBinPptxRW
 	private:
 		NSStringUtils::CStringBuilder*				m_pWriter;
 		std::map<std::wstring, _relsGeneratorInfo>	m_mapImages;
-		std::map<std::wstring, int>					m_mapLinks;
+		std::map<std::wstring, unsigned int>		m_mapLinks;
 	public:
-		size_t										m_lNextRelsID;
+		unsigned int								m_lNextRelsID;
 		CImageManager2*								m_pManager;
 
 		CRelsGenerator(CImageManager2* pManager = NULL);
@@ -430,9 +430,10 @@ namespace NSBinPptxRW
 
 		void WriteSlideComments	(int nComment);
 		void WritePresentationComments	(int nComment);
-		int WriteChart (int nChartNumber, _INT32 lDocType);
-		int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
-		int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
+		
+		unsigned int WriteChart (int nChartNumber, _INT32 lDocType);
+		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
+		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
 		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsVbaProject = false, bool bIsJsaProject = false  );
 		void CloseRels ();

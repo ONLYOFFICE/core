@@ -1449,6 +1449,8 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 
 			convert(dg->m_OfficeArtSpgrContainer.get());
 		}break;
+	default:
+		break;
 	}
 }
 

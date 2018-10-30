@@ -86,8 +86,8 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// content_type_content
-class content_type_content : public xml::element_impl<content_type_content>
+// content_type
+class content_type : public xml::element_impl<content_type>
 {
 public:
     static const wchar_t * ns;

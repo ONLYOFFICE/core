@@ -618,6 +618,12 @@ namespace Aggplus
 		c_c_path.approximation_method(agg::curve_inc);
 		DashStyle eStyle = (DashStyle)pPen->DashStyle;
 
+        if (DashStyleCustom == eStyle)
+        {
+            if (0 == pPen->Count)
+                eStyle = DashStyleSolid;
+        }
+
 		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
 		if (m_bIntegerGrid)
 			pAffine = new agg::trans_affine();

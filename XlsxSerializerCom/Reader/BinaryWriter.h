@@ -4085,7 +4085,7 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteLONG(oRowColBreaks.m_oManualBreakCount->GetValue());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			for (int i = 0; i < oRowColBreaks.m_arrItems.size(); ++i)
+			for (size_t i = 0; i < oRowColBreaks.m_arrItems.size(); ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_RowColBreaks::Break);
 				WritemBreak(*oRowColBreaks.m_arrItems[i]);

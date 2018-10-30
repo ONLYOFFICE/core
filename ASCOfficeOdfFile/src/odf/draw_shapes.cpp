@@ -61,7 +61,7 @@ namespace odf_reader {
 
 const wchar_t * draw_shape::ns = L"draw";
 const wchar_t * draw_shape::name = L"shape";
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /// draw-shape-attlist
 void draw_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -69,7 +69,14 @@ void draw_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 
 void draw_shape::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+    if CP_CHECK_NAME(L"draw", L"enhanced-geometry")
+	{
+		CP_CREATE_ELEMENT(enhanced_geometry_);
+	}
+	else
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
 }
 void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -88,7 +95,9 @@ void draw_rect_attlist::add_attributes( const xml::attributes_wc_ptr & Attribute
     CP_APPLY_ATTR(L"draw:filter-name", draw_filter_name_);
 	CP_APPLY_ATTR(L"draw:corner-radius",draw_corner_radius_);
 }
-
+//-------------------------------------------------------------------------------------------
+/// draw:rect
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_rect::ns = L"draw";
 const wchar_t * draw_rect::name = L"rect";
 
@@ -103,9 +112,6 @@ void draw_rect::add_attributes( const xml::attributes_wc_ptr & Attributes )
 		sub_type_ = 9;
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// draw-ellipse-attlist
 
 void draw_ellipse_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -113,7 +119,9 @@ void draw_ellipse_attlist::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"draw:filter-name", draw_filter_name_);
 }
 
+//-------------------------------------------------------------------------------------------
 /// draw:ellipse
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_ellipse::ns = L"draw";
 const wchar_t * draw_ellipse::name = L"ellipse";
 
@@ -133,7 +141,9 @@ void draw_circle_attlist::add_attributes( const xml::attributes_wc_ptr & Attribu
 {
     //CP_APPLY_ATTR(L"draw:filter-name", draw_filter_name_);
 }
+//-------------------------------------------------------------------------------------------
 // draw:circle
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_circle::ns = L"draw";
 const wchar_t * draw_circle::name = L"circle";
 
@@ -144,7 +154,6 @@ void draw_circle::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	sub_type_ = 4;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
 /// draw-line-attlist
 void draw_line_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -153,7 +162,9 @@ void draw_line_attlist::add_attributes( const xml::attributes_wc_ptr & Attribute
     CP_APPLY_ATTR(L"svg:y1", svg_y1_);
     CP_APPLY_ATTR(L"svg:y2", svg_y2_);
 }
+//-------------------------------------------------------------------------------------------
 // draw:line
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_line::ns = L"draw";
 const wchar_t * draw_line::name = L"line";
 
@@ -199,7 +210,9 @@ void draw_line::reset_svg_attributes()
 void draw_custom_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
+//-------------------------------------------------------------------------------------------
 // draw:custom_shape
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_custom_shape::ns = L"draw";
 const wchar_t * draw_custom_shape::name = L"custom-shape";
 
@@ -218,7 +231,9 @@ void draw_path_attlist::add_attributes( const xml::attributes_wc_ptr & Attribute
     CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
 
 }
+//-------------------------------------------------------------------------------------------
 // draw:path
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_path::ns = L"draw";
 const wchar_t * draw_path::name = L"path";
 
@@ -276,11 +291,15 @@ void draw_polygon_attlist::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
 
 }
+//-------------------------------------------------------------------------------------------
 // draw:polygon
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_polygon::ns = L"draw";
 const wchar_t * draw_polygon::name = L"polygon";
 
+//-------------------------------------------------------------------------------------------
 // draw:contour-polygon
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_contour_polygon::ns = L"draw";
 const wchar_t * draw_contour_polygon::name = L"contour-polygon";
 
@@ -338,7 +357,9 @@ void draw_polyline_attlist::add_attributes( const xml::attributes_wc_ptr & Attri
     CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
 
 }
+//-------------------------------------------------------------------------------------------
 // draw:polyline
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_polyline::ns = L"draw";
 const wchar_t * draw_polyline::name = L"polyline";
 
@@ -396,7 +417,7 @@ void draw_polyline::reset_polyline_path()
 		}
 	}
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 void draw_equation_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {	
 	CP_APPLY_ATTR(L"draw:name", draw_name_);
@@ -417,7 +438,9 @@ void draw_handle_attlist::add_attributes( const xml::attributes_wc_ptr & Attribu
 	
 	CP_APPLY_ATTR(L"draw:handle-polar", draw_handle_polar_);
 }
+//-------------------------------------------------------------------------------------------
 // draw:path
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_handle::ns = L"draw";
 const wchar_t * draw_handle::name = L"handle";
 
@@ -459,7 +482,9 @@ void draw_enhanced_geometry_attlist::add_attributes( const xml::attributes_wc_pt
 	CP_APPLY_ATTR(L"drawooo:enhanced-path"	, drawooo_enhanced_path_);
 	CP_APPLY_ATTR(L"drawooo:sub-view-size"	, drawooo_sub_view_size_);
 }
+//-------------------------------------------------------------------------------------------
 // draw:enhanced_geometry
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_enhanced_geometry::ns = L"draw";
 const wchar_t * draw_enhanced_geometry::name = L"enhanced-geometry";
 
@@ -584,13 +609,15 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		//draw_handle_geometry_.push_back(elm);
   //  }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 /// draw-caption-attlist
+//-------------------------------------------------------------------------------------------
 void draw_caption_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
+//-------------------------------------------------------------------------------------------
 // draw:caption
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_caption::ns = L"draw";
 const wchar_t * draw_caption::name = L"caption";
 
@@ -601,15 +628,18 @@ void draw_caption::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	
 	sub_type_ = 1;	
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 /// draw-connector-attlist
+//-------------------------------------------------------------------------------------------
 void draw_connector_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"svg:d",			svg_d_);
     CP_APPLY_ATTR(L"svg:viewBox",	svg_viewbox_);	
     CP_APPLY_ATTR(L"draw:type",		draw_type_);
 }
+//-------------------------------------------------------------------------------------------
 // draw:connector
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_connector::ns = L"draw";
 const wchar_t * draw_connector::name = L"connector";
 
@@ -667,7 +697,9 @@ void draw_connector::reset_svg_path()
 }
 ///////////////////////////////////////
 
+//-------------------------------------------------------------------------------------------
 // dr3d:scene
+//-------------------------------------------------------------------------------------------
 const wchar_t * dr3d_scene::ns = L"dr3d";
 const wchar_t * dr3d_scene::name = L"scene";
 
@@ -678,7 +710,9 @@ void dr3d_scene::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	sub_type_ = 10; 
 	
 }
+//-------------------------------------------------------------------------------------------
 // dr3d:extrude
+//-------------------------------------------------------------------------------------------
 const wchar_t * dr3d_extrude::ns = L"dr3d";
 const wchar_t * dr3d_extrude::name = L"extrude";
 
@@ -692,7 +726,9 @@ void dr3d_extrude::reset_svg_path()
 	if (!svg_d_) return;
 
 }
+//-------------------------------------------------------------------------------------------
 // dr3d:light
+//-------------------------------------------------------------------------------------------
 const wchar_t * dr3d_light::ns = L"dr3d";
 const wchar_t * dr3d_light::name = L"light";
 
@@ -702,6 +738,28 @@ void dr3d_light::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"dr3d:direction",	dr3d_direction_);
 	CP_APPLY_ATTR(L"dr3d:specular",		dr3d_specular_);
 	CP_APPLY_ATTR(L"dr3d:enabled",		dr3d_enabled_);
+}
+//-------------------------------------------------------------------------------------------
+// draw:control
+//-------------------------------------------------------------------------------------------
+const wchar_t * draw_control::ns = L"draw";
+const wchar_t * draw_control::name = L"control";
+
+void draw_control::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"xml:id", xml_id_);
+	CP_APPLY_ATTR(L"draw:caption-id", caption_id_);
+	CP_APPLY_ATTR(L"draw:control", control_id_);
+
+	draw_shape::add_attributes(Attributes);
+}
+
+void draw_control::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"draw", L"glue-point")
+    {
+        CP_CREATE_ELEMENT(draw_glue_point_);
+    }   
 }
 
 }

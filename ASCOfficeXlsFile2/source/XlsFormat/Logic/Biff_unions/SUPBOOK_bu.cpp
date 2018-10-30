@@ -110,13 +110,13 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 		ExternDocName* docName = dynamic_cast<ExternDocName*>(extern_name.body.get());
 		if(docName)
 		{
-			if (docName->ixals > 0 && !supbook.rgst.empty())
+			if (docName->ixals > 0 && docName->ixals < supbook.rgst.size())
 			{
-				name = supbook.rgst[docName->ixals];
+				name = supbook.rgst[docName->ixals - 1];
 			}
 			else
 			{
-				name = docName->nameDefinition.getAssembledFormula();
+				//name = docName->nameDefinition.getAssembledFormula(); //in  update !!
 				if (name.empty())
 				{
 					name = docName->extName.value();
@@ -229,19 +229,25 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 			{	
 				CP_XML_NODE(L"sheetNames")
 				{ 
-					for (size_t i = 0; i < m_arXCT.size(); i++)
+					for (size_t i = 0; i < book->rgst.size(); i++)
 					{
 						CP_XML_NODE(L"sheetName")
 						{
-							std::wstring sheet;
-							
-							XCT * name = dynamic_cast<XCT*>(m_arXCT[i].m_XCT.get());
-							if ((name) && (name->itab_exist))
-								sheet = book->rgst[name->itab];
-							else 
-								sheet = L"Sheet " + std::to_wstring(i + 1);
-							
-							CP_XML_ATTR(L"val", sheet); 
+							CP_XML_ATTR(L"val", book->rgst[i]); 
+						}
+					}
+					for (size_t i = 0; i < m_arXCT.size(); i++)
+					{
+						XCT * name = dynamic_cast<XCT*>(m_arXCT[i].m_XCT.get());
+						if ((name) && (name->itab_exist))
+						{
+						}
+						else 
+						{
+							CP_XML_NODE(L"sheetName")
+							{			
+								CP_XML_ATTR(L"val", L"Sheet " + std::to_wstring(i + 1)); 
+							}
 						}
 					}
 				}
@@ -249,11 +255,20 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 				{
 					CP_XML_NODE(L"definedNames")
 					{
-						for (size_t d = 0; d < arNames.size(); d++)
+						for (size_t j = 0; j < arNames.size(); j++)
 						{
 							CP_XML_NODE(L"definedName")
 							{
-								CP_XML_ATTR(L"name", arNames[d]); 
+								CP_XML_ATTR(L"name", arNames[j]); 
+								
+								std::map<std::wstring, _def_name>::iterator pFind = mapNamesExt.find(arNames[j]);
+								if (pFind != mapNamesExt.end())
+								{
+									CP_XML_ATTR(L"refersTo", pFind->second.fmla); 
+									
+									if (pFind->second.sheetId > 0)
+										CP_XML_ATTR(L"sheetId", pFind->second.sheetId); 
+								}
 							}
 						}
 					}
@@ -267,8 +282,9 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 						
 						CP_XML_NODE(L"sheetData")
 						{
-							CP_XML_ATTR(L"sheetId", i); 
-							int current_row = -1;
+							CP_XML_ATTR(L"sheetId", name->itab); 
+							
+							int current_row = -1;							
 							for (size_t j = 0; j < m_arXCT[i].m_arCRN.size(); j++)
 							{
 								CRN * cell = dynamic_cast<CRN*>(m_arXCT[i].m_arCRN[j].get());

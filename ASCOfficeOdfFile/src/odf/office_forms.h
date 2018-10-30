@@ -57,10 +57,12 @@ public:
     static const ElementType type = typeOfficeForms;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 public:
     office_element_ptr_array	content_;
@@ -80,10 +82,12 @@ public:
     static const ElementType type = typeFormForm;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 public:
     office_element_ptr_array			content_;
@@ -128,10 +132,12 @@ public:
     static const ElementType type = typeFormProperties;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 public:
     office_element_ptr_array content_; //form property && form list-property
@@ -168,10 +174,12 @@ public:
     static const ElementType type = typeFormListProperty;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 public:
 	_CP_OPT(std::wstring)					property_name_;
@@ -210,18 +218,20 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeFormElement;
 
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+ 	form_element() {}
+
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
-	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) {}
-	virtual void pptx_convert(oox::pptx_conversion_context & Context) {}
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
 
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw) {}
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw) {}
-	form_element() {}
 
-	//CPDOCCORE_DEFINE_VISITABLE();
+	virtual void serialize_control_props(std::wostream & strm){}
+
 	friend class odf_document;
 //----------------------------------------------------------------------------------------------
 	office_element_ptr			office_event_listeners_;
@@ -242,6 +252,7 @@ public:
 	_CP_OPT(std::wstring)		xml_id_;
 	_CP_OPT(std::wstring)		xforms_bind_;
 	_CP_OPT(std::wstring)		current_value_;
+	_CP_OPT(odf_types::Bool)	dropdown_;
 };
 
 //  form:button
@@ -254,7 +265,11 @@ public:
     static const ElementType type = typeFormButton;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
+	virtual void serialize_control_props(std::wostream & strm);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
@@ -285,9 +300,14 @@ public:
     static const ElementType type = typeFormText;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
@@ -310,9 +330,15 @@ public:
     static const ElementType type = typeFormCheckbox;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control *draw);
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
@@ -336,23 +362,26 @@ public:
     static const ElementType type = typeFormCombobox;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-	_CP_OPT(odf_types::Bool)	dropdown_;
 	office_element_ptr_array	items_;
 	_CP_OPT(int	)				size_;
 	
-	//form:list-source-type
-	//form:size
+	_CP_OPT(std::wstring)		source_cell_range_;
+	_CP_OPT(std::wstring)		list_source_;
+	
 	//form:auto-complete
-	//form:list-source
-	//form:sourcecell-range
-	//form:dropdown
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_combobox);
@@ -367,14 +396,19 @@ public:
     static const ElementType type = typeFormListbox;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void serialize_control_props(std::wostream & strm);
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-	//form:list-source-type
-	//form:list-source
-	//form:source-cell-range
+	_CP_OPT(std::wstring)		list_linkage_type_;
+	_CP_OPT(std::wstring)		source_cell_range_;
+	_CP_OPT(std::wstring)		list_source_;
+	_CP_OPT(std::wstring)		list_source_type_;
 	
 	//form:bound-column
 	//form:xforms-list-source
@@ -395,8 +429,14 @@ public:
     static const ElementType type = typeFormDate;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert		(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 

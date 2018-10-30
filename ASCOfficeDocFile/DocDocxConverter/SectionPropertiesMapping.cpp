@@ -130,6 +130,8 @@ namespace DocFileFormat
 							appendValueAttribute( &pgBorders, L"w:display", L"notFirstPage" );
 
 					}break;
+					default:
+						break;
 				}
 			}
 			if (_ctx->_doc->nWordVersion == 2)

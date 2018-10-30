@@ -752,7 +752,11 @@ namespace PPTX
 
 			olePic.Init();
 			olePic->blipFill.blip.Init();
+
 			olePic->blipFill.stretch.Init();
+			olePic->blipFill.stretch->fillRect.Init();
+
+			olePic->blipFill.srcRect.Init();
 
 			olePic->blipFill.blip->oleFilepathImage = NSDirectory::CreateTempFileWithUniqueName(sTempDirectory, L"img");
 

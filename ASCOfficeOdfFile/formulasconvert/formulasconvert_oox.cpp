@@ -79,7 +79,7 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 
 	if (b)
 	{
-		boost::wregex re1(L"(\\$?\\w+\\!)?([a-zA-Z$]*\\d*)\\:?([a-zA-Z$]*\\d*)?");
+		boost::wregex re1(L"(\\$?\\w+\\!)?([\\w^0-9$]*\\d*)\\:?([\\w^0-9$]*\\d*)?");
 //                          $   Sheet2   ! $ A1                 :  $ B5    
 //                          $   Sheet2   ! $ A                  :  $ A    
 //                          $   Sheet2   ! $ 1                  :  $ 1    
@@ -106,9 +106,21 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 	
 	if (sz > 3)
     {
+		std::wstring prev;
 		std::wstring s;
 		std::wstring sheet = what[1].matched ? what[1].str() : L"";
 
+		if (sheet == L"KAVYCHKA!") //todooo переделать ... временно
+		{
+			prev = L"KAVYCHKA";
+			sheet = L"!";
+		}
+
+		if (sheet == L"APOSTROF!") //todooo переделать ... временно
+		{
+			prev = L"APOSTROF";
+			sheet = L"!";
+		}
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
 		
@@ -122,7 +134,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 			}	
 			if (!sheet.empty()  && (std::wstring::npos != c1.find(L"$"))) sheet = L"$"  + sheet;
 
-			s =  std::wstring(L"[")  + sheet + L"." + 
+			s =  prev + L"["  + sheet + L"." + 
 									 c1 +
 									(c2.empty() ? L"" : (L":" + sheet  + L"." + c2) ) + std::wstring(L"]");
 		}
@@ -408,7 +420,7 @@ std::wstring  oox2odf_converter::Impl::replace_arguments(boost::wsmatch const & 
 {
 	std::wstring out;
 
-	int sz = what.size();
+	size_t sz = what.size();
 
     if (what[1].matched)
     {
@@ -444,13 +456,13 @@ std::wstring oox2odf_converter::Impl::convert(const std::wstring& expr)
     if (is_forbidden1(expr))
         return L"NULLFORMULA";
 
-    std::wstring workstr = expr;
+	std::wstring workstr = expr;
     replace_cells_range(workstr);
     replace_vertical(workstr);
     replace_semicolons(workstr);
     return workstr;
 }
-// of:=(Formula) -> (Formula)
+// (Formula) -> of:=(Formula) 
 std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 {
     std::wstring workstr = expr;
@@ -462,8 +474,12 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 	
 	std::wstring res = boost::regex_replace(
 		res1,
-		boost::wregex(L"(?!([a-zA-Z]+\\d*\\())(([a-zA-Z]+\\!)?\\$?[a-zA-Z]*\\$?\\d*(\\:\\$?[a-zA-Z]*\\$?\\d*){0,1})"),
+		boost::wregex(L"(?!([\\w^0-9]+\\d*\\())(([\\w^0-9]+\\!)?\\$?[\\w^0-9]*\\$?\\d*(\\:\\$?[\\w^0-9]*\\$?\\d*){0,1})"),
 		&oox2odf_converter::Impl::replace_arguments, boost::match_default | boost::format_all);
+
+	//SUBTOTAL(109,Expense31[Amount])
+	XmlUtils::replace_all( res, L"[", L"KVADRATIN");
+	XmlUtils::replace_all( res, L"]", L"KVADRATOUT");
 
 	if (res1 == res)
 	{
@@ -568,7 +584,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	
 	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-	for (int i = 0; i < distance_inp.size(); i++)
+	for (size_t i = 0; i < distance_inp.size(); i++)
 	{
 		std::wstring sheet;
 		std::vector<std::wstring> range;
@@ -576,7 +592,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 
 		boost::algorithm::split(range, distance_inp[i], boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-		for (int j = 0 ; j < range.size(); j++)
+		for (size_t j = 0 ; j < range.size(); j++)
 		{
 			int pos = range[j].find('!'); 
 			if (0 <= pos)
@@ -588,7 +604,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 
 		}
 		std::wstring cells_out;
-		for (int c = 0; c < cells.size(); c++)
+		for (size_t c = 0; c < cells.size(); c++)
 		{
 			if (!sheet.empty())
 				cells_out += sheet + L".";
@@ -607,7 +623,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	}
 	std::wstring result;
 
-	for (int i = 0 ; i < distance_out.size(); i++)
+	for (size_t i = 0 ; i < distance_out.size(); i++)
 	{
 		result += distance_out[i];
 		result += L" ";
@@ -743,7 +759,7 @@ int oox2odf_converter::get_count_value_points(std::wstring expr)
 	XmlUtils::replace_all( expr, L")", L"");
 	boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-	for (long i=0; i < splitted.size(); i++)
+	for (size_t i=0; i < splitted.size(); i++)
 	{
 		int res = splitted[i].find(L"!");
 		if (res > 0) splitted[i] = splitted[i].substr(res+1, splitted[i].size()-res);

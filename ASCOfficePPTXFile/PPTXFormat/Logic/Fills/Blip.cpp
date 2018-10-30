@@ -164,7 +164,6 @@ namespace PPTX
 			pWriter->WriteAttribute(_T("cstate"), cstate);
 			pWriter->EndAttributes();
 
-			// TODO:
 			size_t nCount = Effects.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
@@ -191,7 +190,7 @@ namespace PPTX
 
 			for (ULONG i = 0; i < len; ++i)
 			{
-				pWriter->WriteRecord1(3, Effects[i]);
+				pWriter->WriteRecord1(0, Effects[i]);// id неважен
 			}
 
 			pWriter->EndRecord();
@@ -279,16 +278,14 @@ namespace PPTX
 					case 1:
 					{
 						// id. embed / link
-						pReader->Skip(4);
-						break;
-					}
+						pReader->Skip(4);						
+					}break;
 					case 10:
 					case 11:
 					{
 						// id. embed / link
-						pReader->GetString2();
-						break;
-					}
+						pReader->GetString2();						
+					}break;
 					case 2:
 					{
 						pReader->Skip(4);
@@ -296,42 +293,16 @@ namespace PPTX
 						for (ULONG _eff = 0; _eff < count_effects; ++_eff)
 						{
 							pReader->Skip(1); // type 
-							ULONG rec_len = pReader->GetULong();
-							if (0 == rec_len)
-								continue;
-							
-							BYTE rec = pReader->GetUChar();
-							
-							if (rec == EFFECT_TYPE_ALPHAMODFIX)
+
+							Effects.push_back(UniEffect());
+							Effects.back().fromPPTY(pReader);
+
+							if (false == Effects.back().is_init())
 							{
-								// alpha!!!
-								LONG _e22 = pReader->GetPos() + pReader->GetLong() + 4;
-
-								pReader->Skip(1); // startattr
-
-								PPTX::Logic::AlphaModFix* pEffect = new PPTX::Logic::AlphaModFix();
-								while (true)
-								{
-									BYTE _at = pReader->GetUChar_TypeNode();
-									if (NSBinPptxRW::g_nodeAttributeEnd == _at)
-										break;
-
-									if (_at == 0)
-										pEffect->amt = pReader->GetLong();
-								}
-
-								Effects.push_back(UniEffect());
-								Effects[0].InitPointer(pEffect);
-
-								pReader->Seek(_e22);
+								Effects.pop_back();
 							}
-							else
-							{
-								pReader->SkipRecord();
-							}
-						}
-						break;
-					}
+						}						
+					}break;
 					case 3:
 					{
 						pReader->Skip(6); // len + start attributes + type
@@ -361,11 +332,10 @@ namespace PPTX
 
 						if (oRelsGeneratorInfo.nImageRId > 0)
 						{
-							embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
+							embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
 						}
-						pReader->Skip(1); // end attribute
-						break;
-					}
+						pReader->Skip(1); // end attribute						
+					}break;
 					default:
 					{
 						pReader->SkipRecord();

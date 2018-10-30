@@ -30,8 +30,6 @@
  *
  */
 #include "EffectProperties.h"
-#include "EffectLst.h"
-#include "EffectDag.h"
 
 namespace PPTX
 {

@@ -134,6 +134,8 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 				bNilPICFAndBinData = true; // or bPICFAndOfficeArtData - shape, pic, ole
 			}
 			break;
+			default:
+				break;
 		}
 	}
 

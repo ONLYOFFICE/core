@@ -136,6 +136,8 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeBentUpArrow:			return boost::make_shared<oox_shape_BentUpArrow>();	
 	case SimpleTypes::shapetypeLeftRightUpArrow:	return boost::make_shared<oox_shape_leftRightUpArrow>();	
 
+	case SimpleTypes::shapetypeStraightConnector1:	return boost::make_shared<oox_shape_StraightConnector1>();
+	case SimpleTypes::shapetypeFrame:				return boost::make_shared<oox_shape_Frame>();
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDownPour): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchUp): 
@@ -176,7 +178,6 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	//case (2001 + SimpleTypes::textshapetypeTextWave1): 
 	//case (2001 + SimpleTypes::textshapetypeTextWave2): 
 	//case (2001 + SimpleTypes::textshapetypeTextWave4): 
-	//case SimpleTypes::shapetypeStraightConnector1: return boost::make_shared<oox_shape_straightConnector1>();
 
 	default:
 		if (ooxPrstGeomType > 2000) return boost::make_shared<oox_shape_textPlain>();

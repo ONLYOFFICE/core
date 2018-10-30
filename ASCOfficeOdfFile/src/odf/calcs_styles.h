@@ -40,22 +40,26 @@
 #include "odfcontext.h"
 #include <vector>
 
-namespace cpdoccore { 
-	class tabs_context;
-namespace odf_reader {
+namespace cpdoccore 
+{ 
+	namespace oox
+	{
+		class tabs_context;
+	}
+	namespace odf_reader 
+	{
+		graphic_format_properties calc_graphic_properties_content(const style_instance * styleInstance);
+		graphic_format_properties calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances);
 
-graphic_format_properties calc_graphic_properties_content(const style_instance * styleInstance);
-graphic_format_properties calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances);
+		text_format_properties_content calc_text_properties_content(const style_instance * styleInstance);
+		text_format_properties_content calc_text_properties_content(const std::vector<const style_instance *> & styleInstances);
 
-text_format_properties_content calc_text_properties_content(const style_instance * styleInstance);
-text_format_properties_content calc_text_properties_content(const std::vector<const style_instance *> & styleInstances);
+		paragraph_format_properties calc_paragraph_properties_content(const style_instance * styleInstance);
+		paragraph_format_properties calc_paragraph_properties_content(const std::vector<const style_instance *> & styleInstances);
 
-paragraph_format_properties calc_paragraph_properties_content(const style_instance * styleInstance);
-paragraph_format_properties calc_paragraph_properties_content(const std::vector<const style_instance *> & styleInstances);
+		style_table_cell_properties_attlist calc_table_cell_properties(const style_instance * styleInstance);
+		style_table_cell_properties_attlist calc_table_cell_properties(const std::vector<const style_instance *> & styleInstances);
 
-style_table_cell_properties_attlist calc_table_cell_properties(const style_instance * styleInstance);
-style_table_cell_properties_attlist calc_table_cell_properties(const std::vector<const style_instance *> & styleInstances);
-
-void calc_tab_stops(const style_instance * styleInstance, tabs_context & context);
-}
+		void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & context);
+	}
 }

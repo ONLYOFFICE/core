@@ -427,8 +427,9 @@ namespace DocFileFormat
 					{
 						appendStyleProperty(&strStyle, L"visibility", L"hidden");
 					}
-				}
-				break;
+				}break;
+			default:
+				break;				
 			}
 		}
 

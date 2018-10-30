@@ -77,7 +77,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Colors.clear();
-                XmlMacroLoadArray(node, _T("*"), Colors, UniColor);
+                XmlMacroLoadArray(node, L"*", Colors, UniColor);
 				FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const
@@ -85,9 +85,38 @@ namespace PPTX
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(Colors);
 
-				return XmlUtils::CreateNode(_T("a:duotone"), oValue);
+				return XmlUtils::CreateNode(L"a:duotone", oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:duotone");
+				pWriter->EndAttributes();
 
+				pWriter->WriteArray2(Colors);
+
+				pWriter->EndNode(L"a:duotone");
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				pReader->Skip(4); // len
+				BYTE _type = pReader->GetUChar();
+				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+
+				ULONG count = pReader->GetULong();
+				for (ULONG i = 0; i < count; ++i)
+				{
+					pReader->Skip(1); // type 
+
+					Colors.push_back(UniColor());
+					Colors.back().fromPPTY(pReader);
+
+					if (false == Colors.back().is_init())
+					{
+						Colors.pop_back();
+					}
+				}
+				pReader->Seek(_e);
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(EFFECT_TYPE_DUOTONE);

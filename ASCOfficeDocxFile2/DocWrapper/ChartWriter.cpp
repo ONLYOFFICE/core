@@ -282,7 +282,7 @@ namespace BinXlsxRW{
 			{
 				OOX::Spreadsheet::CTableColumn* pTableColumn = new OOX::Spreadsheet::CTableColumn();
 				pTableColumn->m_oId.Init();
-				pTableColumn->m_oId->SetValue(i + 1);
+				pTableColumn->m_oId->SetValue((unsigned int)i + 1);
 				pTableColumn->m_oName.Init();
 				pTableColumn->m_oName->append(m_aTableNames[i]);
 				pTable->m_oTable->m_oTableColumns->m_arrItems.push_back(pTableColumn);
@@ -604,7 +604,7 @@ namespace BinXlsxRW{
 							// Не число
 							aSharedStrings.push_back(val);
 							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
-							pCell->m_oValue->m_sText = std::to_wstring(aSharedStrings.size() - 1);
+							pCell->m_oValue->m_sText = std::to_wstring((int)aSharedStrings.size() - 1);
 						}
 						else
 						{
@@ -658,7 +658,7 @@ namespace BinXlsxRW{
 
         if(NULL != format)
 		{
-			int nXfsIndex = m_aXfs.size();
+			int nXfsIndex = (int)m_aXfs.size();
 
             boost::unordered_map<std::wstring, int>::const_iterator itFormat = m_mapFormats.find(*format);
 			if(itFormat == m_mapFormats.end())

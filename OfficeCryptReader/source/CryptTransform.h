@@ -55,7 +55,9 @@ namespace CRYPT_METHOD
 		AES_CBC,
 		AES_CFB,
 		AES_ECB,
-		Blowfish_CFB
+		Blowfish_CFB,
+		DES_CBC,
+		DES_ECB
 	};
 }
 namespace CRYPT

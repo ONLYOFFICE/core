@@ -304,6 +304,9 @@ namespace PPTX
 					{
 						LONG _embed_data_size	= pReader->GetLong();
 						LONG _end_embed_data	= pReader->GetPos() + _embed_data_size + 4;
+
+						if (_embed_data_size < 1) 
+							break;
 //------------------------------------------------------------------
 						std::wstring sDstEmbedded = pReader->m_pRels->m_pManager->GetDstMedia();
 						int nPos = (int)sDstEmbedded.rfind(wchar_t('m'));
@@ -327,7 +330,22 @@ namespace PPTX
 						{
 							pReader->Seek(pReader->GetPos() - 4); //roll back to size record
 							std::wstring sXmlContent;
-							pReader->m_pMainDocument->getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
+							if (pReader->m_pMainDocument)
+							{
+								pReader->m_pMainDocument->getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
+							}
+							else
+							{
+								BinDocxRW::CDocxSerializer		oDocxSerializer;
+								NSBinPptxRW::CDrawingConverter	oDrawingConverter;
+
+								oDrawingConverter.SetMainDocument(&oDocxSerializer);
+				
+								//oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(oDrawingConverter.m_pBinaryWriter, &oFontProcessor, &oDrawingConverter, NULL);
+								oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", false, 111, false, &oDrawingConverter, L"");
+
+								oDocxSerializer.getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
+							}
 
 							if (!sXmlContent.empty())
 							{
@@ -938,7 +956,7 @@ namespace PPTX
 						nvPicPr.nvPr.extLst.push_back(ext);
 					}
 
-                    int nRId = -1;
+                    unsigned int nRId = 0;
 					if (blipFill.additionalFile.is<OOX::Audio>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"audioFile");
@@ -1060,7 +1078,7 @@ namespace PPTX
 				
 				if ( mediaFile.IsInit() == false && !nvPicPr.nvPr.extLst.empty())
 				{
-					//todooo - почему везде нулевой то? - сделать по всем поиск по uri
+					//todooo - почему везде нулевой то? - сделать поиск по всем uri
 					file = parentFileAs<Slide>().Find(nvPicPr.nvPr.extLst[0].link.get());
 				}		
 			}//удалять ли c UnknownType ???? (если не найден щас генерится)
@@ -1479,7 +1497,11 @@ namespace PPTX
 			if(oleObject->m_oId.IsInit())
 			{
 				if (blipFill.blip.IsInit() == false)
+				{
 					blipFill.blip.Init();
+					blipFill.stretch.Init();
+					blipFill.stretch->fillRect.Init();
+				}
 				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
             XmlMacroReadAttributeBase(node, L"spid",	oleObject->m_sShapeId);

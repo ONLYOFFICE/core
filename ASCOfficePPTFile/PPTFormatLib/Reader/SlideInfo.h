@@ -135,7 +135,7 @@ public:
 
 		if (lIndex < 0) lIndex = 0;
 		
-		if(lIndex >= 0 && lIndex < m_parEmptyPictures->size())
+		if(lIndex >= 0 && lIndex < (int)m_parEmptyPictures->size())
 		{
 			return m_parEmptyPictures->at(lIndex);
 		}

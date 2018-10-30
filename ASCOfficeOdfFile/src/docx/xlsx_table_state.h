@@ -70,7 +70,7 @@ public:
 	bool			filter;
 	bool			withHeader;
 
-	std::vector<std::pair<int, bool>> bySort;  //field + order
+	std::vector<std::pair<size_t, bool>> bySort;  //field + order
 	
 	void serialize_sort			(std::wostream & _Wostream);
 	void serialize_autofilter	(std::wostream & _Wostream);
@@ -82,6 +82,8 @@ public:
     xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName, int tableId);
     
 	std::wstring current_style() const { return table_style_; }
+
+	void set_rtl(bool val);
     
 	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName);
     void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
@@ -92,8 +94,8 @@ public:
 
 	void add_empty_row(int count);
 
-	void set_end_table(){ bEndTable = true; }
-	bool get_end_table(){ return bEndTable; }
+	void set_end_table(){ bEndTable_ = true; }
+	bool get_end_table(){ return bEndTable_; }
     
 	std::wstring current_row_style			() const;
     std::wstring default_row_cell_style		() const;
@@ -134,6 +136,7 @@ public:
 	void serialize_table_format				(std::wostream & _Wostream);
 	void serialize_merge_cells				(std::wostream & _Wostream);
     void serialize_hyperlinks				(std::wostream & _Wostream);
+	void serialize_controls					(std::wostream & _Wostream);
     void serialize_ole_objects				(std::wostream & _Wostream);
 	void serialize_page_properties			(std::wostream & _Wostream);
 	void serialize_background				(std::wostream & _Wostream);
@@ -146,17 +149,18 @@ public:
 	
 	struct _group_row
 	{
-		bool enabled;
-		int count;
-		int level;
-		bool collapsed;
+		bool enabled = false;
+		int count = 0;
+		int level = 0;
+		bool collapsed = false;
 	}group_row_;
 
 	friend class xlsx_conversion_context;
 	friend class xlsx_table_context;
 
 private:	
-	bool								bEndTable;
+	bool								bRTL_;
+	bool								bEndTable_;
     xlsx_conversion_context *			context_;    
 
     std::wstring						tableName_;

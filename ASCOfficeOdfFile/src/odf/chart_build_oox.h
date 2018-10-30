@@ -101,8 +101,8 @@ class object_odf_context
 public:
 	struct _cell
 	{
-		int col;
-		int row;
+		size_t col;
+		size_t row;
 		std::wstring val;
 	};
 

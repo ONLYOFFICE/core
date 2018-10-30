@@ -61,10 +61,12 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SmartArt.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/AlphaModFix.h"
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 #define PROGRESSEVENT_ID	0
 
@@ -160,7 +162,7 @@ std::wstring EncodeBase64(const std::string & value)
 	char *pData = NULL;
 	std::wstring result;
 
-	NSFile::CBase64Converter::Encode((BYTE*)value.c_str(), value.length(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
+	NSFile::CBase64Converter::Encode((BYTE*)value.c_str(), (int)value.length(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
 	if (pData)
 	{
 		result = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pData, nLength);
@@ -203,28 +205,37 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 {
 	CRYPT::ODFEncryptor		encryptor;
 	CRYPT::_odfCryptData	cryptData;
-//-----------------------
-//aes
-	cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
-	cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
-	cryptData.start_hashSize		= 32;
 
-	cryptData.spinCount	= 100000;
-	cryptData.keySize	= 32;
+	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMethodEncrypt);
 
-	cryptData.checksum_size = 1024;
-	cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+	if (sApplication == L"Weak")
+	{
 //-----------------------
 //blowfish
-	//cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
-	//cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
-	//cryptData.start_hashSize		= 20;
+		cryptData.cipherAlgorithm		= CRYPT_METHOD::Blowfish_CFB;
+		cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA1;
+		cryptData.start_hashSize		= 20;
 
-	//cryptData.spinCount	= 1024;
-	//cryptData.keySize	= 16;
+		cryptData.spinCount	= 1024;
+		cryptData.keySize	= 7;//16;
 
-	//cryptData.checksum_size = 1024;
-	//cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+		cryptData.checksum_size = 1024;
+		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+	}
+	else
+	{
+//-----------------------
+//aes
+		cryptData.cipherAlgorithm		= CRYPT_METHOD::AES_CBC;
+		cryptData.start_hashAlgorithm	= CRYPT_METHOD::SHA256;
+		cryptData.start_hashSize		= 32;
+
+		cryptData.spinCount	= 100000;
+		cryptData.keySize	= 32;
+
+		cryptData.checksum_size = 1024;
+		cryptData.checksum_hashAlgorithm = CRYPT_METHOD::SHA256;
+	}
 //-----------------------
 	NSFile::CFileBinary file;
 
@@ -363,6 +374,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_p_ShapeTree:
 			case OOX::et_a_GroupShape:
 			case OOX::et_w_GroupShape:
+			case OOX::et_lc_LockedCanvas:
 			{
 				convert(dynamic_cast<PPTX::Logic::SpTree *>(oox_unknown));				
 			}break;
@@ -433,14 +445,42 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<PPTX::Logic::EffectStyle*>(oox_unknown));
 			}break;
-			//case OOX::et_a_alphaModFix:
-			//{
-			//	OOX::Drawing::CAlphaModulateFixedEffect* pAlpha= dynamic_cast<OOX::Drawing::CAlphaModulateFixedEffect*>(oox_unknown);
-			//	if (pAlpha)
-			//	{
-			//		odf_context()->drawing_context()->set_opacity(pAlpha->m_oAmt.GetValue());
-			//	}
-			//}break;
+			case OOX::et_a_alphaModFix:
+			{
+				convert(dynamic_cast<PPTX::Logic::AlphaModFix*>(oox_unknown));
+			}break;
+			case OOX::et_a_blur:
+			{
+				convert(dynamic_cast<PPTX::Logic::Blur*>(oox_unknown));
+			}break;
+			case OOX::et_a_fillOverlay:
+			{
+				convert(dynamic_cast<PPTX::Logic::FillOverlay*>(oox_unknown));
+			}break;
+			case OOX::et_a_glow:
+			{
+				convert(dynamic_cast<PPTX::Logic::Glow*>(oox_unknown));
+			}break;
+			case OOX::et_a_innerShdw:
+			{
+				convert(dynamic_cast<PPTX::Logic::InnerShdw*>(oox_unknown));
+			}break;
+			case OOX::et_a_outerShdw:
+			{
+				convert(dynamic_cast<PPTX::Logic::OuterShdw*>(oox_unknown));
+			}break;
+			case OOX::et_a_reflection:
+			{
+				convert(dynamic_cast<PPTX::Logic::Reflection*>(oox_unknown));
+			}break;
+			case OOX::et_a_softEdge:
+			{
+				convert(dynamic_cast<PPTX::Logic::SoftEdge*>(oox_unknown));
+			}break;
+			case OOX::et_a_effectDag:
+			{
+				convert(dynamic_cast<PPTX::Logic::EffectDag*>(oox_unknown));
+			}break;
 			case OOX::et_v_imagedata:
 			{
 				convert(dynamic_cast<OOX::Vml::CImageData*>(oox_unknown));

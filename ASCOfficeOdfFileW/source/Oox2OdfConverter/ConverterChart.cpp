@@ -1205,7 +1205,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val)
 	}
 	else if (val->m_numRef)
 	{
-		if (val->m_numRef->m_f)odf_context()->chart_context()->set_series_value_formula(*val->m_numRef->m_f);
+		if (val->m_numRef->m_f)
+			odf_context()->chart_context()->set_series_value_formula(*val->m_numRef->m_f);
 		
 		convert(val->m_numRef->m_numCache, false, false);
 	}

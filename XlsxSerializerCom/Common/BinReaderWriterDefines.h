@@ -79,7 +79,9 @@ namespace BinXlsxRW
 		Styles = 2,
 		Workbook = 3,
 		Worksheets = 4,
-		CalcChain = 5
+		CalcChain = 5,
+		App = 6,
+		Core = 7
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes

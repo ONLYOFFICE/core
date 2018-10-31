@@ -145,7 +145,8 @@ extern int g_nCurFormatVersion;
 		Endnotes	= 11,
 		Background	= 12,
 		VbaProject	= 13,
-		App			= 14
+		App			= 15,
+		Core		= 16
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{

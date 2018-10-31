@@ -36,6 +36,8 @@
 #include "../DocWrapper/FontProcessor.h"
 #include "../../Common/Base64.h"
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
 #include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
 #include "BinEquationWriter.h"
 
@@ -7961,38 +7963,6 @@ namespace BinDocxRW
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	};
-	class BinaryAppTableWriter
-	{
-		BinaryCommonWriter m_oBcw;
-		ParamsWriter& m_oParamsWriter;
-	public:
-		BinaryAppTableWriter(ParamsWriter& oParamsWriter):
-			m_oBcw(oParamsWriter),m_oParamsWriter(oParamsWriter)
-		{
-		}
-		void Write(OOX::CApp& oApp)
-		{
-			int nStart = m_oBcw.WriteItemWithLengthStart();
-			WriteProperties(oApp);
-			m_oBcw.WriteItemWithLengthEnd(nStart);
-		}
-		void WriteProperties(OOX::CApp& oApp)
-		{
-			int nCurPos = 0;
-			if (oApp.m_sApplication.IsInit())
-			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSerApp::Application);
-				m_oBcw.m_oStream.WriteStringW3(oApp.m_sApplication.get());
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-			}
-			if (oApp.m_sAppVersion.IsInit())
-			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSerApp::AppVersion);
-				m_oBcw.m_oStream.WriteStringW3(oApp.m_sAppVersion.get());
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-			}
-		}
-	};
 	class BinaryFileWriter
 	{
 		BinaryCommonWriter	m_oBcw;
@@ -8148,9 +8118,15 @@ namespace BinDocxRW
 		//Write App
 				if(NULL != oDocx.m_pApp)
 				{
-					BinDocxRW::BinaryAppTableWriter oBinaryAppWriter(m_oParamsWriter);
 					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::App);
-					oBinaryAppWriter.Write(*oDocx.m_pApp);
+					oDocx.m_pApp->ToPptxApp()->toPPTY(&oBufferedStream);
+					this->WriteTableEnd(nCurPos);
+				}
+
+				if(NULL != oDocx.m_pCore)
+				{
+					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Core);
+					oDocx.m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
 					this->WriteTableEnd(nCurPos);
 				}
 

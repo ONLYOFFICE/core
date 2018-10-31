@@ -811,6 +811,8 @@
       <Filter>VectorML</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Docx.cpp" />
+	<ClCompile Include="..\Source\DocxFormat\App.cpp" />
+	<ClCompile Include="..\Source\DocxFormat\Core.cpp" />
     <ClCompile Include="..\Source\DocxFormat\FileFactory.cpp" />
     <ClCompile Include="..\Source\DocxFormat\IFileContainer.cpp" />
   </ItemGroup>

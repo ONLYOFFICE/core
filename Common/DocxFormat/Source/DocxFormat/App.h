@@ -40,23 +40,17 @@
 #include "../Common/SimpleTypes_Shared.h"
 #include "../../../../DesktopEditor/common/SystemUtils.h"
 
+namespace PPTX
+{
+	class App;
+}
 namespace OOX
 {
 	class CApp : public OOX::File
 	{
 	public:
-		CApp(OOX::Document* pMain) : OOX::File(pMain)
-		{
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pApp = this;
-		}
-		CApp(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
-		{
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pApp = this;
-
-			read( oPath );
-		}
+		CApp(OOX::Document* pMain);
+		CApp(OOX::Document* pMain, const CPath& oPath);
 		virtual ~CApp()
 		{
 		}
@@ -465,6 +459,8 @@ namespace OOX
 		{
 			m_bHyperlinksChanged = bVal;
 		}
+		PPTX::App* ToPptxApp();
+
 		// TO DO: DigSig
 		//        HeadingPairs
 		//        HLinks

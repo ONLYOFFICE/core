@@ -52,6 +52,7 @@ public:
     std::wstringstream  hyperlinks_;
     std::wstringstream  comments_;
     std::wstringstream	sort_;
+	std::wstringstream	tableParts_;
     std::wstringstream	autofilter_;
 	std::wstringstream	conditionalFormatting_;
 	std::wstringstream  picture_background_;
@@ -99,15 +100,17 @@ std::wostream & xlsx_xml_worksheet::sheetFormat()
 {
     return impl_->sheetFormat_;
 }
-
 std::wostream & xlsx_xml_worksheet::sheetData()
 {
     return impl_->sheetData_;
 }
-
 std::wostream & xlsx_xml_worksheet::mergeCells()
 {
     return impl_->mergeCells_;
+}
+std::wostream & xlsx_xml_worksheet::tableParts()
+{
+    return impl_->tableParts_;
 }
 std::wostream & xlsx_xml_worksheet::conditionalFormatting()
 {
@@ -208,6 +211,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			
 			CP_XML_STREAM() << impl_->drawing_.str();
 			
+			if (!impl_->tableParts_.str().empty())
+            {
+                CP_XML_NODE(L"tableParts")
+                {
+					CP_XML_STREAM() << impl_->tableParts_.str();
+				}
+			}
 			if (!impl_->commentsId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawing")

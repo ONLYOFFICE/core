@@ -1064,12 +1064,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 {
 	if (!oox_sheet_views)return;
 
-	for (unsigned long i =0; i < oox_sheet_views->m_arrItems.size(); i++)
+	for (size_t i =0; i < oox_sheet_views->m_arrItems.size(); i++)
 	{
 		OOX::Spreadsheet::CSheetView *sheet_view = oox_sheet_views->m_arrItems[i];
 		if (!sheet_view) continue;
 
-		int view_id = sheet_view->m_oWorkbookViewId->GetValue();
+		int view_id = sheet_view->m_oWorkbookViewId.IsInit() ? sheet_view->m_oWorkbookViewId->GetValue() : -1;
 		if (view_id < 0) continue;
 
 		ods_context->start_table_view( view_id );

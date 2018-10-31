@@ -160,6 +160,9 @@ public:
 	void add_jsaProject	(const std::string &content);
 
 	void add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props);
+	
+	void add_table_part(const std::wstring & table) {table_parts_.push_back(table);}
+	size_t get_table_parts_size() {return table_parts_.size();}
 //------------------------------------------------------------------------------------
 
     odf_reader::odf_document * root()
@@ -206,7 +209,8 @@ private:
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;
-  
+	std::vector<std::wstring>			table_parts_;
+ 
     std::wstringstream                  defaultOutput_;
     std::pair<float,float>              maxDigitSize_;
     num_format_context                  num_format_context_;

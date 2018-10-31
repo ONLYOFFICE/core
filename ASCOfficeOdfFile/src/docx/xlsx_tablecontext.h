@@ -82,6 +82,7 @@ public:
 
 	unsigned int columns_count();
 
+	void serialize_tableParts			(std::wostream & _Wostream, rels & Rels);
 	void serialize_sort					(std::wostream & _Wostream);
 	void serialize_autofilter			(std::wostream & _Wostream);
     void serialize_merge_cells			(std::wostream & _Wostream);
@@ -119,15 +120,17 @@ public:
 	void add_database_sort	(int field_number, int order);
 	void end_database_range();
 
-
+	int in_database_range();
+	void set_database_range_value(int index, const std::wstring& value);
 private:
     xlsx_conversion_context				*xlsx_conversion_context_;
     xlsx_text_context					&xlsx_text_context_;
 	
-	std::vector<xlsx_table_state_ptr>	 xlsx_table_states_;
-	std::vector<xlsx_data_range_ptr>	 xlsx_data_ranges_;
+	std::vector<xlsx_table_state_ptr>		xlsx_table_states_;
+	std::vector<xlsx_data_range_ptr>		xlsx_data_ranges_;
+	std::vector<xlsx_data_range_values_ptr>	xlsx_data_ranges_values_;
 	
-	std::multimap<std::wstring, int>	 xlsx_data_ranges_map_;		
+	std::multimap<std::wstring, int>		xlsx_data_ranges_map_;		
 
 };
 

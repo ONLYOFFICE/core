@@ -68,6 +68,10 @@ void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
 
 	formulasconvert::oox2odf_converter formulas_converter;
 
+	if (std::wstring::npos == ref.find(L"!") )
+	{
+		ref = table_state_list_.back().office_table_name_ + L"!" + ref;
+	}
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
 	XmlUtils::replace_all( odf_range, L"[", L"");
 	XmlUtils::replace_all( odf_range, L"]", L"");

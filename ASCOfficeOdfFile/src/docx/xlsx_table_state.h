@@ -53,6 +53,29 @@ typedef _CP_PTR(xlsx_table_state) xlsx_table_state_ptr;
 class xlsx_data_range;
 typedef _CP_PTR(xlsx_data_range) xlsx_data_range_ptr;
 
+class xlsx_data_range_values;
+typedef _CP_PTR(xlsx_data_range_values) xlsx_data_range_values_ptr;
+
+class xlsx_data_range_values
+{
+public:
+	xlsx_data_range_values(size_t row, size_t col1, size_t col2) : row_header(row), start_column(col1), end_column(col2) {}
+	
+	size_t row_header;
+	size_t start_column;
+	size_t end_column;
+
+	std::vector<std::wstring> values;
+
+	void set_value(size_t col, size_t row, const std::wstring& value)
+	{
+		while (col - start_column + 1 > values.size())
+			values.push_back(L"");
+
+		values[col - start_column] = value;
+	}
+	bool in_range(size_t col, size_t row) {return (row_header == row && (col >= start_column && col <= end_column));}
+};
 
 class xlsx_data_range
 {

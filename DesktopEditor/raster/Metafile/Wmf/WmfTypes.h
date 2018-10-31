@@ -179,10 +179,10 @@ namespace MetaFile
 	};
 	struct TWmfRect
 	{
-		short Left;
-		short Top;
-		short Right;
-		short Bottom;
+		unsigned short Left;
+		unsigned short Top;
+		unsigned short Right;
+		unsigned short Bottom;
 	};
 	struct TWmfPlaceable
 	{

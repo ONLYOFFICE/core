@@ -245,6 +245,10 @@ void xl_files::write(const std::wstring & RootPath)
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
+	{
+        table_part_files_.set_main_document(get_main_document());
+        table_part_files_.write(path);
+    }
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -321,6 +325,10 @@ void xl_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
 void xl_files::add_pivot_table(pivot_table_content_ptr pivot_table)
 {
     pivot_table_files_.add_pivot_table(pivot_table);
+}
+void xl_files::add_table_part(const std::wstring &content)
+{
+	table_part_files_.add_table_part(content);
 }
 void xl_files::add_jsaProject(const std::string &content)
 {
@@ -418,20 +426,42 @@ void xl_pivot_table_files::write(const std::wstring & RootPath)
     }
 }
 //------------------------------------------------------------------------------------------------------
+void xl_table_part_files::add_table_part(const std::wstring & table_part)
+{
+    table_parts_.push_back(table_part);
+}
+void xl_table_part_files::write(const std::wstring & RootPath)
+{
+	if (table_parts_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"tables";
+    NSDirectory::CreateDirectory(path.c_str());
+	
+	for (size_t i = 0; i < table_parts_.size(); i++)
+    {
+        const std::wstring fileName = std::wstring(L"table") + std::to_wstring(i + 1) + L".xml";
+        content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
+       
+		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml";
+        contentTypes->add_override(std::wstring(L"/xl/tables/") + fileName, kWSConType);
+
+        package::simple_element(fileName, table_parts_[i]).write(path);
+    }
+}
+//------------------------------------------------------------------------------------------------------
 void xl_charts_files::add_chart(chart_content_ptr chart)
 {
     charts_.push_back(chart);
 }
 void xl_charts_files::write(const std::wstring & RootPath)
 {
+	if (charts_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
     NSDirectory::CreateDirectory(path.c_str());
 
-    size_t count = 0;
-
 	for (size_t i = 0; i < charts_.size(); i++)
     {
-        count++;
         const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(i + 1) + L".xml";
         content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
        

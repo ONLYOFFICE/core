@@ -66,11 +66,11 @@ void xlsx_table_context::start_database_range(std::wstring tableName, std::wstri
 	ref	= convert.convert_named_ref(ref);
 
 	std::wstring ref1, ref2;
-	int pos = ref.find(L":");
+	size_t pos = ref.find(L":");
 
 	std::wstring xlsx_table_name;
 
-	if (pos >= 0)
+	if (pos != std::wstring::npos)
 	{
 		xlsx_data_ranges_.push_back(xlsx_data_range_ptr(new xlsx_data_range()));
 		xlsx_data_ranges_.back()->table_name = tableName;
@@ -90,13 +90,15 @@ void xlsx_table_context::start_database_range(std::wstring tableName, std::wstri
 	
 		xlsx_data_ranges_.back()->ref = ref1 + L":" + ref2;
 
-		size_t col, row;
+		size_t col1, col2, row1, row2;
 		
-		getCellAddressInv(ref1, col, row);
-		xlsx_data_ranges_.back()->cell_start = std::pair<int, int>(col,row);
+		getCellAddressInv(ref1, col1, row1);
+		xlsx_data_ranges_.back()->cell_start = std::pair<int, int>(col1, row1);
 
-		getCellAddressInv(ref2, col, row);
-		xlsx_data_ranges_.back()->cell_end = std::pair<int, int>(col,row);
+		getCellAddressInv(ref2, col2, row2);
+		xlsx_data_ranges_.back()->cell_end = std::pair<int, int>(col2, row2);
+
+		xlsx_data_ranges_values_.push_back(xlsx_data_range_values_ptr(new xlsx_data_range_values(row1, col1, col2)));
 	}
 
 	if (!xlsx_table_name.empty())
@@ -128,6 +130,28 @@ void xlsx_table_context::end_database_range()
 {
 }
 
+void xlsx_table_context::set_database_range_value(int index, const std::wstring& value)
+{
+	size_t col = state()->current_column();
+	size_t row = state()->current_row();
+
+	xlsx_data_ranges_values_[index]->set_value(col, row, value);
+}
+
+int xlsx_table_context::in_database_range()
+{
+	int col = state()->current_column();
+	int row = state()->current_row();
+
+	for (size_t i = 0; i < xlsx_data_ranges_values_.size(); i++)
+	{
+		if (xlsx_data_ranges_values_[i]->in_range(col, row))
+		{
+			return (int)i;
+		}
+	}
+	return -1;
+}
 void xlsx_table_context::add_database_sort(int field_number, int order)
 {
 	xlsx_data_ranges_.back()->bySort.push_back(std::pair<int, bool>(field_number, order == 1 ? false : true ));
@@ -256,6 +280,72 @@ void xlsx_table_context::serialize_sort(std::wostream & _Wostream)
 	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; ++it)
 	{
 		xlsx_data_ranges_[it->second]->serialize_sort(_Wostream);
+	}
+}
+void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & Rels)
+{
+	if (xlsx_data_ranges_.empty()) return;
+
+	std::pair<std::multimap<std::wstring, int>::iterator, std::multimap<std::wstring, int>::iterator> range;
+
+	range = xlsx_data_ranges_map_.equal_range(state()->tableName_);
+
+	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; ++it)
+	{
+		size_t id = xlsx_conversion_context_->get_table_parts_size() + 1;
+
+		std::wstring rId = L"tprtId" + std::to_wstring(id);
+		std::wstring ref = L"../tables/table" + std::to_wstring(id) + L".xml";
+		
+		CP_XML_WRITER(_Wostream)
+		{
+			CP_XML_NODE(L"tablePart")
+			{
+				CP_XML_ATTR(L"r:id", rId);
+			}
+		}
+		Rels.add( relationship(rId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", ref));
+		
+		std::wstringstream strm;
+		CP_XML_WRITER(strm)
+		{			
+			CP_XML_NODE(L"table")
+			{
+				CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+
+				CP_XML_ATTR(L"id", id);
+				CP_XML_ATTR(L"name", xlsx_data_ranges_[it->second]->table_name);
+				CP_XML_ATTR(L"displayName", xlsx_data_ranges_[it->second]->table_name);
+				CP_XML_ATTR(L"ref", xlsx_data_ranges_[it->second]->ref);
+				CP_XML_ATTR(L"totalsRowShown", 0);
+
+				xlsx_data_ranges_[it->second]->serialize_autofilter(CP_XML_STREAM());
+				xlsx_data_ranges_[it->second]->serialize_sort(CP_XML_STREAM());
+
+				CP_XML_NODE(L"tableColumns")
+				{
+					CP_XML_ATTR(L"count",	xlsx_data_ranges_[it->second]->cell_end.first - 
+											xlsx_data_ranges_[it->second]->cell_start.first + 1);
+					
+					for (int id = 0, i = xlsx_data_ranges_[it->second]->cell_start.first; i <= xlsx_data_ranges_[it->second]->cell_end.first; i++, id++)
+					{
+						CP_XML_NODE(L"tableColumn")
+						{
+							CP_XML_ATTR(L"id", id + 1);
+							CP_XML_ATTR(L"name", xlsx_data_ranges_values_[it->second]->values[id]);
+						}
+					}
+				}
+				CP_XML_NODE(L"tableStyleInfo")
+				{
+					CP_XML_ATTR(L"showFirstColumn", 0);
+					CP_XML_ATTR(L"showLastColumn", 0);
+					CP_XML_ATTR(L"showRowStripes", 1);
+					CP_XML_ATTR(L"showColumnStripes", 0);				
+				}
+			}
+		}
+		xlsx_conversion_context_->add_table_part(strm.str());
 	}
 }
 void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)

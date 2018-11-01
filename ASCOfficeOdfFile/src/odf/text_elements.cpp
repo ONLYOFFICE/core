@@ -125,7 +125,7 @@ void process_paragraph_index(const paragraph_attrs & Attr, oox::docx_conversion_
 std::wostream & paragraph::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(content_);
-    _Wostream << L"\n";
+    //_Wostream << L"\n";
     return _Wostream;
 }
 

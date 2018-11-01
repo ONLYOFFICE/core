@@ -71,7 +71,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	math_context_		(odf_document_->odf_context().fontContainer(), true),
 	xlsx_style_			(this),
 	
-	maxDigitSize_	(std::pair<float,float>(-1.0, -1.0) ),
+	maxDigitSize_	(std::make_pair(-1.f, -1.f) ),
 	default_style_	( (std::numeric_limits<size_t>::max)() ),
 	mediaitems_		(odf_document_->get_folder()),
 	xlsx_drawing_context_handle_(mediaitems_)
@@ -200,6 +200,10 @@ void xlsx_conversion_context::end_document()
 		charts_[i]->dump_rels(content->get_rel_file()->get_rels());
 		
 		output_document_->get_xl_files().add_charts(content);
+	}
+    for (size_t i = 0; i < table_parts_.size(); i++)
+    {
+		output_document_->get_xl_files().add_table_part(table_parts_[i]);
 	}
     //workbook_content << L"<calcPr iterateCount=\"100\" refMode=\"A1\" iterate=\"false\" iterateDelta=\"0.0001\" />";
 
@@ -436,8 +440,9 @@ void xlsx_conversion_context::end_table()
 	get_table_context().serialize_table_format			(current_sheet().sheetFormat());
 	get_table_context().serialize_page_properties		(current_sheet().page_properties());
 	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
-    get_table_context().serialize_autofilter			(current_sheet().autofilter());
-    get_table_context().serialize_sort					(current_sheet().sort());
+    get_table_context().serialize_tableParts			(current_sheet().tableParts(), current_sheet().sheet_rels());
+    //get_table_context().serialize_autofilter			(current_sheet().autofilter());
+    //get_table_context().serialize_sort				(current_sheet().sort());
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
 	get_table_context().serialize_data_validation		(current_sheet().dataValidations());
     

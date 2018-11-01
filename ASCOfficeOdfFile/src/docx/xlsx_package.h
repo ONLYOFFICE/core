@@ -131,7 +131,17 @@ public:
 
 };
 
+class xl_table_part_files  : public element
+{
+public:
+	xl_table_part_files(){}
 
+    void add_table_part(const std::wstring & table_part);
+	virtual void write(const std::wstring & RootPath);
+    
+    std::vector<std::wstring> table_parts_;
+
+};
 class xl_charts_files  : public element
 {
 public:
@@ -244,6 +254,7 @@ public:
 	void add_pivot_table	(pivot_table_content_ptr table);
 	void add_jsaProject		(const std::string &content);
 	void add_control_props	(simple_element_ptr Element);
+	void add_table_part		(const std::wstring &content);
 
 private:
     rels_files				rels_files_;
@@ -252,7 +263,8 @@ private:
 	xl_pivot_cache_files	pivot_cache_files_;
 	xl_pivot_table_files	pivot_table_files_;
   	xl_control_props_files	control_props_files_;
-  
+	xl_table_part_files		table_part_files_;
+ 
 	element_ptr		theme_;
     element_ptr		workbook_;
 

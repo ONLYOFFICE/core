@@ -874,14 +874,14 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 			int type = attlists_.rel_size_.style_rel_width_->get_type();
 
 			if (type == odf_types::percent_or_scale::Percent)
-				drawing->pctWidth	= attlists_.rel_size_.style_rel_width_->get_percent().get_value();
+				drawing->pctWidth	= (int)attlists_.rel_size_.style_rel_width_->get_percent().get_value();
 		}
 		if (attlists_.rel_size_.style_rel_height_ )
 		{
 			int type = attlists_.rel_size_.style_rel_height_->get_type();
 
 			if (type == odf_types::percent_or_scale::Percent)
-				drawing->pctHeight	= attlists_.rel_size_.style_rel_height_->get_percent().get_value();
+				drawing->pctHeight	= (int)attlists_.rel_size_.style_rel_height_->get_percent().get_value();
 		}
 
     }

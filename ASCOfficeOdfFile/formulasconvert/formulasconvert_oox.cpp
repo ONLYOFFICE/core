@@ -214,16 +214,19 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	replace_vertical(workstr);
 	replace_semicolons(workstr);		
 	
+	std::wstring res1 = boost::regex_replace(
+        workstr,
+		boost::wregex(L"('.*?')|(\".*?\")"),
+		&oox2odf_converter::Impl::convert_scobci, boost::match_default | boost::format_all);
+
 	std::vector<std::wstring> distance;
 
-	boost::algorithm::split(distance,workstr, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+	boost::algorithm::split(distance, res1, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
 	for (size_t i = 0; i < distance.size(); i++)
 	{		
 		std::wstring &d = distance[i];
 
-		oox_replace_tmp(d);
-		
 		replace_cells_range(d);
 
 		oox_replace_tmp_back(d);
@@ -645,8 +648,6 @@ std::wstring oox2odf_converter::get_table_name()
 {
     return impl_->table_name_;
 }
-
-
 std::wstring oox2odf_converter::convert_ref(std::wstring const & expr)
 {
     std::wstring workstr = expr;

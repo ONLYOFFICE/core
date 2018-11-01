@@ -69,9 +69,23 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
 	for (size_t i = 0 ; i < elements_.size(); i++)
     {
         elements_[i]->xlsx_convert(Context);
-    }
+	}
    
 	const int sharedStrId = Context.get_table_context().end_cell_content();
+
+	int index = Context.get_table_context().in_database_range();
+	
+	if (index >= 0)
+	{
+		std::wstringstream strm;
+		for (size_t i = 0 ; i < elements_.size(); i++)
+		{
+			elements_[i]->text_to_stream(strm);
+		}
+
+		Context.get_table_context().set_database_range_value(index, strm.str());
+
+	}
     return sharedStrId;
 }
 

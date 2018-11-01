@@ -39,15 +39,15 @@ namespace OOX
 	{
 		CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 		if (docx) docx->m_pCore = this;
-		//OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(File::m_pMainDocument);
-		//if (xlsx) xlsx->m_pCore = this;
+		OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(File::m_pMainDocument);
+		if (xlsx) xlsx->m_pCore = this;
 	}
 	CCore::CCore(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
 	{
 		CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 		if (docx) docx->m_pCore = this;
-		//OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(File::m_pMainDocument);
-		//if (xlsx) xlsx->m_pCore = this;
+		OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(File::m_pMainDocument);
+		if (xlsx) xlsx->m_pCore = this;
 
 		read( oPath );
 	}

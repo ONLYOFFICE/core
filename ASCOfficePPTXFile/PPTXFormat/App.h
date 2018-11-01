@@ -91,11 +91,11 @@ namespace PPTX
                 XmlMacroLoadArray(oNodeVector2, _T("vt:variant"), TitlesOfParts, Logic::PartTitle);
 			}
 
-            XmlMacroReadAttributeBase(oNode, L"Company", Company);
-            XmlMacroReadAttributeBase(oNode, L"LinksUpToDate", LinksUpToDate);
-            XmlMacroReadAttributeBase(oNode, L"SharedDoc", SharedDoc);
-            XmlMacroReadAttributeBase(oNode, L"HyperlinksChanged", HyperlinksChanged);
-            XmlMacroReadAttributeBase(oNode, L"AppVersion", AppVersion);
+			XmlMacroReadNodeValueBase(oNode, L"Company", Company);
+			XmlMacroReadNodeValueBase(oNode, L"LinksUpToDate", LinksUpToDate);
+			XmlMacroReadNodeValueBase(oNode, L"SharedDoc", SharedDoc);
+			XmlMacroReadNodeValueBase(oNode, L"HyperlinksChanged", HyperlinksChanged);
+			XmlMacroReadNodeValueBase(oNode, L"AppVersion", AppVersion);
 			
 			//Characters = document.Root.element("Characters").text();
 			//CharactersWithSpaces = document.Root.element("CharactersWithSpaces").text();

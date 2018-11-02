@@ -116,7 +116,7 @@ namespace PdfWriter
 		void WriteReal (float fValue);
 		void WriteReal (double dValue);
 		void WriteEscapeName(const char* sValue);
-		void WriteEscapeText(const BYTE* sText, unsigned int unLen);
+        void WriteEscapeText(const BYTE* sText, unsigned int unLen, bool isUTF16 = false);
 		void WriteBinary(const BYTE* pData, unsigned int unLen, CEncrypt* pEncrypt);
 		void WriteStream(CStream* pStream, unsigned int unFilter, CEncrypt* pEncrypt);
 

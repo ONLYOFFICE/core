@@ -108,7 +108,7 @@ namespace PdfWriter
 		if (eType <= InfoModaDate)
 			return;
 
-		Add(sName, new CStringObject(sValue));
+        Add(sName, new CStringObject(sValue, true));
 	}
 	const char* CInfoDict::GetInfo(EInfoType eType)
 	{

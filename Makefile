@@ -3,6 +3,8 @@ PRODUCT_VERSION ?= 0.0.0
 BUILD_NUMBER ?= 0
 PACKAGE_NAME := $(PRODUCT_NAME)
 
+PUBLISHER_NAME ?= Ascensio System SIA
+
 UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_M),x86_64)
 	ARCHITECTURE := 64
@@ -288,7 +290,12 @@ $(PDFREADER): $(PDFREADER_DEP)
 $(PDFWRITER): $(PDFWRITER_DEP)
 
 %.build/Makefile: %.pro
-	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r $<
+	mkdir -p $(dir $@) && \
+	cd $(dir $@) && \
+	PUBLISHER_NAME="$(PUBLISHER_NAME)" \
+	PRODUCT_VERSION=$(PRODUCT_VERSION) \
+	BUILD_NUMBER=$(BUILD_NUMBER) \
+	qmake -r ../../$<
 
 $(ARCHIVE) : 
 	$(AR) $@ $(ARTIFACTS)

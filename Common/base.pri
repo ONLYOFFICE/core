@@ -1,9 +1,17 @@
+VERSION = $$(PRODUCT_VERSION).$$(BUILD_NUMBER)
+isEmpty(VERSION){
+    VERSION = $$cat(version.txt)
+}
 
-VERSION = $$cat(version.txt)
 DEFINES += INTVER=$$VERSION
 
-QMAKE_TARGET_COMPANY = $$cat(copyright.txt)
-QMAKE_TARGET_COPYRIGHT = $$cat(copyright.txt) (c) 2018
+PUBLISHER_NAME = $$(PUBLISHER_NAME)
+isEmpty(PUBLISHER_NAME){
+    PUBLISHER_NAME = $$cat(copyright.txt)
+}
+
+QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
+QMAKE_TARGET_COPYRIGHT = Copyright (C) $$PUBLISHER_NAME $$system(date +%Y). All rights reserved
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {

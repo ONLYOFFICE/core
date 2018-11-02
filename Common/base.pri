@@ -10,8 +10,16 @@ isEmpty(PUBLISHER_NAME){
     PUBLISHER_NAME = $$cat(copyright.txt)
 }
 
+win32 {
+    CURRENT_YEAR = $$system(echo %Date:~6,4%)
+}
+
+!win32 {
+    CURRENT_YEAR = $$system(date +%Y)
+}
+
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
-QMAKE_TARGET_COPYRIGHT = Copyright (C) $$PUBLISHER_NAME $$system(date +%Y). All rights reserved
+QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {

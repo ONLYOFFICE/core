@@ -11,7 +11,7 @@ isEmpty(PUBLISHER_NAME){
 }
 
 win32 {
-    CURRENT_YEAR = $$system(echo %Date:~6,4%)
+    CURRENT_YEAR = $$system("echo %Date:~6,4%")
 }
 
 !win32 {

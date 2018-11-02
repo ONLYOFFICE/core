@@ -38,6 +38,7 @@
 #include <sstream>
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../UnicodeConverter/UnicodeConverter.h"
 
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 
@@ -281,7 +282,7 @@ namespace PdfWriter
 
 		Write((BYTE*)sTmpChar, StrLen(sTmpChar, -1));
 	}
-    void CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen)
+    void CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen, bool isUTF16)
 	{
 		if (!unLen || !sText)
 			return;
@@ -294,6 +295,21 @@ namespace PdfWriter
 		unsigned long nRet = 0;
 
 		sBuf[nIndex++] = '(';
+
+        if (isUTF16)
+        {
+            std::string sUtf8((char*)sText, unLen);
+            std::wstring sUnicode = UTF8_TO_U(sUtf8);
+            NSUnicodeConverter::CUnicodeConverter oConverter;
+            std::string sUtf16BE = oConverter.fromUnicode(sUnicode, "UTF-16BE");
+
+            unLen = (unsigned int)sUtf16BE.length();
+            sTxt = (BYTE*)sUtf16BE.c_str();
+
+            sBuf[nIndex++] = 0xFE;
+            sBuf[nIndex++] = 0xFF;
+        }
+
 		for (int nCounter = 0; nCounter < unLen; nCounter++)
 		{
 			BYTE nChar = (BYTE)*sTxt++;
@@ -324,7 +340,7 @@ namespace PdfWriter
 		sBuf[nIndex++] = ')';
 
 		Write((BYTE*)sBuf, nIndex);
-	}
+	}            
     void CStream::WriteBinary(const BYTE* pData, unsigned int unLen, CEncrypt* pEncrypt)
 	{
 		char sBuf[TEXT_DEFAULT_LEN];
@@ -508,8 +524,8 @@ namespace PdfWriter
 			WriteChar('>');
 		}
 		else
-		{
-			WriteEscapeText(pString->GetString(), pString->GetLength());
+		{            
+            WriteEscapeText(pString->GetString(), pString->GetLength(), pString->IsUTF16());
 		}
 	}
     void CStream::Write(CBinaryObject* pBinary, CEncrypt* pEncrypt)

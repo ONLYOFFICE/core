@@ -223,6 +223,8 @@
 		8A404FCA2089FF7E00F2D5CF /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC92089FF7E00F2D5CF /* Base64.cpp */; };
 		8A404FCC2089FFE700F2D5CF /* Directory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCB2089FFE700F2D5CF /* Directory.cpp */; };
 		8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCD208A001D00F2D5CF /* Path.cpp */; };
+		8AECC18F218C991900DEE19A /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC18E218C991900DEE19A /* App.cpp */; };
+		8AECC191218C992900DEE19A /* Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC190218C992900DEE19A /* Core.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -450,6 +452,8 @@
 		8A404FC92089FF7E00F2D5CF /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64.cpp; path = ../../../../DesktopEditor/common/Base64.cpp; sourceTree = "<group>"; };
 		8A404FCB2089FFE700F2D5CF /* Directory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Directory.cpp; path = ../../../../DesktopEditor/common/Directory.cpp; sourceTree = "<group>"; };
 		8A404FCD208A001D00F2D5CF /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Path.cpp; path = ../../../../DesktopEditor/common/Path.cpp; sourceTree = "<group>"; };
+		8AECC18E218C991900DEE19A /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
+		8AECC190218C992900DEE19A /* Core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Core.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -570,10 +574,12 @@
 			isa = PBXGroup;
 			children = (
 				17E6A01E1AC4262700F28F8B /* App.h */,
+				8AECC18E218C991900DEE19A /* App.cpp */,
 				17E6A01F1AC4262700F28F8B /* Bibliography.h */,
 				17E6A0201AC4262700F28F8B /* Comments.h */,
 				17E6A0211AC4262700F28F8B /* ContentTypes.h */,
 				17E6A0221AC4262700F28F8B /* Core.h */,
+				8AECC190218C992900DEE19A /* Core.cpp */,
 				17E6A0231AC4262700F28F8B /* CustomXml.h */,
 				17E6A0241AC4262700F28F8B /* Diagram */,
 				17E6A0261AC4262700F28F8B /* Document.h */,
@@ -1173,6 +1179,7 @@
 				17C1FB9B1ACC4250006B99B3 /* Annotations.cpp in Sources */,
 				17C1FB9C1ACC4250006B99B3 /* FileFactory.cpp in Sources */,
 				17C1FB9D1ACC4250006B99B3 /* DateTime.cpp in Sources */,
+				8AECC191218C992900DEE19A /* Core.cpp in Sources */,
 				17C1FB9E1ACC4250006B99B3 /* Align.cpp in Sources */,
 				17C1FB9F1ACC4250006B99B3 /* Index.cpp in Sources */,
 				17C1FBA01ACC4250006B99B3 /* TxtFile.cpp in Sources */,
@@ -1190,6 +1197,7 @@
 				17C1FBAC1ACC4250006B99B3 /* AlternateContent.cpp in Sources */,
 				17C1FBAD1ACC4250006B99B3 /* SmartTag.cpp in Sources */,
 				17C1FBAE1ACC4250006B99B3 /* oMath.cpp in Sources */,
+				8AECC18F218C991900DEE19A /* App.cpp in Sources */,
 				69E6AC892031AC3500795D9D /* SheetData.cpp in Sources */,
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,
 				17C1FBB11ACC4250006B99B3 /* Position.cpp in Sources */,

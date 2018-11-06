@@ -1,7 +1,4 @@
-VERSION = $$(PRODUCT_VERSION).$$(BUILD_NUMBER)
-isEmpty(VERSION){
-    VERSION = $$cat(version.txt)
-}
+VERSION = $$cat(version.txt)
 
 PRODUCT_VERSION = $$(PRODUCT_VERSION)
 BUILD_NUMBER = $$(BUILD_NUMBER)

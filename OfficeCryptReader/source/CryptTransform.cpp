@@ -586,7 +586,7 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 		
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(verifierInputKey.ptr, verifierInputKey.size);
+			rc4Decryption.SetKey(verifierInputKey.ptr, cryptData.keySize);
 		}
 //--------------------------------------------
 		_buf decryptedVerifierHashInputBytes;		
@@ -596,7 +596,7 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 //--------------------------------------------
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(verifierHashKey.ptr, verifierHashKey.size);
+			rc4Decryption.SetKey(verifierHashKey.ptr, cryptData.keySize);
 		}		
 		_buf decryptedVerifierHashBytes;		
 		DecryptCipher(verifierHashKey, pSalt, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
@@ -609,7 +609,7 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(verifierKey.ptr, verifierKey.size);
+			rc4Decryption.SetKey(verifierKey.ptr, cryptData.keySize);
 		}
 //--------------------------------------------
 		_buf decryptedVerifierHashInputBytes;		
@@ -673,7 +673,7 @@ void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long 
 			
 			_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm, block_index);
 			
-			rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
+			rc4Decryption.SetKey(hashKey.ptr, cryptData.keySize);
 		}
 
 		const long offset = nCurrPos % block_size;
@@ -764,7 +764,7 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(agileKey.ptr, agileKey.size);
+			rc4Decryption.SetKey(agileKey.ptr, cryptData.keySize);
 		}
 		_buf pDecryptedKey;
 		DecryptCipher( agileKey, pSalt, pKeyValue, pDecryptedKey, cryptData.cipherAlgorithm);  
@@ -775,7 +775,7 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(pDecryptedKey.ptr, pDecryptedKey.size);
+			rc4Decryption.SetKey(pDecryptedKey.ptr, cryptData.keySize);
 		}
 		while (pos < size)
 		{
@@ -801,7 +801,7 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 		
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{			
-			rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
+			rc4Decryption.SetKey(hashKey.ptr, cryptData.keySize);
 		}
 	
 		_buf pInp(data_inp, size, false);
@@ -860,7 +860,7 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Encryption.SetKey(agileKey.ptr, agileKey.size);
+			rc4Encryption.SetKey(agileKey.ptr, cryptData.keySize);
 		}
 		_buf pKeyValue;
 		EncryptCipher( agileKey, pSalt, pDecryptedKey, pKeyValue, cryptData.cipherAlgorithm);  
@@ -871,7 +871,7 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 		
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Encryption.SetKey(verifierInputKey.ptr, verifierInputKey.size);
+			rc4Encryption.SetKey(verifierInputKey.ptr, cryptData.keySize);
 		}
 		_buf pEncVerInput;
 		EncryptCipher( verifierInputKey, pSalt, decryptedVerifierHashInputBytes, pEncVerInput, cryptData.cipherAlgorithm);  
@@ -882,7 +882,7 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 		
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Encryption.SetKey(verifierHashKey.ptr, verifierHashKey.size);
+			rc4Encryption.SetKey(verifierHashKey.ptr, cryptData.keySize);
 		}
 		else if (decryptedVerifierHashBytes.size % PADDING_SIZE != 0) 
 		{
@@ -903,7 +903,7 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{			
-			rc4Encryption.SetKey(verifierKey.ptr, verifierKey.size);
+			rc4Encryption.SetKey(verifierKey.ptr, cryptData.keySize);
 		}	
 		_buf decryptedVerInput(seed_verify.data(), seed_verify.size());
 		
@@ -955,7 +955,7 @@ void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 
 	if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 	{
-		rc4Encryption.SetKey(agileKey.ptr, agileKey.size);
+		rc4Encryption.SetKey(agileKey.ptr, cryptData.keySize);
 	}
 
 	_buf secretKey;
@@ -981,7 +981,7 @@ void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 
 	if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 	{
-		rc4Encryption.SetKey(secretKey.ptr, secretKey.size);
+		rc4Encryption.SetKey(secretKey.ptr, cryptData.keySize);
 	}
 	if (pSaltHmac.size % PADDING_SIZE != 0) 
 	{
@@ -1033,14 +1033,14 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(agileKey.ptr, agileKey.size);
+			rc4Decryption.SetKey(agileKey.ptr, cryptData.keySize);
 		}
 		_buf pDecryptedKey;
 		DecryptCipher( agileKey, pSalt, pKeyValue, pDecryptedKey, cryptData.cipherAlgorithm);  
 		
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Encryption.SetKey(pDecryptedKey.ptr, agileKey.size);
+			rc4Encryption.SetKey(pDecryptedKey.ptr, cryptData.keySize);
 		}
 	//-------------------------------------------------------------------------------------------------
 		_buf iv(cryptData.blockSize, true);
@@ -1094,8 +1094,8 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 		
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
-			rc4Encryption.SetKey(hashKey.ptr, hashKey.size);
+			rc4Decryption.SetKey(hashKey.ptr, cryptData.keySize);
+			rc4Encryption.SetKey(hashKey.ptr, cryptData.keySize);
 		}
 	
 		_buf pInp(data_inp, size, false);

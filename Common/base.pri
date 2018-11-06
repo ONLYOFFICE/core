@@ -1,9 +1,31 @@
-
 VERSION = $$cat(version.txt)
+
+PRODUCT_VERSION = $$(PRODUCT_VERSION)
+BUILD_NUMBER = $$(BUILD_NUMBER)
+
+!isEmpty(PRODUCT_VERSION){
+    !isEmpty(BUILD_NUMBER){
+        VERSION = $$PRODUCT_VERSION.$$BUILD_NUMBER
+	}
+}
+
 DEFINES += INTVER=$$VERSION
 
-QMAKE_TARGET_COMPANY = $$cat(copyright.txt)
-QMAKE_TARGET_COPYRIGHT = $$cat(copyright.txt) (c) 2018
+PUBLISHER_NAME = $$(PUBLISHER_NAME)
+isEmpty(PUBLISHER_NAME){
+    PUBLISHER_NAME = $$cat(copyright.txt)
+}
+
+win32 {
+    CURRENT_YEAR = $$system("echo %Date:~6,4%")
+}
+
+!win32 {
+    CURRENT_YEAR = $$system(date +%Y)
+}
+
+QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
+QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {

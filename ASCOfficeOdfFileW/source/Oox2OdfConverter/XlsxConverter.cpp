@@ -163,11 +163,35 @@ void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
 	
-	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
+	OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
 	std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 	
+	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(Workbook);
+	
+	if(Workbook->m_oExternalReferences.IsInit())
+	{	
+		for (size_t i = 0; i < Workbook->m_oExternalReferences->m_arrItems.size(); i++)
+		{
+			OOX::Spreadsheet::CExternalReference *externalRef = dynamic_cast<OOX::Spreadsheet::CExternalReference*>(Workbook->m_oExternalReferences->m_arrItems[i]);
+			if((externalRef) && (externalRef->m_oRid.IsInit()))
+			{
+				smart_ptr<OOX::File> file = find_file_by_id(externalRef->m_oRid->GetValue());
+				
+				smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
+				if (fileExternal.IsInit())
+				{
+					ods_context->add_external_reference(fileExternal->Uri().GetPath());
+				}
+				else
+				{
+					smart_ptr<OOX::Spreadsheet::CExternalLink> externalLink = file.smart_dynamic_cast<OOX::Spreadsheet::CExternalLink>();
+					convert(externalLink.operator->());
+				}
+			}
+		}
+	}
 	if(Workbook->m_oBookViews.IsInit())
 	{	
 		for (size_t i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
@@ -729,9 +753,32 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
 	ods_context->end_cell_text();
 	ods_context->current_table().set_cell_text( ods_context->text_context());
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CExternalLink *oox_external_link)
+{
+	if (!oox_external_link) return;
+
+	OOX::IFileContainer* old_container = xlsx_current_container;
+	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(oox_external_link);
+	
+	if (oox_external_link->m_oExternalBook.IsInit())
+	{
+		if (oox_external_link->m_oExternalBook->m_oRid.IsInit())
+		{
+			smart_ptr<OOX::File> file = find_file_by_id(oox_external_link->m_oExternalBook->m_oRid->GetValue());
+			
+			smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
+			if (fileExternal.IsInit())
+			{
+				ods_context->add_external_reference(fileExternal->Uri().GetPath());
+			}
+		}
+	}
+	xlsx_current_container = old_container;
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 {
-	if (oox_unknown == NULL)return;
+	if (!oox_unknown)return;
 
 	switch(oox_unknown->getType())
 	{

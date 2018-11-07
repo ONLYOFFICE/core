@@ -610,7 +610,7 @@ void ods_table_state::add_definded_expression(office_element_ptr & elm)
 {
 	if (!table_defined_expressions_)
 	{
-		create_element(L"table", L"named-expressions",table_defined_expressions_,context_);
+		create_element(L"table", L"named-expressions", table_defined_expressions_, context_);
 		office_table_->add_child_element(table_defined_expressions_);
 	}
 	if (!table_defined_expressions_)return;
@@ -630,7 +630,7 @@ void ods_table_state::start_comment(int col, int row, std::wstring & author)
 	ods_comment_state state;
 
 	state.row=row;  state.col =col; state.author = author;	
-	create_element(L"office", L"annotation",state.elm,context_);
+	create_element(L"office", L"annotation", state.elm, context_);
 
 	comments_.push_back(state);
 }
@@ -661,7 +661,7 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 	if (comments_.back().author.length() > 0 && comments_.back().elm)
 	{
 		office_element_ptr dc_elm;
-		create_element(L"dc", L"creator",dc_elm,context_);
+		create_element(L"dc", L"creator", dc_elm, context_);
 		if (dc_elm)
 		{
 			dc_elm->add_text(comments_.back().author);
@@ -799,18 +799,51 @@ void ods_table_state::set_cell_spanned(int spanned_cols, int spanned_rows)
 }
 void ods_table_state::set_cell_formula(std::wstring & formula)
 {
-	if (formula.length() < 1)return;
+	if (formula.empty())return;
 
 	//test external link
-	{
-		boost::wregex re(L"([\[]\\d+\[\]])+");
+	bool bExternal = true;
+	boost::wregex re(L"([\[]\\d+[\]])+");
 
+	while(bExternal)
+	{
 		boost::wsmatch result;
-		bool b = boost::regex_search(formula, result, re);
-		if (b) return;  //todoooo
+		bExternal = boost::regex_search(formula, result, re);
+		if (!bExternal) break;
+
+		ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
+		
+		std::wstring refExternal = result[1].str();
+		int idExternal = XmlUtils::GetInteger(refExternal.substr(1, refExternal.length() - 1)) - 1;
+
+		while(idExternal >= 0 && idExternal < ods_context->externals_.size())
+		{
+			size_t pos = formula.find(refExternal);
+			if (pos == std::wstring::npos)
+				break;
+
+			std::wstring new_formula; 
+			
+			if (pos > 0 && formula[pos - 1] == L'\'')
+			{
+				new_formula = formula.substr(0, pos - 1);
+				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+				new_formula += L"'";
+			}
+			else
+			{
+				new_formula = formula.substr(0, pos);
+				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+			}
+			pos += refExternal.length();
+			new_formula += formula.substr(pos, formula.length() - pos);
+			formula = new_formula;
+		}
 	}
 
 	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
+
+	XmlUtils::replace_all(odfFormula, L"EXTERNALREF", L"file://");//снятие экранирования
 
 	if (std::wstring::npos != odfFormula.find(L"["))
 	{
@@ -1338,7 +1371,7 @@ void ods_table_state::end_conditional_formats()
 void ods_table_state::start_conditional_format(std::wstring ref)
 {
 	office_element_ptr		elm;
-	create_element(L"calcext", L"conditional-format",elm,context_);
+	create_element(L"calcext", L"conditional-format", elm, context_);
 
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
@@ -1363,13 +1396,13 @@ void ods_table_state::start_conditional_rule(int rule_type)
 {
 	office_element_ptr		elm;
 
-	if (rule_type == 3)		create_element(L"calcext", L"color-scale",elm,context_); 
-	else if (rule_type == 7)create_element(L"calcext", L"data-bar",elm,context_);
-	else if (rule_type ==10)create_element(L"calcext", L"icon-set",elm,context_);
-	else if (rule_type ==14)create_element(L"calcext", L"date-is",elm,context_);
+	if (rule_type == 3)		create_element(L"calcext", L"color-scale",  elm, context_); 
+	else if (rule_type == 7)create_element(L"calcext", L"data-bar", elm ,context_);
+	else if (rule_type ==10)create_element(L"calcext", L"icon-set", elm, context_);
+	else if (rule_type ==14)create_element(L"calcext", L"date-is", elm, context_);
 	else
 	{
-		create_element(L"calcext", L"condition",elm,context_);
+		create_element(L"calcext", L"condition", elm, context_);
 		calcext_condition* condition = dynamic_cast<calcext_condition*>	 (elm.get());
 		
 		if (condition) 

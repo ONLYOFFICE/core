@@ -93,6 +93,7 @@ namespace OOX
 		class CHeaderFooter;		
 		class CSparklineGroups;
 		class CAltTextTable;
+		class CExternalLink;
 	}
 }
 
@@ -177,6 +178,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CPageSetup			*oox_page);
 		void convert(OOX::Spreadsheet::CPageMargins			*oox_page);
 		void convert(OOX::Spreadsheet::CWorkbookView		*oox_book_views);
+		void convert(OOX::Spreadsheet::CExternalLink		*oox_external_link);
 
 		void convert(OOX::Spreadsheet::CFont				*font,		odf_writer::style_text_properties		*text_properties);		
 		void convert(OOX::Spreadsheet::CBorder				*border,	odf_writer::style_table_cell_properties *cell_properties);

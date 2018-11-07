@@ -353,7 +353,7 @@ task buildOpenSsl() {
                             environment "PATH", PATH
                             commandLine "./Configure", "--prefix=$OPENSSL_LIBS_INSTALL", "--openssldir=$OPENSSL_LIBS_INSTALL", \
                                         "android-" + value.TCN, "-D__ANDROID_API__=$project.ext.SDK_MIN", \
-                                        "no-shared", "no-ssl2", "no-ssl3", "no-comp", "no-hw", "no-engine"
+                                        "no-shared", "no-ssl3", "no-comp", "no-hw", "no-engine"
                         }
 
                         // Clean build files

@@ -40,6 +40,7 @@ target_include_directories(${LIB_NAME_PDF_WRITER}
 # Set target definition
 target_compile_definitions(${LIB_NAME_PDF_WRITER}
     PRIVATE
+        _LINUX
         PDFWRITER_USE_DYNAMIC_LIBRARY
 )
 

@@ -9,9 +9,11 @@ keystore-release.properties
 /build
 /captures
 /gradle
+/android-ndk*
 /extra-builds/native/libs
 /extra-builds/native/toolchain
 /extra-builds/native/src/iconv
+.zip
 .gradle
 .idea
 .DS_Store

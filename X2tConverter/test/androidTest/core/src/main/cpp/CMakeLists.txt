@@ -9,7 +9,6 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 # Set global definition
 add_definitions(
     -D__ANDROID__
-    -D_LINUX
 )
 
 # Add checks arguments here

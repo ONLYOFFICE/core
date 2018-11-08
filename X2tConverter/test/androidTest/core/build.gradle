@@ -10,11 +10,14 @@ apply from: "$rootProject.projectDir/extra-builds/gradle/common.gradle"
 
 // Common native libs path
 def TOOLCHAIN_VERSION = 4.9
-def HOST_PLATFORM = "linux-x86_64"
-def PATH_NDK = getBackSlash(android.ndkDirectory.path)
+def NDK_VERSION = "android-ndk-r17c"
+def HOST_PLATFORM = getHostName()
+def PATH_NDK = "${project.rootDir.path}/${NDK_VERSION}"
 def PATH_TOOLCHAIN = "$PATH_NDK/toolchains/\$1/prebuilt/$HOST_PLATFORM/bin"
 def PATH_STANDALONE_SCRIPT = "$PATH_NDK/build/tools"
 def PATH_3PARTY = "$project.ext.SRC_CORE/Common/3dParty"
+def NDK_URL = "https://dl.google.com/android/repository/${NDK_VERSION}-${HOST_PLATFORM}.zip"
+def NDK_DOWNLOAD = "${PATH_NDK}.zip"
 
 // Keys for constant
 def MASK_LIB = 'lib*.*'
@@ -301,6 +304,34 @@ task unpackingLibs(type: Copy) {
         println "Folder already exist: $project.ext.PATH_TO_NATIVE_LIBS"
     }
 }
+
+/*
+* Download NDK ver.17c with deprecated support of GCC
+* */
+task downloadNdk() {
+    doLast {
+        if (!file(PATH_NDK).exists()) {
+            if (!file(NDK_DOWNLOAD).exists()) {
+                download {
+                    println "\nDownload NDK..."
+                    src NDK_URL
+                    dest NDK_DOWNLOAD
+                    overwrite false
+                    onlyIfModified true
+                    quiet false
+                }
+            }
+
+            copy {
+                println "\nUnpack NDK..."
+                eachFile { println it.file }
+                from zipTree(NDK_DOWNLOAD)
+                into project.rootDir.path
+            }
+        }
+    }
+}
+
 
 /*
 * https://wiki.openssl.org/index.php/Android
@@ -878,15 +909,13 @@ task buildBoost() {
 /*
 * Add here pre build tasks
 * */
-task build3dPArty() {
-    buildOpenSsl.execute()
-    buildCurl.execute()
-    buildIconv.execute()
-    buildIcu.execute()
-    buildBoost.execute()
+task preBuildTask() {
+    doLast {
+        downloadNdk.execute()
+        buildOpenSsl.execute()
+        buildCurl.execute()
+        buildIconv.execute()
+        buildIcu.execute()
+        buildBoost.execute()
+    }
 }
-
-/*
-* Add task for run before build
-* */
-preBuild.dependsOn build3dPArty

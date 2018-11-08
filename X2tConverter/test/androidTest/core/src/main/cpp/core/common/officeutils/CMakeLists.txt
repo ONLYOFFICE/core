@@ -12,39 +12,39 @@ if (NOT DEFINED LIB_NAME_OFFICE_UTILS)
     message(FATAL_ERROR "You must set library name in \"LIB_NAME_OFFICE_UTILS\"!")
 endif()
 
+# Zlib name
+set(ZLIB_NAME zlib-1.2.11)
+
 # Library source .h .cpp
 file(GLOB OFFICE_UTILS_CPP
         ${OFFICE_UTILS_DIR}src/*.cpp
-        ${OFFICE_UTILS_DIR}src/zlib-1.2.3/*.c
-        ${OFFICE_UTILS_DIR}src/zlib-1.2.3/contrib/minizip/*.c
+        ${OFFICE_UTILS_DIR}src/${ZLIB_NAME}/*.c
+        ${OFFICE_UTILS_DIR}src/${ZLIB_NAME}/contrib/minizip/*.c
 )
 
 # Exclude sources
 list(REMOVE_ITEM OFFICE_UTILS_CPP
-    ${OFFICE_UTILS_DIR}src/zlib-1.2.3/contrib/minizip/iowin32.c
+    ${OFFICE_UTILS_DIR}src/${ZLIB_NAME}/contrib/minizip/iowin32.c
 )
 
 # Set targer as static library
 add_library(${LIB_NAME_OFFICE_UTILS} STATIC ${OFFICE_UTILS_CPP})
 
-# Add dependency library
-#target_link_libraries(${LIB_NAME_OFFICE_UTILS}
-#    PRIVATE
-#        ${LIB_NAME_EDITOR_COMMON}
-#)
-
 # Add include files .h
 target_include_directories(${LIB_NAME_OFFICE_UTILS}
     PUBLIC
         ${OFFICE_UTILS_DIR}
-        ${OFFICE_UTILS_DIR}zlib-1.2.3/
+        ${OFFICE_UTILS_DIR}${ZLIB_NAME}/
     PRIVATE
-        ${OFFICE_UTILS_DIR}zlib-1.2.3/contrib/minizip/
+        ${OFFICE_UTILS_DIR}${ZLIB_NAME}/contrib/minizip/
 )
 
 # Set target definition
 target_compile_definitions(${LIB_NAME_OFFICE_UTILS}
     PRIVATE
         _LINUX
+        USE_FILE32API
+        NOCRYPT
+        NOUNCRYPT
         BUILD_ZLIB_AS_SOURCES
 )

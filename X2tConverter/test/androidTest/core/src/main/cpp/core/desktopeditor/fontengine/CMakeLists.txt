@@ -103,3 +103,9 @@ target_compile_options(${LIB_NAME_FONT_ENGINE}
         -Wno-register
         -Wno-c++11-narrowing
 )
+
+# Set target definition
+target_compile_definitions(${LIB_NAME_FONT_ENGINE}
+    PRIVATE
+        _LINUX
+)

@@ -162,7 +162,8 @@ target_include_directories(${LIB_NAME_CRYPTOPP} PUBLIC ${CRYPTOPP_DIR})
 
 # Set target definition
 target_compile_definitions(${LIB_NAME_CRYPTOPP}
-    PRIVATE
+    PUBLIC
+        _LINUX
         UNICODE
         CRYPTOPPLIB_LIBRARY
         CRYPTOPP_DISABLE_ASM

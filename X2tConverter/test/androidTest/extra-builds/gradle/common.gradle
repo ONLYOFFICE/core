@@ -102,6 +102,37 @@ def getDirNameExt(String path) {
     return countFolders == 1? nameFolder : ''
 }
 
+def getHostNameExt() {
+    final String value = System.getProperty("os.name").toLowerCase();
+    println "System: ${value}"
+
+    if (value.contains("linux")) {
+        return ("linux");
+    } else if (value.contains("mac os x") || value.contains("darwin") || value.contains("osx")) {
+        return ("darwin");
+    } else if (value.contains("windows")) {
+        return ("windows");
+    }
+
+    throw new GradleException("UNKNOWN SYSTEM FOR ANDROID NDK: ${value}!")
+}
+
+def getHostArchExt() {
+    final String value = System.getProperty("os.arch");
+    println "Architecture: ${value}"
+
+    if ("x86" == value) {
+        return value
+    } else if ("amd64" == value || "x86_64" == value) {
+        return "x86_64"
+    }
+
+    throw new GradleException("UNKNOWN ARCHITECTRE FOR ANDROID NDK: ${value}!")
+}
+
+def getHostNameFullExt() {
+    return "${getHostNameExt()}-${getHostArchExt()}"
+}
 
 /*
 * Add methods/values here for export
@@ -141,5 +172,6 @@ ext {
     isFolderNotEmpty = this.&isFolderNotEmptyCheck
     getBackSlash = this.&getBackSlashExt
     getDirName = this.&getDirNameExt
+    getHostName = this.&getHostNameFullExt
 }
 

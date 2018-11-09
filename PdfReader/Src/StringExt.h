@@ -34,7 +34,7 @@
 
 #include <stdarg.h>
 #include <string>
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include <string.h>
 
 namespace PdfReader

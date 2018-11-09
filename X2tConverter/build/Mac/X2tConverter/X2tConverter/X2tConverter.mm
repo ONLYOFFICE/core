@@ -100,7 +100,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
         oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
         
         std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.docx";
-
+        
         if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::doct_bin2docx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
             return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
         }
@@ -175,7 +175,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
         oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
         
         std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.xlsx";
-
+        
         if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::xlst_bin2xlsx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
             return oox2mscrypt(sResultDecryptFile, to, temp, oInputParams);
         }
@@ -349,6 +349,109 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     return NExtractTools::xlsx2csv(from, to, temp, oInputParams);
 }
 
+- (int)sdk_xls2xlsx:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    // TODO: extract xml options
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::xls2xlsx(from, to, temp, oInputParams);
+}
+- (int)sdk_xls2xlsx_dir:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    // TODO: extract xml options
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::xls2xlsx_dir(from, to, temp, oInputParams);
+}
+- (int)sdk_xls2xlst:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    // TODO: extract xml options
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::xls2xlst(from, to, temp, oInputParams);
+}
+- (int)sdk_xls2xlst_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    // TODO: extract xml options
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::xls2xlst_bin(from, to, temp, oInputParams);
+}
+- (int)sdk_xls2xlsm:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    // TODO: extract xml options
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::xls2xlsm(from, to, temp, oInputParams);
+}
+- (int)sdk_xls2xlsm_dir:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    // TODO: extract xml options
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::xls2xlsm_dir(from, to, temp, oInputParams);
+}
+
 - (int)txt2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -357,7 +460,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
-
+    
     if (self.encoding != nil) {
         oInputParams.m_nCsvTxtEncoding = new int(self.encoding.intValue);
     }

@@ -38,7 +38,7 @@
 #include "OfficeDrawing/GroupShapeBooleanProperties.h"
 #include "OfficeDrawing/MetafilePictBlip.h"
 
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
 
 #include "../../DesktopEditor/common/File.h"

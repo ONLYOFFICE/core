@@ -30,7 +30,7 @@
  *
  */
 
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "../../../fontengine/FontManager.h"
 
 #include "EmfFile.h"

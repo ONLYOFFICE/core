@@ -30,7 +30,7 @@
  *
  */
 #include "CPEncodings/CodePage.h"
-#include "String.h"
+#include "StringExt.h"
 
 namespace NSStringExt
 {

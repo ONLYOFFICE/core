@@ -31,7 +31,7 @@
  */
 
 #include "SvmObjects.h"
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 
 static const char* CodingCharsets[95] =

@@ -33,7 +33,7 @@
 #define _METAFILE_COMMON_METAFILETYPES_H
 
 #include <string>
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 
 #ifndef BYTE
 typedef unsigned char BYTE;

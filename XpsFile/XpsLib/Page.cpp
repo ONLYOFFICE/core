@@ -31,7 +31,7 @@
  */
 #include "Page.h"
 #include <stdio.h>
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/structures.h"
 #include "../../PdfWriter/PdfRenderer.h"
 

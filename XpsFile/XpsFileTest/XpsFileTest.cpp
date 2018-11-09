@@ -40,7 +40,7 @@
 #include <string>
 #include "windows.h"
 
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 #include <iostream>

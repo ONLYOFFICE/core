@@ -3560,77 +3560,95 @@ namespace NExtractTools
     // xls -> xlsx
     _UINT32 xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
-        std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
-        
-        NSDirectory::CreateDirectory(sResultDocxDir);
-        
-        _UINT32 nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sTemp, params);
-        if(SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDocxDir, sTo, true))
-                return 0;
-        }
+//        std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+//
+//        NSDirectory::CreateDirectory(sResultDocxDir);
+//
+//        _UINT32 nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sTemp, params);
+//        if(SUCCEEDED_X2T(nRes))
+//        {
+//            COfficeUtils oCOfficeUtils(NULL);
+//            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDocxDir, sTo, true))
+//                return 0;
+//        }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     _UINT32 xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
-//       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), NULL);
-//       if (AVS_ERROR_DRM == hRes)
-//       {
-//           if(!params.getDontSaveAdditional())
-//           {
-//               copyOrigin(sFrom, *params.m_sFileTo);
-//           }
-//           return AVS_FILEUTILS_ERROR_CONVERT_DRM;
-//       }
-//       else if (AVS_ERROR_PASSWORD == hRes)
-//       {
-//          return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
-//       }
-//       return 0 == hRes ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-       return AVS_FILEUTILS_ERROR_CONVERT;
-   }
-
+    {return 0;
+//        bool bMacros = false;
+//
+//        _UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
+//
+//        nRes = processEncryptionError(nRes, sFrom, params);
+//        return nRes;
+    }
+    // xls -> xlsm
+    _UINT32 xls2xlsm (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+//        std::wstring sResultXlsmDir = sTemp + FILE_SEPARATOR_STR + _T("xlsm_unpacked");
+//
+//        NSDirectory::CreateDirectory(sResultXlsmDir);
+//
+//        _UINT32 nRes = xls2xlsm_dir(sFrom, sResultXlsmDir, sTemp, params);
+//
+//        if(SUCCEEDED_X2T(nRes))
+//        {
+//            COfficeUtils oCOfficeUtils(NULL);
+//            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlsmDir, sTo, true))
+                return 0;
+//        }
+//        return nRes;
+    }
+    _UINT32 xls2xlsm_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {return 0;
+//        bool bMacros = true;
+//
+//        _UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
+//
+//        nRes = processEncryptionError(nRes, sFrom, params);
+//        return nRes;
+    }
     // xls -> xlst
     _UINT32 xls2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-    {
+    { return 0;
         // Extract xlsx to temp directory
-        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
-        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-        
-        NSDirectory::CreateDirectory(sResultDoctDir);
-        
-        _UINT32 nRes = xls2xlst_bin(sFrom, sResultDoctFileEditor, sTemp, params);
-        
-        if (SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        
-        return nRes;
+//        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
+//        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+//
+//        NSDirectory::CreateDirectory(sResultDoctDir);
+//
+//        _UINT32 nRes = xls2xlst_bin(sFrom, sResultDoctFileEditor, sTemp, params);
+//
+//        if (SUCCEEDED_X2T(nRes))
+//        {
+//            COfficeUtils oCOfficeUtils(NULL);
+//            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+//        }
+//
+//        return nRes;
     }
     
-   // xls -> xlst_bin
-   _UINT32 xls2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
-//        std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + L"xlsx_unpacked";
+    // xls -> xlst_bin
+    _UINT32 xls2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {return 0;
+//        std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 //
 //        NSDirectory::CreateDirectory(sResultXlsxDir);
 //
-//		if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), NULL)== S_OK)
+//        bool bMacros = true;
+//        _UINT32 nRes = ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
+//
+//        nRes = processEncryptionError(nRes, sFrom, params);
+//        if (SUCCEEDED_X2T(nRes))
 //        {
 //            BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 //
 //            m_oCXlsxSerializer.setFontDir(params.getFontPath());
 //
-//			int res =  m_oCXlsxSerializer.saveToFile (sTo, sResultXlsxDir, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-//
-//            return res;
-//
+//            return m_oCXlsxSerializer.saveToFile (sTo, sResultXlsxDir, params.getXmlOptions());
 //        }
-        return AVS_FILEUTILS_ERROR_CONVERT;
-   }
+//        return nRes;
+    }
+    
 }
 

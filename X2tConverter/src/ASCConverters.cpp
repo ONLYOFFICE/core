@@ -522,21 +522,23 @@ namespace NExtractTools
     }
 	_UINT32 xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile)
     {
-		//save Editor.xlsx for pivot
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
-		std::wstring sEditorXLSX = sToDir + FILE_SEPARATOR_STR + _T("Editor.xlsx");
-		if(sXlsxFile.empty())
+		BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
+		if (m_oCXlsxSerializer.hasPivot(sXlsxDir))
 		{
-			dir2zip(sXlsxDir, sEditorXLSX);
-		}
-		else
-		{
-			NSFile::CFileBinary::Copy(sXlsxFile, sEditorXLSX);
+			//save Editor.xlsx for pivot
+			std::wstring sEditorXLSX = sToDir + FILE_SEPARATOR_STR + _T("Editor.xlsx");
+			if(sXlsxFile.empty())
+			{
+				dir2zip(sXlsxDir, sEditorXLSX);
+			}
+			else
+			{
+				NSFile::CFileBinary::Copy(sXlsxFile, sEditorXLSX);
+			}
 		}
 
         // Save to file (from temp dir)
-        BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
-
 		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 

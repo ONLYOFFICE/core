@@ -602,6 +602,8 @@ void TestDocument7()
 
 	pPage->EndText();
 
+	oPdf.SetDocumentID(L"23193r09jscladjalj");
+	//oPdf.SetPasswords(L"123", L"qwe");
 	oPdf.SaveToFile(L"D:/test/_pdf/Test7.pdf");
 	oPdf.Close();
 }
@@ -800,7 +802,7 @@ void ConvertFolder(std::wstring wsFolderPath)
 int _tmain(int argc, _TCHAR* argv[])
 {
 
-	TestDocument3();
+	TestDocument7();
 
 
 	return S_OK;

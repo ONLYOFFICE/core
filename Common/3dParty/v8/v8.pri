@@ -26,7 +26,10 @@ core_linux {
 
 core_mac {
     LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
-    LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
+
+    #LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
+    LIBS += $$CORE_V8_PATH_LIBS/third_party/icu/libicui18n.a
+    LIBS += $$CORE_V8_PATH_LIBS/third_party/icu/libicuuc.a
 
     QMAKE_CXXFLAGS += -Wall -Wno-inconsistent-missing-override
     QMAKE_CFLAGS += -Wall -Wno-inconsistent-missing-override

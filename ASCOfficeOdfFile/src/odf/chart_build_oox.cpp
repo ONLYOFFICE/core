@@ -1057,7 +1057,7 @@ void process_build_object::visit(table_table_cell& val)
 	if (cell_cash.empty())
 		cell_cash = cell_val;
 
-	object_odf_context::_cell cell_= {object_odf_context_.current_table_column_, object_odf_context_.current_table_row_, cell_cash};
+    object_odf_context::_cell cell_= {(size_t)object_odf_context_.current_table_column_, (size_t)object_odf_context_.current_table_row_, cell_cash};
 
 	object_odf_context_.cash_values.push_back(cell_);
 	

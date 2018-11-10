@@ -243,16 +243,16 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				{
 					names.push_back(L"adj1");
 				}
-				else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
-				{
-					names.push_back(L"vf");
-				}
-				else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
-						 std::wstring::npos != shapeGeomPreset.find(L"pentagon"))
-				{
-					names.push_back(L"hf");
-					names.push_back(L"vf");
-				}
+				//else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
+				//{
+				//	names.push_back(L"vf");
+				//}
+				//else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
+				//		 std::wstring::npos != shapeGeomPreset.find(L"pentagon"))
+				//{
+				//	names.push_back(L"hf");
+				//	names.push_back(L"vf");
+				//}
 				else if (std::wstring::npos != shapeGeomPreset.find(L"hexagon"))
 				{
 					names.push_back(L"adj");

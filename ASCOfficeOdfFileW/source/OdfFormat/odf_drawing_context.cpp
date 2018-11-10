@@ -1267,10 +1267,14 @@ void odf_drawing_context::end_line_properties()
 ////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_name(const std::wstring & name)
 {
+	if (name.empty()) return;
+
 	impl_->current_drawing_state_.name_ = name;
 }
 void odf_drawing_context::set_description (const std::wstring & description)
 {
+	if (description.empty()) return;
+
 	impl_->current_drawing_state_.description_ = description;
 }
 void odf_drawing_context::set_hidden (bool bVal)

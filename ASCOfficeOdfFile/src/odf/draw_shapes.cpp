@@ -546,9 +546,9 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		if (!draw_type_oox_index_)
 		{
 			int count = sizeof(_OO_OOX_custom_shapes) / sizeof(_shape_converter);
-			int pos = odf_type.find(L"ooxml-");
+			size_t pos = odf_type.find(L"ooxml-");
 
-			if (pos < 0)
+			if (pos == std::wstring::npos)
 			{
 				for (long i = 0; i< count; i++)
 				{
@@ -562,7 +562,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			else
 			{
 				std::wstring oox_type = odf_type.substr(pos + 6);
-				for (long i = 0; i< count; i++)
+				for (long i = 0; i < count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].oox == oox_type)
 					{
@@ -572,7 +572,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 					}	
 				}
 			}
-			if ((draw_type_oox_index_) && (*draw_type_oox_index_== 179))//L"textBox"
+			if ((draw_type_oox_index_) && (*draw_type_oox_index_== 96))//L"textBox" "mso-spt24"
 			{
 				sub_type_ = 1;//textBox
 			}

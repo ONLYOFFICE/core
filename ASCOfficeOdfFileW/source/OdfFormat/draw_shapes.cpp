@@ -404,13 +404,17 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 /// draw-enhanced_geometry_attlist
 void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 {
+	if (draw_modifiers_ && draw_modifiers_->empty())
+	{
+		draw_modifiers_ = boost::none;
+	}
     CP_XML_ATTR_OPT(L"draw:type",				draw_type_);
 	CP_XML_ATTR_OPT(L"drawooo:sub-view-size",	draw_sub_view_size_);
 	CP_XML_ATTR_OPT(L"draw:text-areas",			draw_text_areas_);
 	CP_XML_ATTR_OPT(L"draw:text-rotate-angle",	draw_text_rotate_angle_);
     CP_XML_ATTR_OPT(L"draw:modifiers",			draw_modifiers_);
-	CP_XML_ATTR_OPT(L"drawooo:enhanced-path",	draw_enhanced_path_);	
-    //CP_XML_ATTR_OPT(L"draw:enhanced-path",		draw_enhanced_path_);	
+	//CP_XML_ATTR_OPT(L"drawooo:enhanced-path",	draw_enhanced_path_);	
+    CP_XML_ATTR_OPT(L"draw:enhanced-path",		draw_enhanced_path_);	
 	CP_XML_ATTR_OPT(L"draw:glue-points",		draw_glue_points_);
 	CP_XML_ATTR_OPT(L"draw:mirror-vertical",	draw_mirror_vertical_);
 	CP_XML_ATTR_OPT(L"draw:mirror-horizontal",	draw_mirror_horizontal_);

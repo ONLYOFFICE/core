@@ -138,6 +138,39 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 
 	case SimpleTypes::shapetypeStraightConnector1:	return boost::make_shared<oox_shape_StraightConnector1>();
 	case SimpleTypes::shapetypeFrame:				return boost::make_shared<oox_shape_Frame>();
+	case SimpleTypes::shapetypePentagon:			return boost::make_shared<oox_shape_Pentagon>();
+	case SimpleTypes::shapetypeOctagon:				return boost::make_shared<oox_shape_Octagon>();
+	case SimpleTypes::shapetypeHexagon:				return boost::make_shared<oox_shape_Hexagon>();
+	case SimpleTypes::shapetypeHeptagon:			return boost::make_shared<oox_shape_Heptagon>();
+	case SimpleTypes::shapetypeDecagon:				return boost::make_shared<oox_shape_Decagon>();
+	case SimpleTypes::shapetypeDodecagon:			return boost::make_shared<oox_shape_Dodecagon>();
+	case SimpleTypes::shapetypeCube:				return boost::make_shared<oox_shape_Cube>();
+
+	case SimpleTypes::shapetypeCallout1:			return boost::make_shared<oox_shape_Callout1>();
+	case SimpleTypes::shapetypeCallout2:			return boost::make_shared<oox_shape_Callout2>();
+//	case SimpleTypes::shapetypeCallout3:			return boost::make_shared<oox_shape_Callout3>();
+
+	case SimpleTypes::shapetypeAccentCallout1:		return boost::make_shared<oox_shape_AccentCallout1>();
+	case SimpleTypes::shapetypeAccentCallout2:		return boost::make_shared<oox_shape_AccentCallout2>();
+	case SimpleTypes::shapetypeAccentCallout3:		return boost::make_shared<oox_shape_AccentCallout3>();
+
+	case SimpleTypes::shapetypeBorderCallout1:		return boost::make_shared<oox_shape_BorderCallout1>();
+	case SimpleTypes::shapetypeBorderCallout2:		return boost::make_shared<oox_shape_BorderCallout2>();
+	case SimpleTypes::shapetypeBorderCallout3:		return boost::make_shared<oox_shape_BorderCallout3>();
+
+	case SimpleTypes::shapetypeAccentBorderCallout1:	return boost::make_shared<oox_shape_AccentBorderCallout1>();
+	case SimpleTypes::shapetypeAccentBorderCallout2:	return boost::make_shared<oox_shape_AccentBorderCallout2>();
+	case SimpleTypes::shapetypeAccentBorderCallout3:	return boost::make_shared<oox_shape_AccentBorderCallout3>();
+
+	case SimpleTypes::shapetypeCloudCallout:		return boost::make_shared<oox_shape_CloudCallout>();
+	case SimpleTypes::shapetypeWedgeRectCallout:	return boost::make_shared<oox_shape_WedgeRectCallout>();
+	case SimpleTypes::shapetypeWedgeRoundRectCallout:	return boost::make_shared<oox_shape_WedgeRoundRectCallout>();
+	case SimpleTypes::shapetypeWedgeEllipseCallout:	return boost::make_shared<oox_shape_WedgeEllipseCallout>();
+
+	case SimpleTypes::shapetypeRibbon:				return boost::make_shared<oox_shape_Ribbon>();
+	case SimpleTypes::shapetypeRibbon2:				return boost::make_shared<oox_shape_Ribbon2>();
+	case SimpleTypes::shapetypeEllipseRibbon:		return boost::make_shared<oox_shape_EllipseRibbon>();
+	case SimpleTypes::shapetypeEllipseRibbon2:		return boost::make_shared<oox_shape_EllipseRibbon2>();
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDownPour): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchUp): 

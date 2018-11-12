@@ -298,6 +298,13 @@ void draw_connector::reset_svg_attributes()
 }
 void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	if (draw_connector_attlist_.draw_type_)
+	{
+		if (*draw_connector_attlist_.draw_type_ == L"curve")
+		{
+			sub_type_ = 11;
+		}
+	}
 	reset_svg_attributes();
 	reset_svg_path();
 ///////////////////////////////////////////////////////////////////////

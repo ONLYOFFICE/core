@@ -42,6 +42,7 @@
 //+ shapetypeWedgeRoundRectCallout
 //+ shapetypeCloudCallout
 //+ shapetypeWedgeEllipseCallout
+//+ shapetypeQuadArrowCallout
 
 namespace cpdoccore 
 {
@@ -558,6 +559,55 @@ public:
 		
 		h1.position = L"$0 $1";
 		handles.push_back(h1);
+	}
+};
+class oox_shape_QuadArrowCallout : public oox_shape
+{
+public:
+	oox_shape_QuadArrowCallout()
+	{
+		odf_type_name	=L"ooxml-quadArrowCallout";
+
+		enhanced_path	= L"M ?f0 ?f6 L ?f17 ?f30 ?f17 ?f32 ?f21 ?f32 ?f21 ?f28 ?f25 ?f28 ?f25 ?f17 ?f23 ?f17 ?f9 ?f2 ?f24 ?f17 ?f26 ?f17 ?f26 ?f28 ?f22 ?f28 ?f22 ?f32 ?f20 ?f32 ?f20 ?f30 ?f1 ?f6 ?f20 ?f31 ?f20 ?f33 ?f22 ?f33 ?f22 ?f29 ?f26 ?f29 ?f26 ?f27 ?f24 ?f27 ?f9 ?f3 ?f23 ?f27 ?f25 ?f27 ?f25 ?f29 ?f21 ?f29 ?f21 ?f33 ?f17 ?f33 ?f17 ?f31 Z N";
+		text_areas		= L"?f21 ?f28 ?f22 ?f29";
+		view_box		= L"0 0 21600 21600";
+		modifiers		= L"18515 18515 18515 48123";
+		
+		add(L"f0", L"left");
+		add(L"f1", L"right");
+		add(L"f2", L"top");
+		add(L"f3", L"bottom");
+		add(L"f4", L"?f3 - ?f2");
+		add(L"f5", L"?f4 / 2");
+		add(L"f6", L"?f2 + ?f5");
+		add(L"f7", L"?f1 - ?f0");
+		add(L"f8", L"?f7 / 2");
+		add(L"f9", L"?f0 + ?f8");
+		add(L"f10", L"min(?f7, ?f4)");
+		add(L"f11", L"$1");
+		add(L"f12", L"$0");
+		add(L"f13", L"$2");
+		add(L"f14", L"$3");
+		add(L"f15", L"?f10 * ?f11 / 100000");
+		add(L"f16", L"?f10 * ?f12 / 200000");
+		add(L"f17", L"?f10 * ?f13 / 100000");
+		add(L"f18", L"?f7 * ?f14 / 200000");
+		add(L"f19", L"?f4 * ?f14 / 200000");
+		add(L"f20", L"?f1 - ?f17");
+		add(L"f21", L"?f9 - ?f18");
+		add(L"f22", L"?f9 + ?f18");
+		add(L"f23", L"?f9 - ?f15");
+		add(L"f24", L"?f9 + ?f15");
+		add(L"f25", L"?f9 - ?f16");
+		add(L"f26", L"?f9 + ?f16");
+		add(L"f27", L"?f3 - ?f17");
+		add(L"f28", L"?f6 - ?f19");
+		add(L"f29", L"?f6 + ?f19");
+		add(L"f30", L"?f6 - ?f15");
+		add(L"f31", L"?f6 + ?f15");
+		add(L"f32", L"?f6 - ?f16");
+		add(L"f33", L"?f6 + ?f16");
+/////////////////////////////////////////////////////////
 	}
 };
 }

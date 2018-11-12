@@ -211,6 +211,15 @@ void draw_path::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void draw_connector::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	if (draw_connector_attlist_.draw_type_)
+	{
+		if (*draw_connector_attlist_.draw_type_ == L"curve")
+		{
+			sub_type_ = 11;
+		}
+	}
+	reset_svg_attributes();	
+
 	reset_svg_path();
 ///////////////////////////////////////////////////////////////////////
 	Context.get_drawing_context().start_shape(6);

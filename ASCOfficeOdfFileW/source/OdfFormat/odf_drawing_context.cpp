@@ -708,8 +708,14 @@ office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
 		create_element(L"draw", L"polygon", element, odf_context_);
 		break;
 	case 9:
+	case 10:
+	{
 		create_element(L"draw", L"connector", element, odf_context_);
-		break;
+		draw_connector* connector = dynamic_cast<draw_connector*>(element.get());
+
+		if (type == 10)	connector->draw_connector_attlist_.draw_type_ = L"curve";
+		else			connector->draw_connector_attlist_.draw_type_ = L"standard";
+	}break;
 	case 5000:
 		create_element(L"draw", L"g", element, odf_context_);
 		break;
@@ -1160,6 +1166,11 @@ bool odf_drawing_context::isLineShape()
 	case 49:	//SimpleTypes::shapetypeCurvedConnector4:
 	case 50:	//SimpleTypes::shapetypeCurvedConnector5:
 	case 31:	//SimpleTypes::shapetypeBracketPair
+	case 30:	//SimpleTypes::shapetypeBracePair
+	case 148:	//SimpleTypes::shapetypeRightBracket
+	case 111:	//SimpleTypes::shapetypeLeftBracket
+	case 147:	//SimpleTypes::shapetypeRightBrace
+	case 110:	//SimpleTypes::shapetypeLeftBrace
 	case 18:	//SimpleTypes::shapetypeArc
 		return true;
 	case 1000:

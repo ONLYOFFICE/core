@@ -215,10 +215,18 @@ void draw_path::docx_convert(oox::docx_conversion_context & Context)
 void draw_connector::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+	if (draw_connector_attlist_.draw_type_)
+	{
+		if (*draw_connector_attlist_.draw_type_ == L"curve")
+		{
+			sub_type_ = 11;
+		}
+	}
+	reset_svg_attributes();	
 	common_docx_convert(Context);
 	//...
 	reset_svg_path();
+
 	draw_shape::docx_convert(Context);
 }
 void draw_polygon::docx_convert(oox::docx_conversion_context & Context)

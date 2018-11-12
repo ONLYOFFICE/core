@@ -649,17 +649,15 @@ void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
     draw_line_attlist_.add_attributes(Attributes);
 	draw_shape::add_attributes(Attributes);
 
-	sub_type_ = 5; //коннектор - линия, если ломаная (ниже определяется) - то путь
+	sub_type_ = 10; //коннектор - линия, если ломаная (ниже определяется) - то путь
 	
 }
 void draw_connector::reset_svg_path()
 {
-	if (!draw_connector_attlist_.svg_d_)
+	if (draw_connector_attlist_.svg_d_)
 	{
-		bad_shape_ = true;
-	}
-	else
-	{
+		sub_type_ = 8;
+
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 	
@@ -707,7 +705,7 @@ void dr3d_scene::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	draw_shape::add_attributes(Attributes);
 
-	sub_type_ = 10; 
+	sub_type_ = 12; 
 	
 }
 //-------------------------------------------------------------------------------------------

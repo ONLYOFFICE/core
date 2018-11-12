@@ -1038,7 +1038,9 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...
 
-	if (drawing.sub_type !=5 )//line
+	if (drawing.sub_type != 5 && 
+		drawing.sub_type != 11 && 
+		drawing.sub_type != 12 )//line, connectors
 	{
 		drawing.additional.push_back(_property(L"text-content", Context.get_drawing_context().get_text_stream_shape()));
 	}

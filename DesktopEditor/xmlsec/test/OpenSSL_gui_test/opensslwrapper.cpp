@@ -12,7 +12,7 @@
 #include <openssl/conf.h>
 
 #include "../../../common/File.h"
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "opensslwrapper.h"
 
 class COpenssl_library_private

@@ -1,7 +1,7 @@
 #include "./XmlSigner_openssl.h"
 
 #include "../../../common/File.h"
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "../../../common/BigInteger.h"
 
 #include <unistd.h>

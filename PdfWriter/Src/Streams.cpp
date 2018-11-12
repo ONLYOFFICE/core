@@ -389,7 +389,10 @@ namespace PdfWriter
         pStream->Seek(0, SeekSet);
 		unsigned long size = pStream->Size();
 		if (pEncrypt)
-			otbuf_all = new BYTE[size * 1.1 + 13 + 64];
+		{
+			unsigned long size_out = (unsigned long)(size * 1.1 + 13 + 64);
+			otbuf_all = new BYTE[size_out];
+		}
 
         // initialize decompression stream.
         ZStream.SetOut(otbuf, DEFLATE_BUF_SIZ);

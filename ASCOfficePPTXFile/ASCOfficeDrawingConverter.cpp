@@ -666,7 +666,14 @@ namespace PPTX
 
 			std::wstring strValue = strParams.substr(nPosOld, nPosition - nPosOld);
 
-			m_mapSettings.insert(std::pair<std::wstring, std::wstring>(strName, strValue));
+			if (m_mapSettings.find(strName) == m_mapSettings.end())
+			{
+				m_mapSettings.insert(std::make_pair(strName, strValue));
+			}
+			else
+			{
+				m_mapSettings[strName] += L"," + strValue;
+			}
 		}
 	}
 
@@ -733,8 +740,14 @@ namespace PPTX
 			if (pData[nPosOld] == WCHAR('.'))
                 strValue = (L"0" + strValue);
 
-			//добавляем через [], а не insert, потому что ключи могут дублироваться(а в предыдущей реализации использовалось последнее значение)
-			m_mapSettings[strName] = strValue;
+			if (m_mapSettings.find(strName) == m_mapSettings.end())
+			{
+				m_mapSettings.insert(std::make_pair(strName, strValue));
+			}
+			else
+			{
+				m_mapSettings[strName] += L"," + strValue;
+			}
 		}
 	}
 
@@ -2864,7 +2877,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					pSpPr->xfrm->flipH = true;
                 else if (pFind->second == L"y")
 					pSpPr->xfrm->flipV = true;
-                else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x"))
+				else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x")
+					 || (pFind->second == L"y,x") || (pFind->second == L"x,y"))
 				{
 					pSpPr->xfrm->flipH = true;
 					pSpPr->xfrm->flipV = true;
@@ -2898,7 +2912,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					pSpPr->xfrm->flipH = true;
                 else if (pFind->second == L"y")
 					pSpPr->xfrm->flipV = true;
-                else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x"))
+				else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x")
+					 || (pFind->second == L"y,x") || (pFind->second == L"x,y"))
 				{
 					pSpPr->xfrm->flipH = true;
 					pSpPr->xfrm->flipV = true;
@@ -3062,7 +3077,8 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 				pTree->grpSpPr.xfrm->flipH = true;
             else if (pFind->second == L"y")
 				pTree->grpSpPr.xfrm->flipV = true;
-            else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x"))
+            else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x")
+				 || (pFind->second == L"y,x") || (pFind->second == L"x,y"))
 			{
 				pTree->grpSpPr.xfrm->flipH = true;
 				pTree->grpSpPr.xfrm->flipV = true;
@@ -3102,7 +3118,8 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 				pTree->grpSpPr.xfrm->flipH = true;
             else if (pFind->second == L"y")
 				pTree->grpSpPr.xfrm->flipV = true;
-            else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x"))
+            else if ((pFind->second == L"xy") || (pFind->second == L"yx") || (pFind->second == L"x y") || (pFind->second == L"y x")
+				 || (pFind->second == L"y,x") || (pFind->second == L"x,y"))
 			{
 				pTree->grpSpPr.xfrm->flipH = true;
 				pTree->grpSpPr.xfrm->flipV = true;

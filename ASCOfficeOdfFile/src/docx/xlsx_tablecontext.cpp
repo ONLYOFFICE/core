@@ -119,12 +119,14 @@ void xlsx_table_context::set_database_header (bool val)
 	if (xlsx_data_ranges_.empty()) return;
 
 	xlsx_data_ranges_.back()->withHeader = val;
+	xlsx_data_ranges_values_.back()->withHeader = val;
 }
 void xlsx_table_context::set_database_filter (bool val)
 {
 	if (xlsx_data_ranges_.empty()) return;
 
 	xlsx_data_ranges_.back()->filter = val;
+	xlsx_data_ranges_values_.back()->filter = val;
 }
 void xlsx_table_context::end_database_range()
 {
@@ -145,7 +147,8 @@ int xlsx_table_context::in_database_range()
 
 	for (size_t i = 0; i < xlsx_data_ranges_values_.size(); i++)
 	{
-		if (xlsx_data_ranges_values_[i]->in_range(col, row))
+		if ((xlsx_data_ranges_values_[i]->withHeader || xlsx_data_ranges_values_[i]->filter)
+			&& xlsx_data_ranges_values_[i]->in_range(col, row))
 		{
 			return (int)i;
 		}
@@ -317,6 +320,12 @@ void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & 
 				CP_XML_ATTR(L"name", xlsx_data_ranges_[it->second]->table_name);
 				CP_XML_ATTR(L"displayName", xlsx_data_ranges_[it->second]->table_name);
 				CP_XML_ATTR(L"ref", xlsx_data_ranges_[it->second]->ref);
+				
+				if (xlsx_data_ranges_[it->second]->withHeader == false && 
+					xlsx_data_ranges_[it->second]->filter == false)
+					CP_XML_ATTR(L"headerRowCount", 0);
+
+				CP_XML_ATTR(L"totalsRowCount", 0);
 				CP_XML_ATTR(L"totalsRowShown", 0);
 
 				xlsx_data_ranges_[it->second]->serialize_autofilter(CP_XML_STREAM());
@@ -331,8 +340,13 @@ void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & 
 					{
 						CP_XML_NODE(L"tableColumn")
 						{
+							std::wstring column_name = xlsx_data_ranges_values_[it->second]->values[id];
+							if (column_name.empty())
+							{
+								column_name = L"Column_" + std::to_wstring(id + 1); 
+							}
 							CP_XML_ATTR(L"id", id + 1);
-							CP_XML_ATTR(L"name", xlsx_data_ranges_values_[it->second]->values[id]);
+							CP_XML_ATTR(L"name", column_name);
 						}
 					}
 				}

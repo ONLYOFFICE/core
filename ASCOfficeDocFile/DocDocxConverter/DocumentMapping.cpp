@@ -1071,7 +1071,9 @@ namespace DocFileFormat
 			int cpPic			= searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
 			int cpFieldEnd		= searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 
-			if (cpFieldStart < cpPic && cpPic < cpFieldEnd)
+			bool bStartField = _fieldLevels.empty() ? false : (_fieldLevels.back().bBegin && !_fieldLevels.back().bSeparate);
+
+			if (cpFieldStart < cpPic && cpPic < cpFieldEnd && !bStartField)
 			{
 				writeField(text, cpFieldStart, cpFieldEnd);
 				text.clear();

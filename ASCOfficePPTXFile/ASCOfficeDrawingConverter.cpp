@@ -4804,6 +4804,14 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 		if(oPic.oleObject.IsInit())
 		{
 			bOle = oPic.oleObject->isValid();
+			if (oPic.oleObject->m_oDxaOrig.IsInit() == false)
+			{
+				oPic.oleObject->m_oDxaOrig = 0;
+			}
+			if (oPic.oleObject->m_oDyaOrig.IsInit() == false)
+			{
+				oPic.oleObject->m_oDyaOrig = 0;
+			}
 		}
 	}
 	bool bSignatureLine = false;

@@ -31,6 +31,7 @@
  */
 
 #include "MainDocumentMapping.h"
+#include "OfficeDrawing/FillStyleBooleanProperties.h"
 
 namespace DocFileFormat
 {
@@ -83,16 +84,27 @@ namespace DocFileFormat
 
 		if ((m_document->GetOfficeArt()) && (m_document->GetOfficeArt()->GetShapeBackgound()))
 		{
+			bool bFilled = true;
 			m_document->DocProperties->bDisplayBackgroundShape = true;
 			ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeBackgound();
 
-			m_pXmlWriter->WriteNodeBegin ( L"w:background", TRUE);
-				m_pXmlWriter->WriteAttribute	( L"w:color", L"FFFFFF");
-			m_pXmlWriter->WriteNodeEnd( L"",  TRUE, FALSE );
-			
-			VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, NULL, NULL,  _caller);
-				pShape->Convert(&oVmlWriter);
-			m_pXmlWriter->WriteNodeEnd (L"w:background");
+			OptionEntryPtr boolFill = pShape->ExtractOption(fillStyleBooleanProperties);
+
+			FillStyleBooleanProperties booleans(boolFill ? boolFill->op : 0);
+			if (booleans.fUsefFilled && !booleans.fFilled)
+			{
+				bFilled = false;
+			}
+			if (bFilled)
+			{
+				m_pXmlWriter->WriteNodeBegin ( L"w:background", TRUE);
+					m_pXmlWriter->WriteAttribute ( L"w:color", L"FFFFFF");
+				m_pXmlWriter->WriteNodeEnd( L"",  TRUE, FALSE );
+				
+				VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, NULL, NULL,  _caller);
+					pShape->Convert(&oVmlWriter);
+				m_pXmlWriter->WriteNodeEnd (L"w:background");
+			}
 		}
 
 		m_pXmlWriter->WriteNodeBegin( L"w:body", FALSE );

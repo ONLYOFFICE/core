@@ -117,9 +117,9 @@ public:
 	}
 	static RelsType detectMediaType(const std::wstring & fileName)
 	{
-		int pos = fileName.rfind(L".");
+		size_t pos = fileName.rfind(L".");
 
-		std::wstring sExt = (pos >=0 ? fileName.substr(pos + 1) : L"");
+		std::wstring sExt = (pos != std::wstring::npos ? fileName.substr(pos + 1) : L"");
 
 		if (sExt.empty()) return typeMedia;
 

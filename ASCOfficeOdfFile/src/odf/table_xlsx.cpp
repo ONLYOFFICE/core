@@ -84,7 +84,6 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
 		}
 
 		Context.get_table_context().set_database_range_value(index, strm.str());
-
 	}
     return sharedStrId;
 }
@@ -1157,7 +1156,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 
                     if (!formula.empty())
                     {
-                        const std::wstring xlsxFormula = formulas_converter.convert(formula);
+						const std::wstring xlsxFormula = formulas_converter.convert(formula);
                         if (!xlsxFormula.empty())
                         {
                             CP_XML_NODE(L"f")

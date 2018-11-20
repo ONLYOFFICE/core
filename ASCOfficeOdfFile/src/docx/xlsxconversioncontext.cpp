@@ -79,6 +79,8 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
      applicationFonts_ = NSFonts::NSApplication::Create();
 }
 
+std::unordered_map<std::wstring, int> xlsx_conversion_context::mapExternalLink_;
+
 void xlsx_conversion_context::set_output_document (package::xlsx_document * document)
 {
 	output_document_ = document;
@@ -235,7 +237,41 @@ void xlsx_conversion_context::end_document()
                 {
                     CP_XML_STREAM() << workbook_content.str();
                 }
+				if (false == mapExternalLink_.empty())
+				{
+					CP_XML_NODE(L"externalReferences")
+					{
+						for (std::unordered_map<std::wstring, int>::iterator it = mapExternalLink_.begin(); 
+							it != mapExternalLink_.end(); ++it)
+						{
+							package::external_links_content_ptr content = package::external_links_content::create();
+							content->rId() = L"extRef" + std::to_wstring(it->second);
+							{
+								CP_XML_WRITER(content->content())
+								{
+									CP_XML_NODE(L"externalLink")
+									{
+										CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+										CP_XML_NODE(L"externalBook")
+										{
+											CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+											CP_XML_ATTR(L"r:id", L"rId1");
+										}
+									}
+								}
+							}
+							
+							content->get_rels().add(relationship(L"rId1", mediaitems::get_rel_type(typeExternalLink), it->first, L"External"));
 
+							output_document_->get_xl_files().add_external_links(content);	
+
+							CP_XML_NODE(L"externalReference")
+							{
+								CP_XML_ATTR(L"r:id", content->rId());
+							}
+						}
+					}
+				}
                 get_xlsx_defined_names().xlsx_serialize(CP_XML_STREAM());
 
 				int pivot_cache_count = xlsx_pivots_context_.get_count();
@@ -507,6 +543,20 @@ void xlsx_conversion_context::end_table()
     }    
     get_table_context().end_table();
 }
+//int xlsx_conversion_context::add_external_link(const std::wstring & external)
+//{
+//	std::unordered_map<std::wstring, int>::iterator pFind = mapExternalLink_.find(external);
+//	if ( pFind == mapExternalLink_.end())
+//	{
+//		int id = (int)mapExternalLink_.size() + 1;
+//		mapExternalLink_.insert(std::make_pair(external, id));
+//		return id;
+//	}
+//	else
+//	{
+//		return pFind->second;
+//	}
+//}
 void xlsx_conversion_context::add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props)
 {
 	if (rid.empty()) return;

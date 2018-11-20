@@ -195,10 +195,12 @@ void table_data_pilot_field::xlsx_convert(oox::xlsx_conversion_context & Context
 
 		if (type == table_function::String)
 		{
-			formulasconvert::odf2oox_converter formulas_converter;
+			std::wstring formula = table_function_->get_string();
 
-			std::wstring user_funtion = formulas_converter.convert(table_function_->get_string());
-			Context.get_pivots_context().set_field_user_function(user_funtion);
+			formulasconvert::odf2oox_converter formulas_converter;
+			std::wstring oox_formula = formulas_converter.convert(formula);
+			
+			Context.get_pivots_context().set_field_user_function(oox_formula);
 		}
 		else
 		{

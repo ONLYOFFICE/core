@@ -54,6 +54,7 @@
 #include "datatypes/borderstyle.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../Common/OfficeFileFormatChecker.h"
 #include "../../../Common/3dParty/pole/pole.h"
 
 namespace cpdoccore { 
@@ -295,50 +296,63 @@ void draw_object_ole::add_child_element( xml::sax * Reader, const std::wstring &
     CP_NOT_APPLICABLE_ELM(); 
 }
 
-std::wstring draw_object_ole::detectObject(const std::wstring &fileName)
+void draw_object_ole::detectObject(const std::wstring &fileName, std::wstring &prog, std::wstring &extension, oox::RelsType &rels)
 {
+	extension = L".bin";
+
 	POLE::Storage *storage = new POLE::Storage(fileName.c_str());
-	if (storage == NULL) return L"";
-
-	if (storage->open(false, false) == false)
+	if ((storage) && (storage->open(false, false) == true))
 	{
-		delete storage;
-		return L"";
-	}
-	std::wstring prog;
-	POLE::Stream* pStream = new POLE::Stream(storage, L"CompObj");
-	if ((pStream) && (pStream->size() > 28))
-	{
-		//skip the CompObjHeader
-		pStream->seek(28);
-
-		int sz_obj = (int)pStream->size() - 28;
-
-		std::vector<std::string> str;
-		
-		while (sz_obj > 0)
+		std::wstring prog;
+		POLE::Stream* pStream = new POLE::Stream(storage, L"CompObj");
+		if ((pStream) && (pStream->size() > 28))
 		{
-			_UINT32 sz = 0;			
-			pStream->read((unsigned char*)&sz, 4); sz_obj-= 4;
+			//skip the CompObjHeader
+			pStream->seek(28);
+
+			int sz_obj = (int)pStream->size() - 28;
+
+			std::vector<std::string> str;
 			
-			if (sz > sz_obj) 
-				break;
-			unsigned char *data  = new unsigned char[sz];
-			pStream->read(data, sz);
+			while (sz_obj > 0)
+			{
+				_UINT32 sz = 0;			
+				pStream->read((unsigned char*)&sz, 4); sz_obj-= 4;
+				
+				if (sz > sz_obj) 
+					break;
+				unsigned char *data  = new unsigned char[sz];
+				pStream->read(data, sz);
 
-			str.push_back(std::string((char*)data, sz));
-			delete []data;
+				str.push_back(std::string((char*)data, sz));
+				delete []data;
 
-			sz_obj-= sz;
+				sz_obj-= sz;
+			}
+			if (!str.empty())
+			{
+				prog = std::wstring (str.back().begin(), str.back().end());
+			}
+			delete pStream;
 		}
-		if (!str.empty())
-		{
-			prog = std::wstring (str.back().begin(), str.back().end());
-		}
-		delete pStream;
+		delete storage;
 	}
-	delete storage;
-	return prog;
+	else
+	{
+		COfficeFileFormatChecker checker(fileName);
+		switch(checker.nFileType)
+		{
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:		extension = L".doc"; prog = L"Word"; rels = oox::typeOleObject; break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		extension = L".docx"; prog = L"Word"; rels = oox::typeMsObject; break; 
+
+		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:		extension = L".xls"; prog = L"Excel"; rels = oox::typeOleObject; break;
+		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:	extension = L".xlsx"; prog = L"Excel"; rels = oox::typeMsObject; break;
+
+		case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT:	extension = L".ppt"; prog = L"PowerPoint"; rels = oox::typeOleObject; break;
+		case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:	extension = L".pptx"; prog = L"PowerPoint"; rels = oox::typeMsObject; break;
+
+		}
+	}
 }
 
 

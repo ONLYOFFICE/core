@@ -1638,18 +1638,20 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 
 	if (href.empty()) return;
 
-	draw_frame*	frame	 = Context.get_drawing_context().get_current_frame();		//owner
+	draw_frame*	frame = Context.get_drawing_context().get_current_frame();		//owner
 	if (!frame) return;
 	
-	oox::_docx_drawing * drawing	= dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
 	if (!drawing) return;
 			
-	drawing->type			=  oox::typeOleObject;
-	
-	bool isMediaInternal	= true;        
-	drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
+	std::wstring extension;
+	detectObject(href, drawing->objectProgId, extension, drawing->type);
 
-	drawing->objectProgId	= detectObject(objectPath); 
+	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+
+	bool isMediaInternal	= true;
+	drawing->objectId = Context.get_mediaitems().add_or_find(href + extension, drawing->type, isMediaInternal, href);
+
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {

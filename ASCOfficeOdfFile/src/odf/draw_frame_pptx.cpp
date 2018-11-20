@@ -384,7 +384,18 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 	if (!href.empty()) 
-		Context.get_slide_context().set_ole_object(href, detectObject(objectPath));
+	{
+		std::wstring prog, extension;
+		oox::RelsType relsType;
+		detectObject(objectPath, prog, extension, relsType);
+		
+		NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+
+		if (relsType == oox::typeMsObject)
+			Context.get_slide_context().set_ms_object(href + extension, prog);
+		else
+			Context.get_slide_context().set_ole_object(href + extension, prog);
+	}
 }
 
 void draw_param::pptx_convert(oox::pptx_conversion_context & Context)

@@ -327,7 +327,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-	std::wstring detectObject(const std::wstring &fileName);
+	void detectObject(const std::wstring &fileName, std::wstring &prog, std::wstring &extension, oox::RelsType &rels);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);

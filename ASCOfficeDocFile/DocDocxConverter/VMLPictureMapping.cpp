@@ -138,6 +138,51 @@ namespace DocFileFormat
 		}
 		return btWin32;
 	}
+	bool VMLPictureMapping::ParseEmbeddedBlob( const std::string & xmlString, std::wstring & newXmlString)
+	{
+		newXmlString.clear();
+
+		std::wstring sTempFolder = m_context->_doc->m_sTempFolder;
+		if (sTempFolder.empty())
+		{
+            sTempFolder = NSFile::CFileBinary::GetTempPath();
+		}
+
+		std::wstring sTempXmlFile = NSDirectory::CreateTempFileWithUniqueName(sTempFolder, L"emb");
+
+		NSFile::CFileBinary file; 
+		file.CreateFileW(sTempXmlFile);
+		file.WriteFile((BYTE*)xmlString.c_str(), xmlString.size());
+		file.CloseFile();
+
+		COfficeUtils officeUtils(NULL);
+
+		BYTE *utf8Data = NULL; 
+		ULONG utf8DataSize = 0;
+		if (S_OK != officeUtils.LoadFileFromArchive(sTempXmlFile, L"drs/shapexml.xml", &utf8Data, utf8DataSize))
+		{
+			if (S_OK == officeUtils.IsFileExistInArchive(sTempXmlFile, L"drs/diagrams"))
+			{
+				officeUtils.LoadFileFromArchive(sTempXmlFile, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize);
+			}
+			else if (S_OK != officeUtils.LoadFileFromArchive(sTempXmlFile, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+			{
+
+			}
+		}
+
+		if (utf8Data && utf8DataSize > 0)
+		{
+			newXmlString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+
+			delete []utf8Data;
+		}
+		NSFile::CFileBinary::Remove(sTempXmlFile);
+
+		if (newXmlString.empty()) return false;
+
+		return true;
+	}
 	bool VMLPictureMapping::ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
 	{
 		newXmlString.clear();
@@ -221,6 +266,7 @@ namespace DocFileFormat
 		m_isBullete			=	false;
 		m_isEquation		=	false;
 		m_isEmbedded		=	false;
+		m_isBlob			=	false;
 
         m_imageData			=	new XMLTools::XMLElement( L"v:imagedata" );
 	}
@@ -314,7 +360,9 @@ namespace DocFileFormat
 			case metroBlob:
 				{
 					//встроенная неведомая хуйня
+					m_isBlob		= true;
 					m_isEmbedded	= true;
+
 					m_embeddedData	= std::string((char*)iter->opComplex.get(), iter->op);
 					
 					//if (ParseEmbeddedBlob( m_embeddedData, m_blobXml)) // todoooo

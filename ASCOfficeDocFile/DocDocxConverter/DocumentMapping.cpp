@@ -992,6 +992,11 @@ namespace DocFileFormat
 								_writeAfterRun = oVmlMapper.m_equationXml;
 								bFormula = true;
 							}
+							else if (oVmlMapper.m_isBlob)
+							{
+								_writeAfterRun = oVmlMapper.m_blobXml;
+								bFormula = true;
+							}
 						}
 						else
 						{

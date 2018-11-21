@@ -398,6 +398,72 @@ namespace MetaFile
 				nAdd++;
 			}
 
+			BYTE* pUncompressedBuffer = NULL;
+			if (BI_RLE8 == unCompression)
+			{
+				int nStride = nWidth + nAdd;
+				int lUncompressedLen = nStride * abs(nHeight);
+				pUncompressedBuffer = new BYTE[lUncompressedLen];
+				if (!pUncompressedBuffer)
+					return false;
+
+				for (int nPos = 0, nUncompressedPos = 0, nLinePos = 0; nPos < lBufLen; nPos += 2)
+				{
+					BYTE nCount = pBuffer[nPos];
+					BYTE nColor = pBuffer[nPos + 1];
+
+					if (nCount == 0)
+					{
+						// End of line.
+						if (0 == nColor)
+						{
+							if (nLinePos < nStride)
+							{
+								int nAdditionalSpace = nStride - nLinePos;
+
+								if (nUncompressedPos + nAdditionalSpace > lUncompressedLen)
+									break;
+
+								::memset(pUncompressedBuffer + nUncompressedPos, 0, nAdditionalSpace);
+								nUncompressedPos += nAdditionalSpace;
+							}
+
+							nLinePos = 0;
+
+							continue;
+						}
+						// End of bitmap.
+						else if (1 == nColor)
+						{
+							break;
+						}
+						else
+						{
+							// TODO: 2
+							break;
+						}
+					}
+
+					nLinePos += nCount;
+					while (nLinePos >= nStride)
+					{
+						nLinePos -= nStride;
+					}
+
+					if (nUncompressedPos + nCount > lUncompressedLen)
+						break;
+
+					for (int i = 0; i < nCount; ++i)
+						pUncompressedBuffer[nUncompressedPos + i] = nColor;
+
+					::memset(pUncompressedBuffer + nUncompressedPos, nColor, nCount);
+					nUncompressedPos += nCount;
+				}
+
+				pBuffer = pUncompressedBuffer;
+				lBufLen = lUncompressedLen;
+			}
+
 			if (lBufLen < (nWidth + nAdd) * abs(nHeight))
 				return false;
 
@@ -448,6 +514,9 @@ namespace MetaFile
 			*ppDstBuffer = pBgraBuffer;
 			*pulWidth    = ulWidth;
 			*pulHeight   = ulHeight;
+
+			if (pUncompressedBuffer)
+				delete[] pUncompressedBuffer;
 
 			return true;
 		}

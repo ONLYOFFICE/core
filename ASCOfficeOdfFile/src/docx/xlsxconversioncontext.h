@@ -201,6 +201,7 @@ public:
     mediaitems & get_mediaitems() { return mediaitems_; }
 
 	static std::unordered_map<std::wstring, int>	mapExternalLink_;
+	std::map<std::wstring, int>						mapUsedNames_;
 private:
     void create_new_sheet	(std::wstring const & name);
 

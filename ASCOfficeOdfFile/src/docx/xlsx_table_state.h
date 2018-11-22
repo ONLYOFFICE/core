@@ -87,15 +87,17 @@ public:
 class xlsx_data_range
 {
 public:
-	xlsx_data_range() : byRow(true), filter(false), withHeader(false), cell_start(0,0), cell_end(0,0) {}
+	xlsx_data_range() : byRow(true), filter(false), bTablePart(true), withHeader(false), cell_start(0,0), cell_end(0,0) {}
 
 	std::wstring	table_name;
+	std::wstring	name;
 	
 	std::wstring	ref;
 	
 	std::pair<int, int> cell_start;
 	std::pair<int, int> cell_end;
 
+	bool			bTablePart;
 	bool			byRow;
 	bool			filter;
 	bool			withHeader;

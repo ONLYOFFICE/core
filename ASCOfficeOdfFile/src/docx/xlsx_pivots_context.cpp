@@ -302,11 +302,23 @@ void xlsx_pivots_context::Impl::calc_headers()
 
 	std::map<size_t, size_t>::iterator pFind;
 
+	//current_.bAxisCol = false;
+	//current_.bAxisRow = false;
+
 	size_t min_col = 0xffffff, min_row = 0xffffff;
+	size_t prev_col, prev_row;
 	for (size_t i = 0; i < current_.headers.size(); i++)//("F18","F19","F23","G21","H21")
 	{
 		size_t row = 0, col = 0;
 		oox::getCellAddressInv(current_.headers[i], col, row);
+
+		//if (i > 0)
+		//{
+		//	if (col != prev_col)current_.bAxisCol = true;
+		//	if (row != prev_row)current_.bAxisRow = true;
+		//}
+		prev_col = col;
+		prev_row = row;
 
 		if (col < min_col) min_col = col;
 		if (row < min_row) min_row = row;
@@ -578,10 +590,10 @@ void xlsx_pivots_context::Impl::sort_fields()
 			i--;
 		}
 	}
-	if ((bAddRepeateCol || (count_items_col == 0 && current_.bAxisCol))/* && bShowEmptyCol*/) ///* || (bEmptyColCache && current_.grand_total < 0)*/?? Financial Execution (template).ods
+	if ((bAddRepeateCol || (count_items_col == 0 && current_.bAxisCol)) && (current_.grand_total == 1 || current_.grand_total == 2))/* && bShowEmptyCol*/ ///* || (bEmptyColCache && current_.grand_total < 0)*/?? Financial Execution (template).ods
 		current_.col_fields.push_back(-2);	
 	
-	if ((bAddRepeateRow || (count_items_row == 0 && current_.bAxisRow))/* && bShowEmptyRow*/)
+	if ((bAddRepeateRow || (count_items_row == 0 && current_.bAxisRow)) && (current_.grand_total == 1 || current_.grand_total == 3))/* && bShowEmptyRow*/
 		current_.row_fields.push_back(-2);	
 }
 void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)

@@ -73,18 +73,6 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
    
 	const int sharedStrId = Context.get_table_context().end_cell_content();
 
-	int index = Context.get_table_context().in_database_range();
-	
-	if (index >= 0)
-	{
-		std::wstringstream strm;
-		for (size_t i = 0 ; i < elements_.size(); i++)
-		{
-			elements_[i]->text_to_stream(strm);
-		}
-
-		Context.get_table_context().set_database_range_value(index, strm.str());
-	}
     return sharedStrId;
 }
 
@@ -853,9 +841,31 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		
 		const int sharedStringId = content_.xlsx_convert(Context, &textFormatProperties);
 
-		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
-			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
+//---------------------------------------------------------------------------------------------------------	
+		if (t_val == oox::XlsxCellType::str || t_val == oox::XlsxCellType::inlineStr)
+		{
+			int index = Context.get_table_context().in_database_range();
 			
+			if (index >= 0)
+			{
+				if (sharedStringId >= 0)
+				{
+					std::wstringstream strm;
+					content_.text_to_stream(strm);
+
+					Context.get_table_context().set_database_range_value(index, strm.str());
+				}
+				else if (str_val)
+				{
+					Context.get_table_context().set_database_range_value(index, str_val.get());
+				}
+			}
+		}
+		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
+		{
+			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
+		}
+//---------------------------------------------------------------------------------------------------------			
 		if (skip_next_cell)break;
 	
 	// пустые ячейки пропускаем.
@@ -1138,7 +1148,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 		
 		const int sharedStringId = content_.xlsx_convert(Context, &textFormatProperties);
 
-		if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
+		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
 			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 			
 		if (skip_next_cell)break;

@@ -477,8 +477,8 @@ void xlsx_conversion_context::end_table()
 	get_table_context().serialize_page_properties		(current_sheet().page_properties());
 	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
     get_table_context().serialize_tableParts			(current_sheet().tableParts(), current_sheet().sheet_rels());
-    //get_table_context().serialize_autofilter			(current_sheet().autofilter());
-    //get_table_context().serialize_sort				(current_sheet().sort());
+    get_table_context().serialize_autofilter			(current_sheet().autofilter());
+    get_table_context().serialize_sort					(current_sheet().sort());
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
 	get_table_context().serialize_data_validation		(current_sheet().dataValidations());
     

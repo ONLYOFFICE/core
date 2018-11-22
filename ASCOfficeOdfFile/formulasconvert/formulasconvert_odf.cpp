@@ -508,10 +508,8 @@ namespace formulasconvert {
 
 	void odf2oox_converter::Impl::split_distance_by(const std::wstring& expr, const std::wstring& by, std::vector<std::wstring>& out)
 	{
-		std::wstring workstr = expr;
-		
-		boost::regex_replace(
-			workstr,
+		std::wstring workstr = boost::regex_replace(
+			expr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
 			&convert_scobci, boost::match_default | boost::format_all);
 	    
@@ -529,10 +527,8 @@ namespace formulasconvert {
 
 	std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring& expr)
 	{
-		std::wstring workstr = is_forbidden(expr);
-
-		boost::regex_replace(
-			workstr,
+		std::wstring workstr = boost::regex_replace(
+			is_forbidden(expr),
 			boost::wregex(L"('.*?')|(\".*?\")"),
 			&convert_scobci, boost::match_default | boost::format_all);
 	    

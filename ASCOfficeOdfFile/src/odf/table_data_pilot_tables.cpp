@@ -87,6 +87,7 @@ void table_data_pilot_table::add_child_element( xml::sax * Reader, const std::ws
 		CP_CREATE_ELEMENT (source_);
 
 }
+
 void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	if (!source_) return;

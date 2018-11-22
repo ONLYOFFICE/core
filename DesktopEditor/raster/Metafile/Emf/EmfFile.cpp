@@ -408,7 +408,7 @@ static const struct ActionNamesEmf
 		m_oStream.Skip(ulHeaderSize + lBitsOffset);
 		BYTE* pBitsBuffer = m_oStream.GetCurPtr();
 
-		unsigned int ulBitsSizeSkip = std::ceil(ulBitsSize / 4 + 0.5) * 4;
+		unsigned int ulBitsSizeSkip = 0 == ulBitsSize ? 0 : ((int)(((double)ulBitsSize - 0.5) / 4) + 1) * 4;
 		m_oStream.Skip(ulBitsSizeSkip);
 
 		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);

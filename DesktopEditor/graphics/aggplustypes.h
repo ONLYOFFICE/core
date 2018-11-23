@@ -255,12 +255,12 @@ public:
 	double bottom;
 
 public:
-	CDoubleRect()
+	CDoubleRect(double dLeft = 0.0, double dTop = 0.0, double dRight = 0.0, double dBottom = 0.0)
 	{
-		left	= 0;
-		top		= 0;
-		right	= 0;
-		bottom	= 0;
+		left	= dLeft;
+		top		= dTop;
+		right	= dRight;
+		bottom	= dBottom;
 	}
 	CDoubleRect& operator=(const CDoubleRect& oSrc)
 	{
@@ -301,6 +301,11 @@ public:
 	inline double GetCentreY() const
 	{
 		return (top + bottom) / 2.0;
+	}
+
+	inline CDoublePoint GetCenter() const
+	{
+		return CDoublePoint((left + right) / 2.0, (top + bottom) / 2.0);
 	}
 
 	inline INT IsPointInside(const CDoublePoint& oPoint)

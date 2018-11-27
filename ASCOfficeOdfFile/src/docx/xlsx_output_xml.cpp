@@ -218,13 +218,6 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_ATTR(L"r:id",impl_->vml_drawingId_);
 				}
 			}
-			if (!impl_->tableParts_.str().empty())
-            {
-                CP_XML_NODE(L"tableParts")
-                {
-					CP_XML_STREAM() << impl_->tableParts_.str();
-				}
-			}
 			if (!impl_->ole_objects_.str().empty())
             {
                 CP_XML_NODE(L"oleObjects")
@@ -239,6 +232,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_STREAM() << impl_->controls_.str();
                 }
             }
+			if (!impl_->tableParts_.str().empty())
+            {
+                CP_XML_NODE(L"tableParts")
+                {
+					CP_XML_STREAM() << impl_->tableParts_.str();
+				}
+			}
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
 			//CP_XML_NODE(L"headerFooter){}

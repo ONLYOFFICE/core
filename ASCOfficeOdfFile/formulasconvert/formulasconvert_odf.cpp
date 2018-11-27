@@ -235,7 +235,7 @@ namespace formulasconvert {
 	{
 		convert_with_TableName = withTableName;
 
-		boost::wregex complexRef(L"\\[(?:\$)?([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]");
+		boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]");
 		/*
 									 [     $   Sheet2          . A1								 : ( $   Sheet2)? . B5                    ]
 		*/
@@ -494,7 +494,7 @@ namespace formulasconvert {
 
 		bool isFormula = check_formula(workstr);
 
-		boost::regex_replace(
+		workstr = boost::regex_replace(
 			workstr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
 			&convert_scobci, boost::match_default | boost::format_all);

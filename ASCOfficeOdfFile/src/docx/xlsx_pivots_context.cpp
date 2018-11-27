@@ -590,11 +590,17 @@ void xlsx_pivots_context::Impl::sort_fields()
 			i--;
 		}
 	}
-	if ((bAddRepeateCol || (count_items_col == 0 && current_.bAxisCol)) && (current_.grand_total == 1 || current_.grand_total == 2))/* && bShowEmptyCol*/ ///* || (bEmptyColCache && current_.grand_total < 0)*/?? Financial Execution (template).ods
+	bool data_col_repeate = false;
+	if ((bAddRepeateRow || (count_items_row == 0 && current_.bAxisRow)) && (current_.grand_total == 1 || current_.grand_total == 3 || current_.data_on_row))/* && bShowEmptyRow*/
+	{
+		current_.row_fields.push_back(-2);	
+		data_col_repeate = true;
+	}
+
+	if (!data_col_repeate && (bAddRepeateCol || (count_items_col == 0 && current_.bAxisCol)) && (current_.grand_total == 1 || current_.grand_total == 2 || current_.data_fields.size() > 1 ))/* && bShowEmptyCol*/ ///* || (bEmptyColCache && current_.grand_total < 0)*/?? Financial Execution (template).ods
 		current_.col_fields.push_back(-2);	
 	
-	if ((bAddRepeateRow || (count_items_row == 0 && current_.bAxisRow)) && (current_.grand_total == 1 || current_.grand_total == 3))/* && bShowEmptyRow*/
-		current_.row_fields.push_back(-2);	
+
 }
 void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 {

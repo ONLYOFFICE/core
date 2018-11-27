@@ -63,17 +63,17 @@ xlsx_table_state_ptr xlsx_table_context::state()
 bool xlsx_table_context::start_database_range(const std::wstring & name, const std::wstring & ref)
 {	
 	formulasconvert::odf2oox_converter convert;	
-	std::wstring odf_ref	= convert.convert_named_ref(ref);
+	std::wstring oox_ref = convert.convert_named_ref(ref);
 
 	std::wstring ref1, ref2;
-	size_t pos = odf_ref.find(L":");
+	size_t pos = oox_ref.find(L":");
 
 	std::wstring xlsx_table_name;
 
 	if (pos != std::wstring::npos)
 	{
-		ref1 = odf_ref.substr(0, pos );
-		ref2 = odf_ref.substr(pos + 1);
+		ref1 = oox_ref.substr(0, pos );
+		ref2 = oox_ref.substr(pos + 1);
 		
 		pos = ref1.find(L"!");							
 		if (pos > 0)
@@ -91,10 +91,11 @@ bool xlsx_table_context::start_database_range(const std::wstring & name, const s
 
 		getCellAddressInv(ref1, col1, row1);
 		getCellAddressInv(ref2, col2, row2);
+		
 		xlsx_data_ranges_.push_back(xlsx_data_range_ptr(new xlsx_data_range()));
 		
-		if (name.find(L"__Anonymous_Sheet_DB__") != std::wstring::npos || col1 == col2)
-		{
+		if (/*name.find(L"__Anonymous_Sheet_DB__") != std::wstring::npos ||*/ col1 == col2)
+		{//check range in pivots
 			xlsx_data_ranges_.back()->bTablePart = false;
 		}
 		xlsx_data_ranges_.back()->name = name;
@@ -103,7 +104,7 @@ bool xlsx_table_context::start_database_range(const std::wstring & name, const s
 		xlsx_data_ranges_.back()->cell_start = std::pair<int, int>(col1, row1);
 		xlsx_data_ranges_.back()->cell_end = std::pair<int, int>(col2, row2);
 
-		xlsx_data_ranges_values_.push_back(xlsx_data_range_values_ptr(new xlsx_data_range_values(row1, col1, col2)));
+		xlsx_data_ranges_.back()->set_header(row1, col1, col2);
 	}
 
 	if (!xlsx_table_name.empty())
@@ -123,14 +124,12 @@ void xlsx_table_context::set_database_header (bool val)
 	if (xlsx_data_ranges_.empty()) return;
 
 	xlsx_data_ranges_.back()->withHeader = val;
-	xlsx_data_ranges_values_.back()->withHeader = val;
 }
 void xlsx_table_context::set_database_filter (bool val)
 {
 	if (xlsx_data_ranges_.empty()) return;
 
 	xlsx_data_ranges_.back()->filter = val;
-	xlsx_data_ranges_values_.back()->filter = val;
 }
 void xlsx_table_context::end_database_range()
 {
@@ -138,23 +137,55 @@ void xlsx_table_context::end_database_range()
 
 void xlsx_table_context::set_database_range_value(int index, const std::wstring& value)
 {
+	if (index < 0 || index > xlsx_data_ranges_.size()) return;
+
 	size_t col = state()->current_column();
 	size_t row = state()->current_row();
 
-	xlsx_data_ranges_values_[index]->set_value(col, row, value);
+	xlsx_data_ranges_[index]->set_header_value(col, row, value);
 }
+void xlsx_table_context::check_database_range_intersection(const std::wstring& table_name, const std::wstring& ref)
+{
+	std::wstring ref1, ref2;
+	size_t col_1, row_1, col_2, row_2;
 
+	size_t pos = ref.find(L":");
+	if (pos != std::wstring::npos)
+	{
+		ref1 = ref.substr(0, pos );
+		ref2 = ref.substr(pos + 1);
+	}
+	getCellAddressInv(ref1, col_1, row_1);
+	getCellAddressInv(ref2, col_2, row_2);
+		
+	for (size_t i = 0; i < xlsx_data_ranges_.size(); i++)
+	{
+		if (xlsx_data_ranges_[i]->table_name != table_name) continue;
+		
+		//if	( xlsx_data_ranges_[i]->cell_start.second < row_2 || xlsx_data_ranges_[i]->cell_end.second > row_1 
+		//	|| xlsx_data_ranges_[i]->cell_end.first < col_1 || xlsx_data_ranges_[i]->cell_start.first > col_2 )
+
+		if	(((col_1 <= xlsx_data_ranges_[i]->cell_start.first && xlsx_data_ranges_[i]->cell_start.first <= col_2) || 
+			(xlsx_data_ranges_[i]->cell_start.first <= col_1 && col_1 <= xlsx_data_ranges_[i]->cell_end.first)) 
+			&& 
+			(( row_1 <= xlsx_data_ranges_[i]->cell_start.second && xlsx_data_ranges_[i]->cell_start.second <= row_2) ||
+			(xlsx_data_ranges_[i]->cell_start.second <= row_1 && row_1 <= xlsx_data_ranges_[i]->cell_end.second )))
+		{
+			xlsx_data_ranges_[i]->bTablePart = false;
+		}
+	}
+}
 int xlsx_table_context::in_database_range()
 {
 	int col = state()->current_column();
 	int row = state()->current_row();
 
-	for (size_t i = 0; i < xlsx_data_ranges_values_.size(); i++)
+	for (size_t i = 0; i < xlsx_data_ranges_.size(); i++)
 	{
 		if (xlsx_data_ranges_[i]->table_name != state()->get_table_name()) continue;
 
 		if (/*(xlsx_data_ranges_values_[i]->withHeader || xlsx_data_ranges_values_[i]->filter)&& */
-			xlsx_data_ranges_values_[i]->in_range(col, row)) //header row only
+			xlsx_data_ranges_[i]->in_header(col, row)) 
 		{
 			return (int)i;
 		}
@@ -350,7 +381,7 @@ void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & 
 					{
 						CP_XML_NODE(L"tableColumn")
 						{
-							std::wstring column_name = xlsx_data_ranges_values_[it->second]->values[id];
+							std::wstring column_name = xlsx_data_ranges_[it->second]->header_values[id];
 							if (column_name.empty())
 							{
 								column_name = L"Column_" + std::to_wstring(id + 1); 

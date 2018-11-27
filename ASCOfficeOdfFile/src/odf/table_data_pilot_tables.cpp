@@ -106,6 +106,8 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 		std::wstring ref = formulas_converter.convert_named_ref(*table_target_range_address_, false);
 		sheet_name = formulas_converter.get_table_name();
 
+		Context.get_table_context().check_database_range_intersection(sheet_name, ref);
+
 		Context.get_pivots_context().set_view_target_range(ref);
 		Context.get_pivots_context().set_view_target_table_name(sheet_name);
 	}

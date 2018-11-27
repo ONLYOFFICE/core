@@ -81,8 +81,8 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 				std::wstring ref1, ref2;
 				size_t col_1, row_1, col_2, row_2;
 
-				int pos = ref.find(L":");
-				if (pos >= 0)
+				size_t pos = ref.find(L":");
+				if (pos != std::wstring::npos)
 				{
 					ref1 = ref.substr(0, pos );
 					ref2 = ref.substr(pos + 1);

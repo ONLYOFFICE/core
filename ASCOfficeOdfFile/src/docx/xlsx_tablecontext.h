@@ -116,19 +116,19 @@ public:
 		void set_database_orientation	(bool val);
 		void set_database_header		(bool val);
 		void set_database_filter		(bool val);
-		
-	void add_database_sort	(int field_number, int order);
+		void add_database_sort	(int field_number, int order);
 	void end_database_range();
-
+		
 	int in_database_range();
 	void set_database_range_value(int index, const std::wstring& value);
+	void check_database_range_intersection(const std::wstring& table_name, const std::wstring& ref);
+
 private:
     xlsx_conversion_context				*xlsx_conversion_context_;
     xlsx_text_context					&xlsx_text_context_;
 	
 	std::vector<xlsx_table_state_ptr>		xlsx_table_states_;
 	std::vector<xlsx_data_range_ptr>		xlsx_data_ranges_;
-	std::vector<xlsx_data_range_values_ptr>	xlsx_data_ranges_values_;
 	
 	std::multimap<std::wstring, int>		xlsx_data_ranges_map_;		
 

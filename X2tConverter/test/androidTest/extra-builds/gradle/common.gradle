@@ -89,13 +89,15 @@ def getBackSlashExt(String str) {
     return str.replaceAll("\\\\", "/")
 }
 
-def getDirNameExt(String path) {
+def findDirNameExt(String path, String name) {
     def countFolders = 0
     def nameFolder = ''
     file(path).listFiles().each { it ->
         if (it.isDirectory()) {
-            nameFolder = it.getName()
-            ++countFolders
+            if (it.getName().contains(name)) {
+                nameFolder = it.getName()
+                ++countFolders
+            }
         }
     }
 
@@ -144,7 +146,7 @@ ext {
 
     // Extra path
     // Args for cmake
-    project.ext.SRC_CORE = "$rootProject.rootDir/../../../"
+    project.ext.SRC_CORE = "$rootProject.rootDir/../../.."
     project.ext.PATH_TO_NATIVE_BUILDS = getBackSlashExt("$rootProject.projectDir/extra-builds/native")
     project.ext.PATH_TO_NATIVE_LIBS = "$project.ext.PATH_TO_NATIVE_BUILDS/libs"
     project.ext.PATH_TO_NATIVE_ARCHS = "$project.ext.PATH_TO_NATIVE_BUILDS/libs.tar"
@@ -171,7 +173,8 @@ ext {
     getPathEnv = this.&getPathEnvOs
     isFolderNotEmpty = this.&isFolderNotEmptyCheck
     getBackSlash = this.&getBackSlashExt
-    getDirName = this.&getDirNameExt
-    getHostName = this.&getHostNameFullExt
+    findDirName = this.&findDirNameExt
+    getHostNameFull = this.&getHostNameFullExt
+    getHostName = this.&getHostNameExt
 }
 

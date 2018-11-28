@@ -28,7 +28,8 @@ endif()
 if (NOT DEFINED ARG_LIBS)
     message(FATAL_ERROR "You must set argument \"ARG_LIBS\" with path to 3d-party library...")
 elseif (NOT EXISTS ${ARG_LIBS})
-    message(FATAL_ERROR "3d party libraries path doesn't exist!")
+    file(MAKE_DIRECTORY ${ARG_LIBS})
+    message(STATUS "3d party libraries path doesn't exist! Created!")
 endif()
 
 # ---------- Libs names ----------

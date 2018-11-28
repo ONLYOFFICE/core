@@ -11,7 +11,7 @@ apply from: "$rootProject.projectDir/extra-builds/gradle/common.gradle"
 // Common native libs path
 def TOOLCHAIN_VERSION = 4.9
 def NDK_VERSION = "android-ndk-r17c"
-def HOST_PLATFORM = getHostName()
+def HOST_PLATFORM = getHostNameFull()
 def PATH_NDK = "${project.rootDir.path}/${NDK_VERSION}"
 def PATH_TOOLCHAIN = "$PATH_NDK/toolchains/\$1/prebuilt/$HOST_PLATFORM/bin"
 def PATH_STANDALONE_SCRIPT = "$PATH_NDK/build/tools"
@@ -43,7 +43,7 @@ def ICONV_LIBS_PATH = "$project.ext.PATH_TO_NATIVE_LIBS/iconv"
 def ICONV_LIBS_INSTALL = "$ICONV_LIBS_PATH/install"
 
 // Icu
-def ICU_SRC = "$PATH_3PARTY/icu/" + getDirName("$PATH_3PARTY/icu")
+def ICU_SRC = "$PATH_3PARTY/icu/" + findDirName("$PATH_3PARTY/icu", getHostName())
 def ICU_BUILD = "$ICU_SRC/build"
 def ICU_SRC_ROOT = "$ICU_SRC/icu/source"
 def ICU_LIBS_PATH = "$project.ext.PATH_TO_NATIVE_LIBS/icu"

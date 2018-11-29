@@ -59,17 +59,12 @@ namespace OOX
 		class CLegacyDrawingWorksheet;
 //необработанные child:
 		//<cellWatches>
-		//<colBreaks>
 		//<customProperties>
-		//<dataConsolidate>
-		//<dataValidations>
 		//<extLst>
 		//<phoneticPr>
 		//<protectedRanges>
-		//<rowBreaks>
 		//<scenarios>
 		//<sheetCalcPr>
-		//<sheetProtection>
 		//<smartTags>
 		//<sortState>
 		//<webPublishItems>
@@ -140,6 +135,9 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CPictureWorksheet>			m_oPicture;
 			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oRowBreaks;
 			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oColBreaks;
+			nullable<OOX::Spreadsheet::CSheetProtection>			m_oSheetProtection;
+			nullable<OOX::Spreadsheet::CDataValidations>			m_oDataValidations;
+			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

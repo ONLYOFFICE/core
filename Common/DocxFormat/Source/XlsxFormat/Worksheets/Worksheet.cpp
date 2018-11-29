@@ -157,6 +157,12 @@ namespace OOX
 							m_oRowBreaks = oReader;
 						else if (_T("colBreaks") == sName)
 							m_oColBreaks = oReader;
+						else if (_T("sheetProtection") == sName)
+							m_oSheetProtection = oReader;
+						else if (_T("dataValidations") == sName)
+							m_oDataValidations = oReader;
+						else if (_T("dataConsolidate") == sName)
+							m_oDataConsolidate = oReader;
 					}
 				}
 				if(m_oLegacyDrawing.IsInit() && m_oLegacyDrawing->m_oId.IsInit())
@@ -393,10 +399,16 @@ namespace OOX
 					m_oPicture->toXML(sXml);
 				if(m_oOleObjects.IsInit())
 					m_oOleObjects->toXML(sXml);
-				if (m_oControls.IsInit())
+				if(m_oControls.IsInit())
 					m_oControls->toXML(sXml);
+				if(m_oSheetProtection.IsInit())
+					m_oSheetProtection->toXML(sXml);
+				if(m_oDataValidations.IsInit())
+					m_oDataValidations->toXML(sXml);
 				if(m_oTableParts.IsInit())
 					m_oTableParts->toXML(sXml);
+				if(m_oDataConsolidate.IsInit())
+					m_oDataConsolidate->toXML(sXml);
 				if(m_oExtLst.IsInit())
 				{
 					sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));

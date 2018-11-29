@@ -32,6 +32,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 #include "xlsx_row_spanned.h"
 #include "xlsx_merge_cells.h"
@@ -76,10 +77,6 @@ public:
 	void serialize_sort			(std::wostream & _Wostream);
 	void serialize_autofilter	(std::wostream & _Wostream);
 	
-	size_t row_header;
-	size_t start_column_header;
-	size_t end_column_header;
-
 	std::vector<std::wstring> header_values;
 
 	void set_header(size_t row, size_t col1, size_t col2)
@@ -96,12 +93,29 @@ public:
 		while (col - start_column_header + 1 >= header_values.size())
 			header_values.push_back(L"");
 
-		header_values[col - start_column_header] = value;
+		std::map<std::wstring, int>::iterator pFind = map_unique_header_values.find(value);
+		if (pFind == map_unique_header_values.end())
+		{
+			map_unique_header_values.insert(std::make_pair(value, 1));
+			header_values[col - start_column_header] = value;
+		}
+		else
+		{
+			pFind->second++;
+			header_values[col - start_column_header] = value + std::to_wstring(pFind->second);
+		}
 	}
 	bool in_header(size_t col, size_t row) 
 	{
 		return (row_header == row && (col >= start_column_header && col <= end_column_header));
 	}
+
+private:
+	size_t row_header;
+	size_t start_column_header;
+	size_t end_column_header;
+
+	std::map<std::wstring, int> map_unique_header_values;
 };
 
 class xlsx_table_state

@@ -1125,6 +1125,12 @@ namespace OOX
 		et_x_HeaderFooterElementWorksheet,
 		et_x_Break,
 		et_x_RowColBreaks,
+		et_x_SheetProtection,
+		et_x_DataValidations,
+		et_x_DataValidation,
+		et_x_DataConsolidate,
+		et_x_DataRefs,
+		et_x_DataRef,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

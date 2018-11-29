@@ -48,7 +48,8 @@ class xlsx_table_context
 public:
     xlsx_table_context(xlsx_conversion_context * Context, xlsx_text_context & textCotnext);
 
-    void start_table(std::wstring tableName, std::wstring tableStyleName, int id);
+    void start_table(const std::wstring &tableName, const std::wstring & tableStyleName, int id);
+		void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
     void end_table();
 
     void start_cell(const std::wstring & formula,
@@ -94,6 +95,7 @@ public:
 	void serialize_page_properties		(std::wostream & _Wostream);
 	void serialize_background			(std::wostream & _Wostream);
 	void serialize_data_validation		(std::wostream & _Wostream);
+	void serialize_protection			(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   

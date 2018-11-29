@@ -134,9 +134,8 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
     xlsx_comments_context_	(Context->get_comments_context_handle()),
     table_column_last_width_(0.0),
 	in_cell(false),
-	bEndTable_(false),
-	bRTL_(false)
-
+	bEndTable(false),
+	bRTL(false)
 {        
 	odf_reader::style_table_properties	* table_prop = NULL;
 	odf_reader::style_instance			* tableStyle = context_->root()->odf_context().styleContainer().style_by_name(table_style_, odf_types::style_family::Table, false);
@@ -147,7 +146,7 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
 	if ((table_prop) && (table_prop->content().common_writing_mode_attlist_.style_writing_mode_))
 	{
 		if (table_prop->content().common_writing_mode_attlist_.style_writing_mode_->get_type() == odf_types::writing_mode::RlTb)
-			bRTL_ = true;
+			bRTL = true;
 	}
 }
     
@@ -162,7 +161,19 @@ void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & 
 
 void xlsx_table_state::set_rtl(bool val)
 {
-	bRTL_ = val;
+	bRTL = val;
+}
+
+void xlsx_table_state::set_protection(bool val, const std::wstring &key, const std::wstring &algorithm)
+{
+	bProtected = val;
+	protect_key = key;
+	
+	size_t pos = algorithm.find(L"#");
+	if (pos != std::wstring::npos)
+	{
+		protect_key_algorithm = algorithm.substr(pos + 1);
+	}
 }
 
 unsigned int xlsx_table_state::columns_count() const
@@ -389,6 +400,19 @@ void xlsx_table_state::serialize_background (std::wostream & strm)
 		}
 	}
 }
+void xlsx_table_state::serialize_protection (std::wostream & strm)
+{
+	if (!bProtected) return;
+	
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"sheetProtection")
+		{
+			CP_XML_ATTR(L"sheet", 1);
+//convert protection odf->ooxml impossible without password !!!
+		}
+	}
+}
 void xlsx_table_state::serialize_table_format (std::wostream & strm)
 {
 	odf_reader::odf_read_context & odfContext = context_->root()->odf_context();
@@ -437,7 +461,7 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 				{
 					CP_XML_ATTR(L"workbookViewId", 0);
 
-					if (bRTL_)
+					if (bRTL)
 						CP_XML_ATTR(L"rightToLeft", 1); 
 
 					std::wstring s_col, s_row;

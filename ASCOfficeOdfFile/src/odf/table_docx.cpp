@@ -171,10 +171,10 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	bool sub_table = table_table_attlist_.table_is_sub_table_.get_value_or(false);
+	bool sub_table = attlist_.table_is_sub_table_.get_value_or(false);
 	//todooo придумать как сделать внешние границы sub-таблицы границами внешней ячейки (чтоб слияние произошло)
 	
-	std::wstring tableStyleName = table_table_attlist_.table_style_name_.get_value_or(L"");
+	std::wstring tableStyleName = attlist_.table_style_name_.get_value_or(L"");
 
 	_Wostream << L"<w:tbl>";    
 

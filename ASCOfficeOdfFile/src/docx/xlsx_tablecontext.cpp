@@ -204,17 +204,19 @@ xlsx_text_context_(textContext)
 {        
 }
 
-void xlsx_table_context::start_table(std::wstring tableName, std::wstring tableStyleName, int id)
+void xlsx_table_context::start_table(const std::wstring & tableName, const std::wstring & tableStyleName, int id)
 {
 	xlsx_table_state_ptr  state = boost::make_shared<xlsx_table_state>(xlsx_conversion_context_, tableStyleName, tableName, id);
     xlsx_table_states_.push_back( state);
 }
-
+void xlsx_table_context::set_protection(bool val, const std::wstring &key, const std::wstring &algorithm)
+{
+	xlsx_table_states_.back()->set_protection(val, key, algorithm);
+}
 void xlsx_table_context::end_table()
 {
     //xlsx_table_states_.pop_back();
-}
-	
+}	
 void xlsx_table_context::start_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
 {
     state()->start_cell(columnsSpanned, rowsSpanned);    
@@ -450,6 +452,10 @@ void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)
 			//CP_XML_ATTR(L"ref", ref);
 		}
 	}
+}
+void xlsx_table_context::serialize_protection(std::wostream & _Wostream)
+{
+    return state()->serialize_protection(_Wostream);
 }
 void xlsx_table_context::serialize_conditionalFormatting(std::wostream & _Wostream)
 {

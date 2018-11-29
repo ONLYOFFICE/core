@@ -481,7 +481,8 @@ void xlsx_conversion_context::end_table()
     get_table_context().serialize_sort					(current_sheet().sort());
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
 	get_table_context().serialize_data_validation		(current_sheet().dataValidations());
-    
+ 	get_table_context().serialize_protection			(current_sheet().protection());
+   
 	get_drawing_context().set_odf_packet_path			(root()->get_folder());
     get_drawing_context().process_objects				(get_table_metrics());
 	

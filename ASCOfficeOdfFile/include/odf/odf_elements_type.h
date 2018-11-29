@@ -332,6 +332,7 @@ enum ElementType
     typeTableTableRowGroup,
 	typeTableTableRowNoGroup,
     typeTableTableSource,
+	typeTableTableProtection,
 
 	typeTableDataPilotTables,
 	typeTableDataPilotTable,

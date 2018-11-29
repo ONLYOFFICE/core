@@ -319,8 +319,8 @@ void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring tableStyleName	= table_table_attlist_.table_style_name_.get_value_or(L"");
-    const std::wstring tableName		= table_table_attlist_.table_name_.get_value_or(L"");
+    const std::wstring tableStyleName	= attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring tableName		= attlist_.table_name_.get_value_or(L"");
 
     _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
 
@@ -339,6 +339,15 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	}
     Context.start_table(tableName, tableStyleName);
+
+	if (attlist_.table_protected_)
+	{
+		Context.get_table_context().set_protection(true,	attlist_.table_protection_key_.get_value_or(L""), 
+															attlist_.table_protection_key_digest_algorithm_.get_value_or(L""));
+		if (table_protection_)
+		{
+		}
+	}
 
 	table_columns_and_groups_.xlsx_convert(Context);
 

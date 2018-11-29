@@ -60,6 +60,7 @@ public:
 	std::wstringstream	ole_objects_;
 	std::wstringstream	page_props_;
 	std::wstringstream	controls_;
+	std::wstringstream	protection_;
 
 	rels sheet_rels_;
 
@@ -156,6 +157,10 @@ std::wostream & xlsx_xml_worksheet::dataValidations()
 {
     return impl_->dataValidations_;
 }
+std::wostream & xlsx_xml_worksheet::protection()
+{
+    return impl_->protection_;
+}
 //---------------------------------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -203,6 +208,10 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                     CP_XML_STREAM() << impl_->hyperlinks_.str();
                 }
             }
+			if (!impl_->protection_.str().empty())
+            {
+				CP_XML_STREAM() << impl_->protection_.str();
+			}
 			
 			if (!impl_->page_props_.str().empty())
             {

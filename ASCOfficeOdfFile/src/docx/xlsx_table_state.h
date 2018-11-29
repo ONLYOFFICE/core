@@ -126,7 +126,8 @@ public:
 	std::wstring current_style() const { return table_style_; }
 
 	void set_rtl(bool val);
-    
+	void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
+ 
 	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName);
     void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     
@@ -136,8 +137,8 @@ public:
 
 	void add_empty_row(int count);
 
-	void set_end_table(){ bEndTable_ = true; }
-	bool get_end_table(){ return bEndTable_; }
+	void set_end_table(){ bEndTable = true; }
+	bool get_end_table(){ return bEndTable; }
     
 	std::wstring current_row_style			() const;
     std::wstring default_row_cell_style		() const;
@@ -182,6 +183,7 @@ public:
     void serialize_ole_objects				(std::wostream & _Wostream);
 	void serialize_page_properties			(std::wostream & _Wostream);
 	void serialize_background				(std::wostream & _Wostream);
+	void serialize_protection				(std::wostream & _Wostream);
 
 	void dump_rels_hyperlinks				(rels & Rels);
 	void dump_rels_ole_objects				(rels & Rels);
@@ -201,9 +203,13 @@ public:
 	friend class xlsx_table_context;
 
 private:	
-	bool								bRTL_;
-	bool								bEndTable_;
     xlsx_conversion_context *			context_;    
+
+	bool								bProtected;
+    std::wstring						protect_key;
+    std::wstring						protect_key_algorithm;
+	bool								bRTL;
+	bool								bEndTable;
 
     std::wstring						tableName_;
 	int									tableId_;

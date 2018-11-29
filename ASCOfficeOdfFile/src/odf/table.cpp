@@ -57,6 +57,8 @@ void table_table_attlist::add_attributes( const xml::attributes_wc_ptr & Attribu
 
     CP_APPLY_ATTR(L"table:protected",		table_protected_, false);
     CP_APPLY_ATTR(L"table:protection-key",	table_protection_key_); 
+	CP_APPLY_ATTR(L"table:protection-key-digest-algorithm",	table_protection_key_digest_algorithm_);
+
     CP_APPLY_ATTR(L"table:print",			table_print_, true);
     CP_APPLY_ATTR(L"table:print-ranges",	table_print_ranges_);
 	
@@ -134,7 +136,23 @@ void table_table_source::add_child_element( xml::sax * Reader, const std::wstrin
 {
     CP_NOT_APPLICABLE_ELM();
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// table:table-protection
+const wchar_t * table_table_protection::ns = L"loext"; //?? table odf 1.3
+const wchar_t * table_table_protection::name = L"table-protection";
 
+void table_table_protection::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"loext:select-protected-cells",	select_protected_cells);
+	CP_APPLY_ATTR(L"loext:select-unprotected-cells",select_unprotected_cells);
+	CP_APPLY_ATTR(L"loext:insert-columns",			insert_columns);
+	CP_APPLY_ATTR(L"loext:insert-rows",				insert_rows);
+	CP_APPLY_ATTR(L"loext:delete-columns",			delete_columns);
+	CP_APPLY_ATTR(L"loext:delete-rows",				delete_rows);
+	CP_APPLY_ATTR(L"loext:format-columns",			format_columns);
+	CP_APPLY_ATTR(L"loext:format-rows",				format_rows);
+	CP_APPLY_ATTR(L"loext:format-cells",			format_cells);
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // table:table
 const wchar_t * table_table::ns = L"table";
@@ -144,7 +162,7 @@ void table_table::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"table:style-name",	element_style_name);
 
-	table_table_attlist_.add_attributes(Attributes);
+	attlist_.add_attributes(Attributes);
 }
 
 void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -173,8 +191,12 @@ void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     {
         CP_CREATE_ELEMENT(table_shapes_);    
     }
+    else if ( L"table-protection" == Name)  //ns = loext or table
+    {
+        CP_CREATE_ELEMENT(table_protection_);    
+    }
 	else if (	CP_CHECK_NAME(L"table", L"named-expressions") || 
-				CP_CHECK_NAME(L"table", L"named-range") )		//???
+				CP_CHECK_NAME(L"table", L"named-range") )
 	{
         CP_CREATE_ELEMENT(table_named_);    
 	}

@@ -68,6 +68,7 @@ public:
 	std::wostream & ole_objects();
 	std::wostream & page_properties();
 	std::wostream & controls();
+	std::wostream & protection();
 	
 	rels & sheet_rels();			//hyperlink, background image, external, media ...
 	

@@ -147,6 +147,8 @@ public:
 
 	void Generate();
 	bool Verify();
+
+	bool VerifyWrike();
 private:
 	std::wstring			password;
 	_ecmaWriteProtectData	data;

@@ -53,9 +53,9 @@
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "../../DesktopEditor/common/File.h"
-
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
 static const unsigned char encrVerifierHashValueBlockKey[8]			= { 0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e };
 static const unsigned char encrKeyValueBlockKey[8]					= { 0x14, 0x6e, 0x0b, 0xe7, 0xab, 0xac, 0xd0, 0xd6 };
@@ -848,6 +848,30 @@ void ECMAWriteProtect::Generate()
 
 	data.saltValue = std::string((char*)pSalt.ptr, pSalt.size);
 	data.hashValue = std::string((char*)pHashBuf.ptr, pHashBuf.size);
+}
+bool ECMAWriteProtect::VerifyWrike()
+{
+	std::string p = std::string(password.begin(), password.end());
+
+    unsigned int wPasswordHash = 0;
+  
+    const char* pch = p.c_str() + p.length();
+    while (pch-- != p.c_str())
+    {
+        wPasswordHash = ((wPasswordHash >> 14) & 0x01) | 
+                        ((wPasswordHash << 1) & 0x7fff);
+        wPasswordHash ^= *pch;
+    }
+ 
+    wPasswordHash = ((wPasswordHash >> 14) & 0x01) | 
+                    ((wPasswordHash << 1) & 0x7fff);
+ 
+    wPasswordHash ^= (0x8000 | ('N' << 8) | 'K');
+    wPasswordHash ^= p.length();
+
+	std::string sPasswordHash = XmlUtils::IntToString(wPasswordHash, "%4.4X");
+	
+	return data.hashValue == sPasswordHash;
 }
 bool ECMAWriteProtect::Verify()
 {

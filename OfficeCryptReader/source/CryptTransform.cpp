@@ -810,6 +810,62 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 		DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
 	}
 }
+//-----------------------------------------------------------------------------------------------------------
+ECMAWriteProtect::ECMAWriteProtect()
+{
+}
+void ECMAWriteProtect::SetPassword (std::wstring password_)
+{
+	password = password_;
+}
+void ECMAWriteProtect::SetCryptData(_ecmaWriteProtectData &_data)
+{
+	data = _data;
+}
+void ECMAWriteProtect::GetCryptData(_ecmaWriteProtectData &_data)
+{
+	_data = data;
+}
+void ECMAWriteProtect::Generate()
+{
+	//сгенерить соль
+	RandomPool prng;
+	SecByteBlock seed_salt(16);
+	OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
+	prng.IncorporateEntropy(seed_salt, seed_salt.size());
+
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
+	_buf pSalt		(seed_salt.data(), seed_salt.size());
+
+	_buf pHashBuf = HashAppend(pSalt, pPassword, data.hashAlgorithm);
+		
+	for (int i = 0; i < data.spinCount; i++)
+	{
+        _buf iterator((unsigned char*)&i, 4, false);
+        pHashBuf = HashAppend(pHashBuf, iterator, data.hashAlgorithm);
+	}
+
+	data.saltValue = std::string((char*)pSalt.ptr, pSalt.size);
+	data.hashValue = std::string((char*)pHashBuf.ptr, pHashBuf.size);
+}
+bool ECMAWriteProtect::Verify()
+{
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
+	_buf pSalt		(data.saltValue);
+	_buf pHash		(data.hashValue);
+
+	_buf pHashTest = HashAppend(pSalt, pPassword, data.hashAlgorithm);
+		
+	for (int i = 0; i < data.spinCount; i++)
+	{
+        _buf iterator((unsigned char*)&i, 4, false);
+        pHashTest = HashAppend(pHashTest, iterator, data.hashAlgorithm);
+	}
+	return (pHashTest == pHash);
+}
+
 
 //-----------------------------------------------------------------------------------------------------------
 ECMAEncryptor::ECMAEncryptor()

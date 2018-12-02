@@ -88,6 +88,7 @@ namespace DocFileFormat
 		friend class VMLPictureMapping;
 		friend class OpenXmlPackage;
 		friend class TextboxMapping;
+		friend class SettingsMapping;
 
 	public:
 

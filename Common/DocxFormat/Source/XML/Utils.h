@@ -231,6 +231,8 @@ namespace XmlUtils
         double d = 0;
 #if defined (_WIN32) || defined (_WIN64)
 		swscanf_s(string.c_str(), L"%lf", &d);
+#elif defined(_IOS) || defined(__ANDROID__)
+        scanf(string.c_str(), L"%lf", &f);
 #else
 		_stscanf(string.c_str(), L"%lf", &d);
 #endif
@@ -243,6 +245,8 @@ namespace XmlUtils
         float f = 0;
 #if defined (_WIN32) || defined (_WIN64)
 		swscanf_s(string.c_str(), L"%f", &f);
+#elif defined(_IOS) || defined(__ANDROID__)
+        scanf(string.c_str(), L"%f", &f);
 #else
         _stscanf(string.c_str(), L"%f", &f);
 #endif

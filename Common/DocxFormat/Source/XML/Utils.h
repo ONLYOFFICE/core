@@ -37,6 +37,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <stdio.h>
 
 #ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
@@ -232,7 +233,7 @@ namespace XmlUtils
 #if defined (_WIN32) || defined (_WIN64)
 		swscanf_s(string.c_str(), L"%lf", &d);
 #elif defined(_IOS) || defined(__ANDROID__)
-        scanf(string.c_str(), L"%lf", &f);
+        swscanf(string.c_str(), L"%lf", &d);
 #else
 		_stscanf(string.c_str(), L"%lf", &d);
 #endif
@@ -246,7 +247,7 @@ namespace XmlUtils
 #if defined (_WIN32) || defined (_WIN64)
 		swscanf_s(string.c_str(), L"%f", &f);
 #elif defined(_IOS) || defined(__ANDROID__)
-        scanf(string.c_str(), L"%f", &f);
+        swscanf(string.c_str(), L"%f", &f);
 #else
         _stscanf(string.c_str(), L"%f", &f);
 #endif

@@ -1221,7 +1221,7 @@ namespace OOX
 			{
 				writer.WriteString(L"<sheetProtection");
 					WritingStringNullableAttrString(L"password",	m_oPassword,		m_oPassword.get());
-					WritingStringNullableAttrString(L"algorithmName",m_oAlgorithmName,	m_oAlgorithmName.get());
+					WritingStringNullableAttrString(L"algorithmName",m_oAlgorithmName,	m_oAlgorithmName->ToString());
 					WritingStringNullableAttrString(L"hashValue",	m_oHashValue,		m_oHashValue.get());
 					WritingStringNullableAttrString(L"saltValue",	m_oSaltValue,		m_oSaltValue.get());
 					WritingStringNullableAttrInt(L"spinCount",		m_oSpinCount,		m_oSpinCount->GetValue());
@@ -1265,30 +1265,30 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("saltValue"),		m_oSaltValue)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("spinCount"),		m_oSpinCount)
 					
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoFilter"),		m_oAutoFilter)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("content"),			m_oContent)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoFilter"),	m_oAutoFilter)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("content"),		m_oContent)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("deleteColumns"),	m_oDeleteColumns)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("deleteRows"),		m_oDeleteRows)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatCells"),		m_oFormatCells)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("deleteRows"),	m_oDeleteRows)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatCells"),	m_oFormatCells)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatColumns"),	m_oFormatColumns)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatRows"),		m_oFormatRows)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatRows"),	m_oFormatRows)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("insertColumns"),	m_oInsertColumns)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("insertHyperlinks"),m_oInsertHyperlinks)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("insertRows"),		m_oInsertRows)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("objects"),			m_oObjects)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pivotTables"),		m_oPivotTables)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("insertRows"),	m_oInsertRows)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("objects"),		m_oObjects)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pivotTables"),	m_oPivotTables)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("scenarios"),		m_oScenarios)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sheet"),			m_oSelectLockedCells)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sheet"),			m_oSelectUnlockedCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("selectLockedCells"),m_oSelectLockedCells)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("selectUnlockedCell"),m_oSelectUnlockedCell)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sheet"),			m_oSheet)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sort"),			m_oSort)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable_string		m_oPassword;
-			nullable_string		m_oAlgorithmName;
+			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
 			nullable_string		m_oHashValue;
 			nullable_string		m_oSaltValue;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
+			nullable_string		m_oPassword; //for old wrike protection
 
 			nullable<SimpleTypes::COnOff<>>		m_oAutoFilter;
 			nullable<SimpleTypes::COnOff<>>		m_oContent;

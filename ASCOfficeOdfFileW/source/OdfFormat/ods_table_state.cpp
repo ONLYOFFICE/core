@@ -169,7 +169,7 @@ void ods_table_state::set_table_name(std::wstring name)
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
-	table->table_table_attlist_.table_name_ = name;
+	table->attlist_.table_name_ = name;
 }
 
 void ods_table_state::set_table_master_page(std::wstring name)
@@ -178,7 +178,74 @@ void ods_table_state::set_table_master_page(std::wstring name)
 
 	office_table_style_->style_master_page_name_ = name;
 }
+void ods_table_state::set_table_protection(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
 
+	table->attlist_.table_protected_ = true;
+	create_element(L"loext", L"table-protection", table->table_protection_, context_);
+}
+void ods_table_state::set_table_protection_insert_columns(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->insert_columns = Val;
+}
+void ods_table_state::set_table_protection_insert_rows(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->insert_rows = Val;
+}
+void ods_table_state::set_table_protection_delete_columns(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->delete_columns = Val;
+}
+void ods_table_state::set_table_protection_delete_rows(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->delete_rows = Val;
+}
+void ods_table_state::set_table_protection_protected_cells(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->select_protected_cells = Val;
+}
+void ods_table_state::set_table_protection_unprotected_cells(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->select_unprotected_cells = Val;
+}
 void ods_table_state::set_table_hidden(bool Val)
 {
 	if (!office_table_style_)return;
@@ -205,7 +272,7 @@ void ods_table_state::set_print_range(std::wstring range)
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
-	table->table_table_attlist_.table_print_ranges_ = range;
+	table->attlist_.table_print_ranges_ = range;
 }
 
 void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
@@ -227,7 +294,7 @@ void ods_table_state::set_table_style(office_element_ptr & elm)
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 	
-	table->table_table_attlist_.table_style_name_ = office_table_style_->style_name_;
+	table->attlist_.table_style_name_ = office_table_style_->style_name_;
 	//потом в принципе и по имени можно будет связать(найти)
 
 
@@ -273,8 +340,8 @@ void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	if (style_name.length()>0) column->table_table_column_attlist_.table_style_name_ = style_name;
-	column->table_table_column_attlist_.table_number_columns_repeated_ = repeated;
+	if (style_name.length()>0) column->attlist_.table_style_name_ = style_name;
+	column->attlist_.table_number_columns_repeated_ = repeated;
 	
 }
 void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
@@ -284,7 +351,7 @@ void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	column->table_table_column_attlist_.table_default_cell_style_name_ = style_name;
+	column->attlist_.table_default_cell_style_name_ = style_name;
 
 	columns_.back().cell_style_name = style_name;
 }
@@ -330,7 +397,7 @@ void ods_table_state::set_column_hidden(bool val)
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	column->table_table_column_attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
+	column->attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
 }
 void ods_table_state::set_table_dimension(int col, int row)
 {
@@ -370,8 +437,8 @@ void ods_table_state::add_row(office_element_ptr & elm, unsigned int repeated, o
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	if (row == NULL)return;
 
-	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_name;
-	row->table_table_row_attlist_.table_number_rows_repeated_ = repeated;
+	if (style_name.length()>0) row->attlist_.table_style_name_ = style_name;
+	row->attlist_.table_number_rows_repeated_ = repeated;
 
 	row_default_cell_style_name_ = L"";
 
@@ -394,14 +461,14 @@ void ods_table_state::add_row_repeated()
 			i--;
 		}
 	}
-	row->table_table_row_attlist_.table_number_rows_repeated_ = rows_.back().repeated;
+	row->attlist_.table_number_rows_repeated_ = rows_.back().repeated;
 }
 void ods_table_state::set_row_hidden(bool Val)
 {
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	if (row == NULL)return;
 
-	row->table_table_row_attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
+	row->attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
 }
 void ods_table_state::set_row_optimal_height(bool val)
 {
@@ -496,7 +563,7 @@ void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 	//table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	//if (row == NULL)return;
 
-	//row->table_table_row_attlist_.table_default_cell_style_name_ = style_name;
+	//row->attlist_.table_default_cell_style_name_ = style_name;
 }
 
 office_element_ptr  & ods_table_state::current_row_element()
@@ -536,12 +603,12 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
 	if (cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
 	{
-		cell->table_table_cell_attlist_.table_style_name_ =	style_name;
+		cell->attlist_.table_style_name_ =	style_name;
 	}
 	table_covered_table_cell* covered_cell = dynamic_cast<table_covered_table_cell*>(elm.get());
 	if (covered_cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
 	{
-		covered_cell->table_table_cell_attlist_.table_style_name_ =	style_name;
+		covered_cell->attlist_.table_style_name_ =	style_name;
 	}
 	ods_cell_state state;
 
@@ -571,7 +638,7 @@ void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 	common_value_and_type_attlist cell_type;
 	cell_type.office_value_type_ = office_value_type(value_type);
 
-	cell->table_table_cell_attlist_.common_value_and_type_attlist_ = cell_type;
+	cell->attlist_.common_value_and_type_attlist_ = cell_type;
 
 }
 void ods_table_state::set_cell_type(int type)
@@ -599,11 +666,11 @@ void ods_table_state::set_cell_type(int type)
 	}
 	if (cell_type)
 	{
-		if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+		if (!cell->attlist_.common_value_and_type_attlist_)
 		{
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+			cell->attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 		}
-		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+		cell->attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
 	}
 }
 void ods_table_state::add_definded_expression(office_element_ptr & elm)
@@ -693,8 +760,8 @@ void ods_table_state::check_spanned_cells()
 						table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
 						if (cell_elm == NULL)break;
 
-						cell_elm->table_table_cell_attlist_extra_.table_number_columns_spanned_ = jt->second.spanned_cols;
-						cell_elm->table_table_cell_attlist_extra_.table_number_rows_spanned_ = jt->second.spanned_rows;
+						cell_elm->attlist_extra_.table_number_columns_spanned_ = jt->second.spanned_cols;
+						cell_elm->attlist_extra_.table_number_rows_spanned_ = jt->second.spanned_rows;
 
 						break;
 					}
@@ -794,8 +861,8 @@ void ods_table_state::set_cell_spanned(int spanned_cols, int spanned_rows)
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
 
-	cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
-	cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+	cell->attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+	cell->attlist_extra_.table_number_rows_spanned_ = spanned_rows;
 }
 void ods_table_state::set_cell_formula(std::wstring & formula)
 {
@@ -866,7 +933,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
 
-	cell->table_table_cell_attlist_.table_formula_ = odfFormula;
+	cell->attlist_.table_formula_ = odfFormula;
 	cells_.back().empty = false;
 }
 
@@ -939,7 +1006,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 		ods_shared_formula_state state = {(unsigned int)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
 		shared_formulas_.push_back(state);
 		
-		cell->table_table_cell_attlist_.table_formula_ = odf_formula;
+		cell->attlist_.table_formula_ = odf_formula;
 		cells_.back().empty = false;
 	}
 	else
@@ -975,7 +1042,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 						boost::match_default | boost::format_all);
 					odf_formula = res;
 				}
-				cell->table_table_cell_attlist_.table_formula_ = odf_formula;				
+				cell->attlist_.table_formula_ = odf_formula;				
 				cells_.back().empty = false;
 			}
 		}
@@ -1016,8 +1083,8 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 		if (cell == NULL)return;
 
-		cell->table_table_cell_attlist_extra_.table_number_matrix_columns_spanned_ = col_span;
-		cell->table_table_cell_attlist_extra_.table_number_matrix_rows_spanned_ = row_span;
+		cell->attlist_extra_.table_number_matrix_columns_spanned_ = col_span;
+		cell->attlist_extra_.table_number_matrix_rows_spanned_ = row_span;
 
 	}
 }
@@ -1100,11 +1167,11 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 		if (cell)
 		{
-			if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+			if (!cell->attlist_.common_value_and_type_attlist_)
 			{
-				cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+				cell->attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 			}
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+			cell->attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
 		}
 		cells_.back().empty = false;
 
@@ -1127,35 +1194,35 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
 
-	if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+	if (!cell->attlist_.common_value_and_type_attlist_)
 	{
-		cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
-		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
+		cell->attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+		cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
 		//временно... пока нет определялки типов
 	}
 	cells_.back().empty = false;
 	
-	if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+	if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 	{
-		switch(cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type())
+		switch(cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type())
 		{
 		case office_value_type::String:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_string_value_ = value;
+			cell->attlist_.common_value_and_type_attlist_->office_string_value_ = value;
 			break;
 		case office_value_type::Boolean:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
+			cell->attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
+			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
 			break;
 		case office_value_type::Time:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
+			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
 			break;
 		case office_value_type::Currency:
 		case office_value_type::Percentage:
 		case office_value_type::Float:
 		default:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = value;
+			cell->attlist_.common_value_and_type_attlist_->office_value_ = value;
 		}
 	}
 	else
@@ -1168,11 +1235,11 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	{
 		bool need_test_cach = false;
 
-		if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 		{
-			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
- 			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
-			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
+			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
+ 			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
+			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
 		}
 		try
 		{
@@ -1186,8 +1253,8 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		{
 			if (need_cash)
 			{
-				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = boost::none;
-				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
+				cell->attlist_.common_value_and_type_attlist_->office_value_ = boost::none;
+				cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
 			}
 		}
 		if (need_cash)
@@ -1216,7 +1283,7 @@ void ods_table_state::end_cell()
 	if (cells_.back().empty)
 	{
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
-		if (cell)cell->table_table_cell_attlist_.common_value_and_type_attlist_ = boost::none;
+		if (cell)cell->attlist_.common_value_and_type_attlist_ = boost::none;
 	}
 }
 
@@ -1315,8 +1382,8 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 		int spanned_rows = 0, spanned_cols = 0;
 		if (cell && isSpannedCell(current_table_column_, current_table_row_, spanned_cols, spanned_rows))
 		{
-			cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
-			cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+			cell->attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+			cell->attlist_extra_.table_number_rows_spanned_ = spanned_rows;
 		}
 	}
 	
@@ -1338,17 +1405,17 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 	if (cell)
 	{
-		cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
+		cell->attlist_.table_number_columns_repeated_ = repeated;
 
 		if (!row_default_cell_style_name_.empty())
-			cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+			cell->attlist_.table_style_name_ = row_default_cell_style_name_;
 	}
 	if (covered_cell)
 	{
-		covered_cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
+		covered_cell->attlist_.table_number_columns_repeated_ = repeated;
 
 		if (!row_default_cell_style_name_.empty())
-			covered_cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+			covered_cell->attlist_.table_style_name_ = row_default_cell_style_name_;
 
 		current_covered_cols_ -= repeated;
 	}

@@ -374,11 +374,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 
 /////////////////////////////////////////////////////////////////////////
+	convert(oox_sheet->m_oDataValidations.GetPointer());
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
 	convert(oox_sheet->m_oPicture.GetPointer());
+	convert(oox_sheet->m_oSheetProtection.GetPointer());
 	
 	OoxConverter::convert(oox_sheet->m_oExtLst.GetPointer());
 
@@ -389,6 +391,51 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter * oox_header_footer)
 	if (!oox_header_footer) return;
 
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
+{
+	if (!oox_prot) return;
+
+	ods_context->current_table().set_table_protection(true);
+
+	if (oox_prot->m_oInsertColumns.IsInit())
+	{
+		ods_context->current_table().set_table_protection_insert_columns(oox_prot->m_oInsertColumns->ToBool());
+	}
+	if (oox_prot->m_oInsertRows.IsInit())
+	{
+		ods_context->current_table().set_table_protection_insert_rows(oox_prot->m_oInsertRows->ToBool());
+	}
+	if (oox_prot->m_oDeleteColumns.IsInit())
+	{
+		ods_context->current_table().set_table_protection_delete_columns(oox_prot->m_oDeleteColumns->ToBool());
+	}
+	if (oox_prot->m_oDeleteRows.IsInit())
+	{
+		ods_context->current_table().set_table_protection_delete_rows(oox_prot->m_oDeleteRows->ToBool());
+	}
+	if (oox_prot->m_oSelectLockedCells.IsInit())
+	{
+		ods_context->current_table().set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
+	}
+	if (oox_prot->m_oSelectUnlockedCell.IsInit())
+	{
+		ods_context->current_table().set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCell->ToBool());
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
+{
+	if (!oox_validations) return;
+
+	for (size_t i = 0; i < oox_validations->m_arrItems.size(); i++)
+	{
+		convert(oox_validations->m_arrItems[i]);
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
+{
+	if (!oox_validation) return;
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
 {
 	if (!oox_background) return;

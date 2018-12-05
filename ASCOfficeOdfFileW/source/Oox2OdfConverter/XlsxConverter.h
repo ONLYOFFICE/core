@@ -94,6 +94,9 @@ namespace OOX
 		class CSparklineGroups;
 		class CAltTextTable;
 		class CExternalLink;
+		class CDataValidations;
+		class CSheetProtection;
+		class CDataValidation;
 	}
 }
 
@@ -201,6 +204,9 @@ namespace Oox2Odf
 
 		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position *pos);
 
+		void convert(OOX::Spreadsheet::CSheetProtection				*oox_prot);
+		void convert(OOX::Spreadsheet::CDataValidations				*oox_validations);
+		void convert(OOX::Spreadsheet::CDataValidation				*oox_validation);
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);
 		void convert(OOX::Spreadsheet::CAutofilter					*oox_filter);

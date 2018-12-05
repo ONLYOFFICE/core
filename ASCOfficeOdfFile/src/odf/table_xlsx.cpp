@@ -342,9 +342,10 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (attlist_.table_protected_)
 	{
-		Context.get_table_context().set_protection(true,	attlist_.table_protection_key_.get_value_or(L""), 
+		Context.get_table_context().set_protection(true, attlist_.table_protection_key_.get_value_or(L""), 
 															attlist_.table_protection_key_digest_algorithm_.get_value_or(L""));
-		if (table_protection_)
+		table_table_protection* prot = dynamic_cast<table_table_protection*>( table_protection_.get() );
+		if (prot)
 		{
 		}
 	}

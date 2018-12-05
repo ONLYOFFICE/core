@@ -645,9 +645,9 @@ public:
 
 	_CP_OPT(bool)	delete_columns;
 	_CP_OPT(bool)	delete_rows;
-	_CP_OPT(bool)	format_columns;
-	_CP_OPT(bool)	format_rows;
-	_CP_OPT(bool)	format_cells;
+	//_CP_OPT(bool)	format_columns; //???
+	//_CP_OPT(bool)	format_rows;
+	//_CP_OPT(bool)	format_cells;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_protection);
 

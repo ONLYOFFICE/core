@@ -44,6 +44,9 @@
 #include <iosfwd>
 
 namespace cpdoccore { 
+
+	std::string DecodeBase64(const std::wstring & value);
+
 namespace odf_reader {
 
 class styles_container;

@@ -811,10 +811,39 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 	}
 }
 //-----------------------------------------------------------------------------------------------------------
-ECMAWriteProtect::ECMAWriteProtect()
+void odfWriteProtect::SetPassword (const std::wstring &password_)
 {
+	password = password_;
 }
-void ECMAWriteProtect::SetPassword (std::wstring password_)
+void odfWriteProtect::SetProtectKey (const std::string &key)
+{
+	protect_key = key;
+}
+void odfWriteProtect::SetProtectAlgorithm (const CRYPT_METHOD::_hashAlgorithm &alg)
+{
+	hash = alg;
+}
+void odfWriteProtect::Generate()
+{
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
+
+	_buf pHashTest = HashAppend(empty, pPassword, hash);
+		
+	protect_key = std::string((char*)pHashTest.ptr, pHashTest.size);
+}
+bool odfWriteProtect::Verify()
+{
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
+	_buf pHash		(protect_key);
+
+	_buf pHashTest = HashAppend(empty, pPassword, hash);
+		
+	return (pHashTest == pHash);
+}
+//----------------------------------------------------------------------------------------------------------
+void ECMAWriteProtect::SetPassword (const std::wstring &password_)
 {
 	password = password_;
 }
@@ -889,8 +918,6 @@ bool ECMAWriteProtect::Verify()
 	}
 	return (pHashTest == pHash);
 }
-
-
 //-----------------------------------------------------------------------------------------------------------
 ECMAEncryptor::ECMAEncryptor()
 {

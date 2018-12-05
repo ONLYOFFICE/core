@@ -133,14 +133,13 @@ struct _odfCryptData
 	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
 };
 //---------------------------------------------------------------------------------------------------
-
 class ECMAWriteProtect
 {
 public:
-	ECMAWriteProtect();
+	ECMAWriteProtect(){}
 	virtual ~ECMAWriteProtect(){}
 
-	void SetPassword (std::wstring password);
+	void SetPassword (const std::wstring &password);
 	
 	void SetCryptData(_ecmaWriteProtectData &data);
 	void GetCryptData(_ecmaWriteProtectData &data);
@@ -154,6 +153,24 @@ private:
 	_ecmaWriteProtectData	data;
 };
 
+//---------------------------------------------------------------------------------------------------
+class odfWriteProtect
+{
+public:
+	odfWriteProtect() : hash(CRYPT_METHOD::SHA1) {}
+
+	void SetPassword (const std::wstring & password);
+	void SetProtectKey (const std::string & protect_key);
+	void SetProtectAlgorithm (const CRYPT_METHOD::_hashAlgorithm & hash);
+
+	void Generate();
+	bool Verify();
+private:
+	std::wstring password;
+	CRYPT_METHOD::_hashAlgorithm hash;
+	std::string protect_key;
+};
+//---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 
 {
 public:

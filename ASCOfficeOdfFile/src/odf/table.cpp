@@ -149,9 +149,9 @@ void table_table_protection::add_attributes( const xml::attributes_wc_ptr & Attr
 	CP_APPLY_ATTR(L"loext:insert-rows",				insert_rows);
 	CP_APPLY_ATTR(L"loext:delete-columns",			delete_columns);
 	CP_APPLY_ATTR(L"loext:delete-rows",				delete_rows);
-	CP_APPLY_ATTR(L"loext:format-columns",			format_columns);
-	CP_APPLY_ATTR(L"loext:format-rows",				format_rows);
-	CP_APPLY_ATTR(L"loext:format-cells",			format_cells);
+	//CP_APPLY_ATTR(L"loext:format-columns",		format_columns);
+	//CP_APPLY_ATTR(L"loext:format-rows",			format_rows);
+	//CP_APPLY_ATTR(L"loext:format-cells",			format_cells);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // table:table

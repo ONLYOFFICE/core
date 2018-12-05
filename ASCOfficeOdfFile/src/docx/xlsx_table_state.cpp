@@ -44,6 +44,7 @@
 
 #include "../formulasconvert/formulasconvert.h"
 
+#include "../../../OfficeCryptReader/source/CryptTransform.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -174,6 +175,14 @@ void xlsx_table_state::set_protection(bool val, const std::wstring &key, const s
 	{
 		protect_key_algorithm = algorithm.substr(pos + 1);
 	}
+
+	//test
+	//CRYPT::odfWriteProtect protect;
+	//protect.SetProtectKey(DecodeBase64(protect_key));
+	//protect.SetPassword(L"123");
+
+	//bool res = protect.Verify();
+
 }
 
 unsigned int xlsx_table_state::columns_count() const

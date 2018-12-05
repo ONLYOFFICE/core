@@ -332,22 +332,6 @@ bool odf_document::Impl::decrypt_folder (const std::wstring &password, const std
 	}
 	return result;
 }
-std::string DecodeBase64(const std::wstring & value1)
-{
-	int nLength = 0;
-	unsigned char *pData = NULL;
-	std::string result;
-
-	std::string value(value1.begin(), value1.end());
-
-	NSFile::CBase64Converter::Decode(value.c_str(), value.length(), pData, nLength);
-	if (pData)
-	{
-		result = std::string((char*)pData, nLength);
-		delete []pData; pData = NULL;
-	}
-	return result;
-}
 bool odf_document::Impl::decrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr element, int file_size )
 {
 	manifest_encryption_data* encryption_data = dynamic_cast<manifest_encryption_data*>(element.get());

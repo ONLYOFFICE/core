@@ -52,8 +52,11 @@ namespace PdfWriter
 
 		std::string sXML;
 
+        char strBOM[4] = { 0xEF, 0xBB, 0xBF, 0 };
+        std::string sBOM(strBOM);
+
 		// Begin
-		sXML += "<?xpacket begin=\"п»ї\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n";
+        sXML += ("<?xpacket begin=\"" + sBOM + "\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n");
 
 		// Producer
 		sXML += "<rdf:Description rdf:about=\"\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\">\n";

@@ -1703,6 +1703,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 	bool bIsNeedCoordSizes	= true;
 	bool bTextBox			= false;
 	bool bPicture			= false;
+	bool bStroked			= true;
 
     std::wstring strStyleAdvenced = L"";
 
@@ -2400,6 +2401,24 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
                     XmlMacroReadAttributeBase(oNodeShape, L"strokeweight",   sStrokeWeight);
                     XmlMacroReadAttributeBase(oNodeShape, L"stroked",        sStroked);
 
+					XmlUtils::CXmlNode oNodeStroke = oNodeShape.ReadNode(L"v:stroke");
+					if (oNodeStroke.IsValid())
+					{
+						nullable_string sStrokeOn;
+						XmlMacroReadAttributeBase(oNodeStroke, L"on", sStrokeOn);
+						if (sStrokeOn.is_init())
+						{
+							sStroked.reset();
+							sStroked = sStrokeOn;
+						}
+						nullable_string sStrokeColor1;
+						XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor1);
+						if (sStrokeColor1.is_init())
+						{
+							sStrokeColor1.reset();
+							sStrokeColor = sStrokeColor1;
+						}
+					}
 		//textFill
 					strRPr += L"<w14:textFill>";
 						
@@ -2538,7 +2557,6 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 					NSPresentationEditor::CColor color;
 					
-					bool bStroked = true;
 					if (sStroked.is_init())
 					{
 						if (*sStroked == L"false" || *sStroked == L"f")
@@ -2547,7 +2565,6 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							bStroked = false;
 						}
 					}				
-					
 					if (sStrokeColor.is_init())
 					{
 						color = NS_DWC_Common::getColorFromString(*sStrokeColor);
@@ -2569,6 +2586,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					}
 					sTxbxContent += L"</w:txbxContent>";
 					pShape->strTextBoxShape = sTxbxContent;
+
+					if (sStroked.is_init() == false && wordArtString.empty() == false)
+					{
+						bStroked = false;
+					}
 				}
 				strXmlPPTX = L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>";
 
@@ -2911,8 +2933,10 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			pShape->signatureLine = pPPTShape->m_oSignatureLine;
 		}
 
-		//if (!pPPTShape->IsWordArt())
+		if (bStroked)
+		{
 		CheckPenShape(elem, oNodeShape, pPPTShape);		
+		}
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
 
@@ -4478,9 +4502,21 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		pSpPr->ln->w = size;
 		pPPTShape->m_bIsStroked = true;
 	}
+    XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"v:stroke");
 
 	nullable_string sStroked;
     XmlMacroReadAttributeBase(oNode, L"stroked", sStroked);
+	
+	if (oNodeStroke.IsValid())
+	{
+		nullable_string sStrokeOn;
+        XmlMacroReadAttributeBase(oNodeStroke, L"on", sStrokeOn);
+		if (sStrokeOn.is_init())
+		{
+			sStroked.reset();
+			sStroked = sStrokeOn;
+		}
+	}
 	if (sStroked.is_init())
 	{
         if (*sStroked == L"false" || *sStroked == L"f")
@@ -4501,16 +4537,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		pSpPr->ln->Fill.Fill = new PPTX::Logic::NoFill();
 	}
 
-    XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"v:stroke");
 	if (oNodeStroke.IsValid())
 	{
-		nullable_string sStrokeOn;
-        XmlMacroReadAttributeBase(oNodeStroke, L"on", sStrokeOn);
-		if (sStrokeOn.is_init())
-		{
-			sStroked.reset();
-			sStroked = sStrokeOn;
-		}
 		sStrokeColor.reset();
         XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor);
 		if (sStrokeColor.is_init())

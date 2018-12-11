@@ -33,7 +33,12 @@
 
 #include "oox_rels.h"
 
-#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore { 
 namespace oox {
@@ -41,20 +46,8 @@ namespace oox {
 class mediaitems
 {
 public:
-    mediaitems(const std::wstring & odfPacket) : odf_packet_(odfPacket)
-    {
-		count_charts	= 0;
- 		count_shape		= 0;
- 		count_image		= 0;
- 		count_tables	= 0;
- 		count_media		= 0;
-		count_object	= 0;
- 		count_audio		= 0;
- 		count_video		= 0;
- 		count_slide		= 0;
-		count_activeX	= 0;	
-		count_control	= 0;	
-	}
+    mediaitems(const std::wstring & odfPacket);
+	virtual ~mediaitems();
 
     struct item 
     {
@@ -87,6 +80,9 @@ public:
 	size_t count_activeX;
 	size_t count_control;
 
+	void set_font_directory(std::wstring pathFonts);
+	NSFonts::IApplicationFonts *applicationFonts() {return applicationFonts_;}
+
     std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal);//возможны ссылки на один и тот же объект
     std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref);
     
@@ -117,9 +113,9 @@ public:
 	}
 	static RelsType detectMediaType(const std::wstring & fileName)
 	{
-		int pos = fileName.rfind(L".");
+		size_t pos = fileName.rfind(L".");
 
-		std::wstring sExt = (pos >=0 ? fileName.substr(pos + 1) : L"");
+		std::wstring sExt = (pos != std::wstring::npos ? fileName.substr(pos + 1) : L"");
 
 		if (sExt.empty()) return typeMedia;
 
@@ -147,6 +143,7 @@ private:
 	items_array		items_;
     std::wstring	odf_packet_;
 
+    NSFonts::IApplicationFonts	*applicationFonts_;
 };
 
 }

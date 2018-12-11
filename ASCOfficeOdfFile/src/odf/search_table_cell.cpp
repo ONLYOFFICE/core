@@ -169,7 +169,7 @@ public:
 
     virtual void visit(const table_table& val)
     {
-        if (visit_table(val.table_table_attlist_.table_name_.get_value_or(L"")))
+        if (visit_table(val.attlist_.table_name_.get_value_or(L"")))
         {
             ACCEPT_ALL_CONTENT_CONST(val.table_columns_and_groups_.content_, stop_);
             ACCEPT_ALL_CONTENT_CONST(val.table_rows_and_groups_.content_, stop_);

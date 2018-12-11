@@ -53,8 +53,7 @@ namespace oox {
 class xlsx_drawing_context_handle::Impl
 {
 public:
-    Impl(mediaitems & items)
-        : items_(items), next_rId_(1), next_drawing_id_(1) 
+    Impl(mediaitems & items) : items_(items), next_rId_(1), next_drawing_id_(1) 
     {
     }  
 
@@ -162,6 +161,7 @@ void xlsx_drawing_context::clear()
 {
 	impl_->object_description_.type_				= typeUnknown;
 	impl_->object_description_.in_group_			= false;
+	impl_->object_description_.lined_				= false;
     impl_->object_description_.xlink_href_			= L"";
     impl_->object_description_.name_				= L"";
 	impl_->object_description_.anchor_				= L"";
@@ -543,6 +543,8 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	
 	GetProperty(obj.additional_, L"text-content", sTextContent);
 	GetProperty(obj.additional_, L"color-mode", sColorMode);
+	GetProperty(obj.additional_, L"luminance", drawing.fill.bitmap->luminance);
+	GetProperty(obj.additional_, L"contrast", drawing.fill.bitmap->contrast);
 
 	if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
 	{
@@ -551,7 +553,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	}
 	std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  obj.xlink_href_;			
 	
-	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL/*applicationFonts_*/);
+	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, impl_->get_mediaitems().applicationFonts());
 	drawing.fill.bitmap->bStretch	= true;
 
 	if ((sColorMode) && (*sColorMode == L"greyscale"))
@@ -678,6 +680,7 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 		drawing.fill	= obj.fill_;
 		drawing.inGroup	= obj.in_group_;
 		drawing.id		= impl_->next_rId();
+		drawing.lined	= obj.lined_;
 
 		drawing.sub_type = obj.shape_type_;
 		
@@ -740,6 +743,11 @@ void xlsx_drawing_context::set_link(std::wstring link, RelsType typeRels)
 }
 void xlsx_drawing_context::end_action()
 {
+}
+
+void xlsx_drawing_context::set_is_line_shape(bool val)
+{
+	impl_->object_description_.lined_ = val;
 }
 
 

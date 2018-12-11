@@ -87,6 +87,7 @@ void table_data_pilot_table::add_child_element( xml::sax * Reader, const std::ws
 		CP_CREATE_ELEMENT (source_);
 
 }
+
 void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	if (!source_) return;
@@ -104,6 +105,8 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 	{
 		std::wstring ref = formulas_converter.convert_named_ref(*table_target_range_address_, false);
 		sheet_name = formulas_converter.get_table_name();
+
+		Context.get_table_context().check_database_range_intersection(sheet_name, ref);
 
 		Context.get_pivots_context().set_view_target_range(ref);
 		Context.get_pivots_context().set_view_target_table_name(sheet_name);
@@ -195,10 +198,12 @@ void table_data_pilot_field::xlsx_convert(oox::xlsx_conversion_context & Context
 
 		if (type == table_function::String)
 		{
-			formulasconvert::odf2oox_converter formulas_converter;
+			std::wstring formula = table_function_->get_string();
 
-			std::wstring user_funtion = formulas_converter.convert(table_function_->get_string());
-			Context.get_pivots_context().set_field_user_function(user_funtion);
+			formulasconvert::odf2oox_converter formulas_converter;
+			std::wstring oox_formula = formulas_converter.convert(formula);
+			
+			Context.get_pivots_context().set_field_user_function(oox_formula);
 		}
 		else
 		{

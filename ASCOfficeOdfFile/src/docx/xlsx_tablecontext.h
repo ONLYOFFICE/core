@@ -48,7 +48,8 @@ class xlsx_table_context
 public:
     xlsx_table_context(xlsx_conversion_context * Context, xlsx_text_context & textCotnext);
 
-    void start_table(std::wstring tableName, std::wstring tableStyleName, int id);
+    void start_table(const std::wstring &tableName, const std::wstring & tableStyleName, int id);
+		void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
     void end_table();
 
     void start_cell(const std::wstring & formula,
@@ -94,6 +95,7 @@ public:
 	void serialize_page_properties		(std::wostream & _Wostream);
 	void serialize_background			(std::wostream & _Wostream);
 	void serialize_data_validation		(std::wostream & _Wostream);
+	void serialize_protection			(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   
@@ -112,23 +114,23 @@ public:
 	void dump_rels_hyperlinks	(rels & Rels);
 	void dump_rels_ole_objects	(rels & Rels);
 
-	void start_database_range(std::wstring table_name, std::wstring ref);
+	bool start_database_range(const std::wstring &table_name, const std::wstring &ref);
 		void set_database_orientation	(bool val);
 		void set_database_header		(bool val);
 		void set_database_filter		(bool val);
-		
-	void add_database_sort	(int field_number, int order);
+		void add_database_sort	(int field_number, int order);
 	void end_database_range();
-
+		
 	int in_database_range();
 	void set_database_range_value(int index, const std::wstring& value);
+	void check_database_range_intersection(const std::wstring& table_name, const std::wstring& ref);
+
 private:
     xlsx_conversion_context				*xlsx_conversion_context_;
     xlsx_text_context					&xlsx_text_context_;
 	
 	std::vector<xlsx_table_state_ptr>		xlsx_table_states_;
 	std::vector<xlsx_data_range_ptr>		xlsx_data_ranges_;
-	std::vector<xlsx_data_range_values_ptr>	xlsx_data_ranges_values_;
 	
 	std::multimap<std::wstring, int>		xlsx_data_ranges_map_;		
 

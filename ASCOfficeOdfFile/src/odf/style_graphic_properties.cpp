@@ -108,11 +108,26 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 
 	if (draw_stroke_)		properties.push_back(_property(L"stroke",		draw_stroke_->get_type() ));
 	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_->get_hex_value() ));
-	if (draw_stroke_dash_)	properties.push_back(_property(L"stroke-dash",	draw_stroke_dash_.get()));
+	if (draw_stroke_dash_)
+	{
+		if (!draw_stroke_dash_->empty())
+			properties.push_back(_property(L"stroke-dash",	draw_stroke_dash_.get()));
+	}
 	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_->get_length().get_value_unit(odf_types::length::pt) ));
 	if (svg_stroke_opacity_)properties.push_back(_property(L"stroke-opacity",svg_stroke_opacity_->get_percent().get_value()));	
-	if (draw_marker_start_)	properties.push_back(_property(L"marker-start",	draw_marker_start_->get() ));
-	if (draw_marker_end_)	properties.push_back(_property(L"marker-end",	draw_marker_end_->get() ));
+	if (draw_marker_start_)
+	{
+		properties.push_back(_property(L"marker-start",	draw_marker_start_->get() ));
+	}
+	if (draw_marker_end_)
+	{
+		//const std::wstring style_name = draw_marker_end_->get();
+		//if (!style_name.empty())
+		////if (office_element_ptr style = styles.find_by_style_name(style_name))
+		//{
+			properties.push_back(_property(L"marker-end",	draw_marker_end_->get() ));
+		//}
+	}
 	
 	if (draw_textarea_horizontal_align_)properties.push_back(_property(L"textarea-horizontal_align",draw_textarea_horizontal_align_->get_type() ));
 	if (draw_textarea_vertical_align_)	properties.push_back(_property(L"textarea-vertical_align",	draw_textarea_vertical_align_->get_type() ));
@@ -125,6 +140,14 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	if (common_draw_fill_attlist_.draw_color_mode_)
 	{
 		properties.push_back(_property(L"color-mode", *common_draw_fill_attlist_.draw_color_mode_));
+	}
+	if (common_draw_fill_attlist_.draw_luminance_)
+	{
+		properties.push_back(_property(L"luminance", common_draw_fill_attlist_.draw_luminance_->get_value()));
+	}
+	if (common_draw_fill_attlist_.draw_contrast_)
+	{
+		properties.push_back(_property(L"contrast", common_draw_fill_attlist_.draw_contrast_->get_value()));
 	}
 	if (common_padding_attlist_.fo_padding_)
 	{

@@ -41,6 +41,7 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -74,7 +75,32 @@ mediaitems::item::item(	std::wstring const & _href,
 	count_add = 1;
 	count_used = 0;
 }
+mediaitems::mediaitems(const std::wstring & odfPacket) : odf_packet_(odfPacket)
+{
+	count_charts	= 0;
+	count_shape		= 0;
+	count_image		= 0;
+	count_tables	= 0;
+	count_media		= 0;
+	count_object	= 0;
+	count_audio		= 0;
+	count_video		= 0;
+	count_slide		= 0;
+	count_activeX	= 0;	
+	count_control	= 0;	
 
+	applicationFonts_	= NSFonts::NSApplication::Create();
+}
+mediaitems::~mediaitems()
+{
+    if (applicationFonts_)
+        delete applicationFonts_;
+}
+void mediaitems::set_font_directory(std::wstring pathFonts)
+{
+    if (applicationFonts_)
+        applicationFonts_->InitializeFromFolder(pathFonts);
+}
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal)
 {
     std::wstring ref;

@@ -61,15 +61,17 @@ public:
     _CP_OPT(std::wstring)	table_style_name_;
 	_CP_OPT(std::wstring)	table_template_name_;
 
-	bool					table_protected_;		// default false
+	bool					table_protected_;					// default false
     _CP_OPT(std::wstring)	table_protection_key_; 
-    bool					table_print_;			// default true
+	_CP_OPT(std::wstring)	table_protection_key_digest_algorithm_;
+
+    bool					table_print_;						// default true
     _CP_OPT(std::wstring)	table_print_ranges_;
 
 	bool					table_use_first_row_styles_;		// default false;
-	bool					table_use_banding_rows_styles_;		//defualt false;
-	bool					table_use_first_column_styles_;		//defualt false;
-	bool					table_use_banding_columns_styles_;	//defualt false;
+	bool					table_use_banding_rows_styles_;		// defualt false;
+	bool					table_use_first_column_styles_;		// defualt false;
+	bool					table_use_banding_columns_styles_;	// defualt false;
 
     friend class table_table;    
 };
@@ -617,6 +619,38 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row_group);
 
+class table_table_protection : public office_element_impl<table_table_protection>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableTableProtection;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context) {}
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) {}
+	virtual void pptx_convert(oox::pptx_conversion_context & Context) {}
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+public:
+	_CP_OPT(bool)	select_protected_cells;
+	_CP_OPT(bool)	select_unprotected_cells;
+	_CP_OPT(bool)	insert_columns;
+	_CP_OPT(bool)	insert_rows;
+
+	_CP_OPT(bool)	delete_columns;
+	_CP_OPT(bool)	delete_rows;
+	//_CP_OPT(bool)	format_columns; //???
+	//_CP_OPT(bool)	format_rows;
+	//_CP_OPT(bool)	format_cells;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_table_protection);
+
 class table_table : public office_element_impl<table_table>
 {
 public:
@@ -636,7 +670,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_attlist			table_table_attlist_;
+    table_table_attlist			attlist_;
+	
+	office_element_ptr			table_protection_;
 
     table_columns_and_groups	table_columns_and_groups_;
     table_rows_and_groups		table_rows_and_groups_;

@@ -119,8 +119,7 @@ private:
 
 };
 
-//  default_style
-///         style:default-style
+//  style:default-style
 class default_style : public office_element_impl<default_style>
 {
 public:
@@ -147,10 +146,69 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(default_style);
+//-------------------------------------------------------------------------------------------------
+// draw:marker
+class draw_marker : public office_element_impl<draw_marker>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleDrawMarker;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//  style_draw_gradient
+	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+
+	_CP_OPT(std::wstring)		svg_d_; 
+	_CP_OPT(std::wstring)		svg_viewBox_; 
+ 	_CP_OPT(std::wstring)		draw_name_;
+	_CP_OPT(std::wstring)		draw_display_name_;
+	
+    friend class odf_document;
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+ 
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_marker);
+
+//-------------------------------------------------------------------------------------------------
+// draw:stroke-dash
+class draw_stroke_dash : public office_element_impl<draw_stroke_dash>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleDrawStrokeDash;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+
+	_CP_OPT(odf_types::length_or_percent)	draw_distance_; 
+	_CP_OPT(odf_types::length_or_percent)	draw_dots1_length_; 
+	_CP_OPT(odf_types::length_or_percent)	draw_dots2_length_; 
+
+	_CP_OPT(int)				draw_dots1_;
+	_CP_OPT(int)				draw_dots2_;
+	
+	_CP_OPT(std::wstring)		draw_style_; //rect or round:
+ 	_CP_OPT(std::wstring)		draw_name_;
+	_CP_OPT(std::wstring)		draw_display_name_;
+	
+    friend class odf_document;
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+ 
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_stroke_dash);
+//-------------------------------------------------------------------------------------------------
+//  draw:gradient
 class draw_gradient : public office_element_impl<draw_gradient>
 {
 public:
@@ -189,7 +247,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
 /////////////////////////////////////////////////////////////////////////////////////////////////
-//  style_draw_hatch
+//  draw:hatch
 class draw_hatch : public office_element_impl<draw_hatch>
 {
 public:
@@ -355,8 +413,8 @@ public:
     office_element_ptr_array draw_opacity_;     
 	office_element_ptr_array draw_hatch_;    
     
-	office_element_ptr_array draw_marker_; // < TODO
-    office_element_ptr_array draw_stroke_dash_; // < TODO
+	office_element_ptr_array draw_marker_; 
+    office_element_ptr_array draw_stroke_dash_; 
 	
 	office_element_ptr_array svg_linearGradient_; // < TODO
     office_element_ptr_array svg_radialGradient_; // < TODO

@@ -88,7 +88,6 @@ void xlsx_document::write(const std::wstring & RootPath)
 pivot_cache_content::pivot_cache_content() : definitions_rels_file_(rels_file::create(L""))
 {      
 }
-
 _CP_PTR(pivot_cache_content) pivot_cache_content::create()
 {
     return boost::make_shared<pivot_cache_content>();
@@ -97,17 +96,23 @@ _CP_PTR(pivot_cache_content) pivot_cache_content::create()
 pivot_table_content::pivot_table_content() : rels_file_(rels_file::create(L""))
 {      
 }
-
 _CP_PTR(pivot_table_content) pivot_table_content::create()
 {
     return boost::make_shared<pivot_table_content>();
+}
+//--------------------------------------------------------------------------------------------
+external_links_content::external_links_content() : rels_file_(rels_file::create(L""))
+{      
+}
+_CP_PTR(external_links_content) external_links_content::create()
+{
+    return boost::make_shared<external_links_content>();
 }
 //--------------------------------------------------------------------------------------------
 sheet_content::sheet_content() : rels_(rels_file::create(L""))
 {
         
 }
-
 _CP_PTR(sheet_content) sheet_content::create()
 {
     return boost::make_shared<sheet_content>();
@@ -198,8 +203,11 @@ void xl_files::write(const std::wstring & RootPath)
 		control_props_files_.set_main_document( this->get_main_document() );
 		control_props_files_.write(path);
 	}
-	int index = 1;
-    if (true)
+	{
+		external_links_files_.set_rels(&rels_files_);
+        external_links_files_.set_main_document(get_main_document());
+        external_links_files_.write(path);
+    }
     {
         //workbook_->hyperlinks->write(path);
         rels_files_.add( relationship( L"hId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml" ) );
@@ -217,7 +225,6 @@ void xl_files::write(const std::wstring & RootPath)
 		content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
 		contentTypes->add_override(L"/xl/connections.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml");
 	}
-
 	if (styles_)
     {
        styles_->write(path);
@@ -249,6 +256,7 @@ void xl_files::write(const std::wstring & RootPath)
         table_part_files_.set_main_document(get_main_document());
         table_part_files_.write(path);
     }
+
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -290,11 +298,11 @@ void xl_files::add_sheet(sheet_content_ptr sheet)
     sheets_files_.add_sheet(sheet);
 }
 
-void xl_files::set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts)
+void xl_files::set_media(mediaitems & _Mediaitems)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{
-		media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+		media_ = element_ptr( new media(_Mediaitems, _Mediaitems.applicationFonts()) );
 	}
 
 	if (_Mediaitems.count_object > 0)
@@ -337,6 +345,10 @@ void xl_files::add_jsaProject(const std::string &content)
 void xl_files::add_control_props (simple_element_ptr element)
 {
 	control_props_files_.add_control_props(element);
+}
+void xl_files::add_external_links(external_links_content_ptr content)
+{
+    external_links_files_.add_external_links(content);
 }
 //----------------------------------------------------------------------------------------
 void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
@@ -423,6 +435,44 @@ void xl_pivot_table_files::write(const std::wstring & RootPath)
 				relFiles.write(path);
 			}
         }
+    }
+}
+//------------------------------------------------------------------------------------------------------
+void xl_external_links_files::add_external_links(external_links_content_ptr content)
+{
+    external_links_.push_back(content);
+}
+void xl_external_links_files::write(const std::wstring & RootPath)
+{
+	if (external_links_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"externalLinks";
+    NSDirectory::CreateDirectory(path.c_str());
+	
+	for (size_t i = 0; i < external_links_.size(); i++)
+    {
+        const std::wstring fileName = std::wstring(L"externalLink") + std::to_wstring(i + 1) + L".xml";
+        content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
+       
+		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml";
+        contentTypes->add_override(std::wstring(L"/xl/externalLinks/") + fileName, kWSConType);
+
+        package::simple_element(fileName, external_links_[i]->content_.str()).write(path);
+
+		{
+			rels_files relFiles;
+			external_links_[i]->rels_file_->set_file_name(fileName + L".rels");
+			
+			relFiles.add_rel_file(external_links_[i]->rels_file_);
+			relFiles.write(path);
+		}
+        if (rels_)
+        {
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
+            const std::wstring fileRef = std::wstring(L"externalLinks/") + fileName;
+            rels_->add(external_links_[i]->rId_, kWSRel, fileRef);
+        }
+
     }
 }
 //------------------------------------------------------------------------------------------------------

@@ -284,6 +284,7 @@ void form_button::docx_convert(oox::docx_conversion_context & Context)
 void form_button::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	Context.get_forms_context().start_element(1);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
 }

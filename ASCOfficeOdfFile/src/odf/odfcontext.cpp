@@ -35,7 +35,23 @@
 namespace cpdoccore { 
 
 	using namespace odf_types;
+	
+	std::string DecodeBase64(const std::wstring & value1)
+	{
+		int nLength = 0;
+		unsigned char *pData = NULL;
+		std::string result;
 
+		std::string value(value1.begin(), value1.end());
+
+		NSFile::CBase64Converter::Decode(value.c_str(), value.length(), pData, nLength);
+		if (pData)
+		{
+			result = std::string((char*)pData, nLength);
+			delete []pData; pData = NULL;
+		}
+		return result;
+	}
 namespace odf_reader {
 
 style_instance::style_instance(

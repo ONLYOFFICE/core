@@ -72,6 +72,8 @@ public:
     void set_clipping	(const std::wstring & str );
 	void set_fill		(_oox_fill & fill);
 	
+	void set_is_line_shape(bool val);
+
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
 

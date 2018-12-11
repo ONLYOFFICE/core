@@ -315,15 +315,17 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
+		bool bClosed = false;
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true, bClosed);
 		}
 		catch(...)
 		{
 			res = false; 
 		}
+		//if (!bClosed) lined_shape_ = true;
 		
 		if (!o_Polyline.empty() && res )
 		{
@@ -400,11 +402,6 @@ void dr3d_scene::docx_convert(oox::docx_conversion_context & Context)
 	common_docx_convert(Context);
 	//...
 	draw_shape::docx_convert(Context);
-}
-void dr3d_extrude::docx_convert(oox::docx_conversion_context & Context)
-{
-	reset_svg_path();
-
 }
 void dr3d_light::docx_convert(oox::docx_conversion_context & Context)
 {

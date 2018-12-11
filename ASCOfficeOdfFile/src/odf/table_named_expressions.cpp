@@ -94,8 +94,19 @@ void table_named_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 		{
 			tableId = Context.get_table_context().state()->get_table_id();
 		}
-        oox::xlsx_defined_names & ctx = Context.get_xlsx_defined_names();
-        ctx.add(table_name_.get(), table_cell_range_address_.get(), false, tableId);
+		std::wstring name = table_name_.get();
+		std::map<std::wstring, int>::iterator pFind = Context.mapUsedNames_.find(name);
+		if (pFind == Context.mapUsedNames_.end())
+		{
+			Context.mapUsedNames_.insert(std::make_pair(name, 1));
+		}
+		else
+		{
+			name += L"_" + std::to_wstring(pFind->second);
+			pFind->second++;
+		}
+		
+		Context.get_xlsx_defined_names().add(name, table_cell_range_address_.get(), false, tableId);
     }
 }
 
@@ -130,8 +141,18 @@ void table_named_expression::xlsx_convert(oox::xlsx_conversion_context & Context
 		{
 			tableId = Context.get_table_context().state()->get_table_id();
 		}
-		oox::xlsx_defined_names & ctx = Context.get_xlsx_defined_names();
-        ctx.add(table_name_.get(), table_expression_.get(), true, tableId);
+		std::wstring name = table_name_.get();
+		std::map<std::wstring, int>::iterator pFind = Context.mapUsedNames_.find(name);
+		if (pFind == Context.mapUsedNames_.end())
+		{
+			Context.mapUsedNames_.insert(std::make_pair(name, 1));
+		}
+		else
+		{
+			name += L"_" + std::to_wstring(pFind->second);
+			pFind->second++;
+		}
+        Context.get_xlsx_defined_names().add(name, table_expression_.get(), true, tableId);
     }
 }
 

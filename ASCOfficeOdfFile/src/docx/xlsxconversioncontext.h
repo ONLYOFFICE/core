@@ -34,6 +34,8 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/regex.hpp>
+#include <unordered_map>
 
 #include "oox_conversion_context.h"
 
@@ -53,11 +55,6 @@
 #include "oox_chart_context.h"
 
 #include "mediaitems.h"
-
-namespace NSFonts
-{
-    class IApplicationFonts;
-}
 
 namespace cpdoccore {
 
@@ -161,8 +158,11 @@ public:
 
 	void add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props);
 	
+	//int add_external_link(const std::wstring & external);
+
 	void add_table_part(const std::wstring & table) {table_parts_.push_back(table);}
 	size_t get_table_parts_size() {return table_parts_.size();}
+	
 //------------------------------------------------------------------------------------
 
     odf_reader::odf_document * root()
@@ -195,17 +195,15 @@ public:
 
     mediaitems & get_mediaitems() { return mediaitems_; }
 
+	static std::unordered_map<std::wstring, int>	mapExternalLink_;
+	std::map<std::wstring, int>						mapUsedNames_;
 private:
-    void create_new_sheet	(std::wstring const & name);
-
 	void serialize_bookViews(std::wostream & strm);
 	void serialize_calcPr	(std::wostream & strm);    
 
     package::xlsx_document				*output_document_;
     const odf_reader::office_element	*spreadsheet_;
     odf_reader::odf_document			*odf_document_;
-
-    NSFonts::IApplicationFonts			*applicationFonts_;
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;
@@ -217,8 +215,8 @@ private:
     size_t                              default_style_;
     mediaitems                          mediaitems_;
 	std::multimap<std::wstring, int>	mapPivotsTableView_;
-
- 	std::map<std::wstring, std::wstring>control_props_; 
+	
+ 	std::map<std::wstring, std::wstring>	control_props_; 
  
     xlsx_style_manager              xlsx_style_;
     xlsx_defined_names              xlsx_defined_names_;
@@ -231,6 +229,8 @@ private:
 	
 	math_context					math_context_;
 	forms_context					forms_context_;
+
+	static std::wstring change_external(boost::wsmatch const & what);
 };
 
 }

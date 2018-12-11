@@ -63,7 +63,7 @@ public:
 	static const ElementType type = typeDrawShape;
 	static const xml::NodeType xml_type = xml::typeElement;
 
-	draw_shape() : bad_shape_(false), word_art_(false), idx_in_owner(-1) {}
+	draw_shape() : bad_shape_(false), word_art_(false), idx_in_owner(-1), lined_shape_(false) {}
 
 	CPDOCCORE_DEFINE_VISITABLE();
 	friend class odf_document;
@@ -93,6 +93,7 @@ public:
 	int									sub_type_;
 	std::vector<odf_reader::_property>	additional_;
 	int									idx_in_owner;
+	bool								lined_shape_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,7 +286,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_polygon);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------------
 //draw:contour-polygon
 class draw_contour_polygon : public draw_polygon
 {
@@ -297,9 +298,21 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(draw_contour_polygon);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------------
+//draw:contour-path
+class draw_contour_path : public draw_path
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDrawContourPath;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_contour_path);
+//-----------------------------------------------------------------------------------------------------
 class draw_polyline_attlist
 {
 public:
@@ -572,9 +585,9 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_scene);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 
-class dr3d_extrude : public office_element_impl<dr3d_extrude>
+class dr3d_extrude : public draw_path
 {
 public:
     static const wchar_t * ns;
@@ -586,19 +599,31 @@ public:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	
-	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-	virtual void docx_convert(oox::docx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context);
-
-	_CP_OPT(std::wstring) svg_d_;
-	_CP_OPT(std::wstring) svg_viewbox_;
-	
-	void reset_svg_path();
-
+	//virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	//virtual void docx_convert(oox::docx_conversion_context & Context);
+	//virtual void pptx_convert(oox::pptx_conversion_context & Context);
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_extrude);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
 
+class dr3d_rotate : public draw_path
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dRotate;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
+	//virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	//virtual void docx_convert(oox::docx_conversion_context & Context);
+    //virtual void pptx_convert(oox::pptx_conversion_context & Context);
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_rotate);
+//------------------------------------------------------------------------------------------------------------
 class dr3d_light : public office_element_impl<dr3d_light>
 {
 public:

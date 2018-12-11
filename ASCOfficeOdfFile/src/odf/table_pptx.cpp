@@ -159,13 +159,13 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().start_table();
 //////////////////////////////////////////////////////////////////
 
-	std::wstring tableStyleName = table_table_attlist_.table_style_name_.get_value_or(L"");
+	std::wstring tableStyleName = attlist_.table_style_name_.get_value_or(L"");
     
 	Context.get_table_context().start_table(tableStyleName);	
 	
-	if (table_table_attlist_.table_template_name_)
+	if (attlist_.table_template_name_)
 	{
-		std::wstring name = L"table:" + table_table_attlist_.table_template_name_.get() ;
+		std::wstring name = L"table:" + attlist_.table_template_name_.get() ;
 		if (office_element_ptr style = Context.root()->odf_context().Templates().find_by_style_name(name))
 		{
 			if (table_table_template* template_ = dynamic_cast<table_table_template *>(style.get()))
@@ -184,13 +184,13 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 	_Wostream << L"<a:tbl>";
 
  	_Wostream << L"<a:tblPr";
-		if (table_table_attlist_.table_use_banding_rows_styles_)
+		if (attlist_.table_use_banding_rows_styles_)
 			_Wostream << L"	bandRow=\"1\"";
-		if (table_table_attlist_.table_use_first_row_styles_)
+		if (attlist_.table_use_first_row_styles_)
 			_Wostream << L"	firstRow=\"1\"";
-		if (table_table_attlist_.table_use_banding_columns_styles_)
+		if (attlist_.table_use_banding_columns_styles_)
 			_Wostream << L"	bandCol=\"1\"";
-		if (table_table_attlist_.table_use_first_column_styles_)
+		if (attlist_.table_use_first_column_styles_)
 			_Wostream << L"	firstCol=\"1\"";		
 	_Wostream << ">";
 	

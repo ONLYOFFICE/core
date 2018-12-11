@@ -60,6 +60,10 @@ std::wostream & operator << (std::wostream & _Wostream, const marker_style & _Va
 
 std::wstring marker_style::parse(const std::wstring & Str)
 {
+	if (Str.empty())
+	{
+		return L"none";
+	}
     std::wstring tmp = Str;
     boost::algorithm::to_lower(tmp);
 

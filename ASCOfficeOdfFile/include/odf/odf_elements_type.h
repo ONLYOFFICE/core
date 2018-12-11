@@ -332,6 +332,7 @@ enum ElementType
     typeTableTableRowGroup,
 	typeTableTableRowNoGroup,
     typeTableTableSource,
+	typeTableTableProtection,
 
 	typeTableDataPilotTables,
 	typeTableDataPilotTable,
@@ -454,6 +455,7 @@ enum ElementType
 	typeDrawPolyline,
 	typeDrawRegularPolyline,
 	typeDrawPath,
+	typeDrawContourPath,
 	typeDrawCircle,
 	typeDrawg,
 	typeDrawPageThumbnail,

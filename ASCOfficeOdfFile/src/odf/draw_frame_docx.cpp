@@ -1003,7 +1003,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->x = val >= 0 ? val : 0; //??? todooo отрицательные величины ...
 	}
 
-	GetProperty(drawing->additional,L"svg:translate_y", dVal);
+	GetProperty(drawing->additional, L"svg:translate_y", dVal);
 	if (dVal)
 	{
 		int val = get_value_emu(dVal.get());
@@ -1012,16 +1012,11 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 
 	if (drawing->inGroup && drawing->type != oox::typeGroupShape)
 	{
-		Context.get_drawing_context().set_position_child_group	(drawing->x, drawing->y);
-		Context.get_drawing_context().set_size_child_group		(drawing->cx + drawing->x, drawing->cy + drawing->y);
-
-		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
         _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
 		drawing->x -= x_group_offset;
 		drawing->y -= y_group_offset;
-
 	}
 
 }
@@ -1034,13 +1029,12 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	drawing.id		= Context.get_drawing_context().get_current_shape_id();
 	drawing.name	= Context.get_drawing_context().get_current_object_name();
 	drawing.inGroup	= Context.get_drawing_context().in_group();
+	drawing.lined	= lined_shape_;
 
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...
 
-	if (drawing.sub_type != 5 && 
-		drawing.sub_type != 11 && 
-		drawing.sub_type != 12 )//line, connectors
+	if (drawing.lined == false)
 	{
 		drawing.additional.push_back(_property(L"text-content", Context.get_drawing_context().get_text_stream_shape()));
 	}
@@ -1192,10 +1186,18 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 			std::wstring strRectClip = properties->fo_clip_.get();
 			strRectClip = strRectClip.substr(5, strRectClip.length() - 6);
 			
-			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + href;
+			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + xlink_attlist_.href_.get_value_or(L"");
 			
-			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, NULL/*Context.applicationFonts_*/);
-		}        
+			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, Context.get_mediaitems().applicationFonts());
+		}
+		if (properties->common_draw_fill_attlist_.draw_luminance_)
+		{
+			drawing->fill.bitmap->luminance = properties->common_draw_fill_attlist_.draw_luminance_->get_value();
+		}
+		if (properties->common_draw_fill_attlist_.draw_contrast_)
+		{
+			drawing->fill.bitmap->contrast = properties->common_draw_fill_attlist_.draw_contrast_->get_value();
+		}
 	}
 }
 
@@ -1349,9 +1351,14 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.reset_context_state();
 		
+	if (position_child_x1 >= 0 && position_child_y1 >= 0 )
+		Context.get_drawing_context().set_position_child_group	(position_child_x1, position_child_y1);
+
+	if (position_child_x2 >= 0 && position_child_y2 >= 0 )
+		Context.get_drawing_context().set_size_child_group	(position_child_x2, position_child_y2);
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = content_[i]->get_type();
         content_[i]->docx_convert(Context);
     }
 	drawing.content_group_ = temp_stream.str();
@@ -1370,10 +1377,6 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	
 	if (drawing.inGroup)
 	{
-		Context.get_drawing_context().set_position_child_group	(drawing.x, drawing.y);
-		Context.get_drawing_context().set_size_child_group		(drawing.cx + drawing.x, drawing.cy + drawing.y);
-
-        // ваще то тут "несовсем" верно ... нужно сначала все стартовые позиции добавить ..
         _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
@@ -1638,18 +1641,20 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 
 	if (href.empty()) return;
 
-	draw_frame*	frame	 = Context.get_drawing_context().get_current_frame();		//owner
+	draw_frame*	frame = Context.get_drawing_context().get_current_frame();		//owner
 	if (!frame) return;
 	
-	oox::_docx_drawing * drawing	= dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
 	if (!drawing) return;
 			
-	drawing->type			=  oox::typeOleObject;
-	
-	bool isMediaInternal	= true;        
-	drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
+	std::wstring extension;
+	detectObject(href, drawing->objectProgId, extension, drawing->type);
 
-	drawing->objectProgId	= detectObject(objectPath); 
+	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+
+	bool isMediaInternal	= true;
+	drawing->objectId = Context.get_mediaitems().add_or_find(href + extension, drawing->type, isMediaInternal, href);
+
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {

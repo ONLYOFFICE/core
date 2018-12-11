@@ -43,7 +43,7 @@
 #include <boost/variant.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore 
 {

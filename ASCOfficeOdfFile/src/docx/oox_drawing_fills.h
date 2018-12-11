@@ -70,12 +70,15 @@ namespace oox {
 		bool			bStretch;
 		bool			bCrop;
 		bool			bTile;
-		bool			bGrayscale;
 
 		double			cropRect[4];//0-left, 1 -top, 2- right, 3 - bottom
 		
 		_CP_OPT(int)	dpi;
 		_CP_OPT(bool)	rotate;
+
+		bool			bGrayscale;
+		_CP_OPT(double)	luminance;
+		_CP_OPT(double)	contrast;
 	};
 /////////////////////////////////////////////////////////
 	class oox_hatch_fill;

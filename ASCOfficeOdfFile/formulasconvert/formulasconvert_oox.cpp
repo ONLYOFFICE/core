@@ -39,6 +39,22 @@
 namespace cpdoccore {
 namespace formulasconvert {
 
+	static std::wstring forbidden_formulas1[] =
+	{
+		L"NULLFORMULA()"
+		/*
+		L"BETADIST",
+		L"CEILING",
+		L"FLOOR",
+		L"RANK",
+		L"ROUND",
+		L"ROUNDDOWN",
+		L"ROUNDUP",
+		L"SUBTOTAL",
+		L"FORMULA",
+		L"ISREF"*/
+	};
+
 class oox2odf_converter::Impl
 {
 public:
@@ -48,7 +64,7 @@ public:
 	std::wstring convert_conditional_formula(const std::wstring& expr);
 
 	std::wstring convert_chart_distance(const std::wstring& expr);
-    static void replace_cells_range(std::wstring& expr);
+    static void replace_cells_range(std::wstring& expr, bool bSelect = true);
   
 	static void replace_semicolons(std::wstring& expr);
     static void replace_vertical(std::wstring& expr);
@@ -59,7 +75,104 @@ public:
 	static std::wstring replace_arguments(boost::wsmatch const & what);
 	static std::wstring convert_scobci(boost::wsmatch const & what);
 	
-    void replace_named_ref(std::wstring & expr);
+	static std::wstring replace_tilda_formater(boost::wsmatch const & what)
+	{
+		if (what[1].matched)
+			return L";";
+		else if (what[2].matched)
+			return what[2].str();    
+		else if (what[3].matched)
+			return what[3].str();
+		//else if (what[4].matched)
+		//    return what[4].str();
+		else
+			return L"";
+	}
+	static std::wstring replace_semicolons_formater(boost::wsmatch const & what)
+	{
+		if (what[1].matched)
+			return L";";
+		else if (what[2].matched)
+			return what[2].str();    
+		else if (what[3].matched)
+			return what[3].str();
+		//else if (what[4].matched)
+		//    return what[4].str();
+		else
+			return L"";
+	}
+	static std::wstring replace_vertical_formater(boost::wsmatch const & what)
+	{
+		if (what[1].matched)
+		{
+			std::wstring inner = what[1].str();
+			XmlUtils::replace_all( inner, L";", L"|");
+			return L"{" + inner + L"}";
+		}    
+		else if (what[2].matched)
+			return what[2].str();
+		else if (what[3].matched)
+			return what[3].str();
+		
+		return L"";
+	}
+	static std::wstring replace_space_formater(boost::wsmatch const & what)
+	{
+		if (what[1].matched)
+		{
+			std::wstring inner = what[1].str();
+			XmlUtils::replace_all( inner, L",", L" ");
+			return inner;
+		}    
+		else if (what[2].matched)
+			return what[2].str();
+		else if (what[3].matched)
+			return what[3].str();
+
+		return L"";
+	}
+	static void oox_replace_tmp_back(std::wstring &expr)
+	{
+		XmlUtils::replace_all( expr, L"ТОСHKA", L".");
+		XmlUtils::replace_all( expr, L"VOSKL", L"!");
+
+		XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
+		XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
+
+		XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
+		XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
+		
+		XmlUtils::replace_all( expr, L"PROBEL", L" ");
+		XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
+		XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+	}
+
+	static void oox_replace_tmp(std::wstring &expr)
+	{
+		XmlUtils::replace_all( expr, L".", L"ТОСHKA");
+		XmlUtils::replace_all( expr, L"!", L"VOSKL");
+
+		XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
+		XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
+
+		XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
+		XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
+		
+		XmlUtils::replace_all( expr, L" ", L"PROBEL");
+		XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
+		XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+	}
+
+	static bool is_forbidden1(const std::wstring & formula)
+	{
+		for (size_t i = 0; i < 1; i++)
+		 {
+			if (boost::algorithm::contains(formula, forbidden_formulas1[i]))
+				return true;
+		}
+		return false;
+	}
+	void replace_named_ref(std::wstring & expr);
     void replace_named_formula(std::wstring & expr);
 	
 	static bool isFindBaseCell_;
@@ -69,38 +182,8 @@ public:
 
 bool			oox2odf_converter::Impl::isFindBaseCell_ = false;
 std::wstring	oox2odf_converter::Impl::table_name_ = L"";
-void oox_replace_tmp_back(std::wstring &expr)
-{
-	XmlUtils::replace_all( expr, L"ТОСHKA", L".");
-	XmlUtils::replace_all( expr, L"VOSKL", L"!");
 
-	XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
-	XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
-
-	XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
-	XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
-	
-	XmlUtils::replace_all( expr, L"PROBEL", L" ");
-	XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
-	XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
-}
-
-void oox_replace_tmp(std::wstring &expr)
-{
-	XmlUtils::replace_all( expr, L".", L"ТОСHKA");
-	XmlUtils::replace_all( expr, L"!", L"VOSKL");
-
-	XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
-	XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
-
-	XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
-	XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
-	
-	XmlUtils::replace_all( expr, L" ", L"PROBEL");
-	XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
-	XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
-}
-void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
+void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr, bool bSelect)
 {
 	if ((0 == expr.find(L"KAVYCHKA")) && (expr.length() - 8 == expr.rfind(L"KAVYCHKA") ))
 		return;
@@ -112,7 +195,7 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 
 	if (b)
 	{
-		boost::wregex re1(L"(\\$?\\w+\\!)?([\\w^0-9$]*\\d*)\\:?([\\w^0-9$]*\\d*)?");
+		boost::wregex re1(L"(\\$?[^\']+\\!)?([\\w^0-9$]*\\d*)\\:?([\\w^0-9$]*\\d*)?");
 //                          $   Sheet2   ! $ A1                 :  $ B5    
 //                          $   Sheet2   ! $ A                  :  $ A    
 //                          $   Sheet2   ! $ 1                  :  $ 1    
@@ -121,7 +204,7 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 		std::wstring res = boost::regex_replace(
 			workstr,	
 			re1,
-			&replace_cells_range_formater1,
+			bSelect ? &replace_cells_range_formater1 : &replace_cells_range_formater2,
 			boost::match_default | boost::format_all);
 	     
 		 expr = res;
@@ -180,18 +263,43 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
 {
     const size_t sz = what.size();
 	
-	if (sz > 2)
+	if (sz > 3)
+    {
+		std::wstring s;
+		std::wstring sheet = what[1].matched ? what[1].str() : L"";
+
+        std::wstring c1 = what[2].str(); 
+        std::wstring c2 = what[3].str(); 
+
+		if ((0 == c1.find(L"KAVYCHKA")) && (c1.length() - 8 == c1.rfind(L"KAVYCHKA") ))
+		{
+			return c1;
+		}
+		else if (!c1.empty() || !c2.empty() || !sheet.empty())
+		{      
+			XmlUtils::replace_all( sheet, L"!", L"");
+
+			if (isFindBaseCell_ && table_name_.empty() && !sheet.empty())
+			{
+				table_name_ = sheet + L".$A$1";
+			}	
+			if (!sheet.empty()  && (std::wstring::npos != c1.find(L"$"))) sheet = L"$"  + sheet;
+
+
+			s =  sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"");
+		}
+        return s;
+	}
+	else
 	{
         const std::wstring c1 = what[1].str(); 
         const std::wstring c2 = what[2].str(); 
 
-		const std::wstring s =  std::wstring(L"[.") +  c1 + (c2.empty() ? L"" : (L":." + c2) ) + std::wstring(L"]");
+		const std::wstring s =  std::wstring(L".") +  c1 + (c2.empty() ? L"" : (L":." + c2) );
 
 		return s; 
 	}
-
-    return L"";
-
+	return L"";
 }
 		
 void oox2odf_converter::Impl::replace_named_formula(std::wstring & expr)
@@ -203,7 +311,6 @@ void oox2odf_converter::Impl::replace_named_formula(std::wstring & expr)
 	isFindBaseCell_ = false;
 }
 
-  // Лист1!$A$1 -> $Лист1.$A$1 
 void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 {
 	table_name_.clear();
@@ -227,7 +334,7 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	{		
 		std::wstring &d = distance[i];
 
-		replace_cells_range(d);
+		replace_cells_range(d, false);
 
 		oox_replace_tmp_back(d);
 			
@@ -245,38 +352,6 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 }
 
 
-namespace 
-{
-std::wstring replace_tilda_formater(boost::wsmatch const & what)
-{
-    if (what[1].matched)
-        return L";";
-    else if (what[2].matched)
-        return what[2].str();    
-    else if (what[3].matched)
-        return what[3].str();
-    //else if (what[4].matched)
-    //    return what[4].str();
-	else
-		return L"";
-}
-
-
-std::wstring replace_semicolons_formater(boost::wsmatch const & what)
-{
-    if (what[1].matched)
-        return L";";
-    else if (what[2].matched)
-        return what[2].str();    
-    else if (what[3].matched)
-        return what[3].str();
-    //else if (what[4].matched)
-    //    return what[4].str();
-	else
-		return L"";
-}
-
-}
 
 // TODO
 // заменить запятые на точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
@@ -291,67 +366,8 @@ void oox2odf_converter::Impl::replace_semicolons(std::wstring& expr)
         boost::match_default | boost::format_all);
      expr = res;
 }
-namespace 
-{
 
-std::wstring replace_vertical_formater(boost::wsmatch const & what)
-{
-    if (what[1].matched)
-    {
-        std::wstring inner = what[1].str();
-        XmlUtils::replace_all( inner, L";", L"|");
-        return L"{" + inner + L"}";
-    }    
-    else if (what[2].matched)
-        return what[2].str();
-    else if (what[3].matched)
-        return what[3].str();
-	
-	return L"";
-}
-std::wstring replace_space_formater(boost::wsmatch const & what)
-{
-    if (what[1].matched)
-    {
-        std::wstring inner = what[1].str();
-        XmlUtils::replace_all( inner, L",", L" ");
-        return inner;
-    }    
-    else if (what[2].matched)
-        return what[2].str();
-    else if (what[3].matched)
-        return what[3].str();
 
-	return L"";
-}
-
-}
-
-std::wstring forbidden_formulas1[] =
-{
-    L"NULLFORMULA()"
-    /*
-    L"BETADIST",
-    L"CEILING",
-    L"FLOOR",
-    L"RANK",
-    L"ROUND",
-    L"ROUNDDOWN",
-    L"ROUNDUP",
-    L"SUBTOTAL",
-    L"FORMULA",
-    L"ISREF"*/
-};
-
-bool is_forbidden1(const std::wstring & formula)
-{
-	for (size_t i = 0; i < 1; i++)
-     {
-        if (boost::algorithm::contains(formula, forbidden_formulas1[i]))
-            return true;
-    }
-    return false;
-}
 //void oox2odf_converter::Impl::split_(std::wstring& expr)
 //{
 //     const std::wstring res = boost::regex_split(
@@ -380,22 +396,6 @@ void oox2odf_converter::Impl::replace_space(std::wstring& expr)
         &replace_space_formater,
         boost::match_default | boost::format_all);
      expr = res;
-}
-
-std::wstring replace_(boost::wsmatch const & what)
-{
-    if (what[1].matched)
-    {
-        std::wstring inner = what[1].str();
-        XmlUtils::replace_all( inner, L",", L" ");
-        return inner;
-    }    
-    else if (what[2].matched)
-        return what[2].str();
-    else if (what[3].matched)
-        return what[3].str();
-
-	return L"";
 }
 
 std::wstring oox2odf_converter::Impl::convert_scobci(boost::wsmatch const & what)

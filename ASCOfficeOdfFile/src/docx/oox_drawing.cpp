@@ -108,6 +108,8 @@ static const std::wstring _ooxShapeType[]=
 	L"custGeom",//uses sub-sub type,
 	L"polygon", 
 	L"roundRect", 
+	L"bentConnector3",
+	L"curvedConnector3"
 };
 
 
@@ -243,16 +245,16 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				{
 					names.push_back(L"adj1");
 				}
-				else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
-				{
-					names.push_back(L"vf");
-				}
-				else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
-						 std::wstring::npos != shapeGeomPreset.find(L"pentagon"))
-				{
-					names.push_back(L"hf");
-					names.push_back(L"vf");
-				}
+				//else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
+				//{
+				//	names.push_back(L"vf");
+				//}
+				//else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
+				//		 std::wstring::npos != shapeGeomPreset.find(L"pentagon"))
+				//{
+				//	names.push_back(L"hf");
+				//	names.push_back(L"vf");
+				//}
 				else if (std::wstring::npos != shapeGeomPreset.find(L"hexagon"))
 				{
 					names.push_back(L"adj");
@@ -418,7 +420,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 			shapeGeomPreset = L"rect";
 		}
 	}
-	else if (sub_type < 10 && sub_type >= 0)
+	else if (sub_type <= 12 && sub_type >= 0)
 	{
 		shapeGeomPreset = _ooxShapeType[sub_type]; //odf -> oox
 	} 

@@ -69,9 +69,42 @@ public:
 
 bool			oox2odf_converter::Impl::isFindBaseCell_ = false;
 std::wstring	oox2odf_converter::Impl::table_name_ = L"";
+void oox_replace_tmp_back(std::wstring &expr)
+{
+	XmlUtils::replace_all( expr, L"ТОСHKA", L".");
+	XmlUtils::replace_all( expr, L"VOSKL", L"!");
 
+	XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
+	XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
+
+	XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
+	XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
+	
+	XmlUtils::replace_all( expr, L"PROBEL", L" ");
+	XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
+	XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+}
+
+void oox_replace_tmp(std::wstring &expr)
+{
+	XmlUtils::replace_all( expr, L".", L"ТОСHKA");
+	XmlUtils::replace_all( expr, L"!", L"VOSKL");
+
+	XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
+	XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
+
+	XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
+	XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
+	
+	XmlUtils::replace_all( expr, L" ", L"PROBEL");
+	XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
+	XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+}
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 {
+	if ((0 == expr.find(L"KAVYCHKA")) && (expr.length() - 8 == expr.rfind(L"KAVYCHKA") ))
+		return;
+
 	boost::wregex re(L"([:$!])+");
 
 	boost::wsmatch result;
@@ -106,25 +139,17 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 	
 	if (sz > 3)
     {
-		std::wstring prev;
 		std::wstring s;
 		std::wstring sheet = what[1].matched ? what[1].str() : L"";
 
-		if (sheet == L"KAVYCHKA!") //todooo переделать ... временно
-		{
-			prev = L"KAVYCHKA";
-			sheet = L"!";
-		}
-
-		if (sheet == L"APOSTROF!") //todooo переделать ... временно
-		{
-			prev = L"APOSTROF";
-			sheet = L"!";
-		}
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
-		
-		if (!c1.empty() || !c2.empty() || !sheet.empty())
+
+		if ((0 == c1.find(L"KAVYCHKA")) && (c1.length() - 8 == c1.rfind(L"KAVYCHKA") ))
+		{
+			return c1;
+		}
+		else if (!c1.empty() || !c2.empty() || !sheet.empty())
 		{      
 			XmlUtils::replace_all( sheet, L"!", L"");
 
@@ -134,9 +159,8 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 			}	
 			if (!sheet.empty()  && (std::wstring::npos != c1.find(L"$"))) sheet = L"$"  + sheet;
 
-			s =  prev + L"["  + sheet + L"." + 
-									 c1 +
-									(c2.empty() ? L"" : (L":" + sheet  + L"." + c2) ) + std::wstring(L"]");
+
+			s =  L"["  + sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"]");
 		}
         return s;
 	}
@@ -190,27 +214,22 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	replace_vertical(workstr);
 	replace_semicolons(workstr);		
 	
+	std::wstring res1 = boost::regex_replace(
+        workstr,
+		boost::wregex(L"('.*?')|(\".*?\")"),
+		&oox2odf_converter::Impl::convert_scobci, boost::match_default | boost::format_all);
+
 	std::vector<std::wstring> distance;
 
-	boost::algorithm::split(distance,workstr, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+	boost::algorithm::split(distance, res1, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
 	for (size_t i = 0; i < distance.size(); i++)
 	{		
 		std::wstring &d = distance[i];
 
-		XmlUtils::replace_all( d, L"(", L"SCOBCAIN");
-		XmlUtils::replace_all( d, L")", L"SCOBCAOUT");
-		XmlUtils::replace_all( d, L" ", L"PROBEL");
-		XmlUtils::replace_all( d, L"'", L"APOSTROF");
-		XmlUtils::replace_all( d, L"\"", L"KAVYCHKA");
-		
 		replace_cells_range(d);
 
-		XmlUtils::replace_all( d, L"SCOBCAIN", L"(");
-		XmlUtils::replace_all( d, L"SCOBCAOUT", L")");
-		XmlUtils::replace_all( d, L"PROBEL", L" ");
-		XmlUtils::replace_all( d, L"APOSTROF", L"'");
-		XmlUtils::replace_all( d, L"KAVYCHKA", L"\"");
+		oox_replace_tmp_back(d);
 			
 		out = out + d + std::wstring(L";");
 	}
@@ -221,11 +240,7 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 
 	if (table_name_.empty() == false)
 	{
-		XmlUtils::replace_all( table_name_, L"SCOBCAIN", L"(");
-		XmlUtils::replace_all( table_name_, L"SCOBCAOUT", L")");
-		XmlUtils::replace_all( table_name_, L"PROBEL", L" ");
-		XmlUtils::replace_all( table_name_, L"APOSTROF", L"'");
-		XmlUtils::replace_all( table_name_, L"KAVYCHKA", L"\"");
+		oox_replace_tmp_back(table_name_);
 	}
 }
 
@@ -382,32 +397,19 @@ std::wstring replace_(boost::wsmatch const & what)
 
 	return L"";
 }
+
 std::wstring oox2odf_converter::Impl::convert_scobci(boost::wsmatch const & what)
 {
     if (what[1].matched)
     {
         std::wstring inner = what[1].str();
-        XmlUtils::replace_all( inner, L"(", L"SCOBCAIN");
-        XmlUtils::replace_all( inner, L")", L"SCOBCAOUT");
-
-		XmlUtils::replace_all( inner, L"[", L"KVADRATIN");
-		XmlUtils::replace_all( inner, L"]", L"KVADRATOUT");
-		
-		XmlUtils::replace_all( inner, L" ", L"PROBEL");
-        XmlUtils::replace_all( inner, L"'", L"APOSTROF");
+        oox_replace_tmp(inner);
 		return inner;
 	}
     else if (what[2].matched)
     {
         std::wstring inner = what[2].str();
-        XmlUtils::replace_all( inner, L"(", L"SCOBCAIN");
-        XmlUtils::replace_all( inner, L")", L"SCOBCAOUT");
-
- 		XmlUtils::replace_all( inner, L"[", L"KVADRATIN");
-		XmlUtils::replace_all( inner, L"]", L"KVADRATOUT");
-		
-		XmlUtils::replace_all( inner, L" ", L"PROBEL");
-        XmlUtils::replace_all( inner, L"\"", L"KAVYCHKA");
+        oox_replace_tmp(inner);
 		return inner;
 	}
     else if (what[3].matched)
@@ -492,16 +494,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 			boost::match_default | boost::format_all);
 	}
 
-    XmlUtils::replace_all( res, L"SCOBCAIN", L"(");
-    XmlUtils::replace_all( res, L"SCOBCAOUT", L")");
-
-	XmlUtils::replace_all( res, L"KVADRATIN", L"[");
-	XmlUtils::replace_all( res, L"KVADRATOUT", L"]");
-    
-
-    XmlUtils::replace_all( res, L"APOSTROF", L"'");
-
-    XmlUtils::replace_all( res, L"KAVYCHKA", L"\"");
+	oox_replace_tmp_back(res);
 
 	replace_vertical(res);   
 	replace_semicolons(res);
@@ -510,17 +503,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 
 	if (table_name_.empty() == false)
 	{
-		XmlUtils::replace_all( table_name_, L"SCOBCAIN", L"(");
-		XmlUtils::replace_all( table_name_, L"SCOBCAOUT", L")");
-
-		XmlUtils::replace_all( table_name_, L"KVADRATIN", L"[");
-		XmlUtils::replace_all( table_name_, L"KVADRATOUT", L"]");
-	    
-
-		XmlUtils::replace_all( table_name_, L"APOSTROF", L"'");
-
-		XmlUtils::replace_all( table_name_, L"KAVYCHKA", L"\"");
-		XmlUtils::replace_all( table_name_, L"PROBEL", L" ");
+		oox_replace_tmp_back(table_name_);
 	}
 
     return std::wstring(L"of:=") + res;
@@ -549,12 +532,7 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 	     
 	}
 
-    XmlUtils::replace_all( res, L"SCOBCAIN", L"(");
-    XmlUtils::replace_all( res, L"SCOBCAOUT", L")");
-
-    XmlUtils::replace_all( res, L"APOSTROF", L"'");
-
-    XmlUtils::replace_all( res, L"KAVYCHKA", L"\"");
+    oox_replace_tmp_back( res);
 
 	replace_vertical(res);
 	replace_semicolons(res);
@@ -670,8 +648,6 @@ std::wstring oox2odf_converter::get_table_name()
 {
     return impl_->table_name_;
 }
-
-
 std::wstring oox2odf_converter::convert_ref(std::wstring const & expr)
 {
     std::wstring workstr = expr;

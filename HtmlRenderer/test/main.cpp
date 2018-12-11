@@ -40,6 +40,7 @@
 #include "../include/HTMLRenderer3.h"
 
 #include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include "../include/ASCSVGWriter.h"
 
@@ -60,7 +61,16 @@ int main(int argc, char *argv[])
 #endif
 
     NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-    pFonts->Initialize();
+    if (true)
+    {
+        pFonts->Initialize();
+    }
+    else
+    {
+        std::vector<std::wstring> arFiles = pFonts->GetSetupFontFiles();
+        NSDirectory::GetFiles2(L"D:\\GIT\\core-fonts", arFiles, true);
+        pFonts->InitializeFromArrayFiles(arFiles);
+    }
 
 #ifdef METAFILE_TEST
 

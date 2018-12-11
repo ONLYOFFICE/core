@@ -76,6 +76,8 @@ class odf_conversion_context : boost::noncopyable
 		odf_style_context_ptr				style_context;	
 		odf_settings_context_ptr			settings_context;
 		_mediaitems							mediaitems;
+	
+		boost::unordered_map<std::wstring, int> mapFonts;
 	};
 
 public:
@@ -85,6 +87,7 @@ public:
     virtual ~odf_conversion_context();
 
     void set_fonts_directory(std::wstring pathFonts);
+	void add_font(const std::wstring & font_name);
 
     virtual void	start_document() = 0 ;
 	virtual void	end_document();

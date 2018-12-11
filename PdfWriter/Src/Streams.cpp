@@ -38,6 +38,7 @@
 #include <sstream>
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../UnicodeConverter/UnicodeConverter.h"
 
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 
@@ -281,7 +282,7 @@ namespace PdfWriter
 
 		Write((BYTE*)sTmpChar, StrLen(sTmpChar, -1));
 	}
-    void CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen)
+    void CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen, bool isUTF16)
 	{
 		if (!unLen || !sText)
 			return;
@@ -294,6 +295,21 @@ namespace PdfWriter
 		unsigned long nRet = 0;
 
 		sBuf[nIndex++] = '(';
+
+        if (isUTF16)
+        {
+            std::string sUtf8((char*)sText, unLen);
+            std::wstring sUnicode = UTF8_TO_U(sUtf8);
+            NSUnicodeConverter::CUnicodeConverter oConverter;
+            std::string sUtf16BE = oConverter.fromUnicode(sUnicode, "UTF-16BE");
+
+            unLen = (unsigned int)sUtf16BE.length();
+            sTxt = (BYTE*)sUtf16BE.c_str();
+
+            sBuf[nIndex++] = 0xFE;
+            sBuf[nIndex++] = 0xFF;
+        }
+
 		for (int nCounter = 0; nCounter < unLen; nCounter++)
 		{
 			BYTE nChar = (BYTE)*sTxt++;
@@ -324,158 +340,185 @@ namespace PdfWriter
 		sBuf[nIndex++] = ')';
 
 		Write((BYTE*)sBuf, nIndex);
-	}
+	}            
     void CStream::WriteBinary(const BYTE* pData, unsigned int unLen, CEncrypt* pEncrypt)
-	{
-		char sBuf[TEXT_DEFAULT_LEN];
+    {
+        char sBuf[TEXT_DEFAULT_LEN];
 
-		BYTE* pBuf = NULL;
-		bool bDelete = false;
-		unsigned int nIndex = 0;
+        BYTE* pBuf = NULL;
+        bool bDelete = false;
+        unsigned int nIndex = 0;
 
-		const BYTE* pBuffer = NULL;
-		if (pEncrypt)
-		{
-			pBuf = new BYTE[unLen + 16 + 16]; // iv + padding
-			bDelete = true;
-			unLen = pEncrypt->CryptBuf(pData, pBuf, unLen, true);
-			pBuffer = pBuf;
-		}
-		else
-		{
-			pBuffer = pData;
-		}
+        const BYTE* pBuffer = NULL;
+        if (pEncrypt)
+        {
+            pBuf = new BYTE[unLen + 16 + 16]; // iv + padding
+            bDelete = true;
+            unLen = pEncrypt->CryptBuf(pData, pBuf, unLen);
+            pBuffer = pBuf;
+        }
+        else
+        {
+            pBuffer = pData;
+        }
 
-		for (int nCounter = 0; nCounter < unLen; nCounter++, pBuffer++)
-		{
-			Write((const BYTE*)c_pHexStrings[*pBuffer], 2);
-		}
+        for (int nCounter = 0; nCounter < unLen; nCounter++, pBuffer++)
+        {
+            Write((const BYTE*)c_pHexStrings[*pBuffer], 2);
+        }
 
-		if (nIndex > 0)
-		{
-			Write((BYTE*)sBuf, nIndex);
-		}
+        if (nIndex > 0)
+        {
+            Write((BYTE*)sBuf, nIndex);
+        }
 
-		if (bDelete)
-			delete[] pBuf;
-	}
+        if (bDelete)
+            delete[] pBuf;
+    }
     void CStream::WriteStreamWithDeflate(CStream* pStream, CEncrypt* pEncrypt)
-	{
-		unsigned long nRet = OK;
+    {
+        unsigned long nRet = OK;
 
         CDeflate ZStream;
         BYTE inbuf[STREAM_BUF_SIZ];
         BYTE otbuf[DEFLATE_BUF_SIZ];
-		BYTE ebuf[DEFLATE_BUF_SIZ];
 
-		// initialize input stream
-		pStream->Seek(0, SeekSet);
+        BYTE *otbuf_all = NULL;
 
-		// initialize decompression stream.
+        // initialize input stream
+        pStream->Seek(0, SeekSet);
+		unsigned long size = pStream->Size();
+		if (pEncrypt)
+		{
+			unsigned long size_out = (unsigned long)(size * 1.1 + 13 + 64);
+			otbuf_all = new BYTE[size_out];
+		}
+
+        // initialize decompression stream.
         ZStream.SetOut(otbuf, DEFLATE_BUF_SIZ);
         ZStream.Init(DEFLATE_DEFAULT_COMPRESSION, -1);
         ZStream.SetIn(inbuf, 0);
 
-		for (;;)
-		{
-			unsigned int unSize = STREAM_BUF_SIZ;
-			pStream->Read(inbuf, &unSize);
+        unsigned long size_crypt = 0;
+
+		unsigned int offset = 0;
+        while(true)
+        {
+            unsigned int unSize = STREAM_BUF_SIZ;
+            pStream->Read(inbuf, &unSize);
 
             ZStream.SetIn(inbuf, unSize);
 
-			if (0 == unSize)
-				break;
+            if (0 == unSize)
+                break;
 
             while (ZStream.GetAvailIn() > 0)
-			{
+            {
                 ZStream.Process(DEFLATE_NO_FLUSH);
 
                 if (ZStream.GetAvailOut() == 0)
-				{
-					if (pEncrypt)
-					{
-                        pEncrypt->CryptBuf(otbuf, ebuf, DEFLATE_BUF_SIZ, false);
-						Write(ebuf, DEFLATE_BUF_SIZ);
-					}
-					else
-						Write(otbuf, DEFLATE_BUF_SIZ);
+                {
+                    if (pEncrypt)
+                    {
+						memcpy(otbuf_all + offset, otbuf, DEFLATE_BUF_SIZ);
+						offset += DEFLATE_BUF_SIZ;
+                    }
+                    else
+                        Write(otbuf, DEFLATE_BUF_SIZ);
 
                     ZStream.SetOut(otbuf, DEFLATE_BUF_SIZ);
-				}
-			}
-		}
+                }
+            }
+        }
 
-		bool bEnd = false;
-		for (;;)
-		{
+        bool bEnd = false;
+        while(true)
+        {
             nRet = ZStream.Process(DEFLATE_FINISH);
             if (DEFLATE_OK != nRet && DEFLATE_STREAM_END != nRet)
-			{
+            {
                 ZStream.End();
-				return;
-			}
+                return;
+            }
 
             if (DEFLATE_STREAM_END == nRet)
-				bEnd = true;
+                bEnd = true;
 
             if (ZStream.GetAvailOut() < DEFLATE_BUF_SIZ)
-			{
+            {
                 unsigned int osize = DEFLATE_BUF_SIZ - ZStream.GetAvailOut();
-				if (pEncrypt)
-				{
-                    osize = pEncrypt->CryptBuf(otbuf, ebuf, osize, true);
-					Write(ebuf, osize);
-				}
-				else
-					Write(otbuf, osize);
+                if (pEncrypt)
+                {
+					memcpy(otbuf_all + offset, otbuf, osize);
+					offset += osize;
+                }
+                else
+                    Write(otbuf, osize);
 
                 ZStream.SetOut(otbuf, DEFLATE_BUF_SIZ);
-			}
+            }
 
-			if (bEnd)
-				break;
-		}
+            if (bEnd)
+                break;
+        }
+        if (pEncrypt)
+        {
+			BYTE *etbuf_all = new BYTE[offset + 32];
+			unsigned int osize = pEncrypt->CryptBuf(otbuf_all, etbuf_all, offset);
+			delete []otbuf_all;
+
+			Write(etbuf_all, osize);
+
+			delete []etbuf_all;
+        }
 
         ZStream.End();
-	}
+    }
     void CStream::WriteStream(CStream* pStream, unsigned int unFilter, CEncrypt *pEncrypt)
-	{
-		if (pStream->Size() <= 0)
-			return;
+    {
+        if (pStream->Size() <= 0)
+            return;
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 
-		if (unFilter & STREAM_FILTER_FLATE_DECODE)
-			return WriteStreamWithDeflate(pStream, pEncrypt);
+        if (unFilter & STREAM_FILTER_FLATE_DECODE)
+            return WriteStreamWithDeflate(pStream, pEncrypt);
 
 #endif
-
-		BYTE pBuf[STREAM_BUF_SIZ];
-		BYTE pEBuf[STREAM_BUF_SIZ];
-
 		pStream->Seek(0, SeekSet);
-		for (;;)
+       
+		if (pEncrypt)
+        {
+			unsigned int size = pStream->Size();
+
+			BYTE *pBuf = new BYTE[size];
+			BYTE *pEBuf = new BYTE[size + 32];
+			
+			pStream->Read(pBuf, &size);
+			size = pEncrypt->CryptBuf(pBuf, pEBuf, size);
+			Write(pEBuf, size);
+
+			delete []pBuf;
+			delete []pEBuf;
+		}
+		else
 		{
-			unsigned int unSize = STREAM_BUF_SIZ;
-			pStream->Read(pBuf, &unSize);
+			BYTE pBuf[STREAM_BUF_SIZ];
 
-			if (0 == unSize)
-				break;
+			while(true)
+			{
+				unsigned int unSize = STREAM_BUF_SIZ;
+				pStream->Read(pBuf, &unSize);
 
-			if (pEncrypt)
-			{
-                unSize = pEncrypt->CryptBuf(pBuf, pEBuf, unSize, pStream->IsEof());
-				Write(pEBuf, unSize);
-			}
-			else
-			{
+				if (0 == unSize)
+					break;
 				Write(pBuf, unSize);
 			}
 		}
-	}
+    }
     void CStream::Write(CNullObject* pNull)
-	{
-	}
+    {
+    }
     void CStream::Write(CBoolObject* pBool)
 	{
 		if (pBool->Get())
@@ -508,8 +551,8 @@ namespace PdfWriter
 			WriteChar('>');
 		}
 		else
-		{
-			WriteEscapeText(pString->GetString(), pString->GetLength());
+		{            
+            WriteEscapeText(pString->GetString(), pString->GetLength(), pString->IsUTF16());
 		}
 	}
     void CStream::Write(CBinaryObject* pBinary, CEncrypt* pEncrypt)

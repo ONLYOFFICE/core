@@ -690,7 +690,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="111"
+			Name="libs"
 			>
 			<File
 				RelativePath="..\..\..\build\lib\win_32\DEBUG\DjVuFile.lib"

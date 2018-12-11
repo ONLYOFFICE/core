@@ -874,14 +874,14 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 			int type = attlists_.rel_size_.style_rel_width_->get_type();
 
 			if (type == odf_types::percent_or_scale::Percent)
-				drawing->pctWidth	= attlists_.rel_size_.style_rel_width_->get_percent().get_value();
+				drawing->pctWidth	= (int)attlists_.rel_size_.style_rel_width_->get_percent().get_value();
 		}
 		if (attlists_.rel_size_.style_rel_height_ )
 		{
 			int type = attlists_.rel_size_.style_rel_height_->get_type();
 
 			if (type == odf_types::percent_or_scale::Percent)
-				drawing->pctHeight	= attlists_.rel_size_.style_rel_height_->get_percent().get_value();
+				drawing->pctHeight	= (int)attlists_.rel_size_.style_rel_height_->get_percent().get_value();
 		}
 
     }
@@ -1038,7 +1038,9 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...
 
-	if (drawing.sub_type !=5 )//line
+	if (drawing.sub_type != 5 && 
+		drawing.sub_type != 11 && 
+		drawing.sub_type != 12 )//line, connectors
 	{
 		drawing.additional.push_back(_property(L"text-content", Context.get_drawing_context().get_text_stream_shape()));
 	}

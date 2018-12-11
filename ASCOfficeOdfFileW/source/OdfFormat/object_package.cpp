@@ -394,7 +394,6 @@ namespace odf_writer
 					
 					CP_XML_ATTR(L"office:version",		L"1.2");				
 	
-					CP_XML_NODE(L"office:font-face-decls");
 					if (content)
 					{
 						CP_XML_STREAM() << content->styles_str();

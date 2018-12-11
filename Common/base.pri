@@ -1,9 +1,31 @@
-
 VERSION = $$cat(version.txt)
+
+PRODUCT_VERSION = $$(PRODUCT_VERSION)
+BUILD_NUMBER = $$(BUILD_NUMBER)
+
+!isEmpty(PRODUCT_VERSION){
+    !isEmpty(BUILD_NUMBER){
+        VERSION = $${PRODUCT_VERSION}.$${BUILD_NUMBER}
+	}
+}
+
 DEFINES += INTVER=$$VERSION
 
-QMAKE_TARGET_COMPANY = $$cat(copyright.txt)
-QMAKE_TARGET_COPYRIGHT = $$cat(copyright.txt) (c) 2018
+PUBLISHER_NAME = $$(PUBLISHER_NAME)
+isEmpty(PUBLISHER_NAME){
+    PUBLISHER_NAME = $$cat(copyright.txt)
+}
+
+win32 {
+    CURRENT_YEAR = $$system("echo %Date:~6,4%")
+}
+
+!win32 {
+    CURRENT_YEAR = $$system(date +%Y)
+}
+
+QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
+QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
@@ -15,6 +37,16 @@ CONFIG(debug, debug|release) {
 #PLATFORM
 win32 {
     CONFIG += core_windows
+}
+
+DST_ARCH=$$QMAKE_TARGET.arch
+isEqual(QT_MAJOR_VERSION, 5) {
+    DST_ARCH=$$QT_ARCH
+    # QT_ARCH uses 'i386' instead of 'x86',
+    # so map that value back to what we expect.
+    equals(DST_ARCH, i386) {
+        DST_ARCH=x86
+    }
 }
 
 win32:contains(QMAKE_TARGET.arch, x86_64): {
@@ -33,6 +65,11 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64): {
 linux-g++:!contains(QMAKE_HOST.arch, x86_64): {
     message("linux-32")
     CONFIG += core_linux_32
+}
+linux-g++:contains(DST_ARCH, arm): {
+    message("arm")
+    CONFIG += core_linux_arm
+    DEFINES += LINUX_ARM
 }
 }
 
@@ -92,6 +129,9 @@ core_linux_64 {
 }
 core_mac_64 {
     CORE_BUILDS_PLATFORM_PREFIX = mac_64
+}
+core_linux_arm {
+    CORE_BUILDS_PLATFORM_PREFIX = arm
 }
 
 core_debug {

@@ -37,7 +37,14 @@ mkdir "build"
 fi
 cef_binary=cef_binary
 cef_arch=$cef_binary.7z
-cef_url=http://d2ettrnqo7v976.cloudfront.net/cef/3163/$platform$arch/$cef_arch
+cef_version="3163"
+
+if [[ "$platform" == *"linux"* ]]
+then
+cef_version="3202"
+fi
+
+cef_url=http://d2ettrnqo7v976.cloudfront.net/cef/$cef_version/$platform$arch/$cef_arch
 
 if [[ "$platform" == *"linux"* ]]
 then

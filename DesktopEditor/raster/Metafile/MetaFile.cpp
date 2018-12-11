@@ -177,47 +177,49 @@ namespace MetaFile
 	{
 		return m_lType;
 	}
-	void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
-	{
-		if (c_lMetaWmf == m_lType)
-		{
-            const TRectD& oRect = m_oWmfFile.GetBounds();
-			*pdX = oRect.dLeft;
-			*pdY = oRect.dTop;
-			*pdW = oRect.dRight - oRect.dLeft;
-			*pdH = oRect.dBottom - oRect.dTop;
-		}
-		else if (c_lMetaEmf == m_lType)
-		{
-			TEmfRectL* pRect = m_oEmfFile.GetBounds();
-			*pdX = pRect->lLeft;
-			*pdY = pRect->lTop;
-			*pdW = pRect->lRight - pRect->lLeft;
-			*pdH = pRect->lBottom - pRect->lTop;
-		}
-		else if (c_lMetaSvm == m_lType)
-		{
-			TRect* pRect = m_oSvmFile.GetBounds();
-			*pdX = pRect->nLeft;
-			*pdY = pRect->nTop;
-			*pdW = pRect->nRight - pRect->nLeft;
-			*pdH = pRect->nBottom - pRect->nTop;
+        void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
+        {
+            if (c_lMetaWmf == m_lType)
+            {
+                const TRectD& oRect = m_oWmfFile.GetBounds();
+                *pdX = oRect.dLeft;
+                *pdY = oRect.dTop;
+                *pdW = oRect.dRight - oRect.dLeft;
+                *pdH = oRect.dBottom - oRect.dTop;
+            }
+            else if (c_lMetaEmf == m_lType)
+            {
+                TEmfRectL* pRect = m_oEmfFile.GetBounds();
+                *pdX = pRect->lLeft;
+                *pdY = pRect->lTop;
+                *pdW = pRect->lRight - pRect->lLeft;
+                *pdH = pRect->lBottom - pRect->lTop;
+            }
+            else if (c_lMetaSvm == m_lType)
+            {
+                TRect* pRect = m_oSvmFile.GetBounds();
+                *pdX = pRect->nLeft;
+                *pdY = pRect->nTop;
+                *pdW = pRect->nRight - pRect->nLeft;
+                *pdH = pRect->nBottom - pRect->nTop;
 
-			if (*pdW > 10000 || *pdH > 10000)
-			{
-				*pdW /= 10;
-				*pdH /= 10;
-			}
-		}
-		else
-		{
-			*pdX = 0;
-			*pdY = 0;
-			*pdW = 0;
-			*pdH = 0;
-		}
-	};
-	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
+                if (*pdW > 10000 || *pdH > 10000)
+                {
+                    *pdW /= 10;
+                    *pdH /= 10;
+                }
+            }
+            else
+            {
+                *pdX = 0;
+                *pdY = 0;
+                *pdW = 0;
+                *pdH = 0;
+            }
+            if (*pdW < 0) *pdW = -*pdW;
+            if (*pdH < 0) *pdH = -*pdH;
+        };
+        void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
 		CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
 		CFontsCache* pFontCache = new CFontsCache();

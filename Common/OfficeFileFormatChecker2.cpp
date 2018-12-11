@@ -262,7 +262,7 @@ std::wstring COfficeFileFormatChecker::getDocumentID (const std::wstring & _file
 	}
 	else
 	{
-		if ( false == isOpenOfficeFormatFile(fileName, sDocumentID))
+		if ( false == isOpenOfficeFormatFile(fileName, documentID))
 		{
 			NSFile::CFileBinary file;
 			if (!file.OpenFile(fileName))
@@ -275,12 +275,13 @@ std::wstring COfficeFileFormatChecker::getDocumentID (const std::wstring & _file
 			file.ReadFile(buffer, MIN_SIZE_BUFFER, dwReadBytes);
 			file.CloseFile();
 
-			if (isPdfFormatFile(buffer, (int)dwReadBytes, sDocumentID) )
+			if (isPdfFormatFile(buffer, (int)dwReadBytes, documentID) )
 			{
 				nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 			}
 		}
 	}
+	sDocumentID = documentID;
 
 	return documentID;
 }

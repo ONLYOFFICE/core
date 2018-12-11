@@ -212,7 +212,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
                 }
 				CP_XML_NODE(L"p:cNvSpPr")//non visual properies (собственно тока 1 там)
 				{
-					if (val.sub_type==1 || val.sub_type==2)CP_XML_ATTR(L"txBox", 1);
+					if (val.sub_type == 1 || val.sub_type == 2)CP_XML_ATTR(L"txBox", 1);
 					CP_XML_NODE(L"a:spLocks")
 					{
 						CP_XML_ATTR(L"noGrp", 1);

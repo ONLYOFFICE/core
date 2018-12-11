@@ -309,8 +309,10 @@ public:
 				void add_conditional_colorscale(int index, _CP_OPT(odf_types::color) color);
 				void set_conditional_databar_color(_CP_OPT(odf_types::color) color);
 				
-				void set_conditional_style_name(std::wstring style_name);
+				void set_conditional_style_name(const std::wstring &style_name);
                 void set_conditional_operator(int _operator);
+
+				void set_conditional_text(const std::wstring &text);
 			void end_conditional_rule();
 		void end_conditional_format();
 	void end_conditional_formats();

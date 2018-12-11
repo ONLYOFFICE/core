@@ -47,6 +47,8 @@ ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_p.c
 ASCOfficeXlsFile2/win32/dlldata.c
 OfficeUtils/win32/OfficeUtilsLib/OfficeUtilsLib/ReadMe.txt
 X2tConverter/**/Makefile.*
+X2tConverter/ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/Makefile
+X2tConverter/Common/DocxFormat/DocxFormatLib/Makefile
 *.7z
 *.obj
 *.pdb

@@ -575,7 +575,7 @@ namespace Aggplus
 
 		return DrawPath(pPen, &oPath);
 	}
-	Status CGraphics::DrawPath(NSStructures::CPen* pPen, CGraphicsPath* pPath)
+    Status CGraphics::DrawPath(NSStructures::CPen* pPen, CGraphicsPath* pPath, const double& gamma)
 	{
 		if (NULL == pPen || NULL == pPath)
 			return InvalidParameter;
@@ -725,7 +725,13 @@ namespace Aggplus
 		
 		m_rasterizer.get_rasterizer().filling_rule(agg::fill_non_zero);
 		
+        if (gamma >= 0)
+            m_rasterizer.get_rasterizer().gamma(agg::gamma_threshold(gamma));
+
 		DoFillPath(&oBrush);
+
+        if (gamma >= 0)
+            m_rasterizer.gamma(1.0);
 
 		if (m_bIntegerGrid)
 			RELEASEOBJECT(pAffine);

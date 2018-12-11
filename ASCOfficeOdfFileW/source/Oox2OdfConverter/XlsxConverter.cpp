@@ -1064,12 +1064,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 {
 	if (!oox_sheet_views)return;
 
-	for (unsigned long i =0; i < oox_sheet_views->m_arrItems.size(); i++)
+	for (size_t i =0; i < oox_sheet_views->m_arrItems.size(); i++)
 	{
 		OOX::Spreadsheet::CSheetView *sheet_view = oox_sheet_views->m_arrItems[i];
 		if (!sheet_view) continue;
 
-		int view_id = sheet_view->m_oWorkbookViewId->GetValue();
+		int view_id = sheet_view->m_oWorkbookViewId.IsInit() ? sheet_view->m_oWorkbookViewId->GetValue() : -1;
 		if (view_id < 0) continue;
 
 		ods_context->start_table_view( view_id );
@@ -1480,6 +1480,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont *font, odf_writer::style_tex
 	if ((font->m_oStrike.IsInit()) && (font->m_oStrike->m_oVal.ToBool()))
 		text_properties->content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 
+	ods_context->add_font(font_name);
 	ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
 }
 
@@ -2268,9 +2269,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			}
 			if (oox_cond_rule->m_oOperator.IsInit()) 
 				ods_context->current_table().set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
+
+			if (oox_cond_rule->m_oText.IsInit()) 
+				ods_context->current_table().set_conditional_text(oox_cond_rule->m_oText.get2());
 			
-				for (size_t i=0; i< oox_cond_rule->m_arrItems.size(); i++)
-					convert(oox_cond_rule->m_arrItems[i]);
+			for (size_t i=0; i< oox_cond_rule->m_arrItems.size(); i++)
+				convert(oox_cond_rule->m_arrItems[i]);
 		}	
 		ods_context->current_table().end_conditional_rule();
 	}

@@ -70,6 +70,7 @@ namespace oox {
 		bool			bStretch;
 		bool			bCrop;
 		bool			bTile;
+		bool			bGrayscale;
 
 		double			cropRect[4];//0-left, 1 -top, 2- right, 3 - bottom
 		

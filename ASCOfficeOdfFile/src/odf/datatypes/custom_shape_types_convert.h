@@ -79,8 +79,8 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"up-down-arrow-callout"		,L"upDownArrowCallout"	,0	,0	,0	},
 {L"quad-arrow-callout"			,L"quadArrowCallout"	,0	,0	,0	},
 {L"circular-arrow"				,L"circularArrow"	,0	,0	,0	},
-{L"can"							,L"lightningBolt"	,0	,0	,0	},
-{L"lightning"					,L"can"	,0	,0	,0	},
+{L"can"							,L"can"	,0	,0	,0	},
+{L"lightning"					,L"lightningBolt"	,0	,0	,0	},
 {L"heart"						,L"heart"	,0	,0	,0	},
 {L"sun"							,L"sun"	,1	,46875	,12500	},
 {L"moon"						,L"moon"	,0	,0	,0	},
@@ -222,7 +222,6 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"concave-star6"			,L""	,0	,0	,0	},
 {L"signet"					,L""	,0	,0	,0	},
 {L"doorplate"				,L""	,0	,0	,0	},
-
 {L""						,L"round1Rect"		,0	,0	,0	},
 {L""						,L"round2DiagRect"	,0	,0	,0	},
 {L""						,L"snip2DiagRect"	,0	,0	,0	},

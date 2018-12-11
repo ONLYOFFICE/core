@@ -34,6 +34,13 @@
 
 #include <vector>
 
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
+
 #if defined(_WIN32) || defined(_WIN64)
 	#include <windows.h>
 	#include <gdiplus.h>
@@ -42,13 +49,6 @@
 
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../../ASCOfficeOdfFile/src/docx/measuredigits.h"
-
-#ifndef min
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif
-#ifndef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#endif
 
 namespace _graphics_utils_
 {
@@ -144,7 +144,10 @@ namespace _graphics_utils_
 	}
 	double calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold , NSFonts::IApplicationFonts *appFonts)
 	{
-        std::pair<float,float> val = cpdoccore::utils::GetMaxDigitSizePixels(name, size, 96., 0 , appFonts);
+		if (name.empty())
+			name = L"Arial";
+
+		std::pair<float,float> val = cpdoccore::utils::GetMaxDigitSizePixels(name, size, 96., 0 , appFonts);
 
         return val.first;
 	}

@@ -101,6 +101,24 @@ namespace DocFileFormat
 			return new ShapeContainer( _reader, bodySize, typeCode, version, instance );
 		}
 
+		OptionEntryPtr ExtractOption(const PropertyId & prop) const
+		{
+			OptionEntryPtr ret;
+			for ( size_t i = 0; i < this->Children.size(); ++i )
+			{
+				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( this->Children[i] );
+
+				if ( opt == NULL ) continue;
+
+				std::map<PropertyId, OptionEntryPtr>::iterator pFind = opt->OptionsByID.find(prop);
+				if (pFind != opt->OptionsByID.end())
+				{
+					ret = pFind->second;
+				}
+			}
+			return ret;
+		}
+
 		std::vector<OptionEntryPtr> ExtractOptions() const
 		{
 			std::vector<OptionEntryPtr> ret;

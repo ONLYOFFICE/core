@@ -16,6 +16,11 @@ CONFIG -= debug_and_release debug_and_release_target
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
+CORE_ROOT_DIR = $$PWD/../..
+PWD_ROOT_DIR = $$PWD
+include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
+
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/Debug
 } else {
@@ -25,41 +30,10 @@ CONFIG(debug, debug|release) {
 CONFIG += c++11
 TEMPLATE = app
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../build/lib
-
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
-}
-
-LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
-LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
-LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics -lHtmlFile
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
     QMAKE_LFLAGS += -Wl,--rpath=./
-
-    LIBS        += $$PWD/../../build/bin/icu/linux_64/libicuuc.so.55
-    LIBS        += $$PWD/../../build/bin/icu/linux_64/libicudata.so.55
     message(linux)
 }
 
@@ -67,9 +41,6 @@ win32 {
 LIBS += -ladvapi32 \
         -luser32 \
         -lshell32
-
-LIBS        += -L$$PWD/../../build/bin/icu/win_64/ -licudt
-LIBS        += -L$$PWD/../../build/bin/icu/win_64/ -licuuc
 }
 
 SOURCES += main.cpp

@@ -320,35 +320,58 @@ namespace PdfWriter
         impl->Reset();
 	}
  #define PADDING_SIZE 16
-	unsigned int CEncrypt::CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen, bool bLast)
-	{
-		unsigned int unLenOut = unLen;
-		
-		if (unLenOut % PADDING_SIZE != 0 && bLast)
-			unLenOut = (unLen / PADDING_SIZE + 1) * PADDING_SIZE;
+         unsigned int CEncrypt::CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen)
+        {
+            unsigned int unLenOut = unLen;
 
-		memcpy(pDst, impl->streamInitialization, 16);
-        
-		CryptoPP::StreamTransformationFilter stfEncryption(*impl->streamEncryption, new CryptoPP::ArraySink( pDst + 16, unLenOut), CryptoPP::StreamTransformationFilter::NO_PADDING );
+            if (unLenOut % PADDING_SIZE != 0)
+                unLenOut = (unLen / PADDING_SIZE + 1) * PADDING_SIZE;
 
-		if (unLenOut != unLen)
-		{
-			stfEncryption.Put2(pSrc, unLen, 0, true);
-			
-			unsigned char empty[16] = {};
-			stfEncryption.Put2(empty, unLenOut - unLen, 1, true);
-		}
-		else
-		{
-			stfEncryption.Put2(pSrc, unLen, bLast ? 1 : 0, true);
-		}
-        stfEncryption.MessageEnd();
+			memcpy(pDst, impl->streamInitialization, 16);
 
-		return unLenOut + 16;
-    }
-	void CEncrypt::SetPermission(unsigned int unPermission)
-	{
-		m_unPermission = unPermission;
-	}
+            CryptoPP::StreamTransformationFilter stfEncryption(*impl->streamEncryption, new CryptoPP::ArraySink( pDst + 16, unLenOut), CryptoPP::StreamTransformationFilter::NO_PADDING );
+
+            stfEncryption.Put2(pSrc, unLen, 0, true);
+            
+			if (unLenOut != unLen)
+            {
+				unsigned char empty[16] = {};
+				stfEncryption.Put2(empty, unLenOut - unLen, 0, true);
+
+            }
+			stfEncryption.MessageEnd();
+
+            return unLenOut + 16;
+        }
+		 //unsigned int CEncrypt::CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen, bool bFirst, bool bLast)
+   //     {
+   //         unsigned int unLenOut = unLen;
+
+   //         if (unLenOut % PADDING_SIZE != 0 && bLast)
+   //             unLenOut = (unLen / PADDING_SIZE + 1) * PADDING_SIZE;
+
+   //         if(bFirst)
+   //             memcpy(pDst, impl->streamInitialization, 16);
+
+   //         CryptoPP::StreamTransformationFilter stfEncryption(*impl->streamEncryption, new CryptoPP::ArraySink( pDst + (bFirst ? 16 : 0), unLenOut), CryptoPP::StreamTransformationFilter::NO_PADDING );
+
+   //         stfEncryption.Put2(pSrc, unLen, 0, true);
+   //         
+			//if (unLenOut != unLen && bLast)
+   //         {
+			//	unsigned char empty[16] = {};
+			//	stfEncryption.Put2(empty, unLenOut - unLen, 0, true);
+
+   //         }
+   //         if (bLast)
+   //         {
+   //             stfEncryption.MessageEnd();
+   //         }
+   //         return unLenOut + (bFirst ? 16 : 0);
+   //     }
+        void CEncrypt::SetPermission(unsigned int unPermission)
+        {
+            m_unPermission = unPermission;
+        }
 
 }

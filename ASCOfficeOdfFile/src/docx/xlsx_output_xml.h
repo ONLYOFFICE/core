@@ -60,6 +60,7 @@ public:
     std::wostream & drawing(); 
     std::wostream & comments();
 	std::wostream & autofilter();
+	std::wostream & tableParts();
 	std::wostream & conditionalFormatting();
 	std::wostream & picture_background();
 	std::wostream & dataValidations();

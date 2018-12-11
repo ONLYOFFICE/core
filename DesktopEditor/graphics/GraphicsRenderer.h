@@ -90,6 +90,8 @@ private:
 	double m_dGlobalAlpha;
     bool m_bGlobalAlphaEnabled;
 
+    double m_dGammaStroke;
+
     std::vector<IGraphicsRenderer_State*> m_arStates;
 
 public:
@@ -277,6 +279,8 @@ public:
         m_oInstalledFont.SetDefaultParams();
         m_oInstalledFont.Name = L"";        
     }
+
+    void SetGammaStroke(double value);
 
 protected:
 	void _SetFont();

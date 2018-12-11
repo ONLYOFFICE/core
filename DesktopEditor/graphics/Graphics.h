@@ -359,7 +359,7 @@ public:
     Status DrawLines(NSStructures::CPen* pPen, double* pPoints, LONG lCount);
 	Status DrawRectangle(NSStructures::CPen* pPen, double x, double y, double width, double height);
 	Status DrawEllipse(NSStructures::CPen* pPen, double x, double y, double width, double height);
-	Status DrawPath(NSStructures::CPen* pPen, CGraphicsPath* pPath);
+    Status DrawPath(NSStructures::CPen* pPen, CGraphicsPath* pPath, const double& gamma = -1);
 	Status DrawPathNoTransform(NSStructures::CPen* pPen, CGraphicsPath* pPath);
 
 	// заливка

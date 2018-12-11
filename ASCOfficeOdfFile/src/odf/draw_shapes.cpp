@@ -546,9 +546,9 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		if (!draw_type_oox_index_)
 		{
 			int count = sizeof(_OO_OOX_custom_shapes) / sizeof(_shape_converter);
-			int pos = odf_type.find(L"ooxml-");
+			size_t pos = odf_type.find(L"ooxml-");
 
-			if (pos < 0)
+			if (pos == std::wstring::npos)
 			{
 				for (long i = 0; i< count; i++)
 				{
@@ -562,7 +562,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			else
 			{
 				std::wstring oox_type = odf_type.substr(pos + 6);
-				for (long i = 0; i< count; i++)
+				for (long i = 0; i < count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].oox == oox_type)
 					{
@@ -572,7 +572,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 					}	
 				}
 			}
-			if ((draw_type_oox_index_) && (*draw_type_oox_index_== 179))//L"textBox"
+			if ((draw_type_oox_index_) && (*draw_type_oox_index_== 96))//L"textBox" "mso-spt24"
 			{
 				sub_type_ = 1;//textBox
 			}
@@ -649,17 +649,15 @@ void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
     draw_line_attlist_.add_attributes(Attributes);
 	draw_shape::add_attributes(Attributes);
 
-	sub_type_ = 5; //коннектор - линия, если ломаная (ниже определяется) - то путь
+	sub_type_ = 10; //коннектор - линия, если ломаная (ниже определяется) - то путь
 	
 }
 void draw_connector::reset_svg_path()
 {
-	if (!draw_connector_attlist_.svg_d_)
+	if (draw_connector_attlist_.svg_d_)
 	{
-		bad_shape_ = true;
-	}
-	else
-	{
+		sub_type_ = 8;
+
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 	
@@ -707,7 +705,7 @@ void dr3d_scene::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	draw_shape::add_attributes(Attributes);
 
-	sub_type_ = 10; 
+	sub_type_ = 12; 
 	
 }
 //-------------------------------------------------------------------------------------------

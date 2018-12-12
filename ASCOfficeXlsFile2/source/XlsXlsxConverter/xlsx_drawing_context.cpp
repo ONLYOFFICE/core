@@ -2205,7 +2205,10 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 			CP_XML_NODE(L"a:bodyPr")//todooo rtl
 			{
 				if (drawing_state->text.wrap == 2 || drawing_state->wordart.is)
-					CP_XML_ATTR(L"wrap", L"none" ); 
+					CP_XML_ATTR(L"wrap", L"none" );
+
+				if (false == drawing_state->text.fit_shape)
+					CP_XML_ATTR(L"vertOverflow", L"clip" ); 
 
 				if (drawing_state->wordart.is)
 				{

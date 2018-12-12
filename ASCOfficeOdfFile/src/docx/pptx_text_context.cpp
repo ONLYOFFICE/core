@@ -99,7 +99,6 @@ private:
 
 	odf_reader::odf_read_context & odf_context_ ;
 	std::wstring hyperlink_hId;
-
 	
 	bool in_span;
 	bool in_paragraph;
@@ -275,7 +274,7 @@ void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::
 
 void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_properties & propertiesOut, int Level)
 {
-	if (Level <0)return;
+	if (Level < 0)return;
 	if (list_style_stack_.empty())return;
 	
 	odf_reader::style_list_level_properties	*list_properties= NULL;
@@ -362,7 +361,7 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 {
 	get_styles_context().start();
 
-	int level = list_style_stack_.size()-1;		
+	int level = list_style_stack_.size() - 1;		
 
 	odf_reader::paragraph_format_properties paragraph_properties_;
 	
@@ -643,7 +642,7 @@ void pptx_text_context::Impl::start_list_item(bool restart)
 
 void pptx_text_context::Impl::start_list(const std::wstring & StyleName, bool Continue)
 {
-    if (paragraphs_cout_ > 0 && in_paragraph)
+    if (paragraphs_cout_ > 0 && ( in_paragraph || list_style_stack_.empty()))
     {	
 		dump_paragraph();
 	}

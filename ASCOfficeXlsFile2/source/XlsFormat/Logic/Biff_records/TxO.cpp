@@ -152,6 +152,14 @@ void TxO::readFields(CFRecord& record)
 	fLockText	= GETBIT(flags, 9);	// reserved3 (4 bits)	
 	fJustLast	= GETBIT(flags, 14);
 	fSecretEdit = GETBIT(flags, 15);
+
+	//if (false == record.isEOF())
+	//{
+	//	int sz = record.getDataSize() - record.getRdPtr();
+	//	BYTE *last = new BYTE[sz];
+	//	memcpy(last, record.getCurData<BYTE>(), sz);
+	//	delete []last;
+	//}
 }
 
 int TxO::serialize_vml (std::wostream & _stream)

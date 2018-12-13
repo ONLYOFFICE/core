@@ -973,6 +973,28 @@ void odf_document::Impl::parse_styles(office_element *element)
 
 				context_->Templates().add(L"table:" + style->get_text_style_name(), elm);
             }
+			for (size_t i = 0; i < docStyles->draw_styles_.draw_marker_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->draw_styles_.draw_marker_[i];
+
+				draw_marker * style = dynamic_cast<draw_marker *>(elm.get());
+
+                if (!style)
+                    continue;
+
+				context_->drawStyles().add(L"marker:" + style->get_style_name(), elm);
+            }
+			for (size_t i = 0; i < docStyles->draw_styles_.draw_stroke_dash_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->draw_styles_.draw_stroke_dash_[i];
+
+				draw_stroke_dash * style = dynamic_cast<draw_stroke_dash *>(elm.get());
+
+                if (!style)
+                    continue;
+
+				context_->drawStyles().add(L"stroke_dash:" + style->get_style_name(), elm);
+            }
 		}
         while(0); // end parse styles
     }

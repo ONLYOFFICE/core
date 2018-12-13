@@ -48,7 +48,7 @@
 
 #include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"

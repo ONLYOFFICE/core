@@ -64,7 +64,7 @@ public:
 	std::wstring convert_conditional_formula(const std::wstring& expr);
 
 	std::wstring convert_chart_distance(const std::wstring& expr);
-    static void replace_cells_range(std::wstring& expr);
+    static void replace_cells_range(std::wstring& expr, bool bSelect = true);
   
 	static void replace_semicolons(std::wstring& expr);
     static void replace_vertical(std::wstring& expr);
@@ -183,7 +183,7 @@ public:
 bool			oox2odf_converter::Impl::isFindBaseCell_ = false;
 std::wstring	oox2odf_converter::Impl::table_name_ = L"";
 
-void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
+void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr, bool bSelect)
 {
 	if ((0 == expr.find(L"KAVYCHKA")) && (expr.length() - 8 == expr.rfind(L"KAVYCHKA") ))
 		return;
@@ -195,7 +195,7 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 
 	if (b)
 	{
-		boost::wregex re1(L"(\\$?\\w+\\!)?([\\w^0-9$]*\\d*)\\:?([\\w^0-9$]*\\d*)?");
+		boost::wregex re1(L"(\\$?[^\']+\\!)?([\\w^0-9$]*\\d*)\\:?([\\w^0-9$]*\\d*)?");
 //                          $   Sheet2   ! $ A1                 :  $ B5    
 //                          $   Sheet2   ! $ A                  :  $ A    
 //                          $   Sheet2   ! $ 1                  :  $ 1    
@@ -204,7 +204,7 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 		std::wstring res = boost::regex_replace(
 			workstr,	
 			re1,
-			&replace_cells_range_formater1,
+			bSelect ? &replace_cells_range_formater1 : &replace_cells_range_formater2,
 			boost::match_default | boost::format_all);
 	     
 		 expr = res;
@@ -263,18 +263,43 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
 {
     const size_t sz = what.size();
 	
-	if (sz > 2)
+	if (sz > 3)
+    {
+		std::wstring s;
+		std::wstring sheet = what[1].matched ? what[1].str() : L"";
+
+        std::wstring c1 = what[2].str(); 
+        std::wstring c2 = what[3].str(); 
+
+		if ((0 == c1.find(L"KAVYCHKA")) && (c1.length() - 8 == c1.rfind(L"KAVYCHKA") ))
+		{
+			return c1;
+		}
+		else if (!c1.empty() || !c2.empty() || !sheet.empty())
+		{      
+			XmlUtils::replace_all( sheet, L"!", L"");
+
+			if (isFindBaseCell_ && table_name_.empty() && !sheet.empty())
+			{
+				table_name_ = sheet + L".$A$1";
+			}	
+			if (!sheet.empty()  && (std::wstring::npos != c1.find(L"$"))) sheet = L"$"  + sheet;
+
+
+			s =  sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"");
+		}
+        return s;
+	}
+	else
 	{
         const std::wstring c1 = what[1].str(); 
         const std::wstring c2 = what[2].str(); 
 
-		const std::wstring s =  std::wstring(L"[.") +  c1 + (c2.empty() ? L"" : (L":." + c2) ) + std::wstring(L"]");
+		const std::wstring s =  std::wstring(L".") +  c1 + (c2.empty() ? L"" : (L":." + c2) );
 
 		return s; 
 	}
-
-    return L"";
-
+	return L"";
 }
 		
 void oox2odf_converter::Impl::replace_named_formula(std::wstring & expr)
@@ -309,7 +334,7 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	{		
 		std::wstring &d = distance[i];
 
-		replace_cells_range(d);
+		replace_cells_range(d, false);
 
 		oox_replace_tmp_back(d);
 			

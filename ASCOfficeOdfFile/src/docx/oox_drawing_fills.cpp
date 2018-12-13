@@ -194,6 +194,14 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 				{
 					CP_XML_NODE(ns + L":grayscl");
 				}
+				if (val.bitmap->luminance || val.bitmap->contrast)
+				{
+					CP_XML_NODE(ns + L":lum")
+					{
+						if (val.bitmap->luminance)	CP_XML_ATTR2(L"bright", (int)(*val.bitmap->luminance * 1000));
+						if (val.bitmap->contrast)	CP_XML_ATTR2(L"contrast", (int)(*val.bitmap->contrast * 1000));
+					}
+				}
 			}
 			if (val.bitmap->bCrop)
 			{

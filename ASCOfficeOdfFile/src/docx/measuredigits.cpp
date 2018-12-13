@@ -36,7 +36,7 @@
 
 #include <float.h>
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore {
 namespace utils {

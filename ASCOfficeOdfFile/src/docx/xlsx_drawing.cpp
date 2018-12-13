@@ -162,7 +162,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
                 }
 				CP_XML_NODE(L"xdr:cNvSpPr")//non visual properies (собственно тока 1 там)
 				{
-					if (val.sub_type==1)CP_XML_ATTR(L"txBox", 1);
+					if (val.sub_type == 1)CP_XML_ATTR(L"txBox", 1);
 				}
             } // xdr:nv_Pr
 			CP_XML_NODE(L"xdr:spPr")
@@ -171,11 +171,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
 
 				val.serialize_shape(CP_XML_STREAM());
 				
-				bool draw_always = false;
-				if (val.sub_type == 5 || val.sub_type == 6)//line собственно ) - если ее нет - в свойствах будет
-					draw_always = true;
-
-				oox_serialize_ln(CP_XML_STREAM(),val.additional, draw_always);
+				oox_serialize_ln(CP_XML_STREAM(),val.additional, val.lined);
             } // xdr:spPr
 			
 			xlsx_serialize_text(CP_XML_STREAM(), val);

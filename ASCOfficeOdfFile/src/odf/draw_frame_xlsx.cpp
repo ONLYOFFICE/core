@@ -179,14 +179,14 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_right",		Compute_BorderWidth(properties, sideRight)));
 	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_bottom",	Compute_BorderWidth(properties, sideBottom))); 
 	
+	oox::_oox_fill fill;
+	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
+																	Context.root()->odf_context().drawStyles(), fill);	
 	if (properties.fo_clip_)
 	{
 		std::wstring strRectClip = properties.fo_clip_.get();
-		Context.get_drawing_context().set_clipping(strRectClip.substr(5,strRectClip.length()-6));
+		Context.get_drawing_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
 	}
-	oox::_oox_fill fill;
-	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-																	Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_drawing_context().set_fill(fill);
 
 	oox_drawing_ = oox_drawing_ptr(new oox::_xlsx_drawing());
@@ -228,7 +228,7 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 
-	if (text_content_.length()>0)
+	if (!text_content_.empty())
 	{
 		Context.get_drawing_context().set_property(_property(L"text-content", text_content_));
 	}

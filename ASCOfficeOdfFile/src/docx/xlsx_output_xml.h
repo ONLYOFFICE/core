@@ -47,10 +47,11 @@ typedef _CP_PTR(xlsx_xml_worksheet) xlsx_xml_worksheet_ptr;
 class xlsx_xml_worksheet: noncopyable
 {
 public:
-    xlsx_xml_worksheet(std::wstring const & name);
+    xlsx_xml_worksheet(std::wstring const & name, bool hidden);
     ~xlsx_xml_worksheet();
 
 	std::wstring name() const;
+	bool hidden() const;
    
 	std::wostream & cols();
     std::wostream & sheetFormat();
@@ -82,7 +83,7 @@ public:
 	std::pair<std::wstring, std::wstring> get_vml_drawing_link() const;
 	std::pair<std::wstring, std::wstring> get_comments_link() const;
 
-    static xlsx_xml_worksheet_ptr create(std::wstring const & name);
+    static xlsx_xml_worksheet_ptr create(std::wstring const & name, bool hidden);
 
 private:
     class Impl;

@@ -298,11 +298,11 @@ void xl_files::add_sheet(sheet_content_ptr sheet)
     sheets_files_.add_sheet(sheet);
 }
 
-void xl_files::set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts)
+void xl_files::set_media(mediaitems & _Mediaitems)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{
-		media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+		media_ = element_ptr( new media(_Mediaitems, _Mediaitems.applicationFonts()) );
 	}
 
 	if (_Mediaitems.count_object > 0)

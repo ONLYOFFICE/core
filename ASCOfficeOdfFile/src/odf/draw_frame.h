@@ -209,6 +209,8 @@ public:
     static const ElementType type		= typeDrawG;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	draw_g() : position_child_x1(-1), position_child_y1(-1), position_child_x2(-1), position_child_y2(-1) {}
+
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -219,6 +221,12 @@ public:
     draw_g_attlist							draw_g_attlist_;
 
     office_element_ptr_array				content_;
+
+	int position_child_x1;
+	int position_child_y1;
+
+	int position_child_x2;
+	int position_child_y2;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

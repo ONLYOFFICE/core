@@ -41,8 +41,9 @@ namespace oox {
 class xlsx_xml_worksheet::Impl
 {
 public:
-    Impl(std::wstring const & name) : name_(name){}
+    Impl(std::wstring const & name, bool hidden) : name_(name), hidden_(hidden) {}
     std::wstring name_;
+	bool hidden_;
   
 	std::wstringstream  cols_;
     std::wstringstream  sheetFormat_;
@@ -78,14 +79,18 @@ std::wstring xlsx_xml_worksheet::name() const
 {
     return impl_->name_;
 }
-
-xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create(std::wstring const & name)
+bool xlsx_xml_worksheet::hidden() const
 {
-    return boost::make_shared<xlsx_xml_worksheet>(name);
+    return impl_->hidden_;
 }
 
-xlsx_xml_worksheet::xlsx_xml_worksheet(std::wstring const & name)
- : impl_(new xlsx_xml_worksheet::Impl(name))
+xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create(std::wstring const & name, bool hidden)
+{
+    return boost::make_shared<xlsx_xml_worksheet>(name, hidden);
+}
+
+xlsx_xml_worksheet::xlsx_xml_worksheet(std::wstring const & name, bool hidden)
+ : impl_(new xlsx_xml_worksheet::Impl(name, hidden))
 {
 }
 
@@ -189,6 +194,10 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             {
                 CP_XML_STREAM() << impl_->sheetData_.str();
             }
+			if (!impl_->protection_.str().empty())
+            {
+				CP_XML_STREAM() << impl_->protection_.str();
+			}
 			//оказывается порядок нахождения элементов важен !!! (для office 2010)
 			//объединенные ячейки раньше чем гиперлинки !!!
 			
@@ -208,11 +217,6 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                     CP_XML_STREAM() << impl_->hyperlinks_.str();
                 }
             }
-			if (!impl_->protection_.str().empty())
-            {
-				CP_XML_STREAM() << impl_->protection_.str();
-			}
-			
 			if (!impl_->page_props_.str().empty())
             {
 				CP_XML_STREAM() << impl_->page_props_.str();

@@ -56,11 +56,6 @@
 
 #include "mediaitems.h"
 
-namespace NSFonts
-{
-    class IApplicationFonts;
-}
-
 namespace cpdoccore {
 
 namespace odf_reader 
@@ -203,16 +198,12 @@ public:
 	static std::unordered_map<std::wstring, int>	mapExternalLink_;
 	std::map<std::wstring, int>						mapUsedNames_;
 private:
-    void create_new_sheet	(std::wstring const & name);
-
 	void serialize_bookViews(std::wostream & strm);
 	void serialize_calcPr	(std::wostream & strm);    
 
     package::xlsx_document				*output_document_;
     const odf_reader::office_element	*spreadsheet_;
     odf_reader::odf_document			*odf_document_;
-
-    NSFonts::IApplicationFonts			*applicationFonts_;
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;

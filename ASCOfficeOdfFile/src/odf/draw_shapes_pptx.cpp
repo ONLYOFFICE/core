@@ -148,6 +148,8 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 		paragraph_format_properties paragraph_properties = calc_paragraph_properties_content(textStyleInst);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////	
+	Context.get_slide_context().set_is_line_shape(lined_shape_);
+
 	oox::_oox_fill fill;
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_, 
 																		Context.root()->odf_context().drawStyles() ,fill);	
@@ -230,6 +232,7 @@ void draw_path::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_polygon::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	//closed shape
 	reset_polygon_path();
 ///////////////////////////////////////////////////////////////////////
 	Context.get_slide_context().start_shape(sub_type_);
@@ -238,9 +241,9 @@ void draw_polygon::pptx_convert(oox::pptx_conversion_context & Context)
 
 	Context.get_slide_context().end_shape();
 }
-
 void draw_polyline::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	//line
 	reset_polyline_path();
 ///////////////////////////////////////////////////////////////////////
 	Context.get_slide_context().start_shape(sub_type_);
@@ -249,6 +252,17 @@ void draw_polyline::pptx_convert(oox::pptx_conversion_context & Context)
 
 	Context.get_slide_context().end_shape();
 }
+//void dr3d_rotate::pptx_convert(oox::pptx_conversion_context & Context)
+//{
+//	//closed shape
+//	reset_polygon_path();
+/////////////////////////////////////////////////////////////////////////
+//	Context.get_slide_context().start_shape(sub_type_);
+//
+//	common_pptx_convert(Context);
+//
+//	Context.get_slide_context().end_shape();
+//}
 void draw_custom_shape::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().start_shape(sub_type_);
@@ -353,15 +367,17 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
+		bool bClosed =false;
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true, bClosed);
 		}
 		catch(...)
 		{
 			res = false; 
 		}
+		//if (!bClosed) lined_shape_ = true;
 		
 		if (o_Polyline.size() > 1 && res )
 		{
@@ -425,11 +441,6 @@ void dr3d_scene::pptx_convert(oox::pptx_conversion_context & Context)
 	common_pptx_convert(Context);
 
 	Context.get_slide_context().end_shape();
-
-}
-void dr3d_extrude::pptx_convert(oox::pptx_conversion_context & Context)
-{
-	reset_svg_path();
 
 }
 void dr3d_light::pptx_convert(oox::pptx_conversion_context & Context)

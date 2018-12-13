@@ -39,6 +39,7 @@
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
+#include "../../DesktopEditor/common/String.h"
 
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 
@@ -291,13 +292,15 @@ namespace PdfWriter
 
 		unsigned int nIndex = 0;
 
-		const BYTE* sTxt = sText;
+        BYTE* sTxt = const_cast<BYTE*>(sText);
 		unsigned long nRet = 0;
 
 		sBuf[nIndex++] = '(';
 
+        unsigned short* pUtf16Data = NULL;
         if (isUTF16)
         {
+            /*
             std::string sUtf8((char*)sText, unLen);
             std::wstring sUnicode = UTF8_TO_U(sUtf8);
             NSUnicodeConverter::CUnicodeConverter oConverter;
@@ -305,6 +308,15 @@ namespace PdfWriter
 
             unLen = (unsigned int)sUtf16BE.length();
             sTxt = (BYTE*)sUtf16BE.c_str();
+            */
+
+            std::string sUtf8((char*)sText, unLen);
+            std::wstring sUnicode = UTF8_TO_U(sUtf8);
+            unsigned int unLenUtf16 = 0;
+            pUtf16Data = NSStringExt::CConverter::GetUtf16FromUnicode(sUnicode, unLenUtf16, false);
+
+            sTxt = (BYTE*)pUtf16Data;
+            unLen = unLenUtf16 << 1;
 
             sBuf[nIndex++] = 0xFE;
             sBuf[nIndex++] = 0xFF;
@@ -338,6 +350,9 @@ namespace PdfWriter
 			}
 		}
 		sBuf[nIndex++] = ')';
+
+        if (pUtf16Data)
+            delete []pUtf16Data;
 
 		Write((BYTE*)sBuf, nIndex);
 	}            

@@ -455,6 +455,7 @@ enum ElementType
 	typeDrawPolyline,
 	typeDrawRegularPolyline,
 	typeDrawPath,
+	typeDrawContourPath,
 	typeDrawCircle,
 	typeDrawg,
 	typeDrawPageThumbnail,

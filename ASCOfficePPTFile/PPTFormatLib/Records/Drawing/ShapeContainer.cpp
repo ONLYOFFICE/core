@@ -261,6 +261,10 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 			{
 				pElement->m_oBrush.Type = c_BrushTypeNoFill;
 			}
+			else if (pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			{
+				pElement->m_oBrush.Type = c_BrushTypeSolid;
+			}
 
 			if (NULL != pPPTShape)
 			{
@@ -1786,10 +1790,6 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 	// 3) свои настройки + TextMasterStyles
 	// причем "свои настройки" - это чисто "продвинутые настройки"
 	// потому что все общие ( через проперти ) - уже установлены
-	// тут важно выставить правильный порядок.
-	// словом - важная очень функция для текста, 
-	// и, чтобы убрать всякие лишние .cpp файлы - здесь же будем учитывать 
-	// настройки слайда (т.е. структуры не будут работать со слайдами)
 
 	if (NULL == pElem)
 		return;

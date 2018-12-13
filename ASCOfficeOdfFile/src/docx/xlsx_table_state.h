@@ -190,6 +190,7 @@ public:
 
     std::wstring get_table_name()	const { return tableName_; }
 	int			 get_table_id()		const { return tableId_; }
+	bool		 get_table_hidden()	const { return bHidden; }
 	
 	struct _group_row
 	{
@@ -210,6 +211,7 @@ private:
     std::wstring						protect_key_algorithm;
 	bool								bRTL;
 	bool								bEndTable;
+	bool								bHidden;
 
     std::wstring						tableName_;
 	int									tableId_;

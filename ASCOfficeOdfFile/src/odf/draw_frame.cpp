@@ -30,8 +30,6 @@
  *
  */
 
-#include "draw_frame.h"
-
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -41,6 +39,8 @@
 #include <xml/xmlchar.h>
 #include <xml/attributes.h>
 #include <odf/odf_document.h>
+
+#include "draw_common.h"
 
 #include "serialize_elements.h"
 #include "style_graphic_properties.h"
@@ -154,6 +154,58 @@ void draw_g::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_g::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
+
+	if (content_.empty()) return;
+
+	draw_g		*group = dynamic_cast<draw_g*>		(content_.back().get());
+	draw_frame	*frame = dynamic_cast<draw_frame*>	(content_.back().get());
+	draw_shape	*shape = dynamic_cast<draw_shape*>	(content_.back().get());
+
+	if (group)
+	{		
+		int x=0, y=0, cx=0, cy=0;
+		x = get_value_emu(group->common_draw_attlists_.position_.svg_x_);
+		y = get_value_emu(group->common_draw_attlists_.position_.svg_y_);
+
+		cx = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
+		cy = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
+
+		if (position_child_x1 > x || position_child_x1 < 0) position_child_x1 = x;
+		if (position_child_y1 > y || position_child_y1 < 0) position_child_y1 = y;
+		
+		if (position_child_x2 < x + cx || position_child_x2 < 0) position_child_x2 = x + cx;
+		if (position_child_y2 < y + cy || position_child_y2 < 0) position_child_y2 = y + cy;
+	}
+	else if (frame)
+	{
+		int x=0, y=0, cx=0, cy=0;
+		x = get_value_emu(frame->common_draw_attlists_.position_.svg_x_);
+		y = get_value_emu(frame->common_draw_attlists_.position_.svg_y_);
+
+		cx = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
+		cy = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
+
+		if (position_child_x1 > x || position_child_x1 < 0) position_child_x1 = x;
+		if (position_child_y1 > y || position_child_y1 < 0) position_child_y1 = y;
+		
+		if (position_child_x2 < x + cx || position_child_x2 < 0) position_child_x2 = x + cx;
+		if (position_child_y2 < y + cy || position_child_y2 < 0) position_child_y2 = y + cy;
+	}
+	else if (shape)
+	{
+		int x=0, y=0, cx=0, cy=0;
+		x = get_value_emu(shape->common_draw_attlists_.position_.svg_x_);
+		y = get_value_emu(shape->common_draw_attlists_.position_.svg_y_);
+
+		cx = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
+		cy = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
+
+		if (position_child_x1 > x || position_child_x1 < 0) position_child_x1 = x;
+		if (position_child_y1 > y || position_child_y1 < 0) position_child_y1 = y;
+		
+		if (position_child_x2 < x + cx || position_child_x2 < 0) position_child_x2 = x + cx;
+		if (position_child_y2 < y + cy || position_child_y2 < 0) position_child_y2 = y + cy;
+	}
 }
 
 std::wostream & draw_g::text_to_stream(std::wostream & _Wostream) const

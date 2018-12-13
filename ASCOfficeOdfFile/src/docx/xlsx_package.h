@@ -284,7 +284,7 @@ public:
     void set_sharedStrings	(element_ptr Element);
 	void set_connections	(element_ptr Element);
     void add_sheet			(sheet_content_ptr sheet);
-    void set_media			(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
+    void set_media			(mediaitems & _Mediaitems);
     void set_drawings		(element_ptr Element);
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);

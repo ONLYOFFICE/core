@@ -110,6 +110,8 @@ public:
     void set_clipping	(const std::wstring & str );
 	void set_fill		(_oox_fill & fill);
 
+	void set_is_line_shape(bool val);
+
 	std::vector<odf_reader::_property> & get_properties();
 
 	std::wstring add_hyperlink(std::wstring const & ref);

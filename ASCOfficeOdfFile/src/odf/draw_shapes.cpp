@@ -174,6 +174,7 @@ void draw_line::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	draw_shape::add_attributes(Attributes);
 	
 	sub_type_ = 5;
+	lined_shape_ = true;
 }
 void draw_line::reset_svg_attributes()
 {
@@ -256,8 +257,11 @@ void draw_path::reset_svg_path()
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 	
-		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_path_attlist_.svg_d_.get(), false);
+		bool bClosed = false;
+		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_path_attlist_.svg_d_.get(), false, bClosed);
 		
+		if (!bClosed) lined_shape_ = true;
+
 		for (size_t i = 0; i < o_Polyline_cm.size(); i++)
 		{
 			::svg_path::_polyline  & poly = o_Polyline_cm[i];
@@ -275,7 +279,7 @@ void draw_path::reset_svg_path()
 			}
 			o_Polyline_pt.push_back(poly);
 		}
-		if (o_Polyline_pt.size()>0)
+		if (false == o_Polyline_pt.empty())
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
@@ -292,16 +296,22 @@ void draw_polygon_attlist::add_attributes( const xml::attributes_wc_ptr & Attrib
 
 }
 //-------------------------------------------------------------------------------------------
-// draw:polygon
-//-------------------------------------------------------------------------------------------
-const wchar_t * draw_polygon::ns = L"draw";
-const wchar_t * draw_polygon::name = L"polygon";
-
-//-------------------------------------------------------------------------------------------
 // draw:contour-polygon
 //-------------------------------------------------------------------------------------------
 const wchar_t * draw_contour_polygon::ns = L"draw";
 const wchar_t * draw_contour_polygon::name = L"contour-polygon";
+
+//-------------------------------------------------------------------------------------------
+// draw:contour-path
+//-------------------------------------------------------------------------------------------
+const wchar_t * draw_contour_path::ns = L"draw";
+const wchar_t * draw_contour_path::name = L"contour-path";
+
+//-------------------------------------------------------------------------------------------
+// draw:polygon
+//-------------------------------------------------------------------------------------------
+const wchar_t * draw_polygon::ns = L"draw";
+const wchar_t * draw_polygon::name = L"polygon";
 
 void draw_polygon::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -322,7 +332,7 @@ void draw_polygon::reset_polygon_path()
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 
-		bool res = ::svg_path::parsePolygon(o_Polyline_cm, draw_polygon_attlist_.draw_points_.get(),false, true);
+		bool res = ::svg_path::parsePolygon(o_Polyline_cm, draw_polygon_attlist_.draw_points_.get(), false, true);
 		
 		for (size_t ind = 0 ; ind < o_Polyline_cm.size(); ind++)
 		{
@@ -341,12 +351,12 @@ void draw_polygon::reset_polygon_path()
 			}
 			o_Polyline_pt.push_back(poly);
 		}
-		if (o_Polyline_pt.size()>0)
+		if (false == o_Polyline_pt.empty())
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
             ::svg_path::oox_serialize(output_, o_Polyline_pt);
-			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
+			additional_.push_back(odf_reader::_property(L"custom_path", output_.str()));
 		}
 	}
 }
@@ -368,7 +378,8 @@ void draw_polyline::add_attributes( const xml::attributes_wc_ptr & Attributes )
     draw_polyline_attlist_.add_attributes(Attributes);
 	draw_shape::add_attributes(Attributes);
 
-	sub_type_ = 8;
+	sub_type_ = 14;
+	lined_shape_ = true;
 	
 }
 void draw_polyline::reset_polyline_path()
@@ -382,7 +393,7 @@ void draw_polyline::reset_polyline_path()
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 
-		bool res = ::svg_path::parsePolygon(o_Polyline_cm, draw_polyline_attlist_.draw_points_.get(), false, true);
+		bool res = ::svg_path::parsePolygon(o_Polyline_cm, draw_polyline_attlist_.draw_points_.get(), false, false);
 
 		_CP_OPT(double) start_x, start_y;
 		
@@ -407,7 +418,7 @@ void draw_polyline::reset_polyline_path()
 			}
 			o_Polyline_pt.push_back(poly);
 		}
-		if (o_Polyline_pt.size()>0)
+		if (false == o_Polyline_pt.empty())
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
@@ -650,7 +661,7 @@ void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	draw_shape::add_attributes(Attributes);
 
 	sub_type_ = 10; //коннектор - линия, если ломаная (ниже определяется) - то путь
-	
+	lined_shape_ = true;	
 }
 void draw_connector::reset_svg_path()
 {
@@ -661,7 +672,10 @@ void draw_connector::reset_svg_path()
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
 	
-		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_connector_attlist_.svg_d_.get(), false);
+		bool bClosed = false;
+		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_connector_attlist_.svg_d_.get(), false, bClosed);
+
+		if (!bClosed) lined_shape_ = true;
 	
 		double x1=common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::emu);
 		double y1=common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::emu);
@@ -716,13 +730,22 @@ const wchar_t * dr3d_extrude::name = L"extrude";
 
 void dr3d_extrude::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"svg:d",			svg_d_);
-    CP_APPLY_ATTR(L"svg:viewBox",	svg_viewbox_);	
+	draw_path::add_attributes(Attributes);
+	
+	//sub_type_ = ??
 }
-void dr3d_extrude::reset_svg_path()
-{
-	if (!svg_d_) return;
 
+//-------------------------------------------------------------------------------------------
+// dr3d:rotate
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_rotate::ns = L"dr3d";
+const wchar_t * dr3d_rotate::name = L"rotate";
+
+void dr3d_rotate::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	draw_path::add_attributes(Attributes);
+	
+	//sub_type_ = ??
 }
 //-------------------------------------------------------------------------------------------
 // dr3d:light

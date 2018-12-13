@@ -58,13 +58,11 @@ namespace _image_file_
 {
     bool GetResolution(const wchar_t* fileName, int & Width, int &Height, NSFonts::IApplicationFonts* appFonts)
 	{
-		if (!appFonts) return false;
-
 		CBgraFrame image;
         MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
 
         bool bRet = false;
-        if ( meta_file->LoadFromFile(fileName))
+        if ( appFonts && meta_file->LoadFromFile(fileName))
 		{
 			double dX = 0, dY = 0, dW = 0, dH = 0;
             meta_file->GetBounds(&dX, &dY, &dW, &dH);
@@ -82,6 +80,18 @@ namespace _image_file_
 
         RELEASEOBJECT(meta_file);
         return bRet;
+	}
+
+	void GenerateZeroImage(const std::wstring & fileName)
+	{
+		NSFile::CFileBinary file;
+		if (file.CreateFileW(fileName))
+		{
+			BYTE pData[149] = {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x03, 0x00, 0x00, 0x01, 0x5f, 0xcc, 0x04, 0x2d, 0x00, 0x00, 0x00, 0x01, 0x73, 0x52, 0x47, 0x42, 0x00, 0xae, 0xce, 0x1c, 0xe9, 0x00, 0x00, 0x00, 0x04, 0x67, 0x41, 0x4d, 0x41, 0x00, 0x00, 0xb1, 0x8f, 0x0b, 0xfc, 0x61, 0x05, 0x00, 0x00, 0x00, 0x06, 0x50, 0x4c, 0x54, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xa5, 0x67, 0xb9, 0xcf, 0x00, 0x00, 0x00, 0x02, 0x74, 0x52, 0x4e, 0x53, 0xff, 0x00, 0xe5, 0xb7, 0x30, 0x4a, 0x00, 0x00, 0x00, 0x09, 0x70, 0x48, 0x59, 0x73, 0x00, 0x00, 0x12, 0x74, 0x00, 0x00, 0x12, 0x74, 0x01, 0xde, 0x66, 0x1f, 0x78, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x18, 0x57, 0x63, 0x60, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0xa3, 0xda, 0x3d, 0x94, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
+
+			file.WriteFile(pData, 149);
+			file.CloseFile();
+		}
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,11 +111,11 @@ int get_value_emu(double pt)
 {
     return static_cast<int>((pt* 360000 * 2.54) / 72);
 } 
-bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts	* appFonts)
+bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts *appFonts)
 {
     memset(clip_rect, 0, 4*sizeof(double));
 
-	if (strClipping.length() <1 || fileName.length()<1)return false;
+	if (strClipping.empty() || fileName.empty()) return false;
 		
 	//<top>, <right>, <bottom>, <left> - http://www.w3.org/TR/2001/REC-xsl-20011015/xslspec.html#clip
 
@@ -114,7 +124,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	std::vector<std::wstring>	Points;
 	std::vector<length>			Points_pt;
 	
-	boost::algorithm::split(Points,strClipping, boost::algorithm::is_any_of(L" ,"), boost::algorithm::token_compress_on);
+	boost::algorithm::split(Points, strClipping, boost::algorithm::is_any_of(L" ,"), boost::algorithm::token_compress_on);
 	
 	for (size_t i = 0; i < Points.size(); i++)
 	{
@@ -125,9 +135,9 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 
 	if (!bEnableCrop) return false;
 
-	int fileWidth=0,fileHeight=0;
+	int fileWidth = 0,fileHeight = 0;
 
-	if (!_image_file_::GetResolution(fileName.data(), fileWidth, fileHeight, appFonts) || fileWidth<1 || fileHeight<1)	return false;
+	if (!_image_file_::GetResolution(fileName.data(), fileWidth, fileHeight, appFonts) || fileWidth < 1 || fileHeight < 1)	return false;
 
 	if (Points_pt.size() > 3)//если другое количество точек .. попозже
 	{
@@ -143,7 +153,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 		clip_rect[1] = clip_rect[1]*100/fileHeight;
 		clip_rect[3] = clip_rect[3]*100/fileHeight;
 
-		if (clip_rect[0]<0.01  && clip_rect[1]<0.01  && clip_rect[2]<0.01   && clip_rect[3]<0.01)
+		if (clip_rect[0] < 0.01  && clip_rect[1] < 0.01  && clip_rect[2] < 0.01   && clip_rect[3] < 0.01)
 			return false;
 		return true;
 	}
@@ -740,13 +750,13 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 
 		if (transform.size()>1)//тока с аргументами
 		{
-			int res=0;
-			if ((res = transform[0].find(L"translate"))>=0)//перемещение
+			size_t res = 0;
+			if ((res = transform[0].find(L"translate")) != std::wstring::npos)//перемещение
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
 
-				if (Points.size()>0)
+				if (false == Points.empty())
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = 0;
@@ -755,11 +765,12 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 					Context.get_slide_context().set_translate(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"scale"))>=0)//масштабирование
+			else if ((res = transform[0].find(L"scale")) != std::wstring::npos)//масштабирование
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
-				if (Points.size()>0)
+				
+				if (false == Points.empty())
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = x_pt; 
@@ -768,16 +779,16 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 					Context.get_slide_context().set_scale(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
+			else if ((res = transform[0].find(L"rotate")) != std::wstring::npos)//вращение
 			{
 				Context.get_slide_context().set_rotate( boost::lexical_cast<double>(transform[1]));
 			}
-			else if ((res = transform[0].find(L"skewX"))>=0)//вращение
+			else if ((res = transform[0].find(L"skewX")) != std::wstring::npos)//вращение
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_slide_context().set_property(_property(L"svg:skewX",angle));
 			}
-			else if ((res = transform[0].find(L"skewY"))>=0)//вращение
+			else if ((res = transform[0].find(L"skewY")) != std::wstring::npos)//вращение
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_slide_context().set_property(_property(L"svg:skewY",angle));

@@ -47,8 +47,6 @@
 #include "hyperlinks.h"
 #include "mediaitems.h"
 
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
-
 namespace cpdoccore { 
 
 	namespace odf_types
@@ -796,11 +794,10 @@ public:
  	bool next_dump_page_properties_;
 	bool next_dump_section_;
 
-    odf_reader::odf_document * root()
+    odf_reader::odf_document *root()
     {
         return odf_document_;
     }
-
     void start_document	();
     void end_document	();
 
@@ -1000,7 +997,6 @@ private:
 
     package::docx_document		* output_document_;
     odf_reader::odf_document	* odf_document_;
-    NSFonts::IApplicationFonts	* applicationFonts_;
 
 	std::vector<odf_reader::_property>		settings_properties_;
 

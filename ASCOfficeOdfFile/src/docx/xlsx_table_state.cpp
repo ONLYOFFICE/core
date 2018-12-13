@@ -136,7 +136,8 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
     table_column_last_width_(0.0),
 	in_cell(false),
 	bEndTable(false),
-	bRTL(false)
+	bRTL(false),
+	bHidden(false)
 {        
 	odf_reader::style_table_properties	* table_prop = NULL;
 	odf_reader::style_instance			* tableStyle = context_->root()->odf_context().styleContainer().style_by_name(table_style_, odf_types::style_family::Table, false);
@@ -144,10 +145,17 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
 	if ((tableStyle) && (tableStyle->content()))
 		table_prop = tableStyle->content()->get_style_table_properties();
 
-	if ((table_prop) && (table_prop->content().common_writing_mode_attlist_.style_writing_mode_))
+	if (table_prop)
 	{
-		if (table_prop->content().common_writing_mode_attlist_.style_writing_mode_->get_type() == odf_types::writing_mode::RlTb)
-			bRTL = true;
+		if (table_prop->content().common_writing_mode_attlist_.style_writing_mode_)
+		{
+			if (table_prop->content().common_writing_mode_attlist_.style_writing_mode_->get_type() == odf_types::writing_mode::RlTb)
+				bRTL = true;
+		}
+		if ((table_prop->content().table_display_) && (false == table_prop->content().table_display_))
+		{
+			bHidden = true;
+		}
 	}
 }
     
@@ -418,6 +426,8 @@ void xlsx_table_state::serialize_protection (std::wostream & strm)
 		CP_XML_NODE(L"sheetProtection")
 		{
 			CP_XML_ATTR(L"sheet", 1);
+			CP_XML_ATTR(L"objects", 1);
+			CP_XML_ATTR(L"scenarios", 1);
 //convert protection odf->ooxml impossible without password !!!
 		}
 	}

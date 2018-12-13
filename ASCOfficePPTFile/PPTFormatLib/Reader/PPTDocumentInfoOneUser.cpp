@@ -1555,7 +1555,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 		pTheme->m_pStyles[1].ApplyAfter(pMasterWrapper->m_pStyles[0].get());
 	if (pMasterWrapper->m_pStyles[1].is_init())
 		pTheme->m_pStyles[2].ApplyAfter(pMasterWrapper->m_pStyles[1].get());
-	if (pMasterWrapper->m_pStyles[2].is_init())
+	if (pMasterWrapper->m_pStyles[3].is_init())
 		pTheme->m_pStyles[3].ApplyAfter(pMasterWrapper->m_pStyles[3].get());
 
 	pTheme->CalculateStyles();
@@ -1765,44 +1765,10 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
 	pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 	pMasterWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
 
-	// читаем настройки текстовых стилей -----------------------------------------------
-	std::vector<CRecordTextMasterStyleAtom*> oArrayTextMasters;
-	pMaster->GetRecordsByType(&oArrayTextMasters, true, false);
-
-	for (size_t i = 0; i < oArrayTextMasters.size(); ++i)
-	{
-		LONG lType = (LONG)oArrayTextMasters[i]->m_oHeader.RecInstance; 
-		if ((0 > lType) || (lType > 8))
-			continue;
-
-		pMasterWrapper->m_pStyles[lType] = new NSPresentationEditor::CTextStyles();
-		pMasterWrapper->m_pStyles[lType]->SetStyles((NSPresentationEditor::CTextStyles*)oArrayTextMasters[i]);
-
-		CTheme::CalculateStyle(pTheme.get(), pMasterWrapper->m_pStyles[lType].get());
-	}
-	if (pMasterWrapper->m_pStyles[3].is_init())
-		pMasterWrapper->m_pStyles[3]->ApplyBefore(m_oDefaultTextStyle);
-	else
-		pMasterWrapper->m_pStyles[3] = m_oDefaultTextStyle;
-
-	CTextStyles oPPTDefaultStyle;
-	CreateDefaultStyle(oPPTDefaultStyle, pTheme.get());
-	oPPTDefaultStyle.ApplyAfter(m_oDefaultTextStyle);
-
-	// выставим стили теме
-	pTheme->m_pStyles[0] = oPPTDefaultStyle;
-	pTheme->m_pStyles[1] = oPPTDefaultStyle;
-	pTheme->m_pStyles[2] = oPPTDefaultStyle;
-	pTheme->m_pStyles[3] = oPPTDefaultStyle;
-
-	if (pMasterWrapper->m_pStyles[0].is_init())
-		pTheme->m_pStyles[1].ApplyAfter(pMasterWrapper->m_pStyles[0].get());
-	if (pMasterWrapper->m_pStyles[1].is_init())
-		pTheme->m_pStyles[2].ApplyAfter(pMasterWrapper->m_pStyles[1].get());
-	if (pMasterWrapper->m_pStyles[2].is_init())
-		pTheme->m_pStyles[3].ApplyAfter(pMasterWrapper->m_pStyles[3].get());
-
-	pTheme->CalculateStyles();
+	//настройки текстовых стилей -----------------------------------------------
+	
+	for (size_t i = 0; i < 9; ++i)
+		pMasterWrapper->m_pStyles[i] = m_arMasterWrapper[0].m_pStyles[i]; //main master
 	
 	CLayout* pLayout = NULL; // ну нету тут разметок ...!!
 	

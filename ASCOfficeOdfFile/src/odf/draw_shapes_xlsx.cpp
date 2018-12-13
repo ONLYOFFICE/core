@@ -130,6 +130,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	{
 		Context.get_drawing_context().set_property(additional_[i]);
 	}
+	Context.get_drawing_context().set_is_line_shape(lined_shape_);
 	
 	oox::_oox_fill fill;
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
@@ -300,15 +301,17 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
+		bool bClosed = false;
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true, bClosed);
 		}
 		catch(...)
 		{
 			res = false; 
 		}
+		//if (!bClosed) lined_shape_ = true;
 		
 		if (o_Polyline.size() > 1 && res )
 		{
@@ -364,11 +367,6 @@ void dr3d_scene::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	Context.get_drawing_context().end_shape();
 	Context.get_drawing_context().clear();
-}
-void dr3d_extrude::xlsx_convert(oox::xlsx_conversion_context & Context)
-{
-	reset_svg_path();
-
 }
 void dr3d_light::xlsx_convert(oox::xlsx_conversion_context & Context)
 {

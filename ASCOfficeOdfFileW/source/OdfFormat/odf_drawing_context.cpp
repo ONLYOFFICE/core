@@ -311,7 +311,10 @@ odf_drawing_context::~odf_drawing_context()
 {
 }
 
-office_element_ptr & odf_drawing_context::get_current_element(){return impl_->current_level_.back();}
+office_element_ptr & odf_drawing_context::get_current_element()
+{
+	return impl_->current_level_.back();
+}
 
 void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
 {
@@ -377,7 +380,7 @@ void odf_drawing_context::start_group()
 
 	impl_->current_group_ = impl_->group_list_.back();
 	
-	if (impl_->current_level_.size()>0)
+	if (false == impl_->current_level_.empty())
 		impl_->current_level_.back()->add_child_element(group_elm);
 
 	impl_->current_level_.push_back(group_elm);
@@ -482,7 +485,7 @@ void odf_drawing_context::start_drawing()
 		impl_->current_drawing_state_.svg_height_ = impl_->anchor_settings_.svg_height_;
 	}
 	//else 
-	if (impl_->current_level_.size() > 0)
+	if (false == impl_->current_level_.empty())
 	{
 		impl_->current_drawing_state_.in_group_ = true;
 	}
@@ -504,7 +507,11 @@ void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_att
 }
 void odf_drawing_context::end_drawing()
 {
-	if (impl_->current_drawing_state_.elements_.empty()) return;
+	if (impl_->current_drawing_state_.elements_.empty())
+	{
+		impl_->current_level_.clear(); 
+		return;
+	}
 
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (draw)
@@ -754,7 +761,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	size_t level = current_level_.size();
 	
-	if (current_level_.size() > 0)
+	if (false == current_level_.empty())
 		current_level_.back()->add_child_element(draw_elm);
 
 	current_level_.push_back(draw_elm);
@@ -915,7 +922,7 @@ void odf_drawing_context::end_shape()
 		impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
 	}
 
-	draw_path* path = dynamic_cast<draw_path*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	draw_path* path = dynamic_cast<draw_path*>(impl_->current_level_.back().get());
 	if (path)
 	{
 		if (impl_->current_drawing_state_.view_box_.empty() && impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
@@ -1002,7 +1009,7 @@ void odf_drawing_context::end_shape()
 	}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-	draw_custom_shape* custom = dynamic_cast<draw_custom_shape*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	draw_custom_shape* custom = dynamic_cast<draw_custom_shape*>(impl_->current_level_.back().get());
 	if (custom)
 	{
 		std::wstring sub_type;
@@ -1223,7 +1230,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 {
     size_t level = (int)impl_->current_level_.size();
 	
-	if (impl_->current_level_.size() > 0 && elm)
+	if (false == impl_->current_level_.empty() && elm)
 		impl_->current_level_.back()->add_child_element(elm);
 
 	std::wstring style_name;
@@ -2784,11 +2791,9 @@ void odf_drawing_context::end_text_box()
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
-	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
+	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_level_.back().get());
 
-	if (!draw) return;
-
-	if (!draw->draw_text_box_attlist_.fo_min_height_)
+	if ((draw) && (!draw->draw_text_box_attlist_.fo_min_height_))
 	{
 		draw->draw_text_box_attlist_.fo_min_height_= impl_->current_drawing_state_.svg_height_;
 	}
@@ -2912,7 +2917,7 @@ office_element_ptr & odf_drawing_context::get_current_style_element()
 }
 void odf_drawing_context::set_text(odf_text_context* text_context)
 {
-	if (text_context == NULL || impl_->current_level_.size() < 1 ) return;
+	if (text_context == NULL || impl_->current_level_.empty() ) return;
 	
 	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
@@ -3557,7 +3562,7 @@ void odf_drawing_context::set_bitmap_link(std::wstring file_path)
 	
 	if (impl_->current_drawing_state_.oox_shape_preset_ == 3000)
 	{
-		if (impl_->current_level_.size() < 1) return;
+		if (impl_->current_level_.empty()) return;
 		
 		draw_image* image = dynamic_cast<draw_image*>(impl_->current_level_.back().get());
 		if (image == NULL)return;

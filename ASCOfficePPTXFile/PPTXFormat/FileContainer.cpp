@@ -337,6 +337,8 @@ namespace PPTX
 				break;
 			}
 		}
+
+		if (strDefDirectory.empty()) return L"";
 		
 		OOX::CPath new_filename = strDefDirectory + FILE_SEPARATOR_STR + relation->Filename().GetFilename();
 		

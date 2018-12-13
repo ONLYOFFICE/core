@@ -149,6 +149,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	}
 ///////////////////////////////////////////////////////////////////////////////////////	
 	Context.get_slide_context().set_is_line_shape(lined_shape_);
+	Context.get_slide_context().set_is_connector_shape(connector_);
 
 	oox::_oox_fill fill;
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_, 

@@ -1025,11 +1025,12 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------------------------------------------------------
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type	= oox::typeShape;
-	drawing.id		= Context.get_drawing_context().get_current_shape_id();
-	drawing.name	= Context.get_drawing_context().get_current_object_name();
-	drawing.inGroup	= Context.get_drawing_context().in_group();
-	drawing.lined	= lined_shape_;
+	drawing.type		= oox::typeShape;
+	drawing.id			= Context.get_drawing_context().get_current_shape_id();
+	drawing.name		= Context.get_drawing_context().get_current_object_name();
+	drawing.inGroup		= Context.get_drawing_context().in_group();
+	drawing.lined		= lined_shape_;
+	drawing.connector	= connector_;
 
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...

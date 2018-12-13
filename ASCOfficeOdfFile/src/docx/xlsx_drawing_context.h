@@ -111,6 +111,7 @@ public:
 	void set_fill		(_oox_fill & fill);
 
 	void set_is_line_shape(bool val);
+	void set_is_connector_shape(bool val);
 
 	std::vector<odf_reader::_property> & get_properties();
 

@@ -662,6 +662,7 @@ void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 	sub_type_ = 10; //коннектор - линия, если ломаная (ниже определяется) - то путь
 	lined_shape_ = true;	
+	connector_ = true;
 }
 void draw_connector::reset_svg_path()
 {

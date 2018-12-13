@@ -63,7 +63,7 @@ public:
 	static const ElementType type = typeDrawShape;
 	static const xml::NodeType xml_type = xml::typeElement;
 
-	draw_shape() : bad_shape_(false), word_art_(false), idx_in_owner(-1), lined_shape_(false) {}
+	draw_shape() : bad_shape_(false), word_art_(false), idx_in_owner(-1), lined_shape_(false), connector_(false){}
 
 	CPDOCCORE_DEFINE_VISITABLE();
 	friend class odf_document;
@@ -94,6 +94,7 @@ public:
 	std::vector<odf_reader::_property>	additional_;
 	int									idx_in_owner;
 	bool								lined_shape_;
+	bool								connector_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -762,7 +762,7 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 					double y_pt = 0;
 					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
 
-					Context.get_slide_context().set_translate(x_pt,y_pt);
+					Context.get_slide_context().set_translate(x_pt, y_pt);
 				}
 			}
 			else if ((res = transform[0].find(L"scale")) != std::wstring::npos)//масштабирование
@@ -776,22 +776,23 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 					double y_pt = x_pt; 
 					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
 
-					Context.get_slide_context().set_scale(x_pt,y_pt);
+					Context.get_slide_context().set_scale(x_pt, y_pt);
 				}
 			}
 			else if ((res = transform[0].find(L"rotate")) != std::wstring::npos)//вращение
 			{
 				Context.get_slide_context().set_rotate( boost::lexical_cast<double>(transform[1]));
+				Context.get_slide_context().set_translate_rotate();
 			}
 			else if ((res = transform[0].find(L"skewX")) != std::wstring::npos)//вращение
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
-				Context.get_slide_context().set_property(_property(L"svg:skewX",angle));
+				Context.get_slide_context().set_property(_property(L"svg:skewX", angle));
 			}
 			else if ((res = transform[0].find(L"skewY")) != std::wstring::npos)//вращение
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
-				Context.get_slide_context().set_property(_property(L"svg:skewY",angle));
+				Context.get_slide_context().set_property(_property(L"svg:skewY", angle));
 			}
 		}
 	}

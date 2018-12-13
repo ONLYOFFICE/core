@@ -149,10 +149,11 @@ void pptx_slide_context::Impl::process_drawings()
 	{
 		_pptx_drawing drawing = _pptx_drawing();
 
-		drawing.type	= objects_[i].type_;			
-		drawing.name	= objects_[i].name_;
-		drawing.id		= next_rId();	
-		drawing.lined	= objects_[i].lined_;
+		drawing.type		= objects_[i].type_;			
+		drawing.name		= objects_[i].name_;
+		drawing.id			= next_rId();	
+		drawing.lined		= objects_[i].lined_;
+		drawing.connector	= objects_[i].connector_;
 		
 		process_common_properties(objects_[i], drawing);
 		
@@ -229,6 +230,8 @@ void pptx_slide_context::default_set()
 	
 	impl_->object_description_.clipping_string_= L"";
 	impl_->object_description_.svg_rect_	= boost::none;
+	impl_->object_description_.connector_	= false;
+	impl_->object_description_.lined_		= false;
 
 	impl_->object_description_.hlinks_.clear();
 	impl_->object_description_.action_.clear();
@@ -289,7 +292,16 @@ void pptx_slide_context::set_translate(double x_pt, double y_pt)
 		r.y += y_pt;
 	}
 }
-
+void pptx_slide_context::set_translate_rotate()
+{
+	if (impl_->object_description_.svg_rect_)
+	{
+		_rect & r = impl_->object_description_.svg_rect_.get();
+		
+		r.x -= r.cx / 2;
+		r.y += r.cy / 2;
+	}
+}
 void pptx_slide_context::set_scale(double cx_pt, double cy_pt)
 {
 	if (impl_->object_description_.svg_rect_)
@@ -322,7 +334,6 @@ void pptx_slide_context::set_clipping(const std::wstring & str)
 {
 	impl_->object_description_.clipping_string_= str;
 }
-
 void pptx_slide_context::set_fill(_oox_fill & fill)
 {
 	impl_->object_description_.fill_= fill;
@@ -331,7 +342,10 @@ void pptx_slide_context::set_is_line_shape(bool val)
 {
 	impl_->object_description_.lined_ = val;
 }
-
+void pptx_slide_context::set_is_connector_shape(bool val)
+{
+	impl_->object_description_.connector_ = val;
+}
 std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;

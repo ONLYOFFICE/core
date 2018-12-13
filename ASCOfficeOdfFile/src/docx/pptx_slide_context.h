@@ -61,6 +61,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////
 	void set_rect		(double width_pt, double height_pt, double x_pt, double y_pt);
 
+	void set_translate_rotate();
 	void set_translate	(double x_pt, double y_pt);
 	void set_scale		(double cx_pt, double cy_pt);
 	void set_rotate		(double angle);
@@ -73,6 +74,7 @@ public:
 	void set_fill		(_oox_fill & fill);
 	
 	void set_is_line_shape(bool val);
+	void set_is_connector_shape(bool val);
 
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);

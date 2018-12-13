@@ -74,6 +74,7 @@ struct drawing_object_description
 
 	bool									in_group_;
 	bool									lined_;
+	bool									connector_;
 	int										shape_type_;	//default - frame
 
 	std::vector<drawing_object_description>	child_objects_;

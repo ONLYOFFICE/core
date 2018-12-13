@@ -110,6 +110,7 @@ static const std::wstring _ooxShapeType[]=
 	L"roundRect", 
 	L"bentConnector3",
 	L"curvedConnector3",
+	L"",//3-D shape
 	L"",
 	L"polyline"
 };

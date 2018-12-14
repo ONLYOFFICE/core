@@ -162,6 +162,7 @@ void xlsx_drawing_context::clear()
 	impl_->object_description_.type_				= typeUnknown;
 	impl_->object_description_.in_group_			= false;
 	impl_->object_description_.lined_				= false;
+	impl_->object_description_.connector_			= false;
     impl_->object_description_.xlink_href_			= L"";
     impl_->object_description_.name_				= L"";
 	impl_->object_description_.anchor_				= L"";
@@ -675,12 +676,13 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 
 		_xlsx_drawing drawing	=_xlsx_drawing();
 
-		drawing.type	= obj.type_;
-		drawing.name	= obj.name_;
-		drawing.fill	= obj.fill_;
-		drawing.inGroup	= obj.in_group_;
-		drawing.id		= impl_->next_rId();
-		drawing.lined	= obj.lined_;
+		drawing.type		= obj.type_;
+		drawing.name		= obj.name_;
+		drawing.fill		= obj.fill_;
+		drawing.inGroup		= obj.in_group_;
+		drawing.id			= impl_->next_rId();
+		drawing.lined		= obj.lined_;
+		drawing.connector	= obj.connector_;
 
 		drawing.sub_type = obj.shape_type_;
 		
@@ -744,10 +746,13 @@ void xlsx_drawing_context::set_link(std::wstring link, RelsType typeRels)
 void xlsx_drawing_context::end_action()
 {
 }
-
 void xlsx_drawing_context::set_is_line_shape(bool val)
 {
 	impl_->object_description_.lined_ = val;
+}
+void xlsx_drawing_context::set_is_connector_shape(bool val)
+{
+	impl_->object_description_.connector_ = val;
 }
 
 

@@ -131,6 +131,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_drawing_context().set_property(additional_[i]);
 	}
 	Context.get_drawing_context().set_is_line_shape(lined_shape_);
+	Context.get_drawing_context().set_is_connector_shape(connector_);
 	
 	oox::_oox_fill fill;
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,

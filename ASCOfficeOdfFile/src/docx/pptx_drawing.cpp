@@ -254,7 +254,65 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 		}
     }  // CP_XML_WRITER  
 }
+void pptx_serialize_connector(std::wostream & strm, _pptx_drawing & val)
+{
+	CP_XML_WRITER(strm)    
+    {
+        CP_XML_NODE(L"p:cxnSp")
+        {                  
+            CP_XML_NODE(L"p:nvCxnSpPr")
+            {
+                CP_XML_NODE(L"p:cNvPr")
+                {
+                    CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
+                    CP_XML_ATTR(L"name", val.name); 
 
+					oox_serialize_action(CP_XML_STREAM(), val.action);
+                }
+				CP_XML_NODE(L"p:cNvCxnSpPr")//non visual properies (собственно тока 1 там)
+				{
+					if (val.sub_type == 1 || val.sub_type == 2)CP_XML_ATTR(L"txBox", 1);
+					CP_XML_NODE(L"a:spLocks")
+					{
+						CP_XML_ATTR(L"noGrp", 1);
+					}
+				}
+				CP_XML_NODE(L"p:nvPr")
+				{
+					if (val.place_holder_type_.length()>0)
+					{
+						CP_XML_NODE(L"p:ph")
+						{
+							CP_XML_ATTR(L"type",val.place_holder_type_);
+							if (val.place_holder_idx_ > 0)	CP_XML_ATTR(L"idx", val.place_holder_idx_);
+							
+							if (val.place_holder_type_ == L"dt")	{	CP_XML_ATTR(L"sz", L"half");	}
+							if (val.place_holder_type_ == L"ftr")	{	CP_XML_ATTR(L"sz", L"quarter");	}
+							if (val.place_holder_type_ == L"sldNum"){	CP_XML_ATTR(L"sz", L"quarter");	}
+						}
+					}
+				}
+            }
+			CP_XML_NODE(L"p:spPr")
+			{			
+				_CP_OPT(bool) bNoRect;
+				odf_reader::GetProperty(val.additional,L"no_rect",bNoRect);
+
+				if (!bNoRect)
+				{	
+					if (val.cx != 0 || val.cy != 0) //layout
+					{
+						val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+					}
+					val.serialize_shape(CP_XML_STREAM());
+
+					oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				}
+			}
+			 pptx_serialize_text(CP_XML_STREAM(), val);
+		}
+    }  // CP_XML_WRITER  
+}
 void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
 {
     CP_XML_WRITER(strm)    
@@ -381,7 +439,10 @@ void _pptx_drawing::serialize(std::wostream & strm)
 {
 	if (type == typeShape)
 	{
-		pptx_serialize_shape(strm, *this);
+		//if (connector) only for ms prst connectors, but not custom!!
+		//	pptx_serialize_connector(strm, *this);
+		//else			
+			pptx_serialize_shape(strm, *this);
 	}
 	else if (type == typeImage)
 	{

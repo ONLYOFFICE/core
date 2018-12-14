@@ -445,7 +445,10 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         builder.WriteString(L"<SignatureImage>");
         builder.WriteString(m_image_valid);
         builder.WriteString(L"</SignatureImage>");
-        builder.WriteString(L"<SignatureComments/>\
+
+        if (!m_certificate->IsGOST())
+        {
+            builder.WriteString(L"<SignatureComments/>\
 <WindowsVersion>10.0</WindowsVersion>\
 <OfficeVersion>16.0</OfficeVersion>\
 <ApplicationVersion>16.0</ApplicationVersion>\
@@ -460,6 +463,25 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
 </SignatureInfoV1>\
 </SignatureProperty>\
 </SignatureProperties>");
+        }
+        else
+        {
+            builder.WriteString(L"<SignatureComments/>\
+<WindowsVersion>10.0</WindowsVersion>\
+<OfficeVersion>16.0</OfficeVersion>\
+<ApplicationVersion>16.0</ApplicationVersion>\
+<Monitors>2</Monitors>\
+<HorizontalResolution>1680</HorizontalResolution>\
+<VerticalResolution>1050</VerticalResolution>\
+<ColorDepth>32</ColorDepth>\
+<SignatureProviderId>{F5AC7D23-DA04-45F5-ABCB-38CE7A982553}</SignatureProviderId>\
+<SignatureProviderUrl>http://www.cryptopro.ru/products/office/signature</SignatureProviderUrl>\
+<SignatureProviderDetails>8</SignatureProviderDetails>\
+<SignatureType>1</SignatureType>\
+</SignatureInfoV1>\
+</SignatureProperty>\
+</SignatureProperties>");
+        }
 
         m_signed_info.WriteString("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idOfficeObject\">");
         m_signed_info.WriteString(GetReferenceMain(builder.GetData(), L"idOfficeObject", false));
@@ -486,7 +508,7 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
 
     std::wstring GenerateSignPropertiesObject()
     {
-        std::wstring sName = m_certificate->GetSignerName();
+        std::wstring sName = m_certificate->GetIssuerName();
 
         std::string sKeyA = m_certificate->GetNumber();
         std::wstring sKey = UTF8_TO_U(sKeyA);

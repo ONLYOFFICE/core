@@ -62,11 +62,11 @@ namespace PPTX
 			oNode.FromXmlFile(filename.m_strFilename);
 
             XmlMacroReadNodeValueBase(oNode, _T("dc:title"), title);
-            XmlMacroReadAttributeBase(oNode, _T("dc:creator"), creator);
-            XmlMacroReadAttributeBase(oNode, _T("cp:lastModifiedBy"), lastModifiedBy);
-            XmlMacroReadAttributeBase(oNode, _T("cp:revision"), revision);
-            XmlMacroReadAttributeBase(oNode, _T("dcterms:modified"), modified);
-            XmlMacroReadAttributeBase(oNode, _T("dcterms:created"), created);
+			XmlMacroReadNodeValueBase(oNode, _T("dc:creator"), creator);
+			XmlMacroReadNodeValueBase(oNode, _T("cp:lastModifiedBy"), lastModifiedBy);
+			XmlMacroReadNodeValueBase(oNode, _T("cp:revision"), revision);
+			XmlMacroReadNodeValueBase(oNode, _T("dcterms:modified"), modified);
+			XmlMacroReadNodeValueBase(oNode, _T("dcterms:created"), created);
 
 	//		created = PPTX::DateTime::Parse(document.Root.element("created").text().ToString());
 	//			modified = PPTX::DateTime::Parse(document.Root.element("modified").text().ToString());

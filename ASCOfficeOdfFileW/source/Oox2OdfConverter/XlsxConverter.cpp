@@ -163,11 +163,35 @@ void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
 	
-	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
+	OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
 	std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 	
+	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(Workbook);
+	
+	if(Workbook->m_oExternalReferences.IsInit())
+	{	
+		for (size_t i = 0; i < Workbook->m_oExternalReferences->m_arrItems.size(); i++)
+		{
+			OOX::Spreadsheet::CExternalReference *externalRef = dynamic_cast<OOX::Spreadsheet::CExternalReference*>(Workbook->m_oExternalReferences->m_arrItems[i]);
+			if((externalRef) && (externalRef->m_oRid.IsInit()))
+			{
+				smart_ptr<OOX::File> file = find_file_by_id(externalRef->m_oRid->GetValue());
+				
+				smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
+				if (fileExternal.IsInit())
+				{
+					ods_context->add_external_reference(fileExternal->Uri().GetPath());
+				}
+				else
+				{
+					smart_ptr<OOX::Spreadsheet::CExternalLink> externalLink = file.smart_dynamic_cast<OOX::Spreadsheet::CExternalLink>();
+					convert(externalLink.operator->());
+				}
+			}
+		}
+	}
 	if(Workbook->m_oBookViews.IsInit())
 	{	
 		for (size_t i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
@@ -350,11 +374,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 
 /////////////////////////////////////////////////////////////////////////
+	convert(oox_sheet->m_oDataValidations.GetPointer());
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
 	convert(oox_sheet->m_oPicture.GetPointer());
+	convert(oox_sheet->m_oSheetProtection.GetPointer());
 	
 	OoxConverter::convert(oox_sheet->m_oExtLst.GetPointer());
 
@@ -365,6 +391,51 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter * oox_header_footer)
 	if (!oox_header_footer) return;
 
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
+{
+	if (!oox_prot) return;
+
+	ods_context->current_table().set_table_protection(true);
+
+	if (oox_prot->m_oInsertColumns.IsInit())
+	{
+		ods_context->current_table().set_table_protection_insert_columns(oox_prot->m_oInsertColumns->ToBool());
+	}
+	if (oox_prot->m_oInsertRows.IsInit())
+	{
+		ods_context->current_table().set_table_protection_insert_rows(oox_prot->m_oInsertRows->ToBool());
+	}
+	if (oox_prot->m_oDeleteColumns.IsInit())
+	{
+		ods_context->current_table().set_table_protection_delete_columns(oox_prot->m_oDeleteColumns->ToBool());
+	}
+	if (oox_prot->m_oDeleteRows.IsInit())
+	{
+		ods_context->current_table().set_table_protection_delete_rows(oox_prot->m_oDeleteRows->ToBool());
+	}
+	if (oox_prot->m_oSelectLockedCells.IsInit())
+	{
+		ods_context->current_table().set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
+	}
+	if (oox_prot->m_oSelectUnlockedCell.IsInit())
+	{
+		ods_context->current_table().set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCell->ToBool());
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
+{
+	if (!oox_validations) return;
+
+	for (size_t i = 0; i < oox_validations->m_arrItems.size(); i++)
+	{
+		convert(oox_validations->m_arrItems[i]);
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
+{
+	if (!oox_validation) return;
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
 {
 	if (!oox_background) return;
@@ -729,9 +800,32 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
 	ods_context->end_cell_text();
 	ods_context->current_table().set_cell_text( ods_context->text_context());
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CExternalLink *oox_external_link)
+{
+	if (!oox_external_link) return;
+
+	OOX::IFileContainer* old_container = xlsx_current_container;
+	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(oox_external_link);
+	
+	if (oox_external_link->m_oExternalBook.IsInit())
+	{
+		if (oox_external_link->m_oExternalBook->m_oRid.IsInit())
+		{
+			smart_ptr<OOX::File> file = find_file_by_id(oox_external_link->m_oExternalBook->m_oRid->GetValue());
+			
+			smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
+			if (fileExternal.IsInit())
+			{
+				ods_context->add_external_reference(fileExternal->Uri().GetPath());
+			}
+		}
+	}
+	xlsx_current_container = old_container;
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 {
-	if (oox_unknown == NULL)return;
+	if (!oox_unknown)return;
 
 	switch(oox_unknown->getType())
 	{

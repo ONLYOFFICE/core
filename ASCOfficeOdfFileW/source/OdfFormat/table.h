@@ -66,10 +66,11 @@ public:
     _CP_OPT(std::wstring)		table_style_name_;
 	_CP_OPT(std::wstring)		table_template_name_;
 
-    _CP_OPT(std::wstring)		table_protection_key_; 
     _CP_OPT(std::wstring)		table_print_ranges_;
 
-   _CP_OPT(odf_types::Bool)		table_protected_; // default false
+	_CP_OPT(odf_types::Bool)	table_protected_; // default false
+    _CP_OPT(std::wstring)		table_protection_key_; 
+	_CP_OPT(std::wstring)		table_protection_key_digest_algorithm_;
     
    bool table_print_;						// default true
 	
@@ -152,7 +153,37 @@ public:
 
 	void serialize(CP_ATTR_NODE);    
 };
+//-----------------------------------------------------------------------------------------------------
+class table_table_protection : public office_element_impl<table_table_protection>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableTableProtection;
 
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	table_table_protection() : select_protected_cells(true), select_unprotected_cells(true) {}
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	odf_types::Bool	select_protected_cells;
+	odf_types::Bool	select_unprotected_cells;
+
+	_CP_OPT(odf_types::Bool)	insert_columns;
+	_CP_OPT(odf_types::Bool)	insert_rows;
+
+	_CP_OPT(odf_types::Bool)	delete_columns;
+	_CP_OPT(odf_types::Bool)	delete_rows;
+	//_CP_OPT(bool)	format_columns; //???
+	//_CP_OPT(bool)	format_rows;
+	//_CP_OPT(bool)	format_cells;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_table_protection);
 //-----------------------------------------------------------------------------------------------------
 class table_table_source : public office_element_impl<table_table_source>
 {
@@ -274,7 +305,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 public:
-    table_table_column_attlist table_table_column_attlist_;
+    table_table_column_attlist attlist_;
 
 };
 
@@ -378,7 +409,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    table_table_row_attlist		table_table_row_attlist_;
+    table_table_row_attlist		attlist_;
     office_element_ptr_array	content_; // table-table-cell, table-covered-table-cell
     
 };
@@ -418,9 +449,9 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    table_table_cell_attlist		table_table_cell_attlist_;
-    table_table_cell_attlist_extra	table_table_cell_attlist_extra_;
-    table_table_cell_content		table_table_cell_content_;
+    table_table_cell_attlist		attlist_;
+    table_table_cell_attlist_extra	attlist_extra_;
+    table_table_cell_content		content_;
 
 };
 
@@ -445,8 +476,8 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	bool empty_;
-    table_table_cell_attlist table_table_cell_attlist_;
-    table_table_cell_content table_table_cell_content_;
+    table_table_cell_attlist attlist_;
+    table_table_cell_content content_;
 
 };
 
@@ -616,17 +647,20 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    table_table_attlist				table_table_attlist_;
-    office_element_ptr				table_table_source_;//table-table-source
+    table_table_attlist			attlist_;
+
+	office_element_ptr			table_table_source_;//table-table-source
+	office_element_ptr			table_protection_;
+
+	office_element_ptr			table_named_expressions_;
+ 	office_element_ptr			table_conditional_formats_;
+	office_element_ptr			table_shapes_;
+    table_columns_and_groups	table_columns_and_groups_;//table-columns-and-groups
+    table_rows_and_groups		table_rows_and_groups_;
+
     //office-dde-source
     //table-scenario
     //office-forms
-	office_element_ptr				table_named_expressions_;
- 	office_element_ptr				table_conditional_formats_;
-	office_element_ptr				table_shapes_;
-    table_columns_and_groups		table_columns_and_groups_;//table-columns-and-groups
-    table_rows_and_groups			table_rows_and_groups_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table);

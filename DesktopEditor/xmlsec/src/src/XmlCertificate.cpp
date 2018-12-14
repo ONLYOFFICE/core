@@ -57,6 +57,18 @@ int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)
         "http://www.w3.org/2001/04/xmlenc#sha512" == sAlg)
         return OOXML_HASH_ALG_SHA512;
 
+    if ("urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411" == sAlg ||
+        "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102001-gostr3411" == sAlg)
+        return OOXML_HASH_ALG_GOST_GR3411;
+
+    if ("urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256" == sAlg ||
+        "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256" == sAlg)
+        return OOXML_HASH_ALG_GOST_GR3411_2012_256;
+
+    if ("urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-512" == sAlg ||
+        "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-512" == sAlg)
+        return OOXML_HASH_ALG_GOST_GR3411_2012_512;
+
     return OOXML_HASH_ALG_INVALID;
 }
 
@@ -74,6 +86,12 @@ std::string ICertificate::GetDigestMethodA(const int& nAlg)
         return "http://www.w3.org/2001/04/xmldsig-more#sha384";
     case OOXML_HASH_ALG_SHA512:
         return "http://www.w3.org/2001/04/xmlenc#sha512";
+    case OOXML_HASH_ALG_GOST_GR3411:
+        return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411";
+    case OOXML_HASH_ALG_GOST_GR3411_2012_256:
+        return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256";
+    case OOXML_HASH_ALG_GOST_GR3411_2012_512:
+        return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-512";
     default:
         break;
     }
@@ -98,6 +116,12 @@ std::string ICertificate::GetSignatureMethodA(const int& nAlg)
         return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384";
     case OOXML_HASH_ALG_SHA512:
         return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512";
+    case OOXML_HASH_ALG_GOST_GR3411:
+        return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102001-gostr3411";
+    case OOXML_HASH_ALG_GOST_GR3411_2012_256:
+        return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256";
+    case OOXML_HASH_ALG_GOST_GR3411_2012_512:
+        return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-512";
     default:
         break;
     }

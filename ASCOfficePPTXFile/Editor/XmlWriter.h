@@ -613,7 +613,12 @@ namespace NSBinPptxRW
 		AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_sizet& value)
         {
             if (value.IsInit())
-                WriteAttribute(strName, *value);
+                #ifdef __ANDROID__
+                    WriteAttribute(strName, (int)(*value));
+                #else
+                    WriteAttribute(strName, *value);
+                #endif
+
         }
         AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_double& value)
         {

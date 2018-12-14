@@ -30,7 +30,7 @@
  *
  */
 
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "../../../fontengine/FontManager.h"
 
 #include "EmfFile.h"
@@ -407,7 +407,9 @@ static const struct ActionNamesEmf
 		BYTE* pHeaderBuffer = m_oStream.GetCurPtr();
 		m_oStream.Skip(ulHeaderSize + lBitsOffset);
 		BYTE* pBitsBuffer = m_oStream.GetCurPtr();
-		m_oStream.Skip(ulBitsSize);
+
+		unsigned int ulBitsSizeSkip = 0 == ulBitsSize ? 0 : ((int)(((double)ulBitsSize - 0.5) / 4) + 1) * 4;
+		m_oStream.Skip(ulBitsSizeSkip);
 
 		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
 

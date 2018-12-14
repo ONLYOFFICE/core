@@ -207,6 +207,7 @@ namespace PPTX
 
 			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	name_ = L"wps:wsp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:sp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) name_ = L"a:sp";
 				
 			pWriter->StartNode(name_);
 
@@ -234,21 +235,6 @@ namespace PPTX
 			if (pWriter->m_lGroupIndex > 1 && !bIsPresentStyle)
 			{
 				pWriter->m_lFlag -= 0x02;
-			}
-
-			if (style.is_init())
-			{
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = _T("wps");
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = _T("xdr");
-
-                pWriter->Write(style);
-            }
-
-			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
-			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && txBody.is_init())
-					txBody->m_name = _T("xdr:txBody");
-				pWriter->Write(txBody);
 			}
 
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
@@ -279,7 +265,33 @@ namespace PPTX
 					pWriter->WriteString(_T("<wps:bodyPr rot=\"0\"><a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/></wps:bodyPr>"));
 				}
 			}
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)
+			{
+				txBody->m_name = L"a:txBody";
 
+				pWriter->StartNode(L"a:txSp");
+				pWriter->EndAttributes();
+					pWriter->Write(txBody);
+					pWriter->WriteString(L"<a:useSpRect/>");
+				pWriter->EndNode(L"a:txSp");
+			}
+			else
+			{
+				if (txBody.is_init())
+				{
+					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	
+						txBody->m_name = L"xdr:txBody";
+				}
+				pWriter->Write(txBody);
+			}
+			if (style.is_init())
+			{
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = L"wps";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) style->m_namespace = L"a";
+
+                pWriter->Write(style);
+            }
 			pWriter->EndNode(name_);
 		}
 		

@@ -58,6 +58,7 @@ namespace DocFileFormat
 		void writePictureBorder (const std::wstring & name, const BorderCode* brc);
 		void appendStyleProperty( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
 		bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
+		bool ParseEmbeddedBlob(const std::string & xmlString, std::wstring & newXmlString);
 		std::wstring GetShapeID(const Shape* pShape) const;
 	protected:
 		/// Copies the picture from the binary stream to the zip archive 
@@ -69,11 +70,13 @@ namespace DocFileFormat
 		static std::wstring GetTargetExt (Global::BlipType nType);
 		static std::wstring GetContentType (Global::BlipType nType);
 
+		bool							m_isBlob;
 		bool							m_isBullete;
 		bool							m_isEquation;
 		bool							m_isEmbedded;
 		std::string						m_embeddedData;
 		std::wstring					m_equationXml;
+		std::wstring					m_blobXml;
 		
 		std::wstring					m_shapeId;
 	private:

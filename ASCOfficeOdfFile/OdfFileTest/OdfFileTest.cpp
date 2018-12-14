@@ -105,7 +105,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	}
     _CP_LOG << L"[info] " << srcFileName << std::endl;
 	
-	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", srcTempPath2, L"password", NULL);
+	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", srcTempPath2, L"", NULL);
 
 	if (srcTempPath != srcFileName)
 	{

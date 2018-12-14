@@ -42,7 +42,8 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 	
 	if (m_ooxGraphic->element.is_init())
 	{
-		if (m_ooxGraphic->element.getType() == OOX::et_p_ShapeTree)
+		if (m_ooxGraphic->element.getType() == OOX::et_p_ShapeTree ||
+			m_ooxGraphic->element.getType() == OOX::et_lc_LockedCanvas)
 		{
 			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->element.GetElem().operator->()));
 			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);

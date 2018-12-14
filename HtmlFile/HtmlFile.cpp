@@ -38,7 +38,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringBuilder.h"
-#include "../DesktopEditor/common/String.h"
+#include "../DesktopEditor/common/StringExt.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/fontengine/application_generate_fonts_common.h"
 

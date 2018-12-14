@@ -217,7 +217,7 @@ public:
 
 private:
 
-	unsigned char*			m_Data;
+	unsigned char*	m_Data;
 	unsigned long	m_Size;
 	unsigned long	m_Position;
 	bool			bMemoryCopy;

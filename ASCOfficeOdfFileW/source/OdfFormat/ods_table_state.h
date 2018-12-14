@@ -253,6 +253,14 @@ public:
 		void set_table_tab_color(_CP_OPT(odf_types::color) & _color);
         void set_table_dimension(int col, int row);
 		void set_print_range(std::wstring range);
+		
+		void set_table_protection(bool Val);
+		void set_table_protection_insert_columns(bool Val);
+		void set_table_protection_insert_rows(bool Val);
+		void set_table_protection_delete_columns(bool Val);
+		void set_table_protection_delete_rows(bool Val);
+		void set_table_protection_unprotected_cells(bool Val);
+		void set_table_protection_protected_cells(bool Val);
 
     void add_column(office_element_ptr & elm, unsigned int repeated ,office_element_ptr & style);
 		void set_column_width(double width);

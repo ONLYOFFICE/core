@@ -174,7 +174,7 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 			state.table.style_elm = style_state->get_office_element();
 			state.table.style_name = style_state->get_name();
 			
-			table->table_table_attlist_.table_style_name_ = state.table.style_name;		
+			table->attlist_.table_style_name_ = state.table.style_name;		
 		}
 	}
 	impl_->default_cell_properties = L"";
@@ -226,11 +226,11 @@ void odf_table_context::start_row(office_element_ptr &elm, bool styled)
 			state.style_elm		= style_state->get_office_element();
 			state.style_name	= style_state->get_name();
 			
-			row->table_table_row_attlist_.table_style_name_ = state.style_name;		
+			row->attlist_.table_style_name_ = state.style_name;		
 		}
 	}
 	if (!impl_->current_table().default_cell_properties.empty())
-		row->table_table_row_attlist_.table_default_cell_style_name_ = impl_->current_table().default_cell_properties;
+		row->attlist_.table_default_cell_style_name_ = impl_->current_table().default_cell_properties;
 
 
 	impl_->current_table().rows.push_back(state);
@@ -277,7 +277,7 @@ void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 		{
 			state.style_elm = style_state->get_office_element();
 			state.style_name = style_state->get_name();
-			column->table_table_column_attlist_.table_style_name_ = state.style_name;		
+			column->attlist_.table_style_name_ = state.style_name;		
 		}
 	}
 
@@ -466,7 +466,7 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 			state.style_elm		= style_state->get_office_element();
 			state.style_name	= style_state->get_name();
 			
-			cell->table_table_cell_attlist_.table_style_name_ = state.style_name;		
+			cell->attlist_.table_style_name_ = state.style_name;		
 		}
 
 		if (!impl_->current_table().default_cell_properties.empty())
@@ -498,7 +498,7 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 		table_table_cell * cell = dynamic_cast<table_table_cell *>(state_row.spanned_column_cell[0].get());
 		if (!cell)return;
 
-		cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = (unsigned int)state_row.spanned_column_cell.size();	
+		cell->attlist_extra_.table_number_columns_spanned_ = (unsigned int)state_row.spanned_column_cell.size();	
 		state_row.spanned_column_cell.clear();
 	}
 
@@ -517,7 +517,7 @@ void odf_table_context::set_cell_column_span_restart()
 		table_table_cell * cell = dynamic_cast<table_table_cell *>(state.spanned_column_cell[0].get());
 		if (!cell)return;
 
-		cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = sz;
+		cell->attlist_extra_.table_number_columns_spanned_ = sz;
 	}
 	state.spanned_column_cell.clear();
 }
@@ -530,7 +530,7 @@ void odf_table_context::set_cell_column_span(int spanned)
 	{
 		table_table_cell * cell = dynamic_cast<table_table_cell *>(impl_->current_table().cells.back().elm.get());
 		if (cell)
-			cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned;
+			cell->attlist_extra_.table_number_columns_spanned_ = spanned;
 	}
 	else
 	{
@@ -551,7 +551,7 @@ void odf_table_context::set_cell_row_span(int spanned)
 	{
 		table_table_cell * cell = dynamic_cast<table_table_cell *>(impl_->current_table().cells.back().elm.get());
 		if (cell)
-			cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned;
+			cell->attlist_extra_.table_number_rows_spanned_ = spanned;
 	}
 	else
 	{
@@ -574,7 +574,7 @@ void odf_table_context::set_cell_row_span_restart()
 		table_table_cell * cell = dynamic_cast<table_table_cell *>(state.spanned_row_cell[0].get());
 		if (!cell)return;
 
-		cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = sz;
+		cell->attlist_extra_.table_number_rows_spanned_ = sz;
 	}
 	state.spanned_row_cell.clear();
 

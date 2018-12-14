@@ -130,7 +130,7 @@ namespace PdfReader
 	// Выделяем память и копируем туда строку.
 	static char *CopyString(char *sString)
 	{
-		char *sResult = (char *)MemUtilsMalloc(strlen(sString) + 1);
+		char *sResult = (char *)MemUtilsMalloc((int)strlen(sString) + 1);
 		strcpy(sResult, sString);
 		return sResult;
 	}

@@ -37,6 +37,8 @@
 #include "../Biff_records/ObjProtect.h"
 #include "../Biff_records/Password.h"
 
+#include "../../../../../OfficeCryptReader/source/CryptTransform.h"
+
 namespace XLS
 {
 
@@ -76,6 +78,18 @@ const bool PROTECTION_COMMON::loadContent(BinProcessor& proc)
 	{
 		m_Password = elements_.back();
 		elements_.pop_back();
+
+		////test
+		//Password* passw = dynamic_cast<Password*>(m_Password.get());
+
+		//CRYPT::_ecmaWriteProtectData data;
+		//data.hashValue = std::string(passw->wPassword.begin(), passw->wPassword.end());
+
+		//CRYPT::ECMAWriteProtect protect;
+		//protect.SetCryptData(data);
+		//protect.SetPassword(L"123");
+
+		//bool res = protect.VerifyWrike();
 	}
 
 	return m_Protect || m_ScenarioProtect || m_ObjProtect || m_Password;

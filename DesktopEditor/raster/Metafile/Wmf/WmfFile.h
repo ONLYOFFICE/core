@@ -32,7 +32,7 @@
 #ifndef _METAFILE_WMF_WMFFILE_H
 #define _METAFILE_WMF_WMFFILE_H
 
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "../../../fontengine/FontManager.h"
 
 #include "../Common/IOutputDevice.h"

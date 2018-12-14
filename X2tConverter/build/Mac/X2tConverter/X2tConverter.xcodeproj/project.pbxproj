@@ -24,7 +24,6 @@
 		17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */; };
 		17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17C27A171AC2DB3D00E1D003 /* X2tConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 691A8BD01E2FA67E00DCB54A /* liblibxml2.a */; };
 		69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F241CB51C2A003E771B /* libOfficeUtils.a */; };
 		69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */; };
 		69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FD41CB5243F003E771B /* libmng_ios.a */; };
@@ -56,6 +55,10 @@
 		69DA32F81CEE100E00E10AF0 /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32611CEE09BB00E10AF0 /* libPPTXFormatLib_ios.a */; };
 		69DA32F91CEE100E00E10AF0 /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32491CEE094A00E10AF0 /* libraster_ios.a */; };
 		69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69EC66D21E01770D003527E2 /* libUnicodeConverter.a */; };
+		8A35A6EE215E5F46005CC806 /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A35A6EC215E5F46005CC806 /* xmlutils.h */; };
+		8A35A6F3215E5F62005CC806 /* xmldom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A6F0215E5F62005CC806 /* xmldom.cpp */; };
+		8A35A6F4215E5F62005CC806 /* xmllight_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A35A6F1215E5F62005CC806 /* xmllight_private.h */; };
+		8A35A6F5215E5F62005CC806 /* xmllight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A6F2215E5F62005CC806 /* xmllight.cpp */; };
 		8A9FAC2B207772E1007787F6 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A9FAC27207772CC007787F6 /* libicu.a */; };
 		8ADB5F4220C52EFE00B72D37 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ADB5F4120C52EFE00B72D37 /* version.h */; };
 /* End PBXBuildFile section */
@@ -74,20 +77,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 17E17EDC1AC453F800BEA2EA;
 			remoteInfo = ASCOfficeDocxFile2Lib;
-		};
-		691A8BCF1E2FA67E00DCB54A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 69967F581E2F84F100B620CD;
-			remoteInfo = libxml2;
-		};
-		691A8BD11E2FA68900DCB54A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 69967F571E2F84F100B620CD;
-			remoteInfo = libxml2;
 		};
 		69415F231CB51C2A003E771B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -447,7 +436,6 @@
 		17C8DED01ACD696100902C85 /* libX2tConverter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libX2tConverter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeDocxFile2Lib.xcodeproj; path = ../../../../ASCOfficeDocxFile2/Mac/ASCOfficeDocxFile2Lib.xcodeproj; sourceTree = "<group>"; };
 		6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = ../../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<group>"; };
-		691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libxml2.xcodeproj; path = ../../../../DesktopEditor/xml/mac/libxml2.xcodeproj; sourceTree = "<group>"; };
 		69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeUtils.xcodeproj; path = ../../../../OfficeUtils/OfficeUtils.xcodeproj; sourceTree = "<group>"; };
 		69415FAE1CB5243F003E771B /* mng.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mng.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/mng/mng.xcodeproj; sourceTree = "<group>"; };
 		69415FB11CB5243F003E771B /* png.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = png.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/png/png.xcodeproj; sourceTree = "<group>"; };
@@ -479,6 +467,10 @@
 		69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = ../../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UnicodeConverter.xcodeproj; path = ../../../../UnicodeConverter/build/UnicodeConverter/UnicodeConverter.xcodeproj; sourceTree = "<group>"; };
+		8A35A6EC215E5F46005CC806 /* xmlutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlutils.h; path = ../../../../../DesktopEditor/xml/include/xmlutils.h; sourceTree = "<group>"; };
+		8A35A6F0215E5F62005CC806 /* xmldom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmldom.cpp; path = ../../../../../DesktopEditor/xml/src/xmldom.cpp; sourceTree = "<group>"; };
+		8A35A6F1215E5F62005CC806 /* xmllight_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmllight_private.h; path = ../../../../../DesktopEditor/xml/src/xmllight_private.h; sourceTree = "<group>"; };
+		8A35A6F2215E5F62005CC806 /* xmllight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmllight.cpp; path = ../../../../../DesktopEditor/xml/src/xmllight.cpp; sourceTree = "<group>"; };
 		8A9FAC22207772CC007787F6 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = icu/icu.xcodeproj; sourceTree = "<group>"; };
 		8ADB5F4120C52EFE00B72D37 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -490,7 +482,6 @@
 			files = (
 				8A9FAC2B207772E1007787F6 /* libicu.a in Frameworks */,
 				696DD7CF1F5D98220021D0F3 /* libOfficeCryptReader.a in Frameworks */,
-				691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */,
 				6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */,
 				6967B10A1E27A41B00A129E2 /* libPdfWriter.a in Frameworks */,
 				6967B0D41E27A36E00A129E2 /* libHtmlFile.a in Frameworks */,
@@ -526,7 +517,6 @@
 			children = (
 				8A9FAC22207772CC007787F6 /* icu.xcodeproj */,
 				696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */,
-				691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */,
 				6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */,
 				6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */,
 				6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */,
@@ -581,14 +571,6 @@
 			isa = PBXGroup;
 			children = (
 				17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		691A8BCC1E2FA67E00DCB54A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				691A8BD01E2FA67E00DCB54A /* liblibxml2.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -668,6 +650,7 @@
 		6967AFA51E27918600A129E2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				8A35A6EF215E5F4A005CC806 /* XmlUtils */,
 				6967B1181E27A9D500A129E2 /* OfficeFileFormatChecker */,
 				6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */,
 				6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */,
@@ -815,6 +798,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8A35A6EF215E5F4A005CC806 /* XmlUtils */ = {
+			isa = PBXGroup;
+			children = (
+				8A35A6F0215E5F62005CC806 /* xmldom.cpp */,
+				8A35A6F1215E5F62005CC806 /* xmllight_private.h */,
+				8A35A6F2215E5F62005CC806 /* xmllight.cpp */,
+				8A35A6EC215E5F46005CC806 /* xmlutils.h */,
+			);
+			name = XmlUtils;
+			sourceTree = "<group>";
+		};
 		8A9FAC23207772CC007787F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -833,6 +827,8 @@
 				6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */,
 				8ADB5F4220C52EFE00B72D37 /* version.h in Headers */,
 				6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */,
+				8A35A6F4215E5F62005CC806 /* xmllight_private.h in Headers */,
+				8A35A6EE215E5F46005CC806 /* xmlutils.h in Headers */,
 				6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */,
 				6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */,
 				17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */,
@@ -856,7 +852,6 @@
 			dependencies = (
 				8A9FAC2A207772D9007787F6 /* PBXTargetDependency */,
 				696DD7D11F5D98270021D0F3 /* PBXTargetDependency */,
-				691A8BD21E2FA68900DCB54A /* PBXTargetDependency */,
 				6967B1D01E27B9D000A129E2 /* PBXTargetDependency */,
 				6967B10C1E27A42500A129E2 /* PBXTargetDependency */,
 				6967B0D31E27A36800A129E2 /* PBXTargetDependency */,
@@ -960,10 +955,6 @@
 					ProjectRef = 69415FBA1CB5243F003E771B /* libpsd.xcodeproj */;
 				},
 				{
-					ProductGroup = 691A8BCC1E2FA67E00DCB54A /* Products */;
-					ProjectRef = 691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */;
-				},
-				{
 					ProductGroup = 69DA322D1CEE08DC00E10AF0 /* Products */;
 					ProjectRef = 69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */;
 				},
@@ -1030,13 +1021,6 @@
 			fileType = archive.ar;
 			path = libASCOfficeDocxFile2Lib_ios.a;
 			remoteRef = 17E17F5A1AC457CD00BEA2EA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		691A8BD01E2FA67E00DCB54A /* liblibxml2.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = liblibxml2.a;
-			remoteRef = 691A8BCF1E2FA67E00DCB54A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		69415F241CB51C2A003E771B /* libOfficeUtils.a */ = {
@@ -1252,7 +1236,9 @@
 			files = (
 				17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */,
 				6967B1101E27A65600A129E2 /* OfficeFileFormatChecker2.cpp in Sources */,
+				8A35A6F3215E5F62005CC806 /* xmldom.cpp in Sources */,
 				6967BEB01E27D16A00A129E2 /* ASCConverters_ios.cpp in Sources */,
+				8A35A6F5215E5F62005CC806 /* xmllight.cpp in Sources */,
 				6967AFB01E2793A500A129E2 /* cextracttools.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1264,11 +1250,6 @@
 			isa = PBXTargetDependency;
 			name = ASCOfficeDocxFile2Lib_ios;
 			targetProxy = 17C8DEDB1ACD6A3900902C85 /* PBXContainerItemProxy */;
-		};
-		691A8BD21E2FA68900DCB54A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = libxml2;
-			targetProxy = 691A8BD11E2FA68900DCB54A /* PBXContainerItemProxy */;
 		};
 		69415F261CB51C32003E771B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1522,9 +1503,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
 					PPTX_DEF,
 					PPT_DEF,
 					ENABLE_PPT_TO_PPTX_CONVERT,
@@ -1571,9 +1549,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
 					PPTX_DEF,
 					PPT_DEF,
 					ENABLE_PPT_TO_PPTX_CONVERT,

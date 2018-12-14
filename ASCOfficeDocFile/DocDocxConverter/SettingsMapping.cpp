@@ -32,9 +32,38 @@
 
 
 #include "SettingsMapping.h"
+#include "../../OfficeCryptReader/source/CryptTransform.h"
 
 namespace DocFileFormat
 {
+	std::string DecodeBase64(const std::string & value)
+	{
+		int nLength = 0;
+		unsigned char *pData = NULL;
+		std::string result;
+
+		NSFile::CBase64Converter::Decode(value.c_str(), value.length(), pData, nLength);
+		if (pData)
+		{
+			result = std::string((char*)pData, nLength);
+			delete []pData; pData = NULL;
+		}
+		return result;
+	}
+	std::wstring EncodeBase64(const std::string & value)
+	{
+		int nLength = 0;
+		char *pData = NULL;
+		std::string result;
+
+		NSFile::CBase64Converter::Encode((BYTE*)value.c_str(), value.length(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
+		if (pData)
+		{
+			result = std::string(pData, nLength);
+			delete []pData; pData = NULL;
+		}
+		return std::wstring(result.begin(), result.end());
+	}
 	SettingsMapping::SettingsMapping (ConversionContext* ctx):  PropertiesMapping(&m_oXmlWriter)
 	{
 		_ctx = ctx;
@@ -49,11 +78,39 @@ namespace DocFileFormat
 		//start w:settings
 		m_oXmlWriter.WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?"  );
 		m_oXmlWriter.WriteNodeBegin( L"w:settings",  TRUE );
-
 		//write namespaces
 		m_oXmlWriter.WriteAttribute( L"xmlns:w",  OpenXmlNamespaces::WordprocessingML );
 		m_oXmlWriter.WriteNodeEnd( L"",  TRUE, FALSE );
 
+		if (_ctx->_doc->FIB->m_FibBase.fWriteReservation)
+		{
+			m_oXmlWriter.WriteNodeBegin( L"w:writeProtection",  TRUE );
+			WideString* passw = static_cast<WideString*>(_ctx->_doc->AssocNames->operator[]( 17 ));
+			if (passw && false == passw->empty())
+			{
+				CRYPT::_ecmaWriteProtectData data;
+				
+				CRYPT::ECMAWriteProtect protect;
+				protect.SetCryptData(data);
+				protect.SetPassword(*passw);
+
+				protect.Generate();
+				protect.GetCryptData(data);
+
+				//m_oXmlWriter.WriteAttribute	( L"w:cryptProviderType", L"rsaAES");
+				//m_oXmlWriter.WriteAttribute	( L"w:cryptAlgorithmSid", 14); //sha-512
+				//m_oXmlWriter.WriteAttribute	( L"w:cryptAlgorithmType", L"typeAny");
+				//m_oXmlWriter.WriteAttribute	( L"w:cryptAlgorithmClass", L"hash");
+				//m_oXmlWriter.WriteAttribute	( L"w:cryptSpinCount", data.spinCount);
+				//m_oXmlWriter.WriteAttribute	( L"w:hash", EncodeBase64(data.hashValue));
+				//m_oXmlWriter.WriteAttribute	( L"w:salt", EncodeBase64(data.saltValue));
+				m_oXmlWriter.WriteAttribute	( L"w:algorithmName", L"SHA-512");
+				m_oXmlWriter.WriteAttribute	( L"w:spinCount", data.spinCount);
+				m_oXmlWriter.WriteAttribute	( L"w:hashValue", EncodeBase64(data.hashValue));
+				m_oXmlWriter.WriteAttribute	( L"w:saltValue", EncodeBase64(data.saltValue));
+			}
+			m_oXmlWriter.WriteNodeEnd( L"",  TRUE, TRUE );
+		}
 		//zoom
 		m_oXmlWriter.WriteNodeBegin	( L"w:zoom",  TRUE );
 		m_oXmlWriter.WriteAttribute	( L"w:percent",  FormatUtils::IntToWideString( dop->wScaleSaved > 0 ? dop->wScaleSaved : 100 ) );

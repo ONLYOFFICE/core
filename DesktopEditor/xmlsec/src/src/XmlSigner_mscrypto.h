@@ -11,6 +11,18 @@
 #include "../../../common/File.h"
 #include "../../../common/BigInteger.h"
 
+#define ALG_SID_GR3411                  30
+#define ALG_SID_GR3411_2012_256			33
+#define ALG_SID_GR3411_2012_512			34
+
+#define CALG_GR3411             (ALG_CLASS_HASH | ALG_TYPE_ANY | ALG_SID_GR3411)
+#define CALG_GR3411_2012_256    (ALG_CLASS_HASH | ALG_TYPE_ANY | ALG_SID_GR3411_2012_256)
+#define CALG_GR3411_2012_512    (ALG_CLASS_HASH | ALG_TYPE_ANY | ALG_SID_GR3411_2012_512)
+
+#define PROV_GOST_2001_DH               75
+#define PROV_GOST_2012_256              80
+#define PROV_GOST_2012_512              81
+
 #ifdef MS_CRYPTO_PRIVATE
 namespace NSMSCryptoPrivate
 {
@@ -157,6 +169,19 @@ public:
         if (!m_context)
             return L"";
 
+        DWORD dwNameLen = CertGetNameStringW(m_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, NULL, NULL, 0);
+        wchar_t* pNameData = new wchar_t[dwNameLen];
+        CertGetNameStringW(m_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, NULL, pNameData, dwNameLen);
+        std::wstring sName(pNameData);
+        RELEASEARRAYOBJECTS(pNameData);
+        return sName;
+    }
+
+    virtual std::wstring GetIssuerName()
+    {
+        if (!m_context)
+            return L"";
+
         DWORD dwNameLen = CertGetNameStringW(m_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, NULL, 0);
         wchar_t* pNameData = new wchar_t[dwNameLen];
         CertGetNameStringW(m_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, pNameData, dwNameLen);
@@ -231,6 +256,16 @@ public:
             algs.push_back(OOXML_HASH_ALG_SHA384);
         else if ("1.2.840.113549.1.1.13" == sAlg)
             algs.push_back(OOXML_HASH_ALG_SHA512);
+        else if ("1.2.643.2.2.3" == sAlg)
+        {
+            std::string sHashAlg = m_context->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId;
+            if ("1.2.643.2.2.20" == sHashAlg || "1.2.643.2.2.19" == sHashAlg)
+                algs.push_back(OOXML_HASH_ALG_GOST_GR3411);
+            else if ("1.2.643.7.1.1.1.1" == sHashAlg)
+                algs.push_back(OOXML_HASH_ALG_GOST_GR3411_2012_256);
+            else if ("1.2.643.7.1.1.1.2" == sHashAlg)
+                algs.push_back(OOXML_HASH_ALG_GOST_GR3411_2012_512);
+        }
         else
             algs.push_back(OOXML_HASH_ALG_SHA1);
 
@@ -239,7 +274,7 @@ public:
         else
             m_alg = algs[0];
 
-        m_alg = OOXML_HASH_ALG_SHA1;
+        //m_alg = OOXML_HASH_ALG_SHA1;
         return algs;
     }
     int GetHashAlg()
@@ -247,6 +282,43 @@ public:
         if (m_alg == OOXML_HASH_ALG_INVALID)
             GetHashAlgs();
         return m_alg;
+    }
+
+    bool IsGOST()
+    {
+        if (m_alg == OOXML_HASH_ALG_INVALID)
+            GetHashAlgs();
+
+        switch (m_alg)
+        {
+        case OOXML_HASH_ALG_GOST_GR3411:
+        case OOXML_HASH_ALG_GOST_GR3411_2012_256:
+        case OOXML_HASH_ALG_GOST_GR3411_2012_512:
+            return true;
+        default:
+            break;
+        }
+        return false;
+    }
+
+    int GetGOSTProviderType()
+    {
+        if (!IsGOST())
+            return PROV_RSA_FULL;
+
+        switch (m_alg)
+        {
+        case OOXML_HASH_ALG_GOST_GR3411:
+            return PROV_GOST_2001_DH;
+        case OOXML_HASH_ALG_GOST_GR3411_2012_256:
+            return PROV_GOST_2012_256;
+        case OOXML_HASH_ALG_GOST_GR3411_2012_512:
+            return PROV_GOST_2012_512;
+        default:
+            break;
+        }
+
+        return PROV_RSA_FULL;
     }
 
 public:
@@ -302,7 +374,11 @@ public:
             if (!bResult)
             {
                 CryptReleaseContext(hCryptProv, 0);
-                if (!CryptAcquireContextW(&hCryptProv, info->pwszContainerName, NULL, PROV_RSA_AES, 0))
+                int nProvType = PROV_RSA_AES;
+                if (IsGOST())
+                    nProvType = GetGOSTProviderType();
+
+                if (!CryptAcquireContextW(&hCryptProv, info->pwszContainerName, NULL, nProvType, 0))
                 {
                     CryptReleaseContext(hCryptProv, 0);
                     free(info);
@@ -397,6 +473,21 @@ public:
             case OOXML_HASH_ALG_SHA512:
             {
                 dwProvType = PROV_RSA_AES;
+                break;
+            }
+            case OOXML_HASH_ALG_GOST_GR3411:
+            {
+                dwProvType = PROV_GOST_2001_DH;
+                break;
+            }
+            case OOXML_HASH_ALG_GOST_GR3411_2012_256:
+            {
+                dwProvType = PROV_GOST_2012_256;
+                break;
+            }
+            case OOXML_HASH_ALG_GOST_GR3411_2012_512:
+            {
+                dwProvType = PROV_GOST_2012_512;
                 break;
             }
             default:
@@ -495,6 +586,21 @@ public:
             case OOXML_HASH_ALG_SHA512:
             {
                 dwProvType = PROV_RSA_AES;
+                break;
+            }
+            case OOXML_HASH_ALG_GOST_GR3411:
+            {
+                dwProvType = PROV_GOST_2001_DH;
+                break;
+            }
+            case OOXML_HASH_ALG_GOST_GR3411_2012_256:
+            {
+                dwProvType = PROV_GOST_2012_256;
+                break;
+            }
+            case OOXML_HASH_ALG_GOST_GR3411_2012_512:
+            {
+                dwProvType = PROV_GOST_2012_512;
                 break;
             }
             default:
@@ -616,6 +722,12 @@ private:
             return CALG_SHA_512;
         case OOXML_HASH_ALG_SHA224:
             return CALG_SHA1;
+        case OOXML_HASH_ALG_GOST_GR3411:
+            return CALG_GR3411;
+        case OOXML_HASH_ALG_GOST_GR3411_2012_256:
+            return CALG_GR3411_2012_256;
+        case OOXML_HASH_ALG_GOST_GR3411_2012_512:
+            return CALG_GR3411_2012_512;
         default:
             return CALG_SHA1;
         }

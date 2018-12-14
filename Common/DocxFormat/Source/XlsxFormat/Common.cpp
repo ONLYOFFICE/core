@@ -29,6 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#ifdef __ANDROID__
+#include <gcvt.h>
+#endif
+
 #include "CommonInclude.h"
 #include "Common.h"
 

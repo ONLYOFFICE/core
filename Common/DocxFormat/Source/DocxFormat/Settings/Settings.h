@@ -2134,20 +2134,28 @@ namespace OOX
 						switch ( wsChar2 )
 						{
 						case 'a':
-							if      ( _T("w:algorithmName") == wsName ) m_oAlgorithmName = oReader.GetText();
+							if      ( L"w:algorithmName" == wsName ) m_oAlgorithmName = oReader.GetText();
+							break;
+						case 'c':
+							if      ( L"w:cryptProviderType"	== wsName ) m_oCryptProviderType	= oReader.GetText();
+							else if	( L"w:cryptAlgorithmSid"	== wsName ) m_oAlgorithmName		= oReader.GetText();
+							else if	( L"w:cryptAlgorithmType"	== wsName ) m_oCryptAlgorithmType	= oReader.GetText();
+							else if	( L"w:cryptAlgorithmClass"	== wsName ) m_oCryptAlgorithmClass	= oReader.GetText();
+							else if	( L"w:cryptSpinCount"		== wsName ) m_oSpinCount			= oReader.GetText();
 							break;
 						case 'h':
-							if      ( _T("w:hashValue")     == wsName ) m_sHashValue     = oReader.GetText();
+							if      ( L"w:hashValue"	== wsName ) m_sHashValue     = oReader.GetText();
+							else if	( L"w:hash"			== wsName ) m_sHashValue     = oReader.GetText();
 							break;
 						case 'r':
-							if      ( _T("w:recommended")   == wsName ) m_oRecommended   = oReader.GetText();
+							if      ( L"w:recommended"   == wsName ) m_oRecommended   = oReader.GetText();
 							break;
 						case 's':
-							if      ( _T("w:saltValue")     == wsName ) m_sSaltValue     = oReader.GetText();
-							else if ( _T("w:spinCount")     == wsName ) m_oSpinCount     = oReader.GetText();
+							if      ( L"w:saltValue"	== wsName ) m_sSaltValue     = oReader.GetText();
+							else if ( L"w:salt"			== wsName ) m_sSaltValue     = oReader.GetText();
+							else if ( L"w:spinCount"	== wsName ) m_oSpinCount     = oReader.GetText();
 							break;
 						}
-
 					}
 
 					if ( !oReader.MoveToNextAttribute() )
@@ -2161,14 +2169,14 @@ namespace OOX
 			}
 
 		public:
+			nullable<std::wstring>	m_oCryptProviderType;
+			nullable<std::wstring>	m_oCryptAlgorithmType;
+			nullable<std::wstring>	m_oCryptAlgorithmClass;
 
-			// TO DO: Добавить атрибуты из 9.7.2.5 Part4
-
-			// Attributes
 			nullable<SimpleTypes::CCryptAlgoritmName<>> m_oAlgorithmName;
-            nullable<std::wstring>                           m_sHashValue;
+            nullable<std::wstring>						m_sHashValue;
 			nullable<SimpleTypes::COnOff<>>             m_oRecommended;
-            nullable<std::wstring>                           m_sSaltValue;
+            nullable<std::wstring>						m_sSaltValue;
 			nullable<SimpleTypes::CDecimalNumber<>>     m_oSpinCount;
 		};
 		//--------------------------------------------------------------------------------

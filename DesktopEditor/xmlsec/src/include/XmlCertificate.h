@@ -12,6 +12,10 @@
 #define OOXML_HASH_ALG_SHA384       4
 #define OOXML_HASH_ALG_SHA512       5
 
+#define OOXML_HASH_ALG_GOST_GR3411          10
+#define OOXML_HASH_ALG_GOST_GR3411_2012_256 11
+#define OOXML_HASH_ALG_GOST_GR3411_2012_512 12
+
 #define OPEN_SSL_WARNING_OK         0
 #define OPEN_SSL_WARNING_ERR        1
 #define OPEN_SSL_WARNING_ALL_OK     2
@@ -91,6 +95,7 @@ public:
 public:
     virtual std::string GetNumber()             = 0;
     virtual std::wstring GetSignerName()        = 0;
+    virtual std::wstring GetIssuerName()        = 0;
 
     virtual std::string GetCertificateBase64()  = 0;
     virtual std::string GetCertificateHash()    = 0;
@@ -110,6 +115,8 @@ public:
 
     virtual std::vector<int> GetHashAlgs()                                              = 0;
     virtual int GetHashAlg()                                                            = 0;
+
+    virtual bool IsGOST()                                                               = 0;
 
 public:
     virtual int ShowSelectDialog(void* parent = NULL)   = 0;

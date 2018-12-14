@@ -146,7 +146,7 @@ private:
 #else
 #include <stdlib.h>
 
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
 #include <new>
 #endif
 

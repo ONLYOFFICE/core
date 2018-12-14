@@ -585,7 +585,13 @@ void ods_conversion_context::end_drawings()
 {
 	current_table().drawing_context()->clear();
 }
+void ods_conversion_context::add_external_reference(const std::wstring & ref)
+{
+	ods_external_state external;
 
+	external.ref = ref;
+	externals_.push_back(external);
+}
 double ods_conversion_context::convert_symbol_width(double val)
 {
 	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;

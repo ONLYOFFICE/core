@@ -244,7 +244,7 @@ namespace BinXlsxRW
 			else if(c_oSer_TablePart::TableStyleInfo == type)
 			{
 				pTable->m_oTableStyleInfo.Init();
-				READ2_DEF(length, res, this->ReadTableStyleInfo, pTable->m_oTableStyleInfo.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadTableStyleInfo, pTable->m_oTableStyleInfo.GetPointer());
 			}
 			else if(c_oSer_TablePart::AltTextTable == type)
 			{
@@ -339,17 +339,17 @@ namespace BinXlsxRW
 			else if(c_oSer_FilterColumn::DynamicFilter == type)
 			{
 				pFilterColumn->m_oDynamicFilter.Init();
-				READ2_DEF(length, res, this->ReadDynamicFilter, pFilterColumn->m_oDynamicFilter.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadDynamicFilter, pFilterColumn->m_oDynamicFilter.GetPointer());
 			}
 			else if(c_oSer_FilterColumn::ColorFilter == type)
 			{
 				pFilterColumn->m_oColorFilter.Init();
-				READ2_DEF(length, res, this->ReadColorFilter, pFilterColumn->m_oColorFilter.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColorFilter, pFilterColumn->m_oColorFilter.GetPointer());
 			}
 			else if(c_oSer_FilterColumn::Top10 == type)
 			{
 				pFilterColumn->m_oTop10.Init();
-				READ2_DEF(length, res, this->ReadTop10, pFilterColumn->m_oTop10.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadTop10, pFilterColumn->m_oTop10.GetPointer());
 			}
 			else if(c_oSer_FilterColumn::HiddenButton == type)
 			{
@@ -378,7 +378,7 @@ namespace BinXlsxRW
 			else if(c_oSer_FilterColumn::DateGroupItem == type)
 			{
 				OOX::Spreadsheet::CDateGroupItem* pDateGroupItem = new OOX::Spreadsheet::CDateGroupItem();
-				READ2_DEF(length, res, this->ReadDateGroupItem, pDateGroupItem);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadDateGroupItem, pDateGroupItem);
 				pFilters->m_arrItems.push_back(pDateGroupItem);
 			}
 			else if(c_oSer_FilterColumn::FiltersBlank == type)
@@ -470,7 +470,7 @@ namespace BinXlsxRW
 			if(c_oSer_CustomFilters::CustomFilter == type)
 			{
 				OOX::Spreadsheet::CCustomFilter* pCustomFilter = new OOX::Spreadsheet::CCustomFilter();
-				READ2_DEF(length, res, this->ReadCustomFiltersItem, pCustomFilter);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadCustomFiltersItem, pCustomFilter);
 				pCustomFilters->m_arrItems.push_back(pCustomFilter);
 			}
 			else
@@ -593,7 +593,7 @@ namespace BinXlsxRW
 			if(c_oSer_SortState::SortCondition == type)
 			{
 				OOX::Spreadsheet::CSortCondition* pSortCondition = new OOX::Spreadsheet::CSortCondition();
-				READ2_DEF(length, res, this->ReadSortCondition, pSortCondition);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadSortCondition, pSortCondition);
 				pSortState->m_arrItems.push_back(pSortCondition);
 			}
 			else
@@ -783,7 +783,7 @@ namespace BinXlsxRW
 			if(c_oSerSharedStringTypes::RPr == type)
 			{
 				pRun->m_oRPr.Init();
-				READ2_DEF(length, res, this->ReadRPr, pRun->m_oRPr.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadRPr, pRun->m_oRPr.GetPointer());
 			}
 			else if(c_oSerSharedStringTypes::Text == type)
 			{
@@ -813,7 +813,7 @@ namespace BinXlsxRW
 			else if(c_oSerFontTypes::Color == type)
 			{
 				pFont->m_oColor.Init();
-				READ2_DEF(length, res, this->ReadColor, pFont->m_oColor.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pFont->m_oColor.GetPointer());
 			}
 			else if(c_oSerFontTypes::Italic == type)
 			{
@@ -979,37 +979,37 @@ namespace BinXlsxRW
 			if(c_oSerBorderTypes::Bottom == type)
 			{
 				pBorder->m_oBottom.Init();
-				READ2_DEF(length, res, this->ReadBorderProp, pBorder->m_oBottom.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oBottom.GetPointer());
 			}
 			else if(c_oSerBorderTypes::Diagonal == type)
 			{
 				pBorder->m_oDiagonal.Init();
-				READ2_DEF(length, res, this->ReadBorderProp, pBorder->m_oDiagonal.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oDiagonal.GetPointer());
 			}
 			else if(c_oSerBorderTypes::End == type)
 			{
 				pBorder->m_oEnd.Init();
-				READ2_DEF(length, res, this->ReadBorderProp, pBorder->m_oEnd.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oEnd.GetPointer());
 			}
 			else if(c_oSerBorderTypes::Horizontal == type)
 			{
 				pBorder->m_oHorizontal.Init();
-				READ2_DEF(length, res, this->ReadBorderProp, pBorder->m_oHorizontal.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oHorizontal.GetPointer());
 			}
 			else if(c_oSerBorderTypes::Start == type)
 			{
 				pBorder->m_oStart.Init();
-				READ2_DEF(length, res, this->ReadBorderProp, pBorder->m_oStart.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oStart.GetPointer());
 			}
 			else if(c_oSerBorderTypes::Top == type)
 			{
 				pBorder->m_oTop.Init();
-				READ2_DEF(length, res, this->ReadBorderProp, pBorder->m_oTop.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oTop.GetPointer());
 			}
 			else if(c_oSerBorderTypes::Vertical == type)
 			{
 				pBorder->m_oVertical.Init();
-				READ2_DEF(length, res, this->ReadBorderProp, pBorder->m_oVertical.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oVertical.GetPointer());
 			}
 			else if(c_oSerBorderTypes::DiagonalDown == type)
 			{
@@ -1039,7 +1039,7 @@ namespace BinXlsxRW
 			else if(c_oSerBorderPropTypes::Color == type)
 			{
 				pBorderProp->m_oColor.Init();
-				READ2_DEF(length, res, this->ReadColor, pBorderProp->m_oColor.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pBorderProp->m_oColor.GetPointer());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1090,7 +1090,7 @@ namespace BinXlsxRW
 			if(c_oSerFillTypes::PatternFillBgColor == type)
 			{
 				pPatternFill->m_oFgColor.Init();
-				READ2_DEF(length, res, this->ReadColor, pPatternFill->m_oFgColor.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oFgColor.GetPointer());
 				pPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeSolid);
 			}
 			else
@@ -1103,7 +1103,7 @@ namespace BinXlsxRW
 			if(c_oSerStylesTypes::Font == type)
 			{
 				OOX::Spreadsheet::CFont* pFont = new OOX::Spreadsheet::CFont();
-				READ2_DEF(length, res, this->ReadFont, pFont);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadFont, pFont);
 				m_oStyles.m_oFonts->m_arrItems.push_back(pFont);
 			}
 			else
@@ -1122,7 +1122,7 @@ namespace BinXlsxRW
 			else if(c_oSerFontTypes::Color == type)
 			{
 				pFont->m_oColor.Init();
-				READ2_DEF(length, res, this->ReadColor, pFont->m_oColor.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pFont->m_oColor.GetPointer());
 			}
 			else if(c_oSerFontTypes::Italic == type)
 			{
@@ -1175,7 +1175,7 @@ namespace BinXlsxRW
 			if(c_oSerStylesTypes::NumFmt == type)
 			{
 				OOX::Spreadsheet::CNumFmt* pNumFmt = new OOX::Spreadsheet::CNumFmt();
-				READ2_DEF(length, res, this->ReadNumFmt, pNumFmt);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadNumFmt, pNumFmt);
 				m_oStyles.m_oNumFmts->m_arrItems.push_back(pNumFmt);
 			}
 			else
@@ -1207,7 +1207,7 @@ namespace BinXlsxRW
 			if(c_oSerStylesTypes::Xfs == type)
 			{
 				OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
-				READ2_DEF(length, res, this->ReadXfs, pXfs);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadXfs, pXfs);
 				m_oStyles.m_oCellStyleXfs->m_arrItems.push_back(pXfs);
 			}
 			else
@@ -1220,7 +1220,7 @@ namespace BinXlsxRW
 			if(c_oSerStylesTypes::Xfs == type)
 			{
 				OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
-				READ2_DEF(length, res, this->ReadXfs, pXfs);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadXfs, pXfs);
 				m_oStyles.m_oCellXfs->m_arrItems.push_back(pXfs);
 			}
 			else
@@ -1289,7 +1289,7 @@ namespace BinXlsxRW
 			else if(c_oSerXfsTypes::Aligment == type)
 			{
 				pXfs->m_oAligment.Init();
-				READ2_DEF(length, res, this->ReadAligment, pXfs->m_oAligment.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadAligment, pXfs->m_oAligment.GetPointer());
 			}
 			else if (c_oSerXfsTypes::XfId == type)
 			{
@@ -1364,7 +1364,7 @@ namespace BinXlsxRW
 			if(c_oSer_Dxf::Alignment == type)
 			{
 				pDxf->m_oAlignment.Init();
-				READ2_DEF(length, res, this->ReadAligment, pDxf->m_oAlignment.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadAligment, pDxf->m_oAlignment.GetPointer());
 			}
 			else if(c_oSer_Dxf::Border == type)
 			{
@@ -1379,12 +1379,12 @@ namespace BinXlsxRW
 			else if(c_oSer_Dxf::Font == type)
 			{
 				pDxf->m_oFont.Init();
-				READ2_DEF(length, res, this->ReadFont, pDxf->m_oFont.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadFont, pDxf->m_oFont.GetPointer());
 			}
 			else if(c_oSer_Dxf::NumFmt == type)
 			{
 				pDxf->m_oNumFmt.Init();
-				READ2_DEF(length, res, this->ReadNumFmt, pDxf->m_oNumFmt.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadNumFmt, pDxf->m_oNumFmt.GetPointer());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1517,7 +1517,7 @@ namespace BinXlsxRW
 			if(c_oSer_TableStyle::Element == type)
 			{
 				OOX::Spreadsheet::CTableStyleElement* pTableStyleElement = new OOX::Spreadsheet::CTableStyleElement();
-				READ2_DEF(length, res, this->ReadTableCustomStyleElement, pTableStyleElement);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadTableCustomStyleElement, pTableStyleElement);
 				pTableStyle->m_arrItems.push_back(pTableStyleElement);
 			}
 			else
@@ -1571,7 +1571,7 @@ namespace BinXlsxRW
 			if(c_oSerWorkbookTypes::WorkbookPr == type)
 			{
 				m_oWorkbook.m_oWorkbookPr.Init();
-				READ2_DEF(length, res, this->ReadWorkbookPr, poResult);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadWorkbookPr, poResult);
 			}
 			else if(c_oSerWorkbookTypes::BookViews == type)
 			{
@@ -1680,7 +1680,7 @@ namespace BinXlsxRW
 			if(c_oSerWorkbookTypes::WorkbookView == type)
 			{
 				OOX::Spreadsheet::CWorkbookView* pWorkbookView = new OOX::Spreadsheet::CWorkbookView();
-				READ2_DEF(length, res, this->ReadWorkbookView, pWorkbookView);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadWorkbookView, pWorkbookView);
 				m_oWorkbook.m_oBookViews->m_arrItems.push_back(pWorkbookView);
 			}
 			else
@@ -2316,7 +2316,7 @@ namespace BinXlsxRW
 			if(c_oSerWorksheetsTypes::Comment == type)
 			{
 				OOX::Spreadsheet::CCommentItem* pNewComment = new OOX::Spreadsheet::CCommentItem();
-				READ2_DEF(length, res, this->ReadComment, pNewComment);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadComment, pNewComment);
 
 				if(NULL != m_pCurWorksheet && pNewComment->IsValid())
 				{
@@ -2654,7 +2654,7 @@ namespace BinXlsxRW
 
 			OOX::Spreadsheet::CSheetFormatPr oSheetFormatPr;
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetFormatPr);
-				READ2_DEF(length, res, this->ReadSheetFormatPr, &oSheetFormatPr);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadSheetFormatPr, &oSheetFormatPr);
 			SEEK_TO_POS_END2();
 			if(!oSheetFormatPr.m_oDefaultRowHeight.IsInit())
 			{
@@ -2710,17 +2710,17 @@ namespace BinXlsxRW
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
 				OOX::Spreadsheet::CPrintOptions oPrintOptions;
-				READ2_DEF(length, res, this->ReadPrintOptions, &oPrintOptions);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadPrintOptions, &oPrintOptions);
 			SEEK_TO_POS_END(oPrintOptions);
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PageMargins);
 				OOX::Spreadsheet::CPageMargins oPageMargins;
-				READ2_DEF(length, res, this->ReadPageMargins, &oPageMargins);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadPageMargins, &oPageMargins);
 			SEEK_TO_POS_END(oPageMargins);
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PageSetup);
 				OOX::Spreadsheet::CPageSetup oPageSetup;
-				READ2_DEF(length, res, this->ReadPageSetup, &oPageSetup);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadPageSetup, &oPageSetup);
 			SEEK_TO_POS_END(oPageSetup);
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::HeaderFooter);
@@ -2885,7 +2885,7 @@ namespace BinXlsxRW
 			SEEK_TO_POS_END2();
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
-				READ2_DEF(length, res, this->ReadWorksheetProp, poResult);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
 			SEEK_TO_POS_END2();
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::PivotTable);
@@ -2958,7 +2958,7 @@ namespace BinXlsxRW
 			if(c_oSerWorksheetsTypes::Col == type)
 			{
 				OOX::Spreadsheet::CCol* pCol = new OOX::Spreadsheet::CCol();
-				READ2_DEF(length, res, this->ReadWorksheetCol, pCol);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetCol, pCol);
 				pCols->m_arrItems.push_back(pCol);
 			}
 			else
@@ -3260,7 +3260,7 @@ namespace BinXlsxRW
 			else if(c_oSer_SheetPr::TabColor == type)
 			{
 				pSheetPr->m_oTabColor.Init();
-				READ2_DEF(length, res, this->ReadColor, pSheetPr->m_oTabColor.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSheetPr->m_oTabColor.GetPointer());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -3717,22 +3717,22 @@ namespace BinXlsxRW
 			else if(c_oSer_DrawingType::From == type)
 			{
 				pCellAnchor->m_oFrom.Init();
-				READ2_DEF(length, res, this->ReadFromTo, pCellAnchor->m_oFrom.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadFromTo, pCellAnchor->m_oFrom.GetPointer());
 			}
 			else if(c_oSer_DrawingType::To == type)
 			{
 				pCellAnchor->m_oTo.Init();
-				READ2_DEF(length, res, this->ReadFromTo, pCellAnchor->m_oTo.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadFromTo, pCellAnchor->m_oTo.GetPointer());
 			}
 			else if(c_oSer_DrawingType::Pos == type)
 			{
 				pCellAnchor->m_oPos.Init();
-				READ2_DEF(length, res, this->ReadPos, pCellAnchor->m_oPos.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadPos, pCellAnchor->m_oPos.GetPointer());
 			}
 			else if(c_oSer_DrawingType::Ext == type)
 			{
 				pCellAnchor->m_oExt.Init();
-				READ2_DEF(length, res, this->ReadExt, pCellAnchor->m_oExt.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadExt, pCellAnchor->m_oExt.GetPointer());
 			}
 			else if(c_oSer_DrawingType::pptxDrawing == type)
 			{
@@ -3990,7 +3990,7 @@ namespace BinXlsxRW
 			if(c_oSerWorksheetsTypes::Row == type)
 			{
 				OOX::Spreadsheet::CRow oRow;
-				READ2_DEF(length, res, this->ReadRow, &oRow);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadRow, &oRow);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -4140,7 +4140,7 @@ namespace BinXlsxRW
 			else if(c_oSerCellTypes::Formula == type)
 			{
 				pCell->m_oFormula.Init();
-				READ2_DEF(length, res, this->ReadFormula, pCell->m_oFormula.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadFormula, pCell->m_oFormula.GetPointer());
 			}
 			else if(c_oSerCellTypes::Value == type)
 			{
@@ -4363,7 +4363,7 @@ namespace BinXlsxRW
 			else if(c_oSer_ConditionalFormattingRuleColorScale::Color == type)
 			{
 				OOX::Spreadsheet::CColor* pColor = new OOX::Spreadsheet::CColor();
-				READ2_DEF(length, res, this->ReadColor, pColor);
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pColor);
 				pColorScale->m_arrItems.push_back(pColor);
 			}
 			else
@@ -4392,7 +4392,7 @@ namespace BinXlsxRW
 			else if(c_oSer_ConditionalFormattingDataBar::Color == type)
 			{
 				pDataBar->m_oColor.Init();
-				READ2_DEF(length, res, this->ReadColor, pDataBar->m_oColor.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oColor.GetPointer());
 			}
 			else if(c_oSer_ConditionalFormattingDataBar::CFVO == type)
 			{
@@ -4568,42 +4568,42 @@ namespace BinXlsxRW
             else if(c_oSer_Sparkline::ColorSeries == type)
             {
                 pSparklineGroup->m_oColorSeries.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorSeries.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorSeries.GetPointer());
             }
             else if(c_oSer_Sparkline::ColorNegative == type)
             {
                 pSparklineGroup->m_oColorNegative.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorNegative.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorNegative.GetPointer());
             }
             else if(c_oSer_Sparkline::ColorAxis == type)
             {
                 pSparklineGroup->m_oColorAxis.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorAxis.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorAxis.GetPointer());
             }
             else if(c_oSer_Sparkline::ColorMarkers == type)
             {
                 pSparklineGroup->m_oColorMarkers.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorMarkers.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorMarkers.GetPointer());
             }
             else if(c_oSer_Sparkline::ColorFirst == type)
             {
                 pSparklineGroup->m_oColorFirst.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorFirst.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorFirst.GetPointer());
             }
             else if(c_oSer_Sparkline::ColorLast == type)
             {
                 pSparklineGroup->m_oColorLast.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorLast.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorLast.GetPointer());
             }
             else if(c_oSer_Sparkline::ColorHigh == type)
             {
                 pSparklineGroup->m_oColorHigh.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorHigh.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorHigh.GetPointer());
             }
             else if(c_oSer_Sparkline::ColorLow == type)
             {
                 pSparklineGroup->m_oColorLow.Init();
-				READ2_DEF(length, res, this->ReadColor, pSparklineGroup->m_oColorLow.GetPointer());
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorLow.GetPointer());
             }
             else if(c_oSer_Sparkline::Ref == type)
             {

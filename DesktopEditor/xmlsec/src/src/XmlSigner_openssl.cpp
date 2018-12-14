@@ -1,7 +1,7 @@
 #include "./XmlSigner_openssl.h"
 
 #include "../../../common/File.h"
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "../../../common/BigInteger.h"
 
 #include <unistd.h>
@@ -165,6 +165,11 @@ public:
             }
         }
         return sNameW;
+    }
+
+    std::wstring GetIssuerName()
+    {
+        return GetSignerName();
     }
 
     std::string GetCertificateBase64()
@@ -830,6 +835,11 @@ std::wstring CCertificate_openssl::GetSignerName()
     return m_internal->GetSignerName();
 }
 
+std::wstring CCertificate_openssl::GetIssuerName()
+{
+    return m_internal->GetIssuerName();
+}
+
 std::string CCertificate_openssl::GetCertificateBase64()
 {
     return m_internal->GetCertificateBase64();
@@ -912,6 +922,11 @@ std::vector<int> CCertificate_openssl::GetHashAlgs()
 int CCertificate_openssl::GetHashAlg()
 {
     return m_internal->GetHashAlg();
+}
+
+bool CCertificate_openssl::IsGOST()
+{
+    return false;
 }
 
 namespace NSOpenSSL

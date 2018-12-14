@@ -18,6 +18,8 @@ public:
 
     virtual std::wstring GetSignerName();
 
+    virtual std::wstring GetIssuerName();
+
     virtual std::string GetCertificateBase64();
 
     virtual std::string GetCertificateHash();
@@ -43,6 +45,8 @@ public:
 
     virtual std::vector<int> GetHashAlgs();
     virtual int GetHashAlg();
+
+    virtual bool IsGOST();
 
 public:
     virtual int ShowSelectDialog(void* parent = NULL);

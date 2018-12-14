@@ -48,6 +48,8 @@
 
 #include "../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
@@ -55,6 +57,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 namespace BinXlsxRW 
 {
@@ -4873,6 +4877,20 @@ namespace BinXlsxRW
 			OOX::Spreadsheet::CIndexedColors* pIndexedColors = NULL;
 			if( (oXlsx.m_pStyles) && oXlsx.m_pStyles->m_oColors.IsInit() && oXlsx.m_pStyles->m_oColors->m_oIndexedColors.IsInit())
 				pIndexedColors = oXlsx.m_pStyles->m_oColors->m_oIndexedColors.operator ->();
+
+			if(oXlsx.m_pApp)
+			{
+				nCurPos = this->WriteTableStart(c_oSerTableTypes::App);
+				oXlsx.m_pApp->ToPptxApp()->toPPTY(&oBufferedStream);
+				this->WriteTableEnd(nCurPos);
+			}
+
+			if(oXlsx.m_pCore)
+			{
+				nCurPos = this->WriteTableStart(c_oSerTableTypes::Core);
+				oXlsx.m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
+				this->WriteTableEnd(nCurPos);
+			}
 
 			if(oXlsx.m_pSharedStrings)
 			{

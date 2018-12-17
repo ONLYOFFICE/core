@@ -1,1 +1,0 @@
-fetch.bat >> 222.txt

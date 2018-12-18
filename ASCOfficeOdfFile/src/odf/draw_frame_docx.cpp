@@ -1116,7 +1116,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		return;
  
 	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-	int pos_replaicement	= href.find(L"ObjectReplacements"); 
+	size_t pos_replaicement	= href.find(L"ObjectReplacements"); 
 
     const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
 	if (!frame)
@@ -1125,7 +1125,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) return;
 
- 	if (pos_replaicement >= 0)
+	if (pos_replaicement != std::wstring::npos)
 	{
 		if (!Context.get_drawing_context().get_use_image_replace())
 			return; //skip replacement image (math, chart, ...)  - возможно записать как альтернативный контент - todooo ???
@@ -1352,10 +1352,10 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.reset_context_state();
 		
-	if (position_child_x1 >= 0 && position_child_y1 >= 0 )
+	if (position_child_x1 != 0x7fffffff && position_child_y1 != 0x7fffffff )
 		Context.get_drawing_context().set_position_child_group	(position_child_x1, position_child_y1);
 
-	if (position_child_x2 >= 0 && position_child_y2 >= 0 )
+	if (position_child_x2 != 0x7fffffff && position_child_y2 != 0x7fffffff )
 		Context.get_drawing_context().set_size_child_group	(position_child_x2, position_child_y2);
 
 	for (size_t i = 0; i < content_.size(); i++)
@@ -1649,7 +1649,7 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	if (!drawing) return;
 			
 	std::wstring extension;
-	detectObject(href, drawing->objectProgId, extension, drawing->type);
+	detectObject(objectPath, drawing->objectProgId, extension, drawing->type);
 
 	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
 

@@ -209,7 +209,7 @@ public:
     static const ElementType type		= typeDrawG;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	draw_g() : position_child_x1(-1), position_child_y1(-1), position_child_x2(-1), position_child_y2(-1) {}
+	draw_g() : position_child_x1(0x7fffffff), position_child_y1(0x7fffffff), position_child_x2(0x7fffffff), position_child_y2(0x7fffffff) {}
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 

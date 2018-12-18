@@ -163,48 +163,48 @@ void draw_g::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
 
 	if (group)
 	{		
-		int x=0, y=0, cx=0, cy=0;
+		int x = 0, y = 0, cx = 0, cy = 0;
 		x = get_value_emu(group->common_draw_attlists_.position_.svg_x_);
 		y = get_value_emu(group->common_draw_attlists_.position_.svg_y_);
 
 		cx = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
 		cy = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
 
-		if (position_child_x1 > x || position_child_x1 < 0) position_child_x1 = x;
-		if (position_child_y1 > y || position_child_y1 < 0) position_child_y1 = y;
+		if (position_child_x1 > x || position_child_x1 == 0x7fffffff) position_child_x1 = x;
+		if (position_child_y1 > y || position_child_y1 == 0x7fffffff) position_child_y1 = y;
 		
-		if (position_child_x2 < x + cx || position_child_x2 < 0) position_child_x2 = x + cx;
-		if (position_child_y2 < y + cy || position_child_y2 < 0) position_child_y2 = y + cy;
+		if (position_child_x2 < x + cx || position_child_x2 == 0x7fffffff) position_child_x2 = x + cx;
+		if (position_child_y2 < y + cy || position_child_y2 == 0x7fffffff) position_child_y2 = y + cy;
 	}
 	else if (frame)
 	{
-		int x=0, y=0, cx=0, cy=0;
+		int x = 0, y = 0, cx = 0, cy = 0;
 		x = get_value_emu(frame->common_draw_attlists_.position_.svg_x_);
 		y = get_value_emu(frame->common_draw_attlists_.position_.svg_y_);
 
 		cx = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
 		cy = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
 
-		if (position_child_x1 > x || position_child_x1 < 0) position_child_x1 = x;
-		if (position_child_y1 > y || position_child_y1 < 0) position_child_y1 = y;
+		if (position_child_x1 > x || position_child_x1 == 0x7fffffff) position_child_x1 = x;
+		if (position_child_y1 > y || position_child_y1 == 0x7fffffff) position_child_y1 = y;
 		
-		if (position_child_x2 < x + cx || position_child_x2 < 0) position_child_x2 = x + cx;
-		if (position_child_y2 < y + cy || position_child_y2 < 0) position_child_y2 = y + cy;
+		if (position_child_x2 < x + cx || position_child_x2 == 0x7fffffff) position_child_x2 = x + cx;
+		if (position_child_y2 < y + cy || position_child_y2 == 0x7fffffff) position_child_y2 = y + cy;
 	}
 	else if (shape)
 	{
-		int x=0, y=0, cx=0, cy=0;
+		int x = 0, y = 0, cx = 0, cy = 0;
 		x = get_value_emu(shape->common_draw_attlists_.position_.svg_x_);
 		y = get_value_emu(shape->common_draw_attlists_.position_.svg_y_);
 
 		cx = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
 		cy = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
 
-		if (position_child_x1 > x || position_child_x1 < 0) position_child_x1 = x;
-		if (position_child_y1 > y || position_child_y1 < 0) position_child_y1 = y;
+		if (position_child_x1 > x || position_child_x1 == 0x7fffffff) position_child_x1 = x;
+		if (position_child_y1 > y || position_child_y1 == 0x7fffffff) position_child_y1 = y;
 		
-		if (position_child_x2 < x + cx || position_child_x2 < 0) position_child_x2 = x + cx;
-		if (position_child_y2 < y + cy || position_child_y2 < 0) position_child_y2 = y + cy;
+		if (position_child_x2 < x + cx || position_child_x2 == 0x7fffffff) position_child_x2 = x + cx;
+		if (position_child_y2 < y + cy || position_child_y2 == 0x7fffffff) position_child_y2 = y + cy;
 	}
 }
 
@@ -355,6 +355,8 @@ void draw_object_ole::detectObject(const std::wstring &fileName, std::wstring &p
 	POLE::Storage *storage = new POLE::Storage(fileName.c_str());
 	if ((storage) && (storage->open(false, false) == true))
 	{
+		rels = oox::typeOleObject;
+
 		std::wstring prog;
 		POLE::Stream* pStream = new POLE::Stream(storage, L"CompObj");
 		if ((pStream) && (pStream->size() > 28))

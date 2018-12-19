@@ -574,11 +574,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
                       const graphic_format_properties				& graphicProperties,
 					  const std::vector<odf_reader::_property>		& additional)
 {
-    // TODO : recursive result!!!
-    const _CP_OPT(anchor_type) anchor = 
-        attlists_.shape_with_text_and_styles_.
-        common_text_anchor_attlist_.
-        type_;
+    const _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
 
 	//todooo пока не ясно как привязать к определеной странице в документе ...
 	//const _CP_OPT(unsigned int) anchor_page_number = 
@@ -588,6 +584,15 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
 
 	_CP_OPT(vertical_rel) styleVerticalRel  = graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
     _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
+
+	if (!styleVerticalRel && anchor)
+	{
+		switch(anchor->get_type())
+		{
+		case anchor_type::Paragraph:	styleVerticalRel = vertical_rel::Paragraph;	break;
+		case anchor_type::Page:			styleVerticalRel = vertical_rel::Page;		break;
+		}
+	}
 
 	_CP_OPT(double) dVal;	
 	GetProperty(additional, L"svg:translate_y", dVal);
@@ -817,14 +822,31 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	}
 
 	_CP_OPT(run_through)	styleRunThrough	= graphicProperties.style_run_through_;
+    _CP_OPT(anchor_type)	anchor			= attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
 	
 	drawing->styleHorizontalRel	= graphicProperties.common_horizontal_rel_attlist_.style_horizontal_rel_;
     drawing->styleHorizontalPos	= graphicProperties.common_horizontal_pos_attlist_.style_horizontal_pos_;
     drawing->styleVerticalPos	= graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
     drawing->styleVerticalRel	= graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
-
-    _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
-
+	
+	if (!drawing->styleVerticalRel && anchor)
+	{
+		switch(anchor->get_type())
+		{
+		case anchor_type::Paragraph:	drawing->styleVerticalRel = vertical_rel::Paragraph;	break;
+		case anchor_type::Page:			drawing->styleVerticalRel = vertical_rel::Page;			break;
+		case anchor_type::Char:			drawing->styleVerticalRel = vertical_rel::Char;			break;
+		}
+	}
+	if (!drawing->styleHorizontalRel && anchor)
+	{
+		switch(anchor->get_type())
+		{
+		case anchor_type::Paragraph:	drawing->styleHorizontalRel = horizontal_rel::Paragraph;	break;
+		case anchor_type::Page:			drawing->styleHorizontalRel = horizontal_rel::Page;			break;
+		case anchor_type::Char:			drawing->styleHorizontalRel = horizontal_rel::Char;			break;
+		}
+	}
 	int level_drawing = Context.get_drawing_context().get_current_level();
 
     if (drawing->parallel == 1 || anchor && anchor->get_type() == anchor_type::AsChar || level_drawing >1 )
@@ -887,7 +909,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
     }
 	drawing->number_wrapped_paragraphs = graphicProperties.style_number_wrapped_paragraphs_.
 									get_value_or( integer_or_nolimit( integer_or_nolimit::NoLimit) ).get_value();
-	if (anchor && anchor->get_type() == anchor_type::AsChar && drawing->posOffsetV< 0)
+	if (anchor && anchor->get_type() == anchor_type::AsChar && drawing->posOffsetV < 0)
 	{
 		drawing->posOffsetV = (int)(length(0.01, length::cm).get_value_unit(length::emu));
 	}

@@ -1094,7 +1094,11 @@ void CSvmFile::Read_META_BMPEX()
 
     Read_META_BMP(bitmap_info, &pBgraBuffer, &ulWidth, &ulHeight);
 
-     //иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
+   //     if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
+	{
+		bitmap_info.nWidth = ulWidth;
+	}
+	//иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
 
     if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
             bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
@@ -1166,7 +1170,7 @@ void CSvmFile::Read_META_BMPEXSCALE()
 
      //иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
 
-        if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
+   //     if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
 	{
 		bitmap_info.nWidth = ulWidth;
 	}
@@ -1240,7 +1244,7 @@ void CSvmFile::Read_META_BMPSCALE()
     Read_META_BMP(bitmap_info, &pBgraBuffer, &ulWidth, &ulHeight );
 
     //иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
-    if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
+    //if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
     {
         bitmap_info.nWidth = ulWidth;
     }

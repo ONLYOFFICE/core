@@ -253,15 +253,15 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				{
 					values.clear();
 				}
-				//else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
-				//{
-				//	names.push_back(L"vf");
-				//}
-				//else if (std::wstring::npos != shapeGeomPreset.find(L"pentagon"))
-				//{
-				//	names.push_back(L"hf");
-				//	names.push_back(L"vf");
-				//}
+				else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
+				{
+					names.push_back(L"vf");
+				}
+				else if (std::wstring::npos != shapeGeomPreset.find(L"pentagon"))
+				{
+					names.push_back(L"hf");
+					names.push_back(L"vf");
+				}
 				else if (std::wstring::npos != shapeGeomPreset.find(L"hexagon"))
 				{
 					names.push_back(L"adj");
@@ -521,26 +521,22 @@ void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & nam
 
 		_CP_OPT(double) dSkewY;
 		odf_reader::GetProperty(additional, L"svg:skewY", dSkewY);	
-
-		_CP_OPT(double) dRotateAngle;
 		
-		if (dRotate || dSkewX || dSkewY)
-		{
-			double tmp=0;
-			if (dRotate)tmp += *dRotate;
-			//if (dSkewX)tmp += *dSkewX;
-			//if (dSkewY)tmp += (*dSkewY) + 3.1415926;
-
-			dRotateAngle = tmp;
-		}
+		//if (dRotate)
+		//{
+		//	double new_x = (cx / 2 * cos(-(*dRotate)) - cy / 2 * sin(-(*dRotate)) ) - cx / 2;
+		//	double new_y = (cx / 2 * sin(-(*dRotate)) + cy / 2 * cos(-(*dRotate)) ) - cy / 2;
+		//	
+		//	x += new_x;
+		//	y += new_y;
+		//}
 		
 		CP_XML_NODE(xfrm)
 		{      
-			if (dRotateAngle)
+			if (dRotate)
 			{
-				double d =360 - dRotateAngle.get() * 180. / 3.14159265358979323846;
-				d *= 60000; //60 000 per 1 gr - 19.5.5 oox 
-				CP_XML_ATTR(L"rot", (int)d);
+				double d = 360 - dRotate.get() * 180. / 3.14159265358979323846;
+				CP_XML_ATTR(L"rot", (int)( d * 60000) ); //60 000 per 1 gr - 19.5.5 oox 
 			}
 			_CP_OPT(bool)bVal;
 			if (odf_reader::GetProperty(additional,L"flipH", bVal))

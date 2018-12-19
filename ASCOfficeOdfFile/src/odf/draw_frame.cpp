@@ -164,12 +164,29 @@ void draw_g::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
 	if (group)
 	{		
 		int x = 0, y = 0, cx = 0, cy = 0;
-		x = get_value_emu(group->common_draw_attlists_.position_.svg_x_);
-		y = get_value_emu(group->common_draw_attlists_.position_.svg_y_);
+		if (group->common_draw_attlists_.position_.svg_x_ && group->common_draw_attlists_.position_.svg_y_)
+		{
+			x = get_value_emu(group->common_draw_attlists_.position_.svg_x_);
+			y = get_value_emu(group->common_draw_attlists_.position_.svg_y_);
+		}
+		else
+		{
+			x = group->position_child_x1;
+			y = group->position_child_y1;
+		}
 
-		cx = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
-		cy = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
-
+		if (group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ && 
+			group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
+		{
+			cx = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
+			cy = get_value_emu(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
+		}
+		else
+		{
+			cx = group->position_child_x2 - group->position_child_x1;
+			cy = group->position_child_y2 - group->position_child_y1;
+		}
+		
 		if (position_child_x1 > x || position_child_x1 == 0x7fffffff) position_child_x1 = x;
 		if (position_child_y1 > y || position_child_y1 == 0x7fffffff) position_child_y1 = y;
 		

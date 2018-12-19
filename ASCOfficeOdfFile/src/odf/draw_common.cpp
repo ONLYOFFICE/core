@@ -619,7 +619,7 @@ void parse_string_to_points(std::wstring str, std::vector<length> & Points)
 	}
 }
 
-void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_property> & additional)
+void docx_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_property> & additional)
 {
 	std::vector<std::wstring> transforms;
 	
@@ -688,10 +688,10 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 		std::vector<std::wstring> transform;
 		boost::algorithm::split(transform, transforms[i], boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
-		if (transform.size()>1)//тока с аргументами
+		if (transform.size() > 1)//тока с аргументами
 		{
-			int res=0;
-			if ((res = transform[0].find(L"translate"))>=0)//перемещение
+			size_t res=0;
+			if ((res = transform[0].find(L"translate")) != std::wstring::npos)//перемещение
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -705,7 +705,7 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 					Context.get_drawing_context().set_translate(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"scale"))>=0)//масштабирование
+			else if ((res = transform[0].find(L"scale")) != std::wstring::npos)//масштабирование
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -718,19 +718,19 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 					Context.get_drawing_context().set_scale(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
+			else if ((res = transform[0].find(L"rotate")) != std::wstring::npos)//вращение
 			{
-				Context.get_drawing_context().set_rotate(boost::lexical_cast<double>(transform[1]));
+				Context.get_drawing_context().set_rotate(boost::lexical_cast<double>(transform[1]), true);
 			}
-			else if ((res = transform[0].find(L"skewX"))>=0)//сдвиг
+			else if ((res = transform[0].find(L"skewX")) != std::wstring::npos)//сдвиг
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
-				Context.get_drawing_context().set_property(_property(L"svg:skewX",angle));
+				Context.get_drawing_context().set_property(_property(L"svg:skewX", angle));
 			}
-			else if ((res = transform[0].find(L"skewY"))>=0)//сдвиг
+			else if ((res = transform[0].find(L"skewY")) != std::wstring::npos)//сдвиг
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
-				Context.get_drawing_context().set_property(_property(L"svg:skewY",angle));
+				Context.get_drawing_context().set_property(_property(L"svg:skewY", angle));
 			}
 		}
 	}
@@ -748,7 +748,7 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 		std::vector<std::wstring> transform;
 		boost::algorithm::split(transform, transforms[i], boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
-		if (transform.size()>1)//тока с аргументами
+		if (transform.size() > 1)//тока с аргументами
 		{
 			size_t res = 0;
 			if ((res = transform[0].find(L"translate")) != std::wstring::npos)//перемещение
@@ -781,8 +781,7 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 			}
 			else if ((res = transform[0].find(L"rotate")) != std::wstring::npos)//вращение
 			{
-				Context.get_slide_context().set_rotate( boost::lexical_cast<double>(transform[1]));
-				Context.get_slide_context().set_translate_rotate();
+				Context.get_slide_context().set_rotate( boost::lexical_cast<double>(transform[1]), true);
 			}
 			else if ((res = transform[0].find(L"skewX")) != std::wstring::npos)//вращение
 			{

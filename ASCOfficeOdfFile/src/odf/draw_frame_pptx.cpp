@@ -115,7 +115,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	if (common_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = common_draw_attlist_.draw_transform_.get();
-		pptx_convert_transforms(transformStr,Context);
+		pptx_convert_transforms(transformStr, Context);
 	}
 ////////////////////////////////////////
 	std::wstring Anchor;
@@ -125,7 +125,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		const double a_x_pt = common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
 		const double a_y_pt = common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
-		Context.get_slide_context().set_anchor(Anchor,a_x_pt,a_y_pt);
+		Context.get_slide_context().set_anchor(Anchor, a_x_pt, a_y_pt);
 	}
 //////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;

@@ -92,8 +92,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	if (common_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = common_draw_attlist_.draw_transform_.get();
-		pptx_convert_transforms(transformStr,Context);
-		//oox_convert_transforms(transformStr, additional_);
+		pptx_convert_transforms(transformStr, Context);
 	}
 ////////////////////////////////////////
 	std::wstring Anchor;

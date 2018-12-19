@@ -522,15 +522,6 @@ void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & nam
 		_CP_OPT(double) dSkewY;
 		odf_reader::GetProperty(additional, L"svg:skewY", dSkewY);	
 		
-		//if (dRotate)
-		//{
-		//	double new_x = (cx / 2 * cos(-(*dRotate)) - cy / 2 * sin(-(*dRotate)) ) - cx / 2;
-		//	double new_y = (cx / 2 * sin(-(*dRotate)) + cy / 2 * cos(-(*dRotate)) ) - cy / 2;
-		//	
-		//	x += new_x;
-		//	y += new_y;
-		//}
-		
 		CP_XML_NODE(xfrm)
 		{      
 			if (dRotate)

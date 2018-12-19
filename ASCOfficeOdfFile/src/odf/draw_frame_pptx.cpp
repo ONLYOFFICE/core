@@ -88,7 +88,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	common_shape_draw_attlist	&common_draw_attlist_		= common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_;
 	common_presentation_attlist	&common_presentation_attlist_= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
 
-    const int z_index					= common_draw_attlist_.draw_z_index_.get_value_or(0);
+    const unsigned int z_index			= common_draw_attlist_.draw_z_index_.get_value_or(0);
     const std::wstring name				= common_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring textStyleName	= common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 

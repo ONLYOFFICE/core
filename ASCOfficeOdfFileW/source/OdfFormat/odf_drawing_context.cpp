@@ -1854,7 +1854,7 @@ void odf_drawing_context::set_horizontal_pos(int align)
 }
 void odf_drawing_context::set_horizontal_pos(double offset_pt)
 {
-	impl_->anchor_settings_.style_horizontal_pos_svg_x_ = length(length(offset_pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->anchor_settings_.style_horizontal_pos_svg_x_ = length(length(offset_pt, length::pt).get_value_unit(length::cm), length::cm);
 	impl_->x = offset_pt;
 }
 void odf_drawing_context::set_default_wrap_style()

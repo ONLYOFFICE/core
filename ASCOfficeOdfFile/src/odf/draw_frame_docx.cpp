@@ -852,7 +852,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		if (!drawing->styleWrap)
 			drawing->styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
 
-        _CP_OPT(int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
+        _CP_OPT(unsigned int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
        
 		if (zIndex)//порядок отрисовки объектов
         {
@@ -936,14 +936,41 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	drawing->cx = get_value_emu(attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
     drawing->cy = get_value_emu(attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
 
+	_CP_OPT(double) dVal;
+	
+	GetProperty(drawing->additional, L"svg:rotate", dVal);
+	if (dVal)
+	{
+		double new_x = (drawing->cx / 2 * cos(-(*dVal)) - drawing->cy / 2 * sin(-(*dVal)) ) - drawing->cx / 2;
+		double new_y = (drawing->cx / 2 * sin(-(*dVal)) + drawing->cy / 2 * cos(-(*dVal)) ) - drawing->cy / 2;
+		
+		drawing->x += new_x;
+		drawing->y += new_y;
+	}	
+	
+	GetProperty(drawing->additional, L"svg:scale_x",dVal);
+	if (dVal)drawing->cx = (int)(0.5 + drawing->cx * dVal.get());
+	
+	GetProperty(drawing->additional, L"svg:scale_y",dVal);
+	if (dVal)drawing->cy = (int)(0.5 + drawing->cy * dVal.get());
+
+	GetProperty(drawing->additional, L"svg:translate_x", dVal);
+	if (dVal)
+	{
+		drawing->x += get_value_emu(dVal.get());
+	}
+	GetProperty(drawing->additional, L"svg:translate_y", dVal);
+	if (dVal)
+	{
+		drawing->y += get_value_emu(dVal.get());
+	}
+
 	if (drawing->cx < 0)	//frame textbox int WORD_EXAMPLE.odt = 45 inch !!!!
 	{
 		drawing->cx = -drawing->cx;
 		drawing->additional.push_back(_property(L"fit-to-size",	true));
 	}
  
-	if (drawing->cy < 0)
-		drawing->cy = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	if ((drawing->styleWrap) && (drawing->styleWrap->get_type() == style_wrap::Dynamic))	//автоподбор
 	{
@@ -988,34 +1015,6 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		//}
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-	_CP_OPT(double) dVal;
-	
-	GetProperty(drawing->additional, L"svg:scale_x",dVal);
-	if (dVal)drawing->cx = (int)(0.5 + drawing->cx * dVal.get());
-	
-	GetProperty(drawing->additional, L"svg:scale_y",dVal);
-	if (dVal)drawing->cy = (int)(0.5 + drawing->cy * dVal.get());
-
-	GetProperty(drawing->additional, L"svg:translate_x", dVal);
-	if (dVal)
-	{
-		drawing->x = get_value_emu(dVal.get());
-	}
-	GetProperty(drawing->additional, L"svg:translate_x", dVal);
-	if (dVal)
-	{
-		drawing->y = get_value_emu(dVal.get());
-	}
-
-	GetProperty(drawing->additional, L"svg:rotate", dVal);
-	if (dVal)
-	{
-		double new_x = (drawing->cx / 2 * cos(-(*dVal)) - drawing->cy / 2 * sin(-(*dVal)) ) - drawing->cx / 2;
-		double new_y = (drawing->cx / 2 * sin(-(*dVal)) + drawing->cy / 2 * cos(-(*dVal)) ) - drawing->cy / 2;
-		
-		drawing->x += new_x;
-		drawing->y += new_y;
-	}
 	if (drawing->inGroup && drawing->type != oox::typeGroupShape)
 	{
         _INT32 x_group_offset, y_group_offset;

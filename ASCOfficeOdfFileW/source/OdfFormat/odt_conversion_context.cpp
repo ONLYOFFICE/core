@@ -1509,7 +1509,7 @@ void odt_conversion_context::end_table_columns()
 void odt_conversion_context::start_table_header_rows()
 {
 	office_element_ptr elm;
-	create_element(L"table", L"table-header-rows",elm,this);
+	create_element(L"table", L"table-header-rows", elm, this);
 
 	text_context()->start_element(elm);
 }
@@ -1520,11 +1520,11 @@ void odt_conversion_context::end_table_header_rows()
 void odt_conversion_context::start_table_row(bool styled)
 {
 	office_element_ptr elm;
-	create_element(L"table", L"table-row",elm,this);
+	create_element(L"table", L"table-row", elm, this);
 
 	if (styled)
 	{
-		styles_context()->create_style(L"",odf_types::style_family::TableRow, true, false, -1);
+		styles_context()->create_style(L"", odf_types::style_family::TableRow, true, false, -1);
 	}
 	text_context()->start_element(elm);
 
@@ -1556,7 +1556,7 @@ void odt_conversion_context::end_table_cell()
 }
 void odt_conversion_context::end_table_row()
 {
-	for (int i=table_context()->current_column() ; i < table_context()->count_columns(); i++)
+	for (int i = table_context()->current_column() ; i < table_context()->count_columns(); i++)
 	{
 		add_default_cell();
 	}

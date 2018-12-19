@@ -37,7 +37,8 @@ public :
         }
 
         NSString* stringURL = StringWToNSString(m_sFileUrl);
-        NSURL  *url = [NSURL URLWithString:stringURL];
+        NSString *escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        NSURL  *url = [NSURL URLWithString:escapedURL];
         NSData *urlData = [NSData dataWithContentsOfURL:url];
         if ( urlData )
         {

@@ -103,7 +103,7 @@ public:
 
 	void set_translate	(double x_pt, double y_pt);
 	void set_scale		(double cx_pt, double cy_pt);
-	void set_rotate		(double angle);
+	void set_rotate		(double angle, bool translate = false);
 
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt, bool group = false);
 	void set_property	(odf_reader::_property p);

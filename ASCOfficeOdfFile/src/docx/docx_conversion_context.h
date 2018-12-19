@@ -188,14 +188,14 @@ public:
     }
 	void set_position_child_group(_INT32 x, _INT32 y)
 	{
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		if (groups_.back().x > x)	groups_.back().x = x;
 		if (groups_.back().y > y)	groups_.back().y = y;
 	}	
 	void set_size_child_group(_INT32 cx, _INT32 cy)
 	{
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		if (groups_.back().cx < cx)	groups_.back().cx = cx;
 		if (groups_.back().cy < cy)	groups_.back().cy = cy;
@@ -203,7 +203,7 @@ public:
 	void get_position_group(_INT32 & x, _INT32 & y)
 	{
 		x = y = 0;
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		x = groups_.back().x;
 		y = groups_.back().y;
@@ -211,7 +211,7 @@ public:
 	void get_size_group(_INT32 & cx, _INT32 & cy)
 	{
 		cx = cy = 0;
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		cx = groups_.back().cx;
 		cy = groups_.back().cy;

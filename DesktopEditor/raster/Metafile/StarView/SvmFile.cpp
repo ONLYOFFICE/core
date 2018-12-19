@@ -190,6 +190,9 @@ void CSvmFile::PlayMetaFile()
 			case META_ISECTRECTCLIPREGION_ACTION:	Read_META_SECTRECTCLIPREGION(); break;
 			case META_ISECTREGIONCLIPREGION_ACTION:	Read_META_SECTREGIONCLIPREGION(); break;
 
+                        case META_BMPEX_ACTION:                 Read_META_BMPEX(); break;
+                        case META_BMPEXSCALE_ACTION:		Read_META_BMPEXSCALE(); break;
+
 			case META_ROUNDRECT_ACTION:
 			case META_ELLIPSE_ACTION:
 			case META_ARC_ACTION:
@@ -199,8 +202,6 @@ void CSvmFile::PlayMetaFile()
 			case META_POINT_ACTION:
 
 			case META_BMPSCALEPART_ACTION:
-			case META_BMPEX_ACTION:
-			case META_BMPEXSCALE_ACTION:
 			case META_BMPEXSCALEPART_ACTION:
 			case META_MASK_ACTION:
 			case META_MASKSCALE_ACTION:
@@ -973,135 +974,306 @@ void CSvmFile::Read_META_RASTEROP()
 
 	
 }
-
 void CSvmFile::Read_META_BMP()
 {
+    TSvmBitmap bitmap_info;
 
+    BYTE *pBgraBuffer = NULL;
+    unsigned int ulWidth = 0, ulHeight = 0;
+
+    Read_META_BMP(bitmap_info, &pBgraBuffer, &ulWidth, &ulHeight );
+
+    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
+            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+    {
+        m_oBoundingBox.nRight = bitmap_info.nWidth;
+        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+    }
+
+    if (pBgraBuffer)
+    {
+        if ( m_pOutput)
+        {
+            m_pOutput->DrawBitmap( m_oCurrnetOffset.x, m_oCurrnetOffset.y, bitmap_info.nWidth, bitmap_info.nHeight, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+        }
+
+        delete []pBgraBuffer;
+
+        UpdateOutputDC();
+    }
+}
+void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
+{
+    unsigned int	nHeaderSize = 0;
+
+    unsigned int	nTmp32;
+    unsigned short	nTmp16 = 0;
+    bool                bRet = false;
+
+    m_oStream >> nTmp16;
+    m_oStream >> nHeaderSize;
+
+    if ( ( 0x4D42 == nTmp16 ) || ( 0x4142 == nTmp16 ) )
+    {
+        if ( 0x4142 == nTmp16 )
+        {
+            m_oStream.Skip( 12 );//не то !!!
+            m_oStream >> nTmp16;
+            m_oStream.Skip( 8 );
+            m_oStream >> nTmp32;
+            nHeaderSize = nTmp32 - 28UL;;
+            bRet = ( 0x4D42 == nTmp16 );
+        }
+        else
+        {
+            m_oStream.Skip( 4 );
+            m_oStream >> nTmp32;
+            nHeaderSize = nTmp32 - 14;
+        }
+    }
+
+    unsigned short	nColors;
+    BYTE*		pData = NULL;
+
+    m_oStream >> bitmap_info; //size = 40
+
+    int nBitCount = discretizeBitcount(bitmap_info.nBitCount);
+
+    if( nBitCount <= 8 )
+    {
+        if( bitmap_info.nColsUsed )
+            nColors = (USHORT) bitmap_info.nColsUsed;
+        else
+            nColors = ( 1 << bitmap_info.nBitCount );
+    }
+    else
+        nColors = 0;
+
+    if( ZCOMPRESS == bitmap_info.nCompression )
+    {
+        COfficeUtils OfficeUtils(NULL);
+
+        ULONG destSize, srcSize;
+        m_oStream >> srcSize >> destSize >> bitmap_info.nCompression;
+
+        BYTE*	srcBuf	= m_oStream.GetCurPtr();
+        BYTE*	destBuf = new BYTE[destSize];
+
+        if (destSize > 0 && m_pOutput && destBuf )
+        {
+            if (OfficeUtils.Uncompress(destBuf, &destSize, srcBuf, srcSize) != S_OK)
+            {
+                delete []destBuf;
+                return;
+            }
+        }
+        m_oStream.Skip(srcSize);
+
+        MetaFile::ReadImage((BYTE*)&bitmap_info, bitmap_info.nSize, destBuf, destSize, ppDstBuffer, pulWidth, pulHeight);
+        delete []destBuf;
+    }
+    else
+    {
+        BYTE *Header = new BYTE [ nHeaderSize];
+        memcpy(Header, &bitmap_info, bitmap_info.nSize);
+
+        m_oStream.ReadBytes(Header + bitmap_info.nSize, nHeaderSize - bitmap_info.nSize);
+
+        MetaFile::ReadImage(Header , nHeaderSize,  m_oStream.GetCurPtr(), bitmap_info.nSizeImage, ppDstBuffer, pulWidth, pulHeight);
+        m_oStream.Skip(bitmap_info.nSizeImage);
+        delete Header;
+    }
+}
+
+void CSvmFile::Read_META_BMPEX()
+{
+    TSvmBitmap bitmap_info;
+
+    BYTE *pBgraBuffer = NULL;
+    unsigned int ulWidth = 0, ulHeight = 0;
+
+    Read_META_BMP(bitmap_info, &pBgraBuffer, &ulWidth, &ulHeight);
+
+   //     if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
+	{
+		bitmap_info.nWidth = ulWidth;
+	}
+	//иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
+
+    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
+            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+    {
+        m_oBoundingBox.nRight = bitmap_info.nWidth;
+        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+    }
+    unsigned int	nMagic1;
+    unsigned int	nMagic2;
+
+    m_oStream >> nMagic1 >> nMagic2;
+
+    TSvmBitmap bitmap_info_mask;
+    BYTE *pBgraBufferMask = NULL;
+    unsigned int ulWidthMask = 0, ulHeightMask = 0;
+
+    if ( (0x25091962 == nMagic1) && (0xACB20201 == nMagic2))
+    {
+        BYTE transparentType;
+        m_oStream >> transparentType;
+
+        switch(transparentType)
+        {
+            case 2:// bitmap mask
+                Read_META_BMP(bitmap_info_mask, &pBgraBufferMask, &ulWidthMask, &ulHeightMask);
+            break;
+            case 1:// transparent color
+                TSvmColor oColor;
+                m_oStream >> oColor;
+                break;
+        }
+    }
+
+    if (pBgraBufferMask)
+    {
+        delete []pBgraBufferMask;
+    }
+
+    if (pBgraBuffer)
+    {
+        if ( m_pOutput)
+        {
+            m_pOutput->DrawBitmap( m_oCurrnetOffset.x, m_oCurrnetOffset.y, bitmap_info.nWidth, bitmap_info.nHeight, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+        }
+
+        delete []pBgraBuffer;
+
+        UpdateOutputDC();
+    }
 }
 
 void CSvmFile::Read_META_SECTRECTCLIPREGION()
 {
-	TSvmRect	rect;
-	
-	m_oStream >> rect;
+    TSvmRect	rect;
+
+    m_oStream >> rect;
 }
 void CSvmFile::Read_META_SECTREGIONCLIPREGION()
 {
 }
+void CSvmFile::Read_META_BMPEXSCALE()
+{ 
+    TSvmBitmap bitmap_info;
+
+    BYTE *pBgraBuffer = NULL;
+    unsigned int ulWidth = 0, ulHeight = 0;
+
+    Read_META_BMP(bitmap_info, &pBgraBuffer, &ulWidth, &ulHeight);
+
+     //иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
+
+   //     if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
+	{
+		bitmap_info.nWidth = ulWidth;
+	}
+
+    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
+            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+    {
+        m_oBoundingBox.nRight = bitmap_info.nWidth;
+        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+    }
+    unsigned int	nMagic1;
+    unsigned int	nMagic2;
+
+    m_oStream >> nMagic1 >> nMagic2;
+
+    TSvmBitmap bitmap_info_mask;
+
+    BYTE *pBgraBufferMask = NULL;
+    unsigned int ulWidthMask = 0, ulHeightMask = 0;
+
+    if ( (0x25091962 == nMagic1) && (0xACB20201 == nMagic2))
+    {
+        BYTE transparentType;
+        m_oStream >> transparentType;
+
+        switch(transparentType)
+        {
+            case 2:// bitmap mask
+                Read_META_BMP(bitmap_info_mask, &pBgraBufferMask, &ulWidthMask, &ulHeightMask);
+            break;
+            case 1:// transparent color
+                TSvmColor oColor;
+                m_oStream >> oColor;
+                break;
+        }
+    }
+
+    if (pBgraBufferMask)
+    {
+        delete []pBgraBufferMask;
+    }
+
+    TSvmSize	size;
+    TSvmPoint	point;
+
+    m_oStream >> point;
+    m_oStream >> size.cx;
+    m_oStream >> size.cy;
+
+    if (pBgraBuffer)
+    {
+        if ( m_pOutput)
+        {
+            m_pOutput->DrawBitmap( point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+        }
+
+        delete []pBgraBuffer;
+
+        UpdateOutputDC();
+    }
+
+}
 void CSvmFile::Read_META_BMPSCALE()
 {
-	unsigned int	nHeaderSize = 0;
-	
-	unsigned int	nTmp32;
-	unsigned short	nTmp16 = 0;
-	bool			bRet = false;
+    TSvmBitmap bitmap_info;
 
-	m_oStream >> nTmp16;
-	m_oStream >> nHeaderSize;
+    BYTE *pBgraBuffer = NULL;
 
-	if ( ( 0x4D42 == nTmp16 ) || ( 0x4142 == nTmp16 ) )
-	{
-		if ( 0x4142 == nTmp16 )
-		{
-			m_oStream.Skip( 12 );//не то !!!
-			m_oStream >> nTmp16;
-			m_oStream.Skip( 8 );
-			m_oStream >> nTmp32;
-			nHeaderSize = nTmp32 - 28UL;;
-			bRet = ( 0x4D42 == nTmp16 );
-		}
-		else
-		{
-			m_oStream.Skip( 4 );
-			m_oStream >> nTmp32;
-			nHeaderSize = nTmp32 - 14;
-		}
-	}
+    unsigned int ulWidth = 0, ulHeight = 0;
 
-	TSvmBitmap bitmap_info;
+    Read_META_BMP(bitmap_info, &pBgraBuffer, &ulWidth, &ulHeight );
 
-	m_oStream >> bitmap_info; //size = 40 
-	
-	unsigned short	nColors;
-	BYTE*			pData = NULL;
-	
-	int nBitCount = discretizeBitcount(bitmap_info.nBitCount);
+    //иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
+    //if (ulWidth !=  bitmap_info.nWidth && bitmap_info.nWidth % 2 != 0)
+    {
+        bitmap_info.nWidth = ulWidth;
+    }
 
-	if( nBitCount <= 8 )
-	{
-		if( bitmap_info.nColsUsed )
-			nColors = (USHORT) bitmap_info.nColsUsed;
-		else
-			nColors = ( 1 << bitmap_info.nBitCount );
-	}
-	else
-		nColors = 0;
+    if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
+            bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
+    {
+        m_oBoundingBox.nRight = bitmap_info.nWidth;
+        m_oBoundingBox.nBottom = bitmap_info.nHeight;
+    }
 
-	BYTE *pBgraBuffer = NULL;
+    TSvmSize	size;
+    TSvmPoint	point;
 
-	unsigned int ulWidth = 0, ulHeight = 0;
-	
-	if( ZCOMPRESS == bitmap_info.nCompression )
-	{
-		COfficeUtils OfficeUtils(NULL);
-		
-		ULONG destSize, srcSize;
-		m_oStream >> srcSize >> destSize >> bitmap_info.nCompression;
+    m_oStream >> point;
+    m_oStream >> size.cx;
+    m_oStream >> size.cy;
 
-		BYTE*	srcBuf	= m_oStream.GetCurPtr();
-		BYTE*	destBuf = new BYTE[destSize];
+    if (pBgraBuffer)
+    {
+        if ( m_pOutput)
+        {
+            m_pOutput->DrawBitmap( point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+        }
 
-		if (destSize > 0 && m_pOutput && destBuf )
-		{
-			if (OfficeUtils.Uncompress(destBuf, &destSize, srcBuf, srcSize) != S_OK)
-			{
-				delete []destBuf;
-				return;
-			}
-		}
-		m_oStream.Skip(srcSize);
-	
-		MetaFile::ReadImage((BYTE*)&bitmap_info, bitmap_info.nSize, destBuf, destSize, &pBgraBuffer, &ulWidth, &ulHeight);
-		delete []destBuf;
-	}
-	else
-	{
-		BYTE *Header = new BYTE [ nHeaderSize];
-		memcpy(Header, &bitmap_info, bitmap_info.nSize);
+        delete []pBgraBuffer;
 
-		m_oStream.ReadBytes(Header + bitmap_info.nSize, nHeaderSize - bitmap_info.nSize);
-
-		MetaFile::ReadImage(Header , nHeaderSize,  m_oStream.GetCurPtr(), bitmap_info.nSizeImage, &pBgraBuffer, &ulWidth, &ulHeight);
-		m_oStream.Skip(bitmap_info.nSizeImage);
-		delete Header;
-	}
-	//иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
-
-	if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
-			bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
-	{
-		m_oBoundingBox.nRight = bitmap_info.nWidth;
-		m_oBoundingBox.nBottom = bitmap_info.nHeight;
-	}
-
-	TSvmSize	size; 
-	TSvmPoint	point; 
-
-	m_oStream >> point;
-	m_oStream >> size.cx;
-	m_oStream >> size.cy;
-
-	if (pBgraBuffer)
-	{
-		if ( m_pOutput)
-		{
-			m_pOutput->DrawBitmap( point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
-		}
-
-		delete []pBgraBuffer;
-		
-		UpdateOutputDC();
-	}
+        UpdateOutputDC();
+    }
 
 }
 } // namespace MetaFile

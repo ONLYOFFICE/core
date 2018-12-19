@@ -834,7 +834,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	if (attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_.get();
-		oox_convert_transforms(transformStr, drawing->additional);
+		docx_convert_transforms(transformStr, drawing->additional);
 	} 
 	if (!drawing->isInline)
     {
@@ -999,17 +999,23 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	GetProperty(drawing->additional, L"svg:translate_x", dVal);
 	if (dVal)
 	{
-		int val = get_value_emu(dVal.get());
-		drawing->x = val >= 0 ? val : 0; //??? todooo отрицательные величины ...
+		drawing->x = get_value_emu(dVal.get());
 	}
-
-	GetProperty(drawing->additional, L"svg:translate_y", dVal);
+	GetProperty(drawing->additional, L"svg:translate_x", dVal);
 	if (dVal)
 	{
-		int val = get_value_emu(dVal.get());
-		drawing->y = val >= 0 ? val : 0; //??? todooo отрицательные величины ...
+		drawing->y = get_value_emu(dVal.get());
 	}
 
+	GetProperty(drawing->additional, L"svg:rotate", dVal);
+	if (dVal)
+	{
+		double new_x = (drawing->cx / 2 * cos(-(*dVal)) - drawing->cy / 2 * sin(-(*dVal)) ) - drawing->cx / 2;
+		double new_y = (drawing->cx / 2 * sin(-(*dVal)) + drawing->cy / 2 * cos(-(*dVal)) ) - drawing->cy / 2;
+		
+		drawing->x += new_x;
+		drawing->y += new_y;
+	}
 	if (drawing->inGroup && drawing->type != oox::typeGroupShape)
 	{
         _INT32 x_group_offset, y_group_offset;
@@ -1116,7 +1122,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		return;
  
 	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-	int pos_replaicement	= href.find(L"ObjectReplacements"); 
+	size_t pos_replaicement	= href.find(L"ObjectReplacements"); 
 
     const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
 	if (!frame)
@@ -1125,7 +1131,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) return;
 
- 	if (pos_replaicement >= 0)
+	if (pos_replaicement != std::wstring::npos)
 	{
 		if (!Context.get_drawing_context().get_use_image_replace())
 			return; //skip replacement image (math, chart, ...)  - возможно записать как альтернативный контент - todooo ???
@@ -1352,11 +1358,15 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.reset_context_state();
 		
-	if (position_child_x1 >= 0 && position_child_y1 >= 0 )
+	if (position_child_x1 != 0x7fffffff && position_child_y1 != 0x7fffffff )
+	{
 		Context.get_drawing_context().set_position_child_group	(position_child_x1, position_child_y1);
 
-	if (position_child_x2 >= 0 && position_child_y2 >= 0 )
-		Context.get_drawing_context().set_size_child_group	(position_child_x2, position_child_y2);
+		if (position_child_x2 != 0x7fffffff && position_child_y2 != 0x7fffffff )
+		{
+			Context.get_drawing_context().set_size_child_group	(position_child_x2 - position_child_x1, position_child_y2 - position_child_y1);
+		}
+	}
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
@@ -1370,10 +1380,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------
 	Context.get_drawing_context().get_size_group	(drawing.cx	, drawing.cy);
 	Context.get_drawing_context().get_position_group(drawing.x	, drawing.y);
-	
-	drawing.cx -= drawing.x;
-	drawing.cy -= drawing.y;	
-	
+
 	Context.get_drawing_context().stop_group();    	
 	
 	if (drawing.inGroup)
@@ -1649,7 +1656,7 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	if (!drawing) return;
 			
 	std::wstring extension;
-	detectObject(href, drawing->objectProgId, extension, drawing->type);
+	detectObject(objectPath, drawing->objectProgId, extension, drawing->type);
 
 	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
 

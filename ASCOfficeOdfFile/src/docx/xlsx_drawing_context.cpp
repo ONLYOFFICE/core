@@ -361,17 +361,18 @@ void xlsx_drawing_context::set_translate(double x_pt, double y_pt)
 	}
 }
 
-void xlsx_drawing_context::set_rotate(double angle)
+void xlsx_drawing_context::set_rotate(double angle, bool translate)
 {
 	set_property(odf_reader::_property(L"svg:rotate", angle));
 	
-	if (impl_->object_description_.svg_rect_)
+	if (impl_->object_description_.svg_rect_ && translate)
 	{
-		_rect & r = impl_->object_description_.svg_rect_.get();
+		_rect &r = impl_->object_description_.svg_rect_.get();
+		double new_x = (r.cx / 2 * cos(-angle) - r.cy / 2 * sin(-angle) ) - r.cx / 2;
+		double new_y = (r.cx / 2 * sin(-angle) + r.cy / 2 * cos(-angle) ) - r.cy / 2;
 		
-		//r.x -= r.width_/2;
-		//r.y -= r.height_/2;
-
+		r.x += new_x;
+		r.y	+= new_y;
 	}
 }
 void xlsx_drawing_context::set_scale(double cx_pt, double cy_pt)

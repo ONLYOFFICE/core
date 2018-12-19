@@ -507,13 +507,7 @@ void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_att
 }
 void odf_drawing_context::end_drawing()
 {
-	if (impl_->current_drawing_state_.elements_.empty())
-	{
-		impl_->current_level_.clear(); 
-		return;
-	}
-
-	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (draw)
 	{
 		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_)
@@ -603,7 +597,7 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////////
-	presentation_placeholder * placeholder = dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	presentation_placeholder * placeholder = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (placeholder)
 	{
 		placeholder->presentation_object_	= impl_->current_drawing_state_.presentation_class_;

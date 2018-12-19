@@ -111,10 +111,9 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_a);
 
-void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_context & Context);
+void docx_convert_transforms(std::wstring transformStr, std::vector<odf_reader::_property> & additional);
 void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_context & Context);
-void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_property> & additional);
-//void docx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_context & Context);
+void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_context & Context);
 
 }
 }

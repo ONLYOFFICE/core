@@ -96,8 +96,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (common_draw_attlist_.common_shape_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = common_draw_attlist_.common_shape_draw_attlist_.draw_transform_.get();
-		xlsx_convert_transforms(transformStr,Context);
-		//oox_convert_transforms(transformStr, additional_);
+		xlsx_convert_transforms(transformStr, Context);
 	}
 ////////////////////////////////////////
 	std::wstring Anchor;

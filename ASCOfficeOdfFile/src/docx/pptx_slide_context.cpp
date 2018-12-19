@@ -267,21 +267,20 @@ void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt
 	impl_->object_description_.svg_rect_ = _rect(width_pt, height_pt, x_pt, y_pt);
 }
 
-void pptx_slide_context::set_rotate(double angle)
+void pptx_slide_context::set_rotate(double angle, bool translate)
 {
-	set_property(odf_reader::_property(L"svg:rotate",angle));
+	set_property(odf_reader::_property(L"svg:rotate", angle));
 	
-	if (impl_->object_description_.svg_rect_)
+	if (impl_->object_description_.svg_rect_ && translate)
 	{
-		//вращение в open office от центральной точки
-		_rect r = impl_->object_description_.svg_rect_.get();
-		//r.x_-=r.width_;
-		//r.y_-=r.height_;
-
-		impl_->object_description_.svg_rect_= r;
+		_rect &r = impl_->object_description_.svg_rect_.get();
+		double new_x = (r.cx / 2 * cos(-angle) - r.cy / 2 * sin(-angle) ) - r.cx / 2;
+		double new_y = (r.cx / 2 * sin(-angle) + r.cy / 2 * cos(-angle) ) - r.cy / 2;
+		
+		r.x += new_x;
+		r.y	+= new_y;
 	}
 }
-
 void pptx_slide_context::set_translate(double x_pt, double y_pt)
 {
 	if (impl_->object_description_.svg_rect_)
@@ -292,16 +291,7 @@ void pptx_slide_context::set_translate(double x_pt, double y_pt)
 		r.y += y_pt;
 	}
 }
-void pptx_slide_context::set_translate_rotate()
-{
-	if (impl_->object_description_.svg_rect_)
-	{
-		_rect & r = impl_->object_description_.svg_rect_.get();
-		
-		r.x -= r.cx / 2;
-		r.y += r.cy / 2;
-	}
-}
+
 void pptx_slide_context::set_scale(double cx_pt, double cy_pt)
 {
 	if (impl_->object_description_.svg_rect_)
@@ -701,12 +691,10 @@ void pptx_slide_context::Impl::process_common_properties(drawing_object_descript
 {
 	if (pic.svg_rect_)
 	{
+		int val;
 		//todooo непонятки с отрицательными значениями
-		int val = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if ( val >= 0) drawing.x = val;
-		
-		val = (int)(0.5 + odf_types::length(pic.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if ( val >= 0 ) drawing.y = val;
+		drawing.x = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.y = (int)(0.5 + odf_types::length(pic.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cx, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if ( val >=0 ) drawing.cx = val;

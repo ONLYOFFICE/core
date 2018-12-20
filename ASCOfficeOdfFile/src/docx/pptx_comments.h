@@ -42,7 +42,7 @@ namespace oox {
 
 	struct _pptx_comment
 	{
-		size_t x_, y_;
+		int x_, y_;
 
 		int author_id_;
 		int idx_;

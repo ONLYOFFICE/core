@@ -268,7 +268,7 @@ void officeooo_annotation::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 	id_idx = Context.add_author_comments(author);
 
-	Context.get_comments_context().start_comment(x, y,id_idx.first,id_idx.second);//author & idx (uniq number for author
+	Context.get_comments_context().start_comment(x, y, id_idx.first, id_idx.second);//author & idx (uniq number for author
 	
 	Context.get_text_context().start_comment_content();
 	for (size_t i = 0; i < content_.size(); i++)//текст + текстовый стиль

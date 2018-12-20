@@ -340,6 +340,14 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 
 	bool set_shape = false;
 
+	if (attlist_.draw_mirror_horizontal_)
+	{
+		Context.get_slide_context().set_property(_property(L"flipH", *attlist_.draw_mirror_horizontal_));
+	}
+	if (attlist_.draw_mirror_vertical_)
+	{
+		Context.get_slide_context().set_property(_property(L"flipV", *attlist_.draw_mirror_vertical_));
+	}
 	if (draw_type_oox_index_)
 	{
 		Context.get_slide_context().set_property(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
@@ -357,10 +365,10 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 	}
 
 	std::wstring odf_path;
-	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
-		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
-	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
-		odf_path = draw_enhanced_geometry_attlist_.draw_enhanced_path_.get();
+	if (attlist_.drawooo_enhanced_path_)
+		odf_path = attlist_.drawooo_enhanced_path_.get();
+	else if (attlist_.draw_enhanced_path_)
+		odf_path = attlist_.draw_enhanced_path_.get();
 	
 	if (!odf_path.empty())
 	{
@@ -388,10 +396,10 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 
 			set_shape = true;
 			
-			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
+			if (attlist_.drawooo_sub_view_size_)
 			{
 				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *draw_enhanced_geometry_attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 				
 				if (splitted.size() == 2)
 				{
@@ -412,10 +420,10 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 			}
 		}
 	}
-	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
+	if (attlist_.draw_modifiers_)
 	{
 		if (bOoxType_)
-			Context.get_slide_context().set_property(_property(L"oox-draw-modifiers", draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
+			Context.get_slide_context().set_property(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));	
 		else
 		{
 		}
@@ -446,6 +454,14 @@ void dr3d_scene::pptx_convert(oox::pptx_conversion_context & Context)
 void dr3d_light::pptx_convert(oox::pptx_conversion_context & Context)
 {
 
+}
+void dr3d_cube::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	Context.get_slide_context().start_shape(sub_type_); //reset type
+}
+void dr3d_sphere::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	Context.get_slide_context().start_shape(sub_type_); //reset type
 }
 }
 }

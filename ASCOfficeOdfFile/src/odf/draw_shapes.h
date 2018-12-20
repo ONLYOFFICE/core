@@ -455,6 +455,8 @@ public:
 	_CP_OPT(std::wstring)	draw_enhanced_path_;
 	_CP_OPT(std::wstring)	drawooo_enhanced_path_;
 	_CP_OPT(std::wstring)	drawooo_sub_view_size_;
+	_CP_OPT(bool)			draw_mirror_horizontal_;
+	_CP_OPT(bool)			draw_mirror_vertical_;
 };
 /////////////////////////////////////////////////////////////////////////
 class draw_enhanced_geometry : public office_element_impl<draw_enhanced_geometry>
@@ -476,7 +478,7 @@ public:
 
 	void find_draw_type_oox();
 
-    draw_enhanced_geometry_attlist draw_enhanced_geometry_attlist_;
+    draw_enhanced_geometry_attlist attlist_;
 
 	_CP_OPT(int)			sub_type_;
 	_CP_OPT(int)			draw_type_oox_index_;
@@ -641,13 +643,61 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-	_CP_OPT(std::wstring)	dr3d_diffuse_color_;
-	_CP_OPT(std::wstring)	dr3d_direction_;
-	_CP_OPT(std::wstring)	dr3d_specular_;
-	_CP_OPT(odf_types::Bool)dr3d_enabled_;
+	_CP_OPT(std::wstring)		dr3d_diffuse_color_;
+	_CP_OPT(std::wstring)		dr3d_direction_;
+	_CP_OPT(odf_types::Bool)	dr3d_specular_;
+	_CP_OPT(odf_types::Bool)	dr3d_enabled_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_light);
+
+//------------------------------------------------------------------------------------------------------------
+class dr3d_cube : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dCube;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+	_CP_OPT(std::wstring)	dr3d_max_edge_;
+	_CP_OPT(std::wstring)	dr3d_min_edge_;
+	_CP_OPT(std::wstring)	dr3d_transform_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_cube);
+
+//------------------------------------------------------------------------------------------------------------
+class dr3d_sphere : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dSphere;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+	_CP_OPT(std::wstring)	dr3d_size_; //vector3D
+	_CP_OPT(std::wstring)	dr3d_center_; //vector3D
+	_CP_OPT(std::wstring)	dr3d_transform_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_sphere);
 //----------------------------------------------------------------------------------------------
 class draw_control : public draw_shape
 {

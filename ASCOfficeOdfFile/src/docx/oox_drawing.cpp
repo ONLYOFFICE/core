@@ -112,7 +112,10 @@ static const std::wstring _ooxShapeType[]=
 	L"curvedConnector3",
 	L"",//3-D shape
 	L"",
-	L"polyline"
+	L"polyline",
+	L"cube",
+	L"ellipse",	//sphere
+	L""
 };
 
 
@@ -427,7 +430,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 			shapeGeomPreset = L"rect";
 		}
 	}
-	else if (sub_type <= 14 && sub_type >= 0)
+	else if (sub_type <= 16 && sub_type >= 0)
 	{
 		shapeGeomPreset = _ooxShapeType[sub_type]; //odf -> oox
 	} 
@@ -530,7 +533,7 @@ void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & nam
 				CP_XML_ATTR(L"rot", (int)( d * 60000) ); //60 000 per 1 gr - 19.5.5 oox 
 			}
 			_CP_OPT(bool)bVal;
-			if (odf_reader::GetProperty(additional,L"flipH", bVal))
+			if (odf_reader::GetProperty(additional, L"flipH", bVal))
 				CP_XML_ATTR(L"flipH", bVal.get());
 
 			if (odf_reader::GetProperty(additional,L"flipV", bVal))

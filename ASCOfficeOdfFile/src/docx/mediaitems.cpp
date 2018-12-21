@@ -152,8 +152,8 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 
 	if (sExt.empty())
 	{
-		int n = uri.find(L"ObjectReplacements");
-		if (n >= 0)
+		size_t n = uri.find(L"ObjectReplacements");
+		if (n != std::wstring::npos)
 		{
 			if (!isInternal) return L"";
 
@@ -164,9 +164,9 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 		if (sExt.empty())
 		{
 			//то что есть .. 
-			int n = uri.rfind(L".");
-			if (n > 0) 
-				sExt = uri.substr(n);
+			size_t n = uri.rfind(L".");
+			if (n != std::wstring::npos) 
+				sExt = XmlUtils::GetLower(uri.substr(n));
 		}
 	}
 
@@ -193,7 +193,7 @@ std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 
 		if (!sExt.empty()) sExt = std::wstring(L".") + sExt;
 	}
-	return sExt;
+	return XmlUtils::GetLower(sExt);
 }
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
@@ -268,8 +268,8 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 		}
 		else if ( type == typeImage)
 		{
-            int n_svm = outputPath.rfind (L".svm");
-			if ( n_svm >= 0 )
+            size_t n_svm = outputPath.rfind (L".svm");
+			if ( n_svm != std::wstring::npos )
 			{
 				outputPath = outputPath.substr(0, n_svm) + L".png"; 
 			}

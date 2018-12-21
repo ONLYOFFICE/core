@@ -74,6 +74,7 @@ namespace odf_writer
 			count_rows = 0;
 
 			table_width = 0;
+			table_height = 0;
 		}
 		std::vector<odf_row_state>		rows;
 		std::vector<odf_column_state>	columns;
@@ -91,6 +92,8 @@ namespace odf_writer
 		bool styled;
 
 		double table_width;
+		double table_height;
+
 		std::wstring default_cell_properties;
 
 		_CP_OPT(std::wstring) border_inside_v_;
@@ -103,30 +106,34 @@ class odf_table_context::Impl
 public:
 	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)
     {	
-		default_column_width = -1;
+		default_column_width = boost::none;
+		default_row_height = boost::none;
 		optimal_column_width = false;
 	} 
 
 	odf_table_state & current_table()	{return tables_.back();}
-	bool empty () {return tables_.size() >0 ? false : true; }
+	bool empty () {return (false == tables_.empty()) ? false : true; }
 
 	void start_table(odf_table_state & state) {tables_.push_back(state);}
 
 	void end_table() 
 	{
-		if (tables_.size() > 0) tables_.pop_back(); 
+		if (false == tables_.empty()) tables_.pop_back(); 
 		
-		default_column_width	= -1;  // todo .. in level ???
+		default_column_width	= boost::none;  // todo .. in level ???
+		default_row_height		= boost::none;
 		default_cell_properties = L""; 
 		optimal_column_width	= false;
 	}
 
-	odf_style_context	* styles_context() {return odf_context_->styles_context();}
+	odf_style_context *styles_context() {return odf_context_->styles_context();}
 
 	odf_conversion_context *odf_context_; 
 
-	double	default_column_width;
-	bool	optimal_column_width;
+	_CP_OPT(double)	default_row_height;
+	_CP_OPT(double)	default_column_width;
+	bool			optimal_column_width;
+
 	std::wstring default_cell_properties; // для предустановки ..
 
 private:
@@ -252,7 +259,7 @@ void odf_table_context::end_row()
 	//	start_cell(cell,false);
 	//	end_cell();
 	//}
-	impl_->current_table().current_column =0;
+	impl_->current_table().current_column = 0;
 }
 
 
@@ -312,15 +319,24 @@ void odf_table_context::set_default_cell_properties(std::wstring style_name)
 {
 	impl_->default_cell_properties = style_name;
 }
-double odf_table_context::get_table_width()
+_CP_OPT(double) odf_table_context::get_table_width()
 {
-	if (impl_->empty()) return -1;
+	if (impl_->empty()) return boost::none;
 	else return impl_->current_table().table_width;
+}
+_CP_OPT(double) odf_table_context::get_table_height()
+{
+	if (impl_->empty()) return boost::none;
+	else return impl_->current_table().table_height;
 }
 std::wstring odf_table_context::get_default_cell_properties()
 {
 	if (impl_->empty()) return impl_->default_cell_properties;
 	else return impl_->current_table().default_cell_properties;
+}
+void odf_table_context::set_default_row_height(double height)
+{
+	impl_->default_row_height = height;
 }
 void odf_table_context::set_default_column_width(double width)
 {
@@ -347,7 +363,7 @@ void odf_table_context::set_column_optimal(bool val)
 void odf_table_context::change_current_column_width(double width)
 {
 	if (impl_->empty()) return;
-	if (impl_->current_table().columns.size() < 1)return;
+	if (impl_->current_table().columns.empty())return;
 
 	int index = impl_->current_table().current_column ;
 	if (index < 0) return;
@@ -368,7 +384,7 @@ void odf_table_context::change_current_column_width(double width)
 	style_table_column_properties *properties = style_->content_.get_style_table_column_properties();
 	if (properties == NULL) return;
 
-	length length_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
+	length length_ = length(length(width, length::pt).get_value_unit(length::cm), length::cm);
 	
 	if (!properties->style_table_column_properties_attlist_.style_column_width_)
 		properties->style_table_column_properties_attlist_.style_column_width_ = length_;
@@ -383,39 +399,68 @@ void odf_table_context::change_current_column_width(double width)
 void odf_table_context::set_column_width(double width)
 {
 	if (impl_->empty()) return;
-	if (impl_->current_table().columns.size() < 1)return;
+	if (impl_->current_table().columns.empty())return;
 
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns.back().style_elm.get());
-
-	if (style_ == NULL) return;
-	style_table_column_properties *properties = style_->content_.get_style_table_column_properties();
-	if (properties == NULL) return;
+	style_table_column_properties *properties = style_ ? style_->content_.get_style_table_column_properties() : NULL;
 
 	if (width > 0)
 	{
-		properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
-		//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
-
-		if (impl_->optimal_column_width)
+		if (properties)
 		{
-			properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
+			properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
+			//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
+
+			if (impl_->optimal_column_width)
+			{
+				properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
+			}
 		}
 
 		impl_->current_table().table_width += width;
 	}
 	else
 	{
-		properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
-
-		if (impl_->default_column_width >= 0)
+		if (properties)
 		{
-			properties->style_table_column_properties_attlist_.style_column_width_ = length(length(impl_->default_column_width,length::pt).get_value_unit(length::cm),length::cm);
-			//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
-			
-			impl_->current_table().table_width += impl_->default_column_width;
+			properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
+
+			if (impl_->default_column_width)
+			{
+				properties->style_table_column_properties_attlist_.style_column_width_ = length(length(impl_->default_column_width.get(), length::pt).get_value_unit(length::cm), length::cm);
+				//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
+			}
 		}
+		impl_->current_table().table_width += impl_->default_column_width.get_value_or(0);
 	}
 }
+void odf_table_context::set_row_height(double height)
+{
+	if (impl_->empty()) return;
+
+	if (height > 0)
+	{
+		//style *style_ = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
+
+		//if (style_)
+		//{
+		//	style_table_row_properties *properties = style_->content_.get_style_table_row_properties();
+		//	if (properties)
+		//	{			
+		//		//properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
+		//	}
+		//}
+		impl_->current_table().table_height += height;
+
+		if (!impl_->default_row_height)
+			impl_->default_row_height = height;
+	}
+	else
+	{
+		impl_->current_table().table_height += impl_->default_row_height.get_value_or(0);
+	}
+}
+
 int odf_table_context::current_column ()
 {
 	if (impl_->empty()) return 0;

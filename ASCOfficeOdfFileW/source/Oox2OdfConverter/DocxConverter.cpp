@@ -3980,7 +3980,14 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 			odt_context->start_drawings();
 				_CP_OPT(double) width, height, x, y ;
 				
-				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit())
+				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpXSpec.IsInit())
+				{
+					odt_context->drawing_context()->set_horizontal_pos(oox_table->m_oTableProperties->m_oTblpPr->m_oTblpXSpec->GetValue());
+				}
+				bool bRightAlignX = ((oox_table->m_oTableProperties->m_oTblpPr->m_oTblpXSpec.IsInit()) && 
+					(oox_table->m_oTableProperties->m_oTblpPr->m_oTblpXSpec->GetValue() == SimpleTypes::xalignRight));
+				
+				if (!bRightAlignX && oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit())
 					x = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX->ToPoints();
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit())
 					y = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY->ToPoints();
@@ -3990,6 +3997,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 				//	if (!x) x = oox_table->m_oTableProperties->m_oTblpPr->m_oLeftFromText->ToPoints();
 				//	else x = -*x + oox_table->m_oTableProperties->m_oTblpPr->m_oLeftFromText->ToPoints();
 				//}
+
 
 				odt_context->drawing_context()->set_drawings_rect(x, y, width, height);	
 				
@@ -4021,10 +4029,11 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText.IsInit())
 				{
-					if (!x) //x = *x + oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText->ToPoints();
+					if (!bRightAlignX && !x) //x = *x + oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText->ToPoints();
+					{
 						x = oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText->ToPoints();
-
-					odt_context->drawing_context()->set_horizontal_pos(*x);
+						odt_context->drawing_context()->set_horizontal_pos(*x);
+					}
 				}
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTopFromText.IsInit())
 				{
@@ -4038,7 +4047,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 				odt_context->drawing_context()->start_text_box();
 					odt_context->drawing_context()->set_text_box_tableframe(true);
 					odt_context->drawing_context()->set_text_box_min_size(0, 1.);
-					odt_context->drawing_context()->set_z_order(0x7fffffff-1);
+					odt_context->drawing_context()->set_z_order(0x7fffffff - 1024/* + id_tables*/);
 					odt_context->drawing_context()->set_text_box_parent_style(L"Frame");
 					odt_context->drawing_context()->set_name(L"TableFrame");
 				odt_context->start_text_context();
@@ -4046,7 +4055,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 	odt_context->start_table(true); 
 
-	_CP_OPT(std::wstring) border_inside_h,border_inside_v;
+	_CP_OPT(std::wstring) border_inside_h, border_inside_v;
 
 	if (styled_table)
 	{
@@ -4100,10 +4109,11 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	if (in_frame)
 	{
 		_CP_OPT(double) width = odt_context->table_context()->get_table_width();
-		_CP_OPT(double) height;
+		_CP_OPT(double) height = odt_context->table_context()->get_table_height();
+		
 		odt_context->drawing_context()->set_size(width, height);
 
-		odt_context->drawing_context()->set_text_box_min_size(-1,0);
+		odt_context->drawing_context()->set_text_box_min_size(-1, height.get_value_or(0));
 	}
 	
 	odt_context->end_table();
@@ -4295,7 +4305,7 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 	if (id_change_properties >= 0)
 		odt_context->end_change(id_change_properties, 3);
 }
-bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_properties * table_properties )
+bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_properties *table_properties )
 {
 	if (oox_table_pr == NULL) return false;
 	if (table_properties == NULL) return false;
@@ -4397,7 +4407,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 	return true;
 }
 
-void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_cell_properties	* table_cell_properties)
+void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_cell_properties * table_cell_properties)
 {
 	if (oox_table_pr == NULL || oox_table_pr == NULL) return;
 
@@ -4450,24 +4460,27 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, bool base_
 	
 	return true;
 }
-void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr, odf_writer::style_table_row_properties	* table_row_properties)
+void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr, odf_writer::style_table_row_properties *table_row_properties)
 {
 	if (oox_table_row_pr == NULL) return;
 	if (table_row_properties == NULL) return;
 
-	if (oox_table_row_pr->m_oTblHeight.IsInit())
+	if ((oox_table_row_pr->m_oTblHeight.IsInit()) && 
+		(oox_table_row_pr->m_oTblHeight->m_oVal.IsInit()))
 	{
 		_CP_OPT(odf_types::length) length;
 		convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_row_pr->m_oTblHeight->m_oVal.GetPointer()), length);
+
+		odt_context->table_context()->set_row_height(oox_table_row_pr->m_oTblHeight->m_oVal->ToPoints());
 
 		if (oox_table_row_pr->m_oTblHeight->m_oHRule.IsInit())
 		{
 			switch(oox_table_row_pr->m_oTblHeight->m_oHRule->GetValue())
 			{
 				case SimpleTypes::heightruleAtLeast:
-					table_row_properties->style_table_row_properties_attlist_.style_min_row_height_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm); break;
+					table_row_properties->style_table_row_properties_attlist_.style_min_row_height_ = odf_types::length(length->get_value_unit(odf_types::length::cm), odf_types::length::cm); break;
 				case SimpleTypes::heightruleExact:
-					table_row_properties->style_table_row_properties_attlist_.style_row_height_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm); break;
+					table_row_properties->style_table_row_properties_attlist_.style_row_height_ = odf_types::length(length->get_value_unit(odf_types::length::cm), odf_types::length::cm); break;
 				case SimpleTypes::heightruleAuto:
 					table_row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; break;
 			}
@@ -4481,7 +4494,7 @@ void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr)
 {
 	if (oox_table_row_pr == NULL) return;
 
-	odf_writer::style_table_row_properties	* table_row_properties = odt_context->styles_context()->last_state()->get_table_row_properties();
+	odf_writer::style_table_row_properties	*table_row_properties = odt_context->styles_context()->last_state()->get_table_row_properties();
 
 	if (oox_table_row_pr->m_oCnfStyle.IsInit())
 	{

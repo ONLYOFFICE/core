@@ -492,6 +492,8 @@ void draw_enhanced_geometry_attlist::add_attributes( const xml::attributes_wc_pt
 	CP_APPLY_ATTR(L"draw:enhanced-path"		, draw_enhanced_path_);
 	CP_APPLY_ATTR(L"drawooo:enhanced-path"	, drawooo_enhanced_path_);
 	CP_APPLY_ATTR(L"drawooo:sub-view-size"	, drawooo_sub_view_size_);
+	CP_APPLY_ATTR(L"draw:mirror-horizontal"	, draw_mirror_horizontal_);
+	CP_APPLY_ATTR(L"draw:mirror-vertical"	, draw_mirror_vertical_);
 }
 //-------------------------------------------------------------------------------------------
 // draw:enhanced_geometry
@@ -501,7 +503,7 @@ const wchar_t * draw_enhanced_geometry::name = L"enhanced-geometry";
 
 void draw_enhanced_geometry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    draw_enhanced_geometry_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
     CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
 }
 
@@ -525,20 +527,20 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const std::ws
 }
 void draw_enhanced_geometry::find_draw_type_oox()
 {
-	word_art_ = false;
-	bOoxType_ = false;
+	word_art_	= false;
+	bOoxType_	= false;
 	
-	if (draw_enhanced_geometry_attlist_.draw_text_path_ &&
-			*draw_enhanced_geometry_attlist_.draw_text_path_ == true)
+	if (attlist_.draw_text_path_ &&
+			*attlist_.draw_text_path_ == true)
 	{
 		draw_type_oox_index_ = 0;
 		word_art_ = true;
 		sub_type_ = 1;
 	}
 
-	if (draw_enhanced_geometry_attlist_.draw_type_)
+	if (attlist_.draw_type_)
 	{
-		std::wstring odf_type = draw_enhanced_geometry_attlist_.draw_type_.get();
+		std::wstring odf_type = attlist_.draw_type_.get();
 
 		if (word_art_)
 		{
@@ -561,7 +563,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 
 			if (pos == std::wstring::npos)
 			{
-				for (long i = 0; i< count; i++)
+				for (long i = 0; i < count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
 					{
@@ -760,6 +762,38 @@ void dr3d_light::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"dr3d:direction",	dr3d_direction_);
 	CP_APPLY_ATTR(L"dr3d:specular",		dr3d_specular_);
 	CP_APPLY_ATTR(L"dr3d:enabled",		dr3d_enabled_);
+}
+//-------------------------------------------------------------------------------------------
+// dr3d:cube
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_cube::ns = L"dr3d";
+const wchar_t * dr3d_cube::name = L"cube";
+
+void dr3d_cube::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	draw_shape::add_attributes(Attributes);
+
+	CP_APPLY_ATTR(L"dr3d:max-edge",		dr3d_max_edge_);
+	CP_APPLY_ATTR(L"dr3d:min-edge",		dr3d_min_edge_);
+	CP_APPLY_ATTR(L"dr3d:transform",	dr3d_transform_);
+
+	sub_type_ = 15;
+}
+//-------------------------------------------------------------------------------------------
+// dr3d:sphere
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_sphere::ns = L"dr3d";
+const wchar_t * dr3d_sphere::name = L"sphere";
+
+void dr3d_sphere::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	draw_shape::add_attributes(Attributes);
+
+	CP_APPLY_ATTR(L"dr3d:size",		dr3d_size_); //vector3D
+	CP_APPLY_ATTR(L"dr3d:center",	dr3d_center_); //vector3D
+	CP_APPLY_ATTR(L"dr3d:transform",dr3d_transform_);
+
+	sub_type_ = 16;
 }
 //-------------------------------------------------------------------------------------------
 // draw:control

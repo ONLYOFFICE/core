@@ -73,8 +73,8 @@ void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	common_draw_shape_with_text_and_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_;
 
-    const int z_index		= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
-    const std::wstring name = common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
+    const unsigned int z_index	= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
+    const std::wstring name		= common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
 
  //////////////////////////////////////////////////////////////////////////
 	Context.get_drawing_context().start_group( name);
@@ -118,7 +118,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	common_draw_shape_with_text_and_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_;
 
-    const int z_index				= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
+    const unsigned int z_index		= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
     const std::wstring name			= common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring styleName	= common_draw_attlist_.common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");    
     const std::wstring textStyleName = common_draw_attlist_.common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");

@@ -71,7 +71,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	common_draw_shape_with_text_and_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_;
 
-    const int z_index				= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
+    const unsigned int z_index		= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
     const std::wstring name			= common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring styleName	= common_draw_attlist_.common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");    
     const std::wstring textStyleName = common_draw_attlist_.common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
@@ -276,6 +276,14 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 {
 	find_draw_type_oox();
 
+	if (attlist_.draw_mirror_horizontal_)
+	{
+		Context.get_drawing_context().set_property(_property(L"flipH", *attlist_.draw_mirror_horizontal_));
+	}
+	if (attlist_.draw_mirror_vertical_)
+	{
+		Context.get_drawing_context().set_property(_property(L"flipV", *attlist_.draw_mirror_vertical_));
+	}
 	if (draw_type_oox_index_)
 	{
 		Context.get_drawing_context().set_property(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
@@ -291,10 +299,10 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 	}
 
 	std::wstring odf_path;
-	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
-		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
-	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
-		odf_path = draw_enhanced_geometry_attlist_.draw_enhanced_path_.get();
+	if (attlist_.drawooo_enhanced_path_)
+		odf_path = attlist_.drawooo_enhanced_path_.get();
+	else if (attlist_.draw_enhanced_path_)
+		odf_path = attlist_.draw_enhanced_path_.get();
 	
 	if (!odf_path.empty())
 	{
@@ -320,10 +328,10 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
             ::svg_path::oox_serialize(output_, o_Polyline);
 			Context.get_drawing_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
 
-			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
+			if (attlist_.drawooo_sub_view_size_)
 			{
 				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *draw_enhanced_geometry_attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 				
 				if (splitted.size() == 2)
 				{
@@ -348,10 +356,10 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 			draw_type_oox_index_ = 0;
 		}
 	}
-	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
+	if (attlist_.draw_modifiers_)
 	{
 		if (bOoxType_)
-			Context.get_drawing_context().set_property(_property(L"oox-draw-modifiers", draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
+			Context.get_drawing_context().set_property(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));	
 		else
 		{
 		}
@@ -370,6 +378,15 @@ void dr3d_scene::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void dr3d_light::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+
+}
+void dr3d_cube::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_drawing_context().start_shape(sub_type_); //reset type
+}
+void dr3d_sphere::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_drawing_context().start_shape(sub_type_); //reset type
 
 }
 void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)

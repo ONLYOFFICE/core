@@ -443,6 +443,8 @@ namespace {
 
 double pixToSize(double pixels, double maxDigitSize)
 { 
+	if (pixels < 8) pixels = 8; //УВЕДОМЛЕНИЕ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА.ods
+
 	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9; // * 9525. * 72.0 / (360000.0 * 2.54);
 }
 double cmToChars (double cm)
@@ -772,10 +774,10 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             double s;
             if (oox::parseTime(tv, h, m, s))
             {
-				boost::int64_t intTime = (boost::int64_t)oox::convertTime(h, m, s);
-				if (intTime > 0)
+				double dTime = oox::convertTime(h, m, s);
+				if (dTime >= 0)
 				{
-					number_val = boost::lexical_cast<std::wstring>(intTime);
+					number_val = boost::lexical_cast<std::wstring>(dTime);
 				}
 				else
 				{

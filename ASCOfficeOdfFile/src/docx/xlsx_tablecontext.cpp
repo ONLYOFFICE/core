@@ -338,6 +338,38 @@ void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & 
 	{
 		if (false == xlsx_data_ranges_[it->second]->bTablePart) continue;
 
+// из за дебелизма мсофис которому ОБЯЗАТЕЛЬНО нужно прописывать имена колонок таблицы (и они должны быть еще 
+// прописаны и в самих данных таблицы !!
+		int i = xlsx_data_ranges_[it->second]->header_values.size() - 1;
+		for (; i >= 0; i--)
+		{
+			if (false == xlsx_data_ranges_[it->second]->header_values[i].empty())
+			{
+				break;
+			}
+		}
+
+		if (i == -1)
+		{
+			xlsx_data_ranges_[it->second]->bTablePart = false;
+			continue;
+		}
+		else
+		{
+			size_t erase = xlsx_data_ranges_[it->second]->header_values.size() - 1 - i;
+			if (erase > 0)
+			{
+				xlsx_data_ranges_[it->second]->header_values.erase(xlsx_data_ranges_[it->second]->header_values.begin() + i + 1, xlsx_data_ranges_[it->second]->header_values.end());
+				xlsx_data_ranges_[it->second]->cell_end.first -= erase;
+
+				std::wstring ref1 = getCellAddress(xlsx_data_ranges_[it->second]->cell_start.first, xlsx_data_ranges_[it->second]->cell_start.second);
+				std::wstring ref2 = getCellAddress(xlsx_data_ranges_[it->second]->cell_end.first, xlsx_data_ranges_[it->second]->cell_end.second);
+				
+				xlsx_data_ranges_[it->second]->ref = ref1 + L":" + ref2;
+			}
+		}
+		//--------------------------------------------------------
+
 		size_t id = xlsx_conversion_context_->get_table_parts_size() + 1;
 
 		std::wstring rId = L"tprtId" + std::to_wstring(id);
@@ -351,10 +383,10 @@ void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & 
 			}
 		}
 		Rels.add( relationship(rId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", ref));
-		
+//--------------------------------------------------------
 		std::wstringstream strm;
 		CP_XML_WRITER(strm)
-		{			
+		{
 			CP_XML_NODE(L"table")
 			{
 				CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");

@@ -308,7 +308,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 			}
         }
     } 
-	if (next_section_/* || next_end_section_*/)
+	if (next_section_/* || next_end_section_*/)//remove in text::section 
 	{
 		Context.get_section_context().get().is_dump_ = true;
 		is_empty = false;
@@ -675,6 +675,7 @@ void section::add_child_element( xml::sax * Reader, const std::wstring & Ns, con
 
 void section::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool bAddSection = false;
 	if ( false == Context.get_drawing_state_content())
 	{
 		std::wstring current_page_properties = Context.get_page_properties();
@@ -682,6 +683,8 @@ void section::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_section_context().add_section (section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
 		
 		Context.add_page_properties(current_page_properties);
+
+		bAddSection = true;
 	}
 	else
 	{
@@ -729,6 +732,11 @@ void section::docx_convert(oox::docx_conversion_context & Context)
 		} 
 		content_[i]->docx_convert(Context);
     }
+	if (bAddSection)
+	{
+		Context.get_section_context().get().is_dump_ = true;
+		Context.last_dump_page_properties(false);
+	}
 }
 
 // text-section-source-attr

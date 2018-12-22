@@ -172,6 +172,8 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 
 	if (type == typeOleObject && sExt.empty())
 		sExt = L".bin";
+	else if ( type == typeChart)
+		sExt = L".xml";
    
 	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }
@@ -240,8 +242,6 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	
     std::wstring inputPath	= isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
 	std::wstring outputPath	= isMediaInternal ? ( sub_path + inputFileName)		 : href;
-	
-	if ( type == typeChart) outputPath = outputPath + L".xml";
 
 	std::wstring id;
     for (size_t i = 0 ; i < items_.size(); i++)

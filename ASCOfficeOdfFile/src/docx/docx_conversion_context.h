@@ -793,6 +793,7 @@ public:
 
  	bool next_dump_page_properties_;
 	bool next_dump_section_;
+	bool last_dump_page_properties_;
 
     odf_reader::odf_document *root()
     {
@@ -862,6 +863,8 @@ public:
     
 	void next_dump_page_properties			(bool val);
     bool is_next_dump_page_properties		();
+	void last_dump_page_properties			(bool val);
+	bool is_last_dump_page_properties		();
 
     void set_master_page_name(const std::wstring & MasterPageName);
     const std::wstring & get_master_page_name() const;

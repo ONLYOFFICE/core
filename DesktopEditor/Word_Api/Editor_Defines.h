@@ -491,6 +491,7 @@
 #define c_oAscTypeSelectElement_Shape				6
 #define c_oAscTypeSelectElement_Slide				7
 #define c_oAscTypeSelectElement_Chart				8
+#define c_oAscTypeSelectElement_Math                9
 
 #define c_oAscTableBordersType_LEFT					0
 #define c_oAscTableBordersType_TOP					1
@@ -695,6 +696,7 @@
 #define ASC_MENU_EVENT_TYPE_SHAPE                   18
 #define ASC_MENU_EVENT_TYPE_SLIDE                   20
 #define ASC_MENU_EVENT_TYPE_CHART                   21
+#define ASC_MENU_EVENT_TYPE_MATH                    22
 
 // insert commands
 #define ASC_MENU_EVENT_TYPE_INSERT_IMAGE			50

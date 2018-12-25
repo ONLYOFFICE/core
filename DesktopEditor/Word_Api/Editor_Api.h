@@ -2390,6 +2390,39 @@ namespace NSEditorApi
 	};
 }
 
+
+
+namespace NSEditorApi
+{
+    class CAscMath : public IMenuEventDataBase
+    {
+    private:
+        js_wrapper<int> m_nType;
+        js_wrapper<int> m_nAction;
+        js_wrapper<bool> m_bCanIncreaseArgumentSize;
+        js_wrapper<bool> m_bCanDecreaseArgumentSize;
+        js_wrapper<bool> m_bCanInsertForcedBreak;
+        js_wrapper<bool> m_bCanDeleteForcedBreak;
+        js_wrapper<bool> m_bCanAlignToCharacter;
+        
+    public:
+        CAscMath()
+        {
+        }
+        virtual ~CAscMath()
+        {
+        }
+        
+        LINK_PROPERTY_INT_JS(Type)
+        LINK_PROPERTY_INT_JS(Action)
+        LINK_PROPERTY_BOOL_JS(CanIncreaseArgumentSize)
+        LINK_PROPERTY_BOOL_JS(CanDecreaseArgumentSize);
+        LINK_PROPERTY_BOOL_JS(CanInsertForcedBreak);
+        LINK_PROPERTY_BOOL_JS(CanDeleteForcedBreak);
+        LINK_PROPERTY_BOOL_JS(CanAlignToCharacter);
+    };
+}
+
 namespace NSEditorApi
 {
 	class CAscMenuEvent : public IMenuEventDataBase

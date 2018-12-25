@@ -63,14 +63,6 @@ using namespace NSPresentationEditor;
 class CPPTElement
 {
 public:
-	inline double FixedPointToDouble(unsigned int op)
-	{
-		short			Integral	= op >> 16;
-		unsigned short Fractional	= op - (Integral << 16);
-
-		return Integral + (Fractional / 65536.0);
-	}
-
 	bool ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2);
 	CColor CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme* pTheme);
 	

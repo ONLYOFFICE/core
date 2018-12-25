@@ -278,6 +278,9 @@ namespace NSPresentationEditor
 				{
 					m_oStyles.m_pLevels[i] = pTheme->m_pStyles[0].m_pLevels[i];
 				}
+				
+				if (m_oStyles.m_pLevels[i].is_init() == false) continue;
+
 				if (m_oRuler.tabsStops.size() > 0)
 				{
 					m_oStyles.m_pLevels[i]->m_oPFRun.tabStops = m_oRuler.tabsStops;

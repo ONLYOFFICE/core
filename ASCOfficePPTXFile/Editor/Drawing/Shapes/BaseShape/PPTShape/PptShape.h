@@ -38,15 +38,110 @@
 using namespace NSOfficeDrawing;
 using namespace NSPresentationEditor;
 
+static  double FixedPointToDouble(unsigned int op)
+{
+	short			Integral	= op >> 16;
+	unsigned short Fractional	= op - (Integral << 16);
+
+	return Integral + (Fractional / 65536.0);
+}
+
+namespace PPTShapes
+{
+	struct _3dOptions
+	{
+		_3dOptions() : bEnabled(false), bMetallic(false), bExtrusionColor(false), bLightFace(true),
+			bConstrainRotation(true), bRotationCenterAuto(false), bParallel(true), bFillHarsh(true), bKeyHarsh(true), 
+			nRenderMode(0), dSpecularAmt(0), nEdgeThickness(0x0000319C), nExtrudeForward(0), nExtrudeBackward(0x0006F9F0),
+			nSkewAmount(0x32)
+		{
+			dFillIntensity = FixedPointToDouble(0x00009470);
+			dKeyX		= FixedPointToDouble(0x0000C350);
+			dKeyY		= FixedPointToDouble(0x00000000);
+			dFillX		= FixedPointToDouble(0xFFFF3CB0);
+			dFillY		= FixedPointToDouble(0x00000000);
+			dOriginX	= FixedPointToDouble(0x00008000);
+			dOriginY	= FixedPointToDouble(0xFFFF8000);
+			dSkewAngle	= 225;//FixedPointToDouble(0xFF790000);
+			dXViewpoint	= FixedPointToDouble(0x001312D0);
+			dYViewpoint	= FixedPointToDouble(0xFFECED30);
+		}
+
+		bool bEnabled;
+		bool bMetallic;
+		bool bExtrusionColor;
+		bool bLightFace;
+
+		bool bConstrainRotation;
+		bool bRotationCenterAuto;
+		bool bParallel;
+		bool bKeyHarsh;
+		bool bFillHarsh;
+
+		boost::optional<double> dSpecularAmt;
+		boost::optional<double> dDiffuseAmt;
+		boost::optional<double> dShininess;
+		_INT32 nEdgeThickness;
+		_INT32 nExtrudeForward;
+		_INT32 nExtrudeBackward;
+
+		boost::optional<double> dBottomBevelWidth;
+		boost::optional<double> dBottomBevelHeight;
+		boost::optional<_INT32> nBottomBevelType;
+
+		boost::optional<double> dTopBevelWidth;
+		boost::optional<double> dTopBevelHeight;
+		boost::optional<_INT32> nTopBevelType;
+
+		boost::optional<double> dXRotationAngle;
+		boost::optional<double> dYRotationAngle;
+		boost::optional<double> dRotationAxisX;
+		boost::optional<double> dRotationAxisY;
+		boost::optional<double> dRotationAxisZ;
+		boost::optional<double> dRotationAngle;
+		boost::optional<double> dRotationCenterX;
+		boost::optional<double> dRotationCenterY;
+		boost::optional<double> dRotationCenterZ;
+
+		boost::optional<double> dTolerance;
+		double dXViewpoint;
+		double dYViewpoint;
+		boost::optional<double> dZViewpoint;
+		
+		boost::optional<CColor> oExtrusionColor;
+		boost::optional<CColor> oCrMod;
+		boost::optional<CColor> oExtrusionColorExt;
+		boost::optional<_INT32> nTypeExtrusionColorExt;
+
+		_INT32 nRenderMode;		
+
+		double dOriginX;
+		double dOriginY;
+		double dSkewAngle;
+		_INT32 nSkewAmount;
+
+		boost::optional<double> dAmbientIntensity;
+		boost::optional<double> dKeyIntensity;		
+		double dKeyX;
+		double dKeyY;
+		double dFillIntensity;
+		double dFillX;
+		double dFillY;
+		boost::optional<double> dKeyZ;
+		boost::optional<double> dFillZ;
+	};
+}
+
 class CPPTShape : public CBaseShape
 {
 public:
-    PPTShapes::ShapeType		m_eType;
+    PPTShapes::ShapeType			m_eType;
     NSGuidesVML::CFormulasManager	m_oManager;
+    NSCustomVML::CCustomVML			m_oCustomVML;
 
-    NSCustomVML::CCustomVML m_oCustomVML;
+	PPTShapes::_3dOptions			m_o3dOptions;
 
-    std::wstring m_strPathLimoX;
+	std::wstring m_strPathLimoX;
     std::wstring m_strPathLimoY;
 
     std::vector<std::wstring> m_arStringTextRects;
@@ -54,6 +149,7 @@ public:
 
     bool m_bIsFilled;
     bool m_bIsStroked;
+
     nullable<OOX::VmlOffice::CSignatureLine> m_oSignatureLine;
 
     CPPTShape();

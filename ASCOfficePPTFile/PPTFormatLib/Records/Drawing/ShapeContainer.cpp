@@ -261,7 +261,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 			{
 				pElement->m_oBrush.Type = c_BrushTypeNoFill;
 			}
-			else if (pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			else if (pElement->m_oBrush.Type == c_BrushTypeNotSet )
 			{
 				pElement->m_oBrush.Type = c_BrushTypeSolid;
 			}
@@ -420,7 +420,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			else
 				oAtom.ToColor(&pElement->m_oBrush.Color1);
 
-			if (pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			if (pElement->m_oBrush.Type == c_BrushTypeNotSet )
 				pElement->m_oBrush.Type = c_BrushTypeSolid;
 			
 		}break;
@@ -434,7 +434,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			else
 				oAtom.ToColor(&pElement->m_oBrush.Color2);
 			
-			if (pElement->m_bIsBackground && pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			if (pElement->m_bIsBackground && pElement->m_oBrush.Type == c_BrushTypeNotSet )
 			{
 				pElement->m_oBrush.Type = c_BrushTypeSolid;
 			}
@@ -737,6 +737,28 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 				//контурная
 				pElement->m_oShadow.Visible = fshadowObscured;
 			}
+		}break;
+	case shapeBoolean:
+		{
+			bool fUsefPolicyLabel	= GETBIT(pProperty->m_lValue, 25);
+			bool fUsefPolicyBarcode	= GETBIT(pProperty->m_lValue, 24);
+			bool fUsefFlipHOverride	= GETBIT(pProperty->m_lValue, 23);
+			bool fUsefFlipVOverride	= GETBIT(pProperty->m_lValue, 22);
+			bool fUsefOleIcon		= GETBIT(pProperty->m_lValue, 21);
+			bool fUsefPreferRelativeResize	= GETBIT(pProperty->m_lValue, 20);
+			bool fUsefLockShapeType		= GETBIT(pProperty->m_lValue, 19);
+			bool fUsefInitiator		= GETBIT(pProperty->m_lValue, 18);
+			bool fUsefBackground	= GETBIT(pProperty->m_lValue, 16);
+			
+			bool fPolicyLabel		= fUsefPolicyLabel		? GETBIT(pProperty->m_lValue, 9) : false;
+			bool fPolicyBarcode		= fUsefPolicyBarcode	? GETBIT(pProperty->m_lValue, 8) : false;
+			bool fFlipHOverride		= fUsefFlipHOverride	? GETBIT(pProperty->m_lValue, 7) : false;
+			bool fFlipVOverride		= fUsefFlipVOverride	? GETBIT(pProperty->m_lValue, 6) : false;
+			bool fOleIcon			= fUsefOleIcon			? GETBIT(pProperty->m_lValue, 5) : false;
+			bool fPreferRelativeResize = fUsefPreferRelativeResize ? GETBIT(pProperty->m_lValue, 4) : false;
+			bool fLockShapeType		= fUsefLockShapeType	? GETBIT(pProperty->m_lValue, 3) : false;
+			bool fInitiator			= fUsefInitiator		? GETBIT(pProperty->m_lValue, 2) : false;
+			bool fBackground		= fUsefBackground		? GETBIT(pProperty->m_lValue, 0) : false;
 		}break;
 	case groupShapeBoolean:
 		{

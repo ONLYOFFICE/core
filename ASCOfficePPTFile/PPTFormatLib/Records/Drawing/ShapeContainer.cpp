@@ -261,7 +261,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 			{
 				pElement->m_oBrush.Type = c_BrushTypeNoFill;
 			}
-			else if (pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			else if (pElement->m_oBrush.Type == c_BrushTypeNotSet )
 			{
 				pElement->m_oBrush.Type = c_BrushTypeSolid;
 			}
@@ -420,7 +420,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			else
 				oAtom.ToColor(&pElement->m_oBrush.Color1);
 
-			if (pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			if (pElement->m_oBrush.Type == c_BrushTypeNotSet )
 				pElement->m_oBrush.Type = c_BrushTypeSolid;
 			
 		}break;
@@ -434,7 +434,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			else
 				oAtom.ToColor(&pElement->m_oBrush.Color2);
 			
-			if (pElement->m_bIsBackground && pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			if (pElement->m_bIsBackground && pElement->m_oBrush.Type == c_BrushTypeNotSet )
 			{
 				pElement->m_oBrush.Type = c_BrushTypeSolid;
 			}
@@ -563,23 +563,23 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 // line --------------------------------------------------------
 	case lineBoolean: //Line Style Boolean Properties
 	{
-		bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
-		bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
-		bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
-		bool bLine					= GETBIT(pProperty->m_lValue, 3);
-		bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
-		bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
-		bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
-		bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
-
-		bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
-		bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
-		bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
-		bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
-		bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
-		bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
-		bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
 		bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
+		bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
+		bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
+		bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
+		bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
+		bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
+		bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
+		bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
+
+		bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
+		bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
+		bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
+		bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
+		bool bLine					= GETBIT(pProperty->m_lValue, 3);
+		bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
+		bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
+		bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
 
 		if (bUsefLine)
 			pElement->m_bLine = bLine;				
@@ -738,41 +738,63 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 				pElement->m_oShadow.Visible = fshadowObscured;
 			}
 		}break;
+	case shapeBoolean:
+		{
+			bool fUsefPolicyLabel	= GETBIT(pProperty->m_lValue, 25);
+			bool fUsefPolicyBarcode	= GETBIT(pProperty->m_lValue, 24);
+			bool fUsefFlipHOverride	= GETBIT(pProperty->m_lValue, 23);
+			bool fUsefFlipVOverride	= GETBIT(pProperty->m_lValue, 22);
+			bool fUsefOleIcon		= GETBIT(pProperty->m_lValue, 21);
+			bool fUsefPreferRelativeResize	= GETBIT(pProperty->m_lValue, 20);
+			bool fUsefLockShapeType		= GETBIT(pProperty->m_lValue, 19);
+			bool fUsefInitiator		= GETBIT(pProperty->m_lValue, 18);
+			bool fUsefBackground	= GETBIT(pProperty->m_lValue, 16);
+			
+			bool fPolicyLabel		= fUsefPolicyLabel		? GETBIT(pProperty->m_lValue, 9) : false;
+			bool fPolicyBarcode		= fUsefPolicyBarcode	? GETBIT(pProperty->m_lValue, 8) : false;
+			bool fFlipHOverride		= fUsefFlipHOverride	? GETBIT(pProperty->m_lValue, 7) : false;
+			bool fFlipVOverride		= fUsefFlipVOverride	? GETBIT(pProperty->m_lValue, 6) : false;
+			bool fOleIcon			= fUsefOleIcon			? GETBIT(pProperty->m_lValue, 5) : false;
+			bool fPreferRelativeResize = fUsefPreferRelativeResize ? GETBIT(pProperty->m_lValue, 4) : false;
+			bool fLockShapeType		= fUsefLockShapeType	? GETBIT(pProperty->m_lValue, 3) : false;
+			bool fInitiator			= fUsefInitiator		? GETBIT(pProperty->m_lValue, 2) : false;
+			bool fBackground		= fUsefBackground		? GETBIT(pProperty->m_lValue, 0) : false;
+		}break;
 	case groupShapeBoolean:
 		{
-			bool fUsefLayoutInCell		= GETBIT(pProperty->m_lValue, 0);
-			bool fUsefIsBullet			= GETBIT(pProperty->m_lValue, 1);
-			bool fUsefStandardHR		= GETBIT(pProperty->m_lValue, 2);
-			bool fUsefNoshadeHR			= GETBIT(pProperty->m_lValue, 3);
-			bool fUsefHorizRule			= GETBIT(pProperty->m_lValue, 4);
-			bool fUsefUserDrawn			= GETBIT(pProperty->m_lValue, 5);
-			bool fUsefAllowOverlap		= GETBIT(pProperty->m_lValue, 6);
-			bool fUsefReallyHidden		= GETBIT(pProperty->m_lValue, 7);
-			bool fUsefScriptAnchor		= GETBIT(pProperty->m_lValue, 8);
-			bool fUsefEditedWrap		= GETBIT(pProperty->m_lValue, 9);
-			bool fUsefBehindDocument	= GETBIT(pProperty->m_lValue, 10);
-			bool fUsefOnDblClickNotify	= GETBIT(pProperty->m_lValue, 11);
-			bool fUsefIsButton			= GETBIT(pProperty->m_lValue, 12);
-			bool fUsefOneD				= GETBIT(pProperty->m_lValue, 13);
-			bool fUsefHidden			= GETBIT(pProperty->m_lValue, 14);
-			bool fUsefPrint				= GETBIT(pProperty->m_lValue, 15);
+			bool fUsefLayoutInCell		= GETBIT(pProperty->m_lValue, 31);
+			bool fUsefIsBullet			= GETBIT(pProperty->m_lValue, 30);
+			bool fUsefStandardHR		= GETBIT(pProperty->m_lValue, 29);
+			bool fUsefNoshadeHR			= GETBIT(pProperty->m_lValue, 28);
+			bool fUsefHorizRule			= GETBIT(pProperty->m_lValue, 27);
+			bool fUsefUserDrawn			= GETBIT(pProperty->m_lValue, 26);
+			bool fUsefAllowOverlap		= GETBIT(pProperty->m_lValue, 25);
+			bool fUsefReallyHidden		= GETBIT(pProperty->m_lValue, 24);
+			bool fUsefScriptAnchor		= GETBIT(pProperty->m_lValue, 23);
+			bool fUsefEditedWrap		= GETBIT(pProperty->m_lValue, 22);
+			bool fUsefBehindDocument	= GETBIT(pProperty->m_lValue, 21);
+			bool fUsefOnDblClickNotify	= GETBIT(pProperty->m_lValue, 20);
+			bool fUsefIsButton			= GETBIT(pProperty->m_lValue, 19);
+			bool fUsefOneD				= GETBIT(pProperty->m_lValue, 18);
+			bool fUsefHidden			= GETBIT(pProperty->m_lValue, 17);
+			bool fUsefPrint				= GETBIT(pProperty->m_lValue, 16);
 			
-			bool fLayoutInCell		= fUsefLayoutInCell	? GETBIT(pProperty->m_lValue, 16)	: true;
-			bool fIsBullet			= fUsefIsBullet		? GETBIT(pProperty->m_lValue, 17)	: false;
-			bool fStandardHR		= fUsefStandardHR	? GETBIT(pProperty->m_lValue, 18)	: false;
-			bool fNoshadeHR			= fUsefNoshadeHR	? GETBIT(pProperty->m_lValue, 19)	: false;
-			bool fHorizRule			= fUsefHorizRule	? GETBIT(pProperty->m_lValue, 20)	: false;
-			bool fUserDrawn			= fUsefUserDrawn	? GETBIT(pProperty->m_lValue, 21)	: false;
-			bool fAllowOverlap		= fUsefAllowOverlap	? GETBIT(pProperty->m_lValue, 22)	: true;
-			bool fReallyHidden 		= fUsefReallyHidden		? GETBIT(pProperty->m_lValue, 23) : false;
-			bool fScriptAnchor		= fUsefScriptAnchor		? GETBIT(pProperty->m_lValue, 24) : false;
-			bool fEditedWrap		= fUsefEditedWrap		? GETBIT(pProperty->m_lValue, 25) : false;
-			bool fBehindDocument	= fUsefBehindDocument	? GETBIT(pProperty->m_lValue, 26) : false;
-			bool fOnDblClickNotify	= fUsefOnDblClickNotify ? GETBIT(pProperty->m_lValue, 27) : false;
-			bool fIsButton			= fUsefIsButton		? GETBIT(pProperty->m_lValue, 28)	: false;
-			bool fOneD				= fUsefOneD			? GETBIT(pProperty->m_lValue, 29)	: false;
-			bool fHidden			= fUsefHidden		? GETBIT(pProperty->m_lValue, 30)	: false;
-			bool fPrint				= fUsefPrint		? GETBIT(pProperty->m_lValue, 31)	: true;
+			bool fLayoutInCell		= fUsefLayoutInCell	? GETBIT(pProperty->m_lValue, 15)	: true;
+			bool fIsBullet			= fUsefIsBullet		? GETBIT(pProperty->m_lValue, 14)	: false;
+			bool fStandardHR		= fUsefStandardHR	? GETBIT(pProperty->m_lValue, 13)	: false;
+			bool fNoshadeHR			= fUsefNoshadeHR	? GETBIT(pProperty->m_lValue, 12)	: false;
+			bool fHorizRule			= fUsefHorizRule	? GETBIT(pProperty->m_lValue, 11)	: false;
+			bool fUserDrawn			= fUsefUserDrawn	? GETBIT(pProperty->m_lValue, 10)	: false;
+			bool fAllowOverlap		= fUsefAllowOverlap	? GETBIT(pProperty->m_lValue, 9)	: true;
+			bool fReallyHidden 		= fUsefReallyHidden		? GETBIT(pProperty->m_lValue, 8) : false;
+			bool fScriptAnchor		= fUsefScriptAnchor		? GETBIT(pProperty->m_lValue, 7) : false;
+			bool fEditedWrap		= fUsefEditedWrap		? GETBIT(pProperty->m_lValue, 6) : false;
+			bool fBehindDocument	= fUsefBehindDocument	? GETBIT(pProperty->m_lValue, 5) : false;
+			bool fOnDblClickNotify	= fUsefOnDblClickNotify ? GETBIT(pProperty->m_lValue, 4) : false;
+			bool fIsButton			= fUsefIsButton		? GETBIT(pProperty->m_lValue, 3)	: false;
+			bool fOneD				= fUsefOneD			? GETBIT(pProperty->m_lValue, 2)	: false;
+			bool fHidden			= fUsefHidden		? GETBIT(pProperty->m_lValue, 1)	: false;
+			bool fPrint				= fUsefPrint		? GETBIT(pProperty->m_lValue, 0)	: true;
 
 			pElement->m_bHidden = fHidden || fIsBullet;
 							//presentation_ticio_20100610.ppt
@@ -1092,23 +1114,20 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			{
 			case NSOfficeDrawing::alignTextLeft:
 				{
-					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
-					break;
-				}
+					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;					
+				}break;
 			case NSOfficeDrawing::alignTextCenter:
 				{
-					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-					break;
-				}
+					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;					
+				}break;
 			case NSOfficeDrawing::alignTextRight:
 				{
-					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;
-					break;
-				}
+					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;					
+				}break;
 			default:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-				}
+				}break;
 			};
 			break;
 		}
@@ -1211,9 +1230,239 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 				pParentShape->m_oText.m_bAutoFit = bFitShapeToText;
 
 		}break;
+	case NSOfficeDrawing::c3DSpecularAmt:
+		{
+			pShape->m_o3dOptions.dSpecularAmt = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DDiffuseAmt:
+		{
+			pShape->m_o3dOptions.dDiffuseAmt = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+    case NSOfficeDrawing::c3DShininess:
+		{
+			pShape->m_o3dOptions.dShininess = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+    case NSOfficeDrawing::c3DEdgeThickness:
+		{
+			pShape->m_o3dOptions.nEdgeThickness = pProperty->m_lValue;
+		}break;
+	case NSOfficeDrawing::C3DExtrudeForward:
+		{
+			pShape->m_o3dOptions.nExtrudeForward = pProperty->m_lValue;
+		}break;
+	case NSOfficeDrawing::c3DExtrudeBackward:
+		{
+			pShape->m_o3dOptions.nExtrudeBackward = pProperty->m_lValue;
+		}break;
+	case NSOfficeDrawing::c3DExtrudePlane:
+		{
+			//ExtrudePlane = 0;
+		}break;
+	case NSOfficeDrawing::c3DExtrusionColor:
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
+
+			CColor tmp;
+			if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else				oAtom.ToColor(&tmp);			
+
+			pShape->m_o3dOptions.oExtrusionColor = tmp;
+		}break;
+	case NSOfficeDrawing::c3DCrMod:
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
+
+			CColor tmp;
+			if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else				oAtom.ToColor(&tmp);			
+				
+			pShape->m_o3dOptions.oCrMod = tmp;
+		}break;
+	case NSOfficeDrawing::c3DExtrusionColorExt:
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
+
+			CColor tmp;
+			if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else				oAtom.ToColor(&tmp);			
+			pShape->m_o3dOptions.oExtrusionColorExt = tmp;
+		}break;
+	case NSOfficeDrawing::c3DExtrusionColorExtMod:			
+		{
+			pShape->m_o3dOptions.nTypeExtrusionColorExt = (pProperty->m_lValue & 0x00000300) >> 8;
+		}break;
+	case NSOfficeDrawing::c3DBottomBevelWidth:
+		{
+			pShape->m_o3dOptions.dBottomBevelWidth = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DBottomBevelHeight:
+		{
+			pShape->m_o3dOptions.dBottomBevelHeight = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DBottomBevelType:
+		{
+			pShape->m_o3dOptions.nBottomBevelType = pProperty->m_lValue;
+		}break;
+	case NSOfficeDrawing::c3DTopBevelWidth:
+		{
+			pShape->m_o3dOptions.dTopBevelWidth = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DTopBevelHeight:
+		{
+			pShape->m_o3dOptions.dTopBevelHeight = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DTopBevelType:
+		{
+			pShape->m_o3dOptions.nTopBevelType = pProperty->m_lValue;
+		}break;
+	case NSOfficeDrawing::c3DBoolean:
+		{
+			bool fUsef3D					= GETBIT(pProperty->m_lValue, 19);
+			bool fUsefc3DMetallic			= GETBIT(pProperty->m_lValue, 18);
+			bool fUsefc3DUseExtrusionColor	= GETBIT(pProperty->m_lValue, 17);
+			bool fUsefc3DLightFace			= GETBIT(pProperty->m_lValue, 16);
+			
+			pShape->m_o3dOptions.bEnabled		= fUsef3D					? GETBIT(pProperty->m_lValue, 3)	: false;
+			pShape->m_o3dOptions.bMetallic		= fUsefc3DMetallic			? GETBIT(pProperty->m_lValue, 2)	: false;
+			pShape->m_o3dOptions.bExtrusionColor= fUsefc3DUseExtrusionColor	? GETBIT(pProperty->m_lValue, 1)	: false;
+			pShape->m_o3dOptions.bLightFace		= fUsefc3DLightFace			? GETBIT(pProperty->m_lValue, 0)	: true;
+
+		}break;
+	case NSOfficeDrawing::c3DYRotationAngle:
+		{
+			double val = FixedPointToDouble(pProperty->m_lValue);
+			if (val < 0) val += 360;
+			pShape->m_o3dOptions.dYRotationAngle = val;
+		}break;
+	case NSOfficeDrawing::c3DXRotationAngle:
+		{
+			double val = FixedPointToDouble(pProperty->m_lValue);
+			if (val < 0) val += 360;
+			pShape->m_o3dOptions.dXRotationAngle = val;
+		}break;
+	case NSOfficeDrawing::c3DRotationAxisX:
+		{
+			pShape->m_o3dOptions.dRotationAxisX = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DRotationAxisY:
+		{
+			pShape->m_o3dOptions.dRotationAxisY = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DRotationAxisZ:
+		{
+			pShape->m_o3dOptions.dRotationAxisZ = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DRotationAngle:
+		{
+			pShape->m_o3dOptions.dRotationAngle = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DRotationCenterX:
+		{
+			pShape->m_o3dOptions.dRotationCenterX = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DRotationCenterY:
+		{
+			pShape->m_o3dOptions.dRotationCenterY = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DRotationCenterZ:
+		{
+			pShape->m_o3dOptions.dRotationCenterZ = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DRenderMode:
+		{
+			pShape->m_o3dOptions.nRenderMode = pProperty->m_lValue;
+		}break;
+	case NSOfficeDrawing::c3DTolerance:
+		{
+			pShape->m_o3dOptions.dTolerance = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DXViewpoint:
+		{
+			pShape->m_o3dOptions.dXViewpoint = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DYViewpoint:
+		{
+			pShape->m_o3dOptions.dYViewpoint = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DZViewpoint:
+		{
+			pShape->m_o3dOptions.dZViewpoint = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DOriginX:
+		{
+			pShape->m_o3dOptions.dOriginX = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DOriginY:
+		{
+			pShape->m_o3dOptions.dOriginY = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DSkewAngle:
+		{
+			double val = FixedPointToDouble(pProperty->m_lValue);
+			if (val <= 0) val += 360;
+			pShape->m_o3dOptions.dSkewAngle = val;
+		}break;
+	case NSOfficeDrawing::c3DSkewAmount:
+		{
+			pShape->m_o3dOptions.nSkewAmount = pProperty->m_lValue;
+		}break;
+	case NSOfficeDrawing::c3DAmbientIntensity:
+		{
+			pShape->m_o3dOptions.dAmbientIntensity = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DKeyX:
+		{
+			pShape->m_o3dOptions.dKeyX = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DKeyY:
+		{
+			pShape->m_o3dOptions.dKeyY = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DKeyZ:
+		{
+			pShape->m_o3dOptions.dKeyZ = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DKeyIntensity:
+		{
+			pShape->m_o3dOptions.dKeyIntensity = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DFillX:
+		{
+			pShape->m_o3dOptions.dFillX = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DFillY:
+		{
+			pShape->m_o3dOptions.dFillY = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DFillZ:
+		{
+			pShape->m_o3dOptions.dFillZ = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DFillIntensity:
+		{
+			pShape->m_o3dOptions.dFillIntensity = FixedPointToDouble(pProperty->m_lValue);
+		}break;
+	case NSOfficeDrawing::c3DStyleBoolean:
+		{
+			bool fUsefc3DConstrainRotation	= GETBIT(pProperty->m_lValue, 20);
+			bool fUsefc3DRotationCenterAuto	= GETBIT(pProperty->m_lValue, 19);
+			bool fUsefc3DParallel			= GETBIT(pProperty->m_lValue, 18);
+			bool fUsefc3DKeyHarsh			= GETBIT(pProperty->m_lValue, 17);
+			bool fUsefc3DFillHarsh			= GETBIT(pProperty->m_lValue, 16);
+			
+			pShape->m_o3dOptions.bConstrainRotation	= fUsefc3DConstrainRotation	? GETBIT(pProperty->m_lValue, 4)	: true;
+			pShape->m_o3dOptions.bRotationCenterAuto= fUsefc3DRotationCenterAuto? GETBIT(pProperty->m_lValue, 3)	: false;
+			pShape->m_o3dOptions.bParallel			= fUsefc3DParallel			? GETBIT(pProperty->m_lValue, 2)	: true;
+			pShape->m_o3dOptions.bKeyHarsh			= fUsefc3DKeyHarsh			? GETBIT(pProperty->m_lValue, 1)	: true;
+			pShape->m_o3dOptions.bFillHarsh			= fUsefc3DFillHarsh			? GETBIT(pProperty->m_lValue, 0)	: true;
+		}break;
 	default:
 		{
 			int unknown_value = pProperty->m_lValue;
+			unknown_value = unknown_value;
 		}break;			
 	}
 }
@@ -2203,7 +2452,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 				pShape->m_pShape->m_oText.m_oAttributes.m_oTextBrush = pShape->m_oBrush;
 
 				pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignHorizontal	= 1;
-				pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical		= 1;
+				pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical	= 1;
 
 				pShape->m_pShape->m_lDrawType = c_ShapeDrawType_Text;
 				break;

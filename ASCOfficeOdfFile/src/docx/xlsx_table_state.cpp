@@ -137,7 +137,8 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
 	in_cell(false),
 	bEndTable(false),
 	bRTL(false),
-	bHidden(false)
+	bHidden(false),
+	bProtected(false)
 {        
 	odf_reader::style_table_properties	* table_prop = NULL;
 	odf_reader::style_instance			* tableStyle = context_->root()->odf_context().styleContainer().style_by_name(table_style_, odf_types::style_family::Table, false);

@@ -2911,6 +2911,8 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 
 	_CP_OPT(int) anchor_type_x, anchor_type_y;
 
+	bool bThrough = oox_anchor->m_oBehindDoc.IsInit() ? oox_anchor->m_oBehindDoc->ToBool(): false;
+
 	if (oox_anchor->m_oPositionV.IsInit() && oox_anchor->m_oPositionV->m_oRelativeFrom.IsInit())
 	{
 		int vert_rel = oox_anchor->m_oPositionV->m_oRelativeFrom->GetValue();
@@ -3005,6 +3007,12 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::None);
 		wrap_set = true;
+
+		if (bThrough)
+		{//эффект_штурмовика.docx
+			odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::RunThrough);
+			odt_context->drawing_context()->set_object_background(true);
+		}
 	}
 	else if (oox_anchor->m_oAllowOverlap.IsInit())
 	{

@@ -131,6 +131,7 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 
 //----------------------------------------------------------------------------------------------------------------
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
+	last_dump_page_properties_	(true),
 	next_dump_page_properties_	(false),
 	page_break_					(false),
 	page_break_after_			(false),
@@ -1425,14 +1426,22 @@ void docx_conversion_context::next_dump_page_properties(bool val)
 	if (process_headers_footers_ && val) return;
 		
 	next_dump_page_properties_ = val;
+	if (val)
+		last_dump_page_properties(true);
 }
 
 bool docx_conversion_context::is_next_dump_page_properties()
 {
     return next_dump_page_properties_;    
 }
-
-
+void docx_conversion_context::last_dump_page_properties(bool val)
+{
+	last_dump_page_properties_ = val;
+}
+bool docx_conversion_context::is_last_dump_page_properties()
+{
+    return last_dump_page_properties_;    
+}
 void docx_conversion_context::start_text_list_style(const std::wstring & StyleName)
 {
     text_list_style_name_ = StyleName;    

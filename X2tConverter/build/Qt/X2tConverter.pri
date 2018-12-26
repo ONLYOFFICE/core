@@ -29,13 +29,8 @@ core_windows {
     QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
 }
 
-#CONFIG += build_for_centos6
-build_for_centos6 {
-core_linux_64 {
-    QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux-x86-64.so.2
-} else {
-    QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux.so.2
-}
+core_linux {
+    QMAKE_LFLAGS += -Wl,--rpath=./:./system
 }
 
 DEFINES += UNICODE \

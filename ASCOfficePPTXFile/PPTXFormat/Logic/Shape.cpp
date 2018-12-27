@@ -600,7 +600,7 @@ namespace PPTX
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
             
 			std::wstring strId		= L"shape "		+ std::to_wstring(pWriter->m_lObjectIdVML);
-			std::wstring strSpid	= L"_x0000_s"	+ XmlUtils::IntToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
+			std::wstring strSpid	= L"_x0000_s"	+ std::to_wstring(pWriter->m_lObjectIdVML);
 			
 			pWriter->m_lObjectIdVML++;
 

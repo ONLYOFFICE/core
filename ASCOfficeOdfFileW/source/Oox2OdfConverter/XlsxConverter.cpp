@@ -106,7 +106,7 @@ OOX::IFileContainer* XlsxConverter::current_document()
 	else
 		return NULL;
 }
-smart_ptr<OOX::File> XlsxConverter::find_file_by_id(std::wstring sId)
+smart_ptr<OOX::File> XlsxConverter::find_file_by_id(const std::wstring & sId)
 {
 	smart_ptr<OOX::File> oFile;
 	
@@ -117,7 +117,7 @@ smart_ptr<OOX::File> XlsxConverter::find_file_by_id(std::wstring sId)
 		
 	return oFile;
 }
-std::wstring XlsxConverter::find_link_by_id (std::wstring sId, int type)
+std::wstring XlsxConverter::find_link_by_id (const std::wstring & sId, int type)
 {
     smart_ptr<OOX::File>	oFile;
 	std::wstring			ref;
@@ -441,8 +441,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
 	if (!oox_background) return;
 	if (!oox_background->m_oId.IsInit())return;
 
-	std::wstring sID, pathImage, href;
-	sID         = oox_background->m_oId->GetValue();
+	std::wstring pathImage, href, sID = oox_background->m_oId->GetValue();
+
 	pathImage   = find_link_by_id(sID, 1);
 	href		= ods_context->add_image(pathImage);
 
@@ -539,8 +539,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 	if (oox_sheet == NULL)return;
 
 	std::wstring ref = oox_hyperlink->m_oRef.IsInit() ? oox_hyperlink->m_oRef.get() : L"";
-	std::wstring link;
-	
+	std::wstring link;	
+	std::wstring display = oox_hyperlink->m_oDisplay.IsInit() ? oox_hyperlink->m_oDisplay.get() : L"";
+
 	if (oox_hyperlink->m_oRid.IsInit() && oox_sheet->m_pCurRels.IsInit())
 	{
 		OOX::Rels::CRelationShip* oRels = NULL;
@@ -550,10 +551,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 			if(oRels->IsExternal())
 				link= oRels->Target().GetPath();
 		}
+		ods_context->add_hyperlink(ref, link, display, false);
 	}
-	std::wstring display = oox_hyperlink->m_oDisplay.IsInit() ? oox_hyperlink->m_oDisplay.get() : L"";
-	ods_context->add_hyperlink(ref, link, display);
-
+	else if (oox_hyperlink->m_oLocation.IsInit())
+	{
+		link = oox_hyperlink->m_oLocation.get();
+		ods_context->add_hyperlink(ref, link, display, true);
+	}
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::CRow *oox_row_prev)
@@ -1745,23 +1749,23 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorder *oox_border, odf_writer::s
 	convert(oox_border->m_oStart.GetPointer()	, left);
 	convert(oox_border->m_oEnd.GetPointer()		, right);
 	
-	if (bottom == top && top == left && left== right && bottom.length() > 0)
+	if (bottom == top && top == left && left == right && !bottom.empty())
 	{
 		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = left;
 	}
 	else
 	{
-		if (bottom.length() >0 )table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if (top.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
-		if (left.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
-		if (right.length() >0 ) table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
+		if (!bottom.empty())table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (!top.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
+		if (!left.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
+		if (!right.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
 	}
 
 	convert(oox_border->m_oDiagonal.GetPointer(), other);
 	
-	if (oox_border->m_oDiagonalDown.IsInit() && other.length()>0) //and true???
+	if (oox_border->m_oDiagonalDown.IsInit() && !other.empty()) //and true???
 		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_= other;
-	if (oox_border->m_oDiagonalUp.IsInit() && other.length()>0) //and true???
+	if (oox_border->m_oDiagonalUp.IsInit() && !other.empty()) //and true???
 		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_= other;
 	//nullable<CBorderProp>						m_oHorizontal;
 	//nullable<CBorderProp>						m_oVertical;
@@ -2205,19 +2209,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 		}
 		if (object->m_oRid.IsInit())
 		{
-			std::wstring pathOle;
-	
 			std::wstring sID = object->m_oRid->GetValue();
-			pathOle = find_link_by_id(sID, 4);
+			
+			std::wstring pathOle = find_link_by_id(sID, 4);
 
 			odf_ref_object = odf_context()->add_oleobject(pathOle);
 		}
 		if ((object->m_oObjectPr.IsInit()) && (object->m_oObjectPr->m_oRid.IsInit()))
 		{
-			std::wstring pathImage;
-	
 			std::wstring sID = object->m_oObjectPr->m_oRid->GetValue();
-			pathImage = find_link_by_id(sID, 1);
+			
+			std::wstring pathImage = find_link_by_id(sID, 1);
 					
 			odf_ref_image = odf_context()->add_imageobject(pathImage);
 		}

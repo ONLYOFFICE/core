@@ -570,28 +570,36 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		OOX::Image* pImage = dynamic_cast<OOX::Image*>(oFile.operator->());
 
 		if (pImage)
+		{
 			ref = pImage->filename().GetPath();
+		}
 	}
 	if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
 	{
 		OOX::HyperLink* pHyperlink = dynamic_cast<OOX::HyperLink*>(oFile.operator->());
 		
 		if (pHyperlink && pHyperlink->bHyperlink)
+		{
 			ref = pHyperlink->Uri().GetPath();
+		}
 	}
 	if (type == 3)
 	{
 		OOX::Media* pMedia = dynamic_cast<OOX::Media*>(oFile.operator->());
 
 		if (pMedia)
+		{
 			ref = pMedia->filename().GetPath();
+		}
 	}
 	if (type == 4)
 	{
 		OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(oFile.operator->());
 
 		if (pOleObject)
+		{
 			ref = pOleObject->filename().GetPath();
+		}
 	}
 	return ref;
 }

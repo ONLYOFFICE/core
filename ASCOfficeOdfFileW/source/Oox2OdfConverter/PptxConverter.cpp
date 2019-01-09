@@ -143,7 +143,7 @@ OOX::IFileContainer* PptxConverter::current_document()
 	else
 		return pptx_document;
 }
-NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(std::wstring sId)
+NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(const std::wstring & sId)
 {
 	smart_ptr<OOX::File> oFile;
 	if (pptx_document)
@@ -159,7 +159,7 @@ NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(std::wstring sId)
 	return oFile;
 }
 
-std::wstring PptxConverter::find_link_by_id (std::wstring sId, int type)
+std::wstring PptxConverter::find_link_by_id (const std::wstring & sId, int type)
 {
 	if(!pptx_document) return L"";
 
@@ -555,10 +555,11 @@ void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 	
 	if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
 	{
-		std::wstring sID		= oox_transition->sndAc->stSnd->embed.get();
-		std::wstring pathAudio	= find_link_by_id(sID, 3);
+		std::wstring sID = oox_transition->sndAc->stSnd->embed.get();
 		
-		std::wstring odf_ref	= odf_context()->add_media(pathAudio);
+		std::wstring pathAudio = find_link_by_id(sID, 3);
+		
+		std::wstring odf_ref = odf_context()->add_media(pathAudio);
 
 		odp_context->current_slide().set_transition_sound(odf_ref, oox_transition->sndAc->stSnd->loop.get_value_or(false));
 	}

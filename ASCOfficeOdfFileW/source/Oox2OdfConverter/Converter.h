@@ -379,11 +379,11 @@ public:
        
 		cpdoccore::odf_writer::package::odf_document		*output_document;
 
-				std::wstring								find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type);
-		virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
-		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;
+				std::wstring						find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type);
+		virtual std::wstring						find_link_by_id(const std::wstring & sId, int type) = 0;
+		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id(const std::wstring & sId) = 0;
 		
-		OOX::IFileContainer									*oox_current_child_document;
+		OOX::IFileContainer							*oox_current_child_document;
 		
 		void convert (OOX::JsaProject *jsaProject);	
 		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	

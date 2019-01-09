@@ -93,7 +93,7 @@ public:
 	void add_external_reference(const std::wstring & ref);
 
     void add_merge_cells(const std::wstring & ref);
-	void add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display);
+	void add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, bool external = true);
 
 	void start_comment		(int col, int row, std::wstring & author);
 	void set_comment_rect	(double l, double t, double w, double h);

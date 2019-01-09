@@ -582,7 +582,7 @@ office_element_ptr  & ods_table_state::current_cell_element()
 }
 ods_hyperlink_state & ods_table_state::current_hyperlink()
 {
-	if ((cells_size_ >0 && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
+	if ((cells_size_ > 0 && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
 	{
 		return hyperlinks_[cells_.back().hyperlink_idx];
 	}
@@ -683,12 +683,19 @@ void ods_table_state::add_definded_expression(office_element_ptr & elm)
 	if (!table_defined_expressions_)return;
 	table_defined_expressions_->add_child_element(elm);
 }
-void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link)
+void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation)
 {
 	ods_hyperlink_state state;
-	
+	state.row = row;  state.col = col; state.ref = ref; state.bLocation = bLocation;
 
-	state.row=row;  state.col =col; state.ref = ref, state.link = link;
+	if (state.bLocation)
+	{
+		state.link = L"#" + formulas_converter_table.convert_named_ref(link);
+	}
+	else
+	{
+		state.link = link;		
+	}
 
 	hyperlinks_.push_back(state);
 }
@@ -696,7 +703,7 @@ void ods_table_state::start_comment(int col, int row, std::wstring & author)
 {
 	ods_comment_state state;
 
-	state.row=row;  state.col =col; state.author = author;	
+	state.row = row;  state.col = col; state.author = author;	
 	create_element(L"office", L"annotation", state.elm, context_);
 
 	comments_.push_back(state);
@@ -1424,7 +1431,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 ///////////////////////////////////////////////////
 void ods_table_state::start_conditional_formats()
 {
-	office_element_ptr		elm;
+	office_element_ptr elm;
 	create_element(L"calcext", L"conditional-formats",elm,context_);
 
 	current_level_.back()->add_child_element(elm);
@@ -1437,7 +1444,7 @@ void ods_table_state::end_conditional_formats()
 }
 void ods_table_state::start_conditional_format(std::wstring ref)
 {
-	office_element_ptr		elm;
+	office_element_ptr elm;
 	create_element(L"calcext", L"conditional-format", elm, context_);
 
 	current_level_.back()->add_child_element(elm);

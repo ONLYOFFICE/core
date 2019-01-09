@@ -179,8 +179,8 @@ struct ods_element_state
 
 struct ods_cell_state : ods_element_state
 {
-    int col;
-    int row;
+    int col = -1;
+    int row = -1;
 
     int hyperlink_idx = -1;
     int comment_idx = -1;
@@ -191,14 +191,16 @@ struct ods_cell_state : ods_element_state
 struct ods_hyperlink_state
 {
 	std::wstring ref;
-    int col;
-    int row;
+    int col = -1;
+    int row = -1;
+	
 	std::wstring link;
+	bool bLocation = false;
 };
 struct ods_comment_state
 {
-    int col;
-    int row;
+    int col = -1;
+    int row = -1;
 	std::wstring author;
 
 	office_element_ptr elm;
@@ -326,7 +328,8 @@ public:
 	void end_conditional_formats();
 
 ///////////////////////////////
-    void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
+    void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation = false);
+	
 	void add_definded_expression(office_element_ptr & elm);
 
     void start_comment(int col, int row, std::wstring & author);

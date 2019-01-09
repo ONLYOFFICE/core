@@ -274,7 +274,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			pathImage = oox_picture->blipFill.blip->oleFilepathImage;
 		}
 		std::wstring pathOle;
-		
+	
 		if (oox_picture->oleObject->m_oId.IsInit())
 		{
 			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4);
@@ -1030,10 +1030,11 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 		if (oox_bitmap_fill->blip.IsInit())
 		{
             std::wstring sID, pathImage;
-            if (oox_bitmap_fill->blip->embed.IsInit())
+            
+			if (oox_bitmap_fill->blip->embed.IsInit())
             {
                 sID         = oox_bitmap_fill->blip->embed->get();
-                pathImage   = find_link_by_id(sID,1);
+                pathImage   = find_link_by_id(sID, 1);
 
                 if (!pathImage.empty())
                 {
@@ -1505,6 +1506,7 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 		if (buBlip.blip.embed.IsInit())
 		{
 			std::wstring sID = buBlip.blip.embed->get();
+			
 			std::wstring pathImage = find_link_by_id(sID, 1);
 
 			if (pathImage.empty())
@@ -2166,6 +2168,7 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
 		
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
+		
 		text_context->add_hyperlink(hlink, oox_run->GetText());
 	}
 	else
@@ -2200,6 +2203,7 @@ void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 	if ((oox_fld->rPr.IsInit()) && (oox_fld->rPr->hlinkClick.IsInit()) && (oox_fld->rPr->hlinkClick->id.IsInit()))
 	{
 		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2);
+		
 		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText());
 
 	}

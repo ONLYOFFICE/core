@@ -146,7 +146,7 @@ OOX::IFileContainer* DocxConverter::current_document()
 		return dynamic_cast<OOX::IFileContainer*>(docx_document->m_pDocument);
 	}
 }
-NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
+NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(const std::wstring &sId)
 {
 	smart_ptr<OOX::File> oFile;
 
@@ -158,7 +158,7 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
 	return oFile;
 }
 
-std::wstring DocxConverter::find_link_by_id (std::wstring sId, int type)
+std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
 {
 	if (!docx_document) return L"";
 
@@ -3142,6 +3142,9 @@ void DocxConverter::convert_settings()
 
 	if (!docx_document->m_pSettings) return;
 
+	if (docx_document->m_pSettings->m_oWriteProtection.IsInit())
+	{
+	}
 	if (docx_document->m_pSettings->m_oZoom.IsInit())
 	{
 	}
@@ -3273,7 +3276,7 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(),2);
+		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
 	}
 	else if (oox_hyperlink->m_sAnchor.IsInit())
 	{

@@ -26,6 +26,7 @@ add_library(${LIB_NAME_EDITOR_XML} STATIC ${XML_EDITOR_CPP})
 target_include_directories(${LIB_NAME_EDITOR_XML}
     PUBLIC
         ${XML_EDITOR_DIR}include/
+    PRIVATE
         ${XML_EDITOR_DIR}build/qt/
         ${XML_EDITOR_DIR}libxml2/
         ${XML_EDITOR_DIR}libxml2/include/

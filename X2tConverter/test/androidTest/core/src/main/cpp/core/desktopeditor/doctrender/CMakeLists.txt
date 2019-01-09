@@ -32,7 +32,7 @@ target_link_libraries(${LIB_NAME_DOCT_RENDER}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_DOCT_RENDER}
-    PUBLIC
+    PRIVATE
         ${DOCT_RENDER_DIR}
 )
 

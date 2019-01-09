@@ -89,7 +89,7 @@ target_link_libraries(${LIB_NAME_FONT_ENGINE}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_FONT_ENGINE}
-    PUBLIC
+    PRIVATE
         ${FONT_ENGINE_DIR}
         ${FONT_ENGINE_DIR}fontconverter
         ${GRAPHICS_EDITOR_DIR}

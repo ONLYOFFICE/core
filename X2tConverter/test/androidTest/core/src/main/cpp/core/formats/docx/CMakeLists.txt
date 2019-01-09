@@ -34,7 +34,7 @@ target_link_libraries(${LIB_NAME_DOCX}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_DOCX}
-    PUBLIC
+    PRIVATE
         ${DOCX_FILE_DIR}DocWrapper/
         ${DOCX_FILE_DIR}BinReader/
         ${DOCX_FILE_DIR}BinWriter/

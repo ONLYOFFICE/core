@@ -31,7 +31,7 @@ target_link_libraries(${LIB_NAME_RTF}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_RTF}
-    PUBLIC
+    PRIVATE
         ${RTF_FILE_DIR}RtfFormatLib/Linux/
         ${RTF_FILE_DIR}source/
         ${RTF_FILE_DIR}source/Reader/

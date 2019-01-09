@@ -75,7 +75,7 @@ target_link_libraries(${LIB_NAME_XLS}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_XLS}
-    PUBLIC
+    PRIVATE
         ${XLS_FILE_DIR}source/Common/
         ${XLS_FILE_DIR}source/XlsFormat/
         ${XLS_FILE_DIR}source/XlsFormat/Auxiliary/

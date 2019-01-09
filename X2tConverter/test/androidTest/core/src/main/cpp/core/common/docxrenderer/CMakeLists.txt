@@ -22,7 +22,7 @@ add_library(${LIB_NAME_DOCX_RENDER} STATIC ${DOCX_RENDER_CPP})
 
 # Add include files .h
 target_include_directories(${LIB_NAME_DOCX_RENDER}
-    PUBLIC
+    PRIVATE
         ${DOCX_RENDER_DIR}
         ${DOCX_RENDER_DIR}src/logic/
 )

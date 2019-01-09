@@ -18,12 +18,6 @@ file(GLOB COMMON_EDITOR_CPP ${COMMON_EDITOR_DIR}*.cpp)
 # Set targer as static library
 add_library(${LIB_NAME_EDITOR_COMMON} STATIC ${COMMON_EDITOR_CPP})
 
-# Add include files .h
-target_include_directories(${LIB_NAME_EDITOR_COMMON}
-    INTERFACE
-        ${COMMON_EDITOR_DIR}../
-)
-
 # Set target definition
 target_compile_definitions(${LIB_NAME_EDITOR_COMMON}
     PRIVATE _LINUX

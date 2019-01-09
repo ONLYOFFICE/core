@@ -34,7 +34,7 @@ target_link_libraries(${LIB_NAME_XPS}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_XPS}
-    PUBLIC
+    PRIVATE
         ${XPS_FILE_DIR}
         ${XPS_FILE_DIR}XpsLib/
 )

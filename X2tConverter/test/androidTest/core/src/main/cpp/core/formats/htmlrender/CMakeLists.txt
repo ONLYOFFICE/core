@@ -29,7 +29,7 @@ target_link_libraries(${LIB_NAME_HTML_RENDER}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_HTML_RENDER}
-    PUBLIC
+    PRIVATE
         ${HTML_RENDER_DIR}src/
         ${HTML_RENDER_DIR}include/
 )

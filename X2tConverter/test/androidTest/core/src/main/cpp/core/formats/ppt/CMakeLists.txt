@@ -30,7 +30,7 @@ target_link_libraries(${LIB_NAME_PPT}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_PPT}
-    PUBLIC
+    PRIVATE
         ${PPT_FILE_DIR}PPTFormatLib/
         ${PPT_FILE_DIR}PPTFormatLib/Linux/
         ${PPT_FILE_DIR}PPTFormatLib/Reader/

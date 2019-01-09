@@ -34,9 +34,8 @@ target_link_libraries(${LIB_NAME_DOCXFORMAT}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_DOCXFORMAT}
-    PUBLIC
-        ${DOCXFORMAT_DIR}DocxFormatLib/
     PRIVATE
+        ${DOCXFORMAT_DIR}DocxFormatLib/
         ${WORKAROUND_DIR}/gcvt/
         ${DOCXFORMAT_DIR}Source/
         ${DOCXFORMAT_DIR}Source/Base/

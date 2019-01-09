@@ -20,6 +20,6 @@ add_library(${LIB_NAME_POLE} STATIC ${POLE_CPP})
 
 # Add include files .h
 target_include_directories(${LIB_NAME_POLE}
-    PUBLIC
+    PRIVATE
         ${POLE_DIR}
 )

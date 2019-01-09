@@ -31,9 +31,8 @@ target_link_libraries(${LIB_NAME_DJVU}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_DJVU}
-    PUBLIC
-        ${DJVU_DIR}
     PRIVATE
+        ${DJVU_DIR}
         ${DJVU_DIR}libdjvu/
         ${WORKAROUND_DIR}/mblen/
 )

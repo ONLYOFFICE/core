@@ -22,7 +22,7 @@ add_library(${LIB_NAME_HTML_FILE} STATIC ${HTML_FILE_CPP})
 
 # Add include files .h
 target_include_directories(${LIB_NAME_HTML_FILE}
-    PUBLIC
+    PRIVATE
         ${HTML_FILE_DIR}
 )
 

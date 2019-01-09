@@ -19,11 +19,14 @@ file(GLOB UNICODE_CONVERTER_CPP ${UNICODE_CONVERTER_DIR}*.cpp)
 add_library(${LIB_NAME_UNICODE_CONVERTER} STATIC ${UNICODE_CONVERTER_CPP})
 
 # Add include files .h
-target_include_directories(${LIB_NAME_UNICODE_CONVERTER} PUBLIC ${UNICODE_CONVERTER_DIR})
+target_include_directories(${LIB_NAME_UNICODE_CONVERTER}
+    PRIVATE
+        ${UNICODE_CONVERTER_DIR}
+)
 
 # Add dependency library
 target_link_libraries(${LIB_NAME_UNICODE_CONVERTER}
-    PUBLIC
+    PRIVATE
         ${LIB_NAME_ICU_UC}
         ${LIB_NAME_ICU_DATA}
         ${LIB_NAME_ICU_i18n}

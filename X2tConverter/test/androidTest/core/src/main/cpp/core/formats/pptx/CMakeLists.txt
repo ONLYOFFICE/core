@@ -43,7 +43,7 @@ target_link_libraries(${LIB_NAME_PPTX}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_PPTX}
-    PUBLIC
+    PRIVATE
         ${PPTX_FILE_DIR}
         ${PPTX_FILE_DIR}PPTXLib/Linux/PPTXFormatLib/
         ${PPTX_FILE_DIR}Editor/

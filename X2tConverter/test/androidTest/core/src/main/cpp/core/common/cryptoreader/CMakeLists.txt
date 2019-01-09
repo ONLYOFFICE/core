@@ -28,6 +28,6 @@ target_link_libraries(${LIB_NAME_CRYPTO_READER}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_CRYPTO_READER}
-    PUBLIC
+    PRIVATE
         ${CRYPTO_READER_DIR}source/
 )

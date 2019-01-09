@@ -32,10 +32,9 @@ add_library(${LIB_NAME_OFFICE_UTILS} STATIC ${OFFICE_UTILS_CPP})
 
 # Add include files .h
 target_include_directories(${LIB_NAME_OFFICE_UTILS}
-    PUBLIC
+    PRIVATE
         ${OFFICE_UTILS_DIR}
         ${OFFICE_UTILS_DIR}${ZLIB_NAME}/
-    PRIVATE
         ${OFFICE_UTILS_DIR}${ZLIB_NAME}/contrib/minizip/
 )
 

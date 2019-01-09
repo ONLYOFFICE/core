@@ -43,7 +43,7 @@ target_link_libraries(${LIB_NAME_ODF_READER}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_ODF_READER}
-    PUBLIC
+    PRIVATE
         ${ODF_READER_FILE_DIR}include/
         ${ODF_READER_FILE_DIR}linux/
         ${ODF_READER_FILE_DIR}formulasconvert/

@@ -29,9 +29,8 @@ target_link_libraries(${LIB_NAME_PDF_READER}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_PDF_READER}
-    PUBLIC
-        ${PDF_READER_DIR}
     PRIVATE
+        ${PDF_READER_DIR}
         ${PDF_READER_DIR}Src/
         ${PDF_READER_DIR}Resources/
 )

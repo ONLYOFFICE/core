@@ -33,9 +33,8 @@ target_link_libraries(${LIB_NAME_DOC}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_DOC}
-    PUBLIC
-        ${DOC_FILE_DIR}DocFormatLib/
     PRIVATE
+        ${DOC_FILE_DIR}DocFormatLib/
         ${DOC_FILE_DIR}DocFormatLib/Linux/
         ${DOC_FILE_DIR}Common/
         ${DOC_FILE_DIR}DocDocxConverter/

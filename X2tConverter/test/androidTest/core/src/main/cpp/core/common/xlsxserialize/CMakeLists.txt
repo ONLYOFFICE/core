@@ -24,13 +24,13 @@ add_library(${LIB_NAME_XLSX_SERIALIZE} STATIC ${XLSX_SERIALIZE_CPP})
 
 # Add dependency library
 target_link_libraries(${LIB_NAME_XLSX_SERIALIZE}
-    PUBLIC
+    PRIVATE
         ${LIB_NAME_FONT_ENGINE}
 )
 
 # Add include files .h
 target_include_directories(${LIB_NAME_XLSX_SERIALIZE}
-    PUBLIC
+    PRIVATE
         ${XLSX_SERIALIZE_DIR}Common/
         ${XLSX_SERIALIZE_DIR}Reader/
         ${XLSX_SERIALIZE_DIR}Writer/

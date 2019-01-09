@@ -34,7 +34,7 @@ target_link_libraries(${LIB_NAME_TXT}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_TXT}
-    PUBLIC
+    PRIVATE
         ${TXT_DIR}TxtXmlFormatLib/Source/
         ${TXT_DIR}TxtXmlFormatLib/Source/Common/
         ${TXT_DIR}TxtXmlFormatLib/Source/TxtFormat/

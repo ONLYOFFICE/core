@@ -31,9 +31,8 @@ target_link_libraries(${LIB_NAME_PDF_WRITER}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_PDF_WRITER}
-    PUBLIC
-        ${PDF_WRITER_DIR}
     PRIVATE
+        ${PDF_WRITER_DIR}
         ${PDF_WRITER_DIR}Src/
 )
 

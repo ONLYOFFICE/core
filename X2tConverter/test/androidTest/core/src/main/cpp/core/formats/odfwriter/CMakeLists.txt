@@ -41,13 +41,12 @@ target_link_libraries(${LIB_NAME_ODF_WRITER}
 
 # Add include files .h
 target_include_directories(${LIB_NAME_ODF_WRITER}
-    PUBLIC
+    PRIVATE
         ${ODF_WRITER_FILE_DIR}linux/
         ${ODF_WRITER_FILE_DIR}source/
         ${ODF_WRITER_FILE_DIR}source/OdfFormat/
         ${ODF_WRITER_FILE_DIR}source/OdfFormat/Shapes/
         ${ODF_WRITER_FILE_DIR}source/Oox2OdfConverter/
-    PRIVATE
         ${ODF_READER_FILE_DIR}include/
         ${ODF_READER_FILE_DIR}linux/
         ${ODF_READER_FILE_DIR}formulasconvert/

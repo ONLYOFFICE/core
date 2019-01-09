@@ -1903,11 +1903,13 @@ void odf_drawing_context::set_group_position(_CP_OPT(double) x, _CP_OPT(double) 
 
 	if ( !x || !y ) return;
 
-	impl_->current_group_->x = *change_x ;
-	impl_->current_group_->y = *change_y ; 
+    if (change_x && impl_->current_group_->x)
+        impl_->current_group_->x = *change_x;
+    if (change_y && impl_->current_group_->y)
+        impl_->current_group_->y = *change_y;
 
-	impl_->current_group_->shift_x = (*x /impl_->current_group_->scale_cx - *change_x) ;
-	impl_->current_group_->shift_y = (*y /impl_->current_group_->scale_cy - *change_y) ;
+    impl_->current_group_->shift_x = (*x /impl_->current_group_->scale_cx - change_x.get_value_or(0)) ;
+    impl_->current_group_->shift_y = (*y /impl_->current_group_->scale_cy - change_y.get_value_or(0)) ;
 }
 
 void odf_drawing_context::set_group_size( _CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy)
@@ -1920,8 +1922,10 @@ void odf_drawing_context::set_group_size( _CP_OPT(double) cx, _CP_OPT(double) cy
 	if (change_cy && cy)
 		impl_->current_group_->scale_cy = *cy / *change_cy;
 
-	impl_->current_group_->cx = *change_cx;	
-	impl_->current_group_->cy = *change_cy;
+    if (change_cx && impl_->current_group_->cx)
+        impl_->current_group_->cx = *change_cx;
+    if (change_cy && impl_->current_group_->cy)
+        impl_->current_group_->cy = *change_cy;
 
 }
 void odf_drawing_context::set_group_flip_V(bool bVal)

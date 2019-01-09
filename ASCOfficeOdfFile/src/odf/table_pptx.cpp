@@ -83,14 +83,14 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 			style_table_row_properties_attlist & row_attlist = inst->content()->get_style_table_row_properties()->attlist_;
 			if (row_attlist.style_row_height_)
 			{
-				height = (int)( 0.5 +row_attlist.style_row_height_->get_value_unit(length::emu) );
+				height = (int)( 0.5 + row_attlist.style_row_height_->get_value_unit(length::emu) );
 			}
 			else if (row_attlist.style_min_row_height_)
 			{
 				height = (int)( 0.5 + row_attlist.style_min_row_height_->get_value_unit(length::emu));
 			}
 		}
-		if (height<1) height = 100000;
+		if (height < 1) height = 100000;
     
 		_Wostream << L"<a:tr h=\"" << height << L"\">";
   

@@ -18,6 +18,9 @@ Common/3dParty/curl/win_32
 Common/3dParty/curl/linux_64
 Common/3dParty/curl/linux_32
 Common/3dParty/curl/mac_64
+Common/3dParty/v8/.cipd
+Common/3dParty/v8/.gclient
+Common/3dParty/v8/.gclient_entries
 Common/3dParty/v8/v8
 Common/3dParty/v8/depot_tools
 Common/3dParty/v8/win_64

@@ -507,6 +507,10 @@ bool odf_text_context::start_field(int type, const std::wstring& value)
 		{
 			create_element(L"text", L"date", elm, odf_context_);
 		}break;
+		case fieldTextInput:
+		{
+			create_element(L"text", L"text-input", elm, odf_context_);
+		}break;
 	}
 
 	if (elm)

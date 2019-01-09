@@ -1320,6 +1320,67 @@ void sequence::pptx_convert(oox::pptx_conversion_context & Context)
         text_[i]->pptx_convert(Context);
     }
 }
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * expression::ns = L"text";
+const wchar_t * expression::name = L"expression";
+
+void expression::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	office_value_.add_attributes(Attributes);
+	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
+	CP_APPLY_ATTR(L"text:display",			text_display_);
+	CP_APPLY_ATTR(L"text:formula",			text_formula_);
+
+}
+std::wostream & expression::text_to_stream(std::wostream & _Wostream) const
+{
+    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    return _Wostream;
+}
+void expression::add_text(const std::wstring & Text)
+{
+    text_ = Text;
+}
+void expression::docx_convert(oox::docx_conversion_context & Context) 
+{//???
+    std::wostream & strm = Context.output_stream();
+	Context.finish_run();
+	
+	strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"></w:fldChar></w:r>";
+	strm << L"<w:r><w:instrText>FORMTEXT</w:instrText></w:r>";
+	strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	strm << L"<w:r><w:t>" << text_ << L"</w:t></w:r>";
+    strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+}
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * text_input::ns = L"text";
+const wchar_t * text_input::name = L"text-input";
+
+void text_input::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:description", text_description_);
+
+}
+std::wostream & text_input::text_to_stream(std::wostream & _Wostream) const
+{
+    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    return _Wostream;
+}
+void text_input::add_text(const std::wstring & Text)
+{
+    text_ = Text;
+}
+void text_input::docx_convert(oox::docx_conversion_context & Context) 
+{
+    std::wostream & strm = Context.output_stream();
+	Context.finish_run();
+	
+	strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"></w:fldChar></w:r>";
+	strm << L"<w:r><w:instrText>FORMTEXT</w:instrText></w:r>";
+	strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	strm << L"<w:r><w:t>" << text_ << L"</w:t></w:r>";
+    strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+}
 //-------------------------------------------------------------------------------------------------------------------
 const wchar_t * text_drop_down::ns		= L"text";
 const wchar_t * text_drop_down::name	= L"drop-down";

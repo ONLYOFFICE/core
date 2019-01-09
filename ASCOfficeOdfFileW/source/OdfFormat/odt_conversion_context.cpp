@@ -706,6 +706,11 @@ void odt_conversion_context::set_field_instr()
 	{
 		current_fields.back().type = fieldTime;
 	}
+	res1 = instr.find(L"FORMTEXT");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = fieldTextInput;
+	}
 	res1 = instr.find(L"SEQ");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{

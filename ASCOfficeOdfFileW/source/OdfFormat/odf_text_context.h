@@ -53,6 +53,8 @@ namespace odf_writer
 		fieldPageRef,
 		fieldSeq,
 		fieldXE,
+		fieldTextInput,
+		fieldExpression,
 
 		fieldBibliography = 0xff + 1,
 		fieldIndex,

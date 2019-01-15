@@ -181,7 +181,7 @@ namespace NSPresentationEditor
             std::wstring	ConvertShadow	(CShadow	& shadow);
             std::wstring	ConvertBrush	(CBrush		& brush);
 			std::wstring	ConvertLineEnd	(unsigned char cap, unsigned char length, unsigned char width);
-    static	std::wstring	ConvertColor	(CColor		& color, long alpha);
+    static	std::wstring	ConvertColor	(CColor		& color, long alpha = 255);
 
 	void	ParseXmlAlternative(const std::wstring & xml);
 // тип рендерера-----------------------------------------------------------------------------
@@ -453,5 +453,6 @@ namespace NSPresentationEditor
 		void WriteShapeInfo();
 		void WriteImageInfo();
 		void WriteTextInfo();
+		void Write3dShape();
 	};
 }

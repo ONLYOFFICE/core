@@ -283,7 +283,7 @@ namespace NSStringExt
 
         return pUnicodes;
     }
-    unsigned short* CConverter::GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
+    unsigned short* CConverter::GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen, const bool& bIsLE)
     {
         unsigned int unTextLen = (unsigned int)wsUnicodeText.size();
         if (unTextLen <= 0)
@@ -335,6 +335,18 @@ namespace NSStringExt
             {
                 delete[] pUtf16;
                 return NULL;
+            }
+        }
+
+        if (!bIsLE)
+        {
+            unsigned char* pDataReverce = (unsigned char*)pUtf16;
+            unsigned int unLen2 = unLen << 1;
+            for (unsigned int i = 0; i < unLen2; i += 2)
+            {
+                unsigned char tmp = pDataReverce[i];
+                pDataReverce[i] = pDataReverce[i + 1];
+                pDataReverce[i + 1] = tmp;
             }
         }
 

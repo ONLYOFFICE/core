@@ -151,7 +151,10 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 	{
 		if (page_layout_instance *lastPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
 		{
-			Context.next_dump_page_properties(true);
+			if (Context.is_last_dump_page_properties())
+			{
+				Context.next_dump_page_properties(true);
+			}
 			
 			lastPageLayout->docx_serialize(Context.output_stream(), Context);
 			//Context.remove_page_properties();

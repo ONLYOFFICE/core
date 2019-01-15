@@ -344,14 +344,14 @@ void style_table_row_properties_attlist::docx_convert(oox::docx_conversion_conte
     
     if (style_row_height_)
     {
-        int val = (int)( 0.5 + 20.0 *style_row_height_->get_value_unit(length::pt) );
+        int val = (int)( 0.5 + 20.0 * style_row_height_->get_value_unit(length::pt) );
         if (val < 0)
             val = 0;
         strm << L"<w:trHeight w:hRule=\"exact\" w:val=\"" << val << L"\" />";
     }
     else if (style_min_row_height_)
     {
-        int val = (int)( 0.5 + 20.0 *style_min_row_height_->get_value_unit(length::pt) );
+        int val = (int)( 0.5 + 20.0 * style_min_row_height_->get_value_unit(length::pt) );
         if (val < 0)
             val = 0;
         strm << L"<w:trHeight w:hRule=\"atLeast\" w:val=\"" << val << L"\" />";

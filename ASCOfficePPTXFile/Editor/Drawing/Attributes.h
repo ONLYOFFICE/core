@@ -735,7 +735,7 @@ namespace NSPresentationEditor
 
         void SetDefaultParams()
         {
-            Type = c_BrushTypeNoFill;
+            Type = c_BrushTypeNotSet;
 
             Color1 = 0xFFFFFFFF;
             Alpha1 = 255;

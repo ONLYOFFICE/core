@@ -70,6 +70,8 @@ private:
 	//office_element_ptr		forms_; -> content
    
 	office_element_ptr_array	content_;
+	
+	_CP_OPT(std::wstring)		first_element_style_name;
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_text);
 //----------------------------------------------------------------------------------------------------

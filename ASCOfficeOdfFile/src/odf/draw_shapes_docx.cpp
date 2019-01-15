@@ -288,6 +288,14 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 	bool set_shape = false;
 
+	if (attlist_.draw_mirror_horizontal_)
+	{
+		shape->additional_.push_back(_property(L"flipH", *attlist_.draw_mirror_horizontal_));
+	}
+	if (attlist_.draw_mirror_vertical_)
+	{
+		shape->additional_.push_back(_property(L"flipV", *attlist_.draw_mirror_vertical_));
+	}
 	if (draw_type_oox_index_)
 	{
 		shape->additional_.push_back(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
@@ -305,25 +313,27 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		set_shape = true;
 	}
 	std::wstring odf_path; //общая часть - объединить ...
-	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
-		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
-	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
-		odf_path = draw_enhanced_geometry_attlist_.draw_enhanced_path_.get();
+	if (attlist_.drawooo_enhanced_path_)
+		odf_path = attlist_.drawooo_enhanced_path_.get();
+	else if (attlist_.draw_enhanced_path_)
+		odf_path = attlist_.draw_enhanced_path_.get();
 	
 	if (!odf_path.empty())
 	{
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
+		bool bClosed = false;
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true, bClosed);
 		}
 		catch(...)
 		{
 			res = false; 
 		}
+		//if (!bClosed) lined_shape_ = true;
 		
 		if (!o_Polyline.empty() && res )
 		{
@@ -337,10 +347,10 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 			int w = 0;
 			int h = 0;
 
-			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
+			if (attlist_.drawooo_sub_view_size_)
 			{
 				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *draw_enhanced_geometry_attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 				
 				if (splitted.size() == 2)
 				{
@@ -373,10 +383,10 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		}
 	}
 
-	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
+	if (attlist_.draw_modifiers_)
 	{
 		if (bOoxType_)
-			shape->additional_.push_back(_property(L"oox-draw-modifiers", draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
+			shape->additional_.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));	
 		else
 		{
 		}
@@ -401,12 +411,15 @@ void dr3d_scene::docx_convert(oox::docx_conversion_context & Context)
 	//...
 	draw_shape::docx_convert(Context);
 }
-void dr3d_extrude::docx_convert(oox::docx_conversion_context & Context)
+void dr3d_light::docx_convert(oox::docx_conversion_context & Context)
 {
-	reset_svg_path();
 
 }
-void dr3d_light::docx_convert(oox::docx_conversion_context & Context)
+void dr3d_cube::docx_convert(oox::docx_conversion_context & Context)
+{
+
+}
+void dr3d_sphere::docx_convert(oox::docx_conversion_context & Context)
 {
 
 }

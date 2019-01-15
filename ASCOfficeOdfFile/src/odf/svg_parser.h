@@ -58,7 +58,7 @@ namespace svg_path
 	};
 
 	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  path);
-	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ);
+	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool & bIsClosed);
 	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool closed);
 }
 

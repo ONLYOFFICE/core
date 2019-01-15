@@ -53,8 +53,7 @@ namespace oox {
 class xlsx_drawing_context_handle::Impl
 {
 public:
-    Impl(mediaitems & items)
-        : items_(items), next_rId_(1), next_drawing_id_(1) 
+    Impl(mediaitems & items) : items_(items), next_rId_(1), next_drawing_id_(1) 
     {
     }  
 
@@ -162,6 +161,8 @@ void xlsx_drawing_context::clear()
 {
 	impl_->object_description_.type_				= typeUnknown;
 	impl_->object_description_.in_group_			= false;
+	impl_->object_description_.lined_				= false;
+	impl_->object_description_.connector_			= false;
     impl_->object_description_.xlink_href_			= L"";
     impl_->object_description_.name_				= L"";
 	impl_->object_description_.anchor_				= L"";
@@ -360,17 +361,18 @@ void xlsx_drawing_context::set_translate(double x_pt, double y_pt)
 	}
 }
 
-void xlsx_drawing_context::set_rotate(double angle)
+void xlsx_drawing_context::set_rotate(double angle, bool translate)
 {
 	set_property(odf_reader::_property(L"svg:rotate", angle));
 	
-	if (impl_->object_description_.svg_rect_)
+	if (impl_->object_description_.svg_rect_ && translate)
 	{
-		_rect & r = impl_->object_description_.svg_rect_.get();
+		_rect &r = impl_->object_description_.svg_rect_.get();
+		double new_x = (r.cx / 2 * cos(-angle) - r.cy / 2 * sin(-angle) ) - r.cx / 2;
+		double new_y = (r.cx / 2 * sin(-angle) + r.cy / 2 * cos(-angle) ) - r.cy / 2;
 		
-		//r.x -= r.width_/2;
-		//r.y -= r.height_/2;
-
+		r.x += new_x;
+		r.y	+= new_y;
 	}
 }
 void xlsx_drawing_context::set_scale(double cx_pt, double cy_pt)
@@ -543,6 +545,8 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	
 	GetProperty(obj.additional_, L"text-content", sTextContent);
 	GetProperty(obj.additional_, L"color-mode", sColorMode);
+	GetProperty(obj.additional_, L"luminance", drawing.fill.bitmap->luminance);
+	GetProperty(obj.additional_, L"contrast", drawing.fill.bitmap->contrast);
 
 	if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
 	{
@@ -551,7 +555,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	}
 	std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  obj.xlink_href_;			
 	
-	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL/*applicationFonts_*/);
+	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, impl_->get_mediaitems().applicationFonts());
 	drawing.fill.bitmap->bStretch	= true;
 
 	if ((sColorMode) && (*sColorMode == L"greyscale"))
@@ -673,11 +677,13 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 
 		_xlsx_drawing drawing	=_xlsx_drawing();
 
-		drawing.type	= obj.type_;
-		drawing.name	= obj.name_;
-		drawing.fill	= obj.fill_;
-		drawing.inGroup	= obj.in_group_;
-		drawing.id		= impl_->next_rId();
+		drawing.type		= obj.type_;
+		drawing.name		= obj.name_;
+		drawing.fill		= obj.fill_;
+		drawing.inGroup		= obj.in_group_;
+		drawing.id			= impl_->next_rId();
+		drawing.lined		= obj.lined_;
+		drawing.connector	= obj.connector_;
 
 		drawing.sub_type = obj.shape_type_;
 		
@@ -740,6 +746,14 @@ void xlsx_drawing_context::set_link(std::wstring link, RelsType typeRels)
 }
 void xlsx_drawing_context::end_action()
 {
+}
+void xlsx_drawing_context::set_is_line_shape(bool val)
+{
+	impl_->object_description_.lined_ = val;
+}
+void xlsx_drawing_context::set_is_connector_shape(bool val)
+{
+	impl_->object_description_.connector_ = val;
 }
 
 

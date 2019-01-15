@@ -73,19 +73,6 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
    
 	const int sharedStrId = Context.get_table_context().end_cell_content();
 
-	int index = Context.get_table_context().in_database_range();
-	
-	if (index >= 0)
-	{
-		std::wstringstream strm;
-		for (size_t i = 0 ; i < elements_.size(); i++)
-		{
-			elements_[i]->text_to_stream(strm);
-		}
-
-		Context.get_table_context().set_database_range_value(index, strm.str());
-
-	}
     return sharedStrId;
 }
 
@@ -332,8 +319,8 @@ void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring tableStyleName	= table_table_attlist_.table_style_name_.get_value_or(L"");
-    const std::wstring tableName		= table_table_attlist_.table_name_.get_value_or(L"");
+    const std::wstring tableStyleName	= attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring tableName		= attlist_.table_name_.get_value_or(L"");
 
     _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
 
@@ -352,6 +339,16 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	}
     Context.start_table(tableName, tableStyleName);
+
+	if (attlist_.table_protected_)
+	{
+		Context.get_table_context().set_protection(true, attlist_.table_protection_key_.get_value_or(L""), 
+															attlist_.table_protection_key_digest_algorithm_.get_value_or(L""));
+		table_table_protection* prot = dynamic_cast<table_table_protection*>( table_protection_.get() );
+		if (prot)
+		{
+		}
+	}
 
 	table_columns_and_groups_.xlsx_convert(Context);
 
@@ -446,6 +443,8 @@ namespace {
 
 double pixToSize(double pixels, double maxDigitSize)
 { 
+	if (pixels < 8) pixels = 8; //УВЕДОМЛЕНИЕ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА.ods
+
 	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9; // * 9525. * 72.0 / (360000.0 * 2.54);
 }
 double cmToChars (double cm)
@@ -775,10 +774,10 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             double s;
             if (oox::parseTime(tv, h, m, s))
             {
-				boost::int64_t intTime = (boost::int64_t)oox::convertTime(h, m, s);
-				if (intTime > 0)
+				double dTime = oox::convertTime(h, m, s);
+				if (dTime >= 0)
 				{
-					number_val = boost::lexical_cast<std::wstring>(intTime);
+					number_val = boost::lexical_cast<std::wstring>(dTime);
 				}
 				else
 				{
@@ -854,9 +853,31 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		
 		const int sharedStringId = content_.xlsx_convert(Context, &textFormatProperties);
 
-		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
-			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
+//---------------------------------------------------------------------------------------------------------	
+		if (t_val == oox::XlsxCellType::str || t_val == oox::XlsxCellType::inlineStr)
+		{
+			int index = Context.get_table_context().in_database_range();
 			
+			if (index >= 0)
+			{
+				if (sharedStringId >= 0)
+				{
+					std::wstringstream strm;
+					content_.text_to_stream(strm);
+
+					Context.get_table_context().set_database_range_value(index, strm.str());
+				}
+				else if (str_val)
+				{
+					Context.get_table_context().set_database_range_value(index, str_val.get());
+				}
+			}
+		}
+		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
+		{
+			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
+		}
+//---------------------------------------------------------------------------------------------------------			
 		if (skip_next_cell)break;
 	
 	// пустые ячейки пропускаем.
@@ -1139,7 +1160,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 		
 		const int sharedStringId = content_.xlsx_convert(Context, &textFormatProperties);
 
-		if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
+		if (t_val == oox::XlsxCellType::str && sharedStringId >= 0)
 			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 			
 		if (skip_next_cell)break;
@@ -1157,7 +1178,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 
                     if (!formula.empty())
                     {
-                        const std::wstring xlsxFormula = formulas_converter.convert(formula);
+						const std::wstring xlsxFormula = formulas_converter.convert(formula);
                         if (!xlsxFormula.empty())
                         {
                             CP_XML_NODE(L"f")

@@ -88,24 +88,43 @@ void table_database_range::add_child_element( xml::sax * Reader, const std::wstr
 void table_database_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	if (!table_target_range_address_)	return;
+	if (!table_name_)	return;
 
-	Context.get_table_context().start_database_range(table_name_.get_value_or(L""), *table_target_range_address_);
-	
-	if (table_display_filter_buttons_)
-		Context.get_table_context().set_database_filter(table_display_filter_buttons_->get());
+	std::wstring name = table_name_.get();
 
-	if (table_orientation_)
-		Context.get_table_context().set_database_orientation(table_orientation_->get_type() == table_orientation::row ? true : false);
-
-	if (table_contains_header_)
-		Context.get_table_context().set_database_header(table_contains_header_->get());
-
-	for (size_t i = 0; i < content_.size(); i++)
+	std::map<std::wstring, int>::iterator pFind = Context.mapUsedNames_.find(name);
+	if (pFind == Context.mapUsedNames_.end())
 	{
-		content_[i]->xlsx_convert(Context);
+		Context.mapUsedNames_.insert(std::make_pair(name, 1));
 	}
+	else
+	{
+		name += L"_" + std::to_wstring(pFind->second);
+		pFind->second++;
+	}	
+	
+	if (Context.get_table_context().start_database_range(name, *table_target_range_address_))
+	{	
+		if (table_display_filter_buttons_)
+			Context.get_table_context().set_database_filter(table_display_filter_buttons_->get());
 
-	Context.get_table_context().end_database_range();
+		if (table_orientation_)
+			Context.get_table_context().set_database_orientation(table_orientation_->get_type() == table_orientation::row ? true : false);
+
+		if (table_contains_header_)
+			Context.get_table_context().set_database_header(table_contains_header_->get());
+
+		for (size_t i = 0; i < content_.size(); i++)
+		{
+			content_[i]->xlsx_convert(Context);
+		}
+
+		Context.get_table_context().end_database_range();
+	}
+	else
+	{
+		Context.get_xlsx_defined_names().add(name, table_target_range_address_.get(), false, -1);
+	}
 }
 
 //--------------------------------------------------------------------------------------------------

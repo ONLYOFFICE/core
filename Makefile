@@ -224,11 +224,20 @@ ARTIFACTS += Common/3dParty/*/$(TARGET)/build/*
 
 ifeq ($(OS),Windows_NT)
 ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/release/*.dat
-ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/release/obj/*
 else
 ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/*.dat
-ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/obj/*
 endif
+
+CORE_TARGET += $(ALLFONTSGEN)
+CORE_TARGET += $(DOCTRENDERER)
+CORE_TARGET += $(DJVUFILE)
+CORE_TARGET += $(HTMLFILE)
+CORE_TARGET += $(HTMLRENDERER)
+CORE_TARGET += $(PDFREADER)
+CORE_TARGET += $(PDFWRITER)
+CORE_TARGET += $(UNICODECONVERTER)
+CORE_TARGET += $(X2T)
+CORE_TARGET += $(XPSFILE)
 
 EXT_TARGET += $(DOCBUILDER)
 
@@ -248,14 +257,10 @@ $$(value $(1)): $$(value $(1)_MAKE)
 	cd $$(dir $$(value $(1)_MAKE)) && $(MAKE);
 endef
 
-.PHONY : all bin lib clean deploy
+.PHONY : all clean deploy
 
 .NOTPARALLEL:
-all: lib bin 
-
-bin: $(X2T) $(ALLFONTSGEN)
-
-lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
+all: $(CORE_TARGET)
 
 ext: $(EXT_TARGET)
 

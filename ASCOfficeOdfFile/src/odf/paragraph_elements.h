@@ -875,6 +875,58 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(sequence);
 //-------------------------------------------------------------------------------------------------------------------
+// text:expression
+//-------------------------------------------------------------------------------------------------------------------
+class expression: public paragraph_content_element<expression>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextExpression;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	void docx_convert(oox::docx_conversion_context & Context);
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+	_CP_OPT(std::wstring)						style_data_style_name_;
+	_CP_OPT(std::wstring)						text_display_;
+	_CP_OPT(std::wstring)						text_formula_;
+	odf_types::common_value_and_type_attlist	office_value_;
+	
+	std::wstring text_; 
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(expression);
+//-------------------------------------------------------------------------------------------------------------------
+// text:text-input
+//-------------------------------------------------------------------------------------------------------------------
+class text_input: public paragraph_content_element<text_input>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextTextInput;
+    CPDOCCORE_DEFINE_VISITABLE();
+ 
+	void docx_convert(oox::docx_conversion_context & Context);
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+	_CP_OPT(std::wstring)	text_description_;
+	std::wstring			text_; 
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_input);
+//-------------------------------------------------------------------------------------------------------------------
 // text:sequence_ref
 //-------------------------------------------------------------------------------------------------------------------
 class sequence_ref : public paragraph_content_element<sequence_ref>

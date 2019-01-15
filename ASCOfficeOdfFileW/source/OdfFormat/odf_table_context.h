@@ -65,15 +65,17 @@ public:
 	void count_rows (int count);
 
 	void start_table(office_element_ptr &elm, bool styled = false);
-		void set_default_column_width(double width);
+		void set_default_column_width(double val);
 		void set_optimal_column_width(bool val);
-		void change_current_column_width(double width);
+		void change_current_column_width(double val);
+		void set_default_row_height(double val);
 	void end_table();
 	
 	void		 set_default_cell_properties(std::wstring style_name);
 	std::wstring get_default_cell_properties();
 	
-	double		 get_table_width();
+	_CP_OPT(double) get_table_width();
+	_CP_OPT(double) get_table_height();
 
 	void set_table_inside_v(_CP_OPT(std::wstring) border);
 	void set_table_inside_h(_CP_OPT(std::wstring) border);
@@ -82,6 +84,7 @@ public:
 	_CP_OPT(std::wstring) get_table_inside_h();
 
 	void start_row(office_element_ptr &elm, bool styled = false);
+		void set_row_height(double val);
 	void end_row();
 
 	void start_cell(office_element_ptr &elm, bool styled = false);

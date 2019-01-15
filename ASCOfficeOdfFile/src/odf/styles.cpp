@@ -329,7 +329,44 @@ void draw_fill_image::add_child_element( xml::sax * Reader, const std::wstring &
 {
     CP_NOT_APPLICABLE_ELM();
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------
+const wchar_t * draw_marker::ns = L"draw";
+const wchar_t * draw_marker::name = L"marker";
+
+void draw_marker::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:name"			, draw_name_);
+	CP_APPLY_ATTR(L"draw:display-name"	, draw_display_name_);
+
+	CP_APPLY_ATTR(L"svg:d"				, svg_d_);
+	CP_APPLY_ATTR(L"svg:viewBox"		, svg_viewBox_);
+}
+void draw_marker::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+//----------------------------------------------------------------------------------------
+const wchar_t * draw_stroke_dash::ns = L"draw";
+const wchar_t * draw_stroke_dash::name = L"stroke-dash";
+
+void draw_stroke_dash::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:name"				, draw_name_);
+	CP_APPLY_ATTR(L"draw:display-name"		, draw_display_name_);
+
+	CP_APPLY_ATTR(L"draw:distance"			, draw_distance_);
+	CP_APPLY_ATTR(L"draw:dots1-length"		, draw_dots1_length_);
+	CP_APPLY_ATTR(L"draw:dots2-length"		, draw_dots2_length_);
+	CP_APPLY_ATTR(L"draw:dots1"				, draw_dots1_);
+	CP_APPLY_ATTR(L"draw:dots2"				, draw_dots2_);
+	CP_APPLY_ATTR(L"draw:style"				, draw_style_);//"square" 
+
+}
+void draw_stroke_dash::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+//----------------------------------------------------------------------------------------
 const wchar_t * draw_gradient::ns = L"draw";
 const wchar_t * draw_gradient::name = L"gradient";
 

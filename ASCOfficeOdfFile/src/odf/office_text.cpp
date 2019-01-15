@@ -129,6 +129,16 @@ void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 	else if (is_text_content(Ns, Name))
     {
         CP_CREATE_ELEMENT(content_);
+
+		if (!first_element_style_name && (content_.back()->get_type() == typeTextP || 
+											content_.back()->get_type() == typeTextH))
+		{//bus-modern_l.ott
+			if (content_.back()->element_style_name)
+				first_element_style_name = content_.back()->element_style_name;
+			else
+				first_element_style_name = L""; //default
+
+		}
     }
     else
         CP_NOT_APPLICABLE_ELM();
@@ -155,6 +165,26 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 		//forms_->docx_convert(Context);
 
 	Context.start_office_text();
+
+	if ((first_element_style_name) && (!first_element_style_name->empty()))
+	{
+		std::wstring text___ = *first_element_style_name;
+
+		const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(text___);
+	   
+		if (masterPageName)
+		{				
+			std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
+
+			if (false == masterPageNameLayout.empty())
+			{
+				Context.set_master_page_name(*masterPageName); //проверка на то что тема действительно существует????
+				
+				Context.remove_page_properties();
+				Context.add_page_properties(masterPageNameLayout);
+			}
+		}  
+	}
 	for (size_t i = 0; i < content_.size(); i++)
     {
 		if (content_[i]->element_style_name)

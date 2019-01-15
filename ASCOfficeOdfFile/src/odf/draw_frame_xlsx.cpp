@@ -73,8 +73,8 @@ void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	common_draw_shape_with_text_and_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_;
 
-    const int z_index		= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
-    const std::wstring name = common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
+    const unsigned int z_index	= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
+    const std::wstring name		= common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
 
  //////////////////////////////////////////////////////////////////////////
 	Context.get_drawing_context().start_group( name);
@@ -118,7 +118,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	common_draw_shape_with_text_and_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_;
 
-    const int z_index				= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
+    const unsigned int z_index		= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
     const std::wstring name			= common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring styleName	= common_draw_attlist_.common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");    
     const std::wstring textStyleName = common_draw_attlist_.common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
@@ -144,7 +144,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (common_draw_attlist_.common_shape_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = common_draw_attlist_.common_shape_draw_attlist_.draw_transform_.get();
-		xlsx_convert_transforms(transformStr,Context);
+		xlsx_convert_transforms(transformStr, Context);
 	}
 ////////////////////////////////////////
 	std::wstring Anchor;
@@ -179,14 +179,14 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_right",		Compute_BorderWidth(properties, sideRight)));
 	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_bottom",	Compute_BorderWidth(properties, sideBottom))); 
 	
+	oox::_oox_fill fill;
+	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
+																	Context.root()->odf_context().drawStyles(), fill);	
 	if (properties.fo_clip_)
 	{
 		std::wstring strRectClip = properties.fo_clip_.get();
-		Context.get_drawing_context().set_clipping(strRectClip.substr(5,strRectClip.length()-6));
+		Context.get_drawing_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
 	}
-	oox::_oox_fill fill;
-	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-																	Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_drawing_context().set_fill(fill);
 
 	oox_drawing_ = oox_drawing_ptr(new oox::_xlsx_drawing());
@@ -228,7 +228,7 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 
-	if (text_content_.length()>0)
+	if (!text_content_.empty())
 	{
 		Context.get_drawing_context().set_property(_property(L"text-content", text_content_));
 	}
@@ -359,8 +359,18 @@ void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 	if (!href.empty()) 
-		Context.get_drawing_context().set_ole_object(href, detectObject(objectPath));
-	
+	{
+		std::wstring prog, extension;
+		oox::RelsType relsType;
+		detectObject(objectPath, prog, extension, relsType);
+		
+		NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+
+		if (relsType == oox::typeMsObject)
+			Context.get_drawing_context().set_ms_object(href + extension, prog);
+		else
+			Context.get_drawing_context().set_ole_object(href + extension, prog);
+	}
 }
 
 }

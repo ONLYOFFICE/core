@@ -48,50 +48,58 @@
 #endif
 
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../../DesktopEditor/common/File.h"
 #include "../../../../ASCOfficeOdfFile/src/docx/measuredigits.h"
 
 namespace _graphics_utils_
 {
 	bool GetResolution(const wchar_t* fileName, double & Width, double &Height) //pt
 	{
-                bool result =false;
+		NSFile::CFileBinary file;
+		if (false == file.OpenFile(fileName)) return false;
 
-                CBgraFrame image;
-                if (result = image.OpenFile(fileName, 0 ))
-                {
-                        Width  = image.get_Width();
-                        Height = image.get_Height();
+		long file_size = file.GetFileSize();
+		file.CloseFile();
 
-                        result = true;
-                }
-                else
-                {
+		if (file_size < 1) return false;
+        bool result =false;
+
+        CBgraFrame image;
+        if (result = image.OpenFile(fileName, 0 ))
+        {
+                Width  = image.get_Width();
+                Height = image.get_Height();
+
+                result = true;
+        }
+        else
+        {
 #if defined(_WIN32) || defined(_WIN64)
-                    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-                    ULONG_PTR gdiplusToken=0;
-                    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+            Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+            ULONG_PTR gdiplusToken=0;
+            Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-                    Gdiplus::Bitmap *file = new Gdiplus::Bitmap(fileName,false);
-                    if ((file) && (file->GetLastStatus()==Gdiplus::Ok))
-                    {
-                            Height = file->GetHeight();
-                            Width  = file->GetWidth();
+            Gdiplus::Bitmap *file = new Gdiplus::Bitmap(fileName,false);
+            if ((file) && (file->GetLastStatus()==Gdiplus::Ok))
+            {
+                    Height = file->GetHeight();
+                    Width  = file->GetWidth();
 
-                            double dpi_x = file->GetHorizontalResolution();
-                            double dpi_y = file->GetVerticalResolution();
+                    double dpi_x = file->GetHorizontalResolution();
+                    double dpi_y = file->GetVerticalResolution();
 
-                            if (dpi_x <1 )dpi_x = 96;
-                            if (dpi_y <1 )dpi_y = 96;
+                    if (dpi_x <1 )dpi_x = 96;
+                    if (dpi_y <1 )dpi_y = 96;
 
-                            Height = Height *72. / dpi_y;
-                            Width = Width * 72. /dpi_x;
+                    Height = Height *72. / dpi_y;
+                    Width = Width * 72. /dpi_x;
 
-                            result = true;
-                            delete file;
-                    }
-                    Gdiplus::GdiplusShutdown(gdiplusToken);
+                    result = true;
+                    delete file;
+            }
+            Gdiplus::GdiplusShutdown(gdiplusToken);
 #endif
-                }
+        }
 		return result;
 	}
 	double calculate_size_symbol_win(std::wstring name, double size, bool italic, bool bold, std::wstring test_str)

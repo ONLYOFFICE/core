@@ -131,7 +131,7 @@ namespace NSStringExt
         static std::wstring GetUnicodeFromUTF16(const unsigned short* pData, long lCount);
         static std::wstring GetUnicodeFromUTF32(const unsigned int* pData, long lCount);
         static unsigned int* GetUtf32FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen);
-        static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen);
+        static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen, const bool& isLE = true);
 	};	
 }
 

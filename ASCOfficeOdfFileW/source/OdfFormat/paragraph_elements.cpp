@@ -814,7 +814,40 @@ void text_sequence::add_text(const std::wstring & Text)
     office_element_ptr elm = text_text::create(Text) ;
     text_.push_back( elm );
 }
+//----------------------------------------------------------------------------------
+// text:sequence
+//----------------------------------------------------------------------------------
+const wchar_t * text_text_input::ns = L"text";
+const wchar_t * text_text_input::name = L"text-input";
 
+void text_text_input::serialize(std::wostream & _Wostream) 
+{
+ 	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 	
+			CP_XML_ATTR_OPT(L"text:description", text_description_);
+	
+			for (size_t i = 0; i < text_.size(); i++)
+			{
+				text_[i]->text_to_stream(CP_XML_STREAM());
+			}
+		}
+	}
+}
+void text_text_input::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(text_);
+}
+void text_text_input::add_child_element( const office_element_ptr & child_element)
+{
+	text_.push_back(child_element);
+}
+void text_text_input::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text_text::create(Text) ;
+    text_.push_back( elm );
+}
 //----------------------------------------------------------------------------------
 // text:sequesheet-namence
 //----------------------------------------------------------------------------------

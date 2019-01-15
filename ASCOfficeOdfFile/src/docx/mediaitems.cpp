@@ -41,6 +41,7 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -74,7 +75,32 @@ mediaitems::item::item(	std::wstring const & _href,
 	count_add = 1;
 	count_used = 0;
 }
+mediaitems::mediaitems(const std::wstring & odfPacket) : odf_packet_(odfPacket)
+{
+	count_charts	= 0;
+	count_shape		= 0;
+	count_image		= 0;
+	count_tables	= 0;
+	count_media		= 0;
+	count_object	= 0;
+	count_audio		= 0;
+	count_video		= 0;
+	count_slide		= 0;
+	count_activeX	= 0;	
+	count_control	= 0;	
 
+	applicationFonts_	= NSFonts::NSApplication::Create();
+}
+mediaitems::~mediaitems()
+{
+    if (applicationFonts_)
+        delete applicationFonts_;
+}
+void mediaitems::set_font_directory(std::wstring pathFonts)
+{
+    if (applicationFonts_)
+        applicationFonts_->InitializeFromFolder(pathFonts);
+}
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal)
 {
     std::wstring ref;
@@ -126,8 +152,8 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 
 	if (sExt.empty())
 	{
-		int n = uri.find(L"ObjectReplacements");
-		if (n >= 0)
+		size_t n = uri.find(L"ObjectReplacements");
+		if (n != std::wstring::npos)
 		{
 			if (!isInternal) return L"";
 
@@ -138,14 +164,16 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 		if (sExt.empty())
 		{
 			//то что есть .. 
-			int n = uri.rfind(L".");
-			if (n > 0) 
-				sExt = uri.substr(n);
+			size_t n = uri.rfind(L".");
+			if (n != std::wstring::npos) 
+				sExt = XmlUtils::GetLower(uri.substr(n));
 		}
 	}
 
 	if (type == typeOleObject && sExt.empty())
 		sExt = L".bin";
+	else if ( type == typeChart)
+		sExt = L".xml";
    
 	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }
@@ -167,7 +195,7 @@ std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 
 		if (!sExt.empty()) sExt = std::wstring(L".") + sExt;
 	}
-	return sExt;
+	return XmlUtils::GetLower(sExt);
 }
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
@@ -214,8 +242,6 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	
     std::wstring inputPath	= isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
 	std::wstring outputPath	= isMediaInternal ? ( sub_path + inputFileName)		 : href;
-	
-	if ( type == typeChart) outputPath = outputPath + L".xml";
 
 	std::wstring id;
     for (size_t i = 0 ; i < items_.size(); i++)
@@ -242,8 +268,8 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 		}
 		else if ( type == typeImage)
 		{
-            int n_svm = outputPath.rfind (L".svm");
-			if ( n_svm >= 0 )
+            size_t n_svm = outputPath.rfind (L".svm");
+			if ( n_svm != std::wstring::npos )
 			{
 				outputPath = outputPath.substr(0, n_svm) + L".png"; 
 			}

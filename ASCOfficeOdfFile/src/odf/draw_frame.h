@@ -209,6 +209,8 @@ public:
     static const ElementType type		= typeDrawG;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	draw_g() : position_child_x1(0x7fffffff), position_child_y1(0x7fffffff), position_child_x2(0x7fffffff), position_child_y2(0x7fffffff) {}
+
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -219,6 +221,12 @@ public:
     draw_g_attlist							draw_g_attlist_;
 
     office_element_ptr_array				content_;
+
+	int position_child_x1;
+	int position_child_y1;
+
+	int position_child_x2;
+	int position_child_y2;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -327,7 +335,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-	std::wstring detectObject(const std::wstring &fileName);
+	void detectObject(const std::wstring &fileName, std::wstring &prog, std::wstring &extension, oox::RelsType &rels);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);

@@ -48,7 +48,8 @@
 
 #include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/Common.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
@@ -3618,6 +3619,8 @@ namespace BinXlsxRW
 								oPic.m_sClientDataXml = oClientData.toXML();
 								
 								NSBinPptxRW::CXmlWriter						oWriter(XMLWRITER_DOC_TYPE_XLSX);
+								COOXToVMLGeometry oOOXToVMLRenderer;
+								oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 								NSCommon::smart_ptr<PPTX::Logic::ClrMap>	oClrMap;
 
 								oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
@@ -3881,6 +3884,8 @@ namespace BinXlsxRW
 				{
 					PPTX::Logic::SpTreeElem* pSpTree = static_cast<PPTX::Logic::SpTreeElem*>(oVmlShape.pElement);
 					NSBinPptxRW::CXmlWriter						oWriter(XMLWRITER_DOC_TYPE_XLSX);
+					COOXToVMLGeometry oOOXToVMLRenderer;
+					oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 					NSCommon::smart_ptr<PPTX::Logic::ClrMap>	oClrMap;
 					oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
 					pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oVmlShape.sXml.c_str());

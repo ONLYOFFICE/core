@@ -45,7 +45,6 @@
 #include "../odf/odfcontext.h"
 #include "../odf/calcs_styles.h"
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 
 namespace cpdoccore { 
@@ -76,8 +75,9 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	mediaitems_		(odf_document_->get_folder()),
 	xlsx_drawing_context_handle_(mediaitems_)
 {
-     applicationFonts_ = NSFonts::NSApplication::Create();
 }
+
+std::unordered_map<std::wstring, int> xlsx_conversion_context::mapExternalLink_;
 
 void xlsx_conversion_context::set_output_document (package::xlsx_document * document)
 {
@@ -86,15 +86,11 @@ void xlsx_conversion_context::set_output_document (package::xlsx_document * docu
 
 xlsx_conversion_context::~xlsx_conversion_context()
 {
-    if (applicationFonts_)
-        delete applicationFonts_;
 }
 
 void xlsx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-    if (applicationFonts_ == NULL) return;
-
-    applicationFonts_->InitializeFromFolder(pathFonts);
+	mediaitems_.set_font_directory(pathFonts);
 }
 
 void xlsx_conversion_context::start_chart(std::wstring name)
@@ -182,7 +178,7 @@ void xlsx_conversion_context::end_document()
             {
                 CP_XML_ATTR(L"name",	sheet->name()); // office 2010 ! ограничение на длину имени !!!
                 CP_XML_ATTR(L"sheetId", i + 1);
-                CP_XML_ATTR(L"state",	L"visible");
+				CP_XML_ATTR(L"state",	sheet->hidden() ? L"hidden" : L"visible");
                 CP_XML_ATTR(L"r:id",	id);            
             }
         }
@@ -235,7 +231,41 @@ void xlsx_conversion_context::end_document()
                 {
                     CP_XML_STREAM() << workbook_content.str();
                 }
+				if (false == mapExternalLink_.empty())
+				{
+					CP_XML_NODE(L"externalReferences")
+					{
+						for (std::unordered_map<std::wstring, int>::iterator it = mapExternalLink_.begin(); 
+							it != mapExternalLink_.end(); ++it)
+						{
+							package::external_links_content_ptr content = package::external_links_content::create();
+							content->rId() = L"extRef" + std::to_wstring(it->second);
+							{
+								CP_XML_WRITER(content->content())
+								{
+									CP_XML_NODE(L"externalLink")
+									{
+										CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+										CP_XML_NODE(L"externalBook")
+										{
+											CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+											CP_XML_ATTR(L"r:id", L"rId1");
+										}
+									}
+								}
+							}
+							
+							content->get_rels().add(relationship(L"rId1", mediaitems::get_rel_type(typeExternalLink), it->first, L"External"));
 
+							output_document_->get_xl_files().add_external_links(content);	
+
+							CP_XML_NODE(L"externalReference")
+							{
+								CP_XML_ATTR(L"r:id", content->rId());
+							}
+						}
+					}
+				}
                 get_xlsx_defined_names().xlsx_serialize(CP_XML_STREAM());
 
 				int pivot_cache_count = xlsx_pivots_context_.get_count();
@@ -291,7 +321,7 @@ void xlsx_conversion_context::end_document()
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
 
 		output_document_->get_content_types_file().set_media(get_mediaitems());
-        output_document_->get_xl_files().set_media(get_mediaitems(), applicationFonts_);
+        output_document_->get_xl_files().set_media(get_mediaitems());
 
         package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());
         output_document_->get_xl_files().set_drawings(drawings);
@@ -396,15 +426,12 @@ int xlsx_conversion_context::find_sheet_by_name(std::wstring tableName)
 	}
 	return -1;
 }
-void xlsx_conversion_context::create_new_sheet(std::wstring const & name)
-{
-    sheets_.push_back(xlsx_xml_worksheet::create(name));
-}
+
 bool xlsx_conversion_context::start_table(std::wstring tableName, std::wstring tableStyleName)
 {
-    create_new_sheet(tableName);
 	get_table_context().start_table(tableName, tableStyleName, sheets_.size() - 1);
 
+    sheets_.push_back(xlsx_xml_worksheet::create(tableName, get_table_context().state()->get_table_hidden()));
 	current_sheet().cols() << L"<cols>";
     return true;
 }
@@ -441,11 +468,12 @@ void xlsx_conversion_context::end_table()
 	get_table_context().serialize_page_properties		(current_sheet().page_properties());
 	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
     get_table_context().serialize_tableParts			(current_sheet().tableParts(), current_sheet().sheet_rels());
-    //get_table_context().serialize_autofilter			(current_sheet().autofilter());
-    //get_table_context().serialize_sort				(current_sheet().sort());
+    get_table_context().serialize_autofilter			(current_sheet().autofilter());
+    get_table_context().serialize_sort					(current_sheet().sort());
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
 	get_table_context().serialize_data_validation		(current_sheet().dataValidations());
-    
+ 	get_table_context().serialize_protection			(current_sheet().protection());
+   
 	get_drawing_context().set_odf_packet_path			(root()->get_folder());
     get_drawing_context().process_objects				(get_table_metrics());
 	
@@ -507,6 +535,20 @@ void xlsx_conversion_context::end_table()
     }    
     get_table_context().end_table();
 }
+//int xlsx_conversion_context::add_external_link(const std::wstring & external)
+//{
+//	std::unordered_map<std::wstring, int>::iterator pFind = mapExternalLink_.find(external);
+//	if ( pFind == mapExternalLink_.end())
+//	{
+//		int id = (int)mapExternalLink_.size() + 1;
+//		mapExternalLink_.insert(std::make_pair(external, id));
+//		return id;
+//	}
+//	else
+//	{
+//		return pFind->second;
+//	}
+//}
 void xlsx_conversion_context::add_control_props(const std::wstring & rid, const std::wstring & target, const std::wstring & props)
 {
 	if (rid.empty()) return;
@@ -688,7 +730,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, 96., 0, applicationFonts_);
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, 96., 0, mediaitems_.applicationFonts());
     }    
     return maxDigitSize_;
 }

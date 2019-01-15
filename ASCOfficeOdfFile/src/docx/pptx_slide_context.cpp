@@ -147,11 +147,13 @@ void pptx_slide_context::Impl::process_drawings()
 {
 	for (size_t i = 0; i < objects_.size(); i++)
 	{
-		_pptx_drawing drawing	=_pptx_drawing();
+		_pptx_drawing drawing = _pptx_drawing();
 
-		drawing.type			= objects_[i].type_;			
-		drawing.name			= objects_[i].name_;
-		drawing.id				= next_rId();			
+		drawing.type		= objects_[i].type_;			
+		drawing.name		= objects_[i].name_;
+		drawing.id			= next_rId();	
+		drawing.lined		= objects_[i].lined_;
+		drawing.connector	= objects_[i].connector_;
 		
 		process_common_properties(objects_[i], drawing);
 		
@@ -228,6 +230,8 @@ void pptx_slide_context::default_set()
 	
 	impl_->object_description_.clipping_string_= L"";
 	impl_->object_description_.svg_rect_	= boost::none;
+	impl_->object_description_.connector_	= false;
+	impl_->object_description_.lined_		= false;
 
 	impl_->object_description_.hlinks_.clear();
 	impl_->object_description_.action_.clear();
@@ -263,21 +267,20 @@ void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt
 	impl_->object_description_.svg_rect_ = _rect(width_pt, height_pt, x_pt, y_pt);
 }
 
-void pptx_slide_context::set_rotate(double angle)
+void pptx_slide_context::set_rotate(double angle, bool translate)
 {
-	set_property(odf_reader::_property(L"svg:rotate",angle));
+	set_property(odf_reader::_property(L"svg:rotate", angle));
 	
-	if (impl_->object_description_.svg_rect_)
+	if (impl_->object_description_.svg_rect_ && translate)
 	{
-		//вращение в open office от центральной точки
-		_rect r = impl_->object_description_.svg_rect_.get();
-		//r.x_-=r.width_;
-		//r.y_-=r.height_;
-
-		impl_->object_description_.svg_rect_= r;
+		_rect &r = impl_->object_description_.svg_rect_.get();
+		double new_x = (r.cx / 2 * cos(-angle) - r.cy / 2 * sin(-angle) ) - r.cx / 2;
+		double new_y = (r.cx / 2 * sin(-angle) + r.cy / 2 * cos(-angle) ) - r.cy / 2;
+		
+		r.x += new_x;
+		r.y	+= new_y;
 	}
 }
-
 void pptx_slide_context::set_translate(double x_pt, double y_pt)
 {
 	if (impl_->object_description_.svg_rect_)
@@ -321,12 +324,18 @@ void pptx_slide_context::set_clipping(const std::wstring & str)
 {
 	impl_->object_description_.clipping_string_= str;
 }
-
 void pptx_slide_context::set_fill(_oox_fill & fill)
 {
 	impl_->object_description_.fill_= fill;
 }
-
+void pptx_slide_context::set_is_line_shape(bool val)
+{
+	impl_->object_description_.lined_ = val;
+}
+void pptx_slide_context::set_is_connector_shape(bool val)
+{
+	impl_->object_description_.connector_ = val;
+}
 std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;
@@ -472,8 +481,8 @@ void pptx_slide_context::set_media_param(std::wstring name, std::wstring value)
 
 void pptx_slide_context::set_image(const std::wstring & path)
 {
-	int pos_replaicement = path.find(L"ObjectReplacements"); 
-	if (pos_replaicement >= 0)
+	size_t pos_replaicement = path.find(L"ObjectReplacements"); 
+	if (pos_replaicement != std::wstring::npos)
 	{
 		if (path.length() - (pos_replaicement + 18) < 2)
 			return; //object without image
@@ -486,7 +495,7 @@ void pptx_slide_context::set_image(const std::wstring & path)
 	}
 	else if (impl_->use_image_replacement_)
 	{
-		impl_->object_description_.fill_.type	= 2;
+		impl_->object_description_.fill_.type = 2;
 		impl_->object_description_.fill_.bitmap = oox::oox_bitmap_fill::create();
 		impl_->object_description_.fill_.bitmap->xlink_href_ = path;
 		impl_->object_description_.fill_.bitmap->bStretch = true;
@@ -538,10 +547,13 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	drawing.fill.bitmap		= oox_bitmap_fill::create();
 	drawing.fill.type		= 2;
 	
-	_CP_OPT(std::wstring)	sTextContent, sColorMode;
+	_CP_OPT(std::wstring) sTextContent, sColorMode;
+	_CP_OPT(double) dLuminance, dContrast;
 	
 	GetProperty(obj.additional_, L"text-content", sTextContent);
 	GetProperty(obj.additional_, L"color-mode", sColorMode);
+	GetProperty(obj.additional_, L"luminance", drawing.fill.bitmap->luminance);
+	GetProperty(obj.additional_, L"contrast", drawing.fill.bitmap->contrast);
 
 	if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
 	{
@@ -550,11 +562,11 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	}
 
 	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
-	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL);
+	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, get_mediaitems().applicationFonts());
 	drawing.fill.bitmap->bStretch = true;
 	
 	if ((sColorMode) && (*sColorMode == L"greyscale"))
-		drawing.fill.bitmap->bGrayscale	= true;
+		drawing.fill.bitmap->luminance	= true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
 	std::wstring ref;/// это ссылка на выходной внешний объект
@@ -632,25 +644,29 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 }
 void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _pptx_drawing & drawing)
 {
-    std::wstring ref;
-    bool isMediaInternal = true;
+    std::wstring ref, ref_image;
+    bool isMediaInternal = true, isMediaInternal_image = true;
    
 	drawing.objectId		= get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);      
 	drawing.objectProgId	= obj.descriptor_;
 
-	add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
-
-	if (drawing.fill.bitmap)
+	if (!drawing.fill.bitmap)
 	{
-		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		drawing.fill.bitmap = oox::oox_bitmap_fill::create();
+		drawing.fill.bitmap->xlink_href_ = L"zero.png";
 		
-		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+		_image_file_::GenerateZeroImage(odfPacket_ + FILE_SEPARATOR_STR + L"zero.png");
 	}
+	
+	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal_image, ref_image);
+	add_additional_rels(isMediaInternal_image, drawing.fill.bitmap->rId, ref_image, typeImage);
+
+	add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);	
 }
 void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _pptx_drawing & drawing)
 {
-    std::wstring ref;
-    bool isMediaInternal = true;
+    std::wstring ref, ref_image;
+    bool isMediaInternal = true, isMediaInternal_image = true;
 
 	drawing.type = mediaitems::detectMediaType(obj.xlink_href_); //reset from Media to Audio, Video, ... QuickTime? AudioCD? ...   
 	
@@ -658,26 +674,27 @@ void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _p
 	drawing.extId		= L"ext" + drawing.objectId;
 	drawing.extExternal	= !isMediaInternal;
 	
+	if (!drawing.fill.bitmap)
+	{
+		drawing.fill.bitmap = oox::oox_bitmap_fill::create();
+		drawing.fill.bitmap->xlink_href_ = L"zero.png";
+		
+		_image_file_::GenerateZeroImage(odfPacket_ + FILE_SEPARATOR_STR + L"zero.png");
+	}
+	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal_image, ref_image);		
+	add_additional_rels(isMediaInternal_image, drawing.fill.bitmap->rId, ref_image, typeImage);
+	
 	add_drawing(drawing, false, drawing.objectId, L"NULL", drawing.type);
 	add_additional_rels( isMediaInternal, drawing.extId, ref, typeMedia);
-
-	if (drawing.fill.bitmap)
-	{
-		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
-		
-		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
-	}
 }
 void pptx_slide_context::Impl::process_common_properties(drawing_object_description & pic, _pptx_drawing & drawing)
 {
 	if (pic.svg_rect_)
 	{
+		int val;
 		//todooo непонятки с отрицательными значениями
-		int val = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if ( val >= 0) drawing.x = val;
-		
-		val = (int)(0.5 + odf_types::length(pic.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if ( val >= 0 ) drawing.y = val;
+		drawing.x = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.y = (int)(0.5 + odf_types::length(pic.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cx, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if ( val >=0 ) drawing.cx = val;

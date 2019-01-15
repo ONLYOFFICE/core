@@ -157,7 +157,6 @@ private:
 
 	package::pptx_document		* output_document_; 
     odf_reader::odf_document	* odf_document_;    
-    NSFonts::IApplicationFonts  * applicationFonts_;
 
     pptx_slide_context		pptx_slide_context_;
 	pptx_text_context		pptx_text_context_;

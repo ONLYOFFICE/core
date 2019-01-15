@@ -36,6 +36,7 @@
 #include "../include/CPScopedPtr.h"
 
 namespace cpdoccore {
+
 namespace formulasconvert {
 
 
@@ -44,7 +45,7 @@ namespace formulasconvert {
 class odf2oox_converter
 {
 public:
-    odf2oox_converter();
+	odf2oox_converter();
     ~odf2oox_converter();
 
     // of:=SUM([.DDA1:.BA3]) -> SUM(DDA1:BA3)

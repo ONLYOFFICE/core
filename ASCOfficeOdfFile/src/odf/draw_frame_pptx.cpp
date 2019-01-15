@@ -88,7 +88,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	common_shape_draw_attlist	&common_draw_attlist_		= common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_;
 	common_presentation_attlist	&common_presentation_attlist_= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
 
-    const int z_index					= common_draw_attlist_.draw_z_index_.get_value_or(0);
+    const unsigned int z_index			= common_draw_attlist_.draw_z_index_.get_value_or(0);
     const std::wstring name				= common_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring textStyleName	= common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
@@ -115,7 +115,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	if (common_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = common_draw_attlist_.draw_transform_.get();
-		pptx_convert_transforms(transformStr,Context);
+		pptx_convert_transforms(transformStr, Context);
 	}
 ////////////////////////////////////////
 	std::wstring Anchor;
@@ -125,7 +125,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		const double a_x_pt = common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
 		const double a_y_pt = common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
-		Context.get_slide_context().set_anchor(Anchor,a_x_pt,a_y_pt);
+		Context.get_slide_context().set_anchor(Anchor, a_x_pt, a_y_pt);
 	}
 //////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
@@ -162,7 +162,13 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	
 	oox::_oox_fill fill;
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_, 
-															Context.root()->odf_context().drawStyles() ,fill);	
+															Context.root()->odf_context().drawStyles(), fill);	
+	if (properties.fo_clip_)
+	{
+		std::wstring strRectClip = properties.fo_clip_.get();
+		Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+	}
+
 	Context.get_slide_context().set_fill(fill);
 
 	Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left",	Compute_BorderWidth(properties, sideLeft)));
@@ -170,11 +176,6 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right",	Compute_BorderWidth(properties, sideRight)));
 	Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom",	Compute_BorderWidth(properties, sideBottom))); 
 	
-	if (properties.fo_clip_)
-	{
-		std::wstring strRectClip = properties.fo_clip_.get();
-		Context.get_slide_context().set_clipping(strRectClip.substr(5,strRectClip.length()-6));
-	}
 	if (common_presentation_attlist_.presentation_class_)
 	{
 		Context.get_slide_context().set_placeHolder_type(common_presentation_attlist_.presentation_class_->get_type_ms());
@@ -221,7 +222,7 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
     }
 	std::wstring text_content_ = Context.get_text_context().end_object();
 
-	if (text_content_.length()>0)
+	if (!text_content_.empty())
 	{
 		Context.get_slide_context().set_property(_property(L"text-content", text_content_));
 	}
@@ -384,7 +385,18 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 	if (!href.empty()) 
-		Context.get_slide_context().set_ole_object(href, detectObject(objectPath));
+	{
+		std::wstring prog, extension;
+		oox::RelsType relsType;
+		detectObject(objectPath, prog, extension, relsType);
+		
+		NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+
+		if (relsType == oox::typeMsObject)
+			Context.get_slide_context().set_ms_object(href + extension, prog);
+		else
+			Context.get_slide_context().set_ole_object(href + extension, prog);
+	}
 }
 
 void draw_param::pptx_convert(oox::pptx_conversion_context & Context)

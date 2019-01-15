@@ -72,6 +72,7 @@ typedef _CP_PTR(sheet_content) sheet_content_ptr;
 //------------------------------------------------------------------------
 class pivot_cache_content;
 typedef _CP_PTR(pivot_cache_content) pivot_cache_content_ptr;
+
 class pivot_cache_content : boost::noncopyable
 {
 public:
@@ -94,6 +95,7 @@ private:
 //------------------------------------------------------------------------
 class pivot_table_content;
 typedef _CP_PTR(pivot_table_content) pivot_table_content_ptr;
+
 class pivot_table_content : boost::noncopyable
 {
 public:
@@ -109,6 +111,28 @@ public:
 private:
     std::wstringstream	content_;
 	rels_file_ptr		rels_file_;
+};
+//------------------------------------------------------------------------
+class external_links_content;
+typedef _CP_PTR(external_links_content) external_links_content_ptr;
+
+class external_links_content : boost::noncopyable
+{
+public:
+    external_links_content();
+    static external_links_content_ptr create();
+
+	std::wstring	& rId()			{ return rId_;}
+    std::wostream	& content()		{ return content_; }
+	rels			& get_rels()	{ return rels_file_->get_rels(); }
+
+    std::wstring	str() { return content_.str(); }
+	
+	friend class	xl_external_links_files;
+private:
+    std::wstringstream	content_;
+	rels_file_ptr		rels_file_;
+	std::wstring		rId_;
 };
 //------------------------------------------------------------------------
 class sheets_files  : public element
@@ -153,7 +177,22 @@ public:
     std::vector<chart_content_ptr> charts_;
 
 };
-
+class xl_external_links_files  : public element
+{
+public:
+	xl_external_links_files(){}
+	 
+	void			add_external_links(external_links_content_ptr content);
+	virtual void	write(const std::wstring & RootPath);
+    
+	void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }  
+private:
+    std::vector<external_links_content_ptr> external_links_;
+    rels_files * rels_;
+};
 class xl_pivot_table_files  : public element
 {
 public:
@@ -245,7 +284,7 @@ public:
     void set_sharedStrings	(element_ptr Element);
 	void set_connections	(element_ptr Element);
     void add_sheet			(sheet_content_ptr sheet);
-    void set_media			(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
+    void set_media			(mediaitems & _Mediaitems);
     void set_drawings		(element_ptr Element);
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);
@@ -255,6 +294,7 @@ public:
 	void add_jsaProject		(const std::string &content);
 	void add_control_props	(simple_element_ptr Element);
 	void add_table_part		(const std::wstring &content);
+	void add_external_links	(external_links_content_ptr content);
 
 private:
     rels_files				rels_files_;
@@ -264,7 +304,8 @@ private:
 	xl_pivot_table_files	pivot_table_files_;
   	xl_control_props_files	control_props_files_;
 	xl_table_part_files		table_part_files_;
- 
+ 	xl_external_links_files	external_links_files_;
+
 	element_ptr		theme_;
     element_ptr		workbook_;
 
@@ -289,7 +330,7 @@ public:
 
     virtual content_types_file	& get_content_types_file()	{ return content_type_file_; }
     xl_files					& get_xl_files()			{ return xl_files_; }
-
+	rels_files					& get_rels_files()			{ return rels_files_; }	
 private:
     xlsx_content_types_file content_type_file_;
     xl_files				xl_files_;

@@ -47,8 +47,6 @@
 #include "hyperlinks.h"
 #include "mediaitems.h"
 
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
-
 namespace cpdoccore { 
 
 	namespace odf_types
@@ -190,14 +188,14 @@ public:
     }
 	void set_position_child_group(_INT32 x, _INT32 y)
 	{
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		if (groups_.back().x > x)	groups_.back().x = x;
 		if (groups_.back().y > y)	groups_.back().y = y;
 	}	
 	void set_size_child_group(_INT32 cx, _INT32 cy)
 	{
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		if (groups_.back().cx < cx)	groups_.back().cx = cx;
 		if (groups_.back().cy < cy)	groups_.back().cy = cy;
@@ -205,7 +203,7 @@ public:
 	void get_position_group(_INT32 & x, _INT32 & y)
 	{
 		x = y = 0;
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		x = groups_.back().x;
 		y = groups_.back().y;
@@ -213,7 +211,7 @@ public:
 	void get_size_group(_INT32 & cx, _INT32 & cy)
 	{
 		cx = cy = 0;
-		if (groups_.size() < 1) return;
+		if (groups_.empty()) return;
 
 		cx = groups_.back().cx;
 		cy = groups_.back().cy;
@@ -795,12 +793,12 @@ public:
 
  	bool next_dump_page_properties_;
 	bool next_dump_section_;
+	bool last_dump_page_properties_;
 
-    odf_reader::odf_document * root()
+    odf_reader::odf_document *root()
     {
         return odf_document_;
     }
-
     void start_document	();
     void end_document	();
 
@@ -865,6 +863,8 @@ public:
     
 	void next_dump_page_properties			(bool val);
     bool is_next_dump_page_properties		();
+	void last_dump_page_properties			(bool val);
+	bool is_last_dump_page_properties		();
 
     void set_master_page_name(const std::wstring & MasterPageName);
     const std::wstring & get_master_page_name() const;
@@ -1000,7 +1000,6 @@ private:
 
     package::docx_document		* output_document_;
     odf_reader::odf_document	* odf_document_;
-    NSFonts::IApplicationFonts	* applicationFonts_;
 
 	std::vector<odf_reader::_property>		settings_properties_;
 

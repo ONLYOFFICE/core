@@ -574,11 +574,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
                       const graphic_format_properties				& graphicProperties,
 					  const std::vector<odf_reader::_property>		& additional)
 {
-    // TODO : recursive result!!!
-    const _CP_OPT(anchor_type) anchor = 
-        attlists_.shape_with_text_and_styles_.
-        common_text_anchor_attlist_.
-        type_;
+    const _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
 
 	//todooo пока не ясно как привязать к определеной странице в документе ...
 	//const _CP_OPT(unsigned int) anchor_page_number = 
@@ -588,6 +584,15 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
 
 	_CP_OPT(vertical_rel) styleVerticalRel  = graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
     _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
+
+	if (!styleVerticalRel && anchor)
+	{
+		switch(anchor->get_type())
+		{
+		case anchor_type::Paragraph:	styleVerticalRel = vertical_rel::Paragraph;	break;
+		case anchor_type::Page:			styleVerticalRel = vertical_rel::Page;		break;
+		}
+	}
 
 	_CP_OPT(double) dVal;	
 	GetProperty(additional, L"svg:translate_y", dVal);
@@ -817,14 +822,31 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	}
 
 	_CP_OPT(run_through)	styleRunThrough	= graphicProperties.style_run_through_;
+    _CP_OPT(anchor_type)	anchor			= attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
 	
 	drawing->styleHorizontalRel	= graphicProperties.common_horizontal_rel_attlist_.style_horizontal_rel_;
     drawing->styleHorizontalPos	= graphicProperties.common_horizontal_pos_attlist_.style_horizontal_pos_;
     drawing->styleVerticalPos	= graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
     drawing->styleVerticalRel	= graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
-
-    _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
-
+	
+	if (!drawing->styleVerticalRel && anchor)
+	{
+		switch(anchor->get_type())
+		{
+		case anchor_type::Paragraph:	drawing->styleVerticalRel = vertical_rel::Paragraph;	break;
+		case anchor_type::Page:			drawing->styleVerticalRel = vertical_rel::Page;			break;
+		case anchor_type::Char:			drawing->styleVerticalRel = vertical_rel::Char;			break;
+		}
+	}
+	if (!drawing->styleHorizontalRel && anchor)
+	{
+		switch(anchor->get_type())
+		{
+		case anchor_type::Paragraph:	drawing->styleHorizontalRel = horizontal_rel::Paragraph;	break;
+		case anchor_type::Page:			drawing->styleHorizontalRel = horizontal_rel::Page;			break;
+		case anchor_type::Char:			drawing->styleHorizontalRel = horizontal_rel::Char;			break;
+		}
+	}
 	int level_drawing = Context.get_drawing_context().get_current_level();
 
     if (drawing->parallel == 1 || anchor && anchor->get_type() == anchor_type::AsChar || level_drawing >1 )
@@ -834,7 +856,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	if (attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_.get();
-		oox_convert_transforms(transformStr, drawing->additional);
+		docx_convert_transforms(transformStr, drawing->additional);
 	} 
 	if (!drawing->isInline)
     {
@@ -852,7 +874,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		if (!drawing->styleWrap)
 			drawing->styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
 
-        _CP_OPT(int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
+        _CP_OPT(unsigned int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
        
 		if (zIndex)//порядок отрисовки объектов
         {
@@ -887,7 +909,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
     }
 	drawing->number_wrapped_paragraphs = graphicProperties.style_number_wrapped_paragraphs_.
 									get_value_or( integer_or_nolimit( integer_or_nolimit::NoLimit) ).get_value();
-	if (anchor && anchor->get_type() == anchor_type::AsChar && drawing->posOffsetV< 0)
+	if (anchor && anchor->get_type() == anchor_type::AsChar && drawing->posOffsetV < 0)
 	{
 		drawing->posOffsetV = (int)(length(0.01, length::cm).get_value_unit(length::emu));
 	}
@@ -936,14 +958,41 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	drawing->cx = get_value_emu(attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
     drawing->cy = get_value_emu(attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
 
+	_CP_OPT(double) dVal;
+	
+	GetProperty(drawing->additional, L"svg:rotate", dVal);
+	if (dVal)
+	{
+		double new_x = (drawing->cx / 2 * cos(-(*dVal)) - drawing->cy / 2 * sin(-(*dVal)) ) - drawing->cx / 2;
+		double new_y = (drawing->cx / 2 * sin(-(*dVal)) + drawing->cy / 2 * cos(-(*dVal)) ) - drawing->cy / 2;
+		
+		drawing->x += new_x;
+		drawing->y += new_y;
+	}	
+	
+	GetProperty(drawing->additional, L"svg:scale_x",dVal);
+	if (dVal)drawing->cx = (int)(0.5 + drawing->cx * dVal.get());
+	
+	GetProperty(drawing->additional, L"svg:scale_y",dVal);
+	if (dVal)drawing->cy = (int)(0.5 + drawing->cy * dVal.get());
+
+	GetProperty(drawing->additional, L"svg:translate_x", dVal);
+	if (dVal)
+	{
+		drawing->x += get_value_emu(dVal.get());
+	}
+	GetProperty(drawing->additional, L"svg:translate_y", dVal);
+	if (dVal)
+	{
+		drawing->y += get_value_emu(dVal.get());
+	}
+
 	if (drawing->cx < 0)	//frame textbox int WORD_EXAMPLE.odt = 45 inch !!!!
 	{
 		drawing->cx = -drawing->cx;
 		drawing->additional.push_back(_property(L"fit-to-size",	true));
 	}
  
-	if (drawing->cy < 0)
-		drawing->cy = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	if ((drawing->styleWrap) && (drawing->styleWrap->get_type() == style_wrap::Dynamic))	//автоподбор
 	{
@@ -988,40 +1037,13 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		//}
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-	_CP_OPT(double) dVal;
-	
-	GetProperty(drawing->additional, L"svg:scale_x",dVal);
-	if (dVal)drawing->cx = (int)(0.5 + drawing->cx * dVal.get());
-	
-	GetProperty(drawing->additional, L"svg:scale_y",dVal);
-	if (dVal)drawing->cy = (int)(0.5 + drawing->cy * dVal.get());
-
-	GetProperty(drawing->additional, L"svg:translate_x", dVal);
-	if (dVal)
-	{
-		int val = get_value_emu(dVal.get());
-		drawing->x = val >= 0 ? val : 0; //??? todooo отрицательные величины ...
-	}
-
-	GetProperty(drawing->additional,L"svg:translate_y", dVal);
-	if (dVal)
-	{
-		int val = get_value_emu(dVal.get());
-		drawing->y = val >= 0 ? val : 0; //??? todooo отрицательные величины ...
-	}
-
 	if (drawing->inGroup && drawing->type != oox::typeGroupShape)
 	{
-		Context.get_drawing_context().set_position_child_group	(drawing->x, drawing->y);
-		Context.get_drawing_context().set_size_child_group		(drawing->cx + drawing->x, drawing->cy + drawing->y);
-
-		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
         _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
 		drawing->x -= x_group_offset;
 		drawing->y -= y_group_offset;
-
 	}
 
 }
@@ -1030,17 +1052,17 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------------------------------------------------------
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type	= oox::typeShape;
-	drawing.id		= Context.get_drawing_context().get_current_shape_id();
-	drawing.name	= Context.get_drawing_context().get_current_object_name();
-	drawing.inGroup	= Context.get_drawing_context().in_group();
+	drawing.type		= oox::typeShape;
+	drawing.id			= Context.get_drawing_context().get_current_shape_id();
+	drawing.name		= Context.get_drawing_context().get_current_object_name();
+	drawing.inGroup		= Context.get_drawing_context().in_group();
+	drawing.lined		= lined_shape_;
+	drawing.connector	= connector_;
 
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...
 
-	if (drawing.sub_type != 5 && 
-		drawing.sub_type != 11 && 
-		drawing.sub_type != 12 )//line, connectors
+	if (drawing.lined == false)
 	{
 		drawing.additional.push_back(_property(L"text-content", Context.get_drawing_context().get_text_stream_shape()));
 	}
@@ -1121,7 +1143,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		return;
  
 	std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
-	int pos_replaicement	= href.find(L"ObjectReplacements"); 
+	size_t pos_replaicement	= href.find(L"ObjectReplacements"); 
 
     const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
 	if (!frame)
@@ -1130,7 +1152,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) return;
 
- 	if (pos_replaicement >= 0)
+	if (pos_replaicement != std::wstring::npos)
 	{
 		if (!Context.get_drawing_context().get_use_image_replace())
 			return; //skip replacement image (math, chart, ...)  - возможно записать как альтернативный контент - todooo ???
@@ -1192,10 +1214,18 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 			std::wstring strRectClip = properties->fo_clip_.get();
 			strRectClip = strRectClip.substr(5, strRectClip.length() - 6);
 			
-			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + href;
+			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + xlink_attlist_.href_.get_value_or(L"");
 			
-			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, NULL/*Context.applicationFonts_*/);
-		}        
+			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, Context.get_mediaitems().applicationFonts());
+		}
+		if (properties->common_draw_fill_attlist_.draw_luminance_)
+		{
+			drawing->fill.bitmap->luminance = properties->common_draw_fill_attlist_.draw_luminance_->get_value();
+		}
+		if (properties->common_draw_fill_attlist_.draw_contrast_)
+		{
+			drawing->fill.bitmap->contrast = properties->common_draw_fill_attlist_.draw_contrast_->get_value();
+		}
 	}
 }
 
@@ -1349,9 +1379,18 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.reset_context_state();
 		
+	if (position_child_x1 != 0x7fffffff && position_child_y1 != 0x7fffffff )
+	{
+		Context.get_drawing_context().set_position_child_group	(position_child_x1, position_child_y1);
+
+		if (position_child_x2 != 0x7fffffff && position_child_y2 != 0x7fffffff )
+		{
+			Context.get_drawing_context().set_size_child_group	(position_child_x2 - position_child_x1, position_child_y2 - position_child_y1);
+		}
+	}
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = content_[i]->get_type();
         content_[i]->docx_convert(Context);
     }
 	drawing.content_group_ = temp_stream.str();
@@ -1362,18 +1401,11 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------
 	Context.get_drawing_context().get_size_group	(drawing.cx	, drawing.cy);
 	Context.get_drawing_context().get_position_group(drawing.x	, drawing.y);
-	
-	drawing.cx -= drawing.x;
-	drawing.cy -= drawing.y;	
-	
+
 	Context.get_drawing_context().stop_group();    	
 	
 	if (drawing.inGroup)
 	{
-		Context.get_drawing_context().set_position_child_group	(drawing.x, drawing.y);
-		Context.get_drawing_context().set_size_child_group		(drawing.cx + drawing.x, drawing.cy + drawing.y);
-
-        // ваще то тут "несовсем" верно ... нужно сначала все стартовые позиции добавить ..
         _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
@@ -1638,18 +1670,20 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 
 	if (href.empty()) return;
 
-	draw_frame*	frame	 = Context.get_drawing_context().get_current_frame();		//owner
+	draw_frame*	frame = Context.get_drawing_context().get_current_frame();		//owner
 	if (!frame) return;
 	
-	oox::_docx_drawing * drawing	= dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
 	if (!drawing) return;
 			
-	drawing->type			=  oox::typeOleObject;
-	
-	bool isMediaInternal	= true;        
-	drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
+	std::wstring extension;
+	detectObject(objectPath, drawing->objectProgId, extension, drawing->type);
 
-	drawing->objectProgId	= detectObject(objectPath); 
+	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
+
+	bool isMediaInternal	= true;
+	drawing->objectId = Context.get_mediaitems().add_or_find(href + extension, drawing->type, isMediaInternal, href);
+
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {

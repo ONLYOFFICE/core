@@ -1466,6 +1466,8 @@ void XlsConverter::convert(ODRAW::OfficeArtFSP * fsp)
 }
 void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.empty()) return;
+	
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
@@ -1627,7 +1629,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 }
 void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	if (props.size() < 1) return;
+	if (props.empty()) return;
 
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
@@ -1724,7 +1726,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 }
 void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	if (props.size() < 1) return;
+	if (props.empty()) return;
 
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
@@ -1768,7 +1770,7 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 }
 void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	if (props.size() < 1) return;
+	if (props.empty()) return;
 
 	oox::_rect					rect;
 	std::vector<_CP_OPT(int)>	adjustValues(8);
@@ -1852,7 +1854,7 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 }
 void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	if (props.size() < 1) return;
+	if (props.empty()) return;
 
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
@@ -1912,13 +1914,15 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 }
 void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	if (props.size() < 1) return;
+	if (props.empty()) return;
 
 	RECT text_margin = {0x00016530, 0x0000b298, 0x00016530, 0x0000b298};
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
+		case NSOfficeDrawing::lTxid: break;
+		case NSOfficeDrawing::txdir: break;
 		case NSOfficeDrawing::dxTextLeft:		text_margin.left	= props[i]->op;	break;
 		case NSOfficeDrawing::dxTextRight:		text_margin.right	= props[i]->op;	break;			
 		case NSOfficeDrawing::dyTextTop:		text_margin.top		= props[i]->op;	break;
@@ -1985,18 +1989,25 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 					}break;
 				}
 			}break;
+		default:
+			int j = 0;
+			break;		
 		}
 	}
 	xlsx_context->get_drawing_context().set_text_margin(text_margin);
 }
 void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.empty()) return;
+
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 	}
 }
 void XlsConverter::convert_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.empty()) return;
+
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 
@@ -2004,6 +2015,8 @@ void XlsConverter::convert_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 }
 void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.empty()) return;
+
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)

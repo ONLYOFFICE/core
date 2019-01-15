@@ -45,8 +45,6 @@
 
 #include "pptx_default_serializes.h"
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-
 namespace cpdoccore { 
 
 namespace odf_reader 
@@ -72,13 +70,10 @@ pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odf
 	,last_idx_placeHolder	(1)
 	,last_uniq_big_id		(1)
 {
-    applicationFonts_ = NSFonts::NSApplication::Create();
 }
 
 pptx_conversion_context::~pptx_conversion_context()
 {
-    if (applicationFonts_)
-        delete applicationFonts_;
 }
 
 void pptx_conversion_context::set_output_document(package::pptx_document * document)
@@ -88,8 +83,7 @@ void pptx_conversion_context::set_output_document(package::pptx_document * docum
 
 void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-    if (applicationFonts_ )
-        applicationFonts_->InitializeFromFolder(pathFonts);
+	pptx_slide_context_.get_mediaitems().set_font_directory(pathFonts);
 }
 
 void pptx_conversion_context::process_layouts()
@@ -333,7 +327,7 @@ void pptx_conversion_context::end_document()
 	output_document_->get_ppt_files().set_presentation (presentation_);       
 	output_document_->get_ppt_files().set_comments (comments);
 	output_document_->get_ppt_files().set_authors_comments (authors_comments_);
-	output_document_->get_ppt_files().set_media (get_mediaitems(), applicationFonts_);
+	output_document_->get_ppt_files().set_media (get_mediaitems());
 
 	output_document_->get_content_types_file().set_media(get_mediaitems());
 }

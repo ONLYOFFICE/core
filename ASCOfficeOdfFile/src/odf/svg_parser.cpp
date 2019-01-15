@@ -185,12 +185,11 @@ namespace svg_path
 		return bUseRelativeCoordinates ? cLowerCaseCommand : cUpperCaseCommand;
 	}
 
-	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement, bool bWrongPositionAfterZ)
+	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement, bool bWrongPositionAfterZ, bool & bIsClosed)
     {
         Polyline.clear();
         const int nLen(rSvgDStatement.length());
         int nPos(0);
-        bool bIsClosed(false);
         
 		double nLastX( 0.0 );
         double nLastY( 0.0 );
@@ -199,6 +198,8 @@ namespace svg_path
  		double nLastControlY( 0.0 );
 		
 		_polyline aCurrPoly;
+
+		bIsClosed = false;
 
         // skip initial whitespace
         skipSpaces(nPos, rSvgDStatement, nLen);

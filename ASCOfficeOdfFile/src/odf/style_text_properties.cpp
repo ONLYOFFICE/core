@@ -529,7 +529,18 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 					CP_XML_NODE(L"a:cs"){CP_XML_ATTR(L"typeface", delete_apostroph_in_name(w_cs));}
 				}
 			}
+			if ((fo_background_color_) && (fo_background_color_->get_type() == odf_types::background_color::Enabled ))
+			{
+				std::wstring strRGB = fo_background_color_->get_color().get_hex_value(); //auto ... не нужно
+				if (!strRGB.empty())
+				{
+					CP_XML_NODE(L"a:highlight")
+					{
+						CP_XML_NODE(L"a:srgbClr") {CP_XML_ATTR(L"val", strRGB);}
+					}
+				}
 
+			}
 			if (!hlink.empty())
 			{
 				CP_XML_NODE(L"a:hlinkClick")

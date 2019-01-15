@@ -32,6 +32,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 #include "xlsx_row_spanned.h"
 #include "xlsx_merge_cells.h"
@@ -53,49 +54,20 @@ typedef _CP_PTR(xlsx_table_state) xlsx_table_state_ptr;
 class xlsx_data_range;
 typedef _CP_PTR(xlsx_data_range) xlsx_data_range_ptr;
 
-class xlsx_data_range_values;
-typedef _CP_PTR(xlsx_data_range_values) xlsx_data_range_values_ptr;
-
-class xlsx_data_range_values
-{
-public:
-	xlsx_data_range_values(size_t row, size_t col1, size_t col2) : withHeader(false), filter(false), row_header(row), start_column(col1), end_column(col2) 
-	{
-		for (size_t i = start_column; i <= end_column; i++)
-			values.push_back(L"");
-	}
-	
-	size_t row_header;
-	size_t start_column;
-	size_t end_column;
-
-	bool withHeader;
-	bool filter;
-
-	std::vector<std::wstring> values;
-
-	void set_value(size_t col, size_t row, const std::wstring& value)
-	{
-		while (col - start_column + 1 >= values.size())
-			values.push_back(L"");
-
-		values[col - start_column] = value;
-	}
-	bool in_range(size_t col, size_t row) {return (row_header == row && (col >= start_column && col <= end_column));}
-};
-
 class xlsx_data_range
 {
 public:
-	xlsx_data_range() : byRow(true), filter(false), withHeader(false), cell_start(0,0), cell_end(0,0) {}
+	xlsx_data_range() : byRow(true), filter(false), bTablePart(true), withHeader(false), cell_start(0,0), cell_end(0,0) {}
 
 	std::wstring	table_name;
+	std::wstring	name;
 	
 	std::wstring	ref;
 	
 	std::pair<int, int> cell_start;
 	std::pair<int, int> cell_end;
 
+	bool			bTablePart;
 	bool			byRow;
 	bool			filter;
 	bool			withHeader;
@@ -104,6 +76,46 @@ public:
 	
 	void serialize_sort			(std::wostream & _Wostream);
 	void serialize_autofilter	(std::wostream & _Wostream);
+	
+	std::vector<std::wstring> header_values;
+
+	void set_header(size_t row, size_t col1, size_t col2)
+	{
+		row_header = row;
+		start_column_header = col1;
+		end_column_header = col2;
+
+		for (size_t i = start_column_header; i <= end_column_header; i++)
+			header_values.push_back(L"");
+	}
+	void set_header_value(size_t col, size_t row, const std::wstring& value)
+	{
+		while (col - start_column_header + 1 >= header_values.size())
+			header_values.push_back(L"");
+
+		std::map<std::wstring, int>::iterator pFind = map_unique_header_values.find(value);
+		if (pFind == map_unique_header_values.end())
+		{
+			map_unique_header_values.insert(std::make_pair(value, 1));
+			header_values[col - start_column_header] = value;
+		}
+		else
+		{
+			pFind->second++;
+			header_values[col - start_column_header] = value + std::to_wstring(pFind->second);
+		}
+	}
+	bool in_header(size_t col, size_t row) 
+	{
+		return (row_header == row && (col >= start_column_header && col <= end_column_header));
+	}
+
+private:
+	size_t row_header;
+	size_t start_column_header;
+	size_t end_column_header;
+
+	std::map<std::wstring, int> map_unique_header_values;
 };
 
 class xlsx_table_state
@@ -114,7 +126,8 @@ public:
 	std::wstring current_style() const { return table_style_; }
 
 	void set_rtl(bool val);
-    
+	void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
+ 
 	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName);
     void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     
@@ -124,8 +137,8 @@ public:
 
 	void add_empty_row(int count);
 
-	void set_end_table(){ bEndTable_ = true; }
-	bool get_end_table(){ return bEndTable_; }
+	void set_end_table(){ bEndTable = true; }
+	bool get_end_table(){ return bEndTable; }
     
 	std::wstring current_row_style			() const;
     std::wstring default_row_cell_style		() const;
@@ -170,12 +183,14 @@ public:
     void serialize_ole_objects				(std::wostream & _Wostream);
 	void serialize_page_properties			(std::wostream & _Wostream);
 	void serialize_background				(std::wostream & _Wostream);
+	void serialize_protection				(std::wostream & _Wostream);
 
 	void dump_rels_hyperlinks				(rels & Rels);
 	void dump_rels_ole_objects				(rels & Rels);
 
     std::wstring get_table_name()	const { return tableName_; }
 	int			 get_table_id()		const { return tableId_; }
+	bool		 get_table_hidden()	const { return bHidden; }
 	
 	struct _group_row
 	{
@@ -189,9 +204,14 @@ public:
 	friend class xlsx_table_context;
 
 private:	
-	bool								bRTL_;
-	bool								bEndTable_;
     xlsx_conversion_context *			context_;    
+
+	bool								bProtected;
+    std::wstring						protect_key;
+    std::wstring						protect_key_algorithm;
+	bool								bRTL;
+	bool								bEndTable;
+	bool								bHidden;
 
     std::wstring						tableName_;
 	int									tableId_;

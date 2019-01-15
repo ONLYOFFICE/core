@@ -72,8 +72,9 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
     const style_instance * inst = 
         Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableRow,Context.process_headers_footers_);
 	
-	style_table_cell_properties* cell_props = NULL;
-	style_table_row_properties* row_props = NULL;
+	style_table_cell_properties	*cell_props = NULL;
+	style_table_row_properties	*row_props = NULL;
+	
 	if (inst && inst->content())
 	{
 		cell_props = inst->content()->get_style_table_cell_properties(true);
@@ -89,8 +90,32 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
     {
         _Wostream << L"<w:tr>";
         
-        _Wostream << L"<w:trPr>";        
-			_Wostream << L"<w:cantSplit w:val=\"false\" />"; 
+        _Wostream << L"<w:trPr>";   
+
+			bool bCantSplit = false;
+
+			if (row_props)
+			{
+				if (row_props->attlist_.fo_keep_together_ && row_props->attlist_.fo_keep_together_->get_type() == keep_together::Always)
+				{
+					_Wostream << L"<w:cantSplit w:val=\"true\"/>"; 
+				}
+				if (row_props->attlist_.style_row_height_)
+				{
+					int val = (int)( 0.5 + 20.0 * row_props->attlist_.style_row_height_->get_value_unit(length::pt) );
+					if (val < 0)
+						val = 0;
+					_Wostream << L"<w:trHeight w:val=\"" << val << L"\" w:hRule=\"exact\"/>";
+				}
+				else if (row_props->attlist_.style_min_row_height_)
+				{
+					int val = (int)( 0.5 + 20.0 * row_props->attlist_.style_min_row_height_->get_value_unit(length::pt) );
+					if (val < 0)
+						val = 0;
+					_Wostream << L"<w:trHeight w:val=\"" << val << L"\" w:hRule=\"atLeast\"/>";
+				}	
+
+			}
 
 			if (cell_props)
 				cell_props->docx_convert(Context);
@@ -171,10 +196,10 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	bool sub_table = table_table_attlist_.table_is_sub_table_.get_value_or(false);
+	bool sub_table = attlist_.table_is_sub_table_.get_value_or(false);
 	//todooo придумать как сделать внешние границы sub-таблицы границами внешней ячейки (чтоб слияние произошло)
 	
-	std::wstring tableStyleName = table_table_attlist_.table_style_name_.get_value_or(L"");
+	std::wstring tableStyleName = attlist_.table_style_name_.get_value_or(L"");
 
 	_Wostream << L"<w:tbl>";    
 

@@ -59,11 +59,11 @@ public:
 	void set_transitionAction	(bool val);
 	void set_transitionSpeed	(std::wstring val);
 ///////////////////////////////////////////////////////////////////////////////////////////
-	void set_rect		(double width_pt, double height_pt, double x_pt, double y_pt);
+	void set_rect (double width_pt, double height_pt, double x_pt, double y_pt);
 
 	void set_translate	(double x_pt, double y_pt);
 	void set_scale		(double cx_pt, double cy_pt);
-	void set_rotate		(double angle);
+	void set_rotate		(double angle, bool translate = false);
 
 	void set_name		(std::wstring const & name);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt);
@@ -72,6 +72,9 @@ public:
     void set_clipping	(const std::wstring & str );
 	void set_fill		(_oox_fill & fill);
 	
+	void set_is_line_shape(bool val);
+	void set_is_connector_shape(bool val);
+
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
 

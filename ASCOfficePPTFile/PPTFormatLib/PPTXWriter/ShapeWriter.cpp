@@ -40,6 +40,8 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
 
+#include <iostream>
+
 CStylesWriter::CStylesWriter() : m_pTheme(NULL) {}
 CStylesWriter::CStylesWriter(NSPresentationEditor::CTheme* pTheme) : m_pTheme(pTheme) {}
 
@@ -889,6 +891,208 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
     std::wstring str2 = _T("</p:nvSpPr>");
 	m_oWriter.WriteString(str2);
 }
+void NSPresentationEditor::CShapeWriter::Write3dShape()
+{
+	CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
+	if (!pShapeElement) return;
+
+	CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(pShapeElement->m_pShape->getBaseShape().get());
+	if (!pPPTShape) return;
+
+	if (!pPPTShape->m_o3dOptions.bEnabled) return;
+
+	//{
+	//	std::cout << "........................................................................\n";
+	//	std::wcout << pShapeElement->m_sName << L"\n";
+	//	if (pPPTShape->m_o3dOptions.dSpecularAmt) 
+	//	{
+	//		std::cout << "SpecularAmt\t" << (*pPPTShape->m_o3dOptions.dSpecularAmt) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dDiffuseAmt) 
+	//	{
+	//		std::cout << "iffuseAmt\t" << (*pPPTShape->m_o3dOptions.dDiffuseAmt) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dShininess) 
+	//	{
+	//		std::cout << "Shininess\t" << (*pPPTShape->m_o3dOptions.dShininess) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dXRotationAngle) 
+	//	{
+	//		std::cout << "XRotationAngle\t" << (*pPPTShape->m_o3dOptions.dXRotationAngle) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dYRotationAngle) 
+	//	{
+	//		std::cout << "YRotationAngle\t" << (*pPPTShape->m_o3dOptions.dYRotationAngle) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dRotationAxisX) 
+	//	{
+	//		std::cout << "RotationAxisX\t" << (*pPPTShape->m_o3dOptions.dRotationAxisX) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dRotationAxisY) 
+	//	{
+	//		std::cout << "RotationAxisY\t" << (*pPPTShape->m_o3dOptions.dRotationAxisY) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dRotationAxisZ) 
+	//	{
+	//		std::cout << "RotationAxisZ\t" << (*pPPTShape->m_o3dOptions.dRotationAxisZ) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dRotationAngle) 
+	//	{
+	//		std::cout << "RotationAngle\t" << (*pPPTShape->m_o3dOptions.dRotationAngle) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dRotationCenterX) 
+	//	{
+	//		std::cout << "RotationCenterX\t" << (*pPPTShape->m_o3dOptions.dRotationCenterX) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dRotationCenterY) 
+	//	{
+	//		std::cout << "RotationCenterY\t" << (*pPPTShape->m_o3dOptions.dRotationCenterY) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dRotationCenterZ) 
+	//	{
+	//		std::cout << "RotationCenterZ\t" << (*pPPTShape->m_o3dOptions.dRotationCenterZ) << "\n";
+	//	}
+	//	if (pPPTShape->m_o3dOptions.dTolerance) 
+	//	{
+	//		std::cout << "Tolerance\t" << (*pPPTShape->m_o3dOptions.dTolerance) << "\n";
+	//	}
+	//	std::cout << "XViewpoint\t" << (pPPTShape->m_o3dOptions.dXViewpoint) << "\n";
+	//	std::cout << "YViewpoint\t" << (pPPTShape->m_o3dOptions.dYViewpoint) << "\n";
+	//	if (pPPTShape->m_o3dOptions.dZViewpoint)
+	//	{
+	//		std::cout << "ZViewpoint\t" << (*pPPTShape->m_o3dOptions.dZViewpoint) << "\n";
+	//	}
+	//	std::cout << "OriginX\t" << (pPPTShape->m_o3dOptions.dOriginX) << "\n";
+	//	std::cout << "OriginY\t" << (pPPTShape->m_o3dOptions.dOriginY) << "\n";
+	//	std::cout << "SkewAngle\t" << (pPPTShape->m_o3dOptions.dSkewAngle) << "\n";
+	//	std::cout << "SkewAmount\t" << (pPPTShape->m_o3dOptions.nSkewAmount) << "\n";
+
+	//	if (pPPTShape->m_o3dOptions.dAmbientIntensity)
+	//	{
+	//		std::cout << "AmbientIntensity\t" << (*pPPTShape->m_o3dOptions.dAmbientIntensity) << "\n";
+	//	}		
+	//	if (pPPTShape->m_o3dOptions.dKeyIntensity)
+	//	{
+	//		std::cout << "KeyIntensity\t" << (*pPPTShape->m_o3dOptions.dKeyIntensity) << "\n";
+	//	}
+	//	std::cout << "KeyX\t" << (pPPTShape->m_o3dOptions.dKeyX) << "\n";
+	//	std::cout << "KeyY\t" << (pPPTShape->m_o3dOptions.dKeyY) << "\n";
+	//	if (pPPTShape->m_o3dOptions.dKeyZ)
+	//	{
+	//		std::cout << "KeyZ\t" << (*pPPTShape->m_o3dOptions.dKeyZ) << "\n";
+	//	}
+	//	std::cout << "FillIntensity\t" << (pPPTShape->m_o3dOptions.dFillIntensity) << "\n";
+	//	std::cout << "FillX\t" << (pPPTShape->m_o3dOptions.dFillX) << "\n";
+	//	std::cout << "FillY\t" << (pPPTShape->m_o3dOptions.dFillY) << "\n";
+	//	if (pPPTShape->m_o3dOptions.dFillZ)
+	//	{
+	//		std::cout << "FillZ\t" << (*pPPTShape->m_o3dOptions.dFillZ) << "\n";
+	//	}
+	//	std::cout << "........................................................................\n";
+	//}
+
+	m_oWriter.WriteString(std::wstring(L"<a:scene3d>"));
+		m_oWriter.WriteString(std::wstring(L"<a:camera"));
+		
+		std::wstring sAngle;
+		if (pPPTShape->m_o3dOptions.dSkewAngle < 10) sAngle = L"Left";
+		else if (pPPTShape->m_o3dOptions.dSkewAngle >= 10 && pPPTShape->m_o3dOptions.dSkewAngle < 80) sAngle = L"BottomLeft";
+		else if (pPPTShape->m_o3dOptions.dSkewAngle >= 80 && pPPTShape->m_o3dOptions.dSkewAngle < 100) sAngle = L"Bottom";
+		else if (pPPTShape->m_o3dOptions.dSkewAngle >= 100 && pPPTShape->m_o3dOptions.dSkewAngle < 145) sAngle = L"BottomRight";
+		else if (pPPTShape->m_o3dOptions.dSkewAngle >= 145 && pPPTShape->m_o3dOptions.dSkewAngle < 190) sAngle = L"Right";
+		else if (pPPTShape->m_o3dOptions.dSkewAngle >= 190 && pPPTShape->m_o3dOptions.dSkewAngle < 235) sAngle = L"TopRight";
+		else if (pPPTShape->m_o3dOptions.dSkewAngle >= 235 && pPPTShape->m_o3dOptions.dSkewAngle < 280) sAngle = L"Top";
+		else if (pPPTShape->m_o3dOptions.dSkewAngle >= 280 && pPPTShape->m_o3dOptions.dSkewAngle < 325) sAngle = L"TopLeft";
+		else sAngle = L"Front";
+
+		if (pPPTShape->m_o3dOptions.bParallel)
+			m_oWriter.WriteString(std::wstring(L" prst=\"legacyOblique" + sAngle + L"\""));
+		else
+			m_oWriter.WriteString(std::wstring(L" prst=\"legacyPerspective" + sAngle + L"\""));
+		m_oWriter.WriteString(std::wstring(L">"));
+		if (pPPTShape->m_o3dOptions.bConstrainRotation)
+		{
+			m_oWriter.WriteString(std::wstring(L"<a:rot"));
+				m_oWriter.WriteString(std::wstring(L" lat=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dXRotationAngle.get_value_or(0))) + L"\""));
+				m_oWriter.WriteString(std::wstring(L" lon=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dYRotationAngle.get_value_or(0))) + L"\""));
+				m_oWriter.WriteString(std::wstring(L" rev=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dRotationAngle.get_value_or(0))) + L"\""));
+			m_oWriter.WriteString(std::wstring(L"/>"));
+		}
+		m_oWriter.WriteString(std::wstring(L"</a:camera>"));
+
+  		m_oWriter.WriteString(std::wstring(L"<a:lightRig"));
+			if (pPPTShape->m_o3dOptions.dFillIntensity < 0.3)		
+				m_oWriter.WriteString(std::wstring(L" rig=\"legacyHarsh3\""));
+			else if (pPPTShape->m_o3dOptions.dFillIntensity < 0.4)	
+				m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat4\""));
+			else if (pPPTShape->m_o3dOptions.dFillIntensity > 0.6 || 
+				(pPPTShape->m_o3dOptions.dKeyX < 0.1 && pPPTShape->m_o3dOptions.dFillX < 0.1 && 
+				 pPPTShape->m_o3dOptions.dKeyY < 0.1 && pPPTShape->m_o3dOptions.dFillY < 0.1))	
+				m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat1\""));
+			else
+				m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat3\""));
+
+			if (pPPTShape->m_o3dOptions.dKeyX < 0.1 && pPPTShape->m_o3dOptions.dFillX < 0.1)
+			{
+				if (pPPTShape->m_o3dOptions.dKeyY < 0.1 && pPPTShape->m_o3dOptions.dFillY < 0.1)
+															m_oWriter.WriteString(std::wstring(L" dir=\"t\""));
+				else if (pPPTShape->m_o3dOptions.dKeyY < 0)	m_oWriter.WriteString(std::wstring(L" dir=\"r\""));
+				else										m_oWriter.WriteString(std::wstring(L" dir=\"l\""));
+			}
+			else
+			{
+				if (pPPTShape->m_o3dOptions.dKeyX < 0)	m_oWriter.WriteString(std::wstring(L" dir=\"t\""));
+				else									m_oWriter.WriteString(std::wstring(L" dir=\"b\""));
+			}
+		m_oWriter.WriteString(std::wstring(L"/>"));
+	m_oWriter.WriteString(std::wstring(L"</a:scene3d>"));
+	
+	m_oWriter.WriteString(std::wstring(L"<a:sp3d"));
+		m_oWriter.WriteString(std::wstring(L" extrusionH=\"" + std::to_wstring(pPPTShape->m_o3dOptions.nExtrudeBackward) + L"\""));
+
+	switch(pPPTShape->m_o3dOptions.nRenderMode)
+	{
+	case 0x00000000://solid
+	{
+		if (pPPTShape->m_o3dOptions.bMetallic)
+			m_oWriter.WriteString(std::wstring(L" prstMaterial=\"legacyMetal\""));
+		else 
+			m_oWriter.WriteString(std::wstring(L" prstMaterial=\"legacyMatte\"")); 
+	}break; 
+	case 0x00000001: m_oWriter.WriteString(std::wstring(L" prstMaterial=\"legacyWireframe\"")); break; //wireframe
+	case 0x00000002: m_oWriter.WriteString(std::wstring(L" prstMaterial=\"legacyWireframe\"")); break; //bounding cube ????
+	}
+
+	m_oWriter.WriteString(std::wstring(L">"));
+
+	m_oWriter.WriteString(std::wstring(L"<a:bevelT w=\"13500\" h=\"13500\" prst=\"angle\"/>"));
+	m_oWriter.WriteString(std::wstring(L"<a:bevelB w=\"13500\" h=\"13500\" prst=\"angle\"/>"));
+
+	std::wstring strExtrusionClr;
+		if (pPPTShape->m_o3dOptions.oExtrusionColor)
+		{
+			strExtrusionClr = ConvertColor(*pPPTShape->m_o3dOptions.oExtrusionColor);
+		}
+		else
+		{
+			if (pShapeElement->m_oBrush.Type != c_BrushTypeNoFill)
+			{
+				strExtrusionClr = ConvertColor(pShapeElement->m_oBrush.Color1, pShapeElement->m_oBrush.Alpha1);
+			}
+			else
+			{
+				strExtrusionClr = ConvertColor(pShapeElement->m_oPen.Color, pShapeElement->m_oPen.Alpha);
+			}
+		}
+	m_oWriter.WriteString(std::wstring(L"<a:extrusionClr>"));
+		m_oWriter.WriteString(strExtrusionClr);
+	m_oWriter.WriteString(std::wstring(L"</a:extrusionClr>"));
+	m_oWriter.WriteString(std::wstring(L"<a:contourClr>"));
+		m_oWriter.WriteString(strExtrusionClr);
+	m_oWriter.WriteString(std::wstring(L"</a:contourClr>"));
+
+	m_oWriter.WriteString(std::wstring(L"</a:sp3d>"));
+}
 void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 {
 	//if (false == m_xmlTxBodyAlternative.empty())
@@ -1552,6 +1756,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 		}
 		m_oWriter.WriteString(ConvertShadow(pShapeElement->m_oShadow));
 	}
+	Write3dShape();
 
 	m_oWriter.WriteString(std::wstring(L"</p:spPr>"));			
 

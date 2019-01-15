@@ -79,14 +79,15 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	else if (L"wav" == extension)	return  L"audio/wav";
 	else if (L"mp3" == extension)	return  L"audio/mpeg";
 	else if (L"wma" == extension)	return  L"audio/x-ms-wma";
-	else if (L"m4a" == extension)	return  L"audio/unknown";
+	else if (L"m4a" == extension)	return  L"audio/m4a";
 
 	else if (L"avi" == extension)	return  L"video/x-msvideo";
 	else if (L"wmv" == extension)	return  L"video/x-ms-wmv";
-	else if (L"mov" == extension)	return  L"video/unknown";
-	else if (L"mp4" == extension)	return  L"video/unknown";
-	else if (L"m4v" == extension)	return  L"video/unknown";
-	else if (L"mkv" == extension)	return  L"video/unknown";
+	else if (L"mov" == extension)	return  L"video/mov";
+	else if (L"mp4" == extension)	return  L"video/mp4";
+	else if (L"m4v" == extension)	return  L"video/m4v";
+	else if (L"mkv" == extension)	return  L"video/mkv";
+	else if (L"webm" == extension)	return  L"video/webm";
 
 	else if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

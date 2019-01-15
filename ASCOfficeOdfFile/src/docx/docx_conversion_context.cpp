@@ -131,6 +131,7 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 
 //----------------------------------------------------------------------------------------------------------------
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
+	last_dump_page_properties_	(true),
 	next_dump_page_properties_	(false),
 	page_break_					(false),
 	page_break_after_			(false),
@@ -155,12 +156,9 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	odf_document_				(OdfDocument)
 {
 	streams_man_		= streams_man::create(temp_stream_);
-    applicationFonts_	= NSFonts::NSApplication::Create();
 }
 docx_conversion_context::~docx_conversion_context()
 {
-    if (applicationFonts_)
-        delete applicationFonts_;
 }
 void docx_conversion_context::set_output_document(package::docx_document * document)
 {
@@ -168,8 +166,7 @@ void docx_conversion_context::set_output_document(package::docx_document * docum
 }
 void docx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-    if (applicationFonts_)
-        applicationFonts_->InitializeFromFolder(pathFonts);
+	mediaitems_.set_font_directory(pathFonts);
 }
 std::wstring styles_map::get(const std::wstring & Name, odf_types::style_family::type Type)
 {
@@ -686,7 +683,7 @@ void docx_conversion_context::end_document()
 
     output_document_->get_word_files().set_document	( package::simple_element::create(L"document.xml", document_xml_.str()) );
 	output_document_->get_word_files().set_settings	( package::simple_element::create(L"settings.xml", dump_settings_document()));
-	output_document_->get_word_files().set_media	( mediaitems_, applicationFonts_);
+	output_document_->get_word_files().set_media	( mediaitems_);
 	output_document_->get_word_files().set_comments	( comments_context_);
     output_document_->get_word_files().set_headers_footers( headers_footers_);
 
@@ -1429,14 +1426,22 @@ void docx_conversion_context::next_dump_page_properties(bool val)
 	if (process_headers_footers_ && val) return;
 		
 	next_dump_page_properties_ = val;
+	if (val)
+		last_dump_page_properties(true);
 }
 
 bool docx_conversion_context::is_next_dump_page_properties()
 {
     return next_dump_page_properties_;    
 }
-
-
+void docx_conversion_context::last_dump_page_properties(bool val)
+{
+	last_dump_page_properties_ = val;
+}
+bool docx_conversion_context::is_last_dump_page_properties()
+{
+    return last_dump_page_properties_;    
+}
 void docx_conversion_context::start_text_list_style(const std::wstring & StyleName)
 {
     text_list_style_name_ = StyleName;    

@@ -1070,7 +1070,7 @@ void odf_drawing_context::end_shape()
 					enhanced->attlist_.draw_type_			= shape_define->odf_type_name;
 					enhanced->attlist_.draw_text_areas_		= shape_define->text_areas;
 					
-					enhanced->attlist_.draw_glue_points_		= shape_define->glue_points;
+					enhanced->attlist_.draw_glue_points_	= shape_define->glue_points;
 					enhanced->attlist_.draw_sub_view_size_	= shape_define->sub_view_size;
 
 					if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())

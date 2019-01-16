@@ -70,6 +70,7 @@ namespace cpdoccore
 
 		void add(std::wstring name,std::wstring frmla)
 		{
+			XmlUtils::replace_all(name, L"gd", L"f");
 			_equation q = {name, frmla};
 			equations.push_back(q);
 		}

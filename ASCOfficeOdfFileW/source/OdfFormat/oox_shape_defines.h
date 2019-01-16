@@ -68,12 +68,7 @@ namespace cpdoccore
 			_CP_OPT(std::wstring) r_maximum;
 		};
 
-		void add(std::wstring name,std::wstring frmla)
-		{
-			XmlUtils::replace_all(name, L"gd", L"f");
-			_equation q = {name, frmla};
-			equations.push_back(q);
-		}
+        void add(std::wstring name,std::wstring frmla);
 
 		std::vector<_equation>	equations;
 		std::vector<_handle>	handles;		

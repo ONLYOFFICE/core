@@ -88,12 +88,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("left"),	m_oLeft)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("top"),		m_oTop)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("right"),	m_oRight)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bottom"),	m_oBottom)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("header"),	m_oHeader)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("footer"),	m_oFooter)
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("left"),	m_oLeft)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("top"),		m_oTop)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("right"),	m_oRight)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("bottom"),	m_oBottom)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("header"),	m_oHeader)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("footer"),	m_oFooter)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -157,12 +157,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("orientation"),	m_oOrientation)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperSize"),	m_oPaperSize)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperUnits"),	m_oPaperUnits)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperWidth"),	m_oPaperWidth)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperHeight"),	m_oPaperHeight)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),		m_oRId)
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("orientation"),	m_oOrientation)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperSize"),	m_oPaperSize)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperUnits"),	m_oPaperUnits)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperWidth"),	m_oPaperWidth)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperHeight"),	m_oPaperHeight)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:id"),		m_oRId)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			nullable<SimpleTypes::CRelationshipId>				m_oRId;
@@ -218,11 +218,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLines"),			m_oGridLines)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLinesSet"),		m_oGridLinesSet)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("headings"),			m_oHeadings)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("horizontalCentered"),	m_oHorizontalCentered)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("verticalCentered"),	m_oVerticalCentered)
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("gridLines"),			m_oGridLines)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("gridLinesSet"),		m_oGridLinesSet)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("headings"),			m_oHeadings)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("horizontalCentered"),	m_oHorizontalCentered)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("verticalCentered"),	m_oVerticalCentered)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -271,7 +271,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef)
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("ref"), m_oRef)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -328,15 +328,15 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("baseColWidth"),		m_oBaseColWidth)	// ToDo Excel не воспринимает значения не uint (мы приводим к uint)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),		m_oCustomHeight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultColWidth"),		m_oDefaultColWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultRowHeight"),	m_oDefaultRowHeight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevelCol"),		m_oOutlineLevelCol )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevelRow"),		m_oOutlineLevelRow )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickBottom"),			m_oThickBottom )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickTop"),			m_oThickTop )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zeroHeight"),			m_oZeroHeight )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("baseColWidth"),		m_oBaseColWidth)	// ToDo Excel не воспринимает значения не uint (мы приводим к uint)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("customHeight"),		m_oCustomHeight )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("defaultColWidth"),		m_oDefaultColWidth )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("defaultRowHeight"),	m_oDefaultRowHeight )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("outlineLevelCol"),		m_oOutlineLevelCol )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("outlineLevelRow"),		m_oOutlineLevelRow )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("thickBottom"),			m_oThickBottom )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("thickTop"),			m_oThickTop )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("zeroHeight"),			m_oZeroHeight )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -395,11 +395,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activePane")	, m_oActivePane)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("state")		, m_oState)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell")	, m_oTopLeftCell)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xSplit")		, m_oXSplit)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ySplit")		, m_oYSplit)	
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("activePane")	, m_oActivePane)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("state")		, m_oState)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("topLeftCell")	, m_oTopLeftCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("xSplit")		, m_oXSplit)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("ySplit")		, m_oYSplit)	
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -454,10 +454,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCell")	, m_oActiveCell)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCellId")	, m_oActiveCellId)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sqref")		, m_oSqref)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("pane")			, m_oPane)
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("activeCell")	, m_oActiveCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("activeCellId")	, m_oActiveCellId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sqref")		, m_oSqref)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pane")			, m_oPane)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -556,25 +556,25 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("colorId"),				m_oColorId)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultGridColor"),	m_oDefaultGridColor)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rightToLeft"),			m_oRightToLeft)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showFormulas"),		m_oShowFormulas)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showGridLines"),		m_oShowGridLines)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showOutlineSymbols"),	m_oShowOutlineSymbols)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRowColHeaders"),	m_oShowRowColHeaders)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRuler"),			m_oShowRuler)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showWhiteSpace"),		m_oShowWhiteSpace)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showZeros"),			m_oShowZeros)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tabSelected"),			m_oTabSelected)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell"),			m_oTopLeftCell)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("view"),				m_oView)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowProtection"),	m_oWindowProtection)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("workbookViewId"),		m_oWorkbookViewId)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScale"),			m_oZoomScale)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScaleNormal"),		m_oZoomScaleNormal)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScalePageLayoutView"),		m_oZoomScalePageLayoutView)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScaleSheetLayoutView"),	m_oZoomScaleSheetLayoutView)		
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("colorId"),				m_oColorId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("defaultGridColor"),	m_oDefaultGridColor)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rightToLeft"),			m_oRightToLeft)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showFormulas"),		m_oShowFormulas)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showGridLines"),		m_oShowGridLines)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showOutlineSymbols"),	m_oShowOutlineSymbols)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showRowColHeaders"),	m_oShowRowColHeaders)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showRuler"),			m_oShowRuler)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showWhiteSpace"),		m_oShowWhiteSpace)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showZeros"),			m_oShowZeros)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("tabSelected"),			m_oTabSelected)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("topLeftCell"),			m_oTopLeftCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("view"),				m_oView)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("windowProtection"),	m_oWindowProtection)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("workbookViewId"),		m_oWorkbookViewId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("zoomScale"),			m_oZoomScale)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("zoomScaleNormal"),		m_oZoomScaleNormal)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("zoomScalePageLayoutView"),		m_oZoomScalePageLayoutView)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("zoomScaleSheetLayoutView"),	m_oZoomScaleSheetLayoutView)		
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -768,7 +768,7 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
-				if (m_sText.empty())			return;
+				if (m_sText.empty()) return;
 
 				writer.WriteString(_T("<"));
 					writer.WriteString(sName);
@@ -892,9 +892,9 @@ namespace OOX
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if		( oReader, _T("alignWithMargins"),	m_oAlignWithMargins)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("differentFirst"),	m_oDifferentFirst)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("differentOddEven"),	m_oDifferentOddEven)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("scaleWithDoc"),		m_oScaleWithDoc)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("differentFirst"),	m_oDifferentFirst)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("differentOddEven"),	m_oDifferentOddEven)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("scaleWithDoc"),		m_oScaleWithDoc)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -974,27 +974,25 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),    m_oId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cfe"),     m_oCfe )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cff"),     m_oCff )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cfo"),     m_oCfo )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("che"),		m_oChe )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("chf"),     m_oChf )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cho"),     m_oCho )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lfe"),     m_oLfe )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lff"),     m_oLff )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lfo"),     m_oLfo )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lhe"),     m_oLhe )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lhf"),     m_oLhf )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lho"),     m_oLho )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rfe"),     m_oRfe )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rff"),     m_oRff )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rfo"),     m_oRfo )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rhe"),     m_oRhe )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rhf"),     m_oRhf )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rho"),     m_oRho )
-
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("r:id"),    m_oId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cfe"),     m_oCfe )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cff"),     m_oCff )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cfo"),     m_oCfo )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("che"),		m_oChe )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("chf"),     m_oChf )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cho"),     m_oCho )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lfe"),     m_oLfe )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lff"),     m_oLff )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lfo"),     m_oLfo )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lhe"),     m_oLhe )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lhf"),     m_oLhf )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lho"),     m_oLho )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rfe"),     m_oRfe )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rff"),     m_oRff )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rfo"),     m_oRfo )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rhe"),     m_oRhe )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rhf"),     m_oRhf )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rho"),     m_oRho )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -1063,7 +1061,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"), m_oId )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("r:id"), m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -1114,10 +1112,10 @@ namespace OOX
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if		( oReader, _T("id"),	m_oId)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("man"),	m_oMan)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("max"),	m_oMax)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("min"),	m_oMin)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("pt"),	m_oPt)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("man"),	m_oMan)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("max"),	m_oMax)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("min"),	m_oMin)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pt"),	m_oPt)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1144,7 +1142,7 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -1152,11 +1150,11 @@ namespace OOX
 			}
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
-				writer.WriteString(_T("<"));
+				writer.WriteString(L"<");
 				writer.WriteString(sName);
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				WritingStringNullableAttrInt(L"manualBreakCount", m_oManualBreakCount, m_oManualBreakCount->GetValue());
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 				for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
 					if ( m_arrItems[i] )
@@ -1164,9 +1162,9 @@ namespace OOX
 						m_arrItems[i]->toXML(writer);
 					}
 				}
-				writer.WriteString(_T("</"));
+				writer.WriteString(L"</");
 				writer.WriteString(sName);
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1180,7 +1178,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("brk") == sName )
+					if ( L"brk" == sName )
 						m_arrItems.push_back( new CBreak( oReader ));
 				}
 			}
@@ -1193,14 +1191,456 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("count"),	m_oCount)
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("manualBreakCount"),	m_oManualBreakCount)
+				WritingElement_ReadAttributes_Read_if		( oReader, L"count",	m_oCount)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, L"manualBreakCount",	m_oManualBreakCount)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oManualBreakCount;
+		};
+		class CSheetProtection : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSheetProtection)
+			CSheetProtection()
+			{
+			}
+			virtual ~CSheetProtection()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<sheetProtection");
+					WritingStringNullableAttrString(L"password",	m_oPassword,		m_oPassword.get());
+					WritingStringNullableAttrString(L"algorithmName",m_oAlgorithmName,	m_oAlgorithmName->ToString());
+					WritingStringNullableAttrString(L"hashValue",	m_oHashValue,		m_oHashValue.get());
+					WritingStringNullableAttrString(L"saltValue",	m_oSaltValue,		m_oSaltValue.get());
+					WritingStringNullableAttrInt(L"spinCount",		m_oSpinCount,		m_oSpinCount->GetValue());
+					WritingStringNullableAttrInt(L"autoFilter",		m_oAutoFilter,		m_oAutoFilter->GetValue());
+					WritingStringNullableAttrInt(L"content",		m_oContent,			m_oContent->GetValue());
+					WritingStringNullableAttrInt(L"deleteColumns",	m_oDeleteColumns,	m_oDeleteColumns->GetValue());
+					WritingStringNullableAttrInt(L"deleteRows",		m_oDeleteRows,		m_oDeleteRows->GetValue());
+					WritingStringNullableAttrInt(L"formatCells",	m_oFormatCells,		m_oFormatCells->GetValue());
+					WritingStringNullableAttrInt(L"formatColumns",	m_oFormatColumns,	m_oFormatColumns->GetValue());
+					WritingStringNullableAttrInt(L"formatRows",		m_oFormatRows,		m_oFormatRows->GetValue());
+					WritingStringNullableAttrInt(L"insertColumns",	m_oInsertColumns,	m_oInsertColumns->GetValue());
+					WritingStringNullableAttrInt(L"insertHyperlinks", m_oInsertHyperlinks, m_oInsertHyperlinks->GetValue());
+					WritingStringNullableAttrInt(L"insertRows",		m_oInsertRows,		m_oInsertRows->GetValue());
+					WritingStringNullableAttrInt(L"objects",		m_oObjects,			m_oObjects->GetValue());
+					WritingStringNullableAttrInt(L"pivotTables",	m_oPivotTables,		m_oPivotTables->GetValue());
+					WritingStringNullableAttrInt(L"scenarios",		m_oScenarios,		m_oScenarios->GetValue());
+					WritingStringNullableAttrInt(L"selectLockedCells",	m_oSelectLockedCells,	m_oSelectLockedCells->GetValue());
+					WritingStringNullableAttrInt(L"selectUnlockedCell",	m_oSelectUnlockedCell,	m_oSelectUnlockedCell->GetValue());
+					WritingStringNullableAttrInt(L"sheet",			m_oSheet,			m_oSheet->GetValue());
+					WritingStringNullableAttrInt(L"sort",			m_oSort,			m_oSort->GetValue());
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_x_SheetProtection;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("password"),		m_oPassword)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("algorithmName"),	m_oAlgorithmName)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("hashValue"),		m_oHashValue)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("saltValue"),		m_oSaltValue)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("spinCount"),		m_oSpinCount)
+					
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoFilter"),	m_oAutoFilter)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("content"),		m_oContent)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("deleteColumns"),	m_oDeleteColumns)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("deleteRows"),	m_oDeleteRows)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatCells"),	m_oFormatCells)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatColumns"),	m_oFormatColumns)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("formatRows"),	m_oFormatRows)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("insertColumns"),	m_oInsertColumns)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("insertHyperlinks"),m_oInsertHyperlinks)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("insertRows"),	m_oInsertRows)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("objects"),		m_oObjects)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pivotTables"),	m_oPivotTables)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("scenarios"),		m_oScenarios)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("selectLockedCells"),m_oSelectLockedCells)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("selectUnlockedCell"),m_oSelectUnlockedCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sheet"),			m_oSheet)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sort"),			m_oSort)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
+			nullable_string		m_oHashValue;
+			nullable_string		m_oSaltValue;
+			nullable_string		m_oPassword; //for old wrike protection
+
+			nullable<SimpleTypes::COnOff<>>		m_oAutoFilter;
+			nullable<SimpleTypes::COnOff<>>		m_oContent;
+			nullable<SimpleTypes::COnOff<>>		m_oDeleteColumns;
+			nullable<SimpleTypes::COnOff<>>		m_oDeleteRows;
+			nullable<SimpleTypes::COnOff<>>		m_oFormatCells;
+			nullable<SimpleTypes::COnOff<>>		m_oFormatColumns;
+			nullable<SimpleTypes::COnOff<>>		m_oFormatRows;
+			nullable<SimpleTypes::COnOff<>>		m_oInsertColumns;
+			nullable<SimpleTypes::COnOff<>>		m_oInsertHyperlinks;
+			nullable<SimpleTypes::COnOff<>>		m_oInsertRows;
+			nullable<SimpleTypes::COnOff<>>		m_oObjects;
+			nullable<SimpleTypes::COnOff<>>		m_oPivotTables;
+			nullable<SimpleTypes::COnOff<>>		m_oScenarios;
+			nullable<SimpleTypes::COnOff<>>		m_oSelectLockedCells;
+			nullable<SimpleTypes::COnOff<>>		m_oSelectUnlockedCell;
+			nullable<SimpleTypes::COnOff<>>		m_oSheet;
+			nullable<SimpleTypes::COnOff<>>		m_oSort;
+		};
+		class CDataRef : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CDataRef)
+			CDataRef()
+			{
+			}
+			virtual ~CDataRef()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<sheetProtection");
+					WritingStringAttrString(L"r:id", m_oId->ToString());
+					WritingStringNullableAttrString(L"name",	m_oName,	m_oName.get());
+					WritingStringNullableAttrString(L"ref",		m_oRef,		m_oRef.get());
+					WritingStringNullableAttrString(L"sheet",	m_oSheet,	m_oSheet.get());
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_x_DataRef;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("r:id"),		m_oId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("name"),		m_oName)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("ref"),		m_oRef)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sheet"),		m_oSheet)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			nullable<SimpleTypes::CRelationshipId>	m_oId;
+			nullable_string							m_oName;
+			nullable_string							m_oRef;
+			nullable_string							m_oSheet;
+		};
+		class CDataRefs : public WritingElementWithChilds<CDataRef>
+		{
+		public:
+			WritingElement_AdditionConstructors(CDataRefs)
+			CDataRefs()
+			{
+			}
+			virtual ~CDataRefs()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<dataRefs");
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				writer.WriteString(L">");
+				for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if ( m_arrItems[i] )
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+				writer.WriteString(L"</dataRefs>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( L"dataRef" == sName )
+						m_arrItems.push_back( new CDataRef( oReader ));
+				}
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_DataRefs;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"count",	m_oCount)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+		};
+		class CDataConsolidate : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CDataConsolidate)
+			CDataConsolidate()
+			{
+			}
+			virtual ~CDataConsolidate()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<dataConsolidate");
+					WritingStringNullableAttrString(L"function",	m_oFunction,	m_oFunction.get());
+					WritingStringNullableAttrInt(L"link",			m_oLink,		m_oLink->GetValue());
+					WritingStringNullableAttrInt(L"startLabels",	m_oStartLabels,	m_oStartLabels->GetValue());
+					WritingStringNullableAttrInt(L"topLabels",		m_oTopLabels,	m_oTopLabels->GetValue());
+				writer.WriteString(L">");
+
+				writer.WriteString(L"</dataConsolidate>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( L"dataRefs" == sName )
+						m_oDataRefs = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_x_DataConsolidate;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("function"),		m_oFunction)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("link"),			m_oLink)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("startLabels"),	m_oStartLabels)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("topLabels"),		m_oTopLabels)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			nullable_string						m_oFunction; //ST_DataConsolidateFunction
+			nullable<SimpleTypes::COnOff<>>		m_oLink; 
+			nullable<SimpleTypes::COnOff<>>		m_oStartLabels;
+			nullable<SimpleTypes::COnOff<>>		m_oTopLabels;
+
+			nullable<CDataRefs>					m_oDataRefs;
+
+		};
+		class CDataValidation : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CDataValidation)
+			CDataValidation()
+			{
+			}
+			virtual ~CDataValidation()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<dataValidation");
+					WritingStringNullableAttrInt	(L"allowBlank",		m_oAllowBlank,		m_oAllowBlank->GetValue());
+					WritingStringNullableAttrString	(L"error",			m_oError,			m_oError.get());
+					WritingStringNullableAttrString	(L"errorStyle",		m_oErrorStyle,		m_oErrorStyle.get());
+					WritingStringNullableAttrString	(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
+					WritingStringNullableAttrString	(L"imeMode",		m_oImeMode,			m_oImeMode.get());
+					WritingStringNullableAttrString	(L"operator",		m_oOperator,		m_oOperator.get());
+					WritingStringNullableAttrString	(L"promt",			m_oPromt,			m_oPromt.get());
+					WritingStringNullableAttrString	(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
+					WritingStringNullableAttrInt	(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
+					WritingStringNullableAttrInt	(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
+					WritingStringNullableAttrInt	(L"showInputMessage",m_oShowInputMessage,m_oShowInputMessage->GetValue());
+					WritingStringNullableAttrString	(L"sqref",			m_oSqref,			m_oSqref.get());
+					WritingStringNullableAttrString	(L"type",			m_oType,			m_oType.get());
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_x_DataValidation;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("allowBlank"),		m_oAllowBlank)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("error"),			m_oError)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errorStyle"),		m_oErrorStyle)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errorTitle"),		m_oErrorTitle)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("imeMode"),			m_oImeMode)				
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("operator"),		m_oOperator)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("promt"),			m_oPromt)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("promptTitle"),		m_oPromptTitle)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showDropDown"),	m_oShowDropDown)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showErrorMessage"),m_oShowErrorMessage)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showInputMessage"),m_oShowInputMessage)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sqref"),			m_oSqref)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),			m_oType)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
+
+			nullable<SimpleTypes::COnOff<>>		m_oAllowBlank;
+			nullable_string						m_oError;
+			nullable_string						m_oErrorStyle; //ST_DataValidationErrorStyle
+			nullable_string						m_oErrorTitle;
+			nullable_string						m_oImeMode; //ST_DataValidationImeMode
+			nullable_string						m_oOperator; //ST_DataValidationOperator
+			nullable_string						m_oPromt;
+			nullable_string						m_oPromptTitle;
+			nullable<SimpleTypes::COnOff<>>		m_oShowDropDown;
+			nullable<SimpleTypes::COnOff<>>		m_oShowErrorMessage;
+			nullable<SimpleTypes::COnOff<>>		m_oShowInputMessage;
+			nullable_string						m_oSqref; //ST_Sqref
+			nullable_string						m_oType; //ST_DataValidationType
+		};
+		class CDataValidations : public WritingElementWithChilds<CDataValidation>
+		{
+		public:
+			WritingElement_AdditionConstructors(CDataValidations)
+			CDataValidations()
+			{
+			}
+			virtual ~CDataValidations()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<dataValidations");
+				WritingStringNullableAttrInt(L"count",			m_oCount,			m_oCount->GetValue());
+				WritingStringNullableAttrInt(L"disablePrompts", m_oDisablePrompts,	m_oDisablePrompts->GetValue());
+				WritingStringNullableAttrInt(L"xWindow",		m_oXWindow,			m_oXWindow->GetValue());
+				WritingStringNullableAttrInt(L"yWindow",		m_oYWindow,			m_oYWindow->GetValue());
+				writer.WriteString(L">");
+				for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if ( m_arrItems[i] )
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+				writer.WriteString(L"</dataValidations>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( L"dataValidation" == sName )
+						m_arrItems.push_back( new CDataValidation( oReader ));
+				}
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_DataValidations;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, L"count",		m_oCount)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, L"disablePrompts",m_oDisablePrompts)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, L"xWindow",	m_oXWindow)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, L"yWindow",	m_oYWindow)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::COnOff<>>					m_oDisablePrompts;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oXWindow;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oYWindow;
 		};
 	} //Spreadsheet
 } // namespace OOX

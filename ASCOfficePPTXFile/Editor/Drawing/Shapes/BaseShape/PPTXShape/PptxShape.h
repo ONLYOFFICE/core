@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "./../BaseShape.h"
+#include "../BaseShape.h"
 
 using namespace NSPresentationEditor;
 

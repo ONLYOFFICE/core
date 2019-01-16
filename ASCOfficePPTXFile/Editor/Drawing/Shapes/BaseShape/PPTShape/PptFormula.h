@@ -38,7 +38,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <math.h>
-#include "./../Common.h"
+#include "../Common.h"
 
 #include "../../../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../../../DesktopEditor/graphics/aggplustypes.h"

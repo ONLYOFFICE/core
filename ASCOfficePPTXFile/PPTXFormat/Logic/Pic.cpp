@@ -1208,10 +1208,10 @@ namespace PPTX
 				}
 				else
 				{
-					sOleNodeName = L"w:pict";
-					pWriter->StartNode(sOleNodeName);
-					pWriter->StartAttributes();
-					pWriter->EndAttributes();
+					//sOleNodeName = L"w:pict";
+					//pWriter->StartNode(sOleNodeName);
+					//pWriter->StartAttributes();
+					//pWriter->EndAttributes();
 				}
 			}
 
@@ -1276,187 +1276,126 @@ namespace PPTX
 				}
 			}
 
-			bool bRect = bOle; //ole ВСЕГДА rect или shape c типом ctPictFrame(75)
+            std::wstring strPath;
+            std::wstring strTextRect;
 
-			if (spPr.Geometry.is<PPTX::Logic::PrstGeom>())
+			LONG lW = 43200;
+			LONG lH = 43200;
+			if (spPr.xfrm.is_init())
 			{
-				const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-
-				if( lpGeom.prst.get() == L"rect" ) 
-					bRect = true;
+				lW = spPr.xfrm->extX.get_value_or(43200);
+				lH = spPr.xfrm->extY.get_value_or(43200);
 			}
 
-			if (bRect == false)
-			{//custom vml shape
-                std::wstring strPath;
-                std::wstring strTextRect;
+			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
 
-				LONG lW = 43200;
-				LONG lH = 43200;
-				if (spPr.xfrm.is_init())
+			pWriter->StartNode(L"v:shapetype");
+			pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"type", L"#_x0000_t75");
+				pWriter->WriteAttribute(L"o:spt", L"75");
+				pWriter->WriteAttribute(L"coordsize", L"21600,21600");
+				pWriter->WriteAttribute(L"o:preferrelative", L"t");
+				pWriter->WriteAttribute(L"path", L"m@4@5l@4@11@9@11@9@5xe");
+			pWriter->EndAttributes();
+			pWriter->StartNode(L"v:formulas");
+				pWriter->EndAttributes();
+				pWriter->WriteString(L"<v:f eqn=\"if lineDrawn pixelLineWidth 0\"/>\
+<v:f eqn=\"sum @0 1 0\"/>\
+<v:f eqn=\"sum 0 0 @1\"/>\
+<v:f eqn=\"prod @2 1 2\"/>\
+<v:f eqn=\"prod @3 21600 pixelWidth\"/>\
+<v:f eqn=\"prod @3 21600 pixelHeight\"/>\
+<v:f eqn=\"sum @0 0 1\"/>\
+<v:f eqn=\"prod @6 1 2\"/>\
+<v:f eqn=\"prod @7 21600 pixelWidth\"/>\
+<v:f eqn=\"sum @8 21600 0\"/>\
+<v:f eqn=\"prod @7 21600 pixelHeight\"/>\
+<v:f eqn=\"sum @10 21600 0\"/>");
+				pWriter->EndNode(L"v:formulas");
+			pWriter->EndNode(L"v:shapetype");
+			
+			pWriter->StartNode(L"v:shape");
+			pWriter->StartAttributes();
+
+			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+			{
+				if(NULL == pId)
 				{
-					lW = spPr.xfrm->extX.get_value_or(43200);
-					lH = spPr.xfrm->extY.get_value_or(43200);
-				}
-
-				spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
-
-				pWriter->StartNode(L"v:shape");
-
-				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
-				{
-					if(NULL == pId)
-					{
-						pWriter->WriteAttribute(L"id", strSpid);
-					}
-					else
-					{
-						pWriter->WriteAttribute(L"id", pId);
-						pWriter->WriteAttribute(L"o:spid", strSpid);
-					}
+					pWriter->WriteAttribute(L"id", strSpid);
 				}
 				else
 				{
-					pWriter->WriteAttribute(L"id", strId);
+					pWriter->WriteAttribute(L"id", pId);
 					pWriter->WriteAttribute(L"o:spid", strSpid);
 				}
-
-				pWriter->StartAttributes();
-				if (oStylesWriter.GetSize() == 0)
-				{
-					pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain);
-				}
-				else
-				{
-					pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
-				}
-
-				if(!bOle)
-				{
-					oStylesWriter.ClearNoAttack();
-					oStylesWriter.m_oWriter.AddSize(30);
-					oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100);
-					oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-					oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100);
-					pWriter->WriteAttribute(L"coordsize", oStylesWriter.GetXmlString());
-
-					pWriter->WriteAttribute(L"path", strPath);
-				}
-
-				if (!pWriter->m_strAttributesMain.empty())
-				{
-					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain.clear();
-				}
-				if(bOle)
-				{
-					pWriter->WriteAttribute(L"filled", (std::wstring)L"f");
-				}
-				std::wstring strNodeVal;
-				if (!spPr.ln.is_init())
-				{
-					pWriter->WriteAttribute(L"stroked", (std::wstring)L"false");
-				}
-				else
-				{
-					std::wstring strPenAttr = _T("");
-					nullable<ShapeStyle> pShapeStyle;
-					CalculateLine(spPr, pShapeStyle, oTheme, oClrMap, strPenAttr, strNodeVal, bOle);
-					pWriter->WriteString(strPenAttr);
-				}
-
-				pWriter->EndAttributes();
-
-				pWriter->StartNode(L"v:path");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"textboxrect", strTextRect);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"v:path");
-
-				if (blipFill.blip.is_init() && blipFill.blip->embed.is_init())
-				{
-					pWriter->StartNode(L"v:imagedata");
-					pWriter->StartAttributes();
-					if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
-					{
-						pWriter->WriteAttribute(L"o:relid", blipFill.blip->embed->ToString());
-					}
-					else
-					{
-						pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
-					}
-					pWriter->WriteAttribute(L"o:title", (std::wstring)L"");
-					pWriter->EndAttributes();
-					pWriter->EndNode(L"v:imagedata");
-				}
-
-				if (m_sClientDataXml.IsInit())
-					pWriter->WriteString(*m_sClientDataXml);
-
-				pWriter->EndNode(L"v:shape");
 			}
 			else
 			{
-				pWriter->StartNode(L"v:rect");
+				pWriter->WriteAttribute(L"id", strId);
+				pWriter->WriteAttribute(L"o:spid", strSpid);
+			}
+			pWriter->WriteAttribute(L"type", L"#_x0000_t75");
+			if (oStylesWriter.GetSize() == 0)
+			{
+				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain);
+			}
+			else
+			{
+				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
+			}
 
+			if (!pWriter->m_strAttributesMain.empty())
+			{
+				pWriter->WriteString(pWriter->m_strAttributesMain);
+				pWriter->m_strAttributesMain.clear();
+			}
+			if(bOle)
+			{
+				pWriter->WriteAttribute(L"filled", L"f");
+			}
+			std::wstring strNodeVal;
+			if (!spPr.ln.is_init())
+			{
+				pWriter->WriteAttribute(L"stroked", L"false");
+			}
+			else
+			{
+				std::wstring strPenAttr = _T("");
+				nullable<ShapeStyle> pShapeStyle;
+				CalculateLine(spPr, pShapeStyle, oTheme, oClrMap, strPenAttr, strNodeVal, bOle);
+				pWriter->WriteString(strPenAttr);
+			}
+
+			pWriter->EndAttributes();
+
+			pWriter->StartNode(L"v:path");
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"textboxrect", strTextRect);
+			pWriter->EndAttributes();
+			pWriter->EndNode(L"v:path");
+
+			if (blipFill.blip.is_init() && blipFill.blip->embed.is_init())
+			{
+				pWriter->StartNode(L"v:imagedata");
 				pWriter->StartAttributes();
-
 				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
-					if(NULL == pId)
-					{
-						pWriter->WriteAttribute(L"id", strSpid);
-					}
-					else
-					{
-						pWriter->WriteAttribute(L"id", pId);
-						pWriter->WriteAttribute(L"o:spid", strSpid);
-					}
+					pWriter->WriteAttribute(L"o:relid", blipFill.blip->embed->ToString());
 				}
 				else
 				{
-					pWriter->WriteAttribute(L"id", strId);
-					pWriter->WriteAttribute(L"o:spid", strSpid);
+					pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
 				}
-
-				if (oStylesWriter.GetSize() == 0)
-				{
-					pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain);
-				}
-				else
-				{
-					pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
-				}
-				if(bOle)
-				{
-					pWriter->WriteAttribute(L"filled", (std::wstring)L"f");
-					pWriter->WriteAttribute(L"stroked", (std::wstring)L"f");
-				}
-
+				pWriter->WriteAttribute(L"o:title", L"");
 				pWriter->EndAttributes();
-
-				if (blipFill.blip.is_init() && blipFill.blip->embed.is_init())
-				{
-					pWriter->StartNode(L"v:imagedata");
-					pWriter->StartAttributes();
-					if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
-					{
-						pWriter->WriteAttribute(L"o:relid", blipFill.blip->embed->ToString());
-					}
-					else
-					{
-						pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
-					}
-					pWriter->WriteAttribute(L"o:title", (std::wstring)L"");
-					pWriter->EndAttributes();
-					pWriter->EndNode(L"v:imagedata");
-				}
-				
-				if (m_sClientDataXml.IsInit())
-					pWriter->WriteString(*m_sClientDataXml);
-
-				pWriter->EndNode(L"v:rect");
+				pWriter->EndNode(L"v:imagedata");
 			}
+
+			if (m_sClientDataXml.IsInit())
+				pWriter->WriteString(*m_sClientDataXml);
+
+			pWriter->EndNode(L"v:shape");
+
 			pWriter->m_strStyleMain.clear();
 
 			if(bOle)
@@ -1472,7 +1411,7 @@ namespace PPTX
 					oleObject->toXmlWriter(pWriter);
 				}
 			}
-			if (XMLWRITER_DOC_TYPE_XLSX != pWriter->m_lDocType)
+			if (!sOleNodeName.empty())
 			{
 				pWriter->EndNode(sOleNodeName);
 			}

@@ -36,7 +36,7 @@
 #endif
 
 #include <math.h>
-#include "./../Common.h"
+#include "../Common.h"
 #include "../../../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../../../Common/DocxFormat/Source/XML/Utils.h"
 namespace NSGuidesOOXML

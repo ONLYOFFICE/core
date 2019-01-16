@@ -145,8 +145,6 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-	update_xfs();
-
 	return true;
 }
 void FORMATTING::update_xfs()
@@ -172,7 +170,7 @@ void FORMATTING::update_xfs()
 
 					if (xf->ind_xf == style->ixfe)
 					{
-						xf->style.xf_props = styleExt->xfProps.rgExt;
+						xf->xf_props = styleExt->xfProps.rgExt;
 						bFound = true;
 						break;
 					}
@@ -234,27 +232,7 @@ int FORMATTING::serialize1(std::wostream & stream)
 				}
 			}
 		}
-		if (!global_info->m_arFonts.empty())
-		{
-			CP_XML_NODE(L"fonts")
-			{
-				CP_XML_ATTR(L"count", global_info->m_arFonts.size());
-               
-				for (size_t i = 0; i < global_info->m_arFonts.size(); i++)
-				{
-					Font * font = dynamic_cast<Font*>(global_info->m_arFonts[i].get());
-					
-					std::map<int, FillInfoExt>::iterator it = global_info->fonts_color_ext.find(i);
-					
-					if (font && (it != global_info->fonts_color_ext.end()))
-					{					
-						font->set_color_ext(it->second);
-					}
-					global_info->m_arFonts[i]->serialize(CP_XML_STREAM());
-				}
-			}
-		}
-   }
+	}
 	return 0;
 }
 

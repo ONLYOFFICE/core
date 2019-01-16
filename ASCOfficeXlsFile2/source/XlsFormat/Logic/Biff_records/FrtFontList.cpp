@@ -45,11 +45,11 @@ void FrtFontList::readFields(CFRecord& record)
 	unsigned char reserved;
 	record >> frtHeaderOld >> verExcel >> reserved >> cFont;
 
-	FontInfo val;
+	FrtFontInfo val;
 	for (unsigned short i = 0; i < cFont; i++)
 	{
 		record >> val;
-		rgFontInfo.push_back(val);
+		rgFrtFontInfo.push_back(val);
 	}
 }
 

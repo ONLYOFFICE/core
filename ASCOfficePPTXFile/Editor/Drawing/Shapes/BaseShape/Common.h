@@ -403,8 +403,6 @@ namespace NSStringUtils
     }
 }
 
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-
 class COOXToVMLGeometry : public IRenderer
 {
 private:
@@ -883,4 +881,3 @@ private:
 	}	
 };
 
-#endif

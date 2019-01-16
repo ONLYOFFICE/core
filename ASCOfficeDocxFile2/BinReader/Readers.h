@@ -3232,6 +3232,11 @@ public:
 			NSBinPptxRW::CXmlWriter xmlWriter;
 			pTheme->toXmlWriter(&xmlWriter);
 			m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();
+
+			if ((m_oFileWriter.m_pDrawingConverter) && (m_oFileWriter.m_pDrawingConverter->m_pTheme))
+			{
+				*m_oFileWriter.m_pDrawingConverter->m_pTheme = pTheme;
+			}
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

@@ -93,6 +93,7 @@ public:
 private:
 	void LoadHFPicture();
 	void UpdateXti();
+	void UpdateXFC();
 	void UpdateDefineNames();
 	void UpdateExternalDefineNames();
 };

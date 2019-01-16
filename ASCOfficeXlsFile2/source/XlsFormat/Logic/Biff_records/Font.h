@@ -47,9 +47,9 @@ public:
 	~Font();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
+	void set(FontInfo & info);
 
 	static const ElementType	type = typeFont;
 
@@ -78,8 +78,8 @@ public:
 	unsigned char	bFamily;
 	unsigned char	bCharSet;
 
-	FillInfoExt				color_ext;
 	ShortXLUnicodeString	fontName;
+	FillInfoExt				color_ext;
 
 	bool					correct;
 	

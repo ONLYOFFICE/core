@@ -32,62 +32,20 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include "BorderFillInfo.h"
 
 namespace XLS
 {
-class XFProp;
-class ExtProp;
-class CFRecord;
-class Font;
-
-class GlobalWorkbookInfo;
-typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 
 class StyleXF : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(StyleXF)
 public:
-	StyleXF(size_t& cell_xf_current_id, size_t& style_xf_current_id);
+	StyleXF();
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
 
-	static const ElementType	type = typeStyleXF;
-
-	int serialize(std::wostream & stream);
-
-	unsigned char	alc;
-	bool			fWrap;
-	unsigned char	alcV;
-	bool			fJustLast;
-	unsigned short	trot;
-	unsigned char	cIndent;
-	bool			fShrinkToFit;
-	unsigned char	iReadOrder;
-
-//------------------------------------------------------------------
-	GlobalWorkbookInfoPtr global_info;
-	
-	BorderInfo		border;
-	FillInfo		fill;
-	FillInfoExt		font_color;
-	size_t			font_id;
-	Font			*font;
-
-	BiffStructurePtrVector ext_props;
-	BiffStructurePtrVector xf_props;
-
-	void Update(ExtProp* extProp); // xls style
-	void Update(XFProp* xfProp); //xlsx style
-
-	void RegisterFillBorder();
-
-	size_t border_x_id;
-	size_t fill_x_id;
-
-	size_t& cell_xf_current_id_;
-	size_t& style_xf_current_id_;
+	static const ElementType type = typeStyleXF;
 };
 
 } // namespace XLS

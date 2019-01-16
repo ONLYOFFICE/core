@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "./../BaseShape.h"
+#include "../BaseShape.h"
 #include "CustomGeomShape.h"
 #include "PptShapeEnum.h"
 #include "../../../../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"

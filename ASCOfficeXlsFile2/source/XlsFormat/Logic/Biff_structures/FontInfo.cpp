@@ -35,12 +35,12 @@
 
 namespace XLS
 {
-BiffStructurePtr FontInfo::clone()
+BiffStructurePtr FrtFontInfo::clone()
 {
-	return BiffStructurePtr(new FontInfo(*this));
+	return BiffStructurePtr(new FrtFontInfo(*this));
 }
 
-void FontInfo::load(CFRecord& record)
+void FrtFontInfo::load(CFRecord& record)
 {
 	unsigned short flags;
 	record 	>> flags >> ifnt;

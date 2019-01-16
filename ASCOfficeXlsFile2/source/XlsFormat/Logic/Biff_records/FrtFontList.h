@@ -52,10 +52,10 @@ public:
 
 	static const ElementType type = typeFrtFontList;
 
-	FrtHeaderOld			frtHeaderOld;
-	unsigned char			verExcel;
-	unsigned short			cFont;
-	std::vector<FontInfo>	rgFontInfo;
+	FrtHeaderOld				frtHeaderOld;
+	unsigned char				verExcel;
+	unsigned short				cFont;
+	std::vector<FrtFontInfo>	rgFrtFontInfo;
 };
 
 } // namespace XLS

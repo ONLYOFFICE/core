@@ -36,14 +36,14 @@
 namespace XLS
 {
 
-class FontInfo: public BiffStructure
+class FrtFontInfo: public BiffStructure
 {	
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(FontInfo)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FrtFontInfo)
 public:
 	BiffStructurePtr clone();
 
-	FontInfo(){}
-	~FontInfo(){}
+	FrtFontInfo(){}
+	~FrtFontInfo(){}
 
 	static const ElementType type = typeFontInfo;
 	

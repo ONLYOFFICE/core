@@ -61,6 +61,21 @@ namespace PPTX
 			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pTheme = this;
 		}
+		Theme(OOX::Document *pMain, const std::string &contentTheme) : WrapperFile(pMain), PPTX::FileContainer(pMain)
+		{
+			FileMap map;
+			
+			isThemeOverride = false;
+			m_map = NULL;
+
+			read(contentTheme, map);
+
+			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
+			if (docx && !docx->m_pTheme && !isThemeOverride) 
+			{
+				docx->m_pTheme = this;
+			}
+		}
 		Theme(OOX::Document *pMain, const OOX::CPath& filename) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			FileMap map;
@@ -89,6 +104,17 @@ namespace PPTX
 				docx->m_pTheme = this;
 			}	
 		}
+		void read(const std::string &contentTheme, FileMap& map)
+		{
+			isThemeOverride = false;
+			//FileContainer::read(filename, map);
+			m_map = NULL;
+
+			XmlUtils::CXmlNode oNode;
+			oNode.FromXmlStringA(contentTheme);
+
+			read(oNode, map);
+		}
 
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
@@ -98,7 +124,11 @@ namespace PPTX
 
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
-			
+
+			read(oNode, map);
+		}
+		void read(XmlUtils::CXmlNode &oNode, FileMap& map)
+		{
 			std::wstring strNodeName = XmlUtils::GetNameNoNS(oNode.GetName());
 			if (_T("themeOverride") == strNodeName)
 			{

@@ -31,15 +31,16 @@
  */
 
 #include "CELL.h"
-#include <Logic/Biff_records/Blank.h>
-#include <Logic/Biff_unions/FORMULA.h>
-#include <Logic/Biff_records/MulBlank.h>
-#include <Logic/Biff_records/RK.h>
-#include <Logic/Biff_records/MulRk.h>
-#include <Logic/Biff_records/BoolErr.h>
-#include <Logic/Biff_records/Number.h>
-#include <Logic/Biff_records/LabelSst.h>
-#include <Logic/Biff_records/Label.h> // глючный файл SchetPrintForm.xls
+#include "FORMULA.h"
+
+#include "../Biff_records/Blank.h"
+#include "../Biff_records/MulBlank.h"
+#include "../Biff_records/RK.h"
+#include "../Biff_records/MulRk.h"
+#include "../Biff_records/BoolErr.h"
+#include "../Biff_records/Number.h"
+#include "../Biff_records/LabelSst.h"
+#include "../Biff_records/Label.h" // глючный файл SchetPrintForm.xls
 
 namespace XLS
 {

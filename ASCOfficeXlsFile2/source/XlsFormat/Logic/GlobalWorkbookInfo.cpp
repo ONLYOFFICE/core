@@ -118,7 +118,6 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 
 	bVbaProjectExist		= false;
 	bMacrosExist			= false;
-	bThemePresent			= false;
 	bWorkbookProtectExist	= false;
 
 	idPivotCache			= 0;	
@@ -144,7 +143,21 @@ const size_t GlobalWorkbookInfo::RegisterBorderId(const BorderInfo& border)
 		return it_find->second;
 	}
 }
-
+const size_t GlobalWorkbookInfo::RegisterFontId(const FontInfo& font)
+{
+	boost::unordered_map<FontInfo, int>::const_iterator it_find = font_x_ids.find(font);
+	
+	if(font_x_ids.end() == it_find)
+	{
+		int id = font_x_ids.size();
+		font_x_ids[font] = id;
+		return id;
+	}
+	else
+	{
+		return it_find->second;
+	}
+}
 const size_t GlobalWorkbookInfo::RegisterFillId(const FillInfo& fill)
 {
 	if(0 == fill.fls)
@@ -163,11 +176,6 @@ const size_t GlobalWorkbookInfo::RegisterFillId(const FillInfo& fill)
 	{
 		return it_find->second;
 	}
-}
-
-void GlobalWorkbookInfo::RegisterFontColorId (int id, const FillInfoExt & font_color)
-{
-	fonts_color_ext.insert(std::make_pair(id, font_color));
 }
 
 void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)

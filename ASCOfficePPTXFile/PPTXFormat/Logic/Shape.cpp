@@ -236,7 +236,14 @@ namespace PPTX
 			{
 				pWriter->m_lFlag -= 0x02;
 			}
+			if (style.is_init())
+			{
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = L"wps";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) style->m_namespace = L"a";
 
+                pWriter->Write(style);
+            }
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 			{	
 				bool bIsWritedBodyPr = false;
@@ -284,14 +291,7 @@ namespace PPTX
 				}
 				pWriter->Write(txBody);
 			}
-			if (style.is_init())
-			{
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = L"wps";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = L"xdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) style->m_namespace = L"a";
 
-                pWriter->Write(style);
-            }
 			pWriter->EndNode(name_);
 		}
 		

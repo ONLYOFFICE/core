@@ -108,6 +108,8 @@ namespace OOX
 			CPath	m_oReadPath;
 
 		public:
+			void read(XmlUtils::CXmlLiteReader& oReader);
+
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
 

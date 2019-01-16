@@ -3883,12 +3883,16 @@ namespace BinXlsxRW
 				if(NULL != oVmlShape.pElement && !oVmlShape.sXml.empty())
 				{
 					PPTX::Logic::SpTreeElem* pSpTree = static_cast<PPTX::Logic::SpTreeElem*>(oVmlShape.pElement);
+					
 					NSBinPptxRW::CXmlWriter						oWriter(XMLWRITER_DOC_TYPE_XLSX);
-					COOXToVMLGeometry oOOXToVMLRenderer;
-					oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
+					COOXToVMLGeometry							oOOXToVMLRenderer;
 					NSCommon::smart_ptr<PPTX::Logic::ClrMap>	oClrMap;
+
+					oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 					oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+					
 					pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oVmlShape.sXml.c_str());
+					
 					pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 					pVmlDrawing->m_aXml.push_back(oWriter.GetXmlString());
 				}

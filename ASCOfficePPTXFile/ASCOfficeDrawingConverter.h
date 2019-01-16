@@ -42,7 +42,7 @@
 #include <vector>
 #include <map>
 
-#include "./../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 
 class IRenderer;
 class COfficeFontPicker;

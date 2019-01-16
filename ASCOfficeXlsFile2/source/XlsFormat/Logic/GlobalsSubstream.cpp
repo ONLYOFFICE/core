@@ -578,6 +578,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			}
 		}
 	}
+	UpdateXFC();
 	LoadHFPicture();	
 	UpdateXti();
 	UpdateDefineNames();
@@ -585,7 +586,15 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 	return true;
 }
+void GlobalsSubstream::UpdateXFC()
+{
+	FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
 
+	if (fmts)
+	{		
+		fmts->update_xfs();
+	}
+}
 void GlobalsSubstream::LoadHFPicture()
 {
 	if (m_arHFPicture.empty()) return;

@@ -122,7 +122,6 @@ public:
 	void convert(XLS::MacroSheetSubstream		* chart);
 
 	void convert(XLS::FORMATTING				* formating);
-	void convert(XLS::THEME						* theme);
 	void convert(XLS::BACKGROUND 				* back);
 	void convert(XLS::SHAREDSTRINGS				* sharedstrings);
 	void convert(XLS::HLINK						* hlink);
@@ -155,6 +154,7 @@ public:
 
 	std::wstring WriteMediaFile	(char *data, int size, std::wstring type_ext, int id = -1);
 private:	
+	void convert_theme			();
 	void convert_old			(XLS::OBJECTS				* objects, XLS::WorksheetSubstream * sheet);
 	void convert_chart_sheet	(XLS::ChartSheetSubstream	* chart);
 

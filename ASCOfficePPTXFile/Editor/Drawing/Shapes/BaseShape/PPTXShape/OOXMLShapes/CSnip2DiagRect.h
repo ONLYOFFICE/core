@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTXShape.h"
+#include "../PptxShape.h"
 
 namespace OOXMLShapes
 {

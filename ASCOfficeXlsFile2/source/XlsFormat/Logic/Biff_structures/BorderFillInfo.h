@@ -136,6 +136,35 @@ struct BorderInfo
 	int serialize(std::wostream & stream);
 };
 
+struct FontInfo
+{
+	unsigned short dyHeight = 0; // measured in twips (1/20 of of a printer's point)
+
+	bool fItalic	= false;
+	bool fStrikeOut	= false;
+	bool fOutline	= false;
+	bool fShadow	= false;
+	bool fCondense	= false;
+	bool fExtend	= false;
+
+	unsigned short icv = 0;
+	unsigned short bls = 0;
+	unsigned short sss = 0;
+	unsigned short scheme = 0;
+	unsigned char	uls;
+	unsigned char	bFamily = 0;
+	unsigned char	bCharSet = 0;
+
+	FillInfoExt		color;
+	std::wstring	name;
+
+	bool operator == (const FontInfo & rVal) const;
+	bool operator != (const FontInfo & rVal) const;
+
+	friend std::size_t hash_value(FontInfo const & val);
+
+	int serialize(std::wostream & stream);
+};
 
 
 } // namespace XLS

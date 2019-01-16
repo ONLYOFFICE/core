@@ -30,71 +30,22 @@
  *
  */
 #pragma once
-
 #include "BiffStructure.h"
-#include "BorderFillInfo.h"
 
 namespace XLS
 {
-class XFProps;
-class ExtProp;
-
-class CFRecord;
-class GlobalWorkbookInfo;
-typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 
 class CellXF : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CellXF)
 public:
-	CellXF(size_t& cell_xf_current_id, size_t& style_xf_current_id);
+	CellXF();
 
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
 
 	static const ElementType type = typeCellXF;
-
-	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
-	
-	unsigned char	alc;
-	bool			fWrap;
-	unsigned char	alcV;
-	bool			fJustLast;
-	unsigned short	trot;
-	unsigned char	cIndent;
-	bool			fShrinkToFit;
-	unsigned char	iReadOrder;
-	
-	bool			fAtrNum;
-	bool			fAtrFnt;
-	bool			fAtrAlc;
-	bool			fAtrBdr;
-	bool			fAtrPat;
-	bool			fAtrProt;
-
-	BorderInfo border;
-	FillInfo fill;
-
-	FillInfoExt		font_color;
-	size_t			font_id;
-
-	bool			fHasXFExt;
-	bool			fsxButton;
-//------------------------------------------------------------------
-	BiffStructurePtrVector ext_props;
-	BiffStructurePtrVector xf_props;
-
-	size_t border_x_id;
-	size_t fill_x_id;
-
-	size_t& cell_xf_current_id_;
-	size_t& style_xf_current_id_;
-	
-	void Update(ExtProp* extProp); // xls style
-	void Update(XFProps* xfProps); //xlsx style
-
-	void RegisterFillBorder();
 };
 
 } // namespace XLS

@@ -32,6 +32,9 @@
 
 #include "Theme.h"
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 namespace XLS
 {
@@ -52,13 +55,14 @@ BaseObjectPtr Theme::clone()
 
 void Theme::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	record >> frtHeader >> dwThemeVersion;
 
 	if (dwThemeVersion == 124226)
 	{
 		//default theme
 	}
-	//else if (dwThemeVersion == 0)
 	else
 	{
 		nThemeDataSize = record.getDataSize() - record.getRdPtr();
@@ -66,6 +70,37 @@ void Theme::readFields(CFRecord& record)
 
 		memcpy(pThemeData.get(), record.getCurData<char>(), nThemeDataSize);
 		record.skipNunBytes(nThemeDataSize);
+
+		std::wstring tempThemePath = global_info->tempDirectory + FILE_SEPARATOR_STR + L"theme.temp";
+		
+		NSFile::CFileBinary file;	
+		if (!file.CreateFileW(tempThemePath)) return;
+
+		file.WriteFile((BYTE*)pThemeData.get(), nThemeDataSize);
+		file.CloseFile();
+
+		COfficeUtils OfficeUtils(NULL);
+		
+		ULONG nBufferSize = 0;
+		BYTE *pBuffer = NULL;
+
+		HRESULT hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme1.xml", &pBuffer, nBufferSize);// todooo - parsing ThemeManager
+
+		if (hresult != S_OK || pBuffer == NULL)
+			hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme1.xml", &pBuffer, nBufferSize);
+		
+		if (hresult != S_OK || pBuffer == NULL)
+			hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme/theme1.xml", &pBuffer, nBufferSize);
+		//???  переписать по нормальному
+		if (hresult == S_OK && pBuffer != NULL)
+		{
+			global_info->sTheme = std::string((char*)pBuffer, nBufferSize);
+
+			global_info->m_pTheme = boost::shared_ptr<PPTX::Theme>(new PPTX::Theme(NULL, global_info->sTheme));
+
+			delete []pBuffer;
+			pBuffer = NULL;
+		}
 
 	}
 }

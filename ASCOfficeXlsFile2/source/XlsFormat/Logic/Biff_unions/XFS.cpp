@@ -129,17 +129,18 @@ void XFS::RegisterFillBorder()
 		for (size_t j = first_xf_ext ; j < m_arXFext.size(); j++)
 		{
 			XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
-			if (ext->ixfe > i)
+
+			if (ext->ixfe > xfs->ind_xf)
 				break;
 
 			if (ext->ixfe == xfs->ind_xf)
 			{
-				xfs->style.ext_props = ext->rgExt;
+				xfs->ext_props = ext->rgExt;
 				first_xf_ext	= j + 1;
 				break;
 			}
 		}
-		xfs->style.RegisterFillBorder();
+		xfs->RegisterFillBorderFont();
 
 	}
 	first_xf_ext = 0;
@@ -148,23 +149,24 @@ void XFS::RegisterFillBorder()
 	{
 		XF *xfs = dynamic_cast<XF*>(m_arCellXFs[i].get());
 
-		if (!m_arXFext.empty() && xfs->cell.fHasXFExt)
+		if (!m_arXFext.empty() && xfs->fHasXFExt)
 		{
 			for (size_t j = first_xf_ext ; j < m_arXFext.size(); j++)
 			{
 				XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
-				if (ext->ixfe > i)
+				
+				if (ext->ixfe > xfs->ind_xf)
 					break;
 
 				if (ext->ixfe == xfs->ind_xf)
 				{
-					xfs->cell.ext_props = ext->rgExt;
+					xfs->ext_props = ext->rgExt;
 					first_xf_ext	= j + 1;
 					break;
 				}
 			}
 		}		
-		xfs->cell.RegisterFillBorder();
+		xfs->RegisterFillBorderFont();
 	}
 }
 int XFS::serialize(std::wostream & stream)

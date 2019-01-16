@@ -52,6 +52,24 @@ BaseObjectPtr Font::clone()
 	return BaseObjectPtr(new Font(*this));
 }
 
+void Font::set(FontInfo & info)
+{
+	info.dyHeight	= dyHeight; 
+	info.fItalic	= fItalic;
+	info.fStrikeOut	= fStrikeOut;
+	info.fOutline	= fOutline;
+	info.fShadow	= fShadow;
+	info.fCondense	= fCondense;
+	info.fExtend	= fExtend;
+	info.icv		= icv;
+	info.bls		= bls;
+	info.sss		= sss;
+	info.uls		= uls;
+	info.bFamily	= bFamily;
+	info.bCharSet	= bCharSet;
+	info.name		= fontName.value();
+}
+
 void Font::readFields(CFRecord& record)
 {
 	correct = false;

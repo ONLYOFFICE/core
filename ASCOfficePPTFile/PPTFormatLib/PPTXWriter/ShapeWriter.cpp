@@ -429,7 +429,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 			brush_writer.WriteString(L"</a:blipFill>");
 		}
 	}
-	else if (	brush.Type == c_BrushTypeNoFill) 
+	else if ( brush.Type == c_BrushTypeNoFill ) 
 	{
 		brush_writer.WriteString(L"<a:noFill/>");
 	}
@@ -488,7 +488,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 			brush_writer.WriteString(L"</a:bgClr>");
 		brush_writer.WriteString(L"</a:pattFill>");
 	}
-	else
+	else if (brush.Type != c_BrushTypeNotSet)
 	{
 		brush_writer.WriteString(std::wstring(L"<a:solidFill>"));
 			brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));

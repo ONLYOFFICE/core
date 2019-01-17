@@ -261,7 +261,8 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 			{
 				pElement->m_oBrush.Type = c_BrushTypeNoFill;
 			}
-			else if (pElement->m_oBrush.Type == c_BrushTypeNotSet )
+			else if (pElement->m_oBrush.Type == c_BrushTypeNotSet &&
+				(pElement->m_lPlaceholderType == 0 && pElement->m_lPlaceholderID < 0 ))
 			{
 				pElement->m_oBrush.Type = c_BrushTypeSolid;
 			}

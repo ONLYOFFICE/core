@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -392,7 +392,7 @@ int main(int argc, char* argv[])
 
     oBuilder.WriteString(L"\
 /*\n\
- * (c) Copyright Ascensio System SIA 2010-2018\n\
+ * (c) Copyright Ascensio System SIA 2010-2019\n\
  *\n\
  * This program is a free software product. You can redistribute it and/or\n\
  * modify it under the terms of the GNU Affero General Public License (AGPL)\n\

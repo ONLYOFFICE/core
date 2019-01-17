@@ -88,7 +88,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"), m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -110,8 +110,6 @@ namespace OOX
 			virtual ~CDrawing()
 			{
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

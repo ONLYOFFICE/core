@@ -52,6 +52,7 @@
 #include "ExternalLinks/ExternalLinkPath.h"
 #include "../DocxFormat/Diagram/DiagramDrawing.h"
 #include "../DocxFormat/Diagram/DiagramData.h"
+#include "../DocxFormat/ChartDrawing.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -99,6 +100,8 @@ namespace OOX
 			else if ( oRelation.Type() == FileTypes::WorkbookComments)
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
 //common			
+			//else if ( oRelation.Type() == OOX::FileTypes::ChartDrawing)
+			//	return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 			//else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
 			//	return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
 			//else if ( oRelation.Type() == OOX::FileTypes::Theme )
@@ -170,6 +173,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CTableFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::VmlDrawing )
 				return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)
+				return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::Chart )

@@ -143,7 +143,8 @@ namespace PPTX
 					namespaceLockLink_ = PPTX::g_Namespaces.a.m_strLink;
 					namespace_		= L"wp";
 				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) namespace_ = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
 
 				pWriter->StartNode(namespace_ + L":cNvGraphicFramePr");
 				

@@ -988,6 +988,11 @@ namespace OOX
 		et_ct_alternatecontentchoice,
 		et_ct_alternatecontentfallback,
 
+		et_cdr_FromTo,
+		et_cdr_Ext,
+		et_cdr_RelSizeAnchor,
+		et_cdr_AbsSizeAnchor,
+
 		et_x_Unknown,
 		et_x_BookViews, // <bookViews>
 		et_x_WorkbookPr,

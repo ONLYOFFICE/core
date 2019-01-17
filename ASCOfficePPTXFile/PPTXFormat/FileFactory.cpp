@@ -55,6 +55,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
@@ -109,6 +110,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::LegacyDiagramText(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::VmlDrawing)
 			return smart_ptr<OOX::File>(new OOX::CVmlDrawing(pMain, OOX::CPath(), filename));
+		else if (relation.Type() == OOX::FileTypes::ChartDrawing)
+			return smart_ptr<OOX::File>(new OOX::CChartDrawing(pMain, OOX::CPath(), filename));
 		else if (relation.Type() == OOX::Presentation::FileTypes::CommentAuthors)
 			return smart_ptr<OOX::File>(new PPTX::Authors(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::SlideComments)

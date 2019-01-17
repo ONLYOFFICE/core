@@ -201,8 +201,9 @@ namespace PPTX
 					if (pWriter->m_lGroupIndex == 0)	name_ = L"wpg:wgp";
 					else								name_ = L"wpg:grpSp";
 				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:grpSp";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) name_ = L"a:grpSp";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:grpSp";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:grpSp";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:grpSp";
 				else
 				{
 					if (pWriter->m_lGroupIndex == 0)	name_ = L"p:spTree";

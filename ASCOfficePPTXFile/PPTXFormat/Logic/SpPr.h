@@ -84,16 +84,17 @@ namespace PPTX
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					if (0 == (pWriter->m_lFlag & 0x01))							name_ = L"wps:spPr";
-					else														name_ = L"pic:spPr";
+					if (0 == (pWriter->m_lFlag & 0x01))								name_ = L"wps:spPr";
+					else															name_ = L"pic:spPr";
 				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)		name_ = L"xdr:spPr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)		name_ = L"c:spPr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)	name_ = L"a:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)			name_ = L"c:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:spPr";
 				else
 				{//theme
-					if (0 != (pWriter->m_lFlag & 0x04))							name_ = L"a:spPr";
-					else														name_ = L"p:spPr";
+					if (0 != (pWriter->m_lFlag & 0x04))								name_ = L"a:spPr";
+					else															name_ = L"p:spPr";
 				}
 				pWriter->StartNode(name_);
 				

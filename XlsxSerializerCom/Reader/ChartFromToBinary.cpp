@@ -36,6 +36,7 @@
 #include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 using namespace OOX::Spreadsheet;
@@ -68,6 +69,7 @@ namespace BinXlsxRW
 	BYTE c_oserct_chartspaceUSERSHAPES = 13;
 	BYTE c_oserct_chartspaceEXTLST = 14;
 	BYTE c_oserct_chartspaceTHEMEOVERRIDE = 15;
+	BYTE c_oserct_chartspaceUSERSHAPES_COUNT = 16;
 
 	BYTE c_oserct_booleanVAL = 0;
 
@@ -6147,12 +6149,7 @@ namespace BinXlsxRW
 			WriteCT_PrintSettings(*oVal.m_printSettings);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		//if(NULL != oVal.m_userShapes)
-		//{
-		//	int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceUSERSHAPES);
-		//	WriteCT_RelId(*oVal.m_userShapes);
-		//	m_oBcw.WriteItemEnd(nCurPos);
-		//}
+
 		if(NULL != oVal.m_extLst)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceEXTLST);
@@ -6160,7 +6157,7 @@ namespace BinXlsxRW
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 
-		std::vector<smart_ptr<OOX::File>>& container =oChartSpace.GetContainer();
+		std::vector<smart_ptr<OOX::File>>& container = oChartSpace.GetContainer();
 
 		for (size_t i = 0; i < container.size(); ++i)
 		{
@@ -6173,6 +6170,111 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 				break;
 			}
+		}
+		if ((NULL != oVal.m_userShapes) && (NULL != oVal.m_userShapes->m_id))
+		{
+			smart_ptr<OOX::File> oFile = oChartSpace.Find(*oVal.m_userShapes->m_id);
+			
+			if (oFile.IsInit() && OOX::FileTypes::ChartDrawing == oFile->type())
+			{
+				OOX::CChartDrawing* pDrawing = (OOX::CChartDrawing*)oFile.operator->();
+				
+				smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
+				m_pOfficeDrawingConverter->SetRels(pDrawing);
+				
+				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceUSERSHAPES);
+
+				int nCurPos1 = m_oBcw.WriteItemStart(c_oserct_chartspaceUSERSHAPES_COUNT);
+					m_oBcw.m_oStream.WriteLONG(pDrawing->m_arrItems.size());
+				m_oBcw.WriteItemEnd(nCurPos1);
+				
+				smart_ptr<OOX::IFileContainer> oldRelsStream = *m_oBcw.m_oStream.m_pCurrentContainer;
+				*m_oBcw.m_oStream.m_pCurrentContainer = pDrawing;
+				m_oBcw.m_oStream.m_pCurrentContainer->AddRef();
+
+				for (size_t i = 0; i < pDrawing->m_arrItems.size(); i++)
+				{
+					WriteCT_Shape(pDrawing->m_arrItems[0]);
+				}
+				
+				m_oBcw.WriteItemEnd(nCurPos);
+				
+				*m_oBcw.m_oStream.m_pCurrentContainer = oldRelsStream;				
+				m_pOfficeDrawingConverter->SetRels(oldRels);
+			}
+		}	
+	}
+	void BinaryChartWriter::WriteCT_Shape(OOX::CSizeAnchor *pVal)
+	{
+		OOX::CAbsSizeAnchor* absSize = dynamic_cast<OOX::CAbsSizeAnchor*>(pVal);
+		OOX::CRelSizeAnchor* relSize = dynamic_cast<OOX::CRelSizeAnchor*>(pVal);
+	//Type
+		int nCurPos;
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Type);
+		m_oBcw.m_oStream.WriteBYTE(relSize ? 1 : 2);
+		m_oBcw.WriteItemEnd(nCurPos);
+	//From
+		if(pVal->m_oFrom.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::From);
+				WriteCT_FromTo(*pVal->m_oFrom);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	//To
+		if((relSize) && (relSize->m_oTo.IsInit()))
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::To);
+				WriteCT_FromTo(*relSize->m_oTo);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	//Ext
+		if((absSize) && (absSize->m_oExt.IsInit()))
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Ext);
+				WriteCT_Ext(*absSize->m_oExt);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pVal->m_oElement.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
+			nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+			m_oBcw.m_oStream.StartRecord(0);
+			m_oBcw.m_oStream.WriteRecord2(1, pVal->m_oElement->GetElem());
+			m_oBcw.m_oStream.EndRecord();
+
+
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+	}
+	void BinaryChartWriter::WriteCT_FromTo(OOX::CFromTo& oFromTo)
+	{
+		if(oFromTo.m_oX.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingPosType::X);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+			m_oBcw.m_oStream.WriteDoubleReal(oFromTo.m_oX.get());
+		}
+		if(oFromTo.m_oY.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingPosType::Y);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+			m_oBcw.m_oStream.WriteDoubleReal(oFromTo.m_oY.get());
+		}
+	}
+	void BinaryChartWriter::WriteCT_Ext(OOX::CExt& oExt)
+	{
+		if(oExt.m_oCx.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingExtType::Cx);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+			m_oBcw.m_oStream.WriteDoubleReal(oExt.m_oCx.get());
+		}
+		if(oExt.m_oCy.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingExtType::Cy);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+			m_oBcw.m_oStream.WriteDoubleReal(oExt.m_oCy.get());
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)

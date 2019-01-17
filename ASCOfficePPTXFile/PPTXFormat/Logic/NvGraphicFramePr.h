@@ -129,10 +129,9 @@ namespace PPTX
 					return;
 				}
 				std::wstring namespace_ = m_namespace;
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)
-				{
-					namespace_ = L"a";
-				}
+				
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)				namespace_ = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
 
 				pWriter->StartNode(namespace_ + L":nvGraphicFramePr");
 				pWriter->EndAttributes();

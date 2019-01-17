@@ -58,6 +58,7 @@
 #include "Diagram/DiagramDrawing.h"
 #include "Diagram/DiagramData.h"
 #include "VmlDrawing.h"
+#include "ChartDrawing.h"
 #include "CustomXml.h"
 
 #include "../XlsxFormat/Chart/Chart.h"
@@ -129,6 +130,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
 			return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartDrawing)
+			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
@@ -219,6 +222,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
+		else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)
+			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )

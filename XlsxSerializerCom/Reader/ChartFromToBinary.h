@@ -44,6 +44,9 @@ namespace OOX
 	{
 		class CChartSpace;
 	}
+	class CSizeAnchor;
+	class CFromTo;
+	class CExt;
 }
 
 namespace BinXlsxRW
@@ -356,6 +359,10 @@ namespace BinXlsxRW
 		void WriteCT_Style1			(OOX::Spreadsheet::CT_Style1& oVal);
 		void WriteCT_Style			(OOX::Spreadsheet::CT_Style& oVal);
 		void WriteCT_TextLanguageID	(OOX::Spreadsheet::CT_TextLanguageID& oVal);
+		
+		void WriteCT_Shape			(OOX::CSizeAnchor* pVal);
+		void WriteCT_FromTo			(OOX::CFromTo& oFromTo);
+		void WriteCT_Ext			(OOX::CExt& oExt);
 	
 		void WriteAlternateContent			(OOX::Spreadsheet::AlternateContent& oVal);
 		void WriteAlternateContentChoice	(OOX::Spreadsheet::AlternateContentChoice& oVal);

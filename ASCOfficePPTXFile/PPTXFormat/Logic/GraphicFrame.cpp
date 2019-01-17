@@ -354,6 +354,7 @@ namespace PPTX
 			{				
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->m_ns = L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)						xfrm->m_ns = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)					xfrm->m_ns = L"cdr";
 				
 				xfrm->toXmlWriter(pWriter);
 			}
@@ -377,6 +378,7 @@ namespace PPTX
 			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)	namespace_ = L"wpg";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)							namespace_ = L"a";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)						namespace_ = L"cdr";
 
 			pWriter->StartNode(namespace_ + L":graphicFrame");
 

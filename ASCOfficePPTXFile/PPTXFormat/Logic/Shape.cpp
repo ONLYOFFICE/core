@@ -205,9 +205,10 @@ namespace PPTX
 		{
 			std::wstring name_ = m_name;
 
-			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	name_ = L"wps:wsp";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:sp";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) name_ = L"a:sp";
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			name_ = L"wps:wsp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:sp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:sp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp";
 				
 			pWriter->StartNode(name_);
 
@@ -238,9 +239,10 @@ namespace PPTX
 			}
 			if (style.is_init())
 			{
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = L"wps";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = L"xdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) style->m_namespace = L"a";
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			style->m_namespace = L"wps";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
 
                 pWriter->Write(style);
             }
@@ -288,6 +290,8 @@ namespace PPTX
 				{
 					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	
 						txBody->m_name = L"xdr:txBody";
+					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	
+						txBody->m_name = L"cdr:txBody";
 				}
 				pWriter->Write(txBody);
 			}
@@ -584,7 +588,6 @@ namespace PPTX
 		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group, bool bSignature)
 		{
 			std::wstring strPath, strTextRect;
-			bool bOle = false;
 			SimpleTypes::Vml::SptType vmlPrst = SimpleTypes::Vml::sptNotPrimitive;
 
 			LONG lW = 43200, lH = 43200;
@@ -621,8 +624,8 @@ namespace PPTX
             std::wstring strFillNode;
             std::wstring strStrokeNode;;
 
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle, bSignature);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle, bSignature);
+			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
+			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false, bSignature);
 
 			pWriter->StartNode(L"v:shape");
 
@@ -720,18 +723,8 @@ namespace PPTX
 
 			pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
 
-			if(!bOle)
-			{
-				//oStylesWriter.ClearNoAttack();
-				//oStylesWriter.m_oWriter.AddSize(30);
-				//oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100);
-				//oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-				//oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100);
-				//pWriter->WriteAttribute(L"coordsize", oStylesWriter.GetXmlString());
-				pWriter->WriteAttribute(L"coordsize", (std::wstring)L"100000,100000");
-
-				pWriter->WriteAttribute(L"path", strPath);
-			}
+			pWriter->WriteAttribute(L"coordsize", (std::wstring)L"100000,100000");
+			pWriter->WriteAttribute(L"path", strPath);
 
 			if (!pWriter->m_strAttributesMain.empty())
 			{

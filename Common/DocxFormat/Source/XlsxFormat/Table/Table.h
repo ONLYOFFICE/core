@@ -198,13 +198,13 @@ namespace OOX
 				{
 					writer.WriteString(L">");
 
-					if(m_oTotalsRowFormula.IsInit())
-					{
-						WritingStringValEncodeXmlString(L"totalsRowFormula", m_oTotalsRowFormula.get());
-					}
 					if(m_oCalculatedColumnFormula.IsInit())
 					{
 						WritingStringValEncodeXmlString(L"calculatedColumnFormula", m_oCalculatedColumnFormula.get());
+					}
+					if(m_oTotalsRowFormula.IsInit())
+					{
+						WritingStringValEncodeXmlString(L"totalsRowFormula", m_oTotalsRowFormula.get());
 					}
 
 					writer.WriteString(L"</tableColumn>");

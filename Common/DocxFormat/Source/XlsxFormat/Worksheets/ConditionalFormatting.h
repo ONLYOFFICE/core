@@ -439,7 +439,7 @@ namespace OOX
 					WritingStringNullableAttrInt(L"stdDev", m_oStdDev, m_oStdDev->GetValue());
 					if (m_oStopIfTrue.IsInit() && true == m_oStopIfTrue->ToBool())
 						writer.WriteString(_T (" stopIfTrue=\"1\""));
-					WritingStringNullableAttrString(L"text", m_oText, m_oText.get());
+					WritingStringNullableAttrEncodeXmlString(L"text", m_oText, m_oText.get());
 					WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod.get());
 
 					writer.WriteString(_T(">"));

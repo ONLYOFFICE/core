@@ -150,28 +150,32 @@ namespace BinXlsxRW{
 		m_pExternalDrawingConverter->SetDstContentRels();
 
 	//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
+		std::wstring sDrawingsPath;
 		std::wstring sThemePath;
 		std::wstring sEmbedingPath;
 		std::wstring sContentTypePath;
 		
-        int nIndex	= (int)sFilepath.rfind(FILE_SEPARATOR_CHAR); 
+        size_t nIndex	= (int)sFilepath.rfind(FILE_SEPARATOR_CHAR); 
         nIndex		= (int)sFilepath.rfind(FILE_SEPARATOR_CHAR, nIndex - 1);
-		if(-1 != nIndex)
+		
+		if(std::wstring::npos != nIndex)
 		{
             std::wstring sFilepathLeft = sFilepath.substr(0, nIndex + 1);
+
 			sThemePath		= sFilepathLeft + L"theme";
 			sEmbedingPath	= sFilepathLeft + L"embeddings";
+			sDrawingsPath	= sFilepathLeft + L"drawings";
 		}
         if		(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	sContentTypePath = L"/word/charts/";
 		else if (pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_XLSX)	sContentTypePath = L"/xl/charts/";
 		else															sContentTypePath = L"/ppt/charts/";
 
 	//todo theme path
-		BinXlsxRW::SaveParams			oSaveParams(sThemePath, m_pExternalDrawingConverter->GetContentTypes());
+		BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sThemePath, m_pExternalDrawingConverter->GetContentTypes());
 		OOX::Spreadsheet::CChartSpace	oChartSpace(NULL);
 		BinXlsxRW::BinaryChartReader	oBinaryChartReader(*pReader, oSaveParams, m_pExternalDrawingConverter);
 		
-		oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);
+		oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace);
 
 		if(oChartSpace.isValid())
 		{

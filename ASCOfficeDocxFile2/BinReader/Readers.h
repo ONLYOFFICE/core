@@ -7590,7 +7590,8 @@ public:
                 m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = XMLWRITER_DOC_TYPE_XLSX;
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 				
-				std::wstring sThemePath = m_oFileWriter.m_sThemePath;
+				std::wstring sThemePath		= m_oFileWriter.m_sThemePath;
+				std::wstring sDrawingsPath	= m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"drawings";
 
 				size_t nPos = sThemePath.rfind(FILE_SEPARATOR_STR);
 				if (std::wstring::npos != nPos)
@@ -7598,11 +7599,11 @@ public:
 					sThemePath = sThemePath.substr(0, nPos);
 				}
 					
-				BinXlsxRW::SaveParams			oSaveParams(sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
+				BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
 				BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
 				
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace(NULL);
-				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
+				oBinaryChartReader.ReadCT_ChartSpace(length, pChartSpace);
 
 				//save xlsx
 				_INT32 nChartCount = m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount();
@@ -7628,15 +7629,11 @@ public:
 					pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
 				}
 
-			//save chart.xml
-				NSStringUtils::CStringBuilder sw;
-				pChartSpace->toXML(sw);
-			
-				std::wstring sFilename;
-				std::wstring sRelsName;
-                std::wstring sContent = sw.GetData();
-                
-				m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
+				std::wstring sFilename = L"chart" + std::to_wstring(nChartIndex) + L".xml";
+				std::wstring sRelsName = L"charts/" + sFilename;
+				
+				OOX::CPath pathChartsFile = pathChartsDir + FILE_SEPARATOR_STR + sFilename;
+				pChartSpace->write(pathChartsFile, OOX::CPath(L"/word/charts"), *m_oFileWriter.m_pDrawingConverter->GetContentTypes());
 
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
@@ -7645,7 +7642,7 @@ public:
                 std::wstring bstrChartRelType = OOX::FileTypes::Chart.RelationType();
 				
 				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
-				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml", L"/word/charts", sFilename);
+				//m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml", L"/word/charts", sFilename);
 
                 pDrawingProperty->sChartRels = L"rId" + std::to_wstring( rIdChart);
 
@@ -7834,7 +7831,6 @@ public:
 			}
 			else if (pDrawingProperty->nObjectType == 2)
 			{
-
 				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 				oXlsxSerializer.setDrawingConverter(m_oFileWriter.m_pDrawingConverter);
 
@@ -7849,10 +7845,16 @@ public:
 				std::wstring strDstEmbeddedTemp = strDstEmbedded + FILE_SEPARATOR_STR + L"Temp";
 				NSDirectory::CreateDirectory(strDstEmbeddedTemp);
 
+				std::wstring strDstEmbeddedTempXl = strDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl";
+				NSDirectory::CreateDirectory(strDstEmbeddedTempXl);
+
+				std::wstring strDstEmbeddedTempThemePath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"theme";
+				std::wstring strDstEmbeddedTempDrawingPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"drawings";
+				
 				int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
 
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id + 1) + L".xlsx";
-				BinXlsxRW::SaveParams oSaveParams(m_oFileWriter.m_sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
+				BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
 				
 				OOX::Spreadsheet::CXlsx oXlsx;
 

@@ -43,10 +43,12 @@ using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter)
+	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter)
 	{
-		pContentTypes		= _pContentTypes;
-        sThemePath          = _sThemePath;
+		pContentTypes	= _pContentTypes;
+        sThemePath		= _sThemePath;
+		sDrawingsPath	= _sDrawingsPath;
+
 		nThemeOverrideCount = 1;
 		pCSVWriter = _pCSVWriter;
 	}
@@ -69,7 +71,10 @@ namespace BinXlsxRW
 	BYTE c_oserct_chartspaceUSERSHAPES = 13;
 	BYTE c_oserct_chartspaceEXTLST = 14;
 	BYTE c_oserct_chartspaceTHEMEOVERRIDE = 15;
-	BYTE c_oserct_chartspaceUSERSHAPES_COUNT = 16;
+	
+	BYTE c_oserct_usershapes_COUNT = 0;
+	BYTE c_oserct_usershapes_SHAPE_REL = 1;
+	BYTE c_oserct_usershapes_SHAPE_ABS = 2;
 
 	BYTE c_oserct_booleanVAL = 0;
 
@@ -859,106 +864,102 @@ namespace BinXlsxRW
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int BinaryChartReader::ReadCT_ChartSpace(long length, CT_ChartSpace* poResult)
+	int BinaryChartReader::ReadCT_ChartSpace(long length, OOX::Spreadsheet::CChartSpace* pChartSpace)
 	{
 		int res = c_oSerConstants::ReadOk;
-		READ1_DEF(length, res, this->ReadCT_ChartSpace, poResult);
+		READ1_DEF(length, res, this->ReadCT_ChartSpace, pChartSpace);
 		return res;
 	}
 	int BinaryChartReader::ReadCT_ChartSpace(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CT_ChartSpace* poVal = static_cast<CT_ChartSpace*>(poResult);
+		
+		OOX::Spreadsheet::CChartSpace *pChart = static_cast<OOX::Spreadsheet::CChartSpace*>(poResult);
+		
 		if(c_oserct_chartspaceDATE1904 == type)
 		{
 			CT_Boolean* pNewElem = new CT_Boolean;
 			READ1_DEF(length, res, this->ReadCT_Boolean, pNewElem);
-			poVal->m_date1904 = pNewElem;
+			pChart->m_oChartSpace.m_date1904 = pNewElem;
 		}
 		else if(c_oserct_chartspaceLANG == type)
 		{
 			CT_TextLanguageID* pNewElem = new CT_TextLanguageID;
 			READ1_DEF(length, res, this->ReadCT_TextLanguageID, pNewElem);
-			poVal->m_lang = pNewElem;
+			pChart->m_oChartSpace.m_lang = pNewElem;
 		}
 		else if(c_oserct_chartspaceROUNDEDCORNERS == type)
 		{
 			CT_Boolean* pNewElem = new CT_Boolean;
 			READ1_DEF(length, res, this->ReadCT_Boolean, pNewElem);
-			poVal->m_roundedCorners = pNewElem;
+			pChart->m_oChartSpace.m_roundedCorners = pNewElem;
 		}
 		else if(c_oserct_chartspaceALTERNATECONTENT == type)
 		{
 			AlternateContent* pNewElem = new AlternateContent;
 			READ1_DEF(length, res, this->ReadAlternateContent, pNewElem);
-			poVal->m_AlternateContent = pNewElem;
+			pChart->m_oChartSpace.m_AlternateContent = pNewElem;
 		}
 		else if(c_oserct_chartspaceSTYLE == type)
 		{
 			CT_Style1* pNewElem = new CT_Style1;
 			READ1_DEF(length, res, this->ReadCT_Style1, pNewElem);
-			poVal->m_style = pNewElem;
+			pChart->m_oChartSpace.m_style = pNewElem;
 		}
 		else if(c_oserct_chartspaceCLRMAPOVR == type)
 		{
 			BYTE typeRec1 = m_oBufferedStream.GetUChar();
 			
-			poVal->m_oClrMapOvr = new PPTX::Logic::ClrMap();
+			pChart->m_oChartSpace.m_oClrMapOvr = new PPTX::Logic::ClrMap();
 
-			poVal->m_oClrMapOvr->m_name = L"c:clrMapOvr";
-			poVal->m_oClrMapOvr->fromPPTY(&m_oBufferedStream);
+			pChart->m_oChartSpace.m_oClrMapOvr->m_name = L"c:clrMapOvr";
+			pChart->m_oChartSpace.m_oClrMapOvr->fromPPTY(&m_oBufferedStream);
 		}
 		else if(c_oserct_chartspacePIVOTSOURCE == type)
 		{
 			CT_PivotSource* pNewElem = new CT_PivotSource;
 			READ1_DEF(length, res, this->ReadCT_PivotSource, pNewElem);
-			poVal->m_pivotSource = pNewElem;
+			pChart->m_oChartSpace.m_pivotSource = pNewElem;
 		}
 		else if(c_oserct_chartspacePROTECTION == type)
 		{
 			CT_Protection* pNewElem = new CT_Protection;
 			READ1_DEF(length, res, this->ReadCT_Protection, pNewElem);
-			poVal->m_protection = pNewElem;
+			pChart->m_oChartSpace.m_protection = pNewElem;
 		}
 		else if(c_oserct_chartspaceCHART == type)
 		{
 			CT_Chart* pNewElem = new CT_Chart;
 			READ1_DEF(length, res, this->ReadCT_Chart, pNewElem);
-			poVal->m_chart = pNewElem;
+			pChart->m_oChartSpace.m_chart = pNewElem;
 		}
 		else if(c_oserct_chartspaceSPPR == type)
 		{
-			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
+			pChart->m_oChartSpace.m_oSpPr = new PPTX::Logic::SpPr;
+			res = ReadCT_SpPr(0, length, pChart->m_oChartSpace.m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_chartspaceTXPR == type)
 		{
-			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
+			pChart->m_oChartSpace.m_oTxPr = new PPTX::Logic::TxBody;
+			res = ReadCT_TxPr(0, length, pChart->m_oChartSpace.m_oTxPr.GetPointer());
 		}
 		//else if(c_oserct_chartspaceEXTERNALDATA == type)
 		//{
 		//	CT_ExternalData* pNewElem = new CT_ExternalData;
 		//	READ1_DEF(length, res, this->ReadCT_ExternalData, pNewElem);
-		//	poVal->m_externalData = pNewElem;
+		//	pChart->m_oChartSpace.m_externalData = pNewElem;
 		//}
 		else if(c_oserct_chartspacePRINTSETTINGS == type)
 		{
 			CT_PrintSettings* pNewElem = new CT_PrintSettings;
 			READ1_DEF(length, res, this->ReadCT_PrintSettings, pNewElem);
-			poVal->m_printSettings = pNewElem;
+			pChart->m_oChartSpace.m_printSettings = pNewElem;
 		}
-		//else if(c_oserct_chartspaceUSERSHAPES == type)
-		//{
-		//	CT_RelId* pNewElem = new CT_RelId;
-		//	READ1_DEF(length, res, this->ReadCT_RelId, pNewElem);
-		//	poVal->m_userShapes = pNewElem;
-		//}
 		else if(c_oserct_chartspaceEXTLST == type)
 		{
 			CT_extLst* pNewElem = new CT_extLst;
 			READ1_DEF(length, res, this->ReadCT_extLst, pNewElem);
-			poVal->m_extLst = pNewElem;
+			pChart->m_oChartSpace.m_extLst = pNewElem;
 		}
 		else if(c_oserct_chartspaceTHEMEOVERRIDE == type)
 		{
@@ -991,6 +992,31 @@ namespace BinXlsxRW
 
 				m_oSaveParams.pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.themeOverride+xml", sContentTypesPath, sThemeOverrideName);
 			}
+		}
+		else if(c_oserct_chartspaceUSERSHAPES == type)
+		{			
+			OOX::CSystemUtility::CreateDirectories(m_oSaveParams.sDrawingsPath);
+
+			OOX::CPath pathDrawingsRelsDir = m_oSaveParams.sDrawingsPath  + FILE_SEPARATOR_STR + _T("_rels");
+			OOX::CSystemUtility::CreateDirectories(pathDrawingsRelsDir.GetPath());
+
+			m_pOfficeDrawingConverter->SetDstContentRels();
+			
+			OOX::CChartDrawing* pChartDrawing = new OOX::CChartDrawing(NULL);
+			READ1_DEF(length, res, this->ReadCT_userShapes, pChartDrawing);
+
+			NSCommon::smart_ptr<OOX::File> pDrawingFile(pChartDrawing);
+			pChart->Add(pDrawingFile);
+			
+			OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath()  + FILE_SEPARATOR_STR + pChartDrawing->m_sOutputFilename + _T(".rels");
+			m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
+			
+			unsigned int rId = 0;
+            m_pOfficeDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartUserShapes", L"../drawings/" + pChartDrawing->m_sOutputFilename, std::wstring(), &rId);
+			
+			pChart->m_oChartSpace.m_userShapes = new CT_RelId;
+			pChart->m_oChartSpace.m_userShapes->m_id = new std::wstring;
+			*pChart->m_oChartSpace.m_userShapes->m_id = OOX::RId(rId).ToString();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1042,27 +1068,109 @@ namespace BinXlsxRW
 		}
 		return res;
 	}
-	int BinaryChartReader::ReadCT_RelId(long length, CT_RelId* poResult)
+	
+	int BinaryChartReader::ReadCT_userShapes(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		READ1_DEF(length, res, this->ReadCT_RelId, poResult);
-		return res;
-	}
-	int BinaryChartReader::ReadCT_RelId(BYTE type, long length, void* poResult)
-	{
-		int res = c_oSerConstants::ReadOk;
-		CT_RelId* poVal = static_cast<CT_RelId*>(poResult);
-		if(c_oserct_relidID == type)
+		if(c_oserct_usershapes_COUNT == type)
 		{
-			std::wstring* pNewElem = new std::wstring;
-			//todo
-			*pNewElem = m_oBufferedStream.GetString4(length);
-			poVal->m_id = pNewElem;
+			long count_shapes = m_oBufferedStream.GetLong();
 		}
-		else
-			res = c_oSerConstants::ReadUnknown;
+		else if (c_oserct_usershapes_SHAPE_REL)
+		{
+			OOX::CChartDrawing* chartDrawing = (OOX::CChartDrawing*)poResult;
+			
+			OOX::CSizeAnchor *pNewElem = new OOX::CRelSizeAnchor();
+			chartDrawing->m_arrItems.push_back(pNewElem);
+
+			READ1_DEF(length, res, this->ReadCT_userShape, pNewElem);
+		}
+		else if (c_oserct_usershapes_SHAPE_ABS)
+		{
+			OOX::CChartDrawing* chartDrawing = (OOX::CChartDrawing*)poResult;
+			
+			OOX::CSizeAnchor *pNewElem = new OOX::CAbsSizeAnchor();
+			chartDrawing->m_arrItems.push_back(pNewElem);
+
+			READ1_DEF(length, res, this->ReadCT_userShape, pNewElem);
+		}
+		return res;
+	}	
+	int BinaryChartReader::ReadCT_userShape(BYTE type, long length, void* poResult)
+	{
+		OOX::CSizeAnchor*		pAnchor		= static_cast<OOX::CSizeAnchor*>	(poResult);
+		OOX::CAbsSizeAnchor*	pAbsAnchor	= dynamic_cast<OOX::CAbsSizeAnchor*>(pAnchor);
+		OOX::CRelSizeAnchor*	pRelAnchor	= dynamic_cast<OOX::CRelSizeAnchor*>(pAnchor);
+
+		if(!pAnchor && (!pRelAnchor || pAbsAnchor)) return c_oSerConstants::ReadUnknown;
+
+		int res = c_oSerConstants::ReadOk;
+		if(c_oSer_DrawingType::From == type)
+		{
+			pAnchor->m_oFrom.Init();
+			READ2_DEF_SPREADSHEET(length, res, this->ReadCT_FromTo, pAnchor->m_oFrom.GetPointer());
+		}
+		else if(c_oSer_DrawingType::To == type)
+		{
+			pRelAnchor->m_oTo.Init();
+			READ2_DEF_SPREADSHEET(length, res, this->ReadCT_FromTo, pRelAnchor->m_oTo.GetPointer());
+		}
+		else if(c_oSer_DrawingType::Ext == type)
+		{
+			pAbsAnchor->m_oExt.Init();
+			READ2_DEF_SPREADSHEET(length, res, this->ReadCT_Ext, pAbsAnchor->m_oExt.GetPointer());
+		}
+		else if(c_oSer_DrawingType::pptxDrawing == type)
+		{
+			pAnchor->m_oElement.Init();
+
+			BYTE typeRec1   = m_oBufferedStream.GetUChar();    // must be 0;
+			LONG _e         = m_oBufferedStream.GetPos()   + m_oBufferedStream.GetLong() + 4;
+
+			m_oBufferedStream.Skip(5); // type record (must be 1) + 4 byte - len record
+
+			pAnchor->m_oElement->fromPPTY(&m_oBufferedStream);
+
+			if (!pAnchor->m_oElement->is_init())
+				res = c_oSerConstants::ReadUnknown;
+		}
 		return res;
 	}
+	int BinaryChartReader::ReadCT_FromTo(BYTE type, long length, void* poResult)
+	{
+		OOX::CFromTo* pFromTo = static_cast<OOX::CFromTo*>(poResult);
+
+		int res = c_oSerConstants::ReadOk;
+		if(c_oSer_DrawingPosType::X == type)
+		{
+			pFromTo->m_oX.reset(new double);
+			*pFromTo->m_oX = m_oBufferedStream.GetDoubleReal();
+		}
+		if(c_oSer_DrawingPosType::Y == type)
+		{
+			pFromTo->m_oY.reset(new double);
+			*pFromTo->m_oY = m_oBufferedStream.GetDoubleReal();
+		}
+		return res;
+	}
+	int BinaryChartReader::ReadCT_Ext(BYTE type, long length, void* poResult)
+	{
+		OOX::CExt* pExt = static_cast<OOX::CExt*>(poResult);
+
+		int res = c_oSerConstants::ReadOk;
+		if(c_oSer_DrawingPosType::X == type)
+		{
+			pExt->m_oCx.reset(new double);
+			*pExt->m_oCx = m_oBufferedStream.GetDoubleReal();
+		}
+		if(c_oSer_DrawingPosType::Y == type)
+		{
+			pExt->m_oCy.reset(new double);
+			*pExt->m_oCy = m_oBufferedStream.GetDoubleReal();
+		}
+		return res;
+	}
+
 	int BinaryChartReader::ReadCT_PageSetup(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -6184,7 +6292,7 @@ namespace BinXlsxRW
 				
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceUSERSHAPES);
 
-				int nCurPos1 = m_oBcw.WriteItemStart(c_oserct_chartspaceUSERSHAPES_COUNT);
+				int nCurPos1 = m_oBcw.WriteItemStart(c_oserct_usershapes_COUNT);
 					m_oBcw.m_oStream.WriteLONG(pDrawing->m_arrItems.size());
 				m_oBcw.WriteItemEnd(nCurPos1);
 				
@@ -6194,7 +6302,12 @@ namespace BinXlsxRW
 
 				for (size_t i = 0; i < pDrawing->m_arrItems.size(); i++)
 				{
-					WriteCT_Shape(pDrawing->m_arrItems[0]);
+					OOX::CAbsSizeAnchor* absSize = dynamic_cast<OOX::CAbsSizeAnchor*>(pDrawing->m_arrItems[i]);
+					OOX::CRelSizeAnchor* relSize = dynamic_cast<OOX::CRelSizeAnchor*>(pDrawing->m_arrItems[i]);
+					
+					int nCurPos2 = m_oBcw.WriteItemStart(relSize ? c_oserct_usershapes_SHAPE_REL : c_oserct_usershapes_SHAPE_ABS);
+						WriteCT_Shape(pDrawing->m_arrItems[i]);
+					m_oBcw.WriteItemEnd(nCurPos2);
 				}
 				
 				m_oBcw.WriteItemEnd(nCurPos);
@@ -6208,12 +6321,9 @@ namespace BinXlsxRW
 	{
 		OOX::CAbsSizeAnchor* absSize = dynamic_cast<OOX::CAbsSizeAnchor*>(pVal);
 		OOX::CRelSizeAnchor* relSize = dynamic_cast<OOX::CRelSizeAnchor*>(pVal);
-	//Type
-		int nCurPos;
-		nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Type);
-		m_oBcw.m_oStream.WriteBYTE(relSize ? 1 : 2);
-		m_oBcw.WriteItemEnd(nCurPos);
+
 	//From
+		int nCurPos = 0;
 		if(pVal->m_oFrom.IsInit())
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::From);

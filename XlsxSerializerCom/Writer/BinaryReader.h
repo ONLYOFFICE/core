@@ -4949,12 +4949,16 @@ namespace BinXlsxRW
                         sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
 
 					OOX::Spreadsheet::CXlsx oXlsx;
-					std::wstring params_path = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
-                    
+					
+					std::wstring themePath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
+					std::wstring drawingsPath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Drawings.DefaultDirectory().GetPath();
+                   
 					if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
 					{
-						SaveParams oSaveParams(params_path.c_str(), pOfficeDrawingConverter->GetContentTypes(), NULL);
+						SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL);
+						
 						ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+						
 						oXlsx.PrepareToWrite();
 						oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
 					}
@@ -4962,8 +4966,10 @@ namespace BinXlsxRW
 					{
 						CSVWriter::CCSVWriter oCSVWriter(oXlsx, nCodePage, sDelimiter, false);
 						oCSVWriter.Start(sDstPathCSV);
-						SaveParams oSaveParams(params_path.c_str(), pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
+						SaveParams oSaveParams(drawingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
+						
 						ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+						
 						oCSVWriter.End();
 					}
 					bResultOk = true;

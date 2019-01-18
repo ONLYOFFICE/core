@@ -425,7 +425,11 @@ namespace PPTX
 							OOX::Spreadsheet::CXlsx			oXlsx;
 							BinXlsxRW::BinaryFileReader		oEmbeddedReader;				
 							NSBinPptxRW::CDrawingConverter	oDrawingConverter;
-							BinXlsxRW::SaveParams			oSaveParams(pReader->m_strFolderThemes, oDrawingConverter.GetContentTypes());							
+
+							std::wstring sDrawingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"drawings";
+							std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
+
+							BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sThemePath, oDrawingConverter.GetContentTypes());							
 
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);

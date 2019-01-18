@@ -452,7 +452,11 @@ namespace OOX
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			NSStringUtils::CStringBuilder sXml;
-			sXml.WriteString(L"<c:userShapes xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart>\"");
+			sXml.WriteString(L"<c:userShapes \
+xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
+xmlns:cdr=\"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+>");
 			
 			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -461,7 +465,8 @@ namespace OOX
 			sXml.WriteString(L"</c:userShapes>");
 
             NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
-			oContent.AddDefault( oPath.GetExtention(false) );
+			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+
 			IFileContainer::Write(oPath, oDirectory, oContent);
 		}
 		virtual const OOX::FileType type() const
@@ -470,8 +475,9 @@ namespace OOX
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			if (m_bDocument) return type().DefaultDirectory();
-			else	return L"../" + type().DefaultDirectory();
+			//if (m_bDocument) return type().DefaultDirectory();
+			//else	
+				return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{

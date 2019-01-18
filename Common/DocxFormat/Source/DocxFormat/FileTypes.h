@@ -154,7 +154,7 @@ namespace OOX
 
 		const FileType ChartDrawing			(L"drawings", L"drawing.xml",
 												_T("application/vnd.openxmlformats-officedocument.drawingml.chartshapes+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartUserShapes"));		
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartUserShapes"), true, true);		
 
 		const FileType Layout				(L"diagrams", L"layout.xml",
 												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml"),

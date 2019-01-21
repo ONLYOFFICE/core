@@ -42,22 +42,27 @@ namespace OOX
 	public:
 		FileType(const CPath& defaultDirectory, const CPath& defaultFileName,
 							const std::wstring& overrideType, 
-							const std::wstring& relationType, bool bEnumerated = false, bool bEnumeratedGlobal = false ) : m_defaultDirectory(defaultDirectory),
+							const std::wstring& relationType,
+							const std::wstring& enumerateType = L"", bool bEnumerated = false, bool bEnumeratedGlobal = false ) 
+		:	m_defaultDirectory(defaultDirectory),
 			m_defaultFileName(defaultFileName),
 			m_overrideType(overrideType),
 			m_relationType(relationType),
+			m_enumerateType(enumerateType),
 			m_bEnumerated(bEnumerated),
 			m_bEnumeratedGlobal(bEnumeratedGlobal)
 		{
 		}
 
-		FileType(const WCHAR* defaultDirectory, const WCHAR* defaultFileName,
+		FileType(const std::wstring& defaultDirectory, const std::wstring& defaultFileName,
 							const std::wstring& overrideType, 
-							const std::wstring& relationType, bool bEnumerated = false, bool bEnumeratedGlobal = false )
+							const std::wstring& relationType,
+							const std::wstring& enumerateType = L"", bool bEnumerated = false, bool bEnumeratedGlobal = false )
 		:	m_defaultDirectory(defaultDirectory),
 			m_defaultFileName(defaultFileName),
 			m_overrideType(overrideType),
 			m_relationType(relationType),
+			m_enumerateType(enumerateType),
 			m_bEnumerated(bEnumerated),
 			m_bEnumeratedGlobal(bEnumeratedGlobal)
 		{
@@ -66,17 +71,17 @@ namespace OOX
 		~FileType()
 		{
 		}
-
-	public:
 		const bool operator ==(const FileType& rhs) const
 		{
 			return (m_relationType == rhs.m_relationType);
 		}
-
-	public:
 		inline const std::wstring OverrideType() const
 		{
 			return m_overrideType;
+		}
+		inline const std::wstring EnumerateType() const
+		{
+			return m_enumerateType;
 		}
 		inline const std::wstring RelationType() const
 		{
@@ -101,10 +106,11 @@ namespace OOX
 	private:
 		std::wstring		m_overrideType;
 		std::wstring		m_relationType;
-		CPath		m_defaultDirectory;
-		CPath		m_defaultFileName;
-		bool		m_bEnumerated;
-		bool		m_bEnumeratedGlobal;
+		std::wstring		m_enumerateType;
+		CPath				m_defaultDirectory;
+		CPath				m_defaultFileName;
+		bool				m_bEnumerated;
+		bool				m_bEnumeratedGlobal;
 	};
 
 	static const bool operator ==(const std::wstring& type, const FileType& file)

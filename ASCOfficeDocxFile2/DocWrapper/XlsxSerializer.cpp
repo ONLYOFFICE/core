@@ -211,13 +211,11 @@ namespace BinXlsxRW{
 
             OOX::CSystemUtility::CreateDirectories(pathRelsDir.GetPath());
 
-			oChartSpace.write2(sFilepath);
+			oChartSpace.write(sFilepath, sContentTypePath, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
             OOX::CPath pathRelsFile = pathRelsDir + FILE_SEPARATOR_STR + strFilename + _T(".rels");
             m_pExternalDrawingConverter->SaveDstContentRels(pathRelsFile.GetPath());
 
-			pReader->m_pRels->m_pManager->m_pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml", sContentTypePath, strFilename);
-			
 			bRes = true;
 		}
 		return bRes;

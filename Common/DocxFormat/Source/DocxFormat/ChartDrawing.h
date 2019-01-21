@@ -456,6 +456,7 @@ namespace OOX
 xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
 xmlns:cdr=\"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"\
 >");
 			
 			for (size_t i = 0; i < m_arrItems.size(); ++i)

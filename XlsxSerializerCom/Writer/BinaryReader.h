@@ -2817,6 +2817,7 @@ namespace BinXlsxRW
 
 				NSCommon::smart_ptr<OOX::File> pDrawingFile(m_pCurDrawing);
 				const OOX::RId oRId = m_pCurWorksheet->Add(pDrawingFile);
+				
 				OOX::Spreadsheet::CDrawingWorksheet oDrawingWorksheet;
 				oDrawingWorksheet.m_oId.Init();
 				oDrawingWorksheet.m_oId->SetValue(oRId.get());
@@ -2827,7 +2828,7 @@ namespace BinXlsxRW
 			SEEK_TO_POS_END2();
 
 			//ole & comment
-			if(m_pCurVmlDrawing->m_aXml.size() > 0 || (NULL != m_pCurVmlDrawing->m_mapComments && m_pCurVmlDrawing->m_mapComments->size() > 0))
+			if(!m_pCurVmlDrawing->m_aXml.empty() || (NULL != m_pCurVmlDrawing->m_mapComments && !m_pCurVmlDrawing->m_mapComments->empty()))
 			{
 				NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(m_pCurVmlDrawing);
 				m_pCurVmlDrawing = NULL;

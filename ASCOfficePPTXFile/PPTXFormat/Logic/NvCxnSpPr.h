@@ -101,7 +101,7 @@ namespace PPTX
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cNvPr);
 				oValue.Write(cNvCxnSpPr);
-				oValue.Write(nvPr);
+				//oValue.Write(nvPr); //todooo ??? 3622708.xlsx
 
 				return XmlUtils::CreateNode(m_namespace + L":nvCxnSpPr", oValue);
 			}
@@ -118,7 +118,7 @@ namespace PPTX
 
                 cNvPr.toXmlWriter2(namespace_ , pWriter);
 				cNvCxnSpPr.toXmlWriter(pWriter);
-                nvPr.toXmlWriter2(namespace_, pWriter);
+                //nvPr.toXmlWriter2(namespace_, pWriter); //todooo ??? 3622708.xlsx
 
 				pWriter->EndNode(namespace_ + L":nvCxnSpPr");
 			}

@@ -1019,6 +1019,35 @@ void CDrawingConverter::ClearShapeTypes()
 	m_mapShapeTypes.clear();
 }
 
+void CDrawingConverter::AddShapeType(XmlUtils::CXmlNode& oNodeST)
+{
+    std::wstring strId = oNodeST.GetAttribute(L"id");
+
+	if (strId.empty())
+	{
+		strId = oNodeST.GetAttribute(L"type");
+		if (strId[0] == (wchar_t)('#'))
+		{
+			strId = strId.substr(1);
+		}
+	}
+
+	if (strId.empty()) return;
+	//if (m_mapShapeTypes.find(strId) == m_mapShapeTypes.end())//?? с затиранием ???
+	{
+		CPPTShape* pShape = new CPPTShape();
+		pShape->m_bIsShapeType = true;
+		
+		pShape->LoadFromXMLShapeType(oNodeST);
+
+		CShapePtr pS = CShapePtr(new CShape(NSBaseShape::unknown, 0));
+		pS->setBaseShape(CBaseShapePtr(pShape));
+		
+		LoadCoordSize(oNodeST, pS);
+
+		m_mapShapeTypes.insert(std::make_pair(strId, pS));			
+	}
+}
 HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 {
     std::wstring strXml = L"<main ";
@@ -1058,22 +1087,7 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 	{
         XmlUtils::CXmlNode oNodeST = oNode.ReadNodeNoNS(L"shapetype");
 
-        std::wstring strId = oNodeST.GetAttribute(L"id");
-
-		//if (m_mapShapeTypes.find(strId) == m_mapShapeTypes.end())//?? с затиранием ???
-		{
-			CPPTShape* pShape = new CPPTShape();
-			pShape->m_bIsShapeType = true;
-			
-			pShape->LoadFromXMLShapeType(oNodeST);
-
-			CShapePtr pS = CShapePtr(new CShape(NSBaseShape::unknown, 0));
-			pS->setBaseShape(CBaseShapePtr(pShape));
-			
-			LoadCoordSize(oNodeST, pS);
-
-			m_mapShapeTypes.insert(std::make_pair(strId, pS));			
-		}
+		AddShapeType(oNodeST);
     }
 
 	return S_OK;
@@ -1184,7 +1198,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 				XmlUtils::CXmlNode oNodeST;
 				if (oParseNode.GetNode(L"v:shapetype", oNodeST))
 				{
-					AddShapeType(oNodeST.GetXml());
+					AddShapeType(oNodeST);
 				}
 				XmlUtils::CXmlNodes oChilds;
                 if (oParseNode.GetNodes(L"*", oChilds))
@@ -1535,7 +1549,7 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 				XmlUtils::CXmlNode oNodeST;
 				if (oParseNode.GetNode(L"v:shapetype", oNodeST))
 				{
-					AddShapeType(oNodeST.GetXml());
+					AddShapeType(oNodeST);
 				}
 
 				XmlUtils::CXmlNodes oChilds;
@@ -3025,7 +3039,7 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 
 			if (L"shapetype"	== strNameP)
 			{
-				AddShapeType(oNodeT.GetXml());
+				AddShapeType(oNodeT);
 			}
 			else if (
 				L"shape"		== strNameP ||

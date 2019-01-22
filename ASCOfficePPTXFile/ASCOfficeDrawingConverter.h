@@ -227,7 +227,8 @@ namespace NSBinPptxRW
         void SetEmbedDstPath    (const std::wstring& sEmbedPath);
 
 		void ClearShapeTypes	();
-		HRESULT AddShapeType        (const std::wstring& sXml);
+		HRESULT AddShapeType	(const std::wstring& sXml);
+		void AddShapeType		(XmlUtils::CXmlNode& oNodeST);
 
         HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
 

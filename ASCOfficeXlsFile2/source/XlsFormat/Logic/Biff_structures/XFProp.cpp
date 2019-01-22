@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -304,7 +304,7 @@ int XFProp::serialize(std::wostream & stream)
 		case 0x0022:	serialize_val_prop	(stream, L"charset",		xfPropDataBlob);		break;
 		case 0x0023:	serialize_val_prop	(stream, L"family",			xfPropDataBlob);		break;
 		case 0x0024:	serialize_val_prop	(stream, L"sz",				xfPropDataBlob);		break;
-		case 0x0025:	serialize_val_prop	(stream, L"scheme",			xfPropDataBlob);		break;
+		//case 0x0025:	serialize_val_prop	(stream, L"scheme",			xfPropDataBlob);		break;
 		case 0x0026:	serialize_val_prop	(stream, L"formatCode",		xfPropDataBlob);		break;
 		case 0x0029:	serialize_val_prop	(stream, L"numFmtId",		xfPropDataBlob);		break;
 		case 0x002A:	serialize_val_prop	(stream, L"relativeIndent", xfPropDataBlob);		break;

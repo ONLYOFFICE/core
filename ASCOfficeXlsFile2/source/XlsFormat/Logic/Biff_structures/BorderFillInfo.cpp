@@ -67,6 +67,7 @@ std::size_t hash_value(BorderInfo const & val)
 std::size_t hash_value(FontInfo const & val)
 {
     std::size_t seed = 0;
+	boost::hash_combine(seed, val.dyHeight);
 	boost::hash_combine(seed, val.fItalic);
     boost::hash_combine(seed, val.fStrikeOut);
     boost::hash_combine(seed, val.fOutline);
@@ -91,6 +92,7 @@ std::size_t hash_value(FontInfo const & val)
 bool FontInfo::operator == (const FontInfo & rVal) const
 {
     const bool res =     
+		dyHeight== rVal.dyHeight &&
 		name	== rVal.name &&
 		scheme	== rVal.scheme &&
 		fItalic == rVal.fItalic &&

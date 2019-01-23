@@ -231,6 +231,7 @@ namespace OOX
 		class CT_TextLanguageID;
 		class CTextProperties;
 	}
+	class CSizeAnchor;
 	namespace Vml
 	{
 		class CShapeType;
@@ -524,6 +525,8 @@ public:
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool categories, bool label);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool categories, bool label);
+		
+		void convert(OOX::CSizeAnchor *sz_anchor, double x0, double y0, double width, double height);
 
 //.vml............................................................................................................................
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);

@@ -36,6 +36,7 @@
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
@@ -424,8 +425,10 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 	if (!oox_chart) return;
 	if( !oox_chart->id_data.IsInit()) return;
 
-	_CP_OPT(double) width, height;
+	_CP_OPT(double) width, height, x, y, zero(0);
+	
 	odf_context()->drawing_context()->get_size (width, height);
+	odf_context()->drawing_context()->get_position (x, y);
 				
 	smart_ptr<OOX::File> oFile = find_file_by_id (oox_chart->id_data->get());
 	if (oFile.IsInit())
@@ -435,6 +438,25 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 		if (pChart)
 		{
 			oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(pChart);	
+			
+			OOX::CChartDrawing* pChartDrawing = NULL;
+			if ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id))
+			{
+				oFile = find_file_by_id (*pChart->m_oChartSpace.m_userShapes->m_id);
+				pChartDrawing = dynamic_cast<OOX::CChartDrawing*>(oFile.operator->());
+			}
+			if ((pChartDrawing) && (false == pChartDrawing->m_arrItems.empty()))
+			{
+				odf_context()->drawing_context()->start_group();
+
+				odf_context()->drawing_context()->set_group_size (width, height, width, height);
+				odf_context()->drawing_context()->set_group_position (x, y, 0, 0);
+				
+				odf_context()->drawing_context()->start_drawing();
+				odf_context()->drawing_context()->set_position (zero, zero);
+				odf_context()->drawing_context()->set_size (width, height);
+			}
+			
 			odf_context()->drawing_context()->start_object(odf_context()->get_next_name_object());
 			{
 				odf_context()->start_chart();
@@ -446,10 +468,59 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 				odf_context()->end_chart();
 			}
 			odf_context()->drawing_context()->end_object();	
+			
+			if ((pChartDrawing) && (false == pChartDrawing->m_arrItems.empty()))
+			{
+				odf_context()->drawing_context()->end_drawing();
+
+				oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(pChartDrawing);
+
+				for (size_t i = 0; i < pChartDrawing->m_arrItems.size(); i++)
+				{
+					convert(pChartDrawing->m_arrItems[i], 0, 0, width.get_value_or(0), height.get_value_or(0));
+				}
+				odf_context()->drawing_context()->end_group();
+			}
 			oox_current_child_document = NULL;
 		}
 	}
 }
+void OoxConverter::convert(OOX::CSizeAnchor *sz_anchor, double x0, double y0, double width, double height)
+{
+	if (!sz_anchor) return;
+	
+	_CP_OPT(double) x, y, cx, cy;
+
+	if (sz_anchor->m_oFrom.IsInit())
+	{
+		if (sz_anchor->m_oFrom->m_oX.IsInit())	x = *sz_anchor->m_oFrom->m_oX * width	+  x0;
+		if (sz_anchor->m_oFrom->m_oY.IsInit())	y = *sz_anchor->m_oFrom->m_oY * height	+  y0;
+	}
+
+	OOX::CRelSizeAnchor *relAnchor = dynamic_cast<OOX::CRelSizeAnchor*>(sz_anchor);
+	OOX::CAbsSizeAnchor *absAnchor = dynamic_cast<OOX::CAbsSizeAnchor*>(sz_anchor);
+
+	if ((relAnchor) && (relAnchor->m_oTo.IsInit() && sz_anchor->m_oFrom.IsInit()))
+	{
+		if (relAnchor->m_oTo->m_oX.IsInit())	cx = (*relAnchor->m_oTo->m_oX - *sz_anchor->m_oFrom->m_oX) * width; 
+		if (relAnchor->m_oTo->m_oY.IsInit())	cy = (*relAnchor->m_oTo->m_oY - *sz_anchor->m_oFrom->m_oY) * height; 
+	}
+	if ((absAnchor) && (absAnchor->m_oExt.IsInit()))
+	{
+		if (absAnchor->m_oExt->m_oCx.IsInit())	cx = *absAnchor->m_oExt->m_oCx * width; 
+		if (absAnchor->m_oExt->m_oCy.IsInit())	cy = *absAnchor->m_oExt->m_oCy * height; 
+	}
+	
+	odf_context()->drawing_context()->start_drawing();
+		
+		odf_context()->drawing_context()->set_position (x, y);
+		odf_context()->drawing_context()->set_size (cx, cy);
+		
+		convert(sz_anchor->m_oElement.GetPointer());
+
+	odf_context()->drawing_context()->end_drawing();
+}
+
 void OoxConverter::convert(PPTX::Logic::CNvGrpSpPr *oox_cnvGrpSpPr)
 {
 	if (!oox_cnvGrpSpPr) return;

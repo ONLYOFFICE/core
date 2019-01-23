@@ -180,17 +180,22 @@ namespace PPTX
 				return;
 
 			NSBinPptxRW::CDrawingConverter oDrawingConverter;
-			NSBinPptxRW::CBinaryFileWriter* pOldWriter = oDrawingConverter.m_pBinaryWriter;
 			
-			oDrawingConverter.m_pBinaryWriter		= pWriter;
-			smart_ptr<OOX::IFileContainer> oldRels	= oDrawingConverter.GetRels();
+			NSBinPptxRW::CBinaryFileWriter *pOldDrawingWriter = oDrawingConverter.m_pBinaryWriter;
+			BinDocxRW::CDocxSerializer *pOldMainDocument = pWriter->m_pMainDocument;
+			
+			pWriter->m_pMainDocument = NULL;
+			oDrawingConverter.m_pBinaryWriter = pWriter;
+			smart_ptr<OOX::IFileContainer> oldRels = oDrawingConverter.GetRels();
 			oDrawingConverter.SetRels(pChart.smart_dynamic_cast<OOX::IFileContainer>());
 		
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(*pWriter, &oDrawingConverter);	
 			oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
 
 			oDrawingConverter.SetRels(oldRels);
-			oDrawingConverter.m_pBinaryWriter = pOldWriter;
+			
+			oDrawingConverter.m_pBinaryWriter = pOldDrawingWriter;
+			pWriter->m_pMainDocument = pOldMainDocument;
 		}
 		std::wstring ChartRec::toXML() const
 		{

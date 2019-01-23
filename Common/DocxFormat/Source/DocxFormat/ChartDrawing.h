@@ -33,6 +33,7 @@
 
 #include "IFileContainer.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
+#include "../XlsxFormat/WritingElement.h"
 
 namespace OOX
 {

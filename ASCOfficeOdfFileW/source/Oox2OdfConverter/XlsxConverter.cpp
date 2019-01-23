@@ -110,10 +110,10 @@ smart_ptr<OOX::File> XlsxConverter::find_file_by_id(const std::wstring & sId)
 {
 	smart_ptr<OOX::File> oFile;
 	
-	if (xlsx_current_container)
-		oFile = xlsx_current_container->Find(sId);
-	else if (oox_current_child_document)
+	if (oox_current_child_document)
 		oFile = oox_current_child_document->Find(sId);
+	else if (xlsx_current_container)
+		oFile = xlsx_current_container->Find(sId);
 		
 	return oFile;
 }
@@ -122,16 +122,16 @@ std::wstring XlsxConverter::find_link_by_id (const std::wstring & sId, int type)
     smart_ptr<OOX::File>	oFile;
 	std::wstring			ref;
 
-	if (xlsx_current_container)
-	{
-		oFile	= xlsx_current_container->Find(sId);
-		ref		= OoxConverter::find_link_by(oFile, type);
-	}
-	if (!ref.empty()) return ref;
-
 	if (oox_current_child_document)
 	{
 		oFile	= oox_current_child_document->Find(sId);
+		ref		= OoxConverter::find_link_by(oFile, type);
+	}	
+	if (!ref.empty()) return ref;
+
+	if (xlsx_current_container)
+	{
+		oFile	= xlsx_current_container->Find(sId);
 		ref		= OoxConverter::find_link_by(oFile, type);
 	}
 	return ref;

@@ -383,14 +383,16 @@ void CPdfRenderer::CCommandManager::Flush()
 					oTextLine.Flush(pPage);
 					lTextColor = pText->GetColor();
 					TColor oColor = lTextColor;
-					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);					
+					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);
+					pPage->SetStrokeColor(oColor.r, oColor.g, oColor.b);
 				}
 
 				if (nTextAlpha != pText->GetAlpha())
 				{
 					oTextLine.Flush(pPage);
 					nTextAlpha = pText->GetAlpha();
-					pPage->SetFillAlpha(nTextAlpha);					
+					pPage->SetFillAlpha(nTextAlpha);
+					pPage->SetStrokeAlpha(nTextAlpha);
 				}
 
 				if (fabs(dTextSpace - pText->GetSpace()) > 0.001)

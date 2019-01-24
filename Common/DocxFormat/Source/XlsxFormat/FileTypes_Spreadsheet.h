@@ -82,6 +82,11 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", 
 												L"tables/table", true, true);
 
+			const FileType QueryTable		(L"../queryTables", L"queryTable.xml",
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.queryTable+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/queryTable", 
+												L"queryTables/table", true, true);			
+
 			const FileType Drawings			(L"../drawings", L"drawing.xml",
 												L"application/vnd.openxmlformats-officedocument.drawing+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing", 

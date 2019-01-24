@@ -285,6 +285,22 @@ namespace OOX
 												L"", 
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath");
 
+		const FileType ExternalLinkLibrary	(L"", L"", 
+												L"", 
+												L"http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlLibrary");
+		
+		const FileType ExternalLinkPathMissing(L"", L"", 
+												L"", 
+												L"http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlPathMissing");
+
+		const FileType ExternalLinkPathStartup(L"", L"", 
+												L"", 
+												L"http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlStartup");
+
+		const FileType ExternalLinkPathAlternateStartup(L"", L"", 
+												L"", 
+												L"http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlAlternateStartup");
+
 		const FileType LegacyDiagramText	(L"", L"legacyDiagramText.bin",
 												L"",
 												L"http://schemas.microsoft.com/office/2006/relationships/legacyDiagramText");

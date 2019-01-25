@@ -44,7 +44,7 @@ namespace odf_reader {
 const wchar_t * svg_desc::ns	= L"svg";
 const wchar_t * svg_desc::name	= L"desc";
 
-std::wostream & svg_desc::text_to_stream(std::wostream & _Wostream) const
+std::wostream & svg_desc::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     _Wostream <<  text_ ;
     return _Wostream;
@@ -60,7 +60,7 @@ void svg_desc::add_text(const std::wstring & Text)
 const wchar_t * svg_font_face_uri::ns = L"svg";
 const wchar_t * svg_font_face_uri::name = L"font-face-uri";
 
-std::wostream & svg_font_face_uri::text_to_stream(std::wostream & _Wostream) const
+std::wostream & svg_font_face_uri::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -88,7 +88,7 @@ void svg_font_face_uri::add_text(const std::wstring & Text)
 const wchar_t * svg_font_face_format::ns = L"svg";
 const wchar_t * svg_font_face_format::name = L"font-face-format";
 
-std::wostream & svg_font_face_format::text_to_stream(std::wostream & _Wostream) const
+std::wostream & svg_font_face_format::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -111,7 +111,7 @@ void svg_font_face_format::add_text(const std::wstring & Text)
 const wchar_t * svg_font_face_name::ns = L"svg";
 const wchar_t * svg_font_face_name::name = L"font-face-name";
 
-std::wostream & svg_font_face_name::text_to_stream(std::wostream & _Wostream) const
+std::wostream & svg_font_face_name::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }

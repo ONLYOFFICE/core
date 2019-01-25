@@ -120,9 +120,9 @@ void paragraph_content_element<ElementT>::docx_serialize_run(office_element_ptr 
 const wchar_t * text::ns = L"";
 const wchar_t * text::name = L"";
 
-std::wostream & text::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_, true );
+	_Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_, true ) : text_);
     return _Wostream;
 }
 
@@ -202,7 +202,7 @@ office_element_ptr text::create(const std::wstring & Text)
 const wchar_t * s::ns = L"text";
 const wchar_t * s::name = L"s";
 
-std::wostream & s::text_to_stream(std::wostream & _Wostream) const
+std::wostream & s::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     if (text_c_)
     {
@@ -259,7 +259,7 @@ void s::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * tab::ns = L"text";
 const wchar_t * tab::name = L"tab";
 
-std::wostream & tab::text_to_stream(std::wostream & _Wostream) const
+std::wostream & tab::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     _Wostream << std::wstring(L"\t");
     return _Wostream;
@@ -291,7 +291,7 @@ void tab::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * line_break::ns = L"text";
 const wchar_t * line_break::name = L"line-break";
 
-std::wostream & line_break::text_to_stream(std::wostream & _Wostream) const
+std::wostream & line_break::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     _Wostream << std::wstring(L"\r\n");
     return _Wostream;
@@ -332,7 +332,7 @@ void bookmark::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:name", text_name_, std::wstring(L""));
 }
-std::wostream & bookmark::text_to_stream(std::wostream & _Wostream) const
+std::wostream & bookmark::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -348,7 +348,7 @@ void bookmark_start::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.start_bookmark(name_);
 }
-std::wostream & bookmark_start::text_to_stream(std::wostream & _Wostream) const
+std::wostream & bookmark_start::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -364,7 +364,7 @@ void bookmark_end::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.end_bookmark(name_);
 }
-std::wostream & bookmark_end::text_to_stream(std::wostream & _Wostream) const
+std::wostream & bookmark_end::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -461,11 +461,11 @@ void hidden_text::docx_convert(oox::docx_conversion_context & Context)
 const wchar_t * span::ns = L"text";
 const wchar_t * span::name = L"span";
 
-std::wostream & span::text_to_stream(std::wostream & _Wostream) const
+std::wostream & span::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     for (size_t i = 0; i < content_.size(); i++)
     {
-        content_[i]->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }
@@ -574,11 +574,11 @@ void span::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * a::ns = L"text";
 const wchar_t * a::name = L"a";
 
-std::wostream & a::text_to_stream(std::wostream & _Wostream) const
+std::wostream & a::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
 	for (size_t i = 0; i < content_.size(); i++)
     {
-        content_[i]->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }
@@ -712,13 +712,13 @@ const wchar_t * note::name = L"note";
 note::note()
 {}
 
-std::wostream & note::text_to_stream(std::wostream & _Wostream) const
+std::wostream & note::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     if (text_note_citation_)
-        text_note_citation_->text_to_stream(_Wostream);
+        text_note_citation_->text_to_stream(_Wostream, bXmlEncode);
 
     if (text_note_body_)
-        text_note_body_->text_to_stream(_Wostream);
+        text_note_body_->text_to_stream(_Wostream, bXmlEncode);
 
     return _Wostream;
 }
@@ -806,13 +806,13 @@ void note::docx_convert(oox::docx_conversion_context & Context)
 const wchar_t * ruby::ns = L"text";
 const wchar_t * ruby::name = L"ruby";
 
-std::wostream & ruby::text_to_stream(std::wostream & _Wostream) const
+std::wostream & ruby::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     if (text_ruby_base_)
-        text_ruby_base_->text_to_stream(_Wostream);
+        text_ruby_base_->text_to_stream(_Wostream, bXmlEncode);
 
     if (text_ruby_text_)
-        text_ruby_text_->text_to_stream(_Wostream);
+        text_ruby_text_->text_to_stream(_Wostream, bXmlEncode);
 
     return _Wostream;
 }
@@ -846,9 +846,9 @@ void ruby::add_text(const std::wstring & Text)
 const wchar_t * title::ns = L"text";
 const wchar_t * title::name = L"title";
 
-std::wostream & title::text_to_stream(std::wostream & _Wostream) const
+std::wostream & title::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -883,9 +883,9 @@ void title::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * subject::ns = L"text";
 const wchar_t * subject::name = L"subject";
 
-std::wostream & subject::text_to_stream(std::wostream & _Wostream) const
+std::wostream & subject::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -919,9 +919,9 @@ void subject::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * chapter::ns = L"text";
 const wchar_t * chapter::name = L"chapter";
 
-std::wostream & chapter::text_to_stream(std::wostream & _Wostream) const
+std::wostream & chapter::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -955,9 +955,9 @@ void chapter::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * text_placeholder::ns = L"text";
 const wchar_t * text_placeholder::name = L"placeholder";
 
-std::wostream & text_placeholder::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_placeholder::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -986,9 +986,9 @@ void text_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * text_page_number::ns = L"text";
 const wchar_t * text_page_number::name = L"page-number";
 
-std::wostream & text_page_number::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_page_number::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1024,9 +1024,9 @@ void text_page_number::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * text_page_count::ns = L"text";
 const wchar_t * text_page_count::name = L"page-count";
 
-std::wostream & text_page_count::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_page_count::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1059,9 +1059,9 @@ void text_page_count::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * text_date::ns = L"text";
 const wchar_t * text_date::name = L"date";
 
-std::wostream & text_date::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_date::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1120,9 +1120,9 @@ void text_modification_date::pptx_convert(oox::pptx_conversion_context & Context
 const wchar_t * text_time::ns = L"text";
 const wchar_t * text_time::name = L"time";
 
-std::wostream & text_time::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_time::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1180,9 +1180,9 @@ void text_modification_time::pptx_convert(oox::pptx_conversion_context & Context
 const wchar_t * text_file_name::ns = L"text";
 const wchar_t * text_file_name::name = L"file-name";
 
-std::wostream & text_file_name::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_file_name::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 void text_file_name::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -1245,9 +1245,9 @@ void sequence::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"text:ref-name",			ref_name_);
 	CP_APPLY_ATTR(L"text:name",				name_);
 }
-std::wostream & sequence::text_to_stream(std::wostream & _Wostream) const
+std::wostream & sequence::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 void sequence::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -1332,9 +1332,9 @@ void expression::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"text:formula",			text_formula_);
 
 }
-std::wostream & expression::text_to_stream(std::wostream & _Wostream) const
+std::wostream & expression::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ );
+	_Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
     return _Wostream;
 }
 void expression::add_text(const std::wstring & Text)
@@ -1361,9 +1361,9 @@ void text_input::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"text:description", text_description_);
 
 }
-std::wostream & text_input::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_input::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    _Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
     return _Wostream;
 }
 void text_input::add_text(const std::wstring & Text)
@@ -1405,9 +1405,9 @@ void text_drop_down::add_text(const std::wstring & Text)
 {
     text_ = Text;
 }
-std::wostream & text_drop_down::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_drop_down::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    _Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
     return _Wostream;
 }
 
@@ -1570,9 +1570,9 @@ void sender_company::docx_convert(oox::docx_conversion_context & Context)
 const wchar_t * sender_postal_code::ns = L"text";
 const wchar_t * sender_postal_code::name = L"sender-postal-code";
 
-std::wostream & sender_postal_code::text_to_stream(std::wostream & _Wostream) const
+std::wostream & sender_postal_code::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1722,9 +1722,9 @@ void bibliography_mark::add_text(const std::wstring & Text)
 	text_ = text::create(Text) ;
 }
 
-std::wostream & bibliography_mark::text_to_stream(std::wostream & _Wostream) const
+std::wostream & bibliography_mark::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_);
+    CP_SERIALIZE_TEXT(text_, bXmlEncode);
     return _Wostream;
 }
 void bibliography_mark::serialize(std::wostream & strm)

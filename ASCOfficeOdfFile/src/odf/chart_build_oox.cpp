@@ -737,7 +737,7 @@ void process_build_object::visit(chart_title& val)
 	if (val.text_p_)
 	{
 		std::wstringstream v;
-		val.text_p_->text_to_stream(v);
+		val.text_p_->text_to_stream(v, false);
 		t.content_ = v.str();
 	}
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
@@ -764,7 +764,7 @@ void process_build_object::visit(chart_subtitle & val)
 {
 	title t;
 	std::wstringstream v;
-	val.text_p_->text_to_stream(v);
+	val.text_p_->text_to_stream(v, false);
 	t.content_ = v.str();
 
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)
@@ -1038,15 +1038,15 @@ void process_build_object::visit(table_table_cell& val)
 	for (size_t i = 0 ; i < val.content_.elements_.size(); i++)
 	{
 		std::wstringstream  wstream_temp;	
-		val.content_.elements_[i]->text_to_stream(wstream_temp);
+		val.content_.elements_[i]->text_to_stream(wstream_temp, false);
 		
 		if (val.content_.elements_[i]->get_type() == typeTextP)
 		{
-			cell_cash += xml::utils::replace_xml_to_text(wstream_temp.str());
+			cell_cash += wstream_temp.str();
 		}
 		else if (val.content_.elements_[i]->get_type() == typeDrawG)
 		{
-			cell_desc += xml::utils::replace_xml_to_text(wstream_temp.str());
+			cell_desc += wstream_temp.str();
 		}
 	}   
 

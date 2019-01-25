@@ -106,7 +106,7 @@ void draw_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
         //CP_NOT_APPLICABLE_ELM();
     }
 }
-std::wostream & draw_image::text_to_stream(std::wostream & _Wostream) const
+std::wostream & draw_image::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -115,7 +115,7 @@ std::wostream & draw_image::text_to_stream(std::wostream & _Wostream) const
 const wchar_t * draw_chart::ns = L"draw";
 const wchar_t * draw_chart::name = L"chart";
 
-std::wostream & draw_chart::text_to_stream(std::wostream & _Wostream) const
+std::wostream & draw_chart::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -225,9 +225,9 @@ void draw_g::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
 	}
 }
 
-std::wostream & draw_g::text_to_stream(std::wostream & _Wostream) const
+std::wostream & draw_g::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 
@@ -236,9 +236,9 @@ std::wostream & draw_g::text_to_stream(std::wostream & _Wostream) const
 const wchar_t * draw_frame::ns = L"draw";
 const wchar_t * draw_frame::name = L"frame";
 
-std::wostream & draw_frame::text_to_stream(std::wostream & _Wostream) const
+std::wostream & draw_frame::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 
@@ -308,9 +308,9 @@ void draw_text_box_attlist::add_attributes( const xml::attributes_wc_ptr & Attri
 const wchar_t * draw_text_box::ns = L"draw";
 const wchar_t * draw_text_box::name = L"text-box";
 
-std::wostream & draw_text_box::text_to_stream(std::wostream & _Wostream) const
+std::wostream & draw_text_box::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 

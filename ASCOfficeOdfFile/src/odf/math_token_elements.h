@@ -48,7 +48,7 @@ public:
 
 	virtual void oox_convert(oox::math_context & Context);
 
-	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -73,7 +73,7 @@ public:
 
 	virtual void oox_convert(oox::math_context & Context);
 
-	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(bool)				fence_;
 	_CP_OPT(bool)				stretchy_;

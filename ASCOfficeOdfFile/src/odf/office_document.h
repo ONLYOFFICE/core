@@ -44,7 +44,7 @@ namespace odf_reader {
 class office_document_base  : public office_element
 {
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     CPDOCCORE_DEFINE_VISITABLE();
 
 

@@ -47,7 +47,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual std::wostream & xml_to_stream(std::wostream & _Wostream) const;
 
 public:

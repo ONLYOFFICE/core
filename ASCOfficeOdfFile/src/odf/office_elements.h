@@ -112,7 +112,7 @@ public:
 	_CP_OPT(std::wstring)	element_style_name;
 	_CP_OPT(std::wstring)	next_element_style_name; //for master page
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const
     {
         _CP_LOG << L"[warning] use base text_to_stream\n";
         return _Wostream;

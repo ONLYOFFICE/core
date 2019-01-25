@@ -53,7 +53,7 @@ namespace odf_reader {
 const wchar_t * style_tab_stop::ns = L"style";
 const wchar_t * style_tab_stop::name = L"tab-stop";
 
-std::wostream & style_tab_stop::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_tab_stop::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -84,7 +84,7 @@ void style_tab_stop::add_text(const std::wstring & Text)
 const wchar_t * style_tab_stops::ns = L"style";
 const wchar_t * style_tab_stops::name = L"tab-stops";
 
-std::wostream & style_tab_stops::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_tab_stops::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -104,7 +104,7 @@ void style_tab_stops::add_child_element( xml::sax * Reader, const std::wstring &
 const wchar_t * style_drop_cap::ns = L"style";
 const wchar_t * style_drop_cap::name = L"drop-cap";
 
-std::wostream & style_drop_cap::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_drop_cap::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -129,7 +129,7 @@ void style_drop_cap::add_text(const std::wstring & Text)
 const wchar_t * style_background_image::ns = L"style";
 const wchar_t * style_background_image::name = L"background-image";
 
-std::wostream & style_background_image::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_background_image::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -267,7 +267,7 @@ bool paragraph_format_properties::add_child_element( xml::sax * Reader, const st
 const wchar_t * style_paragraph_properties::ns = L"style";
 const wchar_t * style_paragraph_properties::name = L"paragraph-properties";
 
-std::wostream & style_paragraph_properties::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_paragraph_properties::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }

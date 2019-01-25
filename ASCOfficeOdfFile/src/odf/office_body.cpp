@@ -55,10 +55,10 @@ namespace odf_reader {
 const wchar_t * office_body::ns = L"office";
 const wchar_t * office_body::name = L"body";
 
-std::wostream & office_body::text_to_stream(std::wostream & _Wostream) const
+std::wostream & office_body::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     if (content_)
-        content_->text_to_stream(_Wostream);
+        content_->text_to_stream(_Wostream, bXmlEncode);
     return _Wostream;
 }
 

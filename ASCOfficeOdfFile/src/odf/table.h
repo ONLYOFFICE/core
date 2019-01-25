@@ -356,7 +356,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -375,7 +375,7 @@ CP_REGISTER_OFFICE_ELEMENT2(table_table_row);
 class table_table_cell_content
 {
 public:
-    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     
     bool	docx_convert(oox::docx_conversion_context & Context) ;
@@ -404,7 +404,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -439,7 +439,7 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -475,7 +475,7 @@ public:
 	table_table_rows() 
 	{
     }
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -501,7 +501,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -517,7 +517,7 @@ CP_REGISTER_OFFICE_ELEMENT2(table_table_header_rows);
 class table_rows
 {
 public:
-    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
   
 	void docx_convert(oox::docx_conversion_context & Context);
@@ -549,7 +549,7 @@ public:
 
     table_rows_no_group();
 
-    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
   
 	void docx_convert(oox::docx_conversion_context & Context);
@@ -568,7 +568,7 @@ class table_rows_and_groups
 {
 public:
     table_rows_and_groups();
-    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     
 	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
   
@@ -606,7 +606,7 @@ public:
 	{
     }
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

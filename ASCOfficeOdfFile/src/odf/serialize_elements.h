@@ -36,40 +36,23 @@
 namespace cpdoccore {
 namespace odf_reader {
 
-inline std::wostream & serialize_elements(std::wostream & _Wostream, const office_element_ptr & elm)
+inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const office_element_ptr & elm, bool bXmlEncode = true)
 {
     if (elm)
-        elm->xml_to_stream(_Wostream);
+        elm->text_to_stream(_Wostream, bXmlEncode);
     return _Wostream;
 }
 
-inline std::wostream & serialize_elements(std::wostream & _Wostream, const office_element_ptr_array & elms)
+inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const office_element_ptr_array & elms, bool bXmlEncode = true)
 {
     for (size_t i = 0; i < elms.size(); i++)
     {
-        serialize_elements(_Wostream, elms[i]);
+        serialize_elements_text(_Wostream, elms[i], bXmlEncode);
     }
     return _Wostream;
 }
 
-inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const office_element_ptr & elm)
-{
-    if (elm)
-        elm->text_to_stream(_Wostream);
-    return _Wostream;
-}
-
-inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const office_element_ptr_array & elms)
-{
-    for (size_t i = 0; i < elms.size(); i++)
-    {
-        serialize_elements_text(_Wostream, elms[i]);
-    }
-    return _Wostream;
-}
-
-#define CP_SERIALIZE_XML(ELEMENT) serialize_elements(_Wostream, (ELEMENT))
-#define CP_SERIALIZE_TEXT(ELEMENT) serialize_elements_text(_Wostream, (ELEMENT))
+#define CP_SERIALIZE_TEXT(ELEMENT, bXmlEncode) serialize_elements_text(_Wostream, (ELEMENT), bXmlEncode)
 
 
 }

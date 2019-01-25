@@ -53,7 +53,7 @@ public:
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 public:
     note_citation() {} 
@@ -84,7 +84,7 @@ public:
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 public:
     note_body() {} 
 

@@ -69,7 +69,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     common_svg_font_face_xlink_attlist	common_svg_font_face_xlink_attlist_;
     office_element_ptr_array			svg_font_face_format_;
@@ -92,7 +92,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	std::wstring text_;
 
@@ -114,7 +114,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     optional<std::wstring>::Type svg_string_;
 
@@ -136,7 +136,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     optional<std::wstring>::Type name_;
     
 private:

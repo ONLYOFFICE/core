@@ -296,7 +296,7 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 const wchar_t * default_style::ns = L"style";
 const wchar_t * default_style::name = L"default-style";
 
-std::wostream & default_style::text_to_stream(std::wostream & _Wostream) const
+std::wostream & default_style::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -440,7 +440,7 @@ void draw_opacity::add_child_element( xml::sax * Reader, const std::wstring & Ns
 const wchar_t * style::ns = L"style";
 const wchar_t * style::name = L"style";
 
-std::wostream & style::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -559,7 +559,7 @@ void draw_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 const wchar_t * office_automatic_styles::ns = L"office";
 const wchar_t * office_automatic_styles::name = L"automatic-styles";
 
-std::wostream & office_automatic_styles::text_to_stream(std::wostream & _Wostream) const
+std::wostream & office_automatic_styles::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -587,7 +587,7 @@ void office_automatic_styles::add_text(const std::wstring & Text)
 const wchar_t * office_master_styles::ns = L"office";
 const wchar_t * office_master_styles::name = L"master-styles";
 
-std::wostream & office_master_styles::text_to_stream(std::wostream & _Wostream) const
+std::wostream & office_master_styles::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -849,7 +849,7 @@ void style_section_properties::add_child_element( xml::sax * Reader, const std::
 const wchar_t * style_header_style::ns = L"style";
 const wchar_t * style_header_style::name = L"header-style";
 
-std::wostream & style_header_style::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_header_style::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -874,7 +874,7 @@ void style_header_style::add_child_element( xml::sax * Reader, const std::wstrin
 const wchar_t * style_footer_style::ns = L"style";
 const wchar_t * style_footer_style::name = L"footer-style";
 
-std::wostream & style_footer_style::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_footer_style::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -900,7 +900,7 @@ void style_footer_style::add_child_element( xml::sax * Reader, const std::wstrin
 const wchar_t * style_page_layout::ns = L"style";
 const wchar_t * style_page_layout::name = L"page-layout";
 
-std::wostream & style_page_layout::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_page_layout::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;    
 }
@@ -1529,7 +1529,7 @@ void style_master_page_attlist::add_attributes( const xml::attributes_wc_ptr & A
 const wchar_t * style_master_page::ns = L"style";
 const wchar_t * style_master_page::name = L"master-page";
 
-std::wostream & style_master_page::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_master_page::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }
@@ -1786,7 +1786,7 @@ void text_notes_configuration::add_text(const std::wstring & Text)
 const wchar_t * style_presentation_page_layout::ns = L"style";
 const wchar_t * style_presentation_page_layout::name = L"presentation-page-layout";
 
-std::wostream & style_presentation_page_layout::text_to_stream(std::wostream & _Wostream) const
+std::wostream & style_presentation_page_layout::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;    
 } 

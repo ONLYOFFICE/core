@@ -42,11 +42,11 @@ namespace odf_reader {
 const wchar_t * abstract_xml::ns = L"";
 const wchar_t * abstract_xml::name = L"abstract-xml";
 
-std::wostream & abstract_xml::text_to_stream(std::wostream & _Wostream) const
+std::wostream & abstract_xml::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
 	for (size_t i = 0; i < xml_content_.size(); i++)
     {
-        xml_content_[i]->text_to_stream(_Wostream);
+        xml_content_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }

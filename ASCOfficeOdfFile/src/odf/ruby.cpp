@@ -50,9 +50,9 @@ namespace text {
 const wchar_t * ruby_base::ns = L"text";
 const wchar_t * ruby_base::name = L"ruby-base";
 
-std::wostream & ruby_base::text_to_stream(std::wostream & _Wostream) const
+std::wostream & ruby_base::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    serialize_elements_text(_Wostream, content_);
+    serialize_elements_text(_Wostream, content_, bXmlEncode);
     return _Wostream;
 }
 
@@ -76,9 +76,9 @@ void ruby_base::add_text(const std::wstring & Text)
 const wchar_t * ruby_text::ns = L"text";
 const wchar_t * ruby_text::name = L"ruby-text";
 
-std::wostream & ruby_text::text_to_stream(std::wostream & _Wostream) const
+std::wostream & ruby_text::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 

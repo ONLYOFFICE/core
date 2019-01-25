@@ -439,6 +439,7 @@ namespace NSDirectory
             if (0 == attemps)
             {
                 pcTemplate = L"";
+                break;
             }
         }
         return pcTemplate;

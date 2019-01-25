@@ -42,14 +42,14 @@ public:
 	{
         m_dwMagicWord   = 0xEDB88320;
         m_dwInitCrc     = 0xFFFFFFFF;
-        m_bInitTable    = FALSE;
+        m_bInitTable    = false;
 	}
 public:
-    unsigned int Calc(const unsigned char* pStream, int nSize)
+	unsigned int Calc(const unsigned char* pStream, unsigned int nSize)
 	{
 		InitCRCTable();
         unsigned int dwRes = m_dwInitCrc;
-		for (int i=0;i<nSize;i++)
+        for (unsigned int i=0;i<nSize;i++)
 		{
 			dwRes = m_arCRCTable[(dwRes ^ pStream[i])& 0xFF] ^ (dwRes >> 8);
 		}
@@ -77,6 +77,7 @@ private:
 			}
 			m_arCRCTable[i] = dwTemp;
 		}
+		m_bInitTable = true;
 	}
 
     unsigned int m_dwMagicWord;

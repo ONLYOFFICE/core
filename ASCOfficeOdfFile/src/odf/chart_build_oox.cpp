@@ -34,6 +34,8 @@
 
 #include "serialize_elements.h"
 #include <odf/odf_document.h>
+#include <xml/utils.h>
+
 #include "../formulasconvert/formulasconvert.h"
 
 #include "style_graphic_properties.h"
@@ -1037,13 +1039,14 @@ void process_build_object::visit(table_table_cell& val)
 	{
 		std::wstringstream  wstream_temp;	
 		val.content_.elements_[i]->text_to_stream(wstream_temp);
+		
 		if (val.content_.elements_[i]->get_type() == typeTextP)
 		{
-			cell_cash += wstream_temp.str();
+			cell_cash += xml::utils::replace_xml_to_text(wstream_temp.str());
 		}
 		else if (val.content_.elements_[i]->get_type() == typeDrawG)
 		{
-			cell_desc += wstream_temp.str();
+			cell_desc += xml::utils::replace_xml_to_text(wstream_temp.str());
 		}
 	}   
 

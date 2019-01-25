@@ -4266,10 +4266,10 @@ namespace BinDocxRW
 
 						if ( pSSub->m_oSSubPr.IsInit() )
 							WriteMathSSubPr(pSSub->m_oSSubPr.get());
-						if ( pSSub->m_oSub.IsInit() )
-							WriteMathSub(pSSub->m_oSub.get());
 						if ( pSSub->m_oElement.IsInit() )
 							WriteMathElement(pSSub->m_oElement.get());
+						if ( pSSub->m_oSub.IsInit() )
+							WriteMathSub(pSSub->m_oSub.get());
 
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
@@ -4281,12 +4281,12 @@ namespace BinDocxRW
 
 						if ( pSSubSup->m_oSSubSupPr.IsInit() )
 							WriteMathSSubSupPr(pSSubSup->m_oSSubSupPr.get());
+						if ( pSSubSup->m_oElement.IsInit() )
+							WriteMathElement(pSSubSup->m_oElement.get());
 						if ( pSSubSup->m_oSub.IsInit() )
 							WriteMathSub(pSSubSup->m_oSub.get());
 						if ( pSSubSup->m_oSup.IsInit() )
 							WriteMathSup(pSSubSup->m_oSup.get());
-						if ( pSSubSup->m_oElement.IsInit() )
-							WriteMathElement(pSSubSup->m_oElement.get());
 
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;

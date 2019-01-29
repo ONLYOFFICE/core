@@ -33,9 +33,6 @@
 #include "VMLPictureMapping.h"
 #include "VMLShapeMapping.h"
 
-#include "OfficeDrawing/GeometryBooleanProperties.h"
-#include "OfficeDrawing/GeometryTextBooleanProperties.h"
-#include "OfficeDrawing/GroupShapeBooleanProperties.h"
 #include "OfficeDrawing/MetafilePictBlip.h"
 
 #include "../../DesktopEditor/common/StringExt.h"
@@ -302,7 +299,7 @@ namespace DocFileFormat
 		std::wstring strHeight = FormatUtils::DoubleToWideString( height.ToPoints() );
 		std::wstring strStyle;
 	
-		std::vector<OptionEntryPtr> options;
+		std::vector<ODRAW::OfficeArtFOPTEPtr> options;
 		
 		PictureFrameType type;
 		Shape* pShape = NULL;
@@ -342,33 +339,37 @@ namespace DocFileFormat
 
 		for (size_t i = 0; i < options.size(); i++)
 		{
-			OptionEntryPtr & iter = options[i];
-			switch ( iter->pid )
+			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
+			switch ( iter->opid )
 			{
 			case wzEquationXML:
 				{
-					m_isEquation = true;
-					m_isEmbedded = true;
-					
-					m_embeddedData = std::string((char*)iter->opComplex.get(), iter->op);
-
-					if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
+					ODRAW::xmlString *pXml = dynamic_cast<ODRAW::xmlString*>(iter.get());
+					if (pXml)
 					{
-						m_isEmbedded = false;
+						m_isEquation = true;
+						m_isEmbedded = true;
+						
+						m_embeddedData = pXml->data;
+
+						if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
+						{
+							m_isEmbedded = false;
+						}
 					}
 				}break;
 			case metroBlob:
-				{
-					//встроенная неведомая хуйня
-					m_isBlob		= true;
-					m_isEmbedded	= true;
-
-					m_embeddedData	= std::string((char*)iter->opComplex.get(), iter->op);
-					
-					//if (ParseEmbeddedBlob( m_embeddedData, m_blobXml)) // todoooo
-					//{
-					//	m_isEmbedded = false;
-					//}
+				{//встроенная неведомая хуйня
+					ODRAW::metroBlob* blob = dynamic_cast<ODRAW::metroBlob*>(iter.get());
+					if (blob)
+					{						
+						m_isBlob		= true;
+						m_isEmbedded	= true;
+						//if (ParseEmbeddedBlob( blob->data.first, blob->data.second)) // todoooo
+						//{
+						//	m_isEmbedded = false;
+						//}
+					}
 				}break;
 //BORDERS
 			case borderBottomColor:
@@ -459,9 +460,9 @@ namespace DocFileFormat
 				}break;
 			case groupShapeBooleans:
 				{
-					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
+					ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 
-					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument)
+					if (booleans->fUsefBehindDocument && booleans->fBehindDocument)
 					{
 						//The shape is behind the text, so the z-index must be negative.
 						appendStyleProperty(&strStyle, L"z-index", L"-1" );
@@ -471,7 +472,7 @@ namespace DocFileFormat
 					//	appendStyleProperty( &strStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 					//}
 
-					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
+					if (booleans->fHidden && booleans->fUsefHidden)
 					{
 						appendStyleProperty(&strStyle, L"visibility", L"hidden");
 					}

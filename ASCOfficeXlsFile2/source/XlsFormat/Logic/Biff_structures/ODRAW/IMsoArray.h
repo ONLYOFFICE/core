@@ -49,7 +49,25 @@ class IMsoArray : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone(){return XLS::BiffStructurePtr(new IMsoArray(*this));}
 
-	static const XLS::ElementType	type = XLS::typeIMsoArray;
+	static const XLS::ElementType type = XLS::typeIMsoArray;
+
+	void load(IBinaryReader* reader)
+	{
+		unsigned short nElems, nElemsAlloc;
+		unsigned short cbElem;
+				
+		nElems		= reader->ReadUInt16();
+		nElemsAlloc = reader->ReadUInt16();
+		cbElem		= reader->ReadUInt16();
+		
+		for (unsigned short i = 0; i < nElems; i++)
+		{
+			Type element(cbElem);
+			element.load(reader);
+
+			data.push_back(element);
+		}
+	}
 
 	virtual void load(XLS::CFRecord& record)
 	{

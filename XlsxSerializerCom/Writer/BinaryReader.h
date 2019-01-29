@@ -224,8 +224,7 @@ namespace BinXlsxRW
 			}
 			else if(c_oSer_TablePart::DisplayName == type)
 			{
-				pTable->m_oDisplayName.Init();
-				pTable->m_oDisplayName->append(m_oBufferedStream.GetString4(length));
+				pTable->m_oDisplayName = m_oBufferedStream.GetString4(length);
 			}
 			else if(c_oSer_TablePart::AutoFilter == type)
 			{

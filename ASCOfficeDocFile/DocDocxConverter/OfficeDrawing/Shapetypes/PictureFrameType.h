@@ -60,9 +60,9 @@ namespace DocFileFormat
         this->Filled = false;
         this->Stroked = false;
 
-        //pictures have a lock on the aspect ratio by default
-		this->Lock.fUsefLockAspectRatio = true;
-        this->Lock.fLockAspectRatio = true;
+  //      //pictures have a lock on the aspect ratio by default
+		//this->Lock.fUsefLockAspectRatio = true;
+  //      this->Lock.fLockAspectRatio = true;
       }
 	  void SetType(unsigned int nType)
 	  {

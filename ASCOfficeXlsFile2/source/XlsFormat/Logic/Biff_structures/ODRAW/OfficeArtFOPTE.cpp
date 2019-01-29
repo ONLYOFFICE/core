@@ -117,6 +117,15 @@ XLS::BiffStructurePtr OfficeArtFOPTE::clone()
 	return XLS::BiffStructurePtr(new OfficeArtFOPTE(*this));
 }
 
+void OfficeArtFOPTE::load(IBinaryReader* _reader)
+{
+	unsigned short flags = _reader->ReadUInt16();
+	op			= _reader->ReadUInt32();
+	
+	opid		= GETBITS(flags, 0, 13);
+	fBid		= GETBIT(flags, 14);
+	fComplex	= GETBIT(flags, 15);
+}
 void OfficeArtFOPTE::load(XLS::CFRecord& record)
 {
 	unsigned short flags;
@@ -126,12 +135,8 @@ void OfficeArtFOPTE::load(XLS::CFRecord& record)
 	fBid		= GETBIT(flags, 14);
 	fComplex	= GETBIT(flags, 15);
 }
-
-OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
+OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 {
-	const unsigned short* op = record.getCurData<unsigned short>();
-	unsigned short opid = GETBITS(*op, 0, 13);
-
 	OfficeArtFOPTEPtr fopte;
 	switch(opid)
 	{
@@ -414,6 +419,9 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 /*todo*/case 0x0303: //cxstyle
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
+		case 0x030C:
+			fopte = OfficeArtFOPTEPtr(new xmlString);
+			break;
 		case 0x033F:
 			fopte = OfficeArtFOPTEPtr(new ShapeBooleanProperties);
 			break;
@@ -423,6 +431,9 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			break;
 		case 0x0382:
 			fopte = OfficeArtFOPTEPtr(new pihlShape);
+			break;
+		case 0x0383:
+			fopte = OfficeArtFOPTEPtr(new pWrapPolygonVertices);
 			break;
 		case 0x03A9:
 			fopte = OfficeArtFOPTEPtr(new metroBlob);
@@ -434,8 +445,34 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
 	}
+	return fopte;
+}
 
-	fopte->load(record);
+OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(IBinaryReader* _reader)
+{
+	if (!_reader) return OfficeArtFOPTEPtr();
+	
+	long pos = _reader->GetPosition();
+	unsigned short opid = _reader->ReadUInt16();
+	
+	opid = GETBITS(opid, 0, 13);
+	
+	_reader->Seek(pos, 0);
+
+	OfficeArtFOPTEPtr fopte = create(opid);
+
+	if (fopte) fopte->load(_reader);
+	return fopte;
+}
+
+OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
+{
+	const unsigned short* op = record.getCurData<unsigned short>();
+	unsigned short opid = GETBITS(*op, 0, 13);
+
+	OfficeArtFOPTEPtr fopte = create(opid);
+
+	if (fopte) fopte->load(record);
 
 	return fopte;
 }
@@ -456,15 +493,35 @@ void FixedPoint::load(XLS::CFRecord& record)
 
 	dVal = Integral + (Fractional / 65536.0);
 }
+void FixedPoint::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+
+	short			Integral	= op >> 16;
+	unsigned short Fractional	= op - (Integral << 16);
+
+	dVal = Integral + (Fractional / 65536.0);
+}
 void OfficeArtFOPTE::ReadComplexData(XLS::CFRecord& record)
 {
 	record.skipNunBytes(op); // default is to skip complex data
 }
-
+void OfficeArtFOPTE::ReadComplexData(IBinaryReader* reader)
+{
+	reader->ReadBytes( op, false ); // default is to skip complex data
+}
 void TextBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-	
+	set();
+}
+void TextBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void TextBooleanProperties::set()
+{
 	fUsefFitShapeToText = GETBIT(op, 17);
 	fUsefAutoTextMargin = GETBIT(op, 19);
 	fUsefSelectText		= GETBIT(op, 20);
@@ -476,11 +533,19 @@ void TextBooleanProperties::load(XLS::CFRecord& record)
 void GeometryTextBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void GeometryTextBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void GeometryTextBooleanProperties::set()
+{
 	fUsegFReverseRows	= GETBIT(op, 31);
 	fUsefGtext			= GETBIT(op, 30);
 	fUsegFVertical		= GETBIT(op, 29);
-	fUsegtextFKern		= GETBIT(op, 28);
+	fUsegFKern			= GETBIT(op, 28);
 	fUsegTight			= GETBIT(op, 27);
 	fUsegFStretch		= GETBIT(op, 26);
 	fUsegFShrinkFit		= GETBIT(op, 25);
@@ -511,10 +576,18 @@ void GeometryTextBooleanProperties::load(XLS::CFRecord& record)
 	fSmallcaps		= GETBIT(op,  1);
 	fStrikethrough	= GETBIT(op,  0);
 }
+void GroupShapeBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void GroupShapeBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void GroupShapeBooleanProperties::set()
+{
 	fUsefLayoutInCell	= GETBIT(op, 31);
 	fUsefIsBullet		= GETBIT(op, 30);
 	fUsefStandardHR		= GETBIT(op, 29);
@@ -559,11 +632,28 @@ void fillShadeType::load(XLS::CFRecord& record)
 	msoshadeBand		= GETBIT(op, 3);
 	msoshadeOneColor	= GETBIT(op, 4);
 }
+void fillShadeType::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
 
+	msoshadeNone		= GETBIT(op, 0);
+	msoshadeGamma		= GETBIT(op, 1);
+	msoshadeSigma		= GETBIT(op, 2);
+	msoshadeBand		= GETBIT(op, 3);
+	msoshadeOneColor	= GETBIT(op, 4);
+}
 void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void FillStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void FillStyleBooleanProperties::set()
+{
 	fNoFillHitTest				= GETBIT(op, 0);
 	fillUseRect					= GETBIT(op, 1);
 	fillShape					= GETBIT(op, 2);
@@ -580,7 +670,6 @@ void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 	fUsefUseShapeAnchor			= GETBIT(op, 21);
 	fUsefRecolorFillAsPicture	= GETBIT(op, 22);
 }
-
 void fillBlip::ReadComplexData(XLS::CFRecord& record)
 {
 	OfficeArtRecordHeader rh_child;
@@ -591,7 +680,38 @@ void fillBlip::ReadComplexData(XLS::CFRecord& record)
 	blip = OfficeArtBlipPtr(new OfficeArtBlip(rh_child.recType));
 	blip->loadFields(record);
 }
+void fillBlip::ReadComplexData(IBinaryReader* reader)
+{
+	long pos = reader->GetPosition();
+	
+	OfficeArtRecordHeader rh_child;
+	rh_child.load(reader);
+	
+	reader->Seek(pos, 0);
 
+	blip = OfficeArtBlipPtr(new OfficeArtBlip(rh_child.recType));
+	blip->loadFields(reader);
+}
+void anyString::ReadComplexData(IBinaryReader* reader)
+{
+	unsigned char* pData = reader->ReadBytes(op, true);
+#if defined(_WIN32) || defined(_WIN64)
+		string_ = std::wstring((wchar_t*)pData, op);
+#else
+        string_ = convertUtf16ToWString((UTF16*)pData, op);
+#endif
+	if (!string_.empty())
+	{
+        int i, length = (std::min)(op, (_INT32)string_.length());
+
+		for (i = 0; i < length; i++)
+		{
+			if (string_.at(i) < 14 ) break;
+		}
+		string_ = string_.substr(0, i);
+	}
+	delete []pData;
+}
 void anyString::ReadComplexData(XLS::CFRecord& record)
 {	
 #if defined(_WIN32) || defined(_WIN64)
@@ -614,14 +734,26 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 
 void fillShadeColors::ReadComplexData(XLS::CFRecord& record)
 {
-	fillShadeColors_complex.op = op;
-	record >> fillShadeColors_complex;
+	complex.op = op;
+	record >> complex;
 }
-
+void fillShadeColors::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void ProtectionBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void ProtectionBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void ProtectionBooleanProperties::set()
+{
 	fLockAgainstGrouping	= GETBIT(op, 0);
 	fLockAdjustHandles		= GETBIT(op, 1);
 	fLockText				= GETBIT(op, 2);
@@ -645,10 +777,18 @@ void ProtectionBooleanProperties::load(XLS::CFRecord& record)
 	fUsefLockAgainstUngrouping = GETBIT(op, 25);
 }
 
+void LineStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void LineStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void LineStyleBooleanProperties::set()
+{
 	fNoLineDrawDash			= GETBIT(op, 0);
 	fLineFillShape			= GETBIT(op, 1);
 	fHitTestLine			= GETBIT(op, 2);
@@ -666,21 +806,35 @@ void LineStyleBooleanProperties::load(XLS::CFRecord& record)
 	fUsefInsetPen			= GETBIT(op, 22);
 	fUsefLineOpaqueBackColor= GETBIT(op, 25);
 }
-
 void ShadowStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void ShadowStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void ShadowStyleBooleanProperties::set()
+{
 	fshadowObscured		= GETBIT(op, 0);
 	fShadow				= GETBIT(op, 1);
 	fUsefshadowObscured = GETBIT(op, 16);
 	fUsefShadow			= GETBIT(op, 17);
 }
-
+void GeometryBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void GeometryBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void GeometryBooleanProperties::set()
+{
 	fUsefShadowOK			= GETBIT(op, 8);
 	fUsef3DOK				= GETBIT(op, 9);
 	fUsefLineOK				= GETBIT(op, 10);
@@ -695,6 +849,54 @@ void GeometryBooleanProperties::load(XLS::CFRecord& record)
 	fFillShadeShapeOK		= GETBIT(op, 26);
 	fFillOK					= GETBIT(op, 27);
 }
+void ThreeDObjectBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void ThreeDObjectBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+	set();
+}
+void ThreeDObjectBooleanProperties::set()
+{
+	fUsef3D						=	GETBIT(op, 0);
+	fUsefc3DMetallic			=	GETBIT(op, 1);
+	fUsefc3DUseExtrusionColor	=	GETBIT(op, 2);
+	fUsefc3DLightFace			=	GETBIT(op, 3);
+
+	// 12 unused
+
+	f3D							=	GETBIT(op, 16);
+	fc3DMetallic				=	GETBIT(op, 17);
+	fc3DUseExtrusionColor		=	GETBIT(op, 18);
+	fc3DLightFace				=	GETBIT(op, 19);
+}
+void ThreeDStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void ThreeDStyleBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+	set();
+}
+void ThreeDStyleBooleanProperties::set()
+{
+	fUsefc3DConstrainRotation	=	GETBIT(op, 0);
+	fUsefc3DRotationCenterAuto	=	GETBIT(op, 1);
+	fUsefc3DParallel			=	GETBIT(op, 2);
+	fUsefc3DKeyHarsh			=	GETBIT(op, 3);
+	fUsefc3DFillHarsh			=	GETBIT(op, 4);
+
+	fc3DConstrainRotation		=	GETBIT(op, 16);
+	fc3DRotationCenterAuto		=	GETBIT(op, 17);
+	fc3DParallel				=	GETBIT(op, 18);
+	fc3DKeyHarsh				=	GETBIT(op, 19);
+	fc3DFillHarsh				=	GETBIT(op, 20);
+}
 XLS::BiffStructurePtr IHlink::clone()
 {
 	return XLS::BiffStructurePtr(new IHlink(*this));
@@ -705,12 +907,47 @@ void IHlink::load(XLS::CFRecord& record)
 	record >> CLSID_StdHlink;
 	record >> hyperlink;
 }
+void IHlink::load(IBinaryReader* reader)
+{
+	CLSID_StdHlink.Data1 = reader->ReadUInt32();
+	CLSID_StdHlink.Data2 = reader->ReadUInt16();
+	CLSID_StdHlink.Data3 = reader->ReadUInt16();
+    
+	unsigned char* pData = reader->ReadBytes(8, true);
+	memcpy(CLSID_StdHlink.Data4, pData, 8) ;
+	delete pData;
 
+	hyperlink.load(reader);
+}
 void pihlShape::ReadComplexData(XLS::CFRecord& record)
 {
 	int pos = record.getRdPtr();
 
 	record >> complex;
+}
+void pihlShape::ReadComplexData(IBinaryReader* reader)
+{
+	complex.load(reader);
+}
+void xmlString::ReadComplexData(IBinaryReader* reader)
+{
+	unsigned char* pData = reader->ReadBytes(op, true);
+	
+	data = std::string((char*)pData, op);
+
+	delete []pData;
+}
+void xmlString::ReadComplexData(XLS::CFRecord& record)
+{
+	data = std::string(record.getCurData<char>(), op);
+
+	record.skipNunBytes(op);
+}
+void metroBlob::ReadComplexData(IBinaryReader* reader)
+{
+	unsigned char* pData = reader->ReadBytes(op, true);
+	
+	data = std::make_pair(boost::shared_array<unsigned char>(pData), op);
 }
 void metroBlob::ReadComplexData(XLS::CFRecord& record)
 {
@@ -770,7 +1007,23 @@ XLS::BiffStructurePtr MSOPOINT::clone()
 {
 	return XLS::BiffStructurePtr(new MSOPOINT(*this));
 }
-
+void MSOPOINT::load(IBinaryReader* reader)
+{
+	if (cbElement == 4)
+	{
+		x = reader->ReadInt32();
+		y = reader->ReadInt32();
+	}
+	else
+	{
+		unsigned short x_, y_;
+		x_ = reader->ReadInt16();
+		y_ = reader->ReadInt16();
+		
+		x = x_;
+		y = y_;
+	}
+}
 void MSOPOINT::load(XLS::CFRecord& record)
 {
 	if (cbElement == 4)
@@ -806,7 +1059,30 @@ XLS::BiffStructurePtr MSORECT::clone()
 {
 	return XLS::BiffStructurePtr(new MSORECT(*this));
 }
-
+void MSORECT::load(IBinaryReader* reader)
+{
+	if (cbElement == 8)
+	{
+		l = reader->ReadInt32();
+		t = reader->ReadInt32();
+		r = reader->ReadInt32();
+		b = reader->ReadInt32();
+	}
+	else
+	{
+		unsigned short l_, t_, r_, b_;
+		
+		l_ = reader->ReadInt16();
+		t_ = reader->ReadInt16();
+		r_ = reader->ReadInt16();
+		b_ = reader->ReadInt16();
+		
+		l = l_;
+		t = t_;
+		r = r_;
+		b = b_;
+	}
+}
 void MSORECT::load(XLS::CFRecord& record)
 {
 	if (cbElement == 8)
@@ -841,7 +1117,121 @@ XLS::BiffStructurePtr MSOPATHINFO::clone()
 {
 	return XLS::BiffStructurePtr(new MSOPATHINFO(*this));
 }
+void MSOPATHINFO::load(IBinaryReader* reader)
+{
+	_UINT16 mem = reader->ReadInt16();
+	
+	unsigned char type = (mem >> 13 & 0x07);
+	
+	if (type <= 4)
+	{
+		m_eRuler	= (NSCustomShapesConvert::RulesType)type;
+		m_nCount	= (mem & 0x1FFF);
+		m_nCount	= (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
+		return;
+	}
 
+	type = (mem >> 8) & 0x1F;
+	mem = mem & 0xFF;
+
+	switch (type)
+	{
+	case 0x00:
+		{
+			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			break;
+		}
+	case 0x01:
+		{
+			m_eRuler = NSCustomShapesConvert::rtAngleEllipseTo;
+			break;
+		}
+	case 0x02:
+		{
+			m_eRuler = NSCustomShapesConvert::rtAngleEllipse;
+			break;
+		}
+	case 0x03:
+		{
+			m_eRuler = NSCustomShapesConvert::rtArcTo;
+			break;
+		}
+	case 0x04:
+		{
+			m_eRuler = NSCustomShapesConvert::rtArc;
+			break;
+		}
+	case 0x05:
+		{
+			m_eRuler = NSCustomShapesConvert::rtClockwiseArcTo;
+			break;
+		}
+	case 0x06:
+		{
+			m_eRuler = NSCustomShapesConvert::rtClockwiseArc;
+			break;
+		}
+	case 0x07:
+		{
+			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrX;
+			break;
+		}
+	case 0x08:
+		{
+			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrY;
+			break;
+		}
+	case 0x09:
+		{
+			m_eRuler = NSCustomShapesConvert::rtQuadrBesier;
+			break;
+		}
+	case 0x0A:
+		{
+			m_eRuler = NSCustomShapesConvert::rtNoFill;
+			break;
+		}
+	case 0x0B:
+		{
+			m_eRuler = NSCustomShapesConvert::rtNoStroke;
+			break;
+		}
+	case 0x0C:
+	case 0x10:
+		{
+			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			break;
+		}
+	case 0x0D:
+	case 0x0E:
+	case 0x0F:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+		{
+			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+			break;
+		}
+	case 0x15:
+		{
+			m_eRuler = NSCustomShapesConvert::rtFillColor;
+			break;
+		}
+	case 0x16:
+		{
+			m_eRuler = NSCustomShapesConvert::rtLineColor;
+			break;
+		}
+	default:
+		{
+			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+		}
+	};
+
+	m_nCount = (_UINT16)mem;
+	m_nCount = (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
+}
 void MSOPATHINFO::load(XLS::CFRecord& record)
 {
 	_UINT16 mem = 0;
@@ -977,6 +1367,21 @@ XLS::BiffStructurePtr MSOSG::clone()
 	return XLS::BiffStructurePtr(new MSOSG(*this));
 }
 
+void MSOSG::load(IBinaryReader* reader)
+{
+	_UINT16 ftType = reader->ReadUInt16();
+	
+	m_eType = NSCustomShapesConvert::FormulaType(ftType & 0x1FFF);
+
+	m_param_type1 = (unsigned char)(ftType & 0x04);
+	m_param_type2 = (unsigned char)(ftType & 0x02);
+	m_param_type3 = (unsigned char)(ftType & 0x01);
+
+	m_param_value1 = reader->ReadUInt16();
+	m_param_value2 = reader->ReadUInt16();
+	m_param_value3 = reader->ReadUInt16();
+}
+
 void MSOSG::load(XLS::CFRecord& record)
 {
 	_UINT16 ftType;
@@ -1004,6 +1409,55 @@ ADJH::ADJH(unsigned short cbElement_)
 XLS::BiffStructurePtr ADJH::clone() 
 {
 	return XLS::BiffStructurePtr(new ADJH(*this));
+}
+
+void ADJH::load(IBinaryReader* reader)
+{
+	_UINT32 flag = reader->ReadUInt32();
+	
+	fahInverseX			= GETBIT(flag, 31);
+	fahInverseY			= GETBIT(flag, 30);
+	fahSwitchPosition	= GETBIT(flag, 29);
+	fahPolar			= GETBIT(flag, 28);
+	fahPin				= GETBIT(flag, 27);
+	fahUnused			= GETBIT(flag, 26);
+	fahxMin				= GETBIT(flag, 25);
+	fahxMax				= GETBIT(flag, 24);
+	fahyMin				= GETBIT(flag, 23);
+	fahyMax				= GETBIT(flag, 22);
+	fahxRange			= GETBIT(flag, 21);
+	fahyRange			= GETBIT(flag, 20);
+	fahPolarPin			= GETBIT(flag, 19);
+
+	cbElement -= 4;
+
+	if (cbElement == 4)
+	{
+		_UINT16 x, y;
+		x = reader->ReadUInt16();
+		y = reader->ReadUInt16();
+		
+		apX	= x;
+		apY = y;
+
+		cbElement -= 4;
+	}
+	else 
+	{	
+		apX = reader->ReadUInt32();
+		apY = reader->ReadUInt32();
+	
+		cbElement -= 8;
+	}
+	
+	if (cbElement < 1) return;
+	
+	if (fahxRange)	xRange =  reader->ReadInt16(); 
+	if (fahyRange)	yRange =  reader->ReadInt16(); 
+	if (fahxMin)	xMin =  reader->ReadInt16(); 
+	if (fahxMax)	xMax =  reader->ReadInt16(); 
+	if (fahyMin)	yMin =  reader->ReadInt16(); 
+	if (fahyMax)	yMax =  reader->ReadInt16(); 
 }
 
 void ADJH::load(XLS::CFRecord& record)
@@ -1061,7 +1515,11 @@ void PVertices::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
-
+void PVertices::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
 void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
@@ -1069,13 +1527,22 @@ void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
-
+void PSegmentInfo::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
 void pGuides::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
+}
+void pGuides::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
 }
 void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 {
@@ -1085,12 +1552,22 @@ void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
+void pAdjustHandles::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
 void pConnectionSites::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
+}
+void pConnectionSites::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
 }
 void pConnectionSitesDir::ReadComplexData(XLS::CFRecord& record)
 {
@@ -1099,6 +1576,11 @@ void pConnectionSitesDir::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
+void pConnectionSitesDir::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
 void pInscribe::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
@@ -1106,4 +1588,22 @@ void pInscribe::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
+void pInscribe::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void pWrapPolygonVertices::ReadComplexData(XLS::CFRecord& record)
+{
+	complex.op = op;
+	int pos = record.getRdPtr();
+
+	record >> complex;
+}
+void pWrapPolygonVertices::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+
 } 

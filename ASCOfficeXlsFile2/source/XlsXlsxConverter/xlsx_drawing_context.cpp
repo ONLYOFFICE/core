@@ -47,156 +47,6 @@
 
 namespace oox {
 
-	class PathParser
-	{
-	public:
-
-		PathParser (std::vector<ODRAW::MSOPATHINFO> &arSegments, std::vector<ODRAW::MSOPOINT>& arPoints, std::vector<ODRAW::MSOSG> & arGuides)
-			: m_arSegments(arSegments)
-		{
-			LONG lMinF = (_INT32)0x80000000;
-			POINT point;
-			for (size_t i = 0; i < arPoints.size(); i++)
-			{
-				point.x = arPoints[i].x;
-				point.y = arPoints[i].y;
-
-				if (lMinF <= point.x)
-				{
-					int index = (_UINT32)point.x - 0x80000000;
-					if (index >= 0 && index < (int)arGuides.size())
-					{
-						point.x = arGuides[index].m_param_value3;
-					}
-				}
-				if (lMinF <= point.y)
-				{
-					int index = (_UINT32)point.y - 0x80000000;
-					if (index >= 0 && index < (int)arGuides.size())
-					{
-						point.y = arGuides[index].m_param_value3;
-					}
-				}
-				if ((size_t)point.y > 0xffff)	point.y &= 0xffff;
-				if ((size_t)point.x > 0xffff)	point.x &= 0xffff;
-
-				m_arPoints.push_back(point);
-			}
-		}
-
-		inline std::wstring GetVmlPath () const
-		{
-			if (m_arSegments.empty() && m_arPoints.empty())
-				return std::wstring(L"");
-
-			std::wstring strVmlPath;
-			size_t valuePointer = 0;
-
-			if (m_arSegments.empty())
-			{
-				for (size_t i = 0; i < m_arPoints.size(); ++i)
-				{
-                    strVmlPath += L"l";
-					strVmlPath += std::to_wstring(m_arPoints[i].x);
-                    strVmlPath += L",";
-					strVmlPath += std::to_wstring(m_arPoints[i].y);
-					
-					++valuePointer;
-				}
-
-                strVmlPath += L"xe";
-
-				return strVmlPath;
-			}
-			
-			for (size_t i = 0; i < m_arSegments.size(); i++)
-			{
-				switch (m_arSegments[i].m_eRuler)
-				{
-					case NSCustomShapesConvert::rtLineTo:
-					{
-						for (_UINT16 i = 0; i < m_arSegments[i].m_nCount; ++i)
-						{
-							if (valuePointer + 1 > m_arPoints.size())
-							{
-								break;
-
-								strVmlPath += L"l";
-								strVmlPath += std::to_wstring(m_arPoints[0].x);
-								strVmlPath += L",";
-								strVmlPath += std::to_wstring(m_arPoints[0].y);
-								
-								++valuePointer;
-							}
-							else
-							{
-								strVmlPath += L"l";
-								strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
-								strVmlPath += L",";
-								strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
-								
-								++valuePointer;
-							}
-						}
-					}break;
-					case NSCustomShapesConvert::rtCurveTo:
-					{
-						for (_UINT16 i = 0; i < m_arSegments[i].m_nCount; ++i)
-						{
-							if (valuePointer + 3 > m_arPoints.size()) 
-								break;
-							strVmlPath += L"c";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].x );
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].y );
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].x );
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].y );
-							valuePointer += 3;
-						}
-					}break;
-					case NSCustomShapesConvert::rtMoveTo:
-					{
-						if (valuePointer < m_arPoints.size()) 
-						{
-							strVmlPath += L"m";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
-							strVmlPath += L",";
-							strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
-							
-							++valuePointer;
-						}
-					}
-					break;
-					case NSCustomShapesConvert::rtClose:
-					{
-						strVmlPath += L"x";
-					}
-					break;
-					case NSCustomShapesConvert::rtEnd:
-					{
-						strVmlPath += L"e";
-					}break;	
-					default:
-						break;
-				}
-			}
-
-            if ( !strVmlPath.empty() && ( strVmlPath[strVmlPath.size() - 1] != L'e' ) )
-                strVmlPath +=L"e";
-
-			return strVmlPath;
-		}
-
-	private:
-		std::vector<ODRAW::MSOPATHINFO>	&m_arSegments;
-		std::vector<POINT> m_arPoints;
-	};
 //-----------------------------------------------------------------------------------------------------------
 	const static std::wstring shemeColor[18] = 
 	{L"accent1",L"accent2",L"accent3",L"accent4",L"accent5",L"accent6",L"bk1",L"bk2",L"dk1",L"dk2",L"folHlink",L"hlink",L"lt1",L"lt2",L"none", L"tx1",L"tx2",L"phClr"};
@@ -1117,7 +967,7 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 			if (!current_drawing_states->back()->custom_verticles.empty() &&
 				!current_drawing_states->back()->custom_segments.empty())
 			{		
-				PathParser oParser (current_drawing_states->back()->custom_segments, current_drawing_states->back()->custom_verticles, current_drawing_states->back()->custom_guides);
+				ODRAW::PathParser oParser (current_drawing_states->back()->custom_segments, current_drawing_states->back()->custom_verticles, current_drawing_states->back()->custom_guides);
 				std::wstring path = oParser.GetVmlPath();
 
 				if (false == path.empty())
@@ -1736,8 +1586,6 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 
 	shape->m_oCustomVML.SetAdjusts(&shape->m_arAdjustments);
 	
-	shape->m_oCustomVML.m_bIsVerticesPresent = drawing_state->custom_verticles.empty() ? false : true;
-	
 	for (size_t i = 0 ; i < drawing_state->custom_verticles.size(); i++)
 	{
 		 Aggplus::POINT p;
@@ -1788,9 +1636,9 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 			shape->m_oCustomVML.addAdjust(i, *drawing_state->custom_adjustValues[i]);
 		}
 	}
-	if (drawing_state->custom_path >=0)
+	if (drawing_state->custom_path >= 0)
 		shape->m_oCustomVML.SetPath((NSCustomShapesConvert::RulesType)drawing_state->custom_path);
-	
+
 	shape->m_oCustomVML.ToCustomShape(shape, shape->m_oManager);
 	shape->ReCalculate();
 //-------------------------------------------------------------------------------------

@@ -64,13 +64,50 @@ namespace SimpleTypes
 			E m_eValue;
 		};
 
+		enum ETableType
+		{
+			typeQueryTable	=  0,
+			typeWorksheet	=  1,
+			typeXml			=  2,
+		};
+		template<ETableType eDefValue = typeWorksheet>
+		class CTableType : public CSimpleType<ETableType, eDefValue>
+		{
+		public:
+			CTableType() {}
+
+            virtual ETableType FromString(std::wstring &sValue)
+			{
+                if      ( _T("queryTable")	== sValue ) this->m_eValue = typeQueryTable;
+                else if ( _T("worksheet")	== sValue ) this->m_eValue = typeWorksheet;
+                else if ( _T("xml")			== sValue ) this->m_eValue = typeXml;
+                else                                    this->m_eValue = eDefValue;
+
+                return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+				case typeQueryTable : return _T("queryTable");break;
+				case typeWorksheet : return _T("worksheet");break;
+				case typeXml : return _T("xml");break;
+				default : return _T("typeWorksheet");
+
+				}
+			}
+
+			SimpleType_FromString     (ETableType)
+			SimpleType_Operator_Equal (CTableType)
+		};
+
 		enum EVisibleType
 		{
 			visibleHidden		=  0,
 			visibleVeryHidden	=  1,
 			visibleVisible		=  2,
 		};
-
 		template<EVisibleType eDefValue = visibleVisible>
 		class CVisibleType : public CSimpleType<EVisibleType, eDefValue>
 		{
@@ -87,7 +124,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual std::wstring       ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -100,7 +137,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EVisibleType)
-				SimpleType_Operator_Equal (CVisibleType)
+			SimpleType_Operator_Equal (CVisibleType)
 		};
 
 		enum EPhoneticAlignmentType

@@ -65,6 +65,13 @@ void FixedPoint::load(XLS::CFRecord& record)
 
 	dVal =  Integral + Fractional/65536.;
 }
+void FixedPoint::load(IBinaryReader* reader)
+{
+	Fractional = reader->ReadUInt16(); 
+	Integral = reader->ReadInt16(); 
+
+	dVal =  Integral + Fractional/65536.;
+}
 
 
 } // namespace OSHARED

@@ -55,6 +55,8 @@ public:
 
 	virtual void loadFields(XLS::CFRecord& record);
 	
+	void loadFields(IBinaryReader* reader);
+	
 	XLS::BiffStructurePtr clone()
 	{
 		return XLS::BiffStructurePtr(new OfficeArtBlip(recType));

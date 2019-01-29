@@ -32,6 +32,7 @@
 #pragma once
 
 #include "Record.h"
+#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtRGFOPTE.h"
 
 namespace DocFileFormat
 {
@@ -526,21 +527,6 @@ namespace DocFileFormat
 		LineDashing_LongDashDotDotGEL
 	} LineDashing;
 
-	struct OptionEntry
-	{
-		OptionEntry() :	pid(PropertyId_left), fBid(false), fComplex(false), op(0)
-		{
-		}
-
-		PropertyId		pid;
-		bool			fBid;
-		bool			fComplex;
-		unsigned int	op;
-		std::shared_ptr<unsigned char>	opComplex;
-	};
-
-	typedef std::shared_ptr<OptionEntry> OptionEntryPtr;
-
 	class ShapeOptions: public Record
 	{
 	public: 
@@ -548,9 +534,9 @@ namespace DocFileFormat
 		static const unsigned short TYPE_CODE_0xF121 = 0xF121;
 		static const unsigned short TYPE_CODE_0xF122 = 0xF122;
 
-		std::vector<OptionEntryPtr>				Options;
-		std::map<PropertyId, OptionEntryPtr>	OptionsByID;
-
+		std::vector<ODRAW::OfficeArtFOPTEPtr>			Options;
+		std::map<PropertyId, ODRAW::OfficeArtFOPTEPtr>	OptionsByID;
+	
 		ShapeOptions() : Record()
 		{
 		}
@@ -563,41 +549,24 @@ namespace DocFileFormat
 		{
 			long pos = Reader->GetPosition();
 
-			//parse the flags and the simple values
+	// parse the flags and the simple values
 			for (unsigned int i = 0; i < instance; ++i)
 			{
-				OptionEntryPtr entry = std::shared_ptr<OptionEntry>(new OptionEntry());
-				unsigned short flag	=	Reader->ReadUInt16();
+				ODRAW::OfficeArtFOPTEPtr fopte = ODRAW::OfficeArtFOPTE::load_and_create(Reader);
+				if (!fopte)continue;
 
-				entry->pid			=	(PropertyId)FormatUtils::BitmaskToInt (flag, 0x3FFF);
-				entry->fBid			=	FormatUtils::BitmaskToBool (flag, 0x4000);
-				entry->fComplex		=	FormatUtils::BitmaskToBool (flag, 0x8000);
-				entry->op			=	Reader->ReadUInt32();
 
-				Options.push_back( entry );
+				Options.push_back(fopte);
 			}
+	// complex load 
 
-			//parse the complex values & sorted by pid
-			for (unsigned int i = 0; i < instance; ++i)
+			for(size_t i = 0; i < Options.size();  ++i)
 			{
-				if (Options[i]->fComplex && Options[i]->op > 0)
-				{			
-					unsigned int size = Options[i]->op;
-					
-					if (Options[i]->pid == 0x0145 ||
-						Options[i]->pid == 0x0146 ||
-						Options[i]->pid == 0x0197 ||
-						Options[i]->pid == 0x0156 ||
-						Options[i]->pid == 0x0155 ||
-						Options[i]->pid == 0x0151 ||
-						Options[i]->pid == 0x0152 ||
-						Options[i]->pid == 0x0157 ||
-						Options[i]->pid == 0x0158)//mso arrays
-							size += 6;
-					Options[i]->opComplex = std::shared_ptr<unsigned char>(Reader->ReadBytes( size, true ));
+				if(Options[i]->fComplex && Options[i]->op > 0)
+				{
+					Options[i]->ReadComplexData(Reader);
 				}
-
-				OptionsByID.insert(std::make_pair(Options[i]->pid, Options[i]));
+				OptionsByID.insert(std::make_pair((PropertyId)Options[i]->opid, Options[i]));
 			}
 
             Reader->Seek(( pos + size ), 0/*STREAM_SEEK_SET*/);

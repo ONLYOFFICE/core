@@ -1573,9 +1573,9 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				ODRAW::fillShadeColors *shadeColors = dynamic_cast<ODRAW::fillShadeColors*>(props[i].get());
 
-				for (size_t i = 0 ; (shadeColors) && (i < shadeColors->fillShadeColors_complex.data.size()); i++)
+				for (size_t i = 0 ; (shadeColors) && (i < shadeColors->complex.data.size()); i++)
 				{
-					ODRAW::OfficeArtCOLORREF & color = shadeColors->fillShadeColors_complex.data[i].color;
+					ODRAW::OfficeArtCOLORREF & color = shadeColors->complex.data[i].color;
 
 					std::wstring strColor;
 					if (!color.sColorRGB.empty())	strColor = color.sColorRGB;
@@ -1585,10 +1585,10 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 						if (it != xls_global_info->colors_palette.end())	strColor = it->second;
 					}
 					if (!strColor.empty())
-						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->fillShadeColors_complex.data[i].dPosition, strColor);
+						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->complex.data[i].dPosition, strColor);
 					else
 					{
-						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->fillShadeColors_complex.data[i].dPosition, 
+						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->complex.data[i].dPosition, 
 																									color.index, color.fSchemeIndex ? 1 : 3 );
 					}
 				}

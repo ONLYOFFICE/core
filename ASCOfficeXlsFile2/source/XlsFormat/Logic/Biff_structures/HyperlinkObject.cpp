@@ -31,18 +31,15 @@
  */
 
 #include "HyperlinkObject.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/AttributeDataWrong.h>
+#include "../../Binary/CFRecord.h"
 
 namespace OSHARED
 {
-
 
 XLS::BiffStructurePtr HyperlinkObject::clone()
 {
 	return XLS::BiffStructurePtr(new HyperlinkObject(*this));
 }
-
 void HyperlinkObject::load(XLS::CFRecord& record)
 {
 	_UINT32 flags;
@@ -89,6 +86,65 @@ void HyperlinkObject::load(XLS::CFRecord& record)
 	if(hlstmfHasCreationTime)
 	{
 		record.loadAnyData(fileTime);
+	}
+}
+
+
+
+void HyperlinkObject::load(IBinaryReader* reader)
+{
+	streamVersion = reader->ReadUInt32();
+	_UINT32 flags = reader->ReadUInt32();
+		
+	hlstmfHasMoniker = GETBIT(flags, 0);
+	hlstmfIsAbsolute = GETBIT(flags, 1);
+	hlstmfSiteGaveDisplayName = GETBIT(flags, 2);
+	hlstmfHasLocationStr = GETBIT(flags, 3);
+	hlstmfHasDisplayName = GETBIT(flags, 4);
+	hlstmfHasGUID = GETBIT(flags, 5);
+	hlstmfHasCreationTime = GETBIT(flags, 6);
+	hlstmfHasFrameName = GETBIT(flags, 7);
+	hlstmfMonikerSavedAsStr = GETBIT(flags, 8);
+	hlstmfAbsFromGetdataRel = GETBIT(flags, 9);
+
+	if(hlstmfHasDisplayName)
+	{
+		displayName.load(reader);
+	}
+	if(hlstmfHasFrameName)
+	{
+		targetFrameName.load(reader);
+	}
+	if(hlstmfHasMoniker && hlstmfMonikerSavedAsStr)
+	{
+		moniker.load(reader);
+	}
+	if(hlstmfHasMoniker && !hlstmfMonikerSavedAsStr)
+	{
+		oleMoniker.load(reader);
+	}
+	if(hlstmfHasLocationStr)
+	{
+		location.load(reader);
+	}
+	if(hlstmfHasGUID)
+	{
+		_GUID_ guid_num;
+		
+		guid_num.Data1 = reader->ReadUInt32();
+		guid_num.Data2 = reader->ReadUInt16();
+		guid_num.Data3 = reader->ReadUInt16();
+	    
+		unsigned char* pData = reader->ReadBytes(8, true);
+		memcpy(guid_num.Data4, pData, 8) ;
+		delete pData;
+
+		guid = STR::guid2bstr(guid_num);
+	}
+	if(hlstmfHasCreationTime)
+	{
+		fileTime.dwLowDateTime = reader->ReadUInt32();
+		fileTime.dwHighDateTime = reader->ReadUInt32();
 	}
 }
 

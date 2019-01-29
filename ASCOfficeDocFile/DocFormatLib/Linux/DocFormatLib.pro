@@ -208,28 +208,19 @@ HEADERS +=  \
     ../../DocDocxConverter/OfficeDrawing/ChildAnchor.h \
     ../../DocDocxConverter/OfficeDrawing/ClientAnchor.h \
     ../../DocDocxConverter/OfficeDrawing/ClientData.h \
-    ../../DocDocxConverter/OfficeDrawing/DiagramBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/DrawingContainer.h \
     ../../DocDocxConverter/OfficeDrawing/DrawingGroup.h \
     ../../DocDocxConverter/OfficeDrawing/DrawingGroupRecord.h \
     ../../DocDocxConverter/OfficeDrawing/DrawingRecord.h \
-    ../../DocDocxConverter/OfficeDrawing/FillStyleBooleanProperties.h \
-    ../../DocDocxConverter/OfficeDrawing/GeometryBooleanProperties.h \
-    ../../DocDocxConverter/OfficeDrawing/GeometryTextBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/GroupContainer.h \
-    ../../DocDocxConverter/OfficeDrawing/GroupShapeBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/GroupShapeRecord.h \
-    ../../DocDocxConverter/OfficeDrawing/LineStyleBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/MetafilePictBlip.h \
     ../../DocDocxConverter/OfficeDrawing/OfficeArtClientTextbox.h \
     ../../DocDocxConverter/OfficeDrawing/PathParser.h \
     ../../DocDocxConverter/OfficeDrawing/PathSegment.h \
-    ../../DocDocxConverter/OfficeDrawing/ProtectionBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/Record.h \
     ../../DocDocxConverter/OfficeDrawing/RecordFactory.h \
     ../../DocDocxConverter/OfficeDrawing/RegularContainer.h \
-    ../../DocDocxConverter/OfficeDrawing/ShadowStyleBooleanProperties.h \
-    ../../DocDocxConverter/OfficeDrawing/threeDBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/Shape.h \
     ../../DocDocxConverter/OfficeDrawing/ShapeContainer.h \
     ../../DocDocxConverter/OfficeDrawing/ShapeOptions.h \

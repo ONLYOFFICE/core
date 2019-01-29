@@ -116,7 +116,7 @@ namespace BinXlsxRW
 			if(oTable.m_oDisplayName.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::DisplayName);
-				m_oBcw.m_oStream.WriteStringW(oTable.m_oDisplayName.get2());
+				m_oBcw.m_oStream.WriteStringW(*oTable.m_oDisplayName);
 			}
 			if(oTable.m_oAutoFilter.IsInit())
 			{

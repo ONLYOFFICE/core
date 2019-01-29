@@ -38,6 +38,7 @@
 
 #include "../../Common/common.h"
 #include "../Auxiliary/HelpFunc.h"
+#include "../../../../ASCOfficeDocFile/DocDocxConverter/OfficeDrawing/Record.h"
 
 namespace XLS
 {

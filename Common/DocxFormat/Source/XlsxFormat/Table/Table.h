@@ -351,24 +351,44 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-			}
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, int nIndex) const
-			{
-				if(false == m_oRef.IsInit() || false == m_oDisplayName.IsInit()) return;
-					
 				writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<table xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"");
-				WritingStringAttrInt(L"id", nIndex);
+<table \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"xr xr3\" \
+xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" \
+xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"");
+
+				WritingStringNullableAttrInt(L"id", m_oId, m_oId->GetValue());
 				WritingStringAttrEncodeXmlString(L"name", m_oDisplayName.get());
 				WritingStringAttrEncodeXmlString(L"displayName", m_oDisplayName.get());
 				WritingStringAttrString(L"ref", m_oRef->ToString());
+				WritingStringNullableAttrInt(L"connectionId", m_oConnectionId, m_oConnectionId->GetValue());
+				WritingStringNullableAttrString(L"tableType", m_oTableType, m_oTableType->ToString());
+			
+				WritingStringNullableAttrString(L"totalsRowDxfId", m_oComment, *m_oComment);
+				WritingStringNullableAttrInt(L"totalsRowDxfId", m_oTotalsRowDxfId, m_oTotalsRowDxfId->GetValue());
+
+				WritingStringNullableAttrInt(L"tableBorderDxfId", m_oTableBorderDxfId, m_oTableBorderDxfId->GetValue());
+				WritingStringNullableAttrString(L"dataCellStyle", m_oDataCellStyle, *m_oDataCellStyle);
+				WritingStringNullableAttrInt(L"headerRowBorderDxfId", m_oHeaderRowBorderDxfId, m_oHeaderRowBorderDxfId->GetValue());
+				WritingStringNullableAttrString(L"headerRowCellStyle", m_oHeaderRowCellStyle, *m_oHeaderRowCellStyle);
+				WritingStringNullableAttrInt(L"headerRowDxfId", m_oHeaderRowDxfId, m_oHeaderRowDxfId->GetValue());
+				WritingStringNullableAttrInt(L"totalsRowBorderDxfId", m_oTotalsRowBorderDxfId, m_oTotalsRowBorderDxfId->GetValue());
+				WritingStringNullableAttrInt(L"totalsRowDxfId", m_oTotalsRowDxfId, m_oTotalsRowDxfId->GetValue());
+				WritingStringNullableAttrString(L"totalsRowCellStyle", m_oTotalsRowCellStyle, *m_oTotalsRowCellStyle);
+			
 				if(m_oHeaderRowCount.IsInit() && 0 == m_oHeaderRowCount->GetValue())
 					writer.WriteString(L" headerRowCount=\"0\"");
 				if(m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
 					writer.WriteString(L" totalsRowCount=\"1\"");
 				else
-					writer.WriteString(L" totalsRowShown=\"0\"");
-				WritingStringNullableAttrInt(L"tableBorderDxfId", m_oTableBorderDxfId, m_oTableBorderDxfId->GetValue());
+					writer.WriteString(L" totalsRowShown=\"0\"");//m_oTotalsRowShown
+
+				if (m_oInsertRow.IsInit())		WritingStringAttrString(L"insertRow",	*m_oInsertRow ? L"1" : L"0");
+				if (m_oInsertRowShift.IsInit())	WritingStringAttrString(L"insertRowShift",	*m_oInsertRowShift ? L"1" : L"0");
+				if (m_oPublished.IsInit())		WritingStringAttrString(L"published",	*m_oPublished ? L"1" : L"0");
+				
 				writer.WriteString(L">");
 
 				if(m_oAutoFilter.IsInit())
@@ -384,6 +404,15 @@ namespace OOX
 					writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
 				}
 				writer.WriteString(L"</table>");
+			}
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, int nIndex)
+			{
+				if(false == m_oRef.IsInit() || false == m_oDisplayName.IsInit()) return;
+				
+				m_oId.Init();
+				m_oId->SetValue((unsigned int)nIndex);
+
+				toXML(writer);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -419,21 +448,51 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("ref"),				m_oRef )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("headerRowCount"),	m_oHeaderRowCount )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("totalsRowCount"),	m_oTotalsRowCount )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("displayName"),		m_oDisplayName )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("tableBorderDxfId"),	m_oTableBorderDxfId )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, L"ref",					m_oRef )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"headerRowCount",		m_oHeaderRowCount )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"totalsRowCount",		m_oTotalsRowCount )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"displayName",			m_oDisplayName )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"tableBorderDxfId",		m_oTableBorderDxfId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"comment",				m_oComment )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"connectionId",			m_oConnectionId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"dataCellStyle",		m_oDataCellStyle )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"headerRowBorderDxfId",	m_oHeaderRowBorderDxfId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"headerRowCellStyle",	m_oHeaderRowCellStyle )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"headerRowDxfId",		m_oHeaderRowDxfId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"insertRow",			m_oInsertRow )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"insertRowShift",		m_oInsertRowShift )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"published",			m_oPublished )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"id",					m_oId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"tableType",			m_oTableType )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"totalsRowBorderDxfId",	m_oTotalsRowBorderDxfId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"totalsRowCellStyle",	m_oTotalsRowCellStyle )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"totalsRowDxfId",		m_oTotalsRowDxfId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"totalsRowShown",		m_oTotalsRowShown )
+			WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId >				m_oRef;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oHeaderRowCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oTotalsRowCount;
-			nullable<std::wstring >								m_oDisplayName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oTableBorderDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oHeaderRowCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTotalsRowCount;
+			nullable_string										m_oDisplayName;
+			nullable_string										m_oName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTableBorderDxfId;
+
+			nullable_string										m_oComment;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oConnectionId;
+			nullable_string										m_oDataCellStyle;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oHeaderRowBorderDxfId;
+			nullable_string										m_oHeaderRowCellStyle;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oHeaderRowDxfId;
+			nullable_bool										m_oInsertRow;
+			nullable_bool										m_oInsertRowShift;
+			nullable_bool										m_oPublished;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oId;
+			nullable<SimpleTypes::Spreadsheet::CTableType<>>	m_oTableType;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTotalsRowBorderDxfId;
+			nullable_string										m_oTotalsRowCellStyle;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTotalsRowDxfId;
+			nullable_bool										m_oTotalsRowShown;
 
 			nullable<CAutofilter >								m_oAutoFilter;
 			nullable<CSortState >								m_oSortState;
@@ -994,9 +1053,6 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-			}
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, int nIndex) const
-			{
 				if(false == m_oName.IsInit()) return;
 
 				writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
@@ -1166,9 +1222,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				if(false == m_oQueryTable.IsInit()) return;
 
 				NSStringUtils::CStringBuilder sXml;
-				int nGlobalNumber = OOX::FileGlobalEnumerated::GetGlobalNumber();
 
-				m_oQueryTable->toXML2(sXml, nGlobalNumber);
+				m_oQueryTable->toXML(sXml);
 
                 std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());

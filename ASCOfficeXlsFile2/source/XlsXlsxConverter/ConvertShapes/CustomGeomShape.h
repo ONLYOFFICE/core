@@ -190,14 +190,12 @@ namespace NSCustomShapesConvert
 		std::vector<CGuide>				m_arGuides;
 		std::vector<LONG>*				m_pAdjustValues;
 
-        bool							m_bIsVerticesPresent;
         bool							m_bIsPathPresent;
 
 		CCustomVML() : m_arVertices(), m_arSegments(), m_arGuides(), m_pAdjustValues(NULL)
 		{
 			m_ePath = rtCurveTo/*rtLineTo*/;
 			
-            m_bIsVerticesPresent	= false;
             m_bIsPathPresent		= false;
 		}
 		
@@ -222,7 +220,6 @@ namespace NSCustomShapesConvert
 			m_pAdjustValues = oSrc.m_pAdjustValues;
 			
 			m_bIsPathPresent		= oSrc.m_bIsPathPresent;
-			m_bIsVerticesPresent	= oSrc.m_bIsVerticesPresent;
 
 			return *this;
 		}
@@ -231,13 +228,11 @@ namespace NSCustomShapesConvert
 		{
 		}
 
-	public:
 		bool IsCustom()
 		{
-			return (m_bIsVerticesPresent && m_bIsPathPresent);
+			return (!m_arVertices.empty() && (m_bIsPathPresent || !m_arSegments.empty()));
 		}
 
-	public:
 		void SetPath(RulesType ePath)
 		{
 			m_ePath = ePath;

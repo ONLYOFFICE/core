@@ -88,7 +88,41 @@ void BiffString::load(CFRecord& record)
 	// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. Stack overflow stopped.", __FUNCTION__);
 	//	record >> *this; // :-)
 }
+void BiffString::load(IBinaryReader* reader)
+{
+}
 
+void BiffString::load(IBinaryReader* reader, const size_t cch1, const bool is_wide1)
+{
+	bool is_wide	= is_wide1;
+	
+	size_t cch = cch1;
+	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+	{
+		cch =  cch_.get();
+	}
+	size_t raw_length = cch << (is_wide ? 1 : 0);
+	
+	if (reader->GetPosition() + cch > reader->GetSize())
+	{
+		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
+		return;
+	}
+	unsigned char* pData = reader->ReadBytes(cch, true);
+	
+	if(is_wide)
+	{
+#if defined(_WIN32) || defined(_WIN64)
+		str_ = std::wstring((wchar_t*)pData, cch);
+#else
+		str_ = convertUtf16ToWString((UTF16*)pData, cch);
+#endif
+	}
+	else
+	{
+	}
+	delete []pData;
+}
 
 void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 {
@@ -241,5 +275,35 @@ void XLUnicodeStringSegmented::load(CFRecord& record)
 		strTotal		+= arStrings.back();
 	}
 }
+void XLUnicodeStringSegmented::load(IBinaryReader* reader)
+{
+	cchTotal = reader->ReadUInt32();
 
+	if (cchTotal < 1) return;
+	
+	if (cchTotal > reader->GetSize() - reader->GetPosition())
+	{
+		cchTotal = cchTotal >> 8;
+	}
+
+	_UINT32 cchTotal_test = 0;
+	while(true)
+	{
+		if (reader->GetPosition() >= reader->GetSize())
+			break;
+
+		if (cchTotal_test >= cchTotal) 
+			break;
+		
+		_UINT32 max_string_size = cchTotal - cchTotal_test;
+
+		XLUnicodeString string;
+		string.load(reader);
+		
+		arStrings.push_back(string.value());
+
+		cchTotal_test	+= arStrings.back().length();
+		strTotal		+= arStrings.back();
+	}
+}
 } // namespace XLS

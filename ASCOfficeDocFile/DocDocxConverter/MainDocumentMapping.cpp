@@ -31,7 +31,6 @@
  */
 
 #include "MainDocumentMapping.h"
-#include "OfficeDrawing/FillStyleBooleanProperties.h"
 
 namespace DocFileFormat
 {
@@ -88,10 +87,11 @@ namespace DocFileFormat
 			m_document->DocProperties->bDisplayBackgroundShape = true;
 			ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeBackgound();
 
-			OptionEntryPtr boolFill = pShape->ExtractOption(fillStyleBooleanProperties);
+			ODRAW::OfficeArtFOPTEPtr boolFill = pShape->ExtractOption(fillStyleBooleanProperties);
 
-			FillStyleBooleanProperties booleans(boolFill ? boolFill->op : 0);
-			if (booleans.fUsefFilled && !booleans.fFilled)
+			ODRAW::FillStyleBooleanProperties* booleans = dynamic_cast<ODRAW::FillStyleBooleanProperties*>(boolFill.get());
+
+			if (booleans && (booleans->fUsefFilled && !booleans->fFilled))
 			{
 				bFilled = false;
 			}

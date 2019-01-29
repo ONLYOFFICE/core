@@ -51,7 +51,15 @@ XLS::BiffStructurePtr MSOSHADECOLOR::clone()
 {
 	return XLS::BiffStructurePtr(new MSOSHADECOLOR(*this));
 }
+void MSOSHADECOLOR::load(IBinaryReader* reader)
+{
+    _UINT32 raw_color = reader->ReadUInt32();
+	color = OfficeArtCOLORREF(raw_color);
 
+	position.load(reader);
+
+	dPosition = position.Integral + position.Fractional / 65536.;
+}
 void MSOSHADECOLOR::load(XLS::CFRecord& record)
 {
     _UINT32 raw_color;

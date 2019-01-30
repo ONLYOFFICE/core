@@ -710,17 +710,17 @@ namespace DocFileFormat
 			case c3DXViewpoint:
 				{
 					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
-					ViewPointX = point ? EmuValue( point->dVal ) : 0;
-				}break;
+                    if (point) ViewPointX = EmuValue( (int)point->dVal );
+                }break;
 			case c3DYViewpoint:
 				{				
 					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
-					ViewPointY = point ? EmuValue( point->dVal ) : 0;
+                    if (point) ViewPointY = EmuValue( (int)point->dVal );
 				}break;
 			case c3DZViewpoint:
 				{
 					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
-					ViewPointZ = point ? EmuValue( point->dVal ) : 0;
+                    if (point) ViewPointZ = EmuValue( (int)point->dVal );
 				}break;
 			case c3DOriginX:
 				{

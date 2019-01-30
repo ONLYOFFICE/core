@@ -41,30 +41,10 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 
+#include "../../ASCOfficePPTFile/PPTFormatLib/Reader/ReadStructures.h"
+
 using namespace DocFileFormat;
 
-typedef struct
-{
-    DWORD   iType;              // Record type EMR_HEADER
-    DWORD   nSize;              // Record size in bytes.  This may be greater
-                                // than the sizeof(ENHMETAHEADER).
-    RECT   rclBounds;          // Inclusive-inclusive bounds in device units
-    RECT   rclFrame;           // Inclusive-inclusive Picture Frame .01mm unit
-    DWORD   dSignature;         // Signature.  Must be ENHMETA_SIGNATURE.
-    DWORD   nVersion;           // Version number
-    DWORD   nBytes;             // Size of the metafile in bytes
-    DWORD   nRecords;           // Number of records in the metafile
-    WORD    nHandles;           // Number of handles in the handle table
-                                // Handle index zero is reserved.
-    WORD    sReserved;          // Reserved.  Must be zero.
-    DWORD   nDescription;       // Number of chars in the unicode desc string
-                                // This is 0 if there is no description string
-    DWORD   offDescription;     // Offset to the metafile description record.
-                                // This is 0 if there is no description string
-    DWORD   nPalEntries;        // Number of entries in the metafile palette.
-    SIZE   szlDevice;          // Size of the reference device in pels
-    SIZE   szlMillimeters;     // Size of the reference device in millimeters
-} ENHMETAHEADER3;
 
 namespace DocFileFormat
 {

@@ -89,26 +89,27 @@ struct SFileIdCluster
 	}
 };
 #if !defined(_WIN32) && !defined (_WIN64)
-    typedef struct tagPOINT
-    {
-        long x;
-        long y;
-    } POINT;
-
-    typedef struct tagSIZE
-    {
-        long cx;
-        long cy;
-    }SIZE;
-
-    typedef struct tagRECT
-    {
-        long left;
-        long top;
-        long right;
-        long bottom;
-    }RECT;
- #endif
+    #ifndef customTagPoint
+        #define customTagPoint
+        typedef struct tagPOINT
+        {
+            _INT32  x;
+            _INT32  y;
+        } POINT;
+        typedef struct tagRECT
+        {
+            _INT32    left;
+            _INT32    top;
+            _INT32    right;
+            _INT32    bottom;
+        } RECT;
+        typedef struct tagSIZE
+        {
+            _INT32 cx;
+            _INT32 cy;
+        }SIZE;
+     #endif
+#endif
 
 namespace Gdiplus
 {

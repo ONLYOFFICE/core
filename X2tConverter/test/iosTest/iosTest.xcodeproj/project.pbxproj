@@ -24,6 +24,11 @@
 		699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 699690721E2F925200B620CD /* libc++abi.tbd */; };
 		69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = 69BE370B1F60129600CBA47B /* crypted.xlsx */; };
 		8A94F3CB207CE7D600EC05D2 /* test.csv in Resources */ = {isa = PBXBuildFile; fileRef = 8A94F3C9207CE7D600EC05D2 /* test.csv */; };
+		8AC4E6EF22058B2A0044119A /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AC4E6EE22058B290044119A /* boost.framework */; };
+		8AC4E6F52205999B0044119A /* test.odt in Resources */ = {isa = PBXBuildFile; fileRef = 8AC4E6F22205999B0044119A /* test.odt */; };
+		8AC4E6F62205999B0044119A /* test.ods in Resources */ = {isa = PBXBuildFile; fileRef = 8AC4E6F32205999B0044119A /* test.ods */; };
+		8AC4E6F72205999B0044119A /* test.odp in Resources */ = {isa = PBXBuildFile; fileRef = 8AC4E6F42205999B0044119A /* test.odp */; };
+		8AC4E7282205A4D10044119A /* demo.pptx in Resources */ = {isa = PBXBuildFile; fileRef = 8AC4E7272205A4D10044119A /* demo.pptx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +75,11 @@
 		8A1045C520F4B55F005A0F61 /* libicuuc.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicuuc.58.dylib; path = ../../../Common/3dParty/icu/mac_64/build/libicuuc.58.dylib; sourceTree = "<group>"; };
 		8A94F3C9207CE7D600EC05D2 /* test.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.csv; sourceTree = "<group>"; };
 		8A9FAD36207781C5007787F6 /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = ../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<group>"; };
+		8AC4E6EE22058B290044119A /* boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = boost.framework; path = ../../../Common/3dParty/boost/ios/framework/boost.framework; sourceTree = "<group>"; };
+		8AC4E6F22205999B0044119A /* test.odt */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.odt; sourceTree = "<group>"; };
+		8AC4E6F32205999B0044119A /* test.ods */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.ods; sourceTree = "<group>"; };
+		8AC4E6F42205999B0044119A /* test.odp */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.odp; sourceTree = "<group>"; };
+		8AC4E7272205A4D10044119A /* demo.pptx */ = {isa = PBXFileReference; lastKnownFileType = file; path = demo.pptx; sourceTree = "<group>"; };
 		8AED79AA20F50164008BB78E /* libicui18n.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicui18n.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicui18n.a"; sourceTree = "<group>"; };
 		8AED79AC20F50164008BB78E /* libicuio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuio.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicuio.a"; sourceTree = "<group>"; };
 		8AED79AD20F50164008BB78E /* libicutu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicutu.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicutu.a"; sourceTree = "<group>"; };
@@ -84,6 +94,7 @@
 				699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */,
 				6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */,
 				69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */,
+				8AC4E6EF22058B2A0044119A /* boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,14 +158,18 @@
 		17DAB70A1ACC3B58005AF479 /* Files */ = {
 			isa = PBXGroup;
 			children = (
+				17DAB70D1ACC3B90005AF479 /* demo.docx */,
+				8AC4E7272205A4D10044119A /* demo.pptx */,
 				69BE370B1F60129600CBA47B /* crypted.xlsx */,
 				177B1B461B5FCD34001FC26F /* shapes.xlsx */,
 				1773201E1B4FB9B700BB22FC /* price.xlsx */,
 				1734C9A51B4C251D00C2A6C8 /* smeta.xlsx */,
-				17DAB70D1ACC3B90005AF479 /* demo.docx */,
 				697CDFE72049649800C2638C /* empty.docx */,
 				697CDFE92049649800C2638C /* empty.xlsx */,
 				8A94F3C9207CE7D600EC05D2 /* test.csv */,
+				8AC4E6F42205999B0044119A /* test.odp */,
+				8AC4E6F32205999B0044119A /* test.ods */,
+				8AC4E6F22205999B0044119A /* test.odt */,
 			);
 			name = Files;
 			sourceTree = "<group>";
@@ -162,6 +177,7 @@
 		6967BEB11E27D5BE00A129E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8AC4E6EE22058B290044119A /* boost.framework */,
 				8AED79AA20F50164008BB78E /* libicui18n.a */,
 				8AED79AC20F50164008BB78E /* libicuio.a */,
 				8AED79AD20F50164008BB78E /* libicutu.a */,
@@ -260,14 +276,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A94F3CB207CE7D600EC05D2 /* test.csv in Resources */,
+				8AC4E6F72205999B0044119A /* test.odp in Resources */,
+				8AC4E6F52205999B0044119A /* test.odt in Resources */,
 				69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */,
 				17DAB6871ACC371F005AF479 /* Main.storyboard in Resources */,
 				17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */,
+				8AC4E7282205A4D10044119A /* demo.pptx in Resources */,
 				17DAB6891ACC371F005AF479 /* Images.xcassets in Resources */,
 				697CDFEA2049649800C2638C /* empty.docx in Resources */,
 				1734C9A61B4C251D00C2A6C8 /* smeta.xlsx in Resources */,
 				697CDFEB2049649800C2638C /* empty.xlsx in Resources */,
 				177B1B471B5FCD34001FC26F /* shapes.xlsx in Resources */,
+				8AC4E6F62205999B0044119A /* test.ods in Resources */,
 				1773201F1B4FB9B700BB22FC /* price.xlsx in Resources */,
 				17DAB70E1ACC3B96005AF479 /* demo.docx in Resources */,
 			);
@@ -436,6 +456,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/ios/framework";
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -461,6 +482,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/ios/framework";
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

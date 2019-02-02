@@ -29,41 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  ViewController.m
-//  TestIOSX2tConverter
-//
-//  Created by alexey.musinov on 01.04.15.
-//  Copyright (c) 2015 Ascensio System SIA. All rights reserved.
-//
 
 #import "ViewController.h"
 
 #import "X2tConverter.h"
 #import "OfficeFileErrorDescription.h"
 
-@interface ViewController ()
-
-@end
-
 @implementation ViewController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     NSLog(@"x2t version converter: %@", [X2tConverter version]);
     
     NSLog(@"%@", [X2tConverter delimiters]);
     NSLog(@"%@", [X2tConverter encodingings]);
-
+    
     [self testCSV];
     [self testDOCX];
     [self testXLSX];
+    [self testODT];
 }
 
-- (void)testDOCX
-{
+- (void)testDOCX {
     {
         NSLog(@"==================== OPEN EMPTY DOCX ====================");
         
@@ -134,8 +122,7 @@
     }
 }
 
-- (void)testXLSX
-{
+- (void)testXLSX {
     {
         NSLog(@"==================== OPEN EMPTY XLSX ====================");
         
@@ -221,16 +208,84 @@
     }
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)testODT {
+    //    {
+    //        NSLog(@"==================== ODT TO DOCX ====================");
+    //
+    //        NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"odt"];
+    //
+    //        NSString* fullFileName = path;
+    //        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@test_odt.docx", NSTemporaryDirectory()];
+    //        NSString* tempDir = NSTemporaryDirectory();
+    //        NSString* fontsPath = @"/System/Library/Fonts";
+    //
+    //        // TODO: ...
+    //    }
+    
+    {
+        NSLog(@"==================== DOCX TO ODT ====================");
+        
+        NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
+        NSString* to = [NSString stringWithFormat:@"%@docx_to_odt_test.odt", NSTemporaryDirectory()];
+        NSString* temp = NSTemporaryDirectory();
+        NSString* fonts = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        int result = [conv sdk_docx2odt:from nsTo:to nsTemp:temp nsFontPath:fonts];
+        if (result != 0) {
+            NSLog(@"ERROR DOCX TO ODT : %d",result);
+        } else {
+            NSLog(@"odt output : %@", to);
+        }
+    }
+    
+    {
+        NSLog(@"==================== XLSX TO ODS ====================");
+        
+        NSString* from = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
+        NSString* to = [NSString stringWithFormat:@"%@xlsx_to_ods_test.ods", NSTemporaryDirectory()];
+        NSString* temp = NSTemporaryDirectory();
+        NSString* fonts = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        int result = [conv sdk_xlsx2ods:from nsTo:to nsTemp:temp nsFontPath:fonts];
+        if (result != 0) {
+            NSLog(@"ERROR XLSX TO ODS : %d",result);
+        } else {
+            NSLog(@"ods output : %@", to);
+        }
+    }
+    
+    {
+        NSLog(@"==================== PPTX TO ODP ====================");
+        
+        NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"pptx"];
+        NSString* to = [NSString stringWithFormat:@"%@pptx_to_odp_test.odp", NSTemporaryDirectory()];
+        NSString* temp = NSTemporaryDirectory();
+        NSString* fonts = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        int result = [conv sdk_pptx2odp:from nsTo:to nsTemp:temp nsFontPath:fonts];
+        if (result != 0) {
+            NSLog(@"ERROR PPTX TO ODP : %d",result);
+        } else {
+            NSLog(@"odp output : %@", to);
+        }
+    }
+    
+}
+
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 
 #pragma mark -
 #pragma Utils
 
-- (void)clearDirectory:(NSString*)directory
-{
+- (void)clearDirectory:(NSString*)directory {
     NSFileManager *fm = [NSFileManager defaultManager];
     NSError *error = nil;
     for (NSString *file in [fm contentsOfDirectoryAtPath:directory error:&error]) {
@@ -241,8 +296,7 @@
     }
 }
 
-- (void)createDirectory:(NSString*)directory
-{
+- (void)createDirectory:(NSString*)directory {
     NSFileManager *fileManager= [NSFileManager defaultManager];
     NSError *error = nil;
     if(![fileManager createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error]) {

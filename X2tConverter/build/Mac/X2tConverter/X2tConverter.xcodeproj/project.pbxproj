@@ -61,6 +61,8 @@
 		8A35A6F5215E5F62005CC806 /* xmllight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A6F2215E5F62005CC806 /* xmllight.cpp */; };
 		8A9FAC2B207772E1007787F6 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A9FAC27207772CC007787F6 /* libicu.a */; };
 		8ADB5F4220C52EFE00B72D37 /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ADB5F4120C52EFE00B72D37 /* version.h */; };
+		8AF8AA2C22048C01004BDAC2 /* libASCOfficeOdfFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF8AA2A22048BF5004BDAC2 /* libASCOfficeOdfFile.a */; };
+		8AF8AB6522049072004BDAC2 /* libASCOfficeOdfFileW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AF8AB612204905A004BDAC2 /* libASCOfficeOdfFileW.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -428,6 +430,34 @@
 			remoteGlobalIDString = 1732417F1BBECF8400E67992;
 			remoteInfo = icu;
 		};
+		8AF8AA2922048BF5004BDAC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8AF8AA2522048BF5004BDAC2 /* ASCOfficeOdfFile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8AABA56822048801006249F6;
+			remoteInfo = ASCOfficeOdfFile;
+		};
+		8AF8AA2D22048C06004BDAC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8AF8AA2522048BF5004BDAC2 /* ASCOfficeOdfFile.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8AABA56722048801006249F6;
+			remoteInfo = ASCOfficeOdfFile;
+		};
+		8AF8AB602204905A004BDAC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8AF8AB5C2204905A004BDAC2 /* ASCOfficeOdfFileW.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8AF8AA3822048F12004BDAC2;
+			remoteInfo = ASCOfficeOdfFileW;
+		};
+		8AF8AB632204906C004BDAC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8AF8AB5C2204905A004BDAC2 /* ASCOfficeOdfFileW.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8AF8AA3722048F12004BDAC2;
+			remoteInfo = ASCOfficeOdfFileW;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -472,7 +502,10 @@
 		8A35A6F1215E5F62005CC806 /* xmllight_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmllight_private.h; path = ../../../../../DesktopEditor/xml/src/xmllight_private.h; sourceTree = "<group>"; };
 		8A35A6F2215E5F62005CC806 /* xmllight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmllight.cpp; path = ../../../../../DesktopEditor/xml/src/xmllight.cpp; sourceTree = "<group>"; };
 		8A9FAC22207772CC007787F6 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = icu/icu.xcodeproj; sourceTree = "<group>"; };
+		8AC4E6F022058B5A0044119A /* boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = boost.framework; path = ../../../../Common/3dParty/boost/ios/framework/boost.framework; sourceTree = "<group>"; };
 		8ADB5F4120C52EFE00B72D37 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
+		8AF8AA2522048BF5004BDAC2 /* ASCOfficeOdfFile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeOdfFile.xcodeproj; path = ../../../../ASCOfficeOdfFile/mac/ASCOfficeOdfFile/ASCOfficeOdfFile.xcodeproj; sourceTree = "<group>"; };
+		8AF8AB5C2204905A004BDAC2 /* ASCOfficeOdfFileW.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeOdfFileW.xcodeproj; path = ../../../../ASCOfficeOdfFileW/mac/ASCOfficeOdfFileW/ASCOfficeOdfFileW.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -506,6 +539,8 @@
 				69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */,
 				69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */,
 				69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */,
+				8AF8AA2C22048C01004BDAC2 /* libASCOfficeOdfFile.a in Frameworks */,
+				8AF8AB6522049072004BDAC2 /* libASCOfficeOdfFileW.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,6 +550,8 @@
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
+				8AF8AB5C2204905A004BDAC2 /* ASCOfficeOdfFileW.xcodeproj */,
+				8AF8AA2522048BF5004BDAC2 /* ASCOfficeOdfFile.xcodeproj */,
 				8A9FAC22207772CC007787F6 /* icu.xcodeproj */,
 				696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */,
 				6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */,
@@ -705,6 +742,7 @@
 		696DD7C01F5D97DB0021D0F3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8AC4E6F022058B5A0044119A /* boost.framework */,
 				696DD7C11F5D97DB0021D0F3 /* libcryptopp.a */,
 			);
 			name = Frameworks;
@@ -817,6 +855,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8AF8AA2622048BF5004BDAC2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8AF8AA2A22048BF5004BDAC2 /* libASCOfficeOdfFile.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8AF8AB5D2204905A004BDAC2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8AF8AB612204905A004BDAC2 /* libASCOfficeOdfFileW.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -876,6 +930,8 @@
 				69415FDF1CB5244D003E771B /* PBXTargetDependency */,
 				69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */,
 				17C8DEDC1ACD6A3900902C85 /* PBXTargetDependency */,
+				8AF8AB642204906C004BDAC2 /* PBXTargetDependency */,
+				8AF8AA2E22048C06004BDAC2 /* PBXTargetDependency */,
 			);
 			name = x2tconverter;
 			productName = X2tConverter;
@@ -909,6 +965,14 @@
 				{
 					ProductGroup = 17E17F571AC457CD00BEA2EA /* Products */;
 					ProjectRef = 17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */;
+				},
+				{
+					ProductGroup = 8AF8AA2622048BF5004BDAC2 /* Products */;
+					ProjectRef = 8AF8AA2522048BF5004BDAC2 /* ASCOfficeOdfFile.xcodeproj */;
+				},
+				{
+					ProductGroup = 8AF8AB5D2204905A004BDAC2 /* Products */;
+					ProjectRef = 8AF8AB5C2204905A004BDAC2 /* ASCOfficeOdfFileW.xcodeproj */;
 				},
 				{
 					ProductGroup = 69DA32271CEE087D00E10AF0 /* Products */;
@@ -1198,6 +1262,20 @@
 			remoteRef = 8A9FAC26207772CC007787F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		8AF8AA2A22048BF5004BDAC2 /* libASCOfficeOdfFile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libASCOfficeOdfFile.a;
+			remoteRef = 8AF8AA2922048BF5004BDAC2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8AF8AB612204905A004BDAC2 /* libASCOfficeOdfFileW.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libASCOfficeOdfFileW.a;
+			remoteRef = 8AF8AB602204905A004BDAC2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1375,6 +1453,16 @@
 			isa = PBXTargetDependency;
 			name = icu;
 			targetProxy = 8A9FAC29207772D9007787F6 /* PBXContainerItemProxy */;
+		};
+		8AF8AA2E22048C06004BDAC2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ASCOfficeOdfFile;
+			targetProxy = 8AF8AA2D22048C06004BDAC2 /* PBXContainerItemProxy */;
+		};
+		8AF8AB642204906C004BDAC2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ASCOfficeOdfFileW;
+			targetProxy = 8AF8AB632204906C004BDAC2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

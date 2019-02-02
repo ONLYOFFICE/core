@@ -34,9 +34,15 @@
 
 #include "../../../DesktopEditor/common/File.h"
 
-#include "../libxml2/libxml.h"
-#include "../libxml2/include/libxml/xmlreader.h"
-#include "../libxml2/include/libxml/c14n.h"
+#ifdef _IOS
+    #include <libxml2/libxml/xmlreader.h>
+    #include <libxml2/libxml/c14n.h>
+#else
+    #include "../libxml2/libxml.h"
+    #include "../libxml2/include/libxml/xmlreader.h"
+    #include "../libxml2/include/libxml/c14n.h"
+#endif
+
 #include "../include/xmlutils.h"
 
 namespace XmlUtils

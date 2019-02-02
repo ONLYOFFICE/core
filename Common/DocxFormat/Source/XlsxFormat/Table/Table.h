@@ -381,14 +381,22 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 				if(m_oHeaderRowCount.IsInit() && 0 == m_oHeaderRowCount->GetValue())
 					writer.WriteString(L" headerRowCount=\"0\"");
 				if(m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
-					writer.WriteString(L" totalsRowCount=\"1\"");
-				else
-					writer.WriteString(L" totalsRowShown=\"0\"");//m_oTotalsRowShown
-
-				if (m_oInsertRow.IsInit())		WritingStringAttrString(L"insertRow",	*m_oInsertRow ? L"1" : L"0");
-				if (m_oInsertRowShift.IsInit())	WritingStringAttrString(L"insertRowShift",	*m_oInsertRowShift ? L"1" : L"0");
-				if (m_oPublished.IsInit())		WritingStringAttrString(L"published",	*m_oPublished ? L"1" : L"0");
-				
+                    writer.WriteString(L" totalsRowCount=\"1\"");
+                else
+                    writer.WriteString(L" totalsRowShown=\"0\"");//m_oTotalsRowShown
+                
+                bool bInsertRow = m_oInsertRow.IsInit();                
+                if (bInsertRow) {
+                    WritingStringAttrString(L"insertRow",	*m_oInsertRow ? L"1" : L"0");
+                }
+                if (m_oInsertRowShift.IsInit())	{
+                    WritingStringAttrString(L"insertRowShift",	*m_oInsertRowShift ? L"1" : L"0");
+                }
+                
+                if (m_oPublished.IsInit()) {
+                    WritingStringAttrString(L"published",	*m_oPublished ? L"1" : L"0");
+                }
+                
 				writer.WriteString(L">");
 
 				if(m_oAutoFilter.IsInit())

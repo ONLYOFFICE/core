@@ -81,6 +81,10 @@
 
 - (int)txt2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 
+- (int)sdk_docx2odt:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
+- (int)sdk_xlsx2ods:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
+- (int)sdk_pptx2odp:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
+
 - (int)sdk_dir2zip:(NSString*)nsFrom nsTo:(NSString*)nsTo;
 - (int)sdk_zip2dir:(NSString*)nsFrom nsTo:(NSString*)nsTo;
 

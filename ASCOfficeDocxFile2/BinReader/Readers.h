@@ -38,6 +38,9 @@
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 
+#include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
+
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
@@ -47,6 +50,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 #include "../DocWrapper/XlsxSerializer.h"
 
@@ -8798,6 +8803,28 @@ public:
 					//case c_oSerTableTypes::Document:
 					//	res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter).Read();
 					//	break;
+					case c_oSerTableTypes::App:
+						{
+							PPTX::App oApp(NULL);
+							m_oBufferedStream.Skip(1); // type
+							oApp.fromPPTY(&m_oBufferedStream);
+							OOX::CApp* pApp = new OOX::CApp(NULL);
+							pApp->FromPptxApp(&oApp);
+							pApp->SetRequiredDefaults();
+							m_oFileWriter.m_pApp = pApp;
+						}
+						break;
+					case c_oSerTableTypes::Core:
+						{
+							PPTX::Core oCore(NULL);
+							m_oBufferedStream.Skip(1); // type
+							oCore.fromPPTY(&m_oBufferedStream);
+							OOX::CCore* pCore = new OOX::CCore(NULL);
+							pCore->FromPptxCore(&oCore);
+							pCore->SetRequiredDefaults();
+							m_oFileWriter.m_pCore = pCore;
+						}
+						break;
 					case c_oSerTableTypes::HdrFtr:
 						res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
 						break;

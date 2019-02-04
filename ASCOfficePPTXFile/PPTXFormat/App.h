@@ -65,8 +65,12 @@ namespace PPTX
 
             XmlMacroReadNodeValueBase(oNode, L"Template", Template);
             XmlMacroReadNodeValueBase(oNode, L"TotalTime", TotalTime);
+			XmlMacroReadNodeValueBase(oNode, L"Pages", Pages);
             XmlMacroReadNodeValueBase(oNode, L"Words", Words);
+			XmlMacroReadNodeValueBase(oNode, L"Characters", Characters);
             XmlMacroReadNodeValueBase(oNode, L"Application", Application);
+			XmlMacroReadNodeValueBase(oNode, L"DocSecurity", DocSecurity);
+			XmlMacroReadNodeValueBase(oNode, L"Lines", Lines);
             XmlMacroReadNodeValueBase(oNode, L"PresentationFormat", PresentationFormat);
             XmlMacroReadNodeValueBase(oNode, L"Paragraphs", Paragraphs);
             XmlMacroReadNodeValueBase(oNode, L"Slides", Slides);
@@ -91,21 +95,16 @@ namespace PPTX
                 XmlMacroLoadArray(oNodeVector2, _T("vt:variant"), TitlesOfParts, Logic::PartTitle);
 			}
 
+			XmlMacroReadNodeValueBase(oNode, L"Manager", Manager);
 			XmlMacroReadNodeValueBase(oNode, L"Company", Company);
 			XmlMacroReadNodeValueBase(oNode, L"LinksUpToDate", LinksUpToDate);
+			XmlMacroReadNodeValueBase(oNode, L"CharactersWithSpaces", CharactersWithSpaces);
 			XmlMacroReadNodeValueBase(oNode, L"SharedDoc", SharedDoc);
+			XmlMacroReadNodeValueBase(oNode, L"HyperlinkBase", HyperlinkBase);
 			XmlMacroReadNodeValueBase(oNode, L"HyperlinksChanged", HyperlinksChanged);
 			XmlMacroReadNodeValueBase(oNode, L"AppVersion", AppVersion);
-			
-			//Characters = document.Root.element("Characters").text();
-			//CharactersWithSpaces = document.Root.element("CharactersWithSpaces").text();
 			//DigSig (Digital Signature)
-			//DocSecurity = document.Root.element("DocSecurity").text();
 			//HLinks
-			//HyperlinkBase = document.Root.element("HyperlinkBase").text();
-			//Lines = document.Root.element("Lines").text();
-			//Manager = document.Root.element("Manager").text();
-			//Pages = document.Root.element("Pages").text();
 
 			Normalize();
 		}
@@ -153,7 +152,98 @@ namespace PPTX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
+			//start new record because new attributes is incompatible with previous versions
+			pWriter->StartRecord(0);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			pWriter->WriteInt2(16, Characters);
+			pWriter->WriteInt2(17, CharactersWithSpaces);
+			pWriter->WriteInt2(18, DocSecurity);
+			pWriter->WriteString2(19, HyperlinkBase);
+			pWriter->WriteInt2(20, Lines);
+			pWriter->WriteString2(21, Manager);
+			pWriter->WriteInt2(22, Pages);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			pWriter->EndRecord();
+
+			pWriter->EndRecord();
+		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0: Template = pReader->GetString2(); break;
+				case 1: Application = pReader->GetString2(); break;
+				case 2: PresentationFormat = pReader->GetString2(); break;
+				case 3: Company = pReader->GetString2(); break;
+				case 4: AppVersion = pReader->GetString2(); break;
+				case 5: TotalTime = pReader->GetULong(); break;
+				case 6: Words = pReader->GetULong(); break;
+				case 7: Paragraphs = pReader->GetULong(); break;
+				case 8: Slides = pReader->GetULong(); break;
+				case 9: Notes = pReader->GetULong(); break;
+				case 10: HiddenSlides = pReader->GetULong(); break;
+				case 11: MMClips = pReader->GetULong(); break;
+				case 12: ScaleCrop = pReader->GetBool(); break;
+				case 13: LinksUpToDate = pReader->GetBool(); break;
+				case 14: SharedDoc = pReader->GetBool(); break;
+				case 15: HyperlinksChanged = pReader->GetBool(); break;
+				default: break;
+				}
+			}
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+
+						pReader->Skip(1); // start attributes
+
+						while (true)
+						{
+							BYTE _at = pReader->GetUChar_TypeNode();
+							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+								break;
+
+							switch (_at)
+							{
+							case 16: Characters = pReader->GetULong(); break;
+							case 17: CharactersWithSpaces = pReader->GetULong(); break;
+							case 18: DocSecurity = pReader->GetULong(); break;
+							case 19: HyperlinkBase = pReader->GetString2(); break;
+							case 20: Lines = pReader->GetULong(); break;
+							case 21: Manager = pReader->GetString2(); break;
+							case 22: Pages = pReader->GetULong(); break;
+							default: break;
+							}
+						}
+
+						pReader->Seek(_end_rec2);
+					}
+					break;
+					default:
+					{
+						pReader->SkipRecord();
+						break;
+					}
+				}
+			}
+
+			pReader->Seek(_end_rec);
 		}
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -166,11 +256,16 @@ namespace PPTX
 
 			pWriter->EndAttributes();
 
-			pWriter->WriteNodeValue(_T("Template"), Template);
+			pWriter->WriteNodeValue2(_T("Template"), Template);
 			pWriter->WriteNodeValue(_T("TotalTime"), TotalTime);
+			pWriter->WriteNodeValue(_T("Pages"), Pages);
 			pWriter->WriteNodeValue(_T("Words"), Words);
-			pWriter->WriteNodeValue(_T("Application"), Application);
-			pWriter->WriteNodeValue(_T("PresentationFormat"), PresentationFormat);
+			pWriter->WriteNodeValue(_T("Characters"), Characters);
+			pWriter->WriteNodeValue(_T("CharactersWithSpaces"), CharactersWithSpaces);
+			pWriter->WriteNodeValue2(_T("Application"), Application);
+			pWriter->WriteNodeValue(_T("DocSecurity"), DocSecurity);
+			pWriter->WriteNodeValue2(_T("PresentationFormat"), PresentationFormat);
+			pWriter->WriteNodeValue(_T("Lines"), Lines);
 			pWriter->WriteNodeValue(_T("Paragraphs"), Paragraphs);
 			pWriter->WriteNodeValue(_T("Slides"), Slides);
 			pWriter->WriteNodeValue(_T("Notes"), Notes);
@@ -206,11 +301,13 @@ namespace PPTX
 			pWriter->EndNode(_T("vt:vector"));
 			pWriter->EndNode(_T("TitlesOfParts"));
 
-			pWriter->WriteNodeValue(_T("Company"), Company);
+			pWriter->WriteNodeValue2(_T("Manager"), Manager);
+			pWriter->WriteNodeValue2(_T("Company"), Company);
 			pWriter->WriteNodeValue(_T("LinksUpToDate"), LinksUpToDate);
 			pWriter->WriteNodeValue(_T("SharedDoc"), SharedDoc);
+			pWriter->WriteNodeValue2(_T("HyperlinkBase"), HyperlinkBase);
 			pWriter->WriteNodeValue(_T("HyperlinksChanged"), HyperlinksChanged);
-			pWriter->WriteNodeValue(_T("AppVersion"), AppVersion);
+			pWriter->WriteNodeValue2(_T("AppVersion"), AppVersion);
 
 			pWriter->EndNode(_T("Properties"));
 		}
@@ -235,15 +332,16 @@ namespace PPTX
 		nullable_bool						HyperlinksChanged;		// (Hyperlinks Changed)
 		nullable_string						AppVersion;				// (Application Version)
 
-		//nullable_property<int, setter::only_positive<int> > Characters;			// (Total Number of Characters)
-		//nullable_property<int, setter::only_positive<int> > CharactersWithSpaces;	// (Number of Characters (With Spaces))
+		nullable_int						Characters;				// (Total Number of Characters)
+		nullable_int						CharactersWithSpaces;	// (Number of Characters (With Spaces))
+		nullable_int						DocSecurity;			// (Document Security)
+		nullable_string						HyperlinkBase;			// (Relative Hyperlink Base)
+		nullable_int						Lines;					// (Number of Lines)
+		nullable_string						Manager;				// (Name of Manager)
+		nullable_int						Pages;					// (Total Number of Pages)
+
 		//DigSig (Digital Signature)
-		//nullable_property<int, setter::only_positive<int> > DocSecurity;			// (Document Security)
 		//std::list<std::string> - ??? HLinks;										// (Hyperlink List)
-		//nullable_property<std::string> HyperlinkBase;								// (Relative Hyperlink Base)
-		//nullable_property<int, setter::only_positive<int> > Lines;				// (Number of Lines)
-		//nullable_property<std::string> Manager;									// (Name of Manager)
-		//nullable_property<int, setter::only_positive<int> > Pages;				// (Total Number of Pages)
 	private:
 		nullable_int						m_VectorSize;
 		nullable_int						m_Headings;
@@ -259,6 +357,11 @@ namespace PPTX
 			MMClips.normalize_positive();
 			m_VectorSize.normalize_positive();
 			m_Headings.normalize_positive();
+			Characters.normalize_positive();
+			CharactersWithSpaces.normalize_positive();
+			DocSecurity.normalize_positive();
+			Lines.normalize_positive();
+			Pages.normalize_positive();
 		}		
 	};
 } // namespace PPTX

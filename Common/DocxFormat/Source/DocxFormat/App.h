@@ -186,11 +186,11 @@ namespace OOX
 			if ( m_sApplication.IsInit() )
 			{
 				sXml += _T("<Application>");
-				sXml += m_sApplication.get();
+				sXml += XmlUtils::EncodeXmlString(m_sApplication.get());
 				if ( m_sAppVersion.IsInit() )
 				{
 					sXml += L"/";
-					sXml += m_sAppVersion.get();
+					sXml += XmlUtils::EncodeXmlString(m_sAppVersion.get());
 				}
 				sXml += _T("</Application>");
 			}
@@ -225,7 +225,7 @@ namespace OOX
 			if ( m_sCompany.IsInit() )
 			{
 				sXml += _T("<Company>");
-				sXml += m_sCompany.get();
+				sXml += XmlUtils::EncodeXmlString(m_sCompany.get());
 				sXml += _T("</Company>");
 			}
 
@@ -252,7 +252,7 @@ namespace OOX
 			if ( m_sHyperlinkBase.IsInit() )
 			{
 				sXml += _T("<HyperlinkBase>");
-				sXml += m_sHyperlinkBase.get();
+				sXml += XmlUtils::EncodeXmlString(m_sHyperlinkBase.get());
 				sXml += _T("</HyperlinkBase>");
 			}
 
@@ -289,7 +289,7 @@ namespace OOX
 			if ( m_sManager.IsInit() )
 			{
 				sXml += _T("<Manager>");
-				sXml += m_sManager.get();
+				sXml += XmlUtils::EncodeXmlString(m_sManager.get());
 				sXml += _T("</Manager>");
 			}
 
@@ -366,7 +366,7 @@ namespace OOX
 			if ( m_sTemplate.IsInit() )
 			{
 				sXml += _T("<Template>");
-				sXml += m_sTemplate.get();
+				sXml += XmlUtils::EncodeXmlString(m_sTemplate.get());
 				sXml += _T("</Template>");
 			}
 
@@ -410,18 +410,23 @@ namespace OOX
 		}
 		void SetDefaults()
 		{
-			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-			if (sApplication.empty())
-				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-			SetApplication(sApplication);
-#if defined(INTVER)
-            SetAppVersion(VALUE2STR(INTVER));
-#endif
+			SetRequiredDefaults();
 			SetDocSecurity(0);
 			SetScaleCrop(false);
 			SetLinksUpToDate(false);
 			SetSharedDoc(false);
 			SetHyperlinksChanged(false);
+		}
+		void SetRequiredDefaults()
+		{
+			m_sAppVersion.reset(NULL);
+			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+			if (sApplication.empty())
+				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+			SetApplication(sApplication);
+#if defined(INTVER)
+			SetAppVersion(VALUE2STR(INTVER));
+#endif
 		}
         void SetApplication(const std::wstring& sVal)
 		{
@@ -460,6 +465,7 @@ namespace OOX
 			m_bHyperlinksChanged = bVal;
 		}
 		PPTX::App* ToPptxApp();
+		void FromPptxApp(PPTX::App* pApp);
 
 		// TO DO: DigSig
 		//        HeadingPairs

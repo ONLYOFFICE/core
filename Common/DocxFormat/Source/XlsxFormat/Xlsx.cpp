@@ -123,30 +123,22 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
         return false;
 
 //CApp
-    OOX::CApp* pApp = new OOX::CApp(this);
+	if(NULL == m_pApp)
+	{
+		OOX::CApp* pApp = new OOX::CApp(this);
+		pApp->SetDefaults();
+		smart_ptr<OOX::File> pAppFile(pApp);
+		Add(pAppFile);
+	}
 
-	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-	if (sApplication.empty())
-		sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-	pApp->SetApplication(sApplication);
-
-#if defined(INTVER)
-    pApp->SetAppVersion(VALUE2STR(INTVER));
-#endif
-    pApp->SetDocSecurity(0);
-    pApp->SetScaleCrop(false);
-    pApp->SetLinksUpToDate(false);
-    pApp->SetSharedDoc(false);
-    pApp->SetHyperlinksChanged(false);
-
-    smart_ptr<OOX::File> pAppFile(pApp);
-    const OOX::RId oAppRId =  Add(pAppFile);
 //CCore
-    OOX::CCore* pCore = new OOX::CCore(this);
-    pCore->SetCreator(_T(""));
-    pCore->SetLastModifiedBy(_T(""));
-    smart_ptr<OOX::File> pCoreFile(pCore);
-    const OOX::RId oCoreRId = Add(pCoreFile);
+	if(NULL == m_pCore)
+	{
+		OOX::CCore* pCore = new OOX::CCore(this);
+		pCore->SetDefaults();
+		smart_ptr<OOX::File> pCoreFile(pCore);
+		Add(pCoreFile);
+	}
 
 //xl
     CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();

@@ -531,6 +531,12 @@ namespace NSBinPptxRW
             WriteString(val);
             WriteNodeEnd(strNodeName);
         }
+		AVSINLINE void WriteNodeValue2(const std::wstring& strNodeName, const std::wstring& val)
+		{
+			WriteNodeBegin(strNodeName);
+			WriteStringXML(val);
+			WriteNodeEnd(strNodeName);
+		}
         AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const bool& val)
         {
             WriteNodeBegin(strNodeName);
@@ -663,6 +669,11 @@ namespace NSBinPptxRW
             if (value.IsInit())
                 WriteNodeValue(strName, *value);
         }
+		AVSINLINE void WriteNodeValue2(const std::wstring& strName, const nullable_string& value)
+		{
+			if (value.IsInit())
+				WriteNodeValue2(strName, *value);
+		}
         AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_bool& value)
         {
             if (value.IsInit())

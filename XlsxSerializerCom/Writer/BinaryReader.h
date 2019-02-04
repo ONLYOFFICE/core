@@ -50,6 +50,8 @@
 
 #include "../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 #include "../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/Common.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
@@ -69,6 +71,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 namespace BinXlsxRW 
 {
@@ -5063,6 +5067,30 @@ namespace BinXlsxRW
 				oBufferedStream.Seek(mtiOffBits);
 				switch(mtiType)
 				{
+				case c_oSerTableTypes::App:
+					{
+						PPTX::App oApp(NULL);
+						oBufferedStream.Skip(1); // type
+						oApp.fromPPTY(&oBufferedStream);
+						OOX::CApp* pApp = new OOX::CApp(NULL);
+						pApp->FromPptxApp(&oApp);
+						pApp->SetRequiredDefaults();
+						oXlsx.m_pApp = pApp;
+						oXlsx.Add(smart_ptr<OOX::File>(pApp));
+					}
+					break;
+				case c_oSerTableTypes::Core:
+					{
+						PPTX::Core oCore(NULL);
+						oBufferedStream.Skip(1); // type
+						oCore.fromPPTY(&oBufferedStream);
+						OOX::CCore* pCore = new OOX::CCore(NULL);
+						pCore->FromPptxCore(&oCore);
+						pCore->SetRequiredDefaults();
+						oXlsx.m_pCore = pCore;
+						oXlsx.Add( smart_ptr<OOX::File>(pCore));
+					}
+					break;
 				case c_oSerTableTypes::Styles:
 					{
 						oXlsx.CreateStyles();

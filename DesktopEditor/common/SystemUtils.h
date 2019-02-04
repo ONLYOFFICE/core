@@ -43,6 +43,8 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvCompanyNameDefault = L"Ascensio System SIA Copyright (c) 2018";
 	static const wchar_t* gc_EnvMethodEncrypt = L"METHOD_CRYPT";
 	static const wchar_t* gc_EnvMethodEncryptDefault = L"Strong";
+	static const wchar_t* gc_EnvCreator = L"CREATOR";
+	static const wchar_t* gc_EnvLastModifiedBy = L"LAST_MODIFIED_BY";
 
 	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
 }

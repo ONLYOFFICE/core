@@ -55,18 +55,69 @@ namespace OOX
 	PPTX::Core* CCore::ToPptxCore()
 	{
 		PPTX::Core* res = new PPTX::Core(NULL);
-		if (m_sTitle.IsInit())
-			res->title = m_sTitle.get();
-		if (m_sCreator.IsInit())
-			res->creator = m_sCreator.get();
-		if (m_sLastModifiedBy.IsInit())
-			res->lastModifiedBy = m_sLastModifiedBy.get();
-		if (m_sRevision.IsInit())
-			res->revision = m_sRevision.get();
+		if (m_sCategory.IsInit())
+			res->category = m_sCategory.get();
+		if (m_sContentStatus.IsInit())
+			res->contentStatus = m_sContentStatus.get();
 		if (m_sCreated.IsInit())
 			res->created = m_sCreated.get();
+		if (m_sCreator.IsInit())
+			res->creator = m_sCreator.get();
+		if (m_sDescription.IsInit())
+			res->description = m_sDescription.get();
+		if (m_sIdentifier.IsInit())
+			res->identifier = m_sIdentifier.get();
+		if (m_sKeywords.IsInit())
+			res->keywords = m_sKeywords.get();
+		if (m_sLanguage.IsInit())
+			res->language = m_sLanguage.get();
+		if (m_sLastModifiedBy.IsInit())
+			res->lastModifiedBy = m_sLastModifiedBy.get();
+		if (m_sLastPrinted.IsInit())
+			res->lastPrinted = m_sLastPrinted.get();
 		if (m_sModified.IsInit())
 			res->modified = m_sModified.get();
+		if (m_sRevision.IsInit())
+			res->revision = m_sRevision.get();
+		if (m_sSubject.IsInit())
+			res->subject = m_sSubject.get();
+		if (m_sTitle.IsInit())
+			res->title = m_sTitle.get();
+		if (m_sVersion.IsInit())
+			res->version = m_sVersion.get();
 		return res;
+	}
+	void CCore::FromPptxCore(PPTX::Core* pCore)
+	{
+		if(pCore->category.IsInit())
+			m_sCategory = pCore->category.get();
+		if(pCore->contentStatus.IsInit())
+			m_sContentStatus = pCore->contentStatus.get();
+		if(pCore->created.IsInit())
+			m_sCreated = pCore->created.get();
+		if(pCore->creator.IsInit())
+			m_sCreator = pCore->creator.get();
+		if(pCore->description.IsInit())
+			m_sDescription = pCore->description.get();
+		if(pCore->identifier.IsInit())
+			m_sIdentifier = pCore->identifier.get();
+		if(pCore->keywords.IsInit())
+			m_sKeywords = pCore->keywords.get();
+		if(pCore->language.IsInit())
+			m_sLanguage = pCore->language.get();
+		if(pCore->lastModifiedBy.IsInit())
+			m_sLastModifiedBy = pCore->lastModifiedBy.get();
+		if(pCore->lastPrinted.IsInit())
+			m_sLastPrinted = pCore->lastPrinted.get();
+		if(pCore->modified.IsInit())
+			m_sModified = pCore->modified.get();
+		if(pCore->revision.IsInit())
+			m_sRevision = pCore->revision.get();
+		if(pCore->subject.IsInit())
+			m_sSubject = pCore->subject.get();
+		if(pCore->title.IsInit())
+			m_sTitle = pCore->title.get();
+		if(pCore->version.IsInit())
+			m_sVersion = pCore->version.get();
 	}
 } // namespace OOX

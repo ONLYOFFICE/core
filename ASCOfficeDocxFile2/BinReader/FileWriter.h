@@ -58,6 +58,11 @@ namespace NSBinPptxRW
 {
 	class CDrawingConverter;
 }
+namespace OOX
+{
+	class CApp;
+	class CCore;
+}
 
 namespace Writers
 {
@@ -87,6 +92,8 @@ namespace Writers
 		std::wstring					m_sThemePath;
 		int								m_nDocPrIndex;
 		BinDocxRW::CComments*			m_pComments;
+		OOX::CApp*						m_pApp;
+		OOX::CCore*						m_pCore;
 
 		FileWriter (std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath)
 									:	m_pDrawingConverter(pDrawingConverter), m_sThemePath(sThemePath), m_bSaveChartAsImg(bSaveChartAsImg),
@@ -105,8 +112,15 @@ namespace Writers
 										m_oWebSettingsWriter	(sDirOutput),
 										m_nDocPrIndex(0),
 										m_pComments(NULL),
-										m_oCustomXmlWriter		(sDirOutput, pDrawingConverter)
+										m_oCustomXmlWriter		(sDirOutput, pDrawingConverter),
+										m_pApp					(NULL),
+										m_pCore					(NULL)
 		{
+		}
+		~FileWriter()
+		{
+			RELEASEOBJECT(m_pApp);
+			RELEASEOBJECT(m_pCore);
 		}
 		int getNextDocPr()
 		{

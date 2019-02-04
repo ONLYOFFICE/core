@@ -660,24 +660,28 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());	
 				}
 			}
+
+			// app
+			CreateDefaultApp();
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::App);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				m_oApp.fromPPTY(&m_oReader);
+				SetRequiredDefaultsApp();
+			}
+
+			// core
+			CreateDefaultCore();
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Core);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				m_oCore.fromPPTY(&m_oReader);
+				SetRequiredDefaultsCore();
+			}
             if (false)
 			{
-				// app
-				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::App);
-				if (m_mainTables.end()  != pPair)
-				{
-					m_oReader.Seek(pPair->second);
-					m_oApp.fromPPTY(&m_oReader);
-				}
-
-				// core
-				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Core);
-				if (m_mainTables.end()  != pPair)
-				{
-					m_oReader.Seek(pPair->second);
-					m_oCore.fromPPTY(&m_oReader);
-				}
-
 				// tableStyles
 				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
 				if (m_mainTables.end()  != pPair)
@@ -706,9 +710,6 @@ namespace NSBinPptxRW
 			else
 			{
 		// create default
-				CreateDefaultApp();
-				CreateDefaultCore();
-
 				CreateDefaultViewProps();
 
 		// presProps
@@ -1028,18 +1029,24 @@ namespace NSBinPptxRW
 			m_oReader.Seek(_end_rec);
 		}
 
-		void CreateDefaultApp()
+		void SetRequiredDefaultsApp()
 		{
-			m_oApp.TotalTime = 0;
-			m_oApp.Words = 0;
+			m_oApp.AppVersion.reset(NULL);
 			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 			if (sApplication.empty())
 				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 #if defined(INTVER)
-            std::string s = VALUE2STR(INTVER);
-            sApplication += L"/" + std::wstring(s.begin(), s.end());
+			std::string s = VALUE2STR(INTVER);
+			sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif
 			m_oApp.Application = sApplication;
+		}
+
+		void CreateDefaultApp()
+		{
+			m_oApp.TotalTime = 0;
+			m_oApp.Words = 0;
+			SetRequiredDefaultsApp();
 			m_oApp.PresentationFormat = L"On-screen Show (4:3)";
 			m_oApp.Paragraphs = 0;
 			m_oApp.Slides = (int)m_arSlides.size();
@@ -1081,6 +1088,15 @@ namespace NSBinPptxRW
 			m_oApp.LinksUpToDate = false;
 			m_oApp.SharedDoc = false;
 			m_oApp.HyperlinksChanged = false;
+		}
+		void SetRequiredDefaultsCore()
+		{
+			std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreator);
+			if (!sCreator.empty())
+				m_oCore.creator = sCreator;
+			std::wstring sLastModifiedBy = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvLastModifiedBy);
+			if (!sLastModifiedBy.empty())
+				m_oCore.lastModifiedBy = sLastModifiedBy;
 		}
 		void CreateDefaultCore()
 		{

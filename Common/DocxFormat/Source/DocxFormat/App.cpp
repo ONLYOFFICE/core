@@ -86,7 +86,69 @@ namespace OOX
 			res->HyperlinksChanged = m_bHyperlinksChanged.get();
 		if(m_sAppVersion.IsInit())
 			res->AppVersion = m_sAppVersion.get();
-
+		if(m_nCharacters.IsInit())
+			res->Characters = m_nCharacters.get();
+		if(m_nCharactersWithSpaces.IsInit())
+			res->CharactersWithSpaces = m_nCharactersWithSpaces.get();
+		if(m_nDocSecurity.IsInit())
+			res->DocSecurity = m_nDocSecurity.get();
+		if(m_sHyperlinkBase.IsInit())
+			res->HyperlinkBase = m_sHyperlinkBase.get();
+		if(m_nLines.IsInit())
+			res->Lines = m_nLines.get();
+		if(m_sManager.IsInit())
+			res->Manager = m_sManager.get();
+		if(m_nPages.IsInit())
+			res->Pages = m_nPages.get();
 		return res;
+	}
+	void CApp::FromPptxApp(PPTX::App* pApp)
+	{
+		if(pApp->Template.IsInit())
+			m_sTemplate = pApp->Template.get();
+		if(pApp->TotalTime.IsInit())
+			m_nTotalTime = pApp->TotalTime.get();
+		if(pApp->Words.IsInit())
+			m_nWords = pApp->Words.get();
+		if(pApp->Application.IsInit())
+			m_sApplication = pApp->Application.get();
+		if(pApp->PresentationFormat.IsInit())
+			m_sPresentationForm = pApp->PresentationFormat.get();
+		if(pApp->Paragraphs.IsInit())
+			m_nParagraphs = pApp->Paragraphs.get();
+		if(pApp->Slides.IsInit())
+			m_nSlides = pApp->Slides.get();
+		if(pApp->Notes.IsInit())
+			m_nNotes = pApp->Notes.get();
+		if(pApp->HiddenSlides.IsInit())
+			m_nHiddenSlides = pApp->HiddenSlides.get();
+		if(pApp->MMClips.IsInit())
+			m_nMMClips = pApp->MMClips.get();
+		if(pApp->ScaleCrop.IsInit())
+			m_bScaleCrop = pApp->ScaleCrop.get();
+		if(pApp->Company.IsInit())
+			m_sCompany = pApp->Company.get();
+		if(pApp->LinksUpToDate.IsInit())
+			m_bLinksUpToDate = pApp->LinksUpToDate.get();
+		if(pApp->SharedDoc.IsInit())
+			m_bSharedDoc = pApp->SharedDoc.get();
+		if(pApp->HyperlinksChanged.IsInit())
+			m_bHyperlinksChanged = pApp->HyperlinksChanged.get();
+		if(pApp->AppVersion.IsInit())
+			m_sAppVersion = pApp->AppVersion.get();
+		if(pApp->Characters.IsInit())
+			m_nCharacters = pApp->Characters.get();
+		if(pApp->CharactersWithSpaces.IsInit())
+			m_nCharactersWithSpaces = pApp->CharactersWithSpaces.get();
+		if(pApp->DocSecurity.IsInit())
+			m_nDocSecurity = pApp->DocSecurity.get();
+		if(pApp->HyperlinkBase.IsInit())
+			m_sHyperlinkBase = pApp->HyperlinkBase.get();
+		if(pApp->Lines.IsInit())
+			m_nLines = pApp->Lines.get();
+		if(pApp->Manager.IsInit())
+			m_sManager = pApp->Manager.get();
+		if(pApp->Pages.IsInit())
+			m_nPages = pApp->Pages.get();
 	}
 } // namespace OOX

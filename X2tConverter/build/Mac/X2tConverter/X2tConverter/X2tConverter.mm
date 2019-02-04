@@ -486,7 +486,6 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::docx2odt(from, to, temp, oInputParams);
 }
-
 - (int)sdk_xlsx2ods:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -502,7 +501,6 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::xlsx2ods(from, to, temp, oInputParams);
 }
-
 - (int)sdk_pptx2odp:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -517,6 +515,37 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     }
     
     return NExtractTools::pptx2odp(from, to, temp, oInputParams);
+}
+
+- (int)sdk_odf2oox:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+}
+- (int)sdk_odf2oox_dir:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::odf2oox_dir(from, to, temp, oInputParams);
 }
 
 - (int)sdk_dir2zip:(NSString*)nsFrom nsTo:(NSString*)nsTo {

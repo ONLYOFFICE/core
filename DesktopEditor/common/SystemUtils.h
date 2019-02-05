@@ -44,7 +44,9 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvMethodEncrypt = L"METHOD_CRYPT";
 	static const wchar_t* gc_EnvMethodEncryptDefault = L"Strong";
 	static const wchar_t* gc_EnvCreator = L"CREATOR";
+	static const wchar_t* gc_EnvCreated = L"CREATED";
 	static const wchar_t* gc_EnvLastModifiedBy = L"LAST_MODIFIED_BY";
+	static const wchar_t* gc_EnvModified = L"MODIFIED";
 
 	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
 }

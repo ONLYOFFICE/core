@@ -5076,7 +5076,8 @@ namespace BinXlsxRW
 						pApp->FromPptxApp(&oApp);
 						pApp->SetRequiredDefaults();
 						oXlsx.m_pApp = pApp;
-						oXlsx.Add(smart_ptr<OOX::File>(pApp));
+						smart_ptr<OOX::File> oCurFile(pApp);
+						oXlsx.Add(oCurFile);
 					}
 					break;
 				case c_oSerTableTypes::Core:
@@ -5088,7 +5089,8 @@ namespace BinXlsxRW
 						pCore->FromPptxCore(&oCore);
 						pCore->SetRequiredDefaults();
 						oXlsx.m_pCore = pCore;
-						oXlsx.Add( smart_ptr<OOX::File>(pCore));
+						smart_ptr<OOX::File> oCurFile(pCore);
+						oXlsx.Add(oCurFile);
 					}
 					break;
 				case c_oSerTableTypes::Styles:

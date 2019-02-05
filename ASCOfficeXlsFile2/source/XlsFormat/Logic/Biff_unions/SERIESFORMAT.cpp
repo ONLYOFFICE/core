@@ -313,10 +313,13 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 							}break;
 					}
 				}
-				CP_XML_NODE(L"c:order")
+				if (trendline->ordUser >1)
 				{
-					CP_XML_ATTR (L"val" , trendline->ordUser);	
-				}				
+					CP_XML_NODE(L"c:order")
+					{
+						CP_XML_ATTR (L"val" , trendline->ordUser);	
+					}	
+				}
 				CP_XML_NODE(L"c:dispRSqr")
 				{
 					CP_XML_ATTR (L"val" , (bool)trendline->fRSquared);	

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of End record in BIFF8
 class End: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(End)
@@ -48,10 +46,9 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeEnd;
+	static const ElementType type = typeEnd;
 
 
 };

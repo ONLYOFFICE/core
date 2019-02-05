@@ -66,7 +66,7 @@ public:
 
 	void apply_crt_ss		(BaseObjectPtr crt_ss);
 
-	int serialize			(std::wostream & _stream, int series_type, int ind = -1);
+	int serialize			(std::wostream & _stream, int series_type, int indPt);
 	int serialize_default	(std::wostream & _stream, int series_type, int ind);
 	int serialize2			(std::wostream & _stream, int series_type);
 	
@@ -90,8 +90,7 @@ public:
 	_CP_OPT(bool)	m_isVaried;
 
 	bool			m_isAutoFill;
-	bool			m_isAutoLine;
-	
+	bool			m_isAutoLine;	
 };
 
 } // namespace XLS

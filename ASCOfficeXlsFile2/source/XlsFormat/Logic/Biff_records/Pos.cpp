@@ -82,6 +82,12 @@ int Pos::serialize(std::wostream & _stream)
 		bAutoPosition	= Frame_->fAutoPosition;
 		bAutoSize		= Frame_->fAutoSize;
 	}
+
+	if (m_iLayoutTarget > 0) //cem31.xls
+	{
+		bAutoPosition = false;
+		bAutoSize = false;
+	}
 	double x = x1 / 4000.;
 	double y = y1 / 4000.;
 

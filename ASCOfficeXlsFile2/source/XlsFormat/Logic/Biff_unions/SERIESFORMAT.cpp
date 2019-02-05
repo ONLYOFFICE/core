@@ -289,7 +289,7 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 			{
 				if (series_ss)
 				{
-					series_ss->serialize(CP_XML_STREAM(), CHART_TYPE_Bar);
+					series_ss->serialize(CP_XML_STREAM(), CHART_TYPE_Bar, -1);
 					//тут не надо рисовать маркеры .. а вот fill можно - он просто отбрасывается - по "првильному" нужно выделить отдельный тип чисто линий
 				}
 				//CP_XML_NODE(L"c:spPr")
@@ -305,11 +305,18 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 						case 2:		CP_XML_ATTR (L"val", L"log");		break;
 						case 3:		CP_XML_ATTR (L"val", L"power");		break;
 						case 4:		CP_XML_ATTR (L"val", L"movingAvg"); break;
-						case 0:		//CP_XML_ATTR (L"val", L"poly");		break;
-						default:	CP_XML_ATTR (L"val", L"linear");	break;
+						case 0:
+						default:			
+							{
+								if (trendline->ordUser >1)	CP_XML_ATTR (L"val", L"poly");	
+								else	CP_XML_ATTR (L"val", L"linear");	
+							}break;
 					}
 				}
-				
+				CP_XML_NODE(L"c:order")
+				{
+					CP_XML_ATTR (L"val" , trendline->ordUser);	
+				}				
 				CP_XML_NODE(L"c:dispRSqr")
 				{
 					CP_XML_ATTR (L"val" , (bool)trendline->fRSquared);	

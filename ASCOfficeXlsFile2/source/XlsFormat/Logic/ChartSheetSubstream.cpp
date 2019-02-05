@@ -791,7 +791,8 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 		{
 			CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[0].get());
 			if ((crt) && (	crt->m_iChartType == CHART_TYPE_Radar || 
-							crt->m_iChartType == CHART_TYPE_RadarArea))//еще?
+							crt->m_iChartType == CHART_TYPE_RadarArea ||
+							crt->m_iChartType == CHART_TYPE_Scatter))//еще?
 			{
 				PlotAreaPos->m_iLayoutTarget = 2; //inner
 			}
@@ -898,7 +899,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							
 							series->m_arAI[0]->serialize(CP_XML_STREAM());
 							
-							series_ss->serialize(CP_XML_STREAM(), crt->m_iChartType);
+							series_ss->serialize(CP_XML_STREAM(), crt->m_iChartType, -1);
 
 							serialize_dPt(CP_XML_STREAM(), it->second[i], crt, (std::max)(ser->cValx, ser->cValy));//+bubbles
 							

@@ -39,11 +39,9 @@ Frame::Frame()
 {
 }
 
-
 Frame::~Frame()
 {
 }
-
 
 BaseObjectPtr Frame::clone()
 {
@@ -56,8 +54,8 @@ void Frame::readFields(CFRecord& record)
 	unsigned short flags;
 	record >> frt >> flags;
 	
-	fAutoSize = GETBIT(flags, 0);
-	fAutoPosition = GETBIT(flags, 1);
+	fAutoSize		= GETBIT(flags, 0);
+	fAutoPosition	= GETBIT(flags, 1);
 }
 
 } // namespace XLS

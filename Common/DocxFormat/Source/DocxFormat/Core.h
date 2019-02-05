@@ -223,17 +223,30 @@ namespace OOX
 		}
 		void SetDefaults()
 		{
-			m_sCreator = L"";
+//			m_sCreator = L"";
 			m_sLastModifiedBy = L"";
 		}
 		void SetRequiredDefaults()
 		{
-			std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreator);
-			if (!sCreator.empty())
-				m_sCreator = sCreator;
+			if (m_sCreator.IsInit())
+			{
+				std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreator);
+				if (!sCreator.empty())
+					m_sCreator = sCreator;
+			}
+			if (m_sCreated.IsInit())
+			{
+				std::wstring sCreated = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreated);
+				if (!sCreated.empty())
+					m_sCreated = sCreated;
+			}
 			std::wstring sLastModifiedBy = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvLastModifiedBy);
 			if (!sLastModifiedBy.empty())
 				m_sLastModifiedBy = sLastModifiedBy;
+
+			std::wstring sModified = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvModified);
+			if (!sModified.empty())
+				m_sModified = sModified;
 		}
 		void SetCreator(std::wstring sVal)
 		{

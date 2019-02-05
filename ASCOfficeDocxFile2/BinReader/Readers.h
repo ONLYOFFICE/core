@@ -8806,7 +8806,6 @@ public:
 					case c_oSerTableTypes::App:
 						{
 							PPTX::App oApp(NULL);
-							m_oBufferedStream.Skip(1); // type
 							oApp.fromPPTY(&m_oBufferedStream);
 							OOX::CApp* pApp = new OOX::CApp(NULL);
 							pApp->FromPptxApp(&oApp);
@@ -8817,7 +8816,6 @@ public:
 					case c_oSerTableTypes::Core:
 						{
 							PPTX::Core oCore(NULL);
-							m_oBufferedStream.Skip(1); // type
 							oCore.fromPPTY(&m_oBufferedStream);
 							OOX::CCore* pCore = new OOX::CCore(NULL);
 							pCore->FromPptxCore(&oCore);

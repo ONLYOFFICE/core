@@ -1091,16 +1091,28 @@ namespace NSBinPptxRW
 		}
 		void SetRequiredDefaultsCore()
 		{
-			std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreator);
-			if (!sCreator.empty())
-				m_oCore.creator = sCreator;
+			if (!m_oCore.creator.IsInit())
+			{
+				std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreator);
+				if (!sCreator.empty())
+					m_oCore.creator = sCreator;
+			}
+			if (!m_oCore.created.IsInit())
+			{
+				std::wstring sCreated = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreated);
+				if (!sCreated.empty())
+					m_oCore.created = sCreated;
+			}
 			std::wstring sLastModifiedBy = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvLastModifiedBy);
 			if (!sLastModifiedBy.empty())
 				m_oCore.lastModifiedBy = sLastModifiedBy;
+			std::wstring sModified = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvModified);
+			if (!sModified.empty())
+				m_oCore.modified = sModified;
 		}
 		void CreateDefaultCore()
 		{
-			m_oCore.creator  = _T("");
+//			m_oCore.creator  = _T("");
 			m_oCore.lastModifiedBy = _T("");
 		}
 		void CreateDefaultViewProps()

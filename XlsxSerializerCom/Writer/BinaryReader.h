@@ -5070,7 +5070,6 @@ namespace BinXlsxRW
 				case c_oSerTableTypes::App:
 					{
 						PPTX::App oApp(NULL);
-						oBufferedStream.Skip(1); // type
 						oApp.fromPPTY(&oBufferedStream);
 						OOX::CApp* pApp = new OOX::CApp(NULL);
 						pApp->FromPptxApp(&oApp);
@@ -5083,7 +5082,6 @@ namespace BinXlsxRW
 				case c_oSerTableTypes::Core:
 					{
 						PPTX::Core oCore(NULL);
-						oBufferedStream.Skip(1); // type
 						oCore.fromPPTY(&oBufferedStream);
 						OOX::CCore* pCore = new OOX::CCore(NULL);
 						pCore->FromPptxCore(&oCore);

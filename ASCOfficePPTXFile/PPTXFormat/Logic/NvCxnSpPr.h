@@ -101,7 +101,11 @@ namespace PPTX
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cNvPr);
 				oValue.Write(cNvCxnSpPr);
-				//oValue.Write(nvPr); //todooo ??? 3622708.xlsx
+				
+				if (m_namespace != L"xdr" && m_namespace != L"cdr")
+				{
+					oValue.Write(nvPr); 
+				}
 
 				return XmlUtils::CreateNode(m_namespace + L":nvCxnSpPr", oValue);
 			}
@@ -120,7 +124,12 @@ namespace PPTX
 
                 cNvPr.toXmlWriter2(namespace_ , pWriter);
 				cNvCxnSpPr.toXmlWriter(pWriter);
-                //nvPr.toXmlWriter2(namespace_, pWriter); //todooo ??? 3622708.xlsx
+				
+				if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_GRAPHICS && 
+					pWriter->m_lDocType != XMLWRITER_DOC_TYPE_CHART_DRAWING)
+				{
+					nvPr.toXmlWriter2(namespace_, pWriter);
+				}
 
 				pWriter->EndNode(namespace_ + L":nvCxnSpPr");
 			}

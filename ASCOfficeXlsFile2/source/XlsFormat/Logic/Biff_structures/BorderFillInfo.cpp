@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -64,7 +64,228 @@ std::size_t hash_value(BorderInfo const & val)
 
 	return seed;
 }
+std::size_t hash_value(FontInfo const & val)
+{
+    std::size_t seed = 0;
+	boost::hash_combine(seed, val.dyHeight);
+	boost::hash_combine(seed, val.fItalic);
+    boost::hash_combine(seed, val.fStrikeOut);
+    boost::hash_combine(seed, val.fOutline);
+    boost::hash_combine(seed, val.fShadow);
+    boost::hash_combine(seed, val.fCondense);
+    boost::hash_combine(seed, val.fExtend);
+    boost::hash_combine(seed, val.icv);
+    boost::hash_combine(seed, val.bls);
+    boost::hash_combine(seed, val.sss);
+    boost::hash_combine(seed, val.uls);
+    boost::hash_combine(seed, val.bFamily);
+    boost::hash_combine(seed, val.bCharSet);
+    boost::hash_combine(seed, val.color.icv);
+    boost::hash_combine(seed, val.color.nTintShade);
+    boost::hash_combine(seed, val.color.xclrType);
+    boost::hash_combine(seed, val.color.xclrValue);
+    boost::hash_combine(seed, val.scheme);
+    boost::hash_combine(seed, val.name);
 
+	return seed;
+}
+bool FontInfo::operator == (const FontInfo & rVal) const
+{
+    const bool res =     
+		dyHeight== rVal.dyHeight &&
+		name	== rVal.name &&
+		scheme	== rVal.scheme &&
+		fItalic == rVal.fItalic &&
+		fStrikeOut == rVal.fStrikeOut &&
+		fOutline == rVal.fOutline &&
+		fShadow == rVal.fShadow &&
+		fCondense == rVal.fCondense &&
+		fExtend == rVal.fExtend &&
+		bls	== rVal.bls &&
+		sss	== rVal.sss &&
+		uls	== rVal.uls &&
+		bFamily	== rVal.bFamily &&
+		bCharSet	== rVal.bCharSet &&
+		
+		((icv == rVal.icv && rVal.color.enabled == false && color.enabled == false)  || 
+
+		(color.icv		== rVal.color.icv &&
+		color.nTintShade== rVal.color.nTintShade &&
+		color.xclrType	== rVal.color.xclrType &&
+		color.xclrValue	== rVal.color.xclrValue))
+		;
+
+    return res;
+}
+
+bool FontInfo::operator != (const FontInfo & rVal) const
+{
+	return !(this->operator ==(rVal));
+}
+
+int FontInfo::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+        CP_XML_NODE(L"font")
+        {
+		   if ( bls== 700)
+			{
+				CP_XML_NODE(L"b")
+				{
+					CP_XML_ATTR(L"val", true);
+				}            
+			}
+
+			if (bCharSet)
+			{
+				CP_XML_NODE(L"charset")
+				{
+					CP_XML_ATTR(L"val", bCharSet);
+				}
+			}
+
+			if (icv < 0x7fff || color.enabled )
+			{
+				CP_XML_NODE(L"color")
+				{
+					if (color.enabled)
+					{
+						switch(color.xclrType)
+						{
+						case 0://auto
+							/*CP_XML_ATTR(L"auto");*/ break;
+						case 1://indexed
+							if (color.icv < 64) 
+								CP_XML_ATTR(L"indexed",  color.icv); break;
+						case 2://rgb
+							CP_XML_ATTR(L"rgb", STR::toARGB(color.xclrValue)); break;
+						case 3://theme color
+							CP_XML_ATTR(L"theme", color.xclrValue/* + 1*/); 
+							CP_XML_ATTR(L"tint", color.nTintShade / 32767.0); break;
+						case 4://not set
+							break;
+						}
+					}else
+						CP_XML_ATTR(L"indexed", icv);
+				}
+			}
+
+			if (fCondense)
+			{
+				CP_XML_NODE(L"condense")
+				{
+					CP_XML_ATTR(L"val", 1);
+				}
+			}
+
+			if (fExtend)
+			{
+				CP_XML_NODE(L"extend")
+				{
+					CP_XML_ATTR(L"val", fExtend);
+				}
+			}
+
+			if (bFamily)
+			{
+				CP_XML_NODE(L"family")
+				{
+					CP_XML_ATTR(L"val", bFamily);
+				}
+			}
+
+			if (fItalic)
+			{
+				CP_XML_NODE(L"i")
+				{
+					CP_XML_ATTR(L"val", fItalic);
+				}
+			}
+
+			if (!name.empty())
+			{
+				CP_XML_NODE(L"name")
+				{
+					CP_XML_ATTR(L"val", name);
+				}
+			}
+
+			if (fOutline)
+			{
+				CP_XML_NODE(L"outline")
+				{
+					CP_XML_ATTR(L"val", fOutline);
+				}
+			}
+
+			if (scheme == 1 || scheme == 2)
+			{
+			    CP_XML_NODE(L"scheme")
+			    {
+					CP_XML_ATTR(L"val", (scheme == 1 ? L"major" : L"minor"));
+			    }
+			}
+
+			if (fShadow)
+			{
+				CP_XML_NODE(L"shadow")
+				{
+					CP_XML_ATTR(L"val", fShadow);
+				}
+			}
+
+			if (fStrikeOut)
+			{
+				CP_XML_NODE(L"strike")
+				{
+					CP_XML_ATTR(L"val", fStrikeOut);
+				}
+			}
+
+			if (dyHeight > 0)
+			{
+				CP_XML_NODE(L"sz")
+				{
+					CP_XML_ATTR(L"val", dyHeight/20);
+				}
+			}
+
+			if (uls > 0)
+			{
+				CP_XML_NODE(L"u")
+				{
+					switch(uls)
+					{
+						case 0:		CP_XML_ATTR(L"val", L"none");break;
+						case 1:		CP_XML_ATTR(L"val", L"single");break;
+						case 2:		CP_XML_ATTR(L"val", L"double");break;
+						case 33:	CP_XML_ATTR(L"val", L"singleAccounting");break;
+						case 34:	CP_XML_ATTR(L"val", L"doubleAccounting");break;
+					}
+				}
+			}
+
+			if (sss > 0)
+			{
+				CP_XML_NODE(L"vertAlign")
+				{
+					switch(sss)
+					{
+						case 1:	CP_XML_ATTR(L"val", L"superscript");break;
+						case 2:	CP_XML_ATTR(L"val", L"subscript");break;
+					}
+	               
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+
+//------------------------------------------------------------------------------------------
 bool FillInfo::operator == (const FillInfo & rVal) const
 {
     const bool res =     

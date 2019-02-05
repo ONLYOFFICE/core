@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -96,9 +96,6 @@
 
 #include <simple_xml_writer.h>
 #include <utils.h>
-#include "../../../OfficeUtils/src/OfficeUtils.h"
-
-//#include <boost/utility.hpp>
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
@@ -690,7 +687,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 {
 	if (globals == NULL) return;
 	
-	convert((XLS::THEME*)globals->m_THEME.get());
+	convert_theme();
 	
 	convert((XLS::FORMATTING*)globals->m_Formating.get());	
 
@@ -761,6 +758,7 @@ void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream* chartsheet)
 }
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
 typedef boost::unordered_map<XLS::BorderInfo, int>	mapBorderInfo;
+typedef boost::unordered_map<XLS::FontInfo, int>	mapFontInfo;
 
 void XlsConverter::convert(XLS::FORMATTING* formating)
 {
@@ -778,7 +776,23 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 			CP_XML_ATTR(L"xmlns:x16r2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
 			
 			formating->serialize1(CP_XML_STREAM()); //важен порядок в styles
+			
+			CP_XML_NODE(L"fonts")
+			{
+				std::vector<XLS::FontInfo> fonts_out;
+				fonts_out.resize(xls_global_info->font_x_ids.size());
 
+				for (mapFontInfo::iterator it = xls_global_info->font_x_ids.begin(); it != xls_global_info->font_x_ids.end(); ++it)
+				{
+					fonts_out[it->second] = it->first;
+				}
+
+				CP_XML_ATTR(L"count", fonts_out.size());
+				for (size_t i = 0 ;i < fonts_out.size(); i++)
+				{
+					fonts_out[i].serialize(CP_XML_STREAM());
+				}
+			}
 			CP_XML_NODE(L"fills")
 			{
 				std::vector<XLS::FillInfo> fills_out;
@@ -1090,45 +1104,13 @@ void XlsConverter::convert(XLS::BACKGROUND * back)
 
 }
 
-void XlsConverter::convert(XLS::THEME* THEME_)
+void XlsConverter::convert_theme()
 {
-	if (THEME_ == NULL) return;
-
-	XLS::Theme *theme = dynamic_cast<XLS::Theme*>(THEME_->m_Theme.get());
-	if (!theme) return;
-
-	if (theme->nThemeDataSize < 1) return;
-
-	std::wstring tempThemePath = xls_global_info->tempDirectory + FILE_SEPARATOR_STR + L"theme.temp";
+	if (xls_global_info->sTheme.empty()) return;
 	
-	NSFile::CFileBinary file;	
-	if (!file.CreateFileW(tempThemePath)) return;
-
-	file.WriteFile((BYTE*)theme->pThemeData.get(), theme->nThemeDataSize);
-	file.CloseFile();
-
-	COfficeUtils OfficeUtils(NULL);
-	
-	ULONG nBufferSize = 0;
-	BYTE *pBuffer = NULL;
-
-	HRESULT hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme1.xml", &pBuffer, nBufferSize);// todooo - parsing ThemeManager
-
-	if (hresult != S_OK || pBuffer == NULL)
-		hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme1.xml", &pBuffer, nBufferSize);
-	
-	if (hresult != S_OK || pBuffer == NULL)
-		hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme/theme1.xml", &pBuffer, nBufferSize);
-	//???  переписать по нормальному
-	if (hresult == S_OK && pBuffer != NULL)
-	{
-		xls_global_info->bThemePresent = true;
-		oox::package::theme_content_ptr content = oox::package::theme_content::create((char*)pBuffer, nBufferSize);
-		output_document->get_xl_files().add_theme(content);
-
-		delete []pBuffer;
-		pBuffer = NULL;
-	}
+	oox::package::theme_content_ptr content = 
+		oox::package::theme_content::create((char*)xls_global_info->sTheme.c_str(), xls_global_info->sTheme.length());
+	output_document->get_xl_files().add_theme(content);
 }
 
 struct _group_object

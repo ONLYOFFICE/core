@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -235,22 +235,15 @@ namespace PPTX
 			{
 				pWriter->m_lFlag -= 0x02;
 			}
-
+			
 			if (style.is_init())
-			{
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = _T("wps");
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = _T("xdr");
+			{ 
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = L"wps";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = L"xdr";
 
                 pWriter->Write(style);
             }
-
-			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
-			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && txBody.is_init())
-					txBody->m_name = _T("xdr:txBody");
-				pWriter->Write(txBody);
-			}
-
+			
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 			{	
 				bool bIsWritedBodyPr = false;
@@ -278,6 +271,15 @@ namespace PPTX
 				{
 					pWriter->WriteString(_T("<wps:bodyPr rot=\"0\"><a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/></wps:bodyPr>"));
 				}
+			}
+			else
+			{
+				if (txBody.is_init())
+				{
+					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	
+						txBody->m_name = L"xdr:txBody";
+				}
+				pWriter->Write(txBody);
 			}
 
 			pWriter->EndNode(name_);
@@ -572,7 +574,6 @@ namespace PPTX
 		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group, bool bSignature)
 		{
 			std::wstring strPath, strTextRect;
-			bool bOle = false;
 			SimpleTypes::Vml::SptType vmlPrst = SimpleTypes::Vml::sptNotPrimitive;
 
 			LONG lW = 43200, lH = 43200;
@@ -609,8 +610,8 @@ namespace PPTX
             std::wstring strFillNode;
             std::wstring strStrokeNode;;
 
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle, bSignature);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle, bSignature);
+			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
+			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false, bSignature);
 
 			pWriter->StartNode(L"v:shape");
 
@@ -708,18 +709,8 @@ namespace PPTX
 
 			pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
 
-			if(!bOle)
-			{
-				//oStylesWriter.ClearNoAttack();
-				//oStylesWriter.m_oWriter.AddSize(30);
-				//oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100);
-				//oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-				//oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100);
-				//pWriter->WriteAttribute(L"coordsize", oStylesWriter.GetXmlString());
-				pWriter->WriteAttribute(L"coordsize", (std::wstring)L"100000,100000");
-
-				pWriter->WriteAttribute(L"path", strPath);
-			}
+			pWriter->WriteAttribute(L"coordsize", (std::wstring)L"100000,100000");
+			pWriter->WriteAttribute(L"path", strPath);
 
 			if (!pWriter->m_strAttributesMain.empty())
 			{

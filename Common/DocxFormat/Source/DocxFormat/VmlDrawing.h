@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -326,100 +326,103 @@ namespace OOX
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			//for Comment SpreadsheetML only
-			if((NULL != m_mapComments && m_mapComments->size() > 0) || m_aXml.size() > 0)
+			if((!m_mapComments || m_mapComments->empty()) && m_aXml.empty()) return;
+			
+			//for Comment SpreadsheetML & others vml (hf, objects, ...) !!
+
+			XmlUtils::CStringWriter sXml;
+			sXml.WriteString(L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
+			for (size_t i = 0; i < m_aXml.size(); ++i)
 			{
-				XmlUtils::CStringWriter sXml;
-				sXml.WriteString(L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
-				for (size_t i = 0; i < m_aXml.size(); ++i)
-				{
-					sXml.WriteString(m_aXml[i]);
-				}
-				
-				long nIndex = m_lObjectIdVML + 1;
-				if(NULL != m_mapComments && m_mapComments->size() > 0)
-				{
-                    for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
-					{
-						OOX::Spreadsheet::CCommentItem* comment = it->second;
-                                                
-						std::wstring sStyle;
-						if(comment->m_dLeftMM.IsInit())
-						{
-							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dLeftMM.get());
-							sStyle += L"margin-left:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
-						}
-						if(comment->m_dTopMM.IsInit())
-						{
-							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dTopMM.get());
-							sStyle += L"margin-top:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
-						}
-						if(comment->m_dWidthMM.IsInit())
-						{
-							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dWidthMM.get());
-							sStyle += L"width:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
-						}
-						if(comment->m_dHeightMM.IsInit())
-						{
-							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dHeightMM.get());
-							sStyle += L"height:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
-						}
-						std::wstring sClientData = L"<x:ClientData ObjectType=\"Note\">";
-
-						if(comment->m_bMove.IsInit() && true == comment->m_bMove.get())
-							sClientData += L"<x:MoveWithCells/>";
-
-						if(comment->m_bSize.IsInit() && true == comment->m_bSize.get())
-							sClientData += L"<x:SizeWithCells/>";
-
-						if( comment->m_nLeft.IsInit()   && comment->m_nLeftOffset.IsInit()  &&
-							comment->m_nTop.IsInit()    && comment->m_nTopOffset.IsInit()   &&
-							comment->m_nRight.IsInit()  && comment->m_nRightOffset.IsInit() &&
-							comment->m_nBottom.IsInit() && comment->m_nBottomOffset.IsInit())
-						{
-							sClientData += L"<x:Anchor>";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nLeft.get())          + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nLeftOffset.get())    + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nTop.get())           + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nTopOffset.get())     + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nRight.get())         + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nRightOffset.get())   + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottom.get())        + L",";
-							sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottomOffset.get());
-							sClientData += L"</x:Anchor>";
-						}
-						sClientData += L"<x:AutoFill>False</x:AutoFill>";
-
-						if(comment->m_nRow.IsInit())
-								sClientData += L"<x:Row>" + boost::lexical_cast<std::wstring>(comment->m_nRow.get()) + L"</x:Row>";
-
-						if(comment->m_nCol.IsInit())
-							sClientData += L"<x:Column>" + boost::lexical_cast<std::wstring>(comment->m_nCol.get()) + L"</x:Column>";
-
-						sClientData += L"</x:ClientData>";
-
-						std::wstring sGfxdata;
-						if(comment->m_sGfxdata.IsInit())
-							sGfxdata = L"o:gfxdata=\"" + comment->m_sGfxdata.get2() + L"\"";
-
-						std::wstring sShape;
-						sShape += L"<v:shape id=\"_x0000_s" + boost::lexical_cast<std::wstring>(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";
-						sShape += sStyle;
-						sShape += L"z-index:4;visibility:hidden' ";
-						sShape += sGfxdata;
-						sShape += L" fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>";
-						sShape += sClientData;
-						sShape += L"</v:shape>";
-						
-						sXml.WriteString(sShape);
-					}
-				}
-				sXml.WriteString(L"</xml>");
-
-                NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
-				oContent.AddDefault( oPath.GetExtention(false) );
-				IFileContainer::Write(oPath, oDirectory, oContent);
+				sXml.WriteString(m_aXml[i]);
 			}
+			
+			long nIndex = m_lObjectIdVML + 1;
+			if(NULL != m_mapComments && m_mapComments->size() > 0)
+			{
+				sXml.WriteString(L"<o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout>");
+				sXml.WriteString(L"<v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
+               
+				for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
+				{
+					OOX::Spreadsheet::CCommentItem* comment = it->second;
+                                            
+					std::wstring sStyle;
+					if(comment->m_dLeftMM.IsInit())
+					{
+						SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dLeftMM.get());
+						sStyle += L"margin-left:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+					}
+					if(comment->m_dTopMM.IsInit())
+					{
+						SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dTopMM.get());
+						sStyle += L"margin-top:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+					}
+					if(comment->m_dWidthMM.IsInit())
+					{
+						SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dWidthMM.get());
+						sStyle += L"width:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+					}
+					if(comment->m_dHeightMM.IsInit())
+					{
+						SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dHeightMM.get());
+						sStyle += L"height:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+					}
+					std::wstring sClientData = L"<x:ClientData ObjectType=\"Note\">";
+
+					if(comment->m_bMove.IsInit() && true == comment->m_bMove.get())
+						sClientData += L"<x:MoveWithCells/>";
+
+					if(comment->m_bSize.IsInit() && true == comment->m_bSize.get())
+						sClientData += L"<x:SizeWithCells/>";
+
+					if( comment->m_nLeft.IsInit()   && comment->m_nLeftOffset.IsInit()  &&
+						comment->m_nTop.IsInit()    && comment->m_nTopOffset.IsInit()   &&
+						comment->m_nRight.IsInit()  && comment->m_nRightOffset.IsInit() &&
+						comment->m_nBottom.IsInit() && comment->m_nBottomOffset.IsInit())
+					{
+						sClientData += L"<x:Anchor>";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nLeft.get())          + L",";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nLeftOffset.get())    + L",";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nTop.get())           + L",";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nTopOffset.get())     + L",";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nRight.get())         + L",";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nRightOffset.get())   + L",";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottom.get())        + L",";
+						sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottomOffset.get());
+						sClientData += L"</x:Anchor>";
+					}
+					sClientData += L"<x:AutoFill>False</x:AutoFill>";
+
+					if(comment->m_nRow.IsInit())
+							sClientData += L"<x:Row>" + boost::lexical_cast<std::wstring>(comment->m_nRow.get()) + L"</x:Row>";
+
+					if(comment->m_nCol.IsInit())
+						sClientData += L"<x:Column>" + boost::lexical_cast<std::wstring>(comment->m_nCol.get()) + L"</x:Column>";
+
+					sClientData += L"</x:ClientData>";
+
+					std::wstring sGfxdata;
+					if(comment->m_sGfxdata.IsInit())
+						sGfxdata = L"o:gfxdata=\"" + comment->m_sGfxdata.get2() + L"\"";
+
+					std::wstring sShape;
+					sShape += L"<v:shape id=\"_x0000_s" + boost::lexical_cast<std::wstring>(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";
+					sShape += sStyle;
+					sShape += L"z-index:4;visibility:hidden' ";
+					sShape += sGfxdata;
+					sShape += L" fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>";
+					sShape += sClientData;
+					sShape += L"</v:shape>";
+					
+					sXml.WriteString(sShape);
+				}
+			}
+			sXml.WriteString(L"</xml>");
+
+            NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
+			oContent.AddDefault( oPath.GetExtention(false) );
+			IFileContainer::Write(oPath, oDirectory, oContent);
 		}
 		virtual const OOX::FileType type() const
 		{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -98,85 +98,110 @@ namespace OOX
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if ( _T("worksheet") == sName || _T("chartsheet") == sName)
 			{
-				if ( !oReader.IsEmptyNode() )
+				read(oReader);
+			}
+			
+			if(m_oLegacyDrawing.IsInit() && m_oLegacyDrawing->m_oId.IsInit())
+			{
+				OOX::RId oRId(m_oLegacyDrawing->m_oId->GetValue());
+				
+				smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
+				
+				if (m_pComments && oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
 				{
-					int nDocumentDepth = oReader.GetDepth();
-					while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
-					{
-						sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-						if ( _T("cols") == sName )
-							m_oCols = oReader;
-						else if ( _T("dimension") == sName )
-							m_oDimension = oReader;
-						else if ( _T("drawing") == sName )
-							m_oDrawing = oReader;
-						else if ( _T("hyperlinks") == sName )
-							m_oHyperlinks = oReader;
-						else if ( _T("mergeCells") == sName )
-							m_oMergeCells = oReader;
-						else if ( _T("pageMargins") == sName )
-							m_oPageMargins = oReader;
-						else if ( _T("pageSetup") == sName )
-							m_oPageSetup = oReader;
-						else if ( _T("printOptions") == sName )
-							m_oPrintOptions = oReader;
-						else if ( _T("sheetData") == sName )
-						{
-							m_oSheetData.Init();
-							m_oSheetData->m_pMainDocument = OOX::File::m_pMainDocument; //todooo передалать на неявное
-							m_oSheetData->fromXML(oReader);
-						}
-						else if (_T("conditionalFormatting") == sName)
-							m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
-						else if ( _T("sheetFormatPr") == sName )
-							m_oSheetFormatPr = oReader;
-						else if ( _T("sheetViews") == sName )
-							m_oSheetViews = oReader;
-						else if ( _T("autoFilter") == sName )
-							m_oAutofilter = oReader;
-						else if ( _T("tableParts") == sName )
-							m_oTableParts = oReader;
-						else if ( _T("legacyDrawing") == sName )
-							m_oLegacyDrawing = oReader;
-						else if ( _T("legacyDrawingHF") == sName )
-							m_oLegacyDrawingHF = oReader;
-						else if ( _T("oleObjects") == sName )
-							m_oOleObjects = oReader;
-						else if ( _T("controls") == sName )
-							m_oControls = oReader;
-						else if ( _T("headerFooter") == sName )
-							m_oHeaderFooter = oReader;
-						else if (_T("sheetPr") == sName)
-							m_oSheetPr = oReader;
-                        else if (_T("extLst") == sName)
-                            m_oExtLst = oReader;
-                        else if (_T("picture") == sName)
-                            m_oPicture = oReader;
-						else if (_T("rowBreaks") == sName)
-							m_oRowBreaks = oReader;
-						else if (_T("colBreaks") == sName)
-							m_oColBreaks = oReader;
-					}
-				}
-				if(m_oLegacyDrawing.IsInit() && m_oLegacyDrawing->m_oId.IsInit())
-				{
-					OOX::RId oRId(m_oLegacyDrawing->m_oId->GetValue());
+					OOX::CVmlDrawing* pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.operator->());
 					
-					smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
-					
-					if (m_pComments && oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
-					{
-						OOX::CVmlDrawing* pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.operator->());
-						
-						PrepareComments(m_pComments, pVmlDrawing);
-					}
+					PrepareComments(m_pComments, pVmlDrawing);
 				}
-				if (m_oHeaderFooter.IsInit() && m_oLegacyDrawing.IsInit() && m_oLegacyDrawing.IsInit())
-				{
-				}
-			}		
+			}
+			if (m_oHeaderFooter.IsInit() && m_oLegacyDrawing.IsInit() && m_oLegacyDrawing.IsInit())
+			{
+			}	
 		}
+		void CWorksheet::read(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() ) return;
+			
+			int nDocumentDepth = oReader.GetDepth();
+			std::wstring sName;
+
+			while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
+			{
+				sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if ( _T("cols") == sName )
+					m_oCols = oReader;
+				else if ( _T("dimension") == sName )
+					m_oDimension = oReader;
+				else if ( _T("drawing") == sName )
+					m_oDrawing = oReader;
+				else if ( _T("hyperlinks") == sName )
+					m_oHyperlinks = oReader;
+				else if ( _T("mergeCells") == sName )
+					m_oMergeCells = oReader;
+				else if ( _T("pageMargins") == sName )
+					m_oPageMargins = oReader;
+				else if ( _T("pageSetup") == sName )
+					m_oPageSetup = oReader;
+				else if ( _T("printOptions") == sName )
+					m_oPrintOptions = oReader;
+				else if ( _T("sheetData") == sName )
+				{
+					m_oSheetData.Init();
+					m_oSheetData->m_pMainDocument = OOX::File::m_pMainDocument; //todooo передалать на неявное
+					m_oSheetData->fromXML(oReader);
+				}
+				else if (_T("conditionalFormatting") == sName)
+					m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
+				else if ( _T("sheetFormatPr") == sName )
+					m_oSheetFormatPr = oReader;
+				else if ( _T("sheetViews") == sName )
+					m_oSheetViews = oReader;
+				else if ( _T("autoFilter") == sName )
+					m_oAutofilter = oReader;
+				else if ( _T("tableParts") == sName )
+					m_oTableParts = oReader;
+				else if ( _T("legacyDrawing") == sName )
+					m_oLegacyDrawing = oReader;
+				else if ( _T("legacyDrawingHF") == sName )
+					m_oLegacyDrawingHF = oReader;
+				else if ( _T("oleObjects") == sName )
+					m_oOleObjects = oReader;
+				else if ( _T("controls") == sName )
+					m_oControls = oReader;
+				else if ( _T("headerFooter") == sName )
+					m_oHeaderFooter = oReader;
+				else if (_T("sheetPr") == sName)
+					m_oSheetPr = oReader;
+                else if (_T("extLst") == sName)
+                    m_oExtLst = oReader;
+                else if (_T("picture") == sName)
+                    m_oPicture = oReader;
+				else if (_T("rowBreaks") == sName)
+					m_oRowBreaks = oReader;
+				else if (_T("colBreaks") == sName)
+					m_oColBreaks = oReader;
+				else if (_T("sheetProtection") == sName)
+					m_oSheetProtection = oReader;
+				else if (_T("dataValidations") == sName)
+					m_oDataValidations = oReader;
+				else if (_T("dataConsolidate") == sName)
+					m_oDataConsolidate = oReader;
+				else if (L"AlternateContent" == sName)
+				{
+					int nSubDepth = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nSubDepth ) )
+					{
+						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+						if ( L"Choice" == sSubName )
+						{
+							read(oReader);
+						}
+					}
+				}
+			}
+		}
+
 
 		void CWorksheet::PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing)
 		{
@@ -393,10 +418,16 @@ namespace OOX
 					m_oPicture->toXML(sXml);
 				if(m_oOleObjects.IsInit())
 					m_oOleObjects->toXML(sXml);
-				if (m_oControls.IsInit())
+				if(m_oControls.IsInit())
 					m_oControls->toXML(sXml);
+				if(m_oSheetProtection.IsInit())
+					m_oSheetProtection->toXML(sXml);
+				if(m_oDataValidations.IsInit())
+					m_oDataValidations->toXML(sXml);
 				if(m_oTableParts.IsInit())
 					m_oTableParts->toXML(sXml);
+				if(m_oDataConsolidate.IsInit())
+					m_oDataConsolidate->toXML(sXml);
 				if(m_oExtLst.IsInit())
 				{
 					sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));

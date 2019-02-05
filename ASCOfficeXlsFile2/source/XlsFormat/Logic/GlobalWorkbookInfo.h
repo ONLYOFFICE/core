@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -44,6 +44,13 @@
 #include "../../../../DesktopEditor/graphics/pro/Fonts.h"
 
 class XlsConverter;
+
+namespace PPTX
+{
+	class Theme;
+	typedef boost::shared_ptr<Theme> ThemePtr;
+}
+
 namespace XLS
 {
 
@@ -76,7 +83,8 @@ public:
 
 	const size_t	RegisterBorderId	(const BorderInfo& border);
 	const size_t	RegisterFillId		(const FillInfo& fill);	
-	void			RegisterFontColorId	(int id, const FillInfoExt & font_color);
+	const size_t	RegisterFontId		(const FontInfo& font);
+
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
     
 	void			GetDigitFontSizePixels();
@@ -84,8 +92,9 @@ public:
 //-----------------------------------------------------------------------------
 	bool									bVbaProjectExist;
 	bool									bMacrosExist;
-	bool									bThemePresent;
 	bool									bWorkbookProtectExist;
+
+	std::string								sTheme;
 
 	unsigned short							CodePage;
 	CRYPT::DecryptorPtr						decryptor;
@@ -93,12 +102,13 @@ public:
 	
 	boost::unordered_map<BorderInfo, int>	border_x_ids;
 	boost::unordered_map<FillInfo, int>		fill_x_ids;
+	boost::unordered_map<FontInfo, int>		font_x_ids;
 	
-	std::map<int,  FillInfoExt>				fonts_color_ext;
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
 	std::vector<BaseObjectPtr>				m_arFonts;
+	PPTX::ThemePtr							m_pTheme;
 	
 	unsigned int							current_sheet;
 

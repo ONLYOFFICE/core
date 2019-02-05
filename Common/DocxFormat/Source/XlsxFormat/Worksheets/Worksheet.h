@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -59,17 +59,12 @@ namespace OOX
 		class CLegacyDrawingWorksheet;
 //необработанные child:
 		//<cellWatches>
-		//<colBreaks>
 		//<customProperties>
-		//<dataConsolidate>
-		//<dataValidations>
 		//<extLst>
 		//<phoneticPr>
 		//<protectedRanges>
-		//<rowBreaks>
 		//<scenarios>
 		//<sheetCalcPr>
-		//<sheetProtection>
 		//<smartTags>
 		//<sortState>
 		//<webPublishItems>
@@ -113,6 +108,8 @@ namespace OOX
 			CPath	m_oReadPath;
 
 		public:
+			void read(XmlUtils::CXmlLiteReader& oReader);
+
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
 
@@ -140,6 +137,9 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CPictureWorksheet>			m_oPicture;
 			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oRowBreaks;
 			nullable<OOX::Spreadsheet::CRowColBreaks>				m_oColBreaks;
+			nullable<OOX::Spreadsheet::CSheetProtection>			m_oSheetProtection;
+			nullable<OOX::Spreadsheet::CDataValidations>			m_oDataValidations;
+			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

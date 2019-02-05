@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -272,44 +272,44 @@ int XFProp::serialize(std::wostream & stream)
 {
 	switch(xfPropType)
 	{
-		case 0x0001:	serialize_color_prop(stream, L"fgColor",	xfPropDataBlob);		break;
-		case 0x0002:	serialize_color_prop(stream, L"bgColor",	xfPropDataBlob);		break;
-		case 0x0005:	serialize_color_prop(stream, L"color",		xfPropDataBlob);		break;
-		case 0x0006:	serialize_border_prop(stream, L"top",		xfPropDataBlob);		break;
-		case 0x0007:	serialize_border_prop(stream, L"bottom",	xfPropDataBlob);		break;
-		case 0x0008:	serialize_border_prop(stream, L"left",		xfPropDataBlob);		break;
-		case 0x0009:	serialize_border_prop(stream, L"right",		xfPropDataBlob);		break;
-		case 0x000A:	serialize_border_prop(stream, L"diagonal",	xfPropDataBlob);		break;
-		case 0x000B:	serialize_border_prop(stream, L"vertical",	xfPropDataBlob);		break;
-		case 0x000C:	serialize_border_prop(stream, L"horizontal",xfPropDataBlob);		break;
-		case 0x000D:	serialize_val_prop	(stream, L"diagonalDown", xfPropDataBlob);		break;
-		case 0x000E:	serialize_val_prop	(stream, L"diagonalUp",	xfPropDataBlob);		break;
-		case 0x000F:	serialize_val_prop	(stream, L"horizontal",	xfPropDataBlob);		break;
-		case 0x0010:	serialize_val_prop	(stream, L"vertical",		xfPropDataBlob);	break;
-		case 0x0011:	serialize_val_prop	(stream, L"textRotation", xfPropDataBlob);		break;
-		case 0x0013: 	serialize_val_prop	(stream, L"readingOrder", xfPropDataBlob);		break;
-		case 0x0014:	serialize_val_prop	(stream, L"wrapText",		xfPropDataBlob);	break;
-		case 0x0015:	serialize_val_prop	(stream, L"justifyLastLine", xfPropDataBlob);	break;
-		case 0x0016:	serialize_val_prop	(stream, L"shrinkToFit",	xfPropDataBlob);	break;
-		case 0x0018:	serialize_val_prop	(stream, L"name",			xfPropDataBlob);	break;
-		case 0x0019:	serialize_val_prop	(stream, L"b",			xfPropDataBlob);		break;
-		case 0x001A:	serialize_val_prop	(stream, L"u",			xfPropDataBlob);		break;
-		case 0x001B:	serialize_val_prop	(stream, L"vertAlign",	xfPropDataBlob);		break;
-		case 0x001C:	serialize_val_prop	(stream, L"i",			xfPropDataBlob);		break;
-		case 0x001D:	serialize_val_prop	(stream, L"strike",		xfPropDataBlob);		break;
-		case 0x001E:	serialize_val_prop	(stream, L"outline",		xfPropDataBlob);	break;
-		case 0x001F:	serialize_val_prop	(stream, L"shadow",		xfPropDataBlob);		break;
-		case 0x0020:	serialize_val_prop	(stream, L"condense",		xfPropDataBlob);	break;
-		case 0x0021:	serialize_val_prop	(stream, L"extend",		xfPropDataBlob);		break;
-		case 0x0022:	serialize_val_prop	(stream, L"charset",		xfPropDataBlob);	break;
-		case 0x0023:	serialize_val_prop	(stream, L"family",		xfPropDataBlob);		break;
-		case 0x0024:	serialize_val_prop	(stream, L"sz",			xfPropDataBlob);		break;
-		//case 0x0025:	serialize_val_prop	(stream, L"scheme",		xfPropDataBlob);		break;
-		case 0x0026:	serialize_val_prop	(stream, L"formatCode",	xfPropDataBlob);		break;
-		case 0x0029:	serialize_val_prop	(stream, L"numFmtId",		xfPropDataBlob);	break;
-		case 0x002A:	serialize_val_prop	(stream, L"relativeIndent", xfPropDataBlob);	break;
-		case 0x002B:	serialize_val_prop	(stream, L"locked",		xfPropDataBlob);		break;
-		case 0x002C:	serialize_val_prop	(stream, L"hidden",		xfPropDataBlob);		break;
+		case 0x0001:	serialize_color_prop(stream, L"fgColor",		xfPropDataBlob);		break;
+		case 0x0002:	serialize_color_prop(stream, L"bgColor",		xfPropDataBlob);		break;
+		case 0x0005:	serialize_color_prop(stream, L"color",			xfPropDataBlob);		break;
+		case 0x0006:	serialize_border_prop(stream, L"top",			xfPropDataBlob);		break;
+		case 0x0007:	serialize_border_prop(stream, L"bottom",		xfPropDataBlob);		break;
+		case 0x0008:	serialize_border_prop(stream, L"left",			xfPropDataBlob);		break;
+		case 0x0009:	serialize_border_prop(stream, L"right",			xfPropDataBlob);		break;
+		case 0x000A:	serialize_border_prop(stream, L"diagonal",		xfPropDataBlob);		break;
+		case 0x000B:	serialize_border_prop(stream, L"vertical",		xfPropDataBlob);		break;
+		case 0x000C:	serialize_border_prop(stream, L"horizontal",	xfPropDataBlob);		break;
+		case 0x000D:	serialize_val_prop	(stream, L"diagonalDown",	xfPropDataBlob);		break;
+		case 0x000E:	serialize_val_prop	(stream, L"diagonalUp",		xfPropDataBlob);		break;
+		case 0x000F:	serialize_val_prop	(stream, L"horizontal",		xfPropDataBlob);		break;
+		case 0x0010:	serialize_val_prop	(stream, L"vertical",		xfPropDataBlob);		break;
+		case 0x0011:	serialize_val_prop	(stream, L"textRotation",	xfPropDataBlob);		break;
+		case 0x0013: 	serialize_val_prop	(stream, L"readingOrder",	xfPropDataBlob);		break;
+		case 0x0014:	serialize_val_prop	(stream, L"wrapText",		xfPropDataBlob);		break;
+		case 0x0015:	serialize_val_prop	(stream, L"justifyLastLine", xfPropDataBlob);		break;
+		case 0x0016:	serialize_val_prop	(stream, L"shrinkToFit",	xfPropDataBlob);		break;
+		case 0x0018:	serialize_val_prop	(stream, L"name",			xfPropDataBlob);		break;
+		case 0x0019:	serialize_val_prop	(stream, L"b",				xfPropDataBlob);		break;
+		case 0x001A:	serialize_val_prop	(stream, L"u",				xfPropDataBlob);		break;
+		case 0x001B:	serialize_val_prop	(stream, L"vertAlign",		xfPropDataBlob);		break;
+		case 0x001C:	serialize_val_prop	(stream, L"i",				xfPropDataBlob);		break;
+		case 0x001D:	serialize_val_prop	(stream, L"strike",			xfPropDataBlob);		break;
+		case 0x001E:	serialize_val_prop	(stream, L"outline",		xfPropDataBlob);		break;
+		case 0x001F:	serialize_val_prop	(stream, L"shadow",			xfPropDataBlob);		break;
+		case 0x0020:	serialize_val_prop	(stream, L"condense",		xfPropDataBlob);		break;
+		case 0x0021:	serialize_val_prop	(stream, L"extend",			xfPropDataBlob);		break;
+		case 0x0022:	serialize_val_prop	(stream, L"charset",		xfPropDataBlob);		break;
+		case 0x0023:	serialize_val_prop	(stream, L"family",			xfPropDataBlob);		break;
+		case 0x0024:	serialize_val_prop	(stream, L"sz",				xfPropDataBlob);		break;
+		//case 0x0025:	serialize_val_prop	(stream, L"scheme",			xfPropDataBlob);		break;
+		case 0x0026:	serialize_val_prop	(stream, L"formatCode",		xfPropDataBlob);		break;
+		case 0x0029:	serialize_val_prop	(stream, L"numFmtId",		xfPropDataBlob);		break;
+		case 0x002A:	serialize_val_prop	(stream, L"relativeIndent", xfPropDataBlob);		break;
+		case 0x002B:	serialize_val_prop	(stream, L"locked",			xfPropDataBlob);		break;
+		case 0x002C:	serialize_val_prop	(stream, L"hidden",			xfPropDataBlob);		break;
 	}
 	return 0;
 }

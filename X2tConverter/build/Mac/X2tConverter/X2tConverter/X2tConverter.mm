@@ -471,6 +471,44 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     return NExtractTools::txt2doct_bin(from, to, temp, oInputParams);
 }
 
+- (int)txt2docx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.encoding != nil) {
+        oInputParams.m_nCsvTxtEncoding = new int(self.encoding.intValue);
+    }
+    
+    oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT);
+    oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+    
+    return NExtractTools::txt2docx(from, to, temp, oInputParams);
+}
+
+- (int)txt2docx_dir:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.encoding != nil) {
+        oInputParams.m_nCsvTxtEncoding = new int(self.encoding.intValue);
+    }
+    
+    oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT);
+    oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+    
+    return NExtractTools::txt2doct_bin(from, to, temp, oInputParams);
+}
+
 - (int)sdk_docx2odt:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -532,6 +570,53 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::odf2oox(from, to, temp, oInputParams);
 }
+
+- (int)sdk_odt2docx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+}
+- (int)sdk_ods2xlsx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+}
+- (int)sdk_odp2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+}
+
 - (int)sdk_odf2oox_dir:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);

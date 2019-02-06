@@ -225,8 +225,18 @@ namespace PPTX
 			pWriter->WriteNodeValue2(_T("cp:lastModifiedBy"), lastModifiedBy);
 			pWriter->WriteNodeValue2(_T("cp:revision"), revision);
 			pWriter->WriteNodeValue2(_T("cp:lastPrinted"), lastPrinted);
-			pWriter->WriteNodeValue2(_T("dcterms:created xsi:type=\"dcterms:W3CDTF\""), created);
-			pWriter->WriteNodeValue2(_T("dcterms:modified xsi:type=\"dcterms:W3CDTF\""), modified);
+			if (created.IsInit())
+			{
+				pWriter->WriteNodeBegin(_T("dcterms:created xsi:type=\"dcterms:W3CDTF\""));
+				pWriter->WriteStringXML(*created);
+				pWriter->WriteNodeEnd(_T("dcterms:created"));
+			}
+			if (modified.IsInit())
+			{
+				pWriter->WriteNodeBegin(_T("dcterms:modified xsi:type=\"dcterms:W3CDTF\""));
+				pWriter->WriteStringXML(*modified);
+				pWriter->WriteNodeEnd(_T("dcterms:modified"));
+			}
 			pWriter->WriteNodeValue2(_T("cp:category"), revision);
 			pWriter->WriteNodeValue2(_T("cp:contentStatus"), revision);
 			pWriter->WriteNodeValue2(_T("cp:version"), revision);

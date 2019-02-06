@@ -53,10 +53,30 @@
     self.fonts = @"/System/Library/Fonts";
     self.temp = NSTemporaryDirectory();
     
+    [self testTXT];
     [self testCSV];
     [self testDOCX];
     [self testXLSX];
     [self testODT];
+}
+
+- (void)testTXT {
+    
+    {
+        NSLog(@"==================== TXT TO DOCX ====================");
+        
+        NSString* from = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"txt"];
+        NSString* to = [NSString stringWithFormat:@"%@test_txt_to_docx.docx", self.temp];
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        int result = [conv txt2docx:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
+        if (result != 0) {
+            NSLog(@"ERROR TXT TO DOCX : %d",result);
+        } else {
+            NSLog(@"odt output : %@", to);
+        }
+    }
 }
 
 - (void)testDOCX {
@@ -66,7 +86,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"empty" ofType:@"docx"];
         
         NSString* fullFileName = path;
-        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@empty.bin", NSTemporaryDirectory()];
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@empty.bin", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
@@ -84,7 +104,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
         
         NSString* fullFileName = path;
-        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", NSTemporaryDirectory()];
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
@@ -102,7 +122,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
         
         NSString* fullFileName = path;
-        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", NSTemporaryDirectory()];
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
@@ -110,8 +130,8 @@
         
         NSLog(@"%@",fullFileNameTo);
         
-        NSString* docxOut = [NSString stringWithFormat:@"%@document.docx", NSTemporaryDirectory()];
-        NSString* outTemp = [NSString stringWithFormat:@"%@OUT_TEMP", NSTemporaryDirectory()];
+        NSString* docxOut = [NSString stringWithFormat:@"%@document.docx", self.temp];
+        NSString* outTemp = [NSString stringWithFormat:@"%@OUT_TEMP", self.temp];
         
         [self createDirectory:outTemp];
         [self clearDirectory:outTemp];
@@ -131,7 +151,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"empty" ofType:@"xlsx"];
         
         NSString* fullFileName = path;
-        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@empty.bin", NSTemporaryDirectory()];
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@empty.bin", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
@@ -149,7 +169,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
         
         NSString* fullFileName = path;
-        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@price.bin", NSTemporaryDirectory()];
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@price.bin", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
@@ -167,7 +187,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"crypted" ofType:@"xlsx"];
         
         NSString* fullFileName = path;
-        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@crypted.bin", NSTemporaryDirectory()];
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@crypted.bin", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.password = @"555";
@@ -188,7 +208,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"csv"];
         
         NSString* fullFileName = path;
-        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@test.bin", NSTemporaryDirectory()];
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@test.bin", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
@@ -209,12 +229,11 @@
         NSLog(@"==================== ODT TO DOCX ====================");
         
         NSString* from = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"odt"];
-        NSString* to = [NSString stringWithFormat:@"%@test_odt_to_docx.docx", NSTemporaryDirectory()];
-        NSString* temp = NSTemporaryDirectory();
+        NSString* to = [NSString stringWithFormat:@"%@test_odt_to_docx.docx", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
-        int result = [conv sdk_odf2oox:from nsTo:to nsTemp:temp nsFontPath:self.fonts];
+        int result = [conv sdk_odf2oox:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
         if (result != 0) {
             NSLog(@"ERROR ODT TO DOCX : %d",result);
         } else {
@@ -226,12 +245,11 @@
         NSLog(@"==================== DOCX TO ODT ====================");
         
         NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
-        NSString* to = [NSString stringWithFormat:@"%@docx_to_odt_test.odt", NSTemporaryDirectory()];
-        NSString* temp = NSTemporaryDirectory();
+        NSString* to = [NSString stringWithFormat:@"%@docx_to_odt_test.odt", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
-        int result = [conv sdk_docx2odt:from nsTo:to nsTemp:temp nsFontPath:self.fonts];
+        int result = [conv sdk_docx2odt:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
         if (result != 0) {
             NSLog(@"ERROR DOCX TO ODT : %d",result);
         } else {
@@ -243,12 +261,11 @@
         NSLog(@"==================== ODS TO XLSX ====================");
         
         NSString* from = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"ods"];
-        NSString* to = [NSString stringWithFormat:@"%@test_ods_to_xlsx.xlsx", NSTemporaryDirectory()];
-        NSString* temp = NSTemporaryDirectory();
+        NSString* to = [NSString stringWithFormat:@"%@test_ods_to_xlsx.xlsx", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
-        int result = [conv sdk_odf2oox:from nsTo:to nsTemp:temp nsFontPath:self.fonts];
+        int result = [conv sdk_odf2oox:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
         if (result != 0) {
             NSLog(@"ERROR ODS TO XLSX : %d",result);
         } else {
@@ -260,12 +277,11 @@
         NSLog(@"==================== XLSX TO ODS ====================");
         
         NSString* from = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
-        NSString* to = [NSString stringWithFormat:@"%@xlsx_to_ods_test.ods", NSTemporaryDirectory()];
-        NSString* temp = NSTemporaryDirectory();
+        NSString* to = [NSString stringWithFormat:@"%@xlsx_to_ods_test.ods", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
-        int result = [conv sdk_xlsx2ods:from nsTo:to nsTemp:temp nsFontPath:self.fonts];
+        int result = [conv sdk_xlsx2ods:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
         if (result != 0) {
             NSLog(@"ERROR XLSX TO ODS : %d",result);
         } else {
@@ -277,12 +293,11 @@
         NSLog(@"==================== ODP TO PPTX ====================");
         
         NSString* from = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"odp"];
-        NSString* to = [NSString stringWithFormat:@"%@test_odp_to_pptx.pptx", NSTemporaryDirectory()];
-        NSString* temp = NSTemporaryDirectory();
+        NSString* to = [NSString stringWithFormat:@"%@test_odp_to_pptx.pptx", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
-        int result = [conv sdk_odf2oox:from nsTo:to nsTemp:temp nsFontPath:self.fonts];
+        int result = [conv sdk_odf2oox:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
         if (result != 0) {
             NSLog(@"ERROR ODP TO PPTX : %d",result);
         } else {
@@ -294,12 +309,11 @@
         NSLog(@"==================== PPTX TO ODP ====================");
         
         NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"pptx"];
-        NSString* to = [NSString stringWithFormat:@"%@pptx_to_odp_test.odp", NSTemporaryDirectory()];
-        NSString* temp = NSTemporaryDirectory();
+        NSString* to = [NSString stringWithFormat:@"%@pptx_to_odp_test.odp", self.temp];
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.isNoBase64 = YES;
-        int result = [conv sdk_pptx2odp:from nsTo:to nsTemp:temp nsFontPath:self.fonts];
+        int result = [conv sdk_pptx2odp:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
         if (result != 0) {
             NSLog(@"ERROR PPTX TO ODP : %d",result);
         } else {

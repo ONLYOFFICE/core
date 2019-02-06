@@ -475,10 +475,10 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
 
 	for (size_t nIndex = 0; nIndex < oArrayFonts.size(); ++nIndex)
 	{
-		CFont oFont;
+		CFontProperty oFont;
+		
 		oFont.Name		= oArrayFonts[nIndex]->m_strFaceName;
 		oFont.Charset	= oArrayFonts[nIndex]->m_lfCharSet;
-
 		oFont.PitchFamily = oArrayFonts[nIndex]->m_lfPitchAndFamily;
 
 		m_arrFonts.push_back(oFont);
@@ -1387,7 +1387,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 	if (0 == oArraySlideAtoms.size())
 		return;
 
-	_UINT32 dwID				= (_UINT32)oArraySlideAtoms[0]->m_nMasterIDRef;
+	_UINT32 dwID = (_UINT32)oArraySlideAtoms[0]->m_nMasterIDRef;
 	if (0 != dwID)
 	{
 		// этот мастер - не main!!!
@@ -2473,8 +2473,7 @@ void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle,
 
 		pCF->Size			= 18;
 
-		pCF->FontProperties = new NSPresentationEditor::CFontProperties();
-		pCF->FontProperties->SetFont(pTheme->m_arFonts[0]);
+		pCF->font.font = new NSPresentationEditor::CFontProperty(pTheme->m_arFonts[0]);
 	}
 }
 

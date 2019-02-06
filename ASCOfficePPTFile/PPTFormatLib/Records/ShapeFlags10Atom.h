@@ -34,9 +34,8 @@
 
 class CRecordShapeFlags10Atom : public CUnknownRecord
 {
-	BYTE m_nFlags;
-
 public:
+	BYTE m_nFlags;
 	
 	CRecordShapeFlags10Atom()
 	{

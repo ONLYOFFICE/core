@@ -99,21 +99,22 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 			{
 				if ((pRun->fontRef.is_init()) && (pRun->fontRef.get() < pTheme->m_arFonts.size()))
 				{
-					pRun->FontProperties = new CFontProperties();
-					pRun->FontProperties->SetFont(pTheme->m_arFonts[pRun->fontRef.get()]);
+					pRun->font.font = new CFontProperty(pTheme->m_arFonts[pRun->fontRef.get()]);
 
-					if (1 < pRun->fontRef.get())
-						pRun->fontRef.reset();
+					//if (1 < pRun->fontRef.get())
+					//	pRun->fontRef.reset();
 				}
-				if ((pRun->EAFontRef.is_init()) && (pRun->EAFontRef.get() < pTheme->m_arFonts.size()))
+				if ((pRun->ansiFontRef.is_init()) && (pRun->ansiFontRef.get() < pTheme->m_arFonts.size()))
 				{
-					pRun->FontPropertiesEA = new CFontProperties();
-					pRun->FontPropertiesEA->SetFont(pTheme->m_arFonts[pRun->EAFontRef.get()]);
+					pRun->font.ansi = new CFontProperty(pTheme->m_arFonts[pRun->ansiFontRef.get()]);
 				}
-				if ((pRun->SymbolFontRef.is_init()) && (pRun->SymbolFontRef.get() < pTheme->m_arFonts.size()))
+				if ((pRun->eaFontRef.is_init()) && (pRun->eaFontRef.get() < pTheme->m_arFonts.size()))
 				{
-					pRun->FontPropertiesSym = new CFontProperties();
-					pRun->FontPropertiesSym->SetFont(pTheme->m_arFonts[pRun->SymbolFontRef.get()]);
+					pRun->font.ea = new CFontProperty(pTheme->m_arFonts[pRun->eaFontRef.get()]);
+				}
+				if ((pRun->symbolFontRef.is_init()) && (pRun->symbolFontRef.get() < pTheme->m_arFonts.size()))
+				{
+					pRun->font.sym = new CFontProperty(pTheme->m_arFonts[pRun->symbolFontRef.get()]);
 				}
 			}
 		}

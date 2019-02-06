@@ -34,10 +34,9 @@
 
 class CRecordGridSpacing10Atom : public CUnknownRecord
 {
+public:
 	INT m_nX;
 	INT m_nY;
-
-public:
 	
 	CRecordGridSpacing10Atom()
 	{

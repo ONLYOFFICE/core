@@ -34,12 +34,11 @@
 
 class CRecordNoZoomViewInfoAtom : public CUnknownRecord
 {
+public:
 	SScalingAtom m_oCurScale;
 	SPointAtom m_nOrigin;
 
 	BOOL1 m_bDraftMode;
-
-public:
 	
 	CRecordNoZoomViewInfoAtom()
 	{

@@ -132,15 +132,15 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 			}
 			if (pPF->bulletFontProperties.is_init())
 			{
-				oWriter.WriteString(L"<a:buFont typeface=\"" + pPF->bulletFontProperties->strFontName + L"\"");
+				oWriter.WriteString(L"<a:buFont typeface=\"" + pPF->bulletFontProperties->Name + L"\"");
 
-				if ( pPF->bulletFontProperties->nPitchFamily > 0)
+				if ( pPF->bulletFontProperties->PitchFamily > 0)
 				{
-					oWriter.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring(pPF->bulletFontProperties->nPitchFamily) + L"\"");
+					oWriter.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring(pPF->bulletFontProperties->PitchFamily) + L"\"");
 				}
-				if ( pPF->bulletFontProperties->nFontCharset > 0)
+				if ( pPF->bulletFontProperties->Charset > 0)
 				{
-					oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring((char)pPF->bulletFontProperties->nFontCharset) + L"\"");
+					oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring((char)pPF->bulletFontProperties->Charset) + L"\"");
 				}
 				oWriter.WriteString(std::wstring(L"/>"));
 
@@ -249,9 +249,9 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 			oWriter.WriteString(L"<a:solidFill><a:srgbClr val=\"" + strColor + L"\"/></a:solidFill>");
 		}
 	}
-	if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
+	if ((pCF->font.ansi.is_init()) && (!pCF->font.ansi->Name.empty()))
 	{
-		oWriter.WriteString(L"<a:latin typeface=\"" + pCF->FontProperties->strFontName + L"\"/>");
+		oWriter.WriteString(L"<a:latin typeface=\"" + pCF->font.ansi->Name + L"\"/>");
 	}
 	else if (pCF->fontRef.is_init())
 	{
@@ -271,13 +271,13 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 			}
 		}
 	}
-	if (pCF->FontPropertiesEA.is_init())
+	if (pCF->font.ea.is_init())
 	{
-		oWriter.WriteString(L"<a:cs typeface=\"" + pCF->FontPropertiesEA->strFontName + L"\"/>");
+		oWriter.WriteString(L"<a:ea typeface=\"" + pCF->font.ea->Name + L"\"/>");
 	}
-	if (pCF->FontPropertiesSym.is_init())
+	if (pCF->font.sym.is_init())
 	{
-		oWriter.WriteString(L"<a:sym typeface=\"" + pCF->FontPropertiesSym->strFontName + L"\"/>");
+		oWriter.WriteString(L"<a:sym typeface=\"" + pCF->font.sym->Name + L"\"/>");
 	}
 	oWriter.WriteString(L"</a:defRPr>");		
 
@@ -1319,15 +1319,15 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 				if (pPF->bulletFontProperties.is_init())
 				{
-					m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + L"\"");
+					m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->Name + L"\"");
 
-					if ( pPF->bulletFontProperties->nPitchFamily > 0)
+					if ( pPF->bulletFontProperties->PitchFamily > 0)
 					{
-						m_oWriter.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring(pPF->bulletFontProperties->nPitchFamily) + L"\"");
+						m_oWriter.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring(pPF->bulletFontProperties->PitchFamily) + L"\"");
 					}
-					if ( pPF->bulletFontProperties->nFontCharset > 0)
+					if ( pPF->bulletFontProperties->Charset > 0)
 					{
-						m_oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring((char)pPF->bulletFontProperties->nFontCharset) + L"\"");
+						m_oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring((char)pPF->bulletFontProperties->Charset) + L"\"");
 					}
 					m_oWriter.WriteString(std::wstring(L"/>"));
 				}
@@ -1484,9 +1484,9 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 			}
 
-			if (pCF->FontProperties.is_init())
+			if (pCF->font.font.is_init())
 			{
-				m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
+				m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->font.font->Name + _T("\"/>"));
 			}
 			else if (pCF->fontRef.is_init())
 			{
@@ -1507,13 +1507,13 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 			}
 
-			if (pCF->FontPropertiesEA.is_init())
+			if (pCF->font.ea.is_init())
 			{
-				m_oWriter.WriteString(std::wstring(L"<a:cs typeface=\"") + pCF->FontPropertiesEA->strFontName + L"\"/>");
+				m_oWriter.WriteString(std::wstring(L"<a:ea typeface=\"") + pCF->font.ea->Name + L"\"/>");
 			}
-			if (pCF->FontPropertiesSym.is_init())
+			if (pCF->font.sym.is_init())
 			{
-				m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->FontPropertiesSym->strFontName + _T("\"/>"));
+				m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
 			}
 			m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
@@ -1869,11 +1869,11 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertImage()
 
 		m_oWriter.WriteString(std::wstring(L"<a:srcRect"));
 		if (pImageElement->m_bCropEnabled)
-		{
-            m_oWriter.WriteString(L" l=\"" + std::to_wstring((size_t)(pImageElement->m_lcropFromLeft  *1.5)) + L"\"");
-            m_oWriter.WriteString(L" t=\"" + std::to_wstring((size_t)(pImageElement->m_lcropFromTop   *1.5)) + L"\"");
-            m_oWriter.WriteString(L" r=\"" + std::to_wstring((size_t)(pImageElement->m_lcropFromRight *1.5)) + L"\"");
-            m_oWriter.WriteString(L" b=\"" + std::to_wstring((size_t)(pImageElement->m_lcropFromBottom*1.5)) + L"\"");
+		{//124-125 Q3 V2 Win File 3.ppt
+            m_oWriter.WriteString(L" l=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromLeft  *1.5)) + L"\"");
+            m_oWriter.WriteString(L" t=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromTop   *1.5)) + L"\"");
+            m_oWriter.WriteString(L" r=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromRight *1.5)) + L"\"");
+            m_oWriter.WriteString(L" b=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromBottom*1.5)) + L"\"");
 		}
 		m_oWriter.WriteString(std::wstring(L"/>"));
 		

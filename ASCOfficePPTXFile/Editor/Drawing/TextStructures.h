@@ -81,71 +81,76 @@ namespace NSPresentationEditor
         return _T("<") + strName + _T(">") + std::to_wstring((unsigned int)prop->GetLONG()) + _T("</") + strName + _T(">");
 	}
 
+	class CFontProperty
+	{
+	public:
+		std::wstring	Name;
+		BYTE			PitchFamily;
+		BYTE			Charset;
+
+		CFontProperty() : PitchFamily(0), Charset(0) {}
+
+		CFontProperty(const CFontProperty& oSrc)
+		{
+			*this = oSrc;
+		}
+		CFontProperty& operator=(const CFontProperty& oSrc)
+		{
+			Name		= oSrc.Name;
+			PitchFamily	= oSrc.PitchFamily;
+			Charset		= oSrc.Charset;
+
+			return *this;
+		}
+	};
+
 	class CFontProperties
 	{
 	public:
-		BYTE					FontNameProp;
-		std::wstring			strFontName;
-		BYTE					nPitchFamily;
-		bool					bFontFixed;
-		BYTE					nFontCharset;
-
-		CFontProperties() : FontNameProp(0), bFontFixed(false), nPitchFamily(0), nFontCharset(0)
-		{
-		}
-		~CFontProperties()
-		{
-		}
+		CFontProperties () {}
 		CFontProperties(const CFontProperties& oSrc)
 		{
 			*this = oSrc;
 		}
 		CFontProperties& operator=(const CFontProperties& oSrc)
 		{
-			FontNameProp		= oSrc.FontNameProp;
-			strFontName			= oSrc.strFontName;
-			nPitchFamily		= oSrc.nPitchFamily;
-			bFontFixed			= oSrc.bFontFixed;
-			nFontCharset		= oSrc.nFontCharset;
+			font	= oSrc.font;
+			ansi	= oSrc.ansi;
+			ea		= oSrc.ea;
+			sym		= oSrc.sym;
 
 			return *this;
 		}
-
-		AVSINLINE void SetFont(CFont& oFont)
-		{
-			strFontName		= oFont.Name;
-			nPitchFamily	= oFont.PitchFamily;
-			bFontFixed		= oFont.Monospace;
-			nFontCharset	= oFont.Charset;
-		}
+		NSCommon::nullable_base<CFontProperty>	font;
+		NSCommon::nullable_base<CFontProperty>	ea;
+		NSCommon::nullable_base<CFontProperty>	sym;
+		NSCommon::nullable_base<CFontProperty>	ansi;
 	};
 
 	class CTextCFRun
 	{
 	public:
 
-        NSCommon::nullable_base<bool>			FontBold;
-        NSCommon::nullable_base<bool>			FontItalic;
-        NSCommon::nullable_base<bool>			FontUnderline;
-        NSCommon::nullable_base<bool>			FontStrikeout;
-        NSCommon::nullable_base<bool>			FontShadow;
+        NSCommon::nullable_base<bool>	FontBold;
+        NSCommon::nullable_base<bool>	FontItalic;
+        NSCommon::nullable_base<bool>	FontUnderline;
+        NSCommon::nullable_base<bool>	FontStrikeout;
+        NSCommon::nullable_base<bool>	FontShadow;
 		
-		NSCommon::nullable_base<WORD>			fontRef;			// fontRef
-		NSCommon::nullable_base<WORD>			EAFontRef;			// eaFontRef
-		NSCommon::nullable_base<WORD>			AnsiFontRef;		// ansiFontRef
-		NSCommon::nullable_base<WORD>			SymbolFontRef;		// SymbolFontRef
+		NSCommon::nullable_base<WORD>	fontRef;			// fontRef
+		NSCommon::nullable_base<WORD>	eaFontRef;			// eaFontRef
+		NSCommon::nullable_base<WORD>	ansiFontRef;		// ansiFontRef
+		NSCommon::nullable_base<WORD>	symbolFontRef;		// symFontRef
 
-		NSCommon::nullable_base<double>			BaseLineOffset;		// baseline offset
+		NSCommon::nullable_base<double>	BaseLineOffset;		// baseline offset
 
-		NSCommon::nullable_base<CColor>			Color;				// text color
-		NSCommon::nullable_base<WORD>			Size;				// font size
+		NSCommon::nullable_base<CColor>	Color;				// text color
+		NSCommon::nullable_base<WORD>	Size;				// font size
 
-		NSCommon::nullable_base<WORD>			Cap;				// 0 - none, 1 - TEXT, 2 - text
-		NSCommon::nullable_base<WORD>			Language;
+		NSCommon::nullable_base<WORD>	Cap;				// 0 - none, 1 - TEXT, 2 - text
+		NSCommon::nullable_base<WORD>	Language;
 
-		NSCommon::nullable_base<CFontProperties>	FontProperties;
-		NSCommon::nullable_base<CFontProperties>	FontPropertiesEA;
-		NSCommon::nullable_base<CFontProperties>	FontPropertiesSym;
+		CFontProperties					font;
 
 		CTextCFRun()
 		{
@@ -162,17 +167,20 @@ namespace NSPresentationEditor
 			FontStrikeout	= oSrc.FontStrikeout;
 			FontShadow		= oSrc.FontShadow;
 			
-			fontRef		= oSrc.fontRef;
-			EAFontRef		= oSrc.EAFontRef;
-			AnsiFontRef		= oSrc.AnsiFontRef;
-			SymbolFontRef	= oSrc.SymbolFontRef;
+			fontRef			= oSrc.fontRef;
+			eaFontRef		= oSrc.eaFontRef;
+			ansiFontRef		= oSrc.ansiFontRef;
+			symbolFontRef	= oSrc.symbolFontRef;
 
 			BaseLineOffset	= oSrc.BaseLineOffset;
 
 			Color			= oSrc.Color;
 			Size			= oSrc.Size;
 
-			FontProperties	= oSrc.FontProperties;
+			font		= oSrc.font;
+			font.ea		= oSrc.font.ea;
+			font.ansi	= oSrc.font.ansi;
+			font.sym	= oSrc.font.sym;
 
 			Cap				= oSrc.Cap;
 
@@ -186,28 +194,28 @@ namespace NSPresentationEditor
 		
 		AVSINLINE void ApplyBefore(const CTextCFRun& oSrc)
 		{
-			if (!FontBold.is_init()) 				FontBold = oSrc.FontBold;
-			if (!FontItalic.is_init())				FontItalic = oSrc.FontItalic;
-			if (!FontUnderline.is_init())			FontUnderline = oSrc.FontUnderline;
-			if (!FontStrikeout.is_init())			FontStrikeout = oSrc.FontStrikeout;
-			if (!FontShadow.is_init())				FontShadow = oSrc.FontShadow;
+			if (!FontBold.is_init()) 		FontBold = oSrc.FontBold;
+			if (!FontItalic.is_init())		FontItalic = oSrc.FontItalic;
+			if (!FontUnderline.is_init())	FontUnderline = oSrc.FontUnderline;
+			if (!FontStrikeout.is_init())	FontStrikeout = oSrc.FontStrikeout;
+			if (!FontShadow.is_init())		FontShadow = oSrc.FontShadow;	
+
+			if (!fontRef.is_init())			fontRef = oSrc.fontRef;
+			if (!eaFontRef.is_init())		eaFontRef = oSrc.eaFontRef;
+			if (!ansiFontRef.is_init())		ansiFontRef = oSrc.ansiFontRef;
+			if (!symbolFontRef.is_init())	symbolFontRef = oSrc.symbolFontRef;
+
+			if (!BaseLineOffset.is_init())	BaseLineOffset = oSrc.BaseLineOffset;
+			if (!Color.is_init())			Color = oSrc.Color;
+			if (!Size.is_init())			Size = oSrc.Size;
+			if (!Cap.is_init())				Cap = oSrc.Cap;
 			
-			if (!fontRef.is_init())					fontRef = oSrc.fontRef;
-			if (!EAFontRef.is_init())				EAFontRef = oSrc.EAFontRef;
-			if (!AnsiFontRef.is_init())				AnsiFontRef = oSrc.AnsiFontRef;
-			if (!SymbolFontRef.is_init())			SymbolFontRef = oSrc.SymbolFontRef;
+			if (!font.font.is_init())		font.font	= oSrc.font.font;
+			if (!font.ansi.is_init())		font.ansi	= oSrc.font.ansi;
+			if (!font.ea.is_init())			font.ea		= oSrc.font.ea;
+			if (!font.sym.is_init())		font.sym	= oSrc.font.sym;
 
-			if (!BaseLineOffset.is_init())			BaseLineOffset = oSrc.BaseLineOffset;
-
-			if (!Color.is_init())					Color = oSrc.Color;
-
-			if (!Size.is_init())					Size = oSrc.Size;
-
-			if (!Cap.is_init())						Cap = oSrc.Cap;
-
-			if (!FontProperties.is_init())			FontProperties = oSrc.FontProperties;
-
-			if (!Language.is_init())				Language = oSrc.Language;
+			if (!Language.is_init())		Language = oSrc.Language;
 		}
 		AVSINLINE void ApplyAfter(const CTextCFRun& oSrc)
 		{
@@ -223,26 +231,25 @@ namespace NSPresentationEditor
 				fontRef = oSrc.fontRef;
 				bFontRefSetUp = true;
 			}
-			if (oSrc.EAFontRef.is_init())			EAFontRef = oSrc.EAFontRef;
-			if (oSrc.AnsiFontRef.is_init())			AnsiFontRef = oSrc.AnsiFontRef;
-			if (oSrc.SymbolFontRef.is_init())		SymbolFontRef = oSrc.SymbolFontRef;
+			if (oSrc.eaFontRef.is_init())		eaFontRef = oSrc.eaFontRef;
+			if (oSrc.ansiFontRef.is_init())		ansiFontRef = oSrc.ansiFontRef;
+			if (oSrc.symbolFontRef.is_init())	symbolFontRef = oSrc.symbolFontRef;
+			if (oSrc.BaseLineOffset.is_init())	BaseLineOffset = oSrc.BaseLineOffset;
+			if (oSrc.Color.is_init())			Color = oSrc.Color;
+			if (oSrc.Size.is_init())			Size = oSrc.Size;
+			if (oSrc.Cap.is_init())				Cap = oSrc.Cap;
+			if (oSrc.Language.is_init())		Language = oSrc.Language;
+			
+			if (oSrc.font.ansi.is_init())		font.ansi = oSrc.font.ansi;
+			if (oSrc.font.ea.is_init())			font.ea = oSrc.font.ea;
+			if (oSrc.font.sym.is_init())		font.sym = oSrc.font.sym;
+			if (oSrc.font.font.is_init())		font.font = oSrc.font.font;
+			//{
+			//	FontProperties = oSrc.FontProperties;
+			//	if (!bFontRefSetUp)
+			//		fontRef.reset();
+			//}
 
-			if (oSrc.BaseLineOffset.is_init())		BaseLineOffset = oSrc.BaseLineOffset;
-
-			if (oSrc.Color.is_init())				Color = oSrc.Color;
-
-			if (oSrc.Size.is_init())				Size = oSrc.Size;
-
-			if (oSrc.Cap.is_init())					Cap = oSrc.Cap;
-
-			if (oSrc.FontProperties.is_init())
-			{
-				FontProperties = oSrc.FontProperties;
-				if (!bFontRefSetUp)
-					fontRef.reset();
-			}
-			if (oSrc.Language.is_init())
-				Language = oSrc.Language;
 		}
 
 	};
@@ -251,30 +258,30 @@ namespace NSPresentationEditor
 	{
 	public:
 
-		NSCommon::nullable_base<bool>				hasBullet;
+		NSCommon::nullable_base<bool>			hasBullet;
 
-		NSCommon::nullable_base<WORD>				bulletFontRef;
-		NSCommon::nullable_base<WORD>				bulletSize;
-		NSCommon::nullable_base<WCHAR>				bulletChar;
-		NSCommon::nullable_base<CColor>				bulletColor;
-		NSCommon::nullable_base<CFontProperties>	bulletFontProperties;
+		NSCommon::nullable_base<WORD>			bulletFontRef;
+		NSCommon::nullable_base<WORD>			bulletSize;
+		NSCommon::nullable_base<WCHAR>			bulletChar;
+		NSCommon::nullable_base<CColor>			bulletColor;
+		NSCommon::nullable_base<CFontProperty>	bulletFontProperties;
 
-		NSCommon::nullable_base<WORD>				textAlignment;
-		NSCommon::nullable_base<LONG>				lineSpacing;
-		NSCommon::nullable_base<LONG>				spaceBefore;
-		NSCommon::nullable_base<LONG>				spaceAfter;
-		NSCommon::nullable_base<LONG>				leftMargin;
-		NSCommon::nullable_base<LONG>				indent;
-		NSCommon::nullable_base<LONG>				defaultTabSize;
+		NSCommon::nullable_base<WORD>			textAlignment;
+		NSCommon::nullable_base<LONG>			lineSpacing;
+		NSCommon::nullable_base<LONG>			spaceBefore;
+		NSCommon::nullable_base<LONG>			spaceAfter;
+		NSCommon::nullable_base<LONG>			leftMargin;
+		NSCommon::nullable_base<LONG>			indent;
+		NSCommon::nullable_base<LONG>			defaultTabSize;
 		
-		std::vector<std::pair<int, int>>			tabStops;
+		std::vector<std::pair<int, int>>		tabStops;
 
-		bool										bIsOneLine;
+		bool									bIsOneLine;
 
-		NSCommon::nullable_base<WORD>				fontAlign;
-		NSCommon::nullable_base<WORD>				textDirection;
+		NSCommon::nullable_base<WORD>			fontAlign;
+		NSCommon::nullable_base<WORD>			textDirection;
 
-		NSCommon::nullable_base<WORD>				wrapFlags;
+		NSCommon::nullable_base<WORD>			wrapFlags;
 
 		CTextPFRun() : bIsOneLine(false)
 		{
@@ -673,7 +680,6 @@ namespace NSPresentationEditor
 	public:
 		NSCommon::nullable_base<CTextStyleLevel> m_pLevels[10];
 
-	public:
 		CTextStyles()
 		{
 			for (int i = 0; i < 10; ++i)

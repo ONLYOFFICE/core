@@ -83,7 +83,7 @@ public:
 	// эти параметры - одни на весь документ. 
 	// чтобы поддержать нашу схему (пптх) - копируем их в темы
 	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
-	std::vector<CFont>								m_arrFonts;
+	std::vector<CFontProperty>						m_arrFonts;
 	NSPresentationEditor::CTextStyles				m_oDefaultTextStyle;
 
 	vector_string									m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
@@ -174,10 +174,10 @@ public:
 		oArrayMem.push_back(oScheme[0]);//4
 		oArrayMem.push_back(oScheme[4]);//5 //accent1
 		oArrayMem.push_back(oScheme[5]);//6 //accent2
-		oArrayMem.push_back(oScheme[0]);//7 //accent3
-		oArrayMem.push_back(oScheme[5]);//8 //accent4
-		oArrayMem.push_back(oScheme[4]);//9 //accent5
-		oArrayMem.push_back(oScheme[7]);//10 //accent6
+		oArrayMem.push_back(CColor(0xAAAAAA));//(oScheme[0]);//7 //accent3
+		oArrayMem.push_back(CColor(0xDCDCDC));//(oScheme[5]);//8 //accent4
+		oArrayMem.push_back(CColor(0xDBF1FA));//(oScheme[4]);//9 //accent5
+		oArrayMem.push_back(CColor(0x4B9DCA));//(oScheme[7]);//10 //accent6
 		oArrayMem.push_back(oScheme[6]);//11 //hlink
 		oArrayMem.push_back(oScheme[7]);//12 //folHlink
 		oArrayMem.push_back(oScheme[0]);//13 //lt1

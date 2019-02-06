@@ -34,16 +34,23 @@
 
 class CRecordSSDocInfoAtom : public CUnknownRecord
 {
-	SColorAtom m_oColor;
-	INT m_nRestartTime;
-	SHORT m_nStartSlide;
-	SHORT m_nEndSlide;
-
-	USHORT m_pName[32];
-	USHORT m_nFlags;
-
 public:
+	SColorAtom		m_oPenColor;
+	_INT32			m_nRestartTime;
+	short			m_nStartSlide;
+	short			m_nEndSlide;
+	std::wstring	m_pName;
 	
+	bool fAutoAdvance;
+	bool fWillSkipBuilds;
+	bool fUseSlideRange;
+	bool fDocUseNamedShow;
+	bool fBrowseMode;
+	bool fKioskMode;
+	bool fWillSkipNarration;
+	bool fLoopContinuously;
+	bool fHideScrollBar;
+
 	CRecordSSDocInfoAtom()
 	{
 	}
@@ -54,7 +61,32 @@ public:
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		m_oHeader = oHeader;
+
+		unsigned short flags;
+		unsigned char nm[64];
+
+		NSStreamReader::Read(pStream, m_oPenColor);
+		m_nRestartTime	= StreamUtils::ReadLONG(pStream);
+		m_nStartSlide	= StreamUtils::ReadSHORT(pStream);
+		m_nEndSlide		= StreamUtils::ReadSHORT(pStream);
+
+		pStream->read(nm, 64);
+		m_pName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)nm, 32);
+
+		flags = StreamUtils::ReadWORD(pStream);
+		
+		fAutoAdvance		= GETBIT(flags, 15);
+		fWillSkipBuilds		= GETBIT(flags, 14);
+		fUseSlideRange		= GETBIT(flags, 13);
+		fDocUseNamedShow	= GETBIT(flags, 12);
+		fBrowseMode			= GETBIT(flags, 11);
+		fKioskMode			= GETBIT(flags, 10);
+		fWillSkipNarration	= GETBIT(flags, 9);
+		fLoopContinuously	= GETBIT(flags, 8);
+		fHideScrollBar		= GETBIT(flags, 7);
+
+		unsigned short unused = StreamUtils::ReadWORD(pStream);
 	}
 
 };

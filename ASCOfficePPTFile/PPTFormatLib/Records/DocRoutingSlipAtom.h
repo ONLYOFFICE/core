@@ -34,6 +34,7 @@
 
 class CRecordDocRoutingSlipAtom : public CUnknownRecord
 {
+public:
 	struct SDocRoutingSlipAtom
 	{
         USHORT      m_nType;
@@ -50,8 +51,6 @@ class CRecordDocRoutingSlipAtom : public CUnknownRecord
 	SDocRoutingSlipAtom m_oRgRecipientRoutingSlipStrings;
 	SDocRoutingSlipAtom m_oSubjectString;
 	SDocRoutingSlipAtom m_oMessageString;
-
-public:
 	
 	CRecordDocRoutingSlipAtom()
 	{

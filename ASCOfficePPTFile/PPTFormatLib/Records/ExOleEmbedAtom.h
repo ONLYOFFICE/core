@@ -34,12 +34,11 @@
 
 class CRecordExOleEmbedAtom : public CUnknownRecord
 {
+public:
 	UINT m_nColorFollow;
 	BOOL1 m_nCantLockServer;
 	BOOL1 m_nNoSizeToServer;
 	BOOL1 m_nIsTable;
-
-public:
 	
 	CRecordExOleEmbedAtom()
 	{

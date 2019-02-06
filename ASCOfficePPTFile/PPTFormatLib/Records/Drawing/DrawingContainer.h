@@ -49,3 +49,4 @@ public:
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 	}
 };
+

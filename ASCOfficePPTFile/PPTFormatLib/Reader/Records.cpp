@@ -167,12 +167,14 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	{
 	CREATE_BY_TYPE(RECORD_TYPE_SLIDELISTWITHTEXT			, CRecordSlideListWithText)
 	CREATE_BY_TYPE(RECORD_TYPE_DOCUMENT_ATOM				, CRecordDocumentAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_ENDDOCUMENT				, CRecordEndDocument)
+	CREATE_BY_TYPE(RECORD_TYPE_ENDDOCUMENT					, CRecordEndDocument)
 	//CREATE_BY_TYPE(RECORD_TYPE_SSLIDE_LAYOUT_ATOM			, CRecordSSlideLayoutAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_SLIDE_ATOM					, CRecordSlideAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_NOTES_ATOM					, CRecordNotesAtom) 
 	CREATE_BY_TYPE(RECORD_TYPE_SLIDE_PERSIST_ATOM			, CRecordSlidePersistAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_ENVIRONMENT					, CRecordDocumentTextInfo)
+	CREATE_BY_TYPE(RECORD_TYPE_FONTCOLLECTION				, CRecordFontCollection)
+	CREATE_BY_TYPE(RECORD_TYPE_FONTCOLLECTION10				, CRecordFontCollection)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordMasterPersistAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordNotesPersistAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_SSSLIDE_INFO_ATOM			, CSlideShowSlideInfoAtom)
@@ -182,7 +184,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_VIEWINFO_ATOM				, CRecordViewInfoAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_SLIDE_VIEWINFO_ATOM			, CRecordSlideViewInfoAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_VBAINFO_ATOM					, CRecordVBAInfoAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_SSDOCINFO_ATOM				, CRecordSSDocInfoAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_SSDOCINFO_ATOM				, CRecordSSDocInfoAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_DOC_ROUTING_SLIP			, CRecordDocRoutingSlipAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_EXOBJLIST_ATOM				, CRecordExObjListAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordGridSpacing10Atom)
@@ -204,11 +206,9 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPNOTESMASTERTEXTSTYLES12		, CRecordRoundTripNotesMasterTextStyles12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPDOCFLAGS12						, CRecordRoundTripDocFlags12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPECHECKSUMFORCUSTOMLAYOUTS12	, CRecordRoundTripShapeCheckSumForCustomLayouts12Atom)
-	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCUSTOMTABLESTYLES12				, CRecordRoundTripCustomTableStyles12Atom)
+	CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCUSTOMTABLESTYLES12			, CRecordRoundTripCustomTableStyles12Atom)
 	
 	//CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_SEED_ATOM			, CRecordBookmarkSeedAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_COLOR_SCHEME_ATOM			, CRecordSlideColorSchemeAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordSchemeListElementColorSchemeAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordBlipEntityAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordExObjRefAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_OEPLACEHOLDER_ATOM			, CRecordPlaceHolderAtom)
@@ -236,7 +236,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_GUIDE_ATOM					, CRecordGuideAtom)
 	
 	CREATE_BY_TYPE(RECORD_TYPE_FONTENTITY_ATOM				, CRecordFontEntityAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_FONT_EMBEDDEDDATA			, CRecordFontEmbedDataBlob)
+	CREATE_BY_TYPE(RECORD_TYPE_FONT_EMBEDDEDDATA			, CRecordFontEmbedDataBlob)
 	//CREATE_BY_TYPE(RECORD_TYPE_METAFILE					, CRecordMetafileBlob)
 	CREATE_BY_TYPE(RECORD_TYPE_CSTRING						, CRecordCString)
 	CREATE_BY_TYPE(RECORD_TYPE_SOUNDCOLL_ATOM				, CRecordSoundCollAtom)
@@ -245,7 +245,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	//CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_ENTITY_ATOM		, CRecordBookmarkEntityAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_EXLINK_ATOM				, CRecordExOleLinkAtom)
 	
-	//CREATE_BY_TYPE(RECORD_TYPE_SRKINSOKU_ATOM				, CRecordKinsokuAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_SRKINSOKU_ATOM				, CRecordKinsokuAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_EXHYPERLINK					, CRecordExHyperlinkContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_EXHYPERLINK_ATOM				, CRecordExHyperlinkAtom)
 
@@ -283,7 +283,9 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SECONDARY_OPT			, CRecordShapeProperties)
 	CREATE_BY_TYPE(RECORD_TYPE_ESCHER_TETRIARY_OPT			, CRecordShapeProperties)
 	CREATE_BY_TYPE(RECORD_TYPE_ESCHER_REGROUPITEMS			, CRecordRegGroupItems)
-
+	CREATE_BY_TYPE(RECORD_TYPE_ESCHER_SPLITMENUCOLORS		, CRecordSplitMenuColorRecord)
+	CREATE_BY_TYPE(RECORD_TYPE_ESCHER_COLORMRU				, CRecordMostRecentlyUserColors)
+	
 	CREATE_BY_TYPE(RECORD_TYPE_EX_CDAUDIO					, CRecordExCDAudioContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_EX_WAVAUDIOLINK				, CRecordWAVAudioLinkContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_EX_WAVAUDIOEMBEDDED			, CRecordWAVAudioEmbeddedContainer)
@@ -318,7 +320,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 			pRecord = new CUnknownRecord();
 #ifdef _DEBUG
 			char str[1024]={};
-			sprintf(str, "Unknown record type: %xd\t" , oHeader.RecType);
+			sprintf(str, "Unknown record type: %x\t" , oHeader.RecType);
 			std::cout << str << GetRecordName((_UINT32)oHeader.RecType) << "\n"; 
 #endif
 		}

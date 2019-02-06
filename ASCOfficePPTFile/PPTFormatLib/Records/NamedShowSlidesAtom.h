@@ -34,9 +34,8 @@
 
 class CRecordNamedShowSlidesAtom : public CUnknownRecord
 {
-	std::vector<UINT> m_arRgSlideIdRef;
-
 public:
+	std::vector<UINT> m_arRgSlideIdRef;
 	
 	CRecordNamedShowSlidesAtom()
 	{

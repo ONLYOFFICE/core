@@ -296,7 +296,7 @@ namespace NSPresentationEditor
         }
         CColor(_UINT32 rgb)
         {
-            CreateColor(rgb);
+            (*this) = CreateColor(rgb);
         }
         CColor& operator =(const CColor& oSrc)
         {

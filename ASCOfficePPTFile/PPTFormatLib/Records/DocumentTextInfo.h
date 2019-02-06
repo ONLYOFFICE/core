@@ -50,3 +50,22 @@ public:
 	}
 
 };
+
+class CRecordFontCollection : public CRecordsContainer
+{
+public:
+	
+	CRecordFontCollection()
+	{
+	}
+
+	~CRecordFontCollection()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordsContainer::ReadFromStream(oHeader, pStream);
+	}
+
+};

@@ -474,13 +474,13 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		m_oRun.fontRef = StreamUtils::ReadWORD(pStream);
 
 	if (EAFontRef_)
-		m_oRun.EAFontRef = StreamUtils::ReadWORD(pStream);
+		m_oRun.eaFontRef = StreamUtils::ReadWORD(pStream);
 
 	if (AnsiFontRef_)
-		m_oRun.AnsiFontRef = StreamUtils::ReadWORD(pStream);
+		m_oRun.ansiFontRef = StreamUtils::ReadWORD(pStream);
 
 	if (SymbolFontRef_)
-		m_oRun.SymbolFontRef = StreamUtils::ReadWORD(pStream);
+		m_oRun.symbolFontRef = StreamUtils::ReadWORD(pStream);
 	
 	if (size_)
 		m_oRun.Size = StreamUtils::ReadWORD(pStream);

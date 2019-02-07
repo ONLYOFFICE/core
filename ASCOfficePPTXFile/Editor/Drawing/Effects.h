@@ -34,7 +34,7 @@
 #include <vector>
 #include <string>
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
     class CEffect
     {

@@ -71,6 +71,7 @@
 #include "Biff_records/ExternSheet.h"
 #include "Biff_records/FrtFontList.h"
 
+#include "Biff_unions/FONTLIST.h"
 #include "Biff_unions/PAGESETUP.h"
 #include "Biff_unions/BACKGROUND.h"
 #include "Biff_unions/PROTECTION_COMMON.h"
@@ -119,10 +120,11 @@ BaseObjectPtr ChartSheetSubstream::clone()
 
 /*
 CHARTSHEET = BOF CHARTSHEETCONTENT
-CHARTSHEETCONTENT = [WriteProtect] [SheetExt] [WebPub] *HFPicture PAGESETUP PrintSize [HeaderFooter] 
+
+CHARTSHEETCONTENT = [WriteProtect] [SheetExt] [WebPub] *HFPicture PAGESETUP PrintSize [HeaderFooter]
 					[BACKGROUND] *Fbi *Fbi2 [ClrtClient] [PROTECTION] [Palette] [SXViewLink] 
 					[PivotChartBits] [SBaseRef] [MsoDrawingGroup] OBJECTS Units CHARTFOMATS SERIESDATA 
-					*WINDOW *CUSTOMVIEW [CodeName] [CRTMLFRT] EOF 
+					*WINDOW *CUSTOMVIEW [CodeName] [CRTMLFRT] EOF
 */
 const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 {
@@ -367,6 +369,16 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 				}
 			}break;
 			case rt_CrtMlFrt:			proc.optional<CRTMLFRT>();	break;
+
+			case rt_FrtFontList: //error in stream !!
+			{
+				count = proc.repeated<FONTLIST>(0, 0);
+				while(count > 0)
+				{
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 
 			default://unknown .... skip					
 			{
@@ -785,7 +797,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	if ((ax_parent->iax == 0) && axes) //primary axes
 	{
 		PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
-		PlotAreaPos		= dynamic_cast<Pos*>	(parent0->m_Pos.get());
+		PlotAreaPos		= dynamic_cast<Pos*>	(parent0->m_Pos.get()); //outer plot area
 
 		if (PlotAreaPos && !parent0->m_arCRT.empty())
 		{
@@ -800,7 +812,9 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 		
 		if (PlotAreaPos && PlotAreaFRAME)
 		{
-			PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
+			//FRAME *FRAME_ = dynamic_cast<FRAME*>	(chart_formats->m_FRAME.get());
+			
+			PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;//FRAME_->m_Frame;
 		}
 	}
 
@@ -812,31 +826,13 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	{
 		CP_XML_NODE(L"c:plotArea")
 		{
-			//for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
-			//{
-			//	AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
-			//				ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
-			//				axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
-
-			//	if (((bool)ax_parent->iax == false) && axes) //primary axes
-			//	{
-			//		PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
-			//		PlotAreaPos		= dynamic_cast<Pos*>	(parent->m_Pos.get());
-			//		
-			//		//if (PlotAreaFRAME && PlotAreaPos)
-			//		//{
-			//		//	PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
-			//		//}
-			//	}
-			//}
-
 			if ((sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
 			{
 				if (chart_formats->m_CrtLayout12A)
 				{
 					chart_formats->m_CrtLayout12A->serialize(CP_XML_STREAM());
 				}
-				else if (PlotAreaPos && (sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
+				else if (PlotAreaPos)
 				{
 					PlotAreaPos->serialize(CP_XML_STREAM());
 				}

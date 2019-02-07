@@ -35,7 +35,7 @@
 class CRecordTextPFExceptionAtom : public CUnknownRecord
 {
 public:
-	CTextPFRun_ppt m_oPFRun;
+	CTextPFRunRecord m_oPFRun;
 	
 	CRecordTextPFExceptionAtom()
 	{

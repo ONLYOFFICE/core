@@ -119,7 +119,7 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	}
 	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
-		NSPresentationEditor::CPPTXWriter oPPTXWriter;
+		PPT_FORMAT::CPPTXWriter oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = sDstPath;
 		
 		

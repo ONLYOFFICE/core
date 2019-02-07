@@ -42,7 +42,7 @@ namespace PPTX
 		{
 			if (!pOOXToVMLRenderer) return;
 
-			NSPresentationEditor::CShapeElement* lpShapeElement = NULL;
+			PPT_FORMAT::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = this->as<PPTX::Logic::PrstGeom>();
@@ -51,7 +51,7 @@ namespace PPTX
 				if(_lspt == OOXMLShapes::sptNil) 
 					return;
 
-				lpShapeElement = new NSPresentationEditor::CShapeElement(NSBaseShape::pptx, (int)_lspt);
+				lpShapeElement = new PPT_FORMAT::CShapeElement(NSBaseShape::pptx, (int)_lspt);
 				std::wstring strAdjustValues = lpGeom.GetODString();
 				
 				lpShapeElement->m_pShape->getBaseShape()->LoadAdjustValuesList(strAdjustValues);
@@ -60,7 +60,7 @@ namespace PPTX
 			{
 				const PPTX::Logic::CustGeom & lpGeom = this->as<PPTX::Logic::CustGeom>();
 				std::wstring strShape = lpGeom.GetODString();
-				lpShapeElement = new NSPresentationEditor::CShapeElement(strShape);
+				lpShapeElement = new PPT_FORMAT::CShapeElement(strShape);
 			}
 
 			if (lpShapeElement == NULL)
@@ -85,14 +85,14 @@ namespace PPTX
 			oInfo.m_dWidth	= dCoordSizeX;
 			oInfo.m_dHeight	= dCoordSizeY;
 
-			NSPresentationEditor::CPath& oPath = lpShapeElement->m_pShape->getBaseShape()->m_oPath;
+			ODRAW::CPath& oPath = lpShapeElement->m_pShape->getBaseShape()->m_oPath;
 			
 			COOXToVMLGeometry* pOOXToVMLGeometry = dynamic_cast<COOXToVMLGeometry*>(pOOXToVMLRenderer);
 
             if(NULL != pOOXToVMLGeometry)
 				pOOXToVMLGeometry->NewShape();
 
-			NSPresentationEditor::CGraphicPath oGrPath;			
+			ODRAW::CGraphicPath oGrPath;			
 
 			for (size_t nIndex = 0; nIndex < oPath.m_arParts.size(); ++nIndex)
 			{

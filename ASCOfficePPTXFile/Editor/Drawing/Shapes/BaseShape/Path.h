@@ -37,7 +37,7 @@
 
 using namespace NSGuidesVML;
 
-namespace NSPresentationEditor
+namespace ODRAW
 {
     static std::wstring GetRulerVML(RulesType eRuler)
     {

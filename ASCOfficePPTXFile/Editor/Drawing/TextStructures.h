@@ -33,7 +33,9 @@
 #include "Structures.h"
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 
-namespace NSPresentationEditor
+using namespace ODRAW;
+
+namespace PPT_FORMAT
 {
 
 	#define DEFAULT_BEFORE(EXIST_PARAM, PARAM)  \

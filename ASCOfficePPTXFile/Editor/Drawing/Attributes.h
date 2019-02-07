@@ -43,18 +43,34 @@
 #include "../../../DesktopEditor/graphics/structures.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
-namespace NSPresentationEditor
+static void ReplaceAll(std::wstring & str, const std::wstring& from, const std::wstring& to)
 {
-    static void ReplaceAll(std::wstring & str, const std::wstring& from, const std::wstring& to)
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::wstring::npos)
     {
-        size_t start_pos = 0;
-        while((start_pos = str.find(from, start_pos)) != std::wstring::npos)
-        {
-            str.replace(start_pos, from.length(), to);
-            start_pos += to.length();
-        }
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
     }
+}
+static void CorrectXmlString2(std::wstring & strText)
+{
+    ReplaceAll(strText, L"&apos;",	L"'");
+    ReplaceAll(strText, L"&lt;",	L"<");
+    ReplaceAll(strText, L"&gt;",	L">");
+    ReplaceAll(strText, L"&quot;",	L"\"");
+    ReplaceAll(strText, L"&amp;",	L"&");
+}
+static void CorrectXmlString(std::wstring & strText)
+{
+    strText = XmlUtils::EncodeXmlString(strText);
+}
+static inline std::wstring BoolToString(bool bValue)
+{
+	return bValue ? L"1" : L"0";
+}
 
+namespace PPT_FORMAT
+{
     class CExFilesInfo
     {
     public:
@@ -239,42 +255,9 @@ namespace NSPresentationEditor
         }
     };
 
-    static void CorrectXmlString2(std::wstring & strText)
-    {
-        ReplaceAll(strText, L"&apos;",	L"'");
-        ReplaceAll(strText, L"&lt;",	L"<");
-        ReplaceAll(strText, L"&gt;",	L">");
-        ReplaceAll(strText, L"&quot;",	L"\"");
-        ReplaceAll(strText, L"&amp;",	L"&");
-    }
-    static void CorrectXmlString(std::wstring & strText)
-    {
-        strText = XmlUtils::EncodeXmlString(strText);
-    }
-    static inline std::wstring BoolToString(bool bValue)
-    {
-        if (bValue)
-            return _T("1");
-        return _T("0");
-    }
-
-    static inline std::wstring ToString(int val)
-    {
-        return std::to_wstring(val);
-    }
-    static inline std::wstring ToString(_UINT32 val)
-    {
-        return std::to_wstring(val);
-    }
-    static inline std::wstring ToString(long val)
-    {
-        return std::to_wstring(val);
-    }
-    static inline std::wstring ToString(double val)
-    {
-        return std::to_wstring(val);
-    }
-
+}
+namespace ODRAW
+{
     class CColor
     {
     public:
@@ -397,7 +380,7 @@ namespace NSPresentationEditor
             dwColor |= R;
             dwColor |= (G << 8);
             dwColor |= (B << 16);
-            return NSPresentationEditor::ToString((int)dwColor);
+            return std::to_wstring((int)dwColor);
         }
 
         void FromString(std::wstring str)

@@ -32,8 +32,126 @@
 #pragma once
 #include "Element.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
+	enum eSlideSize
+	{
+		SS_Screen		= 0,
+		SS_LetterPaper	= 1,
+		SS_A4Paper		= 2,
+		SS_35mm			= 3,
+		SS_Overhead		= 4,
+		SS_Banner		= 5,
+		SS_Custom		= 6
+	};
+
+	enum ePlaceholderType
+	{
+		PT_None						= 0,
+		PT_MasterTitle				= 1,
+		PT_MasterBody				= 2,
+		PT_MasterCenterTitle		= 3,
+		PT_MasterSubTitle			= 4,
+		PT_MasterNotesSlideImage	= 5,
+		PT_MasterNotesBody			= 6,
+		PT_MasterDate				= 7,
+		PT_MasterSlideNumber		= 8,
+		PT_MasterFooter				= 9,
+		PT_MasterHeader				= 10,
+		PT_NotesSlideImage			= 11,
+		PT_NotesBody				= 12,
+		PT_Title					= 13,
+		PT_Body						= 14,
+		PT_CenterTitle				= 15,
+		PT_SubTitle					= 16,
+		PT_VerticalTitle			= 17,
+		PT_VerticalBody				= 18,
+		PT_Object					= 19,
+		PT_Graph					= 20,
+		PT_Table					= 21,
+		PT_ClipArt					= 22,
+		PT_OrgChart					= 23,
+		PT_Media					= 24
+	};
+
+	enum Instances
+	{
+		CollectionOfSlides			= 0,
+		CollectionOfMasterSlides	= 1,
+		CollectionOfNotesSlides		= 2
+	};
+
+	enum eSlideLayoutType
+	{
+		SL_TitleSlide			= 0,
+		SL_TitleBody			= 1,
+		SL_MasterTitle			= 2,
+		SL_TitleOnly			= 7,
+		SL_TwoColumns			= 8,
+		SL_TwoRows				= 9,
+		SL_ColumnTwoRows		= 10,
+		SL_TwoRowsColumn		= 11,
+		SL_TwoColumnsRow		= 13,
+		SL_FourObjects			= 14,
+		SL_BigObject			= 15,
+		SL_Blank				= 16,
+		SL_VerticalTitleBody	= 17,
+		SL_VerticalTwoRows		= 18
+	};
+
+	enum eTextType
+	{
+		Tx_TYPE_TITLE		= 0,
+		Tx_TYPE_BODY		= 1,
+		Tx_TYPE_NOTES		= 2,
+		Tx_TYPE_OTHER		= 4,
+		Tx_TYPE_CENTERBODY	= 5,
+		Tx_TYPE_CENTERTITLE	= 6,
+		Tx_TYPE_HALFBODY	= 7,
+		Tx_TYPE_QUARTERBODY	= 8,
+
+		NoPresent			= 0xFF
+	};
+	static void CorrectPlaceholderType(int & type)
+	{
+		switch (type)
+		{
+		case PT_MasterTitle:			type = PT_Title;			break;
+		case PT_MasterBody:				type = PT_Body;				break;
+		case PT_MasterCenterTitle:		type = PT_CenterTitle;		break;
+		case PT_MasterSubTitle:			type = PT_SubTitle;			break;
+		case PT_MasterNotesSlideImage:	type = PT_NotesSlideImage;	break;
+		case PT_MasterNotesBody:		type = PT_NotesBody;		break;
+		}
+	}
+
+	static bool isTitlePlaceholder(int type)
+	{
+		switch (type)
+		{
+		case PT_MasterTitle:			
+		case PT_MasterCenterTitle:
+		case PT_Title:
+		case PT_CenterTitle:
+		case PT_VerticalTitle:
+			return true;
+		default:
+			return false;
+		}
+	}
+	static bool isBodyPlaceholder(int type)
+	{
+		switch (type)
+		{
+		case PT_MasterBody:			
+		case PT_Body:
+		case PT_VerticalBody:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	class CLayout
 	{
 	public:
@@ -129,13 +247,13 @@ namespace NSPresentationEditor
 			
 			return lFound;
 		}
-		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
+		ODRAW::CColor GetColor(const LONG& lIndexScheme)
 		{
 			if (lIndexScheme < (LONG)m_arColorScheme.size())
 			{
 				return m_arColorScheme[lIndexScheme];
 			}
-			return NSPresentationEditor::CColor();
+			return ODRAW::CColor();
 		}
 
         static void CheckPlaceholderStyle(std::wstring strStyleName, LONG& lType, LONG& lLevel, LONG& lTypeStyle)

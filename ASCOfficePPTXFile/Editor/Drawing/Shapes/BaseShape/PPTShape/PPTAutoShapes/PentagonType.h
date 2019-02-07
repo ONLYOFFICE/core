@@ -40,7 +40,7 @@ public:
 
     {
         m_bConcentricFill = true;
-        m_eJoin = NSOfficeDrawing::lineJoinMiter;
+        m_eJoin = ODRAW::lineJoinMiter;
 
         m_strPath = _T("m10800,l,8259,4200,21600r13200,l21600,8259xe");
         LoadConnectorsList(_T("10800,0;0,8259;4200,21600;10800,21600;17400,21600;21600,8259"));

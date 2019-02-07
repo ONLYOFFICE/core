@@ -35,7 +35,7 @@
 
 #include <math.h>
 
-namespace NSPresentationEditor
+namespace ODRAW
 {
     class CDoubleRect
     {

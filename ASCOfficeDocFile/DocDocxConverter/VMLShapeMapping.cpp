@@ -568,7 +568,7 @@ namespace DocFileFormat
 				}break;
 			case fillBlipName:
 				{
-					ODRAW::anyString* str = dynamic_cast<ODRAW::anyString*>(iter.get());
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
 					if ((str) && (!str->string_.empty()))
 					{
 						appendValueAttribute(&m_fill, L"o:title", FormatUtils::XmlEncode(str->string_));
@@ -650,7 +650,7 @@ namespace DocFileFormat
 				}break;
 			case pibName:
 				{
-					ODRAW::anyString* str = dynamic_cast<ODRAW::anyString*>(iter.get());
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
 					if ((str) && (!str->string_.empty()))
 					{
 						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(str->string_));
@@ -762,7 +762,7 @@ namespace DocFileFormat
 // Word Art
 			case gtextUNICODE:
 				{
-					ODRAW::anyString* str = dynamic_cast<ODRAW::anyString*>(iter.get());
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
 					if ((str) && (!str->string_.empty()))
 					{
 						std::wstring text = FormatUtils::XmlEncode(str->string_);
@@ -776,7 +776,7 @@ namespace DocFileFormat
 				}break;
 			case gtextFont:
 				{
-					ODRAW::anyString* str = dynamic_cast<ODRAW::anyString*>(iter.get());
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
 					if ((str) && (!str->string_.empty()))
 					{
 						std::wstring font = str->string_;
@@ -1261,7 +1261,7 @@ namespace DocFileFormat
 	/// Build the VML wrapcoords string for a given pWrapPolygonVertices
 	std::wstring VMLShapeMapping::GetWrapCoords(const ODRAW::OfficeArtFOPTEPtr& pOpt) const
 	{
-		ODRAW::pWrapPolygonVertices* pWrapPolygonVertices = dynamic_cast<ODRAW::pWrapPolygonVertices*>(pOpt.get());
+		ODRAW::PWrapPolygonVertices* pWrapPolygonVertices = dynamic_cast<ODRAW::PWrapPolygonVertices*>(pOpt.get());
 		if (!pWrapPolygonVertices) return L"";
 
 		std::wstring coords;
@@ -1842,7 +1842,7 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeMapping::getFillColorString(const ODRAW::OfficeArtFOPTEPtr& pOpt)  const
 	{
-		ODRAW::fillShadeColors* pColors = dynamic_cast<ODRAW::fillShadeColors*>(pOpt.get());
+		ODRAW::FillShadeColors* pColors = dynamic_cast<ODRAW::FillShadeColors*>(pOpt.get());
 		if (!pColors) return L"";
 		
 		std::wstring result;
@@ -1923,7 +1923,7 @@ namespace DocFileFormat
 	}
 	std::wstring VMLShapeMapping::GetConnectAngles(const ODRAW::OfficeArtFOPTEPtr& pOpt) const
 	{
-		ODRAW::pConnectionSitesDir* pAngles = dynamic_cast<ODRAW::pConnectionSitesDir*>(pOpt.get());
+		ODRAW::PConnectionSitesDir* pAngles = dynamic_cast<ODRAW::PConnectionSitesDir*>(pOpt.get());
 		if (!pAngles) return L"";
 		
 		std::wstring angles;
@@ -1951,7 +1951,7 @@ namespace DocFileFormat
 	}
 	void VMLShapeMapping::GetGuides( const ODRAW::OfficeArtFOPTEPtr& pOpt )
 	{
-		ODRAW::pGuides* pGuides = dynamic_cast<ODRAW::pGuides*>(pOpt.get());
+		ODRAW::PGuides* pGuides = dynamic_cast<ODRAW::PGuides*>(pOpt.get());
 		if (!pGuides) return;
 
 		m_arrGuides = pGuides->complex.data;
@@ -1975,7 +1975,7 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeMapping::GetConnectLocs( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const
 	{
-		ODRAW::pConnectionSites* pConnection = dynamic_cast<ODRAW::pConnectionSites*>(pOpt.get());
+		ODRAW::PConnectionSites* pConnection = dynamic_cast<ODRAW::PConnectionSites*>(pOpt.get());
 		if (!pConnection) return L"";
 
 		std::wstring locs;
@@ -1996,7 +1996,7 @@ namespace DocFileFormat
 	{
 		std::vector<std::wstring> rectangles;
 		
-		ODRAW::pInscribe* pInscribe = dynamic_cast<ODRAW::pInscribe*>(pOpt.get());
+		ODRAW::PInscribe* pInscribe = dynamic_cast<ODRAW::PInscribe*>(pOpt.get());
 		if (!pInscribe) return rectangles;
 		
 		for (size_t i = 0; i < pInscribe->complex.data.size(); ++i)

@@ -32,7 +32,7 @@
 #pragma once
 #include "Elements.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CTransition
 	{

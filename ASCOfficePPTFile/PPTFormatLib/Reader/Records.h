@@ -40,7 +40,7 @@
 
 #include <boost/smart_ptr/shared_array.hpp>
 
-using namespace NSPresentationEditor;
+using namespace PPT_FORMAT;
 using namespace XLS;
 
 class SRecordHeader 

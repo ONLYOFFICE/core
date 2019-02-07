@@ -35,8 +35,8 @@
 class CRecordBlipStoreEntry : public CUnknownRecord
 {
 public:
-	NSOfficeDrawing::BlipType m_btWin32;
-	NSOfficeDrawing::BlipType m_btMacOS;
+	ODRAW::eBlipType m_btWin32;
+	ODRAW::eBlipType m_btMacOS;
 	
 	BYTE m_pRgbUid[16];
 	unsigned short m_nTag;
@@ -44,7 +44,7 @@ public:
 	_UINT32 m_nCountRef;
 	_UINT32 m_nFoDelay;
 
-	NSOfficeDrawing::BlipUsage m_eUsage;
+	ODRAW::eBlipUsage m_eUsage;
 	BYTE m_nLenName;
 
 	BYTE m_nUnused2;
@@ -62,8 +62,8 @@ public:
 	{
 		m_oHeader = oHeader;
 
-		m_btWin32 = (NSOfficeDrawing::BlipType)StreamUtils::ReadBYTE(pStream);
-		m_btMacOS = (NSOfficeDrawing::BlipType)StreamUtils::ReadBYTE(pStream);
+		m_btWin32 = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
+		m_btMacOS = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
 
 		pStream->read(m_pRgbUid, 16);
 
@@ -73,7 +73,7 @@ public:
 		m_nCountRef = StreamUtils::ReadDWORD(pStream);
 		m_nFoDelay = StreamUtils::ReadDWORD(pStream);
 
-		m_eUsage = (NSOfficeDrawing::BlipUsage)StreamUtils::ReadBYTE(pStream);
+		m_eUsage = (ODRAW::eBlipUsage)StreamUtils::ReadBYTE(pStream);
 		
 		m_nLenName = StreamUtils::ReadBYTE(pStream);
 		

@@ -43,8 +43,8 @@ public:
 	UINT m_nNotesMasterPersistIDRef;
 	UINT m_nHandoutMasterPersistIDRef;
 	
-	USHORT m_nFirstSlideNum; 
-	NSOfficePPT::SlideSizeType m_nSlideSizeType;
+	USHORT	m_nFirstSlideNum; 
+	USHORT	m_nSlideSizeType;
 
 	BOOL1 m_bSaveWithFonts;  
 	BOOL1 m_bOmitTitlePlace;
@@ -78,12 +78,12 @@ public:
 		m_nHandoutMasterPersistIDRef = (UINT)StreamUtils::ReadDWORD(pStream);
 
 		m_nFirstSlideNum = StreamUtils::ReadWORD(pStream);
-		m_nSlideSizeType = (NSOfficePPT::SlideSizeType)StreamUtils::ReadWORD(pStream);
+		m_nSlideSizeType = StreamUtils::ReadWORD(pStream);
 
-		m_bSaveWithFonts = StreamUtils::ReadBYTE(pStream);
-		m_bOmitTitlePlace = StreamUtils::ReadBYTE(pStream);
-		m_bRightToLeft = StreamUtils::ReadBYTE(pStream);
-		m_bShowComments = StreamUtils::ReadBYTE(pStream);
+		m_bSaveWithFonts	= StreamUtils::ReadBYTE(pStream);
+		m_bOmitTitlePlace	= StreamUtils::ReadBYTE(pStream);
+		m_bRightToLeft		= StreamUtils::ReadBYTE(pStream);
+		m_bShowComments		= StreamUtils::ReadBYTE(pStream);
 	}
 
 };

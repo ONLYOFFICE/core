@@ -37,15 +37,8 @@
 
 typedef std::vector<std::wstring> vector_string;
 
-namespace NSPresentationEditor
+namespace ODRAW
 {
-	enum _typeMaster
-	{
-		typeMaster,
-		typeNotesMaster,
-		typeHandoutMaster
-
-	};
 	static void CorrectColorPPT(LONG& lSchemeIndex)
     {
         //0x00 //Background color

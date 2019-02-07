@@ -43,7 +43,7 @@
 	case SHAPE_TYPE: { pShape = new CLASS_SHAPE_NAME(); break; }				\
 //-------------------------------------------------------------------------------
 
-using namespace NSOfficeDrawing;
+using namespace ODRAW;
 
 namespace NSCustomShapesConvert
 {

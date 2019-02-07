@@ -330,7 +330,7 @@ namespace PPTX
 
 			if (Index < 10)
 			{
-				//NSPresentationEditor::CorrectColorPPT(Index);
+				//ODRAW::CorrectColorPPT(Index);
 			}
 			else
 			{
@@ -524,7 +524,7 @@ namespace PPTX
 
 			if (Index < 10)
 			{
-				//NSPresentationEditor::CorrectColorPPT(Index);
+				//ODRAW::CorrectColorPPT(Index);
 			}
 			else
 			{

@@ -83,7 +83,7 @@ public:
 	std::map<LONG, CElementInfo>						m_mapElements;
     std::vector<int>*									m_parEmptyPictures;
 	std::map<int, std::wstring>*						m_mapFilePictures;
-	nullable_base<NSPresentationEditor::CTextStyles>	m_pStyles[9];
+	nullable_base<PPT_FORMAT::CTextStyles>	m_pStyles[9];
 
 	CSlideInfo()
 	{

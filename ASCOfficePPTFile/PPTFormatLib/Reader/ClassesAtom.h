@@ -33,7 +33,7 @@
 
 #include "../Records/CurrentUserAtom.h"
 
-using namespace NSOfficePPT;
+//using namespace NSOfficePPT;
 
 class CUserEdit
 { 

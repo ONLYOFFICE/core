@@ -2878,7 +2878,7 @@ namespace Animations
 
 namespace Animations
 {
-	typedef NSPresentationEditor::CAnimationSimple Effect;
+	typedef PPT_FORMAT::CAnimationSimple Effect;
 	typedef std::vector <Effect> Effects;
 	typedef std::map<_UINT32,Effects*> EffectsMap;
 	typedef std::vector <double> TimeArray;

@@ -39,8 +39,7 @@
 	case SHAPE_TYPE: { pShape = new CLASS_SHAPE_NAME(); break; }				\
 //-------------------------------------------------------------------------------
 
-using namespace PPTShapes;
-using namespace NSPresentationEditor;
+using namespace ODRAW;
 
 CPPTShape::CPPTShape() : CBaseShape(), m_arStringTextRects()
 {

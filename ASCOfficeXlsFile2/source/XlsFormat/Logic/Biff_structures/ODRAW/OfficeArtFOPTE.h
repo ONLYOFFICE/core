@@ -81,9 +81,9 @@ public:
     _INT32 op;
 };
 
-class fillColor : public OfficeArtFOPTE
+class FillColor : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillColor)
 };
 
 class FixedPoint : public OfficeArtFOPTE
@@ -244,60 +244,60 @@ private:
 	void set();
 };
 
-class lineColor : public OfficeArtFOPTE
+class LineColor : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineColor)
 };
 
-class fillType : public OfficeArtFOPTE
+class FillType : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillType)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillType)
 };
 
-class pib : public OfficeArtFOPTE
+class Pib : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pib)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Pib)
 };
 
-class pictureId : public OfficeArtFOPTE
+class PictureId : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pictureId)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PictureId)
 };
 
-class pictureRecolor : public OfficeArtFOPTE
+class PictureRecolor : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pictureRecolor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PictureRecolor)
 };
 
 
-class fillOpacity : public FixedPoint
+class FillOpacity : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOpacity)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillOpacity)
 };
 
-class fillBackColor : public OfficeArtFOPTE
+class FillBackColor : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillBackColor)
 };
 
-class fillBackOpacity : public FixedPoint
+class FillBackOpacity : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackOpacity)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillBackOpacity)
 };
 
-class fillCrMod : public OfficeArtFOPTE
+class FillCrMod : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillCrMod)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillCrMod)
 };
 
-class fillWidth : public OfficeArtFOPTE
+class FillWidth : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillWidth)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillWidth)
 };
 
-class fillShadeType : public OfficeArtFOPTE
+class FillShadeType : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadeType)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillShadeType)
 	
 	virtual void load(XLS::CFRecord& record);
 	virtual void load(IBinaryReader* reader);
@@ -334,9 +334,9 @@ private:
 	void set();
 };
 
-class fillBlip : public OfficeArtFOPTE
+class FillBlip : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBlip)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillBlip)
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -352,9 +352,9 @@ class ShapeBooleanProperties : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShapeBooleanProperties)
 };
 
-class anyString : public OfficeArtFOPTE
+class AnyString : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(anyString)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(AnyString)
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -363,9 +363,9 @@ class anyString : public OfficeArtFOPTE
 };
 
 
-class fillBlipFlags : public OfficeArtFOPTE
+class FillBlipFlags : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBlipFlags)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillBlipFlags)
 	//enum MSOBLIPFLAGS
 	//{
 	//	msoblipflagComment		= 0x00000000,
@@ -376,75 +376,75 @@ class fillBlipFlags : public OfficeArtFOPTE
 	//};
 };
 
-class fillHeight : public OfficeArtFOPTE
+class FillHeight : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillHeight)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillHeight)
 };
 
-class fillAngle : public FixedPoint
+class FillAngle : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillAngle)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillAngle)
 
 };
 
-class fillFocus : public OfficeArtFOPTE
+class FillFocus : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillFocus)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillFocus)
 };
 
-class fillToLeft : public FixedPoint
+class FillToLeft : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToLeft)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillToLeft)
 };
 
-class fillToTop : public FixedPoint
+class FillToTop : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToTop)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillToTop)
 };
 
-class fillToRight : public FixedPoint
+class FillToRight : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToRight)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillToRight)
 };
 
-class fillToBottom : public FixedPoint
+class FillToBottom : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToBottom)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillToBottom)
 };
 
-class fillRectLeft : public OfficeArtFOPTE
+class FillRectLeft : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectLeft)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillRectLeft)
 };
 
-class fillRectTop : public OfficeArtFOPTE
+class FillRectTop : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectTop)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillRectTop)
 };
 
-class fillRectRight : public OfficeArtFOPTE
+class FillRectRight : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectRight)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillRectRight)
 };
 
-class fillRectBottom : public OfficeArtFOPTE
+class FillRectBottom : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectBottom)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillRectBottom)
 };
 
-class fillDztype : public OfficeArtFOPTE
+class FillDztype : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillDztype)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillDztype)
 };
 
-class fillShadePreset : public OfficeArtFOPTE
+class FillShadePreset : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadePreset)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillShadePreset)
 };
 
-class fillShadeColors : public OfficeArtFOPTE
+class FillShadeColors : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadeColors)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillShadeColors)
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -453,74 +453,74 @@ class fillShadeColors : public OfficeArtFOPTE
 };
 
 
-class fillShapeOriginX : public FixedPoint
+class FillShapeOriginX : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShapeOriginX)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillShapeOriginX)
 };
 
-class fillShapeOriginY : public FixedPoint
+class FillShapeOriginY : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShapeOriginY)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillShapeOriginY)
 };
 
-class fillOriginX : public FixedPoint
+class FillOriginX : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOriginX)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillOriginX)
 };
 
-class fillOriginY : public FixedPoint
+class FillOriginY : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOriginY)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillOriginY)
 };
 
-class fillColorExt : public OfficeArtFOPTE
+class FillColorExt : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColorExt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillColorExt)
 };
 
-class reserved415 : public OfficeArtFOPTE
+class Reserved415 : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved415)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Reserved415)
 };
 
-class reserved417 : public OfficeArtFOPTE
+class Reserved417 : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved417)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Reserved417)
 };
 
-class reserved419 : public OfficeArtFOPTE
+class Reserved419 : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved419)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Reserved419)
 };
 
-class reserved421 : public OfficeArtFOPTE
+class Reserved421 : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved421)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Reserved421)
 };
 
-class reserved422 : public OfficeArtFOPTE
+class Reserved422 : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved422)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Reserved422)
 };
 
-class reserved423 : public OfficeArtFOPTE
+class Reserved423 : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved423)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Reserved423)
 };
 
-class fillBackColorExt : public OfficeArtFOPTE
+class FillBackColorExt : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackColorExt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillBackColorExt)
 };
 
-class fillColorExtMod : public OfficeArtFOPTE
+class FillColorExtMod : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColorExtMod)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillColorExtMod)
 };
 
-class fillBackColorExtMod : public OfficeArtFOPTE
+class FillBackColorExtMod : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackColorExtMod)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillBackColorExtMod)
 };
 
 class ProtectionBooleanProperties : public OfficeArtFOPTE
@@ -620,43 +620,43 @@ private:
 	void set();
 };
 
-class lineWidth : public OfficeArtFOPTE
+class LineWidth : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineWidth)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineWidth)
 };
 
-class lineMiterLimit : public FixedPoint
+class LineMiterLimit : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineMiterLimit)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineMiterLimit)
 };
 
-class lineDashing : public OfficeArtFOPTE
+class LineDashing : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineDashing)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineDashing)
 };
 
-class lineStyle : public OfficeArtFOPTE
+class LineStyle : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineStyle)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineStyle)
 };
 
-class cropFromBottom : public FixedPoint 
+class CropFromBottom : public FixedPoint 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromBottom)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CropFromBottom)
 };
 
-class cropFromTop : public FixedPoint 
+class CropFromTop : public FixedPoint 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromTop)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CropFromTop)
 };
 
-class cropFromLeft : public FixedPoint 
+class CropFromLeft : public FixedPoint 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromLeft)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CropFromLeft)
 };
-class cropFromRight : public FixedPoint 
+class CropFromRight : public FixedPoint 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromRight)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CropFromRight)
 };
 
 class Rotation : public FixedPoint 
@@ -668,9 +668,9 @@ class OfficeArtShapeRectCoord : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtShapeRectCoord)
 };
 
-class shadowOpacity : public FixedPoint
+class ShadowOpacity : public FixedPoint
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(shadowOpacity)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShadowOpacity)
 };
 
 class MSOPOINT : public XLS::BiffStructure  
@@ -834,9 +834,9 @@ class PSegmentInfo : public OfficeArtFOPTE
 
 	IMsoArray<MSOPATHINFO> complex;
 };
-class pGuides : public OfficeArtFOPTE 
+class PGuides : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pGuides)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PGuides)
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -849,9 +849,9 @@ class AdjustValue : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(AdjustValue)
 };
 
-class pAdjustHandles : public OfficeArtFOPTE 
+class PAdjustHandles : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pAdjustHandles)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PAdjustHandles)
 	
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -859,9 +859,9 @@ class pAdjustHandles : public OfficeArtFOPTE
 	IMsoArray<ADJH> complex;
 };
 
-class pConnectionSites : public OfficeArtFOPTE 
+class PConnectionSites : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pConnectionSites)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PConnectionSites)
 	
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -869,9 +869,9 @@ class pConnectionSites : public OfficeArtFOPTE
 	IMsoArray<MSOPOINT> complex;
 };
 
-class pConnectionSitesDir : public OfficeArtFOPTE 
+class PConnectionSitesDir : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pConnectionSitesDir)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PConnectionSitesDir)
 	
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -879,9 +879,9 @@ class pConnectionSitesDir : public OfficeArtFOPTE
 	IMsoArray<OSHARED::FixedPoint> complex;
 };
 
-class pInscribe : public OfficeArtFOPTE 
+class PInscribe : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pInscribe)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PInscribe)
 	
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -889,9 +889,9 @@ class pInscribe : public OfficeArtFOPTE
 	IMsoArray<MSORECT> complex;
 };
 
-class pWrapPolygonVertices : public OfficeArtFOPTE 
+class PWrapPolygonVertices : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pWrapPolygonVertices)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PWrapPolygonVertices)
 	
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -900,29 +900,29 @@ class pWrapPolygonVertices : public OfficeArtFOPTE
 }; 
 //class cxk : public OfficeArtFOPTE 
 //{
-//	BASE_STRUCTURE_DEFINE_CLASS_NAME(cxk)
+//	BASE_STRUCTURE_DEFINE_CLASS_NAME(Cxk)
 //	
 //	virtual void ReadComplexData(XLS::CFRecord& record);
 //
 //	IMsoArray<MSOCXK> complex;
 //};
-class lineOpacity : public OfficeArtFOPTE 
+class LineOpacity : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineOpacity)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineOpacity)
 };
 
-class lineBackColor : public OfficeArtFOPTE 
+class LineBackColor : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineBackColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineBackColor)
 };
 
-class lineCrMod : public OfficeArtFOPTE 
+class LineCrMod : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineCrMod)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineCrMod)
 };
-class lineType : public OfficeArtFOPTE 
+class LineType : public OfficeArtFOPTE 
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineType)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineType)
 };
 
 class IHlink;
@@ -945,9 +945,9 @@ class IHlink : public XLS::BiffStructure
 	OSHARED::HyperlinkObject		hyperlink;
 };
 
-class pihlShape : public OfficeArtFOPTE
+class PihlShape : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(pihlShape)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PihlShape)
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -955,9 +955,9 @@ class pihlShape : public OfficeArtFOPTE
 	IHlink complex;
 };
 
-class metroBlob : public OfficeArtFOPTE
+class MetroBlob : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(metroBlob)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MetroBlob)
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
@@ -966,9 +966,9 @@ class metroBlob : public OfficeArtFOPTE
 
 	std::wstring xmlString;
 };
-class xmlString : public OfficeArtFOPTE
+class XmlString : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(metroBlob)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XmlString)
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);

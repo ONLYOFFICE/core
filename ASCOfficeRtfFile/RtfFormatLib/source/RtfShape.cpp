@@ -279,7 +279,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	else if (( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape) && !m_bIsOle)
 	{
-		if( NULL != m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame)
+		if( NULL != m_oPicture && m_nShapeType == ODRAW::sptPictureFrame)
 		{
 			if (m_oPicture->m_nWidth == PROP_DEF)
 			{
@@ -422,7 +422,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 		//picture
 		if( 0 != m_oPicture)
 		{
-			if (m_nShapeType == NSOfficeDrawing::sptPictureFrame)
+			if (m_nShapeType == ODRAW::sptPictureFrame)
 			{
 				sResult += L"{\\sp{\\sn pib}{\\sv ";
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
@@ -444,7 +444,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			sResult += L"}";
 		}
 		sResult += L"}";
-		if( m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame )
+		if( m_oPicture && m_nShapeType == ODRAW::sptPictureFrame )
 		{
 			sResult += L"{\\shprslt\\par\\plain";
 			sResult +=  m_oPicture->GenerateWMF( oRenderParameter );
@@ -740,7 +740,7 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring sResult;
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	
-	if( NSOfficeDrawing::sptPictureFrame == m_nShapeType && 0 != m_aTextItems )
+	if( ODRAW::sptPictureFrame == m_nShapeType && 0 != m_aTextItems )
 	{//test for ole
 		TextItemContainerPtr aTempTextItems	= m_aTextItems;
 
@@ -806,11 +806,11 @@ std::wstring RtfShape::GetShapeNodeName()
 	
 	switch(m_nShapeType)
 	{
-		case NSOfficeDrawing::sptRectangle:			return L"v:rect";
-		case NSOfficeDrawing::sptEllipse:			return L"v:oval";
-		case NSOfficeDrawing::sptRoundRectangle:	return L"v:roundrect";
-		case NSOfficeDrawing::sptLine:				return L"v:line";
-		case NSOfficeDrawing::sptArc:				return L"v:arc";
+		case ODRAW::sptRectangle:			return L"v:rect";
+		case ODRAW::sptEllipse:			return L"v:oval";
+		case ODRAW::sptRoundRectangle:	return L"v:roundrect";
+		case ODRAW::sptLine:				return L"v:line";
+		case ODRAW::sptArc:				return L"v:arc";
 		default:									return L"v:shape";
 	}
 }
@@ -1240,7 +1240,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			}
 			
 			if (PROP_DEF != m_nShapePath)
-				custom_shape->m_oCustomVML.SetPath((NSPresentationEditor::RulesType)m_nShapePath);
+				custom_shape->m_oCustomVML.SetPath((ODRAW::RulesType)m_nShapePath);
 			
 			custom_shape->m_oCustomVML.LoadVertices(m_aPVerticles);
 			custom_shape->m_oCustomVML.LoadSegments(m_aPSegmentInfo);

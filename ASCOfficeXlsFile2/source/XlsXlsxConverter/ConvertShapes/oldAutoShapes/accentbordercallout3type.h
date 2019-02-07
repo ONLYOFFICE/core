@@ -41,7 +41,7 @@ public:
 	CAccentBorderCallout3Type()
     {
         m_bConcentricFill = true;
-        m_eJoin = NSOfficeDrawing::lineJoinMiter;
+        m_eJoin = ODRAW::lineJoinMiter;
         //Encaps: Flat
 
         m_strPath = _T("m@0@1l@2@3@4@5@6@7nfem@6,l@6,21600nfem,l21600,r,21600l,21600xe");

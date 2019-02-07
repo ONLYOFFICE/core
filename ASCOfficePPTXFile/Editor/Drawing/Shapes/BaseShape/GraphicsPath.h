@@ -45,14 +45,14 @@
 #include <math.h>//M_PI
 #include <vector>
 
-namespace NSPresentationEditor
+namespace ODRAW
 {
     class CDoublePoint
     {
     public:
         double dX;
         double dY;
-    public:
+
         CDoublePoint()
         {
             dX = 0;
@@ -75,7 +75,7 @@ namespace NSPresentationEditor
 
     namespace NSBaseShape
     {
-    enum ClassType {unknown, pptx, ppt, odp};// Перечисление можно расширять
+		enum ClassType {unknown, pptx, ppt, odp};// Перечисление можно расширять
     }
 
     enum RulesType
@@ -169,14 +169,10 @@ namespace NSPresentationEditor
             m_dAngle	= 0;
             m_lFlags	= 0;
         }
-
-    public:
-
         CGraphicPath()
         {
             InternalClear();
         }
-
         virtual void Draw(IRenderer* pRenderer)
         {
             if (NULL == pRenderer)
@@ -241,15 +237,12 @@ namespace NSPresentationEditor
             pRenderer->EndCommand(c_nPathType);
         }
 
-    public:
-
         class CPart
         {
         public:
             RulesType					m_eType;
             std::vector<CDoublePoint>	m_arPoints;
 
-        public:
             CPart() : m_eType(rtMoveTo), m_arPoints()
             {
             }
@@ -902,8 +895,6 @@ namespace NSPresentationEditor
         {
             m_arParts.clear();
         }
-
-    public:
 
         std::vector<CPart> m_arParts;
         int Metric;

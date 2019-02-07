@@ -38,7 +38,7 @@
 
 namespace NSCustomVML
 {
-    using namespace NSPresentationEditor;
+    using namespace PPT_FORMAT;
     using namespace NSGuidesVML;
 
     class CSegment
@@ -215,7 +215,7 @@ namespace NSCustomVML
 
             m_nCount = (mem >> 5) & 0x00FF;
         }
-        void Read(NSOfficeDrawing::CBinaryReader& oReader)//from binary ms segments
+        void Read(ODRAW::CBinaryReader& oReader)//from binary ms segments
         {
             WORD mem = oReader.ReadWORD();
 
@@ -411,7 +411,7 @@ namespace NSCustomVML
             m_param_value2 = StreamUtils::ReadWORD(pStream);
             m_param_value3 = StreamUtils::ReadWORD(pStream);
         }
-        void Read(NSOfficeDrawing::CBinaryReader& oReader)
+        void Read(ODRAW::CBinaryReader& oReader)
         {
             WORD ftType = oReader.ReadWORD();
 
@@ -584,7 +584,7 @@ namespace NSCustomVML
         }
 		void LoadConnectionSitesDir(CProperty* pProperty)
         {
-            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             m_arConnectionSitesDir.clear();
            
 			WORD lCount = (WORD)(pProperty->m_lValue / 4);
@@ -598,7 +598,7 @@ namespace NSCustomVML
 		}
 		void LoadConnectionSites(CProperty* pProperty)
         {
-            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             m_arConnectionSites.clear();
 
             WORD lCount = (WORD)(pProperty->m_lValue / 8);
@@ -641,7 +641,7 @@ namespace NSCustomVML
 		}
         void LoadVertices(CProperty* pProperty)
         {
-            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
 
             m_arVertices.clear();
 
@@ -720,7 +720,7 @@ namespace NSCustomVML
         }
         void LoadSegments(CProperty* pProperty)
         {
-            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             m_arSegments.clear();
 
             WORD lCount = (WORD)(pProperty->m_lValue / 2);
@@ -755,7 +755,7 @@ namespace NSCustomVML
         }
         void LoadGuides(CProperty* pProperty)
         {
-            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             WORD lCount = (WORD)(pProperty->m_lValue / 4);
 
             for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
@@ -767,7 +767,7 @@ namespace NSCustomVML
         }
 		void LoadInscribe(CProperty* pProperty)
 		{
-            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             m_arInscribe.clear();
 
             WORD lCount = (WORD)(pProperty->m_lValue / 16);

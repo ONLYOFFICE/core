@@ -36,7 +36,7 @@
 #include "PPTXShape/PptxShape.h"
 #include "PPTShape/PptShape.h"
 
-using namespace NSPresentationEditor;
+using namespace ODRAW;
 
 CBaseShapePtr CBaseShape::CreateByType(NSBaseShape::ClassType ClassType, int ShapeType)
 {

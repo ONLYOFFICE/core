@@ -34,7 +34,7 @@
 
 #include "../../../DesktopEditor/common/ASCVariant.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CTextRange
 	{

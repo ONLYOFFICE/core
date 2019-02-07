@@ -48,7 +48,7 @@
 
 #include "Converter.h"	
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	namespace NSPPTXWriterConst
 	{
@@ -68,7 +68,7 @@ namespace NSPresentationEditor
 }
 
 
-NSPresentationEditor::CPPTXWriter::CPPTXWriter()
+PPT_FORMAT::CPPTXWriter::CPPTXWriter()
 {
     m_strTempDirectory	= NSDirectory::GetTempPath() + FILE_SEPARATOR_STR + _T("TempPPTX");
     m_strDstFileName	= NSDirectory::GetTempPath() + FILE_SEPARATOR_STR + _T("Test.pptx");
@@ -79,12 +79,12 @@ NSPresentationEditor::CPPTXWriter::CPPTXWriter()
     m_pShapeWriter = new CShapeWriter();
 }
 	
-NSPresentationEditor::CPPTXWriter::~CPPTXWriter()
+PPT_FORMAT::CPPTXWriter::~CPPTXWriter()
 {
 	RELEASEOBJECT(m_pShapeWriter);
 }
 
-void NSPresentationEditor::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
+void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
 {
 	m_pUserInfo = pUserInfo;
 
@@ -131,7 +131,7 @@ void NSPresentationEditor::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
 	WriteAll();
 }
 
-void NSPresentationEditor::CPPTXWriter::CreateFile(CDocument* pDocument)
+void PPT_FORMAT::CPPTXWriter::CreateFile(CDocument* pDocument)
 {
 	m_pDocument = pDocument;
 	m_oManager.Clear();
@@ -175,13 +175,13 @@ void NSPresentationEditor::CPPTXWriter::CreateFile(CDocument* pDocument)
 	WriteAll();
 }
 
-void NSPresentationEditor::CPPTXWriter::CloseFile()
+void PPT_FORMAT::CPPTXWriter::CloseFile()
 {
 	m_oManager.Clear();
 }
 
 
-void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
+void PPT_FORMAT::CPPTXWriter::WriteContentTypes()
 {
     std::wstring strContentTypes = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
@@ -273,7 +273,7 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 }
 
 
-void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
+void PPT_FORMAT::CPPTXWriter::WriteApp(CFile& oFile)
 {
 	std::wstringstream strm;
 
@@ -413,7 +413,7 @@ void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
 	oFile.WriteStringUTF8(strm.str());
 }
 
-void NSPresentationEditor::CPPTXWriter::WritePresInfo()
+void PPT_FORMAT::CPPTXWriter::WritePresInfo()
 {
 	CFile oFile;
 	
@@ -551,7 +551,7 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
 	oFile.CloseFile();		
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteAll()
+void PPT_FORMAT::CPPTXWriter::WriteAll()
 {
     std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
 	
@@ -585,7 +585,7 @@ void NSPresentationEditor::CPPTXWriter::WriteAll()
 	WriteNotes();
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteThemes()
+void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
 	int nStartLayout = 0, nIndexTheme = 0;
 
@@ -600,7 +600,7 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 	WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)
+void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)
 {		
 	if (!pTheme) return;
 
@@ -612,7 +612,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nInde
 	CFile oFile;
 	oFile.CreateFile(strThemeFile);
 
-	NSPresentationEditor::CStringWriter oStringWriter;
+	PPT_FORMAT::CStringWriter oStringWriter;
 
 	oStringWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\""));
 	oStringWriter.WriteStringXML(pTheme->m_sThemeName);
@@ -854,7 +854,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nInde
 	nIndexTheme++;
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra)
+void PPT_FORMAT::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra)
 {
 	if (colors.size() < 1)
 	{
@@ -908,7 +908,7 @@ accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" 
 	}
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground)
+void PPT_FORMAT::CPPTXWriter::WriteBackground(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground)
 {
 	oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
 
@@ -918,7 +918,7 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 	}
 	oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
 }
-void NSPresentationEditor::CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
+void PPT_FORMAT::CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
 	CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
 	
@@ -931,7 +931,7 @@ void NSPresentationEditor::CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRels
 	}
 	oWriter.WriteString(L"</p:grpSp>");
 }
-void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
+void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
 	if (!pElement) return;
 	
@@ -986,7 +986,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 	}
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteLayout(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme)
+void PPT_FORMAT::CPPTXWriter::WriteLayout(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme)
 {
 	if (!pLayout) return;
 
@@ -1055,7 +1055,7 @@ void NSPresentationEditor::CPPTXWriter::WriteLayout(CLayoutPtr pLayout, int nInd
     strFile = L"slideLayout" + std::to_wstring(nIndexLayout + nStartLayout + 1) + L".xml.rels";
 	oRels.SaveRels(strFileLayoutPath + _T("_rels") + FILE_SEPARATOR_STR + strFile);			
 }
-void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
+void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 {
 	CStringWriter oWriter;
 	CRelsGenerator oRels(&m_oManager);
@@ -1140,7 +1140,7 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 	oRels.SaveRels(strFileSlidePath + _T("_rels") + FILE_SEPARATOR_STR + strFile);
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
+void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
 {
 	if (transition.m_nEffectType == 0xFF)	return;
 
@@ -1327,7 +1327,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, 
 	oWriter.WriteString(std::wstring(L"</p:transition>"));
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteNotes(int nIndexNotes)
+void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
 {
 	CStringWriter oWriter;
 	CRelsGenerator oRels(&m_oManager);
@@ -1391,14 +1391,14 @@ void NSPresentationEditor::CPPTXWriter::WriteNotes(int nIndexNotes)
 	oRels.SaveRels(strFileSlidePath + _T("_rels") + FILE_SEPARATOR_STR + strFile);
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteSlides()
+void PPT_FORMAT::CPPTXWriter::WriteSlides()
 {
 	for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arSlides.size(); ++nIndexS)
 	{
 		WriteSlide((int)nIndexS);
 	}
 }
-void NSPresentationEditor::CPPTXWriter::WriteNotes()
+void PPT_FORMAT::CPPTXWriter::WriteNotes()
 {
 	for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arNotes.size(); ++nIndexS)
 	{

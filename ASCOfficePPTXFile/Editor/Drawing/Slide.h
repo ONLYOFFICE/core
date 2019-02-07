@@ -33,7 +33,7 @@
 #include "SlideShow.h"
 #include "Theme.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CSlide
 	{
@@ -128,7 +128,7 @@ namespace NSPresentationEditor
 			m_sName				= oSrc.m_sName;
 		}
 
-		void SetUpPlaceholderStyles(NSPresentationEditor::CLayout* pLayout)
+		void SetUpPlaceholderStyles(PPT_FORMAT::CLayout* pLayout)
 		{
 			size_t nCountElements = m_arElements.size();
 			for (size_t nEl = 0; nEl < nCountElements; ++nEl)
@@ -175,13 +175,13 @@ namespace NSPresentationEditor
 			}
 		}
 
-		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
+		ODRAW::CColor GetColor(const LONG& lIndexScheme)
 		{
 			if (lIndexScheme < (LONG)m_arColorScheme.size())
 			{
 				return m_arColorScheme[lIndexScheme];
 			}
-			return NSPresentationEditor::CColor();
+			return ODRAW::CColor();
 		}
 	};
 }

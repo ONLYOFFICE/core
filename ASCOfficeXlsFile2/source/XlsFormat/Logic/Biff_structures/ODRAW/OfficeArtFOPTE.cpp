@@ -146,59 +146,59 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x007F:
 			fopte = OfficeArtFOPTEPtr(new ProtectionBooleanProperties);
 			break;
-		case NSOfficeDrawing::lTxid:
-		case NSOfficeDrawing::dxTextLeft:
-		case NSOfficeDrawing::dyTextTop:
-		case NSOfficeDrawing::dxTextRight:
-		case NSOfficeDrawing::dyTextBottom:
-		case NSOfficeDrawing::WrapText:
-		case NSOfficeDrawing::anchorText:
-		case NSOfficeDrawing::txflTextFlow:
-		case NSOfficeDrawing::cdirFont:
-		case NSOfficeDrawing::hspNext:
-		case NSOfficeDrawing::txdir:
-		case NSOfficeDrawing::gtextRTF:
-		case NSOfficeDrawing::gtextAlign:
-		case NSOfficeDrawing::gtextSize:
-		case NSOfficeDrawing::gtextCSSFont:
+		case ODRAW::lTxid:
+		case ODRAW::dxTextLeft:
+		case ODRAW::dyTextTop:
+		case ODRAW::dxTextRight:
+		case ODRAW::dyTextBottom:
+		case ODRAW::WrapText:
+		case ODRAW::anchorText:
+		case ODRAW::txflTextFlow:
+		case ODRAW::cdirFont:
+		case ODRAW::hspNext:
+		case ODRAW::txdir:
+		case ODRAW::gtextRTF:
+		case ODRAW::gtextAlign:
+		case ODRAW::gtextSize:
+		case ODRAW::gtextCSSFont:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
-		case NSOfficeDrawing::gtextSpacing:
+		case ODRAW::gtextSpacing:
 			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
-		case NSOfficeDrawing::textBoolean:
+		case ODRAW::textBoolean:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
 			break;
-		case NSOfficeDrawing::gtextUNICODE:
-		case NSOfficeDrawing::gtextFont:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+		case ODRAW::gtextUNICODE:
+		case ODRAW::gtextFont:
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x00ff:
 			fopte = OfficeArtFOPTEPtr(new GeometryTextBooleanProperties);
 			break;
 		case 0x0100:
-			fopte = OfficeArtFOPTEPtr(new cropFromTop);
+			fopte = OfficeArtFOPTEPtr(new CropFromTop);
 			break;
 		case 0x0101:
-			fopte = OfficeArtFOPTEPtr(new cropFromBottom);
+			fopte = OfficeArtFOPTEPtr(new CropFromBottom);
 			break;
 		case 0x0102:
-			fopte = OfficeArtFOPTEPtr(new cropFromLeft);
+			fopte = OfficeArtFOPTEPtr(new CropFromLeft);
 			break;
 		case 0x0103:
-			fopte = OfficeArtFOPTEPtr(new cropFromRight);
+			fopte = OfficeArtFOPTEPtr(new CropFromRight);
 			break;
 		case 0x0104:
-			fopte = OfficeArtFOPTEPtr(new pib);
+			fopte = OfficeArtFOPTEPtr(new Pib);
 			break;
 		case 0x0105:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x010B:
-			fopte = OfficeArtFOPTEPtr(new pictureId);
+			fopte = OfficeArtFOPTEPtr(new PictureId);
 			break;
 		case 0x011A:
-			fopte = OfficeArtFOPTEPtr(new pictureRecolor);
+			fopte = OfficeArtFOPTEPtr(new PictureRecolor);
 			break;
 		case 0x013F:
 			fopte = OfficeArtFOPTEPtr(new BlipBooleanProperties);
@@ -229,23 +229,23 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 			fopte = OfficeArtFOPTEPtr(new AdjustValue);
 			break;
 		case 0x0151:
-			fopte = OfficeArtFOPTEPtr(new pConnectionSites);
+			fopte = OfficeArtFOPTEPtr(new PConnectionSites);
 			break;
 		case 0x0152:
-			fopte = OfficeArtFOPTEPtr(new pConnectionSitesDir);
+			fopte = OfficeArtFOPTEPtr(new PConnectionSitesDir);
 			break;
 		case 0x0153:
 		case 0x0154:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
 		case 0x0155:
-			fopte = OfficeArtFOPTEPtr(new pAdjustHandles);
+			fopte = OfficeArtFOPTEPtr(new PAdjustHandles);
 			break;
 		case 0x0156:
-			fopte = OfficeArtFOPTEPtr(new pGuides);
+			fopte = OfficeArtFOPTEPtr(new PGuides);
 			break;
 		case 0x0157:
-			fopte = OfficeArtFOPTEPtr(new pInscribe);
+			fopte = OfficeArtFOPTEPtr(new PInscribe);
 			break;
 		case 0x0158:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);//cxk
@@ -254,154 +254,154 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 			fopte = OfficeArtFOPTEPtr(new GeometryBooleanProperties);
 			break;
 		case 0x0180:
-			fopte = OfficeArtFOPTEPtr(new fillType);
+			fopte = OfficeArtFOPTEPtr(new FillType);
 			break;
 		case 0x0181:
-			fopte = OfficeArtFOPTEPtr(new fillColor);
+			fopte = OfficeArtFOPTEPtr(new FillColor);
 			break;
 		case 0x0182:
-			fopte = OfficeArtFOPTEPtr(new fillOpacity);
+			fopte = OfficeArtFOPTEPtr(new FillOpacity);
 			break;
 		case 0x0183:
-			fopte = OfficeArtFOPTEPtr(new fillBackColor);
+			fopte = OfficeArtFOPTEPtr(new FillBackColor);
 			break;
 		case 0x0184:
-			fopte = OfficeArtFOPTEPtr(new fillBackOpacity);
+			fopte = OfficeArtFOPTEPtr(new FillBackOpacity);
 			break;
 		case 0x0185:
-			fopte = OfficeArtFOPTEPtr(new fillCrMod);
+			fopte = OfficeArtFOPTEPtr(new FillCrMod);
 			break;
 		case 0x0186:
-			fopte = OfficeArtFOPTEPtr(new fillBlip);
+			fopte = OfficeArtFOPTEPtr(new FillBlip);
 			break;
 		case 0x0187:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x0188:
-			fopte = OfficeArtFOPTEPtr(new fillBlipFlags);
+			fopte = OfficeArtFOPTEPtr(new FillBlipFlags);
 			break;
 		case 0x0189:
-			fopte = OfficeArtFOPTEPtr(new fillWidth);
+			fopte = OfficeArtFOPTEPtr(new FillWidth);
 			break;
 		case 0x018A:
-			fopte = OfficeArtFOPTEPtr(new fillHeight);
+			fopte = OfficeArtFOPTEPtr(new FillHeight);
 			break;
 		case 0x018B:
-			fopte = OfficeArtFOPTEPtr(new fillAngle);
+			fopte = OfficeArtFOPTEPtr(new FillAngle);
 			break;
 		case 0x018C:
-			fopte = OfficeArtFOPTEPtr(new fillFocus);
+			fopte = OfficeArtFOPTEPtr(new FillFocus);
 			break;
 		case 0x018D:
-			fopte = OfficeArtFOPTEPtr(new fillToLeft);
+			fopte = OfficeArtFOPTEPtr(new FillToLeft);
 			break;
 		case 0x018E:
-			fopte = OfficeArtFOPTEPtr(new fillToTop);
+			fopte = OfficeArtFOPTEPtr(new FillToTop);
 			break;
 		case 0x018F:
-			fopte = OfficeArtFOPTEPtr(new fillToRight);
+			fopte = OfficeArtFOPTEPtr(new FillToRight);
 			break;
 		case 0x0190:
-			fopte = OfficeArtFOPTEPtr(new fillToBottom);
+			fopte = OfficeArtFOPTEPtr(new FillToBottom);
 			break;
 		case 0x0191:
-			fopte = OfficeArtFOPTEPtr(new fillRectLeft);
+			fopte = OfficeArtFOPTEPtr(new FillRectLeft);
 			break;
 		case 0x0192:
-			fopte = OfficeArtFOPTEPtr(new fillRectTop);
+			fopte = OfficeArtFOPTEPtr(new FillRectTop);
 			break;
 		case 0x0193:
-			fopte = OfficeArtFOPTEPtr(new fillRectRight);
+			fopte = OfficeArtFOPTEPtr(new FillRectRight);
 			break;
 		case 0x0194:
-			fopte = OfficeArtFOPTEPtr(new fillRectBottom);
+			fopte = OfficeArtFOPTEPtr(new FillRectBottom);
 			break;
 		case 0x0195:
-			fopte = OfficeArtFOPTEPtr(new fillDztype);
+			fopte = OfficeArtFOPTEPtr(new FillDztype);
 			break;
 		case 0x0196:
-			fopte = OfficeArtFOPTEPtr(new fillShadePreset);
+			fopte = OfficeArtFOPTEPtr(new FillShadePreset);
 			break;
 		case 0x0197:
-			fopte = OfficeArtFOPTEPtr(new fillShadeColors);
+			fopte = OfficeArtFOPTEPtr(new FillShadeColors);
 			break;
 		case 0x0198:
-			fopte = OfficeArtFOPTEPtr(new fillOriginX);
+			fopte = OfficeArtFOPTEPtr(new FillOriginX);
 			break;
 		case 0x0199:
-			fopte = OfficeArtFOPTEPtr(new fillOriginY);
+			fopte = OfficeArtFOPTEPtr(new FillOriginY);
 			break;
 		case 0x019A:
-			fopte = OfficeArtFOPTEPtr(new fillShapeOriginX);
+			fopte = OfficeArtFOPTEPtr(new FillShapeOriginX);
 			break;
 		case 0x019B:
-			fopte = OfficeArtFOPTEPtr(new fillShapeOriginY);
+			fopte = OfficeArtFOPTEPtr(new FillShapeOriginY);
 			break;
 		case 0x019C:
-			fopte = OfficeArtFOPTEPtr(new fillShadeType);
+			fopte = OfficeArtFOPTEPtr(new FillShadeType);
 			break;
 		case 0x019E:
-			fopte = OfficeArtFOPTEPtr(new fillColorExt);
+			fopte = OfficeArtFOPTEPtr(new FillColorExt);
 			break;
 		case 0x019F:
-			fopte = OfficeArtFOPTEPtr(new reserved415);
+			fopte = OfficeArtFOPTEPtr(new Reserved415);
 			break;
 		case 0x01A0:
-			fopte = OfficeArtFOPTEPtr(new fillColorExtMod);
+			fopte = OfficeArtFOPTEPtr(new FillColorExtMod);
 			break;
 		case 0x01A1:
-			fopte = OfficeArtFOPTEPtr(new reserved417);
+			fopte = OfficeArtFOPTEPtr(new Reserved417);
 			break;
 		case 0x01A2:
-			fopte = OfficeArtFOPTEPtr(new fillBackColorExt);
+			fopte = OfficeArtFOPTEPtr(new FillBackColorExt);
 			break;
 		case 0x01A3:
-			fopte = OfficeArtFOPTEPtr(new reserved419);
+			fopte = OfficeArtFOPTEPtr(new Reserved419);
 			break;
 		case 0x01A4:
-			fopte = OfficeArtFOPTEPtr(new fillBackColorExtMod);
+			fopte = OfficeArtFOPTEPtr(new FillBackColorExtMod);
 			break;
 		case 0x01A5:
-			fopte = OfficeArtFOPTEPtr(new reserved421);
+			fopte = OfficeArtFOPTEPtr(new Reserved421);
 			break;
 		case 0x01A6:
-			fopte = OfficeArtFOPTEPtr(new reserved422);
+			fopte = OfficeArtFOPTEPtr(new Reserved422);
 			break;
 		case 0x01A7:
-			fopte = OfficeArtFOPTEPtr(new reserved423);
+			fopte = OfficeArtFOPTEPtr(new Reserved423);
 			break;
 		case 0x01BF:
 			fopte = OfficeArtFOPTEPtr(new FillStyleBooleanProperties);
 			break;
 		case 0x01C0:
-			fopte = OfficeArtFOPTEPtr(new lineColor);
+			fopte = OfficeArtFOPTEPtr(new LineColor);
 			break;
 		case 0x01C1:
-			fopte = OfficeArtFOPTEPtr(new lineOpacity);
+			fopte = OfficeArtFOPTEPtr(new LineOpacity);
 			break;
 		case 0x01C2:
-			fopte = OfficeArtFOPTEPtr(new lineBackColor);
+			fopte = OfficeArtFOPTEPtr(new LineBackColor);
 			break;
 		case 0x01C3:
-			fopte = OfficeArtFOPTEPtr(new lineCrMod);
+			fopte = OfficeArtFOPTEPtr(new LineCrMod);
 			break;
 		case 0x01C4:
-			fopte = OfficeArtFOPTEPtr(new lineType);
+			fopte = OfficeArtFOPTEPtr(new LineType);
 			break;
 		case 0x01C5:
-			fopte = OfficeArtFOPTEPtr(new fillBlip);
+			fopte = OfficeArtFOPTEPtr(new FillBlip);
 			break;
 		case 0x01CB:
-			fopte = OfficeArtFOPTEPtr(new lineWidth);
+			fopte = OfficeArtFOPTEPtr(new LineWidth);
 			break;
 		case 0x01CC:
-			fopte = OfficeArtFOPTEPtr(new lineMiterLimit);
+			fopte = OfficeArtFOPTEPtr(new LineMiterLimit);
 			break;
 		case 0x01CD:
-			fopte = OfficeArtFOPTEPtr(new lineStyle);
+			fopte = OfficeArtFOPTEPtr(new LineStyle);
 			break;
 		case 0x01CE:
-			fopte = OfficeArtFOPTEPtr(new lineDashing);
+			fopte = OfficeArtFOPTEPtr(new LineDashing);
 			break;
 /*todo*/case 0x1D0:	//lineStartArrowhead
 /*todo*/case 0x1D1:	//lineEndArrowhead
@@ -411,7 +411,7 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 			fopte = OfficeArtFOPTEPtr(new LineStyleBooleanProperties);
 			break;
 		case 0x0204:
-			fopte = OfficeArtFOPTEPtr(new shadowOpacity);
+			fopte = OfficeArtFOPTEPtr(new ShadowOpacity);
 			break;
 		case 0x023F:
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
@@ -420,23 +420,23 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
 		case 0x030C:
-			fopte = OfficeArtFOPTEPtr(new xmlString);
+			fopte = OfficeArtFOPTEPtr(new XmlString);
 			break;
 		case 0x033F:
 			fopte = OfficeArtFOPTEPtr(new ShapeBooleanProperties);
 			break;
 		case 0x0380:
 		case 0x0381:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x0382:
-			fopte = OfficeArtFOPTEPtr(new pihlShape);
+			fopte = OfficeArtFOPTEPtr(new PihlShape);
 			break;
 		case 0x0383:
-			fopte = OfficeArtFOPTEPtr(new pWrapPolygonVertices);
+			fopte = OfficeArtFOPTEPtr(new PWrapPolygonVertices);
 			break;
 		case 0x03A9:
-			fopte = OfficeArtFOPTEPtr(new metroBlob);
+			fopte = OfficeArtFOPTEPtr(new MetroBlob);
 			break;
 		case 0x03BF:
 			fopte = OfficeArtFOPTEPtr(new GroupShapeBooleanProperties);
@@ -622,7 +622,7 @@ void GroupShapeBooleanProperties::set()
 	fHidden				= GETBIT(op,  1);
 	fPrint				= GETBIT(op,  0);
 }
-void fillShadeType::load(XLS::CFRecord& record)
+void FillShadeType::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 	
@@ -632,7 +632,7 @@ void fillShadeType::load(XLS::CFRecord& record)
 	msoshadeBand		= GETBIT(op, 3);
 	msoshadeOneColor	= GETBIT(op, 4);
 }
-void fillShadeType::load(IBinaryReader* reader)
+void FillShadeType::load(IBinaryReader* reader)
 {
 	OfficeArtFOPTE::load(reader);
 
@@ -670,7 +670,7 @@ void FillStyleBooleanProperties::set()
 	fUsefUseShapeAnchor			= GETBIT(op, 21);
 	fUsefRecolorFillAsPicture	= GETBIT(op, 22);
 }
-void fillBlip::ReadComplexData(XLS::CFRecord& record)
+void FillBlip::ReadComplexData(XLS::CFRecord& record)
 {
 	OfficeArtRecordHeader rh_child;
 	record >> rh_child;
@@ -680,7 +680,7 @@ void fillBlip::ReadComplexData(XLS::CFRecord& record)
 	blip = OfficeArtBlipPtr(new OfficeArtBlip(rh_child.recType));
 	blip->loadFields(record);
 }
-void fillBlip::ReadComplexData(IBinaryReader* reader)
+void FillBlip::ReadComplexData(IBinaryReader* reader)
 {
 	long pos = reader->GetPosition();
 	
@@ -692,7 +692,7 @@ void fillBlip::ReadComplexData(IBinaryReader* reader)
 	blip = OfficeArtBlipPtr(new OfficeArtBlip(rh_child.recType));
 	blip->loadFields(reader);
 }
-void anyString::ReadComplexData(IBinaryReader* reader)
+void AnyString::ReadComplexData(IBinaryReader* reader)
 {
 	unsigned char* pData = reader->ReadBytes(op, true);
 #if defined(_WIN32) || defined(_WIN64)
@@ -712,7 +712,7 @@ void anyString::ReadComplexData(IBinaryReader* reader)
 	}
 	delete []pData;
 }
-void anyString::ReadComplexData(XLS::CFRecord& record)
+void AnyString::ReadComplexData(XLS::CFRecord& record)
 {	
 #if defined(_WIN32) || defined(_WIN64)
         string_ = std::wstring(record.getCurData<wchar_t>(), op);
@@ -732,12 +732,12 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 	record.skipNunBytes(op);
 }
 
-void fillShadeColors::ReadComplexData(XLS::CFRecord& record)
+void FillShadeColors::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	record >> complex;
 }
-void fillShadeColors::ReadComplexData(IBinaryReader* reader)
+void FillShadeColors::ReadComplexData(IBinaryReader* reader)
 {
 	complex.op = op;
 	complex.load(reader);
@@ -919,17 +919,17 @@ void IHlink::load(IBinaryReader* reader)
 
 	hyperlink.load(reader);
 }
-void pihlShape::ReadComplexData(XLS::CFRecord& record)
+void PihlShape::ReadComplexData(XLS::CFRecord& record)
 {
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pihlShape::ReadComplexData(IBinaryReader* reader)
+void PihlShape::ReadComplexData(IBinaryReader* reader)
 {
 	complex.load(reader);
 }
-void xmlString::ReadComplexData(IBinaryReader* reader)
+void XmlString::ReadComplexData(IBinaryReader* reader)
 {
 	unsigned char* pData = reader->ReadBytes(op, true);
 	
@@ -937,19 +937,19 @@ void xmlString::ReadComplexData(IBinaryReader* reader)
 
 	delete []pData;
 }
-void xmlString::ReadComplexData(XLS::CFRecord& record)
+void XmlString::ReadComplexData(XLS::CFRecord& record)
 {
 	data = std::string(record.getCurData<char>(), op);
 
 	record.skipNunBytes(op);
 }
-void metroBlob::ReadComplexData(IBinaryReader* reader)
+void MetroBlob::ReadComplexData(IBinaryReader* reader)
 {
 	unsigned char* pData = reader->ReadBytes(op, true);
 	
 	data = std::make_pair(boost::shared_array<unsigned char>(pData), op);
 }
-void metroBlob::ReadComplexData(XLS::CFRecord& record)
+void MetroBlob::ReadComplexData(XLS::CFRecord& record)
 {
 	int pos = record.getRdPtr();
 
@@ -1532,19 +1532,19 @@ void PSegmentInfo::ReadComplexData(IBinaryReader* reader)
 	complex.op = op;
 	complex.load(reader);
 }
-void pGuides::ReadComplexData(XLS::CFRecord& record)
+void PGuides::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pGuides::ReadComplexData(IBinaryReader* reader)
+void PGuides::ReadComplexData(IBinaryReader* reader)
 {
 	complex.op = op;
 	complex.load(reader);
 }
-void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
+void PAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 
@@ -1552,55 +1552,55 @@ void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
-void pAdjustHandles::ReadComplexData(IBinaryReader* reader)
+void PAdjustHandles::ReadComplexData(IBinaryReader* reader)
 {
 	complex.op = op;
 	complex.load(reader);
 }
-void pConnectionSites::ReadComplexData(XLS::CFRecord& record)
+void PConnectionSites::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pConnectionSites::ReadComplexData(IBinaryReader* reader)
+void PConnectionSites::ReadComplexData(IBinaryReader* reader)
 {
 	complex.op = op;
 	complex.load(reader);
 }
-void pConnectionSitesDir::ReadComplexData(XLS::CFRecord& record)
+void PConnectionSitesDir::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pConnectionSitesDir::ReadComplexData(IBinaryReader* reader)
+void PConnectionSitesDir::ReadComplexData(IBinaryReader* reader)
 {
 	complex.op = op;
 	complex.load(reader);
 }
-void pInscribe::ReadComplexData(XLS::CFRecord& record)
+void PInscribe::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pInscribe::ReadComplexData(IBinaryReader* reader)
+void PInscribe::ReadComplexData(IBinaryReader* reader)
 {
 	complex.op = op;
 	complex.load(reader);
 }
-void pWrapPolygonVertices::ReadComplexData(XLS::CFRecord& record)
+void PWrapPolygonVertices::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pWrapPolygonVertices::ReadComplexData(IBinaryReader* reader)
+void PWrapPolygonVertices::ReadComplexData(IBinaryReader* reader)
 {
 	complex.op = op;
 	complex.load(reader);

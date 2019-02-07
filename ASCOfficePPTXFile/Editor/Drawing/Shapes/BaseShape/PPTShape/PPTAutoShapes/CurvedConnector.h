@@ -39,7 +39,7 @@ public:
 	CCurvedConnectorType()
     {
         m_bConcentricFill = true;
-		m_eJoin = NSOfficeDrawing::lineJoinRound;
+		m_eJoin = ODRAW::lineJoinRound;
         
 		//m_strPathLimoX = _T("m0,0qx@0,10800qy21600,21600nfe");
 		//m_strPathLimoY = _T("m0,0qy@0,10800qx21600,21600nfe");

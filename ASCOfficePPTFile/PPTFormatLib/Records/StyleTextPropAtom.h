@@ -43,8 +43,8 @@ public:
 	// Text.Bytes/Chars.Atom
 	_UINT32 m_lCount; 
 
-	std::vector<CTextPFRun_ppt> m_arrPFs;
-	std::vector<CTextCFRun_ppt> m_arrCFs;
+	std::vector<CTextPFRunRecord> m_arrPFs;
+	std::vector<CTextCFRunRecord> m_arrCFs;
 	
 	CRecordStyleTextPropAtom()
 	{
@@ -73,7 +73,7 @@ public:
 
 		while (lMemCount < m_lCount + 1)
 		{
-			CTextPFRun_ppt elm;
+			CTextPFRunRecord elm;
 			m_arrPFs.push_back(elm);
 			m_arrPFs[lCountItems].LoadFromStream(pStream);
 			lMemCount += m_arrPFs[lCountItems].m_lCount;
@@ -85,7 +85,7 @@ public:
 		lCountItems = 0;
 		while (lMemCount < m_lCount + 1)
 		{
-			CTextCFRun_ppt elm;
+			CTextCFRunRecord elm;
 			m_arrCFs.push_back(elm);
 
 			m_arrCFs[lCountItems].LoadFromStream(pStream);

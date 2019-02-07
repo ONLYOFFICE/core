@@ -282,7 +282,7 @@ namespace PPTX2EditorAdvanced
 }
 
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CImageElement : public CElement
 	{

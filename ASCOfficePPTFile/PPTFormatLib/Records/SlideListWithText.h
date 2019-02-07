@@ -154,7 +154,7 @@ public:
 					if (RECORD_TYPE_TXINTERACTIVEINFO_ATOM == oRec.RecType)
 					{
 						CRecordTextInteractiveInfoAtom* pTxRanges = dynamic_cast<CRecordTextInteractiveInfoAtom*>(pRecord);
-						NSPresentationEditor::CTextRange oRange;
+						PPT_FORMAT::CTextRange oRange;
 						oRange.m_lStart	= pTxRanges->m_lStart;
 						oRange.m_lEnd	= pTxRanges->m_lEnd;
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_arRanges.push_back(oRange);

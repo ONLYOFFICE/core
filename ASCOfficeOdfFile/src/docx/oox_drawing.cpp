@@ -377,8 +377,7 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 			}
 			else if ((bFitToSize) && (*bFitToSize))
 			{
-				CP_XML_NODE(L"a:noAutofit");
-				//CP_XML_NODE(L"a:spAutoFit")
+				CP_XML_NODE(L"a:normAutofit");
 				//{
 				//	CP_XML_ATTR(L"lnSpcReduction", 10000);
 				//}

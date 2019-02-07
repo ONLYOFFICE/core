@@ -324,7 +324,7 @@ namespace DocFileFormat
 			{
 			case wzEquationXML:
 				{
-					ODRAW::xmlString *pXml = dynamic_cast<ODRAW::xmlString*>(iter.get());
+					ODRAW::XmlString *pXml = dynamic_cast<ODRAW::XmlString*>(iter.get());
 					if (pXml)
 					{
 						m_isEquation = true;
@@ -340,7 +340,7 @@ namespace DocFileFormat
 				}break;
 			case metroBlob:
 				{//встроенная неведомая хуйня
-					ODRAW::metroBlob* blob = dynamic_cast<ODRAW::metroBlob*>(iter.get());
+					ODRAW::MetroBlob* blob = dynamic_cast<ODRAW::MetroBlob*>(iter.get());
 					if (blob)
 					{						
 						m_isBlob		= true;

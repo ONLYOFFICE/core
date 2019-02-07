@@ -31,19 +31,19 @@
  */
 #pragma once
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CTheme;
 }
 class CStylesWriter
 {
 public:
-	CStylesWriter(NSPresentationEditor::CTheme* m_pTheme);
+	CStylesWriter(PPT_FORMAT::CTheme* m_pTheme);
 	CStylesWriter();
 
-	NSPresentationEditor::CTheme* m_pTheme;
+	PPT_FORMAT::CTheme* m_pTheme;
 	
-	void ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CStringWriter& oWriter, int nCount = 10)
+	void ConvertStyles(PPT_FORMAT::CTextStyles& oStyles, PPT_FORMAT::CStringWriter& oWriter, int nCount = 10)
 	{
 		for (int i = 0; i < nCount; ++i)
 		{
@@ -51,19 +51,19 @@ public:
 				ConvertStyleLevel(oStyles.m_pLevels[i].get(), oWriter, i);
 		}
 	}
-	std::wstring ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, const int& nLevel)
+	std::wstring ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, const int& nLevel)
 	{
-		NSPresentationEditor::CStringWriter oWriter;
+		PPT_FORMAT::CStringWriter oWriter;
 		ConvertStyleLevel(oLevel, oWriter, nLevel);
 		return oWriter.GetData();
 	}
 
-	void ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel,
-		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel);
+	void ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel,
+		PPT_FORMAT::CStringWriter& oWriter, const int& nLevel);
 
-    std::wstring ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, int nCount = 10)
+    std::wstring ConvertStyles(PPT_FORMAT::CTextStyles& oStyles, int nCount = 10)
 	{
-		NSPresentationEditor::CStringWriter oWriter;
+		PPT_FORMAT::CStringWriter oWriter;
 		ConvertStyles(oStyles, oWriter, nCount);
 		return oWriter.GetData();
 	}

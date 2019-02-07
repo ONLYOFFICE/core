@@ -32,12 +32,12 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordTextMasterStyleAtom : public CUnknownRecord, public NSPresentationEditor::CTextStyles
+class CRecordTextMasterStyleAtom : public CUnknownRecord, public PPT_FORMAT::CTextStyles
 {
 public:
 	LONG m_nTextType;
 	
-	CRecordTextMasterStyleAtom() : NSPresentationEditor::CTextStyles()
+	CRecordTextMasterStyleAtom() : PPT_FORMAT::CTextStyles()
 	{
 		m_nTextType = 0;
 	}
@@ -111,12 +111,12 @@ protected:
 		if (bIsLevelPresent)
 			lLevel = StreamUtils::ReadSHORT(pStream);
 
-		CTextPFRun_ppt oPF;
-		CTextCFRun_ppt oCF;
+		CTextPFRunRecord oPF;
+		CTextCFRunRecord oCF;
 		oPF.LoadFromStream(pStream, false);
 		oCF.LoadFromStream(pStream, false);
 
-		m_pLevels[lLevelOld] = new NSPresentationEditor::CTextStyleLevel();
+		m_pLevels[lLevelOld] = new PPT_FORMAT::CTextStyleLevel();
 		m_pLevels[lLevelOld]->m_oPFRun = oPF.m_oRun;
 		m_pLevels[lLevelOld]->m_oCFRun = oCF.m_oRun;
 	}

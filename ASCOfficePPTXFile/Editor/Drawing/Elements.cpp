@@ -32,7 +32,7 @@
 
 #include "Slide.h"
 
-void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
+void PPT_FORMAT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
 	LONG lOldIndex = oColor.m_lSchemeIndex;
 	if (-1 == oColor.m_lSchemeIndex)
@@ -61,9 +61,9 @@ void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide*
 	oColor.m_lSchemeIndex = lOldIndex;
 }
 
-void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
+void PPT_FORMAT::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
-	NSPresentationEditor::CTextAttributesEx* pAttributes = &m_pShape->m_oText;
+	PPT_FORMAT::CTextAttributesEx* pAttributes = &m_pShape->m_oText;
 	int nCountColors = 0;
 	if (NULL != pTheme)
 		nCountColors = (int)pTheme->m_arColorScheme.size();
@@ -121,10 +121,10 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 	}
 }
 
-bool NSPresentationEditor::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
+bool PPT_FORMAT::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
 {
 	bool result = false;
-	NSPresentationEditor::CTextAttributesEx* pText = &m_pShape->m_oText;
+	PPT_FORMAT::CTextAttributesEx* pText = &m_pShape->m_oText;
 
 	for (size_t p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
 	{

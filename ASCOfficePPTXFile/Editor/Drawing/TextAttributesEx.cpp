@@ -32,7 +32,7 @@
 #include "TextAttributesEx.h"
 #include "Theme.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 
 	void CTextAttributesEx::RecalcParagraphsPPT()

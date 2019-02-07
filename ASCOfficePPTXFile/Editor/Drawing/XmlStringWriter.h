@@ -32,7 +32,7 @@
 #pragma once
 #include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
     static std::wstring	g_bstr_nodeopen				= L"<";
     static std::wstring	g_bstr_nodeclose			= L">";

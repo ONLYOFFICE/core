@@ -33,8 +33,16 @@
 #include "Structures.h"
 #include "Layout.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
+	enum _typeMaster
+	{
+		typeMaster,
+		typeNotesMaster,
+		typeHandoutMaster
+
+	};
+	
 	const long g_ThemeTextStylesCount	= 4;
 
 	class CTheme
@@ -103,13 +111,13 @@ namespace NSPresentationEditor
 		virtual ~CTheme()
 		{
 		}
-		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
+		ODRAW::CColor GetColor(const LONG& lIndexScheme)
 		{
 			if (lIndexScheme < (LONG)m_arColorScheme.size())
 			{
 				return m_arColorScheme[lIndexScheme];
 			}
-			return NSPresentationEditor::CColor();
+			return ODRAW::CColor();
 		}
 
 		void CalculateStyles()
@@ -118,7 +126,7 @@ namespace NSPresentationEditor
 
 			for (int pos = 0; pos < g_ThemeTextStylesCount; ++pos)
 			{
-				NSPresentationEditor::CTextStyles& oStyle = m_pStyles[pos];
+				PPT_FORMAT::CTextStyles& oStyle = m_pStyles[pos];
 
 				size_t nLevels = 10;
 				for (size_t i = 0; i < nLevels; ++i)

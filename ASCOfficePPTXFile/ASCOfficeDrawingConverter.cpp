@@ -279,9 +279,9 @@ namespace NS_DWC_Common
 	//	0x00FFFFFF,	0x00000000,	0x00000000,	0x00000000,	
 	//	0x00000000,	0x00000000,	0x00FFFFFF,	0x00FFFFFF
 	//};
-	NSPresentationEditor::CColor getColorFromString(const std::wstring& colorStr)
+	ODRAW::CColor getColorFromString(const std::wstring& colorStr)
 	{
-		NSPresentationEditor::CColor color;
+		ODRAW::CColor color;
 		bool bSet = false;
 		if (colorStr.find(L"#") != std::wstring::npos)
 		{
@@ -1780,7 +1780,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
     std::wstring strStyleAdvenced = L"";
 
-	NSPresentationEditor::CShapeElement oShapeElem;
+	PPT_FORMAT::CShapeElement oShapeElem;
 	CPPTShape* pPPTShape = NULL;
 	bool bSetShape = false;
 
@@ -2144,7 +2144,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					{
 						eFillType = etSolidFill;
 						
-						NSPresentationEditor::CColor color	= NS_DWC_Common::getColorFromString(*sFillColor);
+						ODRAW::CColor color	= NS_DWC_Common::getColorFromString(*sFillColor);
 						PPTX::Logic::SolidFill* pSolid		= new PPTX::Logic::SolidFill();
 						pSolid->m_namespace = L"a";
 						
@@ -2302,7 +2302,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							}
 							if (sColor.is_init())
 							{
-								NSPresentationEditor::CColor color;
+								ODRAW::CColor color;
 								if (sColor->find(L"fill") != -1)
 								{
 									std::wstring sColorEffect = *sColor;
@@ -2341,7 +2341,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							}
 							if (sColor2.is_init())
 							{
-								NSPresentationEditor::CColor color;
+								ODRAW::CColor color;
 								if (sColor2->find(L"fill") != -1)
 								{
 									std::wstring sColorEffect = *sColor2;
@@ -2407,7 +2407,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 									double pos = strPos.empty() ? 0 : _wtof(strPos.c_str());
 
-									NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(strColor);
+									ODRAW::CColor color = NS_DWC_Common::getColorFromString(strColor);
 									PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
 									oColor->Color = new PPTX::Logic::SrgbClr();
 									oColor->Color->SetRGB(color.R, color.G, color.B);
@@ -2628,7 +2628,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					smart_ptr<PPTX::Logic::SolidFill> pSolid = new PPTX::Logic::SolidFill();
 					pSolid->m_namespace = L"a";
 					pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-					NSPresentationEditor::CColor color;
+					ODRAW::CColor color;
 					
 					if (sStroked.is_init())
 					{
@@ -4167,7 +4167,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
     XmlMacroReadAttributeBase(oNode, L"fillcolor", sFillColor);
 	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
 	{
-		NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
+		ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
 
 		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
         pSolid->m_namespace = L"a";
@@ -4240,7 +4240,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
         XmlMacroReadAttributeBase(oNodeFill, L"color", sColor);
 		if (sColor.is_init())
 		{
-			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor);
+			ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor);
 
 			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
             pSolid->m_namespace = L"a";
@@ -4303,7 +4303,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		
 			if (sColor.is_init())
 			{
-				NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor);
+				ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor);
 
 				PPTX::Logic::Gs Gs_;
 				Gs_.color.Color = new PPTX::Logic::SrgbClr();
@@ -4333,7 +4333,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				}
 				else
 				{
-					NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
+					ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
 					Gs_.color.Color->SetRGB(color.R, color.G, color.B);
 				}
 
@@ -4543,7 +4543,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
     XmlMacroReadAttributeBase(oNode, L"strokecolor", sStrokeColor);
 	if (sStrokeColor.is_init())
 	{
-		NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+		ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
 
 		if (!pSpPr->ln.is_init())
 			pSpPr->ln = new PPTX::Logic::Ln();
@@ -4616,7 +4616,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
         XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor);
 		if (sStrokeColor.is_init())
 		{
-			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+			ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
 
 			if (!pSpPr->ln.is_init())
 				pSpPr->ln = new PPTX::Logic::Ln();

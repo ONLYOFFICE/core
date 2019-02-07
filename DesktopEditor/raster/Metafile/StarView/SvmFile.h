@@ -161,7 +161,7 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		return m_pDC->GetInverseTransform();
 	}
-	TXForm*      GetTransform()
+	TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED)
 	{
 		return m_pDC->GetTransform();
 	}

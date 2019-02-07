@@ -367,6 +367,10 @@ public:
 	{
 		return (int)CharSet;
 	}
+	int          GetOrientation()
+	{
+		return (int)Orientation;
+	}
 
 public:
 

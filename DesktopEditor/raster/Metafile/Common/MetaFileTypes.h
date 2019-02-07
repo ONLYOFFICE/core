@@ -275,6 +275,9 @@ typedef unsigned char BYTE;
 	#define LAYOUT_BITMAPORIENTATIONPRESERVED	0x0008
 #endif
 
+#define GM_COMPATIBLE       1
+#define GM_ADVANCED         2
+
 namespace MetaFile
 {
 	enum EMetaFileBitCount

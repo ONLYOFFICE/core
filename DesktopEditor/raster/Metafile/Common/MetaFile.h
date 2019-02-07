@@ -70,7 +70,7 @@ namespace MetaFile
 		virtual unsigned int GetFillMode() = 0;
 		virtual TPointD      GetCurPos() = 0;
 		virtual TXForm*      GetInverseTransform() = 0;
-		virtual TXForm*      GetTransform() = 0;
+		virtual TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED) = 0;
 		virtual unsigned int GetMiterLimit() = 0;
 		virtual unsigned int GetRop2Mode() = 0;
 		virtual IClip*       GetClip() = 0;

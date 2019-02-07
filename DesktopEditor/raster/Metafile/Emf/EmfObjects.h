@@ -169,6 +169,10 @@ namespace MetaFile
 		{
 		    return m_bFixedLength;
 		}
+		int GetOrientation()
+		{
+			return LogFontEx.LogFont.Orientation;
+		}
 
 	public:
 

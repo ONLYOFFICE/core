@@ -52,6 +52,8 @@
 
 namespace MetaFile
 {
+	class CEmfClip;
+
 	class CMetaFileRenderer : public IOutputDevice
 	{
 	public:
@@ -138,16 +140,16 @@ namespace MetaFile
 			TPointD oBR = TranslatePoint(dX + dW, dY + dH);
 			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
-		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx)
+		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode)
 		{
 			CheckEndPath();
-
-			UpdateTransform();
-			UpdateClip();
 
 			IFont* pFont = m_pFile->GetFont();
 			if (!pFont)
 				return;
+
+			UpdateClip();
+			UpdateTransform(iGraphicsMode);
 
 			int lLogicalFontHeight = pFont->GetHeight();
 			if (lLogicalFontHeight < 0)
@@ -292,6 +294,25 @@ namespace MetaFile
 			}
 
 			bool bChangeCTM = false;
+
+			if (iGraphicsMode == GM_COMPATIBLE)
+			{
+				// В данной ситуации матрица преобразования должна быть диагональной, в ней могут быть только отражения,
+				// которые в данном случае нужно проправить
+
+				double dM11, dM12, dM21, dM22, dRx, dRy;
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+				double dShiftX = (dM11 < -0.001 ? (2 * dX - 2 * fW) * dM11 : 0);
+				double dShiftY = (dM22 < -0.001 ? (2 * dY - 2 * fH) * dM22 : 0);
+
+				m_pRenderer->ResetTransform();
+				m_pRenderer->SetTransform(fabs(dM11), 0, 0, fabs(dM22), dShiftX + dRx, dShiftY + dRy);
+
+
+				bChangeCTM = true;
+			}
+
 			if (0 != pFont->GetEscapement())
 			{
 				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
@@ -372,8 +393,8 @@ namespace MetaFile
 		{
 			CheckEndPath();
 
-			UpdateTransform();
 			UpdateClip();
+			UpdateTransform();
 
 			m_lDrawPathType = -1;
 			if (true == UpdateBrush())
@@ -471,6 +492,7 @@ namespace MetaFile
 		}
 		void UpdateDC()
 		{
+			UpdateTransform();
 			CheckEndPath();
 		}
 		void ResetClip()
@@ -666,12 +688,12 @@ namespace MetaFile
 
 			return true;
 		}
-		void UpdateTransform()
+		void UpdateTransform(int iGraphicsMode = GM_ADVANCED)
 		{
 			double dKoefX = m_dScaleX;
 			double dKoefY = m_dScaleY;
 
-			TEmfXForm* pMatrix = m_pFile->GetTransform();
+			TEmfXForm* pMatrix = m_pFile->GetTransform(iGraphicsMode);
 			m_pRenderer->ResetTransform();
 			m_pRenderer->SetTransform(pMatrix->M11, pMatrix->M12 * dKoefY / dKoefX, pMatrix->M21 * dKoefX / dKoefY, pMatrix->M22, pMatrix->Dx * dKoefX, pMatrix->Dy * dKoefY);
 		}
@@ -827,7 +849,7 @@ namespace MetaFile
 			return true;
 		}
 		bool UpdateClip()
-		{
+		{			
 			IClip* pClip = m_pFile->GetClip();
 			if (!pClip)
 				return false;

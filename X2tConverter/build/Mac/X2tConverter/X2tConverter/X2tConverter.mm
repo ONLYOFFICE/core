@@ -617,6 +617,100 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     return NExtractTools::odf2oox(from, to, temp, oInputParams);
 }
 
+- (int)sdk_odt2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.docx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring temporaryfile = nsstring_to_wstring(nsTemporaryFile);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    _UINT32 nRes = NExtractTools::odf2oox(from, temporaryfile, temp, oInputParams);
+    if (SUCCEEDED_X2T(nRes))
+    {
+        NExtractTools::InputParams oInputParams;
+        oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+        oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+        
+        nRes = NExtractTools::docx2doct_bin(temporaryfile, to, temp, oInputParams);
+        
+        [self removeFileAt:nsTemporaryFile];
+    }
+    
+    return nRes;
+}
+- (int)sdk_ods2xlst_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.xlsx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring temporaryfile = nsstring_to_wstring(nsTemporaryFile);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    _UINT32 nRes = NExtractTools::odf2oox(from, temporaryfile, temp, oInputParams);
+    if (SUCCEEDED_X2T(nRes))
+    {
+        NExtractTools::InputParams oInputParams;
+        oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+        oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+        
+        nRes = NExtractTools::xlsx2xlst_bin(temporaryfile, to, temp, oInputParams);
+        
+        [self removeFileAt:nsTemporaryFile];
+    }
+    
+    return nRes;
+}
+- (int)sdk_odp2pptt_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.pptx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring temporaryfile = nsstring_to_wstring(nsTemporaryFile);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
+    
+    _UINT32 nRes = NExtractTools::odf2oox(from, temporaryfile, temp, oInputParams);
+    if (SUCCEEDED_X2T(nRes))
+    {
+        NExtractTools::InputParams oInputParams;
+        oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+        oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+        
+        nRes = NExtractTools::pptx2pptt_bin(temporaryfile, to, temp, oInputParams);
+        
+        [self removeFileAt:nsTemporaryFile];
+    }
+    
+    return nRes;
+}
+
 - (int)sdk_odf2oox_dir:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -674,6 +768,16 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
 
 + (NSString *)version {
     return [[NSString alloc] initWithUTF8String:X2T_VERSION];
+}
+
+- (void)removeFileAt:(NSString *)path {
+    NSError *error;
+    if ([[NSFileManager defaultManager] isDeletableFileAtPath:path]) {
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+        if (!success) {
+            NSLog(@"Error removing file at path: %@", error.localizedDescription);
+        }
+    }
 }
 
 @end

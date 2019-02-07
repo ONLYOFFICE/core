@@ -39,7 +39,7 @@ public:
 	
 	CRecordTextMasterStyleAtom() : PPT_FORMAT::CTextStyles()
 	{
-		m_nTextType = 0;
+		m_nTextType = -1;
 	}
 
 	~CRecordTextMasterStyleAtom()

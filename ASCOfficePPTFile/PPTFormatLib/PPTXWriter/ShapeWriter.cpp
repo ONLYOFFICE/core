@@ -69,14 +69,17 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 		std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
 		oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
 	}
+
+	int leftMargin = 0;
 	if (pPF->leftMargin.is_init())
 	{
-		std::wstring strProp = std::to_wstring(pPF->leftMargin.get());
+		leftMargin = pPF->leftMargin.get();
+		std::wstring strProp = std::to_wstring(leftMargin);
 		oWriter.WriteString(L" marL=\"" + strProp + L"\"");
 	}
 	if (pPF->indent.is_init())
 	{
-		std::wstring strProp = std::to_wstring(pPF->indent.get());
+		std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
 		oWriter.WriteString(L" indent=\"" + strProp + L"\"");
 	}
 	if (pPF->textAlignment.is_init())
@@ -1226,14 +1229,16 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 			std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
 			m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
 		}
+		int leftMargin = 0;
 		if (pPF->leftMargin.is_init())
 		{
-            std::wstring strProp = std::to_wstring( pPF->leftMargin.get() );
+			leftMargin = pPF->leftMargin.get();
+            std::wstring strProp = std::to_wstring( leftMargin );
 			m_oWriter.WriteString(L" marL=\"" + strProp + L"\"");			
 		}
 		if (pPF->indent.is_init())
 		{
-			std::wstring strProp = std::to_wstring(pPF->indent.get());
+			std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
 			m_oWriter.WriteString(L" indent=\"" + strProp + L"\"");
 		}
 		if (pPF->textAlignment.is_init())

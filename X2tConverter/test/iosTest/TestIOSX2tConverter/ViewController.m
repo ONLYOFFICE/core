@@ -74,7 +74,7 @@
         if (result != 0) {
             NSLog(@"ERROR TXT TO DOCX : %d",result);
         } else {
-            NSLog(@"odt output : %@", to);
+            NSLog(@"txt output : %@", to);
         }
     }
 }
@@ -238,6 +238,22 @@
             NSLog(@"ERROR ODT TO DOCX : %d",result);
         } else {
             NSLog(@"odt output : %@", to);
+        }
+    }
+    
+    {
+        NSLog(@"==================== ODT TO DOCT BIN ====================");
+        
+        NSString* from = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"odt"];
+        NSString* to = [NSString stringWithFormat:@"%@odt_to_doct_bin", self.temp];
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        int result = [conv sdk_odt2doct_bin:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
+        if (result != 0) {
+            NSLog(@"ERROR ODT TO DOCT BIN : %d",result);
+        } else {
+            NSLog(@"doct bin output : %@", to);
         }
     }
     

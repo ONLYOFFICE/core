@@ -61,6 +61,7 @@ namespace MetaFile
 		void SelectObject(unsigned int ulIndex);
 		void DeleteObject(unsigned int ulIndex);
 		void SelectPalette(unsigned int ulIndex);
+		CEmfDC* SetDC(CEmfDC* pDC);
 
 	private:
 
@@ -82,7 +83,7 @@ namespace MetaFile
 	{
 	public:
 
-		CEmfDC();
+		CEmfDC(CEmfPlayer* pPlayer);
 		~CEmfDC();
 		CEmfDC* Copy();
 
@@ -90,7 +91,7 @@ namespace MetaFile
 		unsigned int    GetMapMode();
 		TEmfXForm*      GetTransform();
 		TEmfXForm*      GetInverseTransform();
-		TEmfXForm*      GetFinalTransform();
+		TEmfXForm*      GetFinalTransform(int iGraphicsMode);
 		void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
 		void            SetTextColor(TEmfColor& oColor);
 		TEmfColor&      GetTextColor();
@@ -132,9 +133,10 @@ namespace MetaFile
 		void            SetCurPos(int lX, int lY);
 		TEmfPointL&     GetCurPos();
 		CEmfClip*       GetClip();
-		void            ClipToPath(CEmfPath* pPath, unsigned int unMode);
+		void            ClipToPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC);
 		void            SetArcDirection(unsigned int unDirection);
 		unsigned int    GetArcDirection();
+		CEmfPlayer*     GetPlayer();
 
 	private:
 
@@ -145,6 +147,7 @@ namespace MetaFile
 
 	private:
 
+		CEmfPlayer*     m_pPlayer;
 		unsigned int    m_ulMapMode;
 		CEmfLogBrushEx* m_pBrush;
 		CEmfLogPen*     m_pPen;
@@ -153,6 +156,7 @@ namespace MetaFile
 		TEmfXForm       m_oTransform;
 		TEmfXForm       m_oInverseTransform;
 		TEmfXForm       m_oFinalTransform;
+		TEmfXForm       m_oFinalTransform2; // Преобразование без учета m_oTransform, т.е. чисто преобразование окна
 		TEmfColor       m_oTextColor;
 		TEmfColor       m_oBgColor;
 		unsigned int    m_ulTextAlign;

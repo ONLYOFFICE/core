@@ -30,12 +30,17 @@
  *
  */
 #include "EmfClip.h"
+#include "EmfPlayer.h"
 
 namespace MetaFile
 {
+	CEmfClipCommandPath::CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC) : m_oPath(pPath), m_unMode(unMode)
+	{
+		m_pDC = pDC->Copy();
+	}
+
 	CEmfClip::CEmfClip()
 	{
-
 	}
 	CEmfClip::~CEmfClip()
 	{
@@ -58,7 +63,7 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pPathCommand = (CEmfClipCommandPath*)pCommand;
-					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode);
+					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode, pPathCommand->m_pDC);
 					break;
 				}
 				case EMF_CLIPCOMMAND_EXCLUDE:
@@ -95,9 +100,9 @@ namespace MetaFile
 		m_vCommands.push_back(pCommand);
 		return true;
 	}
-	bool CEmfClip::SetPath(CEmfPath* pPath, unsigned int unMode)
+	bool CEmfClip::SetPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC)
 	{
-		CEmfClipCommandBase* pCommand = new CEmfClipCommandPath(pPath, unMode);
+		CEmfClipCommandBase* pCommand = new CEmfClipCommandPath(pPath, unMode, pDC);
 		if (!pCommand)
 			return false;
 
@@ -110,6 +115,7 @@ namespace MetaFile
 			return;
 
 		pOutput->ResetClip();
+
 		for (unsigned int ulIndex = 0; ulIndex < m_vCommands.size(); ulIndex++)
 		{
 			CEmfClipCommandBase* pCommand = m_vCommands.at(ulIndex);
@@ -124,7 +130,17 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pClipPath = (CEmfClipCommandPath*)pCommand;
+
+					CEmfDC* pDC = pClipPath->m_pDC;
+					CEmfPlayer* pPlayer = pDC->GetPlayer();
+					CEmfDC* pOldDC = pPlayer->SetDC(pDC);
+					pOutput->UpdateDC();
+
 					pClipPath->m_oPath.Draw(pOutput, false, false, pClipPath->m_unMode);
+
+					pPlayer->SetDC(pOldDC);
+					pOutput->UpdateDC();
+
 					break;
 				}
 				case EMF_CLIPCOMMAND_EXCLUDE:
@@ -153,7 +169,6 @@ namespace MetaFile
 				}
 			}
 		}
-
 	}
 	void CEmfClip::Clear()
 	{

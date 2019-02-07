@@ -219,7 +219,6 @@ static const struct ActionNamesEmf
 			if (0 == ulRecordIndex && EMR_HEADER != ulType)
 				return SetError();
 
-
 			switch (ulType)
 			{
 				//-----------------------------------------------------------
@@ -518,7 +517,7 @@ static const struct ActionNamesEmf
 			m_pOutput->EndPath();
 		}
 	}
-	void CEmfFile::DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx)
+	void CEmfFile::DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx, int iGraphicsMode)
 	{
 		int nX = _nX;
 		int nY = _nY;
@@ -555,13 +554,13 @@ static const struct ActionNamesEmf
 				}
 			}
 
-			m_pOutput->DrawString(wsString, unCharsCount, dX, dY, pdDx);
+			m_pOutput->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode);
 
 			if (pdDx)
 				delete[] pdDx;
 		}
 	}
-	void CEmfFile::DrawTextA(TEmfEmrText& oText)
+	void CEmfFile::DrawTextA(TEmfEmrText& oText, int iGraphicsMode)
 	{
 		if (!oText.OutputString)
 			return SetError();
@@ -636,12 +635,12 @@ static const struct ActionNamesEmf
 			}
 		}
 
-		DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
+		DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode);
 
 		if (pDx)
 			delete[] pDx;
 	}
-	void CEmfFile::DrawTextW(TEmfEmrText& oText)
+	void CEmfFile::DrawTextW(TEmfEmrText& oText, int iGraphicsMode)
 	{
 		if (!oText.OutputString)
 			return SetError();
@@ -705,7 +704,7 @@ static const struct ActionNamesEmf
 		}
 
 		if (unLen)
-			DrawText(wsText, unLen, oText.Reference.x, oText.Reference.y, pDx);
+			DrawText(wsText, unLen, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode);
 
 		if (pDx)
 			delete[] pDx;
@@ -1296,7 +1295,7 @@ static const struct ActionNamesEmf
 
 		if (m_pPath)
 		{
-			m_pDC->ClipToPath(m_pPath, unRegionMode);
+			m_pDC->ClipToPath(m_pPath, unRegionMode, GetDC());
 			RELEASEOBJECT(m_pPath);
 
 			UpdateOutputDC();
@@ -1494,13 +1493,13 @@ static const struct ActionNamesEmf
 		TEmfExtTextoutA oText;
 		m_oStream >> oText;	
 
-		DrawTextA(oText.aEmrText);
+		DrawTextA(oText.aEmrText, oText.iGraphicsMode);
 	}
 	void CEmfFile::Read_EMR_EXTTEXTOUTW()
 	{
 		TEmfExtTextoutW oText;
 		m_oStream >> oText;
-		DrawTextW(oText.wEmrText);
+		DrawTextW(oText.wEmrText, oText.iGraphicsMode);
 	}
 	void CEmfFile::Read_EMR_LINETO()
 	{
@@ -1878,7 +1877,7 @@ static const struct ActionNamesEmf
 
 		for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
 		{
-			DrawTextA(oText.aEmrText[unIndex]);
+			DrawTextA(oText.aEmrText[unIndex], oText.iGraphicsMode);
 		}
 	}
 	void CEmfFile::Read_EMR_POLYTEXTOUTW()
@@ -1895,7 +1894,7 @@ static const struct ActionNamesEmf
 
 		for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
 		{
-			DrawTextA(oText.wEmrText[unIndex]);
+			DrawTextA(oText.wEmrText[unIndex], oText.iGraphicsMode);
 		}
 	}
 	void CEmfFile::Read_EMR_RECTANGLE()
@@ -2000,7 +1999,7 @@ static const struct ActionNamesEmf
 		else if (m_ulRecordSize - unSize < 0)
 			m_oStream.SeekBack(unSize - m_ulRecordSize);
 
-		DrawTextW(oEmrText);
+		DrawTextW(oEmrText, oText.iGraphicsMode);
 
 		// Поскольку мы просто скопировали ссылку на строку, а не скопировали сами строку обнуляем здесь, потому 
 		// что на деструкторе структуры освобождается память.

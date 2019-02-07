@@ -36,7 +36,7 @@ namespace MetaFile
 {
 	CEmfPlayer::CEmfPlayer(CEmfFile* pFile)
 	{
-		CEmfDC* pDC = new CEmfDC();
+		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
 			pFile->SetError();
@@ -81,7 +81,7 @@ namespace MetaFile
 		}
 		m_mObjects.clear();
 
-		CEmfDC* pDC = new CEmfDC();
+		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
 			m_pEmfFile->SetError();
@@ -133,6 +133,13 @@ namespace MetaFile
 	CEmfDC* CEmfPlayer::GetDC()
 	{
 		return m_pDC;
+	}
+	CEmfDC* CEmfPlayer::SetDC(CEmfDC* pDC)
+	{
+		CEmfDC* pOldDC = m_pDC;
+		m_pEmfFile->m_pDC = pDC;
+		m_pDC = pDC;
+		return pOldDC;
 	}
 	void    CEmfPlayer::RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject)
 	{
@@ -248,8 +255,9 @@ namespace MetaFile
 		RegisterObject(ulIndex, (CEmfObjectBase*)pPen);
 	}
 
-	CEmfDC::CEmfDC()
+	CEmfDC::CEmfDC(CEmfPlayer* pPlayer)
 	{
+		m_pPlayer   = pPlayer;
 		m_ulMapMode = MM_TEXT;
 		m_pBrush    = NULL;
 		m_pPen      = NULL;
@@ -277,7 +285,7 @@ namespace MetaFile
 	}
 	CEmfDC*         CEmfDC::Copy()
 	{
-		CEmfDC* pNewDC = new CEmfDC();
+		CEmfDC* pNewDC = new CEmfDC(m_pPlayer);
 		if (!pNewDC)
 			return NULL;
 
@@ -375,8 +383,11 @@ namespace MetaFile
 	{
 		return &m_oInverseTransform;
 	}
-	TEmfXForm*      CEmfDC::GetFinalTransform()
+	TEmfXForm*      CEmfDC::GetFinalTransform(int iGraphicsMode)
 	{
+		if (GM_COMPATIBLE == iGraphicsMode)
+			return &m_oFinalTransform2;
+
 		return &m_oFinalTransform;
 	}
 	void            CEmfDC::MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode)
@@ -613,6 +624,10 @@ namespace MetaFile
 		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+
+		m_oFinalTransform2.Init();
+		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)
 	{
@@ -652,9 +667,9 @@ namespace MetaFile
 	{
 		return &m_oClip;
 	}
-	void            CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode)
+	void            CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC)
 	{
-		m_oClip.SetPath(pPath, unMode);
+		m_oClip.SetPath(pPath, unMode, pDC);
 	}
 	void            CEmfDC::SetArcDirection(unsigned int unDirection)
 	{
@@ -663,5 +678,9 @@ namespace MetaFile
 	unsigned int    CEmfDC::GetArcDirection()
 	{
 		return m_unArcDirection;
+	}
+	CEmfPlayer*     CEmfDC::GetPlayer()
+	{
+		return m_pPlayer;
 	}
 }

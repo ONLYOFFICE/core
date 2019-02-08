@@ -144,7 +144,7 @@ int Legend::serialize(std::wostream & _stream, int size)
 					if (fAutoPosY == false) CP_XML_NODE(L"c:h")		{CP_XML_ATTR(L"val", (dy )/ 4000. /*+ 0.01*/);}
 				}
 			}
-			CP_XML_NODE(L"c:overlay") {CP_XML_ATTR(L"val", 0);}
+			CP_XML_NODE(L"c:overlay") {CP_XML_ATTR(L"val", 1);}
 		}
 	}
 	

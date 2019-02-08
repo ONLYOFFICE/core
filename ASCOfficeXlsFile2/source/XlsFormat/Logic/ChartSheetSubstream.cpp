@@ -368,8 +368,14 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			case rt_CrtMlFrt:			proc.optional<CRTMLFRT>();	break;
-
+			case rt_CrtMlFrt:
+			{
+				if (proc.optional<CRTMLFRT>())
+				{
+					m_CRTMLFRT = elements_.back(); 
+					elements_.pop_back();
+				}
+			}break;
 			case rt_FrtFontList: //error in stream !!
 			{
 				count = proc.repeated<FONTLIST>(0, 0);

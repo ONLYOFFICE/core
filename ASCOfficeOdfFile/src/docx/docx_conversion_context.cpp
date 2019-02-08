@@ -1555,7 +1555,8 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
             )
         {
             process_page_break_after(styleInst);
-            if (styleInst->is_automatic())
+
+			if (styleInst->is_automatic())
             {
                 if (odf_reader::style_content * styleContent = styleInst->content())
                 {
@@ -1593,9 +1594,13 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						}
 					}
 					set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
-                    
+
 					styleContent->docx_convert(*this);                
-                   
+					if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+					{
+						std::wstringstream & _pPr = get_styles_context().paragraph_nodes();
+						_pPr << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
+					}                   
 					end_automatic_style();
 
                     push_text_properties(styleContent->get_style_text_properties());
@@ -1631,12 +1636,6 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 							}
 							output_stream() << L"</w:pPr>";
 						}
-					}
-					else if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
-					{
-						output_stream() << L"<w:pPr>";
-							output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
-						output_stream() << L"</w:pPr>";
 					}
 					return 1;
                 }            

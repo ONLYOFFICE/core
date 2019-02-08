@@ -852,9 +852,12 @@ namespace
         }
     }
 
-    std::wstring StyleDisplayName(const std::wstring & Name, odf_types::style_family::type Type)
+    std::wstring StyleDisplayName(const std::wstring & Name, const std::wstring & DisplayName, odf_types::style_family::type Type)
     {
-        if (!Name.empty())
+        if (!DisplayName.empty())
+            return DisplayName;
+
+		if (!Name.empty())
             return Name;
         else
         {
@@ -1062,7 +1065,7 @@ void docx_conversion_context::process_styles()
 				}
 				_Wostream << L">";
 
-                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->type());
+                const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type());
 
                 _Wostream << L"<w:name w:val=\"" << displayName << L"\" />";
 

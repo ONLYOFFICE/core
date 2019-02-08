@@ -61,6 +61,7 @@ public:
     style_instance(
         styles_container				* Container,
         const std::wstring				& Name,
+        const std::wstring				& DisplayName,
         odf_types::style_family::type	Type,
         style_content					* Content,
         bool							IsAutomatic,
@@ -71,8 +72,8 @@ public:
 		const std::wstring				& StyleClass
         );
 
-
-    const std::wstring				& name()		const;
+	const std::wstring				& display_name()const;
+	const std::wstring				& name()		const;
     odf_types::style_family::type	type()			const;
     style_content					* content()		const;
     style_instance					* parent()		const;
@@ -88,7 +89,10 @@ public:
 
 private:
     styles_container				* container_;
+
     std::wstring					name_;
+	std::wstring					display_name_;
+
     odf_types::style_family::type	style_type_;
     style_content					* content_;
 

@@ -83,11 +83,9 @@ namespace MetaFile
 	class CEmfClipCommandPath : public CEmfClipCommandBase
 	{
 	public:
-		CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC);
+		CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform);
 		~CEmfClipCommandPath()
 		{
-			if (m_pDC)
-				delete m_pDC;
 		}
 		EEmfClipCommandType GetType()
 		{
@@ -96,7 +94,7 @@ namespace MetaFile
 
 	public:
 
-		CEmfDC*      m_pDC;
+		TEmfXForm    m_oTransform;
 		CEmfPath     m_oPath;
 		unsigned int m_unMode;
 	};
@@ -129,7 +127,7 @@ namespace MetaFile
 		void Reset();
 		bool Intersect(TRectD& oRect);
 		bool Exclude(TRectD& oClip, TRectD& oBB);
-		bool SetPath(CEmfPath* pPath, unsigned int umMode, CEmfDC* pDC);
+		bool SetPath(CEmfPath* pPath, unsigned int umMode, TEmfXForm* pTransform);
 		void ClipOnRenderer(IOutputDevice* pOutput);
 
 	private:

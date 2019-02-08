@@ -1295,7 +1295,7 @@ static const struct ActionNamesEmf
 
 		if (m_pPath)
 		{
-			m_pDC->ClipToPath(m_pPath, unRegionMode, GetDC());
+			m_pDC->ClipToPath(m_pPath, unRegionMode, GetDC()->GetFinalTransform(GM_ADVANCED));
 			RELEASEOBJECT(m_pPath);
 
 			UpdateOutputDC();

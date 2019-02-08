@@ -492,7 +492,6 @@ namespace MetaFile
 		}
 		void UpdateDC()
 		{
-			UpdateTransform();
 			CheckEndPath();
 		}
 		void ResetClip()
@@ -559,6 +558,25 @@ namespace MetaFile
 			m_pRenderer->PathCommandEnd();
 
 			m_bStartedPath = false;
+		}		
+		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY)
+		{
+			double dKoefX = m_dScaleX;
+			double dKoefY = m_dScaleY;
+
+			m_pRenderer->ResetTransform();
+			m_pRenderer->SetTransform(dM11, dM12 * dKoefY / dKoefX, dM21 * dKoefX / dKoefY, dM22, dX * dKoefX, dY * dKoefY);
+		}
+		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY)
+		{
+			double dKoefX = m_dScaleX;
+			double dKoefY = m_dScaleY;
+
+			m_pRenderer->GetTransform(pdM11, pdM12, pdM21, pdM22, pdX, pdY);
+			*pdM12 *= dKoefX / dKoefY;
+			*pdM21 *= dKoefY / dKoefX;
+			*pdX /= dKoefX;
+			*pdY /= dKoefY;
 		}
 
 	private:

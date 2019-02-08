@@ -34,9 +34,9 @@
 
 namespace MetaFile
 {
-	CEmfClipCommandPath::CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC) : m_oPath(pPath), m_unMode(unMode)
+	CEmfClipCommandPath::CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform) : m_oPath(pPath), m_unMode(unMode)
 	{
-		m_pDC = pDC->Copy();
+		pTransform->Copy(&m_oTransform);
 	}
 
 	CEmfClip::CEmfClip()
@@ -63,7 +63,7 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pPathCommand = (CEmfClipCommandPath*)pCommand;
-					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode, pPathCommand->m_pDC);
+					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode, &pPathCommand->m_oTransform);
 					break;
 				}
 				case EMF_CLIPCOMMAND_EXCLUDE:
@@ -100,9 +100,9 @@ namespace MetaFile
 		m_vCommands.push_back(pCommand);
 		return true;
 	}
-	bool CEmfClip::SetPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC)
+	bool CEmfClip::SetPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform)
 	{
-		CEmfClipCommandBase* pCommand = new CEmfClipCommandPath(pPath, unMode, pDC);
+		CEmfClipCommandBase* pCommand = new CEmfClipCommandPath(pPath, unMode, pTransform);
 		if (!pCommand)
 			return false;
 
@@ -131,15 +131,13 @@ namespace MetaFile
 				{
 					CEmfClipCommandPath* pClipPath = (CEmfClipCommandPath*)pCommand;
 
-					CEmfDC* pDC = pClipPath->m_pDC;
-					CEmfPlayer* pPlayer = pDC->GetPlayer();
-					CEmfDC* pOldDC = pPlayer->SetDC(pDC);
-					pOutput->UpdateDC();
+					double dM11, dM12, dM21, dM22, dDx, dDy;
+					pOutput->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+					pOutput->SetTransform(pClipPath->m_oTransform.M11, pClipPath->m_oTransform.M12, pClipPath->m_oTransform.M21, pClipPath->m_oTransform.M22, pClipPath->m_oTransform.Dx, pClipPath->m_oTransform.Dy);
 
 					pClipPath->m_oPath.Draw(pOutput, false, false, pClipPath->m_unMode);
 
-					pPlayer->SetDC(pOldDC);
-					pOutput->UpdateDC();
+					pOutput->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
 
 					break;
 				}

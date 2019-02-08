@@ -67,6 +67,8 @@ namespace MetaFile
 		virtual void EndClipPath(unsigned int unMode) = 0;
 
 		virtual void UpdateDC() = 0;
+		virtual void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) = 0;
+		virtual void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) = 0;
 	};
 
 }

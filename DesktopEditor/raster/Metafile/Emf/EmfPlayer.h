@@ -61,7 +61,6 @@ namespace MetaFile
 		void SelectObject(unsigned int ulIndex);
 		void DeleteObject(unsigned int ulIndex);
 		void SelectPalette(unsigned int ulIndex);
-		CEmfDC* SetDC(CEmfDC* pDC);
 
 	private:
 
@@ -133,10 +132,9 @@ namespace MetaFile
 		void            SetCurPos(int lX, int lY);
 		TEmfPointL&     GetCurPos();
 		CEmfClip*       GetClip();
-		void            ClipToPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC);
+		void            ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform);
 		void            SetArcDirection(unsigned int unDirection);
 		unsigned int    GetArcDirection();
-		CEmfPlayer*     GetPlayer();
 
 	private:
 

@@ -134,13 +134,6 @@ namespace MetaFile
 	{
 		return m_pDC;
 	}
-	CEmfDC* CEmfPlayer::SetDC(CEmfDC* pDC)
-	{
-		CEmfDC* pOldDC = m_pDC;
-		m_pEmfFile->m_pDC = pDC;
-		m_pDC = pDC;
-		return pOldDC;
-	}
 	void    CEmfPlayer::RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject)
 	{
 		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
@@ -667,9 +660,9 @@ namespace MetaFile
 	{
 		return &m_oClip;
 	}
-	void            CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode, CEmfDC* pDC)
+	void            CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform)
 	{
-		m_oClip.SetPath(pPath, unMode, pDC);
+		m_oClip.SetPath(pPath, unMode, pTransform);
 	}
 	void            CEmfDC::SetArcDirection(unsigned int unDirection)
 	{
@@ -678,9 +671,5 @@ namespace MetaFile
 	unsigned int    CEmfDC::GetArcDirection()
 	{
 		return m_unArcDirection;
-	}
-	CEmfPlayer*     CEmfDC::GetPlayer()
-	{
-		return m_pPlayer;
 	}
 }

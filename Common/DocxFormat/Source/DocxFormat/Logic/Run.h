@@ -164,8 +164,18 @@ namespace OOX
 							else if ( _T("w:ptab") == sName )
 								pItem = new CPTab( oItem );
 							else if ( _T("w:rPr") == sName )
-							{
-								pItem = m_oRunProperty = new CRunProperty( oItem );
+							{								
+								if (m_oRunProperty)
+								{
+									CRunProperty prop2(oItem);
+									CRunProperty newProp = CRunProperty::Merge(*m_oRunProperty, prop2);
+
+									pItem = m_oRunProperty = new CRunProperty(newProp);
+								}
+								else
+								{
+									pItem = m_oRunProperty = new CRunProperty( oItem );
+								}
 							}
 							else if ( _T("w:ruby") == sName )
 								pItem = new CRuby( oItem );
@@ -265,7 +275,17 @@ namespace OOX
 						pItem = new CPTab( oReader );
 					else if ( _T("w:rPr") == sName )
 					{
-						pItem = m_oRunProperty = new CRunProperty( oReader );
+						if (m_oRunProperty)
+						{
+							CRunProperty prop2(oReader);
+							CRunProperty newProp = CRunProperty::Merge(*m_oRunProperty, prop2);
+
+							pItem = m_oRunProperty = new CRunProperty(newProp);
+						}
+						else
+						{
+							pItem = m_oRunProperty = new CRunProperty( oReader );
+						}
 					}
 					else if ( _T("w:ruby") == sName )
 						pItem = new CRuby( oReader );
@@ -350,13 +370,10 @@ namespace OOX
 
 				oReader.MoveToElement();
 			}
-
 		public:
-	// Attributes
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
-	// Childs
 			OOX::Logic::CRunProperty				*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно
 		};

@@ -29,33 +29,39 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "docbuilder_p.h"
+#ifndef BUILDER_WRAPPER_BUILDER
+#define BUILDER_WRAPPER_BUILDER
 
-namespace NSDoctRenderer
+#include "../docbuilder.h"
+#include "../nativecontrol.h"
+
+class CBuilderObject
 {
-    CDocBuilder::CDocBuilder()
-    {
-        m_pInternal = new CDocBuilder_Private();
-    }
-    CDocBuilder::~CDocBuilder()
-    {
-        RELEASEOBJECT(m_pInternal);
-    }
+public:
+    NSDoctRenderer::CDocBuilder* m_pBuilder;
 
-    int CDocBuilder::OpenFile(const wchar_t* path, const wchar_t* params)
+public:
+    CBuilderObject()
     {
-        m_pInternal->m_nFileType = -1;
-        if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
-            NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
+        m_pBuilder = NULL;
+    }
+    ~CBuilderObject()
+    {        
+    }
+};
 
-        return m_pInternal->OpenFile(path, params);
-    }
-    int CDocBuilder::SaveFile(const int& type, const wchar_t* path, const wchar_t* params)
-    {
-        return m_pInternal->SaveFile(type, path, params);
-    }
-    bool CDocBuilder::ExecuteCommand(const wchar_t* command)
-    {
-        return m_pInternal->ExecuteCommand(command);
-    }    
-}
+// wrap_methods -------------
+CBuilderObject* unwrap_builder(v8::Handle<v8::Object> obj);
+
+void _b_openfile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _b_createfile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _b_settmpfolder(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _b_savefile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _b_closefile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _b_writefile(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+v8::Handle<v8::ObjectTemplate> CreateBuilderTemplate(v8::Isolate* isolate);
+void CreateBuilderObject(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+#endif // BUILDER_WRAPPER_BUILDER
+

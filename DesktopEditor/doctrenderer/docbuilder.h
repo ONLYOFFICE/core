@@ -59,6 +59,9 @@ namespace NSDoctRenderer
         void SetProperty(const char* param, const wchar_t* value);
         void SetPropertyW(const wchar_t* param, const wchar_t* value);
 
+        void WriteData(const wchar_t* path, const wchar_t* value, const bool& append);
+        bool IsSaveWithDoctrendererMode();
+
         char* GetVersion();
 
     public:

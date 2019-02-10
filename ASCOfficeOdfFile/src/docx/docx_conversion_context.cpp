@@ -933,8 +933,8 @@ mc:Ignorable=\"w14 wp14\">";
 
 	for (size_t i = 0; i < numIds.size(); i++)
     {
-        strm << L"<w:num w:numId=\"" << numIds[i] << L"\" >";
-        strm << L"<w:abstractNumId w:val=\"" << numIds[i] << "\" />";
+        strm << L"<w:num w:numId=\"" << numIds[i] << L"\">";
+        strm << L"<w:abstractNumId w:val=\"" << numIds[i] << "\"/>";
         strm << L"</w:num>";    
     }
 
@@ -960,19 +960,19 @@ void docx_conversion_context::process_fonts()
 			if (!arFonts[i]) continue;
 			if (arFonts[i]->name().empty()) continue;
 
-            strm << L"<w:font w:name=\"" << arFonts[i]->name() << L"\" >";
+            strm << L"<w:font w:name=\"" << arFonts[i]->name() << L"\">";
 
             if (!arFonts[i]->charset().empty())
-                strm << L"<w:charset w:val=\"" << arFonts[i]->charset() <<"\" />";
+                strm << L"<w:charset w:val=\"" << arFonts[i]->charset() <<"\"/>";
 
             if (!arFonts[i]->family().empty())
-                strm << L"<w:family w:val=\"" << arFonts[i]->family() << "\" />";
+                strm << L"<w:family w:val=\"" << arFonts[i]->family() << "\"/>";
 
             if (!arFonts[i]->pitch().empty())
-                strm << L"<w:pitch w:val=\"" << arFonts[i]->pitch() << "\" />";
+                strm << L"<w:pitch w:val=\"" << arFonts[i]->pitch() << "\"/>";
 
             if (!arFonts[i]->alt_name().empty())
-                strm << L"<w:altName w:val=\"" << arFonts[i]->alt_name() << "\" />";
+                strm << L"<w:altName w:val=\"" << arFonts[i]->alt_name() << "\"/>";
 
             strm << L"</w:font>";
         }
@@ -995,7 +995,7 @@ void docx_conversion_context::process_styles()
 	_Wostream << L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "; 
 	_Wostream << L"xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" "; 
 	_Wostream << L"xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" ";
-	_Wostream << L"mc:Ignorable=\"w14\"> ";
+	_Wostream << L"mc:Ignorable=\"w14\">";
 	
     if (odf_reader::odf_document * doc = root())
     {
@@ -1067,28 +1067,32 @@ void docx_conversion_context::process_styles()
 
                 const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type());
 
-                _Wostream << L"<w:name w:val=\"" << displayName << L"\" />";
+                _Wostream << L"<w:name w:val=\"" << displayName << L"\"/>";
 
                 if (odf_reader::style_instance * baseOn = arStyles[i]->parent())
                 {
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
-                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
+                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
                 else if (!arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
                 {
                     const std::wstring basedOnId = styles_map_.get(L"", arStyles[i]->type());
-                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
+                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
+				else
+				{
+					_Wostream << L"<w:qFormat/>";
+				}
 
                 if (odf_reader::style_instance * next = arStyles[i]->next())
                 {
                     const std::wstring nextId = styles_map_.get(next->name(), next->type());
-                    _Wostream << L"<w:next w:val=\"" << nextId << "\" />";
+                    _Wostream << L"<w:next w:val=\"" << nextId << "\"/>";
                 }
                 else if (arStyles[i]->is_default())
                 {
                     // self
-                    _Wostream << L"<w:next w:val=\"" << id << "\" />";
+                    _Wostream << L"<w:next w:val=\"" << id << "\"/>";
                 }
 
                 if (odf_reader::style_content * content = arStyles[i]->content())

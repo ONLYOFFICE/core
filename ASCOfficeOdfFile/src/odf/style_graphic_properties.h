@@ -95,6 +95,7 @@ public:
 	_CP_OPT(bool)							draw_auto_grow_width_;
 
     _CP_OPT(bool)							style_shrink_to_fit_;
+	_CP_OPT(std::wstring)					draw_fit_to_size_str_;
 	_CP_OPT(bool)							draw_fit_to_size_; // draw:fit-to-size="shrink-to-fit" style:shrink-to-fit="true" - cebre_1.odp
 	_CP_OPT(bool)							draw_fit_to_contour_;
 	_CP_OPT(std::wstring)					draw_wrap_influence_on_position_;

@@ -56,6 +56,7 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 	CP_APPLY_ATTR(L"draw:fit-to-size",					draw_fit_to_size_);
 	CP_APPLY_ATTR(L"draw:fit-to-contour",				draw_fit_to_contour_);
 	CP_APPLY_ATTR(L"style:shrink-to-fit",				style_shrink_to_fit_);
+	CP_APPLY_ATTR(L"draw:fit-to-size",					draw_fit_to_size_str_);
 
 	CP_APPLY_ATTR(L"draw:stroke",						draw_stroke_); 
 	CP_APPLY_ATTR(L"draw:stroke-dash",					draw_stroke_dash_); 
@@ -100,7 +101,12 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
     common_padding_attlist_.add_attributes(Attributes);
     common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
-    
+
+	if (draw_fit_to_size_str_ && !style_shrink_to_fit_)
+	{//https://bugs.documentfoundation.org/show_bug.cgi?id=97630
+		if (*draw_fit_to_size_str_ == L"shrink-to-fit")
+			style_shrink_to_fit_ = true;
+	}    
 }
 
 void graphic_format_properties::apply_to(std::vector<_property> & properties)

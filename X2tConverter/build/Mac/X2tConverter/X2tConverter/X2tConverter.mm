@@ -727,6 +727,143 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     return NExtractTools::odf2oox_dir(from, to, temp, oInputParams);
 }
 
+- (int)sdk_doct_bin2odt:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.docx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring themeDir = nsstring_to_wstring(nsThemeDir);
+    std::wstring temporaryfile = nsstring_to_wstring(nsTemporaryFile);
+    
+    bool bFromChanges = (bool)fromChanges.boolValue;
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    _UINT32 nRes = 0;
+    
+    if (nil != self.password && self.password.length > 0) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.docx";
+        
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::doct_bin2docx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            nRes = oox2mscrypt(sResultDecryptFile, temporaryfile, temp, oInputParams);
+        } else {
+            return AVS_FILEUTILS_ERROR_CONVERT;
+        }
+    } else {
+        nRes = NExtractTools::doct_bin2docx(from, temporaryfile, temp, bFromChanges, themeDir, oInputParams);
+    }
+    
+    if (SUCCEEDED_X2T(nRes))
+    {
+        NExtractTools::InputParams oInputParams;
+        oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+        oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+        
+        nRes = NExtractTools::docx2odt(temporaryfile, to, temp, oInputParams);
+        
+        [self removeFileAt:nsTemporaryFile];
+    }
+    
+    return nRes;
+}
+- (int)sdk_xlst_bin2ods:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.xlsx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring themeDir = nsstring_to_wstring(nsThemeDir);
+    std::wstring temporaryfile = nsstring_to_wstring(nsTemporaryFile);
+    
+    bool bFromChanges = (bool)fromChanges.boolValue;
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    _UINT32 nRes = 0;
+    
+    if (nil != self.password && self.password.length > 0) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.xlsx";
+        
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::xlst_bin2xlsx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            nRes = oox2mscrypt(sResultDecryptFile, temporaryfile, temp, oInputParams);
+        } else {
+            return AVS_FILEUTILS_ERROR_CONVERT;
+        }
+        
+    } else {
+        nRes = NExtractTools::xlst_bin2xlsx(from, temporaryfile, temp, bFromChanges, themeDir, oInputParams);
+    }
+    
+    if (SUCCEEDED_X2T(nRes))
+    {
+        NExtractTools::InputParams oInputParams;
+        oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+        oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+        
+        nRes = NExtractTools::xlsx2ods(temporaryfile, to, temp, oInputParams);
+        
+        [self removeFileAt:nsTemporaryFile];
+    }
+    
+    return nRes;
+}
+- (int)sdk_pptt_bin2odp:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.pptx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring themeDir = nsstring_to_wstring(nsThemeDir);
+    std::wstring temporaryfile = nsstring_to_wstring(nsTemporaryFile);
+    
+    bool bFromChanges = (bool)fromChanges.boolValue;
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    
+    _UINT32 nRes = 0;
+    
+    if (nil != self.password && self.password.length > 0) {
+        oInputParams.m_sSavePassword = new std::wstring(nsstring_to_wstring(self.password));
+        
+        std::wstring sResultDecryptFile = temp + FILE_SEPARATOR_STR + L"uncrypt_file.pptx";
+        
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT != NExtractTools::pptt_bin2pptx(from, sResultDecryptFile, temp, bFromChanges, themeDir, oInputParams)) {
+            nRes = oox2mscrypt(sResultDecryptFile, temporaryfile, temp, oInputParams);
+        } else {
+            return AVS_FILEUTILS_ERROR_CONVERT;
+        }
+        
+    } else {
+        nRes = NExtractTools::pptt_bin2pptx(from, temporaryfile, temp, bFromChanges, themeDir, oInputParams);
+    }
+    
+    if (SUCCEEDED_X2T(nRes))
+    {
+        NExtractTools::InputParams oInputParams;
+        oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+        oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+        
+        nRes = NExtractTools::pptx2odp(temporaryfile, to, temp, oInputParams);
+        
+        [self removeFileAt:nsTemporaryFile];
+    }
+    
+    return nRes;
+}
+
 - (int)sdk_dir2zip:(NSString*)nsFrom nsTo:(NSString*)nsTo {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);

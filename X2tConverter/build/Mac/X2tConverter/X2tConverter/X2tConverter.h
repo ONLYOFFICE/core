@@ -100,6 +100,10 @@
 
 - (int)sdk_odf2oox_dir:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;
 
+- (int)sdk_doct_bin2odt:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir;
+- (int)sdk_xlst_bin2ods:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir;
+- (int)sdk_pptt_bin2odp:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir;
+
 - (int)sdk_dir2zip:(NSString*)nsFrom nsTo:(NSString*)nsTo;
 - (int)sdk_zip2dir:(NSString*)nsFrom nsTo:(NSString*)nsTo;
 

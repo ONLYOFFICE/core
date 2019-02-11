@@ -163,8 +163,15 @@ void odf_conversion_context::end_document()
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"meta.xml"));
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"settings.xml"));
 
-			if (isRoot)object_files->local_path = L"/";
-			rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
+			if (isRoot)
+			{
+				object_files->local_path = L"/";
+				rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + output_document_->get_type(), object_files->local_path));
+			}
+			else
+			{
+				rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
+			}
 
 			output_document_->add_object(package::element_ptr(object_files), isRoot);
 		}

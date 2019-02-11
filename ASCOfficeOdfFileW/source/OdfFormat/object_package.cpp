@@ -321,6 +321,12 @@ namespace odf_writer
 			manifest_	=	element_ptr(new manifect_file(type + (bTemplate ? L"-template" : L"")));
 			mimetype_	=	element_ptr(new mimetype_file(type + (bTemplate ? L"-template" : L"")));
 		}
+		
+		std::wstring odf_document::get_type()
+		{
+			return dynamic_cast<manifect_file*>(manifest_.get())->get_type();
+		}
+
 		void odf_document::write_manifest(const std::wstring & RootPath)
 		{
 			if (mimetype_)	

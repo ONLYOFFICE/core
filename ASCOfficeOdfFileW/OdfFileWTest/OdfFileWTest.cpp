@@ -74,19 +74,19 @@ HRESULT convert_single(std::wstring srcFileName)
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		dstPath += L"-my.odt"; type = L"text";		break;
 		
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
-		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		dstPath += L"-my.odt"; type = L"text"; bTemplate = true; break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		dstPath += L"-my.ott"; type = L"text"; bTemplate = true; break;
 
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:	dstPath += L"-my.ods"; type = L"spreadsheet";	break;
 		
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
-		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:	dstPath += L"-my.ods"; type = L"spreadsheet"; bTemplate = true; break;
+		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:	dstPath += L"-my.ots"; type = L"spreadsheet"; bTemplate = true; break;
 
 		case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
 		case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:	dstPath += L"-my.odp"; type = L"presentation";	break;
 
 		case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
-		case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:	dstPath += L"-my.odp"; type = L"presentation"; bTemplate = true; break;
+		case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:	dstPath += L"-my.otp"; type = L"presentation"; bTemplate = true; break;
 		default:
 			return S_FALSE;
 	}

@@ -91,8 +91,6 @@ namespace odf_writer
 
 			virtual void write(const std::wstring & RootPath, bool add_padding = false) = 0;
 			std::wstring local_path;
-		private:
-			element * element_;
 		};
 
 		inline element::~element()
@@ -156,6 +154,8 @@ namespace odf_writer
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
 			void add_rels(rels & r); 
 
+			std::wstring get_type() {return type_;}
+
 			rels *get_rels() {return &rels_;}
 
 		private:
@@ -201,7 +201,7 @@ namespace odf_writer
 		class object_files : public element
 		{
 		public:
-			object_files(){}
+			object_files() {}
 			
 			void set_content	(content_content_ptr & _content);
 			
@@ -233,6 +233,8 @@ namespace odf_writer
 			void add_binary(const std::wstring &file_name, const std::string &value);
 			
 			void set_rels(rels & r);
+
+			std::wstring get_type();
 			
 			virtual void write(const std::wstring & RootPath, bool add_padding);
 			void write_manifest(const std::wstring & RootPath);

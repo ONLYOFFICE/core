@@ -369,6 +369,34 @@ namespace OOX
 		std::map<int, int>		m_mapComments; //id, index
 
 	};
+	class CDocumentComments : public CComments
+	{
+	public:
+		CDocumentComments(OOX::Document *pMain) : CComments(NULL)
+		{
+			File::m_pMainDocument = pMain;
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocumentComments = this;
+		}
+		CDocumentComments(OOX::Document *pMain, const CPath& oPath) : CComments(NULL, oPath)
+		{
+			File::m_pMainDocument = pMain;
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocumentComments = this;
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::DocumentComments;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+	};
 	class CCommentExt : public WritingElement
 	{
 	public:
@@ -487,6 +515,26 @@ namespace OOX
 
 		std::vector<CCommentExt*>	m_arrComments;
 		std::map<int, int>			m_mapComments; //paraId, index
+	};
+	class CDocumentCommentsExt : public CCommentsExt
+	{
+	public:
+		CDocumentCommentsExt(OOX::Document *pMain) : CCommentsExt(NULL)
+		{
+			File::m_pMainDocument = pMain;
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocumentCommentsExt = this;
+		}
+		CDocumentCommentsExt(OOX::Document *pMain, const CPath& oPath) : CCommentsExt(NULL, oPath)
+		{
+			File::m_pMainDocument = pMain;
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocumentCommentsExt = this;
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::DocumentCommentsExt;
+		}
 	};
 
 	class CPresenceInfo : public WritingElement
@@ -646,6 +694,27 @@ namespace OOX
 		}
 
 		std::vector<CPerson*> m_arrPeoples;
+	};
+
+	class CDocumentPeople : public CPeople
+	{
+	public:
+		CDocumentPeople(OOX::Document *pMain) : CPeople(NULL)
+		{
+			File::m_pMainDocument = pMain;
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocumentPeople = this;
+		}
+		CDocumentPeople(OOX::Document *pMain, const CPath& oPath) : CPeople(NULL, oPath)
+		{
+			File::m_pMainDocument = pMain;
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocumentPeople = this;
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::DocumentPeople;
+		}
 	};
 
 } // namespace OOX

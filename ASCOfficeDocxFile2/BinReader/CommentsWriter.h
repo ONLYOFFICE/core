@@ -33,6 +33,7 @@
 #define COMMENTS_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 
 namespace Writers
 {
@@ -50,21 +51,28 @@ namespace Writers
         std::wstring	m_sComment;
         std::wstring	m_sCommentExt;
         std::wstring	m_sPeople;
+		std::wstring	m_sDocumentComment;
+		std::wstring	m_sDocumentCommentExt;
+		std::wstring	m_sDocumentPeople;
 
 		CommentsWriter(std::wstring sDir) : m_sDir(sDir)
 		{
 		}
-        void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sPeople)
+		void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sPeople, std::wstring& sDocumentComment, std::wstring& sDocumentCommentExt, std::wstring& sDocumentPeople)
 		{
 			m_sComment		= sComment;
 			m_sCommentExt	= sCommentExt;
 			m_sPeople		= sPeople;
+			m_sDocumentComment		= sDocumentComment;
+			m_sDocumentCommentExt	= sDocumentCommentExt;
+			m_sDocumentPeople		= sDocumentPeople;
 		}
 		void Write()
 		{
+			std::wstring sDir = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR;
             if(false == m_sComment.empty())
 			{
-                OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("comments.xml");
+				OOX::CPath filePath = sDir + OOX::FileTypes::Comments.DefaultFileName().GetPath();
 
 				NSFile::CFileBinary oFile;
 				oFile.CreateFileW(filePath.GetPath());
@@ -76,7 +84,7 @@ namespace Writers
             if(false == m_sCommentExt.empty())
 			{
 				NSFile::CFileBinary oFile;
-                oFile.CreateFileW(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("commentsExtended.xml"));
+				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsExt.DefaultFileName().GetPath());
 				oFile.WriteStringUTF8(g_string_commentExt_Start);
 				oFile.WriteStringUTF8(m_sCommentExt);
 				oFile.WriteStringUTF8(g_string_commentExt_End);
@@ -85,12 +93,43 @@ namespace Writers
             if(false == m_sPeople.empty())
 			{
 				NSFile::CFileBinary oFile;
-                oFile.CreateFileW(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("people.xml"));
+				oFile.CreateFileW(sDir + OOX::FileTypes::People.DefaultFileName().GetPath());
 				oFile.WriteStringUTF8(g_string_people_Start);
 				oFile.WriteStringUTF8(m_sPeople);
 				oFile.WriteStringUTF8(g_string_people_End);
 				oFile.CloseFile();
 			}
+
+			if(false == m_sDocumentComment.empty())
+			{
+				OOX::CPath filePath = sDir + OOX::FileTypes::DocumentComments.DefaultFileName().GetPath();
+
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(filePath.GetPath());
+					oFile.WriteStringUTF8(g_string_comment_Start);
+					oFile.WriteStringUTF8(m_sDocumentComment);
+					oFile.WriteStringUTF8(g_string_comment_End);
+				oFile.CloseFile();
+			}
+			if(false == m_sDocumentCommentExt.empty())
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentCommentsExt.DefaultFileName().GetPath());
+				oFile.WriteStringUTF8(g_string_commentExt_Start);
+				oFile.WriteStringUTF8(m_sDocumentCommentExt);
+				oFile.WriteStringUTF8(g_string_commentExt_End);
+				oFile.CloseFile();
+			}
+			if(false == m_sDocumentPeople.empty())
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentPeople.DefaultFileName().GetPath());
+				oFile.WriteStringUTF8(g_string_people_Start);
+				oFile.WriteStringUTF8(m_sDocumentPeople);
+				oFile.WriteStringUTF8(g_string_people_End);
+				oFile.CloseFile();
+			}
+
 		}
 	};
 }

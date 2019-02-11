@@ -8703,6 +8703,7 @@ public:
 			long nSettingsOffset	= -1;
 			long nDocumentOffset	= -1;
 			long nCommentsOffset	= -1;
+			long nDocumentCommentsOffset	= -1;
 
 			std::vector<BYTE> aTypes;
 			std::vector<long> aOffBits;
@@ -8736,6 +8737,10 @@ public:
 				else if(c_oSerTableTypes::Comments == mtiType)
 				{
 					nCommentsOffset = mtiOffBits;
+				}
+				else if(c_oSerTableTypes::DocumentComments == mtiType)
+				{
+					nDocumentCommentsOffset = mtiOffBits;
 				}
 				else
 				{
@@ -8783,6 +8788,15 @@ public:
 				m_oBufferedStream.Seek(nCommentsOffset);
 				res = oBinary_CommentsTableReader.Read();
 				m_oFileWriter.m_pComments = &oBinary_CommentsTableReader.m_oComments;
+				if(c_oSerConstants::ReadOk != res)
+					return res;
+			}
+			Binary_CommentsTableReader oBinary_DocumentCommentsTableReader(m_oBufferedStream, m_oFileWriter);
+			if(-1 != nDocumentCommentsOffset)
+			{
+				int nOldPos = m_oBufferedStream.GetPos();
+				m_oBufferedStream.Seek(nDocumentCommentsOffset);
+				res = oBinary_DocumentCommentsTableReader.Read();
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
@@ -8936,6 +8950,7 @@ public:
 																					+ FILE_SEPARATOR_STR + L"_rels"
 																					+ FILE_SEPARATOR_STR + L"document.xml.rels";
 
+				//comments
                 CComments& oComments= oBinary_CommentsTableReader.m_oComments;
 				Writers::CommentsWriter& oCommentsWriter = m_oFileWriter.m_oCommentsWriter;
                 
@@ -8943,25 +8958,47 @@ public:
                 std::wstring sContentEx = oComments.writeContentExt();	//важно чтобы writeContentExt вызывался после writeContent
                 std::wstring sPeople	= oComments.writePeople();
 
-				oCommentsWriter.setElements(sContent, sContentEx, sPeople);
+				std::wstring sDocumentContent	= oBinary_DocumentCommentsTableReader.m_oComments.writeContent();
+				std::wstring sDocumentContentEx = oBinary_DocumentCommentsTableReader.m_oComments.writeContentExt();	//важно чтобы writeContentExt вызывался после writeContent
+				std::wstring sDocumentPeople	= oBinary_DocumentCommentsTableReader.m_oComments.writePeople();
+
+				oCommentsWriter.setElements(sContent, sContentEx, sPeople, sDocumentContent, sDocumentContentEx, sDocumentPeople);
                 
 				if(false == oCommentsWriter.m_sComment.empty())
 				{
 					unsigned int rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", L"comments.xml", std::wstring(), &rId);
-					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml", L"/word", L"comments.xml");
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::Comments.RelationType(), OOX::FileTypes::Comments.DefaultFileName().GetPath(), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::Comments.OverrideType(), L"/word", OOX::FileTypes::Comments.DefaultFileName().GetPath());
 				}
                 if(false == oCommentsWriter.m_sCommentExt.empty())
 				{
 					unsigned int rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended", L"commentsExtended.xml", std::wstring(), &rId);
-					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml", L"/word", L"commentsExtended.xml");
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CommentsExt.RelationType(), OOX::FileTypes::CommentsExt.DefaultFileName().GetPath(), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::CommentsExt.OverrideType(), L"/word", OOX::FileTypes::CommentsExt.DefaultFileName().GetPath());
 				}
                 if(false == oCommentsWriter.m_sPeople.empty())
 				{
 					unsigned int rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/people", L"people.xml", std::wstring(), &rId);
-					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml", L"/word", L"people.xml");
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::People.RelationType(), OOX::FileTypes::People.DefaultFileName().GetPath(), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::People.OverrideType(), L"/word", OOX::FileTypes::People.DefaultFileName().GetPath());
+				}
+				if(false == oCommentsWriter.m_sDocumentComment.empty())
+				{
+					unsigned int rId;
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::DocumentComments.RelationType(), OOX::FileTypes::DocumentComments.DefaultFileName().GetPath(), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::DocumentComments.OverrideType(), L"/word", OOX::FileTypes::DocumentComments.DefaultFileName().GetPath());
+				}
+				if(false == oCommentsWriter.m_sDocumentCommentExt.empty())
+				{
+					unsigned int rId;
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::DocumentCommentsExt.RelationType(), OOX::FileTypes::DocumentCommentsExt.DefaultFileName().GetPath(), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::DocumentCommentsExt.OverrideType(), L"/word", OOX::FileTypes::DocumentCommentsExt.DefaultFileName().GetPath());
+				}
+				if(false == oCommentsWriter.m_sDocumentPeople.empty())
+				{
+					unsigned int rId;
+					m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::DocumentPeople.RelationType(), OOX::FileTypes::DocumentPeople.DefaultFileName().GetPath(), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(OOX::FileTypes::DocumentPeople.OverrideType(), L"/word", OOX::FileTypes::DocumentPeople.DefaultFileName().GetPath());
 				}
 
                 m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());

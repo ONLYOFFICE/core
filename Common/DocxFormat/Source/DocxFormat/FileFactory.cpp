@@ -97,10 +97,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Comments)
 			return smart_ptr<OOX::File>(new CComments( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentComments)
+			return smart_ptr<OOX::File>(new CDocumentComments( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsExt )
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentPeople )
+			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
 //common		
 		else if ( oRelation.Type() == FileTypes::Setting)
 			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
@@ -214,10 +220,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Comments)
 			return smart_ptr<OOX::File>(new CComments( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentComments)
+			return smart_ptr<OOX::File>(new CDocumentComments( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsExt )
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentPeople )
+			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
 		else if (pRelation->Type() == FileTypes::Data)
 			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)

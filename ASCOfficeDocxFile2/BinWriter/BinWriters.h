@@ -8081,6 +8081,13 @@ namespace BinDocxRW
 					oBinaryCommentsTableWriter.Write(*oDocx.m_pComments, oDocx.m_pCommentsExt, oDocx.m_pPeople, m_oParamsWriter.m_mapIgnoreComments);
 					this->WriteTableEnd(nCurPos);
 				}
+				if(NULL != oDocx.m_pDocumentComments)
+				{
+					BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
+					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::DocumentComments);
+					oBinaryCommentsTableWriter.Write(*oDocx.m_pDocumentComments, oDocx.m_pDocumentCommentsExt, oDocx.m_pDocumentPeople, m_oParamsWriter.m_mapIgnoreComments);
+					this->WriteTableEnd(nCurPos);
+				}
 
 		//Write StyleTable
 				BinDocxRW::BinaryStyleTableWriter oBinaryStyleTableWriter(m_oParamsWriter);

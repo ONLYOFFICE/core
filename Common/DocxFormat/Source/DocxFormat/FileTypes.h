@@ -110,13 +110,25 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments");
 
+		const FileType DocumentComments		(L"", L"commentsDocument.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml",
+												L"http://schemas.onlyoffice.com/commentsDocument");
+
 		const FileType CommentsExt		(L"", L"commentsExtended.xml", 
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended");
 
+		const FileType DocumentCommentsExt		(L"", L"commentsExtendedDocument.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml",
+												L"http://schemas.onlyoffice.com/commentsExtendedDocument");
+
 		const FileType People			(L"", L"people.xml", 
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/people");
+
+		const FileType DocumentPeople			(L"", L"peopleDocument.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml",
+												L"http://schemas.onlyoffice.com/peopleDocument");
 
 		const FileType CustomXml		(L"customXml", L"item.xml",
 												L"",

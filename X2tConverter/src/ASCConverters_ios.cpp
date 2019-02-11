@@ -1871,17 +1871,17 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedPPTX, NULL, 0))
         {
-            return pptx_dir2odp(sTempUnpackedPPTX, sTo, sTemp, params);
+            return pptx_dir2odp(sTempUnpackedPPTX, sTo, sTemp, params, false); //add template ???
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     // pptx_dir -> odp
-    _UINT32 pptx_dir2odp (const std::wstring &sPptxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
+    _UINT32 pptx_dir2odp (const std::wstring &sPptxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
         std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
         NSDirectory::CreateDirectory(sTempUnpackedODP);
         
-        Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(),  NULL);
+        Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate);
         
         _UINT32 nRes = 0;
         try
@@ -1894,7 +1894,8 @@ namespace NExtractTools
             
             COfficeUtils oCOfficeUtils(NULL);
             nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-        }catch(...)
+        }
+        catch(...)
         {
             nRes = AVS_FILEUTILS_ERROR_CONVERT;
         }
@@ -2376,17 +2377,17 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCX, NULL, 0))
         {
-            return docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params);
+            return docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params, false); //add Template ????
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     // docx dir -> odt
-    _UINT32 docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
+    _UINT32 docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
         std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
         NSDirectory::CreateDirectory(sTempUnpackedODT);
         
-        Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(),  NULL);
+        Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate);
         
         _UINT32 nRes = 0;
         try
@@ -2399,7 +2400,8 @@ namespace NExtractTools
             
             COfficeUtils oCOfficeUtils(NULL);
             nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-        }catch(...)
+        }
+        catch(...)
         {
             nRes = AVS_FILEUTILS_ERROR_CONVERT;
         }
@@ -2415,20 +2417,21 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
         {
-            return xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params);
+            return xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params, false); //add Template ???
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
-    _UINT32 xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    _UINT32 xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
         std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
         NSDirectory::CreateDirectory(sTempUnpackedODS);
         
+        Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate);
+        
+        _UINT32 nRes = 0;
         try
         {
-            Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), NULL);
-            
             std::wstring password    = params.getSavePassword();
             std::wstring documentID = params.getDocumentID();
             
@@ -2436,13 +2439,13 @@ namespace NExtractTools
             converter.write(sTempUnpackedODS, sTemp, password, documentID);
             
             COfficeUtils oCOfficeUtils(NULL);
-            _UINT32 nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-            
-            return nRes;
-        }catch(...)
-        {
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
         }
-        return AVS_FILEUTILS_ERROR_CONVERT;
+        catch(...)
+        {
+            nRes = AVS_FILEUTILS_ERROR_CONVERT;
+        }
+        return nRes;
     }
     
     _UINT32 mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
@@ -2994,7 +2997,11 @@ namespace NExtractTools
             }
             else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
             {
-                nRes = docx_dir2odt(sFrom, sTo, sTemp, params);
+                nRes = docx_dir2odt(sFrom, sTo, sTemp, params, false);
+            }
+            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT == nFormatTo)
+            {
+                nRes = docx_dir2odt(sFrom, sTo, sTemp, params, true);
             }
             else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo)
             {
@@ -3181,29 +3188,49 @@ namespace NExtractTools
 
     _UINT32 fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, const std::wstring &sXlsxFile)
     {
-        int nRes = 0;
+        _UINT32 nRes = 0;
         if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
         {
-            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo)
+            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo ||
+               AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
             {
-                if(params.hasSavePassword())
+                if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
                 {
-                    std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
-                    nRes = dir2zip(sFrom, sToMscrypt);
-                    if(SUCCEEDED_X2T(nRes))
+                    std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
+                    std::wstring sCTTo;
+                    switch(nFormatTo)
                     {
-                        nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+                        case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM: sCTTo = _T("application/vnd.ms-excel.sheet.macroEnabled.main+xml");break;
+                        case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml");break;
+                        case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM: sCTTo = _T("application/vnd.ms-excel.template.macroEnabled.main+xml");break;
                     }
+                    nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                 }
-                else
+                if(SUCCEEDED_X2T(nRes))
                 {
-                    nRes = dir2zip(sFrom, sTo);
+                    if(params.hasSavePassword())
+                    {
+                        std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
+                        nRes = dir2zip(sFrom, sToMscrypt);
+                        if(SUCCEEDED_X2T(nRes))
+                        {
+                            nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+                        }
+                    }
+                    else
+                    {
+                        nRes = dir2zip(sFrom, sTo);
+                    }
                 }
             }
             //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
             else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatTo)
             {
-                nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params);
+                nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params, false);
+            }
+            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS == nFormatTo)
+            {
+                nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params, true);
             }
             else
                 nRes = AVS_FILEUTILS_ERROR_CONVERT;
@@ -3232,7 +3259,7 @@ namespace NExtractTools
         }
         return nRes;
     }
-
+    
     _UINT32 fromXlstBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
     {
         int nRes = 0;
@@ -3369,29 +3396,52 @@ namespace NExtractTools
 
     _UINT32 fromPptxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
     {
-        int nRes = 0;
+        _UINT32 nRes = 0;
         if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
         {
-            if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo)
+            if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX == nFormatTo ||
+                AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM == nFormatTo)
             {
-                if(params.hasSavePassword())
+                if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo ||
+                    AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM == nFormatTo)
                 {
-                    std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
-                    nRes = dir2zip(sFrom, sToMscrypt);
-                    if(SUCCEEDED_X2T(nRes))
+                    std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml");
+                    std::wstring sCTTo;
+                    switch(nFormatTo)
                     {
-                        nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+                        case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM: sCTTo = _T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml");break;
+                        case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX: sCTTo = _T("application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml");break;
+                        case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.presentationml.template.main+xml");break;
+                        case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM: sCTTo = _T("application/vnd.ms-powerpoint.template.macroEnabled.main+xml");break;
+                        case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM: sCTTo = _T("application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml");break;
                     }
+                    nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                 }
-                else
+                if(SUCCEEDED_X2T(nRes))
                 {
-                    nRes = dir2zip(sFrom, sTo);
+                    if(params.hasSavePassword())
+                    {
+                        std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
+                        nRes = dir2zip(sFrom, sToMscrypt);
+                        if(SUCCEEDED_X2T(nRes))
+                        {
+                            nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+                        }
+                    }
+                    else
+                    {
+                        nRes = dir2zip(sFrom, sTo);
+                    }
                 }
             }
             //else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatTo)
             else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatTo)
             {
-                nRes = pptx_dir2odp(sFrom, sTo, sTemp, params);
+                nRes = pptx_dir2odp(sFrom, sTo, sTemp, params, false);
+            }
+            else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatTo)
+            {
+                nRes = pptx_dir2odp(sFrom, sTo, sTemp, params, true);
             }
             else
                 nRes = AVS_FILEUTILS_ERROR_CONVERT;

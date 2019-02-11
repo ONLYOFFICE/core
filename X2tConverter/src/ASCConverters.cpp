@@ -1850,17 +1850,15 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedPPTX, NULL, 0))
         {
-            return pptx_dir2odp(sTempUnpackedPPTX, sTo, sTemp, params);
+            return pptx_dir2odp(sTempUnpackedPPTX, sTo, sTemp, params, false); //add template ???
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	// pptx_dir -> odp
-	_UINT32 pptx_dir2odp (const std::wstring &sPptxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
+	_UINT32 pptx_dir2odp (const std::wstring &sPptxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
 	{
 		std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
 		NSDirectory::CreateDirectory(sTempUnpackedODP);
-
-		bool bTemplate = false;
 
 		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate);
 
@@ -2418,17 +2416,15 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCX, NULL, 0))
         {
-            return docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params);
+            return docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params, false); //add Template ????
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
 	// docx dir -> odt
-	_UINT32 docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
+	_UINT32 docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
    {
        std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODT);
-
-	   bool bTemplate = false;
 
 	   Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate);
 
@@ -2460,17 +2456,15 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
         {
-            return xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params);
+            return xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params, false); //add Template ???
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
 
-	_UINT32 xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	_UINT32 xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
    {
        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODS);
-
-	   bool bTemplate = false;
 	
 	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate);
      
@@ -3084,9 +3078,13 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
            {
-               nRes = docx_dir2odt(sFrom, sTo, sTemp, params);
+               nRes = docx_dir2odt(sFrom, sTo, sTemp, params, false);
            }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo)
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT == nFormatTo)
+           {
+               nRes = docx_dir2odt(sFrom, sTo, sTemp, params, true);
+           }
+		   else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo)
            {
                nRes = docx_dir2rtf(sFrom, sTo, sTemp, params);
            }
@@ -3309,9 +3307,13 @@ namespace NExtractTools
            //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatTo)
            {
-               nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params);
+               nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params, false);
            }
-           else
+           else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS == nFormatTo)
+           {
+               nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params, true);
+           }
+		   else
                nRes = AVS_FILEUTILS_ERROR_CONVERT;
        }
        else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
@@ -3515,7 +3517,11 @@ namespace NExtractTools
 			//else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatTo)
 			else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatTo)
 			{
-               nRes = pptx_dir2odp(sFrom, sTo, sTemp, params);
+               nRes = pptx_dir2odp(sFrom, sTo, sTemp, params, false);
+			}
+			else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatTo)
+			{
+               nRes = pptx_dir2odp(sFrom, sTo, sTemp, params, true);
 			}
 			else
                nRes = AVS_FILEUTILS_ERROR_CONVERT;

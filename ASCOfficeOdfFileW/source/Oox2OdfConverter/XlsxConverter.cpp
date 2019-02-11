@@ -65,13 +65,13 @@ using namespace cpdoccore;
 namespace Oox2Odf
 {
 
-XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* CallBack) 
+XlsxConverter::XlsxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* CallBack) 
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
     xlsx_document   = new OOX::Spreadsheet::CXlsx(oox_path);
 
-	output_document = new odf_writer::package::odf_document(L"spreadsheet");
+	output_document = new odf_writer::package::odf_document(L"spreadsheet", bTemplate);
     ods_context     = new odf_writer::ods_conversion_context(output_document);
 
     pCallBack = CallBack;

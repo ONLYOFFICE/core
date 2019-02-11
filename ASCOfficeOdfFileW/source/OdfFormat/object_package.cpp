@@ -123,9 +123,9 @@ namespace odf_writer
 				rels_.add(r.relationships_[i]);
 			}
 		}
-		manifect_file::manifect_file(std::wstring t)
+		manifect_file::manifect_file(const std::wstring & type)
 		{
-			type_ = t;
+			type_ = type;
 		}
 		binary_file::binary_file(const std::wstring &file_name, const std::string &value)
 		{
@@ -137,9 +137,9 @@ namespace odf_writer
 			simple_element elm(file_name_, value_);
 			elm.write(RootPath, false);
 		}
-		mimetype_file::mimetype_file(std::wstring t)
+		mimetype_file::mimetype_file(const std::wstring & type)
 		{
-			type_ = t;
+			type_ = type;
 		}	
 		void mimetype_file::write(const std::wstring & RootPath, bool add_padding)
 		{
@@ -316,10 +316,10 @@ namespace odf_writer
 			set_rels(rels_);
 		}
 
-		odf_document::odf_document(std::wstring type)
+		odf_document::odf_document(std::wstring type, bool bTemplate)
 		{
-			manifest_	=	element_ptr(new manifect_file(type));
-			mimetype_	=	element_ptr(new mimetype_file(type));
+			manifest_	=	element_ptr(new manifect_file(type + (bTemplate ? L"-template" : L"")));
+			mimetype_	=	element_ptr(new mimetype_file(type + (bTemplate ? L"-template" : L"")));
 		}
 		void odf_document::write_manifest(const std::wstring & RootPath)
 		{

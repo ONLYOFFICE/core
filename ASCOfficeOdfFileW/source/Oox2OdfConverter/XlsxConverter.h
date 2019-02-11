@@ -135,7 +135,7 @@ namespace Oox2Odf
 	public:
 		friend class OoxConverter;
 
-		XlsxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
+		XlsxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* ffCallBack);
 		~XlsxConverter();
 
 		virtual void convertDocument();

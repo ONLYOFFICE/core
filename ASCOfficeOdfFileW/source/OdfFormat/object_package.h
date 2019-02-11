@@ -151,7 +151,7 @@ namespace odf_writer
 		class manifect_file : public element
 		{
 		public:
-			manifect_file(std::wstring type);
+			manifect_file(const std::wstring & type);
 			
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
 			void add_rels(rels & r); 
@@ -178,7 +178,7 @@ namespace odf_writer
 		class mimetype_file : public element
 		{
 		public:
-			mimetype_file(std::wstring type);
+			mimetype_file(const std::wstring & type);
 			
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);       
 
@@ -227,14 +227,14 @@ namespace odf_writer
 		class odf_document : public element
 		{
 		public:
-			odf_document(std::wstring type);
+			odf_document(std::wstring type, bool bTemplate);
 			
 			void add_object(element_ptr _object,bool root = false);
 			void add_binary(const std::wstring &file_name, const std::string &value);
 			
 			void set_rels(rels & r);
 			
-			virtual void write(const std::wstring & RootPath, bool add_padding = false);
+			virtual void write(const std::wstring & RootPath, bool add_padding);
 			void write_manifest(const std::wstring & RootPath);
 
 			manifect_file* get_manifest() {return dynamic_cast<manifect_file*>(manifest_.get());}

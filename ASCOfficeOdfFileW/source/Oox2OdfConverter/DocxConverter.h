@@ -143,7 +143,7 @@ namespace Oox2Odf
 	class DocxConverter : public OoxConverter
 	{
 	public:
-		DocxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
+		DocxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* ffCallBack);
 		~DocxConverter();
 
 		virtual void convertDocument();

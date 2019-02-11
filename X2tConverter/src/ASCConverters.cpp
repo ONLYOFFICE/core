@@ -1857,14 +1857,16 @@ namespace NExtractTools
 	// pptx_dir -> odp
 	_UINT32 pptx_dir2odp (const std::wstring &sPptxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
 	{
-       std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
-       NSDirectory::CreateDirectory(sTempUnpackedODP);
+		std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedODP);
 
-		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(),  NULL);
+		bool bTemplate = false;
+
+		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate);
 
        _UINT32 nRes = 0;
-       try
-       {
+		try
+		{
 			std::wstring password	= params.getSavePassword();
 			std::wstring documentID = params.getDocumentID();
 			
@@ -1873,12 +1875,13 @@ namespace NExtractTools
 
 			COfficeUtils oCOfficeUtils(NULL);
 			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-       }catch(...)
-       {
+		}
+		catch(...)
+		{
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
-       }
-       return nRes;
-   }
+		}
+		return nRes;
+	}
 	// rtf -> docx
 	_UINT32 rtf2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
@@ -2425,7 +2428,9 @@ namespace NExtractTools
        std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODT);
 
-       Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(),  NULL);
+	   bool bTemplate = false;
+
+	   Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate);
 
        _UINT32 nRes = 0;
        try
@@ -2438,7 +2443,8 @@ namespace NExtractTools
 
 			COfficeUtils oCOfficeUtils(NULL);
 			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-       }catch(...)
+       }
+	   catch(...)
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
        }
@@ -2464,10 +2470,13 @@ namespace NExtractTools
        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODS);
 
+	   bool bTemplate = false;
+	
+	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate);
+     
+	   _UINT32 nRes = 0;
        try
        {
-           Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), NULL);
-
 			std::wstring password	= params.getSavePassword();
 			std::wstring documentID = params.getDocumentID();
 			
@@ -2475,13 +2484,13 @@ namespace NExtractTools
 			converter.write(sTempUnpackedODS, sTemp, password, documentID);
 
 			COfficeUtils oCOfficeUtils(NULL);
-			_UINT32 nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-
-           return nRes;
-       }catch(...)
-       {
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
        }
-       return AVS_FILEUTILS_ERROR_CONVERT;
+	   catch(...)
+       {
+           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+       }
+       return nRes;
 	}
 
 	_UINT32 mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)

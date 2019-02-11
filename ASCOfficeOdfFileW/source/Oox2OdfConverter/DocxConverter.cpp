@@ -103,13 +103,13 @@ namespace Oox2Odf
 		}
 		return cols_1 == cols_2;
 	}
-DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* CallBack)
+DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* CallBack)
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
     docx_document   = new OOX::CDocx(oox_path);
 
-    output_document = new odf_writer::package::odf_document(L"text");
+	output_document = new odf_writer::package::odf_document(L"text", bTemplate);
     odt_context     = new odf_writer::odt_conversion_context(output_document);
 
 	pCallBack = CallBack;

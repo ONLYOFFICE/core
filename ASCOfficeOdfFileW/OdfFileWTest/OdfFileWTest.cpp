@@ -65,18 +65,28 @@ HRESULT convert_single(std::wstring srcFileName)
 
 	std::wstring dstPath = srcFileName;// + ....
 
+	bool bTemplate = false;
+	
 	std::wstring type;
 	switch(fileChecker.nFileType)
 	{
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		dstPath += L"-my.odt"; type = L"text";		break;
 		
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		dstPath += L"-my.odt"; type = L"text"; bTemplate = true; break;
+
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:	dstPath += L"-my.ods"; type = L"spreadsheet";	break;
 		
+		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
+		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:	dstPath += L"-my.ods"; type = L"spreadsheet"; bTemplate = true; break;
+
 		case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
 		case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:	dstPath += L"-my.odp"; type = L"presentation";	break;
 
+		case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
+		case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:	dstPath += L"-my.odp"; type = L"presentation"; bTemplate = true; break;
 		default:
 			return S_FALSE;
 	}
@@ -94,7 +104,7 @@ HRESULT convert_single(std::wstring srcFileName)
     if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
 		return S_FALSE;
 
-	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", NULL);
+	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", bTemplate, NULL);
 
 	std::wstring sPassword;// = L"password";
 	

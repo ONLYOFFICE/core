@@ -73,7 +73,7 @@ using namespace cpdoccore;
 namespace Oox2Odf
 {
 
-PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* CallBack)
+PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* CallBack)
 {
  	current_clrMap		= NULL;
 	current_slide		= NULL;
@@ -105,7 +105,7 @@ PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* 
 	}
 	presentation = presentation_ptr.operator->();
 	
-	output_document = new odf_writer::package::odf_document(L"presentation");
+	output_document = new odf_writer::package::odf_document(L"presentation", bTemplate);
     odp_context     = new odf_writer::odp_conversion_context(output_document);
 	
 	if (UpdateProgress(290000))return;

@@ -362,6 +362,7 @@ public:
 																pCallBack = CallBack;
 																bUserStopConvert = 0;
 															 }
+		virtual ~OoxConverter(){}
 
         void set_fonts_directory (const std::wstring & fontsPath);
 		

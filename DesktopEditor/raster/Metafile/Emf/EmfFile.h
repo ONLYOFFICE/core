@@ -171,6 +171,16 @@ namespace MetaFile
 		{
 			return 0;
 		}
+		bool IsWindowFlippedY()
+		{
+			TEmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->ulH < 0);
+		}
+		bool IsWindowFlippedX()
+		{
+			TEmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->ulW < 0);
+		}
 
 	private:
 

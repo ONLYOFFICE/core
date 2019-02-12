@@ -36,7 +36,7 @@ namespace MetaFile
 {
 	CEmfClipCommandPath::CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform) : m_oPath(pPath), m_unMode(unMode)
 	{
-		pTransform->Copy(&m_oTransform);
+		m_oTransform.Copy(pTransform);
 	}
 
 	CEmfClip::CEmfClip()

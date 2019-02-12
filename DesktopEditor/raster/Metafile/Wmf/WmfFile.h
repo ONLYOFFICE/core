@@ -343,6 +343,16 @@ namespace MetaFile
 		{
 			return m_pDC->GetCharSpacing();
 		}
+		bool         IsWindowFlippedY()
+		{
+			TWmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->h < 0);
+		}
+		bool         IsWindowFlippedX()
+		{
+			TWmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->w < 0);
+		}
 
 
 	private:

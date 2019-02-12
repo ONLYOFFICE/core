@@ -75,6 +75,8 @@ namespace MetaFile
 		virtual unsigned int GetRop2Mode() = 0;
 		virtual IClip*       GetClip() = 0;
 		virtual int          GetCharSpace() = 0;
+		virtual bool         IsWindowFlippedY() = 0;
+		virtual bool         IsWindowFlippedX() = 0;
 
 		bool          OpenFromFile(const wchar_t* wsFilePath)
 		{

@@ -138,7 +138,40 @@ namespace MetaFile
 
 			TPointD oTL = TranslatePoint(dX, dY);
 			TPointD oBR = TranslatePoint(dX + dW, dY + dH);
-			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
+
+			double dImageX = oTL.x;
+			double dImageY = oTL.y;
+			double dImageW = oBR.x - oTL.x;
+			double dImageH = oBR.y - oTL.y;
+
+			if (dImageH < 0 || dImageW < 0)
+			{
+				double dM11, dM12, dM21, dM22, dMx, dMy;
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dMx, &dMy);
+
+				double dKx = 1, dKy = 1, dShiftKoefX = 0, dShiftKoefY = 0;
+				if (dImageW < 0)
+				{
+					dKx = -1;
+					dShiftKoefX = 2 * dImageX + dImageW;
+
+					dImageW = -dImageW;
+					dImageX -= dImageW;
+				}
+
+				if (dImageH < 0)
+				{
+					dKy = -1;
+					dShiftKoefY = 2 * dImageY + dImageH;
+
+					dImageH = -dImageH;
+					dImageY -= dImageH;
+				}
+
+				m_pRenderer->SetTransform(dKx * dM11, dKx * dM12, dKy * dM21, dKy * dM22, dShiftKoefX * dM11 + dShiftKoefY * dM21 + dMx, dShiftKoefX * dM12 + dShiftKoefY * dM22 + dMy);
+			}
+
+			m_pRenderer->DrawImage(&oImage, dImageX, dImageY, dImageW, dImageH);
 		}
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode)
 		{
@@ -303,12 +336,39 @@ namespace MetaFile
 				double dM11, dM12, dM21, dM22, dRx, dRy;
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-				double dShiftX = (dM11 < -0.001 ? (2 * dX - 2 * fW) * dM11 : 0);
-				double dShiftY = (dM22 < -0.001 ? (2 * dY - 2 * fH) * dM22 : 0);
+				double dShiftX = 0;
+				double dShiftY = 0;
+
+				// Нам нужно знать в следствие чего происходит флип, из-за Window или Viewport
+				if (dM11 < -0.00001)
+				{
+					dX -= fabs(fW);
+
+					if (m_pFile->IsWindowFlippedX())
+					{
+						dShiftX = (2 * dX + fabs(fW)) * dM11;
+					}
+					else
+					{
+						dShiftX = (2 * dX - fabs(fW)) * dM11;
+					}
+				}
+
+				if (dM22 < - 0.00001)
+				{
+					dY -= fabs(fH);
+					if (m_pFile->IsWindowFlippedY())
+					{
+						dShiftY = (2 * dY + fabs(fH)) * dM22;
+					}
+					else
+					{
+						dShiftY = (2 * dY - fabs(fH)) * dM22;
+					}
+				}
 
 				m_pRenderer->ResetTransform();
 				m_pRenderer->SetTransform(fabs(dM11), 0, 0, fabs(dM22), dShiftX + dRx, dShiftY + dRy);
-
 
 				bChangeCTM = true;
 			}

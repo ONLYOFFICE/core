@@ -215,7 +215,6 @@ static const struct ActionNamesEmf
                     break;
             }
 
-
 			if (0 == ulRecordIndex && EMR_HEADER != ulType)
 				return SetError();
 

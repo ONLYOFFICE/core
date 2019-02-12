@@ -185,6 +185,14 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		return 0;
 	}
+	bool         IsWindowFlippedY()
+	{
+		return false;
+	}
+	bool         IsWindowFlippedX()
+	{
+		return false;
+	}
 
  private:
 	TSvmPoint			m_oCurrnetOffset;

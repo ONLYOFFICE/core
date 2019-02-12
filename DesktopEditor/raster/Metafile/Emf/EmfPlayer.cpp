@@ -585,33 +585,8 @@ namespace MetaFile
 		TEmfWindow* pWindow   = GetWindow();
 		TEmfWindow* pViewPort = GetViewport();
 
-		int nWindowX = pWindow->lX;
-		int nWindowY = pWindow->lY;
-
-		double dPixelW = GetPixelWidth();
-		double dPixelH = GetPixelHeight();
-
-		// Вообще отрицательных высоты и ширины быть не должно, но если так встречается, то
-		// мы считаем, что это не перевернутая система координат, а просто сдвинутая
-
-		if (pWindow->ulH < 0)
-		{
-			if (dPixelH < 0)
-				dPixelH = -dPixelH;
-
-			nWindowY += pWindow->ulH;
-		}
-
-		if (pWindow->ulW < 0)
-		{
-			if (dPixelW < 0)
-				dPixelW = -dPixelW;
-
-			nWindowY += pWindow->ulW;
-		}
-
-		TEmfXForm oWindowXForm(1, 0, 0, 1, -nWindowX, -nWindowY);
-		TEmfXForm oViewportXForm(dPixelW, 0, 0, dPixelH, pViewPort->lX, pViewPort->lY);
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -pWindow->lX, -pWindow->lY);
+		TEmfXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->lX, pViewPort->lY);
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);

@@ -3486,6 +3486,16 @@ public:
 			READ1_DEF(length, res, this->ReadEndnotePr, &oEdnProps);
 			m_oFileWriter.m_oSettingWriter.AddSetting(oEdnProps.toXML());
 		}
+		else if( c_oSer_SettingsType::DecimalSymbol == type )
+		{
+			std::wstring sDecimalSymbol = m_oBufferedStream.GetString3(length);
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:decimalSymbol w:val=\"" + XmlUtils::EncodeXmlString(sDecimalSymbol) + L"\"/>");
+		}
+		else if( c_oSer_SettingsType::ListSeparator == type )
+		{
+			std::wstring sListSeparator = m_oBufferedStream.GetString3(length);
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:listSeparator w:val=\"" + XmlUtils::EncodeXmlString(sListSeparator) + L"\"/>");
+		}
 		else if( c_oSer_SettingsType::SdtGlobalColor == type )
 		{
 			rPr oRPr(m_oFileWriter.m_oFontTableWriter.m_mapFonts);

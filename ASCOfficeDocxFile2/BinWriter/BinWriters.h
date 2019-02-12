@@ -7535,6 +7535,18 @@ namespace BinDocxRW
 				WriteCompat(oSettings.m_oCompat.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oSettings.m_oDecimalSymbol.IsInit() && oSettings.m_oDecimalSymbol->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DecimalSymbol);
+				m_oBcw.m_oStream.WriteStringW3(oSettings.m_oDecimalSymbol->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oSettings.m_oListSeparator.IsInit() && oSettings.m_oListSeparator->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::ListSeparator);
+				m_oBcw.m_oStream.WriteStringW3(oSettings.m_oListSeparator->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			if(oSettingsCustom.m_oSdtGlobalColor.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::SdtGlobalColor);

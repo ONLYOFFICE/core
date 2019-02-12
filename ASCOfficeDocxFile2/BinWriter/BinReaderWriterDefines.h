@@ -810,7 +810,9 @@ extern int g_nCurFormatVersion;
 		SdtGlobalColor = 6,
 		SdtGlobalShowHighlight = 7,
 		Compat = 8,
-		DefaultTabStopTwips = 9
+		DefaultTabStopTwips = 9,
+		DecimalSymbol = 10,
+		ListSeparator = 11
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

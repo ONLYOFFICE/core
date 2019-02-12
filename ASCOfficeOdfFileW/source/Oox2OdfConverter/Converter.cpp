@@ -70,8 +70,6 @@
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 
-#define PROGRESSEVENT_ID	0
-
 using namespace cpdoccore;
 
 namespace Oox2Odf
@@ -80,13 +78,13 @@ namespace Oox2Odf
 	{
 		return (Val * 360000 * 2.54) / 72;
 	}
-    Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate,  const ProgressCallback* CallBack)
+    Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate)
     { 
 		impl_ = NULL;
 		
-        if (type == _T("text"))			impl_ = new DocxConverter(path, bTemplate, CallBack);
-        if (type == _T("spreadsheet"))	impl_ = new XlsxConverter(path, bTemplate, CallBack);
-        if (type == _T("presentation"))	impl_ = new PptxConverter(path, bTemplate, CallBack);
+        if (type == _T("text"))			impl_ = new DocxConverter(path, bTemplate);
+        if (type == _T("spreadsheet"))	impl_ = new XlsxConverter(path, bTemplate);
+        if (type == _T("presentation"))	impl_ = new PptxConverter(path, bTemplate);
 
         if (impl_)
             impl_->set_fonts_directory(fontsPath);
@@ -100,36 +98,16 @@ namespace Oox2Odf
     void Converter::convert()
     {
 		if (!impl_)return;
-		
-		if (impl_->bUserStopConvert) return;
-       
 		impl_->convertDocument();
     }
     void Converter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const
     {
 		if (!impl_)return;
-
-		if (impl_->bUserStopConvert) return;
-
 		return impl_->write(out_path, temp_path, password, documentID);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool  OoxConverter::UpdateProgress(long nComplete)
-{
-	if (pCallBack)
-	{
-		pCallBack->OnProgress (pCallBack->caller, PROGRESSEVENT_ID, nComplete);
-
-		bUserStopConvert = 0;
-		pCallBack->OnProgressEx (pCallBack->caller, PROGRESSEVENT_ID, nComplete, &bUserStopConvert);
-
-		if (bUserStopConvert !=0 ) return TRUE;
-	}
-
-	return FALSE;
-}
 void OoxConverter::write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID)
 {
 	if (!output_document)return;
@@ -155,8 +133,6 @@ void OoxConverter::write(const std::wstring & out_path, const std::wstring & tem
 		
 		NSDirectory::DeleteDirectory(temp_folder);
 	}
-		
-	if (UpdateProgress(1000000))return;
 }
 std::wstring EncodeBase64(const std::string & value)
 {

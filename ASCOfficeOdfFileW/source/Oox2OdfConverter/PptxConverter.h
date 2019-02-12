@@ -110,7 +110,7 @@ namespace Oox2Odf
 	class PptxConverter : public OoxConverter
 	{
 	public:
-		PptxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* ffCallBack);
+		PptxConverter(const std::wstring & path, bool bTemplate);
 		~PptxConverter();
 
 		virtual void convertDocument();

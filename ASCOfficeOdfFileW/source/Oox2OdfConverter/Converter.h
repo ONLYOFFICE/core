@@ -356,20 +356,14 @@ public:
 		
 		void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID);
 		
-		OoxConverter(const ProgressCallback* CallBack = NULL){
-																oox_current_child_document = NULL; 
-																
-																pCallBack = CallBack;
-																bUserStopConvert = 0;
-															 }
+		OoxConverter()
+		{
+			oox_current_child_document = NULL; 
+		}
 		virtual ~OoxConverter(){}
 
         void set_fonts_directory (const std::wstring & fontsPath);
 		
-		const	ProgressCallback* pCallBack;
-		short	bUserStopConvert;
-		bool	UpdateProgress(long nComplete);	
-
 		bool encrypt_document (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
 		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);
 

@@ -103,7 +103,7 @@ namespace Oox2Odf
 		}
 		return cols_1 == cols_2;
 	}
-DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* CallBack)
+DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate)
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
@@ -112,13 +112,9 @@ DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate, const Pr
 	output_document = new odf_writer::package::odf_document(L"text", bTemplate);
     odt_context     = new odf_writer::odt_conversion_context(output_document);
 
-	pCallBack = CallBack;
-
 //set flags to default
 	current_section_properties	= NULL;
     last_section_properties		= NULL;
-	
-	if (UpdateProgress(290000))return;
 }
 DocxConverter::~DocxConverter()
 {
@@ -190,19 +186,14 @@ void DocxConverter::convertDocument()
 	convert_lists_styles();
 	convert_styles();
 
-	if (UpdateProgress(300000))return;
-
 	convert_settings(); 
 	
 	convert_document();
 
-	if (UpdateProgress(800000))return;
 	//удалим уже ненужный документ docx 
 	delete docx_document; docx_document = NULL;
 
 	odt_context->end_document();
- 	
-	if (UpdateProgress(850000))return;
 }
 
 void DocxConverter::convert_document()

@@ -73,7 +73,7 @@ using namespace cpdoccore;
 namespace Oox2Odf
 {
 
-PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* CallBack)
+PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 {
  	current_clrMap		= NULL;
 	current_slide		= NULL;
@@ -83,8 +83,6 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate, const Pr
 	presentation		= NULL;
 	output_document		= NULL;
 	odp_context			= NULL;
-
-	pCallBack		= CallBack;
 
 	const OOX::CPath oox_path(std::wstring(path.c_str()));
 
@@ -107,8 +105,6 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate, const Pr
 	
 	output_document = new odf_writer::package::odf_document(L"presentation", bTemplate);
     odp_context     = new odf_writer::odp_conversion_context(output_document);
-	
-	if (UpdateProgress(290000))return;
 }
 PptxConverter::~PptxConverter()
 {
@@ -186,20 +182,15 @@ void PptxConverter::convertDocument()
 		
 	odp_context->start_document();
 
-	if (UpdateProgress(300000))return;
-
 	convert_styles();
 	convert_settings(); 
 	
 	convert_slides();
 
-	if (UpdateProgress(800000))return;
 	//удалим уже ненужный документ pptx 
 	delete pptx_document; pptx_document = NULL;
 
 	odp_context->end_document();
- 	
-	if (UpdateProgress(850000))return;
 }
 void PptxConverter::convert_styles()
 {

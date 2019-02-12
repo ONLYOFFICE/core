@@ -65,7 +65,7 @@ using namespace cpdoccore;
 namespace Oox2Odf
 {
 
-XlsxConverter::XlsxConverter(const std::wstring & path, bool bTemplate, const ProgressCallback* CallBack) 
+XlsxConverter::XlsxConverter(const std::wstring & path, bool bTemplate) 
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
@@ -74,11 +74,7 @@ XlsxConverter::XlsxConverter(const std::wstring & path, bool bTemplate, const Pr
 	output_document = new odf_writer::package::odf_document(L"spreadsheet", bTemplate);
     ods_context     = new odf_writer::ods_conversion_context(output_document);
 
-    pCallBack = CallBack;
-
     xlsx_current_container = NULL;
-
-	if (UpdateProgress(400000))return;
 }
 XlsxConverter::~XlsxConverter() 
 {
@@ -147,16 +143,12 @@ void XlsxConverter::convertDocument()
 	ods_context->start_document();
 
 	convert_styles();
-	if (UpdateProgress(500000))return;
 
 	convert_sheets();
 
-	if (UpdateProgress(800000))return;
 	delete xlsx_document; xlsx_document = NULL;
 
 	ods_context->end_document();
-
-	if (UpdateProgress(850000))return;
 }
 
 void XlsxConverter::convert_sheets()

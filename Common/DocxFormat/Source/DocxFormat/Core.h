@@ -110,8 +110,13 @@ namespace OOX
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-
+			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<cp:coreProperties \
+xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" \
+xmlns:dc=\"http://purl.org/dc/elements/1.1/\" \
+xmlns:dcterms=\"http://purl.org/dc/terms/\" \
+xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" \
+xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 			if ( m_sTitle.IsInit() )
 			{
 				sXml += _T("<dc:title>");
@@ -166,19 +171,19 @@ namespace OOX
 				sXml += XmlUtils::EncodeXmlString(m_sRevision.get());
 				sXml += _T("</cp:revision>");
 			}
-			if ( m_sLastPrinted.IsInit() )
+			if ( (m_sLastPrinted.IsInit()) && (!m_sLastPrinted->empty()))
 			{
 				sXml += _T("<cp:lastPrinted>");
 				sXml += XmlUtils::EncodeXmlString(m_sLastPrinted.get());
 				sXml += _T("</cp:lastPrinted>");
 			}
-			if ( m_sCreated.IsInit() )
+			if ( (m_sCreated.IsInit()) && (!m_sCreated->empty()))
 			{
 				sXml += _T("<dcterms:created xsi:type=\"dcterms:W3CDTF\">");
 				sXml += XmlUtils::EncodeXmlString(m_sCreated.get());
 				sXml += _T("</dcterms:created>");
 			}
-			if ( m_sModified.IsInit() )
+			if ( (m_sModified.IsInit()) && (!m_sModified->empty()))
 			{
 				sXml += _T("<dcterms:modified xsi:type=\"dcterms:W3CDTF\">");
 				sXml += XmlUtils::EncodeXmlString(m_sModified.get());

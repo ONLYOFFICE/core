@@ -211,6 +211,7 @@ namespace PPTX
 			pWriter->WriteAttribute(_T("xmlns:cp"), PPTX::g_Namespaces.cp.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:dcterms"), PPTX::g_Namespaces.dcterms.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:dcmitype"), PPTX::g_Namespaces.dcmitype.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:xsi"), PPTX::g_Namespaces.xsi.m_strLink);
 
 			pWriter->EndAttributes();
@@ -224,14 +225,18 @@ namespace PPTX
 			pWriter->WriteNodeValue2(_T("dc:language"), language);
 			pWriter->WriteNodeValue2(_T("cp:lastModifiedBy"), lastModifiedBy);
 			pWriter->WriteNodeValue2(_T("cp:revision"), revision);
-			pWriter->WriteNodeValue2(_T("cp:lastPrinted"), lastPrinted);
-			if (created.IsInit())
+
+			if ((lastPrinted.IsInit()) && (false == lastPrinted->empty()))
+			{
+				pWriter->WriteNodeValue2(_T("cp:lastPrinted"), lastPrinted);
+			}
+			if ((created.IsInit()) && (false == created->empty()))
 			{
 				pWriter->WriteNodeBegin(_T("dcterms:created xsi:type=\"dcterms:W3CDTF\""));
 				pWriter->WriteStringXML(*created);
 				pWriter->WriteNodeEnd(_T("dcterms:created"));
 			}
-			if (modified.IsInit())
+			if ((modified.IsInit()) && (false == modified->empty()))
 			{
 				pWriter->WriteNodeBegin(_T("dcterms:modified xsi:type=\"dcterms:W3CDTF\""));
 				pWriter->WriteStringXML(*modified);

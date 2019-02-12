@@ -1083,7 +1083,7 @@ namespace PPTX
 				file = parentFileAs<Slide>().Find(nvPicPr.nvPr.media.as<MediaFile>().link.get());		
 				smart_ptr<OOX::Media> mediaFile = file.smart_dynamic_cast<OOX::Media>();
 				
-				if ( mediaFile.IsInit() == false && !nvPicPr.nvPr.extLst.empty())
+				if ( (mediaFile.IsInit() == false || mediaFile->filename().GetPath() == L"NULL") && !nvPicPr.nvPr.extLst.empty())
 				{
 					//todooo - почему везде нулевой то? - сделать поиск по всем uri
 					file = parentFileAs<Slide>().Find(nvPicPr.nvPr.extLst[0].link.get());

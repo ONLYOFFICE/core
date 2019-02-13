@@ -57,6 +57,8 @@ namespace OOX
 		class CComments;
 		class CCommentItem;
 		class CLegacyDrawingWorksheet;
+		class CThreadedComments;
+		class CPersonList;
 //необработанные child:
 		//<cellWatches>
 		//<customProperties>
@@ -144,7 +146,9 @@ namespace OOX
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 
 //--------------------------------------------------------------------------------------------
-			CComments												*m_pComments;
+			CComments			*m_pComments;
+			CPersonList			*m_pPersonList;
+			CThreadedComments	*m_pThreadedComments;
 		};
 	} //Spreadsheet
 } // namespace OOX

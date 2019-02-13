@@ -676,12 +676,12 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
 		m_oWriter.WriteStringXML(pImageElement->m_sName);
 	m_oWriter.WriteString(std::wstring(L"\""));
 	
-	//if (!pImageElement->m_sDescription.empty())
-	//{//бывает всякая разная бяка сохранена 
-	//	m_oWriter.WriteString(std::wstring(L" descr=\""));
-	//		m_oWriter.WriteStringXML(pImageElement->m_sDescription);
-	//	m_oWriter.WriteString(std::wstring(L"\""));
-	//}
+	if (!pImageElement->m_sDescription.empty())
+	{//бывает всякая разная бяка сохранена 
+		m_oWriter.WriteString(std::wstring(L" descr=\""));
+		m_oWriter.WriteString(XmlUtils::EncodeXmlStringExtend(pImageElement->m_sDescription, true));
+		m_oWriter.WriteString(std::wstring(L"\""));
+	}
 	m_oWriter.WriteString(std::wstring(L">"));
 
 	if (pVideoElement || pAudioElement)

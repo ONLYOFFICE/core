@@ -46,6 +46,8 @@
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
 #include "WorkbookComments.h"
+#include "Comments/ThreadedComments.h"
+#include "Comments/Comments.h"
 
 #include "Table/Table.h"
 #include "ExternalLinks/ExternalLinks.h"
@@ -93,6 +95,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CQueryTableFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::ThreadedComments )
+				return smart_ptr<OOX::File>(new CThreadedComments( pMain, oRootPath, oFileName ));			
+			else if ( oRelation.Type() == FileTypes::Persons)
+				return smart_ptr<OOX::File>(new CPersonList( pMain, oRootPath, oFileName));			
 			else if ( oRelation.Type() == FileTypes::WorkbookComments)
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));			
 			else if ( oRelation.Type() == FileTypes::ExternalLinks )
@@ -190,6 +196,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::ThreadedComments )
+				return smart_ptr<OOX::File>(new CThreadedComments( pMain, oRootPath, oFileName ));			
+			else if ( pRelation->Type() == FileTypes::Persons)
+				return smart_ptr<OOX::File>(new CPersonList( pMain, oRootPath, oFileName));			
 			else if ( pRelation->Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::ExternalLinks )

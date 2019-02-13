@@ -72,6 +72,15 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.calcChain+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/calcChain");
 
+			const FileType ThreadedComments	(L"../threadedComments", L"threadedComment.xml",
+												L"application/vnd.ms-excel.threadedcomments+xml",
+												L"http://schemas.microsoft.com/office/2017/10/relationships/threadedComment", 
+												L"threadedComments/threadedComment", true, true);
+
+			const FileType Persons			(L"../persons", L"person.xml", 
+												L"application/vnd.ms-excel.person+xml",
+												L"http://schemas.microsoft.com/office/2017/10/relationships/person");
+
 			const FileType Comments			(L"../", L"comments.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", 

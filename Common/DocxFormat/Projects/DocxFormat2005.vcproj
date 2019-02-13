@@ -1520,6 +1520,14 @@
 					RelativePath="..\Source\XlsxFormat\Comments\Comments.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Comments\ThreadedComments.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\WorkbookComments.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Drawing"

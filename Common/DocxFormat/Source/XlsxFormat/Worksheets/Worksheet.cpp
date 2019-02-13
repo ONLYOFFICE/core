@@ -33,6 +33,7 @@
 #include "Worksheet.h"
 
 #include "../Comments/Comments.h"
+#include "../Comments/ThreadedComments.h"
 
 #include "../../DocxFormat/External/HyperLink.h"
 #include "../../DocxFormat/Media/Image.h"

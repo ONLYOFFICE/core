@@ -34,4 +34,4 @@ if [ ! -f Makefile ]; then
   ./config no-shared no-asm
 fi
 
-make
+make build_libs

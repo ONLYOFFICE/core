@@ -2319,8 +2319,8 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 					pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 			}
 		}
-		if (eTypeOwn != NoPresent/* && eTypeOwn != Other*/ && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
-		{
+		if (eTypeOwn != NoPresent && eTypeOwn != Tx_TYPE_OTHER && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+		{//齐孟尧-2015年度职工考核报告.ppt
 			int nIndexType = (int)eTypeOwn;
 			
 			if (0 <= nIndexType && nIndexType < 9 && pLayout)

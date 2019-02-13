@@ -74,10 +74,6 @@ using namespace cpdoccore;
 
 namespace Oox2Odf
 {
-	static double pt2emu(double Val)
-	{
-		return (Val * 360000 * 2.54) / 72;
-	}
     Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate)
     { 
 		impl_ = NULL;

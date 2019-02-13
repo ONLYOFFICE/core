@@ -72,7 +72,6 @@ public:
 	// original id -> natural id
 	std::map<_UINT32, _UINT32>							m_mapMasterOriginalIds;
 
-	// это как бы ППT-шная обертка над слайдом
 	std::vector<CSlideInfo>							m_arSlideWrapper;
 	std::vector<CSlideInfo>							m_arMasterWrapper;
 	std::vector<CSlideInfo>							m_arNotesWrapper;
@@ -80,11 +79,10 @@ public:
 	CSlideInfo*										m_pNotesMasterWrapper;
 	CSlideInfo*										m_pHandoutMasterWrapper;
 
-	// эти параметры - одни на весь документ. 
-	// чтобы поддержать нашу схему (пптх) - копируем их в темы
 	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
 	std::vector<CFontProperty>						m_arrFonts;
-	PPT_FORMAT::CTextStyles				m_oDefaultTextStyle;
+
+	PPT_FORMAT::CTextStyles							m_oDefaultTextStyle;
 
 	vector_string									m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
@@ -93,12 +91,10 @@ public:
 	bool											m_bHasFooter;
 	int												m_nFormatDate;
 
-	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
 	CPPTDocumentInfo*								m_pDocumentInfo;
 	CRecordVbaProjectStg*							m_VbaProjectStg;
 	int												m_lIndexThisUser;
 
-	// Animations structures
 	std::map <_UINT32, Animations::CSlideTimeLine*>	m_mapAnimations;
 
 	double											m_nWriteSlideTimeOffset;
@@ -106,7 +102,6 @@ public:
 
 	std::map<_UINT32, CSlideShowSlideInfoAtom>		m_mapTransitions;
 
-	// номера "пустых" картинок - в эти пути не будем сохранять
     std::vector<int>								m_arOffsetPictures;
     bool											m_bIsSetupEmpty;
 

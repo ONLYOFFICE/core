@@ -1464,8 +1464,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 	CSlideInfo* pMasterWrapper = &m_arMasterWrapper[lIndexTheme];
 
 	// записываем шрифты ---------------------------------------------------------------
-	int nCountFonts = m_arrFonts.size();
-	for (int i = 0; i < nCountFonts; ++i)
+	for (size_t i = 0; i < m_arrFonts.size(); ++i)
 	{
 		pTheme->m_arFonts.push_back(m_arrFonts[i]);
 	}
@@ -1713,8 +1712,7 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
 	pMasterWrapper = new CSlideInfo();
 
 	// записываем шрифты ---------------------------------------------------------------
-	int nCountFonts = m_arrFonts.size();
-	for (int i = 0; i < nCountFonts; ++i)
+	for (size_t i = 0; i < m_arrFonts.size(); ++i)
 	{
 		pTheme->m_arFonts.push_back(m_arrFonts[i]);
 	}
@@ -2474,7 +2472,7 @@ void CPPTUserInfo::CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMA
 
 		pCF->Size			= 18;
 
-		pCF->font.font = new PPT_FORMAT::CFontProperty(pTheme->m_arFonts[0]);
+		pCF->font.font = new PPT_FORMAT::CFontProperty(pTheme->m_arFonts.size() > 1 ? pTheme->m_arFonts[1] : pTheme->m_arFonts[0]);
 	}
 }
 

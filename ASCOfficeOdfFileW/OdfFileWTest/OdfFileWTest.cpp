@@ -104,7 +104,7 @@ HRESULT convert_single(std::wstring srcFileName)
     if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
 		return S_FALSE;
 
-	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", bTemplate, NULL);
+	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", bTemplate);
 
 	std::wstring sPassword;// = L"password";
 	

@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of PAGESETUP union of records 
 class PAGESETUP: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PAGESETUP)
@@ -51,13 +48,19 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	static const ElementType	type = typePAGESETUP;
+	static const ElementType type = typePAGESETUP;
 
 	BaseObjectPtr m_HeaderFooter;
 	BaseObjectPtr m_Setup;
 
 	BaseObjectPtr m_Header;
 	BaseObjectPtr m_Footer;
+
+	BaseObjectPtr m_HCenter;
+	BaseObjectPtr m_VCenter;
+
+	BaseObjectPtr m_Pls;
+
 };
 
 } // namespace XLS

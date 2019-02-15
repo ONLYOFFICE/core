@@ -118,16 +118,35 @@ const bool PAGESETUP::loadContent(BinProcessor& proc)
 					m_Footer = elements_.back();
 					elements_.pop_back();
 				}
-			}break;
-			
-			case rt_HCenter:		proc.optional<HCenter>();			break;
-			case rt_VCenter:		proc.optional<VCenter>();			break;
-			
-			case rt_BottomMargin:	proc.optional<BottomMargin>();		break;
+			}break;			
+			case rt_HCenter:
+				{
+					if (proc.optional<HCenter>())
+					{
+						m_HCenter = elements_.back();
+						elements_.pop_back();
+					}				
+				}break;
+			case rt_VCenter:
+				{
+					if (proc.optional<VCenter>())
+					{
+						m_VCenter = elements_.back();
+						elements_.pop_back();
+					}
+				}break;			
+			case rt_BottomMargin:	proc.optional<BottomMargin>();			break;
 			case rt_TopMargin:		proc.optional<TopMargin>();			break;
 			case rt_LeftMargin:		proc.optional<LeftMargin>();		break;
 			case rt_RightMargin:	proc.optional<RightMargin>();		break;
-			case rt_Pls:			proc.optional<Pls>();				break;
+			case rt_Pls:
+				{
+					if (proc.optional<Pls>())
+					{
+						m_Pls = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
 			case rt_Setup:
 			{
 				if (proc.optional<Setup>())
@@ -219,9 +238,34 @@ int PAGESETUP::serialize(std::wostream & stream)
 			if (!r)			CP_XML_ATTR(L"right"	, 0.75);
 		}
 
-		//CP_XML_NODE(L"pageSetup") - для chartsheet аккуратнее
-		//{
-		//}
+		if (setup->iFitHeight > 0 && setup->iFitWidth == 1 && setup->iScale == 100)
+		{
+			setup->iScale = 90;
+		}
+
+		if (false == setup->fNoPls)
+		{	
+			CP_XML_NODE(L"pageSetup")// - для chartsheet аккуратнее
+			{
+				CP_XML_ATTR(L"paperSize", setup->iPaperSize);
+				CP_XML_ATTR(L"firstPageNumber", setup->iPageStart);
+				
+				CP_XML_ATTR(L"scale", setup->iScale);
+
+				CP_XML_ATTR(L"orientation", setup->fPortrait ? L"portrait" : L"landscape");
+				CP_XML_ATTR(L"horizontalDpi", setup->iRes);
+				CP_XML_ATTR(L"verticalDpi", setup->iVRes);
+
+				if (setup->fUsePage)
+					CP_XML_ATTR(L"useFirstPageNumber", true);
+				
+				if (setup->iFitWidth > 0 && setup->iFitWidth < 32767)
+					CP_XML_ATTR(L"fitToWidth", setup->iFitWidth);
+
+				if (setup->iFitHeight > 0 && setup->iFitHeight < 32767)
+					CP_XML_ATTR(L"fitToHeight", setup->iFitHeight);
+			}
+		}
 
 		if (m_Header || m_Footer)
 		{

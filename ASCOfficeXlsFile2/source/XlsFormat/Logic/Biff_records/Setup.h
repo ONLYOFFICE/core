@@ -46,11 +46,10 @@ public:
 	~Setup();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSetup;
+	static const ElementType type = typeSetup;
 
 //-----------------------------
 	_UINT16 iPaperSize;

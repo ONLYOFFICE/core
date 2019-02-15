@@ -322,10 +322,10 @@ namespace OOX
 
 			nullable<CSi> m_oText;
 		};
-		class CThreadedComments : public OOX::FileGlobalEnumerated, public OOX::File, public WritingElementWithChilds<CThreadedComment>
+        class CThreadedComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer, public WritingElementWithChilds<CThreadedComment>
 		{
 		public:
-			CThreadedComments(OOX::Document* pMain) : OOX::File(pMain), OOX::FileGlobalEnumerated(pMain)
+            CThreadedComments(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 			{
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
@@ -333,7 +333,7 @@ namespace OOX
 					xlsx->m_arWorksheets.back()->m_pThreadedComments = this;
 				}
 			}
-			CThreadedComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::FileGlobalEnumerated(pMain)
+            CThreadedComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 			{
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
@@ -354,6 +354,7 @@ namespace OOX
 			virtual void read(const CPath& oRootPath, const CPath& oPath)
 			{
 				m_oReadPath = oPath;
+                IFileContainer::Read( oRootPath, oPath );
 
 				XmlUtils::CXmlLiteReader oReader;
 

@@ -96,7 +96,7 @@ namespace OOX
 			else if ( oRelation.Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::ThreadedComments )
-				return smart_ptr<OOX::File>(new CThreadedComments( pMain, oRootPath, oFileName ));			
+                return smart_ptr<OOX::File>(new CThreadedComments( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Persons)
 				return smart_ptr<OOX::File>(new CPersonList( pMain, oRootPath, oFileName));			
 			else if ( oRelation.Type() == FileTypes::WorkbookComments)

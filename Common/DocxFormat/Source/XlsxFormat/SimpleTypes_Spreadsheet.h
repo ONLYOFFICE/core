@@ -2258,7 +2258,85 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (EIconSetType)
 			SimpleType_Operator_Equal (ST_IconSetType)
-		};				
+		};	
+		
+	//--------------------------------------------------------
+	//	ST_DataBarAxisPosition
+	//--------------------------------------------------------
+		enum EDataBarAxisPosition
+		{
+			automatic		= 0,
+			middle			= 1,
+			none			= 2
+		};
+		template<EDataBarAxisPosition eDefValue = automatic>
+		class ST_DataBarAxisPosition : public CSimpleType<EDataBarAxisPosition, eDefValue>
+		{
+		public:
+			ST_DataBarAxisPosition() {}
+
+            virtual EDataBarAxisPosition FromString(std::wstring &sValue)
+			{
+				if(_T("automatic") == sValue)		this->m_eValue = automatic;
+                else if(_T("middle") == sValue)		this->m_eValue = middle;
+                else if(_T("none") == sValue)		this->m_eValue = none;
+				else 								this->m_eValue = eDefValue;
+                return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+					case automatic	:	return _T("automatic");	break;
+					case middle		:	return _T("middle");	break;
+					case none		:	return _T("none");		break;
+					default			:	return _T("automatic");
+				}
+			}
+
+			SimpleType_FromString     (EDataBarAxisPosition)
+			SimpleType_Operator_Equal (ST_DataBarAxisPosition)
+		};
+
+	//--------------------------------------------------------
+	//	ST_DataBarDirection 
+	//--------------------------------------------------------
+		enum EDataBarDirection
+		{
+			context		= 0,
+			leftToRight	= 1,
+			rightToLeft	= 2
+		};
+		template<EDataBarDirection eDefValue = context>
+		class ST_DataBarDirection : public CSimpleType<EDataBarDirection, eDefValue>
+		{
+		public:
+			ST_DataBarDirection() {}
+
+            virtual EDataBarDirection FromString(std::wstring &sValue)
+			{
+				if(_T("context") == sValue)				this->m_eValue = context;
+                else if(_T("leftToRight") == sValue)	this->m_eValue = leftToRight;
+                else if(_T("rightToLeft") == sValue)	this->m_eValue = rightToLeft;
+				else 									this->m_eValue = eDefValue;
+                return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+					case context		:	return _T("context");		break;
+					case leftToRight	:	return _T("leftToRight");	break;
+					case rightToLeft	:	return _T("rightToLeft");	break;
+					default				:	return _T("automatic");
+				}
+			}
+
+			SimpleType_FromString     (EDataBarDirection)
+			SimpleType_Operator_Equal (ST_DataBarDirection)
+		};
 	//----------------------------------------------------
 	//	18.18.15 ST_CfOperator (Conditional Format Operators)
 	//----------------------------------------------------
@@ -2417,6 +2495,8 @@ namespace SimpleTypes
 			Number					= 3,
 			Percent					= 4,
 			Percentile				= 5,
+			autoMin					= 6,
+			autoMax					= 7
 		};
 		template<ECfvoType eDefValue = Number>
 		class ST_CfvoType : public CSimpleType<ECfvoType, eDefValue>
@@ -2432,7 +2512,9 @@ namespace SimpleTypes
                 else if(_T("num") == sValue)		this->m_eValue = Number;
                 else if(_T("percent") == sValue)	this->m_eValue = Percent;
                 else if(_T("percentile") == sValue)	this->m_eValue = Percentile;
-                else 								this->m_eValue = eDefValue;
+				else if(_T("autoMin") == sValue)	this->m_eValue = autoMin;
+                else if(_T("autoMax") == sValue)	this->m_eValue = autoMax;
+               else 								this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
 
@@ -2446,6 +2528,8 @@ namespace SimpleTypes
 					case Number:	return _T("num");			break;	
 					case Percent:	return _T("percent");		break;	
 					case Percentile:return _T("percentile");	break;	
+					case autoMin:	return _T("autoMin");		break;	
+					case autoMax:	return _T("autoMax");		break;	
 					default		:	return _T("num");
 				}
 			}

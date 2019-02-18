@@ -85,16 +85,7 @@ namespace OOX
 
 					if ( L"extLst" == sName )
 					{
-						if ( oReader.IsEmptyNode() )
-							continue;
-
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-						{
-							//Ext element;
-							//element.fromXML(oReader);
-							//extLst.push_back (element);
-						}
+						extLst = oReader;
 					}
 				}
 			}
@@ -120,7 +111,7 @@ namespace OOX
 			nullable_string providerId;
 			nullable_string id;
 
-			//std::vector<Ext>	extLst;
+			nullable<OOX::Drawing::COfficeArtExtensionList> extLst;
 		};
 
 		class CPersonList : public OOX::File, public WritingElementWithChilds<CPerson>

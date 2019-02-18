@@ -582,11 +582,9 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual std::wstring      ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
-
-			return sResult;
+			return std::to_wstring( this->m_eValue);
 		}
 
 		SimpleType_FromString     (unsigned int)

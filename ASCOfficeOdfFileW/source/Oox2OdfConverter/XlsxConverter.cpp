@@ -2361,8 +2361,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			if (oox_cond_rule->m_oText.IsInit()) 
 				ods_context->current_table().set_conditional_text(oox_cond_rule->m_oText.get2());
 			
-			for (size_t i=0; i< oox_cond_rule->m_arrItems.size(); i++)
-				convert(oox_cond_rule->m_arrItems[i]);
+			convert(oox_cond_rule->m_oIconSet.GetPointer());
+			convert(oox_cond_rule->m_oColorScale.GetPointer());
+			convert(oox_cond_rule->m_oDataBar.GetPointer());
+			convert(oox_cond_rule->m_oFormula.GetPointer());
 		}	
 		ods_context->current_table().end_conditional_rule();
 	}
@@ -2378,33 +2380,26 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataBar *oox_cond_databar)
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-	for (size_t i=0; i< oox_cond_databar->m_arrItems.size(); i++)
-		convert(oox_cond_databar->m_arrItems[i]);
+	for (size_t i=0; i< oox_cond_databar->m_arrValues.size(); i++)
+		convert(oox_cond_databar->m_arrValues[i].GetPointer());
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CColorScale *oox_cond_colorscale)
 {
 	if (!oox_cond_colorscale)return;
 
 	int index = 0;
-	
-    for (std::vector<OOX::Spreadsheet::WritingElement*>::iterator	it = oox_cond_colorscale->m_arrItems.begin();
-																it != oox_cond_colorscale->m_arrItems.end(); ++it)
+
+	for (size_t i = 0; i < oox_cond_colorscale->m_arrValues.size(); ++i)
 	{
-		if (*it == NULL )continue;
-	
-		OOX::EElementType type = (*it)->getType();
-		if (type == OOX::et_x_ConditionalFormatValueObject)
-		{
-			convert(*it);
-		}
-		else
-		{
-			_CP_OPT(odf_types::color) color;
-			convert(dynamic_cast<OOX::Spreadsheet::CColor*>(*it), color);
-			
-			ods_context->current_table().add_conditional_colorscale( index++, color );
-		}
+		convert(oox_cond_colorscale->m_arrValues[i].GetPointer());
 	}
+	for (size_t i = 0; i < oox_cond_colorscale->m_arrColors.size(); ++i)
+	{
+		_CP_OPT(odf_types::color) color;
+		convert(dynamic_cast<OOX::Spreadsheet::CColor*>(oox_cond_colorscale->m_arrColors[i].GetPointer()), color);
+
+		ods_context->current_table().add_conditional_colorscale( index++, color );
+	}	
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
 {
@@ -2415,8 +2410,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-	for (size_t i=0; i< oox_cond_iconset->m_arrItems.size(); i++)
-		convert(oox_cond_iconset->m_arrItems[i]);
+	for (size_t i=0; i< oox_cond_iconset->m_arrValues.size(); i++)
+	{
+		convert(oox_cond_iconset->m_arrValues[i].GetPointer());
+	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox_cond_value)
 {

@@ -138,6 +138,13 @@ namespace NSCommon
                 this->m_pPointer = NULL;
         }
         
+        nullable(XmlUtils::CXmlLiteReader& oReader)
+        {
+			if (oReader.IsValid())
+                this->m_pPointer = new Type(oReader);
+            else
+                this->m_pPointer = NULL;
+        }
 		nullable<Type>& operator=(XmlUtils::CXmlNode& oNode)
 		{
             RELEASEOBJECT(this->m_pPointer);

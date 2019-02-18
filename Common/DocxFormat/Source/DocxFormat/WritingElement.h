@@ -1114,6 +1114,7 @@ namespace OOX
 		et_x_FormulaCF,
 		et_x_IconSet,
 		et_x_ConditionalFormatValueObject,
+		et_x_ConditionalFormatIconSet,
 		et_x_SheetPr,
 		et_x_Pane,
 		et_x_ExternalBook,

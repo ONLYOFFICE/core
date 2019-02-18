@@ -84,8 +84,7 @@ namespace OOX
 				read(oRootPath, oPath);
 			}
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
-			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
-			void PrepareToWrite();
+			
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
@@ -109,8 +108,11 @@ namespace OOX
 			void ClearItems();
 			CPath	m_oReadPath;
 
-		public:
 			void read(XmlUtils::CXmlLiteReader& oReader);
+
+			void PrepareConditionalFormatting();
+			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
+			void PrepareToWrite();
 
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
@@ -149,6 +151,8 @@ namespace OOX
 			CComments			*m_pComments;
 			CPersonList			*m_pPersonList;
 			CThreadedComments	*m_pThreadedComments;
+
+			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -96,21 +96,20 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("aca"),      m_oAca )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("aca"),		m_oAca )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bx"),      m_oBx )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ca"),      m_oCa )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("del1"),      m_oDel1 )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("del2"),      m_oDel2 )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dt2D"),      m_oDt2D )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dtr"),      m_oDtr )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r1"),      m_oR1 )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r2"),      m_oR2 )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("si"),      m_oSi )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("t"),      m_oT )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("del1"),	m_oDel1 )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("del2"),	m_oDel2 )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dt2D"),	m_oDt2D )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dtr"),		m_oDtr )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r1"),		m_oR1 )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r2"),		m_oR2 )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),		m_oRef )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("si"),		m_oSi )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("t"),		m_oT )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
@@ -123,9 +122,9 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>							m_oDel2;
 				nullable<SimpleTypes::COnOff<>>							m_oDt2D;
 				nullable<SimpleTypes::COnOff<>>							m_oDtr;
-				nullable<std::wstring>										m_oR1;
-				nullable<std::wstring>										m_oR2;
-				nullable<std::wstring>										m_oRef;
+				nullable<std::wstring>									m_oR1;
+				nullable<std::wstring>									m_oR2;
+				nullable<std::wstring>									m_oRef;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSi;
 				nullable<SimpleTypes::Spreadsheet::CCellFormulaType<>>	m_oT;
 
@@ -328,7 +327,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if ( oReader, _T("cm"), m_oCellMetadata )
@@ -443,7 +441,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),		m_oCollapsed )

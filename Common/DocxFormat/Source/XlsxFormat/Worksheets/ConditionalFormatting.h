@@ -58,7 +58,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -80,11 +80,27 @@ namespace OOX
 			{
 				return et_x_FormulaCF;
 			}
+			static const CFormulaCF Merge(const CFormulaCF& oPrev, const CFormulaCF& oCurrent)
+			{
+				CFormulaCF oFormula;
+				
+				if (oCurrent.m_sText.empty() == false)
+				{
+					oFormula.m_sText = oCurrent.m_sText;
+					oFormula.m_sNodeName = oCurrent.m_sNodeName;
+				}
+				else
+				{
+					oFormula.m_sText = oPrev.m_sText;
+					oFormula.m_sNodeName = oPrev.m_sNodeName;
+				}
+
+				return oFormula;
+			}
 
 			std::wstring m_sNodeName;
 			std::wstring m_sText;
 		};
-
 
 		class CConditionalFormatValueObject : public WritingElement
 		{
@@ -101,18 +117,22 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if (m_oType.IsInit())
 				{
 					writer.WriteString(L"<cfvo");
+
+					if (m_oType->GetValue() == SimpleTypes::Spreadsheet::autoMin) m_oType->SetValue(SimpleTypes::Spreadsheet::Minimum);
+					if (m_oType->GetValue() == SimpleTypes::Spreadsheet::autoMax) m_oType->SetValue(SimpleTypes::Spreadsheet::Maximum); 
+
 					WritingStringAttrString(L"type", m_oType->ToString());
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
 						writer.WriteString(L" gte=\"0\"");
 					WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
-					writer.WriteString(_T("/>"));
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -140,12 +160,11 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
 
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("gte")		, m_oGte)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("type")	, m_oType)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("val")		, m_oVal)
+				WritingElement_ReadAttributes_Read_if		(oReader, L"gte"	, m_oGte)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"	, m_oType)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"val"	, m_oVal)
 
 				WritingElement_ReadAttributes_End(oReader)
 			}
@@ -158,7 +177,56 @@ namespace OOX
 			nullable<CFormulaCF>								m_oFormula;
 		};
 
-		class CColorScale : public WritingElementWithChilds<>
+		class CConditionalFormatIconSet : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CConditionalFormatIconSet)
+			CConditionalFormatIconSet()
+			{
+			}
+			virtual ~CConditionalFormatIconSet()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<cfIcon>");
+					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
+					WritingStringNullableAttrInt(L"iconId", m_oIconId, m_oIconId->GetValue())
+				writer.WriteString(L"</cfIcon>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (oReader.IsEmptyNode())
+					return;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+
+				WritingElement_ReadAttributes_Read_if		(oReader, L"iconSet", m_oIconSet)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"iconId"	, m_oIconId)
+
+				WritingElement_ReadAttributes_End(oReader)
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_ConditionalFormatIconSet;
+			}
+
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>	m_oIconSet;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oIconId;
+		};
+
+		class CColorScale : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorScale)
@@ -173,24 +241,34 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (3 < m_arrItems.size()) // min 2 + 2
+				if (1 < m_arrValues.size() && 1 < m_arrColors.size()) // min 2 + 2
 				{
                     std::wstring sValue;
-					writer.WriteString(_T("<colorScale>"));
+					writer.WriteString(L"<colorScale>");
 
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    for ( size_t i = 0; i < m_arrValues.size(); ++i)//todooo - проверить можно ли не чередовать,а как есть записать
                     {
-                        if (  m_arrItems[i] )
+						if ( m_arrValues[i].IsInit() )
                         {
-                            m_arrItems[i]->toXML(writer);
+                            m_arrValues[i]->toXML(writer);
                         }
-                    }
-
-					writer.WriteString(_T("</colorScale>"));
+						//if ( (i < m_arrColors.size()) && (m_arrColors[i].IsInit()) )
+						//{
+						//	m_arrColors[i]->toXML(writer);
+						//}
+					}
+                    for ( size_t i = 0/*m_arrValues.size()*/; i < m_arrColors.size(); ++i)
+                    {
+						if ( m_arrColors[i].IsInit() )
+                        {
+                            m_arrColors[i]->toXML(writer);
+                        }
+					}
+					writer.WriteString(L"</colorScale>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -202,22 +280,66 @@ namespace OOX
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("cfvo") == sName)
-						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
-					else if (_T("color") == sName)
-						m_arrItems.push_back(new CColor(oReader));
+					if (L"cfvo" == sName)
+					{
+						nullable<CConditionalFormatValueObject> item(oReader);
+						m_arrValues.push_back(item);
+					}
+					else if (L"color" == sName)
+					{
+						nullable<CColor> item(oReader);
+						m_arrColors.push_back(item);
+					}
 				}
 			}
-
 			virtual EElementType getType () const
 			{
 				return et_x_ColorScale;
 			}
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			{
+				nullable<Type> oResult;
 
-		public:
+				if ( oCurrent.IsInit() )	oResult = oCurrent;
+				else if ( oPrev.IsInit() )	oResult = oPrev;
+
+				return oResult;
+			}
+			static const CColorScale Merge(const CColorScale& oPrev, const CColorScale& oCurrent)
+			{
+				CColorScale oColorScale;
+				
+				for (size_t i = 0; i < oPrev.m_arrValues.size(); i++)
+				{
+					if (i < oCurrent.m_arrValues.size())
+						oColorScale.m_arrValues.push_back(Merge( oPrev.m_arrValues[i],	oCurrent.m_arrValues[i] ));
+					else
+						oColorScale.m_arrValues.push_back(oPrev.m_arrValues[i]);
+				}
+				for (size_t i = oPrev.m_arrValues.size(); i < oCurrent.m_arrValues.size(); i++)
+				{
+					oColorScale.m_arrValues.push_back(oCurrent.m_arrValues[i]);
+				}
+				for (size_t i = 0; i < oPrev.m_arrColors.size(); i++)
+				{
+					if (i < oCurrent.m_arrColors.size())
+						oColorScale.m_arrColors.push_back(Merge( oPrev.m_arrColors[i],	oCurrent.m_arrColors[i] ));
+					else
+						oColorScale.m_arrColors.push_back(oPrev.m_arrColors[i]);
+				}
+				for (size_t i = oPrev.m_arrColors.size(); i < oCurrent.m_arrColors.size(); i++)
+				{
+					oColorScale.m_arrColors.push_back(oCurrent.m_arrColors[i]);
+				}
+				return oColorScale;
+			}
+
+			std::vector<nullable<CConditionalFormatValueObject>>	m_arrValues;
+			std::vector<nullable<CColor>>							m_arrColors;
 		};
 
-		class CDataBar : public WritingElementWithChilds<CConditionalFormatValueObject>
+		class CDataBar : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataBar)
@@ -232,34 +354,34 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (2 == m_arrItems.size() && m_oColor.IsInit())
+				if (2 == m_arrValues.size() && m_oColor.IsInit())
 				{
                     std::wstring sValue;
-					writer.WriteString(_T("<dataBar"));
+					writer.WriteString(L"<dataBar");
 					WritingStringNullableAttrInt(L"maxLength", m_oMaxLength, m_oMaxLength->GetValue());
 					WritingStringNullableAttrInt(L"minLength", m_oMinLength, m_oMinLength->GetValue());
 					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
 					{
-						writer.WriteString(_T(" showValue=\"0\""));
+						writer.WriteString(L" showValue=\"0\"");
 					}
 
-					writer.WriteString(_T(">"));
+					writer.WriteString(L">");
 
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    for ( size_t i = 0; i < m_arrValues.size(); ++i)
                     {
-                        if (  m_arrItems[i] )
+                        if (  m_arrValues[i].IsInit() )
                         {
-                            m_arrItems[i]->toXML(writer);
+                            m_arrValues[i]->toXML(writer);
                         }
                     }
 
-					m_oColor->toXML2(writer, _T("color"));
+					m_oColor->toXML2(writer, L"color");
 
-					writer.WriteString(_T("</dataBar>"));
+					writer.WriteString(L"</dataBar>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -273,10 +395,21 @@ namespace OOX
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("cfvo") == sName)
-						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
-					else if (_T("color") == sName)
+					if (L"cfvo" == sName)
+					{
+						nullable<CConditionalFormatValueObject> item = oReader;
+						m_arrValues.push_back(item);
+					}
+					else if ( L"color" == sName || L"fillColor" == sName )
 						m_oColor = oReader;
+					else if ( L"axisColor" == sName)
+						m_oAxisColor = oReader;
+					else if ( L"borderColor" == sName)
+						m_oBorderColor = oReader;
+					else if ( L"negativeFillColor" == sName )
+						m_oNegativeFillColor = oReader;
+					else if ( L"negativeBorderColor" == sName )
+						m_oNegativeBorderColor = oReader;
 				}
 			}
 
@@ -284,16 +417,61 @@ namespace OOX
 			{
 				return et_x_DataBar;
 			}
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			{
+				nullable<Type> oResult;
 
+				if ( oCurrent.IsInit() )	oResult = oCurrent;
+				else if ( oPrev.IsInit() )	oResult = oPrev;
+
+				return oResult;
+			}
+			static const CDataBar Merge(const CDataBar& oPrev, const CDataBar& oCurrent)
+			{
+				CDataBar oDataBar;
+				oDataBar.m_oMaxLength		= Merge( oPrev.m_oMaxLength,            oCurrent.m_oMaxLength );
+				oDataBar.m_oMinLength		= Merge( oPrev.m_oMinLength,            oCurrent.m_oMinLength );
+				oDataBar.m_oShowValue		= Merge( oPrev.m_oShowValue,            oCurrent.m_oShowValue );
+				oDataBar.m_oAxisPosition	= Merge( oPrev.m_oAxisPosition,			oCurrent.m_oAxisPosition );
+				oDataBar.m_oBorder			= Merge( oPrev.m_oBorder,				oCurrent.m_oBorder );
+				oDataBar.m_oGradient		= Merge( oPrev.m_oGradient,				oCurrent.m_oGradient );
+				oDataBar.m_oDirection		= Merge( oPrev.m_oDirection,			oCurrent.m_oDirection );
+				oDataBar.m_oNegativeBarColorSameAsPositive = Merge( oPrev.m_oNegativeBarColorSameAsPositive, oCurrent.m_oNegativeBarColorSameAsPositive );
+				
+				oDataBar.m_oColor				= Merge( oPrev.m_oColor,				oCurrent.m_oColor );
+				oDataBar.m_oAxisColor			= Merge( oPrev.m_oAxisColor,			oCurrent.m_oAxisColor );
+				oDataBar.m_oNegativeFillColor	= Merge( oPrev.m_oNegativeFillColor,	oCurrent.m_oNegativeFillColor );
+				oDataBar.m_oNegativeBorderColor	= Merge( oPrev.m_oNegativeBorderColor,	oCurrent.m_oNegativeBorderColor );
+				
+				for (size_t i = 0; i < oPrev.m_arrValues.size(); i++)
+				{
+					if (i < oCurrent.m_arrValues.size())
+						oDataBar.m_arrValues.push_back(Merge( oPrev.m_arrValues[i],	oCurrent.m_arrValues[i] ));
+					else
+						oDataBar.m_arrValues.push_back(oPrev.m_arrValues[i]);
+				}
+				for (size_t i = oPrev.m_arrValues.size(); i < oCurrent.m_arrValues.size(); i++)
+				{
+					oDataBar.m_arrValues.push_back(oCurrent.m_arrValues[i]);
+				}
+				return oDataBar;
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start(oReader)
 
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("maxLength")	, m_oMaxLength)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("minLength")	, m_oMinLength)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("showValue")	, m_oShowValue)
+				WritingElement_ReadAttributes_Read_if		(oReader, L"maxLength"	, m_oMaxLength)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"minLength"	, m_oMinLength)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"showValue"	, m_oShowValue)
+
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"axisPosition", m_oAxisPosition)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"border"		, m_oBorder)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"gradient"	, m_oGradient)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"direction"	, m_oDirection)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"negativeBarColorSameAsPositive"	, m_oNegativeBarColorSameAsPositive)
 
 				WritingElement_ReadAttributes_End(oReader)
 			}
@@ -302,11 +480,25 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-
+			
 			nullable<CColor>								m_oColor;
+
+			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
+//---ext-----------
+			nullable<SimpleTypes::Spreadsheet::ST_DataBarAxisPosition<>>	m_oAxisPosition;
+			nullable<SimpleTypes::Spreadsheet::ST_DataBarDirection<>>		m_oDirection;			
+			nullable<SimpleTypes::COnOff<>>									m_oBorder;
+			nullable<SimpleTypes::COnOff<>>									m_oGradient;
+			nullable<SimpleTypes::COnOff<>>									m_oNegativeBarColorSameAsPositive;
+
+			nullable<CColor>								m_oAxisColor;
+			nullable<CColor>								m_oBorderColor;
+			
+			nullable<CColor>								m_oNegativeFillColor;
+			nullable<CColor>								m_oNegativeBorderColor;
 		};
 
-		class CIconSet : public WritingElementWithChilds<CConditionalFormatValueObject>
+		class CIconSet : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CIconSet)
@@ -321,39 +513,48 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (1 < m_arrItems.size()) // min value = 2
+				if (1 < m_arrValues.size()) // min value = 2
 				{
                     std::wstring sValue;
-					writer.WriteString(_T("<iconSet"));
+					writer.WriteString(L"<iconSet");
 					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
 					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
 					{
-						writer.WriteString(_T(" percent=\"0\""));
+						writer.WriteString(L" percent=\"0\"");
 					}
 					if (m_oReverse.IsInit() && true == m_oReverse->ToBool())
 					{
-						writer.WriteString(_T(" reverse=\"1\""));
+						writer.WriteString(L" reverse=\"1\"");
 					}
 					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
 					{
-						writer.WriteString(_T(" showValue=\"0\""));
+						writer.WriteString(L" showValue=\"0\"");
 					}
+					if (m_oCustom.IsInit() && true == m_oCustom->ToBool())
+					{
+						writer.WriteString(L" custom=\"1\"");
+					}
+					writer.WriteString(L">");
 
-					writer.WriteString(_T(">"));
-
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    for ( size_t i = 0; i < m_arrValues.size(); ++i)
                     {
-                        if (  m_arrItems[i] )
+						if ( m_arrValues[i].IsInit() )
                         {
-                            m_arrItems[i]->toXML(writer);
+                            m_arrValues[i]->toXML(writer);
                         }
-                    }
-
-					writer.WriteString(_T("</iconSet>"));
+					}
+                    for ( size_t i = 0; i < m_arrIconSets.size(); ++i)
+                    {
+						if ( m_arrIconSets[i].IsInit() )
+                        {
+                            m_arrIconSets[i]->toXML(writer);
+                        }
+					}
+					writer.WriteString(L"</iconSet>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -367,8 +568,16 @@ namespace OOX
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("cfvo") == sName)
-						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
+					if (L"cfvo" == sName)
+					{
+						nullable<CConditionalFormatValueObject> item(oReader);
+						m_arrValues.push_back(item);
+					}
+					else if (L"cfIcon" == sName)
+					{
+						nullable<CConditionalFormatIconSet> item(oReader);
+						m_arrIconSets.push_back(item);
+					}
 				}
 			}
 
@@ -376,36 +585,81 @@ namespace OOX
 			{
 				return et_x_IconSet;
 			}
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			{
+				nullable<Type> oResult;
 
+				if ( oCurrent.IsInit() )	oResult = oCurrent;
+				else if ( oPrev.IsInit() )	oResult = oPrev;
+
+				return oResult;
+			}
+			static const CIconSet Merge(const CIconSet& oPrev, const CIconSet& oCurrent)
+			{
+				CIconSet oIconSet;
+				oIconSet.m_oIconSet		= Merge( oPrev.m_oIconSet,		oCurrent.m_oIconSet );
+				oIconSet.m_oPercent		= Merge( oPrev.m_oPercent,		oCurrent.m_oPercent );
+				oIconSet.m_oReverse		= Merge( oPrev.m_oReverse,		oCurrent.m_oReverse );
+				oIconSet.m_oShowValue	= Merge( oPrev.m_oShowValue,	oCurrent.m_oShowValue );
+				oIconSet.m_oCustom		= Merge( oPrev.m_oCustom,		oCurrent.m_oCustom );
+				
+				for (size_t i = 0; i < oPrev.m_arrValues.size(); i++)
+				{
+					if (i < oCurrent.m_arrValues.size())
+						oIconSet.m_arrValues.push_back(Merge( oPrev.m_arrValues[i],	oCurrent.m_arrValues[i] ));
+					else
+						oIconSet.m_arrValues.push_back(oPrev.m_arrValues[i]);
+				}
+				for (size_t i = oPrev.m_arrValues.size(); i < oCurrent.m_arrValues.size(); i++)
+				{
+					oIconSet.m_arrValues.push_back(oCurrent.m_arrValues[i]);
+				}
+				for (size_t i = 0; i < oPrev.m_arrIconSets.size(); i++)
+				{
+					if (i < oCurrent.m_arrIconSets.size())
+						oIconSet.m_arrIconSets.push_back(Merge( oPrev.m_arrIconSets[i],	oCurrent.m_arrIconSets[i] ));
+					else
+						oIconSet.m_arrIconSets.push_back(oPrev.m_arrIconSets[i]);
+				}
+				for (size_t i = oPrev.m_arrIconSets.size(); i < oCurrent.m_arrIconSets.size(); i++)
+				{
+					oIconSet.m_arrIconSets.push_back(oCurrent.m_arrIconSets[i]);
+				}
+				return oIconSet;
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
 
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("iconSet")		, m_oIconSet)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("percent")		, m_oPercent)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("reverse")		, m_oReverse)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("showValue")	, m_oShowValue)
+				WritingElement_ReadAttributes_Read_if		(oReader, L"iconSet"	, m_oIconSet)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"percent"	, m_oPercent)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"reverse"	, m_oReverse)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"showValue"	, m_oShowValue)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"custom"		, m_oCustom)
 
 				WritingElement_ReadAttributes_End(oReader)
 			}
 
 		public:
-			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>m_oIconSet;
 			nullable<SimpleTypes::COnOff<>>						m_oPercent;
 			nullable<SimpleTypes::COnOff<>>						m_oReverse;
 			nullable<SimpleTypes::COnOff<>>						m_oShowValue;
+			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
+
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>m_oIconSet;
+//---ext-----------
+			nullable<SimpleTypes::COnOff<>>						m_oCustom;
+			std::vector<nullable<CConditionalFormatIconSet>>	m_arrIconSets;
 		};
 
-		//необработано:
-		//<extLst>
-		class CConditionalFormattingRule : public WritingElementWithChilds<WritingElement>
+		class CConditionalFormattingRule : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormattingRule)
-			CConditionalFormattingRule()
+				CConditionalFormattingRule() : bUsage (false)
 			{
 			}
 			virtual ~CConditionalFormattingRule()
@@ -416,7 +670,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -426,37 +680,39 @@ namespace OOX
 					WritingStringAttrString(L"type", m_oType->ToString());
 					WritingStringAttrInt(L"priority", m_oPriority->GetValue());
 					if (m_oAboveAverage.IsInit() && false == m_oAboveAverage->ToBool())
-						writer.WriteString(_T (" aboveAverage=\"0\""));
+						writer.WriteString(L" aboveAverage=\"0\"");
 					if (m_oBottom.IsInit() && true == m_oBottom->ToBool())
-						writer.WriteString(_T (" bottom=\"1\""));
+						writer.WriteString(L" bottom=\"1\"");
 					WritingStringNullableAttrInt(L"dxfId", m_oDxfId, m_oDxfId->GetValue());
 					if (m_oEqualAverage.IsInit() && true == m_oEqualAverage->ToBool())
-						writer.WriteString(_T (" equalAverage=\"1\""));
+						writer.WriteString(L" equalAverage=\"1\"");
 					WritingStringNullableAttrString(L"operator", m_oOperator, m_oOperator->ToString());
 					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
-						writer.WriteString(_T (" percent=\"1\""));
+						writer.WriteString(L" percent=\"1\"");
 					WritingStringNullableAttrInt(L"rank", m_oRank, m_oRank->GetValue());
 					WritingStringNullableAttrInt(L"stdDev", m_oStdDev, m_oStdDev->GetValue());
 					if (m_oStopIfTrue.IsInit() && true == m_oStopIfTrue->ToBool())
-						writer.WriteString(_T (" stopIfTrue=\"1\""));
+						writer.WriteString(L" stopIfTrue=\"1\"");
 					WritingStringNullableAttrEncodeXmlString(L"text", m_oText, m_oText.get());
 					WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod.get());
 
-					writer.WriteString(_T(">"));
+					writer.WriteString(L">");
 
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
+					if (m_oIconSet.IsInit())
+						m_oIconSet->toXML(writer);
+					if (m_oColorScale.IsInit())
+						m_oColorScale->toXML(writer);
+					if (m_oDataBar.IsInit())
+						m_oDataBar->toXML(writer);
+					if (m_oFormula.IsInit())
+						m_oFormula->toXML(writer);
 
-					writer.WriteString(_T("</cfRule>"));
+					writer.WriteString(L"</cfRule>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				bUsage = false;
 				ReadAttributes(oReader);
 
 				if (oReader.IsEmptyNode())
@@ -466,16 +722,34 @@ namespace OOX
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (L"colorScale" == sName)
-						m_arrItems.push_back(new CColorScale(oReader));
-					else if (L"dataBar" == sName)
-						m_arrItems.push_back(new CDataBar(oReader));
-					else if (L"formula" == sName || L"f" == sName)
-						m_arrItems.push_back(new CFormulaCF(oReader));
-					else if (L"iconSet" == sName)
-						m_arrItems.push_back(new CIconSet(oReader));
-					else if (L"dxf" == sName)
+					
+					if (L"colorScale" == sName )
+						m_oColorScale = oReader;
+					else if ( L"dataBar" == sName)
+						m_oDataBar = oReader;
+					else if ( L"formula" == sName || L"f" == sName)
+						m_oFormula = oReader;
+					else if ( L"iconSet" == sName)
+						m_oIconSet = oReader;
+					else if ( L"dxf" == sName)
 						m_oDxf = oReader;
+					else if ( L"extLst" == sName )
+					{
+						m_oExtLst = oReader;
+						if ( m_oExtLst.IsInit() )
+						{
+							for (size_t i = 0; i < m_oExtLst->m_arrExt.size(); ++i)
+							{
+								if (!m_oExtLst->m_arrExt[i]) continue;
+
+								if (m_oExtLst->m_arrExt[i]->m_oId.IsInit())
+								{
+									m_oExtId = m_oExtLst->m_arrExt[i]->m_oId;
+									break;
+								}
+							}
+						}
+					}
 
 				}
 			}
@@ -484,32 +758,80 @@ namespace OOX
 			{
 				return et_x_ConditionalFormattingRule;
 			}
-
 			bool isValid () const
 			{
 				return m_oType.IsInit() && m_oPriority.IsInit();
 			}
 
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			{
+				nullable<Type> oResult;
+
+				if ( oCurrent.IsInit() )	oResult = oCurrent;
+				else if ( oPrev.IsInit() )	oResult = oPrev;
+
+				return oResult;
+			}
+			static const CConditionalFormattingRule Merge(const CConditionalFormattingRule& oPrev, const CConditionalFormattingRule& oCurrent)
+			{
+				CConditionalFormattingRule oRule;
+				
+				oRule.m_oAboveAverage	= Merge( oPrev.m_oAboveAverage,	oCurrent.m_oAboveAverage );
+				oRule.m_oBottom			= Merge( oPrev.m_oBottom,		oCurrent.m_oBottom );
+				oRule.m_oDxfId			= Merge( oPrev.m_oDxfId,		oCurrent.m_oDxfId );
+				oRule.m_oEqualAverage	= Merge( oPrev.m_oEqualAverage,	oCurrent.m_oEqualAverage );
+				oRule.m_oOperator		= Merge( oPrev.m_oOperator,		oCurrent.m_oOperator );
+				oRule.m_oPercent		= Merge( oPrev.m_oPercent,		oCurrent.m_oPercent );
+				oRule.m_oPriority		= Merge( oPrev.m_oPriority,		oCurrent.m_oPriority );
+				oRule.m_oRank			= Merge( oPrev.m_oRank,			oCurrent.m_oRank );
+				oRule.m_oStdDev			= Merge( oPrev.m_oStdDev,		oCurrent.m_oStdDev );
+				oRule.m_oStopIfTrue		= Merge( oPrev.m_oStopIfTrue,	oCurrent.m_oStopIfTrue );
+				oRule.m_oText			= Merge( oPrev.m_oText,			oCurrent.m_oText );
+				oRule.m_oTimePeriod		= Merge( oPrev.m_oTimePeriod,	oCurrent.m_oTimePeriod );
+				oRule.m_oType			= Merge( oPrev.m_oType,			oCurrent.m_oType );
+
+				if (oPrev.m_oIconSet.IsInit() && oCurrent.m_oIconSet.IsInit())
+					oRule.m_oIconSet	= CIconSet::Merge	( oPrev.m_oIconSet.get(),		oCurrent.m_oIconSet.get());
+				else
+					oRule.m_oIconSet	= Merge( oPrev.m_oIconSet,	oCurrent.m_oIconSet );
+
+				if (oPrev.m_oColorScale.IsInit() && oCurrent.m_oColorScale.IsInit())
+					oRule.m_oColorScale = CColorScale::Merge( oPrev.m_oColorScale.get(),	oCurrent.m_oColorScale.get());
+				else
+					oRule.m_oColorScale	= Merge( oPrev.m_oColorScale,	oCurrent.m_oColorScale );
+
+				if (oPrev.m_oDataBar.IsInit() && oCurrent.m_oDataBar.IsInit())
+					oRule.m_oDataBar	= CDataBar::Merge	( oPrev.m_oDataBar.get(),		oCurrent.m_oDataBar.get());		
+				else
+					oRule.m_oDataBar	= Merge( oPrev.m_oDataBar,	oCurrent.m_oDataBar );
+
+				if (oPrev.m_oFormula.IsInit() && oCurrent.m_oFormula.IsInit())
+					oRule.m_oFormula	= CFormulaCF::Merge	( oPrev.m_oFormula.get(),		oCurrent.m_oFormula.get());
+				else
+					oRule.m_oFormula	= Merge( oPrev.m_oFormula,	oCurrent.m_oFormula );
+				return oRule;
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
 
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("aboveAverage")	, m_oAboveAverage)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("bottom")			, m_oBottom)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("dxfId")			, m_oDxfId)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("equalAverage")	, m_oEqualAverage)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("operator")		, m_oOperator)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("percent")			, m_oPercent)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("priority")		, m_oPriority)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("rank")			, m_oRank)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("stdDev")			, m_oStdDev)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("stopIfTrue")		, m_oStopIfTrue)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("text")			, m_oText)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("timePeriod")		, m_oTimePeriod)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("type")			, m_oType)
+				WritingElement_ReadAttributes_Read_if		(oReader, L"aboveAverage"	, m_oAboveAverage)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"bottom"			, m_oBottom)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"dxfId"			, m_oDxfId)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"equalAverage"	, m_oEqualAverage)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"operator"		, m_oOperator)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"percent"		, m_oPercent)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"priority"		, m_oPriority)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"rank"			, m_oRank)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"stdDev"			, m_oStdDev)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"stopIfTrue"		, m_oStopIfTrue)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"text"			, m_oText)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"timePeriod"		, m_oTimePeriod)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"			, m_oType)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"id"				, m_oId)
 
 				WritingElement_ReadAttributes_End(oReader)
 			}
@@ -526,13 +848,22 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRank;
 			nullable<SimpleTypes::CDecimalNumber<>>				m_oStdDev;
 			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
+			nullable<std::wstring>								m_oId;
 			nullable<std::wstring>								m_oText;
 			nullable<std::wstring>								m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
 			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;	
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
+			nullable<std::wstring>								m_oExtId;
+
+			nullable<CIconSet>		m_oIconSet;
+			nullable<CColorScale>	m_oColorScale;
+			nullable<CDataBar>		m_oDataBar;
+			nullable<CFormulaCF>	m_oFormula;
+
+			bool bUsage;
 		};
 
-		//необработано:
-		//<extLst>
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
 		public:
@@ -548,7 +879,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -569,10 +900,10 @@ namespace OOX
 
 					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())
 					{
-						writer.WriteString(_T (" pivot=\"1\""));
+						writer.WriteString(L" pivot=\"1\"");
 					}
 
-					writer.WriteString(_T(">"));
+					writer.WriteString(L">");
 
                     for ( size_t i = 0; i < m_arrItems.size(); ++i)
                     {
@@ -582,7 +913,7 @@ namespace OOX
                         }
                     }
 
-					writer.WriteString(_T("</conditionalFormatting>"));
+					writer.WriteString(L"</conditionalFormatting>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -597,9 +928,9 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if (_T("cfRule") == sName)
+					if (L"cfRule" == sName)
 						m_arrItems.push_back(new CConditionalFormattingRule(oReader));
-					if (_T("sqref") == sName)
+					if (L"sqref" == sName)
 						m_oSqRef = oReader.GetText2();
 				}
 			}
@@ -608,15 +939,23 @@ namespace OOX
 			{
 				return et_x_ConditionalFormatting;
 			}
+
+			bool IsUsage()
+			{
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( (m_arrItems[i]) && (m_arrItems[i]->bUsage)) return true;
+                }
+				return false;
+			}
 		
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
 
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("sqref")	, m_oSqRef)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("pivot")	, m_oPivot)
+				WritingElement_ReadAttributes_Read_if		(oReader, L"sqref"	, m_oSqRef)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"pivot"	, m_oPivot)
 
 				WritingElement_ReadAttributes_End(oReader)
 			}

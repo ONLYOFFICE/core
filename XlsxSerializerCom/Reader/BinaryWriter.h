@@ -2229,7 +2229,7 @@ namespace BinXlsxRW
 			// ConditionalFormatting
 			if ( !oWorksheet.m_arrConditionalFormatting.empty() )
             {
-				WriteConditionalFormattings(oWorksheet.m_arrConditionalFormatting);
+				WriteConditionalFormattings(oWorksheet.m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx);
 			}
             if (oWorksheet.m_oExtLst.IsInit())
             {
@@ -2238,7 +2238,7 @@ namespace BinXlsxRW
                     OOX::Drawing::COfficeArtExtension* pExt = oWorksheet.m_oExtLst->m_arrExt[i];
 					if ( !pExt->m_arrConditionalFormatting.empty() )
 					{
-						WriteConditionalFormattings(pExt->m_arrConditionalFormatting);
+						WriteConditionalFormattings(pExt->m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx);
 					}
                 }
             }
@@ -4130,17 +4130,21 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		void WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting)
+		void WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting,
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
 		{
 			int nCurPos = 0;
 			for (size_t nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
 			{
+				if (arrConditionalFormatting[nIndex]->IsUsage()) continue;
+
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ConditionalFormatting);
-				WriteConditionalFormatting(*arrConditionalFormatting[nIndex]);
+				WriteConditionalFormatting(*arrConditionalFormatting[nIndex], mapCFRuleEx);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		void WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting)
+		void WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting,
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
 		{
 			int nCurPos = 0;
 
@@ -4156,23 +4160,33 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteStringW(oConditionalFormatting.m_oSqRef.get());
 			}
 
-			if (0 < oConditionalFormatting.m_arrItems.size())
+			if (false == oConditionalFormatting.m_arrItems.empty())
 			{
-				WriteConditionalFormattingRules(oConditionalFormatting.m_arrItems);
+				for (size_t i = 0, length = oConditionalFormatting.m_arrItems.size(); i < length; ++i)
+				{
+					int nCurPos1 = m_oBcw.WriteItemStart(c_oSer_ConditionalFormatting::ConditionalFormattingRule);
+					WriteConditionalFormattingRule(*oConditionalFormatting.m_arrItems[i], mapCFRuleEx);
+					m_oBcw.WriteItemEnd(nCurPos1);
+				}			
 			}
 		}
-		void WriteConditionalFormattingRules(const std::vector<OOX::Spreadsheet::CConditionalFormattingRule *>& aConditionalFormattingRules)
+		void WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule,
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
 		{
-			int nCurPos = 0;
-			for (size_t i = 0, length = aConditionalFormattingRules.size(); i < length; ++i)
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
+			if (oConditionalFormattingRule.m_oExtId.IsInit())
 			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormatting::ConditionalFormattingRule);
-				WriteConditionalFormattingRule(*aConditionalFormattingRules[i]);
-				m_oBcw.WriteItemEnd(nCurPos);
+				 pFind = mapCFRuleEx.find(oConditionalFormattingRule.m_oExtId.get2());
+
+				 if (pFind != mapCFRuleEx.end())
+				 {
+					 const OOX::Spreadsheet::CConditionalFormattingRule newRule = 
+						 OOX::Spreadsheet::CConditionalFormattingRule::Merge(oConditionalFormattingRule, *pFind->second);
+
+					 pFind->second->bUsage = true;
+					 return WriteConditionalFormattingRule(newRule, mapCFRuleEx);
+				 }
 			}
-		}
-		void WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule)
-		{
 			int nCurPos = 0;
 
 			if (oConditionalFormattingRule.m_oAboveAverage.IsInit())
@@ -4252,76 +4266,52 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
-			if (0 < oConditionalFormattingRule.m_arrItems.size())
+			if (oConditionalFormattingRule.m_oColorScale.IsInit())
 			{
-				WriteConditionalFormattingRuleElements(oConditionalFormattingRule.m_arrItems);
+				int nCurPos1 = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::ColorScale);
+				WriteColorScale(oConditionalFormattingRule.m_oColorScale.get());
+				m_oBcw.WriteItemEnd(nCurPos1);
+			}
+			if (oConditionalFormattingRule.m_oDataBar.IsInit())
+			{
+				int nCurPos1 = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::DataBar);
+				WriteDataBar(oConditionalFormattingRule.m_oDataBar.get());
+				m_oBcw.WriteItemEnd(nCurPos1);
+			}
+			if (oConditionalFormattingRule.m_oFormula.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::FormulaCF);
+				m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oFormula->m_sText);
+			}
+			if (oConditionalFormattingRule.m_oIconSet.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::IconSet);
+				WriteIconSet(oConditionalFormattingRule.m_oIconSet.get());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		void WriteConditionalFormattingRuleElements(const std::vector<OOX::Spreadsheet::WritingElement *>& aConditionalFormattingRuleElements)
-		{
-			OOX::Spreadsheet::CColorScale* pColorScale = NULL;
-			OOX::Spreadsheet::CDataBar* pDataBar = NULL;
-			OOX::Spreadsheet::CFormulaCF* pFormulaCF = NULL;
-			OOX::Spreadsheet::CIconSet* pIconSet = NULL;
 
-			int nCurPos = 0;
-			for (size_t i = 0, length = aConditionalFormattingRuleElements.size(); i < length; ++i)
-			{
-				switch (aConditionalFormattingRuleElements[i]->getType())
-				{
-				case OOX::et_x_ColorScale:
-					pColorScale = static_cast<OOX::Spreadsheet::CColorScale*>(aConditionalFormattingRuleElements[i]);
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::ColorScale);
-					WriteColorScale(*pColorScale);
-					m_oBcw.WriteItemEnd(nCurPos);
-					break;
-				case OOX::et_x_DataBar:
-					pDataBar = static_cast<OOX::Spreadsheet::CDataBar*>(aConditionalFormattingRuleElements[i]);
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::DataBar);
-					WriteDataBar(*pDataBar);
-					m_oBcw.WriteItemEnd(nCurPos);
-					break;
-				case OOX::et_x_FormulaCF:
-					pFormulaCF = static_cast<OOX::Spreadsheet::CFormulaCF*>(aConditionalFormattingRuleElements[i]);
-					m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::FormulaCF);
-					m_oBcw.m_oStream.WriteStringW(pFormulaCF->m_sText);
-					break;
-				case OOX::et_x_IconSet:
-					pIconSet = static_cast<OOX::Spreadsheet::CIconSet*>(aConditionalFormattingRuleElements[i]);
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::IconSet);
-					WriteIconSet(*pIconSet);
-					m_oBcw.WriteItemEnd(nCurPos);
-					break;
-				default:
-					break;
-				}
-			}
-		}
 		void WriteColorScale(const OOX::Spreadsheet::CColorScale& oColorScale)
 		{
-			OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = NULL;
-			OOX::Spreadsheet::CColor* pColor = NULL;
-
 			// ToDo более правильно заделать виртуальную функцию, которая будет писать без привидения типов
-			int nCurPos = 0;
 
-			for (size_t i = 0, length = oColorScale.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oColorScale.m_arrValues.size(); i < length; ++i)
 			{
-				pCFVO = dynamic_cast<OOX::Spreadsheet::CConditionalFormatValueObject*>(oColorScale.m_arrItems[i]);
-				if (NULL != pCFVO)
+				if (oColorScale.m_arrValues[i].IsInit())
 				{
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRuleColorScale::CFVO);
-					WriteCFVO(*pCFVO);
+					int nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRuleColorScale::CFVO);
+					WriteCFVO(oColorScale.m_arrValues[i].get());
 					m_oBcw.WriteItemEnd(nCurPos);
-					continue;
 				}
-				pColor = dynamic_cast<OOX::Spreadsheet::CColor*>(oColorScale.m_arrItems[i]);
-				if (NULL != pColor)
+			}
+
+			for (size_t i = 0, length = oColorScale.m_arrColors.size(); i < length; ++i)
+			{
+				if (oColorScale.m_arrColors[i].IsInit())
 				{
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRuleColorScale::Color);
-					m_oBcw.WriteColor(*pColor, m_pIndexedColors);
+					int nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRuleColorScale::Color);
+					m_oBcw.WriteColor(oColorScale.m_arrColors[i].get(), m_pIndexedColors);
 					m_oBcw.WriteItemEnd(nCurPos);
-					continue;
 				}
 			}
 		}
@@ -4354,11 +4344,14 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
-			for (size_t i = 0, length = oDataBar.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oDataBar.m_arrValues.size(); i < length; ++i)
 			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::CFVO);
-				WriteCFVO(*oDataBar.m_arrItems[i]);
-				m_oBcw.WriteItemEnd(nCurPos);
+				if (oDataBar.m_arrValues[i].IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::CFVO);
+					WriteCFVO(oDataBar.m_arrValues[i].get());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
 			}
 		}
 		void WriteIconSet(const OOX::Spreadsheet::CIconSet& oIconSet)
@@ -4390,11 +4383,14 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
-			for (size_t i = 0, length = oIconSet.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oIconSet.m_arrValues.size(); i < length; ++i)
 			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIconSet::CFVO);
-				WriteCFVO(*oIconSet.m_arrItems[i]);
-				m_oBcw.WriteItemEnd(nCurPos);
+				if (oIconSet.m_arrValues[i].IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::CFVO);
+					WriteCFVO(oIconSet.m_arrValues[i].get());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
 			}
 		}
 		void WriteCFVO(const OOX::Spreadsheet::CConditionalFormatValueObject& oCFVO)

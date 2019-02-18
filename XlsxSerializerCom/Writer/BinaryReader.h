@@ -4339,25 +4339,29 @@ namespace BinXlsxRW
 			{
 				OOX::Spreadsheet::CColorScale* pColorScale = new OOX::Spreadsheet::CColorScale();
 				READ1_DEF(length, res, this->ReadColorScale, pColorScale);
-				pConditionalFormattingRule->m_arrItems.push_back(pColorScale);
+
+				pConditionalFormattingRule->m_oColorScale = pColorScale;
 			}
 			else if(c_oSer_ConditionalFormattingRule::DataBar == type)
 			{
 				OOX::Spreadsheet::CDataBar* pDataBar = new OOX::Spreadsheet::CDataBar();
 				READ1_DEF(length, res, this->ReadDataBar, pDataBar);
-				pConditionalFormattingRule->m_arrItems.push_back(pDataBar);
+				
+				pConditionalFormattingRule->m_oDataBar = pDataBar;
 			}
 			else if(c_oSer_ConditionalFormattingRule::FormulaCF == type)
 			{
 				OOX::Spreadsheet::CFormulaCF* pFormulaCF = new OOX::Spreadsheet::CFormulaCF();
 				pFormulaCF->m_sText.append(m_oBufferedStream.GetString4(length));
-				pConditionalFormattingRule->m_arrItems.push_back(pFormulaCF);
+				
+				pConditionalFormattingRule->m_oFormula = pFormulaCF;
 			}
 			else if(c_oSer_ConditionalFormattingRule::IconSet == type)
 			{
 				OOX::Spreadsheet::CIconSet* pIconSet = new OOX::Spreadsheet::CIconSet();
 				READ1_DEF(length, res, this->ReadIconSet, pIconSet);
-				pConditionalFormattingRule->m_arrItems.push_back(pIconSet);
+				
+				pConditionalFormattingRule->m_oIconSet = pIconSet;
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -4369,15 +4373,15 @@ namespace BinXlsxRW
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSer_ConditionalFormattingRuleColorScale::CFVO == type)
 			{
-				OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = new OOX::Spreadsheet::CConditionalFormatValueObject();
-				READ1_DEF(length, res, this->ReadCFVO, pCFVO);
-				pColorScale->m_arrItems.push_back(pCFVO);
+				nullable<OOX::Spreadsheet::CConditionalFormatValueObject> pCFVO; pCFVO.Init();
+				READ1_DEF(length, res, this->ReadCFVO, pCFVO.GetPointer());
+				pColorScale->m_arrValues.push_back(pCFVO);
 			}
 			else if(c_oSer_ConditionalFormattingRuleColorScale::Color == type)
 			{
-				OOX::Spreadsheet::CColor* pColor = new OOX::Spreadsheet::CColor();
-				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pColor);
-				pColorScale->m_arrItems.push_back(pColor);
+				nullable<OOX::Spreadsheet::CColor> pColor; pColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pColor.GetPointer());
+				pColorScale->m_arrColors.push_back(pColor);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -4409,9 +4413,9 @@ namespace BinXlsxRW
 			}
 			else if(c_oSer_ConditionalFormattingDataBar::CFVO == type)
 			{
-				OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = new OOX::Spreadsheet::CConditionalFormatValueObject();
-				READ1_DEF(length, res, this->ReadCFVO, pCFVO);
-				pDataBar->m_arrItems.push_back(pCFVO);
+				nullable<OOX::Spreadsheet::CConditionalFormatValueObject> pCFVO; pCFVO.Init();
+				READ1_DEF(length, res, this->ReadCFVO, pCFVO.GetPointer());
+				pDataBar->m_arrValues.push_back(pCFVO);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -4443,9 +4447,9 @@ namespace BinXlsxRW
 			}
 			else if(c_oSer_ConditionalFormattingIconSet::CFVO == type)
 			{
-				OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = new OOX::Spreadsheet::CConditionalFormatValueObject();
-				READ1_DEF(length, res, this->ReadCFVO, pCFVO);
-				pIconSet->m_arrItems.push_back(pCFVO);
+				nullable<OOX::Spreadsheet::CConditionalFormatValueObject> pCFVO; pCFVO.Init();
+				READ1_DEF(length, res, this->ReadCFVO, pCFVO.GetPointer());
+				pIconSet->m_arrValues.push_back(pCFVO);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

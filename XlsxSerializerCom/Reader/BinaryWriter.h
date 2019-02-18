@@ -4441,10 +4441,34 @@ namespace BinXlsxRW
 			{
 				if (oIconSet.m_arrValues[i].IsInit())
 				{
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::CFVO);
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIconSet::CFVO);
 					WriteCFVO(oIconSet.m_arrValues[i].get());
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
+			}
+			for (size_t i = 0, length = oIconSet.m_arrIconSets.size(); i < length; ++i)
+			{
+				if (oIconSet.m_arrIconSets[i].IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIconSet::CFIcon);
+					WriteCFIcon(oIconSet.m_arrIconSets[i].get());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
+			}
+		}
+		void WriteCFIcon(const OOX::Spreadsheet::CConditionalFormatIconSet& oCFIcon)
+		{
+			if (oCFIcon.m_oIconSet.IsInit())
+			{
+				int nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIcon::iconSet);
+				m_oBcw.m_oStream.WriteLONG(oCFIcon.m_oIconSet->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oCFIcon.m_oIconId.IsInit())
+			{
+				int nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIcon::iconId);
+				m_oBcw.m_oStream.WriteLONG(oCFIcon.m_oIconId->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
 		void WriteCFVO(const OOX::Spreadsheet::CConditionalFormatValueObject& oCFVO)
@@ -4466,6 +4490,11 @@ namespace BinXlsxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingValueObject::Val);
 				m_oBcw.m_oStream.WriteStringW(oCFVO.m_oVal.get2());
+			}
+			if (oCFVO.m_oFormula.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingValueObject::Formula);
+				m_oBcw.m_oStream.WriteStringW(oCFVO.m_oFormula->m_sText);
 			}
 		}
         void WriteSparklineGroups(const OOX::Spreadsheet::CSparklineGroups& oSparklineGroups)

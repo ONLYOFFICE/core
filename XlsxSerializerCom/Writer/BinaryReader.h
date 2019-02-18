@@ -4532,8 +4532,30 @@ namespace BinXlsxRW
 				READ1_DEF(length, res, this->ReadCFVO, pCFVO.GetPointer());
 				pIconSet->m_arrValues.push_back(pCFVO);
 			}
+			else if(c_oSer_ConditionalFormattingIconSet::CFIcon == type)
+			{
+				nullable<OOX::Spreadsheet::CConditionalFormatIconSet> pCFIcon; pCFIcon.Init();
+				READ1_DEF(length, res, this->ReadCFIcon, pCFIcon.GetPointer());
+				pIconSet->m_arrIconSets.push_back(pCFIcon);
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadCFIcon(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CConditionalFormatIconSet* pCFIcon = static_cast<OOX::Spreadsheet::CConditionalFormatIconSet*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ConditionalFormattingIcon::iconSet == type)
+			{
+				pCFIcon->m_oIconSet.Init();
+				pCFIcon->m_oIconSet->SetValue((SimpleTypes::Spreadsheet::EIconSetType)m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingIcon::iconId == type)
+			{
+				pCFIcon->m_oIconId.Init();
+				pCFIcon->m_oIconId->SetValue(m_oBufferedStream.GetLong());
+			}
 			return res;
 		}
 		int ReadCFVO(BYTE type, long length, void* poResult)
@@ -4553,7 +4575,12 @@ namespace BinXlsxRW
 			else if(c_oSer_ConditionalFormattingValueObject::Val == type)
 			{
 				pCFVO->m_oVal.Init();
-				pCFVO->m_oVal->append(m_oBufferedStream.GetString4(length));
+				pCFVO->m_oVal = m_oBufferedStream.GetString4(length);
+			}
+			else if(c_oSer_ConditionalFormattingValueObject::Formula == type)
+			{
+				pCFVO->m_oFormula.Init();
+				pCFVO->m_oFormula->m_sText = m_oBufferedStream.GetString4(length);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

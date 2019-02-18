@@ -2200,7 +2200,13 @@ namespace SimpleTypes
 			Arrows5				= 13,
 			Arrows5Gray			= 14,
 			Quarters5			= 15,
-			Rating5				= 16
+			Rating5				= 16,
+			Triangles3			= 17,
+			Stars3				= 18,
+			Boxes5				= 19,
+			NoIcons				= 20
+
+
 		};
 		template<EIconSetType eDefValue = Arrows3>
 		class ST_IconSetType : public CSimpleType<EIconSetType, eDefValue>
@@ -2210,23 +2216,27 @@ namespace SimpleTypes
 
             virtual EIconSetType FromString(std::wstring &sValue)
 			{
-                if(_T("3Arrows") == sValue)				this->m_eValue = Arrows3;
-                else if(_T("3ArrowsGray") == sValue)	this->m_eValue = Arrows3Gray;
-                else if(_T("3Flags") == sValue)			this->m_eValue = Flags3;
-                else if(_T("3Signs") == sValue)			this->m_eValue = Signs3;
-                else if(_T("3Symbols") == sValue)		this->m_eValue = Symbols3;
-                else if(_T("3Symbols2") == sValue)		this->m_eValue = Symbols3_2;
-                else if(_T("3TrafficLights1") == sValue)this->m_eValue = Traffic3Lights1;
-                else if(_T("3TrafficLights2") == sValue)this->m_eValue = Traffic3Lights2;
-                else if(_T("4Arrows") == sValue)		this->m_eValue = Arrows4;
-                else if(_T("4ArrowsGray") == sValue)	this->m_eValue = Arrows4Gray;
-                else if(_T("4Rating") == sValue)		this->m_eValue = Rating4;
-                else if(_T("4RedToBlack") == sValue)	this->m_eValue = RedToBlack4;
-                else if(_T("4TrafficLights") == sValue)	this->m_eValue = Traffic4Lights;
-                else if(_T("5Arrows") == sValue)		this->m_eValue = Arrows5;
-                else if(_T("5ArrowsGray") == sValue)	this->m_eValue = Arrows5Gray;
-                else if(_T("5Quarters") == sValue)		this->m_eValue = Quarters5;
-                else if(_T("5Rating") == sValue)		this->m_eValue = Rating5;
+                if(L"3Arrows" == sValue)				this->m_eValue = Arrows3;
+                else if(L"3ArrowsGray" == sValue)		this->m_eValue = Arrows3Gray;
+                else if(L"3Flags" == sValue)			this->m_eValue = Flags3;
+                else if(L"3Signs" == sValue)			this->m_eValue = Signs3;
+                else if(L"3Symbols" == sValue)			this->m_eValue = Symbols3;
+                else if(L"3Symbols2" == sValue)			this->m_eValue = Symbols3_2;
+                else if(L"3TrafficLights1" == sValue)	this->m_eValue = Traffic3Lights1;
+                else if(L"3TrafficLights2" == sValue)	this->m_eValue = Traffic3Lights2;
+                else if(L"4Arrows" == sValue)			this->m_eValue = Arrows4;
+                else if(L"4ArrowsGray" == sValue)		this->m_eValue = Arrows4Gray;
+                else if(L"4Rating" == sValue)			this->m_eValue = Rating4;
+                else if(L"4RedToBlack" == sValue)		this->m_eValue = RedToBlack4;
+                else if(L"4TrafficLights" == sValue)	this->m_eValue = Traffic4Lights;
+                else if(L"5Arrows" == sValue)			this->m_eValue = Arrows5;
+                else if(L"5ArrowsGray" == sValue)		this->m_eValue = Arrows5Gray;
+                else if(L"5Quarters" == sValue)			this->m_eValue = Quarters5;
+                else if(L"5Rating" == sValue)			this->m_eValue = Rating5;
+                else if(L"3Triangles" == sValue)		this->m_eValue = Triangles3;
+				else if(L"3Stars" == sValue)			this->m_eValue = Stars3;
+				else if(L"5Boxes" == sValue)			this->m_eValue = Boxes5;
+				else if(L"NoIcons" == sValue)			this->m_eValue = NoIcons;
                 else 									this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
@@ -2235,24 +2245,28 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case Arrows3		:	return _T("3Arrows");		break;
-					case Arrows3Gray	:	return _T("3ArrowsGray");	break;
-					case Flags3			:	return _T("3Flags");		break;
-					case Signs3			:	return _T("3Signs");		break;
-					case Symbols3		:	return _T("3Symbols");		break;
-					case Symbols3_2		:	return _T("3Symbols2");		break;
-					case Traffic3Lights1:	return _T("3TrafficLights1");break;
-					case Traffic3Lights2:	return _T("3TrafficLights2");break;
-					case Arrows4		:	return _T("4Arrows");		break;
-					case Arrows4Gray	:	return _T("4ArrowsGray");	break;
-					case Rating4		:	return _T("4Rating");		break;
-					case RedToBlack4	:	return _T("4RedToBlack");	break;
-					case Traffic4Lights	:	return _T("4TrafficLights");break;
-					case Arrows5		:	return _T("5Arrows");		break;
-					case Arrows5Gray	:	return _T("5ArrowsGray");	break;
-					case Quarters5		:	return _T("5Quarters");		break;
-					case Rating5		:	return _T("5Rating");		break;
-					default				:	return _T("3Arrows");
+					case Arrows3		:	return L"3Arrows";			break;
+					case Arrows3Gray	:	return L"3ArrowsGray";		break;
+					case Flags3			:	return L"3Flags";			break;
+					case Signs3			:	return L"3Signs";			break;
+					case Symbols3		:	return L"3Symbols";			break;
+					case Symbols3_2		:	return L"3Symbols2";		break;
+					case Traffic3Lights1:	return L"3TrafficLights1";	break;
+					case Traffic3Lights2:	return L"3TrafficLights2";	break;
+					case Arrows4		:	return L"4Arrows";			break;
+					case Arrows4Gray	:	return L"4ArrowsGray";		break;
+					case Rating4		:	return L"4Rating";			break;
+					case RedToBlack4	:	return L"4RedToBlack";		break;
+					case Traffic4Lights	:	return L"4TrafficLights";	break;
+					case Arrows5		:	return L"5Arrows";			break;
+					case Arrows5Gray	:	return L"5ArrowsGray";		break;
+					case Quarters5		:	return L"5Quarters";		break;
+					case Rating5		:	return L"5Rating";			break;
+					case Triangles3		:	return L"3Triangles";		break;
+					case Stars3			:	return L"3Stars";			break;
+					case Boxes5			:	return L"5Boxes";			break;
+					case NoIcons		:	return L"NoIcons";			break;
+					default				:	return L"3Arrows";
 				}
 			}
 

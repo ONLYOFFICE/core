@@ -48,7 +48,6 @@ namespace OOX
 			WritingElement_AdditionConstructors(CFormulaCF)
 			CFormulaCF()
 			{
-				m_sNodeName = L"formula";
 			}
 			virtual ~CFormulaCF()
 			{
@@ -62,9 +61,11 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 			{
-				writer.WriteString(L"<" + m_sNodeName + L">");
+				std::wstring node_name = bExtendedWrite ? L"xm:f" : L"formula";
+				
+				writer.WriteString(L"<" + node_name + L">");
 				writer.WriteEncodeXmlString(m_sText);
-				writer.WriteString(L"</" + m_sNodeName + L">");
+				writer.WriteString(L"</" + node_name + L">");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -103,7 +104,7 @@ namespace OOX
 			}
 			bool isExtended ()
 			{
-				return false;
+				return (m_sNodeName == L"xm:f");
 			}
 			std::wstring m_sNodeName;
 			std::wstring m_sText;
@@ -173,7 +174,10 @@ namespace OOX
 			{
 				return et_x_ConditionalFormatValueObject;
 			}
-
+			bool isExtended ()
+			{
+				return (m_oFormula.IsInit());
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -218,10 +222,10 @@ namespace OOX
 			{
 				if (!bExtendedWrite) return;
 
-				writer.WriteString(L"<x14:cfIcon>");
+				writer.WriteString(L"<x14:cfIcon");
 					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
 					WritingStringNullableAttrInt(L"iconId", m_oIconId, m_oIconId->GetValue())
-				writer.WriteString(L"</x14:cfIcon>");
+				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

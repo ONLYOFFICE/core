@@ -748,13 +748,20 @@ namespace BinXlsxRW
 		IconSet = 1,
 		Percent = 2,
 		Reverse = 3,
-		ShowValue = 4
+		ShowValue = 4,
+		CFIcon = 5
 	};}
 	namespace c_oSer_ConditionalFormattingValueObject{enum c_oSer_ConditionalFormattingValueObject
 	{
 		Gte = 0,
 		Type = 1,
-		Val = 2
+		Val = 2,
+		Formula = 3
+	};}
+	namespace c_oSer_ConditionalFormattingIcon{enum c_oSer_ConditionalFormattingIcon
+	{
+		iconSet = 0,
+		iconId = 1
 	};}
 	namespace c_oSer_SheetView{enum c_oSer_SheetView
 	{

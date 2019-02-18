@@ -731,7 +731,15 @@ namespace BinXlsxRW
 		Color = 1,
 		MaxLength = 2,
 		MinLength = 3,
-		ShowValue = 4
+		ShowValue = 4,
+		NegativeColor = 5,
+		BorderColor = 6,
+		AxisColor = 7,
+		NegativeBorderColor = 8,
+		AxisPosition = 9,
+		Direction = 10,
+		GradientEnabled = 11,
+		NegativeBarColorSameAsPositive = 12
 	};}
 	namespace c_oSer_ConditionalFormattingIconSet{enum c_oSer_ConditionalFormattingIconSet
 	{

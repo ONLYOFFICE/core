@@ -4337,13 +4337,61 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteBOOL(oDataBar.m_oShowValue->ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if (oDataBar.m_oGradient.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::GradientEnabled);
+				m_oBcw.m_oStream.WriteBOOL(oDataBar.m_oGradient->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oDataBar.m_oNegativeBarColorSameAsPositive.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::NegativeBarColorSameAsPositive);
+				m_oBcw.m_oStream.WriteBOOL(oDataBar.m_oNegativeBarColorSameAsPositive->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oDataBar.m_oAxisPosition.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::AxisPosition);
+				m_oBcw.m_oStream.WriteLONG(oDataBar.m_oAxisPosition->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oDataBar.m_oDirection.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::Direction);
+				m_oBcw.m_oStream.WriteLONG(oDataBar.m_oDirection->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			if (oDataBar.m_oColor.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::Color);
 				m_oBcw.WriteColor(oDataBar.m_oColor.get(), m_pIndexedColors);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-
+			if (oDataBar.m_oBorderColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::BorderColor);
+				m_oBcw.WriteColor(oDataBar.m_oColor.get(), m_pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}			
+			if (oDataBar.m_oAxisColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::AxisColor);
+				m_oBcw.WriteColor(oDataBar.m_oAxisColor.get(), m_pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}	
+			if (oDataBar.m_oNegativeFillColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::NegativeColor);
+				m_oBcw.WriteColor(oDataBar.m_oNegativeFillColor.get(), m_pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oDataBar.m_oNegativeBorderColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::NegativeBorderColor);
+				m_oBcw.WriteColor(oDataBar.m_oNegativeBorderColor.get(), m_pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			
 			for (size_t i = 0, length = oDataBar.m_arrValues.size(); i < length; ++i)
 			{
 				if (oDataBar.m_arrValues[i].IsInit())

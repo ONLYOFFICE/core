@@ -4406,10 +4406,50 @@ namespace BinXlsxRW
 				pDataBar->m_oShowValue.Init();
 				pDataBar->m_oShowValue->FromBool(m_oBufferedStream.GetBool());
 			}
+			else if(c_oSer_ConditionalFormattingDataBar::GradientEnabled == type)
+			{
+				pDataBar->m_oGradient.Init();
+				pDataBar->m_oGradient->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::NegativeBarColorSameAsPositive == type)
+			{
+				pDataBar->m_oNegativeBarColorSameAsPositive.Init();
+				pDataBar->m_oNegativeBarColorSameAsPositive->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::AxisPosition == type)
+			{
+				pDataBar->m_oAxisPosition.Init();
+				pDataBar->m_oAxisPosition->SetValue((SimpleTypes::Spreadsheet::EDataBarAxisPosition)m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::Direction == type)
+			{
+				pDataBar->m_oDirection.Init();
+				pDataBar->m_oDirection->SetValue((SimpleTypes::Spreadsheet::EDataBarDirection)m_oBufferedStream.GetLong());
+			}
 			else if(c_oSer_ConditionalFormattingDataBar::Color == type)
 			{
 				pDataBar->m_oColor.Init();
 				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oColor.GetPointer());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::AxisColor == type)
+			{
+				pDataBar->m_oAxisColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oAxisColor.GetPointer());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::BorderColor == type)
+			{
+				pDataBar->m_oBorderColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oBorderColor.GetPointer());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::NegativeColor == type)
+			{
+				pDataBar->m_oNegativeFillColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oNegativeFillColor.GetPointer());
+			}	
+			else if(c_oSer_ConditionalFormattingDataBar::NegativeBorderColor == type)
+			{
+				pDataBar->m_oNegativeBorderColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oNegativeBorderColor.GetPointer());
 			}
 			else if(c_oSer_ConditionalFormattingDataBar::CFVO == type)
 			{

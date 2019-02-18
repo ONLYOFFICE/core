@@ -2702,10 +2702,37 @@ namespace BinXlsxRW
 				oMergeCells.m_oCount->SetValue((unsigned int)oMergeCells.m_arrItems.size());
 			SEEK_TO_POS_END(oMergeCells);
 
+			OOX::Drawing::COfficeArtExtension* pOfficeArtExtensionCF = new OOX::Drawing::COfficeArtExtension();
+
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::ConditionalFormatting);
-				OOX::Spreadsheet::CConditionalFormatting oConditionalFormatting;
-				READ1_DEF(length, res, this->ReadConditionalFormatting, &oConditionalFormatting);
-			SEEK_TO_POS_END(oConditionalFormatting);
+				OOX::Spreadsheet::CConditionalFormatting *pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
+				READ1_DEF(length, res, this->ReadConditionalFormatting, pConditionalFormatting);
+
+				if (pConditionalFormatting->IsExtended())
+				{
+					pOfficeArtExtensionCF->m_arrConditionalFormatting.push_back(pConditionalFormatting); 
+				}
+				else
+				{
+					pConditionalFormatting->toXML(oStreamWriter);
+					delete pConditionalFormatting;
+				}
+			SEEK_TO_POS_END2();
+
+			if (pOfficeArtExtensionCF->m_arrConditionalFormatting.empty())
+			{
+				delete pOfficeArtExtensionCF;
+			}
+			else
+			{
+				pOfficeArtExtensionCF->m_sUri.Init();
+				pOfficeArtExtensionCF->m_sUri = L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}";
+				pOfficeArtExtensionCF->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+				if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+					m_pCurWorksheet->m_oExtLst.Init();
+				m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtensionCF);
+			}
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::Hyperlinks);
 				OOX::Spreadsheet::CHyperlinks oHyperlinks;
@@ -2882,12 +2909,19 @@ namespace BinXlsxRW
 				READ1_DEF(length, res, this->ReadSparklineGroups, pOfficeArtExtension->m_oSparklineGroups.GetPointer());
 
 				pOfficeArtExtension->m_sUri.Init();
-				pOfficeArtExtension->m_sUri->append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
-				pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
-				OOX::Drawing::COfficeArtExtensionList oExtLst;
-				oExtLst.m_arrExt.push_back(pOfficeArtExtension);
-				oStreamWriter.WriteString(oExtLst.toXMLWithNS(_T("")));
+				pOfficeArtExtension->m_sUri = L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}";
+				pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+				if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+					m_pCurWorksheet->m_oExtLst.Init();
+				m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+
 			SEEK_TO_POS_END2();
+			
+			if (m_pCurWorksheet->m_oExtLst.IsInit())
+			{
+				oStreamWriter.WriteString(m_pCurWorksheet->m_oExtLst->toXMLWithNS(L""));
+			}
 
 			SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
 				READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
@@ -2910,6 +2944,8 @@ namespace BinXlsxRW
 					RELEASEOBJECT(oPivotCachesTemp.pTable);
 				}
 			SEEK_TO_POS_END2();
+
+
 
 			m_oBufferedStream.Seek(nOldPos);
 			m_pCurWorksheet->toXMLEnd(oStreamWriter);
@@ -4415,6 +4451,11 @@ namespace BinXlsxRW
 			{
 				pDataBar->m_oNegativeBarColorSameAsPositive.Init();
 				pDataBar->m_oNegativeBarColorSameAsPositive->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::NegativeBarBorderColorSameAsPositive == type)
+			{
+				pDataBar->m_oNegativeBarBorderColorSameAsPositive.Init();
+				pDataBar->m_oNegativeBarBorderColorSameAsPositive->FromBool(m_oBufferedStream.GetBool());
 			}
 			else if(c_oSer_ConditionalFormattingDataBar::AxisPosition == type)
 			{

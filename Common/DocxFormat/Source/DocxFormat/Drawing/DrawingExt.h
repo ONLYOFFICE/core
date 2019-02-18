@@ -220,15 +220,15 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
             {
-                return toXMLWithNS(_T("a:"));
+                return toXMLWithNS(L"a:");
             }
             std::wstring toXMLWithNS(const std::wstring& sNamespace) const
 			{
-                std::wstring sResult = _T("<");
-                sResult += sNamespace;
-                sResult += _T("extLst>");
+				if (m_arrExt.empty()) return L"";
+
+                std::wstring sResult = L"<" + sNamespace + L"extLst>";
 				
                 for ( size_t nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
 				{
@@ -236,9 +236,7 @@ namespace OOX
                         sResult += m_arrExt[nIndex]->toXMLWithNS(sNamespace);
 				}
 
-                sResult += _T("</");
-                sResult += sNamespace;
-                sResult += _T("extLst>");
+                sResult += L"</" + sNamespace + L"extLst>";
 
 				return sResult;
 			}

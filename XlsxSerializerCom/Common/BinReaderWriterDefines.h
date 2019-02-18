@@ -739,7 +739,8 @@ namespace BinXlsxRW
 		AxisPosition = 9,
 		Direction = 10,
 		GradientEnabled = 11,
-		NegativeBarColorSameAsPositive = 12
+		NegativeBarColorSameAsPositive = 12,
+		NegativeBarBorderColorSameAsPositive = 13
 	};}
 	namespace c_oSer_ConditionalFormattingIconSet{enum c_oSer_ConditionalFormattingIconSet
 	{

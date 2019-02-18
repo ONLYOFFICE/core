@@ -147,6 +147,17 @@ namespace OOX
 				m_oAltTextTable->toXML(writer);
 				sResult += writer.GetData().c_str();
 			}			
+			if (false == m_arrConditionalFormatting.empty())
+			{
+				sResult += L"<x14:conditionalFormattings>";
+				NSStringUtils::CStringBuilder writer;
+				for (size_t i = 0; i < m_arrConditionalFormatting.size(); i++)
+				{
+					m_arrConditionalFormatting[i]->toXML2(writer, true);
+				}
+				sResult += writer.GetData().c_str();
+				sResult += L"</x14:conditionalFormattings>";
+			}
 			if (m_oId.IsInit())
 			{
 				sResult += L"<" + sNamespace + L"id>" + m_oId.get2() + L"</" + sNamespace + L"id>";

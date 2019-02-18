@@ -4349,6 +4349,12 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteBOOL(oDataBar.m_oNegativeBarColorSameAsPositive->ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if (oDataBar.m_oNegativeBarBorderColorSameAsPositive.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::NegativeBarBorderColorSameAsPositive);
+				m_oBcw.m_oStream.WriteBOOL(oDataBar.m_oNegativeBarBorderColorSameAsPositive->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			if (oDataBar.m_oAxisPosition.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::AxisPosition);

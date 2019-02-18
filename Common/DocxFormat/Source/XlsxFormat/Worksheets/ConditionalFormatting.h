@@ -60,11 +60,15 @@ namespace OOX
 			{
 				return L"";
 			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 			{
 				writer.WriteString(L"<" + m_sNodeName + L">");
 				writer.WriteEncodeXmlString(m_sText);
 				writer.WriteString(L"</" + m_sNodeName + L">");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				toXML2(writer, false);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -97,7 +101,10 @@ namespace OOX
 
 				return oFormula;
 			}
-
+			bool isExtended ()
+			{
+				return false;
+			}
 			std::wstring m_sNodeName;
 			std::wstring m_sText;
 		};
@@ -121,19 +128,31 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (m_oType.IsInit())
+				toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
+			{
+				if (false == m_oType.IsInit()) return;
+				
+				if (bExtendedWrite == false)
 				{
-					writer.WriteString(L"<cfvo");
-
 					if (m_oType->GetValue() == SimpleTypes::Spreadsheet::autoMin) m_oType->SetValue(SimpleTypes::Spreadsheet::Minimum);
 					if (m_oType->GetValue() == SimpleTypes::Spreadsheet::autoMax) m_oType->SetValue(SimpleTypes::Spreadsheet::Maximum); 
+				}
 
+				std::wstring node_name = bExtendedWrite ? L"x14:cfvo" : L"cfvo";
+	
+				writer.WriteString(L"<" + node_name);
 					WritingStringAttrString(L"type", m_oType->ToString());
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
 						writer.WriteString(L" gte=\"0\"");
 					WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
-					writer.WriteString(L"/>");
-				}
+				writer.WriteString(L">");
+
+				if (m_oFormula.IsInit())
+					m_oFormula->toXML2(writer, bExtendedWrite);
+
+				writer.WriteString(L"</" + node_name + L">");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -150,7 +169,6 @@ namespace OOX
 						m_oFormula = oReader;
 				}
 			}
-
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormatValueObject;
@@ -161,11 +179,9 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start(oReader)
-
-				WritingElement_ReadAttributes_Read_if		(oReader, L"gte"	, m_oGte)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"	, m_oType)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"val"	, m_oVal)
-
+					WritingElement_ReadAttributes_Read_if		(oReader, L"gte"	, m_oGte)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"	, m_oType)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"val"	, m_oVal)
 				WritingElement_ReadAttributes_End(oReader)
 			}
 
@@ -196,10 +212,16 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<cfIcon>");
+				toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
+			{
+				if (!bExtendedWrite) return;
+
+				writer.WriteString(L"<x14:cfIcon>");
 					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
 					WritingStringNullableAttrInt(L"iconId", m_oIconId, m_oIconId->GetValue())
-				writer.WriteString(L"</cfIcon>");
+				writer.WriteString(L"</x14:cfIcon>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -245,6 +267,10 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
+			{
 				if (1 < m_arrValues.size() && 1 < m_arrColors.size()) // min 2 + 2
 				{
                     std::wstring sValue;
@@ -254,7 +280,7 @@ namespace OOX
                     {
 						if ( m_arrValues[i].IsInit() )
                         {
-                            m_arrValues[i]->toXML(writer);
+                            m_arrValues[i]->toXML2(writer, bExtendedWrite);
                         }
 						//if ( (i < m_arrColors.size()) && (m_arrColors[i].IsInit()) )
 						//{
@@ -334,7 +360,10 @@ namespace OOX
 				}
 				return oColorScale;
 			}
-
+			bool isExtended ()
+			{
+				return false;
+			}
 			std::vector<nullable<CConditionalFormatValueObject>>	m_arrValues;
 			std::vector<nullable<CColor>>							m_arrColors;
 		};
@@ -356,33 +385,73 @@ namespace OOX
 			{
 				return L"";
 			}
+			bool isExtended ()
+			{
+				if (m_oAxisColor.IsInit() || m_oAxisPosition.IsInit() || m_oDirection.IsInit() || m_oBorderColor.IsInit()
+						|| m_oNegativeFillColor.IsInit() || m_oNegativeBorderColor.IsInit() 
+						|| m_oNegativeBarColorSameAsPositive.IsInit() || m_oNegativeBarBorderColorSameAsPositive.IsInit())
+				{
+					return true;
+				}
+				return false;
+			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (2 == m_arrValues.size() && m_oColor.IsInit())
-				{
-                    std::wstring sValue;
-					writer.WriteString(L"<dataBar");
+				toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
+			{
+				if (2 != m_arrValues.size() || false == m_oColor.IsInit()) return;
+
+				std::wstring node_name = bExtendedWrite ? L"x14:dataBar" : L"dataBar";
+
+				writer.WriteString(L"<" + node_name);
 					WritingStringNullableAttrInt(L"maxLength", m_oMaxLength, m_oMaxLength->GetValue());
 					WritingStringNullableAttrInt(L"minLength", m_oMinLength, m_oMinLength->GetValue());
 					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
 					{
 						writer.WriteString(L" showValue=\"0\"");
 					}
+					if (bExtendedWrite)
+					{
+						if (m_oBorderColor.IsInit()) writer.WriteString(L" border=\"1\"");
+						WritingStringNullableAttrString(L"axisPosition", m_oAxisPosition, m_oAxisPosition->ToString())
+						WritingStringNullableAttrString(L"direction", m_oDirection, m_oDirection->ToString())
+			
+						if (m_oGradient.IsInit() && false == m_oGradient->ToBool())
+						{
+							writer.WriteString(L" gradient=\"0\"");
+						}
+						if (m_oNegativeBarColorSameAsPositive.IsInit() && true == m_oNegativeBarColorSameAsPositive->ToBool())
+						{
+							writer.WriteString(L" negativeBarColorSameAsPositive=\"1\"");
+						}
+						if (m_oNegativeBarBorderColorSameAsPositive.IsInit() && false == m_oNegativeBarBorderColorSameAsPositive->ToBool())
+						{
+							writer.WriteString(L" negativeBarBorderColorSameAsPositive=\"0\"");
+						}
+					}
+				writer.WriteString(L">");
 
-					writer.WriteString(L">");
-
-                    for ( size_t i = 0; i < m_arrValues.size(); ++i)
+                for ( size_t i = 0; i < m_arrValues.size(); ++i)
+                {
+                    if (  m_arrValues[i].IsInit() )
                     {
-                        if (  m_arrValues[i].IsInit() )
-                        {
-                            m_arrValues[i]->toXML(writer);
-                        }
+                        m_arrValues[i]->toXML2(writer, bExtendedWrite);
                     }
+                }
 
-					m_oColor->toXML2(writer, L"color");
+				m_oColor->toXML2(writer, bExtendedWrite ? L"x14:fillColor" : L"color");
 
-					writer.WriteString(L"</dataBar>");
+				if (bExtendedWrite)
+				{
+					if (m_oBorderColor.IsInit())		m_oBorderColor->toXML2(writer, L"x14:borderColor");
+					if (m_oNegativeFillColor.IsInit())	m_oNegativeFillColor->toXML2(writer, L"x14:negativeFillColor");
+					if (m_oNegativeBorderColor.IsInit())m_oNegativeBorderColor->toXML2(writer, L"x14:negativeBorderColor");
+					if (m_oAxisColor.IsInit())			m_oAxisColor->toXML2(writer, L"x14:axisColor");
 				}
+
+				writer.WriteString(L"</" + node_name + L">");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -438,6 +507,7 @@ namespace OOX
 				oDataBar.m_oGradient		= Merge( oPrev.m_oGradient,				oCurrent.m_oGradient );
 				oDataBar.m_oDirection		= Merge( oPrev.m_oDirection,			oCurrent.m_oDirection );
 				oDataBar.m_oNegativeBarColorSameAsPositive = Merge( oPrev.m_oNegativeBarColorSameAsPositive, oCurrent.m_oNegativeBarColorSameAsPositive );
+				oDataBar.m_oNegativeBarBorderColorSameAsPositive = Merge( oPrev.m_oNegativeBarBorderColorSameAsPositive, oCurrent.m_oNegativeBarBorderColorSameAsPositive );
 				
 				oDataBar.m_oColor				= Merge( oPrev.m_oColor,				oCurrent.m_oColor );
 				oDataBar.m_oAxisColor			= Merge( oPrev.m_oAxisColor,			oCurrent.m_oAxisColor );
@@ -462,17 +532,16 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if		(oReader, L"maxLength"	, m_oMaxLength)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"minLength"	, m_oMinLength)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"showValue"	, m_oShowValue)
 
-				WritingElement_ReadAttributes_Read_if		(oReader, L"maxLength"	, m_oMaxLength)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"minLength"	, m_oMinLength)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"showValue"	, m_oShowValue)
-
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"axisPosition", m_oAxisPosition)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"border"		, m_oBorder)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"gradient"	, m_oGradient)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"direction"	, m_oDirection)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, L"negativeBarColorSameAsPositive"	, m_oNegativeBarColorSameAsPositive)
-
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"axisPosition", m_oAxisPosition)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"border"		, m_oBorder)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"gradient"	, m_oGradient)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"direction"	, m_oDirection)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"negativeBarColorSameAsPositive", m_oNegativeBarColorSameAsPositive)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"negativeBarBorderColorSameAsPositive", m_oNegativeBarBorderColorSameAsPositive)
 				WritingElement_ReadAttributes_End(oReader)
 			}
 
@@ -484,12 +553,14 @@ namespace OOX
 			nullable<CColor>								m_oColor;
 
 			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
+
 //---ext-----------
 			nullable<SimpleTypes::Spreadsheet::ST_DataBarAxisPosition<>>	m_oAxisPosition;
 			nullable<SimpleTypes::Spreadsheet::ST_DataBarDirection<>>		m_oDirection;			
 			nullable<SimpleTypes::COnOff<>>									m_oBorder;
 			nullable<SimpleTypes::COnOff<>>									m_oGradient;
 			nullable<SimpleTypes::COnOff<>>									m_oNegativeBarColorSameAsPositive;
+			nullable<SimpleTypes::COnOff<>>									m_oNegativeBarBorderColorSameAsPositive;
 
 			nullable<CColor>								m_oAxisColor;
 			nullable<CColor>								m_oBorderColor;
@@ -517,45 +588,50 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (1 < m_arrValues.size()) // min value = 2
-				{
-                    std::wstring sValue;
-					writer.WriteString(L"<iconSet");
-					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
-					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
-					{
-						writer.WriteString(L" percent=\"0\"");
-					}
-					if (m_oReverse.IsInit() && true == m_oReverse->ToBool())
-					{
-						writer.WriteString(L" reverse=\"1\"");
-					}
-					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
-					{
-						writer.WriteString(L" showValue=\"0\"");
-					}
-					if (m_oCustom.IsInit() && true == m_oCustom->ToBool())
-					{
-						writer.WriteString(L" custom=\"1\"");
-					}
-					writer.WriteString(L">");
+				toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
+			{
+				if (m_arrValues.size() < 2) return;	// min value = 2
 
-                    for ( size_t i = 0; i < m_arrValues.size(); ++i)
-                    {
-						if ( m_arrValues[i].IsInit() )
-                        {
-                            m_arrValues[i]->toXML(writer);
-                        }
-					}
-                    for ( size_t i = 0; i < m_arrIconSets.size(); ++i)
-                    {
-						if ( m_arrIconSets[i].IsInit() )
-                        {
-                            m_arrIconSets[i]->toXML(writer);
-                        }
-					}
-					writer.WriteString(L"</iconSet>");
+				std::wstring node_name = bExtendedWrite ? L"x14:iconSet" : L"iconSet";
+
+				std::wstring sValue;
+				writer.WriteString(L"<" + node_name);
+				WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
+				if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
+				{
+					writer.WriteString(L" percent=\"0\"");
 				}
+				if (m_oReverse.IsInit() && true == m_oReverse->ToBool())
+				{
+					writer.WriteString(L" reverse=\"1\"");
+				}
+				if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
+				{
+					writer.WriteString(L" showValue=\"0\"");
+				}
+				if (bExtendedWrite && false == m_arrIconSets.empty())
+				{
+					writer.WriteString(L" custom=\"1\"");
+				}
+				writer.WriteString(L">");
+
+                for ( size_t i = 0; i < m_arrValues.size(); ++i)
+                {
+					if ( m_arrValues[i].IsInit() )
+                    {
+                        m_arrValues[i]->toXML2(writer, bExtendedWrite);
+                    }
+				}
+                for ( size_t i = 0; bExtendedWrite && i < m_arrIconSets.size(); ++i)
+                {
+					if ( m_arrIconSets[i].IsInit() )
+                    {
+                        m_arrIconSets[i]->toXML2(writer, bExtendedWrite);
+                    }
+				}
+				writer.WriteString(L"</" + node_name + L">");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -628,6 +704,10 @@ namespace OOX
 				}
 				return oIconSet;
 			}
+			bool isExtended ()
+			{
+				return (false == m_arrIconSets.empty());
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -672,11 +752,28 @@ namespace OOX
 			{
 				return L"";
 			}
+			bool isExtended()
+			{
+				if (m_oDxf.IsInit())		return true;
+
+				if (m_oDataBar.IsInit())	return m_oDataBar->isExtended();
+				if (m_oIconSet.IsInit())	return m_oIconSet->isExtended();
+				if (m_oColorScale.IsInit())	return m_oColorScale->isExtended();
+				if (m_oFormula.IsInit())	return m_oFormula->isExtended();
+
+				return false;
+			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (isValid())
-				{
-					writer.WriteString(L"<cfRule");
+				toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
+			{
+				if (false == isValid()) return;
+
+				std::wstring node_name = bExtendedWrite ? L"x14:cfRule" : L"cfRule";
+				
+				writer.WriteString(L"<" + node_name);
 					WritingStringAttrString(L"type", m_oType->ToString());
 					WritingStringAttrInt(L"priority", m_oPriority->GetValue());
 					if (m_oAboveAverage.IsInit() && false == m_oAboveAverage->ToBool())
@@ -695,20 +792,18 @@ namespace OOX
 						writer.WriteString(L" stopIfTrue=\"1\"");
 					WritingStringNullableAttrEncodeXmlString(L"text", m_oText, m_oText.get());
 					WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod.get());
+				writer.WriteString(L">");
 
-					writer.WriteString(L">");
+				if (m_oIconSet.IsInit())
+					m_oIconSet->toXML2(writer, bExtendedWrite);
+				if (m_oColorScale.IsInit())
+					m_oColorScale->toXML2(writer, bExtendedWrite);
+				if (m_oDataBar.IsInit())
+					m_oDataBar->toXML2(writer, bExtendedWrite);
+				if (m_oFormula.IsInit())
+					m_oFormula->toXML2(writer, bExtendedWrite);
 
-					if (m_oIconSet.IsInit())
-						m_oIconSet->toXML(writer);
-					if (m_oColorScale.IsInit())
-						m_oColorScale->toXML(writer);
-					if (m_oDataBar.IsInit())
-						m_oDataBar->toXML(writer);
-					if (m_oFormula.IsInit())
-						m_oFormula->toXML(writer);
-
-					writer.WriteString(L"</cfRule>");
-				}
+				writer.WriteString(L"</" + node_name + L">");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -868,7 +963,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormatting)
-			CConditionalFormatting()
+			CConditionalFormatting() : m_bIsExtended(false), m_bIsValid(false)
 			{
 			}
 			virtual ~CConditionalFormatting()
@@ -881,41 +976,66 @@ namespace OOX
 			{
 				return L"";
 			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			bool IsExtended()
 			{
-				bool isValid = false;
+				m_bIsExtended = false;
+				m_bIsValid = false;
+				
+				if (m_oSqRef.IsInit() == false) return m_bIsExtended;
+
+				m_bIsValid = true;
 
                 for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-                    if ( (m_arrItems[i]) && (m_arrItems[i]->isValid()) )
-					{
-						isValid = true;
-						break;
-					}
+                    if ( !m_arrItems[i]) continue;
+					
+					if (m_arrItems[i]->isValid() == false)
+						m_bIsValid = false;
+					if (m_arrItems[i]->isExtended() == true)
+						m_bIsExtended = true;
 				}
-				if (m_oSqRef.IsInit() && isValid)
-				{
-					writer.WriteString(L"<conditionalFormatting");
-					WritingStringAttrString(L"sqref", m_oSqRef.get());
+				return m_bIsExtended;
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				if (m_bIsValid == false) return;
 
+				if (m_bIsExtended == false)
+					toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
+			{			
+				std::wstring node_name = bExtendedWrite ? L"x14:conditionalFormatting" : L"conditionalFormatting";
+
+				writer.WriteString(L"<" + node_name);
+					if (bExtendedWrite)
+					{
+						WritingStringAttrString(L"xmlns:xm", L"http://schemas.microsoft.com/office/excel/2006/main");
+					}
+					else
+					{
+						WritingStringAttrString(L"sqref", m_oSqRef.get());
+					}
 					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())
 					{
 						writer.WriteString(L" pivot=\"1\"");
 					}
-
-					writer.WriteString(L">");
-
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				writer.WriteString(L">");
+					
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
                     {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
+                        m_arrItems[i]->toXML2(writer, bExtendedWrite);
                     }
-
-					writer.WriteString(L"</conditionalFormatting>");
+                }
+				if (bExtendedWrite)
+				{
+					writer.WriteString(L"<xm:sqref>" + m_oSqRef.get() + L"</xm:sqref>");
 				}
+				writer.WriteString(L"</" + node_name + L">");
 			}
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
@@ -959,9 +1079,13 @@ namespace OOX
 
 				WritingElement_ReadAttributes_End(oReader)
 			}
+
+			mutable bool m_bIsExtended;
+			mutable bool m_bIsValid;
 		public:
-			nullable<SimpleTypes::COnOff<>>			m_oPivot;
-			nullable<std::wstring >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
+
+			nullable<SimpleTypes::COnOff<>>	m_oPivot;
+			nullable<std::wstring >			m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 		};
 	} //Spreadsheet
 } // namespace OOX

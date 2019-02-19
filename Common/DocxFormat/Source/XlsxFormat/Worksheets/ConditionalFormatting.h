@@ -146,12 +146,28 @@ namespace OOX
 				writer.WriteString(L"<" + node_name);
 					WritingStringAttrString(L"type", m_oType->ToString());
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
+					{
 						writer.WriteString(L" gte=\"0\"");
-					WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
+					}
+					if (!bExtendedWrite)
+					{
+						WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
+					}
 				writer.WriteString(L">");
 
-				if (m_oFormula.IsInit())
-					m_oFormula->toXML2(writer, bExtendedWrite);
+				if (bExtendedWrite)
+				{
+					if (true == m_oFormula.IsInit())
+					{
+						m_oFormula->toXML2(writer, true);
+					}
+					else if (m_oVal.IsInit())
+					{
+						CFormulaCF formla; formla.m_sText = m_oVal.get();
+						formla.toXML2(writer, true);
+					}
+							
+				}
 
 				writer.WriteString(L"</" + node_name + L">");
 			}
@@ -801,6 +817,16 @@ namespace OOX
 						writer.WriteString(L" stopIfTrue=\"1\"");
 					WritingStringNullableAttrEncodeXmlString(L"text", m_oText, m_oText.get());
 					WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod.get());
+
+					if (bExtendedWrite)
+					{
+						if (false == m_oId.IsInit())
+						{
+							WritingStringAttrString(L"id", L"{" + XmlUtils::GenerateGuid() + L"}");
+						}
+						else
+							WritingStringNullableAttrString(L"id", m_oId, m_oId.get());
+					}
 				writer.WriteString(L">");
 
 				if (m_oIconSet.IsInit())
@@ -907,6 +933,11 @@ namespace OOX
 				oRule.m_oTimePeriod		= Merge( oPrev.m_oTimePeriod,	oCurrent.m_oTimePeriod );
 				oRule.m_oType			= Merge( oPrev.m_oType,			oCurrent.m_oType );
 				oRule.m_oDxf			= Merge( oPrev.m_oDxf,			oCurrent.m_oDxf );
+
+				if (oRule.m_oDxf.IsInit() && oRule.m_oDxfId.IsInit())
+				{
+					oRule.m_oDxfId.reset();
+				}
 
 				if (oPrev.m_oIconSet.IsInit() && oCurrent.m_oIconSet.IsInit())
 					oRule.m_oIconSet	= CIconSet::Merge	( oPrev.m_oIconSet.get(),		oCurrent.m_oIconSet.get());

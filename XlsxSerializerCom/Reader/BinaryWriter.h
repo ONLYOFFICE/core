@@ -4265,6 +4265,14 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteBYTE(oConditionalFormattingRule.m_oType->GetValue());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if (oConditionalFormattingRule.m_oDxf.IsInit())
+			{
+				BinaryStyleTableWriter oBinaryStyleTableWriter(m_oBcw.m_oStream, m_pEmbeddedFontsManager);
+				
+				int nCurPos1 = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::Dxf);
+				oBinaryStyleTableWriter.WriteDxf(oConditionalFormattingRule.m_oDxf.get(), m_pIndexedColors, m_pTheme, m_oFontProcessor);
+				m_oBcw.WriteItemEnd(nCurPos1);
+			}
 
 			if (oConditionalFormattingRule.m_oColorScale.IsInit())
 			{
@@ -4278,10 +4286,13 @@ namespace BinXlsxRW
 				WriteDataBar(oConditionalFormattingRule.m_oDataBar.get());
 				m_oBcw.WriteItemEnd(nCurPos1);
 			}
-			if (oConditionalFormattingRule.m_oFormula.IsInit())
+			for (size_t i = 0; i < oConditionalFormattingRule.m_arrFormula.size(); ++i)
 			{
-				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::FormulaCF);
-				m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oFormula->m_sText);
+				if (oConditionalFormattingRule.m_arrFormula[i].IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::FormulaCF);
+					m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_arrFormula[i]->m_sText);
+				}
 			}
 			if (oConditionalFormattingRule.m_oIconSet.IsInit())
 			{

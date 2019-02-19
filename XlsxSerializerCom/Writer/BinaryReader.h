@@ -4371,6 +4371,16 @@ namespace BinXlsxRW
 				pConditionalFormattingRule->m_oType.Init();
 				pConditionalFormattingRule->m_oType->SetValue((SimpleTypes::Spreadsheet::ECfType)m_oBufferedStream.GetUChar());
 			}
+			else if(c_oSer_ConditionalFormattingRule::Dxf == type)
+			{
+				OOX::Spreadsheet::CStyles oStyles(NULL);
+				BinaryStyleTableReader style_reader(m_oBufferedStream, oStyles);
+				
+				OOX::Spreadsheet::CDxf* pDxf = new OOX::Spreadsheet::CDxf();
+				READ1_DEF(length, res, style_reader.ReadDxf, pDxf);
+
+				pConditionalFormattingRule->m_oDxf = pDxf;
+			}
 			else if(c_oSer_ConditionalFormattingRule::ColorScale == type)
 			{
 				OOX::Spreadsheet::CColorScale* pColorScale = new OOX::Spreadsheet::CColorScale();
@@ -4387,10 +4397,10 @@ namespace BinXlsxRW
 			}
 			else if(c_oSer_ConditionalFormattingRule::FormulaCF == type)
 			{
-				OOX::Spreadsheet::CFormulaCF* pFormulaCF = new OOX::Spreadsheet::CFormulaCF();
-				pFormulaCF->m_sText.append(m_oBufferedStream.GetString4(length));
+				nullable<OOX::Spreadsheet::CFormulaCF> pFormulaCF; pFormulaCF.Init();
+				pFormulaCF->m_sText = m_oBufferedStream.GetString4(length);
 				
-				pConditionalFormattingRule->m_oFormula = pFormulaCF;
+				pConditionalFormattingRule->m_arrFormula.push_back( pFormulaCF );
 			}
 			else if(c_oSer_ConditionalFormattingRule::IconSet == type)
 			{

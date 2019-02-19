@@ -2345,29 +2345,30 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 {
 	if (!oox_cond_rule)return;
 
-	if (oox_cond_rule->m_oType.IsInit())
+	if (false == oox_cond_rule->m_oType.IsInit()) return;
+	
+	ods_context->current_table().start_conditional_rule(oox_cond_rule->m_oType->GetValue());
 	{
-		ods_context->current_table().start_conditional_rule(oox_cond_rule->m_oType->GetValue());
+		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{
-			if (oox_cond_rule->m_oDxfId.IsInit()) 
-			{
-				std::wstring odf_style_name = odf_context()->styles_context()->find_conditional_style_name(oox_cond_rule->m_oDxfId->GetValue(), odf_types::style_family::TableCell);
+			std::wstring odf_style_name = odf_context()->styles_context()->find_conditional_style_name(oox_cond_rule->m_oDxfId->GetValue(), odf_types::style_family::TableCell);
 
-				ods_context->current_table().set_conditional_style_name(odf_style_name);
-			}
-			if (oox_cond_rule->m_oOperator.IsInit()) 
-				ods_context->current_table().set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
+			ods_context->current_table().set_conditional_style_name(odf_style_name);
+		}
+		if (oox_cond_rule->m_oOperator.IsInit()) 
+			ods_context->current_table().set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
 
-			if (oox_cond_rule->m_oText.IsInit()) 
-				ods_context->current_table().set_conditional_text(oox_cond_rule->m_oText.get2());
-			
-			convert(oox_cond_rule->m_oIconSet.GetPointer());
-			convert(oox_cond_rule->m_oColorScale.GetPointer());
-			convert(oox_cond_rule->m_oDataBar.GetPointer());
-			convert(oox_cond_rule->m_oFormula.GetPointer());
-		}	
-		ods_context->current_table().end_conditional_rule();
-	}
+		if (oox_cond_rule->m_oText.IsInit()) 
+			ods_context->current_table().set_conditional_text(oox_cond_rule->m_oText.get2());
+		
+		convert(oox_cond_rule->m_oIconSet.GetPointer());
+		convert(oox_cond_rule->m_oColorScale.GetPointer());
+		convert(oox_cond_rule->m_oDataBar.GetPointer());
+		
+		for (size_t i = 0; i < oox_cond_rule->m_arrFormula.size(); ++i)
+			convert(oox_cond_rule->m_arrFormula[i].GetPointer());
+	}	
+	ods_context->current_table().end_conditional_rule();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataBar *oox_cond_databar)
 {

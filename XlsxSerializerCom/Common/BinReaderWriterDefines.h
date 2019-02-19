@@ -718,7 +718,8 @@ namespace BinXlsxRW
 		ColorScale = 14,
 		DataBar = 15,
 		FormulaCF = 16,
-		IconSet = 17
+		IconSet = 17,
+		Dxf = 18
 	};}
 	namespace c_oSer_ConditionalFormattingRuleColorScale{enum c_oSer_ConditionalFormattingRuleElement
 	{

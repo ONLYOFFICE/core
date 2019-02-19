@@ -763,8 +763,12 @@ namespace OOX
 				if (m_oDataBar.IsInit())	return m_oDataBar->isExtended();
 				if (m_oIconSet.IsInit())	return m_oIconSet->isExtended();
 				if (m_oColorScale.IsInit())	return m_oColorScale->isExtended();
-				if (m_oFormula.IsInit())	return m_oFormula->isExtended();
-
+				
+				for (size_t i = 0; i < m_arrFormula.size(); i++)
+				{
+					if ((m_arrFormula[i].IsInit()) && m_arrFormula[i]->isExtended())
+						return true;
+				}
 				return false;
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
@@ -804,8 +808,17 @@ namespace OOX
 					m_oColorScale->toXML2(writer, bExtendedWrite);
 				if (m_oDataBar.IsInit())
 					m_oDataBar->toXML2(writer, bExtendedWrite);
-				if (m_oFormula.IsInit())
-					m_oFormula->toXML2(writer, bExtendedWrite);
+				
+				for (size_t i = 0; i < m_arrFormula.size(); i++)
+				{
+					if (m_arrFormula[i].IsInit())
+						m_arrFormula[i]->toXML2(writer, bExtendedWrite);
+				}
+
+				if (m_oDxf.IsInit() && bExtendedWrite)
+				{
+					m_oDxf->toXML2(writer, L"x14:dxf");
+				}
 
 				writer.WriteString(L"</" + node_name + L">");
 			}
@@ -827,7 +840,10 @@ namespace OOX
 					else if ( L"dataBar" == sName)
 						m_oDataBar = oReader;
 					else if ( L"formula" == sName || L"f" == sName)
-						m_oFormula = oReader;
+					{
+						nullable<CFormulaCF> formula(oReader);
+						m_arrFormula.push_back(formula);
+					}
 					else if ( L"iconSet" == sName)
 						m_oIconSet = oReader;
 					else if ( L"dxf" == sName)
@@ -889,6 +905,7 @@ namespace OOX
 				oRule.m_oText			= Merge( oPrev.m_oText,			oCurrent.m_oText );
 				oRule.m_oTimePeriod		= Merge( oPrev.m_oTimePeriod,	oCurrent.m_oTimePeriod );
 				oRule.m_oType			= Merge( oPrev.m_oType,			oCurrent.m_oType );
+				oRule.m_oDxf			= Merge( oPrev.m_oDxf,			oCurrent.m_oDxf );
 
 				if (oPrev.m_oIconSet.IsInit() && oCurrent.m_oIconSet.IsInit())
 					oRule.m_oIconSet	= CIconSet::Merge	( oPrev.m_oIconSet.get(),		oCurrent.m_oIconSet.get());
@@ -905,10 +922,15 @@ namespace OOX
 				else
 					oRule.m_oDataBar	= Merge( oPrev.m_oDataBar,	oCurrent.m_oDataBar );
 
-				if (oPrev.m_oFormula.IsInit() && oCurrent.m_oFormula.IsInit())
-					oRule.m_oFormula	= CFormulaCF::Merge	( oPrev.m_oFormula.get(),		oCurrent.m_oFormula.get());
-				else
-					oRule.m_oFormula	= Merge( oPrev.m_oFormula,	oCurrent.m_oFormula );
+				for (size_t i = 0; i < oCurrent.m_arrFormula.size(); i++)
+				{
+					oRule.m_arrFormula.push_back(oCurrent.m_arrFormula[i]);
+				}
+				for (size_t i = oCurrent.m_arrFormula.size(); i < oPrev.m_arrFormula.size(); i++)
+				{
+					oRule.m_arrFormula.push_back(oPrev.m_arrFormula[i]);
+				}
+
 				return oRule;
 			}
 		private:
@@ -955,10 +977,10 @@ namespace OOX
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 			nullable<std::wstring>								m_oExtId;
 
-			nullable<CIconSet>		m_oIconSet;
-			nullable<CColorScale>	m_oColorScale;
-			nullable<CDataBar>		m_oDataBar;
-			nullable<CFormulaCF>	m_oFormula;
+			nullable<CIconSet>					m_oIconSet;
+			nullable<CColorScale>				m_oColorScale;
+			nullable<CDataBar>					m_oDataBar;
+			std::vector<nullable<CFormulaCF>>	m_arrFormula;
 
 			bool bUsage;
 		};

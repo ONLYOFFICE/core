@@ -35,14 +35,114 @@
 #include <unistd.h>
 #include "../../DesktopEditor/common/Directory.h"
 
-#include<fcntl.h>
-#include <string>
+#ifndef USE_EXTERNAL_DOWNLOAD
 
-#include <stdio.h>
-
+#include <fcntl.h>
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <stdio.h>
 
+#else
+
+#include <unistd.h>
+#include <sys/wait.h>
+
+int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
+{
+    int nReturnCode = -1;
+
+    std::string sUrlA = U_TO_UTF8(sUrl);
+    //sUrlA =("\"" + sUrlA + "\"");
+    std::string sOutputA = U_TO_UTF8(sOutput);
+    //sOutputA =("\"" + sOutputA + "\"");
+
+    if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/curl"))
+    {
+        pid_t pid = fork(); // create child process
+        int status;
+
+        switch (pid)
+        {
+        case -1: // error
+            break;
+
+        case 0: // child process
+        {
+            const char* nargs[6];
+            nargs[0] = "/usr/bin/curl";
+            nargs[1] = sUrlA.c_str();
+            nargs[2] = "--output";
+            nargs[3] = sOutputA.c_str();
+            nargs[4] = "--silent";
+            nargs[5] = NULL;
+
+            const char* nenv[3];
+            nenv[0] = "LD_PRELOAD=";
+            nenv[1] = "LD_LIBRARY_PATH=";
+            nenv[2] = NULL;
+
+            execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
+            exit(EXIT_SUCCESS);
+            break;
+        }
+        default: // parent process, pid now contains the child pid
+            while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+            if (WIFEXITED(status))
+            {
+                nReturnCode =  WEXITSTATUS(status);
+            }
+            break;
+        }
+    }
+
+    if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/wget"))
+    {
+        pid_t pid = fork(); // create child process
+        int status;
+
+        switch (pid)
+        {
+        case -1: // error
+            break;
+
+        case 0: // child process
+        {
+            const char* nargs[6];
+            nargs[0] = "/usr/bin/wget";
+            nargs[1] = sUrlA.c_str();
+            nargs[2] = "-O";
+            nargs[3] = sOutputA.c_str();
+            nargs[4] = "-q";
+            nargs[5] = NULL;
+
+            const char* nenv[2];
+            nenv[0] = "LD_PRELOAD=";
+            nenv[1] = NULL;
+
+            execve("/usr/bin/wget", (char * const *)nargs, (char * const *)nenv);
+            exit(EXIT_SUCCESS);
+            break;
+        }
+        default: // parent process, pid now contains the child pid
+            while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+            if (WIFEXITED(status))
+            {
+                nReturnCode =  WEXITSTATUS(status);
+            }
+            break;
+        }
+    }
+
+    if (0 == nReturnCode)
+    {
+        if (!NSFile::CFileBinary::Exists(sOutput))
+            nReturnCode = -1;
+    }
+
+    return nReturnCode;
+}
+
+#endif
 
 class CFileDownloaderBaseCURL : public CFileDownloaderBase
 {
@@ -60,6 +160,7 @@ public :
         }
     }
 
+#ifndef USE_EXTERNAL_DOWNLOAD
     static size_t write_data(void *ptr, size_t size, size_t nmemb, int fd) {
         size_t written = write(fd, ptr, size * nmemb);
         return written;
@@ -119,6 +220,19 @@ protected:
             filename = sTempPath;
         return fd;
     }
+#else
+    virtual int DownloadFile()
+    {
+        if (m_sFilePath.empty())
+        {
+            m_sFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"DW");
+            if (NSFile::CFileBinary::Exists(m_sFilePath))
+                NSFile::CFileBinary::Remove(m_sFilePath);
+        }
+        return download_external(m_sFileUrl, m_sFilePath);
+    }
+
+#endif
 };
 
 CFileDownloader_private::CFileDownloader_private(std::wstring sFileUrl, bool bDelete)

@@ -4387,7 +4387,7 @@ namespace BinXlsxRW
 			if (oDataBar.m_oBorderColor.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::BorderColor);
-				m_oBcw.WriteColor(oDataBar.m_oColor.get(), m_pIndexedColors);
+				m_oBcw.WriteColor(oDataBar.m_oBorderColor.get(), m_pIndexedColors);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}			
 			if (oDataBar.m_oAxisColor.IsInit())

@@ -146,6 +146,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	process_note_				(noNote),
 	new_list_style_number_		(0),
 	current_margin_left_		(0),
+	current_outline_level_		(-1),
 	is_rtl_						(false),
 	is_delete_text_				(false),
 	delayed_converting_			(false),
@@ -369,6 +370,9 @@ void docx_conversion_context::start_index_content()
 				sInstrText += L" \\n "+	std::to_wstring(table_content_context_.min_outline_level) + L"-" + 
 										std::to_wstring(table_content_context_.max_outline_level);
 		}
+		else if (table_content_context_.type_table_content == 1)
+			sInstrText += L" \\o";
+
 		if (false == table_content_context_.outline_level_styles.empty())
 		{
 			sInstrText += L" \\t \"";
@@ -1341,6 +1345,7 @@ void docx_conversion_context::end_automatic_style()
     in_automatic_style_ = false;
     automatic_parent_style_.clear();
 	tabs_context_.clear();
+	current_outline_level_ = -1;
 }
 
 bool docx_conversion_context::in_automatic_style()
@@ -1601,13 +1606,12 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						}
 					}
 					set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
-
-					styleContent->docx_convert(*this);                
 					if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
 					{
-						std::wstringstream & _pPr = get_styles_context().paragraph_nodes();
-						_pPr << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\"/>";
-					}                   
+						set_outline_level(*Attr->outline_level_ - 1);
+					}
+					styleContent->docx_convert(*this);                
+                   
 					end_automatic_style();
 
                     push_text_properties(styleContent->get_style_text_properties());

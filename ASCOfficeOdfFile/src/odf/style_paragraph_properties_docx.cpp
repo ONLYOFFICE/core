@@ -159,6 +159,12 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 		{
 			_pPr << L"<w:bidi/>";
 		}
+		int level = Context.get_outline_level();
+
+		if (level >= 0)
+		{
+			_pPr << L"<w:outlineLvl w:val=\"" <<  level << L"\"/>";
+		}
 	    
 		if (fo_text_align_)
 		{

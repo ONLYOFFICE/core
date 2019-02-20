@@ -63,7 +63,7 @@ odf_text_context::odf_text_context(odf_conversion_context *odf_context, odf_styl
 	paragraph_properties_		= NULL;
 	text_properties_			= NULL;
 
-	current_outline_			= 0;
+	current_outline_			= -1;
 	in_field_					= false;	
 	keep_next_paragraph_		= false;	
 	list_state_.started_list	= false;
@@ -78,7 +78,7 @@ void odf_text_context::clear_params()
 	paragraph_properties_		= NULL;
 	text_properties_			= NULL;
 
-	current_outline_			= 0;
+	current_outline_			= -1;
 	in_field_					= false;
 	
 	keep_next_paragraph_		= false;
@@ -208,7 +208,7 @@ void odf_text_context::set_symbol_text(int sym)
 void odf_text_context::start_paragraph(bool styled)
 {
 	office_element_ptr paragr_elm;
-	if (current_outline_ > 0)
+	if (current_outline_ >= 0)
 	{
 		create_element(L"text", L"h", paragr_elm, odf_context_);
 		
@@ -219,7 +219,7 @@ void odf_text_context::start_paragraph(bool styled)
 	{
 		create_element(L"text", L"p", paragr_elm, odf_context_);
 	}
-	current_outline_ = 0;
+	current_outline_ = -1;
 
 	start_paragraph(paragr_elm, styled);
 

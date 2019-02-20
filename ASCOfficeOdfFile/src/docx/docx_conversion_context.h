@@ -916,6 +916,9 @@ public:
 	void set_margin_left(int val)	{current_margin_left_ = val;}
 	int get_margin_left()			{return current_margin_left_;}
 
+	void set_outline_level(int val)	{current_outline_level_ = val;}
+	int get_outline_level()			{return current_outline_level_;}
+
 	void set_process_note		(NoteType Val) { process_note_ = Val; }
 	NoteType get_process_note	() const		{ return process_note_; }
 	void add_note_reference		();
@@ -1031,6 +1034,7 @@ private:
  
 	std::wstring current_alphabetic_index_;
 	int current_margin_left_;
+	int current_outline_level_;
     int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
 	NoteType process_note_;
     

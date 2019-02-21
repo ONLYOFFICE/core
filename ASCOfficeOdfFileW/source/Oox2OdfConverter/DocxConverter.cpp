@@ -3381,14 +3381,12 @@ void DocxConverter::convert(OOX::Numbering::CAbstractNum* oox_num_style)
 
 
 	odt_context->styles_context()->lists_styles().start_style(true, oox_num_style->m_oAbstractNumId->GetValue());
-	//// Childs
-	//std::vector<OOX::Numbering::CLvl                            >  m_arrLvl;
-	//nullable<ComplexTypes::Word::CMultiLevelType                 > m_oMultiLevelType;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oName;
-	//nullable<ComplexTypes::Word::CLongHexNumber                  > m_oNsid;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oNumStyleLink;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oStyleLink;
-	//nullable<ComplexTypes::Word::CLongHexNumber                  > m_oTmpl;
+	//nullable<ComplexTypes::Word::CMultiLevelType>	m_oMultiLevelType;
+    //nullable<ComplexTypes::Word::std::wstring_>	m_oName;
+	//nullable<ComplexTypes::Word::CLongHexNumber>	m_oNsid;
+    //nullable<ComplexTypes::Word::std::wstring_>	m_oNumStyleLink;
+    //nullable<ComplexTypes::Word::std::wstring_>	m_oStyleLink;
+	//nullable<ComplexTypes::Word::CLongHexNumber>	m_oTmpl;
 
 	for (size_t i=0; i < oox_num_style->m_arrLvl.size(); i++)
 	{
@@ -3422,9 +3420,9 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	//nullable<SimpleTypes::CLongHexNumber<> > m_oTplc;
 
 	//// Childs
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oIsLgl;
-	//nullable<ComplexTypes::Word::CLvlLegacy                      > m_oLegacy;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oPStyle;
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oIsLgl;
+	//nullable<ComplexTypes::Word::CLvlLegacy> m_oLegacy;
+    //nullable<ComplexTypes::Word::std::wstring_> m_oPStyle;
 
 	double  size_bullet_number_marker = 0;
 	if (oox_num_lvl->m_oLvlJc.IsInit())

@@ -549,7 +549,7 @@ void odf_lists_styles_context::set_bullet_char(std::wstring val)
 	
 	wchar_t char_ = convert_bullet_char(val.at(0));
 	
-	style_bullet_->text_list_level_style_bullet_attr_.text_bullet_char_ = val//char_;
+	style_bullet_->text_list_level_style_bullet_attr_.text_bullet_char_ = val;//char_;
 }
 void odf_lists_styles_context::set_bullet_image_size(double size)
 {

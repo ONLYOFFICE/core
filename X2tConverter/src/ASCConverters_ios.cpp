@@ -43,22 +43,11 @@
 #include "../../ASCOfficePPTXFile/ASCOfficePPTXFile.h"
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
-//#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
 #include "../../ASCOfficeTxtFile/TxtXmlFormatLib/Source/TxtXmlFile.h"
 #include "../../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
-#include "../../ASCOfficeOdfFile/src/ConvertOO2OOX.h"
-#include "../../ASCOfficeOdfFileW/source/Oox2OdfConverter/Oox2OdfConverter.h"
-//#include "../../DesktopEditor/doctrenderer/doctrenderer.h"
-//#include "../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
-//#include "../../PdfReader/PdfReader.h"
 #include "../../PdfReader/Src/ErrorConstants.h"
-//#include "../../DjVuFile/DjVu.h"
-//#include "../../XpsFile/XpsFile.h"
-//#include "../../HtmlRenderer/include/HTMLRenderer3.h"
-//#include "../../HtmlFile/HtmlFile.h"
-//#include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
 #include "../../DesktopEditor/common/Path.h"
@@ -1878,28 +1867,7 @@ namespace NExtractTools
     // pptx_dir -> odp
     _UINT32 pptx_dir2odp (const std::wstring &sPptxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
-        std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
-        NSDirectory::CreateDirectory(sTempUnpackedODP);
-        
-        Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate);
-        
-        _UINT32 nRes = 0;
-        try
-        {
-            std::wstring password    = params.getSavePassword();
-            std::wstring documentID = params.getDocumentID();
-            
-            converter.convert();
-            converter.write(sTempUnpackedODP, sTemp, password, documentID);
-            
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODP, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        catch(...)
-        {
-            nRes = AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     // rtf -> docx
     _UINT32 rtf2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -2243,209 +2211,59 @@ namespace NExtractTools
     //odf
     _UINT32 odf2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-        
-        NSDirectory::CreateDirectory(sResultDoctDir);
-        
-        _UINT32 nRes = odf2oot_bin(sFrom, sResultDoctFileEditor, sTemp, params);
-        
-        if (SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     _UINT32 odf2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
-        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
-        
-        NSDirectory::CreateDirectory(sTempUnpackedOdf);
-        
-        COfficeUtils oCOfficeUtils(NULL);
-        if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
-            return -3;
-        
-        NSDirectory::CreateDirectory(sTempUnpackedOox);
-        
-        _UINT32 nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
-        nRes = processEncryptionError(nRes, sFrom, params);
-        if(SUCCEEDED_X2T(nRes))
-        {
-            BinDocxRW::CDocxSerializer m_oCDocxSerializer;
-            
-            m_oCDocxSerializer.setFontDir(params.getFontPath());
-            
-            nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
     _UINT32 odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
-        NSDirectory::CreateDirectory(sTempUnpackedOox);
-        
-        _UINT32 nRes = odf2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
-        if(SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOox, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     _UINT32 odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
-        NSDirectory::CreateDirectory(sTempUnpackedOdf);
-        
-        COfficeUtils oCOfficeUtils(NULL);
-        if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
-            return AVS_FILEUTILS_ERROR_CONVERT;;
-        
-        _UINT32 nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
-        nRes = processEncryptionError(nRes, sFrom, params);
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     //odf flat
     _UINT32 odf_flat2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-        
-        NSDirectory::CreateDirectory(sResultDoctDir);
-        
-        _UINT32 nRes = odf_flat2oot_bin(sFrom, sResultDoctFileEditor, sTemp, params);
-        
-        if (SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
     _UINT32 odf_flat2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
-        
-        NSDirectory::CreateDirectory(sTempUnpackedOox);
-        
-        _UINT32 nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
-        nRes = processEncryptionError(nRes, sFrom, params);
-        if(SUCCEEDED_X2T(nRes))
-        {
-            BinDocxRW::CDocxSerializer m_oCDocxSerializer;
-            
-            m_oCDocxSerializer.setFontDir(params.getFontPath());
-            
-            nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     _UINT32 odf_flat2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
-        NSDirectory::CreateDirectory(sTempUnpackedOox);
-        
-        _UINT32 nRes = odf_flat2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
-        if(SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOox, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     _UINT32 odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
-        _UINT32 nRes = ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
-        nRes = processEncryptionError(nRes, sFrom, params);
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
     // docx -> odt
     _UINT32 docx2odt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
     {
-        std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
-        NSDirectory::CreateDirectory(sTempUnpackedDOCX);
-        
-        COfficeUtils oCOfficeUtils(NULL);
-        if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCX, NULL, 0))
-        {
-            return docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params, false); //add Template ????
-        }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     // docx dir -> odt
     _UINT32 docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
-        std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
-        NSDirectory::CreateDirectory(sTempUnpackedODT);
-        
-        Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate);
-        
-        _UINT32 nRes = 0;
-        try
-        {
-            std::wstring password    = params.getSavePassword();
-            std::wstring documentID = params.getDocumentID();
-            
-            converter.convert();
-            converter.write(sTempUnpackedODT, sTemp, password, documentID);
-            
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODT, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        catch(...)
-        {
-            nRes = AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     // xlsx -> ods
     _UINT32 xlsx2ods (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
     {
-        std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + L"xlsx_unpacked";
-        
-        NSDirectory::CreateDirectory(sTempUnpackedXLSX);
-        
-        COfficeUtils oCOfficeUtils(NULL);
-        if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
-        {
-            return xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params, false); //add Template ???
-        }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
     _UINT32 xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
-        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
-        NSDirectory::CreateDirectory(sTempUnpackedODS);
-        
-        Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate);
-        
-        _UINT32 nRes = 0;
-        try
-        {
-            std::wstring password    = params.getSavePassword();
-            std::wstring documentID = params.getDocumentID();
-            
-            converter.convert();
-            converter.write(sTempUnpackedODS, sTemp, password, documentID);
-            
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        catch(...)
-        {
-            nRes = AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        return nRes;
+        return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
     _UINT32 mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
@@ -3682,17 +3500,6 @@ namespace NExtractTools
     // xls -> xlsx
     _UINT32 xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
-//        std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
-//
-//        NSDirectory::CreateDirectory(sResultDocxDir);
-//
-//        _UINT32 nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sTemp, params);
-//        if(SUCCEEDED_X2T(nRes))
-//        {
-//            COfficeUtils oCOfficeUtils(NULL);
-//            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDocxDir, sTo, true))
-//                return 0;
-//        }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     _UINT32 xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)

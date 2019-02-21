@@ -257,21 +257,21 @@
         }
     }
     
-    {
-        NSLog(@"==================== DOCX TO ODT ====================");
-        
-        NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
-        NSString* to = [NSString stringWithFormat:@"%@docx_to_odt_test.odt", self.temp];
-        
-        X2tConverter* conv = [[X2tConverter alloc]init];
-        conv.isNoBase64 = YES;
-        int result = [conv sdk_docx2odt:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
-        if (result != 0) {
-            NSLog(@"ERROR DOCX TO ODT : %d",result);
-        } else {
-            NSLog(@"odt output : %@", to);
-        }
-    }
+//    {
+//        NSLog(@"==================== DOCX TO ODT ====================");
+//
+//        NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
+//        NSString* to = [NSString stringWithFormat:@"%@docx_to_odt_test.odt", self.temp];
+//
+//        X2tConverter* conv = [[X2tConverter alloc]init];
+//        conv.isNoBase64 = YES;
+//        int result = [conv sdk_docx2odt:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
+//        if (result != 0) {
+//            NSLog(@"ERROR DOCX TO ODT : %d",result);
+//        } else {
+//            NSLog(@"odt output : %@", to);
+//        }
+//    }
     
     {
         NSLog(@"==================== ODS TO XLSX ====================");
@@ -289,21 +289,21 @@
         }
     }
     
-    {
-        NSLog(@"==================== XLSX TO ODS ====================");
-        
-        NSString* from = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
-        NSString* to = [NSString stringWithFormat:@"%@xlsx_to_ods_test.ods", self.temp];
-        
-        X2tConverter* conv = [[X2tConverter alloc]init];
-        conv.isNoBase64 = YES;
-        int result = [conv sdk_xlsx2ods:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
-        if (result != 0) {
-            NSLog(@"ERROR XLSX TO ODS : %d",result);
-        } else {
-            NSLog(@"ods output : %@", to);
-        }
-    }
+//    {
+//        NSLog(@"==================== XLSX TO ODS ====================");
+//
+//        NSString* from = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
+//        NSString* to = [NSString stringWithFormat:@"%@xlsx_to_ods_test.ods", self.temp];
+//
+//        X2tConverter* conv = [[X2tConverter alloc]init];
+//        conv.isNoBase64 = YES;
+//        int result = [conv sdk_xlsx2ods:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
+//        if (result != 0) {
+//            NSLog(@"ERROR XLSX TO ODS : %d",result);
+//        } else {
+//            NSLog(@"ods output : %@", to);
+//        }
+//    }
     
     {
         NSLog(@"==================== ODP TO PPTX ====================");
@@ -321,21 +321,21 @@
         }
     }
     
-    {
-        NSLog(@"==================== PPTX TO ODP ====================");
-        
-        NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"pptx"];
-        NSString* to = [NSString stringWithFormat:@"%@pptx_to_odp_test.odp", self.temp];
-        
-        X2tConverter* conv = [[X2tConverter alloc]init];
-        conv.isNoBase64 = YES;
-        int result = [conv sdk_pptx2odp:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
-        if (result != 0) {
-            NSLog(@"ERROR PPTX TO ODP : %d",result);
-        } else {
-            NSLog(@"odp output : %@", to);
-        }
-    }
+//    {
+//        NSLog(@"==================== PPTX TO ODP ====================");
+//        
+//        NSString* from = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"pptx"];
+//        NSString* to = [NSString stringWithFormat:@"%@pptx_to_odp_test.odp", self.temp];
+//        
+//        X2tConverter* conv = [[X2tConverter alloc]init];
+//        conv.isNoBase64 = YES;
+//        int result = [conv sdk_pptx2odp:from nsTo:to nsTemp:self.temp nsFontPath:self.fonts];
+//        if (result != 0) {
+//            NSLog(@"ERROR PPTX TO ODP : %d",result);
+//        } else {
+//            NSLog(@"odp output : %@", to);
+//        }
+//    }
     
 }
 

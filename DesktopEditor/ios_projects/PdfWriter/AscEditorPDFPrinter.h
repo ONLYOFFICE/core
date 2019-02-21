@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  AscEditorPDFPrinter.h
-//  PdfWriter
-//
-//  Created by Oleg Korshul on 04.03.15.
-//  Copyright (c) 2015 Ascensio System. All rights reserved.
-//
 
 #ifndef PdfWriter_AscEditorPDFPrinter_h
 #define PdfWriter_AscEditorPDFPrinter_h
@@ -62,6 +55,8 @@ public:
     bool m_bUseSystemFonts;
     std::vector<std::wstring> m_arFontsDirectory;
     
+    bool m_bIsPDFA;
+    
 public:
     CAscEditorPDFPrinter()
     {
@@ -72,6 +67,8 @@ public:
         
         m_bUseSystemFonts           = false;
         m_bUseFontsDirectory        = false;
+        
+        m_bIsPDFA                   = false;
     }
     
 public:

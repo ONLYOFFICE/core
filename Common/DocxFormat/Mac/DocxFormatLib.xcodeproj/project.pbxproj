@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1732414A1BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; };
 		1732414C1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; };
+		17ADFF1E2215FD50002B6005 /* ThreadedComments.h in Headers */ = {isa = PBXBuildFile; fileRef = 17ADFF1D2215FD50002B6005 /* ThreadedComments.h */; };
 		17C1FB941ACC4250006B99B3 /* Hyperlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0621AC4262700F28F8B /* Hyperlink.cpp */; };
 		17C1FB951ACC4250006B99B3 /* Sdt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A06D1AC4262700F28F8B /* Sdt.cpp */; };
 		17C1FB961ACC4250006B99B3 /* oMathContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0801AC4262700F28F8B /* oMathContent.cpp */; };
@@ -230,6 +231,7 @@
 /* Begin PBXFileReference section */
 		173241431BBEC90000E67992 /* pole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pole.cpp; sourceTree = "<group>"; };
 		173241441BBEC90000E67992 /* pole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pole.h; sourceTree = "<group>"; };
+		17ADFF1D2215FD50002B6005 /* ThreadedComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadedComments.h; sourceTree = "<group>"; };
 		17C1FC9C1ACC4250006B99B3 /* libDocxFormatLib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDocxFormatLib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E69FEE1AC4262700F28F8B /* ASCWinAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCWinAPI.h; sourceTree = "<group>"; };
 		17E69FEF1AC4262700F28F8B /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
@@ -821,6 +823,7 @@
 			isa = PBXGroup;
 			children = (
 				17E6A1521AC4262800F28F8B /* Comments.h */,
+				17ADFF1D2215FD50002B6005 /* ThreadedComments.h */,
 			);
 			path = Comments;
 			sourceTree = "<group>";
@@ -1114,6 +1117,7 @@
 				17C1FC941ACC4250006B99B3 /* Styles.h in Headers */,
 				17C1FC961ACC4250006B99B3 /* oMathBottomNodes.h in Headers */,
 				17C1FC971ACC4250006B99B3 /* CalcChain.h in Headers */,
+				17ADFF1E2215FD50002B6005 /* ThreadedComments.h in Headers */,
 				17C1FC981ACC4250006B99B3 /* Common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

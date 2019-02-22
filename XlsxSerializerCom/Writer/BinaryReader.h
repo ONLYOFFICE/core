@@ -1059,9 +1059,6 @@ namespace BinXlsxRW
 			if(c_oSerStylesTypes::Fill == type)
 			{
 				OOX::Spreadsheet::CFill* pFill = new OOX::Spreadsheet::CFill();
-				pFill->m_oPatternFill.Init();
-				pFill->m_oPatternFill->m_oPatternType.Init();
-				pFill->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
 				READ1_DEF(length, res, this->ReadFill, pFill);
 				m_oStyles.m_oFills->m_arrItems.push_back(pFill);
 			}
@@ -1073,15 +1070,15 @@ namespace BinXlsxRW
 		{
 			OOX::Spreadsheet::CFill* pFill = static_cast<OOX::Spreadsheet::CFill* >(poResult);
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSerFillTypes::PatternFill == type)
+			if(c_oSerFillTypes::Pattern == type)
 			{
-				if(false == pFill->m_oPatternFill.IsInit())
-				{
-					pFill->m_oPatternFill.Init();
-					pFill->m_oPatternFill->m_oPatternType.Init();
-					pFill->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
-				}
+				pFill->m_oPatternFill.Init();
 				READ1_DEF(length, res, this->ReadPatternFill, pFill->m_oPatternFill.GetPointer());
+			}
+			else if(c_oSerFillTypes::Gradient == type)
+			{
+				pFill->m_oGradientFill.Init();
+				READ1_DEF(length, res, this->ReadGradientFill, pFill->m_oGradientFill.GetPointer());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1091,11 +1088,95 @@ namespace BinXlsxRW
 		{
 			OOX::Spreadsheet::CPatternFill* pPatternFill = static_cast<OOX::Spreadsheet::CPatternFill* >(poResult);
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSerFillTypes::PatternFillBgColor == type)
+			if(c_oSerFillTypes::PatternBgColor_deprecated == type)
+			{
+				pPatternFill->m_oPatternType.Init();
+				pPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeSolid);
+
+				LONG colorPos = m_oBufferedStream.GetPos();
+				pPatternFill->m_oFgColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oFgColor.GetPointer());
+				//todo copy
+				m_oBufferedStream.Seek(colorPos);
+				pPatternFill->m_oBgColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oBgColor.GetPointer());
+			}
+			else if(c_oSerFillTypes::PatternType == type)
+			{
+				pPatternFill->m_oPatternType.Init();
+				pPatternFill->m_oPatternType->SetValue((SimpleTypes::Spreadsheet::EPatternType)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSerFillTypes::PatternFgColor == type)
 			{
 				pPatternFill->m_oFgColor.Init();
 				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oFgColor.GetPointer());
-				pPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeSolid);
+			}
+			else if(c_oSerFillTypes::PatternBgColor == type)
+			{
+				pPatternFill->m_oBgColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oBgColor.GetPointer());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadGradientFill(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CGradientFill* pGradientFill = static_cast<OOX::Spreadsheet::CGradientFill* >(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSerFillTypes::GradientType == type)
+			{
+				pGradientFill->m_oType.Init();
+				pGradientFill->m_oType->SetValue((SimpleTypes::Spreadsheet::EGradientType)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSerFillTypes::GradientLeft == type)
+			{
+				pGradientFill->m_oLeft.Init();
+				pGradientFill->m_oLeft->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else if(c_oSerFillTypes::GradientTop == type)
+			{
+				pGradientFill->m_oTop.Init();
+				pGradientFill->m_oTop->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else if(c_oSerFillTypes::GradientRight == type)
+			{
+				pGradientFill->m_oRight.Init();
+				pGradientFill->m_oRight->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else if(c_oSerFillTypes::GradientBottom == type)
+			{
+				pGradientFill->m_oBottom.Init();
+				pGradientFill->m_oBottom->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else if(c_oSerFillTypes::GradientDegree == type)
+			{
+				pGradientFill->m_oDegree.Init();
+				pGradientFill->m_oDegree->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else if(c_oSerFillTypes::GradientStop == type)
+			{
+				OOX::Spreadsheet::CGradientStop* pGradientStop = new OOX::Spreadsheet::CGradientStop();
+				READ1_DEF(length, res, this->ReadGradientFillStop, pGradientStop);
+				pGradientFill->m_arrItems.push_back(pGradientStop);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadGradientFillStop(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CGradientStop* pGradientStop = static_cast<OOX::Spreadsheet::CGradientStop* >(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSerFillTypes::GradientStopPosition == type)
+			{
+				pGradientStop->m_oPosition.Init();
+				pGradientStop->m_oPosition->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else if(c_oSerFillTypes::GradientStopColor == type)
+			{
+				pGradientStop->m_oColor.Init();
+				READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pGradientStop->m_oColor.GetPointer());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

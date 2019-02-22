@@ -956,60 +956,110 @@ namespace BinXlsxRW
 			{
 					OOX::Spreadsheet::CFill* pFill = fills.m_arrItems[i];
 					nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Fill);
-					WriteFill(*pFill, pIndexedColors, pTheme, false);
+					WriteFill(*pFill, pIndexedColors);
 					m_oBcw.WriteItemEnd(nCurPos);
 			}
         }
-		void WriteFill(const OOX::Spreadsheet::CFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme, bool bPriorityBg = false)
+		void WriteFill(const OOX::Spreadsheet::CFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors)
 		{
 			int nCurPos = 0;
-			//Bottom
-			OOX::Spreadsheet::CColor* pColor = NULL;
-			if(fill.m_oPatternFill.IsInit())
+			if (fill.m_oPatternFill.IsInit())
 			{
-				if((false == fill.m_oPatternFill->m_oPatternType.IsInit() || SimpleTypes::Spreadsheet::patterntypeNone != fill.m_oPatternFill->m_oPatternType->GetValue()))
-				{
-					if(bPriorityBg)
-					{
-						if(fill.m_oPatternFill->m_oBgColor.IsInit())
-							pColor = fill.m_oPatternFill->m_oBgColor.operator ->();
-						else if(fill.m_oPatternFill->m_oFgColor.IsInit())
-							pColor = fill.m_oPatternFill->m_oFgColor.operator ->();
-					}
-					else
-					{
-						if(fill.m_oPatternFill->m_oFgColor.IsInit())
-							pColor = fill.m_oPatternFill->m_oFgColor.operator ->();
-						else if(fill.m_oPatternFill->m_oBgColor.IsInit())
-							pColor = fill.m_oPatternFill->m_oBgColor.operator ->();
-					}
-				}
-			}
-			else
-			{
-				//выбираем один цвет
-				if(fill.m_oGradientFill.IsInit())
-				{
-					const OOX::Spreadsheet::CGradientFill& gradient = fill.m_oGradientFill.get();
-					if(gradient.m_arrItems.size() > 0)
-					{
-						OOX::Spreadsheet::CGradientStop* pStop = gradient.m_arrItems[0];
-						if(pStop->m_oColor.IsInit())
-						{
-							pColor = pStop->m_oColor.operator ->();
-						}
-					}
-				}
-			}
-			if(NULL != pColor)
-			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::PatternFill);
-				int nCurPos2 = m_oBcw.WriteItemStart(c_oSerFillTypes::PatternFillBgColor);
-				m_oBcw.WriteColor(*pColor, pIndexedColors);
-				m_oBcw.WriteItemEnd(nCurPos2);
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::Pattern);
+				WritePatternFill(fill.m_oPatternFill.get(), pIndexedColors);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-        }
+			if (fill.m_oGradientFill.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::Gradient);
+				WriteGradientFill(fill.m_oGradientFill.get(), pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WritePatternFill(const OOX::Spreadsheet::CPatternFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors)
+		{
+			int nCurPos = 0;
+			if (fill.m_oPatternType.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::PatternType);
+				m_oBcw.m_oStream.WriteBYTE(fill.m_oPatternType->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (fill.m_oFgColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::PatternFgColor);
+				m_oBcw.WriteColor(fill.m_oFgColor.get(), pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (fill.m_oBgColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::PatternBgColor);
+				m_oBcw.WriteColor(fill.m_oBgColor.get(), pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteGradientFill(const OOX::Spreadsheet::CGradientFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors)
+		{
+			int nCurPos = 0;
+			if (fill.m_oType.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientType);
+				m_oBcw.m_oStream.WriteBYTE(fill.m_oType->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (fill.m_oLeft.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientLeft);
+				m_oBcw.m_oStream.WriteDoubleReal(fill.m_oLeft->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (fill.m_oTop.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientTop);
+				m_oBcw.m_oStream.WriteDoubleReal(fill.m_oTop->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (fill.m_oRight.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientRight);
+				m_oBcw.m_oStream.WriteDoubleReal(fill.m_oRight->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (fill.m_oBottom.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientBottom);
+				m_oBcw.m_oStream.WriteDoubleReal(fill.m_oBottom->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (fill.m_oDegree.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientDegree);
+				m_oBcw.m_oStream.WriteDoubleReal(fill.m_oDegree->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			for(size_t i = 0, length = fill.m_arrItems.size(); i < length; ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientStop);
+				WriteGradientFillStop(*fill.m_arrItems[i], pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteGradientFillStop(const OOX::Spreadsheet::CGradientStop& stop, OOX::Spreadsheet::CIndexedColors* pIndexedColors)
+		{
+			int nCurPos = 0;
+			if (stop.m_oPosition.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientStopPosition);
+				m_oBcw.m_oStream.WriteDoubleReal(stop.m_oPosition->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (stop.m_oColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::GradientStopColor);
+				m_oBcw.WriteColor(stop.m_oColor.get(), pIndexedColors);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
 		void WriteFonts(const OOX::Spreadsheet::CFonts& fonts, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
@@ -1216,7 +1266,7 @@ namespace BinXlsxRW
 			if(oDxf.m_oFill.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_Dxf::Fill);
-				WriteFill(oDxf.m_oFill.get(), pIndexedColors, pTheme, true);
+				WriteFill(oDxf.m_oFill.get(), pIndexedColors);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			if(oDxf.m_oFont.IsInit())

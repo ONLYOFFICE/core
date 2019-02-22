@@ -153,8 +153,21 @@ namespace BinXlsxRW
 	};}
 	namespace c_oSerFillTypes{enum c_oSerFillTypes
 	{
-		PatternFill = 0,
-		PatternFillBgColor = 1
+		Pattern = 0,
+		PatternBgColor_deprecated = 1,
+		PatternType = 2,
+		PatternFgColor = 3,
+		PatternBgColor = 4,
+		Gradient = 5,
+		GradientType = 6,
+		GradientLeft = 7,
+		GradientTop = 8,
+		GradientRight = 9,
+		GradientBottom = 10,
+		GradientDegree = 11,
+		GradientStop = 12,
+		GradientStopPosition = 13,
+		GradientStopColor = 14
 	};}
 	namespace c_oSerFontTypes{enum c_oSerFontTypes
 	{

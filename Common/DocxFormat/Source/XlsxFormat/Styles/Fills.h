@@ -141,6 +141,14 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				writer.WriteString(L"<stop");
+				WritingStringNullableAttrDouble(L"position", m_oPosition, m_oPosition->GetValue());
+				writer.WriteString(L">");
+				if (m_oColor.IsInit())
+				{
+					m_oColor->toXML(writer);
+				}
+				writer.WriteString(L"</stop>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -194,6 +202,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				writer.WriteString(L"<gradientFill");
+				WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
+				WritingStringNullableAttrDouble(L"left", m_oLeft, m_oLeft->GetValue());
+				WritingStringNullableAttrDouble(L"right", m_oRight, m_oRight->GetValue());
+				WritingStringNullableAttrDouble(L"top", m_oTop, m_oTop->GetValue());
+				WritingStringNullableAttrDouble(L"bottom", m_oBottom, m_oBottom->GetValue());
+				WritingStringNullableAttrDouble(L"degree", m_oDegree, m_oDegree->GetValue());
+				writer.WriteString(L">");
+				for(size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</gradientFill>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -259,6 +280,8 @@ namespace OOX
 				writer.WriteString(L"<fill>");
 				if(m_oPatternFill.IsInit())
 					m_oPatternFill->toXML(writer);
+				if(m_oGradientFill.IsInit())
+					m_oGradientFill->toXML(writer);
 				writer.WriteString(L"</fill>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

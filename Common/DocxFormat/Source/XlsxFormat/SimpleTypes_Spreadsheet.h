@@ -881,7 +881,12 @@ namespace SimpleTypes
 
 			virtual std::wstring     ToString  () const 
 			{
-				return _T("line");
+				switch(this->m_eValue)
+				{
+				case gradienttypeLine : return _T("line"); break;
+				case gradienttypePath : return _T("path"); break;
+				default:return _T("line");
+				}
 			}
 
 			SimpleType_FromString     (EGradientType)

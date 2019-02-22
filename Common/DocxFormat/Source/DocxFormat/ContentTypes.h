@@ -66,6 +66,7 @@ namespace OOX
                 m_mTable.insert( std::make_pair(  _T("wmf"),  _T("image/x-wmf")));
                 m_mTable.insert( std::make_pair(  _T("svg"),  _T("image/svg+xml")));
                 m_mTable.insert( std::make_pair(  _T("svm"),  _T("image/svm")));
+				m_mTable.insert( std::make_pair(  _T("wdp"),  _T("image/vnd.ms-photo")));
                 m_mTable.insert( std::make_pair(  _T("wav"),  _T("audio/wav")));
 				m_mTable.insert( std::make_pair(  _T("wma"),  _T("audio/x-wma")));    
 				m_mTable.insert( std::make_pair(  _T("m4a"),  _T("audio/unknown"))); 

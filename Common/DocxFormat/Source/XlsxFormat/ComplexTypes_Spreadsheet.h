@@ -188,10 +188,9 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_sVal )
-						WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End( oReader )
 				}
 
 			public:
@@ -300,18 +299,18 @@ namespace ComplexTypes
 			{
 			public:
 				ComplexTypes_AdditionConstructors(CChartLayoutTarget)
-					CChartLayoutTarget()
+				CChartLayoutTarget()
 				{
 				}
 				virtual ~CChartLayoutTarget()
 				{
 				}
 
-				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+				virtual void FromXML(XmlUtils::CXmlNode& oNode)
 				{
 					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
-				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+				virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
 					ReadAttributes(oReader);
 
@@ -335,32 +334,30 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-						WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End( oReader )
 				}
 
 			public:
-
-				nullable<SimpleTypes::Spreadsheet::CChartLayoutTarget<> > m_oVal;
+				nullable<SimpleTypes::Spreadsheet::CChartLayoutTarget<>> m_oVal;
 			};
 			class CChartHMode : public ComplexType
 			{
 			public:
 				ComplexTypes_AdditionConstructors(CChartHMode)
-					CChartHMode()
+				CChartHMode()
 				{
 				}
 				virtual ~CChartHMode()
 				{
 				}
 
-				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+				virtual void FromXML(XmlUtils::CXmlNode& oNode)
 				{
 					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
-				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+				virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
 					ReadAttributes(oReader);
 
@@ -384,15 +381,14 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-						WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End( oReader )
 				}
 
 			public:
 
-				nullable<SimpleTypes::Spreadsheet::CChartHMode<> > m_oVal;
+				nullable<SimpleTypes::Spreadsheet::CChartHMode<>> m_oVal;
 			};
 			class CChartAxPos : public ComplexType
 			{
@@ -433,15 +429,14 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-						WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End( oReader )
 				}
 
 			public:
 
-				nullable<SimpleTypes::Spreadsheet::CChartAxPos<> > m_oVal;
+				nullable<SimpleTypes::Spreadsheet::CChartAxPos<>> m_oVal;
 			};
 			class CChartBarGrouping : public ComplexType
 			{
@@ -531,15 +526,14 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-						WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End( oReader )
 				}
 
 			public:
 
-				nullable<SimpleTypes::Spreadsheet::CChartBarDerection<> > m_oVal;
+				nullable<SimpleTypes::Spreadsheet::CChartBarDirection<> > m_oVal;
 			};
 			class CChartSymbol : public ComplexType
 			{

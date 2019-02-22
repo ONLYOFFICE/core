@@ -45,22 +45,17 @@ namespace SimpleTypes
 			{
 				m_eValue = DefValue;
 			}
-
 			virtual E       GetValue() const
 			{
 				return m_eValue;
 			}
-
 			virtual void    SetValue(E eValue)
 			{
 				m_eValue = eValue;
 			}
-
             virtual E       FromString(std::wstring &sValue) = 0;
 			virtual std::wstring ToString() const = 0;
-
 		protected:
-
 			E m_eValue;
 		};
 
@@ -78,9 +73,9 @@ namespace SimpleTypes
 
             virtual ETableType FromString(std::wstring &sValue)
 			{
-                if      ( _T("queryTable")	== sValue ) this->m_eValue = typeQueryTable;
-                else if ( _T("worksheet")	== sValue ) this->m_eValue = typeWorksheet;
-                else if ( _T("xml")			== sValue ) this->m_eValue = typeXml;
+                if      ( L"queryTable"	== sValue ) this->m_eValue = typeQueryTable;
+                else if ( L"worksheet"	== sValue ) this->m_eValue = typeWorksheet;
+                else if ( L"xml"		== sValue ) this->m_eValue = typeXml;
                 else                                    this->m_eValue = eDefValue;
 
                 return this->m_eValue;
@@ -90,10 +85,10 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case typeQueryTable : return _T("queryTable");break;
-				case typeWorksheet : return _T("worksheet");break;
-				case typeXml : return _T("xml");break;
-				default : return _T("typeWorksheet");
+				case typeQueryTable :	return L"queryTable";
+				case typeXml :			return L"xml";
+				case typeWorksheet :
+				default :				return L"worksheet";
 
 				}
 			}
@@ -101,6 +96,111 @@ namespace SimpleTypes
 			SimpleType_FromString     (ETableType)
 			SimpleType_Operator_Equal (CTableType)
 		};
+		enum EDatabaseSourceType
+		{
+			typeODBCBasedSource = 1,
+			typeDAOBasedSource = 2,
+			typeFileBasedDatabaseSource = 3,
+			typeWebQuery = 4,
+			typeOLEDBBasedSource = 5,
+			typeTextBasedSource = 6,
+			typeADORecordSet = 7,
+			typeDSP
+		};
+
+		enum EExternalConnectionType
+		{
+			extConnTypeGeneral	= 0,
+			extConnTypeText		= 1,
+			extConnTypeMDY		= 2,
+			extConnTypeDMY		= 3,
+			extConnTypeYMD		= 4,
+			extConnTypeMYD		= 5,
+			extConnTypeDYM		= 6,
+			extConnTypeYDM		= 7,
+			extConnTypeSkip		= 8,
+			extConnTypeEMD		= 9
+		};
+		template<EExternalConnectionType eDefValue = extConnTypeGeneral>
+		class CExternalConnectionType : public CSimpleType<EExternalConnectionType, eDefValue>
+		{
+		public:
+			CExternalConnectionType() {}
+
+            virtual EExternalConnectionType FromString(std::wstring &sValue)
+			{
+                if      ( L"general"	== sValue ) this->m_eValue = extConnTypeGeneral;
+                else if ( L"text"		== sValue ) this->m_eValue = extConnTypeText;
+                else if ( L"MDY"		== sValue ) this->m_eValue = extConnTypeMDY;
+                else if ( L"DMY"		== sValue ) this->m_eValue = extConnTypeDMY;
+                else if ( L"YMD"		== sValue ) this->m_eValue = extConnTypeYMD;
+                else if ( L"MYD"		== sValue ) this->m_eValue = extConnTypeMYD;
+                else if ( L"DYM"		== sValue ) this->m_eValue = extConnTypeDYM;
+                else if ( L"YDM"		== sValue ) this->m_eValue = extConnTypeYDM;
+                else if ( L"skip"		== sValue ) this->m_eValue = extConnTypeSkip;
+				else if ( L"EMD"		== sValue ) this->m_eValue = extConnTypeEMD;
+				else								this->m_eValue = extConnTypeGeneral;
+
+                return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+				case extConnTypeText:		return L"text";	
+				case extConnTypeMDY:		return L"MDY";	
+				case extConnTypeDMY:		return L"DMY";	
+				case extConnTypeYMD:		return L"YMD";	
+				case extConnTypeMYD:		return L"MYD";	
+				case extConnTypeDYM:		return L"DYM";	
+				case extConnTypeYDM:		return L"YDM";
+				case extConnTypeSkip:		return L"stored";
+				case extConnTypeGeneral:
+				default :					return L"general";
+
+				}
+			}
+			SimpleType_FromString     (EExternalConnectionType)
+			SimpleType_Operator_Equal (CExternalConnectionType)
+		};	
+		enum ECredMethod
+		{
+			integrated_method	= 0,
+			none_method			= 1,
+			prompt_method		= 2,
+			stored_method		= 3
+		};
+		template<ECredMethod eDefValue = integrated_method>
+		class CCredMethod : public CSimpleType<ECredMethod, eDefValue>
+		{
+		public:
+			CCredMethod() {}
+
+            virtual ECredMethod FromString(std::wstring &sValue)
+			{
+                if      ( L"integrated"	== sValue ) this->m_eValue = integrated_method;
+                else if ( L"none"		== sValue ) this->m_eValue = none_method;
+                else if ( L"prompt"		== sValue ) this->m_eValue = prompt_method;
+                else if ( L"stored"		== sValue ) this->m_eValue = stored_method;
+                else								this->m_eValue = integrated_method;
+
+                return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+				case none_method:		return L"none";	
+				case prompt_method:		return L"prompt";
+				case stored_method:		return L"stored";
+				case integrated_method:
+				default :				return L"integrated";
+
+				}
+			}
+			SimpleType_FromString     (ECredMethod)
+			SimpleType_Operator_Equal (CCredMethod)
+		};		
 
 		enum EVisibleType
 		{
@@ -116,30 +216,169 @@ namespace SimpleTypes
 
             virtual EVisibleType FromString(std::wstring &sValue)
 			{
-                if      ( _T("hidden")      == sValue ) this->m_eValue = visibleHidden;
-                else if ( _T("veryHidden")  == sValue ) this->m_eValue = visibleVeryHidden;
-                else if ( _T("visible")     == sValue ) this->m_eValue = visibleVisible;
+                if      ( L"hidden"      == sValue ) this->m_eValue = visibleHidden;
+                else if ( L"veryHidden"  == sValue ) this->m_eValue = visibleVeryHidden;
+                else if ( L"visible"     == sValue ) this->m_eValue = visibleVisible;
                 else                                    this->m_eValue = eDefValue;
 
                 return this->m_eValue;
 			}
-
 			virtual std::wstring ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
-				case visibleHidden : return _T("hidden");break;
-				case visibleVeryHidden : return _T("veryHidden");break;
-				case visibleVisible : return _T("visible");break;
-				default : return _T("visible");
-
+				case visibleHidden :		return L"hidden";	
+				case visibleVeryHidden :	return L"veryHidden";
+				case visibleVisible :		
+				default :					return L"visible";
 				}
 			}
-
 			SimpleType_FromString     (EVisibleType)
 			SimpleType_Operator_Equal (CVisibleType)
 		};
+		
+		enum EHtmlFormat
+		{
+			htmlNone =  0,
+			htmlRtf	=  1,
+			htmlAll	=  2
+		};
+		template<EHtmlFormat eDefValue = htmlNone>
+		class CHtmlFormat : public CSimpleType<EHtmlFormat, eDefValue>
+		{
+		public:
+			CHtmlFormat() {}
 
+            virtual EHtmlFormat FromString(std::wstring &sValue)
+			{
+                if      ( L"none"		== sValue )	this->m_eValue = htmlNone;
+                else if ( L"veryHidden" == sValue )	this->m_eValue = htmlRtf;
+                else if ( L"visible"	== sValue ) this->m_eValue = htmlAll;
+                else                                this->m_eValue = eDefValue;
+
+                return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+				case htmlNone : return L"none";
+				case htmlRtf :	return L"rtf";
+				case htmlAll :	return L"all";
+				default :		return L"none";
+				}
+			}
+			SimpleType_FromString     (EHtmlFormat)
+			SimpleType_Operator_Equal (CHtmlFormat)
+		};
+		enum EParameterType
+		{
+			parameterPrompt =  0,
+			parameterValue	=  1,
+			parameterCell	=  2
+		};
+		template<EParameterType eDefValue = parameterPrompt>
+		class CParameterType : public CSimpleType<EParameterType, eDefValue>
+		{
+		public:
+			CParameterType() {}
+
+            virtual EParameterType FromString(std::wstring &sValue)
+			{
+                if      ( L"promt"	== sValue )	this->m_eValue = parameterPrompt;
+                else if ( L"value"	== sValue )	this->m_eValue = parameterValue;
+                else if ( L"cell"	== sValue ) this->m_eValue = parameterCell;
+                else                            this->m_eValue = eDefValue;
+
+                return this->m_eValue;
+				}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+				case parameterValue :	return L"value";
+				case parameterCell :	return L"cell";
+				case parameterPrompt : 
+				default :				return L"promt";
+			}
+			}
+			SimpleType_FromString     (EParameterType)
+			SimpleType_Operator_Equal (CParameterType)
+		};
+		enum EQualifier
+		{
+			doubleQuote =  0,
+			singleQuote	=  1,
+			noneQuote	=  2
+		};
+		template<EQualifier eDefValue = doubleQuote>
+		class CQualifier : public CSimpleType<EQualifier, eDefValue>
+		{
+		public:
+			CQualifier() {}
+
+            virtual EQualifier FromString(std::wstring &sValue)
+			{
+                if      ( L"doubleQuote"	== sValue )	this->m_eValue = doubleQuote;
+                else if ( L"singleQuote"	== sValue )	this->m_eValue = singleQuote;
+                else if ( L"none"			== sValue ) this->m_eValue = noneQuote;
+                else									this->m_eValue = eDefValue;
+
+                return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+				case noneQuote :	return L"none";
+				case singleQuote :	return L"singleQuote";
+				case doubleQuote : 
+				default :			return L"doubleQuote";
+				}
+			}
+			SimpleType_FromString     (EQualifier)
+			SimpleType_Operator_Equal (CQualifier)
+		};
+		enum EFileType
+		{
+			fileTypeMac		=  0,
+			fileTypeWin		=  1,
+			fileTypeDos		=  2,
+			fileTypeLin		=  3,
+			fileTypeOther	=  4
+		};
+		template<EFileType eDefValue = fileTypeWin>
+		class CFileType : public CSimpleType<EFileType, eDefValue>
+		{
+		public:
+			CFileType() {}
+
+            virtual EFileType FromString(std::wstring &sValue)
+			{
+                if      ( L"win"	== sValue )	this->m_eValue = fileTypeWin;
+                else if ( L"mac"	== sValue )	this->m_eValue = fileTypeMac;
+                else if ( L"lin"	== sValue )	this->m_eValue = fileTypeLin;
+				else if ( L"dos"	== sValue )	this->m_eValue = fileTypeDos;
+				else if ( L"other"	== sValue ) this->m_eValue = fileTypeOther;
+                else                            this->m_eValue = eDefValue;
+
+                return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+				case fileTypeMac :		return L"mac";
+				case fileTypeDos :		return L"dos";
+				case fileTypeLin :		return L"lin";
+				case fileTypeOther :	return L"other";
+				case fileTypeWin : 
+				default :				return L"win";
+				}
+			}
+			SimpleType_FromString     (EFileType)
+			SimpleType_Operator_Equal (CFileType)
+		};		
 		enum EPhoneticAlignmentType
 		{
 			phoneticalignmentCenter			=  0,
@@ -156,10 +395,10 @@ namespace SimpleTypes
 
             virtual EPhoneticAlignmentType FromString(std::wstring &sValue)
 			{
-                if      ( _T("center")            == sValue ) this->m_eValue = phoneticalignmentCenter;
-                else if ( _T("distributed")      == sValue ) this->m_eValue = phoneticalignmentDistributed;
-                else if ( _T("left")    == sValue ) this->m_eValue = phoneticalignmentLeft;
-                else if ( _T("noControl")    == sValue ) this->m_eValue = phoneticalignmentNoControl;
+                if      ( L"center"		== sValue ) this->m_eValue = phoneticalignmentCenter;
+                else if ( L"distributed"== sValue ) this->m_eValue = phoneticalignmentDistributed;
+                else if ( L"left"		== sValue ) this->m_eValue = phoneticalignmentLeft;
+                else if ( L"noControl"	== sValue ) this->m_eValue = phoneticalignmentNoControl;
                 else                                             this->m_eValue = eDefValue;
 
                 return this->m_eValue;
@@ -167,7 +406,14 @@ namespace SimpleTypes
 
 			virtual std::wstring       ToString  () const 
 			{
-				return _T("noControl");
+                switch(this->m_eValue)
+				{
+				case phoneticalignmentCenter :		return L"center";
+				case phoneticalignmentDistributed : return L"distributed";
+				case phoneticalignmentLeft :		return L"left";		
+				case phoneticalignmentNoControl : 
+				default :							return L"noControl";
+}
 			}
 
 			SimpleType_FromString     (EPhoneticAlignmentType)
@@ -190,10 +436,10 @@ namespace SimpleTypes
 
             virtual EPhoneticTypeType FromString(std::wstring &sValue)
 			{
-                if      ( _T("fullwidthKatakana")            == sValue ) this->m_eValue = phonetictypeFullwidthKatakana;
-                else if ( _T("halfwidthKatakana")      == sValue ) this->m_eValue = phonetictypeHalfwidthKatakana;
-                else if ( _T("hiragana")    == sValue ) this->m_eValue = phonetictypeHiragana;
-                else if ( _T("noConversion")    == sValue ) this->m_eValue = phonetictypeNoConversion;
+                if      ( L"fullwidthKatakana"	== sValue ) this->m_eValue = phonetictypeFullwidthKatakana;
+                else if ( L"halfwidthKatakana"	== sValue ) this->m_eValue = phonetictypeHalfwidthKatakana;
+                else if ( L"hiragana"			== sValue ) this->m_eValue = phonetictypeHiragana;
+                else if ( L"noConversion"		== sValue ) this->m_eValue = phonetictypeNoConversion;
                 else                                             this->m_eValue = eDefValue;
 
                 return this->m_eValue;
@@ -201,7 +447,14 @@ namespace SimpleTypes
 
 			virtual std::wstring       ToString  () const 
 			{
-				return _T("noConversion");
+				switch(this->m_eValue)
+				{
+				case phonetictypeFullwidthKatakana :	return L"fullwidthKatakana";
+				case phonetictypeHalfwidthKatakana :	return L"halfwidthKatakana";
+				case phonetictypeHiragana :				return L"hiragana";	
+				case phonetictypeNoConversion : 
+				default :								return L"noConversion";
+				}
 			}
 
 			SimpleType_FromString     (EPhoneticTypeType)
@@ -1557,18 +1810,18 @@ namespace SimpleTypes
 			SimpleType_FromString     (EChartBarGrouping)
 				SimpleType_Operator_Equal (CChartBarGrouping)
 		};
-		enum EChartBarDerection
+		enum EChartBarDirection
 		{
 			chartbardirectionBar	=  0,
 			chartbardirectionCol	=  1
 		};
-		template<EChartBarDerection eDefValue = chartbardirectionBar>
-		class CChartBarDerection : public CSimpleType<EChartBarDerection, eDefValue>
+		template<EChartBarDirection eDefValue = chartbardirectionBar>
+		class CChartBarDirection : public CSimpleType<EChartBarDirection, eDefValue>
 		{
 		public:
-			CChartBarDerection() {}
+			CChartBarDirection() {}
 
-            virtual EChartBarDerection FromString(std::wstring &sValue)
+            virtual EChartBarDirection FromString(std::wstring &sValue)
 			{
 				if(_T("bar") == sValue)
                     this->m_eValue = chartbardirectionBar;
@@ -1583,14 +1836,14 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case chartbardirectionBar: return _T("bar"); break;
-				case chartbardirectionCol: return _T("col"); break;
-				default: return _T("bar");
+				case chartbardirectionBar: return L"bar"; break;
+				case chartbardirectionCol: return L"col"; break;
+				default: return L"bar";
 				}
 			}
 
-			SimpleType_FromString     (EChartBarDerection)
-				SimpleType_Operator_Equal (CChartBarDerection)
+			SimpleType_FromString     (EChartBarDirection)
+			SimpleType_Operator_Equal (CChartBarDirection)
 		};
 		enum EChartSymbol
 		{
@@ -2284,11 +2537,11 @@ namespace SimpleTypes
 	//--------------------------------------------------------
 		enum EDataBarAxisPosition
 		{
-			automatic		= 0,
-			middle			= 1,
-			none			= 2
+			automatic_pos	= 0,
+			middle_pos		= 1,
+			none_pos		= 2
 		};
-		template<EDataBarAxisPosition eDefValue = automatic>
+		template<EDataBarAxisPosition eDefValue = automatic_pos>
 		class ST_DataBarAxisPosition : public CSimpleType<EDataBarAxisPosition, eDefValue>
 		{
 		public:
@@ -2296,9 +2549,9 @@ namespace SimpleTypes
 
             virtual EDataBarAxisPosition FromString(std::wstring &sValue)
 			{
-				if(_T("automatic") == sValue)		this->m_eValue = automatic;
-                else if(_T("middle") == sValue)		this->m_eValue = middle;
-                else if(_T("none") == sValue)		this->m_eValue = none;
+				if(L"automatic" == sValue)		this->m_eValue = automatic_pos;
+                else if(L"middle" == sValue)	this->m_eValue = middle_pos;
+                else if(L"none" == sValue)		this->m_eValue = none_pos;
 				else 								this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
@@ -2307,10 +2560,10 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case automatic	:	return _T("automatic");	break;
-					case middle		:	return _T("middle");	break;
-					case none		:	return _T("none");		break;
-					default			:	return _T("automatic");
+					case automatic_pos	:	return L"automatic";break;
+					case middle_pos		:	return L"middle";	break;
+					case none_pos		:	return L"none";		break;
+					default				:	return L"automatic";
 				}
 			}
 
@@ -2323,11 +2576,11 @@ namespace SimpleTypes
 	//--------------------------------------------------------
 		enum EDataBarDirection
 		{
-			context		= 0,
+			context_direction	= 0,
 			leftToRight	= 1,
 			rightToLeft	= 2
 		};
-		template<EDataBarDirection eDefValue = context>
+		template<EDataBarDirection eDefValue = context_direction>
 		class ST_DataBarDirection : public CSimpleType<EDataBarDirection, eDefValue>
 		{
 		public:
@@ -2335,9 +2588,9 @@ namespace SimpleTypes
 
             virtual EDataBarDirection FromString(std::wstring &sValue)
 			{
-				if(_T("context") == sValue)				this->m_eValue = context;
-                else if(_T("leftToRight") == sValue)	this->m_eValue = leftToRight;
-                else if(_T("rightToLeft") == sValue)	this->m_eValue = rightToLeft;
+					 if(L"context"		== sValue)	this->m_eValue = context_direction;
+                else if(L"leftToRight"	== sValue)	this->m_eValue = leftToRight;
+                else if(L"rightToLeft"	== sValue)	this->m_eValue = rightToLeft;
 				else 									this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
@@ -2346,10 +2599,10 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case context		:	return _T("context");		break;
-					case leftToRight	:	return _T("leftToRight");	break;
-					case rightToLeft	:	return _T("rightToLeft");	break;
-					default				:	return _T("automatic");
+					case context_direction	:	return L"context";
+					case leftToRight		:	return L"leftToRight";
+					case rightToLeft		:	return L"rightToLeft";
+					default					:	return L"automatic";
 				}
 			}
 

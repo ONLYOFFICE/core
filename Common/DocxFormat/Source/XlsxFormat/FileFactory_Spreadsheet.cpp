@@ -50,6 +50,8 @@
 #include "Comments/Comments.h"
 
 #include "Table/Table.h"
+#include "Table/QueryTable.h"
+#include "Table/Connections.h"
 #include "ExternalLinks/ExternalLinks.h"
 #include "ExternalLinks/ExternalLinkPath.h"
 #include "../DocxFormat/Diagram/DiagramDrawing.h"
@@ -103,6 +105,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));			
 			else if ( oRelation.Type() == FileTypes::ExternalLinks )
 				return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::Connections )
+				return smart_ptr<OOX::File>(new CConnectionsFile( pMain, oRootPath, oFileName ));
 			
 			else if ( oRelation.Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
@@ -212,6 +216,8 @@ namespace OOX
 			{// https://msdn.microsoft.com/en-us/library/ff531845(v=office.12).aspx)
 				return smart_ptr<OOX::File>(new ExternalLinkPath( pMain, oRelationFilename ));
 			}
+			else if ( pRelation->Type() == FileTypes::Connections )
+				return smart_ptr<OOX::File>(new CConnectionsFile( pMain, oRootPath, oFileName ));
 			else if (  pRelation->Type() == OOX::FileTypes::OleObject)
 			{
 				if (pRelation->IsExternal())

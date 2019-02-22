@@ -1637,6 +1637,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Table\Connections.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Table\QueryTable.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Table\Table.h"
 					>
 				</File>

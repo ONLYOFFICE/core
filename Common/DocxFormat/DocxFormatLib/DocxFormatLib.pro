@@ -24,7 +24,10 @@ include($$PWD/../../3dParty/boost/boost.pri)
 
 core_release {
 SOURCES += \
-    docxformatlib_logic.cpp
+    docxformatlib_logic.cpp \
+    common_formatlib.cpp \
+    xlsxformatlib_logic.cpp
+
 }
 
 core_debug {

@@ -416,6 +416,9 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x023F:
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
 			break;
+		case 0x02bf:
+			fopte = OfficeArtFOPTEPtr(new ThreeDObjectBooleanProperties);
+			break;
 /*todo*/case 0x0303: //cxstyle
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;

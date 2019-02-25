@@ -665,7 +665,7 @@ namespace DocFileFormat
 				{
                     ODRAW::ThreeDObjectBooleanProperties* booleans = dynamic_cast<ODRAW::ThreeDObjectBooleanProperties*>(iter.get());
 
-					if (booleans->fUsef3D && !booleans->f3D)
+					if ((booleans) && (booleans->fUsef3D && !booleans->f3D))
 						b3D = false;
 				}break;
 			case c3DRenderMode:
@@ -1262,7 +1262,9 @@ namespace DocFileFormat
 	std::wstring VMLShapeMapping::GetWrapCoords(const ODRAW::OfficeArtFOPTEPtr& pOpt) const
 	{
 		ODRAW::PWrapPolygonVertices* pWrapPolygonVertices = dynamic_cast<ODRAW::PWrapPolygonVertices*>(pOpt.get());
+		
 		if (!pWrapPolygonVertices) return L"";
+		if (pWrapPolygonVertices->complex.data.empty()) return L"";
 
 		std::wstring coords;
 

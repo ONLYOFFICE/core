@@ -452,6 +452,96 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     return NExtractTools::xls2xlsm_dir(from, to, temp, oInputParams);
 }
 
+- (int)doct_bin2dotx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
+    
+    int nRes = 0;
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring themeDir = nsstring_to_wstring(nsThemeDir);
+    bool bFromChanges = (bool)fromChanges.boolValue;
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.docx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    std::wstring temporaryFile = nsstring_to_wstring(nsTemporaryFile);
+    
+    std::wstring sDocxDir = temp + _T("docx_unpacked");
+    NSDirectory::DeleteDirectory(sDocxDir);
+    NSDirectory::CreateDirectory(sDocxDir);
+    
+    nRes = doct_bin2docx_dir(from, temporaryFile, sDocxDir, false, temp, oInputParams);
+    if(SUCCEEDED_X2T(nRes))
+    {
+        nRes = fromDocxDir(sDocxDir, to, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX, temp, themeDir, bFromChanges, false, oInputParams);
+    }
+    
+    return nRes;
+}
+
+- (int)xlst_bin2xltx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
+    
+    int nRes = 0;
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring themeDir = nsstring_to_wstring(nsThemeDir);
+    bool bFromChanges = (bool)fromChanges.boolValue;
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.xlsx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    std::wstring temporaryFile = nsstring_to_wstring(nsTemporaryFile);
+    
+    std::wstring sXlsxDir = temp + _T("xlsx_unpacked");
+    NSDirectory::DeleteDirectory(sXlsxDir);
+    NSDirectory::CreateDirectory(sXlsxDir);
+    
+    nRes = xlst_bin2xlsx_dir(from, temporaryFile, sXlsxDir, false, temp, oInputParams);
+    if(SUCCEEDED_X2T(nRes))
+    {
+        nRes = fromXlsxDir(sXlsxDir, to, AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX, temp, themeDir, bFromChanges, false, oInputParams, std::wstring(L""));
+    }
+    
+    return nRes;
+}
+
+- (int)pptt_bin2potx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath fromChanges:(NSNumber*)fromChanges nsThemeDir:(NSString*)nsThemeDir {
+    
+    int nRes = 0;
+    
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    std::wstring temp = nsstring_to_wstring(nsTemp);
+    std::wstring themeDir = nsstring_to_wstring(nsThemeDir);
+    bool bFromChanges = (bool)fromChanges.boolValue;
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    NSString* nsTemporaryFile = [NSString stringWithFormat:@"%@%@.pptx", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    std::wstring temporaryFile = nsstring_to_wstring(nsTemporaryFile);
+    
+    std::wstring sPptxDir = temp + _T("pptx_unpacked");
+    NSDirectory::DeleteDirectory(sPptxDir);
+    NSDirectory::CreateDirectory(sPptxDir);
+    
+    nRes = pptt_bin2pptx_dir(from, temporaryFile, sPptxDir, false, temp, oInputParams);
+    if(SUCCEEDED_X2T(nRes))
+    {
+        nRes = fromPptxDir(sPptxDir, to, AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX, temp, themeDir, bFromChanges, false, oInputParams);
+    }
+    
+    return nRes;
+}
+
 - (int)txt2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);

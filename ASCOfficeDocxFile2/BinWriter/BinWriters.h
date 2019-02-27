@@ -63,6 +63,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
 
 namespace BinDocxRW

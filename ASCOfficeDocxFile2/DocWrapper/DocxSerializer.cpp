@@ -30,7 +30,7 @@
  *
  */
 #include "DocxSerializer.h"
-
+ 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"

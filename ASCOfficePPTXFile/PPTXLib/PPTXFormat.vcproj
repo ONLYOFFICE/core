@@ -706,6 +706,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\Common.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\Ppt2PptxShapeConverter.h"
 					>
 				</File>
@@ -755,6 +759,14 @@
 				</File>
 				<File
 					RelativePath="..\Editor\Drawing\Shapes\shape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\toVmlConvert.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\toVmlConvert.h"
 					>
 				</File>
 			</Filter>

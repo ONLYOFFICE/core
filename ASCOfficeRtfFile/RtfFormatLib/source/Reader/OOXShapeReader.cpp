@@ -42,6 +42,8 @@
 #include "../../../../ASCOfficeOdfFile/src/odf/svg_parser.h"
 #include <boost/algorithm/string.hpp>
 
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
+
 #ifndef RGB
     #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
 #endif

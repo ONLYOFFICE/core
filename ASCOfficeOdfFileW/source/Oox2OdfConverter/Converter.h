@@ -454,20 +454,20 @@ public:
 		void convert(PPTX::Logic::AhXY							*oox_handle);
 		void convert(PPTX::Logic::AhPolar						*oox_handle);
 		
-		void convert(PPTX::Logic::EffectStyle					*oox_effect);
-		void convert(PPTX::Logic::EffectLst						*oox_effect_list);
-		void convert(PPTX::Logic::EffectDag						*oox_effect_dag);
-		void convert(PPTX::Logic::InnerShdw						*oox_effect);
-		void convert(PPTX::Logic::OuterShdw						*oox_effect);
-		void convert(PPTX::Logic::PrstShdw						*oox_effect);
-		void convert(PPTX::Logic::AlphaModFix					*oox_effect);
-		void convert(PPTX::Logic::Blur							*oox_effect);
-		void convert(PPTX::Logic::FillOverlay					*oox_effect);
-		void convert(PPTX::Logic::Glow							*oox_effect);
-		void convert(PPTX::Logic::Reflection					*oox_effect);
-		void convert(PPTX::Logic::SoftEdge						*oox_effect);
-		void convert(PPTX::Logic::Grayscl						*oox_effect);
-		void convert(PPTX::Logic::Duotone						*oox_effect);
+		void convert(PPTX::Logic::EffectStyle					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::EffectLst						*oox_effect_list, DWORD ARGB = 0);
+		void convert(PPTX::Logic::EffectDag						*oox_effect_dag, DWORD ARGB = 0);
+		void convert(PPTX::Logic::InnerShdw						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::OuterShdw						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::PrstShdw						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::AlphaModFix					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Blur							*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::FillOverlay					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Glow							*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Reflection					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::SoftEdge						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Grayscl						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Duotone						*oox_effect, DWORD ARGB = 0);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);

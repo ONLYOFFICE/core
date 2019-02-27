@@ -50,6 +50,7 @@
 
 #include "./Editor/Drawing/Elements.h"
 #include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/Pptx2PptShapeConverter.h"
+#include "./Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
 
 #include "../DesktopEditor/common/Directory.h"
 

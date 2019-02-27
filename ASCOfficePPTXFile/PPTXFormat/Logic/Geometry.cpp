@@ -32,7 +32,7 @@
 
 #include "Geometry.h"
 #include "../../Editor/Drawing/Elements.h"
-#include "../../Editor/Drawing/Shapes/BaseShape/Common.h"
+#include "../../Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
 
 namespace PPTX
 {

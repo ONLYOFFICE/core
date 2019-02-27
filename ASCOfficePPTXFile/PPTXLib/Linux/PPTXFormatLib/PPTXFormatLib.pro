@@ -83,6 +83,7 @@ SOURCES += \
 
 SOURCES += pptxformatlib.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/BaseShape.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/toVmlConvert.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptFormula.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxFormula.cpp \

@@ -923,73 +923,73 @@ void OoxConverter::convert(PPTX::Logic::AhPolar *oox_handle)
 {
 	if (!oox_handle) return;
 }
-void OoxConverter::convert(PPTX::Logic::EffectDag *oox_effect_dag)
+void OoxConverter::convert(PPTX::Logic::EffectDag *oox_effect_dag, DWORD ARGB)
 {
 	if (!oox_effect_dag) return;
 
 	//type - sib, value
 	for (size_t i = 0; i < oox_effect_dag->Effects.size(); ++i)
 	{
-		convert(oox_effect_dag->Effects[i].Effect.operator->());
+		convert(oox_effect_dag->Effects[i].Effect.operator->()/*, ARGB*/);
 	}
 }
-void OoxConverter::convert(PPTX::Logic::EffectLst *oox_effect_list)
+void OoxConverter::convert(PPTX::Logic::EffectLst *oox_effect_list, DWORD ARGB)
 {
 	if (!oox_effect_list) return;
 
-	convert(oox_effect_list->blur.GetPointer());
-	convert(oox_effect_list->fillOverlay.GetPointer());
-	convert(oox_effect_list->glow.GetPointer());
-	convert(oox_effect_list->reflection.GetPointer());
-	convert(oox_effect_list->softEdge.GetPointer());
-	convert(oox_effect_list->innerShdw.GetPointer());
-	convert(oox_effect_list->outerShdw.GetPointer());
-	convert(oox_effect_list->prstShdw.GetPointer());
+	convert(oox_effect_list->blur.GetPointer(), ARGB);
+	convert(oox_effect_list->fillOverlay.GetPointer(), ARGB);
+	convert(oox_effect_list->glow.GetPointer(), ARGB);
+	convert(oox_effect_list->reflection.GetPointer(), ARGB);
+	convert(oox_effect_list->softEdge.GetPointer(), ARGB);
+	convert(oox_effect_list->innerShdw.GetPointer(), ARGB);
+	convert(oox_effect_list->outerShdw.GetPointer(), ARGB);
+	convert(oox_effect_list->prstShdw.GetPointer(), ARGB);
 }
-void OoxConverter::convert(PPTX::Logic::AlphaModFix *oox_alpha)
+void OoxConverter::convert(PPTX::Logic::AlphaModFix *oox_alpha, DWORD ARGB)
 {
 	if (oox_alpha == NULL) return;
 	if (false == oox_alpha->amt.IsInit()) return;
 
 	odf_context()->drawing_context()->set_opacity(oox_alpha->amt.get() / 1000.);
 }
-void OoxConverter::convert(PPTX::Logic::Blur *oox_effect)
+void OoxConverter::convert(PPTX::Logic::Blur *oox_effect, DWORD ARGB)
 {
 	if (oox_effect == NULL) return;
 
 }
-void OoxConverter::convert(PPTX::Logic::FillOverlay *oox_effect)
+void OoxConverter::convert(PPTX::Logic::FillOverlay *oox_effect, DWORD ARGBt)
 {
 	if (oox_effect == NULL) return;
 
 }
-void OoxConverter::convert(PPTX::Logic::Reflection *oox_effect)
+void OoxConverter::convert(PPTX::Logic::Reflection *oox_effect, DWORD ARGB)
 {
 	if (oox_effect == NULL) return;
 
 }
-void OoxConverter::convert(PPTX::Logic::Glow *oox_effect)
+void OoxConverter::convert(PPTX::Logic::Glow *oox_effect, DWORD ARGB)
 {
 	if (oox_effect == NULL) return;
 
 }
-void OoxConverter::convert(PPTX::Logic::SoftEdge *oox_effect)
+void OoxConverter::convert(PPTX::Logic::SoftEdge *oox_effect, DWORD ARGB)
 {
 	if (oox_effect == NULL) return;
 
 }
-void OoxConverter::convert(PPTX::Logic::Grayscl *oox_effect)
+void OoxConverter::convert(PPTX::Logic::Grayscl *oox_effect, DWORD ARGB)
 {
 	if (oox_effect == NULL) return;
 
 	odf_context()->drawing_context()->set_grayscale();
 }
-void OoxConverter::convert(PPTX::Logic::Duotone *oox_effect)
+void OoxConverter::convert(PPTX::Logic::Duotone *oox_effect, DWORD ARGB)
 {
 	if (oox_effect == NULL) return;
 
 }
-void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow)
+void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow, DWORD ARGB)
 {
 	if (oox_shadow == NULL) return;
 
@@ -1000,7 +1000,7 @@ void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow)
 
 	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
 }
-void OoxConverter::convert(PPTX::Logic::OuterShdw *oox_shadow)
+void OoxConverter::convert(PPTX::Logic::OuterShdw *oox_shadow, DWORD ARGB)
 {
 	if (oox_shadow == NULL) return; 
 
@@ -1012,7 +1012,7 @@ void OoxConverter::convert(PPTX::Logic::OuterShdw *oox_shadow)
 	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
 
 }
-void OoxConverter::convert(PPTX::Logic::PrstShdw *oox_shadow)
+void OoxConverter::convert(PPTX::Logic::PrstShdw *oox_shadow, DWORD ARGB)
 {
 	if (oox_shadow == NULL) return; 
 
@@ -1024,13 +1024,20 @@ void OoxConverter::convert(PPTX::Logic::PrstShdw *oox_shadow)
 	//odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
 }
 
-void OoxConverter::convert(PPTX::Logic::EffectStyle *oox_effects)
+void OoxConverter::convert(PPTX::Logic::EffectStyle *oox_effects, DWORD ARGB)
 {
 	if (!oox_effects) return;
 
 	if (oox_effects->EffectList.is_init())
 	{
-		convert(oox_effects->EffectList.List.GetPointer());
+		if (oox_effects->EffectList.is<PPTX::Logic::EffectLst>())
+		{
+			convert(dynamic_cast<PPTX::Logic::EffectLst*>(oox_effects->EffectList.List.GetPointer()), ARGB);
+		}
+		else if(oox_effects->EffectList.is<PPTX::Logic::EffectDag>())
+		{
+			convert(dynamic_cast<PPTX::Logic::EffectDag*>(oox_effects->EffectList.List.GetPointer()), ARGB);
+		}
 	}
 	if (oox_effects->scene3d.IsInit())
 	{
@@ -2468,10 +2475,9 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	}
 	else if (type == 3) 
 	{
-		index -= 1;
 		if (index >= 0 && index < (int)theme->themeElements.fmtScheme.effectStyleLst.size())
 		{
-			convert(&theme->themeElements.fmtScheme.effectStyleLst[index]);		
+			convert(&theme->themeElements.fmtScheme.effectStyleLst[index], nARGB);		
 		}
 	}
 	oox_current_child_document = old;

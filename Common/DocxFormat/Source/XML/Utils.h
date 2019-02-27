@@ -296,7 +296,7 @@ namespace XmlUtils
 //
 //		CoTaskMemFree(guidString);
 //#else
-		srand(time(NULL));
+		srand((unsigned int) time(NULL));
 
         std::wstringstream sstream;
 		sstream << boost::wformat(L"%X%X-%X-%X-%X-%X%X%X") % std::rand() % std::rand() % std::rand() % ((std::rand() & 0x0fff) | 0x4000) % ((rand() % 0x3fff) + 0x8000) %  rand() % rand() % rand();

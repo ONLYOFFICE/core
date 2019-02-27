@@ -70,7 +70,7 @@ typedef shared_ptr<odf_group_state>::Type odf_group_state_ptr;
 
 struct 	odf_group_state
 {
-	odf_group_state(office_element_ptr	elm_, int level_, odf_group_state_ptr prev)
+	odf_group_state(office_element_ptr	elm_, size_t level_, odf_group_state_ptr prev)
 	{
 		shift_x = shift_y = x = y = cx = cy = 0;
 		scale_cx = scale_cy = 1.;
@@ -85,7 +85,7 @@ struct 	odf_group_state
 	}
 	office_element_ptr	elm;
 	
-	int level;
+	size_t level;
 
 	double shift_x;
 	double shift_y;
@@ -583,9 +583,9 @@ void odf_drawing_context::end_drawing()
 			{
 				length cx = *impl_->current_drawing_state_.svg_width_;
 				length cy = *impl_->current_drawing_state_.svg_height_;
-
-				new_x = cx / 2 - (cx / 2 * cos(-angle) - cy / 2 * sin(-angle) );
-				new_y = cy / 2 - (cx / 2 * sin(-angle) + cy / 2 * cos(-angle) );
+ 
+				new_x = cx / 2. - (cx / 2. * cos(-angle) - cy / 2. * sin(-angle) );
+				new_y = cy / 2. - (cx / 2. * sin(-angle) + cy / 2. * cos(-angle) );
 			}
 
 			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(*rotate) + std::wstring(L")");
@@ -3061,7 +3061,7 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (270 - angle) * 10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = (int)((270 - angle) * 10);//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r, double b)
 {
@@ -3118,7 +3118,7 @@ void odf_drawing_context::set_opacity_angle(double angle)
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
 	if (!opacity) return;
 
-	opacity->draw_angle_ = (270-angle)*10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+	opacity->draw_angle_ = (int)((270-angle)*10);//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
 void odf_drawing_context::set_opacity_type(gradient_style style)
 {

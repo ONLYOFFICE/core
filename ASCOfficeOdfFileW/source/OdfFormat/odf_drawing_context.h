@@ -200,6 +200,7 @@ public:
 	void set_rotate			(double dVal);
 
 	void set_no_fill		();
+	void set_group_fill		();
 	void set_type_fill		(int type);//for area - temp for objects
 	void set_solid_fill		(std::wstring hexColor);
 	void set_opacity		(double percent);

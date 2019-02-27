@@ -97,7 +97,7 @@ size_t odp_conversion_context::get_pages_count()
 }
 void odp_conversion_context::start_slide()
 {
-	slide_context_.set_styles_context(styles_context());
+	slide_context_.set_styles_context(odf_conversion_context::styles_context());
 
 	create_element(L"draw", L"page", root_presentation_->pages_, this);		
 	slide_context_.start_page(root_presentation_->pages_.back());	
@@ -120,6 +120,7 @@ void odp_conversion_context::start_master_slide(std::wstring name)
 void odp_conversion_context::end_master_slide()
 {
 	slide_context_.end_page();
+	slide_context_.set_styles_context(NULL); //возврат на базовый
 }
 void odp_conversion_context::start_layout_slide()
 {
@@ -134,11 +135,21 @@ void odp_conversion_context::start_layout_slide()
 void odp_conversion_context::end_layout_slide()
 {
 	slide_context_.end_page();
+	slide_context_.set_styles_context(NULL); //возврат на базовый
 }
 void odp_conversion_context::start_text_context()
 {
 	text_context_ = new odf_text_context(this, slide_context_.get_styles_context());
 }
+odf_style_context* odp_conversion_context::styles_context()	
+{
+	odf_style_context* result = slide_context_.get_styles_context();
+
+	if (!result) result = odf_conversion_context::styles_context();
+	
+	return result;
+}
+
 void odp_conversion_context::end_text_context()
 {
 	if (text_context_)

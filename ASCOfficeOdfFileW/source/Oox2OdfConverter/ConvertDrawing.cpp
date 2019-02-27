@@ -146,8 +146,8 @@ void OoxConverter::convert(PPTX::Logic::Xfrm *oox_xfrm)
 	if (oox_xfrm->extX.IsInit())	width	= Emu2Pt(*oox_xfrm->extX);
 	if (oox_xfrm->extY.IsInit())	height	= Emu2Pt(*oox_xfrm->extY);
 	
-	odf_context()->drawing_context()->set_position( x, y);
 	odf_context()->drawing_context()->set_size(	width, height);					
+	odf_context()->drawing_context()->set_position( x, y);
 	
 	if (oox_xfrm->flipH.get_value_or(false))	odf_context()->drawing_context()->set_flip_H(true);
 	if (oox_xfrm->flipV.get_value_or(false))	odf_context()->drawing_context()->set_flip_V(true);
@@ -592,10 +592,17 @@ void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
 			odf_context()->drawing_context()->set_group_rotate(oox_grpSpPr->xfrm->rot.get() / 60000.);
 	}
 
+	if ((oox_grpSpPr->Fill.Fill.IsInit()) && (oox_grpSpPr->Fill.m_type != PPTX::Logic::UniFill::noFill))
+	{
+		odf_context()->drawing_context()->start_area_properties();
+		{
+			convert(&oox_grpSpPr->Fill);
+		}
+		odf_context()->drawing_context()->end_area_properties();
+	}
+
 	convert(oox_grpSpPr->EffectList.List.GetPointer());
 	convert(oox_grpSpPr->scene3d.GetPointer());
-	
-	//UniFill					Fill;
 }
 
 void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
@@ -842,6 +849,7 @@ void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
 {
     if (oox_fill == NULL) return;
 	
+	if (oox_fill->is<PPTX::Logic::GrpFill>())		odf_context()->drawing_context()->set_group_fill();
 	if (oox_fill->is<PPTX::Logic::NoFill>())		odf_context()->drawing_context()->set_no_fill();
 
     if (oox_fill->is<PPTX::Logic::BlipFill>())		convert(&oox_fill->as<PPTX::Logic::BlipFill>());

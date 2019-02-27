@@ -584,8 +584,8 @@ void odf_drawing_context::end_drawing()
 				length cx = *impl_->current_drawing_state_.svg_width_;
 				length cy = *impl_->current_drawing_state_.svg_height_;
  
-				new_x = cx / 2. - (cx / 2. * cos(-angle) - cy / 2. * sin(-angle) );
-				new_y = cy / 2. - (cx / 2. * sin(-angle) + cy / 2. * cos(-angle) );
+                new_x = (cx / 2.) - ((cx / 2.) * cos(-angle) - (cy / 2.) * sin(-angle) );
+                new_y = (cy / 2.) - ((cx / 2.) * sin(-angle) + (cy / 2.) * cos(-angle) );
 			}
 
 			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(*rotate) + std::wstring(L")");

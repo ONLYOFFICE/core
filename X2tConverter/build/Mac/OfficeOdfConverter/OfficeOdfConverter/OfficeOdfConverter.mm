@@ -151,7 +151,7 @@ namespace NExtractTools
     }
     
     // docx -> odt
-    _UINT32 __docx2odt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
+    _UINT32 __docx2odt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
         std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
         NSDirectory::CreateDirectory(sTempUnpackedDOCX);
@@ -159,13 +159,13 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCX, NULL, 0))
         {
-            return __docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params, false); //add Template ????
+            return __docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params, bTemplate);
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
     // xlsx -> ods
-    _UINT32 __xlsx2ods (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
+    _UINT32 __xlsx2ods (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
         std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + L"xlsx_unpacked";
         
@@ -174,13 +174,13 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
         {
-            return __xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params, false); //add Template ???
+            return __xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params, bTemplate);
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
     
     // pptx -> odp
-    _UINT32 __pptx2odp (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
+    _UINT32 __pptx2odp (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bTemplate)
     {
         std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
         NSDirectory::CreateDirectory(sTempUnpackedPPTX);
@@ -188,7 +188,7 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedPPTX, NULL, 0))
         {
-            return __pptx_dir2odp(sTempUnpackedPPTX, sTo, sTemp, params, false); //add template ???
+            return __pptx_dir2odp(sTempUnpackedPPTX, sTo, sTemp, params, bTemplate);
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
@@ -227,7 +227,7 @@ namespace NExtractTools
 
 @implementation OfficeOdfConverter
 
-- (int)docx2odt:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+- (int)docx2odt:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath isTemplate:(bool)isTemplate {
     std::wstring from = NExtractTools::nsstring_to_wstring(nsFrom);
     std::wstring to = NExtractTools::nsstring_to_wstring(nsTo);
     std::wstring temp = NExtractTools::nsstring_to_wstring(nsTemp);
@@ -240,10 +240,10 @@ namespace NExtractTools
         oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
     }
     
-    return NExtractTools::__docx2odt(from, to, temp, oInputParams);
+    return NExtractTools::__docx2odt(from, to, temp, oInputParams, isTemplate);
 }
 
-- (int)xlsx2ods:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+- (int)xlsx2ods:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath isTemplate:(bool)isTemplate {
     std::wstring from = NExtractTools::nsstring_to_wstring(nsFrom);
     std::wstring to = NExtractTools::nsstring_to_wstring(nsTo);
     std::wstring temp = NExtractTools::nsstring_to_wstring(nsTemp);
@@ -256,10 +256,10 @@ namespace NExtractTools
         oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
     }
     
-    return NExtractTools::__xlsx2ods(from, to, temp, oInputParams);
+    return NExtractTools::__xlsx2ods(from, to, temp, oInputParams, isTemplate);
 }
 
-- (int)pptx2odp:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
+- (int)pptx2odp:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath isTemplate:(bool)isTemplate {
     std::wstring from = NExtractTools::nsstring_to_wstring(nsFrom);
     std::wstring to = NExtractTools::nsstring_to_wstring(nsTo);
     std::wstring temp = NExtractTools::nsstring_to_wstring(nsTemp);
@@ -272,7 +272,7 @@ namespace NExtractTools
         oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
     }
     
-    return NExtractTools::__pptx2odp(from, to, temp, oInputParams);
+    return NExtractTools::__pptx2odp(from, to, temp, oInputParams, isTemplate);
 }
 
 - (int)odf2oox:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {

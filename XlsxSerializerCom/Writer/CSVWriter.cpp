@@ -175,8 +175,8 @@ namespace CSVWriter
 		m_nRowCurrent = 1;
 		m_nColCurrent = 1;
 		m_bIsWriteCell = false;
-		bool m_bStartRow = true;
-		bool m_bStartCell = true;
+		m_bStartRow = true;
+		m_bStartCell = true;
 	}
 	CCSVWriter::~CCSVWriter()
 	{

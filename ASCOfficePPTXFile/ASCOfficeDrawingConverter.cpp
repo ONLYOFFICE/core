@@ -3303,20 +3303,33 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 	bool bIsInline = false;
 
-    if ((oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"left"))			&&
-        (oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-left"))	&&
-        (oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"top"))			&&
-        (oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-top")))
+	if (oProps.IsTop == true)
 	{
-		bIsInline = true;
-	}
-
-	if (!bIsInline)
-	{
-        pFind = oCssStyles.m_mapSettings.find(L"position");
-        if (oCssStyles.m_mapSettings.end() != pFind && pFind->second == L"static")
+		if ((oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"left"))			&&
+			(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-left"))	&&
+			(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"top"))			&&
+			(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-top")))
 		{
 			bIsInline = true;
+		}
+
+		pFind = oCssStyles.m_mapSettings.find(L"mso-position-horizontal-relative");
+		if (oCssStyles.m_mapSettings.end() != pFind && (pFind->second == L"text" || pFind->second == L"char"))
+		{
+			pFind = oCssStyles.m_mapSettings.find(L"mso-position-vertical-relative");
+			if (oCssStyles.m_mapSettings.end() != pFind && (pFind->second == L"text" || pFind->second == L"line"))
+			{		
+				bIsInline = true;
+			}
+		}	
+
+		if (!bIsInline)
+		{
+			pFind = oCssStyles.m_mapSettings.find(L"position");
+			if (oCssStyles.m_mapSettings.end() != pFind && pFind->second == L"static")
+			{
+				bIsInline = true;
+			}
 		}
 	}
 

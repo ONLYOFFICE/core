@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
+
 #ifndef BINARY_WRITER
 #define BINARY_WRITER
 

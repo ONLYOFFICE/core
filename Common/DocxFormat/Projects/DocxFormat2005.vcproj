@@ -1410,6 +1410,10 @@
 			Name="Comments"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Comments.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Comments.h"
 				>
 			</File>
@@ -1682,6 +1686,10 @@
 				>
 				<File
 					RelativePath="..\Source\XlsxFormat\Worksheets\Cols.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\ConditionalFormatting.cpp"
 					>
 				</File>
 				<File

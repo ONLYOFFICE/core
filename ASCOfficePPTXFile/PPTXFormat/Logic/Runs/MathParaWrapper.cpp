@@ -30,9 +30,13 @@
  *
  */
 #include "MathParaWrapper.h"
+
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Math/oMathPara.h"
 #include "../../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
 #include "../../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../../../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
+#include "../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
+#include "../../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
 
 namespace PPTX
 {

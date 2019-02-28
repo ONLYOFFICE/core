@@ -30,8 +30,17 @@
  *
  */
 
-
 #include "Pic.h"
+
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
+#include "../../../ASCOfficeDocxFile2/BinReader/Readers.h"
+#include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
+#include "../../../XlsxSerializerCom/Writer/BinaryReader.h"
+#include "../../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
 #include "SpTree.h"
 #include "Shape.h"
 
@@ -50,17 +59,9 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 
-#include "../../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
-
-#include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
-#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
-#include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
-
-#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
-#include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
-#include "../../../ASCOfficeDocxFile2/BinReader/Readers.h"
-
 #include "../../../Common/OfficeFileFormatChecker.h"
+
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 namespace PPTX
 {

@@ -31,14 +31,19 @@
  */
 #include "DocxSerializer.h"
  
+#include "../BinWriter/BinWriters.h"
+#include "../BinReader/Readers.h"
+
+#include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
+#include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
+
+#include "FontProcessor.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
-#include "../BinWriter/BinWriters.h"
-#include "../BinReader/Readers.h"
-#include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"

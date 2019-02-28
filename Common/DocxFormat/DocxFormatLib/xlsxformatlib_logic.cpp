@@ -36,3 +36,4 @@
 #include "../Source/XlsxFormat/Xlsx.cpp"
 #include "../Source/XlsxFormat/Worksheets/SheetData.cpp"
 #include "../Source/XlsxFormat/Worksheets/Worksheet.cpp"
+#include "../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp"

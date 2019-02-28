@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		17513B092216E721008B45F7 /* OfficeOdfConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17513B082216E721008B45F7 /* OfficeOdfConverter.mm */; };
-		17513B0A2216E721008B45F7 /* OfficeOdfConverter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 17513B072216E721008B45F7 /* OfficeOdfConverter.h */; };
+		17513B0A2216E721008B45F7 /* OfficeOdfConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17513B072216E721008B45F7 /* OfficeOdfConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		17513D1E2216E785008B45F7 /* math_table_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513B152216E783008B45F7 /* math_table_elements.cpp */; };
 		17513D1F2216E785008B45F7 /* text_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513B162216E783008B45F7 /* text_elements.cpp */; };
 		17513D202216E785008B45F7 /* draw_shapes_xlsx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513B172216E783008B45F7 /* draw_shapes_xlsx.cpp */; };
@@ -348,6 +348,7 @@
 		17513F1F2216EB49008B45F7 /* ConvertDrawing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513ED32216EB49008B45F7 /* ConvertDrawing.cpp */; };
 		8A5834E9221D90BE0029F06B /* formulasconvert_odf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5834E6221D90BE0029F06B /* formulasconvert_odf.cpp */; };
 		8A5834EA221D90BE0029F06B /* formulasconvert_oox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5834E8221D90BE0029F06B /* formulasconvert_oox.cpp */; };
+		8A8753C52227F45600117573 /* OfficeOdfConverter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 17513B072216E721008B45F7 /* OfficeOdfConverter.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -357,7 +358,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				17513B0A2216E721008B45F7 /* OfficeOdfConverter.h in CopyFiles */,
+				8A8753C52227F45600117573 /* OfficeOdfConverter.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1897,11 +1898,23 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		8A8753C42227F44A00117573 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17513B0A2216E721008B45F7 /* OfficeOdfConverter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		17513B032216E721008B45F7 /* OfficeOdfConverter */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 17513B0D2216E721008B45F7 /* Build configuration list for PBXNativeTarget "OfficeOdfConverter" */;
 			buildPhases = (
+				8A8753C42227F44A00117573 /* Headers */,
 				17513B002216E721008B45F7 /* Sources */,
 				17513B012216E721008B45F7 /* Frameworks */,
 				17513B022216E721008B45F7 /* CopyFiles */,
@@ -2348,7 +2361,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2401,7 +2414,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -2444,7 +2457,8 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -2483,7 +2497,8 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
 			};
 			name = Release;
 		};

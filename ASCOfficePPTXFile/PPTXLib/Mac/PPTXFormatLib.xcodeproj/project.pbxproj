@@ -838,6 +838,8 @@
 		8A35A70B215E626D005CC806 /* UniFill.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A70A215E626D005CC806 /* UniFill.cpp */; };
 		8A35A70D215E62D0005CC806 /* TableCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A70C215E62D0005CC806 /* TableCell.cpp */; };
 		8A9FACE120777BA7007787F6 /* Structures.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9FACE020777BA7007787F6 /* Structures.h */; };
+		8AE10E6A2228249E00A542DE /* toVmlConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AE10E692228249E00A542DE /* toVmlConvert.h */; };
+		8AE10E6C222824A300A542DE /* toVmlConvert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E6B222824A300A542DE /* toVmlConvert.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1675,6 +1677,8 @@
 		8A35A70A215E626D005CC806 /* UniFill.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UniFill.cpp; sourceTree = "<group>"; };
 		8A35A70C215E62D0005CC806 /* TableCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TableCell.cpp; sourceTree = "<group>"; };
 		8A9FACE020777BA7007787F6 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Structures.h; path = Drawing/Structures.h; sourceTree = "<group>"; };
+		8AE10E692228249E00A542DE /* toVmlConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = toVmlConvert.h; sourceTree = "<group>"; };
+		8AE10E6B222824A300A542DE /* toVmlConvert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = toVmlConvert.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2328,6 +2332,8 @@
 				69656C411FC2FF7F0028C4BA /* BaseShape.h */,
 				69656C421FC2FF7F0028C4BA /* Common.h */,
 				69656C431FC2FF7F0028C4BA /* GraphicsPath.h */,
+				8AE10E692228249E00A542DE /* toVmlConvert.h */,
+				8AE10E6B222824A300A542DE /* toVmlConvert.cpp */,
 				69656C441FC2FF7F0028C4BA /* Path.h */,
 				69656C451FC2FF7F0028C4BA /* PPTShape */,
 				69656CDF1FC2FF7F0028C4BA /* PPTXShape */,
@@ -2843,6 +2849,7 @@
 				69656E871FC2FF800028C4BA /* CBorderCallout3.h in Headers */,
 				69656EEC1FC2FF800028C4BA /* CNoSmoking.h in Headers */,
 				17C1FD001ACC429D006B99B3 /* TextFont.h in Headers */,
+				8AE10E6A2228249E00A542DE /* toVmlConvert.h in Headers */,
 				69656E0C1FC2FF800028C4BA /* FlowChartCollateType.h in Headers */,
 				17C1FD011ACC429D006B99B3 /* Core.h in Headers */,
 				69656EE31FC2FF800028C4BA /* CLineInv.h in Headers */,
@@ -3626,6 +3633,7 @@
 				695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,
 				17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */,
 				696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */,
+				8AE10E6C222824A300A542DE /* toVmlConvert.cpp in Sources */,
 				17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */,
 				17C1FCC51ACC429D006B99B3 /* Shape.cpp in Sources */,
 				17C1FCC71ACC429D006B99B3 /* BuildNodeBase.cpp in Sources */,

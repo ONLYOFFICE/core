@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -206,7 +206,7 @@ void CColorScale::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	}
 }
 template<typename Type>
-static nullable<Type> CColorScale::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+nullable<Type> CColorScale::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
 	nullable<Type> oResult;
 
@@ -337,7 +337,7 @@ void CDataBar::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	}
 }
 template<typename Type>
-static nullable<Type> CDataBar::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+nullable<Type> CDataBar::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
 	nullable<Type> oResult;
 
@@ -461,7 +461,7 @@ void CIconSet::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	}
 }
 template<typename Type>
-static nullable<Type> CIconSet::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+nullable<Type> CIconSet::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
 	nullable<Type> oResult;
 
@@ -639,7 +639,7 @@ void CConditionalFormattingRule::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	}
 }
 template<typename Type>
-static nullable<Type> CConditionalFormattingRule::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+nullable<Type> CConditionalFormattingRule::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
 	nullable<Type> oResult;
 

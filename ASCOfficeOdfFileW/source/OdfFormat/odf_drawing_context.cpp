@@ -1309,6 +1309,15 @@ void odf_drawing_context::set_grayscale()
 
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = L"greyscale";
 }
+void odf_drawing_context::set_white_balance(double red, double green, double blue)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_red_ = red;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_green_ = green;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_blue_ = blue;
+}
+
 void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y )
 {
 	if (!impl_->current_graphic_properties)return;

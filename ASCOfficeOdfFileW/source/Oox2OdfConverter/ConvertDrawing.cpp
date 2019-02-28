@@ -47,6 +47,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/AlphaModFix.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Effects/Duotone.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/PrstClr.h"
@@ -62,6 +63,8 @@
 #include "../OdfFormat/style_text_properties.h"
 #include "../OdfFormat/style_paragraph_properties.h"
 #include "../OdfFormat/styles_list.h"
+
+#define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
 
 using namespace cpdoccore;
 
@@ -988,6 +991,18 @@ void OoxConverter::convert(PPTX::Logic::Duotone *oox_effect, DWORD ARGB)
 {
 	if (oox_effect == NULL) return;
 
+	if (oox_effect->Colors.empty()) return;
+
+    convert(&oox_effect->Colors[0], ARGB);
+
+	if (ARGB != 0)
+	{	
+		double blue		= GETBITS(ARGB, 0, 7) * 100. / 255.;
+		double green	= GETBITS(ARGB, 8, 15) * 100. / 255.;
+		double red		= GETBITS(ARGB, 16, 23) * 100. / 255.;
+
+		odf_context()->drawing_context()->set_white_balance(red, green, blue);
+	}
 }
 void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow, DWORD ARGB)
 {
@@ -996,7 +1011,7 @@ void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow, DWORD ARGB)
 	std::wstring hexColor;
 	_CP_OPT(double) opacity;
 
-	convert(&oox_shadow->Color, hexColor, opacity);
+	convert(&oox_shadow->Color, hexColor, opacity, ARGB);
 
 	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
 }
@@ -1007,7 +1022,7 @@ void OoxConverter::convert(PPTX::Logic::OuterShdw *oox_shadow, DWORD ARGB)
 	std::wstring hexColor;
 	_CP_OPT(double) opacity;
 
-	convert(&oox_shadow->Color, hexColor, opacity);
+	convert(&oox_shadow->Color, hexColor, opacity, ARGB);
 
 	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
 
@@ -1019,7 +1034,7 @@ void OoxConverter::convert(PPTX::Logic::PrstShdw *oox_shadow, DWORD ARGB)
 	std::wstring hexColor;
 	_CP_OPT(double) opacity;
 
-	convert(&oox_shadow->Color, hexColor, opacity);
+	convert(&oox_shadow->Color, hexColor, opacity, ARGB);
 
 	//odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
 }

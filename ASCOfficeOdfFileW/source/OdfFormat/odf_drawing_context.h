@@ -228,6 +228,7 @@ public:
 // пока одной функией ..
 	void set_shadow	(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y = -1);
 	void set_grayscale();
+	void set_white_balance(double red, double green, double blue);
 
 	void set_text					(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);

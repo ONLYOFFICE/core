@@ -78,6 +78,7 @@ OOXMLSIGNATURE := $(LIBDIR)/$(LIB_PREFIX)ooxmlsignature$(LIB_EXT)
 HUNSPELL := $(LIBDIR)/$(LIB_PREFIX)hunspell$(SHARED_EXT)
 KERNEL := $(LIBDIR)/$(LIB_PREFIX)kernel$(SHARED_EXT)
 CRYPTOPP := $(LIBDIR)/$(LIB_PREFIX)CryptoPPLib$(LIB_EXT)
+VIDEOPLAYERLIB := $(LIBDIR)/$(LIB_PREFIX)videoplayer$(LIB_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -98,6 +99,7 @@ TARGETS += $(OOXMLSIGNATURE)
 TARGETS += $(HUNSPELL)
 TARGETS += $(KERNEL)
 TARGETS += $(CRYPTOPP)
+TARGETS += $(VIDEOPLAYERLIB)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
@@ -118,6 +120,7 @@ OOXMLSIGNATURE_PRO := $(abspath DesktopEditor/xmlsec/src/ooxmlsignature.pro)
 HUNSPELL_PRO := $(abspath DesktopEditor/hunspell-1.3.3/src/qt/hunspell.pro)
 KERNEL_PRO := $(abspath Common/kernel.pro)
 CRYPTOPP_PRO := $(abspath Common/3dParty/cryptopp/project/cryptopp.pro)
+VIDEOPLAYERLIB_PRO := $(abspath ../core-ext/multimedia/videoplayer/lib/VideoPlayerLib.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -150,6 +153,7 @@ QT_PROJ += OOXMLSIGNATURE
 QT_PROJ += HUNSPELL
 QT_PROJ += KERNEL
 QT_PROJ += CRYPTOPP
+QT_PROJ += VIDEOPLAYERLIB
 
 X2T_DEP += $(PDFWRITER)
 X2T_DEP += $(GRAPHICS)
@@ -240,6 +244,7 @@ CORE_TARGET += $(X2T)
 CORE_TARGET += $(XPSFILE)
 
 EXT_TARGET += $(DOCBUILDER)
+EXT_TARGET += $(VIDEOPLAYERLIB)
 
 ifneq ($(PLATFORM),mac)
 EXT_TARGET += $(HTMLFILEINTERNAL)

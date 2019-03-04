@@ -22,15 +22,15 @@ DEFINES +=  UNICODE _UNICODE \
 #BOOST
 include($$PWD/../../3dParty/boost/boost.pri)
 
-core_release {
-SOURCES += \
-    docxformatlib_logic.cpp \
-    common_formatlib.cpp \
-    xlsxformatlib_logic.cpp
+#core_release {
+#SOURCES += \
+#    docxformatlib_logic.cpp \
+#    common_formatlib.cpp \
+#    xlsxformatlib_logic.cpp
 
-}
+#}
 
-core_debug {
+#core_debug {
 SOURCES += \
     ../Source/DocxFormat/Logic/AlternateContent.cpp \
     ../Source/DocxFormat/Logic/Annotations.cpp \
@@ -76,7 +76,7 @@ SOURCES += \
     ../Source/Common/ZIndex.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
     ../Source/SystemUtility/SystemUtility.cpp
-}
+#}
 
 
 SOURCES += docxformatlib.cpp \

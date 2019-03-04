@@ -537,7 +537,7 @@ wchar_t convert_bullet_char(wchar_t c)
     case L'\x25CF': res = L'\xF0B7'; break; 
     case L'\x27A2': res = L'\xF0D8'; break; 
     case L'\x2714': res = L'\xF0FC'; break; 
-    case L'\x25A0': res = L'\xF0A7'; break; 
+    /*case L'\x25A0': res = L'\xF0A7'; break; */
     case L'\x25CB': res = L'\x006F'; break; 
     case L'\x2794': res = L'\xF0DA'; break; 
     case L'\x2717': res = L'\xF04F'; break; 

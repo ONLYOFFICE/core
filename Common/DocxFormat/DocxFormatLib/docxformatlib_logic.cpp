@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "common_formatlib.cpp"
+#include "xlsxformatlib_logic.cpp"
 
 #include "../Source/DocxFormat/Logic/AlternateContent.cpp"
 #include "../Source/DocxFormat/Logic/Annotations.cpp"

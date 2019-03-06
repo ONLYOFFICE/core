@@ -53,41 +53,42 @@ namespace oox {
 class xlsx_drawing_context_handle::Impl
 {
 public:
-    Impl(mediaitems & items) : items_(items), next_rId_(1), next_drawing_id_(1) 
+    Impl(mediaitems_ptr & items) : items_(items), next_rId_(1), next_drawing_id_(1) 
     {
     }  
 
-    mediaitems & get_mediaitems() { return items_; }
+    mediaitems_ptr & get_mediaitems() { return items_; }
 
     size_t next_rId()
     {
         return next_rId_++;
     }
 
-    std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings)
+    std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_)
     {
         const std::wstring id = std::to_wstring(next_drawing_id_++);
         const std::wstring fileName = std::wstring(L"drawing") + id + L".xml";
-        drawings_.push_back(drawing_elm(fileName, content, drawings));
-        const std::wstring rId = std::wstring(L"rId") + id;//rDrId
-        return std::pair<std::wstring, std::wstring>(fileName, rId);
+        
+		drawings_.push_back(drawing_elm(fileName, content, drawings, type_));
+        const std::wstring rId = std::wstring(L"rDrId") + id;
+       
+		return std::pair<std::wstring, std::wstring>(fileName, rId);
     }
 
     const std::vector<drawing_elm> & content() const
     {
         return drawings_;
     }
-
 private:
-    mediaitems &				items_;    
+    mediaitems_ptr				items_;    
     std::vector<drawing_elm>	drawings_;
 
     size_t						next_rId_;
     size_t						next_drawing_id_;
 };
 
-xlsx_drawing_context_handle::xlsx_drawing_context_handle(mediaitems & items)
-: impl_(new xlsx_drawing_context_handle::Impl(items))
+xlsx_drawing_context_handle::xlsx_drawing_context_handle(mediaitems_ptr & items) :
+	impl_(new xlsx_drawing_context_handle::Impl(items))
 {
 }
 
@@ -95,9 +96,9 @@ xlsx_drawing_context_handle::~xlsx_drawing_context_handle()
 {
 }
 
-std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings)
+std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_)
 {
-    return impl_->add_drawing_xml(content, drawings);
+    return impl_->add_drawing_xml(content, drawings, type_);
 }
 
 const std::vector<drawing_elm> & xlsx_drawing_context_handle::content() const
@@ -108,13 +109,13 @@ const std::vector<drawing_elm> & xlsx_drawing_context_handle::content() const
 class xlsx_drawing_context::Impl
 {
 public:    
-    Impl(xlsx_drawing_context_handle & handle) : xlsx_drawings_(xlsx_drawings::create(false)), handle_(handle)
+    Impl(xlsx_drawing_context_handle_ptr & handle) : xlsx_drawings_(xlsx_drawings::create(false)), handle_(handle)
     {
 		current_level_			= &objects_;
 		use_image_replacement_	= false;
 	} 
 
-    xlsx_drawing_context_handle&				handle_;
+    xlsx_drawing_context_handle_ptr				handle_;
     drawing_object_description					object_description_;    
 
 	std::vector<drawing_object_description>		objects_;
@@ -124,11 +125,11 @@ public:
 	bool										use_image_replacement_;
 //-----------------------------------------------------------------------------------
 
-	mediaitems & get_mediaitems() { return handle_.impl_->get_mediaitems(); }
+	mediaitems_ptr & get_mediaitems() { return handle_->impl_->get_mediaitems(); }
 
-    void serialize(std::wostream & strm)
+	void serialize(std::wostream & strm, const std::wstring & ns = L"xdr")
     {
-        xlsx_drawings_->serialize(strm);
+        xlsx_drawings_->serialize(strm, ns);
     }
 
     bool empty() const
@@ -138,7 +139,7 @@ public:
 
     size_t next_rId()
     {
-        return handle_.impl_->next_rId();
+        return handle_->impl_->next_rId();
     }
 
     xlsx_drawings_ptr get_drawings()
@@ -150,7 +151,7 @@ private:
 };
 
 
-xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle & h)
+xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h)
  : impl_(new xlsx_drawing_context::Impl(h))
 {    
 	hlinks_size_ = 0;
@@ -386,6 +387,12 @@ void xlsx_drawing_context::set_scale(double cx_pt, double cy_pt)
 
 	}
 }
+void xlsx_drawing_context::set_rel_anchor(_INT32 owner_cx, _INT32 owner_cy)
+{
+	impl_->object_description_.owner_cx_ = owner_cx;
+	impl_->object_description_.owner_cy_ = owner_cy;
+}
+
 void xlsx_drawing_context::set_anchor(std::wstring anchor, double x_pt, double y_pt, bool group)
 {
 	if (group)
@@ -444,9 +451,17 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 {
 	if (obj.anchor_.empty())
 	{
-		drawing.type_anchor = 2; // absolute
+		if (obj.owner_cx_ && obj.owner_cy_)
+		{
+			drawing.type_anchor = 3; // relative
+			drawing.owner_cx_ = obj.owner_cx_;
+			drawing.owner_cy_ = obj.owner_cy_;
+		}
+		else
+			drawing.type_anchor = 2; // absolute
 	}
-	else
+	
+	if (drawing.type_anchor == 1)
 	{
 		xlsx_table_position from, to;
 		
@@ -470,17 +485,19 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 		_rect & r = obj.svg_rect_.get();
 
 		//todooo непонятно что делать с отрицательными значениями
-		int val = 0.5 + odf_types::length(obj.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu);
-		if (val >=0)	drawing.x = val;
+		_INT32 val = 0;
+			
+		val = (_INT32) (0.5 + odf_types::length(obj.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		if (val >= 0)	drawing.x = val;
 		
-		val = 0.5 + odf_types::length(obj.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu);
-		if (val >=0)	drawing.y = val;
+		val = (_INT32) (0.5 + odf_types::length(obj.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		if (val >= 0)	drawing.y = val;
 
-		val = 0.5 + odf_types::length(obj.svg_rect_->cx, odf_types::length::pt).get_value_unit(odf_types::length::emu);
-		if (val >=0)	drawing.cx = val;
+		val = (_INT32) (0.5 + odf_types::length(obj.svg_rect_->cx, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		if (val >= 0)	drawing.cx = val;
 
-		val = .5 + odf_types::length(obj.svg_rect_->cy, odf_types::length::pt).get_value_unit(odf_types::length::emu);
-		if (val >=0)	drawing.cy = val;
+		val = (_INT32) (0.5 + odf_types::length(obj.svg_rect_->cy, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		if (val >= 0)	drawing.cy = val;
 	}
 	
 	drawing.additional	= obj.additional_;
@@ -555,7 +572,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	}
 	std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  obj.xlink_href_;			
 	
-	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, impl_->get_mediaitems().applicationFonts());
+	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, impl_->get_mediaitems()->applicationFonts());
 	drawing.fill.bitmap->bStretch	= true;
 
 	if ((sColorMode) && (*sColorMode == L"greyscale"))
@@ -564,14 +581,14 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 
-	drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);		
+	drawing.fill.bitmap->rId = impl_->get_mediaitems()->add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);		
 
 	if (drawing.type == typeShape)
 	{
 		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
 	
 		isMediaInternal=true;
-		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
+		std::wstring rId = impl_->get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref);
 		
 		xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
@@ -589,7 +606,7 @@ void xlsx_drawing_context::process_chart(drawing_object_description & obj,_xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 	
-	drawing.objectId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
+	drawing.objectId = impl_->get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
     xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_);
 	
 	if (drawing.inGroup)
@@ -627,7 +644,7 @@ void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx
 	}
 	else
 	{
-		drawing.objectId		= impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
+		drawing.objectId		= impl_->get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
 		drawing.objectProgId	= obj.descriptor_;
 		
 		xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_, true);
@@ -641,7 +658,7 @@ void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 
-	std::wstring rId	= impl_->get_mediaitems().add_or_find(L"", obj.type_, isMediaInternal, ref);
+	std::wstring rId	= impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref);
 	xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, obj.type_);
 }
 
@@ -653,7 +670,7 @@ void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_
 	
 	std::wstringstream strm;
 
-	xlsx_drawings_child->serialize(strm);
+	xlsx_drawings_child->serialize(strm, L"xdr");
 
 	drawing.content_group_ = strm.str();
 
@@ -661,7 +678,7 @@ void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 
-	std::wstring rId	= impl_->get_mediaitems().add_or_find(L"", obj.type_, isMediaInternal, ref);
+	std::wstring rId	= impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref);
 	xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, obj.type_);
 
 }
@@ -692,7 +709,7 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 			std::wstring ref;
 			bool isMediaInternal = true;
 			
-			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+			drawing.fill.bitmap->rId = impl_->get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
 			
 			bool in_sheet = (obj.type_== typeOleObject || obj.type_== typeMsObject) ? true : false;
 			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage, in_sheet);//собственно это не объект, а доп рел и ref объекта
@@ -716,9 +733,9 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 	}
 }
 
-void xlsx_drawing_context::serialize(std::wostream & strm)
+void xlsx_drawing_context::serialize(std::wostream & strm, const std::wstring& ns)
 {
-    impl_->serialize(strm);    
+    impl_->serialize(strm, ns);    
 }
 
 xlsx_drawings_ptr xlsx_drawing_context::get_drawings()
@@ -755,7 +772,6 @@ void xlsx_drawing_context::set_is_connector_shape(bool val)
 {
 	impl_->object_description_.connector_ = val;
 }
-
 
 }
 }

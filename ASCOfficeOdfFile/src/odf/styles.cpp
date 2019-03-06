@@ -1386,7 +1386,7 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			if ( fill.bitmap->rId.empty())
 			{
 				std::wstring href	= fill.bitmap->xlink_href_;
-				fill.bitmap->rId	= Context.get_mediaitems().add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
+				fill.bitmap->rId	= Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
 
 				Context.get_drawing_context().get_drawings()->add(fill.bitmap->isInternal, fill.bitmap->rId, href, oox::typeImage, true);
 			}

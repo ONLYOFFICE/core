@@ -53,15 +53,16 @@ namespace oox {
 	class xlsx_drawings;
 	struct _oox_fill;
 
-	typedef _CP_PTR(xlsx_drawings) xlsx_drawings_ptr;
+	typedef _CP_PTR(mediaitems)		mediaitems_ptr;
+	typedef _CP_PTR(xlsx_drawings)	xlsx_drawings_ptr;
 
 class xlsx_drawing_context_handle
 {
 public:
-    xlsx_drawing_context_handle(mediaitems & items);
+    xlsx_drawing_context_handle(mediaitems_ptr & items);
     ~xlsx_drawing_context_handle();
     
-    std::pair<std::wstring, std::wstring>	add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings);
+    std::pair<std::wstring, std::wstring>	add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_ = typeDefault);
     const std::vector<drawing_elm>			& content() const;
 
     friend class xlsx_drawing_context;
@@ -72,10 +73,12 @@ public:
 
 
 
+typedef _CP_PTR(xlsx_drawing_context_handle) xlsx_drawing_context_handle_ptr;
+
 class xlsx_drawing_context
 {
 public:
-    xlsx_drawing_context(xlsx_drawing_context_handle & h);
+    xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h);
     ~xlsx_drawing_context();
 
 	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//для анализа картинок
@@ -105,6 +108,7 @@ public:
 	void set_scale		(double cx_pt, double cy_pt);
 	void set_rotate		(double angle, bool translate = false);
 
+	void set_rel_anchor	(_INT32 owner_cx, _INT32 owner_cy);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt, bool group = false);
 	void set_property	(odf_reader::_property p);
     void set_clipping	(const std::wstring & str );
@@ -122,7 +126,8 @@ public:
 	bool empty() const;
 	void clear();
 
-    void serialize(std::wostream & strm);
+	void serialize(std::wostream & strm, const std::wstring& ns = L"xdr");
+
 	std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
 
     xlsx_drawings_ptr get_drawings();

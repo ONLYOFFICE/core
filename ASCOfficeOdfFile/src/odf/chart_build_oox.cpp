@@ -212,13 +212,18 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 
 		oox_convert(chart_context);
 
-		if (embeddedData.empty())
+		if (false == embeddedData.empty())
 		{
-			chart_context.set_cache_only(true);
+			chart_context.set_externalData(embeddedData);
 		}
 		else
 		{
-			chart_context.set_externalData(embeddedData);
+			chart_context.set_cache_only(true);
+		}
+
+		if (false == userShapes.first.empty())
+		{
+			chart_context.set_userShapes(userShapes);
 		}
 
 		Context.end_chart();
@@ -450,14 +455,14 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			}
 			else
 			{	//x
-				if (false == domain_cash.empty())
+				if (false == domain_cash.empty() || cash_values.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
 					current->set_values_series (2, domain_cash);		
 				}
 				//y
-				if (false == cell_cash.empty())
+				if (false == cell_cash.empty() || cash_values.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				

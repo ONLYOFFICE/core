@@ -124,9 +124,8 @@ namespace chart {
         std::wstring		chart_name_;
         std::wstring		style_name_;
         std::vector<grid>	grids_;
-		int					type_;
-		
-  };
+		int					type_;		
+	};
     struct series : public simple
     {
 		struct point : public simple

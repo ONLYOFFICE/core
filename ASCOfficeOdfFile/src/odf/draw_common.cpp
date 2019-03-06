@@ -499,6 +499,15 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 				fill.gradient = oox::oox_gradient_fill::create();
 
 				Compute_GradientFill(image_style, fill.gradient);
+
+				if (fill.opacity)
+				{
+					for (size_t i = 0; i < fill.gradient->colors.size(); i++)
+					{
+						if (!fill.gradient->colors[i].opacity)
+							fill.gradient->colors[i].opacity = fill.opacity;
+					}
+				}
 			}
 		}
 	}

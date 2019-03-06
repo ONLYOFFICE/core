@@ -47,6 +47,7 @@
 #include "../odf/style_graphic_properties.h"
 
 #include "docx_package.h"
+#include "xlsx_package.h"
 #include "oox_rels.h"
 #include "logging.h"
 
@@ -130,7 +131,7 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 }
 
 //----------------------------------------------------------------------------------------------------------------
-docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
+docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf_document) : 
 	last_dump_page_properties_	(true),
 	next_dump_page_properties_	(false),
 	page_break_					(false),
@@ -152,11 +153,13 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
 	process_comment_			(false),
-	mediaitems_					(OdfDocument->get_folder() ),
-	math_context_				(OdfDocument->odf_context().fontContainer(), false),
-	odf_document_				(OdfDocument)
+	odf_document_				(_odf_document),
+	math_context_				(_odf_document->odf_context().fontContainer(), false)
 {
-	streams_man_		= streams_man::create(temp_stream_);
+	mediaitems_ = boost::make_shared<mediaitems>(odf_document_->get_folder());
+	chart_drawing_handle_ =  boost::make_shared<xlsx_drawing_context_handle>(mediaitems_);
+	
+	streams_man_ = streams_man::create(temp_stream_);
 }
 docx_conversion_context::~docx_conversion_context()
 {
@@ -167,7 +170,7 @@ void docx_conversion_context::set_output_document(package::docx_document * docum
 }
 void docx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-	mediaitems_.set_font_directory(pathFonts);
+	mediaitems_->set_font_directory(pathFonts);
 }
 std::wstring styles_map::get(const std::wstring & Name, odf_types::style_family::type Type)
 {
@@ -685,11 +688,14 @@ void docx_conversion_context::end_document()
 {
     output_stream() << L"</w:document>";
 
-    output_document_->get_word_files().set_document	( package::simple_element::create(L"document.xml", document_xml_.str()) );
+	output_document_->get_word_files().set_document	( package::simple_element::create(L"document.xml", document_xml_.str()) );
 	output_document_->get_word_files().set_settings	( package::simple_element::create(L"settings.xml", dump_settings_document()));
 	output_document_->get_word_files().set_media	( mediaitems_);
 	output_document_->get_word_files().set_comments	( comments_context_);
-    output_document_->get_word_files().set_headers_footers( headers_footers_);
+	output_document_->get_word_files().set_headers_footers( headers_footers_);
+ 
+	package::xl_drawings_ptr drawings = package::xl_drawings::create(chart_drawing_handle_->content());
+	output_document_->get_word_files().set_drawings(drawings);
 
 	package::content_types_file	& content_file_ = output_document_->get_content_types_file();
 	content_file_.set_media( mediaitems_);
@@ -1828,7 +1834,7 @@ namespace
 		//слить если есть mediaitems, добавить релсы и обнулить их для основного документа.
 		rels internal_rels;
 
-		Context.get_mediaitems().dump_rels(internal_rels);
+		Context.get_mediaitems()->dump_rels(internal_rels);
 		Context.dump_hyperlinks(internal_rels, hyperlinks::document_place);
 
 		Context.get_headers_footers().add(styleName, dbgStr, type, internal_rels);

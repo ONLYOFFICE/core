@@ -62,6 +62,9 @@ struct drawing_object_description
     double									anchor_x_;
     double									anchor_y_;
 
+	_CP_OPT(_INT32)							owner_cx_;
+	_CP_OPT(_INT32)							owner_cy_;
+
 	_action_desc							action_;
 	std::vector<_hlink_desc>				hlinks_;
 

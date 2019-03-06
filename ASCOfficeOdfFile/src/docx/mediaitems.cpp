@@ -101,6 +101,7 @@ void mediaitems::set_font_directory(std::wstring pathFonts)
     if (applicationFonts_)
         applicationFonts_->InitializeFromFolder(pathFonts);
 }
+
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal)
 {
     std::wstring ref;
@@ -329,6 +330,10 @@ void mediaitems::dump_rels(rels & Rels)
 {
     for (size_t i = 0; i < items_.size(); i++)
     {
+		if ( items_[i].type == typeUnknown ) continue; 
+		if ( items_[i].type == typeShape ) continue; 
+		if ( items_[i].type == typeGroupShape ) continue; 
+
 		if (items_[i].count_used >= items_[i].count_add) continue; // уже использовали этот релс выше(колонтитул ....)
         
 		Rels.add( relationship(
@@ -338,7 +343,7 @@ void mediaitems::dump_rels(rels & Rels)
                 items_[i].mediaInternal	? L""					: L"External" )
                 );
 		items_[i].count_used++;
-    }        
+	}        
 }
 
 

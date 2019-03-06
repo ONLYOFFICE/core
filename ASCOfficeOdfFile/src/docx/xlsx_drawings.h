@@ -46,13 +46,14 @@ typedef _CP_PTR(xlsx_drawings) xlsx_drawings_ptr;
 
 struct drawing_elm
 {
-    drawing_elm(std::wstring const & _filename, std::wstring const & _content, xlsx_drawings_ptr _drawings)
-        : filename(_filename), content(_content), drawings(_drawings)
+    drawing_elm(std::wstring const & _filename, std::wstring const & _content, xlsx_drawings_ptr _drawings, RelsType const & _type)
+        : filename(_filename), content(_content), drawings(_drawings), type(_type)
     {}
     
     std::wstring		filename;
     std::wstring		content;
     xlsx_drawings_ptr	drawings;
+	RelsType			type;
 };
 
 class _xlsx_drawing;
@@ -71,7 +72,7 @@ public:
     void dump_rels_sheet	(rels & Rels);
     void dump_rels_drawing	(rels & Rels);
 
-    void serialize			(std::wostream & _Wostream);  
+    void serialize			(std::wostream & _Wostream, const std::wstring & ns);  
 	void serialize_objects	(std::wostream & _Wostream);  
 	void serialize_controls	(std::wostream & _Wostream);  
 private:

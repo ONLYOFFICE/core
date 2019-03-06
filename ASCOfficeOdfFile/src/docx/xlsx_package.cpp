@@ -31,6 +31,8 @@
  */
 
 #include "xlsx_package.h"
+#include "docx_package.h"
+#include "pptx_package.h"
 
 #include <boost/ref.hpp>
 
@@ -298,16 +300,16 @@ void xl_files::add_sheet(sheet_content_ptr sheet)
     sheets_files_.add_sheet(sheet);
 }
 
-void xl_files::set_media(mediaitems & _Mediaitems)
+void xl_files::set_media(mediaitems_ptr & _mediaitems)
 {
-	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
+	if (_mediaitems->count_image + _mediaitems->count_media > 0)
 	{
-		media_ = element_ptr( new media(_Mediaitems, _Mediaitems.applicationFonts()) );
+		media_ = element_ptr( new media(_mediaitems, _mediaitems->applicationFonts()) );
 	}
 
-	if (_Mediaitems.count_object > 0)
+	if (_mediaitems->count_object > 0)
 	{
-		embeddings_ = element_ptr( new embeddings(_Mediaitems) );
+		embeddings_ = element_ptr( new embeddings(_mediaitems) );
 	}
 }
 void xl_files::set_comments(element_ptr Element)
@@ -563,10 +565,18 @@ xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 
 void xl_drawings::write(const std::wstring & RootPath)
 {
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
+	
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
     NSDirectory::CreateDirectory(path.c_str());
 
-    for (size_t i = 0; i < drawings_.size(); i++)
+	pptx_document *pptx = dynamic_cast<pptx_document*>(this->get_main_document());
+	xlsx_document *xlsx = dynamic_cast<xlsx_document*>(this->get_main_document());
+	docx_document *docx = dynamic_cast<docx_document*>(this->get_main_document());
+
+	const std::wstring override_str = docx ? L"/word/drawings/" : (pptx ? L"/ppt/drawings/" : L"/xl/drawings/");
+    
+	for (size_t i = 0; i < drawings_.size(); i++)
     {
         package::simple_element(drawings_[i].filename, drawings_[i].content).write(path);        
 
@@ -578,10 +588,11 @@ void xl_drawings::write(const std::wstring & RootPath)
         relFiles.add_rel_file(r);
         relFiles.write(path);
 
-        content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
-
-        const std::wstring kDrawingCT = L"application/vnd.openxmlformats-officedocument.drawing+xml";
-        contentTypes->add_override(L"/xl/drawings/" + drawings_[i].filename, kDrawingCT);
+		const std::wstring kDrawingCT = drawings_[i].type == typeChartUserShapes ?  
+										L"application/vnd.openxmlformats-officedocument.drawingml.chartshapes+xml" :
+										L"application/vnd.openxmlformats-officedocument.drawing+xml";
+       
+		contentTypes->add_override(override_str + drawings_[i].filename, kDrawingCT);
     }
 }
 

@@ -53,7 +53,7 @@ typedef _CP_PTR(oox_chart_context) oox_chart_context_ptr;
 class oox_chart_context
 {
 public:
-    oox_chart_context(mediaitems & mediaitems_, std::wstring name);
+    oox_chart_context(mediaitems_ptr & mediaitems_, std::wstring name);
     ~oox_chart_context();
 
 	std::wostream & chartData();
@@ -83,6 +83,8 @@ public:
 		}
 	}
 	void set_externalData(const std::wstring & href);
+	void set_userShapes(std::pair<std::wstring, std::wstring> &link);
+
 	void add_chart(int type)
 	{
 		plot_area_.add_chart(type);
@@ -128,7 +130,7 @@ private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 	
-	mediaitems							&mediaitems_;
+	mediaitems_ptr						mediaitems_;
 	std::vector<_rel>					rels_;
 	
 	cpdoccore::oox::oox_title			title_;
@@ -137,6 +139,7 @@ private:
 
 	std::wstring						pivot_source_;
 	std::wstring						externalDataId_;
+	std::wstring						userShapesId_;
 
 	std::vector<odf_reader::_property>	graphic_properties_;
 	_oox_fill							fill_;

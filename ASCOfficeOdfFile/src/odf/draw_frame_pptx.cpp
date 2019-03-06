@@ -303,7 +303,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			NSDirectory::CreateDirectory(href_folder);
 			outputXlsx.write(href_folder);
 
-			std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems().count_object + 1) + L".xlsx";
+			std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems()->count_object + 1) + L".xlsx";
 			
 			COfficeUtils oCOfficeUtils(NULL);
 			if (S_OK == oCOfficeUtils.CompressFileOrDirectory(href_folder, odfPath + FILE_SEPARATOR_STR + href, true))

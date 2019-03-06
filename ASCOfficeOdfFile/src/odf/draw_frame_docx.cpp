@@ -923,7 +923,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
 		std::wstring href = drawing->fill.bitmap->xlink_href_;
-		drawing->fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+		drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	}
 
 ////////////////////////////////////////////////////
@@ -1196,7 +1196,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing->fill.type = 2;
 	drawing->fill.bitmap->isInternal = false;
-    drawing->fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
+    drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	drawing->fill.bitmap->bStretch = true;
 
     const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
@@ -1216,7 +1216,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 			
 			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + xlink_attlist_.href_.get_value_or(L"");
 			
-			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, Context.get_mediaitems().applicationFonts());
+			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, Context.get_mediaitems()->applicationFonts());
 		}
 		if (properties->common_draw_fill_attlist_.draw_luminance_)
 		{
@@ -1352,6 +1352,32 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
         Context.add_delayed_element(this);
         return;
     }
+
+	if (object_index >= 0) //только в документах нельзя объект объединять с шейпами в группы (
+	{
+		draw_frame *frame = dynamic_cast<draw_frame*>(content_[object_index].get());
+
+		frame->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ =
+				common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
+		
+		for (size_t i = 0; i < frame->content_.size(); i++)
+		{
+			draw_object *object = dynamic_cast<draw_object*>(frame->content_[i].get());
+			if (!object)continue;
+
+			for (size_t j = 0; j < content_.size(); j++)
+			{
+				if (j == object_index) continue;
+
+				object->content_.push_back(content_[j]);
+
+			}	
+			break;
+		}
+		frame->docx_convert(Context);
+
+		return;
+	}
 	
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 	
@@ -1541,6 +1567,10 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			process_build_object process_build_object_(objectBuild, odf_document_->odf_context());
 			contentSubDoc->accept(process_build_object_); 
 
+			frame = Context.get_drawing_context().get_current_frame();	//owner			
+			if (frame)
+				drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
+
 			if (objectBuild.table_table_)
 			{
 				oox::xlsx_conversion_context xlsx_context(odf_document_.get());
@@ -1556,7 +1586,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				NSDirectory::CreateDirectory(href_folder);
 				outputXlsx.write(href_folder);
 
-				std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems().count_object + 1) + L".xlsx";
+				std::wstring href = L"Microsoft_Excel_Worksheet_" + std::to_wstring(Context.get_mediaitems()->count_object + 1) + L".xlsx";
 				
 				COfficeUtils oCOfficeUtils(NULL);
 				if (S_OK == oCOfficeUtils.CompressFileOrDirectory(href_folder, odfPath + FILE_SEPARATOR_STR + href, true))
@@ -1565,11 +1595,34 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				}
 			}
 
+			if (false == content_.empty())
+			{
+				oox::xlsx_conversion_context xlsx_context(Context.root());
+
+				xlsx_context.set_drawing_context_handle(Context.get_chart_drawing_handle());
+				xlsx_context.set_mediaitems(Context.get_mediaitems());
+
+				xlsx_context.get_table_context().start_table(L"", L"", 0);
+
+				for (size_t i = 0; i < content_.size(); ++i)
+				{
+					xlsx_context.get_drawing_context().set_rel_anchor(drawing->cx, drawing->cy);
+					content_[i]->xlsx_convert(xlsx_context);
+				}
+				xlsx_context.get_table_context().end_table();
+
+				xlsx_context.get_drawing_context().process_objects(xlsx_context.get_table_metrics());
+				
+				std::wstringstream strm;
+				xlsx_context.get_drawing_context().serialize(strm, L"cdr");
+		        
+				const std::pair<std::wstring, std::wstring> drawingName =
+					xlsx_context.get_drawing_context_handle()->add_drawing_xml(strm.str(), xlsx_context.get_drawing_context().get_drawings(), oox::typeChartUserShapes );
+
+				objectBuild.userShapes = drawingName;
+			}
+
 			objectBuild.docx_convert(Context);		
-			
-			frame = Context.get_drawing_context().get_current_frame();	//owner			
-			if (frame)
-				drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 		}		
 //------------------------------------------------------------------------------------------------------------
 		if (!frame || !drawing)
@@ -1582,7 +1635,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			drawing->type = oox::typeChart;
 			
 			bool isMediaInternal = true;        
-			drawing->objectId = Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
+			drawing->objectId = Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href);
 		}
 		else if (objectBuild.object_type_ == 2 ) //embedded text
 		{	
@@ -1641,7 +1694,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				bool isMediaInternal = true;        
 				
 				href += FILE_SEPARATOR_STR + href_new;
-				drawing->objectId		= Context.get_mediaitems().add_or_find(href, drawing->type, isMediaInternal, href);
+				drawing->objectId		= Context.get_mediaitems()->add_or_find(href, drawing->type, isMediaInternal, href);
 				drawing->objectProgId	= L"Excel.Sheet.12";
 			}
 		}
@@ -1682,7 +1735,7 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	NSFile::CFileBinary::Copy(objectPath, objectPath + extension);
 
 	bool isMediaInternal	= true;
-	drawing->objectId = Context.get_mediaitems().add_or_find(href + extension, drawing->type, isMediaInternal, href);
+	drawing->objectId = Context.get_mediaitems()->add_or_find(href + extension, drawing->type, isMediaInternal, href);
 
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)

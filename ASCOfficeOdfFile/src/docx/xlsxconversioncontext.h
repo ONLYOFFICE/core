@@ -188,12 +188,16 @@ public:
 	xlsx_pivots_context			& get_pivots_context()			 { return xlsx_pivots_context_;}
     xlsx_table_metrics          & get_table_metrics();
     xlsx_drawing_context        & get_drawing_context();
-    xlsx_drawing_context_handle & get_drawing_context_handle();	
     xlsx_comments_context       & get_comments_context();
 	xlsx_comments_context_handle & get_comments_context_handle();
 	xlsx_dataValidations_context& get_dataValidations_context()	{ return xlsx_dataValidations_context_;}
 
-    mediaitems & get_mediaitems() { return mediaitems_; }
+	
+    xlsx_drawing_context_handle_ptr & get_drawing_context_handle();	
+	void set_drawing_context_handle(xlsx_drawing_context_handle_ptr &handle);
+
+	mediaitems_ptr & get_mediaitems() { return mediaitems_; }
+	void set_mediaitems(mediaitems_ptr &items);
 
 	static std::unordered_map<std::wstring, int>	mapExternalLink_;
 	std::map<std::wstring, int>						mapUsedNames_;
@@ -213,7 +217,7 @@ private:
     std::pair<float,float>              maxDigitSize_;
     num_format_context                  num_format_context_;
     size_t                              default_style_;
-    mediaitems                          mediaitems_;
+    mediaitems_ptr						mediaitems_;
 	std::multimap<std::wstring, int>	mapPivotsTableView_;
 	
  	std::map<std::wstring, std::wstring>	control_props_; 
@@ -223,9 +227,9 @@ private:
     xlsx_table_context              xlsx_table_context_;
     xlsx_text_context               xlsx_text_context_;
 	xlsx_pivots_context				xlsx_pivots_context_;
-    xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     xlsx_comments_context_handle    xlsx_comments_context_handle_;
 	xlsx_dataValidations_context	xlsx_dataValidations_context_;
+    xlsx_drawing_context_handle_ptr	drawing_context_handle_;
 	
 	math_context					math_context_;
 	forms_context					forms_context_;

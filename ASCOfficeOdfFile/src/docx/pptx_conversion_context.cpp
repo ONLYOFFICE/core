@@ -83,7 +83,7 @@ void pptx_conversion_context::set_output_document(package::pptx_document * docum
 
 void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-	pptx_slide_context_.get_mediaitems().set_font_directory(pathFonts);
+	pptx_slide_context_.get_mediaitems()->set_font_directory(pathFonts);
 }
 
 void pptx_conversion_context::process_layouts()

@@ -173,6 +173,26 @@ bool content_types_file::add_or_find_override(const std::wstring & fileName)
 
 	return true;
 }
+void content_types_file::set_media(mediaitems_ptr & _Mediaitems)
+{
+	std::vector<mediaitems::item> & items_ = _Mediaitems->items();
+    for (size_t i = 0; i < items_.size(); i++)
+    {
+		if ((items_[i].type == typeImage || 
+			items_[i].type == typeMedia	||
+			items_[i].type == typeVideo	||
+			items_[i].type == typeAudio) && items_[i].mediaInternal)
+		{
+			int n = items_[i].outputName.rfind(L".");
+			if (n > 0)
+			{
+				add_or_find_default(items_[i].outputName.substr(n + 1, items_[i].outputName.length() - n));
+			}
+		}
+	}
+}
+
+
 
 void content_types_file::set_media(mediaitems & _Mediaitems)
 {
@@ -349,7 +369,7 @@ void docProps_files::write(const std::wstring & RootPath)
 ////////////
 
 
-media::media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts) : mediaitems_(_Mediaitems), appFonts_(pAppFonts)
+media::media(mediaitems_ptr & _mediaitems, NSFonts::IApplicationFonts *pAppFonts) : mediaItems_(_mediaitems), appFonts_(pAppFonts)
 {    
 }
 
@@ -358,7 +378,8 @@ void media::write(const std::wstring & RootPath)
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
     NSDirectory::CreateDirectory(path.c_str());
 
-	mediaitems::items_array & items = mediaitems_.items();
+	mediaitems::items_array & items = mediaItems_->items();
+
     for (size_t i = 0; i < items.size(); i++ )
     {
         if (items[i].mediaInternal && items[i].valid && (	items[i].type == typeImage || 
@@ -381,7 +402,7 @@ void media::write(const std::wstring & RootPath)
 
 }
 //------------------------------------------------------------------------------------------------------------
-charts::charts(mediaitems & _ChartsItems) : chartsitems_(_ChartsItems)
+charts::charts(mediaitems_ptr & _chartsItems) : chartsItems_(_chartsItems)
 {    
 }
 
@@ -390,7 +411,7 @@ void charts::write(const std::wstring & RootPath)
 
 }
 //--------------------------------------------------------------------------------------------------------------
-embeddings::embeddings(mediaitems & _EmbeddingsItems) : embeddingsitems_(_EmbeddingsItems)
+embeddings::embeddings(mediaitems_ptr & _EmbeddingsItems) : embeddingsItems_(_EmbeddingsItems)
 {    
 }
 void embeddings::write(const std::wstring & RootPath)
@@ -400,7 +421,8 @@ void embeddings::write(const std::wstring & RootPath)
 
 	content_types_file & content_types = get_main_document()->get_content_types_file();           
     
-	mediaitems::items_array & items = embeddingsitems_.items();
+	mediaitems::items_array & items = embeddingsItems_->items();
+
     for (size_t i = 0; i < items.size(); i++ )
     {
         if ( items[i].mediaInternal && items[i].valid &&

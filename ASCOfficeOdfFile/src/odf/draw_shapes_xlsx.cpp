@@ -399,7 +399,7 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (state.ctrlPropId.empty())
 	{
 		std::wstring target;
-		state.ctrlPropId = Context.get_mediaitems().add_control_props(target);
+		state.ctrlPropId = Context.get_mediaitems()->add_control_props(target);
 		
 		std::wstringstream strm;		
 		

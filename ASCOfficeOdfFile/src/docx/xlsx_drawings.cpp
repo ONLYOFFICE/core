@@ -85,28 +85,35 @@ public:
 		}
     }
 	
-	void serialize(std::wostream & strm) 
+	void serialize(std::wostream & strm, const std::wstring & ns) 
     {
 		if (inGroup)
 		{
 			for (size_t i = 0 ; i < xlsx_drawings_.size(); i++)
 			{
-				xlsx_drawings_[i].serialize(strm);
+				xlsx_drawings_[i].serialize(strm, ns);
 			}
 		}
 		else
 		{
 			CP_XML_WRITER(strm)
 			{
-				CP_XML_NODE(L"xdr:wsDr")
+				CP_XML_NODE(ns + L":wsDr")
 				{
-					CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
+					if (ns == L"xdr")
+					{
+						CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
+					}
+					if (ns == L"cdr")
+					{
+						CP_XML_ATTR(L"xmlns:cdr", L"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing");
+					}
 					CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
 					CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
 					for (size_t i = 0 ; i < xlsx_drawings_.size(); i++)
 					{
-						xlsx_drawings_[i].serialize(CP_XML_STREAM());
+						xlsx_drawings_[i].serialize(CP_XML_STREAM(), ns);
 					}
 				}
 			}
@@ -192,9 +199,9 @@ void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring
     impl_->add(isInternal, rid, ref, type, sheet_rel);
 }
 
-void xlsx_drawings::serialize(std::wostream & strm)
+void xlsx_drawings::serialize(std::wostream & strm, const std::wstring & ns)
 {
-    impl_->serialize(strm);
+    impl_->serialize(strm, ns);
 }
 
 void xlsx_drawings::serialize_objects(std::wostream & strm)

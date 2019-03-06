@@ -53,7 +53,7 @@ public:
     std::wstring drawingId_;
 };
 
-oox_chart_context::oox_chart_context(mediaitems & m, std::wstring name) :
+oox_chart_context::oox_chart_context(mediaitems_ptr & m, std::wstring name) :
 		impl_(new oox_chart_context::Impl( name)), mediaitems_(m)
 {
 	
@@ -65,7 +65,7 @@ void oox_chart_context::reset_fill(oox::_oox_fill &f)
 	{
 		bool isInternal = true;
 		std::wstring ref;
-		f.bitmap->rId = mediaitems_.add_or_find(f.bitmap->xlink_href_, typeImage, isInternal, ref); 
+		f.bitmap->rId = mediaitems_->add_or_find(f.bitmap->xlink_href_, typeImage, isInternal, ref); 
 
 		rels_.push_back(_rel(isInternal, f.bitmap->rId, ref, typeImage));
 	}
@@ -75,8 +75,14 @@ void oox_chart_context::set_externalData(const std::wstring & href)
 	bool isInternal = true;
 	std::wstring href_out;
 	
-	externalDataId_ = mediaitems_.add_or_find(href, typeMsObject, isInternal, href_out);
+	externalDataId_ = mediaitems_->add_or_find(href, typeMsObject, isInternal, href_out);
 	rels_.push_back(_rel(isInternal, externalDataId_, href_out, typeMsObject));
+}
+void oox_chart_context::set_userShapes(std::pair<std::wstring, std::wstring> &link)
+{
+	bool isInternal = true;
+	userShapesId_ = link.second;
+	rels_.push_back(_rel(isInternal, userShapesId_, link.first, typeChartUserShapes));
 }
 std::wostream & oox_chart_context::chartData()
 {
@@ -115,6 +121,15 @@ void oox_chart_context::dump_rels(rels & Rels)
 						r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
 						(r.is_internal ? L"" : L"External"))
 			);
+		}
+		else if (r.type == typeChartUserShapes)
+		{
+			Rels.add(relationship(
+						r.rid,
+						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartUserShapes",
+						r.is_internal ? std::wstring(L"../drawings/") + r.ref : r.ref,
+						(r.is_internal ? L"" : L"External"))
+			);			
 		}
 	}
 }
@@ -224,6 +239,13 @@ void oox_chart_context::serialize(std::wostream & strm)
 					{
 						CP_XML_ATTR(L"val", false);
 					}
+				}
+			}
+			if (userShapesId_.empty() == false)
+			{
+				CP_XML_NODE(L"c:userShapes")
+				{
+					CP_XML_ATTR(L"r:id", userShapesId_);
 				}
 			}
 		}

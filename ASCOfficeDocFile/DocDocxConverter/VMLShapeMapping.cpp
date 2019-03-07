@@ -52,6 +52,7 @@ namespace DocFileFormat
 	{		
 		m_isInlineShape		=	isInlineShape;
 		m_isBullete			=	false;
+		m_isPictureBroken	=	false;
 
 		m_pSpa				=	pSpa;
 		m_pCaller			=	pCaller;
@@ -277,6 +278,7 @@ namespace DocFileFormat
 		bool layoutInCell		=	true; //anmeldebogenfos.doc
 		bool b3D				=	false;
 		bool bShadow			=	false;
+		bool bPicturePresent	=	false;
 		
 		int ndxTextLeft			=	-1;
 		int ndyTextTop			=	-1;
@@ -565,6 +567,8 @@ namespace DocFileFormat
 					{
 						appendValueAttribute(&m_fill, L"r:id", std::wstring(( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
 					}
+
+					bPicturePresent = true;
 				}break;
 			case fillBlipName:
 				{
@@ -647,6 +651,7 @@ namespace DocFileFormat
 							appendValueAttribute(&m_imagedata, L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
 						}
 					}
+					bPicturePresent = true;
 				}break;
 			case pibName:
 				{
@@ -751,11 +756,11 @@ namespace DocFileFormat
 						break;
 					case 1:
 					case 5://верт (склони голову направо)						
-						appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+						appendStyleProperty(sTextboxStyle, L"layout-flow", L"vertical");
 						break;
 					case 2://верт (склони голову налево)	
-						appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
-						appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
+						appendStyleProperty(sTextboxStyle, L"layout-flow", L"vertical");
+						appendStyleProperty(sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
 						break;
 					}
 				}break;	
@@ -789,18 +794,18 @@ namespace DocFileFormat
 						if (i < font.size()) font.erase(font.begin() + i, font.end());
 
 						font = std::wstring(L"\"") + font + std::wstring(L"\"");
-						appendStyleProperty(&m_textPathStyle, L"font-family", font);
+						appendStyleProperty(m_textPathStyle, L"font-family", font);
 					}
 				}break;
 			case gtextSize:
 				{
 					std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
-					appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
+					appendStyleProperty(m_textPathStyle, L"font-size", fontSize + L"pt");
 				}break;
 			case gtextSpacing:
 				{
 					std::wstring spacing = FormatUtils::IntToWideString(iter->op);
-					appendStyleProperty(&m_textPathStyle, L"v-text-spacing", spacing + L"f");
+					appendStyleProperty(m_textPathStyle, L"v-text-spacing", spacing + L"f");
 				}break;
 			case geometryTextBooleanProperties:
 				{
@@ -815,20 +820,20 @@ namespace DocFileFormat
 					}
 					if (props->fUsegFVertical && props->fVertical)
 					{
-						appendStyleProperty(&m_textPathStyle, L"v-rotate-letters", L"t");
+						appendStyleProperty(m_textPathStyle, L"v-rotate-letters", L"t");
 						//_twistDimension = true;
 					}
 					if (props->fUsegFKern && props->fKern)
 					{
-						appendStyleProperty(&m_textPathStyle, L"v-text-kern", L"t");
+						appendStyleProperty(m_textPathStyle, L"v-text-kern", L"t");
 					}
 					if (props->fUsegFItalic && props->fItalic)
 					{
-						appendStyleProperty(&m_textPathStyle, L"font-style", L"italic");
+						appendStyleProperty(m_textPathStyle, L"font-style", L"italic");
 					}
 					if (props->fUsegFBold && props->fBold)
 					{
-						appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
+						appendStyleProperty(m_textPathStyle, L"font-weight", L"bold");
 					}
 				}break;
 			default:
@@ -873,10 +878,10 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString( *xCoord ) + L"," + FormatUtils::IntToWideString( *yCoord ) ));
 		} 
 
-		int nCode	=	0;
+		int nCode =	0;
 		if (pShape->GetShapeType())
 		{
-			nCode	=	pShape->GetShapeType()->GetTypeCode();
+			nCode =	pShape->GetShapeType()->GetTypeCode();
 		}
 
 		if (DocFileFormat::msosptRoundRectangle == nCode)
@@ -885,6 +890,11 @@ namespace DocFileFormat
 			{
 				m_pXmlWriter->WriteAttribute(L"arcsize", m_nAdjValues[0]);
 			}
+		}
+		else if (DocFileFormat::msosptPictureFrame == nCode)
+		{
+			if (bPicturePresent == false)
+				m_isPictureBroken = true;
 		}
 		else
 		{
@@ -1391,9 +1401,9 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendDimensionToStyle(std::wstring* style, const PictureDescriptor* pict, bool twistDimensions) const
+	void VMLShapeMapping::AppendDimensionToStyle(std::wstring& style, const PictureDescriptor* pict, bool twistDimensions) const
 	{
-		if ( ( style != NULL ) && ( pict != NULL ) )
+		if (  pict != NULL ) 
 		{
 			double xScaling = pict->mx / 1000.0;
 			double yScaling = pict->my / 1000.0;
@@ -1410,26 +1420,24 @@ namespace DocFileFormat
 			std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
 			std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
 
-			style->operator += ( std::wstring( L"width:" ) + widthString + std::wstring( L"pt;" ) );
-			style->operator += ( std::wstring( L"height:" ) + heightString + std::wstring( L"pt;" ) );
+			style += L"width:" + widthString + L"pt;" ;
+			style += L"height:" + heightString + L"pt;";
 		}
 	}
 
-	void VMLShapeMapping::AppendDimensionToStyle(std::wstring* style, const Spa* pSpa, bool twistDimensions) const
+	void VMLShapeMapping::AppendDimensionToStyle(std::wstring& style, const Spa* pSpa, bool twistDimensions) const
 	{
-		if ( ( style != NULL ) && (pSpa != NULL ) )
+		if (pSpa != NULL )
 		{
 			//append size and position ...
 
 			//if (pSpa->fAnchorLock )
-			//if (pSpa->bx == TEXT && pSpa->by == TEXT)
-			//{
+			if (pSpa->bx == TEXT && pSpa->by == TEXT)
+			{
 			//	appendStyleProperty( style, L"position", L"static" );
-			//}
-			//else
-			//{
-				appendStyleProperty( style, L"position", L"absolute" );
-			//}
+			}
+			else
+				appendStylePropertyFirst( style, L"position", L"absolute" );
 
 			TwipsValue left	 (pSpa->xaLeft);
 			TwipsValue top	 (pSpa->yaTop);
@@ -1452,9 +1460,9 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendDimensionToStyle(std::wstring* style, const ChildAnchor* anchor, bool twistDimensions) const
+	void VMLShapeMapping::AppendDimensionToStyle(std::wstring& style, const ChildAnchor* anchor, bool twistDimensions) const
 	{
-		if ((style != NULL) && (anchor != NULL))
+		if (anchor != NULL)
 		{
 			DocFileFormat::Rectangle bounds = anchor->rcgBounds;
 
@@ -1464,34 +1472,40 @@ namespace DocFileFormat
 				bounds.topLeftAngle.y	=	static_cast<LONG>(((anchor->Bottom	+	anchor->Top)  * 0.5 - (anchor->Right	-	anchor->Left) * 0.5));
 			}
 
-			appendStyleProperty(style, L"position", L"absolute");
-			appendStyleProperty(style, L"left",	FormatUtils::IntToWideString(bounds.topLeftAngle.x));
-			appendStyleProperty(style, L"top",	FormatUtils::IntToWideString(bounds.topLeftAngle.y));
+			appendStylePropertyFirst(style, L"top",	FormatUtils::IntToWideString(bounds.topLeftAngle.y));
+			appendStylePropertyFirst(style, L"left",	FormatUtils::IntToWideString(bounds.topLeftAngle.x));
+			appendStylePropertyFirst(style, L"position", L"absolute");
 
 			if (twistDimensions)
 			{
-				appendStyleProperty(style, L"width",	 FormatUtils::IntToWideString(bounds.size.cy));
-				appendStyleProperty(style, L"height", FormatUtils::IntToWideString(bounds.size.cx));
+				appendStylePropertyFirst(style, L"width",	 FormatUtils::IntToWideString(bounds.size.cy));
+				appendStylePropertyFirst(style, L"height", FormatUtils::IntToWideString(bounds.size.cx));
 			}
 			else
 			{
-				appendStyleProperty(style, L"width",  FormatUtils::IntToWideString(bounds.size.cx));
-				appendStyleProperty(style, L"height", FormatUtils::IntToWideString(bounds.size.cy));
+				appendStylePropertyFirst(style, L"width",  FormatUtils::IntToWideString(bounds.size.cx));
+				appendStylePropertyFirst(style, L"height", FormatUtils::IntToWideString(bounds.size.cy));
 			}
 		}
 	}
 
-	void VMLShapeMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
+	void VMLShapeMapping::appendStyleProperty(std::wstring& style, const std::wstring& propName, const std::wstring& propValue) const
 	{
-		if ( b != NULL )
-		{
-			b->operator += ( propName );
-			b->operator += ( L":" );
-			b->operator += ( propValue );
-			b->operator +=( L";" );
-		}
+		style += ( propName );
+		style += ( L":" );
+		style += ( propValue );
+		style +=( L";" );
 	}
-
+	void VMLShapeMapping::appendStylePropertyFirst(std::wstring& style, const std::wstring& propName, const std::wstring& propValue) const
+	{
+		std::wstring s;
+		s += ( propName );
+		s += ( L":" );
+		s += ( propValue );
+		s +=( L";" );
+		
+		style = s + style;
+	}
 	std::wstring VMLShapeMapping::getTextboxAnchor(unsigned int anchor) const
 	{
 		switch ( anchor )
@@ -1560,22 +1574,22 @@ namespace DocFileFormat
 		PositionHorizontalRelative hRel = (PositionHorizontalRelative )hRel_;
 		switch ( hRel ) 
 		{
-			case msoprhMargin:	return L"margin";
-			case msoprhPage:	return L"page";
-			case msoprhText:	return L"text";
-			case msoprhChar:	return L"char";
+			case msoprhMargin:	return L"margin";	//0 //MARGIN = anchor
+			case msoprhPage:	return L"page";		//1 //PAGE
+			case msoprhText:	return L"text";		//2 //TEXT
+			case msoprhChar:	return L"char";		//3
 			default:
 				return L"margin";
 		}
 	}
 
-	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex) const
+	void VMLShapeMapping::AppendOptionsToStyle (std::wstring& oStyle, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex) const
 	{
-		bool bRelH = false;
-		bool bRelV = false;
+		int nRelH = -1;
+		int nRelV = -1;
 
-		bool bPosH = false;
-		bool bPosV = false;
+		int nPosH = -1;
+		int nPosV = -1;
 
 		bool bZIndex = false;
 
@@ -1587,36 +1601,40 @@ namespace DocFileFormat
 //	POSITIONING
 			case posh:
 				{
-					appendStyleProperty(oStyle, L"mso-position-horizontal", mapHorizontalPosition((PositionHorizontal)iter->op));
-					bPosH = true;
+					nPosH = iter->op;
 				}break;
 			case posrelh:
 				{
+					nRelH = iter->op;
 					appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
-					bRelH = true;
 				}break;
 			case posv:
 				{
-					appendStyleProperty(oStyle, L"mso-position-vertical", mapVerticalPosition((PositionVertical)iter->op));
-					bPosV = true;
+					nPosV = iter->op;
 				}break;
 			case posrelv:
 				{
+					nRelV = iter->op;
 					appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
-					bRelV = true;
 				}break;
 //	BOOLEANS
 			case groupShapeBooleans:
 				{
 					ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 
-					if (booleans->fUsefBehindDocument && booleans->fBehindDocument && !bZIndex)
+					if (booleans->fUsefBehindDocument && booleans->fBehindDocument)
 					{
-						//The shape is behind the text, so the z-index must be negative.
-						appendStyleProperty(oStyle, L"z-index", L"-1" );
-						bZIndex = true;
+						//за текстом (The shape is behind the text, so the z-index must be negative.)
+						m_isInlineShape = false;
+
+						if (!bZIndex)
+						{
+							appendStyleProperty(oStyle, L"z-index", FormatUtils::IntToWideString(-zIndex - 0x7ffff));
+							bZIndex = true;
+						}
 					}
-					else if (!m_isInlineShape && !bZIndex)
+					
+					if (!m_isInlineShape && !bZIndex)
 					{
 						appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 						bZIndex = true;
@@ -1664,13 +1682,29 @@ namespace DocFileFormat
 			}
 		}
 		
-		if (!bRelH && m_pSpa)
+		if (nRelH < 0 && m_pSpa)
 		{
-			appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(m_pSpa->bx));
+			if (m_pSpa->bx == TEXT && bZIndex)
+			{
+				m_pSpa->bx = PAGE;
+			}
+			else
+			{
+				nRelH = m_pSpa->bx;
+				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(m_pSpa->bx));
+			}
 		}
-		if (!bRelV && m_pSpa)
+		if (nRelV < 0 && m_pSpa)
 		{
-			appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative(m_pSpa->by));
+			if (m_pSpa->by == TEXT && bZIndex)
+			{
+				m_pSpa->by = PAGE;
+			}
+			else
+			{
+				nRelV = m_pSpa->by;
+				appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative(m_pSpa->by));
+			}
 		}
 		if (!m_isInlineShape && !bZIndex)
 		{
@@ -1678,6 +1712,19 @@ namespace DocFileFormat
 			bZIndex = true;
 		}
 
+		if (nRelH == 3 && nRelV == 3)
+		{
+			m_isInlineShape = true;
+		}
+
+		if (nPosH >= 0 && !m_isInlineShape)
+		{
+			appendStyleProperty(oStyle, L"mso-position-horizontal", mapHorizontalPosition((PositionHorizontal)nPosH));
+		}
+		if (nPosV >= 0 && !m_isInlineShape)
+		{
+			appendStyleProperty(oStyle, L"mso-position-vertical", mapVerticalPosition((PositionVertical)nPosV));
+		}
 		//if (!bPosH)
 		//{
 		//	appendStyleProperty(oStyle, L"mso-position-horizontal", L"absolute" );
@@ -1721,26 +1768,38 @@ namespace DocFileFormat
 			}
 		}
 
+		if ( shape->fFlipH )
+		{
+			appendStyleProperty( style, L"flip", L"x" );
+		}
+
+		if ( shape->fFlipV )
+		{
+			appendStyleProperty( style, L"flip", L"y" );
+		}
+
+		AppendOptionsToStyle( style, options, zIndex );
+		
 		//don't append the dimension info to lines, 
 		// because they have "from" and "to" attributes to decline the dimension
-		if(!shape->is<LineType>())
+		if(false == shape->is<LineType>())
 		{
 			if ( (m_pSpa != NULL) && ( anchor == NULL ) )
 			{
 				//this shape is placed directly in the document, 
 				//so use the FSPA to build the style
-				AppendDimensionToStyle(&style, m_pSpa, twistDimensions);
+				AppendDimensionToStyle( style, m_pSpa, twistDimensions);
 			}
 			else if (anchor)
 			{
 				//the style is part of a group, 
 				//so use the anchor
-				AppendDimensionToStyle(&style, anchor, twistDimensions);
+				AppendDimensionToStyle( style, anchor, twistDimensions);
 			}
 			else if (m_pict)
 			{
 				// it is some kind of PICT shape (e.g. WordArt)
-				AppendDimensionToStyle(&style, m_pict, twistDimensions);
+				AppendDimensionToStyle( style, m_pict, twistDimensions);
 			}
 		}
 		else
@@ -1748,36 +1807,23 @@ namespace DocFileFormat
 			//если не написать тип позиции, то будет inline
 			if ( anchor != NULL )
 			{
-				appendStyleProperty( &style, L"position", L"absolute" );
+				appendStylePropertyFirst( style, L"position", L"absolute" );
 			}
 			else if (m_pSpa)
 			{
 				//append size and position ...
 				//if (m_pSpa->fAnchorLock)//это возможность смены привязки , а не ее тип
 
-				//if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
-				//{
-				//	appendStyleProperty( &style, L"position", L"static" );
-				//}
-				//else
+				if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
 				{
-					appendStyleProperty( &style, L"position", L"absolute" );
+				//	appendStyleProperty( style, L"position", L"static" );
+				}
+				else
+				{
+					appendStylePropertyFirst( style, L"position", L"absolute" );
 				}
 			}
 		}
-
-		if ( shape->fFlipH )
-		{
-			appendStyleProperty( &style, L"flip", L"x" );
-		}
-
-		if ( shape->fFlipV )
-		{
-			appendStyleProperty( &style, L"flip", L"y" );
-		}
-
-		AppendOptionsToStyle( &style, options, zIndex );
-		
 		return style;
 	}
 

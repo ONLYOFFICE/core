@@ -220,15 +220,12 @@ namespace DocFileFormat
 		return res;
 	}
 //---------------------------------------------------------------
-	void VMLPictureMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
+	void VMLPictureMapping::appendStyleProperty(std::wstring& style, const std::wstring& propName, const std::wstring& propValue) const
 	{
-		if ( b != NULL )
-		{
-			b->operator += ( propName );
-			b->operator += ( L":" );
-			b->operator += ( propValue );
-			b->operator +=( L";" );
-		}
+		style += ( propName );
+		style += ( L":" );
+		style += ( propValue );
+		style +=( L";" );
 	}
 
 	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture) : PropertiesMapping(writer)
@@ -295,6 +292,7 @@ namespace DocFileFormat
 
 			type.Convert( vmlShapeTypeMapping );
 			RELEASEOBJECT( vmlShapeTypeMapping );
+
 		}
 		else if (pict->embeddedData)
 		{
@@ -420,23 +418,23 @@ namespace DocFileFormat
 					std::wstring v = strHeight;
 					strHeight = strWidth; strWidth = v;
 
-					appendStyleProperty(&strStyle, L"rotation", FormatUtils::DoubleToWideString(dAngle));
+					appendStyleProperty(strStyle, L"rotation", FormatUtils::DoubleToWideString(dAngle));
 				}break;
 			case posh:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-horizontal", VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-horizontal", VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
 				}break;
 			case posrelh:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}break;
 			case posv:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-vertical", VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-vertical", VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
 				}break;
 			case posrelv:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
 			case groupShapeBooleans:
 				{
@@ -445,7 +443,7 @@ namespace DocFileFormat
 					if (booleans->fUsefBehindDocument && booleans->fBehindDocument)
 					{
 						//The shape is behind the text, so the z-index must be negative.
-						appendStyleProperty(&strStyle, L"z-index", L"-1" );
+						appendStyleProperty(strStyle, L"z-index", L"-1" );
 					}
 					//else if (!m_isInlinePicture)
 					//{
@@ -454,7 +452,7 @@ namespace DocFileFormat
 
 					if (booleans->fHidden && booleans->fUsefHidden)
 					{
-						appendStyleProperty(&strStyle, L"visibility", L"hidden");
+						appendStyleProperty(strStyle, L"visibility", L"hidden");
 					}
 				}break;
 			default:
@@ -499,7 +497,8 @@ namespace DocFileFormat
 			appendValueAttribute(m_imageData, L"o:title", L"" );
 			m_pXmlWriter->WriteString(m_imageData->GetXMLString());
 		}
-
+		else
+			m_isPictureBroken = true;
 
 		{//borders			
 			writePictureBorder( L"bordertop",		pict->brcTop );

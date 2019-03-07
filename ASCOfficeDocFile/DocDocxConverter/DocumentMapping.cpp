@@ -716,7 +716,7 @@ namespace DocFileFormat
 						RELEASEOBJECT( chpxs );
 					}
 				}
-				oleWriter.WriteString( _lastOLEObject );
+				oleWriter.WriteString( _lastOLEObject ); _lastOLEObject.clear();
                 oleWriter.WriteNodeEnd( L"w:object" );
 
 				if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
@@ -912,6 +912,7 @@ namespace DocFileFormat
 					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
 				}
 
+				bool bPicture = false;
 				if (pSpa)
 				{
 					PictureDescriptor pictDiscr(chpx, m_document->WordDocumentStream, 0x7fffffff, m_document->nWordVersion);
@@ -925,6 +926,8 @@ namespace DocFileFormat
 							
 						pShape->Convert(&oVmlWriter);
 						m_pXmlWriter->WriteNodeEnd (L"w:pict");
+
+						bPicture = true;
 					}
 					
 					if (!pSpa->primitives.empty())
@@ -933,8 +936,13 @@ namespace DocFileFormat
 						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, &pictDiscr,  _caller);
 						pSpa->primitives.Convert(&oVmlWriter);
                         m_pXmlWriter->WriteNodeEnd (L"w:pict");
+						
+						bPicture = true;
 					}
 				}
+
+				if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate))
+					_fieldLevels.back().bResult = bPicture;
 			}
 			else if (TextMark::Picture == code && fSpec)
 			{
@@ -1004,10 +1012,23 @@ namespace DocFileFormat
 							oPicture.shapeContainer->Convert(&oVmlMapper);
 						}
 						
-						pictWriter.WriteNodeEnd	 (L"w:pict");
+						pictWriter.WriteNodeEnd (L"w:pict");
 
 						if (!bFormula)
-							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+						{
+							if (false == _fieldLevels.empty())
+							{
+								if (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult)	//ege15.doc
+								{
+									m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+									_fieldLevels.back().bResult = true;
+								}
+							}
+							else
+							{
+								m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+							}
+						}
 					}
 
 				}                   

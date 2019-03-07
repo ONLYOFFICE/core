@@ -56,7 +56,7 @@ namespace DocFileFormat
 	private:
 		/// Writes a border element
 		void writePictureBorder (const std::wstring & name, const BorderCode* brc);
-		void appendStyleProperty( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
+		void appendStyleProperty( std::wstring& style, const std::wstring& propName, const std::wstring& propValue ) const;
 		bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
 		bool ParseEmbeddedBlob(const std::string & xmlString, std::wstring & newXmlString);
 		std::wstring GetShapeID(const Shape* pShape) const;
@@ -74,6 +74,7 @@ namespace DocFileFormat
 		bool							m_isBullete;
 		bool							m_isEquation;
 		bool							m_isEmbedded;
+		bool							m_isPictureBroken;
 		std::string						m_embeddedData;
 		std::wstring					m_equationXml;
 		std::wstring					m_blobXml;

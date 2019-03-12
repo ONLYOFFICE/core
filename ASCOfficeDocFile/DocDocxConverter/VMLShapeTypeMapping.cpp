@@ -173,12 +173,16 @@ namespace DocFileFormat
 
 	//Lock ??? 
 			ODRAW::ProtectionBooleanProperties *prot = dynamic_cast<ODRAW::ProtectionBooleanProperties*>(pShape->Lock.get());
-			if ((prot) && (prot->fUsefLockAspectRatio && prot->fLockAspectRatio))
+			if ((prot) && (prot->fUsefLockAspectRatio))
 			{
-                appendValueAttribute( _lock, L"aspectratio", L"t" );
+				appendValueAttribute( _lock, L"aspectratio", prot->fLockAspectRatio ? L"t" : L"f" );
+			}
+			else
+			{
+				appendValueAttribute( _lock, L"aspectratio", L"t");
 			}
 
-			if ( _lock->GetAttributeCount() > 1 )
+			if ( _lock->GetAttributeCount() > 0 )
 			{
 				m_pXmlWriter->WriteString( _lock->GetXMLString() );
 			}

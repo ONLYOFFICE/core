@@ -1432,7 +1432,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (ECellFormulaType)
-				SimpleType_Operator_Equal (CCellFormulaType)
+			SimpleType_Operator_Equal (CCellFormulaType)
 		};
 		enum EUpdateLinksType
 		{
@@ -3141,6 +3141,543 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (ERefMode)
 			SimpleType_Operator_Equal (CRefMode)
+		};
+
+		enum EDoubleOrAutomatic 
+		{
+			typeAuto		=  0,
+			typeDouble		=  1
+		};
+		template<EDoubleOrAutomatic eDefValue = typeAuto>
+		class CDoubleOrAutomatic : public CSimpleType<EDoubleOrAutomatic, eDefValue>
+		{
+		public:
+			double m_dValue;
+			CDoubleOrAutomatic() : m_dValue(0){}
+
+            virtual EDoubleOrAutomatic FromString(std::wstring &sValue)
+			{
+				if(_T("auto") == sValue)
+				{
+                    m_eValue = typeAuto;
+					m_dValue = 0;
+				}
+				else
+				{
+                    m_eValue = typeDouble;
+					m_dValue = XmlUtils::GetDouble(sValue);
+				}
+				return m_eValue;
+			}
+			double GetDoubleValue() const
+			{
+				return m_dValue;
+			}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+					case typeAuto : return _T("auto");break;
+					case typeDouble :
+					default: 
+					{
+						return XmlUtils::DoubleToString(m_dValue);
+					}break;
+				}
+			}
+
+			SimpleType_FromString     (EDoubleOrAutomatic)
+			SimpleType_Operator_Equal (CDoubleOrAutomatic)
+		};
+		
+		enum ESeriesLayout 
+		{
+			typeSeriesLayoutBoxWhisker		=  0,
+			typeSeriesLayoutClusteredColumn	=  1,
+			typeSeriesLayoutFunnel			=  2,
+			typeSeriesLayoutParetoLine		=  3,
+			typeSeriesLayoutRegionMap		=  4,
+			typeSeriesLayoutSunburst		=  5,
+			typeSeriesLayoutTreemap			=  6,
+			typeSeriesLayoutWaterfall		=  7,
+		};
+		template<ESeriesLayout eDefValue = typeSeriesLayoutBoxWhisker>
+		class CSeriesLayout : public CSimpleType<ESeriesLayout, eDefValue>
+		{
+		public:
+			CSeriesLayout() {}
+
+			virtual ESeriesLayout FromString(std::wstring &sValue)
+			{
+				if      ( _T("boxWhisker")		== sValue )	this->m_eValue = typeSeriesLayoutBoxWhisker;
+				else if ( _T("clusteredColumn")	== sValue ) this->m_eValue = typeSeriesLayoutClusteredColumn;
+				else if ( _T("funnel")			== sValue ) this->m_eValue = typeSeriesLayoutFunnel;
+				else if ( _T("paretoLine")		== sValue ) this->m_eValue = typeSeriesLayoutParetoLine;
+				else if ( _T("regionMap")		== sValue ) this->m_eValue = typeSeriesLayoutRegionMap;
+				else if ( _T("sunburst")		== sValue ) this->m_eValue = typeSeriesLayoutSunburst;
+				else if ( _T("treemap")			== sValue ) this->m_eValue = typeSeriesLayoutTreemap;
+				else if ( _T("waterfall")		== sValue ) this->m_eValue = typeSeriesLayoutWaterfall;
+				else										this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case typeSeriesLayoutBoxWhisker :		return _T("boxWhisker");break;
+					case typeSeriesLayoutClusteredColumn :	return _T("clusteredColumn");break;
+					case typeSeriesLayoutFunnel:			return _T("funnel");	break;
+					case typeSeriesLayoutParetoLine :		return _T("paretoLine");break;
+					case typeSeriesLayoutRegionMap :		return _T("regionMap");	break;
+					case typeSeriesLayoutSunburst :			return _T("sunburst");	break;
+					case typeSeriesLayoutTreemap :			return _T("treemap");	break;
+					case typeSeriesLayoutWaterfall :		return _T("waterfall");	break;
+					default : return _T("auto");
+				}
+			}
+
+			SimpleType_FromString     (ESeriesLayout)
+			SimpleType_Operator_Equal (CSeriesLayout)
+		};
+		
+		enum EAxisUnit 
+		{
+			unitHundreds			=  0,
+			unitThousands			=  1,
+			unitTenThousands		=  2,
+			unitHundredThousands	=  3,
+			unitMillions			=  4,
+			unitTenMillions			=  5,
+			unitHundredMillions		=  6,
+			unitBillions			=  7,
+			unitTrillions			=  8,
+			unitPercentage			=  9
+
+		};
+		template<EAxisUnit eDefValue = unitPercentage>
+		class CAxisUnit : public CSimpleType<EAxisUnit, eDefValue>
+		{
+		public:
+			CAxisUnit() {}
+
+			virtual EAxisUnit FromString(std::wstring &sValue)
+			{
+				if      ( _T("hundreds")		== sValue )	this->m_eValue = unitHundreds;
+				else if ( _T("thousands")		== sValue ) this->m_eValue = unitThousands;
+				else if ( _T("tenThousands")	== sValue ) this->m_eValue = unitTenThousands;
+				else if ( _T("hundredThousands")== sValue ) this->m_eValue = unitHundredThousands;
+				else if ( _T("millions")		== sValue ) this->m_eValue = unitMillions;
+				else if ( _T("tenMillions")		== sValue ) this->m_eValue = unitTenMillions;
+				else if ( _T("hundredMillions")	== sValue ) this->m_eValue = unitHundredMillions;
+				else if ( _T("billions")		== sValue ) this->m_eValue = unitBillions;
+				else if ( _T("trillions")		== sValue ) this->m_eValue = unitTrillions;
+				else if ( _T("percentage")		== sValue ) this->m_eValue = unitPercentage;
+				else										this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case unitHundreds :			return _T("hundreds");		break;
+					case unitThousands :		return _T("thousands");		break;
+					case unitTenThousands:		return _T("tenThousands");	break;
+					case unitHundredThousands :	return _T("hundredThousands");break;
+					case unitMillions :			return _T("millions");		break;
+					case unitTenMillions :		return _T("tenMillions");	break;
+					case unitHundredMillions :	return _T("hundredMillions");break;
+					case unitBillions :			return _T("billions");		break;
+					case unitTrillions :		return _T("trillions");		break;
+					case unitPercentage :		return _T("percentage");	break;
+					default : return _T("");
+				}
+			}
+
+			SimpleType_FromString     (EAxisUnit)
+			SimpleType_Operator_Equal (CAxisUnit)
+		};
+		enum EDimensionType 
+		{
+			typeDimensionVal		=  0,
+			typeDimensionX			=  1,
+			typeDimensionY			=  2,
+			typeDimensionSize		=  3,
+			typeDimensionColorVal	=  4,
+			typeDimensionCat		=  10,
+			typeDimensionColorStr	=  11
+		};
+		template<EDimensionType eDefValue = typeDimensionVal>
+		class CDimensionType : public CSimpleType<EDimensionType, eDefValue>
+		{
+		public:
+			CDimensionType() {}
+
+			virtual EDimensionType FromString(std::wstring &sValue)
+			{
+				if      ( _T("val")		== sValue )	this->m_eValue = typeDimensionVal;
+				else if ( _T("x")		== sValue ) this->m_eValue = typeDimensionX;
+				else if ( _T("y")		== sValue ) this->m_eValue = typeDimensionY;
+				else if ( _T("size")	== sValue ) this->m_eValue = typeDimensionSize;
+				else if ( _T("colorVal")== sValue ) this->m_eValue = typeDimensionColorVal;
+				else if ( _T("cat")		== sValue ) this->m_eValue = typeDimensionCat;
+				else if ( _T("colorStr")== sValue ) this->m_eValue = typeDimensionColorStr;
+				else								this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case typeDimensionVal :		return _T("val");	
+					case typeDimensionX :		return _T("x");		
+					case typeDimensionY:		return _T("y");		
+					case typeDimensionSize :	return _T("size");	
+					case typeDimensionColorVal :return _T("colorVal");
+					case typeDimensionCat :		return _T("cat");
+					case typeDimensionColorStr :return _T("colorStr");
+					default : return _T("");
+				}
+			}
+
+			SimpleType_FromString     (EDimensionType)
+			SimpleType_Operator_Equal (CDimensionType)
+		};
+		enum EFormulaDirection 
+		{
+			directionCol		=  0,
+			directionRow		=  1
+		};
+		template<EFormulaDirection eDefValue = directionCol>
+		class CFormulaDirection : public CSimpleType<EFormulaDirection, eDefValue>
+		{
+		public:
+			CFormulaDirection() {}
+
+            virtual EFormulaDirection FromString(std::wstring &sValue)
+			{
+				if(_T("row") == sValue) m_eValue = directionRow;
+				else                    m_eValue = directionCol;
+				return m_eValue;
+			}
+			virtual std::wstring ToString  () const 
+			{
+                switch(this->m_eValue)
+				{
+					case directionRow : return _T("row");
+					case directionCol :
+					default: 
+					{
+						return _T("col");
+					}break;
+				}
+			}
+
+			SimpleType_FromString     (EFormulaDirection)
+			SimpleType_Operator_Equal (CFormulaDirection)
+		};
+		enum ESidePos 
+		{
+			sideLeft		=  0,
+			sideRight		=  1,
+			sideTop			=  2,
+			sideBottom		=  3
+		};
+		template<ESidePos eDefValue = sideTop>
+		class CSidePos : public CSimpleType<ESidePos, eDefValue>
+		{
+		public:
+			CSidePos() {}
+
+			virtual ESidePos FromString(std::wstring &sValue)
+			{
+				if      ( _T("t")	== sValue )	this->m_eValue = sideTop;
+				else if ( _T("l")	== sValue ) this->m_eValue = sideLeft;
+				else if ( _T("r")	== sValue ) this->m_eValue = sideRight;
+				else if ( _T("b")	== sValue ) this->m_eValue = sideBottom;
+				else							this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case sideLeft :		return _T("l");	
+					case sideRight:		return _T("r");	
+					case sideBottom :	return _T("b");	
+					case sideTop :		
+					default : return _T("t");
+				}
+			}
+
+			SimpleType_FromString     (ESidePos)
+			SimpleType_Operator_Equal (CSidePos)
+		};
+		enum EPosAlign 
+		{
+			posAlignMin		=  0,
+			posAlignCtr		=  1,
+			posAlignMax		=  2
+		};
+		template<EPosAlign eDefValue = posAlignCtr>
+		class CPosAlign : public CSimpleType<EPosAlign, eDefValue>
+		{
+		public:
+			CPosAlign() {}
+
+			virtual EPosAlign FromString(std::wstring &sValue)
+			{
+				if      ( _T("min")	== sValue )	this->m_eValue = posAlignMin;
+				else if ( _T("max")	== sValue ) this->m_eValue = posAlignMax;
+				else if ( _T("ctr")	== sValue ) this->m_eValue = posAlignCtr;
+				else							this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case posAlignMax :	return _T("max");
+					case posAlignMin:	return _T("min");
+					case posAlignCtr :	
+					default :			return _T("ctr");
+				}
+			}
+
+			SimpleType_FromString     (EPosAlign)
+			SimpleType_Operator_Equal (CPosAlign)
+		};
+		enum ERegionLabelLayout 
+		{
+			layoutNone			=  0,
+			layoutBestFitOnly	=  1,
+			layoutShowAll		=  2
+		};
+		template<ERegionLabelLayout eDefValue = layoutNone>
+		class CRegionLabelLayout : public CSimpleType<ERegionLabelLayout, eDefValue>
+		{
+		public:
+			CRegionLabelLayout() {}
+
+			virtual ERegionLabelLayout FromString(std::wstring &sValue)
+			{
+				if      ( _T("none")		== sValue )	this->m_eValue = layoutNone;
+				else if ( _T("bestFitOnly")	== sValue ) this->m_eValue = layoutBestFitOnly;
+				else if ( _T("showAll")		== sValue ) this->m_eValue = layoutShowAll;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case layoutNone :		return _T("none");
+					case layoutBestFitOnly:	return _T("bestFitOnly");
+					case layoutShowAll :	
+					default :				return _T("showAll");
+				}
+			}
+
+			SimpleType_FromString     (ERegionLabelLayout)
+			SimpleType_Operator_Equal (CRegionLabelLayout)
+		};
+		enum EParentLabelLayout 
+		{
+			layoutNone_			=  0,
+			layoutBanner		=  1,
+			layoutOverlapping	=  2
+		};
+		template<EParentLabelLayout eDefValue = layoutNone_>
+		class CParentLabelLayout : public CSimpleType<EParentLabelLayout, eDefValue>
+		{
+		public:
+			CParentLabelLayout() {}
+
+			virtual EParentLabelLayout FromString(std::wstring &sValue)
+			{
+				if      ( _T("none")		== sValue )	this->m_eValue = layoutNone_;
+				else if ( _T("banner")		== sValue ) this->m_eValue = layoutBanner;
+				else if ( _T("overlapping")	== sValue ) this->m_eValue = layoutOverlapping;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case layoutNone_ :		return _T("none");
+					case layoutOverlapping:	return _T("banner");
+					case layoutBanner :	
+					default :				return _T("overlapping");
+				}
+			}
+
+			SimpleType_FromString     (EParentLabelLayout)
+			SimpleType_Operator_Equal (CParentLabelLayout)
+		};
+		
+		enum EQuartileMethod 
+		{
+			methodInclusive		=  0,
+			methodExclusive		=  1,
+		};
+		template<EQuartileMethod eDefValue = methodInclusive>
+		class CQuartileMethod : public CSimpleType<EQuartileMethod, eDefValue>
+		{
+		public:
+			CQuartileMethod() {}
+
+			virtual EQuartileMethod FromString(std::wstring &sValue)
+			{
+				if      ( _T("inclusive")	== sValue )	this->m_eValue = methodInclusive;
+				else if ( _T("exclusive")	== sValue ) this->m_eValue = methodExclusive;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case methodInclusive :	return _T("inclusive");
+					case methodExclusive:	
+					default :				return _T("exclusive");
+				}
+			}
+
+			SimpleType_FromString     (EQuartileMethod)
+			SimpleType_Operator_Equal (CQuartileMethod)
+		};
+
+		enum EDataLabelPos 
+		{
+			posBestFit	=  0,
+			posBottom	=  1,
+			posCtr		=  2,
+			posInBase	=  3,
+			posInEnd	=  4,
+			posLeft		=  5,
+			posOutEnd	=  6,
+			posRight	=  7,
+			posTop		=  8
+
+		};
+		template<EDataLabelPos eDefValue = posBestFit>
+		class CDataLabelPos : public CSimpleType<EDataLabelPos, eDefValue>
+		{
+		public:
+			CDataLabelPos() {}
+
+			virtual EDataLabelPos FromString(std::wstring &sValue)
+			{
+				if      ( _T("bestFit")	== sValue )	this->m_eValue = posBestFit;
+				else if ( _T("b")		== sValue ) this->m_eValue = posBottom;
+				else if ( _T("ctr")		== sValue ) this->m_eValue = posCtr;
+				else if ( _T("inBase")	== sValue ) this->m_eValue = posInBase;
+				else if ( _T("inEnd")	== sValue ) this->m_eValue = posInEnd;
+				else if ( _T("l")		== sValue ) this->m_eValue = posLeft;
+				else if ( _T("outEnd")	== sValue ) this->m_eValue = posOutEnd;
+				else if ( _T("r")		== sValue ) this->m_eValue = posRight;
+				else if ( _T("t")		== sValue ) this->m_eValue = posTop;
+				else								this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case posBottom :	return _T("b");
+					case posCtr :		return _T("ctr");
+					case posInBase :	return _T("inBase");
+					case posInEnd :		return _T("inEnd");
+					case posLeft :		return _T("l");
+					case posOutEnd :	return _T("outEnd");
+					case posRight :		return _T("r");
+					case posTop :		return _T("t");
+					case posBestFit:	
+					default :			return _T("bestFit");
+				}
+			}
+
+			SimpleType_FromString     (EDataLabelPos)
+			SimpleType_Operator_Equal (CDataLabelPos)
+		};
+
+		template<ESidePos eDefValue = sideLeft>
+		class CIntervalClosedSide : public CSimpleType<ESidePos, eDefValue>
+		{
+		public:
+			CIntervalClosedSide() {}
+
+			virtual ESidePos FromString(std::wstring &sValue)
+			{
+				if      ( _T("l")	== sValue )	this->m_eValue = sideLeft;
+				else if ( _T("r")	== sValue ) this->m_eValue = sideRight;
+				else							this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case sideRight:	return _T("r");
+					case sideLeft :	
+					default :		return _T("l");		
+				}
+			}
+
+			SimpleType_FromString     (ESidePos)
+			SimpleType_Operator_Equal (CIntervalClosedSide)
+		};
+		
+		enum ETickMarksType 
+		{
+			marksTypeIn		=  0,
+			marksTypeOut	=  1,
+			marksTypeCross	=  2,
+			marksTypeNone	=  3
+
+		};
+		template<ETickMarksType eDefValue = marksTypeNone>
+		class CTickMarksType : public CSimpleType<ETickMarksType, eDefValue>
+		{
+		public:
+			CTickMarksType() {}
+
+			virtual ETickMarksType FromString(std::wstring &sValue)
+			{
+				if      ( _T("none")	== sValue )	this->m_eValue = marksTypeNone;
+				else if ( _T("out")		== sValue ) this->m_eValue = marksTypeOut;
+				else if ( _T("in")		== sValue ) this->m_eValue = marksTypeIn;
+				else if ( _T("cross")	== sValue ) this->m_eValue = marksTypeCross;
+				else								this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case marksTypeIn	:	return _T("in");
+					case marksTypeOut	:	return _T("out");
+					case marksTypeCross :	return _T("cross");
+					case marksTypeNone:	
+					default :			return _T("none");
+				}
+			}
+
+			SimpleType_FromString     (ETickMarksType)
+			SimpleType_Operator_Equal (CTickMarksType)
 		};
 	};// Spreadsheet
 } // SimpleTypes

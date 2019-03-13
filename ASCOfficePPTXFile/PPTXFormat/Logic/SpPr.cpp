@@ -149,7 +149,7 @@ namespace PPTX
 		std::wstring SpPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.WriteLimitNullable(_T("bwMode"), bwMode);
+			oAttr.WriteLimitNullable(L"bwMode", bwMode);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteNullable(xfrm);
@@ -160,7 +160,7 @@ namespace PPTX
 			oValue.WriteNullable(scene3d);
 			oValue.WriteNullable(sp3d);
 
-			return XmlUtils::CreateNode(m_namespace + _T(":spPr"), oAttr, oValue);
+			return XmlUtils::CreateNode(m_namespace + L":spPr", oAttr, oValue);
 		}
 
 		void SpPr::Merge(SpPr& spPr)const

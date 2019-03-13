@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XSLXFILE_TYPES_SPREADSHEET_INCLUDE_H_
-#define OOX_XSLXFILE_TYPES_SPREADSHEET_INCLUDE_H_
 
 #include "../DocxFormat/FileType.h"
 
@@ -134,5 +132,3 @@ namespace OOX
 		} // namespace FileTypes
 	}
 } // namespace OOX
-
-#endif // OOX_XSLXFILE_TYPES_SPREADSHEET_INCLUDE_H_

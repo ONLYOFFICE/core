@@ -137,7 +137,6 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			void Merge(SpPr& spPr)const;
 
-		public:
 			nullable<Xfrm>				xfrm;
 			Logic::Geometry				Geometry;
 			UniFill						Fill;
@@ -147,9 +146,8 @@ namespace PPTX
 			nullable<Sp3d>				sp3d;
 
 			nullable_limit<Limit::BWMode> bwMode;
-		//private:
-		public:
-			std::wstring m_namespace;
+
+			std::wstring				m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

@@ -110,6 +110,12 @@ namespace OOX
 			
 			else if ( oRelation.Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
+				return smart_ptr<OOX::File>(new CChartSpaceEx( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ChartStyle )
+				return smart_ptr<OOX::File>(new CChartStyle( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ChartColorStyle )
+				return smart_ptr<OOX::File>(new CChartColorStyle( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::ExternalLinkPath || 
 					  oRelation.Type() == OOX::FileTypes::ExternalLinkPathMissing || 
 					  oRelation.Type() == OOX::FileTypes::ExternalLinkPathStartup || 
@@ -206,6 +212,12 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CPersonList( pMain, oRootPath, oFileName));			
 			else if ( pRelation->Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartEx )
+				return smart_ptr<OOX::File>(new CChartSpaceEx( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartStyle )
+				return smart_ptr<OOX::File>(new CChartStyle( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartColorStyle )
+				return smart_ptr<OOX::File>(new CChartColorStyle( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::ExternalLinks )
 				return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName ));
 			else if (  pRelation->Type() == OOX::FileTypes::ExternalLinkPath || 

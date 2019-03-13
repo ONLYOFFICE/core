@@ -53,6 +53,7 @@ SOURCES += \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/DocxFormat/Comments.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
+    ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/Xlsx.cpp \
     ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
@@ -184,6 +185,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/CalcChain/CalcChain.h \
     ../Source/XlsxFormat/Chart/Chart.h \
     ../Source/XlsxFormat/Chart/ChartSerialize.h \
+    ../Source/XlsxFormat/Chart/ChartSerializeEx.h \
     ../Source/XlsxFormat/Comments/Comments.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \

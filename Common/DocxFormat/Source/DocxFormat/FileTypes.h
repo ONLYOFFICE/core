@@ -193,6 +193,21 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart", 
 												L"charts/chart", true, true);
 		
+		const FileType ChartEx				(L"charts", L"chartEx.xml",
+												L"application/vnd.ms-office.chartex+xml",
+												L"http://schemas.microsoft.com/office/2014/relationships/chartEx", 
+												L"charts/chartEx", true, true);
+
+		const FileType ChartStyle			(L"charts", L"style.xml",
+												L"application/vnd.ms-office.chartstyle+xml",
+												L"http://schemas.microsoft.com/office/2011/relationships/chartStyle", 
+												L"charts/style", true, true);
+
+		const FileType ChartColorStyle		(L"charts", L"colors.xml",
+												L"application/vnd.ms-office.chartcolorstyle+xml",
+												L"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle", 
+												L"charts/colors", true, true);
+
 		const FileType ActiveX_xml			(L"activeX", L"activeX.xml",
 												L"application/vnd.ms-office.activeX+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control");

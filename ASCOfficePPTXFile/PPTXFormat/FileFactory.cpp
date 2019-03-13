@@ -119,6 +119,12 @@ namespace PPTX
 
 		else if (relation.Type() == OOX::FileTypes::Chart)
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace(pMain, filename, filename));
+		else if (relation.Type() == OOX::FileTypes::ChartEx)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx(pMain, filename, filename));
+		else if (relation.Type() == OOX::FileTypes::ChartStyle)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle(pMain, filename, filename));
+		else if (relation.Type() == OOX::FileTypes::ChartColorStyle)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new OOX::HyperLink(pMain, relation.Target()));
 		else if (relation.Type() == OOX::FileTypes::Image)

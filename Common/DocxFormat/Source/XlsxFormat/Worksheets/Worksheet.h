@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_WORKSHEET_FILE_INCLUDE_H_
-#define OOX_WORKSHEET_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -157,4 +155,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_WORKSHEET_FILE_INCLUDE_H_

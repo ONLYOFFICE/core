@@ -1516,6 +1516,14 @@
 					RelativePath="..\Source\XlsxFormat\Chart\ChartSerialize.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Chart\ChartSerializeEx.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Chart\ChartSerializeEx.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Comments"

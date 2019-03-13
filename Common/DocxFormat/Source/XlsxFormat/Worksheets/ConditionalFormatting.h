@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_CONDITIONALFORMATTING_FILE_INCLUDE_H_
-#define OOX_CONDITIONALFORMATTING_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 #include "../Styles/dxf.h"
@@ -416,5 +414,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_CONDITIONALFORMATTING_FILE_INCLUDE_H_

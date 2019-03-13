@@ -31,6 +31,7 @@
  */
 
 #include "../Source/XlsxFormat/Chart/ChartSerialize.cpp"
+#include "../Source/XlsxFormat/Chart/ChartSerializeEx.cpp"
 #include "../Source/XlsxFormat/Common.cpp"
 #include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
 #include "../Source/XlsxFormat/Xlsx.cpp"

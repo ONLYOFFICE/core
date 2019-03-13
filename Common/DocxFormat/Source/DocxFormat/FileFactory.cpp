@@ -140,6 +140,12 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartColorStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_bin)
@@ -240,6 +246,12 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartEx )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartColorStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new ActiveX_xml( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_bin)

@@ -150,12 +150,18 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 			odf_reader::GetProperty(content_.properties_,L"maximum", doubleVal);
 			if (doubleVal)
 			{
-				CP_XML_ATTR(L"c:max", *doubleVal);
+				CP_XML_NODE(L"c:max")
+				{
+					CP_XML_ATTR(L"val", *doubleVal);
+				}
 			}
 			odf_reader::GetProperty(content_.properties_,L"minimum", doubleVal);
 			if (doubleVal)
 			{
-				CP_XML_ATTR(L"c:min", *doubleVal);
+				CP_XML_NODE(L"c:min")
+				{
+					CP_XML_ATTR(L"val", *doubleVal);
+				}
 			}
 			odf_reader::GetProperty(content_.properties_,L"logarithmic", boolVal);
 			if ((boolVal == true) && (boolVal.get()==true))

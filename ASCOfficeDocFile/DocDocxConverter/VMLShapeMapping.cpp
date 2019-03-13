@@ -1431,8 +1431,7 @@ namespace DocFileFormat
 		{
 			//append size and position ...
 
-			//if (pSpa->fAnchorLock )
-			if (pSpa->bx == TEXT && pSpa->by == TEXT)
+			if (m_isInlineShape)
 			{
 			//	appendStyleProperty( style, L"position", L"static" );
 			}
@@ -1689,21 +1688,17 @@ namespace DocFileFormat
 				m_pSpa->bx = PAGE;
 			}
 			else
-			{
-				nRelH = m_pSpa->bx;
-				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(m_pSpa->bx));
+			{//rel column
 			}
 		}
 		if (nRelV < 0 && m_pSpa)
 		{
-			if (m_pSpa->by == TEXT && bZIndex)
+			if (m_pSpa->by == TEXT && bZIndex) 
 			{
 				m_pSpa->by = PAGE;
 			}
 			else
-			{
-				nRelV = m_pSpa->by;
-				appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative(m_pSpa->by));
+			{//rel paragraph
 			}
 		}
 		if (!m_isInlineShape && !bZIndex)

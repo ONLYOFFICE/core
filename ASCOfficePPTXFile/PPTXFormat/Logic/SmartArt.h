@@ -123,10 +123,8 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(ChartRec)
 			
-			ChartRec()	
+			ChartRec() : m_bChartEx(false), m_bData(false), m_lChartNumber(0)
 			{
-				m_bData = false;
-				m_lChartNumber = 0;
 			}
 
 			ChartRec(const ChartRec& oSrc) 
@@ -148,7 +146,11 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				std::wstring ns = XmlUtils::GetNamespace(oReader.GetName());
+
 				m_bData = false;
+				m_bChartEx = false;
+				
 				ReadAttributes( oReader );
 				FillParentPointersForChilds();
 				
@@ -156,10 +158,18 @@ namespace PPTX
 				{
 					m_bData = true;
 				}
+
+				if (ns == L"cx")
+				{
+					m_bChartEx = true;
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_bData = false;
+				m_bChartEx = false;
+
+				std::wstring ns = XmlUtils::GetNamespace(node.GetName());
 
 				XmlMacroReadAttributeBase(node, L"r:id", id_data);
 				FillParentPointersForChilds();
@@ -167,6 +177,10 @@ namespace PPTX
 				if (id_data.IsInit())
 				{
 					m_bData = true;
+				}
+				if (ns == L"cx")
+				{
+					m_bChartEx = true;
 				}
 			}
 			virtual std::wstring toXML() const;
@@ -179,6 +193,7 @@ namespace PPTX
 
 			LONG				m_lChartNumber;
 			bool				m_bData;
+			bool				m_bChartEx;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{				

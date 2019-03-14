@@ -1705,6 +1705,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\DataValidation.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\DataValidation.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Worksheets\Hyperlinks.h"
 					>
 				</File>

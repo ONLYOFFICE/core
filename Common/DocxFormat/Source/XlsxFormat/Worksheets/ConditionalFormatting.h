@@ -305,7 +305,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormattingRule)
-				CConditionalFormattingRule() : bUsage (false)
+			
+			CConditionalFormattingRule() : bUsage (false)
 			{
 			}
 			virtual ~CConditionalFormattingRule()

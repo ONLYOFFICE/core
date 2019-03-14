@@ -64,3 +64,5 @@ X2tConverter/Common/DocxFormat/DocxFormatLib/Makefile
 *.tar.gz
 **/*.build/
 
+*.dat
+*.txt

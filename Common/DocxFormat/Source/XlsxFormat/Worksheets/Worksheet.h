@@ -39,6 +39,7 @@
 #include "MergeCells.h"
 #include "WorksheetChildOther.h"
 #include "ConditionalFormatting.h"
+#include "DataValidation.h"
 
 #include "../Drawing/Drawing.h"
 #include "../Chart/Chart.h"

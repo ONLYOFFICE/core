@@ -508,7 +508,14 @@ namespace PPTX
 			}
 			else if (chartRec.is_init())
 			{
-				pWriter->WriteRecord2(3, chartRec);
+				if (chartRec->m_bChartEx)
+				{
+					pWriter->WriteRecord2(4, chartRec);
+				}
+				else
+				{
+					pWriter->WriteRecord2(3, chartRec);
+				}
 			}
 			else if (element.is_init())
 			{
@@ -575,6 +582,12 @@ namespace PPTX
 						chartRec = new Logic::ChartRec();
 						chartRec->fromPPTY(pReader);
 					}					
+					case 4:
+					{
+						chartRec = new Logic::ChartRec();
+						chartRec->m_bChartEx = true;
+						chartRec->fromPPTY(pReader);
+					}		
 					default:
 						break;
 				}

@@ -1182,6 +1182,7 @@ namespace OOX
 		et_x_SheetProtection,
 		et_x_DataValidations,
 		et_x_DataValidation,
+		et_x_DataValidationFormula,
 		et_x_DataConsolidate,
 		et_x_DataRefs,
 		et_x_DataRef,

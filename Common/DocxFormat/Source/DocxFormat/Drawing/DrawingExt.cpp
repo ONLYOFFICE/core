@@ -34,6 +34,7 @@
 #include "../../XlsxFormat/Table/Table.h"
 #include "../Diagram/DiagramData.h"
 #include "../../XlsxFormat/Worksheets/ConditionalFormatting.h"
+#include "../../XlsxFormat/Worksheets/DataValidation.h"
 
 namespace OOX
 {
@@ -49,9 +50,9 @@ namespace OOX
 			m_oAltTextTable.reset();
 			m_oDataModelExt.reset();
 			m_oCompatExt.reset();
+			m_oDataValidations.reset();
 
-			// delete Conditional Formatting
-			for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
 				delete m_arrConditionalFormatting[nIndex];
 			}
@@ -98,6 +99,10 @@ namespace OOX
 						{						
 							m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(oReader));
 						}
+					}
+					else if (sName == L"dataValidations")
+					{
+						m_oDataValidations = oReader;
 					}
 					else if (sName == L"id")
 					{

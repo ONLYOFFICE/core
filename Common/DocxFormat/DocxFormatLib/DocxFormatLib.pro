@@ -59,6 +59,7 @@ SOURCES += \
     ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
     ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp \
+    ../Source/XlsxFormat/Worksheets/DataValidation.cpp \
     ../Source/DocxFormat/App.cpp \
     ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
@@ -218,6 +219,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Workbook/WorkbookPr.h \
     ../Source/XlsxFormat/Worksheets/Cols.h \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.h \
+    ../Source/XlsxFormat/Worksheets/DataValidation.h \
     ../Source/XlsxFormat/Worksheets/Hyperlinks.h \
     ../Source/XlsxFormat/Worksheets/MergeCells.h \
     ../Source/XlsxFormat/Worksheets/SheetData.h \

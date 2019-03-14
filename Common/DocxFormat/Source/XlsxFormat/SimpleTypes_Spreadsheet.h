@@ -236,7 +236,6 @@ namespace SimpleTypes
 			SimpleType_FromString     (EVisibleType)
 			SimpleType_Operator_Equal (CVisibleType)
 		};
-		
 		enum EHtmlFormat
 		{
 			htmlNone =  0,
@@ -3678,6 +3677,200 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (ETickMarksType)
 			SimpleType_Operator_Equal (CTickMarksType)
+		};		
+		enum EDataValidationType 
+		{
+			validationTypeNone		=  0,
+			validationTypeCustom	=  1,
+			validationTypeDate		=  2,
+			validationTypeDecimal	=  3,
+			validationTypeList		=  4,
+			validationTypeTextLength=  5,
+			validationTypeTime		=  6,
+			validationTypeWhole		=  7
+		};
+		template<EDataValidationType eDefValue = validationTypeNone>
+		class CDataValidationType : public CSimpleType<EDataValidationType, eDefValue>
+		{
+		public:
+			CDataValidationType() {}
+
+			virtual EDataValidationType FromString(std::wstring &sValue)
+			{
+				if      ( _T("custom")		== sValue )	this->m_eValue = validationTypeCustom;
+				else if ( _T("date")		== sValue ) this->m_eValue = validationTypeDate;
+				else if ( _T("decimal")		== sValue ) this->m_eValue = validationTypeDecimal;
+				else if ( _T("list")		== sValue ) this->m_eValue = validationTypeList;
+				else if ( _T("none")		== sValue ) this->m_eValue = validationTypeNone;
+				else if ( _T("textLength")	== sValue ) this->m_eValue = validationTypeTextLength;
+				else if ( _T("time")		== sValue ) this->m_eValue = validationTypeTime;
+				else if ( _T("whole")		== sValue ) this->m_eValue = validationTypeWhole;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case validationTypeCustom	:	return _T("custom");
+					case validationTypeDate	:		return _T("date");
+					case validationTypeDecimal :	return _T("decimal");
+					case validationTypeList :		return _T("list");
+					case validationTypeNone :		return _T("none");
+					case validationTypeTextLength :	return _T("textLength");
+					case validationTypeTime:		return _T("time");
+					case validationTypeWhole:		return _T("whole");
+					default :						return _T("none");
+				}
+			}
+
+			SimpleType_FromString     (EDataValidationType)
+			SimpleType_Operator_Equal (CDataValidationType)
+		};
+		enum EDataValidationErrorStyle 
+		{
+			errorStyleStop			=  0,
+			errorStyleWarning		=  1,
+			errorStyleInformation	=  2
+		};
+		template<EDataValidationErrorStyle eDefValue = errorStyleStop>
+		class CDataValidationErrorStyle : public CSimpleType<EDataValidationErrorStyle, eDefValue>
+		{
+		public:
+			CDataValidationErrorStyle() {}
+
+			virtual EDataValidationErrorStyle FromString(std::wstring &sValue)
+			{
+				if      ( _T("stop")		== sValue )	this->m_eValue = errorStyleStop;
+				else if ( _T("warning")		== sValue ) this->m_eValue = errorStyleWarning;
+				else if ( _T("information")	== sValue ) this->m_eValue = errorStyleInformation;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case errorStyleInformation	:	return _T("information");
+					case errorStyleWarning :		return _T("warning");
+					case errorStyleStop:	
+					default :						return _T("stop");
+				}
+			}
+
+			SimpleType_FromString     (EDataValidationErrorStyle)
+			SimpleType_Operator_Equal (CDataValidationErrorStyle)
+		};
+		enum EDataValidationOperator 
+		{
+			operatorBetween				=  0,
+			operatorNotBetween			=  1,
+			operatorEqual				=  2,
+			operatorNotEqual			=  3,
+			operatorLessThan			=  4,
+			operatorLessThanOrEqual		=  5,
+			operatorGreaterThan			=  6,
+			operatorGreaterThanOrEqual	=  7
+		};
+		template<EDataValidationOperator eDefValue = operatorBetween>
+		class CDataValidationOperator : public CSimpleType<EDataValidationOperator, eDefValue>
+		{
+		public:
+			CDataValidationOperator() {}
+
+			virtual EDataValidationOperator FromString(std::wstring &sValue)
+			{
+				if      ( _T("between")			== sValue )	this->m_eValue = operatorBetween;
+				else if ( _T("notBetween")		== sValue ) this->m_eValue = operatorNotBetween;
+				else if ( _T("equal")			== sValue ) this->m_eValue = operatorEqual;
+				else if ( _T("notEqual")		== sValue ) this->m_eValue = operatorNotEqual;
+				else if ( _T("lessThan")		== sValue ) this->m_eValue = operatorLessThan;
+				else if ( _T("lessThanOrEqual")	== sValue ) this->m_eValue = operatorLessThanOrEqual;
+				else if ( _T("greaterThan")		== sValue ) this->m_eValue = operatorGreaterThan;
+				else if ( _T("greaterThanOrEqual")== sValue ) this->m_eValue = operatorGreaterThanOrEqual;
+				else										this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case operatorBetween	:		return _T("between");
+					case operatorNotBetween	:		return _T("notBetween");
+					case operatorEqual :			return _T("equal");
+					case operatorNotEqual :			return _T("notEqual");
+					case operatorLessThan :			return _T("lessThan");
+					case operatorLessThanOrEqual :	return _T("lessThanOrEqual");
+					case operatorGreaterThan:		return _T("greaterThan");
+					case operatorGreaterThanOrEqual:return _T("greaterThanOrEqual");
+					default :						return _T("between");
+				}
+			}
+
+			SimpleType_FromString     (EDataValidationOperator)
+			SimpleType_Operator_Equal (CDataValidationOperator)
+		};
+		enum EDataValidationImeMode 
+		{
+			imeModeNoControl		=  0,
+			imeModeOff				=  1,
+			imeModeOn				=  2,
+			imeModeDisabled		=  3,
+			imeModeHiragana		=  4,
+			imeModeFullKatakana	=  5,
+			imeModeHalfKatakana	=  6,
+			imeModeFullAlpha		=  7,
+			imeModeHalfAlpha		=  8,
+			imeModeFullHangul		=  9,
+			imeModeHalfHangul		=  10
+		};
+		template<EDataValidationImeMode eDefValue = imeModeNoControl>
+		class CDataValidationImeMode : public CSimpleType<EDataValidationImeMode, eDefValue>
+		{
+		public:
+			CDataValidationImeMode() {}
+
+			virtual EDataValidationImeMode FromString(std::wstring &sValue)
+			{
+				if      ( _T("noControl")	== sValue )	this->m_eValue = imeModeNoControl;
+				else if ( _T("off")			== sValue ) this->m_eValue = imeModeOff;
+				else if ( _T("on")			== sValue ) this->m_eValue = imeModeOn;
+				else if ( _T("disabled")	== sValue ) this->m_eValue = imeModeDisabled;
+				else if ( _T("hiragana")	== sValue ) this->m_eValue = imeModeHiragana;
+				else if ( _T("fullKatakana")== sValue ) this->m_eValue = imeModeFullKatakana;
+				else if ( _T("halfKatakana")== sValue ) this->m_eValue = imeModeHalfKatakana;
+				else if ( _T("fullAlpha")	== sValue ) this->m_eValue = imeModeFullAlpha;
+				else if ( _T("halfAlpha")	== sValue ) this->m_eValue = imeModeHalfAlpha;
+				else if ( _T("fullHangul")	== sValue ) this->m_eValue = imeModeFullHangul;
+				else if ( _T("halfHangul")	== sValue ) this->m_eValue = imeModeHalfHangul;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case imeModeNoControl	:	return _T("noControl");
+					case imeModeOff	:			return _T("off");
+					case imeModeOn :			return _T("on");
+					case imeModeDisabled :		return _T("disabled");
+					case imeModeHiragana :		return _T("hiragana");
+					case imeModeFullKatakana :	return _T("fullKatakana");
+					case imeModeHalfKatakana:	return _T("halfKatakana");
+					case imeModeFullAlpha:		return _T("fullAlpha");
+					case imeModeHalfAlpha:		return _T("halfAlpha");
+					case imeModeFullHangul:		return _T("fullHangul");
+					case imeModeHalfHangul:		return _T("halfHangul");
+					default :					return _T("noControl");
+				}
+			}
+
+			SimpleType_FromString     (EDataValidationImeMode)
+			SimpleType_Operator_Equal (CDataValidationImeMode)
 		};
 	};// Spreadsheet
 } // SimpleTypes

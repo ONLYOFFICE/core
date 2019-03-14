@@ -175,9 +175,9 @@ namespace PPTX
 				else if (pRels != NULL)					file = pRels->Find(*id_data);
 			}
 			smart_ptr<OOX::Spreadsheet::CChartSpace> pChart = file.smart_dynamic_cast<OOX::Spreadsheet::CChartSpace>();
+			smart_ptr<OOX::Spreadsheet::CChartSpaceEx> pChartEx = file.smart_dynamic_cast<OOX::Spreadsheet::CChartSpaceEx>();
 
-            if (pChart.IsInit() == false)
-				return;
+			if (false == pChart.IsInit() && false == pChartEx.IsInit()) return;
 
 			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 			
@@ -190,7 +190,14 @@ namespace PPTX
 			oDrawingConverter.SetRels(pChart.smart_dynamic_cast<OOX::IFileContainer>());
 		
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(*pWriter, &oDrawingConverter);	
-			oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
+			if (pChart.IsInit())
+			{
+				oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
+			}
+			else if (pChartEx.IsInit())
+			{
+				//oBinaryChartWriter.WriteCT_ChartSpace(*pChartEx);
+			}
 
 			oDrawingConverter.SetRels(oldRels);
 			

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_DRAWING_EXT_INCLUDE_H_
-#define OOX_LOGIC_DRAWING_EXT_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
@@ -43,6 +41,7 @@ namespace OOX
 		class CSparklineGroups;
 		class CAltTextTable;
 		class CConditionalFormatting;
+		class CDataValidations;
 	}
 	namespace Drawing
 	{
@@ -178,6 +177,7 @@ namespace OOX
 			nullable<CDataModelExt>							m_oDataModelExt;
 			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
             nullable<std::wstring>							m_oId;
+			nullable<OOX::Spreadsheet::CDataValidations>	m_oDataValidations;
 			
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 		};
@@ -250,4 +250,3 @@ namespace OOX
 	} // namespace Drawing
 } // namespace OOX
 
-#endif // OOX_LOGIC_DRAWING_EXT_INCLUDE_H_

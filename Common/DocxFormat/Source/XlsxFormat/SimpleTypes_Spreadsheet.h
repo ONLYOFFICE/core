@@ -3159,15 +3159,15 @@ namespace SimpleTypes
 			{
 				if(_T("auto") == sValue)
 				{
-                    m_eValue = typeAuto;
+                    this->m_eValue = typeAuto;
 					m_dValue = 0;
 				}
 				else
 				{
-                    m_eValue = typeDouble;
+                    this->m_eValue = typeDouble;
 					m_dValue = XmlUtils::GetDouble(sValue);
 				}
-				return m_eValue;
+                return this->m_eValue;
 			}
 			double GetDoubleValue() const
 			{
@@ -3360,9 +3360,9 @@ namespace SimpleTypes
 
             virtual EFormulaDirection FromString(std::wstring &sValue)
 			{
-				if(_T("row") == sValue) m_eValue = directionRow;
-				else                    m_eValue = directionCol;
-				return m_eValue;
+                if(_T("row") == sValue) this->m_eValue = directionRow;
+                else                    this->m_eValue = directionCol;
+                return this->m_eValue;
 			}
 			virtual std::wstring ToString  () const 
 			{

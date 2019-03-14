@@ -46,13 +46,13 @@ void oox_chart::set_cache_only (bool val)
 
 }
 
-void oox_chart::set_formula_series(int ind, std::wstring val, std::wstring formatCode, bool link_to_source)
+void oox_chart::set_formula_series(int ind, const std::wstring& val, const std::wstring& formatCode, bool link_to_source)
 {
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setFormula(ind, val, formatCode, link_to_source);
 
 }
-void oox_chart::set_name(std::wstring val)
+void oox_chart::set_name(const std::wstring& val)
 {
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setName(val);
@@ -67,6 +67,13 @@ void oox_chart::set_values_series(int ind, std::vector<std::wstring> & val)
 
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setValues (ind, val);
+}
+void oox_chart::set_label_series(const std::wstring& formula, std::vector<std::wstring> & cash)
+{
+	if (formula.empty() && cash.empty()) return;
+
+	oox_series_ptr & current_ptr = series_.back();
+	current_ptr->setLabels (formula, cash);
 }
 void oox_chart::set_properties(std::vector<odf_reader::_property> g)
 {

@@ -437,17 +437,19 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 	if (oFile.IsInit())
 	{
 		OOX::Spreadsheet::CChartSpace* pChart = dynamic_cast<OOX::Spreadsheet::CChartSpace*>(oFile.operator->());
+		OOX::Spreadsheet::CChartSpaceEx* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartSpaceEx*>(oFile.operator->());
 		
-		if (pChart)
+		if (pChart || pChartEx)
 		{
-			oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(pChart);	
+			oox_current_child_document = pChart ? dynamic_cast<OOX::IFileContainer*>(pChart) : dynamic_cast<OOX::IFileContainer*>(pChartEx);	
 			
 			OOX::CChartDrawing* pChartDrawing = NULL;
-			if ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id))
+			if ( (pChart) && ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id)) )
 			{
 				oFile = find_file_by_id (*pChart->m_oChartSpace.m_userShapes->m_id);
 				pChartDrawing = dynamic_cast<OOX::CChartDrawing*>(oFile.operator->());
 			}
+			
 			if ((pChartDrawing) && (false == pChartDrawing->m_arrItems.empty()))
 			{
 				odf_context()->drawing_context()->start_group();
@@ -465,9 +467,16 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 				odf_context()->start_chart();
 					odf_context()->chart_context()->set_chart_size(width, height);		
 		
-					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());			
-			
-					OoxConverter::convert(&pChart->m_oChartSpace);
+					if (pChart)
+					{
+						OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(&pChart->m_oChartSpace);
+					}
+					else if (pChartEx)
+					{
+						OoxConverter::convert(pChartEx->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(&pChartEx->m_oChartSpace);
+					}
 				odf_context()->end_chart();
 			}
 			odf_context()->drawing_context()->end_object();	

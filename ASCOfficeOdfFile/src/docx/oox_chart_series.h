@@ -56,17 +56,20 @@ public:
 	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
 	bool						labelPosEnabled_;
-	_oox_chart_values			values_[5]; //cat(labels), common, x, y, bubble, 
+	_oox_chart_values			values_[5]; //cat, common, x, y, bubble, 
+
+	_oox_strRef					label_; //tx (Series Text) §21.2.2.215
 	int							id_;
-	std::wstring				name_;	//tx (Series Text) §21.2.2.215
+	std::wstring				name_;	
 	int							iSymbolMarkerType_;
 	bool						bLocalTable_;
 	_CP_OPT(oox_data_labels)	data_labels_;
 	
-	void setName(std::wstring &value);
+	void setName(const std::wstring &value);
 	
-	void setFormula	(int ind, std::wstring & value, std::wstring & formatCode, bool link_to_source);
+	void setFormula	(int ind, const std::wstring & value, const std::wstring & formatCode, bool link_to_source);
 	void setValues	(int ind, std::vector<std::wstring> & values);
+	void setLabels	(const std::wstring &formula, std::vector<std::wstring> & values);
 	void parse_properties();
 	
 	void set_cache_only (bool val);

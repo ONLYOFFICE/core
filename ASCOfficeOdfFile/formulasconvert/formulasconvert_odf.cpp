@@ -214,6 +214,13 @@ namespace formulasconvert {
 	    
 		boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L".:"), boost::algorithm::token_compress_on);
 	    
+		if (splitted.size() == 2)
+		{
+			table		= splitted[0];	
+			ref_first	= splitted[1];
+			ref_last	= splitted[1];
+			return true;
+		}
 		if (splitted.size() == 3)
 		{
 			table		= splitted[0];	

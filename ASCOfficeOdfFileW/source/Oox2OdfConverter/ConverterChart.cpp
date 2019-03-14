@@ -282,7 +282,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 		odf_context()->chart_context()->end_element();
 	}
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 {
 	if (axis == NULL)return;
@@ -448,7 +447,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 		convert(axis->m_minorGridlines, 2);
 	odf_context()->chart_context()->end_element();
 }
-////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CT_ChartLines *line, int type)
 {
 	if (line == NULL)return;
@@ -1212,7 +1210,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val)
 	}
 	
 }
-///////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, bool chart3D)
 {
 	if (ct_surface == NULL && chart3D == false)return;
@@ -1293,4 +1290,59 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data, bool categori
 
 	odf_context()->chart_context()->set_cash(format, data, categories, label);
 }
+
+//---------------------------------------------------------------------------------------------------------------
+////chart ex ///////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------------
+void OoxConverter::convert(OOX::Spreadsheet::ChartEx::CPlotArea* oox_plotArea)
+{
+	if (oox_plotArea == NULL)return;
+
+	//convert(oox_plotArea->m_layout);
+///////////////////////
+
+	for (size_t i = 0; i < oox_plotArea->m_plotAreaRegion.m_arSeries.size(); i++)
+	{
+		convert(oox_plotArea->m_plotAreaRegion.m_arSeries[i]);
+	}
+	for (size_t i = 0; i < oox_plotArea->m_arAxis.size(); i++)
+	{
+		convert(oox_plotArea->m_arAxis[i]);
+	}
+
+	odf_context()->chart_context()->start_wall();
+	{
+		convert(oox_plotArea->m_oSpPr.GetPointer());
+	}	
+	odf_context()->chart_context()->end_element();
+}
+void OoxConverter::convert(OOX::Spreadsheet::ChartEx::CChartData *oox_chart_data)
+{
+	if (!oox_chart_data) return;
+
+	for (size_t i = 0; i < oox_chart_data->m_arData.size(); i++)
+	{
+	}
+
+}
+void OoxConverter::convert(OOX::Spreadsheet::ChartEx::CChartSpace *oox_chart)
+{
+	if (!oox_chart)return;
+
+	convert(oox_chart->m_oSpPr.GetPointer());	
+	convert_chart_text(oox_chart->m_oTxPr.GetPointer());
+
+	//convert(oox_chart->m_chart.m_title);
+	//convert(oox_chart->m_chart.m_legend);
+
+	convert(&oox_chart->m_chartData);
+
+	odf_context()->chart_context()->start_plot_area();
+	{
+		convert(&oox_chart->m_chart.m_plotArea); 
+	}
+	odf_context()->chart_context()->end_plot_area();
+}
+
+
 }

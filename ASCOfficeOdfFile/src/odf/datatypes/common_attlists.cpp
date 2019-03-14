@@ -265,7 +265,13 @@ void common_break_attlist::serialize(CP_ATTR_NODE)
 
 void common_page_number_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:page-number", style_page_number_);
+	_CP_OPT(std::wstring) str;
+    CP_APPLY_ATTR(L"style:page-number", str);
+
+	if ((str) && (*str != L"auto"))
+	{
+		style_page_number_ = XmlUtils::GetInteger(*str);
+	}
 }
 void common_page_number_attlist::apply_from(const common_page_number_attlist & Other)
 {

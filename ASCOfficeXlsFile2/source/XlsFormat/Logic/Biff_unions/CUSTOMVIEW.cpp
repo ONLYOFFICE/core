@@ -31,24 +31,24 @@
  */
 
 #include "CUSTOMVIEW.h"
-#include <Logic/Biff_records/UserSViewBegin.h>
-#include <Logic/Biff_records/Selection.h>
-#include <Logic/Biff_records/HorizontalPageBreaks.h>
-#include <Logic/Biff_records/VerticalPageBreaks.h>
-#include <Logic/Biff_records/Header.h>
-#include <Logic/Biff_records/Footer.h>
-#include <Logic/Biff_records/HCenter.h>
-#include <Logic/Biff_records/VCenter.h>
-#include <Logic/Biff_records/LeftMargin.h>
-#include <Logic/Biff_records/RightMargin.h>
-#include <Logic/Biff_records/TopMargin.h>
-#include <Logic/Biff_records/BottomMargin.h>
-#include <Logic/Biff_records/Pls.h>
-#include <Logic/Biff_records/Setup.h>
-#include <Logic/Biff_records/PrintSize.h>
-#include <Logic/Biff_records/HeaderFooter.h>
-#include <Logic/Biff_records/UserSViewEnd.h>
-#include <Logic/Biff_unions/AUTOFILTER.h>
+#include "AUTOFILTER.h"
+#include "../Biff_records/UserSViewBegin.h"
+#include "../Biff_records/Selection.h"
+#include "../Biff_records/HorizontalPageBreaks.h"
+#include "../Biff_records/VerticalPageBreaks.h"
+#include "../Biff_records/Header.h"
+#include "../Biff_records/Footer.h"
+#include "../Biff_records/HCenter.h"
+#include "../Biff_records/VCenter.h"
+#include "../Biff_records/LeftMargin.h"
+#include "../Biff_records/RightMargin.h"
+#include "../Biff_records/TopMargin.h"
+#include "../Biff_records/BottomMargin.h"
+#include "../Biff_records/Pls.h"
+#include "../Biff_records/Setup.h"
+#include "../Biff_records/PrintSize.h"
+#include "../Biff_records/HeaderFooter.h"
+#include "../Biff_records/UserSViewEnd.h"
 
 namespace XLS
 {
@@ -105,7 +105,7 @@ const bool CUSTOMVIEW::loadContent(BinProcessor& proc)
 	proc.optional<TopMargin>();
 	proc.optional<BottomMargin>();
 
-    if (proc.optional<Pls>())
+	if (proc.optional<Pls>())
 	{
 		m_pls = elements_.back();
 		elements_.pop_back();

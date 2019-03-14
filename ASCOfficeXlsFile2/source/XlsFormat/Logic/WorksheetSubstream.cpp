@@ -187,6 +187,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_TopMargin:
 			case rt_LeftMargin:
 			case rt_RightMargin:
+			case rt_Setup:
 			{
 				if (proc.mandatory<PAGESETUP>())
 				{

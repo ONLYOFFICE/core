@@ -860,7 +860,12 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 	if (pPairTheme == m_mapMasterToTheme.end())
 	{
 		//????? слайду не присвоена тема !!!
-		pPairTheme = m_mapMasterToTheme.begin();
+		if (false == m_mapMasterToTheme.empty())
+			pPairTheme = m_mapMasterToTheme.begin();
+		else
+		{			
+			throw 1;	// file format error
+		}
 	}
 //-----------------	
 	pSlide->m_lThemeID			= pPairTheme->second;
@@ -1766,8 +1771,10 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
 
 	//настройки текстовых стилей -----------------------------------------------
 	
-	for (size_t i = 0; i < 9; ++i)
+	for (size_t i = 0; i < 9 && false == m_arMasterWrapper.empty(); ++i)
+	{
 		pMasterWrapper->m_pStyles[i] = m_arMasterWrapper[0].m_pStyles[i]; //main master
+	}
 	
 	CLayout* pLayout = NULL; // ну нету тут разметок ...!!
 	

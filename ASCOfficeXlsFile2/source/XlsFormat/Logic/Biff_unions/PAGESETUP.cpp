@@ -32,18 +32,20 @@
 
 #include "PAGESETUP.h"
 
-#include <Logic/Biff_records/Header.h>
-#include <Logic/Biff_records/Footer.h>
-#include <Logic/Biff_records/HCenter.h>
-#include <Logic/Biff_records/VCenter.h>
-#include <Logic/Biff_records/LeftMargin.h>
-#include <Logic/Biff_records/RightMargin.h>
-#include <Logic/Biff_records/TopMargin.h>
-#include <Logic/Biff_records/BottomMargin.h>
-#include <Logic/Biff_records/Pls.h>
-#include <Logic/Biff_records/Continue.h>
-#include <Logic/Biff_records/Setup.h>
-#include <Logic/Biff_records/HeaderFooter.h> 
+#include "../Biff_records/Header.h"
+#include "../Biff_records/Footer.h"
+#include "../Biff_records/HCenter.h"
+#include "../Biff_records/VCenter.h"
+#include "../Biff_records/LeftMargin.h"
+#include "../Biff_records/RightMargin.h"
+#include "../Biff_records/TopMargin.h"
+#include "../Biff_records/BottomMargin.h"
+#include "../Biff_records/Pls.h"
+#include "../Biff_records/Continue.h"
+#include "../Biff_records/Setup.h"
+#include "../Biff_records/HeaderFooter.h" 
+#include "../Biff_records/HorizontalPageBreaks.h"
+#include "../Biff_records/VerticalPageBreaks.h"
 
 namespace XLS
 {
@@ -135,10 +137,13 @@ const bool PAGESETUP::loadContent(BinProcessor& proc)
 						elements_.pop_back();
 					}
 				}break;			
-			case rt_BottomMargin:	proc.optional<BottomMargin>();			break;
+			case rt_BottomMargin:	proc.optional<BottomMargin>();		break;
 			case rt_TopMargin:		proc.optional<TopMargin>();			break;
 			case rt_LeftMargin:		proc.optional<LeftMargin>();		break;
 			case rt_RightMargin:	proc.optional<RightMargin>();		break;
+			
+			case rt_HorizontalPageBreaks: proc.optional<HorizontalPageBreaks>();	break;
+			case rt_VerticalPageBreaks: proc.optional<VerticalPageBreaks>();	break;
 			case rt_Pls:
 				{
 					if (proc.optional<Pls>())
@@ -238,32 +243,35 @@ int PAGESETUP::serialize(std::wostream & stream)
 			if (!r)			CP_XML_ATTR(L"right"	, 0.75);
 		}
 
-		if (setup->iFitHeight > 0 && setup->iFitWidth == 1 && setup->iScale == 100)
+		if (setup)
 		{
-			setup->iScale = 90;
-		}
-
-		if (false == setup->fNoPls)
-		{	
-			CP_XML_NODE(L"pageSetup")// - для chartsheet аккуратнее
+			if (setup->iFitHeight > 0 && setup->iFitWidth == 1 && setup->iScale == 100)
 			{
-				CP_XML_ATTR(L"paperSize", setup->iPaperSize);
-				CP_XML_ATTR(L"firstPageNumber", setup->iPageStart);
-				
-				CP_XML_ATTR(L"scale", setup->iScale);
+				setup->iScale = 90;
+			}
 
-				CP_XML_ATTR(L"orientation", setup->fPortrait ? L"portrait" : L"landscape");
-				CP_XML_ATTR(L"horizontalDpi", setup->iRes);
-				CP_XML_ATTR(L"verticalDpi", setup->iVRes);
+			if (false == setup->fNoPls)
+			{	
+				CP_XML_NODE(L"pageSetup")// - для chartsheet аккуратнее
+				{
+					CP_XML_ATTR(L"paperSize", setup->iPaperSize);
+					CP_XML_ATTR(L"firstPageNumber", setup->iPageStart);
+					
+					CP_XML_ATTR(L"scale", setup->iScale);
 
-				if (setup->fUsePage)
-					CP_XML_ATTR(L"useFirstPageNumber", true);
-				
-				if (setup->iFitWidth > 0 && setup->iFitWidth < 32767)
-					CP_XML_ATTR(L"fitToWidth", setup->iFitWidth);
+					CP_XML_ATTR(L"orientation", setup->fPortrait ? L"portrait" : L"landscape");
+					CP_XML_ATTR(L"horizontalDpi", setup->iRes);
+					CP_XML_ATTR(L"verticalDpi", setup->iVRes);
 
-				if (setup->iFitHeight > 0 && setup->iFitHeight < 32767)
-					CP_XML_ATTR(L"fitToHeight", setup->iFitHeight);
+					if (setup->fUsePage)
+						CP_XML_ATTR(L"useFirstPageNumber", true);
+					
+					if (setup->iFitWidth > 0 && setup->iFitWidth < 32767)
+						CP_XML_ATTR(L"fitToWidth", setup->iFitWidth);
+
+					if (setup->iFitHeight > 0 && setup->iFitHeight < 32767)
+						CP_XML_ATTR(L"fitToHeight", setup->iFitHeight);
+				}
 			}
 		}
 

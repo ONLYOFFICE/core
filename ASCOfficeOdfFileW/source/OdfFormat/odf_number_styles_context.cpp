@@ -533,12 +533,13 @@ void odf_number_styles_context::create_percentage_style(number_format_state & st
     create_numbers(state, elm, empty);
 	root_elm->add_child_element(elm); 
 
-	create_element(L"number", L"text", elm, odf_context_);
-	number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
+	office_element_ptr elm_text;
+	create_element(L"number", L"text", elm_text, odf_context_);
+	number_text* number_text_ = dynamic_cast<number_text*>(elm_text.get());
 	if (number_text_)number_text_->add_text(L"%"); 	
 
-	root_elm->add_child_element(elm);
-	styles_elments.push_back(elm);
+	root_elm->add_child_element(elm_text);
+	styles_elments.push_back(elm_text);
 }
 
 void odf_number_styles_context::create_currency_style(number_format_state & state, office_element_ptr & root_elm)
@@ -568,7 +569,7 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 				}
 			}
 
-			if (number_country.length()>0)
+			if (false == number_country.empty())
 			{
 				number_currency_symbol_->number_country_ = number_country;
 			}			

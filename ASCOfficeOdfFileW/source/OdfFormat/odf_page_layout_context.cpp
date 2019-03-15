@@ -92,22 +92,27 @@ void odf_page_layout_context::create_layer_sets()
 	create_element(L"draw", L"layer", elm, odf_context_); 		sets_elm->add_child_element(elm);
 	layer = dynamic_cast<draw_layer*>(elm.get());
 	if (layer) layer->draw_name_ = L"layout";
+	elm = office_element_ptr();
 
 	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
 	layer = dynamic_cast<draw_layer*>(elm.get());
 	if (layer) layer->draw_name_ = L"background";
+	elm = office_element_ptr();
 	
 	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
 	layer = dynamic_cast<draw_layer*>(elm.get());
 	if (layer) layer->draw_name_ = L"backgroundobjects";
+	elm = office_element_ptr();
 	
 	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
 	layer = dynamic_cast<draw_layer*>(elm.get());
 	if (layer) layer->draw_name_ = L"controls";
+	elm = office_element_ptr();
 
 	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
 	layer = dynamic_cast<draw_layer*>(elm.get());
 	if (layer) layer->draw_name_ = L"measurelines";
+	elm = office_element_ptr();
 
 	master_state_list_.push_back( odf_master_state(sets_elm) ); 
 }

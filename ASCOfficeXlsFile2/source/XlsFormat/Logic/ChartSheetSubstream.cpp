@@ -70,6 +70,7 @@
 #include "Biff_records/Chart.h"
 #include "Biff_records/ExternSheet.h"
 #include "Biff_records/FrtFontList.h"
+#include "Biff_records/ChartFrtInfo.h"
 
 #include "Biff_unions/FONTLIST.h"
 #include "Biff_unions/PAGESETUP.h"
@@ -385,7 +386,11 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-
+			case rt_ChartFrtInfo: 
+			{
+				//skipped record 
+				count = proc.repeated<ChartFrtInfo>(0, 0);
+			}break;
 			default://unknown .... skip					
 			{
 				proc.SkipRecord();	

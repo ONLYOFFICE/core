@@ -35,15 +35,13 @@
 namespace XLS
 {
 
-ContinueFrt::ContinueFrt()
+ContinueFrt::ContinueFrt() : nData(0)
 {
 }
-
 
 ContinueFrt::~ContinueFrt()
 {
 }
-
 
 BaseObjectPtr ContinueFrt::clone()
 {
@@ -52,10 +50,15 @@ BaseObjectPtr ContinueFrt::clone()
 
 void ContinueFrt::readFields(CFRecord& record)
 {
-#pragma message("####################### ContinueFrt record is not implemented")
-	Log::error("ContinueFrt record is not implemented.");
-	
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> frtHeaderOld;
+
+	nData = record.getDataSize() - 4;
+
+	pData = boost::shared_array<char>(new char[nData]);
+
+	memcpy(pData.get(), record.getCurData<char>(), nData);
+
+	record.skipNunBytes(nData);
 }
 
 } // namespace XLS

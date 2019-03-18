@@ -93,6 +93,10 @@ public:
 	BiffStructurePtr		idDeleted;
 	BiffStructurePtr		idChanged;
 	BiffStructurePtr		cellInvalid;
+//-------
+	_UINT32					cbFeatData;
+	bool					bFeature12;
+
 };
 
 typedef boost::shared_ptr<TableFeatureType> TableFeatureTypePtr;

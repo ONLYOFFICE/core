@@ -31,13 +31,12 @@
  */
 #pragma once
 
+#include "../Biff_structures/FrtHeaderOld.h"
 #include "BiffRecord.h"
 
 namespace XLS
 {
 
-
-// Logical representation of ContinueFrt11 record in BIFF8
 class ContinueFrt11: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ContinueFrt11)
@@ -47,12 +46,14 @@ public:
 	~ContinueFrt11();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeContinueFrt11;
 
+	FrtHeaderOld				frtHeaderOld;
+	boost::shared_array<char>	pData;
+	size_t						nData;
 };
 
 } // namespace XLS

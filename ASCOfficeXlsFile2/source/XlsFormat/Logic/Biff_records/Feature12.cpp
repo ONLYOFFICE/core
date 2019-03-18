@@ -31,11 +31,12 @@
  */
 
 #include "Feature12.h"
+#include "ContinueFrt.h"
 
 namespace XLS
 {
 
-Feature12::Feature12()
+Feature12::Feature12() : feature11(true)
 {
 }
 
@@ -51,6 +52,17 @@ BaseObjectPtr Feature12::clone()
 
 void Feature12::readFields(CFRecord& record)
 {
+	size_t sz = continue_records.size();
+	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt];
+
+	while (!recs.empty())
+	{
+		ContinueFrt continueFrt;
+		continueFrt.readFields(*recs.front());
+
+		record.appendRawData(continueFrt.pData.get(), continueFrt.nData);
+		recs.pop_front();
+	}	
 	feature11.readFields(record);
 
 }

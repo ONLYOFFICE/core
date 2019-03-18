@@ -52,10 +52,13 @@ BaseObjectPtr CrtMlFrt::clone()
 
 void CrtMlFrt::readFields(CFRecord& record)
 {
-#pragma message("####################### CrtMlFrt record is not implemented")
-	Log::error("CrtMlFrt record is not implemented.");
-	
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> frtHeader >> cbXmltkChain;
+
+	//xmltkChain.cb = cbXmltkChain;
+	//record >> xmltkChain;
+	record.skipNunBytes(cbXmltkChain);
+
+	record.skipNunBytes(4);
 }
 
 } // namespace XLS

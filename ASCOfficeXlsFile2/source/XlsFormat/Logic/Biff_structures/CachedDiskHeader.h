@@ -52,6 +52,9 @@ public:
 	_UINT32			cbdxfHdrDisk;
 	DXFN12List		rgHdrDisk;
 	XLUnicodeString	strStyleName;
+
+	bool	fSaveStyleName;
+
 };
 
 typedef boost::shared_ptr<CachedDiskHeader> CachedDiskHeaderPtr;

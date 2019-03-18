@@ -49,6 +49,7 @@ void Feat11FdaAutoFilter::load(CFRecord& record)
 	if (cbAutoFilter >= 0xffff0000)
 	{
 		//LCA BI - Financial Report Usage2010.xls 
+		record.RollRdPtrBack(4);
 		return;
 	}
 	record.skipNunBytes(2);	

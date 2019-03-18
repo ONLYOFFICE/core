@@ -80,9 +80,7 @@ public:
 				return false;
 			}
 		}
-		int count = 0;
-		count = proc.repeated<ContinueFrt11>(0, 0);
-		count = proc.repeated<List12>(0, 0);
+		int count = proc.repeated<List12>(0, 0);
 		
 		while (proc.optional<AutoFilter12>())
 		{
@@ -199,10 +197,15 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 			{
 				if (display.empty()) display = feature11->rgbFeat.rgbName.value();
 
-				CP_XML_ATTR(L"id",		feature11->rgbFeat.idList);
-				CP_XML_ATTR(L"name",	feature11->rgbFeat.rgbName.value());
-				CP_XML_ATTR(L"displayName", display);
-				CP_XML_ATTR(L"ref",		feature11->sqref);
+				CP_XML_ATTR(L"id",				feature11->rgbFeat.idList);
+				CP_XML_ATTR(L"name",			feature11->rgbFeat.rgbName.value());
+				CP_XML_ATTR(L"displayName",		display);
+				CP_XML_ATTR(L"ref",				feature11->sqref);
+				if (feature11->rgbFeat.crwHeader > 0)
+					CP_XML_ATTR(L"headerRowCount",	feature11->rgbFeat.crwHeader);
+				if (feature11->rgbFeat.crwTotals > 0)
+					CP_XML_ATTR(L"totalsRowCount",	feature11->rgbFeat.crwTotals);
+				//CP_XML_ATTR(L"totalsRowShown",	feature11->rgbFeat.fShownTotalRow);
 				
 				if (!comment.empty()) 
 					CP_XML_ATTR(L"comment", comment);
@@ -289,7 +292,23 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 							//if (!field->stData.value().empty())
 							//	CP_XML_ATTR(L"dataDxfId", field->stData.value());	
 							}
-							//totalsRowFunction
+							if (field->fmla.bFmlaExist)
+							{
+								CP_XML_NODE(L"calculatedColumnFormula")
+								{
+									CP_XML_STREAM() << field->fmla.fmla.getAssembledFormula();
+								}
+							}
+							if (field->fLoadTotalFmla)
+							{
+								CP_XML_NODE(L"totalsRowFormula")
+								{
+									if (field->fLoadTotalArray)
+										CP_XML_STREAM() << field->totalArrayFmla.getAssembledFormula();
+									else 
+										CP_XML_STREAM() << field->totalFmla.getAssembledFormula();
+								}
+							}
 						}
 					}
 				}

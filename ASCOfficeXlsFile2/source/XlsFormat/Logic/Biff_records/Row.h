@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Row record in BIFF8
 class Row: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Row)
@@ -47,13 +45,12 @@ public:
 	~Row();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
-	static const ElementType	type = typeRow;
+	static const ElementType type = typeRow;
 
 	GlobalWorkbookInfoPtr global_info_;
 

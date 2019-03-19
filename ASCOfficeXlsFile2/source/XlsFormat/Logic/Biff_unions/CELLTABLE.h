@@ -54,8 +54,12 @@ public:
 	int serialize(std::wostream & stream);
 
 	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
-    int							m_count_CELL_GROUP;
+   
 	std::vector<BaseObjectPtr>	m_arEntExU2;
+
+	GlobalWorkbookInfoPtr		global_info_;
+	int							index_sheet_info_;
+	bool						isConcatinate_;
 };
 
 } // namespace XLS

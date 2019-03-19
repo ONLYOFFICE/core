@@ -201,10 +201,9 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 				CP_XML_ATTR(L"name",			feature11->rgbFeat.rgbName.value());
 				CP_XML_ATTR(L"displayName",		display);
 				CP_XML_ATTR(L"ref",				feature11->sqref);
-				if (feature11->rgbFeat.crwHeader > 0)
-					CP_XML_ATTR(L"headerRowCount",	feature11->rgbFeat.crwHeader);
-				if (feature11->rgbFeat.crwTotals > 0)
-					CP_XML_ATTR(L"totalsRowCount",	feature11->rgbFeat.crwTotals);
+
+				CP_XML_ATTR(L"headerRowCount",	feature11->rgbFeat.crwHeader);
+				CP_XML_ATTR(L"totalsRowCount",	feature11->rgbFeat.crwTotals);
 				//CP_XML_ATTR(L"totalsRowShown",	feature11->rgbFeat.fShownTotalRow);
 				
 				if (!comment.empty()) 

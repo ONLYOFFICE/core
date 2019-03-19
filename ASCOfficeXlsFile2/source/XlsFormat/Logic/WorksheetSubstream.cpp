@@ -239,10 +239,15 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_Label://file(6).xls
 			case rt_Row:
 			{
-				CELLTABLE cell_table(shared_formulas_locations);
-				if (proc.optional(cell_table))
+				CELLTABLE cell_table_temlate(shared_formulas_locations);
+				if (proc.optional(cell_table_temlate))
 				{
-					m_CELLTABLE = elements_.back();
+					if (m_CELLTABLE)
+					{
+						CELLTABLE *cell_table = dynamic_cast<CELLTABLE*>(elements_.back().get());
+						cell_table->isConcatinate_ = true;
+					}
+					m_CELLTABLE = elements_.back(); //пофиг какой тут элемент - данные вынесены во вне
 					elements_.pop_back();
 				}
 				if(0 != shared_formulas_locations.size())

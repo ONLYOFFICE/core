@@ -234,9 +234,8 @@ namespace CSVWriter
 		INT nRowTmp = 0;
 		INT nCol = 0;
 
-		if (pCell->isInitRef())
+		if (pCell->isInitRef() && pCell->getRowCol(nRowTmp, nCol))
 		{
-			pCell->getRowCol(nRowTmp, nCol);
 			nRowTmp++;
 			nCol++;
 		}

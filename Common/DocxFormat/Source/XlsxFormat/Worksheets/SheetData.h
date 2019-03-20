@@ -199,32 +199,28 @@ namespace OOX
 			{
 				m_oRef = sRef;
 			}
-			void getRowCol(int& nRow, int& nCol) const
+			bool getRowCol(int& nRow, int& nCol) const
 			{
+				bool bRes = false;
+				nRow = 0;
+				nCol = 0;
 				if (m_oRef.IsInit())
 				{
 					if (parseRef(m_oRef.get(), nRow, nCol))
 					{
+						bRes = true;
 						nRow--;
 						nCol--;
-					}
-					else
-					{
-						nRow = 0;
-						nCol = 0;
 					}
 
 				}
 				else if (m_oRow.IsInit() && m_oCol.IsInit())
 				{
+					bRes = true;
 					nRow = m_oRow->GetValue();
 					nCol = m_oCol->GetValue();
 				}
-				else
-				{
-					nRow = 0;
-					nCol = 0;
-				}
+				return bRes;
 			}
 			void setRowCol(int nRow, int nCol)
 			{

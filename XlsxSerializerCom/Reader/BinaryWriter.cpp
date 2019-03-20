@@ -2963,12 +2963,10 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 {
 	int nCurPos;
 	//Ref
-	if (oCell.isInitRef())
+	int nRow = 0;
+	int nCol = 0;
+	if (oCell.isInitRef() && oCell.getRowCol(nRow, nCol))
 	{
-		int nRow = 0;
-		int nCol = 0;
-		oCell.getRowCol(nRow, nCol);
-
 		// Пишем теперь не строку, а 2 числа (чтобы не парсить на JavaScript, т.к. на C++ быстрее парсинг). Ускорение открытия файла.
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::RefRowCol);
 		m_oBcw.m_oStream.WriteLONG(nRow);

@@ -131,7 +131,7 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 			ptg_stack.push(strRange + range_ref);		
 		}
 	}
-	if (ixti != 0xffff)
+	if (ixti & 0xfff0 != 0xfff0)
 	{
 		std::wstring link = global_info->arXti_External[ixti].link;
 		if (!link.empty() && !range_ref.empty()) 

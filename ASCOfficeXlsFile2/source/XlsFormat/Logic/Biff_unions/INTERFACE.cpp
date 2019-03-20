@@ -31,9 +31,9 @@
  */
 
 #include "INTERFACE.h"
-#include <Logic/Biff_records/InterfaceHdr.h>
-#include <Logic/Biff_records/Mms.h>
-#include <Logic/Biff_records/InterfaceEnd.h>
+#include "../Biff_records/InterfaceHdr.h"
+#include "../Biff_records/Mms.h"
+#include "../Biff_records/InterfaceEnd.h"
 
 namespace XLS
 {

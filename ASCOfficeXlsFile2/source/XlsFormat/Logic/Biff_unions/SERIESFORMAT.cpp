@@ -134,7 +134,14 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 	m_Series = elements_.back();
 	elements_.pop_back();
 	
-	proc.mandatory<Begin>();								elements_.pop_back(); //skip
+	if (proc.getGlobalWorkbookInfo()->Version < 0x0600)	
+	{
+		if (proc.optional<Begin>()) elements_.pop_back(); //skip
+	}
+	else
+	{
+		if (proc.mandatory<Begin>()) elements_.pop_back(); //skip
+	}
 	
 	count = proc.repeated<AI>(4, 4);
 	while(count > 0 && elements_.size() > 0)
@@ -174,7 +181,7 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 		count = elements_.size();
 		while(count > 0)
 		{
-			if		("SerParent"	== elements_.front()->getClassName())
+			if ("SerParent"	== elements_.front()->getClassName())
 				m_SerParent = elements_.front();
 			else if ("SerToCrt"		== elements_.front()->getClassName())
 				m_SerToCrt = elements_.front();
@@ -224,7 +231,14 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 		m_SeriesEx.push_back(ex);
 	}
 
-	if (proc.mandatory<End>())							elements_.pop_back(); //skip
+	if (proc.getGlobalWorkbookInfo()->Version < 0x0600)	
+	{
+		if (proc.optional<End>()) elements_.pop_back(); //skip
+	}
+	else
+	{
+		if (proc.mandatory<End>()) elements_.pop_back(); //skip
+	}
 
 	return true;
 }

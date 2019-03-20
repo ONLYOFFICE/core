@@ -38,7 +38,6 @@ namespace XLS
 
 class CellRef;
 
-// Logical representation of CELL union of records 
 class CELL: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CELL)
@@ -52,7 +51,7 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	static const ElementType	type = typeCELL;
+	static const ElementType type = typeCELL;
 
     int RowNumber;
     int ColumnNumber;

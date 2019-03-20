@@ -87,6 +87,25 @@ void TableFeatureType::load(CFRecord& record)
 	fLoadCSPName		= GETBIT(flags, 14);
 	fLoadPldwIdChanged	= GETBIT(flags, 15);
 
+	if (bFeature12)
+	{
+		//crwHeader = 0;
+		//lt = 0x00000003;
+		//fSingleCell = false;
+	}
+	else
+	{
+		//lt != 0x00000003;
+		//crwHeader == 0 && fSingleCell == false -> lt = 0
+	}
+
+	if (fAutoFilter) crwHeader = 1;
+	if (fSingleCell)
+	{
+		crwHeader = 0;
+		crwTotals = 0;
+	}
+
 	record >> flags;
 	verXL				= GETBITS(flags, 0, 4);
 	fLoadEntryId		= GETBIT(flags, 4);
@@ -105,7 +124,7 @@ void TableFeatureType::load(CFRecord& record)
 		record.skipNunBytes(16);		// rgbHashParam
 
 	record >> rgbName;
-	record >> cFieldData; //from 1 to 100
+	record >> cFieldData; //from 1 to 0x100
 
 	if (fLoadCSPName)
 		record >> cSPName;
@@ -118,7 +137,7 @@ void TableFeatureType::load(CFRecord& record)
 		if (record.getRdPtr() >= record.getDataSize())
 			return;
 
-		arFieldData.push_back(BiffStructurePtr(new Feat11FieldDataItem(lt, (crwHeader == 0x0000 && fSingleCell))));
+		arFieldData.push_back(BiffStructurePtr(new Feat11FieldDataItem(lt, (crwHeader == 0x0000 && fSingleCell == 0x0000), bFeature12)));
 		arFieldData.back()->load(record);
 	}
 	if (fLoadPldwIdDeleted)

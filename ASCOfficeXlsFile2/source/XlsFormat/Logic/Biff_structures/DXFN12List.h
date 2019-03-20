@@ -57,7 +57,7 @@ public:
 	XFExtNoFRT	xfext;
 //-----------------------------------------------------------------
 	bool		bExist;
-	_UINT32		size;
+	_INT32		size;
 };
 
 typedef boost::shared_ptr<DXFN12List> DXFN12ListPtr;

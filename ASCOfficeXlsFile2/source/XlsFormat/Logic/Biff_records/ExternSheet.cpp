@@ -58,12 +58,15 @@ void ExternSheet::readFields(CFRecord& record)
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
 		unsigned char type;
+		unsigned char size;
 
-		ShortXLAnsiString stName;
-		record >> type >> stName;
+		record >> size >> type;
+
+		LPAnsiStringNoCch stName(size);
+		record >> stName;
 
 		name = stName.value();
-		//int type	= stName.value().substr(0, 1).c_str()[0];
+
 		//if (!name.empty())
 		//	record.getGlobalWorkbookInfo()->arExternalNames.push_back(name);
 

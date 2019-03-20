@@ -462,14 +462,14 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			}
 			else
 			{	//x
-				if (false == domain_cash.empty() || cash_values.empty())
+				if (false == domain_cash.empty() || false == cash_values.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
 					current->set_values_series (2, domain_cash);		
 				}
 				//y
-				if (false == cell_cash.empty() || cash_values.empty())
+				if (false == cell_cash.empty() || false == cash_values.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				

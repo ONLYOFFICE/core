@@ -64,6 +64,7 @@ void DXFN12List::load(CFRecord& record)
 		bExist = true;
 		record >> dxfn;
 		size -= (record.getRdPtr() - pos_record);
+		pos_record = record.getRdPtr();
 	}
 	if (size > 0)
 	{

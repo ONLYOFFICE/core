@@ -55,21 +55,21 @@ struct _oox_numLit
 
 struct _oox_strRef
 {
-	bool						present;
+	bool						present = false;
 
 	std::wstring				formula;
-	int							str_cache_count;
+	int							str_cache_count = 0;
 	std::vector<std::wstring>	str_cache;
 
 };
 struct _oox_numRef
 {
-	bool						present;
+	bool						present = false;
 
 	std::wstring				formula;
 	std::wstring				formatCode;
-	bool						link_to_source;
-	int							num_cache_count;
+	bool						link_to_source = false;
+	int							num_cache_count = 0;
 	std::vector<std::wstring>	num_cache;
 
 };

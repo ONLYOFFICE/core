@@ -210,32 +210,41 @@ namespace formulasconvert {
 
 	bool odf2oox_converter::Impl::find_first_last_ref(std::wstring const & expr, std::wstring & table,std::wstring & ref_first,std::wstring & ref_last)
 	{	
+		std::wstring workstr = expr;
+		workstr = boost::regex_replace(
+			workstr,
+			boost::wregex(L"('.*?')|(\".*?\")"),
+			&convert_scobci, boost::match_default | boost::format_all);
+
 		std::vector< std::wstring > splitted;
 	    
-		boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L".:"), boost::algorithm::token_compress_on);
-	    
+		boost::algorithm::split(splitted, workstr, boost::algorithm::is_any_of(L".:"), boost::algorithm::token_compress_on);
+	  
+		bool res = false;
 		if (splitted.size() == 2)
 		{
 			table		= splitted[0];	
 			ref_first	= splitted[1];
 			ref_last	= splitted[1];
-			return true;
+			res = true;
 		}
 		if (splitted.size() == 3)
 		{
 			table		= splitted[0];	
 			ref_first	= splitted[1];
 			ref_last	= splitted[2];
-			return true;
+			res = true;
 		}
 		if (splitted.size() == 4)
 		{
 			table		= splitted[0];	
 			ref_first	= splitted[1];
 			ref_last	= splitted[3];
-			return true;
+			res = true;
 		}
-		return false;
+		replace_tmp_back( table );
+
+		return res;
 	}
 
 	bool odf2oox_converter::Impl::find_first_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref)

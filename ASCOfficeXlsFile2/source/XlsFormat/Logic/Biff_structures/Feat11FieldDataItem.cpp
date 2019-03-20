@@ -36,7 +36,7 @@
 
 namespace XLS
 {
-Feat11FieldDataItem::Feat11FieldDataItem(_UINT32 _lt, bool bDskHeaderCache) : lt(_lt), bDiskHdrCache(bDskHeaderCache)
+Feat11FieldDataItem::Feat11FieldDataItem(_UINT32 _lt, bool bDskHeaderCache, bool bFeat12) : lt(_lt), bDiskHdrCache(bDskHeaderCache), bFeature12(bFeat12)
 {
 }
 BiffStructurePtr Feat11FieldDataItem::clone()
@@ -96,7 +96,7 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	{
 		fmla.load(record);
 	}
-	if (fLoadTotalFmla)
+	if (fLoadTotalFmla && bFeature12)
 	{
 		if (fLoadTotalArray)
 		{
@@ -107,7 +107,7 @@ void Feat11FieldDataItem::load(CFRecord& record)
 			totalFmla.load(record);
 		}	
 	}
-	if (fLoadTotalStr)
+	if (fLoadTotalStr && bFeature12)
 	{
 		record >> strTotal;
 	}
@@ -122,6 +122,7 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	}
 	if (bDiskHdrCache)
 	{
+		dskHdrCache.fSaveStyleName = fSaveStyleName;
 		record >> dskHdrCache;
 	}
 }

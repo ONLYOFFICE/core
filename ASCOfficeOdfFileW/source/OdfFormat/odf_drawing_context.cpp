@@ -2052,8 +2052,8 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 	double x = x_pt ? *x_pt : 0;
 	double y = y_pt ? *y_pt : 0;
 
-	double cx = *impl_->current_drawing_state_.cx_;
-	double cy = *impl_->current_drawing_state_.cy_;
+	//double cx = *impl_->current_drawing_state_.cx_;
+	//double cy = *impl_->current_drawing_state_.cy_;
 	
 	if (impl_->current_drawing_state_.in_group_)
 	{
@@ -2067,8 +2067,8 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 			x = (x + impl_->group_list_[i]->shift_x) * impl_->group_list_[i]->scale_cx ;	
 			y = (y + impl_->group_list_[i]->shift_y) * impl_->group_list_[i]->scale_cy;
 
-			cx *= impl_->group_list_[i]->scale_cx;
-			cy *= impl_->group_list_[i]->scale_cy;
+			//cx *= impl_->group_list_[i]->scale_cx;
+			//cy *= impl_->group_list_[i]->scale_cy;
 		}
 	}
 

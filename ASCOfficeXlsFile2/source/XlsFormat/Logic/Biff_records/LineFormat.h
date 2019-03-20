@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/LongRGB.h>
+#include "../Biff_structures/LongRGB.h"
 
 namespace XLS
 {
 
-
-// Logical representation of LineFormat record in BIFF8
 class LineFormat: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(LineFormat)
@@ -48,7 +46,6 @@ public:
 	~LineFormat();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

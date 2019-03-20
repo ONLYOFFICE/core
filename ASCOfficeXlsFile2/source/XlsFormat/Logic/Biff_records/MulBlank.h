@@ -36,7 +36,6 @@
 namespace XLS
 {
 
-
 class IXFCellMulBlankSpecial : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(IXFCellMulBlankSpecial)
@@ -53,9 +52,6 @@ public:
 	std::vector<unsigned short> rgixfe;
 };
 
-
-
-// Logical representation of MulBlank record in BIFF8
 class MulBlank: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MulBlank)

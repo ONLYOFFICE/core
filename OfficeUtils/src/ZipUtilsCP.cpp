@@ -506,7 +506,7 @@ namespace ZLibZipUtils
 
 /*========================================================================================================*/
 
-int oneZipFile(zipFile & zf, zip_fileinfo & zi, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel)
+int oneZipFile(zipFile & zf, zip_fileinfo* zi, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel)
 {
 	int err = -1;
 
@@ -518,7 +518,7 @@ int oneZipFile(zipFile & zf, zip_fileinfo & zi, std::wstring & file_name, std::w
 		if(oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
 		{
 			std::string zipFileNameA = codepage_issue_fixToOEM(zip_file_name);
-			err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zi, NULL, 0, NULL, 0, NULL, method, compressionLevel );
+			err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), zi, NULL, 0, NULL, 0, NULL, method, compressionLevel );
 			err = zipWriteInFileInZip( zf, pData, dwSizeRead );
 			err = zipCloseFileInZip( zf );
 		}
@@ -540,27 +540,6 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 		wstring szText;
 
 		zipFile zf = zipOpenHelp(outputFile);
-
-		zip_fileinfo zi;
-
-		zi.tmz_date.tm_sec = zi.tmz_date.tm_min = zi.tmz_date.tm_hour =
-		zi.tmz_date.tm_mday = zi.tmz_date.tm_mon = zi.tmz_date.tm_year = 0;
-		zi.dosDate = 0;
-		zi.internal_fa = 0;
-		zi.external_fa = 0;
-
-#if defined(_WIN32) || defined (_WIN64)
-		SYSTEMTIME currTime;
-
-		GetLocalTime( &currTime );
-
-		zi.tmz_date.tm_sec = currTime.wSecond;
-		zi.tmz_date.tm_min = currTime.wMinute;
-		zi.tmz_date.tm_hour = currTime.wHour;
-		zi.tmz_date.tm_mday = currTime.wDay;
-		zi.tmz_date.tm_mon = currTime.wMonth;
-		zi.tmz_date.tm_year = currTime.wYear;
-#endif
 
 		unsigned int filesCount = get_files_count( dir );
 		unsigned int currentFileIndex = 0;
@@ -599,7 +578,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 					file = NSSystemPath::Combine(szText, cFileName);
 					zipFileName = zipDir + cFileName;
 					
-					oneZipFile(zf, zi, file, zipFileName, 0, compressionLevel);
+					oneZipFile(zf, NULL, file, zipFileName, 0, compressionLevel);
 
 					aCurFiles.erase(aCurFiles.begin() + i, aCurFiles.begin() + i + 1);
 					break;
@@ -612,7 +591,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 				file = NSSystemPath::Combine(szText, cFileName);
 				zipFileName = zipDir + cFileName;
 
-                oneZipFile(zf, zi, file, zipFileName, method, compressionLevel);
+				oneZipFile(zf, NULL, file, zipFileName, method, compressionLevel);
 
 				if ( progress != NULL )
 				{
@@ -660,27 +639,6 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 			{
 				zipFile zf = zipOpenHelp(outputFile);
 
-				zip_fileinfo zi;
-
-				zi.tmz_date.tm_sec = zi.tmz_date.tm_min = zi.tmz_date.tm_hour =
-					zi.tmz_date.tm_mday = zi.tmz_date.tm_mon = zi.tmz_date.tm_year = 0;
-				zi.dosDate = 0;
-				zi.internal_fa = 0;
-				zi.external_fa = 0;
-
-#if defined(_WIN32) || defined (_WIN64)
-				SYSTEMTIME currTime;
-
-				GetLocalTime( &currTime );
-
-				zi.tmz_date.tm_sec = currTime.wSecond;
-				zi.tmz_date.tm_min = currTime.wMinute;
-				zi.tmz_date.tm_hour = currTime.wHour;
-				zi.tmz_date.tm_mday = currTime.wDay;
-				zi.tmz_date.tm_mon = currTime.wMonth;
-				zi.tmz_date.tm_year = currTime.wYear;
-#endif
-
 				wstring inputFileName( inputFile );
 
 				wstring::size_type pos = 0;
@@ -699,7 +657,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 					zipFileName = wstring( inputFileName.begin(), inputFileName.end() );
 				}
 				std::string zipFileNameA = codepage_issue_fixToOEM(zipFileName);
-                err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zi, NULL, 0, NULL, 0, NULL, method, compressionLevel );
+				err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), NULL, NULL, 0, NULL, 0, NULL, method, compressionLevel );
 				err = zipWriteInFileInZip( zf, pData, dwSizeRead );
 				err = zipCloseFileInZip( zf );
 				err = zipClose( zf, NULL );
@@ -929,25 +887,13 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 
 		if(NULL != zip_file_handle)
 		{
-			zip_fileinfo zi = {0};
-#if defined(_WIN32) || defined (_WIN64)
-			SYSTEMTIME currTime;
-			GetLocalTime( &currTime );
-			zi.tmz_date.tm_sec = currTime.wSecond;
-			zi.tmz_date.tm_min = currTime.wMinute;
-			zi.tmz_date.tm_hour = currTime.wHour;
-			zi.tmz_date.tm_mday = currTime.wDay;
-			zi.tmz_date.tm_mon = currTime.wMonth;
-			zi.tmz_date.tm_year = currTime.wYear;
-#endif
-
 			BYTE* pData = NULL;
 			long nSize;
 			std::wstring in_zip_filename;
 			while(callback(in_zip_filename, pData, nSize, pParam))
 			{
 				std::string in_zip_filenameA = codepage_issue_fixToOEM(in_zip_filename);
-				if (ZIP_OK != zipOpenNewFileInZip( zip_file_handle, in_zip_filenameA.c_str(), &zi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, compression_level ) ||
+				if (ZIP_OK != zipOpenNewFileInZip( zip_file_handle, in_zip_filenameA.c_str(), NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, compression_level ) ||
 					ZIP_OK != zipWriteInFileInZip(zip_file_handle, pData, nSize) ||
 					ZIP_OK != zipCloseFileInZip(zip_file_handle))
 				{

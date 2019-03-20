@@ -113,9 +113,18 @@ const bool SS::loadContent(BinProcessor& proc)
 	m_DataFormat = elements_.back();
 	elements_.pop_back();
 
-	if (proc.mandatory<Begin>())
+	bool  bRead = false;
+	if (proc.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
+		bRead = true;
+	}
+	if (proc.optional<Begin>()) //при biff5 может быть или нет, biff8 - обязано быть
+	{
+		bRead = true;
 		elements_.pop_back();
+	}
+	if (bRead)
+	{
 		while (true)
 		{
 			CFRecordType::TypeId type = proc.getNextRecordType();

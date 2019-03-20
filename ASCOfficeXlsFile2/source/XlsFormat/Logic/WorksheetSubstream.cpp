@@ -243,7 +243,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				if (proc.optional(cell_table_temlate))
 				{
 					if (m_CELLTABLE)
-					{
+					{//Daily Flash Report - Demand_Store_427.xls
 						CELLTABLE *cell_table = dynamic_cast<CELLTABLE*>(elements_.back().get());
 						cell_table->isConcatinate_ = true;
 					}
@@ -264,13 +264,18 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_Obj:
 			case rt_MsoDrawing:
 			{
-				OBJECTS objects(false);
-				if (proc.optional(objects))
+				OBJECTS objects_template(false);
+				if (proc.optional(objects_template))
 				{
 					if (!m_OBJECTS) m_OBJECTS = elements_.back();
 					else
 					{
 						Log::warning(L"Double set OBJECTS!!!");
+						OBJECTS *objects = dynamic_cast<OBJECTS*>(elements_.back().get());
+						OBJECTS *prev_objects = dynamic_cast<OBJECTS*>(m_OBJECTS.get());
+
+						prev_objects->elements_.insert(prev_objects->elements_.end(), objects->elements_.begin(), objects->elements_.end());
+
 					}
 					elements_.pop_back();
 				}

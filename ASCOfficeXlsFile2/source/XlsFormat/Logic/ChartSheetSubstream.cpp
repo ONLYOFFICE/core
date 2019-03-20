@@ -143,7 +143,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
 		
-		//Log::warning(CFRecordType::getStringById(type));
+		Log::warning(CFRecordType::getStringById(type));
 
 		if (type == rt_NONE || type == rt_BOF ) break;
 		if (type == rt_EOF) 

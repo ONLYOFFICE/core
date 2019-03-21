@@ -94,7 +94,11 @@ void CConditionalFormatValueObject::toXML2(NSStringUtils::CStringBuilder& writer
 		}
 		if (!bExtendedWrite)
 		{
-			WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
+			if (m_oVal.IsInit())
+				WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
+			else if (m_oFormula.IsInit())
+				WritingStringAttrString(L"val", m_oFormula->m_sText);
+
 		}
 	writer.WriteString(L">");
 

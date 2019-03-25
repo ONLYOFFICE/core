@@ -301,7 +301,8 @@ namespace BinXlsxRW
 		Style		= 4,
 		Width		= 5,
 		CustomWidth = 6,
-		OutLevel	= 7
+		OutLevel	= 7,
+		Collapsed	= 8
 	};}
 	namespace c_oSerHyperlinkTypes{enum c_oSerWorksheetColTypes
 	{
@@ -317,7 +318,9 @@ namespace BinXlsxRW
 		DefaultRowHeight	= 1,
 		BaseColWidth		= 2,
 		CustomHeight		= 3,
-		ZeroHeight			= 4
+		ZeroHeight			= 4,
+		OutlineLevelCol		= 5,
+		OutlineLevelRow		= 6
 	};}
 	namespace c_oSerRowTypes{enum c_oSerRowTypes
 	{
@@ -328,7 +331,8 @@ namespace BinXlsxRW
 		Cells	= 4,
 		Cell	= 5,
 		CustomHeight = 6,
-		OutLevel	= 7
+		OutLevel	= 7,
+		Collapsed	= 8
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{

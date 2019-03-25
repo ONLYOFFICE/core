@@ -3033,6 +3033,11 @@ int BinaryWorksheetsTableReader::ReadWorksheetCol(BYTE type, long length, void* 
 		pCol->m_oOutlineLevel.Init();
 		pCol->m_oOutlineLevel->SetValue( m_oBufferedStream.GetLong());
 	}
+	else if(c_oSerWorksheetColTypes::Collapsed == type)
+	{
+		pCol->m_oCollapsed.Init();
+		pCol->m_oCollapsed->FromBool(m_oBufferedStream.GetBool());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -3317,6 +3322,16 @@ int BinaryWorksheetsTableReader::ReadSheetFormatPr(BYTE type, long length, void*
 	{
 		pSheetFormatPr->m_oZeroHeight.Init();
 		pSheetFormatPr->m_oZeroHeight->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerSheetFormatPrTypes::OutlineLevelCol == type)
+	{
+		pSheetFormatPr->m_oOutlineLevelCol.Init();
+		pSheetFormatPr->m_oOutlineLevelCol->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerSheetFormatPrTypes::OutlineLevelRow == type)
+	{
+		pSheetFormatPr->m_oOutlineLevelRow.Init();
+		pSheetFormatPr->m_oOutlineLevelRow->SetValue(m_oBufferedStream.GetLong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -4063,6 +4078,11 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
 	{
 		pRow->m_oOutlineLevel.Init();
 		pRow->m_oOutlineLevel->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if(c_oSerRowTypes::Collapsed == type)
+	{
+		pRow->m_oCollapsed.Init();
+		pRow->m_oCollapsed->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if(c_oSerRowTypes::Cells == type)
 	{

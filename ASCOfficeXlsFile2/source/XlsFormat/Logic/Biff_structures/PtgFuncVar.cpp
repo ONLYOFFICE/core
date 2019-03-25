@@ -80,13 +80,13 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool 
 	{
 		arguments += ptg_stack.top();
 		ptg_stack.pop();
-		for(unsigned char i = 0; i < nparams - 1 ; ++i)
+		for(unsigned char i = 0; i < nparams - 1 && !ptg_stack.empty(); ++i)
 		{
 			arguments = ptg_stack.top() + L',' + arguments;
 			ptg_stack.pop();
 		}
 	}
-	if(0xFF == tab.getIndex() && ptg_stack.size() > 0) // user-defined function
+	if(0xFF == tab.getIndex()&& !ptg_stack.empty()) // user-defined function
 	{
 		func_name = ptg_stack.top();
 

@@ -279,7 +279,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	else if (( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape) && !m_bIsOle)
 	{
-		if( NULL != m_oPicture && m_nShapeType == ODRAW::sptPictureFrame)
+		if( NULL != m_oPicture && m_nShapeType == ODRAW::sptPictureFrame && !m_bInGroup)
 		{
 			if (m_oPicture->m_nWidth == PROP_DEF)
 			{
@@ -361,7 +361,13 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			//sResult += L"{\\sp{\\sn fLockRotation}{\\sv 1}}";		
 		
 			//picture
-			if( 0 != m_oPicture && m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 3 || m_nFillType == 9)
+			if( NULL != m_oPicture && m_nShapeType == ODRAW::sptPictureFrame && m_bInGroup)
+			{
+				sResult += L"{\\sp{\\sn pib}{\\sv ";
+				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
+				sResult += L"}}";
+			}
+			else if( NULL != m_oPicture && m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 3 || m_nFillType == 9)
 			{
 				sResult += L"{\\sp{\\sn fillBlip}{\\sv ";
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );

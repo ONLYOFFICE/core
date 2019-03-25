@@ -179,10 +179,7 @@ void Obj::readFields(CFRecord& record)
 		old_version.anchor->loadFields(record);
 		
 		record >> nMacrosSize;
-		record.skipNunBytes(2);
-		record >> nNameLen;
-		record.skipNunBytes(2);
-
+		record.skipNunBytes(6);
 
 		if(OBJ_Line == cmo.ot)
 		{
@@ -190,6 +187,26 @@ void Obj::readFields(CFRecord& record)
 			record >> old_version.flag;
 			record >> old_version.flag2;
 		}	
+		else if(OBJ_DropdownList == cmo.ot)
+		{
+			old_version.bFill = true;
+			record >> old_version.fill;
+			record >> old_version.line;		
+			record.skipNunBytes(6);
+
+			short iVal, iMin, iMax, dInc, dPage, fHoriz, dxScroll, grbit, ifnt;
+
+			record >> iVal >> iMin >> iMax >> dInc >> dPage >> fHoriz >> dxScroll >> grbit;
+			record.skipNunBytes(18);
+
+			record >> ifnt;
+			record.skipNunBytes(14);
+
+			short xLeft, yTop, xRight, yBot;
+			record >> xLeft >> yTop >> xRight >> yBot;
+			
+			record.skipNunBytes(4);
+		}
 		else
 		{
 			old_version.bFill = true;
@@ -261,9 +278,38 @@ void Obj::readFields(CFRecord& record)
 
 			old_version.name = txO->name;
 		}
+		else if(OBJ_DropdownList == cmo.ot)
+		{
+			record >> old_version.name;
+			
+			short cbFmla1, cbFmla2, cbFmla3;
+			ObjectParsedFormula fmla1, fmla2, fmla3;
+
+			record >> cbFmla1;
+			if (cbFmla1 > 0)
+			{
+				fmla1.load(record);
+			}
+			record >> cbFmla2;
+			if (cbFmla2 > 0)
+			{
+				fmla2.load(record);
+			}
+			record >> cbFmla3;
+			if (cbFmla3 > 0)
+			{
+				fmla3.load(record);
+			}
+			short cLines, iSel, flag1, flag2, cLine, dxMin;
+			record >> cLines >> iSel >> flag1;
+			
+			record.skipNunBytes(2);
+			record >> flag2 >> cLine >> dxMin;
+			//record.skipNunBytes(2);
+		}
 		else
 		{
-			if (nNameLen > 0)
+			//if (nNameLen > 0)
 			{
 				record >> old_version.name;
 			}

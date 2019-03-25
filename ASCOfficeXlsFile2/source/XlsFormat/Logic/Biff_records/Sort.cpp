@@ -50,7 +50,6 @@ BaseObjectPtr Sort::clone()
 	return BaseObjectPtr(new Sort(*this));
 }
 
-
 void Sort::readFields(CFRecord& record)
 {
 	unsigned short flags;
@@ -68,20 +67,52 @@ void Sort::readFields(CFRecord& record)
 	unsigned char cchKey2;
 	unsigned char cchKey3;
 	record >> cchKey1 >> cchKey2 >> cchKey3;
-	if(cchKey1)
+
+	if (record.getGlobalWorkbookInfo()->Version >= 0x0600)
 	{
-		stKey1.setSize(cchKey1);
-		record >> stKey1;
+		XLUnicodeStringNoCch stKey1_, stKey2_, stKey3_;
+
+		if(cchKey1)
+		{
+			stKey1_.setSize(cchKey1);
+			record >> stKey1_;
+			stKey1 = stKey1_.value();
+		}
+		if(cchKey2)
+		{
+			stKey2_.setSize(cchKey2);
+			record >> stKey2_;
+			stKey2 = stKey2_.value();
+		}
+		if(cchKey3)
+		{
+			stKey3_.setSize(cchKey3);
+			record >> stKey3_;
+			stKey3 = stKey3_.value();
+		}
 	}
-	if(cchKey2)
+	else
 	{
-		stKey2.setSize(cchKey2);
-		record >> stKey2;
-	}
-	if(cchKey3)
-	{
-		stKey3.setSize(cchKey3);
-		record >> stKey3;
+		LPAnsiStringNoCch stKey1_, stKey2_, stKey3_;
+
+		if(cchKey1)
+		{
+			stKey1_.setSize(cchKey1);
+			record >> stKey1_;
+			stKey1 = stKey1_.value();
+		}
+		if(cchKey2)
+		{
+			stKey2_.setSize(cchKey2);
+			record >> stKey2_;
+			stKey2 = stKey2_.value();
+		}
+		if(cchKey3)
+		{
+			stKey3_.setSize(cchKey3);
+			record >> stKey3_;
+			stKey3 = stKey3_.value();
+		}
 	}
 	record.skipNunBytes(1); // reserved
 }

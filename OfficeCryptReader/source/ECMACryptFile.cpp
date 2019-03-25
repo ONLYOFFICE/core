@@ -134,7 +134,7 @@ void ReadMapEntry(POLE::Stream *pStream, ECMACryptFile::_mapEntry & m)
 	_UINT32 refCount = 0;
 	pStream->read((unsigned char*)&refCount, 4); 
 
-	for (int i = 0 ; i < refCount; i++)
+	for (_UINT32 i = 0 ; i < refCount; i++)
 	{
 		ECMACryptFile::_refComponent r;
 		pStream->read((unsigned char*)&r.type, 4); 
@@ -151,7 +151,7 @@ std::string DecodeBase64(const std::string & value)
 	unsigned char *pData = NULL;
 	std::string result;
 
-	NSFile::CBase64Converter::Decode(value.c_str(), value.length(), pData, nLength);
+	NSFile::CBase64Converter::Decode(value.c_str(), (int)value.length(), pData, nLength);
 	if (pData)
 	{
 		result = std::string((char*)pData, nLength);
@@ -165,7 +165,7 @@ std::string EncodeBase64(const std::string & value)
 	char *pData = NULL;
 	std::string result;
 
-	NSFile::CBase64Converter::Encode((BYTE*)value.c_str(), value.length(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
+	NSFile::CBase64Converter::Encode((BYTE*)value.c_str(), (int)value.length(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
 	if (pData)
 	{
 		result = std::string(pData, nLength);
@@ -530,7 +530,7 @@ bool WriteStandartEncryptionInfo(unsigned char* data, int &size, _ecmaCryptData 
 	mem_stream.WriteUInt32((_UINT32)cryptData.hashSize);
 			
 	//int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20; //RC4 | AES(DES) ..  md5?
-	mem_stream.WriteBytes((unsigned char*)cryptData.encryptedVerifierValue.c_str(), cryptData.encryptedVerifierValue.length()/*szEncryptedVerifierHash*/);
+	mem_stream.WriteBytes((unsigned char*)cryptData.encryptedVerifierValue.c_str(), (int)cryptData.encryptedVerifierValue.length()/*szEncryptedVerifierHash*/);
 
 	size = mem_stream.GetPosition();
 

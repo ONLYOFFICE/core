@@ -526,7 +526,7 @@ namespace NSCustomShapesConvert
                 if (NULL == ppArray)
                     return;
 
-                int nCount = this->m_arPoints.size();
+                size_t nCount = this->m_arPoints.size();
 
                 nCountOut = 2 * (nCount + 1);
 
@@ -540,7 +540,7 @@ namespace NSCustomShapesConvert
 
                 if (bR)
                 {
-                    for (int nIndex = 0; nIndex < nCount; ++nIndex)
+                    for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
                     {
                         *pBuffer = (this->m_arPoints[nIndex].dX + pointCur.dX); ++pBuffer;
                         *pBuffer = (this->m_arPoints[nIndex].dY + pointCur.dY); ++pBuffer;
@@ -554,7 +554,7 @@ namespace NSCustomShapesConvert
                 }
                 else
                 {
-                    for (int nIndex = 0; nIndex < nCount; ++nIndex)
+                    for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
                     {
                         *pBuffer = this->m_arPoints[nIndex].dX; ++pBuffer;
                         *pBuffer = this->m_arPoints[nIndex].dY; ++pBuffer;
@@ -592,7 +592,7 @@ namespace NSCustomShapesConvert
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo(pArray, nCount /*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandLinesTo(pArray, (int)nCount /*this->m_arPoints.size()*/);
 						}
 
 						break;
@@ -605,7 +605,7 @@ namespace NSCustomShapesConvert
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandCurvesTo (pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandCurvesTo (pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 
 						break;
@@ -633,7 +633,7 @@ namespace NSCustomShapesConvert
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo(pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandLinesTo(pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 
 						break;
@@ -646,7 +646,7 @@ namespace NSCustomShapesConvert
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandCurvesTo(pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandCurvesTo(pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 						break;
 					}
@@ -794,8 +794,8 @@ namespace NSCustomShapesConvert
 						bool bIsX = true;
 						CheckLastPoint(pRenderer, pointCur);
 
-                        int nCount = this->m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+                        size_t nCount = this->m_arPoints.size();
+						for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 						{
 							double x1 = pointCur.dX;
 							double y1 = pointCur.dY;
@@ -819,8 +819,8 @@ namespace NSCustomShapesConvert
 						bool bIsX = false;
 						CheckLastPoint(pRenderer, pointCur);
 
-                        int nCount = this->m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+                        size_t nCount = this->m_arPoints.size();
+						for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 						{
 							double x1 = pointCur.dX;
 							double y1 = pointCur.dY;
@@ -847,7 +847,7 @@ namespace NSCustomShapesConvert
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo(pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandLinesTo(pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 
 						CheckLastPoint(pRenderer, pointCur);
@@ -887,7 +887,7 @@ namespace NSCustomShapesConvert
 
 		void AddRuler(const RulesType& eType)
 		{
-            int lCount = m_arParts.size();
+            size_t lCount = m_arParts.size();
 			
 			CPart oPart;
 			oPart.m_eType = eType;
@@ -896,7 +896,7 @@ namespace NSCustomShapesConvert
 		}
 		void AddPoint(const double& x, const double& y)
 		{
-            int lCount = m_arParts.size();
+            size_t lCount = m_arParts.size();
 			if (0 != lCount)
 			{
 				CDoublePoint point;

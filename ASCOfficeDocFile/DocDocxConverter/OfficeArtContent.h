@@ -89,7 +89,7 @@ namespace DocFileFormat
 								GroupContainer* group	=	static_cast<GroupContainer*>(groupChild);
 								if (group)
 								{
-									group->Index =	i;
+									group->Index =	(int)i;
 								}
 							}
 							else if (ShapeContainer::TYPE_CODE_0xF004 == groupChild->TypeCode)

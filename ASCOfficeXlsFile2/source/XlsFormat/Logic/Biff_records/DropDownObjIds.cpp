@@ -40,17 +40,14 @@ DropDownObjIds::DropDownObjIds()
 {
 }
 
-
 DropDownObjIds::~DropDownObjIds()
 {
 }
-
 
 BaseObjectPtr DropDownObjIds::clone()
 {
 	return BaseObjectPtr(new DropDownObjIds(*this));
 }
-
 
 void DropDownObjIds::readFields(CFRecord& record)
 {

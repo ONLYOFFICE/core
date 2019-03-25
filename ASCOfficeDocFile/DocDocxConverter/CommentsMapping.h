@@ -92,7 +92,7 @@ namespace DocFileFormat
 					}
 
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
-					if (atrdPre10->m_BookmarkId < 0)
+					if (atrdPre10->m_BookmarkId < 0)//-1 - easy ref (not start/end comment ref)
 					{
 						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 + count + 1024 ));
 					}
@@ -100,10 +100,10 @@ namespace DocFileFormat
 					{
 						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
 					}
-					//if (atrdPost10)
-					//{
-					//	atrdPost10->Date.Convert(new DateMapping(_writer));
-					//}
+					if (atrdPost10)
+					{
+						m_pXmlWriter->WriteAttribute( L"w:date", atrdPost10->m_nDTTM.getString());
+					}
 					if (atrdPre10->m_AuthorIndex < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
 					{
 						m_pXmlWriter->WriteAttribute( L"w:author",

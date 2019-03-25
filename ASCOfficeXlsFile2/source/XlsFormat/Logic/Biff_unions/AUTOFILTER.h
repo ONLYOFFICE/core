@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of AUTOFILTER union of records 
 class AUTOFILTER: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(AUTOFILTER)
@@ -57,7 +55,7 @@ public:
 
 	std::vector<BaseObjectPtr>					m_arSORTDATA12;
 
-	GlobalWorkbookInfoPtr		pGlobalWorkbookInfoPtr;
+	GlobalWorkbookInfoPtr						global_info_;
 
 };
 

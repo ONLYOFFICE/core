@@ -36,12 +36,10 @@
 namespace XLS
 {
 
-
 BiffStructurePtr DropDownObjId::clone()
 {
 	return BiffStructurePtr(new DropDownObjId(*this));
 }
-
 
 void DropDownObjId::load(CFRecord& record)
 {

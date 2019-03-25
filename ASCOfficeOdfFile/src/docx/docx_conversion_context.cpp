@@ -1071,7 +1071,7 @@ void docx_conversion_context::process_styles()
 
                 const std::wstring displayName = StyleDisplayName(arStyles[i]->name(), arStyles[i]->display_name(), arStyles[i]->type());
 
-                _Wostream << L"<w:name w:val=\"" << displayName << L"\"/>";
+				_Wostream << L"<w:name w:val=\"" << XmlUtils::EncodeXmlString(displayName) << L"\"/>";
 
                 if (odf_reader::style_instance * baseOn = arStyles[i]->parent())
                 {

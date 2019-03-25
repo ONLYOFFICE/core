@@ -228,6 +228,10 @@
 		8AE10E742228257E00A542DE /* ConditionalFormatting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */; };
 		8AECC18F218C991900DEE19A /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC18E218C991900DEE19A /* App.cpp */; };
 		8AECC191218C992900DEE19A /* Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC190218C992900DEE19A /* Core.cpp */; };
+		8AF47A5F2248EEB300F6181A /* ChartSerializeEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF47A5D2248EEB200F6181A /* ChartSerializeEx.h */; };
+		8AF47A602248EEB300F6181A /* ChartSerializeEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AF47A5E2248EEB300F6181A /* ChartSerializeEx.cpp */; };
+		8AF47A622248EF8100F6181A /* DataValidation.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF47A612248EF8000F6181A /* DataValidation.h */; };
+		8AF47A642248F5CD00F6181A /* DataValidation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AF47A632248F5CD00F6181A /* DataValidation.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -460,6 +464,10 @@
 		8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConditionalFormatting.cpp; sourceTree = "<group>"; };
 		8AECC18E218C991900DEE19A /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
 		8AECC190218C992900DEE19A /* Core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Core.cpp; sourceTree = "<group>"; };
+		8AF47A5D2248EEB200F6181A /* ChartSerializeEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartSerializeEx.h; sourceTree = "<group>"; };
+		8AF47A5E2248EEB300F6181A /* ChartSerializeEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChartSerializeEx.cpp; sourceTree = "<group>"; };
+		8AF47A612248EF8000F6181A /* DataValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataValidation.h; sourceTree = "<group>"; };
+		8AF47A632248F5CD00F6181A /* DataValidation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataValidation.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -820,6 +828,8 @@
 				17E6A14E1AC4262800F28F8B /* Chart.h */,
 				17E6A14F1AC4262800F28F8B /* ChartSerialize.cpp */,
 				17E6A1501AC4262800F28F8B /* ChartSerialize.h */,
+				8AF47A5E2248EEB300F6181A /* ChartSerializeEx.cpp */,
+				8AF47A5D2248EEB200F6181A /* ChartSerializeEx.h */,
 			);
 			path = Chart;
 			sourceTree = "<group>";
@@ -912,6 +922,8 @@
 				17E6A1881AC4262800F28F8B /* Cols.h */,
 				17E6A1891AC4262800F28F8B /* ConditionalFormatting.h */,
 				8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */,
+				8AF47A612248EF8000F6181A /* DataValidation.h */,
+				8AF47A632248F5CD00F6181A /* DataValidation.cpp */,
 				17E6A18A1AC4262800F28F8B /* Hyperlinks.h */,
 				17E6A18B1AC4262800F28F8B /* MergeCells.h */,
 				17E6A18C1AC4262800F28F8B /* SheetData.h */,
@@ -997,6 +1009,7 @@
 				17C1FBF51ACC4250006B99B3 /* Dir.h in Headers */,
 				17C1FBF61ACC4250006B99B3 /* HyperLink.h in Headers */,
 				17C1FBF71ACC4250006B99B3 /* WritingElement.h in Headers */,
+				8AF47A5F2248EEB300F6181A /* ChartSerializeEx.h in Headers */,
 				17C1FBF81ACC4250006B99B3 /* unicode_util.h in Headers */,
 				17C1FBFB1ACC4250006B99B3 /* Video.h in Headers */,
 				17C1FBFC1ACC4250006B99B3 /* SimpleTypes_Shared.h in Headers */,
@@ -1107,6 +1120,7 @@
 				17C1FC7D1ACC4250006B99B3 /* rPr.h in Headers */,
 				17C1FC7E1ACC4250006B99B3 /* ExternalLinkPath.h in Headers */,
 				17C1FC7F1ACC4250006B99B3 /* Comments.h in Headers */,
+				8AF47A622248EF8100F6181A /* DataValidation.h in Headers */,
 				17C1FC811ACC4250006B99B3 /* Common.h in Headers */,
 				17C1FC821ACC4250006B99B3 /* FtnEdn.h in Headers */,
 				17C1FC841ACC4250006B99B3 /* FileFactory.h in Headers */,
@@ -1187,6 +1201,7 @@
 				17C1FB981ACC4250006B99B3 /* TableProperty.cpp in Sources */,
 				17C1FB9A1ACC4250006B99B3 /* Bdo.cpp in Sources */,
 				17C1FB9B1ACC4250006B99B3 /* Annotations.cpp in Sources */,
+				8AF47A642248F5CD00F6181A /* DataValidation.cpp in Sources */,
 				17C1FB9C1ACC4250006B99B3 /* FileFactory.cpp in Sources */,
 				17C1FB9D1ACC4250006B99B3 /* DateTime.cpp in Sources */,
 				8AECC191218C992900DEE19A /* Core.cpp in Sources */,
@@ -1228,6 +1243,7 @@
 				8A218DC020FCC770006589C2 /* StreamWriter.cpp in Sources */,
 				17C1FBBD1ACC4250006B99B3 /* Common.cpp in Sources */,
 				1732414A1BBEC90000E67992 /* pole.cpp in Sources */,
+				8AF47A602248EEB300F6181A /* ChartSerializeEx.cpp in Sources */,
 				17C1FBBE1ACC4250006B99B3 /* IFileContainer.cpp in Sources */,
 				17C1FBBF1ACC4250006B99B3 /* RunProperty.cpp in Sources */,
 				17C1FBC01ACC4250006B99B3 /* codecvt.cpp in Sources */,

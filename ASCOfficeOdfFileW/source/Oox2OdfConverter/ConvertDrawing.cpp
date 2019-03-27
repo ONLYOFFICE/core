@@ -748,7 +748,7 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 				odf_context()->drawing_context()->set_no_fill();
 			odf_context()->drawing_context()->end_line_properties();
 		
-		odf_context()->drawing_context()->end_text_box();	
+		odf_context()->drawing_context()->end_shape();	
 		odf_context()->drawing_context()->end_drawing();
 		
 		odf_context()->drawing_context()->end_group();	
@@ -1689,7 +1689,9 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 		
 		if (size_pt < 0.001 && odf_list_type == 1000)
 		{
-			odf_writer::style_text_properties * text_props = odf_context()->styles_context()->last_state(odf_types::style_family::Paragraph)->get_text_properties();
+			odf_writer::odf_style_state_ptr state = odf_context()->styles_context()->last_state(odf_types::style_family::Paragraph);
+			odf_writer::style_text_properties *text_props = state ? state->get_text_properties() : NULL;
+
 			if (text_props && text_props->content_.fo_font_size_)
 			{
 				size_pt = text_props->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
@@ -1977,11 +1979,11 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	odf_writer::odf_drawing_context *drawing = odf_context()->drawing_context(); 
 	if (drawing)	//from styles drawing impossible(  ... todoooo ??? 
 	{	
-		if ((oox_run_pr->Fill.is<PPTX::Logic::GradFill>()) ||
-			(oox_run_pr->ln.IsInit() /*&& (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)*/))
-		{
-			drawing->change_text_box_2_wordart();
-		}
+		//if ((oox_run_pr->Fill.is<PPTX::Logic::GradFill>()) ||
+		//	(oox_run_pr->ln.IsInit() /*&& (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)*/))
+		//{
+		//	drawing->change_text_box_2_wordart();
+		//}
 
 		if (drawing->is_wordart())
 		{
@@ -2014,7 +2016,8 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 
 	if (oox_run_pr->ln.is_init())
 	{
-		drawing->start_line_properties(true);
+		if (drawing)
+			drawing->start_line_properties(true);
 		if (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() == OOX::et_a_solidFill )
 		{	
 			solidFill = &oox_run_pr->ln->Fill.as<PPTX::Logic::SolidFill>();

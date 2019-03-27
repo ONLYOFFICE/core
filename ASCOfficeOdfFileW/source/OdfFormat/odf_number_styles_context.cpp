@@ -267,14 +267,18 @@ void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 
 void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring formatCode)
 {
-	if (oox_num_fmt == 0 && formatCode.empty()) return; //general
-
 	number_format_state state;
 	
 	state.oox_num_fmt = oox_num_fmt;
 	state.ods_type = office_value_type::Custom;
-	state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size()+1);
-	state.language_code=0;
+	state.language_code = 0;
+
+	if (oox_num_fmt == 0 && formatCode.empty()) 
+	{
+		//general
+	}
+	else
+		state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size()+1);
 
 	switch (oox_num_fmt)
 	{
@@ -357,7 +361,7 @@ number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, st
 	}
 	else
 	{
-		create(oox_num_fmt,formatCode);
+		create(oox_num_fmt, formatCode);
 		return number_format_array_.back();
 	}
 }

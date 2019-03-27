@@ -310,8 +310,8 @@ void PptxConverter::convert_slides()
 				bool bShowLayoutMasterAnim	= slide->Layout->showMasterPhAnim.get_value_or(true);
 				bool bShowLayoutMasterSp	= slide->Layout->showMasterSp.get_value_or(true);
 				
-				if (slide->Master->cSld.attrName.IsInit())	master_style_name = slide->Master->cSld.attrName.get();
-				else if (current_theme->name.IsInit())		master_style_name = current_theme->name.get();
+				if (slide->Master->cSld.attrName.IsInit())					master_style_name = slide->Master->cSld.attrName.get();
+				else if ((current_theme) && (current_theme->name.IsInit()))	master_style_name = current_theme->name.get();
 
 				master_style_name += L"_" ;
 				

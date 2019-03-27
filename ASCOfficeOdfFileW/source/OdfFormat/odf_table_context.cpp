@@ -601,15 +601,23 @@ void odf_table_context::set_cell_row_span(int spanned)
 	else
 	{
 		int col = impl_->current_table().current_column - 1;
-		odf_column_state & state = impl_->current_table().columns[col];
+		
+		if (col < (int)impl_->current_table().columns.size())
+		{
+			odf_column_state & state = impl_->current_table().columns[col];
 
-		state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+			state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+		}
 	}
 }
 
 void odf_table_context::set_cell_row_span_restart()
 {
 	int col = impl_->current_table().current_column - 1;
+
+	if (col >= (int)impl_->current_table().columns.size())
+		return;
+
 	odf_column_state & state = impl_->current_table().columns[col];
 
 	unsigned int sz = (unsigned int)state.spanned_row_cell.size();

@@ -102,7 +102,7 @@ namespace utils
 				f = false;
 			else
 				v += 1;
-			res += v * mul;
+			res += (int)(v * mul);
 			mul *= r;
 		}
 		return res;

@@ -54,6 +54,9 @@
 #include "Biff_records/List12.h"
 #include "Biff_records/PLV.h"
 #include "Biff_records/CFEx.h"
+#include "Biff_records/Country.h"
+#include "Biff_records/WsBool.h"
+#include "Biff_records/ExternSheet.h"
 
 #include "Biff_unions/BACKGROUND.h"
 #include "Biff_unions/BIGNAME.h"
@@ -488,6 +491,51 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					m_arRECORD12.insert(m_arRECORD12.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
+				}
+			}break;
+			case rt_Window1:	//biff5
+			{
+				count = proc.repeated<Window1>(0, 0);
+				while(count > 0)
+				{
+					//m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_Country:	//biff5
+			{
+				if (proc.optional<Country>())
+				{
+					Country *Country_ = dynamic_cast<Country*>(elements_.back().get());
+					if (Country_)
+					{
+						int countryDef = Country_->iCountryDef;
+						int countryWinIni = Country_->iCountryWinIni;
+
+						global_info_->CodePage;
+					}
+
+					//m_Country = elements_.back();
+					elements_.pop_back();
+				}	
+			}break;
+			case rt_WsBool:	//biff5
+			{
+				bool is_dialog;
+				WsBool wsbool_template(is_dialog);
+				if (proc.optional(wsbool_template)) // The most interesting
+				{
+					//m_WsBool = elements_.back();
+					elements_.pop_back();
+				}
+			}break;	
+			case rt_ExternSheet:	//biff5
+			{
+				if (proc.optional<ExternSheet>())
+				{
+					//m_ExternSheet = elements_.back(); 
+					elements_.pop_back();
 				}
 			}break;
 			default://unknown .... skip					

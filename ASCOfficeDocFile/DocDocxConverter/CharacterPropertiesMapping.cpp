@@ -85,9 +85,11 @@ namespace DocFileFormat
 			
 			if (author_str)
 			{
-                XMLTools::XMLAttribute author( L"w:author", FormatUtils::XmlEncode(*author_str));
+				XMLTools::XMLAttribute author( L"w:author", FormatUtils::XmlEncode(*author_str));
 				rPrChange.AppendAttribute( author );
 			}
+			XMLTools::XMLAttribute date( L"w:date", _revisionData->Dttm.getString());
+			rPrChange.AppendAttribute( date );
 
 			//convert revision stack
 			convertSprms( _revisionData->Changes, &rPrChange );

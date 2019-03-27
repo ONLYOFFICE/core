@@ -1809,7 +1809,7 @@ namespace DocFileFormat
 				//append size and position ...
 				//if (m_pSpa->fAnchorLock)//это возможность смены привязки , а не ее тип
 
-				if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
+				if (m_isInlineShape)/*m_pSpa->bx == TEXT && m_pSpa->by == TEXT*/
 				{
 				//	appendStyleProperty( style, L"position", L"static" );
 				}

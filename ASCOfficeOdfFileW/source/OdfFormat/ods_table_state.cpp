@@ -77,7 +77,7 @@ std::wstring convert_date(const std::wstring & oox_date)
 	{
 		return oox_date;
 	}
-	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
+	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate - 2);
 
 	////to for example, "1899-12-31T05:37:46.66569
 	std::wstring date_str;
@@ -110,19 +110,18 @@ std::wstring convert_time(const std::wstring & oox_time)
 	}
 
 	//PT12H15M42S
-	int hours=0, minutes=0;
-	double sec=0;
+	int hours = 0, minutes = 0;
+	double sec = 0;
 	
-	//todooo ПЕРЕПИСАТЬ !!!
-	//boost::posix_time::time_duration day(24, 0, 0);
-	//
-	//double millisec = day.total_milliseconds() * dTime;
+	boost::posix_time::time_duration day(24, 0, 0);
+	
+	double millisec = day.total_milliseconds() * dTime;
 
 
-	//sec		= millisec /1000.;
-	//hours	= sec/60./60.;
-	//minutes = (sec - (hours * 60 * 60))/60.;
-	//sec		= sec - (hours *60 + minutes) * 60.;
+	sec		= millisec /1000.;
+	hours	= sec/60./60.;
+	minutes = (sec - (hours * 60 * 60))/60.;
+	sec		= sec - (hours *60 + minutes) * 60.;
 
 	int sec1 = sec;
 

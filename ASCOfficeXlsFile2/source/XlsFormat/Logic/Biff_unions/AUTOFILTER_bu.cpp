@@ -42,7 +42,6 @@
 namespace XLS
 {
 
-
 AUTOFILTER::AUTOFILTER()
 {
 }
@@ -87,11 +86,11 @@ const bool AUTOFILTER::loadContent(BinProcessor& proc)
 		return false;
 	}
 	
-	pGlobalWorkbookInfoPtr = proc.getGlobalWorkbookInfo();
+	global_info_ = proc.getGlobalWorkbookInfo();
 
 	m_AutoFilterInfo = elements_.back();
 	elements_.pop_back();
-	
+
 	int count = proc.repeated<Parenthesis_AUTOFILTER_1>(0, 0);
 	while(count > 0)
 	{
@@ -139,13 +138,13 @@ int AUTOFILTER::serialize(std::wostream & stream)
 
 	AutoFilterInfo *info = dynamic_cast<AutoFilterInfo*>(m_AutoFilterInfo.get());
 	
-	std::map<std::wstring, std::vector<std::wstring>>::iterator it = pGlobalWorkbookInfoPtr->mapDefineNames.find(L"_xlnm._FilterDatabase");
+	std::map<std::wstring, std::vector<std::wstring>>::iterator it = global_info_->mapDefineNames.find(L"_xlnm._FilterDatabase");
 	
-	if (it == pGlobalWorkbookInfoPtr->mapDefineNames.end()) return 0;
+	if (it == global_info_->mapDefineNames.end()) return 0;
 
 	int count_columns = info->cEntries;
 	
-	size_t ind = pGlobalWorkbookInfoPtr->current_sheet;
+	size_t ind = global_info_->current_sheet;
 	std::wstring ref;
 	
 	if (ind < it->second.size() && ind >= 0)
@@ -159,7 +158,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	}
 	if (ref.empty()) return 0;
 
-	std::wstring sheet_name = ind <= pGlobalWorkbookInfoPtr->sheets_info.size() ? pGlobalWorkbookInfoPtr->sheets_info[ind-1].name : L"";
+	std::wstring sheet_name = ind <= global_info_->sheets_info.size() ? global_info_->sheets_info[ind-1].name : L"";
 	if (!sheet_name.empty())
 	{
 		int pos = ref.find(sheet_name);

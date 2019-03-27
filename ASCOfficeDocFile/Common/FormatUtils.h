@@ -769,12 +769,20 @@ namespace DocFileFormat
 
 			return bytes;
 		}
-
+#ifndef _WIN32
+		static inline std::wstring IntToWideString(unsigned int value)
+		{
+            return (std::to_wstring(value));
+		}
+#endif
         static inline std::wstring IntToWideString(int value)
 		{
             return (std::to_wstring(value));
 		}
-
+        static inline std::wstring IntToWideString(size_t value)
+		{
+            return (std::to_wstring((unsigned int)value));
+		}
 		static inline std::wstring DoubleToWideString(double value)
 		{
 			std::wstringstream src;			

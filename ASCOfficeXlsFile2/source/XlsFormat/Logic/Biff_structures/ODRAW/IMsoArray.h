@@ -74,7 +74,7 @@ public:
 		unsigned short nElems, nElemsAlloc;
 		unsigned short cbElem;
 		
-		int pos1 = record.getRdPtr();
+		size_t pos1 = record.getRdPtr();
 		
 		record >> nElems >> nElemsAlloc >> cbElem;
 		

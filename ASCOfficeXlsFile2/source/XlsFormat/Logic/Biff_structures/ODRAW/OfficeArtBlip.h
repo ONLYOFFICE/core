@@ -59,7 +59,7 @@ public:
 	
 	XLS::BiffStructurePtr clone()
 	{
-		return XLS::BiffStructurePtr(new OfficeArtBlip(recType));
+		return XLS::BiffStructurePtr(new OfficeArtBlip((unsigned short)recType));
 	}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtBlip;

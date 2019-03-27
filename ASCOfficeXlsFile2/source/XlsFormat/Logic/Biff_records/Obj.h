@@ -95,8 +95,8 @@ public:
 		bool						bFill = false;
 		ShortXLAnsiString			name;
 
-		_UINT32						fill = 0;
-		_UINT32						line = 0;
+		_UINT32						fill = 0;//(icvBack, icvFore, fls, fAuto)
+		_UINT32						line = 0;//(icv, lns, lnw, fAuto)
 		_UINT16						flag = 0;
 		_UINT16						flag2 = 0;
 	}old_version;

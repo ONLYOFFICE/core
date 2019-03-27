@@ -32,6 +32,7 @@
 #pragma once
 
 #include "ByteStructure.h"
+#include "DateAndTime.h"
 
 namespace DocFileFormat
 {
@@ -72,7 +73,7 @@ namespace DocFileFormat
 			return (nWordVersion > 0) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
 		}
 
-        AnnotationReferenceExDescriptor() : m_nDTTM(0), m_nDepth(0), m_nDiatrdParent(0), m_fInkAtn(false)
+        AnnotationReferenceExDescriptor() : m_nDepth(0), m_nDiatrdParent(0), m_fInkAtn(false)
 		{
 		}
 
@@ -82,7 +83,7 @@ namespace DocFileFormat
 
         virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 
-		unsigned int	m_nDTTM;
+		DateAndTime		m_nDTTM;
 		unsigned int	m_nDepth;
 		unsigned int	m_nDiatrdParent;
 		bool			m_fInkAtn;

@@ -406,8 +406,8 @@ namespace DocFileFormat
 				//if it's a inserted run
                 m_pXmlWriter->WriteNodeBegin(L"w:ins", true);
                 m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
+                m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));
                 m_pXmlWriter->WriteNodeEnd(L"", true, false);
-				//rev.Dttm.Convert(new DateMapping(m_pXmlWriter));
 			}
 
 			//start run
@@ -1079,7 +1079,15 @@ namespace DocFileFormat
 				else if ((m_document->AnnotationsReferencePlex) && (_commentNr <= m_document->AnnotationsReferencePlex->Elements.size()))
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
-					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr++ ));
+
+					int index = _commentNr++;
+
+					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index - 1]);
+
+					if (atrdPre10->m_BookmarkId < 0)
+						index += m_document->AnnotationsReferencePlex->Elements.size() + 1024;
+					
+					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(index));
 					m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 			}
@@ -1792,7 +1800,7 @@ namespace DocFileFormat
 			if (m_document->AnnotStartEndCPs[i].second == cp)
 			{
 				result = writeAnnotationEnd(i + 1);  
-				_commentNr = i + 1;
+				//_commentNr = i + 1;
 			}
 		}
 

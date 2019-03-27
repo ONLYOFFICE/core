@@ -49,7 +49,6 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	ObjId id;
 };
 

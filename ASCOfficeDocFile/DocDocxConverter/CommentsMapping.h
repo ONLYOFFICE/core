@@ -85,10 +85,14 @@ namespace DocFileFormat
 				for (size_t index = 0; index < count; ++index)
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
-					AnnotationReferenceExDescriptor* atrdPost10 = m_document->AnnotationsReferenceExPlex ? static_cast<AnnotationReferenceExDescriptor*>(m_document->AnnotationsReferenceExPlex->Elements[index]) : NULL;
+					AnnotationReferenceExDescriptor* atrdPost10 = NULL;
+					if ((m_document->AnnotationsReferenceExPlex) && (index < m_document->AnnotationsReferenceExPlex->Elements.size()))
+					{
+						atrdPost10 = static_cast<AnnotationReferenceExDescriptor*>(m_document->AnnotationsReferenceExPlex->Elements[index]);
+					}
 
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
-					if (atrdPre10->m_BookmarkId < 0)
+					if (atrdPre10->m_BookmarkId < 0)//-1 - easy ref (not start/end comment ref)
 					{
 						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 + count + 1024 ));
 					}
@@ -98,21 +102,14 @@ namespace DocFileFormat
 					}
 					if (atrdPost10)
 					{
-						//!!!TODO!!!
-						/*//ATRDpost10 is optional and not saved in all files
-						if (doc.AnnotationReferenceExtraTable != null && 
-						doc.AnnotationReferenceExtraTable.Count > index)
-						{
-						AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
-						atrdPost10.Date.Convert(new DateMapping(_writer));
-						}*/	
+						m_pXmlWriter->WriteAttribute( L"w:date", atrdPost10->m_nDTTM.getString());
 					}
 					if (atrdPre10->m_AuthorIndex < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
 					{
 						m_pXmlWriter->WriteAttribute( L"w:author",
 							FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->m_AuthorIndex ) ));
 					}
-                    m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->m_UserInitials);
+                    m_pXmlWriter->WriteAttribute( L"w:initials", FormatUtils::XmlEncode(atrdPre10->m_UserInitials));
 
 
 

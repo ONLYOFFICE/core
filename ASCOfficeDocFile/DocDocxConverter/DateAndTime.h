@@ -83,6 +83,14 @@ namespace DocFileFormat
 			  //throw new ByteParseException("Cannot parse the struct DTTM, the length of the struct doesn't match");
 			}
 		}
+		std::wstring getString()
+		{
+			return std::to_wstring(yr) + L"-"	+	(mon < 9 ? L"0" : L"" )	+ std::to_wstring(mon)	+ L"-" + 
+													(dom < 9 ? L"0" : L"" )	+ std::to_wstring(dom)	+ L"T" +
+													(hr < 9 ? L"0" : L"" )	+ std::to_wstring(hr)	+ L":" +
+													(mint < 9 ? L"0" : L"" )+ std::to_wstring(mint)	+ L"Z";
+
+		}
 #if defined(_WIN32) || defined(_WIN64)
 	  SYSTEMTIME ToSYSTEMTIME()
       {

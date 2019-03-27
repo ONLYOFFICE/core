@@ -2793,14 +2793,14 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case Formula:	return _T("formula");		break;	
-					case Maximum:	return _T("min");			break;	
-					case Minimum:	return _T("max");			break;	
-					case Number:	return _T("num");			break;	
-					case Percent:	return _T("percent");		break;	
-					case Percentile:return _T("percentile");	break;	
-					case autoMin:	return _T("autoMin");		break;	
-					case autoMax:	return _T("autoMax");		break;	
+					case Formula:	return _T("formula");
+					case Maximum:	return _T("max");		
+					case Minimum:	return _T("min");
+					case Number:	return _T("num");	
+					case Percent:	return _T("percent");
+					case Percentile:return _T("percentile");
+					case autoMin:	return _T("autoMin");
+					case autoMax:	return _T("autoMax");
 					default		:	return _T("num");
 				}
 			}

@@ -462,7 +462,9 @@ void odf_drawing_context::end_group()
 	
 	impl_->current_group_ = impl_->group_list_.back()->prev_group;
 	impl_->group_list_.pop_back();
-	impl_->current_level_.pop_back();
+
+	if (!impl_->current_level_.empty())
+		impl_->current_level_.pop_back();
 }
 
 
@@ -2373,6 +2375,7 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 {
+	if (hexColor.empty()) return;
 	if (impl_->current_drawing_state_.elements_.empty())return;
 
 	odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);

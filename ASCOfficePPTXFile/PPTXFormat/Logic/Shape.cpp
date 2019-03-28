@@ -502,15 +502,18 @@ namespace PPTX
 				{
 					if (parentFileIs<Slide>())
 					{
-						parentFileAs<Slide>().Layout->GetLevelUp(this);
+						if (parentFileAs<Slide>().Layout.IsInit())
+							parentFileAs<Slide>().Layout->GetLevelUp(this);
 					}
 					else if(parentFileIs<SlideLayout>())
 					{
-						parentFileAs<SlideLayout>().Master->GetLevelUp(this);
+						if (parentFileAs<SlideLayout>().Master.IsInit())
+							parentFileAs<SlideLayout>().Master->GetLevelUp(this);
 					}
 					else if(parentFileIs<NotesSlide>())
 					{
-						parentFileAs<NotesSlide>().master_->GetLevelUp(this);
+						if (parentFileAs<NotesSlide>().master_.IsInit())
+							parentFileAs<NotesSlide>().master_->GetLevelUp(this);
 					}
 				}
 			}

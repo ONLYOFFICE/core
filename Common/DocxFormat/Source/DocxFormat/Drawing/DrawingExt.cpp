@@ -67,6 +67,7 @@ namespace OOX
 									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}"	|| 
 									  *m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}"	||
 									  *m_sUri == L"{B025F937-C7B1-47D3-B67F-A62EFF666E3E}"	||
+									  *m_sUri == L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -162,6 +163,12 @@ namespace OOX
 				}
 				sResult += writer.GetData().c_str();
 				sResult += L"</x14:conditionalFormattings>";
+			}
+			if(m_oDataValidations.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oDataValidations->toXML2(writer, true);
+				sResult += writer.GetData().c_str();
 			}
 			if (m_oId.IsInit())
 			{

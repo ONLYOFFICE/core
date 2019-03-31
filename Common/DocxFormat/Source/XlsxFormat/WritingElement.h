@@ -109,6 +109,8 @@ namespace Spreadsheet
 #define WritingStringNullableAttrBool(name, elem) \
 		WritingStringNullableAttrString(name, elem, elem->ToString3(SimpleTypes::onofftostring1))
 
+#define WritingStringNullableAttrBool2(name, elem) \
+		WritingStringNullableAttrString(name, elem, *elem ? L"1": L"0")
 
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;

@@ -1660,6 +1660,10 @@
 					RelativePath="..\Source\XlsxFormat\Table\Table.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Table\Tables.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Workbook"

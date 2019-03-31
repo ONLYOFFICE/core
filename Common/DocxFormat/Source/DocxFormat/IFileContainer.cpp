@@ -389,6 +389,15 @@ namespace OOX
 		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}
 
+	smart_ptr<OOX::File> IFileContainer::Find(const FileType& oType) const
+	{
+		for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
+		{
+			if (pPair->second->type() == oType)
+				return pPair->second;
+		}
+		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
+	}
 	template<typename T>
     T& IFileContainer::Find()
 	{
@@ -403,6 +412,10 @@ namespace OOX
 
 		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}
+	smart_ptr<OOX::File> IFileContainer::operator [](const FileType& oType)
+	{
+		return Find(oType);
+	}	
 	const RId IFileContainer::GetMaxRId()
 	{
 		return RId( m_lMaxRid );

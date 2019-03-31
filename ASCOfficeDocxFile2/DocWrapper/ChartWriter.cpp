@@ -277,13 +277,20 @@ namespace BinXlsxRW{
 			pTable->m_oTable->m_oTableStyleInfo->m_oShowColumnStripes.Init();
 			pTable->m_oTable->m_oTableStyleInfo->m_oShowColumnStripes->FromBool(false);
 			pTable->m_oTable->m_oTableColumns.Init();
+			
 			for(size_t i = 0; i < m_aTableNames.size(); ++i)
 			{
 				OOX::Spreadsheet::CTableColumn* pTableColumn = new OOX::Spreadsheet::CTableColumn();
-				pTableColumn->m_oId.Init();
-				pTableColumn->m_oId->SetValue((unsigned int)i + 1);
-				pTableColumn->m_oName.Init();
-				pTableColumn->m_oName->append(m_aTableNames[i]);
+
+				if (!pTableColumn->m_oId.IsInit())
+				{
+					pTableColumn->m_oId.Init();
+					pTableColumn->m_oId->SetValue((unsigned int)i + 1);
+				}
+				if (!pTableColumn->m_oName.IsInit())
+				{
+					pTableColumn->m_oName = m_aTableNames[i];
+				}
 				pTable->m_oTable->m_oTableColumns->m_arrItems.push_back(pTableColumn);
 			}
 			pTable->m_oTable->m_oTableColumns->m_oCount.Init();

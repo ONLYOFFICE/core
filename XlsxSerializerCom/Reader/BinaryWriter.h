@@ -55,6 +55,8 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinks.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/CalcChain/CalcChain.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Table/Connections.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Table/QueryTable.h"
 
 namespace BinXlsxRW 
 {
@@ -65,7 +67,7 @@ namespace BinXlsxRW
 		BinaryTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
 		void Write(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTableParts& oTableParts);
 		void WriteTablePart(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTablePart& oTablePart);
-		void WriteTable(OOX::Spreadsheet::CTable& oTable);
+		void WriteTable(OOX::Spreadsheet::CTableFile* pTableFile);
 		void WriteAltTextTable(const OOX::Spreadsheet::CAltTextTable& oAltTextTable);
 		void WriteAutoFilter(const OOX::Spreadsheet::CAutofilter& oAutofilter);
 		void WriteFilterColumns(const std::vector<OOX::Spreadsheet::CFilterColumn *>& aFilterColumn);
@@ -84,6 +86,12 @@ namespace BinXlsxRW
 		void WriteTableColumn(const OOX::Spreadsheet::CTableColumn& oTableColumn);
 		void WriteTableColumns(const OOX::Spreadsheet::CTableColumns& oTableColumns);
 		void WriteTableStyleInfo(const OOX::Spreadsheet::CTableStyleInfo& oTableStyleInfo);
+		void WriteQueryTable(const OOX::Spreadsheet::CQueryTable& oQueryTable);
+		void WriteQueryTableRefresh(const OOX::Spreadsheet::CQueryTableRefresh& oQueryTableRefresh);
+		void WriteQueryTableFields(const OOX::Spreadsheet::CQueryTableFields& oQueryTableFields);
+		void WriteQueryTableField(const OOX::Spreadsheet::CQueryTableField& oQueryTableField);
+		void WriteQueryTableDeletedFields(const OOX::Spreadsheet::CQueryTableDeletedFields& oQueryTableDeletedFields);
+		void WriteQueryTableDeletedField(const OOX::Spreadsheet::CQueryTableDeletedField& oQueryTableDeletedField);
 	};
 	class BinaryStyleTableWriter
 	{
@@ -144,6 +152,12 @@ namespace BinXlsxRW
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView);
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames);
         void WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCalcPr);
+		void WriteConnections(const OOX::Spreadsheet::CConnections& connections);
+		void WriteConnection(const OOX::Spreadsheet::CConnection& connection);
+		void WriteConnectionDbPr(const OOX::Spreadsheet::CDbPr& dbPr);
+		void WriteConnectionOlapPr(const OOX::Spreadsheet::COlapPr& olapPr);
+		void WriteConnectionTextPr(const OOX::Spreadsheet::CTextPr& textPr);
+		void WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr);
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, const std::wstring& sLink);
 		void WriteExternalSheetNames(const OOX::Spreadsheet::CExternalSheetNames& sheetNames);
@@ -226,6 +240,9 @@ namespace BinXlsxRW
         void WriteSparklineGroup(const OOX::Spreadsheet::CSparklineGroup& oSparklineGroup);
         void WriteSparklines(const OOX::Spreadsheet::CSparklines& oSparklines);
         void WriteSparkline(const OOX::Spreadsheet::CSparkline& oSparkline);
+		void WriteDataValidations(const OOX::Spreadsheet::CDataValidations& oDataValidations);
+		void WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations);
+		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
 	};
 	class BinaryCalcChainTableWriter
 	{

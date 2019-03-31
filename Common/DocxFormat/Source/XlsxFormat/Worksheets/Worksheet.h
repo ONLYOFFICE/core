@@ -109,6 +109,7 @@ namespace OOX
 
 			void read(XmlUtils::CXmlLiteReader& oReader);
 
+			void PrepareDataValidations();
 			void PrepareConditionalFormatting();
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
 			void PrepareToWrite();

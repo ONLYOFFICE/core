@@ -39,3 +39,4 @@
 #include "../Source/XlsxFormat/Worksheets/Worksheet.cpp"
 #include "../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp"
 #include "../Source/XlsxFormat/Worksheets/DataValidation.cpp"
+#include "../Source/XlsxFormat/Table/Tables.cpp"

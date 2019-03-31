@@ -69,76 +69,184 @@ void BinaryTableWriter::WriteTablePart(const OOX::Spreadsheet::CWorksheet& oWork
 		smart_ptr<OOX::File> pFile = oWorksheet.Find(OOX::RId(oTablePart.m_oRId->GetValue()));
 		if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::Table == pFile->type())
 		{
-			OOX::Spreadsheet::CTableFile* pTable = static_cast<OOX::Spreadsheet::CTableFile*>(pFile.operator->());
-			if(pTable->m_oTable.IsInit())
+			OOX::Spreadsheet::CTableFile* pTableFile = static_cast<OOX::Spreadsheet::CTableFile*>(pFile.operator->());
+			if(pTableFile->m_oTable.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::Table);
-				WriteTable(*pTable->m_oTable.GetPointer());
+				WriteTable(pTableFile);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
 	}
 }
-void BinaryTableWriter::WriteTable(OOX::Spreadsheet::CTable& oTable)
+void BinaryTableWriter::WriteTable(OOX::Spreadsheet::CTableFile* pTableFile)
 {
+	if (!pTableFile) return;
+
+	OOX::Spreadsheet::CTable* pTable = pTableFile->m_oTable.GetPointer();
+	if (!pTable) return;
+
 	int nCurPos = 0;
-	if(oTable.m_oRef.IsInit())
+	if(pTable->m_oRef.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::Ref);
-		m_oBcw.m_oStream.WriteStringW(oTable.m_oRef->ToString());
+		m_oBcw.m_oStream.WriteStringW(pTable->m_oRef->ToString());
 	}
-	if(oTable.m_oHeaderRowCount.IsInit())
+	if(pTable->m_oHeaderRowCount.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::HeaderRowCount);
-		m_oBcw.m_oStream.WriteLONG(oTable.m_oHeaderRowCount->GetValue());
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oHeaderRowCount->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(oTable.m_oTotalsRowCount.IsInit())
+	if(pTable->m_oTotalsRowCount.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TotalsRowCount);
-		m_oBcw.m_oStream.WriteLONG(oTable.m_oTotalsRowCount->GetValue());
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oTotalsRowCount->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(oTable.m_oDisplayName.IsInit())
+	if(pTable->m_oDisplayName.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::DisplayName);
-		m_oBcw.m_oStream.WriteStringW(*oTable.m_oDisplayName);
+		m_oBcw.m_oStream.WriteStringW(*pTable->m_oDisplayName);
 	}
-	if(oTable.m_oAutoFilter.IsInit())
+	if(pTable->m_oName.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::AutoFilter);
-		WriteAutoFilter(oTable.m_oAutoFilter.get());
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::Name);
+		m_oBcw.m_oStream.WriteStringW(*pTable->m_oName);
+	}
+	if(pTable->m_oComment.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::Comment);
+		m_oBcw.m_oStream.WriteStringW(*pTable->m_oComment);
+	}
+	if(pTable->m_oConnectionId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::ConnectionId);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oConnectionId->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(oTable.m_oSortState.IsInit())
+	if(pTable->m_oTableType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TableType);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oTableType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oDataCellStyle.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::DataCellStyle);
+		m_oBcw.m_oStream.WriteStringW(*pTable->m_oDataCellStyle);
+	}
+	if(pTable->m_oDataDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::DataDxfId);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oDataDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oHeaderRowCellStyle.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::HeaderRowCellStyle);
+		m_oBcw.m_oStream.WriteStringW(*pTable->m_oHeaderRowCellStyle);
+	}
+	if(pTable->m_oHeaderRowDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::HeaderRowDxfId);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oHeaderRowDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oHeaderRowBorderDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::HeaderRowBorderDxfId);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oHeaderRowBorderDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::Id);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oInsertRow.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::InsertRow);
+		m_oBcw.m_oStream.WriteBYTE(*pTable->m_oInsertRow ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oInsertRowShift.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::InsertRowShift);
+		m_oBcw.m_oStream.WriteBYTE(*pTable->m_oInsertRowShift ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oPublished.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::Published);
+		m_oBcw.m_oStream.WriteBYTE(*pTable->m_oPublished ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oTableBorderDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TableBorderDxfId);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oTableBorderDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oTotalsRowBorderDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TotalsRowBorderDxfId);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oTotalsRowBorderDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oTotalsRowCellStyle.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::TotalsRowCellStyle);
+		m_oBcw.m_oStream.WriteStringW(*pTable->m_oTotalsRowCellStyle);
+	}
+	if(pTable->m_oTotalsRowDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TotalsRowDxfId);
+		m_oBcw.m_oStream.WriteLONG(pTable->m_oTotalsRowDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oTotalsRowShown.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TotalsRowShown);
+		m_oBcw.m_oStream.WriteBYTE(*pTable->m_oTotalsRowShown ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oAutoFilter.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::AutoFilter);
+		WriteAutoFilter(pTable->m_oAutoFilter.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(pTable->m_oSortState.IsInit())
 	{
 		OOX::Spreadsheet::CSortState* pSortState = NULL;
-		if(oTable.m_oSortState.IsInit())
-			pSortState = oTable.m_oSortState.GetPointer();
+		if(pTable->m_oSortState.IsInit())
+			pSortState = pTable->m_oSortState.GetPointer();
 		else
-			pSortState = oTable.m_oAutoFilter->m_oSortState.GetPointer();
+			pSortState = pTable->m_oAutoFilter->m_oSortState.GetPointer();
 
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::SortState);
 		WriteSortState(*pSortState);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(oTable.m_oTableColumns.IsInit())
+	if(pTable->m_oTableColumns.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TableColumns);
-		WriteTableColumns(oTable.m_oTableColumns.get());
+		WriteTableColumns(pTable->m_oTableColumns.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(oTable.m_oTableStyleInfo.IsInit())
+	if(pTable->m_oTableStyleInfo.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::TableStyleInfo);
-		WriteTableStyleInfo(oTable.m_oTableStyleInfo.get());
+		WriteTableStyleInfo(pTable->m_oTableStyleInfo.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if(oTable.m_oExtLst.IsInit())
+	if(pTable->m_oExtLst.IsInit())
 	{
-		for(size_t i = 0; i < oTable.m_oExtLst->m_arrExt.size(); ++i)
+		for(size_t i = 0; i < pTable->m_oExtLst->m_arrExt.size(); ++i)
 		{
-			OOX::Drawing::COfficeArtExtension* pExt = oTable.m_oExtLst->m_arrExt[i];
+			OOX::Drawing::COfficeArtExtension* pExt = pTable->m_oExtLst->m_arrExt[i];
 			if(pExt->m_oAltTextTable.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::AltTextTable);
@@ -147,8 +255,288 @@ void BinaryTableWriter::WriteTable(OOX::Spreadsheet::CTable& oTable)
 			}
 		}
 	}
+	smart_ptr<OOX::File> pFile = pTableFile->Find(OOX::Spreadsheet::FileTypes::QueryTable);
+	OOX::Spreadsheet::CQueryTableFile *pQueryTableFile = dynamic_cast<OOX::Spreadsheet::CQueryTableFile*>(pFile.operator->());
+	if ((pQueryTableFile) && (pQueryTableFile->m_oQueryTable.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::QueryTable);
+		WriteQueryTable(pQueryTableFile->m_oQueryTable.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
+	}
 }
-void BinaryTableWriter::WriteAltTextTable(const OOX::Spreadsheet::CAltTextTable& oAltTextTable)
+void BinaryTableWriter::WriteQueryTable(const OOX::Spreadsheet::CQueryTable& oQueryTable)
+{
+	int nCurPos = 0;
+	if(oQueryTable.m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_QueryTable::Name);
+		m_oBcw.m_oStream.WriteStringW(oQueryTable.m_oName.get());
+	}
+	if(oQueryTable.m_oConnectionId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::ConnectionId);
+		m_oBcw.m_oStream.WriteLONG(oQueryTable.m_oConnectionId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oAutoFormatId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::AutoFormatId);
+		m_oBcw.m_oStream.WriteLONG(oQueryTable.m_oAutoFormatId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oGrowShrinkType.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_QueryTable::GrowShrinkType);
+		m_oBcw.m_oStream.WriteStringW(oQueryTable.m_oGrowShrinkType.get());
+	}
+	if(oQueryTable.m_oAdjustColumnWidth.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::AdjustColumnWidth);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oAdjustColumnWidth ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oApplyAlignmentFormats.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::ApplyAlignmentFormats);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oApplyAlignmentFormats ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oApplyBorderFormats.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::ApplyBorderFormats);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oApplyBorderFormats ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+	if(oQueryTable.m_oApplyFontFormats.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::ApplyFontFormats);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oApplyFontFormats ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+	if(oQueryTable.m_oApplyNumberFormats.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::ApplyNumberFormats);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oApplyNumberFormats ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oApplyPatternFormats.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::ApplyPatternFormats);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oApplyPatternFormats ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oApplyWidthHeightFormats.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::ApplyWidthHeightFormats);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oApplyWidthHeightFormats ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oBackgroundRefresh.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::BackgroundRefresh);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oBackgroundRefresh ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oDisableEdit.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::DisableEdit);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oDisableEdit ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oDisableRefresh.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::DisableRefresh);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oDisableRefresh ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oFillFormulas.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::FillFormulas);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oFillFormulas ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oFirstBackgroundRefresh.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::FirstBackgroundRefresh);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oFirstBackgroundRefresh ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oHeaders.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::Headers);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oHeaders ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oIntermediate.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::Intermediate);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oIntermediate ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oPreserveFormatting.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::PreserveFormatting);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oPreserveFormatting ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oRefreshOnLoad.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::RefreshOnLoad);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTable.m_oRefreshOnLoad ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTable.m_oQueryTableRefresh.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTable::QueryTableRefresh);
+		WriteQueryTableRefresh(oQueryTable.m_oQueryTableRefresh.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	//m_oExtLst;
+}
+void BinaryTableWriter::WriteQueryTableRefresh(const OOX::Spreadsheet::CQueryTableRefresh& oQueryTableRefresh)
+{
+	int nCurPos = 0;
+	if(oQueryTableRefresh.m_oNextId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::NextId);
+		m_oBcw.m_oStream.WriteLONG(oQueryTableRefresh.m_oNextId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_FieldIdWrapped.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::FieldIdWrapped);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTableRefresh.m_FieldIdWrapped ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_HeadersInLastRefresh.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::HeadersInLastRefresh);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTableRefresh.m_HeadersInLastRefresh ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_HeadersInLastRefresh.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::HeadersInLastRefresh);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTableRefresh.m_HeadersInLastRefresh ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_UnboundColumnsLeft.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::UnboundColumnsLeft);
+		m_oBcw.m_oStream.WriteLONG(oQueryTableRefresh.m_UnboundColumnsLeft->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_UnboundColumnsLeft.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::UnboundColumnsLeft);
+		m_oBcw.m_oStream.WriteLONG(oQueryTableRefresh.m_UnboundColumnsLeft->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_UnboundColumnsRight.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::UnboundColumnsRight);
+		m_oBcw.m_oStream.WriteLONG(oQueryTableRefresh.m_UnboundColumnsRight->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_oSortState.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::SortState);
+		WriteSortState(oQueryTableRefresh.m_oSortState.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_oQueryTableFields.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::QueryTableFields);
+		WriteQueryTableFields(oQueryTableRefresh.m_oQueryTableFields.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableRefresh.m_oQueryTableDeletedFields.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableRefresh::QueryTableDeletedFields);
+		WriteQueryTableDeletedFields(oQueryTableRefresh.m_oQueryTableDeletedFields.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+
+	//m_oExt
+}
+void BinaryTableWriter::WriteQueryTableFields(const OOX::Spreadsheet::CQueryTableFields& oQueryTableFields)
+{
+	for (size_t i = 0; i < oQueryTableFields.m_arrItems.size(); ++i)
+	{
+		if(oQueryTableFields.m_arrItems[i])
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableField::QueryTableField);
+			WriteQueryTableField(*oQueryTableFields.m_arrItems[i]);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
+}
+void BinaryTableWriter::WriteQueryTableDeletedFields(const OOX::Spreadsheet::CQueryTableDeletedFields& oQueryTableDeletedFields)
+{
+	for (size_t i = 0; i < oQueryTableDeletedFields.m_arrItems.size(); ++i)
+	{
+		if(oQueryTableDeletedFields.m_arrItems[i])
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableDeletedField::QueryTableDeletedField);
+			WriteQueryTableDeletedField(*oQueryTableDeletedFields.m_arrItems[i]);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
+}
+void BinaryTableWriter::WriteQueryTableDeletedField(const OOX::Spreadsheet::CQueryTableDeletedField& oQueryTableDeletedField)
+{
+	if(oQueryTableDeletedField.m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_QueryTableDeletedField::Name);
+		m_oBcw.m_oStream.WriteStringW(oQueryTableDeletedField.m_oName.get());
+	}
+}
+void BinaryTableWriter::WriteQueryTableField(const OOX::Spreadsheet::CQueryTableField& oQueryTableField)
+{
+	int nCurPos = 0;
+	if(oQueryTableField.m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_QueryTableField::Name);
+		m_oBcw.m_oStream.WriteStringW(oQueryTableField.m_oName.get());
+	}
+	if(oQueryTableField.m_oId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableField::Id);
+		m_oBcw.m_oStream.WriteLONG(oQueryTableField.m_oId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableField.m_oTableColumnId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableField::TableColumnId);
+		m_oBcw.m_oStream.WriteLONG(oQueryTableField.m_oTableColumnId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableField.m_oRowNumbers.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableField::RowNumbers);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTableField.m_oRowNumbers ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableField.m_oFillFormulas.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableField::FillFormulas);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTableField.m_oFillFormulas ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableField.m_oDataBound.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableField::DataBound);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTableField.m_oDataBound ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oQueryTableField.m_oClipped.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_QueryTableField::Clipped);
+		m_oBcw.m_oStream.WriteBYTE(*oQueryTableField.m_oClipped ? 1 : 0);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryTableWriter::WriteAltTextTable(const OOX::Spreadsheet::CAltTextTable& oAltTextTable)		
 {
 	int nCurPos = 0;
 	if(oAltTextTable.m_oAltText.IsInit())
@@ -490,12 +878,12 @@ void BinaryTableWriter::WriteTableColumn(const OOX::Spreadsheet::CTableColumn& o
 	if(oTableColumn.m_oName.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::Name);
-		m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oName.get2());
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oName);
 	}
 	if(oTableColumn.m_oTotalsRowLabel.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::TotalsRowLabel);
-		m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oTotalsRowLabel.get2());
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oTotalsRowLabel);
 	}
 	if(oTableColumn.m_oTotalsRowFunction.IsInit())
 	{
@@ -506,7 +894,7 @@ void BinaryTableWriter::WriteTableColumn(const OOX::Spreadsheet::CTableColumn& o
 	if(oTableColumn.m_oTotalsRowFormula.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::TotalsRowFormula);
-		m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oTotalsRowFormula.get2());
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oTotalsRowFormula);
 	}
 	if(oTableColumn.m_oDataDxfId.IsInit())
 	{
@@ -517,7 +905,51 @@ void BinaryTableWriter::WriteTableColumn(const OOX::Spreadsheet::CTableColumn& o
 	if(oTableColumn.m_oCalculatedColumnFormula.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::CalculatedColumnFormula);
-		m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oCalculatedColumnFormula.get2());
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oCalculatedColumnFormula);
+	}
+	if(oTableColumn.m_oDataCellStyle.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::DataCellStyle);
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oDataCellStyle);
+	}
+	if(oTableColumn.m_oHeaderRowCellStyle.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::HeaderRowCellStyle);
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oHeaderRowCellStyle);
+	}
+	if(oTableColumn.m_oHeaderRowDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::HeaderRowDxfId);
+		m_oBcw.m_oStream.WriteLONG(oTableColumn.m_oHeaderRowDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oTableColumn.m_oId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::Id);
+		m_oBcw.m_oStream.WriteLONG(oTableColumn.m_oId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oTableColumn.m_oQueryTableFieldId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::QueryTableFieldId);
+		m_oBcw.m_oStream.WriteLONG(oTableColumn.m_oQueryTableFieldId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oTableColumn.m_oTotalsRowCellStyle.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::TotalsRowCellStyle);
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oTotalsRowCellStyle);
+	}
+	if(oTableColumn.m_oTotalsRowDxfId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::TotalsRowDxfId);
+		m_oBcw.m_oStream.WriteLONG(oTableColumn.m_oTotalsRowDxfId->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oTableColumn.m_oUniqueName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::UniqueName);
+		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oUniqueName);
 	}
 }
 void BinaryTableWriter::WriteTableColumns(const OOX::Spreadsheet::CTableColumns& oTableColumns)
@@ -1593,6 +2025,14 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 	}
+	smart_ptr<OOX::File> pFile = workbook.Find(OOX::Spreadsheet::FileTypes::Connections);
+	OOX::Spreadsheet::CConnectionsFile *pConnectionFile = dynamic_cast<OOX::Spreadsheet::CConnectionsFile*>(pFile.operator->());
+	if ((pConnectionFile) && (pConnectionFile->m_oConnections.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Connections);
+		WriteConnections(pConnectionFile->m_oConnections.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
+	}
 }
 void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 {
@@ -1738,6 +2178,344 @@ void BinaryWorkbookTableWriter::WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCa
 		m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oForceFullCalc->ToBool());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+}
+void BinaryWorkbookTableWriter::WriteConnections(const OOX::Spreadsheet::CConnections& connections)
+{
+	for (size_t i = 0; i < connections.m_arrItems.size(); ++i)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::Connection);
+		WriteConnection(*connections.m_arrItems[i]);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteConnection(const OOX::Spreadsheet::CConnection& connection)
+{
+	int nCurPos = 0;
+	if(connection.m_oType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::Type);
+		m_oBcw.m_oStream.WriteULONG(*connection.m_oType);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::Name);
+		m_oBcw.m_oStream.WriteStringW(*connection.m_oName);
+	}
+	if(connection.m_oId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::Id);
+		m_oBcw.m_oStream.WriteULONG(connection.m_oId->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oCredentials.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::Credentials);
+		m_oBcw.m_oStream.WriteULONG(connection.m_oCredentials->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oBackground.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::Background);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oBackground ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oDeleted.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::Deleted);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oDeleted ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oDescription.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::Description);
+		m_oBcw.m_oStream.WriteStringW(*connection.m_oDescription);
+	}
+	if(connection.m_oInterval.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::Interval);
+		m_oBcw.m_oStream.WriteLONG(*connection.m_oInterval);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if(connection.m_oKeepAlive.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::KeepAlive);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oKeepAlive ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oMinRefreshableVersion.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::MinRefreshableVersion);
+		m_oBcw.m_oStream.WriteLONG(*connection.m_oMinRefreshableVersion);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oNew.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::New);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oNew ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oOdcFile.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::OdcFile);
+		m_oBcw.m_oStream.WriteStringW(*connection.m_oOdcFile);
+	}
+	if(connection.m_oOdcFile.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::OdcFile);
+		m_oBcw.m_oStream.WriteStringW(*connection.m_oOdcFile);
+	}
+	if(connection.m_oOnlyUseConnectionFile.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::OnlyUseConnectionFile);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oOnlyUseConnectionFile ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oReconnectionMethod.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::ReconnectionMethod);
+		m_oBcw.m_oStream.WriteLONG(*connection.m_oReconnectionMethod);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oRefreshedVersion.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::RefreshedVersion);
+		m_oBcw.m_oStream.WriteLONG(*connection.m_oRefreshedVersion);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oRefreshOnLoad.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::RefreshOnLoad);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oRefreshOnLoad ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oSaveData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::SaveData);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oSaveData ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oSavePassword.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::SavePassword);
+		m_oBcw.m_oStream.WriteBYTE(*connection.m_oSavePassword ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oSingleSignOnId.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::SingleSignOnId);
+		m_oBcw.m_oStream.WriteStringW(*connection.m_oSingleSignOnId);
+	}
+	if(connection.m_oSourceFile.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerConnectionsTypes::SourceFile);
+		m_oBcw.m_oStream.WriteStringW(*connection.m_oSourceFile);
+	}
+	if(connection.m_oDbPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::DbPr);
+		WriteConnectionDbPr(connection.m_oDbPr.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oOlapPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::OlapPr);
+		WriteConnectionOlapPr(connection.m_oOlapPr.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oTextPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::TextPr);
+		WriteConnectionTextPr(connection.m_oTextPr.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(connection.m_oWebPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerConnectionsTypes::WebPr);
+		WriteConnectionWebPr(connection.m_oWebPr.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteConnectionDbPr(const OOX::Spreadsheet::CDbPr& dbPr)
+{
+	int nCurPos = 0;
+	if(dbPr.m_oConnection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerDbPrTypes::Connection);
+		m_oBcw.m_oStream.WriteStringW(*dbPr.m_oConnection);
+	}
+	if(dbPr.m_oCommand.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerDbPrTypes::Command);
+		m_oBcw.m_oStream.WriteStringW(*dbPr.m_oCommand);
+	}
+	if(dbPr.m_oCommandType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerDbPrTypes::CommandType);
+		m_oBcw.m_oStream.WriteLONG(*dbPr.m_oCommandType);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if(dbPr.m_oServerCommand.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerDbPrTypes::ServerCommand);
+		m_oBcw.m_oStream.WriteStringW(*dbPr.m_oServerCommand);
+	}
+}
+void BinaryWorkbookTableWriter::WriteConnectionOlapPr(const OOX::Spreadsheet::COlapPr& olapPr)
+{
+	int nCurPos = 0;
+	if(olapPr.m_oLocalConnection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerOlapPrTypes::LocalConnection);
+		m_oBcw.m_oStream.WriteStringW(*olapPr.m_oLocalConnection);
+	}
+	if(olapPr.m_oRowDrillCount.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerOlapPrTypes::RowDrillCount);
+		m_oBcw.m_oStream.WriteLONG(*olapPr.m_oRowDrillCount);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(olapPr.m_oLocal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerOlapPrTypes::Local);
+		m_oBcw.m_oStream.WriteBYTE(*olapPr.m_oLocal ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}		
+	if(olapPr.m_oLocalRefresh.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerOlapPrTypes::LocalRefresh);
+		m_oBcw.m_oStream.WriteBYTE(*olapPr.m_oLocalRefresh ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if(olapPr.m_oSendLocale.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerOlapPrTypes::SendLocale);
+		m_oBcw.m_oStream.WriteBYTE(*olapPr.m_oSendLocale ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if(olapPr.m_oServerNumberFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerOlapPrTypes::ServerNumberFormat);
+		m_oBcw.m_oStream.WriteBYTE(*olapPr.m_oServerNumberFormat ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(olapPr.m_oServerFont.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerOlapPrTypes::ServerFont);
+		m_oBcw.m_oStream.WriteBYTE(*olapPr.m_oServerFont ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(olapPr.m_oServerFontColor.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerOlapPrTypes::ServerFontColor);
+		m_oBcw.m_oStream.WriteBYTE(*olapPr.m_oServerFontColor ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteConnectionTextPr(const OOX::Spreadsheet::CTextPr& textPr)
+{
+	int nCurPos = 0;
+	if(textPr.m_oCharacterSet.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerTextPrTypes::CharacterSet);
+		m_oBcw.m_oStream.WriteStringW(*textPr.m_oCharacterSet);
+	}
+	if(textPr.m_oSourceFile.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerTextPrTypes::SourceFile);
+		m_oBcw.m_oStream.WriteStringW(*textPr.m_oSourceFile);
+	}
+	if(textPr.m_oDecimal.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerTextPrTypes::Decimal);
+		m_oBcw.m_oStream.WriteStringW(*textPr.m_oDecimal);
+	}	
+	if(textPr.m_oDelimiter.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerTextPrTypes::Decimal);
+		m_oBcw.m_oStream.WriteStringW(*textPr.m_oDelimiter);
+	}	
+	if(textPr.m_oThousands.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerTextPrTypes::Thousands);
+		m_oBcw.m_oStream.WriteStringW(*textPr.m_oThousands);
+	}	
+	if(textPr.m_oFirstRow.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::FirstRow);
+		m_oBcw.m_oStream.WriteLONG(*textPr.m_oFirstRow);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if(textPr.m_oQualifier.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Qualifier);
+		m_oBcw.m_oStream.WriteLONG(textPr.m_oQualifier->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if(textPr.m_oFileType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::FileType);
+		m_oBcw.m_oStream.WriteLONG(textPr.m_oFileType->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if(textPr.m_oPrompt.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Prompt);
+		m_oBcw.m_oStream.WriteBYTE(*textPr.m_oPrompt ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(textPr.m_oDelimited.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Delimited);
+		m_oBcw.m_oStream.WriteBYTE(*textPr.m_oDelimited ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(textPr.m_oTab.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Tab);
+		m_oBcw.m_oStream.WriteBYTE(*textPr.m_oTab ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(textPr.m_oSpace.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Space);
+		m_oBcw.m_oStream.WriteBYTE(*textPr.m_oSpace ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(textPr.m_oComma.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Comma);
+		m_oBcw.m_oStream.WriteBYTE(*textPr.m_oComma ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(textPr.m_oSemicolon.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Semicolon);
+		m_oBcw.m_oStream.WriteBYTE(*textPr.m_oSemicolon ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(textPr.m_oConsecutive.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerTextPrTypes::Consecutive);
+		m_oBcw.m_oStream.WriteBYTE(*textPr.m_oConsecutive ? 1 : 0);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	//m_oTextFields;
+}
+void BinaryWorkbookTableWriter::WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr)
+{
+			nullable_string		m_oUrl;
+			nullable_string		m_oPost;
+			nullable_string		m_oEditPage;
+			nullable_bool		m_oXml;
+			nullable_bool		m_oSourceData;
+			nullable_bool		m_oConsecutive;
+			nullable_bool		m_oFirstRow;
+			nullable_bool		m_oXl97;
+			nullable_bool		m_oTextDates;
+			nullable_bool		m_oXl2000;
+			nullable_bool		m_oHtmlTables;
+			nullable<SimpleTypes::Spreadsheet::CHtmlFormat<>> m_oHtmlFormat;
 }
 void BinaryWorkbookTableWriter::WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook)
 {
@@ -2254,6 +3032,13 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet& oSheet
 			}
         }
     }
+	// DataValidations (with ext)
+	if ( oWorksheet.m_oDataValidations.IsInit() )
+    {
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::DataValidations);
+		WriteDataValidations(oWorksheet.m_oDataValidations.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 	//Drawing
 	if(oWorksheet.m_oDrawing.IsInit() && oWorksheet.m_oDrawing->m_oId.IsInit())
 	{
@@ -2307,6 +3092,15 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet& oSheet
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::TableParts);
 		oBinaryTableWriter.Write(oWorksheet, oWorksheet.m_oTableParts.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	smart_ptr<OOX::File> pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::QueryTable);
+	OOX::Spreadsheet::CQueryTableFile *pQueryTableFile = dynamic_cast<OOX::Spreadsheet::CQueryTableFile*>(pFile.operator->());
+	if ((pQueryTableFile) && (pQueryTableFile->m_oQueryTable.IsInit()))
+	{
+		BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::QueryTable);
+		oBinaryTableWriter.WriteQueryTable(pQueryTableFile->m_oQueryTable.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
 	}
 	//Comments
 	if(oWorksheet.m_mapComments.size() > 0)
@@ -4719,6 +5513,133 @@ void BinaryWorksheetTableWriter::WriteSparklineGroup(const OOX::Spreadsheet::CSp
         nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Sparklines);
         WriteSparklines(oSparklineGroup.m_oSparklines.get());
         m_oBcw.WriteItemEnd(nCurPos);
+    }
+}
+void BinaryWorksheetTableWriter::WriteDataValidations(const OOX::Spreadsheet::CDataValidations& oDataValidations)
+{
+    if (oDataValidations.m_oDisablePrompts.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::DisablePrompts);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oDataValidations.m_oDisablePrompts->ToBool());
+    }
+    if (oDataValidations.m_oXWindow.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::XWindow);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(oDataValidations.m_oXWindow->GetValue());
+    }
+    if (oDataValidations.m_oYWindow.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::YWindow);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(oDataValidations.m_oYWindow->GetValue());
+    }
+
+	int nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::DataValidations);
+	WriteDataValidationsContent(oDataValidations);
+	m_oBcw.WriteItemEnd(nCurPos);
+}
+void BinaryWorksheetTableWriter::WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations)
+{
+	for(size_t i = 0; i < oDataValidations.m_arrItems.size(); ++i)
+    {
+        int nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::DataValidation);
+        WriteDataValidation(*oDataValidations.m_arrItems[i]);
+        m_oBcw.WriteItemEnd(nCurPos);
+    }
+}
+void BinaryWorksheetTableWriter::WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation)
+{
+    if (oDataValidation.m_oType.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::Type);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(oDataValidation.m_oType->GetValue());
+    }
+    if (oDataValidation.m_oAllowBlank.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::AllowBlank);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oDataValidation.m_oAllowBlank->ToBool());
+    }
+    if (oDataValidation.m_oError.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::Error);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oError.get());
+    }
+    if (oDataValidation.m_oErrorTitle.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::ErrorTitle);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oErrorTitle.get());
+    }
+    if (oDataValidation.m_oErrorStyle.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::ErrorStyle);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(oDataValidation.m_oErrorStyle->GetValue());
+    }
+    if (oDataValidation.m_oImeMode.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::ImeMode);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(oDataValidation.m_oImeMode->GetValue());
+    }
+    if (oDataValidation.m_oOperator.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::Operator);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(oDataValidation.m_oOperator->GetValue());
+    }
+    if (oDataValidation.m_oPromt.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::Promt);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oPromt.get());
+    }
+    if (oDataValidation.m_oPromptTitle.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::PromptTitle);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oPromptTitle.get());
+    }
+    if (oDataValidation.m_oShowDropDown.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::ShowDropDown);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oDataValidation.m_oShowDropDown->ToBool());
+    }
+    if (oDataValidation.m_oShowErrorMessage.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::ShowErrorMessage);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oDataValidation.m_oShowErrorMessage->ToBool());
+    }
+    if (oDataValidation.m_oShowInputMessage.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::ShowInputMessage);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oDataValidation.m_oShowInputMessage->ToBool());
+    }
+    if (oDataValidation.m_oSqRef.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::SqRef);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oSqRef.get());
+    }
+    if (oDataValidation.m_oFormula1.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::Formula1);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oFormula1->m_sText);
+    }
+    if (oDataValidation.m_oFormula2.IsInit())
+    {
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::Formula2);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oFormula2->m_sText);
     }
 }
 void BinaryWorksheetTableWriter::WriteSparklines(const OOX::Spreadsheet::CSparklines& oSparklines)

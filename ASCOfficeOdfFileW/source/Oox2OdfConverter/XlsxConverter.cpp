@@ -493,7 +493,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CTableColumns *oox_table_part_colu
 	{
 		std::wstring name;
 		if (oox_table_part_columns->m_arrItems[i]->m_oName.IsInit())
-			name = oox_table_part_columns->m_arrItems[i]->m_oName.get2();
+			name = *oox_table_part_columns->m_arrItems[i]->m_oName;
 		
 		ods_context->add_table_part_column(name);
 	}

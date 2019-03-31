@@ -91,9 +91,9 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-					void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 
-			bool isExtended();
+			bool IsExtended();
 
 			virtual EElementType getType () const
 			{
@@ -118,7 +118,7 @@ namespace OOX
 
 			nullable_string									m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 	//ext
-			nullable<std::wstring>							m_oUuid;
+			mutable nullable_string							m_oUuid;
 			nullable<CDataValidationFormula>				m_oFormula1;
 			nullable<CDataValidationFormula>				m_oFormula2;
 		};
@@ -150,7 +150,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			mutable nullable_int							m_oCount;
 			nullable<SimpleTypes::COnOff<>>					m_oDisablePrompts;
 			nullable<SimpleTypes::CDecimalNumber<>>			m_oXWindow;
 			nullable<SimpleTypes::CDecimalNumber<>>			m_oYWindow;

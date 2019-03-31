@@ -42,6 +42,7 @@
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Table/QueryTable.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotTable.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
@@ -100,6 +101,8 @@ namespace BinXlsxRW
 		public:
 		BinaryTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorksheet* pCurWorksheet);
 		int Read(long length, OOX::Spreadsheet::CTableParts* pTableParts);
+		int ReadQueryTable(long length, OOX::Spreadsheet::CQueryTable* pQueryTable);
+		
 		int ReadTablePart(BYTE type, long length, void* poResult);
 		int ReadTable(BYTE type, long length, void* poResult);
 		int ReadAltTextTable(BYTE type, long length, void* poResult);
@@ -121,6 +124,12 @@ namespace BinXlsxRW
 		int ReadTableColumns(BYTE type, long length, void* poResult);
 		int ReadTableColumn(BYTE type, long length, void* poResult);
 		int ReadTableStyleInfo(BYTE type, long length, void* poResult);
+		int ReadQueryTableContent(BYTE type, long length, void* poResult);
+		int ReadQueryTableRefresh(BYTE type, long length, void* poResult);
+		int ReadQueryTableFields(BYTE type, long length, void* poResult);
+		int ReadQueryTableField(BYTE type, long length, void* poResult);
+		int ReadQueryTableDeletedFields(BYTE type, long length, void* poResult);
+		int ReadQueryTableDeletedField(BYTE type, long length, void* poResult);
 	};
 	class BinarySharedStringTableReader : public Binary_CommonReader
 	{
@@ -203,6 +212,12 @@ namespace BinXlsxRW
 		int ReadDdeValue(BYTE type, long length, void* poResult);
 		int ReadPivotCaches(BYTE type, long length, void* poResult);
 		int ReadPivotCache(BYTE type, long length, void* poResult);
+		int ReadConnections(BYTE type, long length, void* poResult);
+		int ReadConnection(BYTE type, long length, void* poResult);
+		int ReadConnectionDbPr(BYTE type, long length, void* poResult);
+		int ReadConnectionOlapPr(BYTE type, long length, void* poResult);
+		int ReadConnectionTextPr(BYTE type, long length, void* poResult);
+		int ReadConnectionWebPr(BYTE type, long length, void* poResult);
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{
@@ -300,6 +315,9 @@ namespace BinXlsxRW
         int ReadSparklines(BYTE type, long length, void* poResult);
         int ReadSparkline(BYTE type, long length, void* poResult);
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
+        int ReadDataValidations(BYTE type, long length, void* poResult);
+		int ReadDataValidationsContent(BYTE type, long length, void* poResult);
+        int ReadDataValidation(BYTE type, long length, void* poResult);
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader
 	{

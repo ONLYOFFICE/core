@@ -64,11 +64,15 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 	writer.WriteString(L"<" + node_name);
 		if (bExtendedWrite)
 		{
+			if (false == m_oUuid.IsInit())
+			{
+				m_oUuid = L"{" + XmlUtils::GenerateGuid() + L"}";
+			}
 			WritingStringNullableAttrString	(L"xr:uid",	m_oUuid, m_oUuid.get());
 		}
 		else
 		{
-			WritingStringAttrString(L"sqref", m_oSqRef.get());
+			WritingStringNullableAttrString(L"sqref", m_oSqRef, m_oSqRef.get());
 		}
 		WritingStringNullableAttrString	(L"type",			m_oType,			m_oType->ToString());
 		WritingStringNullableAttrInt	(L"allowBlank",		m_oAllowBlank,		m_oAllowBlank->GetValue());
@@ -88,11 +92,15 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 	{
 		if (m_oFormula1.IsInit())
 		{
-			m_oFormula1->toXML(writer);
+			writer.WriteString(L"<x14:formula1>");
+				m_oFormula1->toXML2(writer, true);
+			writer.WriteString(L"</x14:formula1>");
 		}
 		if (m_oFormula2.IsInit())
 		{
-			m_oFormula1->toXML(writer);
+			writer.WriteString(L"<x14:formula2>");
+				m_oFormula1->toXML2(writer, true);
+			writer.WriteString(L"</x14:formula2>");
 		}
 		if (m_oSqRef.IsInit())
 		{
@@ -106,8 +114,8 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
 	ReadAttributes( oReader );
 
-	if ( !oReader.IsEmptyNode() )
-		oReader.ReadTillEnd();
+	if ( oReader.IsEmptyNode() )
+		return;
 
 	int nCurDepth = oReader.GetDepth();
 	while (oReader.ReadNextSiblingNode(nCurDepth))
@@ -127,9 +135,9 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		}
 	}
 }
-bool CDataValidation::isExtended()
+bool CDataValidation::IsExtended()
 {
-	return (m_oFormula2.IsInit() || m_oFormula2.IsInit());
+	return (m_oFormula1.IsInit() || m_oFormula2.IsInit());
 }
 void CDataValidation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -151,10 +159,18 @@ void CDataValidation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 }
 void CDataValidations::toXML(NSStringUtils::CStringBuilder& writer) const
 {
+	if (m_arrItems.empty()) return;
+
 	toXML2(writer, false);
 }
 void CDataValidations::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 {
+	if (m_arrItems.empty()) return;
+	
+	if (false == m_oCount.IsInit())
+	{
+		m_oCount = (int)m_arrItems.size();
+	}
 	std::wstring node_name = bExtendedWrite ? L"x14:dataValidations" : L"dataValidations";
 
 	writer.WriteString(L"<" + node_name);
@@ -162,7 +178,7 @@ void CDataValidations::toXML2(NSStringUtils::CStringBuilder& writer, bool bExten
 		{
 			WritingStringAttrString(L"xmlns:xm", L"http://schemas.microsoft.com/office/excel/2006/main");
 		}
-		WritingStringNullableAttrInt(L"count",			m_oCount,			m_oCount->GetValue());
+		WritingStringNullableAttrInt(L"count",			m_oCount,			*m_oCount);
 		WritingStringNullableAttrInt(L"disablePrompts", m_oDisablePrompts,	m_oDisablePrompts->GetValue());
 		WritingStringNullableAttrInt(L"xWindow",		m_oXWindow,			m_oXWindow->GetValue());
 		WritingStringNullableAttrInt(L"yWindow",		m_oYWindow,			m_oYWindow->GetValue());
@@ -174,7 +190,7 @@ void CDataValidations::toXML2(NSStringUtils::CStringBuilder& writer, bool bExten
 			m_arrItems[i]->toXML2(writer, bExtendedWrite);
 		}
 	}
-	writer.WriteString(L"<" + node_name + L">");
+	writer.WriteString(L"</" + node_name + L">");
 }
 void CDataValidations::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {

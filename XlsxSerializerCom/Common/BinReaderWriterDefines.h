@@ -210,7 +210,89 @@ namespace BinXlsxRW
 		VbaProject = 12,
 		JsaProject = 13,
 		Comments = 14,
-		CalcPr = 15
+		CalcPr = 15,
+		Connections = 16
+	};}	
+	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
+	{
+		Connection = 0,
+		Command = 1,
+		CommandType = 2,
+		ServerCommand = 3
+	};}
+	namespace c_oSerTextPrTypes{enum c_oSerTextPrTypes
+	{
+		CharacterSet = 0,
+		SourceFile = 1,
+		Decimal = 2,
+		Delimiter = 3,
+		Thousands = 4,
+		FirstRow = 5,
+		Qualifier = 6,
+		FileType = 7,
+		Prompt = 8,
+		Delimited = 9,
+		Tab = 10,
+		Space = 11,
+		Comma = 12,
+		Semicolon = 13,
+		Consecutive = 14,
+		TextFields = 15
+	};}
+	namespace c_oSerOlapPrTypes{enum c_oSerOlapPrTypes
+	{
+		LocalConnection = 0,
+		RowDrillCount = 1,
+		Local = 2,
+		LocalRefresh = 3,
+		SendLocale = 4,
+		ServerNumberFormat = 5,
+		ServerFont = 6,
+		ServerFontColor = 7
+	};}
+	namespace c_oSerWebPrTypes{enum c_oSerWebPrTypes
+	{
+		Url = 0,
+		Post = 1,
+		EditPage = 2,
+		Xml = 3,
+		SourceData = 4,
+		Consecutive = 5,
+		FirstRow = 6,
+		Xl97 = 7,
+		TextDates = 8,
+		Xl2000 = 9,
+		HtmlTables = 10,
+		HtmlFormat = 11,
+		Tables = 12
+	};}
+	namespace c_oSerConnectionsTypes{enum c_oSerConnectionsTypes
+	{
+		Connection = 0,
+		Type = 1,
+		Name = 2,
+		Id = 3,
+		Credentials = 4,
+		Background = 5,
+		Deleted = 6,
+		Description = 7,
+		Interval = 8,
+		KeepAlive = 9,
+		MinRefreshableVersion = 10,
+		New = 11,
+		OdcFile = 12,
+		OnlyUseConnectionFile = 13,
+		ReconnectionMethod = 14,
+		RefreshedVersion = 15,
+		RefreshOnLoad = 16,
+		SaveData = 17,
+		SavePassword = 18,
+		SingleSignOnId = 19,
+		SourceFile = 20,
+		DbPr = 21,
+		OlapPr = 22,
+		TextPr = 23,
+		WebPr = 24
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{
@@ -284,7 +366,9 @@ namespace BinXlsxRW
 		LegacyDrawingHF = 28,
 		Picture = 29,
 		RowBreaks = 30,
-		ColBreaks = 31
+		ColBreaks = 31,
+		DataValidations = 32,
+		QueryTable = 33
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -543,6 +627,61 @@ namespace BinXlsxRW
 		GridLines = 0,
 		Headings = 1
 	};}
+	namespace c_oSer_QueryTable{enum c_oSer_QueryTable
+	{
+		AdjustColumnWidth = 0,
+		ApplyAlignmentFormats = 1,
+		ApplyBorderFormats = 2,
+		ApplyFontFormats = 3,
+		ApplyNumberFormats = 4,
+		ApplyPatternFormats = 5,
+		ApplyWidthHeightFormats = 6,
+		BackgroundRefresh = 7,			
+		AutoFormatId = 8,
+		ConnectionId = 9,			
+		DisableEdit = 10,
+		DisableRefresh = 11,
+		FillFormulas = 12,
+		FirstBackgroundRefresh = 13,
+		GrowShrinkType = 14,
+		Headers = 15,
+		Intermediate = 16,
+		Name = 17,
+		PreserveFormatting = 18,
+		RefreshOnLoad = 19,
+		RemoveDataOnSave = 20,
+		RowNumbers = 21,
+		QueryTableRefresh = 22
+	};}
+	namespace c_oSer_QueryTableRefresh{enum c_oSer_QueryTableRefresh
+	{
+		NextId = 0,
+		MinimumVersion = 1,			
+		FieldIdWrapped = 2,
+		HeadersInLastRefresh = 3,
+		PreserveSortFilterLayout = 4,
+		UnboundColumnsLeft = 5,
+		UnboundColumnsRight = 6,			
+		QueryTableFields = 7,
+		QueryTableDeletedFields = 8,
+		SortState = 9
+	};}
+	namespace c_oSer_QueryTableField{enum c_oSer_QueryTableField
+	{
+		QueryTableField = 0,			
+		Id = 1,
+		TableColumnId = 2,
+		Name = 3,			
+		RowNumbers = 4,
+		FillFormulas = 5,
+		DataBound = 6,
+		Clipped = 7
+	};}
+	namespace c_oSer_QueryTableDeletedField{enum c_oSer_QueryTableDeletedField
+	{
+		QueryTableDeletedField = 0,			
+		Name = 1
+	};}
 	namespace c_oSer_TablePart{enum c_oSer_TablePart
 	{
 		Table = 0,
@@ -554,7 +693,26 @@ namespace BinXlsxRW
 		TableColumns = 6,
 		TableStyleInfo = 7,
 		HeaderRowCount = 8,
-		AltTextTable = 9
+		AltTextTable = 9,
+		Name = 10,
+		Comment = 11,
+		ConnectionId = 12,
+		Id = 13,
+		DataCellStyle = 14,
+		DataDxfId = 15,
+		HeaderRowBorderDxfId = 16,
+		HeaderRowCellStyle = 17,
+		HeaderRowDxfId = 18,
+		InsertRow = 19,
+		InsertRowShift = 20,
+		Published = 21,
+		TableBorderDxfId = 22,
+		TableType = 23,
+		TotalsRowBorderDxfId = 24,
+		TotalsRowCellStyle = 25,
+		TotalsRowDxfId = 26,
+		TotalsRowShown = 27,
+		QueryTable =28
 	};}
 	namespace c_oSer_TableStyleInfo{enum c_oSer_TableStyleInfo
 	{
@@ -572,7 +730,15 @@ namespace BinXlsxRW
 		TotalsRowLabel = 3,
 		TotalsRowFunction = 4,
 		TotalsRowFormula = 5,
-		CalculatedColumnFormula = 6
+		CalculatedColumnFormula = 6,
+		DataCellStyle = 7,
+		HeaderRowCellStyle = 8,
+		HeaderRowDxfId = 9,
+		Id = 10,
+		QueryTableFieldId = 11,
+		TotalsRowCellStyle = 12,
+		TotalsRowDxfId = 13,
+		UniqueName = 14
 	};}
 	namespace c_oSer_SortState{enum c_oSer_SortState
 	{
@@ -780,6 +946,29 @@ namespace BinXlsxRW
 	{
 		iconSet = 0,
 		iconId = 1
+	};}
+	namespace c_oSer_DataValidation{enum c_oSer_DataValidation
+	{
+		DataValidations = 0,
+		DataValidation = 1,
+		DisablePrompts = 2,
+		XWindow = 3,
+		YWindow = 4,
+		Type = 5,
+		AllowBlank = 6,
+		Error = 7,
+		ErrorTitle = 8,
+		ErrorStyle = 9,
+		ImeMode = 10,
+		Operator = 11,
+		Promt = 12,
+		PromptTitle = 13,
+		ShowDropDown = 14,
+		ShowErrorMessage = 15,
+		ShowInputMessage = 16,
+		SqRef = 17,
+		Formula1 = 18,
+		Formula2 = 19
 	};}
 	namespace c_oSer_SheetView{enum c_oSer_SheetView
 	{

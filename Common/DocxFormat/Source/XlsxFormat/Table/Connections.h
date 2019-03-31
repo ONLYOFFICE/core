@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_CONNECTIONS_INCLUDE_H_
-#define OOX_CONNECTIONS_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -56,7 +54,7 @@ namespace OOX
 				writer.WriteString(L"<textField");
 					WritingStringNullableAttrString	(L"type", m_oType, m_oType->ToString())
 					WritingStringNullableAttrInt	(L"position", m_oPosition, *m_oPosition)
-				writer.WriteString(L"</>");
+				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -154,15 +152,15 @@ namespace OOX
 				writer.WriteString(L"<parameter");
 					WritingStringNullableAttrString	(L"name",			m_oName,		*m_oName)
 					WritingStringNullableAttrString	(L"parameterType",	m_oParameterType, m_oParameterType->ToString())
-					WritingStringNullableAttrString	(L"prompt",			m_oPrompt,		*m_oPrompt)
 					WritingStringNullableAttrInt	(L"sqlType",		m_oSqlType,		*m_oSqlType)
 					WritingStringNullableAttrString	(L"string",			m_oString,		*m_oString)
 					WritingStringNullableAttrString	(L"cell",			m_oCell,		*m_oCell)
 					WritingStringNullableAttrInt	(L"integer",		m_oInteger,		*m_oInteger)
 					WritingStringNullableAttrDouble	(L"double",			m_oDouble,		*m_oDouble)
-					WritingStringNullableAttrBool	(L"boolean",		m_oBoolean)
-					WritingStringNullableAttrBool	(L"refreshOnChange",m_oRefreshOnChange)
-				writer.WriteString(L"</>");
+					WritingStringNullableAttrBool2	(L"boolean",		m_oBoolean)
+					WritingStringNullableAttrBool2	(L"refreshOnChange",m_oRefreshOnChange)
+					WritingStringNullableAttrEncodeXmlString(L"prompt",	m_oPrompt,		*m_oPrompt)
+				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -192,16 +190,16 @@ namespace OOX
 			}
 			nullable<SimpleTypes::Spreadsheet::CParameterType<>> m_oParameterType;
 
-			nullable_string					m_oName;
-			nullable_string					m_oPrompt;
-			nullable_int					m_oSqlType;
-			nullable<SimpleTypes::COnOff<>>	m_oRefreshOnChange;
+			nullable_string		m_oName;
+			nullable_string		m_oPrompt;
+			nullable_int		m_oSqlType;
+			nullable_bool		m_oRefreshOnChange;
 			
-			nullable_string					m_oString;
-			nullable_string					m_oCell;
-			nullable_int					m_oInteger;
-			nullable_double					m_oDouble;
-			nullable<SimpleTypes::COnOff<>>	m_oBoolean;
+			nullable_string		m_oString;
+			nullable_string		m_oCell;
+			nullable_int		m_oInteger;
+			nullable_double		m_oDouble;
+			nullable_bool		m_oBoolean;
 		};
 		class CParameters : public WritingElementWithChilds<CParameter>
 		{
@@ -264,6 +262,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDbPr)
+			CDbPr() {}
+			virtual ~CDbPr() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -275,11 +275,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<dbPr");
-					WritingStringNullableAttrString	(L"connection",		m_oConnection,		*m_oConnection)
-					WritingStringNullableAttrString	(L"command",		m_oCommand,			*m_oCommand)
-					WritingStringNullableAttrString	(L"serverCommand",	m_oServerCommand,	*m_oServerCommand)
-					WritingStringNullableAttrInt	(L"commandType",	m_oCommandType,		*m_oCommandType)
-				writer.WriteString(L"</>");
+					WritingStringNullableAttrEncodeXmlString(L"connection",		m_oConnection,		*m_oConnection)
+					WritingStringNullableAttrEncodeXmlString(L"command",		m_oCommand,			*m_oCommand)
+					WritingStringNullableAttrEncodeXmlString(L"serverCommand",	m_oServerCommand,	*m_oServerCommand)
+					WritingStringNullableAttrInt			(L"commandType",	m_oCommandType,		*m_oCommandType)
+				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -301,16 +301,19 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"commandType",		m_oCommandType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable_string				m_oConnection;
-			nullable_string				m_oCommand;
-			nullable_string				m_oServerCommand;
-			nullable_int				m_oCommandType;
+			nullable_string		m_oConnection;
+			nullable_string		m_oCommand;
+			nullable_string		m_oServerCommand;
+			nullable_int		m_oCommandType;
 		};
 
 		class COlapPr : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(COlapPr)
+
+			COlapPr() {}
+			virtual ~COlapPr() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -322,15 +325,15 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<olapPr");
-					WritingStringNullableAttrString	(L"localConnection",	m_oLocalConnection,	*m_oLocalConnection)
+					WritingStringNullableAttrEncodeXmlString (L"localConnection",	m_oLocalConnection,	*m_oLocalConnection)
 					WritingStringNullableAttrInt	(L"rowDrillCount",		m_oRowDrillCount,	*m_oRowDrillCount)
-					WritingStringNullableAttrBool	(L"local",				m_oLocal)
-					WritingStringNullableAttrBool	(L"localRefresh",		m_oLocalRefresh)
-					WritingStringNullableAttrBool	(L"sendLocale",			m_oSendLocale)
-					WritingStringNullableAttrBool	(L"serverNumberFormat",	m_oServerNumberFormat)
-					WritingStringNullableAttrBool	(L"serverFont",			m_oServerFont)
-					WritingStringNullableAttrBool	(L"serverFontColor",	m_oServerFontColor)
-				writer.WriteString(L"</>");
+					WritingStringNullableAttrBool2	(L"local",				m_oLocal)
+					WritingStringNullableAttrBool2	(L"localRefresh",		m_oLocalRefresh)
+					WritingStringNullableAttrBool2	(L"sendLocale",			m_oSendLocale)
+					WritingStringNullableAttrBool2	(L"serverNumberFormat",	m_oServerNumberFormat)
+					WritingStringNullableAttrBool2	(L"serverFont",			m_oServerFont)
+					WritingStringNullableAttrBool2	(L"serverFontColor",	m_oServerFontColor)
+				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -356,20 +359,23 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"serverFontColor",	m_oServerFontColor )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable_string					m_oLocalConnection;
-			nullable_int					m_oRowDrillCount;
-			nullable<SimpleTypes::COnOff<>>	m_oLocal;
-			nullable<SimpleTypes::COnOff<>>	m_oLocalRefresh;
-			nullable<SimpleTypes::COnOff<>>	m_oSendLocale;
-			nullable<SimpleTypes::COnOff<>>	m_oServerNumberFormat;
-			nullable<SimpleTypes::COnOff<>>	m_oServerFont;
-			nullable<SimpleTypes::COnOff<>>	m_oServerFontColor;
+			nullable_string	m_oLocalConnection;
+			nullable_int	m_oRowDrillCount;
+			nullable_bool	m_oLocal;
+			nullable_bool	m_oLocalRefresh;
+			nullable_bool	m_oSendLocale;
+			nullable_bool	m_oServerNumberFormat;
+			nullable_bool	m_oServerFont;
+			nullable_bool	m_oServerFontColor;
 		};
 
 		class CWebPr : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CWebPr)
+
+			CWebPr() {}
+			virtual ~CWebPr() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -385,14 +391,14 @@ namespace OOX
 					WritingStringNullableAttrString	(L"post",		m_oPost,		*m_oPost)
 					WritingStringNullableAttrString	(L"editPage",	m_oEditPage,	*m_oEditPage)
 					WritingStringNullableAttrString	(L"htmlFormat",	m_oHtmlFormat,	m_oHtmlFormat->ToString())
-					WritingStringNullableAttrBool	(L"xml",		m_oXml)
-					WritingStringNullableAttrBool	(L"sourceData",	m_oSourceData)
-					WritingStringNullableAttrBool	(L"consecutive",m_oConsecutive)
-					WritingStringNullableAttrBool	(L"firstRow",	m_oFirstRow)
-					WritingStringNullableAttrBool	(L"xl97",		m_oXl97)
-					WritingStringNullableAttrBool	(L"textDates",	m_oTextDates)
-					WritingStringNullableAttrBool	(L"xl2000",		m_oXl2000)
-					WritingStringNullableAttrBool	(L"htmlTables",	m_oHtmlTables)
+					WritingStringNullableAttrBool2	(L"sourceData",	m_oSourceData)
+					WritingStringNullableAttrBool2	(L"consecutive",m_oConsecutive)
+					WritingStringNullableAttrBool2	(L"firstRow",	m_oFirstRow)
+					WritingStringNullableAttrBool2	(L"xl97",		m_oXl97)
+					WritingStringNullableAttrBool2	(L"textDates",	m_oTextDates)
+					WritingStringNullableAttrBool2	(L"xl2000",		m_oXl2000)
+					WritingStringNullableAttrBool2	(L"htmlTables",	m_oHtmlTables)
+					WritingStringNullableAttrBool2	(L"xml",		m_oXml)
 
 				//if (m_oTables.IsInit())
 				//{
@@ -401,9 +407,9 @@ namespace OOX
 				//	writer.WriteString(L"</webPr>");
 				//}
 				//else
-				{
-					writer.WriteString(L"</>");
-				}
+				//{
+					writer.WriteString(L"/>");
+				//}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -441,17 +447,17 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"htmlTables",	m_oHtmlTables )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable_string						m_oUrl;
-			nullable_string						m_oPost;
-			nullable_string						m_oEditPage;
-			nullable<SimpleTypes::COnOff<>>		m_oXml;
-			nullable<SimpleTypes::COnOff<>>		m_oSourceData;
-			nullable<SimpleTypes::COnOff<>>		m_oConsecutive;
-			nullable<SimpleTypes::COnOff<>>		m_oFirstRow;
-			nullable<SimpleTypes::COnOff<>>		m_oXl97;
-			nullable<SimpleTypes::COnOff<>>		m_oTextDates;
-			nullable<SimpleTypes::COnOff<>>		m_oXl2000;
-			nullable<SimpleTypes::COnOff<>>		m_oHtmlTables;
+			nullable_string		m_oUrl;
+			nullable_string		m_oPost;
+			nullable_string		m_oEditPage;
+			nullable_bool		m_oXml;
+			nullable_bool		m_oSourceData;
+			nullable_bool		m_oConsecutive;
+			nullable_bool		m_oFirstRow;
+			nullable_bool		m_oXl97;
+			nullable_bool		m_oTextDates;
+			nullable_bool		m_oXl2000;
+			nullable_bool		m_oHtmlTables;
 			nullable<SimpleTypes::Spreadsheet::CHtmlFormat<>> m_oHtmlFormat;
 
 			//nullable<CTables>					m_oTables;
@@ -460,6 +466,9 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTextPr)
+
+			CTextPr() {}
+			virtual ~CTextPr() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -472,20 +481,20 @@ namespace OOX
 			{
 				writer.WriteString(L"<textPr");
 					WritingStringNullableAttrString	(L"characterSet",m_oCharacterSet,	*m_oCharacterSet)
-					WritingStringNullableAttrString	(L"sourceFile",	m_oSourceFile,		*m_oSourceFile)
-					WritingStringNullableAttrString	(L"decimal",	m_oDecimal,			*m_oDecimal)
-					WritingStringNullableAttrString	(L"delimiter",	m_oDelimiter,		*m_oDelimiter)
-					WritingStringNullableAttrString	(L"thousands",	m_oThousands,		*m_oThousands)
+					WritingStringNullableAttrEncodeXmlString	(L"sourceFile",	m_oSourceFile,		*m_oSourceFile)
+					WritingStringNullableAttrEncodeXmlString	(L"decimal",	m_oDecimal,			*m_oDecimal)
+					WritingStringNullableAttrEncodeXmlString	(L"delimiter",	m_oDelimiter,		*m_oDelimiter)
+					WritingStringNullableAttrEncodeXmlString	(L"thousands",	m_oThousands,		*m_oThousands)
 					WritingStringNullableAttrString	(L"qualifier",	m_oQualifier,		m_oQualifier->ToString())
 					WritingStringNullableAttrString	(L"fileType",	m_oFileType,		m_oFileType->ToString())
 					WritingStringNullableAttrInt	(L"firstRow",	m_oFirstRow,		*m_oFirstRow)
-					WritingStringNullableAttrBool	(L"prompt",		m_oPrompt)
-					WritingStringNullableAttrBool	(L"delimited",	m_oDelimited)
-					WritingStringNullableAttrBool	(L"tab",		m_oTab)
-					WritingStringNullableAttrBool	(L"space",		m_oSpace)
-					WritingStringNullableAttrBool	(L"comma",		m_oComma)
-					WritingStringNullableAttrBool	(L"semicolon",	m_oSemicolon)
-					WritingStringNullableAttrBool	(L"consecutive",m_oConsecutive)
+					WritingStringNullableAttrBool2	(L"prompt",		m_oPrompt)
+					WritingStringNullableAttrBool2	(L"delimited",	m_oDelimited)
+					WritingStringNullableAttrBool2	(L"tab",		m_oTab)
+					WritingStringNullableAttrBool2	(L"space",		m_oSpace)
+					WritingStringNullableAttrBool2	(L"comma",		m_oComma)
+					WritingStringNullableAttrBool2	(L"semicolon",	m_oSemicolon)
+					WritingStringNullableAttrBool2	(L"consecutive",m_oConsecutive)
 
 				if (m_oTextFields.IsInit())
 				{
@@ -495,7 +504,7 @@ namespace OOX
 				}
 				else
 				{
-					writer.WriteString(L"</>");
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -537,31 +546,35 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"consecutive",	m_oConsecutive )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable_string						m_oCharacterSet;
-			nullable_string						m_oSourceFile;
-			nullable_string						m_oDecimal;
-			nullable_string						m_oDelimiter;
-			nullable_string						m_oThousands;
-			nullable_int						m_oFirstRow;
+			nullable_string			m_oCharacterSet;
+			nullable_string			m_oSourceFile;
+			nullable_string			m_oDecimal;
+			nullable_string			m_oDelimiter;
+			nullable_string			m_oThousands;
+			nullable_int			m_oFirstRow;
 
 			nullable<SimpleTypes::Spreadsheet::CQualifier<>> m_oQualifier;
 			nullable<SimpleTypes::Spreadsheet::CFileType<>>	m_oFileType;
 
-			nullable<SimpleTypes::COnOff<>>		m_oPrompt;
-			nullable<SimpleTypes::COnOff<>>		m_oDelimited;
-			nullable<SimpleTypes::COnOff<>>		m_oTab;
-			nullable<SimpleTypes::COnOff<>>		m_oSpace;
-			nullable<SimpleTypes::COnOff<>>		m_oComma;
-			nullable<SimpleTypes::COnOff<>>		m_oSemicolon;
-			nullable<SimpleTypes::COnOff<>>		m_oConsecutive;
+			nullable_bool			m_oPrompt;
+			nullable_bool			m_oDelimited;
+			nullable_bool			m_oTab;
+			nullable_bool			m_oSpace;
+			nullable_bool			m_oComma;
+			nullable_bool			m_oSemicolon;
+			nullable_bool			m_oConsecutive;
 
-			nullable<CTextFields>				m_oTextFields;
+			nullable<CTextFields>	m_oTextFields;
 		};
 		class CConnection : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CConnection)
 
+			CConnection() {}
+			virtual ~CConnection()
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -574,25 +587,25 @@ namespace OOX
 				if(false == m_oName.IsInit()) return;
 
 				writer.WriteString(L"<connection");
-					WritingStringNullableAttrString(L"name", m_oName, *m_oName)
-					WritingStringNullableAttrString(L"description", m_oDescription, *m_oDescription)
-					WritingStringNullableAttrInt(L"type", m_oType, *m_oType)
 					WritingStringNullableAttrInt(L"id", m_oId, m_oId->GetValue())
+					WritingStringNullableAttrEncodeXmlString(L"odcFile", m_oOdcFile, *m_oOdcFile)
+					WritingStringNullableAttrBool2(L"keepAlive", m_oKeepAlive)
+					WritingStringNullableAttrEncodeXmlString(L"name", m_oName, *m_oName)
+					WritingStringNullableAttrEncodeXmlString(L"description", m_oDescription, *m_oDescription)
+					WritingStringNullableAttrInt(L"type", m_oType, *m_oType)
 					WritingStringNullableAttrInt(L"interval", m_oInterval, *m_oInterval)
-					WritingStringNullableAttrBool(L"background", m_oBackground)
-					WritingStringNullableAttrBool(L"deleted", m_oDeleted)
-					WritingStringNullableAttrBool(L"keepAlive", m_oKeepAlive)
-					WritingStringNullableAttrBool(L"new", m_oNew)
-					WritingStringNullableAttrBool(L"refreshOnLoad", m_oRefreshOnLoad)
-					WritingStringNullableAttrBool(L"saveData", m_oSaveData)
-					WritingStringNullableAttrBool(L"savePassword", m_oSavePassword)
+					WritingStringNullableAttrBool2(L"background", m_oBackground)
+					WritingStringNullableAttrBool2(L"deleted", m_oDeleted)
+					WritingStringNullableAttrBool2(L"new", m_oNew)
+					WritingStringNullableAttrBool2(L"refreshOnLoad", m_oRefreshOnLoad)
+					WritingStringNullableAttrBool2(L"savePassword", m_oSavePassword)
 					WritingStringNullableAttrInt(L"minRefreshableVersion", m_oMinRefreshableVersion, *m_oMinRefreshableVersion)
-					WritingStringNullableAttrInt(L"refreshedVersion", m_RefreshedVersion, *m_RefreshedVersion)
+					WritingStringNullableAttrInt(L"refreshedVersion", m_oRefreshedVersion, *m_oRefreshedVersion)
 					WritingStringNullableAttrInt(L"reconnectionMethod", m_oReconnectionMethod, *m_oReconnectionMethod)
-					WritingStringNullableAttrString(L"odcFile", m_oOdcFile, *m_oOdcFile)
-					WritingStringNullableAttrString(L"onlyUseConnectionFile", m_oOnlyUseConnectionFile, *m_oOnlyUseConnectionFile)
+					WritingStringNullableAttrBool2(L"onlyUseConnectionFile", m_oOnlyUseConnectionFile)
 					WritingStringNullableAttrString(L"singleSignOnId", m_oSingleSignOnId, *m_oSingleSignOnId)
 					WritingStringNullableAttrString(L"sourceFile", m_oSourceFile, *m_oSourceFile)
+					WritingStringNullableAttrBool2(L"saveData", m_oSaveData)
 				writer.WriteString(L">");
 					if (m_oDbPr.IsInit())	m_oDbPr->toXML(writer);
 					if (m_oOlapPr.IsInit()) m_oOlapPr->toXML(writer);
@@ -646,6 +659,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"odcFile", m_oOdcFile )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"onlyUseConnectionFile", m_oOnlyUseConnectionFile )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"reconnectionMethod", m_oReconnectionMethod )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"refreshedVersion", m_oRefreshedVersion )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"refreshOnLoad", m_oRefreshOnLoad )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"saveData", m_oSaveData )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"savePassword", m_oSavePassword )
@@ -653,33 +667,33 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"sourceFile", m_oSourceFile )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable_int				m_oType;	//EDatabaseSourceType
-			nullable_string				m_oName;
+			nullable_int		m_oType;	//EDatabaseSourceType
+			nullable_string		m_oName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oId;
 
-			nullable<CDbPr>				m_oDbPr;
-			nullable<COlapPr>			m_oOlapPr;
-			nullable<CTextPr>			m_oTextPr;
-			nullable<CWebPr>			m_oWebPr;
+			nullable<CDbPr>		m_oDbPr;
+			nullable<COlapPr>	m_oOlapPr;
+			nullable<CTextPr>	m_oTextPr;
+			nullable<CWebPr>	m_oWebPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 			nullable<SimpleTypes::Spreadsheet::CCredMethod<>> m_oCredentials;
-			nullable<SimpleTypes::COnOff<>>	m_oBackground;
-			nullable<SimpleTypes::COnOff<>>	m_oDeleted;
-			nullable_string					m_oDescription;
-			nullable_int					m_oInterval;
-			nullable<SimpleTypes::COnOff<>>	m_oKeepAlive;
-			nullable_int					m_oMinRefreshableVersion;
-			nullable<SimpleTypes::COnOff<>>	m_oNew;
-			nullable_string					m_oOdcFile;
-			nullable_string					m_oOnlyUseConnectionFile;
-			nullable_int					m_oReconnectionMethod;
-			nullable_int					m_RefreshedVersion;
-			nullable<SimpleTypes::COnOff<>>	m_oRefreshOnLoad;
-			nullable<SimpleTypes::COnOff<>>	m_oSaveData;
-			nullable<SimpleTypes::COnOff<>>	m_oSavePassword;
-			nullable_string					m_oSingleSignOnId;
-			nullable_string					m_oSourceFile;
+			nullable_bool		m_oBackground;
+			nullable_bool		m_oDeleted;
+			nullable_string		m_oDescription;
+			nullable_int		m_oInterval;
+			nullable_bool		m_oKeepAlive;
+			nullable_int		m_oMinRefreshableVersion;
+			nullable_bool		m_oNew;
+			nullable_string		m_oOdcFile;
+			nullable_bool		m_oOnlyUseConnectionFile;
+			nullable_int		m_oReconnectionMethod;
+			nullable_int		m_oRefreshedVersion;
+			nullable_bool		m_oRefreshOnLoad;
+			nullable_bool		m_oSaveData;
+			nullable_bool		m_oSavePassword;
+			nullable_string		m_oSingleSignOnId;
+			nullable_string		m_oSourceFile;
 		};
 
 		class CConnections : public WritingElementWithChilds<CConnection>
@@ -706,10 +720,10 @@ namespace OOX
 xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 mc:Ignorable=\"xr16\" \
-xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
+xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\">");
 
-				WritingStringAttrInt(L"count", (int)m_arrItems.size());
-				writer.WriteString(L">");
+				//WritingStringAttrInt(L"count", (int)m_arrItems.size());
+				//writer.WriteString(L">");
 
 				for (size_t i = 0; i < m_arrItems.size(); i++)
 				{
@@ -820,12 +834,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 			nullable<CConnections>	m_oConnections;
 		private:
-			CPath				m_oReadPath;
+			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_TABLE_FILE_INCLUDE_H_

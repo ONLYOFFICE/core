@@ -438,7 +438,6 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),		m_oCollapsed )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customFormat"),    m_oCustomFormat )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),    m_oCustomHeight )
@@ -451,7 +450,6 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickBot"),		m_oThickBot )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickTop"),		m_oThickTop )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x14ac:dyDescent"),	m_oDyDescent )
-
 				WritingElement_ReadAttributes_End( oReader )
 			}
 

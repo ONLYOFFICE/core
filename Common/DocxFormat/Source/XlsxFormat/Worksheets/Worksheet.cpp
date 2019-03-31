@@ -121,6 +121,7 @@ namespace OOX
 			}
 
 			PrepareConditionalFormatting();
+			PrepareDataValidations();
 		}
 		void CWorksheet::read(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -207,6 +208,30 @@ namespace OOX
 		}
 
 
+		void CWorksheet::PrepareDataValidations()
+		{
+			if (m_oExtLst.IsInit() == false) return;
+
+			for (size_t i = 0; i < m_oExtLst->m_arrExt.size(); ++i)
+			{
+				if (false == m_oExtLst->m_arrExt[i]->m_oDataValidations.IsInit()) continue;
+
+				for (size_t j = 0; j < m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems.size(); ++j)
+				{
+					if (false == m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j]) continue;
+
+					if (false == m_oDataValidations.IsInit())
+					{
+						m_oDataValidations.Init();
+						m_oDataValidations->m_oDisablePrompts = m_oExtLst->m_arrExt[i]->m_oDataValidations->m_oDisablePrompts;
+						m_oDataValidations->m_oXWindow = m_oExtLst->m_arrExt[i]->m_oDataValidations->m_oXWindow;
+						m_oDataValidations->m_oYWindow = m_oExtLst->m_arrExt[i]->m_oDataValidations->m_oYWindow;
+					}
+					m_oDataValidations->m_arrItems.push_back(m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j]);
+					m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j] = NULL;
+				}
+			}
+		}
 
 		void CWorksheet::PrepareConditionalFormatting()
 		{
@@ -216,11 +241,11 @@ namespace OOX
 			{
 				for (size_t j = 0; j < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting.size(); ++j)
 				{
-					if (!m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]) continue;
+					if (false == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]) continue;
 
 					for (size_t k = 0; k < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems.size(); ++k)
 					{
-						if (!m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]) continue;
+						if (false == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]) continue;
 
 						if (m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId.IsInit())
 						{
@@ -476,11 +501,22 @@ namespace OOX
 		}
 		void CWorksheet::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" mc:Ignorable=\"x14ac\">"));
+			writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<worksheet \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" \
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" \
+xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" \
+xmlns:xr2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2\" \
+xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\" \
+mc:Ignorable=\"x14ac\">");
 		}
 		void CWorksheet::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("</worksheet>"));
+			writer.WriteString(L"</worksheet>");
 		}
 
 		const OOX::RId CWorksheet::AddHyperlink (std::wstring& sHref)

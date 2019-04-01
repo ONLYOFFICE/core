@@ -48,6 +48,7 @@
 #include "WorkbookComments.h"
 #include "Comments/ThreadedComments.h"
 #include "Comments/Comments.h"
+#include "Controls/Controls.h"
 
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
@@ -145,6 +146,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName ));
 			else if (	oRelation.Type() == OOX::FileTypes::ActiveX_bin)
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
+			else if (	oRelation.Type() == FileTypes::CtrlProp)
+				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -251,6 +254,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName ));
 			else if (	pRelation->Type() == OOX::FileTypes::ActiveX_bin)
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
+			else if (	pRelation->Type() == FileTypes::CtrlProp)
+				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::WorkbookComments)
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
 

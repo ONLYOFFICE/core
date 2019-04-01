@@ -2152,6 +2152,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 		OOX::Spreadsheet::CCellAnchor * oox_anchor = oox_drawing->m_arrItems[i];
 		
 		if (oox_anchor->m_bShapeOle) continue; 
+		if (oox_anchor->m_bShapeControl) continue; 
 
 		if (oox_sheet->m_oOleObjects.IsInit() && oox_anchor->m_nId.IsInit())
 		{
@@ -2163,7 +2164,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 				continue;
 			}
 		}
-
+		if (oox_sheet->m_oControls.IsInit() && oox_anchor->m_nId.IsInit())
+		{
+            std::map<int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
+			if (pFind != oox_sheet->m_oControls->m_mapControls.end())
+			{
+				//??? перенести даные привязки 
+				oox_anchor->m_bShapeControl = true;
+				continue;
+			}
+		}
 		ods_context->start_drawings();
 			convert(oox_anchor);
 		ods_context->end_drawings();

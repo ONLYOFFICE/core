@@ -1186,6 +1186,9 @@ namespace OOX
 		et_x_DataConsolidate,
 		et_x_DataRefs,
 		et_x_DataRef,
+		et_x_FormControlPr,
+		et_x_ListItems,
+		et_x_ListItem,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

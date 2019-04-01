@@ -40,3 +40,4 @@
 #include "../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp"
 #include "../Source/XlsxFormat/Worksheets/DataValidation.cpp"
 #include "../Source/XlsxFormat/Table/Tables.cpp"
+#include "../Source/XlsxFormat/Controls/Controls.cpp"

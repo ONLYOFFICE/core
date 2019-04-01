@@ -3942,7 +3942,7 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 
 //we use legacyDrawing or objectPr in OleObject so skip shape in drawing
 	
-		if (!pCellAnchor->m_bShapeOle && pCellAnchor->isValid())
+		if (!pCellAnchor->m_bShapeOle && !pCellAnchor->m_bShapeControl && pCellAnchor->isValid())
 		{
 			if(oWorksheet.m_oOleObjects.IsInit() && pCellAnchor->m_nId.IsInit())
 			{
@@ -3950,6 +3950,15 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 				if (pFind != oWorksheet.m_oOleObjects->m_mapOleObjects.end())
 				{
 					pCellAnchor->m_bShapeOle = true;
+					continue;
+				}
+			}
+			if(oWorksheet.m_oControls.IsInit() && pCellAnchor->m_nId.IsInit())
+			{
+                std::map<int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oWorksheet.m_oControls->m_mapControls.find(pCellAnchor->m_nId.get());
+				if (pFind != oWorksheet.m_oControls->m_mapControls.end())
+				{
+					pCellAnchor->m_bShapeControl = true;
 					continue;
 				}
 			}

@@ -1549,6 +1549,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Controls\Controls.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Controls\Controls.h"
 					>
 				</File>

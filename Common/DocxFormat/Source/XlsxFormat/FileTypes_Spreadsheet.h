@@ -98,6 +98,11 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections");
 
+			const FileType CtrlProp			(L"../ctrlProps", L"ctrlProp.xml",
+												L"application/vnd.ms-excel.controlproperties+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/ctrlProp", 
+												L"ctrlProps/ctrlProp", true, true);
+
 			const FileType Drawings			(L"../drawings", L"drawing.xml",
 												L"application/vnd.openxmlformats-officedocument.drawing+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing", 

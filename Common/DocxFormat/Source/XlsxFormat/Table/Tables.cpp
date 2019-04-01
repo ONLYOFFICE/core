@@ -513,8 +513,6 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingElement_ReadAttributes_Read_if ( oReader, _T("count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
-
-
 	void CQueryTableDeletedField::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<deletedField");

@@ -1005,9 +1005,9 @@ namespace SimpleTypes
 
 		enum EHorizontalAlignment
 		{
-			horizontalalignmentCenter				=  0,
+			horizontalalignmentCenter			=  0,
 			horizontalalignmentContinuous		=  1,
-			horizontalalignmentDistributed			=  2,
+			horizontalalignmentDistributed		=  2,
 			horizontalalignmentFill					=  3,
 			horizontalalignmentGeneral				=  4,
 			horizontalalignmentJustify				=  5,
@@ -3871,6 +3871,210 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (EDataValidationImeMode)
 			SimpleType_Operator_Equal (CDataValidationImeMode)
+		};
+		enum EObjectType 
+		{
+			objectButton	=  0,
+			objectCheckBox	=  1,
+			objectDrop		=  2,
+			objectGBox		=  3,
+			objectLabel		=  4,
+			objectList		=  5,
+			objectRadio		=  6,
+			objectScroll	=  7,
+			objectSpin		=  8,
+			objectEditBox	=  9,
+			objectDialog	=  10
+		};
+		template<EObjectType eDefValue = objectButton>
+		class CObjectType : public CSimpleType<EObjectType, eDefValue>
+		{
+		public:
+			CObjectType() {}
+
+			virtual EObjectType FromString(std::wstring &sValue)
+			{
+				if      ( _T("Button")	== sValue )	this->m_eValue = objectButton;
+				else if ( _T("CheckBox")== sValue ) this->m_eValue = objectCheckBox;
+				else if ( _T("Drop")	== sValue ) this->m_eValue = objectDrop;
+				else if ( _T("GBox")	== sValue ) this->m_eValue = objectGBox;
+				else if ( _T("Label")	== sValue ) this->m_eValue = objectLabel;
+				else if ( _T("List")	== sValue ) this->m_eValue = objectList;
+				else if ( _T("Radio")	== sValue ) this->m_eValue = objectRadio;
+				else if ( _T("Scroll")	== sValue ) this->m_eValue = objectScroll;
+				else if ( _T("Spin")	== sValue ) this->m_eValue = objectSpin;
+				else if ( _T("EditBox")	== sValue ) this->m_eValue = objectEditBox;
+				else if ( _T("Dialog")	== sValue ) this->m_eValue = objectDialog;
+				else								this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case objectButton	:	return _T("Button");
+					case objectCheckBox	:	return _T("CheckBox");
+					case objectDrop :		return _T("Drop");
+					case objectGBox :		return _T("GBox");
+					case objectLabel :		return _T("Label");
+					case objectList :		return _T("List");
+					case objectRadio:		return _T("Radio");
+					case objectScroll:		return _T("Scroll");
+					case objectSpin:		return _T("Spin");
+					case objectEditBox:		return _T("EditBox");
+					case objectDialog:		return _T("Dialog");
+					default :				return _T("Button");
+				}
+			}
+			SimpleType_FromString     (EObjectType)
+			SimpleType_Operator_Equal (CObjectType)
+		};
+		enum EChecked 
+		{
+			valUnchecked	=  0,
+			valChecked		=  1,
+			valMixed		=  2
+		};
+		template<EChecked eDefValue = valUnchecked>
+		class CChecked : public CSimpleType<EChecked, eDefValue>
+		{
+		public:
+			CChecked() {}
+
+			virtual EChecked FromString(std::wstring &sValue)
+			{
+				if      ( _T("Mixed")		== sValue )	this->m_eValue = valMixed;
+				else if ( _T("Checked")		== sValue ) this->m_eValue = valChecked;
+				else if ( _T("Unchecked")	== sValue ) this->m_eValue = valUnchecked;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case valMixed	:	return _T("Mixed");
+					case valChecked :	return _T("Checked");
+					case valUnchecked:	
+					default :			return _T("Unchecked");
+				}
+			}
+
+			SimpleType_FromString     (EChecked)
+			SimpleType_Operator_Equal (CChecked)
+		};
+ 		enum EDropStyle 
+		{
+			valCombo		=  0,
+			valComboedit	=  1,
+			valSimple		=  2
+		};
+		template<EDropStyle eDefValue = valSimple>
+		class CDropStyle : public CSimpleType<EDropStyle, eDefValue>
+		{
+		public:
+			CDropStyle() {}
+
+			virtual EDropStyle FromString(std::wstring &sValue)
+			{
+				if      ( _T("combo")		== sValue )	this->m_eValue = valCombo;
+				else if ( _T("comboedit")	== sValue ) this->m_eValue = valComboedit;
+				else if ( _T("simple")		== sValue ) this->m_eValue = valSimple;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case valCombo	:	return _T("combo");
+					case valComboedit :	return _T("comboedit");
+					case valSimple:	
+					default :			return _T("simple");
+				}
+			}
+
+			SimpleType_FromString     (EDropStyle)
+			SimpleType_Operator_Equal (CDropStyle)
+		};
+  		enum ESelType 
+		{
+			valSingle	=  0,
+			valMulti	=  1,
+			valExtended	=  2
+		};
+		template<ESelType eDefValue = valSingle>
+		class CSelType : public CSimpleType<ESelType, eDefValue>
+		{
+		public:
+			CSelType() {}
+
+			virtual ESelType FromString(std::wstring &sValue)
+			{
+				if      ( _T("extended")== sValue )	this->m_eValue = valExtended;
+				else if ( _T("multi")	== sValue ) this->m_eValue = valMulti;
+				else if ( _T("single")	== sValue ) this->m_eValue = valSingle;
+				else								this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case valExtended:	return _T("extended");
+					case valMulti :		return _T("multi");
+					case valSingle:	
+					default :			return _T("single");
+				}
+			}
+
+			SimpleType_FromString     (ESelType)
+			SimpleType_Operator_Equal (CSelType)
+		};
+  		enum EEditValidation 
+		{
+			editText		=  0,
+			editInteger		=  1,
+			editNumber		=  2,
+			editReference	=  3,
+			editFormula		=  4
+		};
+		template<EEditValidation eDefValue = editText>
+		class CEditValidation : public CSimpleType<EEditValidation, eDefValue>
+		{
+		public:
+			CEditValidation() {}
+
+			virtual EEditValidation FromString(std::wstring &sValue)
+			{
+				if      ( _T("text")		== sValue )	this->m_eValue = editText;
+				else if ( _T("integer")		== sValue ) this->m_eValue = editInteger;
+				else if ( _T("number")		== sValue ) this->m_eValue = editNumber;
+				else if ( _T("reference")	== sValue ) this->m_eValue = editReference;
+				else if ( _T("formula")		== sValue ) this->m_eValue = editFormula;
+				else									this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case editInteger:		return _T("integer");
+					case editNumber :		return _T("number");
+					case editReference :	return _T("reference");
+					case editFormula :		return _T("formula");
+					case editText:	
+					default :				return _T("text");
+				}
+			}
+
+			SimpleType_FromString     (EEditValidation)
+			SimpleType_Operator_Equal (CEditValidation)
 		};
 	};// Spreadsheet
 } // SimpleTypes

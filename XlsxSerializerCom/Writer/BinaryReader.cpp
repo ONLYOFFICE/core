@@ -4378,6 +4378,8 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 		READ1_DEF(length, res, this->ReadDrawing, pCellAnchor);
 		
 		pCellAnchor->m_bShapeOle = false;
+		pCellAnchor->m_bShapeControl = false;
+
 		if (pCellAnchor->m_oElement.is_init() && pCellAnchor->m_oElement->is<PPTX::Logic::Pic>())
 		{
 			PPTX::Logic::Pic& oPic = pCellAnchor->m_oElement->as<PPTX::Logic::Pic>();

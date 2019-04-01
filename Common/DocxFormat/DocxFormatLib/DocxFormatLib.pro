@@ -61,6 +61,7 @@ SOURCES += \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp \
     ../Source/XlsxFormat/Worksheets/DataValidation.cpp \
     ../Source/XlsxFormat/Table/Tables.cpp \
+    ../Source/XlsxFormat/Controls/Controls.cpp \
     ../Source/DocxFormat/App.cpp \
     ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \

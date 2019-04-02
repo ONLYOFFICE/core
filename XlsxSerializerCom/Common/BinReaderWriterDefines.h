@@ -368,7 +368,8 @@ namespace BinXlsxRW
 		RowBreaks = 30,
 		ColBreaks = 31,
 		DataValidations = 32,
-		QueryTable = 33
+		QueryTable = 33,
+		Control = 34
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -450,14 +451,14 @@ namespace BinXlsxRW
 		From = 1,
 		To = 2,
 		Pos = 3,
-		Pic = 4,
-		PicSrc = 5,
-		GraphicFrame = 6,
-		Chart = 7,
+		//Pic = 4,
+		//PicSrc = 5,
+		//GraphicFrame = 6,
+		//Chart = 7,
 		Ext = 8,
-		pptxDrawing = 9,
-		Chart2 = 10,
-		ObjectName = 11
+		pptxDrawing = 9
+		//Chart2 = 10,
+		//ObjectName = 11
 	};}
 	namespace c_oSer_DrawingFromToType{enum c_oSer_DrawingFromToType
 	{

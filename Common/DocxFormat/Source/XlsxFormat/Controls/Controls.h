@@ -67,20 +67,24 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<std::wstring>				m_oAltText;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoFill;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoLine;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoPict;
-			nullable<SimpleTypes::COnOff<>>		m_oDde;
-			nullable<SimpleTypes::COnOff<>>		m_oDefaultSize;
-			nullable<SimpleTypes::COnOff<>>		m_oDisabled;
-			nullable<SimpleTypes::CRelationshipId> m_oRid;
-			nullable<SimpleTypes::COnOff<>>		m_oLocked;
-			nullable<std::wstring>				m_oMacro;
-			nullable<SimpleTypes::COnOff<>>		m_oPrint;
-			nullable<SimpleTypes::COnOff<>>		m_oUiObject;
+			nullable_string							m_oAltText;
+			nullable_bool							m_oAutoFill;
+			nullable_bool							m_oAutoLine;
+			nullable_bool							m_oAutoPict;
+			nullable_bool							m_oDde;
+			nullable_bool							m_oDefaultSize;
+			nullable_bool							m_oDisabled;
+			nullable_string							m_oCf;
+			nullable_string							m_oLinkedCell;
+			nullable_string							m_oListFillRange;
+			nullable<SimpleTypes::CRelationshipId>	m_oRid;
+			nullable_bool							m_oLocked;
+			nullable_string							m_oMacro;
+			nullable_bool							m_oPrint;
+			nullable_bool							m_oRecalcAlways;
+			nullable_bool							m_oUiObject;
 
-			nullable<CExtAnchor>				m_oAnchor;
+			nullable<CExtAnchor>					m_oAnchor;
 		};
 
 		class CControl : public WritingElement
@@ -113,16 +117,14 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<std::wstring >								m_oProgId;
+			nullable_string										m_oProgId;
 			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
-			nullable<std::wstring >								m_oLink;
+			nullable_string										m_oLink;
 			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
-			nullable<SimpleTypes::COnOff<>>						m_oAutoLoad;
+			nullable_bool										m_oAutoLoad;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;
 			nullable<CControlPr>								m_oControlPr;
-	//internal
-			nullable<SimpleTypes::CRelationshipId>				m_oRidImg;
 		};
 
 		class CControls : public WritingElement
@@ -132,14 +134,7 @@ namespace OOX
 			CControls()
 			{
 			}
-			virtual ~CControls()
-			{
-				for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
-				{
-					delete it->second;
-				}
-				m_mapControls.clear();
-			}
+			virtual ~CControls();
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -149,17 +144,20 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
+			void read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion = false);
+			
 			virtual EElementType getType () const
 			{
 				return et_x_Controls;
 			}
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		public:
 			std::map<int, CControl*> m_mapControls;
+			std::map<int, CControl*> m_mapControlsAlternative;
 		};
 //------------------------------------------------------------------------------------------------------------------------------
 		class CListItem : public WritingElement
@@ -175,7 +173,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -201,7 +199,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

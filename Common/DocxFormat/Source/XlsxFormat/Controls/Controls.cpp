@@ -38,18 +38,22 @@ namespace Spreadsheet
 	void CControlPr::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<controlPr");
-		WritingStringNullableAttrEncodeXmlString(L"altText", m_oAltText, m_oAltText.get());
-		WritingStringNullableAttrBool(L"autoFill", m_oAutoFill);
-		WritingStringNullableAttrBool(L"autoLine", m_oAutoLine);
-		WritingStringNullableAttrBool(L"autoPict", m_oAutoPict);
-		WritingStringNullableAttrBool(L"dde", m_oDde);
-		WritingStringNullableAttrBool(L"defaultSize", m_oDefaultSize);
-		WritingStringNullableAttrBool(L"disabled", m_oDisabled);
+		WritingStringNullableAttrEncodeXmlString(L"altText", m_oAltText, *m_oAltText);
+		WritingStringNullableAttrBool2(L"autoFill", m_oAutoFill);
+		WritingStringNullableAttrBool2(L"autoLine", m_oAutoLine);
+		WritingStringNullableAttrBool2(L"autoPict", m_oAutoPict);
+		WritingStringNullableAttrBool2(L"dde", m_oDde);
+		WritingStringNullableAttrBool2(L"defaultSize", m_oDefaultSize);
+		WritingStringNullableAttrBool2(L"disabled", m_oDisabled);
 		WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-		WritingStringNullableAttrBool(L"locked", m_oLocked);
-		WritingStringNullableAttrEncodeXmlString(L"macro", m_oMacro, m_oMacro.get());
-		WritingStringNullableAttrBool(L"print", m_oPrint);
-		WritingStringNullableAttrBool(L"uiObject", m_oUiObject);
+		WritingStringNullableAttrBool2(L"locked", m_oLocked);
+		WritingStringNullableAttrEncodeXmlString(L"cf", m_oCf, *m_oCf);
+		WritingStringNullableAttrEncodeXmlString(L"macro", m_oMacro, *m_oMacro);
+		WritingStringNullableAttrEncodeXmlString(L"linkedCell", m_oLinkedCell, *m_oLinkedCell);
+		WritingStringNullableAttrEncodeXmlString(L"listFillRange", m_oListFillRange, *m_oListFillRange);
+		WritingStringNullableAttrBool2(L"recalcAlways", m_oRecalcAlways);
+		WritingStringNullableAttrBool2(L"print", m_oPrint);
+		WritingStringNullableAttrBool2(L"uiObject", m_oUiObject);
 		writer.WriteString(L">");
 		if (m_oAnchor.IsInit())
 		{
@@ -90,6 +94,10 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("macro"),			m_oMacro )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("print"),			m_oPrint )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("uiObject"),		m_oUiObject )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cf"),			m_oCf )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("linkedCell"),	m_oLinkedCell )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("listFillRange"),	m_oListFillRange )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("recalcAlways"),	m_oRecalcAlways )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 	void CControl::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -111,11 +119,11 @@ namespace Spreadsheet
 	void CControl::toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const
 	{
 		writer.WriteString(L"<control");
-		WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, m_oProgId.get());
+		WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, *m_oProgId);
 		WritingStringNullableAttrString(L"dvAspect", m_oDvAspect, m_oDvAspect->ToString());
-		WritingStringNullableAttrEncodeXmlString(L"link", m_oLink, m_oLink.get());
+		WritingStringNullableAttrEncodeXmlString(L"link", m_oLink, *m_oLink);
 		WritingStringNullableAttrString(L"oleUpdate", m_oOleUpdate, m_oOleUpdate->ToString());
-		WritingStringNullableAttrBool(L"autoLoad", m_oAutoLoad);
+		WritingStringNullableAttrBool2(L"autoLoad", m_oAutoLoad);
 		WritingStringNullableAttrInt(L"shapeId", m_oShapeId, m_oShapeId->GetValue());
 		WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 		if (bControlPr && m_oControlPr.IsInit())
@@ -196,7 +204,20 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),		m_oRid )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+	CControls::~CControls()
+	{
+		for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
+		{
+			delete it->second;
+		}		
+		m_mapControls.clear();
 
+		for(std::map<int, CControl*>::const_iterator it = m_mapControlsAlternative.begin(); it != m_mapControlsAlternative.end(); it++)
+		{
+			delete it->second;
+		}
+		m_mapControlsAlternative.clear();
+	}
 	void CControls::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		if(m_mapControls.empty()) return;
@@ -208,7 +229,7 @@ namespace Spreadsheet
 		}
 		writer.WriteString(L"</controls>");
 	}
-	void CControls::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	void CControls::read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion)
 	{
 		ReadAttributes( oReader );
 
@@ -225,7 +246,14 @@ namespace Spreadsheet
 				CControl* pControl = new CControl(oReader);
 				if(pControl->m_oShapeId.IsInit())
 				{
-					m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
+					if (bOldVersion)
+					{
+						m_mapControlsAlternative[pControl->m_oShapeId->GetValue()] = pControl;
+					}
+					else
+					{
+						m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
+					}
 				}
 				else
 				{
@@ -240,11 +268,19 @@ namespace Spreadsheet
 					std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if ( L"Choice" == sSubName )
 					{
-						fromXML(oReader);
+						read(oReader, false);
+					}
+					else if ( L"Fallback" == sSubName )
+					{
+						read(oReader, true);
 					}
 				}
 			}
 		}
+	}
+	void CControls::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		read(oReader, false);
 	}
 //--------------------------------------------------------------------------------------------------------------
 	void CListItem::toXML(NSStringUtils::CStringBuilder& writer) const

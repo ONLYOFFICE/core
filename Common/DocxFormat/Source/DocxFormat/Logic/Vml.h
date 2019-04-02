@@ -2052,10 +2052,8 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-				
+					return;				
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
@@ -2089,7 +2087,7 @@ namespace OOX
 			}
 
 		public:
-			// Attributes
+
             nullable<std::wstring>                              m_sAdj;
             nullable<SimpleTypes::Vml::CVmlPath>                m_oPath;
             SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>  m_oMaster;
@@ -2104,9 +2102,6 @@ namespace OOX
 			virtual ~CClientData()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
@@ -2127,29 +2122,29 @@ namespace OOX
                     }
 				}
 			}
-			void toCellAnchor(OOX::Spreadsheet::CCellAnchor *& pCellAnchor) const;
-		private:
+			void toCellAnchor(OOX::Spreadsheet::CCellAnchor* pCellAnchor);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ObjectType"),      m_oObjectType )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("ObjectType"), m_oObjectType )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
-		public:
-
-			// Attributes
 			nullable<SimpleTypes::Vml::CVmlClientDataObjectType<>>	m_oObjectType;
 
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oMoveWithCells;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oSizeWithCells;
-			nullable<std::wstring>									m_oAnchor;
+			nullable_string											m_oAnchor;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oRow;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oColumn;
+
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oDefaultSize;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oAutoLine;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oAutoPict;
+			nullable_string											m_oFmlaLink;
+			nullable_string											m_oFmlaRange;
+			nullable_string											m_oCf;
 		};
 		//--------------------------------------------------------------------------------
 		// CStroke 14.1.2.21 (Part4)

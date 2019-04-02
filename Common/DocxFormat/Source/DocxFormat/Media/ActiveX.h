@@ -55,12 +55,12 @@ namespace OOX
 		}
         virtual std::wstring toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<ocxPr>"));
-			writer.WriteString(_T("</ocxPr>"));
+			writer.WriteString(L"<ocxPr>");
+			writer.WriteString(L"</ocxPr>");
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -79,8 +79,8 @@ namespace OOX
 		{
 			WritingElement_ReadAttributes_Start(oReader)
 
-			WritingElement_ReadAttributes_Read_if		(oReader, _T("ax:name")		, m_oName)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, _T("ax:value")	, m_oValue)
+			WritingElement_ReadAttributes_Read_if		(oReader, L"ax:name", m_oName)
+			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:value", m_oValue)
 
 			WritingElement_ReadAttributes_End(oReader)
 		}
@@ -133,7 +133,7 @@ namespace OOX
 				return;
 
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if ( _T("ocx") == sName)
+			if ( L"ocx" == sName )
 			{
 				ReadAttributes(oReader);
 
@@ -144,7 +144,7 @@ namespace OOX
 					{
 						sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-						if ( _T("ocxPr") == sName )
+						if ( L"ocxPr" == sName )
 						{
 							COcxPr* pOcxPr = new COcxPr(oReader);
 							m_arrOcxPr.push_back(pOcxPr);
@@ -182,7 +182,6 @@ namespace OOX
 		}
 
 		bool									m_bDocument;
-	protected:
 		CPath									m_oReadPath;
 		
 		nullable<std::wstring>					m_oClassId;
@@ -230,7 +229,7 @@ namespace OOX
 		{
 			return m_filenameCache;
 		}
-	protected:
+
 		CPath	m_filenameCache; //image
 	};
 

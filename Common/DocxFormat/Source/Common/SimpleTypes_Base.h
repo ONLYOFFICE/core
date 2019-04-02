@@ -122,12 +122,12 @@ namespace SimpleTypes
 			m_eValue = DefValue;
 		}
 
-		virtual E       GetValue  () const
+		virtual E GetValue () const
 		{
 			return m_eValue;
 		}
 
-		virtual void    SetValue  (E eValue)
+		virtual void SetValue (E eValue)
 		{
 			m_eValue = eValue;
 		}

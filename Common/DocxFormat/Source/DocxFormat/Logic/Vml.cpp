@@ -1006,18 +1006,19 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( _T("x:MoveWithCells") == sName )
-                    m_oMoveWithCells = oReader.GetText2();
-				else if ( _T("x:SizeWithCells") == sName )
-                    m_oSizeWithCells = oReader.GetText2();
-				else if ( _T("x:Anchor") == sName )
-                    m_oAnchor = oReader.GetText2();
-				else if ( _T("x:Row") == sName )
-                    m_oRow = oReader.GetText2();
-				else if ( _T("x:Column") == sName )
-                    m_oColumn = oReader.GetText2();
+				if		( L"MoveWithCells"	== sName )	m_oMoveWithCells = oReader.GetText2();
+				else if ( L"SizeWithCells"	== sName )	m_oSizeWithCells = oReader.GetText2();
+				else if ( L"Anchor"			== sName )	m_oAnchor = oReader.GetText2();
+				else if ( L"Row"			== sName )	m_oRow = oReader.GetText2();
+				else if ( L"Column"			== sName )	m_oColumn = oReader.GetText2();
+				else if ( L"DefaultSize"	== sName )	m_oDefaultSize = oReader.GetText2();
+				else if ( L"AutoLine"		== sName )	m_oAutoLine = oReader.GetText2();
+				else if ( L"AutoPict"		== sName )	m_oAutoPict = oReader.GetText2();
+				else if ( L"FmlaLink"		== sName )	m_oFmlaLink = oReader.GetText2();
+				else if ( L"FmlaRange"		== sName )	m_oFmlaRange = oReader.GetText2();
+				else if ( L"CF"				== sName )	m_oCf = oReader.GetText2();
 			}
 		}
 		std::wstring CClientData::toXML() const
@@ -1049,9 +1050,10 @@ namespace OOX
 			sResult += _T("</x:ClientData>");
 			return sResult;
 		}
-		void CClientData::toCellAnchor(OOX::Spreadsheet::CCellAnchor *& pCellAnchor) const
+		void CClientData::toCellAnchor(OOX::Spreadsheet::CCellAnchor *pCellAnchor)
 		{
-			if(m_oAnchor.IsInit() == false) return;
+			if (!m_oAnchor.IsInit()) return;
+			if (!pCellAnchor) return;
 
 			std::vector<std::wstring> sAnchors;
             boost::algorithm::split(sAnchors, m_oAnchor.get(), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);

@@ -119,6 +119,7 @@ namespace Spreadsheet
 	void CControl::toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const
 	{
 		writer.WriteString(L"<control");
+		WritingStringNullableAttrEncodeXmlString(L"name", m_oName, *m_oName);
 		WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, *m_oProgId);
 		WritingStringNullableAttrString(L"dvAspect", m_oDvAspect, m_oDvAspect->ToString());
 		WritingStringNullableAttrEncodeXmlString(L"link", m_oLink, *m_oLink);
@@ -196,6 +197,7 @@ namespace Spreadsheet
 	{
 		WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if	 ( oReader, _T("progId"),		m_oProgId )
+			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("name"),	m_oName )
 			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dvAspect"),	m_oDvAspect )
 			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("link"),		m_oLink )
 			WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("oleUpdate"),m_oOleUpdate )
@@ -206,13 +208,13 @@ namespace Spreadsheet
 	}
 	CControls::~CControls()
 	{
-		for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
+		for(std::map<unsigned int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
 		{
 			delete it->second;
 		}		
 		m_mapControls.clear();
 
-		for(std::map<int, CControl*>::const_iterator it = m_mapControlsAlternative.begin(); it != m_mapControlsAlternative.end(); it++)
+		for(std::map<unsigned int, CControl*>::const_iterator it = m_mapControlsAlternative.begin(); it != m_mapControlsAlternative.end(); it++)
 		{
 			delete it->second;
 		}
@@ -223,7 +225,7 @@ namespace Spreadsheet
 		if(m_mapControls.empty()) return;
 		
 		writer.WriteString(L"<controls>");
-		for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
+		for(std::map<unsigned int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
 		{
 			it->second->toXML(writer);
 		}

@@ -1652,8 +1652,7 @@ namespace NSBinPptxRW
 
 	bool CBinaryFileReader::GetBool()
 	{
-		int res = GetUChar();
-		return (res == 1) ? true : false;
+		return (GetUChar() != 0) ? true : false;
 	}
 
 	// 2 byte

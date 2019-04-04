@@ -82,7 +82,7 @@ void OoxConverter::convert(PPTX::Logic::SpTreeElem *oox_element)
 
     smart_ptr<PPTX::WrapperWritingElement> elem = oox_element->GetElem();
 
-	convert (elem.operator->());
+	convert (elem.GetPointer());
 }
 
 void OoxConverter::convert_font(PPTX::Theme *theme, std::wstring & font)
@@ -128,7 +128,7 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 	}
 	else if ( oox_graphic_frame->element.is_init())
 	{
-		OoxConverter::convert(oox_graphic_frame->element.GetElem().operator->());
+		OoxConverter::convert(oox_graphic_frame->element.GetElem().GetPointer());
 	}
 }
 void OoxConverter::convert(PPTX::Logic::NvGraphicFramePr *oox_framePr)
@@ -299,7 +299,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				PPTX::Slide			*pSlide			= dynamic_cast<PPTX::Slide*>(current_document());
 				PPTX::SlideMaster	*pSlideMaster	= dynamic_cast<PPTX::SlideMaster*>(current_document());
 				
-				OOX::CVmlDrawing *pVml = pSlide ? pSlide->Vml.operator->() : (pSlideMaster ? pSlideMaster->Vml.operator->() : NULL);
+				OOX::CVmlDrawing *pVml = pSlide ? pSlide->Vml.GetPointer() : (pSlideMaster ? pSlideMaster->Vml.GetPointer() : NULL);
 				
 				if (pVml)
 				{	
@@ -333,7 +333,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 										
 										if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 										{
-											OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+											OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
 											
 											pathImage = pImageFileCache->filename().GetPath();
 										}
@@ -381,7 +381,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		{
 			for (size_t i = 0 ; i < oox_picture->blipFill.blip->Effects.size(); i++)
 			{
-				convert(oox_picture->blipFill.blip->Effects[i].Effect.operator->());
+				convert(oox_picture->blipFill.blip->Effects[i].Effect.GetPointer());
 			}
 		}
 		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
@@ -405,7 +405,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->get_size (width, height);
 		odf_context()->drawing_context()->get_position (x, y);
 
-		oox_current_child_document = oox_smart_art->m_pFileContainer.operator->();
+		oox_current_child_document = oox_smart_art->m_pFileContainer.GetPointer();
 
 		odf_context()->drawing_context()->start_group();
 
@@ -436,8 +436,8 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 	smart_ptr<OOX::File> oFile = find_file_by_id (oox_chart->id_data->get());
 	if (oFile.IsInit())
 	{
-		OOX::Spreadsheet::CChartSpace* pChart = dynamic_cast<OOX::Spreadsheet::CChartSpace*>(oFile.operator->());
-		OOX::Spreadsheet::CChartSpaceEx* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartSpaceEx*>(oFile.operator->());
+		OOX::Spreadsheet::CChartSpace* pChart = dynamic_cast<OOX::Spreadsheet::CChartSpace*>(oFile.GetPointer());
+		OOX::Spreadsheet::CChartSpaceEx* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartSpaceEx*>(oFile.GetPointer());
 		
 		if (pChart || pChartEx)
 		{
@@ -447,7 +447,7 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 			if ( (pChart) && ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id)) )
 			{
 				oFile = find_file_by_id (*pChart->m_oChartSpace.m_userShapes->m_id);
-				pChartDrawing = dynamic_cast<OOX::CChartDrawing*>(oFile.operator->());
+				pChartDrawing = dynamic_cast<OOX::CChartDrawing*>(oFile.GetPointer());
 			}
 			
 			if ((pChartDrawing) && (false == pChartDrawing->m_arrItems.empty()))
@@ -632,7 +632,7 @@ void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
 	for (size_t i = 0; i < oox_shape_tree->SpTreeElems.size(); i++)
 	{
 		odf_context()->drawing_context()->start_drawing();
-			convert(oox_shape_tree->SpTreeElems[i].GetElem().operator->());
+			convert(oox_shape_tree->SpTreeElems[i].GetElem().GetPointer());
 		odf_context()->drawing_context()->end_drawing();
 	}
 
@@ -911,7 +911,7 @@ void OoxConverter::convert(PPTX::Logic::CustGeom *oox_cust_geom)
 	}
 	for (size_t i = 0; i < oox_cust_geom->ahLst.size(); i++)
 	{
-		convert(oox_cust_geom->ahLst[i].ah.operator->());
+		convert(oox_cust_geom->ahLst[i].ah.GetPointer());
 	}
 	if (oox_cust_geom->rect.IsInit())
 	{
@@ -942,7 +942,7 @@ void OoxConverter::convert(PPTX::Logic::EffectDag *oox_effect_dag, DWORD ARGB)
 	//type - sib, value
 	for (size_t i = 0; i < oox_effect_dag->Effects.size(); ++i)
 	{
-		convert(oox_effect_dag->Effects[i].Effect.operator->()/*, ARGB*/);
+		convert(oox_effect_dag->Effects[i].Effect.GetPointer()/*, ARGB*/);
 	}
 }
 void OoxConverter::convert(PPTX::Logic::EffectLst *oox_effect_list, DWORD ARGB)
@@ -1161,7 +1161,7 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 			}
 			for (size_t i = 0 ; i < oox_bitmap_fill->blip->Effects.size(); i++)
 			{
-				convert(oox_bitmap_fill->blip->Effects[i].Effect.operator->());
+				convert(oox_bitmap_fill->blip->Effects[i].Effect.GetPointer());
 			}
 		}
 		if (oox_bitmap_fill->srcRect.IsInit() && Width > 0  && Height > 0)//часть изображения

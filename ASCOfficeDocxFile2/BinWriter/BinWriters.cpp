@@ -801,7 +801,7 @@ void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
 	if(rPrChange.m_pRunPr.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::rPrChange);
-		Write_rPr(rPrChange.m_pRunPr.operator->());
+		Write_rPr(rPrChange.m_pRunPr.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
@@ -944,7 +944,7 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::pPr_rPr);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
-		brPrs.Write_rPr(pPr.m_oRPr.operator->());
+		brPrs.Write_rPr(pPr.m_oRPr.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 //FramePr
@@ -1425,7 +1425,7 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 			if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
 			{
 				int nIndex = 0;
-				OOX::CHdrFtr* pHdrFtr = (OOX::CHdrFtr*)oFile.operator->();
+				OOX::CHdrFtr* pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
 				if(bHdr)
 				{
 					nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
@@ -2264,7 +2264,7 @@ void Binary_tblPrWriter::WriteTcPrChange(const OOX::Logic::CTcPrChange& tcPrChan
 	if(tcPrChange.m_pTcPr.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::tcPrChange);
-		WriteCellPr(tcPrChange.m_pTcPr.operator->());
+		WriteCellPr(tcPrChange.m_pTcPr.GetPointer());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
@@ -2452,7 +2452,7 @@ void BinaryStyleTableWriter::WriteStyle(const OOX::CStyle& style)
 	if(false != style.m_oRunPr.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_TextPr);
-		brPrs.Write_rPr(style.m_oRunPr.operator->());
+		brPrs.Write_rPr(style.m_oRunPr.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//ParaPr
@@ -2480,7 +2480,7 @@ void BinaryStyleTableWriter::WriteStyle(const OOX::CStyle& style)
 	if(false != style.m_oTcPr.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_sts::Style_CellPr);
-		btblPrs.WriteCellPr(style.m_oTcPr.operator->());
+		btblPrs.WriteCellPr(style.m_oTcPr.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//TblStylePr
@@ -2557,7 +2557,7 @@ void BinaryStyleTableWriter::WriteTblStyleProperties(const OOX::Logic::CTableSty
 		if(false != oProperty.m_oRunPr.IsInit())
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblStylePrType::RunPr);
-			brPrs.Write_rPr(oProperty.m_oRunPr.operator->());
+			brPrs.Write_rPr(oProperty.m_oRunPr.GetPointer());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		//ParaPr
@@ -2585,7 +2585,7 @@ void BinaryStyleTableWriter::WriteTblStyleProperties(const OOX::Logic::CTableSty
 		if(false != oProperty.m_oTcPr.IsInit())
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblStylePrType::TcPr);
-			btblPrs.WriteCellPr(oProperty.m_oTcPr.operator->());
+			btblPrs.WriteCellPr(oProperty.m_oTcPr.GetPointer());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -4234,7 +4234,7 @@ void BinaryDocumentTableWriter::WriteMathRunContent(OOX::Logic::CMRun* pMRun)
 	if ( pMRun->m_oRPr.IsInit() )
 	{
 		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::RPr);
-		brPrs.Write_rPr(pMRun->m_oRPr.operator->());
+		brPrs.Write_rPr(pMRun->m_oRPr.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos2);
 	}
 	if ( pMRun->m_oARPr.IsInit() )
@@ -4483,7 +4483,7 @@ void BinaryDocumentTableWriter::WriteMathCtrlPr(const OOX::Logic::CCtrlPr &pCtrl
 	if ( pCtrlPr.m_oRPr.IsInit() )
 	{
 		int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::rPr);
-		brPrs.Write_rPr(pCtrlPr.m_oRPr.operator->());
+		brPrs.Write_rPr(pCtrlPr.m_oRPr.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos2);
 	}
 	if ( pCtrlPr.m_oARPr.IsInit() )
@@ -6913,7 +6913,7 @@ void BinaryDocumentTableWriter::WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::
 	if(pStd->m_oSdtEndPr.IsInit() && pStd->m_oSdtEndPr->m_oRPr.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::EndPr);
-		brPrs.Write_rPr(pStd->m_oSdtEndPr->m_oRPr.operator->());
+		brPrs.Write_rPr(pStd->m_oSdtEndPr->m_oRPr.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if(pStd->m_oSdtContent.IsInit())
@@ -7037,7 +7037,7 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 	if(oStdPr.m_oRPr.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::RPr);
-		brPrs.Write_rPr(oStdPr.m_oRPr.operator->());
+		brPrs.Write_rPr(oStdPr.m_oRPr.GetPointer());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if(oStdPr.m_oShowingPlcHdr.IsInit())

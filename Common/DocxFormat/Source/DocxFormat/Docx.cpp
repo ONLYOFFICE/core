@@ -96,7 +96,7 @@ namespace OOX {
 
             smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
 			if ( pFile.IsInit() && ( OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type() ) )
-				return (OOX::CHdrFtr*)pFile.operator->();
+				return (OOX::CHdrFtr*)pFile.GetPointer();
 			else 
 				return NULL;
 		}
@@ -112,7 +112,7 @@ namespace OOX {
 			{
 				if (OOX::FileTypes::CustomXml == container[i]->type())
 				{
-					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].operator->());
+					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
 					if(OOX::CSettingsCustom::GetSchemaUrl() == pCustomXml->GetSchemaUrl())
 					{
 						return pCustomXml->m_sXml;

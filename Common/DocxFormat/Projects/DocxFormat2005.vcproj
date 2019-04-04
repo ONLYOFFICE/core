@@ -1565,6 +1565,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Ole\OleObjects.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\Pos.h"
 					>
 				</File>

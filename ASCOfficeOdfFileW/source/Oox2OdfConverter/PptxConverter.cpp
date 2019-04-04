@@ -101,7 +101,7 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 		delete pptx_document;
 		return;
 	}
-	presentation = presentation_ptr.operator->();
+	presentation = presentation_ptr.GetPointer();
 	
 	output_document = new odf_writer::package::odf_document(L"presentation", bTemplate);
     odp_context     = new odf_writer::odp_conversion_context(output_document);
@@ -284,7 +284,7 @@ void PptxConverter::convert_slides()
             continue;// странное ... слайд 38 в FY10_September_Partner_Call.pptx
         }
 
-		current_theme	= slide->theme.operator->();
+		current_theme	= slide->theme.GetPointer();
 		current_clrMap	= NULL;
 
 		std::wstring master_style_name;
@@ -323,7 +323,7 @@ void PptxConverter::convert_slides()
 				odp_context->start_master_slide(master_style_name);
 					convert_common();
 
-					current_slide = slide->Master.operator->();
+					current_slide = slide->Master.GetPointer();
 					
 					if (bShowLayoutMasterSp && bShowMasterSp)
 						convert_slide(&slide->Master->cSld, current_txStyles, false, true, Master);
@@ -332,7 +332,7 @@ void PptxConverter::convert_slides()
 
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
-					current_slide = slide->Layout.operator->();
+					current_slide = slide->Layout.GetPointer();
 					
 					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp, Layout);	
 
@@ -346,7 +346,7 @@ void PptxConverter::convert_slides()
 					{
 						rId = presentation->notesMasterIdLst[0].rid.get();
 						smart_ptr<PPTX::NotesMaster> notes_master = ((*presentation)[rId]).smart_dynamic_cast<PPTX::NotesMaster>();
-						convert(notes_master.operator->());
+						convert(notes_master.GetPointer());
 					}
 				odp_context->end_master_slide();
 				
@@ -378,8 +378,8 @@ void PptxConverter::convert_slides()
 		if (slide->clrMapOvr.IsInit() && slide->clrMapOvr->overrideClrMapping.IsInit())
 			current_clrMap	= slide->clrMapOvr->overrideClrMapping.GetPointer();
 
-		current_tableStyles	= slide->tableStyles_.operator->();
-		current_slide		= slide.operator->();
+		current_tableStyles	= slide->tableStyles_.GetPointer();
+		current_slide		= slide.GetPointer();
 
 		odp_context->start_slide();
 		
@@ -387,8 +387,8 @@ void PptxConverter::convert_slides()
 		odp_context->current_slide().set_layout_page (layout_style_name);
 		
 		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, Slide);
-		convert			(slide->comments.operator->());
-		convert			(slide->Note.operator->());
+		convert			(slide->comments.GetPointer());
+		convert			(slide->Note.GetPointer());
 		
 		convert			(slide->transition.GetPointer());
 		//convert		(slide->timing.GetPointer());
@@ -406,7 +406,7 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 	PPTX::Theme*			old_theme	= current_theme;
 	PPTX::Logic::ClrMap*	old_clrMap	= current_clrMap;
 
-	current_theme	= oox_notes->theme_.operator->();
+	current_theme	= oox_notes->theme_.GetPointer();
 	current_clrMap	= &oox_notes->clrMap;
 	
 	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
@@ -437,7 +437,7 @@ void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
 	
 	if (oox_notes->master_.IsInit())
 	{
-		current_theme	= oox_notes->master_->theme_.operator->();
+		current_theme	= oox_notes->master_->theme_.GetPointer();
 		current_clrMap	= &oox_notes->master_->clrMap;
 	}
 
@@ -542,7 +542,7 @@ void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 		odp_context->current_slide().set_transition_duration(*oox_transition->dur);
 	}
 
-	convert(oox_transition->base.base.operator->());
+	convert(oox_transition->base.base.GetPointer());
 	
 	if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
 	{
@@ -1443,7 +1443,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 
 		if (!bConvert)
 		{
-			OoxConverter::convert(pElem.operator->());
+			OoxConverter::convert(pElem.GetPointer());
 		}
 
 		odf_context()->drawing_context()->end_drawing();

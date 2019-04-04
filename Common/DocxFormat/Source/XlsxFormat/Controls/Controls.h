@@ -39,126 +39,6 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CControlPr : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CControlPr)
-			CControlPr()
-			{
-			}
-			virtual ~CControlPr()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
-			virtual EElementType getType () const
-			{
-				return et_x_ControlPr;
-			}
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		public:
-			nullable_string							m_oAltText;
-			nullable_bool							m_oAutoFill;
-			nullable_bool							m_oAutoLine;
-			nullable_bool							m_oAutoPict;
-			nullable_bool							m_oDde;
-			nullable_bool							m_oDefaultSize;
-			nullable_bool							m_oDisabled;
-			nullable_string							m_oCf;
-			nullable_string							m_oLinkedCell;
-			nullable_string							m_oListFillRange;
-			nullable<SimpleTypes::CRelationshipId>	m_oRid;
-			nullable_bool							m_oLocked;
-			nullable_string							m_oMacro;
-			nullable_bool							m_oPrint;
-			nullable_bool							m_oRecalcAlways;
-			nullable_bool							m_oUiObject;
-
-			nullable<CExtAnchor>					m_oAnchor;
-		};
-
-		class CControl : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CControl)
-			CControl()
-			{
-			}
-			virtual ~CControl()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const;
-   
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
-			virtual EElementType getType () const
-			{
-				return et_x_Control;
-			}
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		public:
-			nullable_string										m_oProgId;
-			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
-			nullable_string										m_oLink;
-			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
-			nullable_bool										m_oAutoLoad;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
-			nullable<SimpleTypes::CRelationshipId>				m_oRid;
-			nullable<CControlPr>								m_oControlPr;
-		};
-
-		class CControls : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CControls)
-			CControls()
-			{
-			}
-			virtual ~CControls();
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			
-			void read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion = false);
-			
-			virtual EElementType getType () const
-			{
-				return et_x_Controls;
-			}
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-		public:
-			std::map<int, CControl*> m_mapControls;
-			std::map<int, CControl*> m_mapControlsAlternative;
-		};
 //------------------------------------------------------------------------------------------------------------------------------
 		class CListItem : public WritingElement
 		{
@@ -272,6 +152,131 @@ namespace OOX
 
 			nullable<CListItems>							m_oItemLst;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+		};
+//------------------------------------------------------------------------------------
+		class CControlPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CControlPr)
+			CControlPr()
+			{
+			}
+			virtual ~CControlPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType () const
+			{
+				return et_x_ControlPr;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable_string							m_oAltText;
+			nullable_bool							m_oAutoFill;
+			nullable_bool							m_oAutoLine;
+			nullable_bool							m_oAutoPict;
+			nullable_bool							m_oDde;
+			nullable_bool							m_oDefaultSize;
+			nullable_bool							m_oDisabled;
+			nullable_string							m_oCf;
+			nullable_string							m_oLinkedCell;
+			nullable_string							m_oListFillRange;
+			nullable<SimpleTypes::CRelationshipId>	m_oRid;
+			nullable_bool							m_oLocked;
+			nullable_string							m_oMacro;
+			nullable_bool							m_oPrint;
+			nullable_bool							m_oRecalcAlways;
+			nullable_bool							m_oUiObject;
+
+			nullable<CExtAnchor>					m_oAnchor;
+		};
+
+//------------------------------------------------------------------------------------
+		class CControl : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CControl)
+			CControl()
+			{
+			}
+			virtual ~CControl()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const;
+   
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType () const
+			{
+				return et_x_Control;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable_string										m_oName;
+			nullable_string										m_oProgId;
+			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
+			nullable_string										m_oLink;
+			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
+			nullable_bool										m_oAutoLoad;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
+			nullable<SimpleTypes::CRelationshipId>				m_oRid;
+			nullable<CControlPr>								m_oControlPr;
+//--for-write---------------
+			nullable<CFormControlPr>							m_oFormControlPr;
+		};
+//------------------------------------------------------------------------------------------------------------------------
+		class CControls : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CControls)
+			CControls()
+			{
+			}
+			virtual ~CControls();
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
+			void read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion = false);
+			
+			virtual EElementType getType () const
+			{
+				return et_x_Controls;
+			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
+		public:
+			std::map<unsigned int, CControl*> m_mapControls;
+			std::map<unsigned int, CControl*> m_mapControlsAlternative;
 		};
 //------------------------------------------------------------------------------------------------------------------------
 		class CCtrlPropFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer

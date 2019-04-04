@@ -327,7 +327,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				
 					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 					{
-						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+						OOX::Image* pImage = (OOX::Image*)oFile.GetPointer();
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
@@ -418,7 +418,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 					{
 						pOutput->m_oPicture	= RtfPicturePtr( new RtfPicture() );
 
-						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+						OOX::Image* pImage = (OOX::Image*)oFile.GetPointer();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
 						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam);
@@ -756,7 +756,7 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 			
 			if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+				OOX::Image* pImage = (OOX::Image*)oFile.GetPointer();
 
 				std::wstring sImagePath = pImage->filename().GetPath();
 
@@ -902,7 +902,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 			{
 				//oox_grad_fill->GsLst[i]->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 			}
-			Parse(oParam, oox_grad_fill->GsLst[i].color.Color.operator->(), hexColor, opacity);
+			Parse(oParam, oox_grad_fill->GsLst[i].color.Color.GetPointer(), hexColor, opacity);
 
 			if (i == 0)
 			{
@@ -958,7 +958,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 			unsigned int nColor = 0; //black
 			_CP_OPT(double) opacity;
 			
-			Parse(oParam, fill.operator->(), nColor, opacity);
+			Parse(oParam, fill.GetPointer(), nColor, opacity);
 			pOutput->m_nLineColor = nColor;
 		}
 		else
@@ -1529,7 +1529,7 @@ bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOut
 	
 		if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
 		{
-			OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
+			OOX::OleObject* pO = (OOX::OleObject*)oFile.GetPointer();
 			sOlePath = pO->filename().m_strFilename;
 		}
 	}
@@ -1934,7 +1934,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 
                 smart_ptr<PPTX::Logic::SpTree> e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 				
-				OOXShapeGroupReader oShapeReader(e.operator->());
+				OOXShapeGroupReader oShapeReader(e.GetPointer());
 				
 				pNewShape->m_bInGroup = true;
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )
@@ -1945,7 +1945,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 				RtfShapePtr pNewShape ( new RtfShape() );
 				
                 smart_ptr<OOX::WritingElement> e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<OOX::WritingElement>();
-				OOXShapeReader oShapeReader(e.operator->());
+				OOXShapeReader oShapeReader(e.GetPointer());
 				
 				pNewShape->m_bInGroup = true;
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )

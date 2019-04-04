@@ -69,7 +69,7 @@ namespace PPTX
 			
 			if (oFileData.IsInit())
 			{
-                pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.operator->());
+                pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());
 				if (pDiagramData) result = true; // это smart art ..есть у него drawing или нет - неважно
 
 				if ((pDiagramData) && (pDiagramData->m_oExtLst.IsInit()))
@@ -95,7 +95,7 @@ namespace PPTX
 					//пробуем по тому же пути с номером data.xml - ниже			
  				}
 			}
-			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 
 			if (!pDiagramDrawing && pDiagramData)
 			{
@@ -109,7 +109,7 @@ namespace PPTX
 
 				oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(NULL, pathDiagramDrawing)));
 				if (oFileDrawing.IsInit())
-					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 			}
 
 			if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
@@ -150,16 +150,16 @@ namespace PPTX
 		{
 			if (m_diag.is_init())
 			{
-				smart_ptr<OOX::IFileContainer> old = *pWriter->m_pCurrentContainer;
+				smart_ptr<OOX::IFileContainer> oldContainer = *pWriter->m_pCurrentContainer;
 				*pWriter->m_pCurrentContainer = m_pFileContainer;
 				if (pWriter->m_pMainDocument)
-					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = (OOX::IFileContainer*)m_pFileContainer.operator->();
+					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = (OOX::IFileContainer*)m_pFileContainer.GetPointer();
 				
 				m_diag->toPPTY(pWriter);
 				
-				*pWriter->m_pCurrentContainer = old;
+				*pWriter->m_pCurrentContainer = oldContainer;
 				if (pWriter->m_pMainDocument)
-					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = old.operator->();
+					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = oldContainer.GetPointer();
 			}
 		}
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

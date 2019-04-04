@@ -539,7 +539,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
     std::wstring ref;
 	if (type == 1 && OOX::FileTypes::Image == oFile->type())
 	{
-		OOX::Image* pImage = dynamic_cast<OOX::Image*>(oFile.operator->());
+		OOX::Image* pImage = dynamic_cast<OOX::Image*>(oFile.GetPointer());
 
 		if (pImage)
 		{
@@ -548,7 +548,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 	}
 	if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
 	{
-		OOX::HyperLink* pHyperlink = dynamic_cast<OOX::HyperLink*>(oFile.operator->());
+		OOX::HyperLink* pHyperlink = dynamic_cast<OOX::HyperLink*>(oFile.GetPointer());
 		
 		if (pHyperlink && pHyperlink->bHyperlink)
 		{
@@ -557,7 +557,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 	}
 	if (type == 3)
 	{
-		OOX::Media* pMedia = dynamic_cast<OOX::Media*>(oFile.operator->());
+		OOX::Media* pMedia = dynamic_cast<OOX::Media*>(oFile.GetPointer());
 
 		if (pMedia)
 		{
@@ -566,7 +566,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 	}
 	if (type == 4)
 	{
-		OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(oFile.operator->());
+		OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(oFile.GetPointer());
 
 		if (pOleObject)
 		{

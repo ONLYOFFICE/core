@@ -84,7 +84,7 @@ namespace OOX
 			
 			PPTX::Theme  *GetTheme () const
 			{
-				return (PPTX::Theme  *)(m_pTheme.operator->());
+				return (PPTX::Theme  *)(m_pTheme.GetPointer());
 			}
 			smart_ptr<PPTX::Theme>							m_pTheme;
 

@@ -238,23 +238,25 @@ namespace BinXlsxRW
 	class BinaryWorksheetsTableReader : public Binary_CommonReader
 	{
 		Binary_CommonReader2				m_oBcr2;
+		NSFile::CStreamWriter*				m_pCurStreamWriter;
+		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
 
-        OOX::Spreadsheet::CWorkbook&                m_oWorkbook;
-        OOX::Spreadsheet::CSharedStrings*           m_pSharedStrings;
-        boost::unordered_map<long, ImageObject*>&	m_mapMedia;
-        OOX::Spreadsheet::CSheet*                   m_pCurSheet;
-        OOX::Spreadsheet::CWorksheet*               m_pCurWorksheet;
-        OOX::Spreadsheet::CDrawing*                 m_pCurDrawing;
-        OOX::CVmlDrawing*                           m_pCurVmlDrawing;
-		NSFile::CStreamWriter*						m_pCurStreamWriter;
-		OOX::Spreadsheet::COleObjects*				m_pCurOleObjects;
-		long                                        m_lObjectIdVML;
+        OOX::Spreadsheet::CWorkbook&					m_oWorkbook;
+        OOX::Spreadsheet::CSharedStrings*				m_pSharedStrings;
+        boost::unordered_map<long, ImageObject*>&		m_mapMedia;
+       
+		NSCommon::smart_ptr<OOX::Spreadsheet::CSheet>		m_pCurSheet;
+        NSCommon::smart_ptr<OOX::Spreadsheet::CWorksheet>	m_pCurWorksheet;
+        NSCommon::smart_ptr<OOX::Spreadsheet::CDrawing>		m_pCurDrawing;
+		NSCommon::smart_ptr<OOX::Spreadsheet::COleObjects>	m_pCurOleObjects;
+        NSCommon::smart_ptr<OOX::CVmlDrawing>				m_pCurVmlDrawing;
+		
+		long								m_lObjectIdVML;
 
         const std::wstring&					m_sDestinationDir;
         const std::wstring&					m_sMediaDir;
 		SaveParams&							m_oSaveParams;
 		int									m_nNextObjectId;
-		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
 
 		std::vector<OOX::Spreadsheet::CWorksheet*>&					m_arWorksheets;
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>&		m_mapWorksheets; // for fast find 
@@ -292,9 +294,13 @@ namespace BinXlsxRW
 		int ReadMergeCells(BYTE type, long length, void* poResult);
 		int ReadDrawings(BYTE type, long length, void* poResult);
 		int ReadDrawing(BYTE type, long length, void* poResult);
+		int ReadCellAnchor(BYTE type, long length, void* poResult);
 		int ReadLegacyDrawingHF(BYTE type, long length, void* poResult);
 		int ReadLegacyDrawingHFDrawings(BYTE type, long length, void* poResult);
 		int ReadLegacyDrawingHFDrawing(BYTE type, long length, void* poResult);
+		int ReadControls(BYTE type, long length, void* poResult);
+		int ReadControl(BYTE type, long length, void* poResult);
+		int ReadControlItems(BYTE type, long length, void* poResult);
 		int ReadFromTo(BYTE type, long length, void* poResult);
 		int ReadExt(BYTE type, long length, void* poResult);
 		int ReadPos(BYTE type, long length, void* poResult);
@@ -321,7 +327,7 @@ namespace BinXlsxRW
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader
 	{
-        boost::unordered_map<long, ImageObject*>&     m_mapMedia;
+        boost::unordered_map<long, ImageObject*>&	m_mapMedia;
         const std::wstring&                         m_sFileInDir;
         long                                        m_nCurId;
         std::wstring                                m_sCurSrc;

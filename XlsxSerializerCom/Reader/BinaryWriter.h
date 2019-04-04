@@ -212,7 +212,8 @@ namespace BinXlsxRW
         void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor* pCellAnchor, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL);
 		void WriteCellAnchor(OOX::Spreadsheet::CCellAnchor* pCellAnchor);
 		void WriteOleObjects(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing = NULL);
-		void WriteControls(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing = NULL);
+		void WriteControls(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::CVmlDrawing *pVmlDrawing = NULL);
+		void WriteControlPr(OOX::Spreadsheet::CControlPr* pControlPr, OOX::Spreadsheet::CFormControlPr* pFormControlPr);
 
 		void WriteLegacyDrawingHF(const OOX::Spreadsheet::CWorksheet& oWorksheet);
 		void WriteLegacyDrawingHFDrawings(OOX::CVmlDrawing* pVmlDrawing);

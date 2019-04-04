@@ -89,7 +89,7 @@ odf_writer::odf_conversion_context* XlsxConverter::odf_context()
 PPTX::Theme* XlsxConverter::oox_theme()
 {
 	if (xlsx_document)
-		return xlsx_document->m_pTheme.operator->();
+		return xlsx_document->m_pTheme.GetPointer();
 	else
 		return NULL;
 }
@@ -179,7 +179,7 @@ void XlsxConverter::convert_sheets()
 				else
 				{
 					smart_ptr<OOX::Spreadsheet::CExternalLink> externalLink = file.smart_dynamic_cast<OOX::Spreadsheet::CExternalLink>();
-					convert(externalLink.operator->());
+					convert(externalLink.GetPointer());
 				}
 			}
 		}
@@ -293,7 +293,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_table_part->m_oRId->GetValue());
 			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Table == oFile->type())
 			{
-				OOX::Spreadsheet::CTableFile* pTableFile = (OOX::Spreadsheet::CTableFile*)oFile.operator->();
+				OOX::Spreadsheet::CTableFile* pTableFile = (OOX::Spreadsheet::CTableFile*)oFile.GetPointer();
 						
 				if ((pTableFile) && (pTableFile->m_oTable.IsInit()))
 				{				
@@ -340,7 +340,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
 		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())
 		{
-			OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
+			OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.GetPointer();
 			
 			convert(pDrawing, oox_sheet);
 		}
@@ -2156,7 +2156,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 
 		if (oox_sheet->m_oOleObjects.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-            boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
+            boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oOleObjects->m_mapOleObjects.end())
 			{
 				//??? перенести даные привязки 
@@ -2166,7 +2166,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 		}
 		if (oox_sheet->m_oControls.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-            std::map<int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
+            std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oControls->m_mapControls.end())
 			{
 				//??? перенести даные привязки 
@@ -2185,7 +2185,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 {
 	if (!oox_objects) return;
 
-    for (boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
+    for (boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
 	{
 		OOX::Spreadsheet::COleObject* object = it->second;
 		ods_context->start_drawings();
@@ -2233,7 +2233,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
             smart_ptr<OOX::File> oFileV = oox_sheet->Find(oox_sheet->m_oLegacyDrawing->m_oId->GetValue());
 			if (oFileV.IsInit() && OOX::FileTypes::VmlDrawing == oFileV->type())
 			{
-				pVmlDrawing = (OOX::CVmlDrawing*)oFileV.operator->();
+				pVmlDrawing = (OOX::CVmlDrawing*)oFileV.GetPointer();
 			}
 			OOX::WritingElement* pShapeElem	= NULL;
 			std::wstring sShapeId = L"_x0000_s" + std::to_wstring(object->m_oShapeId->GetValue());
@@ -2287,7 +2287,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 						
 						if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 						{
-							OOX::Image* pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+							OOX::Image* pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
 							
 							if (pImageFileCache && odf_ref_image.empty())
 							{

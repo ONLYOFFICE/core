@@ -1690,7 +1690,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 		
 		if (oFileData.is_init())
 		{
-			pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.operator->());										
+			pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());										
 			if (pDiagramData)
 			{
 				for (size_t i = 0; (pDiagramData->m_oExtLst.IsInit()) && i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
@@ -1706,7 +1706,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 		if (id_drawing.is_init())
 		{
 			oFileDrawing = (*m_pBinaryWriter->m_pCurrentContainer)->Find(*id_drawing);
-			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 		}
 		if (!pDiagramDrawing && pDiagramData)
 		{
@@ -1721,7 +1721,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 			{
 				oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(NULL, pathDiagramDrawing)));
 				if (oFileDrawing.IsInit())
-					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 			}
 		}
 	}

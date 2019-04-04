@@ -641,11 +641,11 @@ namespace PPTX
 				
 				if (parentFileIs<PPTX::Slide>())
 				{
-					pVml = parentFileAs<PPTX::Slide>().Vml.operator->();
+					pVml = parentFileAs<PPTX::Slide>().Vml.GetPointer();
 				}
 				else if (parentFileIs<PPTX::SlideMaster>())
 				{
-					pVml = parentFileAs<PPTX::SlideMaster>().Vml.operator->();
+					pVml = parentFileAs<PPTX::SlideMaster>().Vml.GetPointer();
 				}
 				if (oleObject->m_sShapeId.IsInit() && pVml && !blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())
 				{					
@@ -679,7 +679,7 @@ namespace PPTX
 										
 										if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 										{
-											OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+											OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
 											
 											blipFill.blip->oleFilepathImage = pImageFileCache->filename().GetPath();
 										}

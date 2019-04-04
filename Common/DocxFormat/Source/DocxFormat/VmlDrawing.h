@@ -441,6 +441,10 @@ namespace OOX
 		{
 			return m_oReadPath;
 		}
+		bool IsEmpty()
+		{
+			return m_aXml.empty() && (!m_mapComments || ((m_mapComments) && (m_mapComments->empty())));
+		}
 	private:
 	
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

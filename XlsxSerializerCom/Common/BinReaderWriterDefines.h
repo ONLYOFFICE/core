@@ -369,7 +369,7 @@ namespace BinXlsxRW
 		ColBreaks = 31,
 		DataValidations = 32,
 		QueryTable = 33,
-		Control = 34
+		Controls = 34
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -418,6 +418,55 @@ namespace BinXlsxRW
 		CustomHeight = 6,
 		OutLevel	= 7,
 		Collapsed	= 8
+	};}
+	namespace c_oSerControlTypes{enum c_oSerControlTypes
+	{
+		Control = 10,
+		ControlAnchor = 11,
+		ObjectType = 12,
+		Name = 13,
+		AltText = 14,
+		AutoFill = 15,
+		AutoLine = 16,
+		AutoPict = 17,
+		DefaultSize = 18,
+		Disabled = 19,
+		Locked = 20,
+		Macro = 21,
+		RecalcAlways = 22,
+		Checked = 23,
+		Colored = 24,
+		DropLines = 25,
+		DropStyle = 26,
+		Dx = 27,
+		FirstButton = 28,
+		FmlaGroup = 29,
+		FmlaLink = 30,
+		FmlaRange = 31,
+		FmlaTxbx = 32,
+		Horiz = 33,
+		Inc = 34,
+		JustLastX = 35,
+		LockText = 36,
+		Max = 37,
+		Min = 38,
+		MultiSel = 39,
+		NoThreeD = 40,
+		NoThreeD2 = 41,
+		Page = 42,
+		Sel = 43,
+		SelType = 44,
+		TextHAlign = 45,
+		TextVAlign = 46,
+		Val = 47,
+		WidthMin = 48,
+		EditVal = 49,
+		MultiLine = 50,
+		VerticalBar = 51,
+		PasswordEdit = 52,
+		Print = 53,
+		ItemLst = 54,
+		Item = 55
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{

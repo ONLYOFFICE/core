@@ -6271,7 +6271,7 @@ namespace BinXlsxRW
 		{
 			if (OOX::FileTypes::ThemeOverride == container[i]->type())
 			{
-				PPTX::Theme* pThemeOverride = dynamic_cast<PPTX::Theme*>(container[i].operator->());
+				PPTX::Theme* pThemeOverride = dynamic_cast<PPTX::Theme*>(container[i].GetPointer());
 		
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceTHEMEOVERRIDE);
 				pThemeOverride->toPPTY(&m_oBcw.m_oStream);
@@ -6285,7 +6285,7 @@ namespace BinXlsxRW
 			
 			if (oFile.IsInit() && OOX::FileTypes::ChartDrawing == oFile->type())
 			{
-				OOX::CChartDrawing* pDrawing = (OOX::CChartDrawing*)oFile.operator->();
+				OOX::CChartDrawing* pDrawing = (OOX::CChartDrawing*)oFile.GetPointer();
 				
 				smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 				m_pOfficeDrawingConverter->SetRels(pDrawing);

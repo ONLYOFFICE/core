@@ -161,8 +161,8 @@ namespace PPTX
 						if (lType == L"ctrTitle")	lType = L"title";
 						if (type == lType)
 						{
-							if (pShape)	pShape->SetLevelUpElement(pMasterShape.operator->());
-							if (pPic)	pPic->SetLevelUpElement(pMasterShape.operator->());
+							if (pShape)	pShape->SetLevelUpElement(pMasterShape.GetPointer());
+							if (pPic)	pPic->SetLevelUpElement(pMasterShape.GetPointer());
 							
 							return;
 						}

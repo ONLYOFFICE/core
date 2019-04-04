@@ -114,7 +114,7 @@ namespace OOX
 				
 				if (m_pComments && oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
 				{
-					OOX::CVmlDrawing* pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.operator->());
+					OOX::CVmlDrawing* pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.GetPointer());
 					
 					PrepareComments(m_pComments, pVmlDrawing);
 				}
@@ -218,7 +218,7 @@ namespace OOX
 
 				for (size_t j = 0; j < m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems.size(); ++j)
 				{
-					if (false == m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j]) continue;
+					if (NULL == m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j]) continue;
 
 					if (false == m_oDataValidations.IsInit())
 					{
@@ -241,11 +241,11 @@ namespace OOX
 			{
 				for (size_t j = 0; j < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting.size(); ++j)
 				{
-					if (false == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]) continue;
+					if (NULL == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]) continue;
 
 					for (size_t k = 0; k < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems.size(); ++k)
 					{
-						if (false == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]) continue;
+						if (NULL == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]) continue;
 
 						if (m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId.IsInit())
 						{

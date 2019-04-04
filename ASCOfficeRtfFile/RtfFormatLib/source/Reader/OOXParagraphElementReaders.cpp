@@ -257,7 +257,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(pHyperlink->m_oId->GetValue());
 					if ((oFile.IsInit()) && (OOX::FileTypes::HyperLink == oFile->type()))
 					{
-						OOX::HyperLink* pH = (OOX::HyperLink*)oFile.operator->();
+						OOX::HyperLink* pH = (OOX::HyperLink*)oFile.GetPointer();
 						sTarget = pH->Uri().GetPath();
 					}
 				}

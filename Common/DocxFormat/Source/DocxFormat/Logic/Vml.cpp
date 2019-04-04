@@ -1019,26 +1019,46 @@ namespace OOX
 				else if ( L"FmlaLink"		== sName )	m_oFmlaLink = oReader.GetText2();
 				else if ( L"FmlaRange"		== sName )	m_oFmlaRange = oReader.GetText2();
 				else if ( L"CF"				== sName )	m_oCf = oReader.GetText2();
+				else if ( L"Min"			== sName )	m_oMin = oReader.GetText2();
+				else if ( L"Max"			== sName )	m_oMax = oReader.GetText2();
+				else if ( L"Val"			== sName )	m_oVal = oReader.GetText2();
+				else if ( L"Inc"			== sName )	m_oInc = oReader.GetText2();
+				else if ( L"Dx"				== sName )	m_oDx = oReader.GetText2();
+				else if ( L"Page"			== sName )	m_oPage = oReader.GetText2();
+				else if ( L"DropLines"		== sName )	m_oDropLines = oReader.GetText2();
+				else if ( L"NoThreeD2"		== sName )	m_oNoThreeD2 = oReader.GetText2();
+				else if ( L"NoThreeD"		== sName )	m_oNoThreeD = oReader.GetText2();
+				else if ( L"DropStyle"		== sName )	m_oDropStyle = oReader.GetText2();
 			}
 		}
 		std::wstring CClientData::toXML() const
 		{
-			std::wstring sResult = _T("<x:ClientData");
+			std::wstring sResult = L"<x:ClientData";
 			if(m_oObjectType.IsInit())
 			{
-				sResult += L" ObjectType=\"";
-				sResult += m_oObjectType->ToString();
-				sResult += L"\"";
+				sResult += L" ObjectType=\"" + m_oObjectType->ToString() + L"\"";
 			}
-			sResult += _T(">");
-			if(m_oMoveWithCells.IsInit() && true == m_oMoveWithCells->ToBool())
-				sResult += _T("<x:MoveWithCells/>");
-			if(m_oSizeWithCells.IsInit() && true == m_oSizeWithCells->ToBool())
-				sResult += _T("<x:SizeWithCells/>");
+			sResult += L">";
+			if(m_oMoveWithCells.IsInit() && *m_oMoveWithCells)
+				sResult += L"<x:MoveWithCells/>";
+			if(m_oSizeWithCells.IsInit() && *m_oSizeWithCells)
+				sResult += L"<x:SizeWithCells/>";
 			if(m_oAnchor.IsInit())
 			{
-				sResult += _T("<x:Anchor>") + m_oAnchor.get() + _T("</x:Anchor>");
+				sResult += L"<x:Anchor>" + m_oAnchor.get() + L"</x:Anchor>";
 			}
+			if(m_oDefaultSize.IsInit())
+			{
+				sResult += std::wstring(L"<x:DefaultSize>") + (*m_oDefaultSize ? L"True" : L"False") + L"</x:DefaultSize>";
+			}
+			if(m_oAutoLine.IsInit())
+			{
+				sResult += std::wstring(L"<x:AutoLine>") + (*m_oAutoLine ? L"True" : L"False") + L"</x:AutoLine>";
+			}	
+			if(m_oAutoPict.IsInit())
+			{
+				sResult += std::wstring(L"<x:AutoPict>") + (*m_oAutoPict ? L"True" : L"False") + L"</x:AutoPict>";
+			}	
 			if(m_oRow.IsInit())
 			{
                 sResult += L"<x:Row>" + std::to_wstring(m_oRow->GetValue()) + L"</x:Row>";
@@ -1047,7 +1067,63 @@ namespace OOX
 			{
                 sResult += L"<x:Column>" + std::to_wstring(m_oColumn->GetValue()) + L"</x:Column>";
 			}
-			sResult += _T("</x:ClientData>");
+			if(m_oCf.IsInit())
+			{
+                sResult += L"<x:CF>" + (*m_oCf) + L"</x:CF>";
+			}
+			if (m_oChecked.IsInit())
+			{
+				sResult += _T("<x:Checked>") + *m_oChecked + _T("</x:Checked>");
+			}
+			if (m_oFmlaLink.IsInit())
+			{
+				sResult += _T("<x:FmlaLink>") + *m_oFmlaLink + _T("</x:FmlaLink>");
+			}
+			if (m_oFmlaRange.IsInit())
+			{
+				sResult += _T("<x:FmlaRange>") + *m_oFmlaRange + _T("</x:FmlaRange>");
+			}
+			if (m_oMin.IsInit())
+			{
+                sResult += L"<x:Min>" + std::to_wstring(m_oMin->GetValue()) + L"</x:Min>";
+			}
+			if (m_oMax.IsInit())
+			{
+                sResult += L"<x:Max>" + std::to_wstring(m_oMax->GetValue()) + L"</x:Max>";
+			}
+			if (m_oVal.IsInit())
+			{
+                sResult += L"<x:Val>" + std::to_wstring(m_oVal->GetValue()) + L"</x:Val>";
+			}
+			if (m_oInc.IsInit())
+			{
+                sResult += L"<x:Inc>" + std::to_wstring(m_oInc->GetValue()) + L"</x:Inc>";
+			}
+			if (m_oDx.IsInit())
+			{
+                sResult += L"<x:Dx>" + std::to_wstring(m_oDx->GetValue()) + L"</x:Dx>";
+			}
+			if (m_oDropStyle.IsInit())
+			{
+				sResult += _T("<x:DropStyle>") + *m_oDropStyle + _T("</x:DropStyle>");
+			}
+			if (m_oDropLines.IsInit())
+			{
+                sResult += L"<x:DropLines>" + std::to_wstring(m_oDropLines->GetValue()) + L"</x:DropLines>";
+			}
+			if (m_oPage.IsInit())
+			{
+                sResult += L"<x:Page>" + std::to_wstring(m_oPage->GetValue()) + L"</x:Page>";
+			}
+			if (m_oNoThreeD.IsInit())
+			{
+				sResult += std::wstring(L"<x:NoThreeD>") + (*m_oNoThreeD ? L"True" : L"False") + L"</x:NoThreeD>";
+			}					
+			if (m_oNoThreeD2.IsInit())
+			{
+				sResult += std::wstring(L"<x:NoThreeD2>") + (*m_oNoThreeD2 ? L"True" : L"False") + L"</x:NoThreeD2>";
+			}
+			sResult += L"</x:ClientData>";
 			return sResult;
 		}
 		void CClientData::toCellAnchor(OOX::Spreadsheet::CCellAnchor *pCellAnchor)

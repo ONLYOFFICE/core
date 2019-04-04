@@ -326,22 +326,46 @@ namespace OOX
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			if((!m_mapComments || m_mapComments->empty()) && m_aXml.empty()) return;
+			if((!m_mapComments || m_mapComments->empty()) && m_arObjectXml.empty() && m_arControlXml.empty()) return;
 			
 			//for Comment SpreadsheetML & others vml (hf, objects, ...) !!
 
 			XmlUtils::CStringWriter sXml;
-			sXml.WriteString(L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
-			for (size_t i = 0; i < m_aXml.size(); ++i)
+			sXml.WriteString(L"<xml \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
+			
+			for (size_t i = 0; i < m_arObjectXml.size(); ++i)
 			{
-				sXml.WriteString(m_aXml[i]);
+				sXml.WriteString(m_arObjectXml[i]);
+			}
+			
+			if (false == m_arControlXml.empty() || ((NULL != m_mapComments) && (false == m_mapComments->empty())))
+			{
+				sXml.WriteString(L"<o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout>");
+			}
+			
+			if (false == m_arControlXml.empty())
+			{
+
+				sXml.WriteString(L"<v:shapetype id=\"_x0000_t201\" coordsize=\"21600,21600\" o:spt=\"201\"");
+				sXml.WriteString(L" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/>");
+				sXml.WriteString(L"<v:path shadowok=\"f\" o:extrusionok=\"f\" strokeok=\"f\" fillok=\"f\" o:connecttype=\"rect\"/>");
+				sXml.WriteString(L"<o:lock v:ext=\"edit\" shapetype=\"t\"/></v:shapetype>");
+ 
+				for (size_t i = 0; i < m_arControlXml.size(); ++i)
+				{
+					sXml.WriteString(m_arControlXml[i]);
+				}
 			}
 			
 			long nIndex = m_lObjectIdVML + 1;
-			if(NULL != m_mapComments && m_mapComments->size() > 0)
-			{
-				sXml.WriteString(L"<o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout>");
-				sXml.WriteString(L"<v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
+			if ((NULL != m_mapComments) && (false == m_mapComments->empty()))
+			{				
+				sXml.WriteString(L"<v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\"");
+				sXml.WriteString(L" path=\"m,l,21600r21600,l21600,xe\">");
+				sXml.WriteString(L"<v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
                
 				for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
 				{
@@ -443,7 +467,7 @@ namespace OOX
 		}
 		bool IsEmpty()
 		{
-			return m_aXml.empty() && (!m_mapComments || ((m_mapComments) && (m_mapComments->empty())));
+			return m_arObjectXml.empty() && m_arControlXml.empty() && (!m_mapComments || ((m_mapComments) && (m_mapComments->empty())));
 		}
 	private:
 	
@@ -460,7 +484,9 @@ namespace OOX
 		std::vector<_vml_shape>													m_arrShapeTypes;
 //writing
         boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
-        std::vector<std::wstring>                                               m_aXml;
+        std::vector<std::wstring>                                               m_arObjectXml;
+        std::vector<std::wstring>                                               m_arControlXml;
+
         long                                                                    m_lObjectIdVML;
 	};
 } // namespace OOX

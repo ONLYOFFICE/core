@@ -4436,7 +4436,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 						OOX::Vml::CClientData oClientData;
 						oClientData.m_oObjectType.Init();
 						oClientData.m_oObjectType->SetValue(SimpleTypes::Vml::vmlclientdataobjecttypePict);
-						oClientData.m_oSizeWithCells.Init();
+						oClientData.m_oSizeWithCells = true;
 
 						oClientData.m_oAnchor = sAnchor;
 
@@ -4454,7 +4454,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 						
 						std::wstring strXml = oWriter.GetXmlString();								
 						
-						m_pCurVmlDrawing->m_aXml.push_back(strXml);
+						m_pCurVmlDrawing->m_arObjectXml.push_back(strXml);
 						m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 
 						pOleObject->m_oShapeId = *oPic.oleObject->m_sShapeId;
@@ -4730,7 +4730,7 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oVmlShape.sXml.c_str());
 			
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
-			pVmlDrawing->m_aXml.push_back(oWriter.GetXmlString());
+			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
 		RELEASEOBJECT(oVmlShape.pElement);
 	}
@@ -5015,25 +5015,28 @@ int BinaryWorksheetsTableReader::ReadControls(BYTE type, long length, void* poRe
 	if(c_oSerControlTypes::Control == type)
 	{		
 		OOX::Spreadsheet::CControl *pControl = new OOX::Spreadsheet::CControl();		
+		
 		pControl->m_oFormControlPr.Init();
+		
 		pControl->m_oControlPr.Init();
 		pControl->m_oControlPr->m_oAnchor.Init();
+		
+		pControl->m_oShapeId.Init();
+		pControl->m_oShapeId->SetValue(m_lObjectIdVML++);
 
 		READ1_DEF(length, res, this->ReadControl, pControl);
+		
+		std::wstring strXml = GetControlVmlShape(pControl);
+				
+		m_pCurVmlDrawing->m_arControlXml.push_back(strXml);
 
-		//pControl->m_oShapeId.Init();
-		//pControl->m_oShapeId->SetValue(m_lObjectIdVML++);
+		pControls->m_mapControls.insert(std::make_pair(pControl->m_oShapeId->GetValue(), pControl));
+		
+		smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pCtrlPropFile(new OOX::Spreadsheet::CCtrlPropFile(NULL));		
+		pCtrlPropFile->m_oFormControlPr = pControl->m_oFormControlPr;
 
-		if (pControl->m_oShapeId.IsInit())
-		{
-			pControls->m_mapControls.insert(std::make_pair(pControl->m_oShapeId->GetValue(), pControl));
-			
-			smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pCtrlPropFile(new OOX::Spreadsheet::CCtrlPropFile(NULL));		
-			pCtrlPropFile->m_oFormControlPr = pControl->m_oFormControlPr;
-
-			smart_ptr<OOX::File> pFile = pCtrlPropFile.smart_dynamic_cast<OOX::File>();
-			pControl->m_oRid = new SimpleTypes::CRelationshipId(m_pCurWorksheet->Add(pFile).get());
-		}
+		smart_ptr<OOX::File> pFile = pCtrlPropFile.smart_dynamic_cast<OOX::File>();
+		pControl->m_oRid = new SimpleTypes::CRelationshipId(m_pCurWorksheet->Add(pFile).get());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5275,6 +5278,78 @@ int BinaryWorksheetsTableReader::ReadControlItems(BYTE type, long length, void* 
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
+}
+std::wstring BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
+{
+	OOX::Spreadsheet::CControl* pControl = static_cast<OOX::Spreadsheet::CControl*>(pC);
+//generate ClientData
+		
+	std::wstring sAnchor;
+		sAnchor += pControl->m_oControlPr->m_oAnchor->m_oFrom->m_oCol->ToString()					+ L",";
+		sAnchor += std::to_wstring(pControl->m_oControlPr->m_oAnchor->m_oFrom->m_oColOff->ToPx())	+ L",";
+		sAnchor += pControl->m_oControlPr->m_oAnchor->m_oFrom->m_oRow->ToString()					+ L",";
+		sAnchor += std::to_wstring(pControl->m_oControlPr->m_oAnchor->m_oFrom->m_oRowOff->ToPx())	+ L",";
+		sAnchor += pControl->m_oControlPr->m_oAnchor->m_oTo->m_oCol->ToString()						+ L",";
+		sAnchor += std::to_wstring(pControl->m_oControlPr->m_oAnchor->m_oTo->m_oColOff->ToPx())		+ L",";
+		sAnchor += pControl->m_oControlPr->m_oAnchor->m_oTo->m_oRow->ToString()						+ L",";
+		sAnchor += std::to_wstring(pControl->m_oControlPr->m_oAnchor->m_oTo->m_oRowOff->ToPx());
+		
+	OOX::Vml::CClientData oClientData;
+		
+	oClientData.m_oSizeWithCells = true;
+	oClientData.m_oAnchor = sAnchor;
+	
+	SimpleTypes::Vml::EVmlClientDataObjectType objectType;
+
+	switch(pControl->m_oFormControlPr->m_oObjectType->GetValue())
+	{
+		case SimpleTypes::Spreadsheet::objectButton:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeButton;	break;
+		case SimpleTypes::Spreadsheet::objectCheckBox:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeCheckbox; break;
+		case SimpleTypes::Spreadsheet::objectDrop:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeDrop;		break;
+		case SimpleTypes::Spreadsheet::objectGBox:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeGBox;		break;
+		case SimpleTypes::Spreadsheet::objectLabel:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeLabel;	break;
+		case SimpleTypes::Spreadsheet::objectList:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeList;		break;
+		case SimpleTypes::Spreadsheet::objectRadio:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeRadio;	break;
+		case SimpleTypes::Spreadsheet::objectScroll:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeScroll;	break;
+		case SimpleTypes::Spreadsheet::objectSpin:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeSpin;		break;
+		case SimpleTypes::Spreadsheet::objectEditBox:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeEdit;		break;
+		case SimpleTypes::Spreadsheet::objectDialog:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeDialog;	break;
+	}
+	oClientData.m_oObjectType.Init();
+	oClientData.m_oObjectType->SetValue(objectType);
+
+	if (pControl->m_oFormControlPr->m_oChecked.IsInit())
+		oClientData.m_oChecked = pControl->m_oFormControlPr->m_oChecked->ToString();
+	
+	if (pControl->m_oFormControlPr->m_oDropStyle.IsInit())
+		oClientData.m_oDropStyle = pControl->m_oFormControlPr->m_oDropStyle->ToString();
+
+	oClientData.m_oDefaultSize = pControl->m_oControlPr->m_oDefaultSize;
+	oClientData.m_oAutoLine = pControl->m_oControlPr->m_oAutoLine;
+	oClientData.m_oAutoPict = pControl->m_oControlPr->m_oAutoPict;	
+	oClientData.m_oCf = pControl->m_oControlPr->m_oCf;
+	
+	oClientData.m_oMin = pControl->m_oFormControlPr->m_oMin;
+	oClientData.m_oMax = pControl->m_oFormControlPr->m_oMax;
+	oClientData.m_oVal = pControl->m_oFormControlPr->m_oVal;
+	oClientData.m_oInc = pControl->m_oFormControlPr->m_oInc;
+	oClientData.m_oDx = pControl->m_oFormControlPr->m_oDx;
+	oClientData.m_oPage = pControl->m_oFormControlPr->m_oPage;
+	oClientData.m_oDropLines = pControl->m_oFormControlPr->m_oDropLines;
+
+	oClientData.m_oNoThreeD = pControl->m_oFormControlPr->m_oNoThreeD;
+	oClientData.m_oNoThreeD2 = pControl->m_oFormControlPr->m_oNoThreeD2;
+	oClientData.m_oFmlaLink = pControl->m_oFormControlPr->m_oFmlaLink;
+	oClientData.m_oFmlaRange = pControl->m_oFormControlPr->m_oFmlaRange;
+
+	std::wstring result = L"<v:shape id=\"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
+	result += L"\" type=\"#_x0000_t201\" style='position:absolute' filled=\"f\" fillcolor=\"window [65]\" stroked=\"f\" strokecolor=\"windowText [64]\" o:insetmode=\"auto\">";
+	result += L"<o:lock v:ext=\"edit\" rotation=\"t\" text=\"t\"/>";
+
+	result += oClientData.toXML();
+	result += L"</v:shape>";
+
+	return result;
 }
 int BinaryWorksheetsTableReader::ReadFormula(BYTE type, long length, void* poResult)
 {

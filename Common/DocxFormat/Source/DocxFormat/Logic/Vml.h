@@ -2132,19 +2132,28 @@ namespace OOX
 			}
 
 			nullable<SimpleTypes::Vml::CVmlClientDataObjectType<>>	m_oObjectType;
-
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oMoveWithCells;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oSizeWithCells;
-			nullable_string											m_oAnchor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oRow;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oColumn;
-
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oDefaultSize;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oAutoLine;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oAutoPict;
-			nullable_string											m_oFmlaLink;
-			nullable_string											m_oFmlaRange;
-			nullable_string											m_oCf;
+			nullable_bool									m_oMoveWithCells;
+			nullable_bool									m_oSizeWithCells;
+			nullable_string									m_oAnchor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oRow;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oColumn;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMin;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMax;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oVal;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oInc;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oDx;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oPage;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oDropLines;
+			nullable_bool									m_oDefaultSize;
+			nullable_bool									m_oAutoLine;
+			nullable_bool									m_oAutoPict;
+			nullable_bool									m_oNoThreeD;
+			nullable_bool									m_oNoThreeD2;
+			nullable_string									m_oFmlaLink;
+			nullable_string									m_oFmlaRange;
+			nullable_string									m_oCf;
+			nullable_string									m_oDropStyle;
+			nullable_string									m_oChecked;
 		};
 		//--------------------------------------------------------------------------------
 		// CStroke 14.1.2.21 (Part4)
@@ -2298,9 +2307,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
-
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2379,8 +2385,6 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
 			nullable<std::wstring>														m_oId;
 			nullable<std::wstring>														m_sAltHref;
 			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>				m_oColor;

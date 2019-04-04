@@ -320,10 +320,12 @@ namespace BinXlsxRW
         int ReadSparklineGroup(BYTE type, long length, void* poResult);
         int ReadSparklines(BYTE type, long length, void* poResult);
         int ReadSparkline(BYTE type, long length, void* poResult);
-		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
         int ReadDataValidations(BYTE type, long length, void* poResult);
 		int ReadDataValidationsContent(BYTE type, long length, void* poResult);
         int ReadDataValidation(BYTE type, long length, void* poResult);
+		
+		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
+		std::wstring GetControlVmlShape(void* pControl);
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader
 	{

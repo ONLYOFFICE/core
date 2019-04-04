@@ -346,9 +346,9 @@ namespace OOX
 								}
 
 								if(pClientData->m_oMoveWithCells.IsInit())
-									pCommentItem->m_bMove = pClientData->m_oMoveWithCells->ToBool();
+									pCommentItem->m_bMove = *pClientData->m_oMoveWithCells;
 								if(pClientData->m_oSizeWithCells.IsInit())
-									pCommentItem->m_bSize = pClientData->m_oSizeWithCells->ToBool();
+									pCommentItem->m_bSize = *pClientData->m_oSizeWithCells;
 
 								for(size_t k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
 								{

@@ -118,13 +118,13 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<8>>			m_oDropLines;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDropLines;
 			nullable<SimpleTypes::Spreadsheet::CObjectType<>>			m_oObjectType;
 			nullable<SimpleTypes::Spreadsheet::CChecked<>>				m_oChecked;
 			nullable<SimpleTypes::Spreadsheet::CDropStyle<>>			m_oDropStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<80>>			m_oDx;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<1>>			m_oInc;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<0>>			m_oMin;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDx;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oInc;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oMin;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oMax;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oPage;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oSel;

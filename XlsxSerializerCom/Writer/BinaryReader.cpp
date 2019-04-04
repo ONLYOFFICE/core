@@ -3277,7 +3277,8 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 
 		m_pCurWorksheet->m_bWriteDirectlyToFile = true;
 		
-		m_oWorkbook.AssignOutputFilename(m_pCurWorksheet.smart_dynamic_cast<OOX::File>());
+		smart_ptr<OOX::File> oCurWorksheetFile = m_pCurWorksheet.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.AssignOutputFilename(oCurWorksheetFile);
 
 		std::wstring sWsPath = m_sDestinationDir + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + m_pCurWorksheet->DefaultDirectory().GetPath();
 		NSDirectory::CreateDirectories(sWsPath);
@@ -3291,7 +3292,6 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 
 		if(m_pCurSheet->m_oName.IsInit())
 		{
-			smart_ptr<OOX::File> oCurWorksheetFile = m_pCurWorksheet.smart_dynamic_cast<OOX::File>();
 			const OOX::RId oRId = m_oWorkbook.Add(oCurWorksheetFile);
 			m_pCurSheet->m_oRid.Init();
 			m_pCurSheet->m_oRid->SetValue(oRId.get());
@@ -3589,7 +3589,8 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Controls);
 		READ1_DEF(length, res, this->ReadControls, &oControls);
-	SEEK_TO_POS_END(oControls);
+	//SEEK_TO_POS_END(oControls); ниже ...
+	SEEK_TO_POS_END2(); 
 //-------------------------------------------------------------------------------------------------------------
 	OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
 	OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
@@ -5019,6 +5020,9 @@ int BinaryWorksheetsTableReader::ReadControls(BYTE type, long length, void* poRe
 		pControl->m_oControlPr->m_oAnchor.Init();
 
 		READ1_DEF(length, res, this->ReadControl, pControl);
+
+		//pControl->m_oShapeId.Init();
+		//pControl->m_oShapeId->SetValue(m_lObjectIdVML++);
 
 		if (pControl->m_oShapeId.IsInit())
 		{

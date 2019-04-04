@@ -344,7 +344,7 @@ namespace Spreadsheet
 //-----------------------------------------------------------------------------------------------------------------
 	void CFormControlPr::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<formControlPr");
+		writer.WriteString(L"<formControlPr xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
 
 		WritingStringNullableAttrBool2(L"firstButton",		m_oFirstButton);
 		WritingStringNullableAttrInt(L"dropLines",			m_oDropLines, m_oDropLines->GetValue());

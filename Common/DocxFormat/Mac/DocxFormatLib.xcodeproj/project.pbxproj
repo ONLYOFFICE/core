@@ -219,6 +219,11 @@
 		69E6AC8D2031ACA900795D9D /* VbaProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 69E6AC8B2031ACA900795D9D /* VbaProject.h */; };
 		69E6AC8F2031B72500795D9D /* Worksheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69E6AC8E2031B72500795D9D /* Worksheet.cpp */; };
 		69F181EC1C7734A700B2952B /* strings_hack_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181EA1C7734A700B2952B /* strings_hack_printf.h */; };
+		8A10C83F22574C3A006F67E5 /* QueryTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10C83E22574C39006F67E5 /* QueryTable.h */; };
+		8A10C84222574C5F006F67E5 /* Connections.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10C84022574C5F006F67E5 /* Connections.h */; };
+		8A10C84322574C5F006F67E5 /* Tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A10C84122574C5F006F67E5 /* Tables.cpp */; };
+		8A10C84822574E7C006F67E5 /* Controls.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10C84622574E7C006F67E5 /* Controls.h */; };
+		8A10C84922574E7C006F67E5 /* Controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A10C84722574E7C006F67E5 /* Controls.cpp */; };
 		8A218DBF20FCC770006589C2 /* StreamWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A218DBD20FCC76F006589C2 /* StreamWriter.h */; };
 		8A218DC020FCC770006589C2 /* StreamWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A218DBE20FCC770006589C2 /* StreamWriter.cpp */; };
 		8A404FCA2089FF7E00F2D5CF /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC92089FF7E00F2D5CF /* Base64.cpp */; };
@@ -455,6 +460,11 @@
 		69E6AC8B2031ACA900795D9D /* VbaProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VbaProject.h; sourceTree = "<group>"; };
 		69E6AC8E2031B72500795D9D /* Worksheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Worksheet.cpp; sourceTree = "<group>"; };
 		69F181EA1C7734A700B2952B /* strings_hack_printf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strings_hack_printf.h; path = ../../Common/DocxFormat/Source/Base/strings_hack_printf.h; sourceTree = "<group>"; };
+		8A10C83E22574C39006F67E5 /* QueryTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueryTable.h; sourceTree = "<group>"; };
+		8A10C84022574C5F006F67E5 /* Connections.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connections.h; sourceTree = "<group>"; };
+		8A10C84122574C5F006F67E5 /* Tables.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tables.cpp; sourceTree = "<group>"; };
+		8A10C84622574E7C006F67E5 /* Controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controls.h; sourceTree = "<group>"; };
+		8A10C84722574E7C006F67E5 /* Controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Controls.cpp; sourceTree = "<group>"; };
 		8A218DBD20FCC76F006589C2 /* StreamWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamWriter.h; sourceTree = "<group>"; };
 		8A218DBE20FCC770006589C2 /* StreamWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StreamWriter.cpp; sourceTree = "<group>"; };
 		8A404FC92089FF7E00F2D5CF /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64.cpp; path = ../../../../DesktopEditor/common/Base64.cpp; sourceTree = "<group>"; };
@@ -788,6 +798,7 @@
 		17E6A14A1AC4262800F28F8B /* XlsxFormat */ = {
 			isa = PBXGroup;
 			children = (
+				8A10C84522574E7C006F67E5 /* Controls */,
 				17E6A14B1AC4262800F28F8B /* CalcChain */,
 				17E6A14D1AC4262800F28F8B /* Chart */,
 				17E6A1511AC4262800F28F8B /* Comments */,
@@ -897,6 +908,9 @@
 		17E6A17C1AC4262800F28F8B /* Table */ = {
 			isa = PBXGroup;
 			children = (
+				8A10C84022574C5F006F67E5 /* Connections.h */,
+				8A10C84122574C5F006F67E5 /* Tables.cpp */,
+				8A10C83E22574C39006F67E5 /* QueryTable.h */,
 				17E6A17D1AC4262800F28F8B /* Autofilter.h */,
 				17E6A17E1AC4262800F28F8B /* Table.h */,
 			);
@@ -961,6 +975,15 @@
 			);
 			name = common;
 			path = ../../../../DesktopEditor/common;
+			sourceTree = "<group>";
+		};
+		8A10C84522574E7C006F67E5 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				8A10C84622574E7C006F67E5 /* Controls.h */,
+				8A10C84722574E7C006F67E5 /* Controls.cpp */,
+			);
+			path = Controls;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1034,6 +1057,7 @@
 				17C1FC141ACC4250006B99B3 /* FileType.h in Headers */,
 				17C1FC151ACC4250006B99B3 /* SimpleTypes_Vml.h in Headers */,
 				17C1FC161ACC4250006B99B3 /* oMathContent.h in Headers */,
+				8A10C84822574E7C006F67E5 /* Controls.h in Headers */,
 				17C1FC171ACC4250006B99B3 /* Settings.h in Headers */,
 				17C1FC1A1ACC4250006B99B3 /* CellAnchor.h in Headers */,
 				17C1FC1D1ACC4250006B99B3 /* Run.h in Headers */,
@@ -1065,6 +1089,7 @@
 				17C1FC391ACC4250006B99B3 /* SmartTag.h in Headers */,
 				17C1FC3A1ACC4250006B99B3 /* Numbering.h in Headers */,
 				17C1FC3B1ACC4250006B99B3 /* FldSimple.h in Headers */,
+				8A10C84222574C5F006F67E5 /* Connections.h in Headers */,
 				17C1FC3D1ACC4250006B99B3 /* Unit.h in Headers */,
 				17C1FC3E1ACC4250006B99B3 /* UnknowTypeFile.h in Headers */,
 				17C1FC411ACC4250006B99B3 /* Align.h in Headers */,
@@ -1134,6 +1159,7 @@
 				17C1FC901ACC4250006B99B3 /* FileTypes_Spreadsheet.h in Headers */,
 				17C1FC911ACC4250006B99B3 /* FileTypes.h in Headers */,
 				17C1FC931ACC4250006B99B3 /* Annotations.h in Headers */,
+				8A10C83F22574C3A006F67E5 /* QueryTable.h in Headers */,
 				17C1FC941ACC4250006B99B3 /* Styles.h in Headers */,
 				17C1FC961ACC4250006B99B3 /* oMathBottomNodes.h in Headers */,
 				17C1FC971ACC4250006B99B3 /* CalcChain.h in Headers */,
@@ -1176,6 +1202,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 17E69FD31AC4259800F28F8B;
@@ -1197,6 +1224,7 @@
 				17C1FB951ACC4250006B99B3 /* Sdt.cpp in Sources */,
 				690FE07E1E9BBA15004B26D0 /* DrawingExt.cpp in Sources */,
 				17C1FB961ACC4250006B99B3 /* oMathContent.cpp in Sources */,
+				8A10C84322574C5F006F67E5 /* Tables.cpp in Sources */,
 				17C1FB971ACC4250006B99B3 /* Table.cpp in Sources */,
 				17C1FB981ACC4250006B99B3 /* TableProperty.cpp in Sources */,
 				17C1FB9A1ACC4250006B99B3 /* Bdo.cpp in Sources */,
@@ -1223,6 +1251,7 @@
 				17C1FBAD1ACC4250006B99B3 /* SmartTag.cpp in Sources */,
 				17C1FBAE1ACC4250006B99B3 /* oMath.cpp in Sources */,
 				8AECC18F218C991900DEE19A /* App.cpp in Sources */,
+				8A10C84922574E7C006F67E5 /* Controls.cpp in Sources */,
 				8AE10E722228255A00A542DE /* Comments.cpp in Sources */,
 				69E6AC892031AC3500795D9D /* SheetData.cpp in Sources */,
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,

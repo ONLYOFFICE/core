@@ -50,6 +50,7 @@
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
 #include "../PPTXFormat/FileContainer.h"
 
 #define BYTE_SIZEOF		sizeof(BYTE)

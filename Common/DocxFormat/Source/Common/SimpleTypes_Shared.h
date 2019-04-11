@@ -511,6 +511,11 @@ namespace SimpleTypes
 	{
 	public:
 		COnOff() {}
+		
+		COnOff(const bool & bVal)
+		{
+			this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
+		}
 
         virtual EOnOff  FromString(std::wstring &sValue)
 		{
@@ -769,9 +774,15 @@ namespace SimpleTypes
         CUnsignedDecimalNumber(const CUnsignedDecimalNumber& obj)
         {
             this->m_eValue = obj.m_eValue;
-
         }
-
+        CUnsignedDecimalNumber(const unsigned int& val)
+        {
+            this->m_eValue = val;
+        }
+        CUnsignedDecimalNumber(const _INT32& val)
+        {
+            this->m_eValue = (unsigned int)val;
+        }
         virtual unsigned int FromString(std::wstring &sValue)
 		{
 
@@ -793,11 +804,10 @@ namespace SimpleTypes
                 this->m_eValue = 0;
             }
 
-
             return this->m_eValue;
 		}
 
-        virtual std::wstring      ToString  () const
+        virtual std::wstring ToString  () const
 		{
             return std::to_wstring( this->m_eValue);
 		}

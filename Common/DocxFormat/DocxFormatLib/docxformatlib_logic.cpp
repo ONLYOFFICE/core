@@ -52,6 +52,7 @@
 #include "../Source/DocxFormat/Math/oMathPara.cpp"
 #include "../Source/DocxFormat/Media/VbaProject.cpp"
 #include "../Source/DocxFormat/Media/JsaProject.cpp"
+#include "../Source/DocxFormat/Media/ActiveX.cpp"
 #include "../Source/DocxFormat/Docx.cpp"
 #include "../Source/DocxFormat/Comments.cpp"
 #include "../Source/DocxFormat/App.cpp"

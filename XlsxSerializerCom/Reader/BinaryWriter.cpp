@@ -4114,43 +4114,33 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		
 		bool bSetAnchor = false;
 		bool bFormControlPr = false;
-		bool bSetObjectType = false;
 
 		smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pFileCtrlProp = pFileControl.smart_dynamic_cast<OOX::Spreadsheet::CCtrlPropFile>();
 		
 		if (pFileCtrlProp.IsInit())
 		{
-			bFormControlPr = bSetObjectType = true;
 			oFormControlPr = pFileCtrlProp->m_oFormControlPr;
+			bFormControlPr = true;
 		}
 		else
 		{
 			oFormControlPr.Init();
-			smart_ptr<OOX::ActiveX_xml> pFileActiveX = pFileControl.smart_dynamic_cast<OOX::ActiveX_xml>();
+			smart_ptr<OOX::ActiveX_xml> pActiveX_xml = pFileControl.smart_dynamic_cast<OOX::ActiveX_xml>();
 
-			if ((pFileActiveX.IsInit()) && (pFileActiveX->m_oClassId.IsInit()))
+			if ((pActiveX_xml.IsInit()) && (pActiveX_xml->m_oObject.IsInit()))
 			{
-				oFormControlPr->m_oObjectType.Init();
-				std::wstring type = XmlUtils::GetUpper(pFileActiveX->m_oClassId.get());
-				bSetObjectType = true;
-				
-					 if (type == L"{D7053240-CE69-11CD-A777-00DD01143C57}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectButton);
-				else if (type == L"{8BD21D40-EC42-11CE-9E0D-00AA006002F3}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectCheckBox);
-				else if (type == L"{8BD21D30-EC42-11CE-9E0D-00AA006002F3}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDrop);
-				else if (type == L"{C62A69F0-16DC-11CE-9E98-00AA00574A4F}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDialog);
-				else if (type == L"{6E182020-F460-11CE-9BCD-00AA00608E01}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectGBox);
-				else if (type == L"{8BD21D50-EC42-11CE-9E0D-00AA006002F3}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectRadio);
-				else if (type == L"{978C9E23-D4B0-11CE-BF2D-00AA003F40D0}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectLabel);
-				else if (type == L"{8BD21D20-EC42-11CE-9E0D-00AA006002F3}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectList);
-				else if (type == L"{DFD181E0-5E2F-11CE-A449-00AA004A803D}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectScroll);
-				else if (type == L"{79176FB0-B7F2-11CE-97EF-00AA006D2776}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectSpin);
-				else if (type == L"{8BD21D10-EC42-11CE-9E0D-00AA006002F3}")	oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectEditBox);
-				//else if (type == L"{EAE50EB0-4A62-11CE-BED6-00AA00611080}")oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectTabStrip);
-				//else if (type == L"{4C599241-6926-101B-9992-00000B65C6F9}")oFormControlPr->m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectImage);
-				else
+				if (pActiveX_xml->m_oObject->m_oObjectType.IsInit() == false)
 				{
-					bSetObjectType = false;
+					OOX::ActiveXObjectImage* pImage = dynamic_cast<OOX::ActiveXObjectImage*>(pActiveX_xml->m_oObject.GetPointer());
+
+					if (pImage)
+					{
+						//todooo
+					}
+					continue;
 				}
+
+				pActiveX_xml->m_oObject->toFormControlPr(oFormControlPr.GetPointer());
 			}
 		}
 		

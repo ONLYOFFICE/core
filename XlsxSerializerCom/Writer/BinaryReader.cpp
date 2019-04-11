@@ -2551,18 +2551,15 @@ int BinaryWorkbookTableReader::ReadCalcPr(BYTE type, long length, void* poResult
 	}
 	else if(c_oSerCalcPrTypes::CalcMode == type)
 	{
-		calcPr->m_oCalcMode.Init();
-		calcPr->m_oCalcMode->SetValue((SimpleTypes::Spreadsheet::ECalcMode)m_oBufferedStream.GetUChar());
+		calcPr->m_oCalcMode = (SimpleTypes::Spreadsheet::ECalcMode)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerCalcPrTypes::FullCalcOnLoad == type)
 	{
-		calcPr->m_oFullCalcOnLoad.Init();
-		calcPr->m_oFullCalcOnLoad->FromBool(m_oBufferedStream.GetBool());
+		calcPr->m_oFullCalcOnLoad = m_oBufferedStream.GetBool();
 	}
 	else if(c_oSerCalcPrTypes::RefMode == type)
 	{
-		calcPr->m_oRefMode.Init();
-		calcPr->m_oRefMode->SetValue((SimpleTypes::Spreadsheet::ERefMode)m_oBufferedStream.GetUChar());
+		calcPr->m_oRefMode = (SimpleTypes::Spreadsheet::ERefMode)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerCalcPrTypes::Iterate == type)
 	{
@@ -3748,13 +3745,11 @@ int BinaryWorksheetsTableReader::ReadWorksheetProp(BYTE type, long length, void*
 	}
 	else if(c_oSerWorksheetPropTypes::SheetId == type)
 	{
-		m_pCurSheet->m_oSheetId.Init();
-		m_pCurSheet->m_oSheetId->SetValue(m_oBufferedStream.GetLong());
+		m_pCurSheet->m_oSheetId = m_oBufferedStream.GetLong();
 	}
 	else if(c_oSerWorksheetPropTypes::State == type)
 	{
-		m_pCurSheet->m_oState.Init();
-		m_pCurSheet->m_oState->SetValue((SimpleTypes::Spreadsheet::EVisibleType)m_oBufferedStream.GetUChar());
+		m_pCurSheet->m_oState = (SimpleTypes::Spreadsheet::EVisibleType)m_oBufferedStream.GetUChar();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -4110,18 +4105,15 @@ int BinaryWorksheetsTableReader::ReadSheetFormatPr(BYTE type, long length, void*
 	}
 	else if (c_oSerSheetFormatPrTypes::ZeroHeight == type)
 	{
-		pSheetFormatPr->m_oZeroHeight.Init();
-		pSheetFormatPr->m_oZeroHeight->FromBool(m_oBufferedStream.GetBool());
+		pSheetFormatPr->m_oZeroHeight = m_oBufferedStream.GetBool();
 	}
 	else if (c_oSerSheetFormatPrTypes::OutlineLevelCol == type)
 	{
-		pSheetFormatPr->m_oOutlineLevelCol.Init();
-		pSheetFormatPr->m_oOutlineLevelCol->SetValue(m_oBufferedStream.GetLong());
+		pSheetFormatPr->m_oOutlineLevelCol = m_oBufferedStream.GetLong();
 	}
 	else if (c_oSerSheetFormatPrTypes::OutlineLevelRow == type)
 	{
-		pSheetFormatPr->m_oOutlineLevelRow.Init();
-		pSheetFormatPr->m_oOutlineLevelRow->SetValue(m_oBufferedStream.GetLong());
+		pSheetFormatPr->m_oOutlineLevelRow = m_oBufferedStream.GetLong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -4869,13 +4861,11 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
 	}
 	else if(c_oSerRowTypes::Hidden == type)
 	{
-		pRow->m_oHidden.Init();
-		pRow->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+		pRow->m_oHidden = m_oBufferedStream.GetBool();
 	}
 	else if(c_oSerRowTypes::CustomHeight == type)
 	{
-		pRow->m_oCustomHeight.Init();
-		pRow->m_oCustomHeight->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+		pRow->m_oCustomHeight = m_oBufferedStream.GetBool();
 	}
 	else if(c_oSerRowTypes::OutLevel == type)
 	{
@@ -4884,8 +4874,7 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
 	}
 	else if(c_oSerRowTypes::Collapsed == type)
 	{
-		pRow->m_oCollapsed.Init();
-		pRow->m_oCollapsed->FromBool(m_oBufferedStream.GetBool());
+		pRow->m_oCollapsed = m_oBufferedStream.GetBool();
 	}
 	else if(c_oSerRowTypes::Cells == type)
 	{
@@ -4979,13 +4968,11 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 	}
 	else if(c_oSerCellTypes::Style == type)
 	{
-		pCell->m_oStyle.Init();
-		pCell->m_oStyle->SetValue(m_oBufferedStream.GetLong());
+		pCell->m_oStyle = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerCellTypes::Type == type)
 	{
-		pCell->m_oType.Init();
-		pCell->m_oType->SetValue((SimpleTypes::Spreadsheet::ECellTypeType)m_oBufferedStream.GetUChar());
+		pCell->m_oType = (SimpleTypes::Spreadsheet::ECellTypeType)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerCellTypes::Formula == type)
 	{
@@ -4996,12 +4983,12 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 	{
 		double dValue = m_oBufferedStream.GetDoubleReal();
 		pCell->m_oValue.Init();
-		pCell->m_oValue->m_sText.append(OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
+		pCell->m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue);
 	}
 	else if(c_oSerCellTypes::ValueText == type)
 	{
 		pCell->m_oValue.Init();
-		pCell->m_oValue->m_sText.append(m_oBufferedStream.GetString4(length));
+		pCell->m_oValue->m_sText = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5021,8 +5008,7 @@ int BinaryWorksheetsTableReader::ReadControls(BYTE type, long length, void* poRe
 		pControl->m_oControlPr.Init();
 		pControl->m_oControlPr->m_oAnchor.Init();
 		
-		pControl->m_oShapeId.Init();
-		pControl->m_oShapeId->SetValue(m_lObjectIdVML++);
+		pControl->m_oShapeId = m_lObjectIdVML++;
 
 		READ1_DEF(length, res, this->ReadControl, pControl);
 		
@@ -5073,8 +5059,7 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 	}
 	else if(c_oSerControlTypes::ObjectType == type)
 	{	
-		pControl->m_oFormControlPr->m_oObjectType.Init();
-		pControl->m_oFormControlPr->m_oObjectType->SetValue((SimpleTypes::Spreadsheet::EObjectType)m_oBufferedStream.GetUChar());
+		pControl->m_oFormControlPr->m_oObjectType = (SimpleTypes::Spreadsheet::EObjectType)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerControlTypes::Name == type)
 	{
@@ -5122,8 +5107,7 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 	}
 	else if(c_oSerControlTypes::Checked == type)
 	{
-		pControl->m_oFormControlPr->m_oChecked.Init();
-		pControl->m_oFormControlPr->m_oChecked->SetValue((SimpleTypes::Spreadsheet::EChecked)m_oBufferedStream.GetUChar());
+		pControl->m_oFormControlPr->m_oChecked = (SimpleTypes::Spreadsheet::EChecked)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerControlTypes::Colored == type)
 	{
@@ -5131,18 +5115,15 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 	}
 	else if(c_oSerControlTypes::DropLines == type)
 	{
-		pControl->m_oFormControlPr->m_oDropLines.Init();
-		pControl->m_oFormControlPr->m_oDropLines->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oDropLines = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::DropStyle == type)
 	{
-		pControl->m_oFormControlPr->m_oDropStyle.Init();
-		pControl->m_oFormControlPr->m_oDropStyle->SetValue((SimpleTypes::Spreadsheet::EDropStyle)m_oBufferedStream.GetUChar());
+		pControl->m_oFormControlPr->m_oDropStyle = (SimpleTypes::Spreadsheet::EDropStyle)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerControlTypes::Dx == type)
 	{
-		pControl->m_oFormControlPr->m_oDx.Init();
-		pControl->m_oFormControlPr->m_oDx->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oDx = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::FirstButton == type)
 	{
@@ -5182,13 +5163,11 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 	}
 	else if(c_oSerControlTypes::Max == type)
 	{
-		pControl->m_oFormControlPr->m_oMax.Init();
-		pControl->m_oFormControlPr->m_oMax->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oMax = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::Min == type)
 	{
-		pControl->m_oFormControlPr->m_oMin.Init();
-		pControl->m_oFormControlPr->m_oMin->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oMin = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::MultiSel == type)
 	{
@@ -5204,43 +5183,35 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 	}
 	else if(c_oSerControlTypes::Page == type)
 	{
-		pControl->m_oFormControlPr->m_oPage.Init();
-		pControl->m_oFormControlPr->m_oPage->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oPage = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::Sel == type)
 	{
-		pControl->m_oFormControlPr->m_oSel.Init();
-		pControl->m_oFormControlPr->m_oSel->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oSel = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::SelType == type)
 	{
-		pControl->m_oFormControlPr->m_oSelType.Init();
-		pControl->m_oFormControlPr->m_oSelType->SetValue((SimpleTypes::Spreadsheet::ESelType)m_oBufferedStream.GetUChar());
+		pControl->m_oFormControlPr->m_oSelType = (SimpleTypes::Spreadsheet::ESelType)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerControlTypes::TextHAlign == type)
 	{
-		pControl->m_oFormControlPr->m_oTextHAlign.Init();
-		pControl->m_oFormControlPr->m_oTextHAlign->SetValue((SimpleTypes::Spreadsheet::EHorizontalAlignment)m_oBufferedStream.GetUChar());
+		pControl->m_oFormControlPr->m_oTextHAlign = (SimpleTypes::Spreadsheet::EHorizontalAlignment)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerControlTypes::TextVAlign == type)
 	{
-		pControl->m_oFormControlPr->m_oTextVAlign.Init();
-		pControl->m_oFormControlPr->m_oTextVAlign->SetValue((SimpleTypes::Spreadsheet::EVerticalAlignment)m_oBufferedStream.GetUChar());
+		pControl->m_oFormControlPr->m_oTextVAlign = (SimpleTypes::Spreadsheet::EVerticalAlignment)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerControlTypes::Val == type)
 	{
-		pControl->m_oFormControlPr->m_oVal.Init();
-		pControl->m_oFormControlPr->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oVal = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::WidthMin == type)
 	{
-		pControl->m_oFormControlPr->m_oWidthMin.Init();
-		pControl->m_oFormControlPr->m_oWidthMin->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oWidthMin = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::EditVal == type)
 	{
-		pControl->m_oFormControlPr->m_oEditVal.Init();
-		pControl->m_oFormControlPr->m_oEditVal->SetValue((SimpleTypes::Spreadsheet::EEditValidation)m_oBufferedStream.GetUChar());
+		pControl->m_oFormControlPr->m_oEditVal = (SimpleTypes::Spreadsheet::EEditValidation)m_oBufferedStream.GetUChar();
 	}
 	else if(c_oSerControlTypes::MultiLine == type)
 	{
@@ -5299,21 +5270,24 @@ std::wstring BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	oClientData.m_oSizeWithCells = true;
 	oClientData.m_oAnchor = sAnchor;
 	
-	SimpleTypes::Vml::EVmlClientDataObjectType objectType;
+	SimpleTypes::Vml::EVmlClientDataObjectType objectType = SimpleTypes::Vml::vmlclientdataobjecttypePict;
 
-	switch(pControl->m_oFormControlPr->m_oObjectType->GetValue())
+	if (pControl->m_oFormControlPr->m_oObjectType.IsInit())
 	{
-		case SimpleTypes::Spreadsheet::objectButton:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeButton;	break;
-		case SimpleTypes::Spreadsheet::objectCheckBox:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeCheckbox; break;
-		case SimpleTypes::Spreadsheet::objectDrop:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeDrop;		break;
-		case SimpleTypes::Spreadsheet::objectGBox:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeGBox;		break;
-		case SimpleTypes::Spreadsheet::objectLabel:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeLabel;	break;
-		case SimpleTypes::Spreadsheet::objectList:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeList;		break;
-		case SimpleTypes::Spreadsheet::objectRadio:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeRadio;	break;
-		case SimpleTypes::Spreadsheet::objectScroll:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeScroll;	break;
-		case SimpleTypes::Spreadsheet::objectSpin:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeSpin;		break;
-		case SimpleTypes::Spreadsheet::objectEditBox:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeEdit;		break;
-		case SimpleTypes::Spreadsheet::objectDialog:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeDialog;	break;
+		switch(pControl->m_oFormControlPr->m_oObjectType->GetValue())
+		{
+			case SimpleTypes::Spreadsheet::objectButton:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeButton;	break;
+			case SimpleTypes::Spreadsheet::objectCheckBox:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeCheckbox; break;
+			case SimpleTypes::Spreadsheet::objectDrop:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeDrop;		break;
+			case SimpleTypes::Spreadsheet::objectGBox:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeGBox;		break;
+			case SimpleTypes::Spreadsheet::objectLabel:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeLabel;	break;
+			case SimpleTypes::Spreadsheet::objectList:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeList;		break;
+			case SimpleTypes::Spreadsheet::objectRadio:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeRadio;	break;
+			case SimpleTypes::Spreadsheet::objectScroll:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeScroll;	break;
+			case SimpleTypes::Spreadsheet::objectSpin:		objectType = SimpleTypes::Vml::vmlclientdataobjecttypeSpin;		break;
+			case SimpleTypes::Spreadsheet::objectEditBox:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeEdit;		break;
+			case SimpleTypes::Spreadsheet::objectDialog:	objectType = SimpleTypes::Vml::vmlclientdataobjecttypeDialog;	break;
+		}
 	}
 	oClientData.m_oObjectType.Init();
 	oClientData.m_oObjectType->SetValue(objectType);

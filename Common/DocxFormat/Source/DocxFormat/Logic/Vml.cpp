@@ -1165,5 +1165,90 @@ namespace OOX
 			pCellAnchor->m_oTo->m_oRowOff->FromPx(XmlUtils::GetInteger(sAnchors[7]));
 
 		}
+		
+		void CTextbox::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if ( L"txbxContent" == sName ) //namespaces w & wne
+					m_oTxtbxContent = oReader;
+				//else if (L"div" == sName)
+				//{
+
+				//	m_arDivs.push_back();
+				//}
+			}
+		}
+		std::wstring CTextbox::toXML() const
+		{
+			std::wstring sResult = _T("<v:textbox ");
+
+			ComplexTypes_WriteAttribute2( _T("id=\""),    m_oId );
+			ComplexTypes_WriteAttribute ( _T("style=\""), m_oStyle );
+
+			sResult += _T("inset=\"") + m_oInset.ToString() + _T("\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oSingleClick.GetValue() )
+				sResult += _T("o:singleclick=\"true\" ");
+
+			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
+				sResult += _T("o:insetmode=\"") + m_oInsetMode.ToString() + _T("\" ");
+
+			sResult += _T(">");
+
+			if ( m_oTxtbxContent.IsInit() )
+				sResult += m_oTxtbxContent->toXML();
+
+			sResult += _T("</v:textbox>");
+
+			return sResult;
+		}
+		void CTextbox::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Выставляем значения по умолчанию
+			m_oInset.Set(7.2, 3.6, 7.2, 3.6 );
+			
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'i':
+					if      ( _T("id")            == wsName ) m_oId          = oReader.GetText();
+					else if ( _T("inset")         == wsName ) m_oInset       = oReader.GetText();
+					else if ( _T("insetmode")     == wsName ) m_oInsetMode   = oReader.GetText();
+					break;
+				case 'o':
+					if      ( _T("o:singleclick") == wsName ) m_oSingleClick = oReader.GetText();
+					break;
+				case 's':
+					if      ( _T("style")         == wsName ) m_oStyle       = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+		}
+
 	} // Vml
 } // OOX

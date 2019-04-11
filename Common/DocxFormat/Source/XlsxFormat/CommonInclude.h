@@ -46,6 +46,5 @@
 #include "ComplexTypes_Spreadsheet.h"
 #include "FileTypes_Spreadsheet.h"
 #include "WritingElement.h"
-#include "SimpleTypes_Spreadsheet.h"
 #include "Common.h"
 

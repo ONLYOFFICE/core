@@ -2457,6 +2457,9 @@ namespace OOX
 
 					if ( L"txbxContent" == sName ) //namespaces w & wne
 						m_oTxtbxContent = oReader;
+					else if (L"div" == sName)
+					{
+					}
 				}
 			}
 			virtual std::wstring      toXML() const

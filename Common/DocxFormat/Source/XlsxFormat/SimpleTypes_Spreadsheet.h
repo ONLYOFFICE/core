@@ -40,20 +40,24 @@ namespace SimpleTypes
 		class CSimpleType
 		{
 		public:
-
 			CSimpleType()
 			{
 				m_eValue = DefValue;
 			}
-			virtual E       GetValue() const
+			CSimpleType(const E& val)
+			{
+				m_eValue = val;
+			}
+
+			virtual E GetValue() const
 			{
 				return m_eValue;
 			}
-			virtual void    SetValue(E eValue)
+			virtual void SetValue(E eValue)
 			{
 				m_eValue = eValue;
 			}
-            virtual E       FromString(std::wstring &sValue) = 0;
+            virtual E FromString(std::wstring &sValue) = 0;
 			virtual std::wstring ToString() const = 0;
 		protected:
 			E m_eValue;
@@ -70,6 +74,7 @@ namespace SimpleTypes
 		{
 		public:
 			CTableType() {}
+			CTableType(const ETableType & val)	{ this->m_eValue = val; }
 
             virtual ETableType FromString(std::wstring &sValue)
 			{
@@ -126,6 +131,7 @@ namespace SimpleTypes
 		{
 		public:
 			CExternalConnectionType() {}
+			CExternalConnectionType(const EExternalConnectionType & val)	{ this->m_eValue = val; }
 
             virtual EExternalConnectionType FromString(std::wstring &sValue)
 			{
@@ -175,6 +181,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCredMethod() {}
+			CCredMethod(const ECredMethod & val)	{ this->m_eValue = val; }
 
             virtual ECredMethod FromString(std::wstring &sValue)
 			{
@@ -213,6 +220,10 @@ namespace SimpleTypes
 		{
 		public:
 			CVisibleType() {}
+			CVisibleType(const EVisibleType & val) 
+			{
+				this->m_eValue = val;
+			}
 
             virtual EVisibleType FromString(std::wstring &sValue)
 			{
@@ -247,6 +258,7 @@ namespace SimpleTypes
 		{
 		public:
 			CHtmlFormat() {}
+			CHtmlFormat(const EHtmlFormat & val)	{ this->m_eValue = val; }
 
             virtual EHtmlFormat FromString(std::wstring &sValue)
 			{
@@ -281,6 +293,7 @@ namespace SimpleTypes
 		{
 		public:
 			CParameterType() {}
+			CParameterType(const EParameterType & val)	{ this->m_eValue = val; }
 
             virtual EParameterType FromString(std::wstring &sValue)
 			{
@@ -315,6 +328,7 @@ namespace SimpleTypes
 		{
 		public:
 			CQualifier() {}
+			CQualifier(const EQualifier & val)	{ this->m_eValue = val; }
 
             virtual EQualifier FromString(std::wstring &sValue)
 			{
@@ -351,6 +365,7 @@ namespace SimpleTypes
 		{
 		public:
 			CFileType() {}
+			CFileType(const EFileType & val)	{ this->m_eValue = val; }
 
             virtual EFileType FromString(std::wstring &sValue)
 			{
@@ -391,6 +406,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPhoneticAlignment() {}
+			CPhoneticAlignment(const EPhoneticAlignmentType & val)	{ this->m_eValue = val; }
 
             virtual EPhoneticAlignmentType FromString(std::wstring &sValue)
 			{
@@ -416,7 +432,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EPhoneticAlignmentType)
-				SimpleType_Operator_Equal (CPhoneticAlignment)
+			SimpleType_Operator_Equal (CPhoneticAlignment)
 		};
 
 		enum EPhoneticTypeType
@@ -432,6 +448,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPhoneticType() {}
+			CPhoneticType(const EPhoneticTypeType & val)	{ this->m_eValue = val; }
 
             virtual EPhoneticTypeType FromString(std::wstring &sValue)
 			{
@@ -457,11 +474,8 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EPhoneticTypeType)
-				SimpleType_Operator_Equal (CPhoneticType)
+			SimpleType_Operator_Equal (CPhoneticType)
 		};
-
-
-
 
 		enum EFontCharset
 		{
@@ -491,6 +505,7 @@ namespace SimpleTypes
 		{
 		public:
 			CFontCharset() {}
+			CFontCharset(const EFontCharset & val)	{ this->m_eValue = val; }
 
             virtual EFontCharset FromString(std::wstring &sValue)
 			{
@@ -555,7 +570,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EFontCharset)
-				SimpleType_Operator_Equal (CFontCharset)
+			SimpleType_Operator_Equal (CFontCharset)
 		};
 
 		enum EThemeColor
@@ -579,6 +594,7 @@ namespace SimpleTypes
 		{
 		public:
 			CThemeColor() {}
+			CThemeColor(const EThemeColor & val)	{ this->m_eValue = val; }
 
             virtual EThemeColor FromString(std::wstring &sValue)
 			{
@@ -624,7 +640,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EThemeColor)
-				SimpleType_Operator_Equal (CThemeColor)
+			SimpleType_Operator_Equal (CThemeColor)
 		};
 
 		class CHexColor
@@ -790,6 +806,7 @@ namespace SimpleTypes
 		{
 		public:
 			CFontFamily() {}
+			CFontFamily(const EFontFamily & val)	{ this->m_eValue = val; }
 
             virtual EFontFamily FromString(std::wstring &sValue)
 			{
@@ -828,7 +845,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EFontFamily)
-				SimpleType_Operator_Equal (CFontFamily)
+			SimpleType_Operator_Equal (CFontFamily)
 		};
 
 		enum EFontScheme
@@ -842,6 +859,7 @@ namespace SimpleTypes
 		{
 		public:
 			CFontScheme() {}
+			CFontScheme(const EFontScheme & val)	{ this->m_eValue = val; }
 
             virtual EFontScheme FromString(std::wstring &sValue)
 			{
@@ -884,6 +902,7 @@ namespace SimpleTypes
 		{
 		public:
 			CUnderline() {}
+			CUnderline(const EUnderline & val)	{ this->m_eValue = val; }
 
             virtual EUnderline FromString(std::wstring &sValue)
 			{
@@ -916,7 +935,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EUnderline)
-				SimpleType_Operator_Equal (CUnderline)
+			SimpleType_Operator_Equal (CUnderline)
 		};
 
 		enum EBorderStyle
@@ -941,6 +960,7 @@ namespace SimpleTypes
 		{
 		public:
 			CBorderStyle() {}
+			CBorderStyle(const EBorderStyle & val)	{ this->m_eValue = val; }
 
             virtual EBorderStyle FromString(std::wstring &sValue)
 			{
@@ -1000,7 +1020,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EBorderStyle)
-				SimpleType_Operator_Equal (CBorderStyle)
+			SimpleType_Operator_Equal (CBorderStyle)
 		};
 
 		enum EHorizontalAlignment
@@ -1019,6 +1039,7 @@ namespace SimpleTypes
 		{
 		public:
 			CHorizontalAlignment() {}
+			CHorizontalAlignment(const EHorizontalAlignment & val)	{ this->m_eValue = val; }
 
             virtual EHorizontalAlignment FromString(std::wstring &sValue)
 			{
@@ -1075,6 +1096,7 @@ namespace SimpleTypes
 		{
 		public:
 			CVerticalAlignment() {}
+			CVerticalAlignment(const EVerticalAlignment & val)	{ this->m_eValue = val; }
 
             virtual EVerticalAlignment FromString(std::wstring &sValue)
 			{
@@ -1119,6 +1141,7 @@ namespace SimpleTypes
 		{
 		public:
 			CGradientType() {}
+			CGradientType(const EGradientType & val)	{ this->m_eValue = val; }
 
             virtual EGradientType FromString(std::wstring &sValue)
 			{
@@ -1142,7 +1165,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EGradientType)
-				SimpleType_Operator_Equal (CGradientType)
+			SimpleType_Operator_Equal (CGradientType)
 		};
 		enum EPatternType
 		{
@@ -1171,6 +1194,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPatternType() {}
+			CPatternType(const EPatternType & val)	{ this->m_eValue = val; }
 
             virtual EPatternType FromString(std::wstring &sValue)
 			{
@@ -1247,7 +1271,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EPatternType)
-				SimpleType_Operator_Equal (CPatternType)
+			SimpleType_Operator_Equal (CPatternType)
 		};
 
 		enum ETableStyleType
@@ -1286,6 +1310,7 @@ namespace SimpleTypes
 		{
 		public:
 			CTableStyleType() {}
+			CTableStyleType(const ETableStyleType & val)	{ this->m_eValue = val; }
 
             virtual ETableStyleType FromString(std::wstring &sValue)
 			{
@@ -1388,7 +1413,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (ETableStyleType)
-				SimpleType_Operator_Equal (CTableStyleType)
+			SimpleType_Operator_Equal (CTableStyleType)
 		};
 		enum ECellFormulaType
 		{
@@ -1402,6 +1427,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCellFormulaType() {}
+			CCellFormulaType(const ECellFormulaType & val)	{ this->m_eValue = val; }
 
             virtual ECellFormulaType FromString(std::wstring &sValue)
 			{
@@ -1444,6 +1470,7 @@ namespace SimpleTypes
 		{
 		public:
 			CUpdateLinksType() {}
+			CUpdateLinksType(const EUpdateLinksType & val)	{ this->m_eValue = val; }
 
             virtual EUpdateLinksType FromString(std::wstring &sValue)
 			{
@@ -1470,7 +1497,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EUpdateLinksType)
-				SimpleType_Operator_Equal (CUpdateLinksType)
+			SimpleType_Operator_Equal (CUpdateLinksType)
 		};
 		enum ECellTypeType
 		{
@@ -1487,6 +1514,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCellTypeType() {}
+			CCellTypeType(const ECellTypeType & val)	{ this->m_eValue = val; }
 
             virtual ECellTypeType FromString(std::wstring &sValue)
 			{
@@ -1525,7 +1553,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (ECellTypeType)
-				SimpleType_Operator_Equal (CCellTypeType)
+			SimpleType_Operator_Equal (CCellTypeType)
 		};
 		enum ECellAnchorType
 		{
@@ -1538,6 +1566,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCellAnchorType() {}
+			CCellAnchorType(const ECellAnchorType & val)	{ this->m_eValue = val; }
 
             virtual ECellAnchorType FromString(std::wstring &sValue)
 			{
@@ -1564,7 +1593,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (ECellAnchorType)
-				SimpleType_Operator_Equal (CCellAnchorType)
+			SimpleType_Operator_Equal (CCellAnchorType)
 		};
 
 		enum ESheetViewType
@@ -1578,6 +1607,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSheetViewType() {}
+			CSheetViewType(const ESheetViewType & val)	{ this->m_eValue = val; }
 
             virtual ESheetViewType FromString(std::wstring &sValue)
 			{
@@ -1604,7 +1634,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (ESheetViewType)
-				SimpleType_Operator_Equal (CSheetViewType)
+			SimpleType_Operator_Equal (CSheetViewType)
 		};
 		enum EChartLegendPos
 		{
@@ -1619,6 +1649,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChartLegendPos() {}
+			CChartLegendPos(const EChartLegendPos & val)	{ this->m_eValue = val; }
 
             virtual EChartLegendPos FromString(std::wstring &sValue)
 			{
@@ -1651,7 +1682,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EChartLegendPos)
-				SimpleType_Operator_Equal (CChartLegendPos)
+			SimpleType_Operator_Equal (CChartLegendPos)
 		};
 		enum EChartHMode
 		{
@@ -1663,6 +1694,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChartHMode() {}
+			CChartHMode(const EChartHMode & val)	{ this->m_eValue = val; }
 
             virtual EChartHMode FromString(std::wstring &sValue)
 			{
@@ -1686,7 +1718,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EChartHMode)
-				SimpleType_Operator_Equal (CChartHMode)
+			SimpleType_Operator_Equal (CChartHMode)
 		};
 		enum EChartLayoutTarget
 		{
@@ -1698,6 +1730,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChartLayoutTarget() {}
+			CChartLayoutTarget(const EChartLayoutTarget & val)	{ this->m_eValue = val; }
 
             virtual EChartLayoutTarget FromString(std::wstring &sValue)
 			{
@@ -1721,7 +1754,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EChartLayoutTarget)
-				SimpleType_Operator_Equal (CChartLayoutTarget)
+			SimpleType_Operator_Equal (CChartLayoutTarget)
 		};
 		enum EChartAxPos
 		{
@@ -1735,6 +1768,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChartAxPos() {}
+			CChartAxPos(const EChartAxPos & val)	{ this->m_eValue = val; }
 
             virtual EChartAxPos FromString(std::wstring &sValue)
 			{
@@ -1778,6 +1812,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChartBarGrouping() {}
+			CChartBarGrouping(const EChartBarGrouping & val)	{ this->m_eValue = val; }
 
             virtual EChartBarGrouping FromString(std::wstring &sValue)
 			{
@@ -1807,7 +1842,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EChartBarGrouping)
-				SimpleType_Operator_Equal (CChartBarGrouping)
+			SimpleType_Operator_Equal (CChartBarGrouping)
 		};
 		enum EChartBarDirection
 		{
@@ -1819,6 +1854,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChartBarDirection() {}
+			CChartBarDirection(const EChartBarDirection & val)	{ this->m_eValue = val; }
 
             virtual EChartBarDirection FromString(std::wstring &sValue)
 			{
@@ -1864,6 +1900,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChartSymbol() {}
+			CChartSymbol(const EChartSymbol & val)	{ this->m_eValue = val; }
 
             virtual EChartSymbol FromString(std::wstring &sValue)
 			{
@@ -1914,7 +1951,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EChartSymbol)
-				SimpleType_Operator_Equal (CChartSymbol)
+			SimpleType_Operator_Equal (CChartSymbol)
 		};
 		enum EPageSize
 		{
@@ -1990,6 +2027,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPageSize() {}
+			CPageSize(const EPageSize & val)	{ this->m_eValue = val; }
 
             virtual EPageSize FromString(std::wstring &sValue)
 			{
@@ -2022,6 +2060,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPageUnits() {}
+			CPageUnits(const EPageUnits & val)	{ this->m_eValue = val; }
 
             virtual EPageUnits FromString(std::wstring &sValue)
 			{
@@ -2070,6 +2109,7 @@ namespace SimpleTypes
 		{
 		public:
 			CTotalsRowFunction() {}
+			CTotalsRowFunction(const ETotalsRowFunction & val)	{ this->m_eValue = val; }
 
             virtual ETotalsRowFunction FromString(std::wstring &sValue)
 			{
@@ -2118,7 +2158,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (ETotalsRowFunction)
-				SimpleType_Operator_Equal (CTotalsRowFunction)
+			SimpleType_Operator_Equal (CTotalsRowFunction)
 		};
 		enum ESortBy
 		{
@@ -2132,6 +2172,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSortBy() {}
+			CSortBy(const ESortBy & val)	{ this->m_eValue = val; }
 
             virtual ESortBy FromString(std::wstring &sValue)
 			{
@@ -2178,6 +2219,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCustomFilter() {}
+			CCustomFilter(const ECustomFilter & val)	{ this->m_eValue = val; }
 
             virtual ECustomFilter FromString(std::wstring &sValue)
 			{
@@ -2214,7 +2256,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (ECustomFilter)
-				SimpleType_Operator_Equal (CCustomFilter)
+			SimpleType_Operator_Equal (CCustomFilter)
 		};
 		enum EDateTimeGroup
 		{
@@ -2230,6 +2272,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDateTimeGroup() {}
+			CDateTimeGroup(const EDateTimeGroup & val)	{ this->m_eValue = val; }
 
             virtual EDateTimeGroup FromString(std::wstring &sValue)
 			{
@@ -2311,6 +2354,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDynamicFilterType() {}
+			CDynamicFilterType(const EDynamicFilterType & val)	{ this->m_eValue = val; }
 
             virtual EDynamicFilterType FromString(std::wstring &sValue)
 			{
@@ -2434,7 +2478,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EDynamicFilterType)
-				SimpleType_Operator_Equal (CDynamicFilterType)
+			SimpleType_Operator_Equal (CDynamicFilterType)
 		};
 	//--------------------------------------------------------
 	//	ST_IconSetType (18.18.42)
@@ -2470,6 +2514,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_IconSetType() {}
+			ST_IconSetType(const EIconSetType & val)	{ this->m_eValue = val; }
 
             virtual EIconSetType FromString(std::wstring &sValue)
 			{
@@ -2545,6 +2590,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_DataBarAxisPosition() {}
+			ST_DataBarAxisPosition(const EDataBarAxisPosition & val)	{ this->m_eValue = val; }
 
             virtual EDataBarAxisPosition FromString(std::wstring &sValue)
 			{
@@ -2584,6 +2630,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_DataBarDirection() {}
+			ST_DataBarDirection(const EDataBarDirection & val)	{ this->m_eValue = val; }
 
             virtual EDataBarDirection FromString(std::wstring &sValue)
 			{
@@ -2631,6 +2678,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_CfOperator() {}
+			ST_CfOperator(const ECfOperator & val)	{ this->m_eValue = val; }
 
             virtual ECfOperator FromString(std::wstring &sValue)
 			{
@@ -2701,6 +2749,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_CfType() {}
+			ST_CfType(const ECfType & val)	{ this->m_eValue = val; }
 
             virtual ECfType FromString(std::wstring &sValue)
 			{
@@ -2774,6 +2823,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_CfvoType() {}
+			ST_CfvoType(const ECfvoType & val)	{ this->m_eValue = val; }
 
             virtual ECfvoType FromString(std::wstring &sValue)
 			{
@@ -2819,7 +2869,8 @@ namespace SimpleTypes
         class ST_SparklineType : public CSimpleType<ESparklineType, eDefValue>
         {
         public:
-            ST_SparklineType() {}
+			ST_SparklineType() {}
+			ST_SparklineType(const ESparklineType & val)	{ this->m_eValue = val; }
 
             virtual ESparklineType FromString(std::wstring &sValue)
             {
@@ -2855,7 +2906,8 @@ namespace SimpleTypes
         class ST_SparklineAxisMinMax : public CSimpleType<ESparklineAxisMinMax, eDefValue>
         {
         public:
-            ST_SparklineAxisMinMax() {}
+			ST_SparklineAxisMinMax() {}
+            ST_SparklineAxisMinMax(const ESparklineAxisMinMax & val)	{ this->m_eValue = val; }
 
             virtual ESparklineAxisMinMax FromString(std::wstring &sValue)
             {
@@ -2890,6 +2942,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_DvAspect() {}
+			ST_DvAspect(const EDvAspect & val)	{ this->m_eValue = val; }
 
             virtual EDvAspect FromString(std::wstring &sValue)
 			{
@@ -2922,6 +2975,7 @@ namespace SimpleTypes
 		{
 		public:
 			ST_OleUpdate() {}
+			ST_OleUpdate(const EOleUpdate & val)	{ this->m_eValue = val; }
 
             virtual EOleUpdate FromString(std::wstring &sValue)
 			{
@@ -2958,6 +3012,7 @@ namespace SimpleTypes
 		{
 		public:
 			CActivePane() {}
+			CActivePane(const EActivePane & val)	{ this->m_eValue = val; }
 
             virtual EActivePane FromString(std::wstring &sValue)
 			{
@@ -2997,7 +3052,8 @@ namespace SimpleTypes
         class CPaneState : public CSimpleType<EPaneState, eDefValue>
         {
         public:
-            CPaneState() {}
+			CPaneState() {}
+			CPaneState(const EPaneState & val)	{ this->m_eValue = val; }
 
             virtual EPaneState FromString(std::wstring &sValue)
 			{
@@ -3038,6 +3094,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDdeValueType() {}
+			CDdeValueType(const EDdeValueType & val)	{ this->m_eValue = val; }
 
 			virtual EDdeValueType FromString(std::wstring &sValue)
 			{
@@ -3079,6 +3136,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCalcMode() {}
+			CCalcMode(const ECalcMode & val)	{ this->m_eValue = val; }
 
 			virtual ECalcMode FromString(std::wstring &sValue)
 			{
@@ -3117,6 +3175,7 @@ namespace SimpleTypes
 		{
 		public:
 			CRefMode() {}
+			CRefMode(const ERefMode & val)	{ this->m_eValue = val; }
 
 			virtual ERefMode FromString(std::wstring &sValue)
 			{
@@ -3153,6 +3212,9 @@ namespace SimpleTypes
 		public:
 			double m_dValue;
 			CDoubleOrAutomatic() : m_dValue(0){}
+			
+			CDoubleOrAutomatic(const double & val) : m_dValue(val), this->m_eValue(typeDouble) {}			
+			CDoubleOrAutomatic(const EDoubleOrAutomatic & val) : this->m_eValue(val), m_dValue(0) {}
 
             virtual EDoubleOrAutomatic FromString(std::wstring &sValue)
 			{
@@ -3205,6 +3267,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSeriesLayout() {}
+			CSeriesLayout(const ESeriesLayout & val)	{ this->m_eValue = val; }
 
 			virtual ESeriesLayout FromString(std::wstring &sValue)
 			{
@@ -3260,6 +3323,7 @@ namespace SimpleTypes
 		{
 		public:
 			CAxisUnit() {}
+			CAxisUnit(const EAxisUnit & val)	{ this->m_eValue = val; }
 
 			virtual EAxisUnit FromString(std::wstring &sValue)
 			{
@@ -3314,6 +3378,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDimensionType() {}
+			CDimensionType(const EDimensionType & val)	{ this->m_eValue = val; }
 
 			virtual EDimensionType FromString(std::wstring &sValue)
 			{
@@ -3356,6 +3421,7 @@ namespace SimpleTypes
 		{
 		public:
 			CFormulaDirection() {}
+			CFormulaDirection(const EFormulaDirection & val)	{ this->m_eValue = val; }
 
             virtual EFormulaDirection FromString(std::wstring &sValue)
 			{
@@ -3391,6 +3457,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSidePos() {}
+			CSidePos(const ESidePos & val)	{ this->m_eValue = val; }
 
 			virtual ESidePos FromString(std::wstring &sValue)
 			{
@@ -3428,6 +3495,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPosAlign() {}
+			CPosAlign(const EPosAlign & val)	{ this->m_eValue = val; }
 
 			virtual EPosAlign FromString(std::wstring &sValue)
 			{
@@ -3463,6 +3531,7 @@ namespace SimpleTypes
 		{
 		public:
 			CRegionLabelLayout() {}
+			CRegionLabelLayout(const ERegionLabelLayout & val)	{ this->m_eValue = val; }
 
 			virtual ERegionLabelLayout FromString(std::wstring &sValue)
 			{
@@ -3498,6 +3567,7 @@ namespace SimpleTypes
 		{
 		public:
 			CParentLabelLayout() {}
+			CParentLabelLayout(const EParentLabelLayout & val)	{ this->m_eValue = val; }
 
 			virtual EParentLabelLayout FromString(std::wstring &sValue)
 			{
@@ -3533,6 +3603,7 @@ namespace SimpleTypes
 		{
 		public:
 			CQuartileMethod() {}
+			CQuartileMethod(const EQuartileMethod & val)	{ this->m_eValue = val; }
 
 			virtual EQuartileMethod FromString(std::wstring &sValue)
 			{
@@ -3574,6 +3645,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDataLabelPos() {}
+			CDataLabelPos(const EDataLabelPos & val)	{ this->m_eValue = val; }
 
 			virtual EDataLabelPos FromString(std::wstring &sValue)
 			{
@@ -3616,6 +3688,7 @@ namespace SimpleTypes
 		{
 		public:
 			CIntervalClosedSide() {}
+			CIntervalClosedSide(const ESidePos & val)	{ this->m_eValue = val; }
 
 			virtual ESidePos FromString(std::wstring &sValue)
 			{
@@ -3652,6 +3725,7 @@ namespace SimpleTypes
 		{
 		public:
 			CTickMarksType() {}
+			CTickMarksType(const ETickMarksType & val)	{ this->m_eValue = val; }
 
 			virtual ETickMarksType FromString(std::wstring &sValue)
 			{
@@ -3694,6 +3768,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDataValidationType() {}
+			CDataValidationType(const EDataValidationType & val)	{ this->m_eValue = val; }
 
 			virtual EDataValidationType FromString(std::wstring &sValue)
 			{
@@ -3739,6 +3814,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDataValidationErrorStyle() {}
+			CDataValidationErrorStyle(const EDataValidationErrorStyle & val)	{ this->m_eValue = val; }
 
 			virtual EDataValidationErrorStyle FromString(std::wstring &sValue)
 			{
@@ -3779,6 +3855,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDataValidationOperator() {}
+			CDataValidationOperator(const EDataValidationOperator & val)	{ this->m_eValue = val; }
 
 			virtual EDataValidationOperator FromString(std::wstring &sValue)
 			{
@@ -3832,6 +3909,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDataValidationImeMode() {}
+			CDataValidationImeMode(const EDataValidationImeMode & val)	{ this->m_eValue = val; }
 
 			virtual EDataValidationImeMode FromString(std::wstring &sValue)
 			{
@@ -3891,6 +3969,7 @@ namespace SimpleTypes
 		{
 		public:
 			CObjectType() {}
+			CObjectType(const EObjectType & val)	{ this->m_eValue = val; }
 
 			virtual EObjectType FromString(std::wstring &sValue)
 			{
@@ -3941,6 +4020,7 @@ namespace SimpleTypes
 		{
 		public:
 			CChecked() {}
+			CChecked(const EChecked & val)	{ this->m_eValue = val; }
 
 			virtual EChecked FromString(std::wstring &sValue)
 			{
@@ -3976,6 +4056,7 @@ namespace SimpleTypes
 		{
 		public:
 			CDropStyle() {}
+			CDropStyle(const EDropStyle & val)	{ this->m_eValue = val; }
 
 			virtual EDropStyle FromString(std::wstring &sValue)
 			{
@@ -4011,6 +4092,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSelType() {}
+			CSelType(const ESelType & val)	{ this->m_eValue = val; }
 
 			virtual ESelType FromString(std::wstring &sValue)
 			{
@@ -4048,6 +4130,7 @@ namespace SimpleTypes
 		{
 		public:
 			CEditValidation() {}
+			CEditValidation(const EEditValidation & val)	{ this->m_eValue = val; }
 
 			virtual EEditValidation FromString(std::wstring &sValue)
 			{

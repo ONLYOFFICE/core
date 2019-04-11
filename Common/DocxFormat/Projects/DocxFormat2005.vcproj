@@ -1186,6 +1186,10 @@
 			Name="Media"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Media\ActiveX.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Media\ActiveX.h"
 				>
 			</File>

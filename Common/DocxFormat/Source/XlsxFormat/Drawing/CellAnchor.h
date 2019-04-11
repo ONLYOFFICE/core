@@ -49,7 +49,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCellAnchor)
-            CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType<>& oAnchorType) :	m_oAnchorType(oAnchorType),
+           
+			CCellAnchor(const SimpleTypes::Spreadsheet::ECellAnchorType& oAnchorType) :	m_oAnchorType(oAnchorType),
+																							m_bShapeOle(false), m_bShapeControl(false)
+			{
+			}
+			CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType<>& oAnchorType) :	m_oAnchorType(oAnchorType),
 																							m_bShapeOle(false), m_bShapeControl(false)
 			{
 			}

@@ -3009,7 +3009,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 		if (bStroked)
 		{
-		CheckPenShape(elem, oNodeShape, pPPTShape);		
+			CheckPenShape(elem, oNodeShape, pPPTShape);		
 		}
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
@@ -4104,18 +4104,21 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 
 	if (oNodeBorder.IsValid())
 	{
-		pSpPr->ln.Init();
-		nullable_int nWidthBorder;
-        XmlMacroReadAttributeBase(oNode, L"width", nWidthBorder);
-		
 		nullable_string sTypeBorder;
-        XmlMacroReadAttributeBase(oNode, L"type", sTypeBorder);
-
+        XmlMacroReadAttributeBase(oNodeBorder, L"type", sTypeBorder);
+		
+		SimpleTypes::CBorderType<> borderType;
 		if (sTypeBorder.IsInit())
 		{
-			SimpleTypes::CBorderType<> borderType;
 			borderType.FromString(sTypeBorder.get());
+		}
+		if (borderType.GetValue() != SimpleTypes::bordertypeNone)
+		{
+			pSpPr->ln.Init();
 			
+			nullable_int nWidthBorder;
+			XmlMacroReadAttributeBase(oNodeBorder, L"width", nWidthBorder);
+
 			if (borderType.GetValue() > 0 && 
 				borderType.GetValue() < 6)
 			{
@@ -4131,30 +4134,29 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 					case SimpleTypes::bordertypeDotDash:		pSpPr->ln->prstDash->val->SetBYTECode(1); break;
 				}
 			}
-
-		}
-		if (nWidthBorder.IsInit())
-		{
-			pSpPr->ln->w = (int)(*nWidthBorder * g_emu_koef);//pt to emu
-		}
-		if (sColorBorder.IsInit())
-		{
-			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-            pSolid->m_namespace = L"a";
-			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-			
-			if (std::wstring::npos != sColorBorder->find(L"#"))
+			if (nWidthBorder.IsInit())
 			{
-				pSolid->Color.Color->SetHexString(sColorBorder->substr(1));
+				pSpPr->ln->w = (int)(*nWidthBorder * g_emu_koef);//pt to emu
 			}
-			else
+			if (sColorBorder.IsInit())
 			{
-				//"red", L"black" , .. to color
+				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+				pSolid->m_namespace = L"a";
+				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+				
+				if (std::wstring::npos != sColorBorder->find(L"#"))
+				{
+					pSolid->Color.Color->SetHexString(sColorBorder->substr(1));
+				}
+				else
+				{
+					//"red", L"black" , .. to color
+				}
+
+				pSpPr->ln->Fill.m_type	= PPTX::Logic::UniFill::solidFill;
+				pSpPr->ln->Fill.Fill	= pSolid;
+
 			}
-
-			pSpPr->ln->Fill.m_type	= PPTX::Logic::UniFill::solidFill;
-			pSpPr->ln->Fill.Fill	= pSolid;
-
 		}
 	}
 }

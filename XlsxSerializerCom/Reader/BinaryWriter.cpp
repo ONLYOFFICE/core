@@ -2998,7 +2998,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Value
-	if(oCell.m_oValue.IsInit())
+	if(oCell.m_oValue.IsInit() && !oCell.m_oValue->ToString().empty())
 	{
 
         double dValue = 0;

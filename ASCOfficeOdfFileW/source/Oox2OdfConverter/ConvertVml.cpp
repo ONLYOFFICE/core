@@ -443,7 +443,7 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		 
 	if (vml_fill->m_rId.IsInit())			sID = vml_fill->m_rId->GetValue();
 	else if (vml_fill->m_oRelId.IsInit())	sID = vml_fill->m_oRelId->GetValue();
-	else if (vml_fill->m_sId.IsInit())		sID = vml_fill->m_sId.get2();
+	else if (vml_fill->m_sId.IsInit())		sID = *vml_fill->m_sId;
 	
 	if (!sID.empty())
 	{

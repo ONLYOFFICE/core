@@ -2624,7 +2624,7 @@ int Binary_tblPrReader::ReadTrPrChange(BYTE type, long length, void* poResult)
 	int res = c_oSerConstants::ReadOk;
 	TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
 	READ1_TRACKREV(type, length, pTrackRevision)
-	else if (c_oSerProp_RevisionType::tblPrChange == type)
+	else if (c_oSerProp_RevisionType::trPrChange == type)
 	{
 		pTrackRevision->trPr = new NSStringUtils::CStringBuilder();
 		READ2_DEF(length, res, this->Read_RowPr, pTrackRevision->trPr);

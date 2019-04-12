@@ -5225,6 +5225,10 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 	{
 		pControl->m_oFormControlPr->m_oPasswordEdit = m_oBufferedStream.GetBool();
 	}
+	else if(c_oSerControlTypes::Text == type)
+	{
+		pControl->m_oFormControlPr->m_oText = m_oBufferedStream.GetString4(length);
+	}
 	else if(c_oSerControlTypes::ItemLst == type)
 	{
 		pControl->m_oFormControlPr->m_oItemLst.Init();
@@ -5310,17 +5314,42 @@ std::wstring BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	oClientData.m_oDx = pControl->m_oFormControlPr->m_oDx;
 	oClientData.m_oPage = pControl->m_oFormControlPr->m_oPage;
 	oClientData.m_oDropLines = pControl->m_oFormControlPr->m_oDropLines;
-
+	oClientData.m_oChecked = pControl->m_oFormControlPr->m_oChecked;
+	oClientData.m_oColored = pControl->m_oFormControlPr->m_oColored;
+	oClientData.m_oDropStyle = pControl->m_oFormControlPr->m_oDropStyle;
+	oClientData.m_oFirstButton = pControl->m_oFormControlPr->m_oFirstButton;
+	oClientData.m_oHoriz = pControl->m_oFormControlPr->m_oHoriz;
+	oClientData.m_oJustLastX = pControl->m_oFormControlPr->m_oJustLastX;
+	oClientData.m_oLockText = pControl->m_oFormControlPr->m_oLockText;
+	oClientData.m_oMultiLine = pControl->m_oFormControlPr->m_oMultiLine;
+	oClientData.m_oSecretEdit = pControl->m_oFormControlPr->m_oPasswordEdit;
+	oClientData.m_oTextHAlign = pControl->m_oFormControlPr->m_oTextHAlign;
+	oClientData.m_oTextVAlign = pControl->m_oFormControlPr->m_oTextVAlign;
+	oClientData.m_oVal = pControl->m_oFormControlPr->m_oVal;
+	oClientData.m_oSel = pControl->m_oFormControlPr->m_oSel;
+	oClientData.m_oSelType = pControl->m_oFormControlPr->m_oSelType;
+	oClientData.m_oVScroll = pControl->m_oFormControlPr->m_oVerticalBar;
+	oClientData.m_oWidthMin = pControl->m_oFormControlPr->m_oWidthMin;
 	oClientData.m_oNoThreeD = pControl->m_oFormControlPr->m_oNoThreeD;
 	oClientData.m_oNoThreeD2 = pControl->m_oFormControlPr->m_oNoThreeD2;
 	oClientData.m_oFmlaLink = pControl->m_oFormControlPr->m_oFmlaLink;
 	oClientData.m_oFmlaRange = pControl->m_oFormControlPr->m_oFmlaRange;
+	oClientData.m_oFmlaTxbx = pControl->m_oFormControlPr->m_oFmlaTxbx;
+	oClientData.m_oFmlaGroup = pControl->m_oFormControlPr->m_oFmlaGroup;
 
 	std::wstring result = L"<v:shape id=\"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
 	result += L"\" type=\"#_x0000_t201\" style='position:absolute' filled=\"f\" fillcolor=\"window [65]\" stroked=\"f\" strokecolor=\"windowText [64]\" o:insetmode=\"auto\">";
 	result += L"<o:lock v:ext=\"edit\" rotation=\"t\" text=\"t\"/>";
 
 	result += oClientData.toXML();
+
+	if (pControl->m_oFormControlPr->m_oText.IsInit())
+	{
+		OOX::Vml::CTextbox oTextbox;
+
+		oTextbox.m_oText = pControl->m_oFormControlPr->m_oText;
+		result += oTextbox.toXML();
+	}
 	result += L"</v:shape>";
 
 	return result;

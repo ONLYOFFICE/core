@@ -38,6 +38,9 @@
 #include "../IFileContainer.h"
 
 #include <boost/smart_ptr/shared_array.hpp>
+
+class MemoryStream;
+
 namespace OOX
 {	
 	namespace Spreadsheet
@@ -53,6 +56,7 @@ namespace OOX
 		virtual void Parse(unsigned char* pData, DWORD size) = 0;
 
 		void toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr); 
+		std::wstring ReadString(MemoryStream *stream, size_t size, bool bCompressed);
 
 		nullable<SimpleTypes::Spreadsheet::CObjectType<>> m_oObjectType;
 

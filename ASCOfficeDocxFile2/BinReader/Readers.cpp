@@ -4080,6 +4080,30 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
 		m_oDocumentWriter.m_oContent.WriteString(oBookmarkEnd.toXML());
 	}
+	else if ( c_oSerParType::MoveFromRangeStart == type )
+	{
+		OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
+		READ1_DEF(length, res, this->ReadMoveFromRangeStart, &oMoveFromRangeStart);
+		m_oDocumentWriter.m_oContent.WriteString(oMoveFromRangeStart.toXML());
+	}
+	else if ( c_oSerParType::MoveFromRangeEnd == type )
+	{
+		OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveFromRangeEnd, &oMoveToRangeEnd);
+		m_oDocumentWriter.m_oContent.WriteString(oMoveToRangeEnd.toXML());
+	}
+	else if ( c_oSerParType::MoveToRangeStart == type )
+	{
+		OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
+		READ1_DEF(length, res, this->ReadMoveToRangeStart, &oMoveToRangeStart);
+		m_oDocumentWriter.m_oContent.WriteString(oMoveToRangeStart.toXML());
+	}
+	else if ( c_oSerParType::MoveToRangeEnd == type )
+	{
+		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
+		m_oDocumentWriter.m_oContent.WriteString(oMoveToRangeEnd.toXML());
+	}
 	else if(c_oSerParType::JsaProject == type)
 	{
 		BYTE* pData = m_oBufferedStream.GetPointer(length);
@@ -4921,6 +4945,30 @@ int Binary_DocumentTableReader::ReadMathArg(BYTE type, long length, void* poResu
 		OOX::Logic::CBookmarkEnd oBookmarkEnd;
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
 		GetRunStringWriter().WriteString(oBookmarkEnd.toXML());
+	}
+	else if ( c_oSer_OMathContentType::MoveFromRangeStart == type )
+	{
+		OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
+		READ1_DEF(length, res, this->ReadMoveFromRangeStart, &oMoveFromRangeStart);
+		GetRunStringWriter().WriteString(oMoveFromRangeStart.toXML());
+	}
+	else if ( c_oSer_OMathContentType::MoveFromRangeEnd == type )
+	{
+		OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveFromRangeEnd, &oMoveToRangeEnd);
+		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+	}
+	else if ( c_oSer_OMathContentType::MoveToRangeStart == type )
+	{
+		OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
+		READ1_DEF(length, res, this->ReadMoveToRangeStart, &oMoveToRangeStart);
+		GetRunStringWriter().WriteString(oMoveToRangeStart.toXML());
+	}
+	else if ( c_oSer_OMathContentType::MoveToRangeEnd == type )
+	{
+		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
+		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7407,6 +7455,30 @@ int Binary_DocumentTableReader::Read_TableContent(BYTE type, long length, void* 
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
 		pCStringWriter->WriteString(oBookmarkEnd.toXML());
 	}
+	else if ( c_oSerDocTableType::MoveFromRangeStart == type )
+	{
+		OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
+		READ1_DEF(length, res, this->ReadMoveFromRangeStart, &oMoveFromRangeStart);
+		pCStringWriter->WriteString(oMoveFromRangeStart.toXML());
+	}
+	else if ( c_oSerDocTableType::MoveFromRangeEnd == type )
+	{
+		OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveFromRangeEnd, &oMoveToRangeEnd);
+		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
+	}
+	else if ( c_oSerDocTableType::MoveToRangeStart == type )
+	{
+		OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
+		READ1_DEF(length, res, this->ReadMoveToRangeStart, &oMoveToRangeStart);
+		pCStringWriter->WriteString(oMoveToRangeStart.toXML());
+	}
+	else if ( c_oSerDocTableType::MoveToRangeEnd == type )
+	{
+		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
+		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -7455,6 +7527,30 @@ int Binary_DocumentTableReader::ReadRowContent(BYTE type, long length, void* poR
 		OOX::Logic::CBookmarkEnd oBookmarkEnd;
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
 		pCStringWriter->WriteString(oBookmarkEnd.toXML());
+	}
+	else if ( c_oSerDocTableType::MoveFromRangeStart == type )
+	{
+		OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
+		READ1_DEF(length, res, this->ReadMoveFromRangeStart, &oMoveFromRangeStart);
+		pCStringWriter->WriteString(oMoveFromRangeStart.toXML());
+	}
+	else if ( c_oSerDocTableType::MoveFromRangeEnd == type )
+	{
+		OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveFromRangeEnd, &oMoveToRangeEnd);
+		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
+	}
+	else if ( c_oSerDocTableType::MoveToRangeStart == type )
+	{
+		OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
+		READ1_DEF(length, res, this->ReadMoveToRangeStart, &oMoveToRangeStart);
+		pCStringWriter->WriteString(oMoveToRangeStart.toXML());
+	}
+	else if ( c_oSerDocTableType::MoveToRangeEnd == type )
+	{
+		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
+		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
+		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

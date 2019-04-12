@@ -103,6 +103,7 @@ public:
 	bool isMj2File(BYTE* pBuffer,DWORD dwBytes);
 	bool isIpodFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isPgxFile(BYTE* pBuffer,DWORD dwBytes);
+	bool isSvgFile(BYTE* pBuffer,DWORD dwBytes);
 
 	std::wstring DetectFormatByData(BYTE *Data, int DataSize);
 

@@ -322,7 +322,21 @@ bool CImageFileFormatChecker::isSvmFile(BYTE* pBuffer,DWORD dwBytes)
 	 
 	return false;
 }
+bool CImageFileFormatChecker::isSvgFile(BYTE* pBuffer,DWORD dwBytes)
+{
+	if (eFileType)return false;
 
+	if ( (6 <= dwBytes) &&(0x3C == pBuffer[0] && 0x3F == pBuffer[1]  && 0x78 == pBuffer[2] && 0x6D == pBuffer[3]
+						 && 0x6C == pBuffer[4] && 0x20 == pBuffer[5]))
+	{
+		std::string sXml_part = std::string((char*)pBuffer, dwBytes);
+		if (sXml_part.find(std::string("svg")) != std::string::npos)
+		{
+			return true;
+		}
+	} 
+	return false;
+}
 
 bool CImageFileFormatChecker::isJ2kFile(BYTE* pBuffer,DWORD dwBytes)
 {
@@ -602,6 +616,7 @@ std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSiz
 	else if (isTiffFile(Data,DataSize))return L"tif";
 	else if (isWmfFile(Data,DataSize)) return L"wmf";
 	else if (isSvmFile(Data,DataSize)) return L"svm";
+	else if (isSvgFile(Data,DataSize)) return L"svg";
 	
-	return L"jpg";
+    return L"";
 }

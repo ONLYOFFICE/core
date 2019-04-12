@@ -194,7 +194,14 @@ std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 		CImageFileFormatChecker image_checker;
 		sExt = image_checker.DetectFormatByData(buffer, buffer_size);
 
-		if (!sExt.empty()) sExt = std::wstring(L".") + sExt;
+		if (sExt.empty())
+		{
+			size_t n = fileName.rfind(L".");
+			if (n != std::wstring::npos) 
+				sExt = XmlUtils::GetLower(fileName.substr(n));
+
+		}
+		else sExt = std::wstring(L".") + sExt;
 	}
 	return XmlUtils::GetLower(sExt);
 }

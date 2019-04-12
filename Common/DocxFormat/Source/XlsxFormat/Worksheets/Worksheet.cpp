@@ -330,7 +330,7 @@ namespace OOX
 							{
 								CCommentItem* pCommentItem = pPair->second;
 								if(pShape->m_sGfxData.IsInit())
-									pCommentItem->m_sGfxdata = pShape->m_sGfxData.get2();
+									pCommentItem->m_sGfxdata = *pShape->m_sGfxData;
 								std::vector<int> m_aAnchor;
 								pClientData->getAnchorArray(m_aAnchor);
 								if(8 <= m_aAnchor.size())

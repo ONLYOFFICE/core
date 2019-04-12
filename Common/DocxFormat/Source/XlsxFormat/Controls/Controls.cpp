@@ -361,7 +361,7 @@ namespace Spreadsheet
 		WritingStringNullableAttrString(L"selType",			m_oSelType, m_oSelType->ToString());
 		WritingStringNullableAttrString(L"textHAlign",		m_oTextHAlign, m_oTextHAlign->ToString());
 		WritingStringNullableAttrString(L"textVAlign",		m_oTextVAlign, m_oTextVAlign->ToString());
-		WritingStringNullableAttrInt(L"val",				m_oVal, m_oVal->GetValue());
+		WritingStringNullableAttrInt(L"val",				m_oVal, *m_oVal);
 		WritingStringNullableAttrInt(L"widthMin",			m_oWidthMin, m_oWidthMin->GetValue());
 		WritingStringNullableAttrString(L"editVal",			m_oEditVal, m_oEditVal->ToString());
 		WritingStringNullableAttrEncodeXmlString(L"multiSel",	m_oMultiSel, *m_oMultiSel);

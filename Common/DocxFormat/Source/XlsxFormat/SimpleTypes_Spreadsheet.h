@@ -4027,6 +4027,8 @@ namespace SimpleTypes
 				if      ( _T("Mixed")		== sValue )	this->m_eValue = valMixed;
 				else if ( _T("Checked")		== sValue ) this->m_eValue = valChecked;
 				else if ( _T("Unchecked")	== sValue ) this->m_eValue = valUnchecked;
+				else if ( _T("1")			== sValue ) this->m_eValue = valChecked;
+				else if ( _T("0")			== sValue ) this->m_eValue = valUnchecked;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}

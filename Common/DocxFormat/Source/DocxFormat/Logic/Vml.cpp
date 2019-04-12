@@ -472,13 +472,13 @@ namespace OOX
 		{
 			std::wstring sResult;
 
-			ComplexTypes_WriteAttribute2( _T("id=\""),          m_sId );
+			ComplexTypes_WriteAttribute3( _T("id=\""),          m_sId );
 			ComplexTypes_WriteAttribute ( _T("style=\""),       m_oStyle );
-			ComplexTypes_WriteAttribute2( _T("href=\""),        m_sHref );
-			ComplexTypes_WriteAttribute2( _T("target=\""),      m_sTarget );
-			ComplexTypes_WriteAttribute2( _T("class=\""),       m_sClass );
-			ComplexTypes_WriteAttribute2( _T("title=\""),       m_sTitle );
-			ComplexTypes_WriteAttribute2( _T("alt=\""),         m_sAlt );
+			ComplexTypes_WriteAttribute3( _T("href=\""),        m_sHref );
+			ComplexTypes_WriteAttribute3( _T("target=\""),      m_sTarget );
+			ComplexTypes_WriteAttribute3( _T("class=\""),       m_sClass );
+			ComplexTypes_WriteAttribute3( _T("title=\""),       m_sTitle );
+			ComplexTypes_WriteAttribute3( _T("alt=\""),         m_sAlt );
 
 			ComplexTypes_WriteAttribute ( _T("coordsize=\""),   m_oCoordSize );
 			ComplexTypes_WriteAttribute ( _T("coordorigin=\""), m_oCoordOrigin );
@@ -487,7 +487,7 @@ namespace OOX
 			if ( SimpleTypes::booleanTrue != m_oPrint.GetValue() )
 				sResult += _T("print=\"false\" ");
 
-			ComplexTypes_WriteAttribute2( _T("o:spid=\""),      m_sSpId );
+			ComplexTypes_WriteAttribute3( _T("o:spid=\""),      m_sSpId );
 
 			if ( SimpleTypes::booleanFalse != m_oOned.GetValue() )
 				sResult += _T("o:oned=\"true\" ");
@@ -537,7 +537,7 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute ( _T("o:dgmlayout=\""),     m_oDgmLayout );
 			ComplexTypes_WriteAttribute ( _T("o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
-			ComplexTypes_WriteAttribute2( _T("o:dgmnodekind=\""),   m_oDgmNodeKind );
+			ComplexTypes_WriteAttribute3( _T("o:dgmnodekind=\""),   m_oDgmNodeKind );
 
 			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
 				sResult += _T("o:insetmode=\"") + m_oInsetMode.ToString() + _T("\" ");
@@ -802,17 +802,141 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
+		void CGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Выставляем значения по умолчанию
+			m_oHrPct.SetValue( 0 );
+
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'a':
+					if      ( _T("alt") == wsName ) m_sAlt = oReader.GetText();
+					break;
+
+				case 'c':
+					if      ( _T("class")       == wsName ) m_sClass       = oReader.GetText();
+					else if ( _T("coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
+					else if ( _T("coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
+					break;
+
+				case 'e':
+					if      ( _T("editas") == wsName ) m_oEditAs = oReader.GetText();
+					break;
+
+				case 'f':
+					if      ( _T("fillcolor") == wsName ) m_oFillColor = oReader.GetText();
+					else if ( _T("filled")    == wsName ) m_oFilled    = oReader.GetText();
+					break;
+
+				case 'h':
+					if      ( _T("href") == wsName ) m_sHref = oReader.GetText();
+					break;
+
+				case 'i':
+					if      ( _T("id")       == wsName ) m_sId       = oReader.GetText();
+					break;
+
+				case 'o':
+					{
+						wchar_t wsChar2 = wsName[2]; // o:_
+						switch ( wsChar2 )
+						{
+						case 'a':
+							if      ( _T("o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
+							else if ( _T("o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
+							break;
+						case 'b':
+							if      ( _T("o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
+							else if ( _T("o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
+							else if ( _T("o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
+							else if ( _T("o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
+							else if ( _T("o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
+							else if ( _T("o:button")            == wsName ) m_oButton            = oReader.GetText();
+							break;
+						case 'd':
+							if      ( _T("o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
+							else if ( _T("o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
+							else if ( _T("o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
+							else if ( _T("o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
+							break;
+						case 'h':  
+							if      ( _T("o:hr")        == wsName ) m_oHr        = oReader.GetText();
+							else if ( _T("o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
+							else if ( _T("o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
+							else if ( _T("o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
+							else if ( _T("o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
+							break;
+						case 'i':
+							if      ( _T("o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
+							break;
+						case 'o':  
+							if      ( _T("o:oned")    == wsName ) m_oOned       = oReader.GetText();
+							break;
+						case 'r':
+							if      ( _T("o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
+							break;
+						case 's':
+							if      ( _T("o:spid") == wsName ) m_sSpId = oReader.GetText();
+							break;
+						case 't':
+							if      ( _T("o:tableproperties")  == wsName ) m_oTableProperties = oReader.GetText();
+							else if ( _T("o:tablelimits")      == wsName ) m_oTableLimits     = oReader.GetText();
+							break;
+						case 'u':
+							if      ( _T("o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
+							else if ( _T("o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
+							break;
+						}
+
+					break;
+					}
+
+				case 'p':
+					if      ( _T("print") == wsName ) m_oPrint = oReader.GetText();
+					break;
+				case 's':
+					if      ( _T("style") == wsName ) m_oStyle = oReader.GetText();
+					break;
+				case 't':
+					if      ( _T("target") == wsName ) m_sTarget = oReader.GetText();
+					else if ( _T("title")  == wsName ) m_sTitle  = oReader.GetText();
+					break;
+				case 'w':
+					if      ( _T("wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+		}
+
+
 		std::wstring CGroup::toXML() const
 		{
 			std::wstring sResult = _T("<v:group ");
 
-			ComplexTypes_WriteAttribute2( _T("id=\""),          m_sId );
+			ComplexTypes_WriteAttribute3( _T("id=\""),          m_sId );
 			ComplexTypes_WriteAttribute ( _T("style=\""),       m_oStyle );
-			ComplexTypes_WriteAttribute2( _T("href=\""),        m_sHref );
-			ComplexTypes_WriteAttribute2( _T("target=\""),      m_sTarget );
-			ComplexTypes_WriteAttribute2( _T("class=\""),       m_sClass );
-			ComplexTypes_WriteAttribute2( _T("title=\""),       m_sTitle );
-			ComplexTypes_WriteAttribute2( _T("alt=\""),         m_sAlt );
+			ComplexTypes_WriteAttribute3( _T("href=\""),        m_sHref );
+			ComplexTypes_WriteAttribute3( _T("target=\""),      m_sTarget );
+			ComplexTypes_WriteAttribute3( _T("class=\""),       m_sClass );
+			ComplexTypes_WriteAttribute3( _T("title=\""),       m_sTitle );
+			ComplexTypes_WriteAttribute3( _T("alt=\""),         m_sAlt );
 
 			ComplexTypes_WriteAttribute ( _T("coordsize=\""),   m_oCoordSize );
 			ComplexTypes_WriteAttribute ( _T("coordorigin=\""), m_oCoordOrigin );
@@ -821,7 +945,7 @@ namespace OOX
 			if ( SimpleTypes::booleanTrue != m_oPrint.GetValue() )
 				sResult += _T("print=\"false\" ");
 
-			ComplexTypes_WriteAttribute2( _T("o:spid=\""),      m_sSpId );
+			ComplexTypes_WriteAttribute3( _T("o:spid=\""),      m_sSpId );
 
 			if ( SimpleTypes::booleanFalse != m_oOned.GetValue() )
 				sResult += _T("o:oned=\"true\" ");
@@ -871,7 +995,7 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute ( _T("o:dgmlayout=\""),     m_oDgmLayout );
 			ComplexTypes_WriteAttribute ( _T("o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
-			ComplexTypes_WriteAttribute2( _T("o:dgmnodekind=\""),   m_oDgmNodeKind );
+			ComplexTypes_WriteAttribute3( _T("o:dgmnodekind=\""),   m_oDgmNodeKind );
 
 			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
 				sResult += _T("o:insetmode=\"") + m_oInsetMode.ToString() + _T("\" ");
@@ -923,41 +1047,35 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		std::wstring CShape::toXML() const
 		{
-			std::wstring sResult = _T("<v:shape ");
+			std::wstring sResult = L"<v:shape ";
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
 			if ( m_sType.IsInit() )
 			{
-				sResult += _T("type=\"");
-                sResult += m_sType.get2();
-				sResult += _T("\" ");
+				sResult += L"type=\"" + *m_sType + L"\" ";
 			}
 
             if ( m_sAdj.IsInit() )
 			{
-				sResult += _T("adj=\"");
-                sResult += m_sAdj.get2();
-				sResult += _T("\" ");
+				sResult += L"adj=\"" + *m_sAdj + L"\" ";
 			}
 
 			if ( m_oPath.IsInit() )
-				sResult += _T("path=\"") + m_oPath->ToString() + _T("\" ");
+				sResult += L"path=\"" + m_oPath->ToString() + L"\" ";
 
 			// TO DO: сделать запись o:gfxdata
 
 			if ( m_sEquationXML.IsInit() )
 			{
-				sResult += _T("equationxml=\"");
-                sResult += m_sEquationXML.get2();
-				sResult += _T("\" ");
+				sResult += L"equationxml=\"" + *m_sEquationXML + L"\" ";
 			}
 
-			sResult += _T(">");
+			sResult += L">";
 
 			sResult += CVmlCommonElements::WriteElements();
 
-			sResult += _T("</v:shape>");
+			sResult += L"</v:shape>";
 
 			return sResult;
 		}
@@ -972,9 +1090,7 @@ namespace OOX
 
             if ( m_sAdj.IsInit() )
 			{
-				sResult += _T("adj=\"");
-                sResult += m_sAdj.get2();
-				sResult += _T("\" ");
+				sResult += L"adj=\"" + *m_sAdj + L"\" ";
 			}
 
 			if ( m_oPath.IsInit() )
@@ -1015,20 +1131,38 @@ namespace OOX
 				else if ( L"Column"			== sName )	m_oColumn = oReader.GetText2();
 				else if ( L"DefaultSize"	== sName )	m_oDefaultSize = oReader.GetText2();
 				else if ( L"AutoLine"		== sName )	m_oAutoLine = oReader.GetText2();
+				else if ( L"AutoFill"		== sName )	m_oAutoFill = oReader.GetText2();
 				else if ( L"AutoPict"		== sName )	m_oAutoPict = oReader.GetText2();
+				else if ( L"AutoScale"		== sName )	m_oAutoScale = oReader.GetText2();
 				else if ( L"FmlaLink"		== sName )	m_oFmlaLink = oReader.GetText2();
 				else if ( L"FmlaRange"		== sName )	m_oFmlaRange = oReader.GetText2();
+				else if ( L"FmlaMacro"		== sName )	m_oFmlaMacro = oReader.GetText2();
+				else if ( L"FmlaTxbx"		== sName )	m_oFmlaTxbx = oReader.GetText2();
+				else if ( L"FmlaGroup"		== sName )	m_oFmlaGroup = oReader.GetText2();
 				else if ( L"CF"				== sName )	m_oCf = oReader.GetText2();
 				else if ( L"Min"			== sName )	m_oMin = oReader.GetText2();
 				else if ( L"Max"			== sName )	m_oMax = oReader.GetText2();
 				else if ( L"Val"			== sName )	m_oVal = oReader.GetText2();
 				else if ( L"Inc"			== sName )	m_oInc = oReader.GetText2();
+				else if ( L"Sel"			== sName )	m_oSel = oReader.GetText2();
+				else if ( L"WidthMin"		== sName )	m_oWidthMin = oReader.GetText2();
 				else if ( L"Dx"				== sName )	m_oDx = oReader.GetText2();
 				else if ( L"Page"			== sName )	m_oPage = oReader.GetText2();
 				else if ( L"DropLines"		== sName )	m_oDropLines = oReader.GetText2();
 				else if ( L"NoThreeD2"		== sName )	m_oNoThreeD2 = oReader.GetText2();
 				else if ( L"NoThreeD"		== sName )	m_oNoThreeD = oReader.GetText2();
 				else if ( L"DropStyle"		== sName )	m_oDropStyle = oReader.GetText2();
+				else if ( L"FirstButton"	== sName )	m_oFirstButton = oReader.GetText2();
+				else if ( L"VScroll"		== sName )	m_oVScroll = oReader.GetText2();
+				else if ( L"Horiz"			== sName )	m_oHoriz = oReader.GetText2();
+				else if ( L"TextHAlign"		== sName )	m_oTextHAlign = oReader.GetText2();
+				else if ( L"TextVAlign"		== sName )	m_oTextVAlign = oReader.GetText2();
+				else if ( L"Colored"		== sName )	m_oColored = oReader.GetText2();
+				else if ( L"MultiLine"		== sName )	m_oMultiLine = oReader.GetText2();
+				else if ( L"LockText"		== sName )	m_oLockText = oReader.GetText2();
+				else if ( L"JustLastX"		== sName )	m_oJustLastX = oReader.GetText2();
+				else if ( L"SecretEdit"		== sName )	m_oSecretEdit = oReader.GetText2();
+				else if ( L"SelType"		== sName )	m_oSelType = oReader.GetText2();
 			}
 		}
 		std::wstring CClientData::toXML() const
@@ -1054,11 +1188,55 @@ namespace OOX
 			if(m_oAutoLine.IsInit())
 			{
 				sResult += std::wstring(L"<x:AutoLine>") + (*m_oAutoLine ? L"True" : L"False") + L"</x:AutoLine>";
+			}
+			if(m_oAutoScale.IsInit())
+			{
+				sResult += std::wstring(L"<x:AutoScale>") + (*m_oAutoScale ? L"True" : L"False") + L"</x:AutoScale>";
 			}	
 			if(m_oAutoPict.IsInit())
 			{
 				sResult += std::wstring(L"<x:AutoPict>") + (*m_oAutoPict ? L"True" : L"False") + L"</x:AutoPict>";
 			}	
+			if(m_oAutoFill.IsInit())
+			{
+				sResult += std::wstring(L"<x:AutoFill>") + (*m_oAutoFill ? L"True" : L"False") + L"</x:AutoFill>";
+			}	
+			if(m_oFirstButton.IsInit())
+			{
+				sResult += std::wstring(L"<x:FirstButton>") + (*m_oFirstButton ? L"True" : L"False") + L"</x:FirstButton>";
+			}
+			if(m_oVScroll.IsInit())
+			{
+				sResult += std::wstring(L"<x:VScroll>") + (*m_oVScroll ? L"True" : L"False") + L"</x:VScroll>";
+			}	
+			if(m_oHoriz.IsInit())
+			{
+				sResult += std::wstring(L"<x:Horiz>") + (*m_oHoriz ? L"True" : L"False") + L"</x:Horiz>";
+			}
+			if(m_oColored.IsInit())
+			{
+				sResult += std::wstring(L"<x:Colored>") + (*m_oColored ? L"True" : L"False") + L"</x:Colored>";
+			}			
+			if(m_oJustLastX.IsInit())
+			{
+				sResult += std::wstring(L"<x:JustLastX>") + (*m_oJustLastX ? L"True" : L"False") + L"</x:JustLastX>";
+			}
+			if(m_oMultiLine.IsInit())
+			{
+				sResult += std::wstring(L"<x:MultiLine>") + (*m_oMultiLine ? L"True" : L"False") + L"</x:MultiLine>";
+			}
+			if(m_oTextHAlign.IsInit())
+			{
+				sResult += std::wstring(L"<x:TextHAlign>") + m_oTextHAlign->ToString() + L"</x:TextHAlign>";
+			}
+			if(m_oTextVAlign.IsInit())
+			{
+				sResult += std::wstring(L"<x:TextVAlign>") + m_oTextVAlign->ToString() + L"</x:TextVAlign>";
+			}
+			if(m_oLockText.IsInit())
+			{
+				sResult += std::wstring(L"<x:LockText>") + (*m_oLockText ? L"True" : L"False") + L"</x:LockText>";
+			}			
 			if(m_oRow.IsInit())
 			{
                 sResult += L"<x:Row>" + std::to_wstring(m_oRow->GetValue()) + L"</x:Row>";
@@ -1067,13 +1245,21 @@ namespace OOX
 			{
                 sResult += L"<x:Column>" + std::to_wstring(m_oColumn->GetValue()) + L"</x:Column>";
 			}
+			if(m_oVal.IsInit())
+			{
+                sResult += L"<x:Val>" + std::to_wstring(*m_oVal) + L"</x:Val>";
+			}
 			if(m_oCf.IsInit())
 			{
                 sResult += L"<x:CF>" + (*m_oCf) + L"</x:CF>";
 			}
+			if(m_oMultiSel.IsInit())
+			{
+                sResult += L"<x:MultiSel>" + (*m_oMultiSel) + L"</x:MultiSel>";
+			}			
 			if (m_oChecked.IsInit())
 			{
-				sResult += _T("<x:Checked>") + *m_oChecked + _T("</x:Checked>");
+				sResult += _T("<x:Checked>") + m_oChecked->ToString() + _T("</x:Checked>");
 			}
 			if (m_oFmlaLink.IsInit())
 			{
@@ -1083,6 +1269,18 @@ namespace OOX
 			{
 				sResult += _T("<x:FmlaRange>") + *m_oFmlaRange + _T("</x:FmlaRange>");
 			}
+			if (m_oFmlaMacro.IsInit())
+			{
+				sResult += _T("<x:FmlaMacro>") + *m_oFmlaMacro + _T("</x:FmlaMacro>");
+			}
+			if (m_oFmlaTxbx.IsInit())
+			{
+				sResult += _T("<x:FmlaTxbx>") + *m_oFmlaTxbx + _T("</x:FmlaTxbx>");
+			}
+			if (m_oFmlaGroup.IsInit())
+			{
+				sResult += _T("<x:FmlaGroup>") + *m_oFmlaGroup + _T("</x:FmlaGroup>");
+			}
 			if (m_oMin.IsInit())
 			{
                 sResult += L"<x:Min>" + std::to_wstring(m_oMin->GetValue()) + L"</x:Min>";
@@ -1091,21 +1289,25 @@ namespace OOX
 			{
                 sResult += L"<x:Max>" + std::to_wstring(m_oMax->GetValue()) + L"</x:Max>";
 			}
-			if (m_oVal.IsInit())
-			{
-                sResult += L"<x:Val>" + std::to_wstring(m_oVal->GetValue()) + L"</x:Val>";
-			}
 			if (m_oInc.IsInit())
 			{
                 sResult += L"<x:Inc>" + std::to_wstring(m_oInc->GetValue()) + L"</x:Inc>";
 			}
+			if (m_oSel.IsInit())
+			{
+                sResult += L"<x:Sel>" + std::to_wstring(m_oSel->GetValue()) + L"</x:Sel>";
+			}
+			if (m_oSelType.IsInit())
+			{
+                sResult += L"<x:SelType>" + m_oSelType->ToString() + L"</x:SelType>";
+			}			
 			if (m_oDx.IsInit())
 			{
                 sResult += L"<x:Dx>" + std::to_wstring(m_oDx->GetValue()) + L"</x:Dx>";
 			}
 			if (m_oDropStyle.IsInit())
 			{
-				sResult += _T("<x:DropStyle>") + *m_oDropStyle + _T("</x:DropStyle>");
+				sResult += _T("<x:DropStyle>") + m_oDropStyle->ToString() + _T("</x:DropStyle>");
 			}
 			if (m_oDropLines.IsInit())
 			{
@@ -1115,6 +1317,10 @@ namespace OOX
 			{
                 sResult += L"<x:Page>" + std::to_wstring(m_oPage->GetValue()) + L"</x:Page>";
 			}
+			if (m_oWidthMin.IsInit())
+			{
+                sResult += L"<x:WidthMin>" + std::to_wstring(m_oWidthMin->GetValue()) + L"</x:WidthMin>";
+			}
 			if (m_oNoThreeD.IsInit())
 			{
 				sResult += std::wstring(L"<x:NoThreeD>") + (*m_oNoThreeD ? L"True" : L"False") + L"</x:NoThreeD>";
@@ -1123,6 +1329,10 @@ namespace OOX
 			{
 				sResult += std::wstring(L"<x:NoThreeD2>") + (*m_oNoThreeD2 ? L"True" : L"False") + L"</x:NoThreeD2>";
 			}
+			if (m_oSecretEdit.IsInit())
+			{
+				sResult += std::wstring(L"<x:SecretEdit>") + (*m_oSecretEdit ? L"True" : L"False") + L"</x:SecretEdit>";
+			}			
 			sResult += L"</x:ClientData>";
 			return sResult;
 		}
@@ -1165,7 +1375,41 @@ namespace OOX
 			pCellAnchor->m_oTo->m_oRowOff->FromPx(XmlUtils::GetInteger(sAnchors[7]));
 
 		}
-		
+		void CClientData::toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr)
+		{
+			if (!pFormControlPr) return;
+
+			if (!pFormControlPr->m_oDropLines.IsInit())		pFormControlPr->m_oDropLines = m_oDropLines;
+			if (!pFormControlPr->m_oChecked.IsInit())		pFormControlPr->m_oChecked = m_oChecked;
+			if (!pFormControlPr->m_oDropStyle.IsInit())		pFormControlPr->m_oDropStyle = m_oDropStyle;
+			if (!pFormControlPr->m_oDx.IsInit())			pFormControlPr->m_oDx = m_oDx;
+			if (!pFormControlPr->m_oInc.IsInit())			pFormControlPr->m_oInc = m_oInc;
+			if (!pFormControlPr->m_oMin.IsInit())			pFormControlPr->m_oMin = m_oMin;
+			if (!pFormControlPr->m_oMax.IsInit())			pFormControlPr->m_oMax = m_oMax;
+			if (!pFormControlPr->m_oPage.IsInit())			pFormControlPr->m_oPage = m_oPage;
+			if (!pFormControlPr->m_oSel.IsInit())			pFormControlPr->m_oSel = m_oSel;
+			if (!pFormControlPr->m_oSelType.IsInit())		pFormControlPr->m_oSelType = m_oSelType;
+			if (!pFormControlPr->m_oTextHAlign.IsInit())	pFormControlPr->m_oTextHAlign = m_oTextHAlign;
+			if (!pFormControlPr->m_oTextVAlign.IsInit())	pFormControlPr->m_oTextVAlign = m_oTextVAlign;
+			if (!pFormControlPr->m_oVal.IsInit())			pFormControlPr->m_oVal = m_oVal;
+			if (!pFormControlPr->m_oWidthMin.IsInit())		pFormControlPr->m_oWidthMin = m_oWidthMin;
+//			if (!pFormControlPr->m_oEditVal.IsInit())		pFormControlPr->m_oEditVal = m_oEditVal;
+			if (!pFormControlPr->m_oFmlaGroup.IsInit())		pFormControlPr->m_oFmlaGroup = m_oFmlaGroup;
+			if (!pFormControlPr->m_oFmlaLink.IsInit())		pFormControlPr->m_oFmlaLink = m_oFmlaLink;
+			if (!pFormControlPr->m_oFmlaRange.IsInit())		pFormControlPr->m_oFmlaRange = m_oFmlaRange;
+			if (!pFormControlPr->m_oFmlaTxbx.IsInit())		pFormControlPr->m_oFmlaTxbx	= m_oFmlaTxbx;
+			if (!pFormControlPr->m_oColored.IsInit())		pFormControlPr->m_oColored = m_oColored;
+			if (!pFormControlPr->m_oFirstButton.IsInit())	pFormControlPr->m_oFirstButton = m_oFirstButton;
+			if (!pFormControlPr->m_oHoriz.IsInit())			pFormControlPr->m_oHoriz = m_oHoriz;
+			if (!pFormControlPr->m_oJustLastX.IsInit())		pFormControlPr->m_oJustLastX = m_oJustLastX;
+			if (!pFormControlPr->m_oLockText.IsInit())		pFormControlPr->m_oLockText = m_oLockText;
+			if (!pFormControlPr->m_oMultiSel.IsInit())		pFormControlPr->m_oMultiSel = m_oMultiSel;
+			if (!pFormControlPr->m_oNoThreeD.IsInit())		pFormControlPr->m_oNoThreeD = m_oNoThreeD;
+			if (!pFormControlPr->m_oNoThreeD2.IsInit())		pFormControlPr->m_oNoThreeD2 = m_oNoThreeD2;
+			if (!pFormControlPr->m_oMultiLine.IsInit())		pFormControlPr->m_oMultiLine = m_oMultiLine;
+			if (!pFormControlPr->m_oVerticalBar.IsInit())	pFormControlPr->m_oVerticalBar = m_oVScroll;
+			if (!pFormControlPr->m_oPasswordEdit.IsInit())	pFormControlPr->m_oPasswordEdit = m_oSecretEdit;
+		}		
 		void CTextbox::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -1180,34 +1424,39 @@ namespace OOX
 
 				if ( L"txbxContent" == sName ) //namespaces w & wne
 					m_oTxtbxContent = oReader;
-				//else if (L"div" == sName)
-				//{
-
-				//	m_arDivs.push_back();
-				//}
+				else if (L"div" == sName)
+				{
+					m_oText = oReader.GetText3();
+					//m_arDivs.push_back();
+				}
 			}
 		}
 		std::wstring CTextbox::toXML() const
 		{
-			std::wstring sResult = _T("<v:textbox ");
+			std::wstring sResult = L"<v:textbox ";
 
-			ComplexTypes_WriteAttribute2( _T("id=\""),    m_oId );
-			ComplexTypes_WriteAttribute ( _T("style=\""), m_oStyle );
+			ComplexTypes_WriteAttribute3(L"id=\"",    m_oId );
+			ComplexTypes_WriteAttribute (L"style=\"", m_oStyle );
 
-			sResult += _T("inset=\"") + m_oInset.ToString() + _T("\" ");
+			sResult += L"inset=\"" + m_oInset.ToString() + L"\" ";
 
 			if ( SimpleTypes::booleanFalse != m_oSingleClick.GetValue() )
-				sResult += _T("o:singleclick=\"true\" ");
+				sResult += L"o:singleclick=\"true\" ";
 
 			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
-				sResult += _T("o:insetmode=\"") + m_oInsetMode.ToString() + _T("\" ");
+				sResult += L"o:insetmode=\"" + m_oInsetMode.ToString() + L"\" ";
 
-			sResult += _T(">");
+			sResult += L">";
 
 			if ( m_oTxtbxContent.IsInit() )
 				sResult += m_oTxtbxContent->toXML();
 
-			sResult += _T("</v:textbox>");
+			if (m_oText.IsInit())
+			{
+				sResult += L"<div>" + *m_oText + L"</div>";
+			}
+
+			sResult += L"</v:textbox>";
 
 			return sResult;
 		}
@@ -1249,6 +1498,955 @@ namespace OOX
 			}
 			oReader.MoveToElement();
 		}
+		void CFill::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Выставляем значения по умолчанию
+			//m_oFocus.SetValue( 0 );
+			//m_oFocusPosition.SetValue( 0.0, 0.0 );
+			//m_oFocusSize.SetValue( 0.0, 0.0 );
+
+			std::wstring sColors;
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'a':
+					if      ( _T("aspect")     == wsName ) m_oAspect     = oReader.GetText();
+					else if ( _T("angle")      == wsName ) m_oAngle      = oReader.GetText();
+					else if ( _T("alignshape") == wsName ) m_oAlignShape = oReader.GetText();
+					break;
+
+				case 'c':
+					if      ( _T("color")  == wsName ) m_oColor   = oReader.GetText();
+					else if ( _T("color2") == wsName ) m_oColor2  = oReader.GetText();
+					else if ( _T("colors") == wsName ) sColors    = oReader.GetText();
+					break;
+
+				case 'i':
+					if      ( _T("id")   == wsName ) m_sId  = oReader.GetText();
+					break;
+
+				case 'm':
+					if      ( _T("method")   == wsName ) m_oMethod = oReader.GetText();
+					break;
+
+				case 'f':
+					if      ( _T("focus")         == wsName ) m_oFocus         = oReader.GetText();
+					else if ( _T("focussize")     == wsName ) m_oFocusSize     = oReader.GetText();
+					else if ( _T("focusposition") == wsName ) m_oFocusPosition = oReader.GetText();
+					break;
+
+				case 'o':
+					if      ( _T("on")                 == wsName ) m_oOn               = oReader.GetText();
+					else if ( _T("opacity")            == wsName ) m_oOpacity          = oReader.GetText();
+					else if ( _T("o:href")             == wsName ) m_sHref             = oReader.GetText();
+					else if ( _T("o:althref")          == wsName ) m_sAltHref          = oReader.GetText();
+					else if ( _T("origin")             == wsName ) m_oOrigin           = oReader.GetText();
+					else if ( _T("o:detectmouseclick") == wsName ) m_oDetectMouseClick = oReader.GetText();
+					else if ( _T("o:title")            == wsName ) m_sTitle            = oReader.GetText();
+					else if ( _T("o:opacity2")         == wsName ) m_oOpacity2         = oReader.GetText();
+					else if ( _T("o:relid")            == wsName ) m_oRelId            = oReader.GetText();
+					break;
+
+				case 'p':
+					if      ( _T("position") == wsName ) m_oPosition = oReader.GetText();
+					break;
+
+				case 'r':
+					if      ( _T("recolor") == wsName ) m_oRecolor = oReader.GetText();
+					else if ( _T("rotate")  == wsName ) m_oRotate  = oReader.GetText();
+					else if ( _T("r:id")    == wsName ) m_rId      = oReader.GetText();
+					break;
+
+				case 's':
+					if      ( _T("src")   == wsName ) m_sSrc    = oReader.GetText();
+					else if ( _T("size")  == wsName ) m_oSize   = oReader.GetText();
+					break;
+
+				case 't':
+					if      ( _T("type") == wsName ) m_oType = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+
+			// TO DO: сделать парсер цветов CFill::m_arrColors
+		}
+
+
+
+		std::wstring CFill::toXML() const
+		{
+			std::wstring sResult = _T("<v:fill ");
+							
+			ComplexTypes_WriteAttribute3( _T("id=\""), m_sId );
+			sResult += _T("type=\"") + m_oType.ToString() + _T("\" ");
+			
+			if ( (m_oOn.IsInit()) && ( SimpleTypes::booleanTrue != m_oOn->GetValue() ))
+				sResult += _T("on=\"false\" ");
+
+			if (  m_oOpacity.IsInit() )
+				sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute (_T("color=\""), m_oColor);
+			ComplexTypes_WriteAttribute (_T("color2=\""),	  m_oColor2);
+			ComplexTypes_WriteAttribute3( _T("src=\""),       m_sSrc );
+			ComplexTypes_WriteAttribute3( _T("o:href=\""),    m_sHref );
+			ComplexTypes_WriteAttribute3( _T("o:althref=\""), m_sAltHref );
+			ComplexTypes_WriteAttribute ( _T("size=\""),      m_oSize );
+			ComplexTypes_WriteAttribute ( _T("origin=\""),    m_oOrigin );
+			ComplexTypes_WriteAttribute ( _T("position=\""),  m_oPosition );
+
+			if ((m_oAspect.IsInit()) && (SimpleTypes::imageaspectIgnore != m_oAspect->GetValue() ))
+				sResult += _T("aspect=\"") + m_oAspect->ToString() + _T("\" ");
+
+			// TO DO: Сделать запись m_arrColors
+
+			ComplexTypes_WriteAttribute ( _T("angle=\""),         m_oAngle );
+
+			if ( (m_oAlignShape.IsInit()) && (SimpleTypes::booleanTrue != m_oAlignShape->GetValue() ))
+				sResult += _T("alignshape=\"false\" ");
+
+			if ( (m_oFocus.IsInit()) && (0 != m_oFocus->GetValue() ))
+				sResult += _T("focus=\"") + m_oFocus->ToString() + _T("\" ");
+
+			if ( (m_oFocusPosition.IsInit()) && (0 != m_oFocusPosition->GetX() || 0 != m_oFocusPosition->GetY() ))
+				sResult += _T("focusposition=\"") + m_oFocusPosition->ToString() + _T("\" ");
+
+			if ( ( m_oFocusSize.IsInit() ) && (0 != m_oFocusSize->GetX() || 0 != m_oFocusSize->GetY() ))
+				sResult += _T("focussize=\"") + m_oFocusSize->ToString() + _T("\" ");
+
+			if ( (m_oMethod.IsInit() ) && (SimpleTypes::fillmethodSigma != m_oMethod->GetValue() ))
+				sResult += _T("method=\"") + m_oMethod->ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute ( _T("o:detectmouseclick=\""), m_oDetectMouseClick );
+			ComplexTypes_WriteAttribute3( _T("o:title=\""),            m_sTitle );
+
+			if ( m_oOpacity2.IsInit() )
+				sResult += _T("o:opacity2=\"") + m_oOpacity2->ToString() + _T("\" ");
+
+			if ( (m_oRecolor.IsInit()) && (SimpleTypes::booleanFalse != m_oRecolor->GetValue() ))
+				sResult += _T("recolor=\"true\" ");
+
+			if (( m_oRotate.IsInit()) && (SimpleTypes::booleanFalse != m_oRotate->GetValue() ))
+				sResult += _T("rotate=\"true\" ");
+
+			ComplexTypes_WriteAttribute ( _T("r:id=\""),    m_rId );
+			ComplexTypes_WriteAttribute ( _T("o:relid=\""), m_oRelId );
+
+			sResult += _T(">");
+
+			if ( m_oFill.IsInit() )
+				sResult += m_oFill->toXML();
+
+			sResult += _T("</v:fill>");
+
+			return sResult;
+		}
+		void CStroke::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'c':
+					if      ( _T("color")     == wsName ) m_oColor     = oReader.GetText();
+					else if ( _T("color2")    == wsName ) m_oColor2    = oReader.GetText();
+					break;
+				case 'd':
+					if      ( _T("dashstyle") == wsName ) m_oDahsStyle = oReader.GetText();
+					break;
+				case 'e':
+					if      ( _T("endarrow")       == wsName ) m_oEndArrow       = oReader.GetText();
+					else if ( _T("endarrowlength") == wsName ) m_oEndArrowLength = oReader.GetText();
+					else if ( _T("endarrowwidth")  == wsName ) m_oEndArrowWidth  = oReader.GetText();
+					else if ( _T("endcap")         == wsName ) m_oEndCap         = oReader.GetText();
+					break;
+				case 'f':
+					if      ( _T("filltype") == wsName ) m_oFillType = oReader.GetText();
+					break;
+				case 'i':
+					if      ( _T("id")              == wsName ) m_oId              = oReader.GetText();
+					else if ( _T("imagealignshape") == wsName ) m_oImageAlignShape = oReader.GetText();
+					else if ( _T("imageaspect")     == wsName ) m_oImageAspect     = oReader.GetText();
+					else if ( _T("imagesize")       == wsName ) m_oImageSize       = oReader.GetText();
+					else if ( _T("insetpen")        == wsName ) m_oInsetPen        = oReader.GetText();
+					break;
+				case 'j':
+					if      ( _T("joinstyle") == wsName ) m_oJoinStyle = oReader.GetText();
+					break;
+				case 'l':
+					if      ( _T("linestyle") == wsName ) m_oLineStyle = oReader.GetText();
+					break;
+				case 'm':
+					if      ( _T("miterlimit") == wsName ) m_oMiterLimit = oReader.GetText();
+					break;
+				case 'o':
+					if      ( _T("o:althref")   == wsName ) m_sAltHref   = oReader.GetText();
+					else if ( _T("o:forcedash") == wsName ) m_oForceDash = oReader.GetText();
+					else if ( _T("o:href")      == wsName ) m_sHref      = oReader.GetText();
+					else if ( _T("on")          == wsName ) m_oOn        = oReader.GetText();
+					else if ( _T("opacity")     == wsName ) m_oOpacity   = oReader.GetText();
+					else if ( _T("o:relid")     == wsName ) m_oRelId     = oReader.GetText();
+					else if ( _T("o:title")     == wsName ) m_sTitle     = oReader.GetText();
+					break;
+				case 'r':
+					if      ( _T("r:id") == wsName ) m_rId = oReader.GetText();
+					break;
+				case 's':
+					if      ( _T("src")              == wsName ) m_sSrc              = oReader.GetText();
+					else if ( _T("startarrow")       == wsName ) m_oStartArrow       = oReader.GetText();
+					else if ( _T("startarrowlength") == wsName ) m_oStartArrowLength = oReader.GetText();
+					else if ( _T("startarrowwidth")  == wsName ) m_oStartArrowWidth  = oReader.GetText();
+					break;
+				case 'w':
+					if      ( _T("weight") == wsName ) m_oWeight = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+
+			// TO DO: Сделать парсер формул ( или использовать уже сделанный парсер в OfficeDrawing\Shapes)
+		}
+
+		std::wstring CStroke::toXML() const
+		{
+			std::wstring sResult = _T("<v:stroke ");
+
+			ComplexTypes_WriteAttribute3( _T("id=\""), m_oId );
+			if ( SimpleTypes::booleanTrue != m_oOn.GetValue() )
+				sResult += _T("on=\"false\" ");
+
+			if ( 1 != m_oWeight.GetValue() )
+				sResult += _T("weight=\"") + m_oWeight.ToString() + _T("\" ");
+
+			//if ( SimpleTypes::colortypeBlack != m_oColor.GetValue() )
+			//	sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
+			ComplexTypes_WriteAttribute ( _T("color=\""), m_oColor );
+
+			if (m_oOpacity.IsInit() )
+				sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
+
+			//if ( SimpleTypes::strokelinestyleSingle != m_oLineStyle.GetValue() )
+			//	sResult += _T("linestyle=\"") + m_oLineStyle.ToString() + _T("\" ");
+			ComplexTypes_WriteAttribute ( _T("linestyle=\""), m_oLineStyle );
+			
+			if ( 8 != m_oMiterLimit.GetValue() )
+				sResult += _T("miterlimit=\"") + m_oMiterLimit.ToString() + _T("\" ");
+
+			if ( SimpleTypes::strokejoinstyleRound != m_oJoinStyle.GetValue() )
+				sResult += _T("joinstyle=\"") + m_oJoinStyle.ToString() + _T("\" ");
+
+			if ( SimpleTypes::strokeendcapFlat != m_oEndCap.GetValue() )
+				sResult += _T("endcap=\"") + m_oEndCap.ToString() + _T("\" ");
+
+			if ( SimpleTypes::Vml::vmldashstyleSolid != m_oDahsStyle.GetValue() )
+				sResult += _T("dashstyle=\"") + m_oDahsStyle.ToString() + _T("\" ");
+
+			if ( SimpleTypes::filltypeSolid != m_oFillType.GetValue() )
+				sResult += _T("filltype=\"") + m_oFillType.ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute3( _T("src=\""), m_sSrc );
+
+			if ( SimpleTypes::imageaspectIgnore != m_oImageAspect.GetValue() )
+				sResult += _T("imageaspect=\"") + m_oImageAspect.ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute ( _T("imagesize=\""), m_oImageSize );
+
+			if ( SimpleTypes::booleanTrue != m_oOn.GetValue() )
+				sResult += _T("imagealignshape=\"false\" ");
+
+			ComplexTypes_WriteAttribute ( _T("color2=\""), m_oColor2 );
+
+			if ( SimpleTypes::strokearrowtypeNone != m_oStartArrow.GetValue() )
+				sResult += _T("startarrow=\"") + m_oStartArrow.ToString() + _T("\" ");
+
+			if ( SimpleTypes::strokearrowwidthMedium != m_oStartArrowWidth.GetValue() )
+				sResult += _T("startarrowwidth=\"") + m_oStartArrowWidth.ToString() + _T("\" ");
+
+			if ( SimpleTypes::strokearrowlengthMedium != m_oStartArrowLength.GetValue() )
+				sResult += _T("startarrowlength=\"") + m_oStartArrowLength.ToString() + _T("\" ");
+
+			if ( SimpleTypes::strokearrowtypeNone != m_oEndArrow.GetValue() )
+				sResult += _T("endarrow=\"") + m_oEndArrow.ToString() + _T("\" ");
+
+			if ( SimpleTypes::strokearrowwidthMedium != m_oEndArrowWidth.GetValue() )
+				sResult += _T("endarrowwidth=\"") + m_oEndArrowWidth.ToString() + _T("\" ");
+
+			if ( SimpleTypes::strokearrowlengthMedium != m_oEndArrowLength.GetValue() )
+				sResult += _T("endarrowlength=\"") + m_oEndArrowLength.ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute3( _T("o:href=\""),    m_sHref );
+			ComplexTypes_WriteAttribute3( _T("o:althref=\""), m_sAltHref );
+			ComplexTypes_WriteAttribute3( _T("o:title=\""),   m_sTitle );
+
+			if ( SimpleTypes::booleanFalse != m_oForceDash.GetValue() )
+				sResult += _T("o:forcedash=\"true\" ");
+
+			ComplexTypes_WriteAttribute ( _T("r:id=\""),     m_rId );
+			ComplexTypes_WriteAttribute ( _T("insetpen=\""), m_oInsetPen );
+			ComplexTypes_WriteAttribute ( _T("o:relid=\""),  m_oRelId );
+
+			sResult += _T(">");
+
+			if ( m_oLeft.IsInit() )
+				sResult += m_oLeft->toXML();
+
+			if ( m_oTop.IsInit() )
+				sResult += m_oTop->toXML();
+
+			if ( m_oRight.IsInit() )
+				sResult += m_oRight->toXML();
+
+			if ( m_oBottom.IsInit() )
+				sResult += m_oBottom->toXML();
+
+			if ( m_oColumn.IsInit() )
+				sResult += m_oColumn->toXML();
+
+			sResult += _T("</v:stroke>");
+
+			return sResult;
+		}
+		void CPath::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Выставляем значения по умолчанию
+			m_oLimo.SetValue( 0, 0 );
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'a':
+					if      ( _T("arrowok")    == wsName ) m_oArrowOk    = oReader.GetText();
+					break;
+
+				case 'f':
+					if      ( _T("fillok")     == wsName ) m_oFillOk     = oReader.GetText();
+					break;
+
+				case 'g':
+					if      ( _T("gradientshapeok") == wsName ) m_oGradientShapeOk = oReader.GetText();
+					break;
+
+				case 'i':
+					if      ( _T("id")         == wsName ) m_oId         = oReader.GetText();
+					else if ( _T("insetpenok") == wsName ) m_oInsetPenOk = oReader.GetText();
+					break;
+
+				case 'l':
+					if      ( _T("limo")       == wsName ) m_oLimo         = oReader.GetText();
+					break;
+
+				case 'o':
+					{
+						wchar_t wsChar2 = wsName[2]; // o:_
+						switch ( wsChar2 )
+						{
+						case 'c':
+							if      ( _T("o:connectangles") == wsName ) m_oConnectAngles = oReader.GetText();
+							else if ( _T("o:connectlocs")   == wsName ) m_oConnectLocs   = oReader.GetText();
+							else if ( _T("o:connecttype")   == wsName ) m_oConnectType   = oReader.GetText();
+							break;
+						case 'e':
+							if      ( _T("o:extrusionok")   == wsName ) m_oExtrusionOk   = oReader.GetText();
+							break;
+						}
+
+					break;
+					}
+
+				case 's':
+					if      ( _T("shadowok")    == wsName ) m_oShadowOk    = oReader.GetText();
+					else if ( _T("strokeok")    == wsName ) m_oStrokeOk    = oReader.GetText();
+					break;
+
+				case 't':
+					if      ( _T("textboxrect") == wsName ) m_oTextBoxRect = oReader.GetText();
+					else if ( _T("textpathok")  == wsName ) m_oTextPathOk  = oReader.GetText();
+					break;
+
+				case 'v':
+					if      ( _T("v")           == wsName ) m_oV           = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+
+			// TO DO: Сделать парсер параметров connectangles, connectlocs
+		}
+
+		std::wstring CPath::toXML() const
+		{
+			std::wstring sResult = _T("<v:path ");
+
+			ComplexTypes_WriteAttribute3( _T("id=\""), m_oId );
+			ComplexTypes_WriteAttribute ( _T("v=\""),  m_oV );
+
+			if ( 0 != m_oLimo.GetX() || 0 != m_oLimo.GetY() )
+				sResult += _T("limo=\"") + m_oLimo.ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute ( _T("textboxrect=\""), m_oTextBoxRect );
+
+			if ( SimpleTypes::booleanTrue != m_oFillOk.GetValue() )
+				sResult += _T("fillok=\"false\" ");
+
+			if ( SimpleTypes::booleanTrue != m_oStrokeOk.GetValue() )
+				sResult += _T("strokeok=\"false\" ");
+
+			if ( SimpleTypes::booleanTrue != m_oShadowOk.GetValue() )
+				sResult += _T("shadowok=\"false\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oArrowOk.GetValue() )
+				sResult += _T("arrowok=\"true\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oGradientShapeOk.GetValue() )
+				sResult += _T("gradientshapeok=\"true\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oTextPathOk.GetValue() )
+				sResult += _T("textpathok=\"true\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oInsetPenOk.GetValue() )
+				sResult += _T("insetpenok=\"true\" ");
+
+			if ( SimpleTypes::connecttypeNone != m_oConnectType.GetValue() )
+				sResult += _T("o:connecttype=\"") + m_oConnectType.ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute3( _T("o:connectlocs=\""),   m_oConnectLocs );
+			ComplexTypes_WriteAttribute3( _T("o:connectangles=\""), m_oConnectAngles );
+
+			if ( SimpleTypes::booleanTrue != m_oExtrusionOk.GetValue() )
+				sResult += _T("extrusionok=\"false\" ");
+
+			sResult += _T("/>");
+
+			return sResult;
+		}
+		void CImageData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Выставляем значения по умолчанию
+			m_oBlackLevel.SetValue( 0.0 );
+			m_oGain.SetValue( 1.0 );
+			m_oGamma.SetValue( 1.0 );
+
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'a':
+					if      ( _T("althref")    == wsName ) m_sAltHref    = oReader.GetText();
+					break;
+
+				case 'b':
+					if      ( _T("bilevel")    == wsName ) m_oBiLevel    = oReader.GetText();
+					else if ( _T("blacklevel") == wsName ) m_oBlackLevel = oReader.GetText();
+					break;
+
+				case 'c':
+					if      ( _T("cropleft")   == wsName ) m_oCropLeft   = oReader.GetText();
+					else if ( _T("croptop")    == wsName ) m_oCropTop    = oReader.GetText();
+					else if ( _T("cropright")  == wsName ) m_oCropRight  = oReader.GetText();
+					else if ( _T("cropbottom") == wsName ) m_oCropBottom = oReader.GetText();
+					break;
+
+				case 'e':
+					if      ( _T("embosscolor")== wsName ) m_oEmbossColor= oReader.GetText();
+					break;
+
+				case 'g':
+					if      ( _T("gain")       == wsName ) m_oGain       = oReader.GetText();
+					if      ( _T("gamma")      == wsName ) m_oGamma      = oReader.GetText();
+					if      ( _T("grayscale")  == wsName ) m_oGrayscale  = oReader.GetText();
+					break;
+
+				case 'i':
+					if      ( _T("id")         == wsName ) m_oId         = oReader.GetText();
+					break;
+
+				case 'o':
+					{
+						wchar_t wsChar2 = wsName[2]; // o:_
+						switch ( wsChar2 )
+						{
+						case 'd':
+							if      ( _T("o:detectmouseclick") == wsName ) m_oDetectMouseClick = oReader.GetText();
+							break;
+						case 'h':
+							if      ( _T("o:href")   == wsName ) m_oHref    = oReader.GetText();
+							break;
+						case 'm':
+							if      ( _T("o:movie")  == wsName ) m_oMovie   = oReader.GetText();
+							break;
+						case 'o':
+							if      ( _T("o:oleid")  == wsName ) m_oOleId   = oReader.GetText();
+							break;
+						case 'r':
+							if      ( _T("o:relid")  == wsName ) m_oRelId   = oReader.GetText();
+							break;
+						case 't':
+							if      ( _T("title")    == wsName ) m_sTitle   = oReader.GetText();
+							break;
+						}
+
+					break;
+					}
+
+				case 'r':
+					if      ( _T("r:href")        == wsName ) m_rHref          = oReader.GetText();
+					else if ( _T("r:id")          == wsName ) m_rId            = oReader.GetText();
+					else if ( _T("r:pict")        == wsName ) m_rPict          = oReader.GetText();
+					else if ( _T("recolortarget") == wsName ) m_oRecolorTarget = oReader.GetText();
+					break;
+
+				case 's':
+					if      ( _T("src")           == wsName ) m_sSrc           = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+		}
+
+
+
+		std::wstring CImageData::toXML() const
+		{
+			std::wstring sResult = L"<v:imagedata ";
+
+			ComplexTypes_WriteAttribute3(L"id=\"", m_oId );
+
+			if ( _T("") !=  m_sSrc )
+				sResult += L"src=\"" + m_sSrc + L"\" ";
+
+			ComplexTypes_WriteAttribute(L"cropleft=\"",		m_oCropLeft);
+			ComplexTypes_WriteAttribute(L"croptop=\"",		m_oCropTop);
+			ComplexTypes_WriteAttribute(L"cropright=\"",	m_oCropRight);
+			ComplexTypes_WriteAttribute(L"cropbottom=\"",	m_oCropBottom);
+
+			if ( 1 != m_oGain.GetValue() )
+				sResult += _T("gain=\"") + m_oGain.ToString() + _T("\" ");
+
+			if ( 0 != m_oBlackLevel.GetValue() )
+				sResult += _T("blacklevel=\"") + m_oBlackLevel.ToString() + _T("\" ");
+
+			if ( 1 != m_oGamma.GetValue() )
+				sResult += _T("gamma=\"") + m_oGamma.ToString() + _T("\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oGrayscale.GetValue() )
+				sResult += _T("grayscale=\"true\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oBiLevel.GetValue() )
+				sResult += _T("bilevel=\"true\" ");
+
+			ComplexTypes_WriteAttribute ( _T("chromakey=\""),    m_oChromaKey );
+			ComplexTypes_WriteAttribute ( _T("embosscolor=\""),  m_oEmbossColor );
+
+			ComplexTypes_WriteAttribute3( _T("o:href=\""),             m_oHref );
+			ComplexTypes_WriteAttribute3( _T("o:althref=\""),          m_sAltHref );
+			ComplexTypes_WriteAttribute3( _T("o:title=\""),            m_sTitle );
+			ComplexTypes_WriteAttribute3( _T("o:oleid=\""),            m_oOleId );
+			ComplexTypes_WriteAttribute ( _T("o:detectmouseclick=\""), m_oDetectMouseClick );
+			ComplexTypes_WriteAttribute ( _T("o:movie=\""),            m_oMovie );
+			ComplexTypes_WriteAttribute ( _T("o:relid=\""),            m_oRelId );
+
+			ComplexTypes_WriteAttribute ( _T("r:id=\""),               m_rId );
+			ComplexTypes_WriteAttribute ( _T("r:pict=\""),             m_rPict );
+			ComplexTypes_WriteAttribute ( _T("r:href=\""),             m_rHref );
+
+			sResult += _T("/>");
+
+			return sResult;
+		}
+		void CImage::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Выставляем значения по умолчанию
+			m_oBlackLevel.SetValue( 0.0 );
+			m_oCropLeft.SetValue( 0.0 );
+			m_oCropRight.SetValue( 0.0 );
+			m_oCropBottom.SetValue( 0.0 );
+			m_oCropTop.SetValue( 0.0 );
+			m_oGain.SetValue( 1.0 );
+			m_oGamma.SetValue( 1.0 );
+
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'b':
+					if      ( _T("bilevel")    == wsName ) m_oBiLevel    = oReader.GetText();
+					else if ( _T("blacklevel") == wsName ) m_oBlackLevel = oReader.GetText();
+					break;
+
+				case 'c':
+					if      ( _T("chromakey")  == wsName ) m_oChromaKey  = oReader.GetText();
+					else if ( _T("cropleft")   == wsName ) m_oCropLeft   = oReader.GetText();
+					else if ( _T("croptop")    == wsName ) m_oCropTop    = oReader.GetText();
+					else if ( _T("cropright")  == wsName ) m_oCropRight  = oReader.GetText();
+					else if ( _T("cropbottom") == wsName ) m_oCropBottom = oReader.GetText();
+					break;
+
+				case 'g':
+					if      ( _T("gain")       == wsName ) m_oGain       = oReader.GetText();
+					if      ( _T("gamma")      == wsName ) m_oGamma      = oReader.GetText();
+					if      ( _T("grayscale")  == wsName ) m_oGrayscale  = oReader.GetText();
+					break;
+
+				case 's':
+					if      ( _T("src")        == wsName ) m_sSrc       = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+		}
+
+		std::wstring CImage::toXML() const
+		{
+			std::wstring sResult = _T("<v:image ");
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			if ( _T("") !=  m_sSrc )
+				sResult += _T("src=\"") + m_sSrc + _T("\" ");
+
+			if ( 0 != m_oCropLeft.GetValue() )
+				sResult += _T("cropleft=\"") + m_oCropLeft.ToString() + _T("\" ");
+
+			if ( 0 != m_oCropTop.GetValue() )
+				sResult += _T("croptop=\"") + m_oCropTop.ToString() + _T("\" ");
+
+			if ( 0 != m_oCropRight.GetValue() )
+				sResult += _T("cropright=\"") + m_oCropRight.ToString() + _T("\" ");
+
+			if ( 0 != m_oCropBottom.GetValue() )
+				sResult += _T("cropbottom=\"") + m_oCropBottom.ToString() + _T("\" ");
+
+			if ( 1 != m_oGain.GetValue() )
+				sResult += _T("gain=\"") + m_oGain.ToString() + _T("\" ");
+
+			if ( 0 != m_oBlackLevel.GetValue() )
+				sResult += _T("blacklevel=\"") + m_oBlackLevel.ToString() + _T("\" ");
+
+			if ( 1 != m_oGamma.GetValue() )
+				sResult += _T("gamma=\"") + m_oGamma.ToString() + _T("\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oGrayscale.GetValue() )
+				sResult += _T("grayscale=\"true\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oBiLevel.GetValue() )
+				sResult += _T("bilevel=\"true\" ");
+
+			sResult += _T(">");
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += _T("</v:image>");
+
+			return sResult;
+		}
+		void CH::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Выставляем значения по умолчанию
+			m_oMap.SetValue( 0, 1000 );
+			m_oPosition.SetConstantX( 0 );
+			m_oPosition.SetConstantY( 0 );
+			m_oRadiusRange.SetValue( 0, 0 );
+			m_oXRange.SetValue( 0, 0 );
+			m_oYRange.SetValue( 0, 0 );
+
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'i':
+					if      ( _T("invx") == wsName ) m_oInvX = oReader.GetText();
+					else if ( _T("invy") == wsName ) m_oInvY = oReader.GetText();
+					break;
+
+				case 'm':
+					if      ( _T("map") == wsName ) m_oMap = oReader.GetText();
+					break;
+
+				case 'p':
+					if      ( _T("position") == wsName ) m_oPosition = oReader.GetText();
+					else if ( _T("polar")    == wsName ) m_oPolar    = oReader.GetText();
+					break;
+
+				case 'r':
+					if      ( _T("radiusrange") == wsName ) m_oRadiusRange = oReader.GetText();
+					break;
+
+				case 's':
+					if      ( _T("switch") == wsName ) m_oSwitch = oReader.GetText();
+					break;
+
+				case 'x':
+					if      ( _T("xrange") == wsName ) m_oXRange = oReader.GetText();
+					break;
+				case 'y':
+					if      ( _T("yrange") == wsName ) m_oYRange = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+		}
+
+		std::wstring CH::toXML() const
+		{
+			std::wstring sResult = _T("<v:h ");
+
+			if ( SimpleTypes::Vml::vmlvector2dposConstant != m_oPosition.GetTypeX() || SimpleTypes::Vml::vmlvector2dposConstant != m_oPosition.GetTypeY() || 0 != m_oPosition.GetX() || 0 != m_oPosition.GetY() )
+				sResult += _T("position=\"") + m_oPosition.ToString() + _T("\" ");
+							
+			ComplexTypes_WriteAttribute ( _T("polar=\""), m_oPolar );
+
+			if ( 0 != m_oMap.GetX() || 1000 != m_oMap.GetY() )
+				sResult += _T("map=\"") + m_oMap.ToString() + _T("\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oInvX.GetValue() )
+				sResult += _T("invx=\"true\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oInvY.GetValue() )
+				sResult += _T("invy=\"true\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oSwitch.GetValue() )
+				sResult += _T("switch=\"true\" ");
+
+			if ( 0 != m_oXRange.GetX() || 0 != m_oXRange.GetY() )
+				sResult += _T("xrange=\"") + m_oXRange.ToString() + _T("\" ");
+
+			if ( 0 != m_oYRange.GetX() || 0 != m_oYRange.GetY() )
+				sResult += _T("yrange=\"") + m_oYRange.ToString() + _T("\" ");
+
+			if ( 0 != m_oRadiusRange.GetX() || 0 != m_oRadiusRange.GetY() )
+				sResult += _T("radiusrange=\"") + m_oRadiusRange.ToString() + _T("\" ");
+
+			sResult += _T("/>");
+
+			return sResult;
+		}
+
+
 
 	} // Vml
+	namespace VmlOffice
+	{
+		void CShapeDefaults::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( _T("v:fill") == sName )
+					m_oVmlFill = oReader;
+				else if ( _T("v:stroke") == sName )
+					m_oVmlStroke = oReader;
+				else if ( _T("v:textbox") == sName )
+					m_oVmlTextbox = oReader;
+				else if ( _T("v:shadow") == sName )
+					m_oVmlShadow = oReader;
+				else if ( _T("o:skew") == sName )
+					m_oSkew = oReader;
+				else if ( _T("o:extrusion") == sName )
+					m_oExtrusion = oReader;
+				else if ( _T("o:callout") == sName )
+					m_oCallout = oReader;
+				else if ( _T("o:lock") == sName )
+					m_oLock = oReader;
+				else if ( _T("o:colormru") == sName )
+					m_oColorMru = oReader;
+				else if ( _T("o:colormenu") == sName )
+					m_oColorMenu = oReader;
+			}
+		}
+		void CShapeDefaults::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{				
+			// Читаем атрибуты
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+			
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'f':
+					if      ( _T("fill")          == wsName ) m_oFill        = oReader.GetText();
+					else if ( _T("fillcolor")     == wsName ) m_oFillColor   = oReader.GetText();
+					break;
+				case 'o':
+					if      ( _T("o:allowincell") == wsName ) m_oAllowInCell = oReader.GetText();
+					break;
+				case 's':
+					if      ( _T("spidmax")       == wsName ) m_oSpIdMax     = oReader.GetText();
+					else if ( _T("style")         == wsName ) m_oStyle       = oReader.GetText();
+					else if ( _T("stroke")        == wsName ) m_oStroke      = oReader.GetText();
+					else if ( _T("strokecolor")   == wsName ) m_oStrokeColor = oReader.GetText();
+					break;
+				case 'v':
+					if      ( _T("v:ext")         == wsName ) m_oExt         = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+		}
+
+
+
+		std::wstring CShapeDefaults::toXML() const
+		{
+			std::wstring sResult = _T("<o:shapedefaults ");
+
+			ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+
+			if ( 0 != m_oSpIdMax.GetValue() )
+				sResult += _T("spidmax=\"") + m_oSpIdMax.ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute ( _T("style=\""), m_oStyle );
+
+			if ( SimpleTypes::booleanTrue != m_oFill.GetValue() )
+				sResult += _T("fill=\"false\" ");
+
+			ComplexTypes_WriteAttribute ( _T("fillcolor=\""), m_oFillColor );
+
+			if ( SimpleTypes::booleanTrue != m_oStroke.GetValue() )
+				sResult += _T("stroke=\"false\" ");
+
+			if ( SimpleTypes::colortypeBlack != m_oStrokeColor.GetValue() )
+				sResult += _T("strokecolor=\"") + m_oStrokeColor.ToString() + _T("\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oAllowInCell.GetValue() )
+				sResult += _T("o:allowincell=\"true\" ");
+
+			sResult += _T(">");
+
+			if ( m_oVmlFill.IsInit() )
+				sResult += m_oVmlFill->toXML();
+
+			if ( m_oVmlStroke.IsInit() )
+				sResult += m_oVmlStroke->toXML();
+
+			if ( m_oVmlTextbox.IsInit() )
+				sResult += m_oVmlTextbox->toXML();
+
+			if ( m_oVmlShadow.IsInit() )
+				sResult += m_oVmlShadow->toXML();
+
+			if ( m_oSkew.IsInit() )
+				sResult += m_oSkew->toXML();
+
+			if ( m_oExtrusion.IsInit() )
+				sResult += m_oExtrusion->toXML();
+
+			if ( m_oCallout.IsInit() )
+				sResult += m_oCallout->toXML();
+
+			if ( m_oLock.IsInit() )
+				sResult += m_oLock->toXML();
+
+			if ( m_oColorMru.IsInit() )
+				sResult += m_oColorMru->toXML();
+
+			if ( m_oColorMenu.IsInit() )
+				sResult += m_oColorMenu->toXML();
+
+			sResult += _T("</o:shapedefaults>");
+
+			return sResult;
+		}
+	}// VmlOffice
 } // OOX

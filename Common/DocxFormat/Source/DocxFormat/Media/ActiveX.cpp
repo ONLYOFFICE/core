@@ -35,6 +35,10 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #include "../../../../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 
+#define	GetB(nRGB) ((unsigned char )nRGB)
+#define	GetG(nRGB) ((unsigned char )(nRGB>>8))
+#define	GetR(nRGB) ((unsigned char )(nRGB>>16))
+
 namespace OOX
 {
 	void ActiveX_xml::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -139,6 +143,27 @@ namespace OOX
 		else
 			return NULL;
 	}
+	std::wstring ActiveXObject::ReadString(MemoryStream *stream, size_t size, bool bCompressed)
+	{
+		if (!stream) return L"";
+		
+		std::wstring result;
+
+		unsigned char* pData = stream->ReadBytes(size, true);
+		if (pData)
+		{
+			if (bCompressed)
+				result = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, size);
+			else
+				result = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pData, size / 2);
+			delete []pData;
+		}
+		int count_padding = 4 - (size % 4);
+		if (count_padding > 0 && count_padding < 4)
+			stream->Seek(stream->GetPosition() + count_padding);
+
+		return result;
+	}
 	void ActiveXObject::toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr)
 	{
 		if (!pFormControlPr) return;
@@ -163,6 +188,25 @@ namespace OOX
 		pFormControlPr->m_oPasswordEdit = m_oPasswordEdit;
 		pFormControlPr->m_oSelType = m_oSelType;
 		pFormControlPr->m_oLockText = m_oLockText;
+
+		if (m_oCaption.IsInit())
+		{
+			pFormControlPr->m_oText = m_oCaption;
+		}
+		if (m_oValue.IsInit())
+		{
+			pFormControlPr->m_oVal = XmlUtils::GetInteger(*m_oValue);
+		}
+		if (m_oBackColor.IsInit())
+		{
+			pFormControlPr->m_oFillColor.Init();
+			pFormControlPr->m_oFillColor->SetRGB(GetR(*m_oBackColor), GetG(*m_oBackColor), GetB(*m_oBackColor));
+		}
+		if (m_oBorderColor.IsInit())
+		{
+			pFormControlPr->m_oBorderColor.Init();
+			pFormControlPr->m_oBorderColor->SetRGB(GetR(*m_oBorderColor), GetG(*m_oBorderColor), GetB(*m_oBorderColor));
+		}
 	}
 
 	void ActiveXObjectScroll::Parse(unsigned char* pData, DWORD size)
@@ -312,8 +356,8 @@ namespace OOX
 		bool fTakeFocusOnClick		= GETBIT(PropMask, 9);
 		bool fMouseIcon				= GETBIT(PropMask, 10);
 
-		bool fCaptionCompressed = false;
-		int size_caption = 0;
+		bool bCaptionCompressed = false;
+		int sizeCaption = 0;
 		int size_picture = 0, pos_picture = 0;
 
 		if (fForeColor)				m_oForeColor = mem_stream.ReadUInt32();
@@ -321,10 +365,10 @@ namespace OOX
 		if (fVariousPropertyBits)	/*VariousPropertyBits =*/ mem_stream.ReadUInt32(); 
 		if (fCaption)
 		{
-			size_caption = mem_stream.ReadUInt32();
+			sizeCaption = mem_stream.ReadUInt32();
 			
-			fCaptionCompressed = GETBIT(size_caption, 31);
-			size_caption = GETBITS(size_caption, 0, 30);
+			bCaptionCompressed = GETBIT(sizeCaption, 31);
+			sizeCaption = GETBITS(sizeCaption, 0, 30);
 		}
 		if (fPicturePosition)		pos_picture = mem_stream.ReadUInt32();
 		if (fMousePointer)
@@ -348,21 +392,9 @@ namespace OOX
 			/*m_oMouseIcon =*/ mem_stream.ReadUInt16();
 			/*Padding3 =*/ mem_stream.ReadUInt16();
 		}
-		if (size_caption > 0)
+		if (sizeCaption > 0)
 		{
-			unsigned char* utf16 = mem_stream.ReadBytes(size_caption, true);
-			if (utf16)
-			{
-				if (fCaptionCompressed)
-					m_oCaption = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf16, size_caption);
-				else
-					m_oCaption = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)utf16, size_caption / 2);
-				delete []utf16;
-			}
-			int count_padding = 4 - (size_caption % 4);
-			if (count_padding > 0 && count_padding < 4)
-				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
-
+			m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
 		}
 		if (fSize)
 		{
@@ -482,8 +514,8 @@ namespace OOX
 		bool fMouseIcon				= GETBIT(PropMask, 12);
 
 		m_oLockText = true;
-		bool fCaptionCompressed = false;
-		int size_caption = 0;
+		bool bCaptionCompressed = false;
+		int sizeCaption = 0;
 		int size_picture = 0, pos_picture = 0;
 
 		if (fForeColor)				m_oForeColor = mem_stream.ReadUInt32();
@@ -491,10 +523,10 @@ namespace OOX
 		if (fVariousPropertyBits)	/*VariousPropertyBits =*/ mem_stream.ReadUInt32(); 
 		if (fCaption)
 		{
-			size_caption = mem_stream.ReadUInt32();
+			sizeCaption = mem_stream.ReadUInt32();
 			
-			fCaptionCompressed = GETBIT(size_caption, 31);
-			size_caption = GETBITS(size_caption, 0, 30);
+			bCaptionCompressed = GETBIT(sizeCaption, 31);
+			sizeCaption = GETBITS(sizeCaption, 0, 30);
 		}
 		if (fPicturePosition)		pos_picture = mem_stream.ReadUInt32();
 		if (fMousePointer)
@@ -529,21 +561,9 @@ namespace OOX
 			/*m_oMouseIcon =*/ mem_stream.ReadUInt16();
 			/*Padding3 =*/ mem_stream.ReadUInt16();
 		}
-		if (size_caption > 0)
+		if (sizeCaption > 0)
 		{
-			unsigned char* utf16 = mem_stream.ReadBytes(size_caption, true);
-			if (utf16)
-			{
-				if (fCaptionCompressed)
-					m_oCaption = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf16, size_caption);
-				else
-					m_oCaption = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)utf16, size_caption / 2);
-				delete []utf16;
-			}
-			int count_padding = 4 - (size_caption % 4);
-			if (count_padding > 0 && count_padding < 4)
-				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
-
+			m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
 		}
 		if (fSize)
 		{
@@ -738,49 +758,16 @@ namespace OOX
 		}
 		if (sizeValue > 0)
 		{
-			unsigned char* utf16 = mem_stream.ReadBytes(sizeValue, true);
-			if (utf16)
-			{
-				if (bCaptionCompressed)
-					m_oValue = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf16, sizeValue);
-				else
-					m_oValue = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)utf16, sizeValue / 2);
-				delete []utf16;
-			}
-			count_padding = 4 - (sizeValue % 4);
-			if (count_padding > 0 && count_padding < 4)
-				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
+			m_oValue = ReadString(&mem_stream, sizeValue, bValueCompressed);
 		}
 		if (sizeCaption > 0)
 		{
-			unsigned char* utf16 = mem_stream.ReadBytes(sizeCaption, true);
-			if (utf16)
-			{
-				if (bCaptionCompressed)
-					m_oCaption = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf16, sizeCaption);
-				else
-					m_oCaption = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)utf16, sizeCaption / 2);
-				delete []utf16;
-			}
-			count_padding = 4 - (sizeCaption % 4);
-			if (count_padding > 0 && count_padding < 4)
-				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
+			m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
 		}
 		std::wstring oGroupName;
 		if (sizeGroupName > 0)
 		{
-			unsigned char* utf16 = mem_stream.ReadBytes(sizeGroupName, true);
-			if (utf16)
-			{
-				if (bGroupNameCompressed)
-					oGroupName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf16, sizeGroupName);
-				else
-					oGroupName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)utf16, sizeGroupName / 2);
-				delete []utf16;
-			}
-			count_padding = 4 - (sizeGroupName % 4);
-			if (count_padding > 0 && count_padding < 4)
-				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
+			oGroupName = ReadString(&mem_stream, sizeGroupName, bGroupNameCompressed);
 		}
 		int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
 		//MouseIcon

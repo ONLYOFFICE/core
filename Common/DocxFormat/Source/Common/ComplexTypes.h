@@ -63,25 +63,25 @@ namespace ComplexTypes
 #define ComplexTypes_WriteAttribute( sStartString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
-		sResult += sStartString;\
-		sResult += oValue->ToString();\
-		sResult += _T("\" ");\
+		sResult += sStartString + oValue->ToString() + L"\" ";\
 	}
 
 #define ComplexTypes_WriteAttribute2( sStartString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
-		sResult += sStartString;\
-        sResult += oValue.get2();\
-		sResult += _T("\" ");\
+		sResult += sStartString + oValue.get2() + L"\" ";\
 	}
-
+#define ComplexTypes_WriteAttribute3( sStartString, oValue ) \
+	if ( oValue.IsInit() )\
+	{\
+		sResult += sStartString + (*oValue) + L"\" ";\
+	}
 #define ComplexTypes_WriteAttribute2Encode( sStartString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
 		sResult += sStartString;\
 		sResult += XmlUtils::EncodeXmlString(oValue.get2());\
-		sResult += _T("\" ");\
+		sResult += L"\" ";\
 	}
 
 	class ComplexType

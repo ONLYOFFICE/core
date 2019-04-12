@@ -131,7 +131,7 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::CSelType<>>				m_oSelType;
 			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>	m_oTextHAlign;
 			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>	m_oTextVAlign;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oVal;
+			nullable_int												m_oVal;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oWidthMin;
 			nullable<SimpleTypes::Spreadsheet::CEditValidation<>>		m_oEditVal;
 			nullable_string		m_oFmlaGroup;
@@ -152,6 +152,10 @@ namespace OOX
 
 			nullable<CListItems>							m_oItemLst;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+//---------------------
+			nullable_string									m_oText;
+			nullable<SimpleTypes::CColorType<>>				m_oFillColor;
+			nullable<SimpleTypes::CColorType<>>				m_oBorderColor;
 		};
 //------------------------------------------------------------------------------------
 		class CControlPr : public WritingElement

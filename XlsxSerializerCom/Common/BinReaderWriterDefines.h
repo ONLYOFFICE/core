@@ -464,9 +464,10 @@ namespace BinXlsxRW
 		MultiLine = 50,
 		VerticalBar = 51,
 		PasswordEdit = 52,
-		Print = 53,
-		ItemLst = 54,
-		Item = 55
+		Text = 53,
+		Print = 54,
+		ItemLst = 55,
+		Item = 56
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{

@@ -313,7 +313,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
 				if (!fill) break;
 				
-				std::wstring srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
+				std::wstring srId = fill->m_sId.IsInit() ? *fill->m_sId : L"" ;
 
 				if (srId.empty() && fill->m_rId.IsInit())
                     srId =  fill->m_rId->GetValue();
@@ -402,7 +402,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
 				if (!image_data) break;
 
-				std::wstring srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
+				std::wstring srId = image_data->m_oId.IsInit() ? *image_data->m_oId : L"" ;
 
 				if (srId.empty())
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : L"" ;

@@ -4113,14 +4113,12 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		if (false == pFileControl.IsInit()) continue;
 		
 		bool bSetAnchor = false;
-		bool bFormControlPr = false;
 
 		smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pFileCtrlProp = pFileControl.smart_dynamic_cast<OOX::Spreadsheet::CCtrlPropFile>();
 		
 		if (pFileCtrlProp.IsInit())
 		{
 			oFormControlPr = pFileCtrlProp->m_oFormControlPr;
-			bFormControlPr = true;
 		}
 		else
 		{
@@ -4190,7 +4188,7 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
 			{
 				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
-				if(OOX::et_v_ClientData == pChildElemShape->getType())
+				if (OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 
@@ -4199,17 +4197,18 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 						pClientData->toCellAnchor(oCellAnchor.GetPointer());
 						bSetAnchor = true;
 					}
-					if (!bFormControlPr)
-					{
-						if (pClientData->m_oFmlaLink.IsInit()) oFormControlPr->m_oFmlaLink = *pClientData->m_oFmlaLink;
-						if (pClientData->m_oFmlaRange.IsInit()) oFormControlPr->m_oFmlaRange = *pClientData->m_oFmlaRange;
-						bFormControlPr = true;
-					}
+					pClientData->toFormControlPr(oFormControlPr.GetPointer());
+				}
+				else if (OOX::et_v_textbox == pChildElemShape->getType())
+				{
+					OOX::Vml::CTextbox* pTextbox = static_cast<OOX::Vml::CTextbox*>(pChildElemShape);
+
+					oFormControlPr->m_oText = pTextbox->m_oText;
 				}
 			}	
 		}
 
-		if (!bSetAnchor || !bFormControlPr)
+		if (!bSetAnchor)
 		{
 			continue;
 		}
@@ -4396,7 +4395,7 @@ void BinaryWorksheetTableWriter::WriteControlPr(OOX::Spreadsheet::CControlPr* pC
 	if (pFormControlPr->m_oVal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::Val);
-		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oVal->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*pFormControlPr->m_oVal);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (pFormControlPr->m_oWidthMin.IsInit())
@@ -4475,6 +4474,12 @@ void BinaryWorksheetTableWriter::WriteControlPr(OOX::Spreadsheet::CControlPr* pC
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::PasswordEdit);
 		m_oBcw.m_oStream.WriteBOOL(*pFormControlPr->m_oPasswordEdit);
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (pFormControlPr->m_oText.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::Text);
+		m_oBcw.m_oStream.WriteStringW(*pFormControlPr->m_oText);
+
 	}
 	if(pFormControlPr->m_oItemLst.IsInit())
 	{

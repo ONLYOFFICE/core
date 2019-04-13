@@ -3213,8 +3213,8 @@ namespace SimpleTypes
 			double m_dValue;
 			CDoubleOrAutomatic() : m_dValue(0){}
 			
-			CDoubleOrAutomatic(const double & val) : m_dValue(val), this->m_eValue(typeDouble) {}			
-			CDoubleOrAutomatic(const EDoubleOrAutomatic & val) : this->m_eValue(val), m_dValue(0) {}
+            CDoubleOrAutomatic(const double & val) { m_dValue = val; this->m_eValue = typeDouble; }
+            CDoubleOrAutomatic(const EDoubleOrAutomatic & val) { this->m_eValue = val; m_dValue = 0; }
 
             virtual EDoubleOrAutomatic FromString(std::wstring &sValue)
 			{

@@ -1680,7 +1680,7 @@ namespace OOX
 		public:
 			nullable_string											m_oId;
 			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
-			SimpleTypes::Vml::CVml_TextBoxInset						m_oInset;
+			nullable<SimpleTypes::Vml::CVml_TextBoxInset>			m_oInset;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oSingleClick;
 			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>	m_oInsetMode;
 

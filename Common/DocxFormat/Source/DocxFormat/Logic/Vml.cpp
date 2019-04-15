@@ -1438,7 +1438,10 @@ namespace OOX
 			ComplexTypes_WriteAttribute3(L"id=\"",    m_oId );
 			ComplexTypes_WriteAttribute (L"style=\"", m_oStyle );
 
-			sResult += L"inset=\"" + m_oInset.ToString() + L"\" ";
+			if (m_oInset.IsInit())
+			{
+				sResult += L"inset=\"" + m_oInset->ToString() + L"\" ";
+			}
 
 			if ( SimpleTypes::booleanFalse != m_oSingleClick.GetValue() )
 				sResult += L"o:singleclick=\"true\" ";
@@ -1463,7 +1466,8 @@ namespace OOX
 		void CTextbox::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			// Выставляем значения по умолчанию
-			m_oInset.Set(7.2, 3.6, 7.2, 3.6 );
+			m_oInset.Init();
+			m_oInset->Set(7.2, 3.6, 7.2, 3.6 );
 			
 			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )

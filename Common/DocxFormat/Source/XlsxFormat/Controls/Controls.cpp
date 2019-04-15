@@ -347,7 +347,6 @@ namespace Spreadsheet
 		writer.WriteString(L"<formControlPr xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
 
 		WritingStringNullableAttrBool2(L"firstButton",		m_oFirstButton);
-		WritingStringNullableAttrInt(L"dropLines",			m_oDropLines, m_oDropLines->GetValue());
 		WritingStringNullableAttrString(L"objectType",		m_oObjectType, m_oObjectType->ToString());
 		WritingStringNullableAttrString(L"checked",			m_oChecked, m_oChecked->ToString());
 		WritingStringNullableAttrString(L"dropStyle",		m_oDropStyle, m_oDropStyle->ToString());

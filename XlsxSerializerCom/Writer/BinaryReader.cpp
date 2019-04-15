@@ -5151,7 +5151,7 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 	}
 	else if(c_oSerControlTypes::Inc == type)
 	{
-		pControl->m_oFormControlPr->m_oInc->SetValue(m_oBufferedStream.GetULong());
+		pControl->m_oFormControlPr->m_oInc = m_oBufferedStream.GetULong();
 	}
 	else if(c_oSerControlTypes::JustLastX == type)
 	{
@@ -5337,8 +5337,15 @@ std::wstring BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	oClientData.m_oFmlaTxbx = pControl->m_oFormControlPr->m_oFmlaTxbx;
 	oClientData.m_oFmlaGroup = pControl->m_oFormControlPr->m_oFmlaGroup;
 
-	std::wstring result = L"<v:shape id=\"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
-	result += L"\" type=\"#_x0000_t201\" style='position:absolute' filled=\"f\" fillcolor=\"window [65]\" stroked=\"f\" strokecolor=\"windowText [64]\" o:insetmode=\"auto\">";
+	std::wstring result = L"<v:shape type=\"#_x0000_t201\" id=\"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue()) + L"\"";
+	result += L" style='position:absolute' stroked=\"f\" strokecolor=\"windowText [64]\" o:insetmode=\"auto\"";
+	result += L" filled=\"f\" fillcolor=\"window [65]\"";
+	
+	if (objectType == SimpleTypes::Vml::vmlclientdataobjecttypeButton)
+	{
+		result += L" o:button=\"t\"";
+	}
+	result += L">";
 	result += L"<o:lock v:ext=\"edit\" rotation=\"t\" text=\"t\"/>";
 
 	result += oClientData.toXML();

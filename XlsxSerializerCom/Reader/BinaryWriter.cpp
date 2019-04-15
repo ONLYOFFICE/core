@@ -4323,7 +4323,7 @@ void BinaryWorksheetTableWriter::WriteControlPr(OOX::Spreadsheet::CControlPr* pC
 	if (pFormControlPr->m_oDropLines.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::DropLines);
-		m_oBcw.m_oStream.WriteBYTE(pFormControlPr->m_oDropLines->GetValue());
+		m_oBcw.m_oStream.WriteLONG(pFormControlPr->m_oDropLines->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (pFormControlPr->m_oChecked.IsInit())

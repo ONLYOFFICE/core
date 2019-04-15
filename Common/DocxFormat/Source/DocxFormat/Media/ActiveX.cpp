@@ -356,6 +356,8 @@ namespace OOX
 		bool fTakeFocusOnClick		= GETBIT(PropMask, 9);
 		bool fMouseIcon				= GETBIT(PropMask, 10);
 
+		m_oLockText = true;
+
 		bool bCaptionCompressed = false;
 		int sizeCaption = 0;
 		int size_picture = 0, pos_picture = 0;

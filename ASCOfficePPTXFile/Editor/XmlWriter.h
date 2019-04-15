@@ -261,9 +261,10 @@ namespace NSBinPptxRW
 
         LONG m_lFlag;
         LONG m_lGroupIndex;
-        LONG m_lObjectId;
-        LONG m_lObjectIdVML;
-        LONG m_lObjectIdOle;
+
+        unsigned int m_lObjectId;
+        unsigned int m_lObjectIdVML;
+        unsigned int m_lObjectIdOle;
 
         std::wstring m_strStyleMain;
         std::wstring m_strAttributesMain;

@@ -251,7 +251,7 @@ namespace BinXlsxRW
 		NSCommon::smart_ptr<OOX::Spreadsheet::COleObjects>	m_pCurOleObjects;
         NSCommon::smart_ptr<OOX::CVmlDrawing>				m_pCurVmlDrawing;
 		
-		long								m_lObjectIdVML;
+        unsigned int						m_lObjectIdVML;
 
         const std::wstring&					m_sDestinationDir;
         const std::wstring&					m_sMediaDir;

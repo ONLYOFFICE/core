@@ -885,7 +885,8 @@ bool odf_drawing_context::change_text_box_2_wordart()
 			draw_base* draw_old = dynamic_cast<draw_base*>(impl_->current_level_[sz - 1].get());
 			if (draw_old)
 			{
-				draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
+				if (draw_old->content_.size() > 1)
+					draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
 			}
 		}
 	//----------------------------------------------

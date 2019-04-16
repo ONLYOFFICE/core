@@ -874,8 +874,10 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 {
 	if (formula.empty())return;
 
+	ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
+	
 	//test external link
-	bool bExternal = true;
+	bool bExternal = !ods_context->externals_.empty();
 	boost::wregex re(L"([\[]\\d+[\]])+");
 
 	while(bExternal)
@@ -884,10 +886,11 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 		bExternal = boost::regex_search(formula, result, re);
 		if (!bExternal) break;
 
-		ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 		
 		std::wstring refExternal = result[1].str();
 		int idExternal = XmlUtils::GetInteger(refExternal.substr(1, refExternal.length() - 1)) - 1;
+
+		bExternal = idExternal >= 0 && idExternal < ods_context->externals_.size();
 
 		while(idExternal >= 0 && idExternal < ods_context->externals_.size())
 		{

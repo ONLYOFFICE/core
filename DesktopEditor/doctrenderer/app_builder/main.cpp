@@ -35,7 +35,7 @@
 #include "../../common/File.h"
 
 #ifdef LINUX
-#include "../../../core/DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/File.h"
 #endif
 
 #include <iostream>

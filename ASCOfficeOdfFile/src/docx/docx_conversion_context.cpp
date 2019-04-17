@@ -143,7 +143,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	text_tracked_context_		(*this),
 	table_context_				(*this),
 	output_document_			(NULL),
-	process_note_				(noNote),
+	current_process_note_		(noNote),
 	new_list_style_number_		(0),
 	current_margin_left_		(0),
 	current_outline_level_		(-1),
@@ -151,7 +151,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	is_delete_text_				(false),
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
-	process_comment_			(false),
+	current_process_comment_	(false),
 	mediaitems_					(OdfDocument->get_folder() ),
 	math_context_				(OdfDocument->odf_context().fontContainer(), false),
 	odf_document_				(OdfDocument)
@@ -619,9 +619,9 @@ std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, b
 {
 	hyperlinks::_type_place type = hyperlinks::document_place;
 	
-	if (process_comment_ == true)											type = hyperlinks::comment_place;
-	else if	(process_note_ == footNote	|| process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
-	else if	(process_note_ == endNote	|| process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
+		 if (current_process_comment_ == true)												type = hyperlinks::comment_place;
+	else if	(current_process_note_ == footNote	|| current_process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
+	else if	(current_process_note_ == endNote	|| current_process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
     XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
@@ -1566,6 +1566,9 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_)
             )
         {
+			double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+			if (font_size > 0) current_fontSize.push_back(font_size);
+
             process_page_break_after(styleInst);
 
 			if (styleInst->is_automatic())
@@ -1938,12 +1941,12 @@ void notes_context::dump_rels(rels & Rels) const
 
 void docx_conversion_context::add_note_reference ()
 {
-    if (process_note_ == footNote || process_note_ ==  endNote)
+    if (current_process_note_ == footNote || current_process_note_ ==  endNote)
     {
         add_element_to_run(_T(""));
-        output_stream() << ((process_note_ == footNote) ? L"<w:footnoteRef />" : L"<w:endnoteRef />");
+        output_stream() << ((current_process_note_ == footNote) ? L"<w:footnoteRef />" : L"<w:endnoteRef />");
         finish_run();
-        process_note_ = (NoteType) (process_note_ + 1); //add ref set
+        current_process_note_ = (NoteType) (current_process_note_ + 1); //add ref set
     }
 }
 
@@ -1992,7 +1995,7 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 void docx_conversion_context::start_changes()
 {
 	if (map_current_changes_.empty()) return;
-	if (process_comment_) return;
+	if (current_process_comment_) return;
 
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
@@ -2091,7 +2094,7 @@ void docx_conversion_context::start_changes()
 
 void docx_conversion_context::end_changes()
 {
-	if (process_comment_) return;
+	if (current_process_comment_) return;
 
 	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); ++it)
 	{

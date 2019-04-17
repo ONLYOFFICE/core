@@ -90,11 +90,9 @@ public:
    
 	int process_font_size	(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
 
-private:
     static double	process_font_size_impl	(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
     static int		process_font_weight		(const _CP_OPT(odf_types::font_weight) & FontWeight);
     static int		process_font_style		(const _CP_OPT(odf_types::font_style) & FontStyle);
-public:
 
     _CP_OPT(std::wstring)					r_style_;
     _CP_OPT(odf_types::font_variant)		fo_font_variant_;    

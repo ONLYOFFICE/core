@@ -104,7 +104,7 @@ TARGETS += $(VIDEOPLAYERLIB)
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
 ALLFONTSGEN_PRO := $(abspath DesktopEditor/AllFontsGen/AllFontsGen.pro)
-DOCBUILDER_PRO := $(abspath ../core-ext/docbuilder/test_builder/docbuilder.pro)
+DOCBUILDER_PRO := $(abspath DesktopEditor/doctrenderer/app_builder/docbuilder.pro)
 PDFWRITER_PRO := $(abspath PdfWriter/PdfWriter.pro)
 GRAPHICS_PRO := $(abspath DesktopEditor/graphics/pro/graphics.pro)
 DOCTRENDERER_PRO := $(abspath DesktopEditor/doctrenderer/doctrenderer.pro)
@@ -120,7 +120,8 @@ OOXMLSIGNATURE_PRO := $(abspath DesktopEditor/xmlsec/src/ooxmlsignature.pro)
 HUNSPELL_PRO := $(abspath DesktopEditor/hunspell-1.3.3/src/qt/hunspell.pro)
 KERNEL_PRO := $(abspath Common/kernel.pro)
 CRYPTOPP_PRO := $(abspath Common/3dParty/cryptopp/project/cryptopp.pro)
-VIDEOPLAYERLIB_PRO := $(abspath ../core-ext/multimedia/videoplayer/lib/VideoPlayerLib.pro)
+#VIDEOPLAYERLIB_PRO := $(abspath ../core-ext/multimedia/videoplayer/lib/VideoPlayerLib.pro)
+VIDEOPLAYERLIB_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/videoplayerlib/videoplayerlib.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -270,7 +271,7 @@ all: $(CORE_TARGET)
 
 ext: $(EXT_TARGET)
 
-desktop: $(ASCDOCUMENTSCORE)
+desktop: $(ASCDOCUMENTSCORE) $(VIDEOPLAYERLIB)
 
 video: $(VIDEOPLAYERLIB) 
 

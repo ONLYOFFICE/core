@@ -1204,7 +1204,10 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         double fontSizeVal = (fo_font_size_) ? process_font_size_impl(fo_font_size_, Context.get_styles_context().get_current_processed_style()) :
             process_font_size_impl(font_size(percent(100.0)), Context.get_styles_context().get_current_processed_style());
 
-        if (style_text_position_->get_type() == text_position::Percent)
+		if (fontSizeVal <= 0)
+			fontSizeVal = Context.get_current_fontSize();
+      
+		if (style_text_position_->get_type() == text_position::Percent)
         {
             const double mul = style_text_position_->get_position().get_value() / 100.0;
             if (fontSizeVal > 0)

@@ -524,7 +524,11 @@ extern int g_nCurFormatVersion;
 		Sdt = 10,
 		BookmarkStart = 11,
 		BookmarkEnd = 12,
-		tblGrid_ItemTwips = 13
+		tblGrid_ItemTwips = 13,
+		MoveFromRangeStart = 14,
+		MoveFromRangeEnd = 15,
+		MoveToRangeStart = 16,
+		MoveToRangeEnd = 17
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -979,7 +983,11 @@ extern int g_nCurFormatVersion;
 		columnbreak = 64,
 		ARPr = 65,
 		BookmarkStart = 66,
-		BookmarkEnd = 67
+		BookmarkEnd = 67,
+		MoveFromRangeStart = 68,
+		MoveFromRangeEnd = 69,
+		MoveToRangeStart = 70,
+		MoveToRangeEnd = 71
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		

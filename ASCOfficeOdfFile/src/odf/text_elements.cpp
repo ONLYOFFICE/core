@@ -370,7 +370,9 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     if (textStyle > 0)
 	{
 		is_empty = false;
-        if (textStyle==1) Context.pop_text_properties();
+        if (textStyle == 1) Context.pop_text_properties();
+		
+		Context.pop_current_fontSize();
 	}
 
     Context.finish_run();

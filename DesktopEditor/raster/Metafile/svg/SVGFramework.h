@@ -5109,36 +5109,36 @@ namespace SVG
 			m_CSS	=	css;
 		}
 
-		BOOL Draw(IRefStorage* model, IAVSRenderer* render, const UnitSystem& oUs);
+        bool Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs);
 
 	private:
 
-		BOOL DrawLine (Line* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawRectangle (Rectangle* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawCircle (Circle* element,const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawEllipse (Ellipse* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawPolyline (Polyline* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawPolygon (Polygon* element, const Style& oStyle, const CString& strClassName = _T(""));		
-		BOOL DrawPath (Path* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawText (Text* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawImage (Image* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawUse (Use* element, const Style& oStyle, const CString& strClassName = _T(""));
+        bool DrawLine (Line* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawRectangle (Rectangle* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawCircle (Circle* element,const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawEllipse (Ellipse* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawPolyline (Polyline* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawPolygon (Polygon* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawPath (Path* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawText (Text* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawImage (Image* element, const Style& oStyle, const std::wstring& strClassName = L"");
+        bool DrawUse (Use* element, const Style& oStyle, const std::wstring& strClassName = L"");
 
-		BOOL DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform = Matrix(), const Point& off = Point());
-		BOOL DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform = Matrix(), const Point& off = Point());
-		BOOL DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle);
+        bool DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform = Matrix(), const Point& off = Point());
+        bool DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform = Matrix(), const Point& off = Point());
+        bool DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle);
 
-		BOOL SetBrushStyle (const Style& style, const CString& strClassName = _T(""));
-		BOOL SetStrokeStyle (const Style& style, const CString& strClassName = _T(""));
+        bool SetBrushStyle (const Style& style, const std::wstring& strClassName = L"");
+        bool SetStrokeStyle (const Style& style, const std::wstring& strClassName = L"");
 
 		// commands only
 
-		void DoRectangle(Rectangle* element, long type, BOOL clipMode = FALSE);
-		void DoCircle(Circle* element, long type, BOOL clipMode = FALSE);
-		void DoEllipse(Ellipse* element, long type, BOOL clipMode = FALSE);
-		void DoPolyline(Polyline* element, long type, BOOL clipMode = FALSE);
-		void DoPolygon(Polygon* element, long type, BOOL clipMode = FALSE);
-		void DoPath(Path* element, long type, BOOL clipMode = FALSE);
+        void DoRectangle(Rectangle* element, long type, BOOL clipMode = false);
+        void DoCircle(Circle* element, long type, BOOL clipMode = false);
+        void DoEllipse(Ellipse* element, long type, BOOL clipMode = false);
+        void DoPolyline(Polyline* element, long type, BOOL clipMode = false);
+        void DoPolygon(Polygon* element, long type, BOOL clipMode = false);
+        void DoPath(Path* element, long type, BOOL clipMode = false);
 
 		// clip 
 		BOOL DoClip(ISvgRef* pRef, BOOL enable);
@@ -5164,12 +5164,12 @@ namespace SVG
 		}
 
 		// image
-		BOOL DrawImageFromFile(Image* element, CString texturePath = L"");
-		BOOL DoPattern(Pattern* element);
+        bool DrawImageFromFile(Image* element, std::wstring texturePath = L"");
+        bool DoPattern(Pattern* element);
 
 		// path
-		BOOL PushPathCommands(Path* element, long PathType);
-		BOOL ClipPathCommands(Path* element, long PathType);
+        bool PushPathCommands(Path* element, long PathType);
+        bool ClipPathCommands(Path* element, long PathType);
 	private:	
 		// for arc render
 		inline BOOL RenderArcAppx(const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)

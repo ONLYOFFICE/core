@@ -1,14 +1,14 @@
 #include "SVGFramework.h"
 
-#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>(_T(##COLOR), ( ##R << 16 ) | ( ##G << 8 ) | ##B );
+#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>(L##COLOR, ( ##R << 16 ) | ( ##G << 8 ) | ##B ));
 
 namespace SVG
 {
 	ColorTable ColorParser::m_oTable;
-    bool ColorTable::InitClrTable()
+    void ColorTable::InitClrTable()
 	{
         if (m_Table.size())
-            return true;
+            return;
 
 		ADD_COLOR("aliceblue", 240, 248, 255);
 		ADD_COLOR("antiquewhite", 250, 235, 215); 
@@ -164,7 +164,7 @@ namespace SVG
     long ColorParser::ColorFromString(const std::wstring& sColor)
 	{
 		// HEX VALUE
-        wchar_t* buf = sColor.c_str();
+        const wchar_t* buf = sColor.c_str();
         size_t len = sColor.length();
 
         std::wstring::size_type index = sColor.find(L"#");
@@ -200,8 +200,8 @@ namespace SVG
         size_t IndS = 0;
         size_t IndCol =	0;
 
-        wchar_t* buf = Rgb.c_str();
-        size_t len = Rgb.length();)
+        const wchar_t* buf = Rgb.c_str();
+        size_t len = Rgb.length();
         for ( size_t i = 0; i < len; ++i )
 		{
             if ( isdigit ( buf [ i ] ) )
@@ -316,7 +316,7 @@ namespace SVG
 
 		return DrawStorage(m_model);
 	}
-	BOOL Painter::DrawLine (Line* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawLine (Line* element, const Style& oStyle, const std::wstring& strClassName)
 	{
 		LONG type = 0;
 		if (SetStrokeStyle(oStyle, strClassName))
@@ -337,11 +337,11 @@ namespace SVG
 			m_render->PathCommandEnd ();
 		}	
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawRectangle (Rectangle* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawRectangle (Rectangle* element, const Style& oStyle, const std::wstring& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);	
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -352,13 +352,13 @@ namespace SVG
 		if (0 != type)
 			DoRectangle (element, type);
 
-		DoClip (element, FALSE);
+        DoClip (element, false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawCircle (Circle* element,const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawCircle (Circle* element,const Style& oStyle, const std::wstring& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -369,13 +369,13 @@ namespace SVG
 		if (0 != type)	
 			DoCircle (element, type);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawEllipse (Ellipse* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawEllipse (Ellipse* element, const Style& oStyle, const std::wstring& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -386,13 +386,13 @@ namespace SVG
 		if (0 != type)	
 			DoEllipse (element, type);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawPolyline (Polyline* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawPolyline (Polyline* element, const Style& oStyle, const std::wstring& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -405,13 +405,13 @@ namespace SVG
 			DoPolyline (element, type);
 		}
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawPolygon (Polygon* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawPolygon (Polygon* element, const Style& oStyle, const std::wstring& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -424,13 +424,13 @@ namespace SVG
 			DoPolygon (element, type);
 		}
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}		
-	BOOL Painter::DrawPath (Path* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawPath (Path* element, const Style& oStyle, const std::wstring& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG lType = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -441,20 +441,20 @@ namespace SVG
 		if (0 != lType)
 			PushPathCommands (element, lType);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawText (Text* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawText (Text* element, const Style& oStyle, const std::wstring& strClassName)
 	{
 		if (!m_bEnableFonts)
-			return FALSE;
+            return false;
 
 		IAVSFontManager* fontManager = GetFontManager();
 		if (NULL == fontManager)
 			return FALSE;
 
-		BOOL clipOn = DoClip (element->GetClip(), TRUE);			
+        bool clipOn = DoClip (element->GetClip(), true);
 
 		SetBrushStyle (oStyle, strClassName);
 
@@ -557,13 +557,13 @@ namespace SVG
 
 		return TRUE;
 	}
-	BOOL Painter::DrawImage (Image* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawImage (Image* element, const Style& oStyle, const std::wstring& strClassName)
 	{
-		if (element->GetXLink().GetLength())
+        if (!element->GetXLink().empty())
 		{	
 			DrawImageFromFile (element, element->LivePath(m_sWorkingDirectory));					
 		}
-		else if (element->m_ImagePath.GetLength())
+        else if (!element->m_ImagePath.empty())
 		{
 			DrawImageFromFile (element);			
 		}
@@ -581,9 +581,9 @@ namespace SVG
 
 		return TRUE;
 	}
-	BOOL Painter::DrawUse (Use* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawUse (Use* element, const Style& oStyle, const std::wstring& strClassName)
 	{
-		BOOL retVal = FALSE;
+        bool retVal = false;
 
 		element->RefreshXLinkSource (m_model);
 
@@ -605,7 +605,7 @@ namespace SVG
 				Symbol* pSymbol = dynamic_cast<Symbol*>(refLink);
 				if (pSymbol)
 				{
-					BOOL bStatus = FALSE;
+                    BOOL bStatus = false;
 					for (long i = 0; i < pSymbol->GetCount(); ++i)
 					{
 						DrawElement* pContent = pSymbol->GetAt(i);
@@ -621,7 +621,7 @@ namespace SVG
 				DrawElement* drawElement = dynamic_cast<DrawElement*>(refLink);
 				if (drawElement)
 				{					
-					m_transforms.Push(element->GetTransform(), FALSE);
+                    m_transforms.Push(element->GetTransform(), false);
 
 					Matrix local = m_transforms.GetFinal();
 					retVal = DrawInternal (drawElement, local, element->GetFrom(), element->GetStyle());
@@ -635,15 +635,15 @@ namespace SVG
 	}
 
 	//
-	BOOL Painter::DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform, const Point& off)
+    bool Painter::DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform, const Point& off)
 	{
 		if (pStorage)
 		{
 			int count = pStorage->GetSize();
 			if (0 == count)
-				return FALSE;
+                return false;
 
-			m_transforms.Push(parentTransform.Copy().Move(off.X, off.Y), FALSE);
+            m_transforms.Push(parentTransform.Copy().Move(off.X, off.Y), false);
 			for (int i = 0; i < count; ++i)
 			{
 				DrawElement* pE = static_cast<DrawElement*>(pStorage->Get(i));
@@ -653,7 +653,7 @@ namespace SVG
 					if (EClipPath == code)
 						continue;
 
-					const CString& css		=	pE->ClassName();
+                    const std::wstring& css	=	pE->ClassName();
 					Style oStyle			=	pE->GetStyle();						
 					oStyle					=	ComposeStyles(pE, oStyle);
 
@@ -685,19 +685,19 @@ namespace SVG
 			m_transforms.Pop();
 		}
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform, const Point& off)
+    bool Painter::DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform, const Point& off)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		BOOL ret = DrawStorage (element, parentTransform, off);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
 		return ret;
 	}
-	BOOL Painter::DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle)
+    bool Painter::DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle)
 	{
 		Matrix mat = parentTransform;						
 		mat *=	Matrix::TranslateTransform(off.X, off.Y);
@@ -711,59 +711,59 @@ namespace SVG
 		Style::UpdateValidateAttributes (oMainStyle, oStyle);
 		oStyle			=	ComposeStyles(pE, oStyle);
 
-		const CString& strClass = pE->ClassName();
+        const std::wstring& strClass = pE->ClassName();
 		ENodeType code	=	pE->nodeType();
 
 		if (ERectangle == code)
 		{
-			DrawRectangle(static_cast<Rectangle*>(pE),oStyle,strClass);			return TRUE;
+            DrawRectangle(static_cast<Rectangle*>(pE),oStyle,strClass);			return true;
 		}
 		else if (ELine == code)
 		{
-			DrawLine(static_cast<Line*>(pE),oStyle,strClass);					return TRUE;
+            DrawLine(static_cast<Line*>(pE),oStyle,strClass);					return true;
 		}
 		else if (EEllipse == code)
 		{
-			DrawEllipse(static_cast<Ellipse*>(pE),oStyle,strClass);				return TRUE;
+            DrawEllipse(static_cast<Ellipse*>(pE),oStyle,strClass);				return true;
 		}
 		else if (ECircle == code)
 		{
-			DrawCircle(static_cast<Circle*>(pE),oStyle,strClass);				return TRUE;
+            DrawCircle(static_cast<Circle*>(pE),oStyle,strClass);				return true;
 		}
 		else if (EPath == code)
 		{
-			DrawPath(static_cast<Path*>(pE),oStyle,strClass);					return TRUE;
+            DrawPath(static_cast<Path*>(pE),oStyle,strClass);					return true;
 		}
 		else if (EPolyline == code)
 		{
-			DrawPolyline(static_cast<Polyline*>(pE),oStyle,strClass);			return TRUE;
+            DrawPolyline(static_cast<Polyline*>(pE),oStyle,strClass);			return true;
 		}
 		else if (EPolygon == code)
 		{
-			DrawPolygon(static_cast<Polygon*>(pE),oStyle,strClass);				return TRUE;
+            DrawPolygon(static_cast<Polygon*>(pE),oStyle,strClass);				return true;
 		}
 		else if (EText == code)
 		{
-			DrawText(static_cast<Text*>(pE),oStyle,strClass);					return TRUE;
+            DrawText(static_cast<Text*>(pE),oStyle,strClass);					return true;
 		}
 		else if (EImage == code)
 		{
-			DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return TRUE;
+            DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return true;
 		}
 		else if (EUse == code)
 		{
-			DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return TRUE;
+            DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return true;
 		}
 
-		return FALSE;
+        return false;
 	}
 
-	BOOL Painter::PushPathCommands (Path* element, long PathType)
+    bool Painter::PushPathCommands (Path* element, long PathType)
 	{
 		m_render->PathCommandStart();
 		m_render->BeginCommand ( c_nPathType );
 
-		BOOL SegmentEnd	=	TRUE;
+        BOOL SegmentEnd	=	true;
 		Point lastMove;
 
 		Point LastPoint;
@@ -773,13 +773,13 @@ namespace SVG
 #ifdef _DEBUG
 			WCHAR Code = element->GetCode(i);
 #endif
-			if (_T('Z') == element->GetCode(i) || _T('z') == element->GetCode(i))
+            if ('Z' == element->GetCode(i) || 'z' == element->GetCode(i))
 			{
 				m_render->PathCommandClose();
 
-				SegmentEnd	=	TRUE;
+                SegmentEnd	=	true;
 			}
-			else if (_T('m') == element->GetCode(i))
+            else if ('m' == element->GetCode(i))
 			{
 				if (0 == i)
 				{					
@@ -799,7 +799,7 @@ namespace SVG
 					lastMove	=	LastPoint;
 				}
 			}
-			else if (_T('M') == element->GetCode(i))
+            else if ('M' == element->GetCode(i))
 			{
 				m_render->PathCommandMoveTo(element->GetX(i), element->GetY(i));
 				LastPoint	=	element->Get(i);
@@ -807,40 +807,40 @@ namespace SVG
 				lastMove	=	LastPoint;
 			}
 			// lines
-			else if (_T('l') == element->GetCode(i))
+            else if ('l' == element->GetCode(i))
 			{
 				m_render->PathCommandLineTo(element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y);
 				LastPoint	+=	element->Get(i);
 			}
-			else if (_T('L') == element->GetCode(i))
+            else if ('L' == element->GetCode(i))
 			{
 				m_render->PathCommandLineTo(element->GetX(i), element->GetY(i));
 				LastPoint	=	element->Get(i);
 			}
 			// Horizontal
-			else if (_T('h') == element->GetCode(i))
+            else if ('h' == element->GetCode(i))
 			{
 				m_render->PathCommandLineTo(element->GetX(i) + LastPoint.X, LastPoint.Y);
 				LastPoint.X	+=	element->Get(i).X;
 			}
-			else if (_T('H') == element->GetCode(i))
+            else if ('H' == element->GetCode(i))
 			{
 				m_render->PathCommandLineTo(element->GetX(i), LastPoint.Y);
 				LastPoint.X	=	element->Get(i).X;
 			}
 			// Vertical
-			else if (_T('v') == element->GetCode(i))
+            else if ('v' == element->GetCode(i))
 			{
 				m_render->PathCommandLineTo(LastPoint.X, element->GetY(i) + LastPoint.Y);
 				LastPoint.Y	+=	element->Get(i).Y;
 			}
-			else if (_T('V') == element->GetCode(i))
+            else if ('V' == element->GetCode(i))
 			{
 				m_render->PathCommandLineTo(LastPoint.X, element->GetY(i));
 				LastPoint.Y	=	element->Get(i).Y;
 			}
 			// elliptical arc curve
-			else if (_T('a') == element->GetCode(i))
+            else if ('a' == element->GetCode(i))
 			{
 				int	LargeFlag		=	static_cast<int> ( element->GetY ( i + 1 ) );
 				int	SweepFlag		=	static_cast<int> ( element->GetX ( i + 2 ) );					
@@ -866,7 +866,7 @@ namespace SVG
 					i += 3;
 				}
 			}
-			else if ( _T('A') == element->GetCode (i) )
+            else if ( 'A' == element->GetCode (i) )
 			{
 				int	LargeFlag		=	static_cast<int> ( element->GetY ( i + 1 ) );
 				int	SweepFlag		=	static_cast<int> ( element->GetX ( i + 2 ) );					
@@ -893,7 +893,7 @@ namespace SVG
 				i += 3;
 			}
 			// cubic bezier
-			else  if ( _T('C') == element->GetCode (i) )
+            else  if ( 'C' == element->GetCode (i) )
 			{
 				m_render->PathCommandCurveTo ( element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1), 
 					element->GetX(i+2), element->GetY(i+2) );
@@ -903,7 +903,7 @@ namespace SVG
 				++i;
 				++i;
 			}
-			else if ( _T('c') == element->GetCode (i) )
+            else if ( 'c' == element->GetCode (i) )
 			{
 				m_render->PathCommandCurveTo ( element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y,
 					element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y,
@@ -914,9 +914,9 @@ namespace SVG
 				++i;
 				++i;
 			}
-			else if ( _T('S') == element->GetCode (i) )
+            else if ( 'S' == element->GetCode (i) )
 			{
-				if ( _T('C') == element->GetCode ( i - 1 ) )
+                if ( 'C' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -926,7 +926,7 @@ namespace SVG
 
 					m_render->PathCommandCurveTo ( dX, dY, element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1) );
 				}
-				else if ( _T('c') == element->GetCode ( i - 1 ) )
+                else if ( 'c' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -936,7 +936,7 @@ namespace SVG
 
 					m_render->PathCommandCurveTo ( dX, dY, element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1) );
 				}
-				else if ( _T('S') == element->GetCode ( i - 1 ) )
+                else if ( 'S' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -946,7 +946,7 @@ namespace SVG
 
 					m_render->PathCommandCurveTo ( dX, dY, element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1) );
 				}
-				else if ( _T('s') == element->GetCode ( i - 1 ) )
+                else if ( 's' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -964,9 +964,9 @@ namespace SVG
 				LastPoint	=	element->Get(i+1);							
 				++i;
 			}
-			else if ( _T('s') == element->GetCode (i) )
+            else if ( 's' == element->GetCode (i) )
 			{
-				if ( _T('C') == element->GetCode ( i - 1 ) )
+                if ( 'C' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -976,7 +976,7 @@ namespace SVG
 
 					m_render->PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if ( _T('c') == element->GetCode ( i - 1 ) )
+                else if ( 'c' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -986,7 +986,7 @@ namespace SVG
 
 					m_render->PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if ( _T('S') == element->GetCode ( i - 1 ) )
+                else if ( 'S' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -996,7 +996,7 @@ namespace SVG
 
 					m_render->PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if ( _T('s') == element->GetCode ( i - 1 ) )
+                else if ( 's' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1006,10 +1006,10 @@ namespace SVG
 
 					m_render->PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if (_T('m') == element->GetCode(i - 1) 
-					|| _T('l') == element->GetCode(i - 1)
-					|| _T('v') == element->GetCode(i - 1)
-					||_T('h') == element->GetCode(i - 1))
+                else if ('m' == element->GetCode(i - 1)
+                    || 'l' == element->GetCode(i - 1)
+                    || 'v' == element->GetCode(i - 1)
+                    || 'h' == element->GetCode(i - 1))
 				{
 					m_render->PathCommandCurveTo(LastPoint.X, LastPoint.Y,
 						element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y,
@@ -1024,7 +1024,7 @@ namespace SVG
 				++i;
 			}
 			// quadratic bezier
-			else if ( _T('q') == element->GetCode(i))
+            else if ( 'q' == element->GetCode(i))
 			{
 				m_render->PathCommandCurveTo ( element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y,
 					element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y,
@@ -1034,7 +1034,7 @@ namespace SVG
 
 				++i;
 			}
-			else if ( _T('Q') == element->GetCode (i) )
+            else if ( 'Q' == element->GetCode (i) )
 			{
 				m_render->PathCommandCurveTo ( element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1), element->GetX(i+1), element->GetY(i+1) );
 
@@ -1042,20 +1042,20 @@ namespace SVG
 
 				++i;
 			}
-			else if ( _T('t') == element->GetCode (i) )
+            else if ( 't' == element->GetCode (i) )
 			{
 				Point p1 = oPath.GetPoints()[ i - 1 ].oPoint;
 				Point p2 = oPath.GetPoints()[ i - 2 ].oPoint;
 				Point p3 = oPath.GetPoints()[ i	+ 0	].oPoint;
 
-				if ( _T('Q') == element->GetCode ( i - 1 ) )
+                if ( 'Q' == element->GetCode ( i - 1 ) )
 				{
 					double dX	=	p1.X - ( p2.X - p1.X );
 					double dY	=	p1.Y - ( p2.Y - p1.Y );
 
 					m_render->PathCommandCurveTo ( dX, dY, p3.X + LastPoint.X, p3.Y + LastPoint.Y, p3.X + LastPoint.X, p3.Y + LastPoint.Y );
 				}
-				else if ( _T('q') == element->GetCode ( i - 1 ) )
+                else if ( 'q' == element->GetCode ( i - 1 ) )
 				{
 					p1 = Point ( LastPoint.X, LastPoint.Y );
 					p2 = Point ( p1.X - element->GetX(i-1) + element->GetX(i-2), p1.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1072,20 +1072,20 @@ namespace SVG
 
 				LastPoint	+=	element->Get(i);							
 			}
-			else if ( _T('T') == element->GetCode (i) )
+            else if ( 'T' == element->GetCode (i) )
 			{
 				Point p1 = oPath.GetPoints()[ i - 1 ].oPoint;
 				Point p2 = oPath.GetPoints()[ i - 2 ].oPoint;
 				Point p3 = oPath.GetPoints()[ i + 0 ].oPoint;
 
-				if ( _T('Q') == element->GetCode ( i - 1 ) )
+                if ( 'Q' == element->GetCode ( i - 1 ) )
 				{
 					double dX	=	p1.X - ( p2.X - p1.X );
 					double dY	=	p1.Y - ( p2.Y - p1.Y );
 
 					m_render->PathCommandCurveTo ( dX, dY, p3.X, p3.Y, p3.X, p3.Y );
 				}
-				else if ( _T('q') == element->GetCode ( i - 1 ) )
+                else if ( 'q' == element->GetCode ( i - 1 ) )
 				{
 					p1 = Point ( LastPoint.X, LastPoint.Y );
 					p2 = Point ( p1.X - element->GetX(i-1) + element->GetX(i-2), p1.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1109,9 +1109,9 @@ namespace SVG
 		m_render->EndCommand(c_nPathType);
 		m_render->PathCommandEnd();
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::ClipPathCommands (Path* element, long PathType)
+    bool Painter::ClipPathCommands (Path* element, long PathType)
 	{
 		Aggplus::CGraphicsPathSimpleConverter simplifier;
 		simplifier.SetRenderer(m_render);
@@ -1127,13 +1127,13 @@ namespace SVG
 #ifdef _DEBUG
 			WCHAR Code = element->GetCode (i);
 #endif
-			if ( _T('Z') == element->GetCode (i) || _T('z') == element->GetCode (i) )
+            if ( 'Z' == element->GetCode (i) || 'z' == element->GetCode (i) )
 			{
 				simplifier.PathCommandClose ();
 
-				SegmentEnd	=	TRUE;
+                SegmentEnd	=	true;
 			}
-			else if ( _T('m') == element->GetCode (i) )
+            else if ( 'm' == element->GetCode (i) )
 			{
 				if (0 == i)
 				{					
@@ -1153,7 +1153,7 @@ namespace SVG
 					lastMove	=	LastPoint;
 				}
 			}
-			else if ( _T('M') == element->GetCode (i) )
+            else if ( 'M' == element->GetCode (i) )
 			{
 				simplifier.PathCommandMoveTo ( element->GetX(i), element->GetY(i) );
 
@@ -1162,7 +1162,7 @@ namespace SVG
 				lastMove	=	LastPoint;
 			}
 			// lines
-			else if ( _T('l') == element->GetCode (i) )
+            else if ( 'l' == element->GetCode (i) )
 			{
 				double X = element->GetX(i);
 				double Y = element->GetY(i);
@@ -1171,40 +1171,40 @@ namespace SVG
 
 				LastPoint	+=	element->Get(i);
 			}
-			else if ( _T('L') == element->GetCode (i) )
+            else if ( 'L' == element->GetCode (i) )
 			{
 				simplifier.PathCommandLineTo ( element->GetX(i), element->GetY(i) );
 
 				LastPoint	=	element->Get(i);
 			}
 			// Horizontal
-			else if ( _T('h') == element->GetCode (i) )
+            else if ( 'h' == element->GetCode (i) )
 			{
 				simplifier.PathCommandLineTo ( element->GetX(i) + LastPoint.X, LastPoint.Y );
 
 				LastPoint.X	+=	element->Get(i).X;
 			}
-			else if ( _T('H') == element->GetCode (i) )
+            else if ( 'H' == element->GetCode (i) )
 			{
 				simplifier.PathCommandLineTo ( element->GetX(i), LastPoint.Y );
 
 				LastPoint.X	=	element->Get(i).X;
 			}
 			// Vertical
-			else if ( _T('v') == element->GetCode (i) )
+            else if ( 'v' == element->GetCode (i) )
 			{
 				simplifier.PathCommandLineTo ( LastPoint.X, element->GetY(i) + LastPoint.Y );
 
 				LastPoint.Y	+=	element->Get(i).Y;
 			}
-			else if ( _T('V') == element->GetCode (i) )
+            else if ( 'V' == element->GetCode (i) )
 			{
 				simplifier.PathCommandLineTo ( LastPoint.X, element->GetY(i) );
 
 				LastPoint.Y	=	element->Get(i).Y;
 			}
 			// elliptical arc curve
-			else if ( _T('a') == element->GetCode (i) )
+            else if ( 'a' == element->GetCode (i) )
 			{
 				int	LargeFlag		=	static_cast<int> ( element->GetY ( i + 1 ) );
 				int	SweepFlag		=	static_cast<int> ( element->GetX ( i + 2 ) );					
@@ -1230,7 +1230,7 @@ namespace SVG
 					i += 3;
 				}
 			}
-			else if ( _T('A') == element->GetCode (i) )
+            else if ( 'A' == element->GetCode (i) )
 			{
 				int	LargeFlag		=	static_cast<int> ( element->GetY ( i + 1 ) );
 				int	SweepFlag		=	static_cast<int> ( element->GetX ( i + 2 ) );					
@@ -1257,7 +1257,7 @@ namespace SVG
 				i += 3;
 			}
 			// cubic bezier
-			else if ( _T('C') == element->GetCode (i) )
+            else if ( 'C' == element->GetCode (i) )
 			{
 				simplifier.PathCommandCurveTo ( element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1), 
 					element->GetX(i+2), element->GetY(i+2) );
@@ -1267,7 +1267,7 @@ namespace SVG
 				++i;
 				++i;
 			}
-			else if ( _T('c') == element->GetCode (i) )
+            else if ( 'c' == element->GetCode (i) )
 			{
 				simplifier.PathCommandCurveTo ( element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y,
 					element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y,
@@ -1278,9 +1278,9 @@ namespace SVG
 				++i;
 				++i;
 			}
-			else if ( _T('S') == element->GetCode (i) )
+            else if ( 'S' == element->GetCode (i) )
 			{
-				if ( _T('C') == element->GetCode ( i - 1 ) )
+                if ( 'C' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -1290,7 +1290,7 @@ namespace SVG
 
 					simplifier.PathCommandCurveTo ( dX, dY, element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1) );
 				}
-				else if ( _T('c') == element->GetCode ( i - 1 ) )
+                else if ( 'c' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1300,7 +1300,7 @@ namespace SVG
 
 					simplifier.PathCommandCurveTo ( dX, dY, element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1) );
 				}
-				else if ( _T('S') == element->GetCode ( i - 1 ) )
+                else if ( 'S' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -1310,7 +1310,7 @@ namespace SVG
 
 					simplifier.PathCommandCurveTo ( dX, dY, element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1) );
 				}
-				else if ( _T('s') == element->GetCode ( i - 1 ) )
+                else if ( 's' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1328,9 +1328,9 @@ namespace SVG
 				LastPoint	=	element->Get(i+1);							
 				++i;
 			}
-			else if ( _T('s') == element->GetCode (i) )
+            else if ( 's' == element->GetCode (i) )
 			{
-				if ( _T('C') == element->GetCode ( i - 1 ) )
+                if ( 'C' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -1340,7 +1340,7 @@ namespace SVG
 
 					simplifier.PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if ( _T('c') == element->GetCode ( i - 1 ) )
+                else if ( 'c' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1350,7 +1350,7 @@ namespace SVG
 
 					simplifier.PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if ( _T('S') == element->GetCode ( i - 1 ) )
+                else if ( 'S' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	element->Get ( i - 1 );
 					Point pReflect	=	element->Get ( i - 2 );
@@ -1360,7 +1360,7 @@ namespace SVG
 
 					simplifier.PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if ( _T('s') == element->GetCode ( i - 1 ) )
+                else if ( 's' == element->GetCode ( i - 1 ) )
 				{
 					Point pAt		=	Point ( LastPoint.X, LastPoint.Y );
 					Point pReflect	=	Point ( pAt.X - element->GetX(i-1) + element->GetX(i-2), pAt.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1370,10 +1370,10 @@ namespace SVG
 
 					simplifier.PathCommandCurveTo ( dX, dY, element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y, element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y );
 				}
-				else if (_T('m') == element->GetCode(i - 1) 
-					|| _T('l') == element->GetCode(i - 1)
-					|| _T('v') == element->GetCode(i - 1)
-					||_T('h') == element->GetCode(i - 1))
+                else if ('m' == element->GetCode(i - 1)
+                    || 'l' == element->GetCode(i - 1)
+                    || 'v' == element->GetCode(i - 1)
+                    || 'h' == element->GetCode(i - 1))
 				{
 					simplifier.PathCommandCurveTo(LastPoint.X, LastPoint.Y,
 						element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y,
@@ -1388,7 +1388,7 @@ namespace SVG
 				++i;
 			}
 			// quadratic bezier
-			else if ( _T('q') == element->GetCode (i) )
+            else if ( 'q' == element->GetCode (i) )
 			{
 				simplifier.PathCommandCurveTo ( element->GetX(i) + LastPoint.X, element->GetY(i) + LastPoint.Y,
 					element->GetX(i+1) + LastPoint.X, element->GetY(i+1) + LastPoint.Y,
@@ -1398,7 +1398,7 @@ namespace SVG
 
 				++i;
 			}
-			else if ( _T('Q') == element->GetCode (i) )
+            else if ( 'Q' == element->GetCode (i) )
 			{
 				simplifier.PathCommandCurveTo ( element->GetX(i), element->GetY(i), element->GetX(i+1), element->GetY(i+1), element->GetX(i+1), element->GetY(i+1) );
 
@@ -1406,20 +1406,20 @@ namespace SVG
 
 				++i;
 			}
-			else if ( _T('t') == element->GetCode(i))
+            else if ( 't' == element->GetCode(i))
 			{
 				Point p1 = oPath.GetPoints()[ i - 1 ].oPoint;
 				Point p2 = oPath.GetPoints()[ i - 2 ].oPoint;
 				Point p3 = oPath.GetPoints()[ i	+ 0	].oPoint;
 
-				if ( _T('Q') == element->GetCode ( i - 1 ) )
+                if ( 'Q' == element->GetCode ( i - 1 ) )
 				{
 					double dX	=	p1.X - ( p2.X - p1.X );
 					double dY	=	p1.Y - ( p2.Y - p1.Y );
 
 					simplifier.PathCommandCurveTo ( dX, dY, p3.X + LastPoint.X, p3.Y + LastPoint.Y, p3.X + LastPoint.X, p3.Y + LastPoint.Y );
 				}
-				else if ( _T('q') == element->GetCode ( i - 1 ) )
+                else if ( 'q' == element->GetCode ( i - 1 ) )
 				{
 					p1 = Point ( LastPoint.X, LastPoint.Y );
 					p2 = Point ( p1.X - element->GetX(i-1) + element->GetX(i-2), p1.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1436,20 +1436,20 @@ namespace SVG
 
 				LastPoint	+=	element->Get(i);							
 			}
-			else if (_T('T') == element->GetCode(i))
+            else if ('T' == element->GetCode(i))
 			{
 				Point p1 = oPath.GetPoints()[ i - 1 ].oPoint;
 				Point p2 = oPath.GetPoints()[ i - 2 ].oPoint;
 				Point p3 = oPath.GetPoints()[ i + 0 ].oPoint;
 
-				if ( _T('Q') == element->GetCode ( i - 1 ) )
+                if ( 'Q' == element->GetCode ( i - 1 ) )
 				{
 					double dX	=	p1.X - ( p2.X - p1.X );
 					double dY	=	p1.Y - ( p2.Y - p1.Y );
 
 					simplifier.PathCommandCurveTo ( dX, dY, p3.X, p3.Y, p3.X, p3.Y );
 				}
-				else if ( _T('q') == element->GetCode ( i - 1 ) )
+                else if ( 'q' == element->GetCode ( i - 1 ) )
 				{
 					p1 = Point ( LastPoint.X, LastPoint.Y );
 					p2 = Point ( p1.X - element->GetX(i-1) + element->GetX(i-2), p1.Y - element->GetY(i-1) + element->GetY(i-2) );
@@ -1468,10 +1468,10 @@ namespace SVG
 			}
 		}
 
-		return TRUE;
+        return true;
 	}
 
-	BOOL Painter::SetBrushStyle (const Style& style, const CString& strClassName)
+    bool Painter::SetBrushStyle (const Style& style, const std::wstring& strClassName)
 	{
 		double alpha	=	style.DoubleAttribute(Opacity);
 
@@ -1576,7 +1576,7 @@ namespace SVG
 
 		return FALSE;
 	}
-	BOOL Painter::SetStrokeStyle (const Style& style, const CString& strClassName)
+    bool Painter::SetStrokeStyle (const Style& style, const std::wstring& strClassName)
 	{
 		double alpha			=	style.DoubleAttribute(Opacity);
 		double dAlplaStroke		=	style.DoubleAttribute (StrokeOpacity);
@@ -1693,7 +1693,7 @@ namespace SVG
 		return FALSE;
 	}
 
-	void Painter::DoRectangle(Rectangle* element, long type, BOOL clipMode)
+    void Painter::DoRectangle(Rectangle* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1771,7 +1771,7 @@ namespace SVG
 			}
 		}
 	}
-	void Painter::DoCircle(Circle* element, long type, BOOL clipMode)
+    void Painter::DoCircle(Circle* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1797,7 +1797,7 @@ namespace SVG
 			simplifier.PathCommandArcTo(element->m_C.X - element->m_R.X, element->m_C.Y - element->m_R.Y, element->m_R.X * 2.0, element->m_R.Y * 2.0, 0, 359.9999);
 		}
 	}
-	void Painter::DoEllipse(Ellipse* element, long type, BOOL clipMode)
+    void Painter::DoEllipse(Ellipse* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1822,7 +1822,7 @@ namespace SVG
 			simplifier.PathCommandArcTo(element->m_C.X - element->m_R.X, element->m_C.Y - element->m_R.Y, element->m_R.X * 2.0, element->m_R.Y * 2.0, 0, 359.9999);
 		}
 	}
-	void Painter::DoPolyline(Polyline* element, long type, BOOL clipMode)
+    void Painter::DoPolyline(Polyline* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1855,7 +1855,7 @@ namespace SVG
 			m_render->PathCommandLineTo (element->GetX(0), element->GetY(0));
 		}
 	}
-	void Painter::DoPolygon(Polygon* element, long type, BOOL clipMode)
+    void Painter::DoPolygon(Polygon* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1888,7 +1888,7 @@ namespace SVG
 			m_render->PathCommandLineTo (element->GetX(0), element->GetY(0));
 		}
 	}
-	void Painter::DoPath(Path* element, long type, BOOL clipMode)
+    void Painter::DoPath(Path* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1902,7 +1902,7 @@ namespace SVG
 
 	// clip 
 
-	BOOL Painter::DoClip(ISvgRef* pRef, BOOL enable)
+    bool Painter::DoClip(ISvgRef* pRef, bool enable)
 	{
 		if (NULL == pRef)
 			return FALSE;
@@ -2184,7 +2184,7 @@ namespace SVG
 				dSweep	=	-abs ( dSweep );
 		}
 
-		return TRUE;
+        return true;
 	}
 }
 

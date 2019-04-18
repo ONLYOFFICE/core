@@ -1,14 +1,14 @@
 #include "SVGFramework.h"
 
-#define ADD_COLOR( COLOR, R, G, B ) m_Table.Add( _T(##COLOR), ( ##R << 16 ) | ( ##G << 8 ) | ##B );
+#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>(_T(##COLOR), ( ##R << 16 ) | ( ##G << 8 ) | ##B );
 
 namespace SVG
 {
 	ColorTable ColorParser::m_oTable;
-	BOOL ColorTable::InitClrTable()
+    bool ColorTable::InitClrTable()
 	{
-		if (m_Table.GetSize())
-			return TRUE;
+        if (m_Table.size())
+            return true;
 
 		ADD_COLOR("aliceblue", 240, 248, 255);
 		ADD_COLOR("antiquewhite", 250, 235, 215); 
@@ -158,54 +158,57 @@ namespace SVG
 		ADD_COLOR("yellow", 255, 255, 0); 
 		ADD_COLOR("yellowgreen", 154, 205, 50); 
 
-		return TRUE;
+        return true;
 	}
 
-	long ColorParser::ColorFromString(const CString& sColor)
+    long ColorParser::ColorFromString(const std::wstring& sColor)
 	{
 		// HEX VALUE
+        wchar_t* buf = sColor.c_str();
+        size_t len = sColor.length();
 
-		int index = sColor.Find(_T('#'));
-		if (-1 != index)
-		{
-			CString OnlyColor = _T("");
-			for ( int i = index; i < sColor.GetLength (); ++i)
+        std::wstring::size_type index = sColor.find(L"#");
+        if (std::wstring::npos != index)
+		{            
+            for (std::wstring::size_type i = index; i < len; ++i)
 			{
-				if (_T(' ') == sColor[i])
+                if (' ' == buf[i])
 				{
-					return ColorFromHexString(sColor.Mid(index, i - index));
+                    return ColorFromHexString(sColor.substr(index, i - index));
 				}
 			}
 
-			return ColorFromHexString(sColor.Mid(index, sColor.GetLength() - index));
+            return ColorFromHexString(sColor.substr(index, len - index));
 		}
 
-		if (CString(_T("none")) == sColor)
+        if (L"none" == sColor)
 			return -2;
 
 		// 'rgb(x,x,x)' 
-		if ((sColor[0] == _T('r')) && (sColor[1] == _T('g')) && (sColor[2] == _T('b')))
+        if (3 <= len && (buf[0] == 'r') && (buf[1] == 'g') && (buf[2] == 'b'))
 			return ColorFromRgbString(sColor);
 
 		// COLOR TABLE
 		return m_oTable.Find(sColor);
 	}
-	long ColorParser::ColorFromRgbString(const CString& Rgb)
+    long ColorParser::ColorFromRgbString(const std::wstring& Rgb)
 	{
-		BOOL PCT	=	FALSE;
+        bool PCT = false;
 		double Color [ 4 ]	=	{ 0.0, 0.0, 0.0, 255 };
 
-		BOOL Begin	=	FALSE;	
-		int	IndS	=	0;
-		int IndCol	=	0;
+        bool Begin = false;
+        size_t IndS = 0;
+        size_t IndCol =	0;
 
-		for ( int i = 0; i < (int)Rgb.GetLength (); ++i )
+        wchar_t* buf = Rgb.c_str();
+        size_t len = Rgb.length();)
+        for ( size_t i = 0; i < len; ++i )
 		{
-			if ( isdigit ( Rgb [ i ] ) )
+            if ( isdigit ( buf [ i ] ) )
 			{
-				if ( FALSE == Begin )
+                if ( false == Begin )
 				{
-					Begin	=	TRUE;
+                    Begin	=	true;
 					IndS	=	i;
 				}
 			}
@@ -215,16 +218,16 @@ namespace SVG
 				{
 					if ( i - IndS >= 1 )
 					{
-						Color [ IndCol++ ]	=	_tstof ( Rgb.Mid ( IndS, i - IndS ) );
+                        Color [ IndCol++ ]	=	std::stod ( Rgb.substr ( IndS, i - IndS ) );
 					}
 				}
 
-				Begin	=	FALSE;
+                Begin	=	false;
 			}
 
-			if ( _T('%') == Rgb [ i ] )
+            if ( '%' == buf[i] )
 			{
-				PCT	=	TRUE;
+                PCT	=	true;
 			}
 		}
 
@@ -240,222 +243,40 @@ namespace SVG
 
 		return ( ( (int) (Color [ 2 ]) << 16 ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 0 ]) );			
 	}
-	long ColorParser::ColorFromHexString(const CString& Hex)
+    long ColorParser::ColorFromHexString(const std::wstring& Hex)
 	{
-		CString value	=	Hex.Mid ( 1, Hex.GetLength () - 1 );
-		if ( 3 == value.GetLength () )	//	for ex ~ #fb0 expands to #ffbb00
+        std::wstring value	=	Hex.substr (1);
+        const wchar_t* buf = value.c_str();
+        if ( 3 == value.length () )	//	for ex ~ #fb0 expands to #ffbb00
 		{
-			value.Insert ( 0, value [ 0 ] );
-			value.Insert ( 2, value [ 2 ] );
-			value.Insert ( 4, value [ 4 ] );
+            std::wstring tmp;
+            tmp += buf[0];
+            tmp += buf[0];
+            tmp += buf[1];
+            tmp += buf[1];
+            tmp += buf[2];
+            tmp += buf[2];
 		}
 
-		for ( int i = 0; i < value.GetLength (); ++i )
+        buf = value.c_str();
+        size_t len = value.length();
+        for ( size_t i = 0; i < len; ++i )
 		{
-			if ( isdigit ( value [ i ] ) || ( value [ i ] >= L'a' ) || ( value [ i ] >= L'f' ) || ( value [ i ] >= L'A' ) || ( value [ i ] >= L'F' ) )
+            if ( isdigit ( buf [ i ] ) || ( buf [ i ] >= L'a' ) || ( buf [ i ] >= L'f' ) || ( buf [ i ] >= L'A' ) || ( buf [ i ] >= L'F' ) )
 				continue;
 
-			long InvCol = wcstol ( value.Mid ( 0, i ), NULL, 16 );
+            long InvCol = std::stoi ( value.substr ( 0, i ), NULL, 16 );
 			return ( ( InvCol & 0xFF ) << 16 ) | ( ( InvCol & 0xFF00 ) ) | ( ( InvCol & 0xFF0000 ) >> 16 );
 		}
 
-		long InvCol = wcstol( value, NULL, 16 );
+        long InvCol = std::stoi( value, NULL, 16 );
 		return ( ( InvCol & 0xFF ) << 16 ) | ( ( InvCol & 0xFF00 ) ) | ( ( InvCol & 0xFF0000 ) >> 16 );
 	}
 }
 
 namespace SVG
 {
-	BOOL ImageBase64::CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder)
-	{
-		if (NULL == pBuffer || Length < 1)
-			return FALSE;
-
-		m_nBufferSize	=	Base64::Base64DecodeGetRequiredLength (Length);
-		m_pBuffer		=	new BYTE [m_nBufferSize];
-
-		if (m_pBuffer)
-		{
-			if (ImageBase64::Base64Decode ( (LPTSTR) pBuffer, Length, m_pBuffer, &m_nBufferSize))
-			{
-				/*
-
-				CAtlFile oFile;
-
-				if ( ImageEncoder == JPG_ENCODER )
-				{
-				if ( SUCCEEDED ( oFile.Create ( _T("C:\\test.jpg"), GENERIC_WRITE, FILE_SHARE_WRITE, CREATE_NEW ) ) )
-				{
-				DWORD nFileBuff	=	0L;
-				oFile.Write ( m_pBuffer, m_nBufferSize, &nFileBuff );
-				oFile.Close ();
-				}
-				}
-
-				*/
-
-				return TRUE;
-			}
-
-			delete [] m_pBuffer;
-		}
-
-		return FALSE;
-	}
-	BOOL ImageBase64::EncodeBufferToImageCOM (const BYTE* pBuffer, const unsigned long& ImageSize, IUnknown*& pImage)
-	{
-		if ( NULL == pBuffer || ImageSize < 41 )
-			return FALSE;
-
-		HGLOBAL	hMem	=	::GlobalAlloc ( GMEM_FIXED, ImageSize );
-		LPVOID	pSImage	=	::GlobalLock ( hMem );
-
-		CopyMemory ( pSImage, pBuffer, ImageSize );
-
-		IStream* pStream = NULL;
-		if ( SUCCEEDED ( CreateStreamOnHGlobal ( hMem, FALSE, &pStream ) ) )
-		{
-			Gdiplus::Bitmap* pBitmap	= Gdiplus::Bitmap::FromStream ( pStream );
-			if ( Gdiplus::Ok == pBitmap->GetLastStatus () )
-			{
-				BOOL Status	=	ImageBase64::GdiImageToImageCOM ( pBitmap, pImage );
-
-				delete pBitmap;
-
-				pStream->Release();
-
-				GlobalUnlock ( hMem );
-				GlobalFree ( hMem );
-
-				return Status;
-			}
-
-			delete pBitmap;
-
-			pStream->Release();
-		}
-
-		GlobalUnlock ( hMem );
-		GlobalFree ( hMem );
-
-		return FALSE;
-	}
-	BOOL ImageBase64::GdiImageToImageCOM (Gdiplus::Bitmap* pBitmap, IUnknown*& pImage)
-	{
-		MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-		if ( SUCCEEDED ( CoCreateInstance ( MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame ) ) )
-		{
-			pFrame->put_Height ( pBitmap->GetHeight () );
-			pFrame->put_Width ( pBitmap->GetWidth () );
-
-			pFrame->put_AspectRatioX ( 0 );
-			pFrame->put_AspectRatioY ( 0 );
-
-#define CSP_BGRA     (1<< 6) /* 32-bit bgra packed */
-
-			//pFrame->put_ColorSpace ( CSP_BGRA | CSP_VFLIP );
-			pFrame->put_ColorSpace	( CSP_BGRA );
-
-			pFrame->SetDefaultStrides ();
-			pFrame->AllocateBuffer	( -1 );
-
-			LONG PlaneSize = 0;		pFrame->get_BufferSize ( &PlaneSize );
-			BYTE* pPlane = NULL;	pFrame->get_Plane ( 0, &pPlane );
-
-			if ( NULL != pPlane )
-			{
-				// memset ( pPlane, 0xFFFFFF00, PlaneSize );
-
-				BitmapData data; 
-				if ( Gdiplus::Ok == pBitmap->LockBits ( NULL, ImageLockModeRead, PixelFormat32bppARGB, &data ) )
-				{
-					memcpy ( pPlane, data.Scan0, PlaneSize );
-					pBitmap->UnlockBits ( &data );
-				}
-
-				pFrame->QueryInterface ( __uuidof(IUnknown), (void**)&pImage );
-				pFrame->Release ();
-
-				return TRUE;
-			}
-
-			pFrame->Release ();
-		}
-
-		return FALSE;
-	}
-	BOOL ImageBase64::Base64Decode(LPTSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw()
-	{
-		// walk the source buffer
-		// each four character sequence is converted to 3 bytes
-		// CRLFs and =, and any characters not in the encoding table
-		// are skiped
-
-		if (szSrc == NULL || pnDestLen == NULL)
-			return FALSE;
-
-		LPTSTR szSrcEnd = szSrc + nSrcLen;
-		int nWritten = 0;
-
-		BOOL bOverflow = (pbDest == NULL) ? TRUE : FALSE;
-
-		while (szSrc < szSrcEnd &&(*szSrc) != 0)
-		{
-			DWORD dwCurr = 0;
-			int i;
-			int nBits = 0;
-			for (i=0; i<4; i++)
-			{
-				if (szSrc >= szSrcEnd)
-					break;
-				int nCh = DecodeBase64Char(*szSrc);
-				szSrc++;
-				if (nCh == -1)
-				{
-					// skip this char
-					i--;
-					continue;
-				}
-				dwCurr <<= 6;
-				dwCurr |= nCh;
-				nBits += 6;
-			}
-
-			if(!bOverflow && nWritten + (nBits/8) > (*pnDestLen))
-				bOverflow = TRUE;
-
-			// dwCurr has the 3 bytes to write to the output buffer
-			// left to right
-			dwCurr <<= 24-nBits;
-			for (i=0; i<nBits/8; i++)
-			{
-				if(!bOverflow)
-				{
-					*pbDest = (BYTE) ((dwCurr & 0x00ff0000) >> 16);
-					pbDest++;
-				}
-				dwCurr <<= 8;
-				nWritten++;
-			}
-
-		}
-
-		*pnDestLen = nWritten;
-
-		if(bOverflow)
-		{
-			// if (pbDest != NULL) ATLASSERT(FALSE);
-
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-}
-
-namespace SVG
-{
-	BOOL Painter::Draw(IRefStorage* model, IAVSRenderer* render, const UnitSystem& oUs)
+    bool Painter::Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs)
 	{
 		if (NULL == model || NULL == render)
 			return FALSE;

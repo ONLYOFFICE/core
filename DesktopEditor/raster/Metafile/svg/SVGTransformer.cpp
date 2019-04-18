@@ -22,12 +22,14 @@ bool CSVGTransformer::LoadFile(const std::wstring& file)
 {
     m_internal->m_oStorage.Clear();
 
-    //m_oXmlParser.SetWorkingDirectory(FileUtils::FilePath(CString(bstrFile)));
-    //m_oRender.SetWorkingDirectory(FileUtils::FilePath(CString(bstrFile)));
-    //m_oStorage.SetWorkingDirectory(FileUtils::FilePath(CString(bstrFile)));
-    //
-    //if (0 == m_oXmlParser.LoadFromFile (CString(bstrFile), &m_oStorage))
-    //    return false;
+    std::wstring sDirectory = NSFile::GetDirectoryName(file);
+
+    m_internal->m_oXmlParser.SetWorkingDirectory(sDirectory);
+    m_internal->m_oRender.SetWorkingDirectory(sDirectory);
+    m_internal->m_oStorage.SetWorkingDirectory(sDirectory);
+
+    if (0 == m_internal->m_oXmlParser.LoadFromFile(file, &m_internal->m_oStorage))
+        return false;
 
     return true;
 }
@@ -35,15 +37,17 @@ bool CSVGTransformer::Load(const std::wstring& content)
 {
     m_internal->m_oStorage.Clear();
 
-    //if (0 == m_oXmlParser.LoadFromString (strXml, &m_oStorage))
-    //    return false;
+    if (0 == m_internal->m_oXmlParser.LoadFromString(content, &m_internal->m_oStorage))
+        return false;
 
     return true;
 }
 
 bool CSVGTransformer::Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 {
-
+    m_internal->m_oRender.SetCSS(m_internal->m_oXmlParser.GetCSS());
+    m_internal->m_oRender.Draw(&m_internal->m_oStorage, pRenderer, m_internal->m_oXmlParser.GetUnitSystem());
+    return true;
 }
 int CSVGTransformer::get_Width()
 {

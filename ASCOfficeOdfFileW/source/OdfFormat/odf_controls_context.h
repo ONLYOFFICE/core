@@ -52,7 +52,7 @@ public:
 	odf_controls_context(odf_conversion_context *odf_context);
     ~odf_controls_context();
 
-	bool start_control(int type);
+	std::wstring start_control(int type);
 	void end_control();
 
 	office_element_ptr & get_root_element();
@@ -62,10 +62,23 @@ public:
 	void finalize(office_element_ptr & root_elm);
 	
 	void set_name			(const std::wstring & name);
-	void set_description	(const std::wstring & descr);
+	void set_label			(const std::wstring & val);
+	void set_linkedCell		(const std::wstring & val);
+	void set_listFillRange	(const std::wstring & val);
+	void set_macro			(const std::wstring & val);
+	void set_disabled		(bool val);
+	void set_printable		(bool val);
+	void set_textHAlign		(int val);
+	void set_textVAlign		(int val);
+	void set_min_value		(int val);
+	void set_max_value		(int val);
+	void set_page_step		(int val);
+	void set_step			(int val);
+	void set_value			(const std::wstring & val);
+	void set_horiz			(bool val);
+	void set_check_state	(int val);
 
 	void set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
-	void set_fill_color (unsigned int color);
 
 private:	
     class Impl;

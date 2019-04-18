@@ -2426,33 +2426,148 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			continue;
 		}
 //---------------------------------------------
-		ods_context->start_drawings();
+		std::wstring id = ods_context->current_table().controls_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue());
 
+		if (false == id.empty())
 		{
-			oox_table_position from = {}, to = {};
-			
-			convert(oCellAnchor->m_oFrom.GetPointer(), &from);	
-			convert(oCellAnchor->m_oTo.GetPointer(), &to);
+			ods_context->start_drawings();
 
-			double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-			ods_context->current_table().convert_position(from, x1, y1);
-			ods_context->current_table().convert_position(to,	x2, y2);
-			
-			ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
-		}
-		ods_context->drawing_context()->start_drawing();
+			{
+				oox_table_position from = {}, to = {};
+				
+				convert(oCellAnchor->m_oFrom.GetPointer(), &from);	
+				convert(oCellAnchor->m_oTo.GetPointer(), &to);
 
-		ods_context->drawing_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue());
+				double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+				ods_context->current_table().convert_position(from, x1, y1);
+				ods_context->current_table().convert_position(to,	x2, y2);
+				
+				ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
+			}		
+			ods_context->drawing_context()->start_drawing();
+			ods_context->drawing_context()->start_control(id);
 		
-		if(pControl->m_oName.IsInit())	ods_context->drawing_context()->set_name(*pControl->m_oName);
+			if (pControl->m_oName.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_name(*pControl->m_oName);
+				ods_context->drawing_context()->set_name(*pControl->m_oName);
+			}
+//----------------------
+			if (oFormControlPr->m_oText.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_label(*oFormControlPr->m_oText);
+			}
+			if (oFormControlPr->m_oFillColor.IsInit())
+			{
+				ods_context->drawing_context()->set_solid_fill(oFormControlPr->m_oFillColor->ToString());
+			}
+			if (oFormControlPr->m_oBorderColor.IsInit())
+			{
+				ods_context->drawing_context()->set_line_color(oFormControlPr->m_oBorderColor->ToString());
+			}
+			if (oFormControlPr->m_oTextHAlign.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_textHAlign(oFormControlPr->m_oTextHAlign->GetValue());
+			}
+			if (oFormControlPr->m_oTextVAlign.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_textVAlign(oFormControlPr->m_oTextVAlign->GetValue());
+			}
+			if (oFormControlPr->m_oMin.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_min_value(oFormControlPr->m_oMin->GetValue());
+			}
+			if (oFormControlPr->m_oMax.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_max_value(oFormControlPr->m_oMin->GetValue());
+			}
+			if (oFormControlPr->m_oPage.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_page_step(oFormControlPr->m_oPage->GetValue());
+			}
+			if (oFormControlPr->m_oInc.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_step(oFormControlPr->m_oInc->GetValue());
+			}
+			if (oFormControlPr->m_oVal.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_value(std::to_wstring(*oFormControlPr->m_oVal));
+			}
+			if (oFormControlPr->m_oHoriz.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_horiz(*oFormControlPr->m_oHoriz);
+			}
+			if (oFormControlPr->m_oFmlaLink.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_linkedCell(*oFormControlPr->m_oFmlaLink);
+			}
+			if (oFormControlPr->m_oFmlaRange.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_listFillRange(*oFormControlPr->m_oFmlaRange);
+			}
+			if (oFormControlPr->m_oChecked.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_check_state(oFormControlPr->m_oChecked->GetValue());
+			}
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDropLines;
+			//nullable<SimpleTypes::Spreadsheet::CDropStyle<>>			m_oDropStyle;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDx;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSel;
+			//nullable<SimpleTypes::Spreadsheet::CSelType<>>			m_oSelType;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oWidthMin;
+			//nullable<SimpleTypes::Spreadsheet::CEditValidation<>>		m_oEditVal;
+			//nullable_string		m_oFmlaGroup;
+			//nullable_string		m_oFmlaTxbx;		
+			//nullable_bool		m_oColored;
+			//nullable_bool		m_oFirstButton;
+			//nullable_bool		m_oJustLastX;
+			//nullable_bool		m_oLockText;
+			//nullable_string		m_oMultiSel;
+			//nullable_bool		m_oNoThreeD;
+			//nullable_bool		m_oNoThreeD2;
+			//nullable_bool		m_oMultiLine;
+			//nullable_bool		m_oVerticalBar;
+			//nullable_bool		m_oPasswordEdit;
+			//nullable<CListItems>							m_oItemLst;
+//---------------------
+			if (pControl->m_oControlPr->m_oLinkedCell.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_linkedCell(*pControl->m_oControlPr->m_oLinkedCell);
+			}
+			if (pControl->m_oControlPr->m_oListFillRange.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_listFillRange(*pControl->m_oControlPr->m_oListFillRange);
+			}
+			if (pControl->m_oControlPr->m_oMacro.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_macro(*pControl->m_oControlPr->m_oMacro);
+			}
+			if (pControl->m_oControlPr->m_oDisabled.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_disabled(*pControl->m_oControlPr->m_oDisabled);
+			}
+			if (pControl->m_oControlPr->m_oPrint.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_printable(*pControl->m_oControlPr->m_oPrint);
+			}
+			if (pControl->m_oControlPr->m_oLocked.IsInit())
+			{
+			}
+			//nullable_string						m_oAltText;
+			//nullable_bool							m_oAutoFill;
+			//nullable_bool							m_oAutoLine;
+			//nullable_bool							m_oAutoPict;
+			//nullable_bool							m_oDde;
+			//nullable_bool							m_oDefaultSize;
+			//nullable_string						m_oCf;
+			//nullable_bool							m_oRecalcAlways;
+//---------------------
+			ods_context->drawing_context()->end_control();
+			ods_context->drawing_context()->end_drawing();
 
-		//pControl->m_oControlPr.GetPointer()
-		//oFormControlPr.GetPointer());		
-
-		ods_context->drawing_context()->end_control();
-		ods_context->drawing_context()->end_drawing();
-
-		ods_context->end_drawings();
+			ods_context->end_drawings();
+			ods_context->current_table().controls_context()->end_control();
+		}
 	}
 }
 

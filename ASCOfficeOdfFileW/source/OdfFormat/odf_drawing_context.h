@@ -149,7 +149,7 @@ public:
 	void start_object_ole(std::wstring ref);
 	void end_object_ole();
 
-	void start_control(int type);
+	void start_control(const std::wstring& id);
 	void end_control();
 
 	void start_media(std::wstring ref);
@@ -226,6 +226,7 @@ public:
 	void					set_fill_color (unsigned int color);
 
 	_CP_OPT(odf_types::color) get_line_color();
+	void set_line_color	(std::wstring hexColor);
 	//void start_shadow_properties();
 	//void end_shadow_properties();
 // пока одной функией ..

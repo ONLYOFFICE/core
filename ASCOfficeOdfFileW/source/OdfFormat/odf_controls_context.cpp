@@ -39,6 +39,7 @@
 
 #include "office_forms.h"
 
+#include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
 namespace cpdoccore {
 namespace odf_writer {
@@ -46,12 +47,10 @@ namespace odf_writer {
 struct 	odf_control_state
 {
 	office_element_ptr	elm;
+	odf_writer::form_element* form_elm;
 	
 	_CP_OPT(double) cx;
 	_CP_OPT(double) cy;
-	
-	std::wstring name;
-	std::wstring description;
 	
 	_CP_OPT(unsigned int) fill_color;
 
@@ -65,7 +64,7 @@ public:
 	Impl(odf_conversion_context *odf_context) : odf_context_(odf_context)
     {	
 	} 
-	bool start_control(int type);
+	std::wstring start_control(int type);
 	
 	std::vector<odf_control_state> controls_;
 
@@ -77,10 +76,9 @@ odf_controls_context::odf_controls_context(odf_conversion_context *odf_context)
 	: impl_(new  odf_controls_context::Impl(odf_context))
 {
 }
-bool odf_controls_context::Impl::start_control(int type)
+std::wstring odf_controls_context::Impl::start_control(int type)
 {
 	office_element_ptr element;
-
 	std::wstring control_implementation;
 	switch(type)
 	{
@@ -140,21 +138,24 @@ bool odf_controls_context::Impl::start_control(int type)
 	}
 	odf_writer::form_element* form_element = dynamic_cast<odf_writer::form_element*>(element.get());
 
-	if (!form_element) return false;
+	if (!form_element) return L"";
 
+	odf_context_->mediaitems()->count_control += 1;
+	form_element->id_ = L"control" + std::to_wstring(odf_context_->mediaitems()->count_control);
 	form_element->control_implementation_ = control_implementation;
 
 	odf_control_state state;
 	state.elm = element;
+	state.form_elm = form_element;
 
 	controls_.push_back(state);
-	return true;
+	return (*form_element->id_);
 }
 
 odf_controls_context::~odf_controls_context()
 {
 }
-bool odf_controls_context::start_control(int type)
+std::wstring odf_controls_context::start_control(int type)
 {
 	return impl_->start_control(type);
 }
@@ -162,59 +163,125 @@ void odf_controls_context::end_control()
 {
 }
 
-void odf_controls_context::set_name(const std::wstring & name)
+void odf_controls_context::set_name(const std::wstring & val)
 {
-	if (name.empty()) return;
+	if (val.empty()) return;
 	if (impl_->controls_.empty()) return;
 
-	impl_->controls_.back().name = name;
+	impl_->controls_.back().form_elm->name_ = val;
 }
-void odf_controls_context::set_description (const std::wstring & description)
+void odf_controls_context::set_label(const std::wstring & val)
 {
-	if (description.empty()) return;
+	if (val.empty()) return;
 	if (impl_->controls_.empty()) return;
 
-	impl_->controls_.back().description = description;
+	impl_->controls_.back().form_elm->label_ = val;
 }
-
-void odf_controls_context::set_fill_color(unsigned int Color)
+void odf_controls_context::set_linkedCell (const std::wstring & val)
 {
-	impl_->controls_.back().fill_color = Color;
-}
-//void odf_controls_context::set_solid_fill(std::wstring hexColor)
-//{
-//	if (!impl_->current_graphic_properties)	return;
-//	if (hexColor.empty()) return;
-//	
-//	size_t res = hexColor.find(L"#");
-//	if (std::wstring::npos == res)
-//		hexColor = std::wstring(L"#") + hexColor;
-//
-//	switch(impl_->current_drawing_part_)
-//	{
-//		case Area:
-//			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = hexColor;
-//			//impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor); - default transparent
-//			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
-//			
-//			if ((/*impl_->is_footer_ || impl_->is_header_ ||*/ impl_->is_background_) && 
-//				(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_) && 
-//				(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
-//			{
-//			}
-//			else
-//				impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
-//			break;
-//		case Line:
-//			impl_->current_graphic_properties->svg_stroke_color_ =  hexColor;
-//			if (!impl_->current_graphic_properties->draw_stroke_)
-//				impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::Solid);//default
-//			if (!impl_->current_graphic_properties->svg_stroke_width_)
-//				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
-//			break;
-//	}
-//}
+	if (val.empty()) return;
+	if (impl_->controls_.empty()) return;
 
+	formulasconvert::oox2odf_converter formulas_converter;
+	impl_->controls_.back().form_elm->linked_cell_ = formulas_converter.convert_ref(val);
+}
+void odf_controls_context::set_listFillRange (const std::wstring & val)
+{
+	if (val.empty()) return;
+	if (impl_->controls_.empty()) return;
+
+	odf_writer::form_listbox *listbox = dynamic_cast<odf_writer::form_listbox*>(impl_->controls_.back().form_elm);
+	if (!listbox) return;
+
+	formulasconvert::oox2odf_converter formulas_converter;
+	listbox->list_source_ = formulas_converter.convert_ref(val);
+}
+void odf_controls_context::set_macro(const std::wstring & val)
+{
+	if (val.empty()) return;
+	if (impl_->controls_.empty()) return;
+
+	//impl_->controls_.back().form_elm-> = val;
+}
+void odf_controls_context::set_disabled	(bool val)
+{
+	if (impl_->controls_.empty()) return;
+
+	impl_->controls_.back().form_elm->disabled_ = val;
+}
+void odf_controls_context::set_printable(bool val)
+{
+	if (impl_->controls_.empty()) return;
+
+	impl_->controls_.back().form_elm->printable_ = val;
+}
+void odf_controls_context::set_textHAlign(int val)
+{
+	if (impl_->controls_.empty()) return;
+}
+void odf_controls_context::set_textVAlign(int val)
+{
+	if (impl_->controls_.empty()) return;
+}
+void odf_controls_context::set_min_value(int val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_value_range *value_range = dynamic_cast<odf_writer::form_value_range*>(impl_->controls_.back().form_elm);
+	if (!value_range) return;
+
+	value_range->min_value_ = val;
+}
+void odf_controls_context::set_max_value(int val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_value_range *value_range = dynamic_cast<odf_writer::form_value_range*>(impl_->controls_.back().form_elm);
+	if (!value_range) return;
+
+	value_range->max_value_ = val;
+}
+void odf_controls_context::set_page_step(int val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_value_range *value_range = dynamic_cast<odf_writer::form_value_range*>(impl_->controls_.back().form_elm);
+	if (!value_range) return;
+
+	value_range->page_step_size_ = val;
+}
+void odf_controls_context::set_step(int val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_value_range *value_range = dynamic_cast<odf_writer::form_value_range*>(impl_->controls_.back().form_elm);
+	if (!value_range) return;
+
+	value_range->step_size_ = val;
+}
+void odf_controls_context::set_horiz(bool val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_value_range *value_range = dynamic_cast<odf_writer::form_value_range*>(impl_->controls_.back().form_elm);
+	if (!value_range) return;
+
+	value_range->orientation_ = val ? odf_types::table_centering::Horizontal : odf_types::table_centering::Vertical;
+}
+void odf_controls_context::set_check_state(int val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_checkbox *checkbox = dynamic_cast<odf_writer::form_checkbox*>(impl_->controls_.back().form_elm);
+	if (checkbox) checkbox->current_state_ = (val == 1);
+
+}
+void odf_controls_context::set_value(const std::wstring & val)
+{
+	if (impl_->controls_.empty()) return;
+
+	impl_->controls_.back().form_elm->value_ = val;
+}
 void odf_controls_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
 	if (impl_->controls_.empty()) return;
@@ -230,6 +297,18 @@ bool odf_controls_context::is_exist_content()
 
 void odf_controls_context::finalize(office_element_ptr & root_elm)//для привязки 
 {
+	if (impl_->controls_.empty()) return;
+
+	office_element_ptr elm_form;
+	create_element(L"form", L"form", elm_form, impl_->odf_context_);
+
+	odf_writer::form_form* form = dynamic_cast<odf_writer::form_form*>(elm_form.get());
+
+	form->control_implementation_ = L"ooo:com.sun.star.form.component.Form";
+	form->name_ = L"Form";
+	form->apply_filter_ = true;
+	form->command_type_ = odf_types::command_type::table;
+	
 	for (size_t i = 0; i < impl_->controls_.size(); i++)
 	{
 		if (false == impl_->controls_[i].properties.empty())
@@ -254,8 +333,9 @@ void odf_controls_context::finalize(office_element_ptr & root_elm)//для пр�
 			}
 			impl_->controls_[i].elm->add_child_element(elm);
 		}
-		root_elm->add_child_element(impl_->controls_[i].elm);
+		elm_form->add_child_element(impl_->controls_[i].elm);
 	}	
+	root_elm->add_child_element(elm_form);
 }
 }
 }

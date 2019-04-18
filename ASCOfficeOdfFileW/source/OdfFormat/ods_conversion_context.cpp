@@ -83,7 +83,7 @@ ods_conversion_context::ods_conversion_context(package::odf_document * outputDoc
 	:	odf_conversion_context		(SpreadsheetDocument, outputDocument), 
 		table_context_(*this), current_text_context_(NULL)
 {
-	font_metrix_		= _font_metrix();
+	font_metrix_ = _font_metrix();
 }
 
 

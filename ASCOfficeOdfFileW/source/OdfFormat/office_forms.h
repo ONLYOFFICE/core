@@ -41,6 +41,7 @@
 
 #include "common_attlists.h"
 #include "commandtype.h"
+#include "tablecentering.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -328,17 +329,31 @@ public:
     static const ElementType type = typeFormCheckbox;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	form_checkbox() : current_state_(false) {}
     virtual void serialize(std::wostream & _Wostream);
 
 	bool current_state_;
 	//form:image-align
 	//form:image-position
-	//form:current-state
 	//form:is-tristate
 	//form:visual-effect
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_checkbox);
+//--------------------------------------------------------------------------------------------
+//  form:radio
+class form_radio : public form_text
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormRadio;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+    virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_radio);
+//--------------------------------------------------------------------------------
 //  form:combobox
 class form_combobox : public form_text
 {
@@ -422,18 +437,14 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	//form:image-align
-	//form:image-position
-	//form:button-type 19.255,
-	//form:default-button 19.265,
-	//form:delayfor-repeat
-	//form:focus-on-click
-	//form:image-data
-	//form:repeat
-	//form:toggle 
-	//form:xforms-submission
-	//office:target-frame
-	//xlink:href
+	_CP_OPT(int)						min_value_;
+	_CP_OPT(int)						max_value_;
+	_CP_OPT(int)						step_size_;
+	_CP_OPT(int)						page_step_size_;
+	_CP_OPT(odf_types::table_centering)	orientation_;
+	_CP_OPT(std::wstring)				delay_for_repeat_;
+//form:delay-for-repeat="PT0.023000000S" 
+
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_value_range);
 //-----------------------------------------------------------------------------------------
@@ -474,8 +485,6 @@ CP_REGISTER_OFFICE_ELEMENT2(form_item);
 }
 //<form:connection-resource>7.6.2,  
 //<form:file> 13.5.5,
-//<form:fixed-text> 13.5.10,
-//<form:form> 13.3, 
 //<form:formatted-text> 13.5.6, 
 //<form:frame> 13.5.19,
 //<form:generic-control> 13.5.25, 
@@ -485,7 +494,4 @@ CP_REGISTER_OFFICE_ELEMENT2(form_item);
 //<form:image-frame> 13.5.20, 
 //<form:number> 13.5.7,
 //<form:password> 13.5.4, 
-//<form:radio> 13.5.18, 
-//<form:textarea> 13.5.3,
 //<form:time>
-//<form:value-range> 13.5.24 and 

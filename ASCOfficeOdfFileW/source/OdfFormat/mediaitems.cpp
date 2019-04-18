@@ -43,18 +43,10 @@
 namespace cpdoccore { 
 namespace odf_writer {
 
-
-_mediaitems::item::item(std::wstring const & _oox_ref,
-                       Type _type,
-                       std::wstring const & _odf_ref
-					   )
-                       : oox_ref(_oox_ref),
-                       type(_type),
-                       odf_ref(_odf_ref)
+_mediaitems::item::item(const std::wstring & _oox_ref, Type _type, const std::wstring & _odf_ref)
+                       : oox_ref(_oox_ref), type(_type), odf_ref(_odf_ref)
 {    
-
 }
-
 
 void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstring & odf_ref)
 {
@@ -119,8 +111,9 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 		{
 			count_image_object++;
 		}
+		item item_(input_path, type, xml::utils::replace_text_to_xml(output_path));
 		
-		items_.push_back( item(input_path, type, xml::utils::replace_text_to_xml(output_path)) );
+		items_.push_back(item_);
 	}
 	odf_ref = output_path;
 }

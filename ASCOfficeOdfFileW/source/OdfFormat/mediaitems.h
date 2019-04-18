@@ -44,39 +44,37 @@ class _mediaitems
 public:
     enum Type { typeUnknown = 0, typeImage, typeMedia, typeOleObject, typeObjectReplacement};
 
+    struct item 
+    {
+		item(const std::wstring & _oox_ref, Type _type, const std::wstring & _odf_ref);
+
+        Type type = typeUnknown;
+        
+		std::wstring oox_ref;
+        std::wstring odf_ref;
+    };
     _mediaitems()
     {
  		count_image			= 0;
  		count_media			= 0;
  		count_object		= 0;
  		count_image_object	= 0;
+ 		count_control		= 0;
 	}
-
-    struct item 
-    {
-        item(
-            std::wstring const & _oox_ref,
-            Type _type,
-            std::wstring const & _odf_ref);
-
-        std::wstring oox_ref;
-        Type type;
-        std::wstring odf_ref;
-    };
-    typedef std::vector< item > items_array;
 	
 	size_t count_image;
 	size_t count_media;
 	size_t count_object;
 	size_t count_image_object;
+	size_t count_control;
 
     void add_or_find(const std::wstring & oox_ref, Type type, std::wstring & odf_ref);
     
 	void dump_rels(rels & Rels, std::wstring local_path = L"");
-    items_array & items() { return items_; }
+    std::vector<item> & items() { return items_; }
 
 private:
-    items_array items_;
+    std::vector<item> items_;
 
 };
 

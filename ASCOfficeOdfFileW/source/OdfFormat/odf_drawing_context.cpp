@@ -1437,6 +1437,17 @@ _CP_OPT(odf_types::color) odf_drawing_context::get_line_color()
 {
 	return impl_->current_graphic_properties->svg_stroke_color_ ;
 }
+void odf_drawing_context::set_line_color(std::wstring hexColor)
+{
+	if (!impl_->current_graphic_properties)	return;
+	if (hexColor.empty()) return;
+	
+	size_t res = hexColor.find(L"#");
+	if (std::wstring::npos == res)
+		hexColor = std::wstring(L"#") + hexColor;
+
+	impl_->current_graphic_properties->svg_stroke_color_ = hexColor;
+}
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)	return;
@@ -2567,7 +2578,7 @@ void odf_drawing_context::start_object(std::wstring name)
 
 	start_element(object_elm);
 }
-void odf_drawing_context::start_control(int type)
+void odf_drawing_context::start_control(const std::wstring& id)
 {
 	office_element_ptr control_elm;
 	create_element(L"draw", L"control", control_elm, impl_->odf_context_);
@@ -2575,8 +2586,8 @@ void odf_drawing_context::start_control(int type)
 	draw_control* control = dynamic_cast<draw_control*>(control_elm.get());
 	if (control == NULL)return;
 
-	//control->draw_control_ = zckzzckzx(type);
-	
+	control->control_id_ = id;
+
 	start_element(control_elm);
 }
 void odf_drawing_context::end_control()

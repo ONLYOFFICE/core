@@ -38,6 +38,7 @@
 #endif
 
 #include "../source/OdfFormat/office_document.cpp"
+#include "../source/OdfFormat/office_forms.cpp"
 #include "../source/OdfFormat/calcext_elements.cpp"
 #include "../source/OdfFormat/draw_base.cpp"
 #include "../source/OdfFormat/draw_frame.cpp"
@@ -49,6 +50,7 @@
 #include "../source/OdfFormat/object_package.cpp"
 #include "../source/OdfFormat/odf_chart_context.cpp"
 #include "../source/OdfFormat/odf_comment_context.cpp"
+#include "../source/OdfFormat/odf_controls_context.cpp"
 #include "../source/OdfFormat/odf_notes_context.cpp"
 #include "../source/OdfFormat/odf_conversion_context.cpp"
 #include "../source/OdfFormat/odf_drawing_context.cpp"

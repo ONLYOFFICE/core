@@ -552,5 +552,23 @@ mc:Ignorable=\"x14ac\">");
 			}
 			m_arrConditionalFormatting.clear();
 		}
+
+		smart_ptr<OOX::WritingElement> CWorksheet::FindVmlObject(const std::wstring &spid)
+		{
+			smart_ptr<OOX::WritingElement> oElement;
+
+			if (!m_oLegacyDrawing.IsInit()) return oElement;
+			if (!m_oLegacyDrawing->m_oId.IsInit()) return oElement;
+            
+			smart_ptr<OOX::File>		oFile		= this->Find(m_oLegacyDrawing->m_oId->GetValue());
+			smart_ptr<OOX::CVmlDrawing> oVmlDrawing = oFile.smart_dynamic_cast<OOX::CVmlDrawing>();
+
+			OOX::WritingElement* pShapeElem	= NULL;
+			if (oVmlDrawing.IsInit())
+			{
+				oElement = oVmlDrawing->FindVmlObject(spid);	
+			}
+			return oElement;
+		}
 	}
 }

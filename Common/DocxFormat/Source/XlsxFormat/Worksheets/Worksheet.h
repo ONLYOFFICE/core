@@ -83,6 +83,7 @@ namespace OOX
 				read(oRootPath, oPath);
 			}
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			void read(XmlUtils::CXmlLiteReader& oReader);
 			
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
@@ -103,17 +104,18 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-            const OOX::RId AddHyperlink (std::wstring& sHref);
 			void ClearItems();
-			CPath	m_oReadPath;
 
-			void read(XmlUtils::CXmlLiteReader& oReader);
+            const OOX::RId AddHyperlink (std::wstring& sHref);
+			smart_ptr<OOX::WritingElement> FindVmlObject(const std::wstring &spid);
 
 			void PrepareDataValidations();
 			void PrepareConditionalFormatting();
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
 			void PrepareToWrite();
 
+			CPath	m_oReadPath;
+			
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
 

@@ -170,10 +170,19 @@ void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 
 void ods_conversion_context::end_sheet()
 {
+	if (current_table().controls_context()->is_exist_content())
+	{
+		office_element_ptr forms_root_elm;
+		create_element(L"office", L"forms", forms_root_elm, this);
+
+		current_table().controls_context()->finalize(forms_root_elm);
+		
+		current_table().add_child_element(forms_root_elm);
+	}
 	if (current_table().drawing_context()->is_exist_content())
 	{
 		office_element_ptr shapes_root_elm;
-		create_element(L"table", L"shapes",shapes_root_elm,this);
+		create_element(L"table", L"shapes", shapes_root_elm, this);
 
 		current_table().drawing_context()->finalize(shapes_root_elm);
 		

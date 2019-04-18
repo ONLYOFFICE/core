@@ -44,6 +44,7 @@
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 
 #include "../OdfFormat/ods_conversion_context.h"
 
@@ -347,6 +348,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 	
 	convert(oox_sheet->m_oOleObjects.GetPointer(), oox_sheet);
+	convert(oox_sheet->m_oControls.GetPointer(), oox_sheet);
 
 	//сортировки
 	//convert(oox_sheet->m_oSortState.GetPointer());
@@ -2226,31 +2228,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 			odf_ref_image = odf_context()->add_imageobject(pathImage);
 		}
 //--------------------------------------------------------------------------------------------------
-		if ((!bAnchor || odf_ref_image.empty()) && object->m_oShapeId.IsInit() && (oox_sheet->m_oLegacyDrawing.IsInit()) && (oox_sheet->m_oLegacyDrawing->m_oId.IsInit()))
+		if ((!bAnchor || odf_ref_image.empty()) && object->m_oShapeId.IsInit())
 		{
-			//todooo вынести отдельно если понадобится еще для чего
-			OOX::CVmlDrawing *pVmlDrawing = NULL;
-            smart_ptr<OOX::File> oFileV = oox_sheet->Find(oox_sheet->m_oLegacyDrawing->m_oId->GetValue());
-			if (oFileV.IsInit() && OOX::FileTypes::VmlDrawing == oFileV->type())
-			{
-				pVmlDrawing = (OOX::CVmlDrawing*)oFileV.GetPointer();
-			}
-			OOX::WritingElement* pShapeElem	= NULL;
 			std::wstring sShapeId = L"_x0000_s" + std::to_wstring(object->m_oShapeId->GetValue());
-			if (pVmlDrawing)
-			{
-                boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
-				
-				if (pFind != pVmlDrawing->m_mapShapes.end())
-				{
-					pShapeElem	= pFind->second.pElement;
-				}			
-			}
-			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
 
-			for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+			smart_ptr<OOX::WritingElement>	oElement	= oox_sheet->FindVmlObject(sShapeId);
+			smart_ptr<OOX::Vml::CShape> oShape		= oElement.smart_dynamic_cast<OOX::Vml::CShape>();
+			
+			for(size_t j = 0; (oShape.IsInit()) && (j < oShape->m_arrItems.size()); ++j)
 			{
-				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				OOX::WritingElement* pChildElemShape = oShape->m_arrItems[j];
+				
 				if(!bAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
@@ -2283,7 +2271,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 					if (!sIdImageFileCache.empty())
 					{
 						//ищем физический файл ( rId относительно vml_drawing)									
-						smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
+						smart_ptr<OOX::CVmlDrawing>	oVmlDrawing = oox_sheet->Find(oox_sheet->m_oLegacyDrawing->m_oId->GetValue()).smart_dynamic_cast<OOX::CVmlDrawing>();
+						smart_ptr<OOX::File> pFile = oVmlDrawing->Find(sIdImageFileCache);
 						
 						if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 						{
@@ -2311,6 +2300,156 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 		}
 
 		ods_context->drawing_context()->end_object_ole();
+		ods_context->drawing_context()->end_drawing();
+
+		ods_context->end_drawings();
+	}
+}
+
+
+void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spreadsheet::CWorksheet *oox_sheet)
+{
+	if (!oox_controls) return;
+
+    for (std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator it = oox_controls->m_mapControls.begin(); it != oox_controls->m_mapControls.end(); ++it)
+	{
+		OOX::Spreadsheet::CControl* pControl = it->second;
+		if (!pControl) continue;
+	
+		OOX::WritingElement* pShapeElem	= NULL;
+		
+		nullable<OOX::Spreadsheet::CCellAnchor>		oCellAnchor;
+		nullable<OOX::Spreadsheet::CFormControlPr>	oFormControlPr;
+        
+		smart_ptr<OOX::File> pFileControl;
+
+		if (pControl->m_oRid.IsInit())
+		{			
+			pFileControl = oox_sheet->Find(OOX::RId(pControl->m_oRid->GetValue()));// rId относительно sheet
+		}
+		if (false == pFileControl.IsInit()) continue;
+		
+		bool bSetAnchor = false;
+
+		smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pFileCtrlProp = pFileControl.smart_dynamic_cast<OOX::Spreadsheet::CCtrlPropFile>();
+		
+		if (pFileCtrlProp.IsInit())
+		{
+			oFormControlPr = pFileCtrlProp->m_oFormControlPr;
+		}
+		else
+		{
+			oFormControlPr.Init();
+			smart_ptr<OOX::ActiveX_xml> pActiveX_xml = pFileControl.smart_dynamic_cast<OOX::ActiveX_xml>();
+
+			if ((pActiveX_xml.IsInit()) && (pActiveX_xml->m_oObject.IsInit()))
+			{
+				if (pActiveX_xml->m_oObject->m_oObjectType.IsInit() == false)
+				{
+					OOX::ActiveXObjectImage* pImage = dynamic_cast<OOX::ActiveXObjectImage*>(pActiveX_xml->m_oObject.GetPointer());
+
+					if (pImage)
+					{
+						//todooo
+					}
+					continue;
+				}
+
+				pActiveX_xml->m_oObject->toFormControlPr(oFormControlPr.GetPointer());
+			}
+		}		
+		std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
+
+		smart_ptr<OOX::WritingElement> oObjectElement = oox_sheet->FindVmlObject(sShapeId);
+		smart_ptr<OOX::Vml::CShape> oShape = oObjectElement.smart_dynamic_cast<OOX::Vml::CShape>();
+
+		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+		
+		if (pControl->m_oControlPr.IsInit() && pControl->m_oControlPr->m_oAnchor.IsInit())
+		{						
+			const OOX::Spreadsheet::CExtAnchor& oAnchor = pControl->m_oControlPr->m_oAnchor.get();
+			
+			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
+			{
+				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
+				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+				else
+					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
+				
+				oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+
+				oCellAnchor->m_oFrom = oAnchor.m_oFrom.get();
+				oCellAnchor->m_oTo = oAnchor.m_oTo.get();
+				
+				bSetAnchor = true;
+			}
+		}
+		if (false == oCellAnchor.IsInit())
+		{
+			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+			oCellAnchor->m_bShapeOle= true;			
+		}
+		if ((oShape.IsInit()) && (OOX::et_v_shapetype != oShape->getType()))
+		{
+			for(size_t j = 0; j < oShape->m_arrItems.size(); ++j)
+			{
+				OOX::WritingElement* pChildElemShape = oShape->m_arrItems[j];
+				
+				if (OOX::et_v_ClientData == pChildElemShape->getType())
+				{
+					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
+
+					if (!bSetAnchor )
+					{
+						pClientData->toCellAnchor(oCellAnchor.GetPointer());
+						bSetAnchor = true;
+					}
+					pClientData->toFormControlPr(oFormControlPr.GetPointer());
+				}
+				else if (OOX::et_v_textbox == pChildElemShape->getType())
+				{
+					OOX::Vml::CTextbox* pTextbox = static_cast<OOX::Vml::CTextbox*>(pChildElemShape);
+
+					oFormControlPr->m_oText = pTextbox->m_oText;
+				}
+			}	
+		}
+		if (!oCellAnchor.IsInit() || !oFormControlPr.IsInit())
+		{
+			continue;
+		}
+		if (!oFormControlPr->m_oObjectType.IsInit() )
+		{
+			continue;
+		}
+//---------------------------------------------
+		ods_context->start_drawings();
+
+		{
+			oox_table_position from = {}, to = {};
+			
+			convert(oCellAnchor->m_oFrom.GetPointer(), &from);	
+			convert(oCellAnchor->m_oTo.GetPointer(), &to);
+
+			double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+			ods_context->current_table().convert_position(from, x1, y1);
+			ods_context->current_table().convert_position(to,	x2, y2);
+			
+			ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
+		}
+		ods_context->drawing_context()->start_drawing();
+
+		ods_context->drawing_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue());
+		
+		if(pControl->m_oName.IsInit())	ods_context->drawing_context()->set_name(*pControl->m_oName);
+
+		//pControl->m_oControlPr.GetPointer()
+		//oFormControlPr.GetPointer());		
+
+		ods_context->drawing_context()->end_control();
 		ods_context->drawing_context()->end_drawing();
 
 		ods_context->end_drawings();

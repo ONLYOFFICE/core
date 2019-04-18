@@ -2567,6 +2567,22 @@ void odf_drawing_context::start_object(std::wstring name)
 
 	start_element(object_elm);
 }
+void odf_drawing_context::start_control(int type)
+{
+	office_element_ptr control_elm;
+	create_element(L"draw", L"control", control_elm, impl_->odf_context_);
+
+	draw_control* control = dynamic_cast<draw_control*>(control_elm.get());
+	if (control == NULL)return;
+
+	//control->draw_control_ = zckzzckzx(type);
+	
+	start_element(control_elm);
+}
+void odf_drawing_context::end_control()
+{
+	end_shape();
+}
 void odf_drawing_context::start_media(std::wstring name)
 {
 	start_frame();
@@ -2613,6 +2629,7 @@ void odf_drawing_context::end_media()
 
 	end_frame();
 }
+
 void odf_drawing_context::start_text_box()
 {	
 	impl_->current_drawing_state_.oox_shape_preset_ = 2000;

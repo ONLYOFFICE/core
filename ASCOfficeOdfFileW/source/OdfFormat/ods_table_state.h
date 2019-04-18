@@ -40,6 +40,7 @@
 #include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "odf_drawing_context.h"
+#include "odf_controls_context.h"
 
 #include "office_elements_create.h"
 
@@ -362,7 +363,8 @@ public:
 
 	void convert_position(oox_table_position & oox_pos, double & x, double & y);
 
-	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
+	odf_drawing_context*	drawing_context(){return  &drawing_context_;}
+	odf_controls_context*	controls_context(){return  &controls_context_;}
 
 	std::wstring					office_table_name_;
 	std::vector<ods_comment_state>	comments_;
@@ -384,7 +386,7 @@ private:
 	std::vector<_covered_info> current_covered_rows_;
 	int current_covered_cols_;
 
-    odf_conversion_context * context_;   
+    odf_conversion_context *context_;   
 	
 	office_element_ptr	office_table_;
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
@@ -414,6 +416,7 @@ private:
 	std::vector<table_part_state>			table_parts_;
 
 	odf_drawing_context		drawing_context_;	
+	odf_controls_context	controls_context_;	
 
 	friend class ods_table_context;
 

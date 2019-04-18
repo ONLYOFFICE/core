@@ -35,12 +35,8 @@
 
 #include "common_attlists.h"
 
-
-namespace cpdoccore 
-{
-
+namespace cpdoccore {
 namespace odf_writer {
-
 
 class draw_shape : public draw_base
 {  
@@ -64,8 +60,7 @@ public:
 	int sub_type_;
 
 };
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_rect_attlist
 {
 public:
@@ -92,8 +87,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_rect);
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_ellipse_attlist
 {
 public:
@@ -117,7 +111,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_ellipse);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_circle : public draw_shape
 {
 public:
@@ -131,7 +125,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_circle);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_line_attlist
 {
 public:
@@ -143,7 +137,7 @@ public:
 	
 	void serialize(CP_ATTR_NODE);   
 };
-/////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_line : public draw_shape
 {
 public:
@@ -160,7 +154,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_line);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_path_attlist
 {
 public:
@@ -169,7 +163,7 @@ public:
 	
 	void serialize(CP_ATTR_NODE);   
 };
-/////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_path : public draw_shape
 {
 public:
@@ -187,7 +181,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_path);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_polygon_attlist
 {
 public:
@@ -196,7 +190,7 @@ public:
 	
 	void serialize(CP_ATTR_NODE);   
 };
-/////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_polygon : public draw_shape
 {
 public:
@@ -214,9 +208,9 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_polygon);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 
-/////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_custom_shape : public draw_shape
 {
 public:
@@ -233,9 +227,9 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_custom_shape);
+//----------------------------------------------------------------------------------------------
 //draw:enhanced-geometry
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_equation_attlist//убрать стринги ... сделать парсинг см стр 378 оазис !!!!!!!!!!!
 {
 public:
@@ -244,7 +238,7 @@ public:
 	
 	void serialize(CP_ATTR_NODE);   
 };
-/////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_equation : public office_element_impl<draw_equation>
 {
 public:
@@ -265,13 +259,13 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_equation);
-////////////////
+//----------------------------------------------------------------------------------------------
 struct draw_handle_geometry
 {
 	int min;
 	int max;
 };
-//////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_handle_attlist//убрать стринги ... сделать парсинг см стр 378 оазис !!!!!!!!!!!
 {
 public:
@@ -290,7 +284,7 @@ public:
 	
 	void serialize(CP_ATTR_NODE);   
 };
-
+//----------------------------------------------------------------------------------------------
 class draw_handle : public office_element_impl<draw_handle>
 {
 public:
@@ -312,7 +306,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_handle);
-/////////////////
+//----------------------------------------------------------------------------------------------
 class draw_enhanced_geometry_attlist
 {
 public:
@@ -336,7 +330,7 @@ public:
 	
 	void serialize(CP_ATTR_NODE);   
 };
-/////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_enhanced_geometry : public office_element_impl<draw_enhanced_geometry>
 {
 public:
@@ -371,7 +365,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_enhanced_geometry);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 
 class draw_caption : public draw_shape
 {
@@ -382,11 +376,11 @@ public:
 	static const ElementType type = typeDrawCaption;
 	static const xml::NodeType xml_type = xml::typeElement;
 
-    virtual void serialize(std::wostream & _Wostream);
+	virtual void serialize(std::wostream & _Wostream);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_caption);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_connector_attlist
 {
 public:
@@ -396,7 +390,7 @@ public:
 	
 	void serialize(CP_ATTR_NODE);   
 };
-/////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
 class draw_connector : public draw_line
 {
 public:
@@ -415,6 +409,30 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_connector);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------
+class draw_control : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDrawControl;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)	xml_id_;
+	_CP_OPT(std::wstring)	caption_id_;
+	_CP_OPT(std::wstring)	control_id_;
+
+	office_element_ptr		draw_glue_point_;
+//<svg:desc>
+//<svg:title>
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_control);
+//----------------------------------------------------------------------------------------------
 }
 }

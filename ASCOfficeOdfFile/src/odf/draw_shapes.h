@@ -712,11 +712,11 @@ public:
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context){}
 
-	_CP_OPT(std::wstring)					xml_id_;
-	_CP_OPT(std::wstring)					caption_id_;
-	_CP_OPT(std::wstring)					control_id_;
+	_CP_OPT(std::wstring)	xml_id_;
+	_CP_OPT(std::wstring)	caption_id_;
+	_CP_OPT(std::wstring)	control_id_;
 
-	office_element_ptr						draw_glue_point_;
+	office_element_ptr		draw_glue_point_;
 //<svg:desc>
 //<svg:title>
 private:

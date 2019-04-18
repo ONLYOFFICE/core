@@ -34,10 +34,7 @@
 #include <string>
 #include "ods_table_state.h"
 
-
 namespace cpdoccore {
-
-
 namespace odf_writer {
 
 class ods_conversion_context;

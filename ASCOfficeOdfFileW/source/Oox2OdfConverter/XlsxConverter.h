@@ -70,6 +70,7 @@ namespace OOX
 		class CCellStyle;
 		class CNumFmt;
 		class COleObjects;
+		class CControls;
 		class CDrawing;
 		class CCellAnchor;
 		class CFromTo;
@@ -201,6 +202,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CCellAnchor					*oox_anchor);
 		void convert(OOX::Spreadsheet::CDrawing						*oox_drawing, OOX::Spreadsheet::CWorksheet *oox_sheet);
 		void convert(OOX::Spreadsheet::COleObjects					*oox_objects, OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::CControls					*oox_control, OOX::Spreadsheet::CWorksheet *oox_sheet);
 
 		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position *pos);
 

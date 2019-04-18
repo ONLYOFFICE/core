@@ -149,6 +149,9 @@ public:
 	void start_object_ole(std::wstring ref);
 	void end_object_ole();
 
+	void start_control(int type);
+	void end_control();
+
 	void start_media(std::wstring ref);
 	void end_media();
 

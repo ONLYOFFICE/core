@@ -1942,6 +1942,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\DocxFormat\VmlDrawing.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\VmlDrawing.h"
 				>
 			</File>

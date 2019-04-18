@@ -468,6 +468,7 @@ enum ElementType
 	typeDrawHandle,
 	typeDrawEquation,
 	typeDrawEnhancedGeometry,
+	typeDrawGluePoint,
 
 	typeDr3dScene,
 	typeDr3dLight,
@@ -506,6 +507,7 @@ enum ElementType
 	typeFormTime,
 	typeFormValueRange,
 	typeFormItem,
+	typeFormOption,
 
 	typeDrawPage,    
 	typePresentationFooterDecl,

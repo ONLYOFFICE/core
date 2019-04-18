@@ -53,6 +53,7 @@ SOURCES += \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/DocxFormat/Comments.cpp \
+    ../Source/DocxFormat/VmlDrawing.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \

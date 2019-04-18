@@ -578,6 +578,55 @@ void draw_connector::reset_svg_path()
 	//}
 }
 ///////////////////////////////////////
+// draw:control
+const wchar_t * draw_control::ns = L"draw";
+const wchar_t * draw_control::name = L"control";
 
+void draw_control::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"xml:id", xml_id_);
+			CP_XML_ATTR_OPT(L"draw:caption-id", caption_id_);
+			CP_XML_ATTR_OPT(L"draw:control", control_id_);
+
+			draw_shape::serialize_attlist(CP_GET_XML_NODE());
+	
+			draw_shape::serialize(CP_XML_STREAM());
+			if (draw_glue_point_)
+				draw_glue_point_->serialize(CP_XML_STREAM());
+		}
+	}
+}
+void draw_control::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"draw", L"glue-point")
+    {
+        CP_CREATE_ELEMENT(draw_glue_point_);
+	}
+    else
+    {
+        //not_applicable_element(L"draw_enhanced_geometry", Reader, Ns, Name);
+    }
+
+}
+void draw_control::add_child_element( const office_element_ptr & child_element)
+{
+ 	if (!child_element) return;
+
+	ElementType type = child_element->get_type();
+
+    if (type == typeDrawGluePoint)
+	{
+		draw_glue_point_ = child_element;
+	}
+    else
+    {
+        //not_applicable_element(L"draw_enhanced_geometry", Reader, Ns, Name);
+    }
+
+}
 }
 }

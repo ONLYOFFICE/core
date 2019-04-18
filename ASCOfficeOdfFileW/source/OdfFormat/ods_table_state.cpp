@@ -140,7 +140,8 @@ std::wstring convert_time(const std::wstring & oox_time)
 ///////////////////////////////////////////////////////////////
 static formulasconvert::oox2odf_converter formulas_converter_table;
 
-ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm): context_(Context),drawing_context_(Context)
+ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm) : 
+		context_(Context), drawing_context_(Context), controls_context_(Context)
 {     
 	office_table_ = elm; 
 
@@ -532,7 +533,7 @@ int ods_table_state::is_row_comment(int row, int repeate_row)
 	{
 		if (comments_[i].row < row + repeate_row && comments_[i].row >= row && comments_[i].used == false)
 		{
-			return  i;
+			return  (int)i;
 		}
 	}
 	return -1;

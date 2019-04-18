@@ -4096,8 +4096,7 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 
 	for (std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator it = oWorksheet.m_oControls->m_mapControls.begin(); it != oWorksheet.m_oControls->m_mapControls.end(); ++it)
 	{
-		OOX::Spreadsheet::CControl*		pControl	= it->second;
-		OOX::WritingElement*			pShapeElem	= NULL;
+		OOX::Spreadsheet::CControl* pControl = it->second;
 		
 		if (!pControl) continue;
 		
@@ -4143,15 +4142,11 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		}
 		
 		std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
+		smart_ptr<OOX::Vml::CShape> oShape;
 		if (pVmlDrawing)
 		{
-            boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
-			
-			if (pFind != pVmlDrawing->m_mapShapes.end())
-			{
-				pFind->second.bUsed = true;
-				pShapeElem	= pFind->second.pElement;
-			}			
+			smart_ptr<OOX::WritingElement> oObjectElement = pVmlDrawing->FindVmlObject(sShapeId);
+			oShape = oObjectElement.smart_dynamic_cast<OOX::Vml::CShape>();
 		}
 		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
@@ -4182,12 +4177,11 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
 			oCellAnchor->m_bShapeOle= true;			
 		}
-		if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
+		if ((oShape.IsInit()) && (OOX::et_v_shapetype != oShape->getType()))
 		{
-			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
-			for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+			for(size_t j = 0; (oShape.IsInit()) && (j < oShape->m_arrItems.size()); ++j)
 			{
-				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				OOX::WritingElement* pChildElemShape = oShape->m_arrItems[j];
 				if (OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);

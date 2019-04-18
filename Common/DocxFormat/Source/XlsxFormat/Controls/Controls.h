@@ -246,7 +246,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;
 			nullable<CControlPr>								m_oControlPr;
-//--for-write---------------
+//--for-write-from-bin--------------
 			nullable<CFormControlPr>							m_oFormControlPr;
 		};
 //------------------------------------------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #include "SVGFramework.h"
 
-#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>(L##COLOR, ( ##R << 16 ) | ( ##G << 8 ) | ##B ));
+#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>( L##COLOR, ( R << 16 ) | ( G << 8 ) | B ))
 
 namespace SVG
 {

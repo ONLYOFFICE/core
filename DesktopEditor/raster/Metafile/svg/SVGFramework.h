@@ -7,13 +7,14 @@
 #include "../../../graphics/pro/Fonts.h"
 #include "../../../raster/BgraFrame.h"
 #include "../../../../Common/FileDownloader/FileDownloader.h"
+#include "../../../graphics/GraphicsPath.h"
 
 
-#define GET_ATTRIBUTEN(NAME)	if(style==##NAME)return m_n##NAME;
-#define GET_ATTRIBUTED(NAME)	if(style==##NAME)return m_n##NAME;
-#define GET_ATTRIBUTE(NAME)		if(style==##NAME)return m_##NAME;
+#define GET_ATTRIBUTEN(NAME)	if(style == NAME) return m_n##NAME;
+#define GET_ATTRIBUTED(NAME)	if(style == NAME) return m_n##NAME;
+#define GET_ATTRIBUTE(NAME)		if(style == NAME) return m_##NAME;
 
-#define VALIDATE_ATTRIBUTE(NAME) if(nStyle==##NAME)return m_bHave##NAME;
+#define VALIDATE_ATTRIBUTE(NAME) if(nStyle == NAME) return m_bHave##NAME;
 
 #ifndef	M_PI
 #define	M_PI		3.14159265358979323846
@@ -972,7 +973,7 @@ namespace SVG
 
 		}
 
-        virtual bool HashRef(ISvgRef* pRef, BOOL bDef)	=	0;
+        virtual bool HashRef(ISvgRef* pRef, bool bDef)	=	0;
         virtual bool GetRef(const std::wstring& ID, ISvgRef*& pRef)	=	0;
 
 		virtual ISvgRef* Get(long index) = 0;
@@ -1002,7 +1003,7 @@ namespace SVG
 		}
 
 	private:
-        void InitClrTable();
+        void InitClrTable();        
 	private:
 
         std::map<std::wstring, unsigned int> m_Table;
@@ -5092,7 +5093,7 @@ namespace SVG
 			}
 		}
 
-		inline void SetWorkingDirectory(const CString& sWorkingDirectory)
+        inline void SetWorkingDirectory(const std::wstring& sWorkingDirectory)
 		{
 			m_sWorkingDirectory	= sWorkingDirectory;
 		}
@@ -5172,7 +5173,7 @@ namespace SVG
         bool ClipPathCommands(Path* element, long PathType);
 	private:	
 		// for arc render
-		inline BOOL RenderArcAppx(const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
+        inline bool RenderArcAppx(const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
 		{
 			if (0.0 != dRotAngle)	
 			{
@@ -5195,9 +5196,9 @@ namespace SVG
 				m_render->PathCommandArcTo(Center.X - Radi.X, Center.Y - Radi.Y, Radi.X * 2.0, Radi.Y * 2.0, dStartAngle, dSweep);
 			}
 
-			return TRUE;
+            return true;
 		}
-		inline BOOL ClipArcAppx(Aggplus::CGraphicsPathSimpleConverter& simplifier, const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
+        inline bool ClipArcAppx(Aggplus::CGraphicsPathSimpleConverter& simplifier, const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
 		{
 			if (0.0 != dRotAngle)
 			{
@@ -5220,22 +5221,21 @@ namespace SVG
 				simplifier.PathCommandArcTo(Center.X - Radi.X, Center.Y - Radi.Y, Radi.X * 2.0, Radi.Y * 2.0, dStartAngle, dSweep);
 			}
 
-			return TRUE;
+            return true;
 		}
 
 		static double GetAngle(const double& CX, const double& CY, const double& X, const double& Y);
 		static Point GetCenter(int LargeFlag, int SweepFlag, Point Radi, Point P1, Point P2);
 		static BOOL GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep);
 
-		inline IAVSFontManager* GetFontManager()
+        inline NSFonts::IFontManager* GetFontManager()
 		{
 			if (NULL == m_pManager)
 			{
-				if (SUCCEEDED(CoCreateInstance(__uuidof(CAVSFontManager), NULL, CLSCTX_INPROC, __uuidof(IAVSFontManager), (void**)&m_pManager)))
-				{
-					m_pManager->Initialize(L"");
-					m_pManager->SetDefaultFont(L"Arial");
-				}
+                m_pApplicationFonts = NSFonts::NSApplication::Create();
+                m_pApplicationFonts->Initialize();
+
+                m_pManager = m_pApplicationFonts->GenerateFontManager();
 			}
 
 			return m_pManager;
@@ -5280,10 +5280,11 @@ namespace SVG
 		}
 
 	private:
+        NSFonts::IFontManager*          m_pManager;
+        NSFonts::IApplicationFonts*     m_pApplicationFonts;
 
-		IAVSRenderer*					m_render;
-		IAVSFontManager*				m_pManager;
-		IRefStorage*					m_model;
+        IRenderer*                      m_render;
+        IRefStorage*					m_model;
 		UnitSystem						m_oUs;
 
 		double							m_dAddMX;
@@ -5294,9 +5295,9 @@ namespace SVG
 		double							m_heightMM;
 
 		MatrixStack						m_transforms;
-		BOOL							m_bEnableFonts;
-		CString							m_sWorkingDirectory;
-		CAtlMap<CString, PatternImage*>	m_patterns;
+        bool							m_bEnableFonts;
+        std::wstring					m_sWorkingDirectory;
+        std::map<std::wstring, PatternImage*>	m_patterns;
 		CStyleCSS*						m_CSS;
 	};
 

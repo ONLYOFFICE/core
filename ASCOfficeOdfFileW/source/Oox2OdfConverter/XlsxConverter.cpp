@@ -2426,7 +2426,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			continue;
 		}
 //---------------------------------------------
-		std::wstring id = ods_context->current_table().controls_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue());
+		std::wstring id = ods_context->current_table().controls_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue(), oFormControlPr->m_oItemLst.IsInit());
 
 		if (false == id.empty())
 		{
@@ -2479,7 +2479,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			}
 			if (oFormControlPr->m_oMax.IsInit())
 			{
-				ods_context->current_table().controls_context()->set_max_value(oFormControlPr->m_oMin->GetValue());
+				ods_context->current_table().controls_context()->set_max_value(oFormControlPr->m_oMax->GetValue());
 			}
 			if (oFormControlPr->m_oPage.IsInit())
 			{
@@ -2497,6 +2497,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			{
 				ods_context->current_table().controls_context()->set_horiz(*oFormControlPr->m_oHoriz);
 			}
+			if (oFormControlPr->m_oVerticalBar.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_horiz(*oFormControlPr->m_oVerticalBar == false);
+			}
 			if (oFormControlPr->m_oFmlaLink.IsInit())
 			{
 				ods_context->current_table().controls_context()->set_linkedCell(*oFormControlPr->m_oFmlaLink);
@@ -2509,8 +2513,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			{
 				ods_context->current_table().controls_context()->set_check_state(oFormControlPr->m_oChecked->GetValue());
 			}
-			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDropLines;
-			//nullable<SimpleTypes::Spreadsheet::CDropStyle<>>			m_oDropStyle;
+			if (oFormControlPr->m_oDropStyle.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_drop_down(true);
+			}
+			if (oFormControlPr->m_oDropLines.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_drop_size(oFormControlPr->m_oDropLines->GetValue());
+			}
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDx;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSel;
 			//nullable<SimpleTypes::Spreadsheet::CSelType<>>			m_oSelType;

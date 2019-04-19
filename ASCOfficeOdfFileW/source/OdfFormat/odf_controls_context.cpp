@@ -64,7 +64,7 @@ public:
 	Impl(odf_conversion_context *odf_context) : odf_context_(odf_context)
     {	
 	} 
-	std::wstring start_control(int type);
+	std::wstring start_control(int type, bool items_set);
 	
 	std::vector<odf_control_state> controls_;
 
@@ -76,7 +76,7 @@ odf_controls_context::odf_controls_context(odf_conversion_context *odf_context)
 	: impl_(new  odf_controls_context::Impl(odf_context))
 {
 }
-std::wstring odf_controls_context::Impl::start_control(int type)
+std::wstring odf_controls_context::Impl::start_control(int type, bool items_set)
 {
 	office_element_ptr element;
 	std::wstring control_implementation;
@@ -94,8 +94,16 @@ std::wstring odf_controls_context::Impl::start_control(int type)
 		}break;
 		case 2: // objectDrop
 		{
-			create_element(L"form", L"combobox", element, odf_context_);
-			control_implementation = L"ooo:com.sun.star.form.component.ComboBox";
+			if (items_set)
+			{
+				create_element(L"form", L"combobox", element, odf_context_);
+				control_implementation = L"ooo:com.sun.star.form.component.ComboBox";
+			}
+			else
+			{
+				create_element(L"form", L"listbox", element, odf_context_);
+				control_implementation = L"ooo:com.sun.star.form.component.ListBox";
+			}
 		}break;
 		case 3: // objectGBox
 		{
@@ -120,7 +128,7 @@ std::wstring odf_controls_context::Impl::start_control(int type)
 		case 7: // objectScroll
 		{
 			create_element(L"form", L"value-range", element, odf_context_);
-			control_implementation = L"com.sun.star.awt.UnoControlScrollBar";
+			control_implementation = L"ooo:com.sun.star.form.component.ScrollBar";
 		}break;
 		case 8: // objectSpin
 		{
@@ -155,9 +163,9 @@ std::wstring odf_controls_context::Impl::start_control(int type)
 odf_controls_context::~odf_controls_context()
 {
 }
-std::wstring odf_controls_context::start_control(int type)
+std::wstring odf_controls_context::start_control(int type, bool items_set)
 {
-	return impl_->start_control(type);
+	return impl_->start_control(type, items_set);
 }
 void odf_controls_context::end_control()
 {
@@ -183,7 +191,7 @@ void odf_controls_context::set_linkedCell (const std::wstring & val)
 	if (impl_->controls_.empty()) return;
 
 	formulasconvert::oox2odf_converter formulas_converter;
-	impl_->controls_.back().form_elm->linked_cell_ = formulas_converter.convert_ref(val);
+	impl_->controls_.back().form_elm->linked_cell_ = formulas_converter.convert_named_ref(val);
 }
 void odf_controls_context::set_listFillRange (const std::wstring & val)
 {
@@ -194,7 +202,17 @@ void odf_controls_context::set_listFillRange (const std::wstring & val)
 	if (!listbox) return;
 
 	formulasconvert::oox2odf_converter formulas_converter;
-	listbox->list_source_ = formulas_converter.convert_ref(val);
+	listbox->source_cell_range_ = formulas_converter.convert_named_ref(val);
+}
+void odf_controls_context::set_drop_size(int val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_listbox *listbox = dynamic_cast<odf_writer::form_listbox*>(impl_->controls_.back().form_elm);
+	if (listbox) listbox->size_ = val;
+	
+	odf_writer::form_combobox *combobox  = dynamic_cast<odf_writer::form_combobox*>(impl_->controls_.back().form_elm);
+	if (combobox ) combobox ->size_ = val;
 }
 void odf_controls_context::set_macro(const std::wstring & val)
 {
@@ -268,13 +286,18 @@ void odf_controls_context::set_horiz(bool val)
 
 	value_range->orientation_ = val ? odf_types::table_centering::Horizontal : odf_types::table_centering::Vertical;
 }
+void odf_controls_context::set_drop_down(bool val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	impl_->controls_.back().form_elm->dropdown_ = val;
+}
 void odf_controls_context::set_check_state(int val)
 {
 	if (impl_->controls_.empty()) return;
 	
 	odf_writer::form_checkbox *checkbox = dynamic_cast<odf_writer::form_checkbox*>(impl_->controls_.back().form_elm);
-	if (checkbox) checkbox->current_state_ = (val == 1);
-
+	checkbox->current_state_ = (val == 1);
 }
 void odf_controls_context::set_value(const std::wstring & val)
 {

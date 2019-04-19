@@ -241,13 +241,13 @@ const wchar_t * form_element::name = L"element";
 
 void form_element::serialize_attlist(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT(L"form:control_implementation",	control_implementation_);
+	CP_XML_ATTR_OPT(L"form:name",			name_);
+	CP_XML_ATTR_OPT(L"form:control-implementation",	control_implementation_);
 	CP_XML_ATTR_OPT(L"form:data-field",		data_field_);
 	CP_XML_ATTR_OPT(L"form:linked-cell",	linked_cell_);
 	CP_XML_ATTR_OPT(L"form:disabled",		disabled_);
 	CP_XML_ATTR_OPT(L"form:id",				id_);
 	CP_XML_ATTR_OPT(L"form:label",			label_);
-	CP_XML_ATTR_OPT(L"form:name",			name_);
 	CP_XML_ATTR_OPT(L"form:printable",		printable_);
 	CP_XML_ATTR_OPT(L"form:tab-index",		tab_index_);
 	CP_XML_ATTR_OPT(L"form:tab-stop",		tab_stop_);
@@ -386,10 +386,10 @@ void form_checkbox::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			form_element::serialize_attlist(CP_GET_XML_NODE());
+			
 			if (current_state_)
 				CP_XML_ATTR(L"form:current-state", L"checked" );			
-
-			form_element::serialize_attlist(CP_GET_XML_NODE());
 			
 			if (properties_) properties_->serialize(CP_XML_STREAM());
 			if (office_event_listeners_) office_event_listeners_->serialize(CP_XML_STREAM());
@@ -516,14 +516,14 @@ void form_value_range::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_ATTR_OPT(L"form:min-value",	min_value_);
-			CP_XML_ATTR_OPT(L"form:max-value",	max_value_);
-			CP_XML_ATTR_OPT(L"form:step-size",	step_size_);
-			CP_XML_ATTR_OPT(L"form:page-step-size",	page_step_size_);
-			CP_XML_ATTR_OPT(L"form:orientation",	orientation_);
-			CP_XML_ATTR_OPT(L"form:delay-for-repeat",	delay_for_repeat_);
-
 			form_element::serialize_attlist(CP_GET_XML_NODE());
+			
+			CP_XML_ATTR_OPT	(L"form:min-value",			min_value_);
+			CP_XML_ATTR_OPT	(L"form:max-value",			max_value_);
+			CP_XML_ATTR_OPT	(L"form:step-size",			step_size_);
+			CP_XML_ATTR_OPT	(L"form:page-step-size",	page_step_size_);
+			CP_XML_ATTR_OPT	(L"form:orientation",		orientation_);
+			CP_XML_ATTR		(L"form:delay-for-repeat",	delay_for_repeat_);
 		
 			if (properties_) properties_->serialize(CP_XML_STREAM());
 			if (office_event_listeners_) office_event_listeners_->serialize(CP_XML_STREAM());

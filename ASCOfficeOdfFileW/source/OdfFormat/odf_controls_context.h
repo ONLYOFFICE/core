@@ -52,7 +52,7 @@ public:
 	odf_controls_context(odf_conversion_context *odf_context);
     ~odf_controls_context();
 
-	std::wstring start_control(int type);
+	std::wstring start_control(int type, bool items_set);
 	void end_control();
 
 	office_element_ptr & get_root_element();
@@ -77,6 +77,8 @@ public:
 	void set_value			(const std::wstring & val);
 	void set_horiz			(bool val);
 	void set_check_state	(int val);
+	void set_drop_down		(bool val);
+	void set_drop_size		(int val);
 
 	void set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
 

@@ -399,6 +399,7 @@ public:
 	_CP_OPT(std::wstring)		source_cell_range_;
 	_CP_OPT(std::wstring)		list_source_;
 	_CP_OPT(std::wstring)		list_source_type_;
+	_CP_OPT(int)				size_;
 
 	office_element_ptr_array	options_;
 	
@@ -429,7 +430,9 @@ CP_REGISTER_OFFICE_ELEMENT2(form_date);
 class form_value_range : public form_element
 {
 public:
-    static const wchar_t * ns;
+	form_value_range() {delay_for_repeat_ = L"PT0.05000000S";}
+   
+	static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeFormValueRange;
@@ -442,9 +445,7 @@ public:
 	_CP_OPT(int)						step_size_;
 	_CP_OPT(int)						page_step_size_;
 	_CP_OPT(odf_types::table_centering)	orientation_;
-	_CP_OPT(std::wstring)				delay_for_repeat_;
-//form:delay-for-repeat="PT0.023000000S" 
-
+	std::wstring						delay_for_repeat_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_value_range);
 //-----------------------------------------------------------------------------------------

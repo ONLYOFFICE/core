@@ -207,7 +207,7 @@ const wchar_t * form_element::name = L"element";
 
 void form_element::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"form:control_implementation",	control_implementation_);
+	CP_APPLY_ATTR(L"form:control-implementation",	control_implementation_);
 	CP_APPLY_ATTR(L"form:data-field",	data_field_);
 	CP_APPLY_ATTR(L"form:linked-cell",	linked_cell_);
 	CP_APPLY_ATTR(L"form:disabled",		disabled_);
@@ -302,7 +302,8 @@ void form_button::serialize_control_props(std::wostream & strm)
 			CP_XML_ATTR(L"dx", L"20");
 			CP_XML_ATTR(L"noThreeD", L"1");			
 		}
-	}}
+	}
+}
 // form:text
 //----------------------------------------------------------------------------------
 const wchar_t * form_text::ns = L"form";
@@ -342,7 +343,8 @@ void form_text::serialize_control_props(std::wostream & strm)
 			if (value_)
 				CP_XML_ATTR(L"val", *value_);
 		}
-	}}
+	}
+}
 void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
 {
 	if (!draw) return;
@@ -376,6 +378,106 @@ void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 	Context.output_stream() << L"</w:sdt>"; 
 }
 void form_text::docx_convert_field(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	if (!draw) return;
+
+	XmlUtils::replace_all( *name_, L" ", L"_");
+
+	Context.add_new_run(L"");
+		Context.output_stream() << L"<w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << *name_ << L"\"/><w:enabled/>";
+		Context.output_stream() << L"</w:ffData></w:fldChar>";
+	Context.finish_run();	
+
+	Context.add_new_run(L"");
+		Context.output_stream() << L"<w:instrText>FORMTEXT</w:instrText>";
+	Context.finish_run();	
+		
+	Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	
+	Context.add_new_run(L"");
+		Context.output_stream() << L"<w:t>" << *current_value_ << L"</w:t>";
+	Context.finish_run();	
+    Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+}
+// form:fixed-text
+//----------------------------------------------------------------------------------
+const wchar_t * form_textarea::ns = L"form";
+const wchar_t * form_textarea::name = L"textarea";
+
+// form:fixed-text
+//----------------------------------------------------------------------------------
+const wchar_t * form_fixed_text::ns = L"form";
+const wchar_t * form_fixed_text::name = L"fixed-text";
+
+void form_fixed_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	form_element::add_attributes(Attributes);
+}
+void form_fixed_text::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(2);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::docx_convert(Context);
+}
+void form_fixed_text::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(2);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_fixed_text::serialize_control_props(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", L"EditBox");
+
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");
+			
+			if (value_)
+				CP_XML_ATTR(L"val", *value_);
+		}
+	}
+}
+void form_fixed_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	if (!draw) return;
+
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			if (name_)
+			{
+				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+			}
+			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
+			//<w:lock w:val="sdtLocked"/>
+			//<w:placeholder>
+			// <w:docPart w:val="DefaultPlaceholder_-1854013440"/>
+			//</w:placeholder>
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+		{
+			Context.add_new_run(L"");
+			if (current_value_)
+			{
+				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+				Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				Context.output_stream() << L"</w:t>";
+			}
+			Context.finish_run();
+		}
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>"; 
+}
+void form_fixed_text::docx_convert_field(oox::docx_conversion_context & Context, draw_control *draw)
 {
 	if (!draw) return;
 
@@ -628,9 +730,6 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 		Context.finish_run();
 	}
 }
-
-
-
 // form:listbox
 //----------------------------------------------------------------------------------
 const wchar_t * form_listbox::ns = L"form";
@@ -693,7 +792,7 @@ void form_listbox::serialize_control_props(std::wostream & strm)
 		}
 	}
 }
-// form:button
+// form:date
 //----------------------------------------------------------------------------------
 const wchar_t * form_date::ns = L"form";
 const wchar_t * form_date::name = L"date";
@@ -767,6 +866,164 @@ void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 		Context.finish_run();
 	}
 }
+// form:time
+//----------------------------------------------------------------------------------
+const wchar_t * form_time::ns = L"form";
+const wchar_t * form_time::name = L"time";
+
+void form_time::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	form_element::add_attributes(Attributes);
+}
+void form_time::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::docx_convert(Context);
+}
+void form_time::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_time::serialize_control_props(std::wostream & strm)
+{
+}
+void form_time::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
+{
+	Context.finish_run();
+
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			if (name_)
+			{
+				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+			}
+			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
+			
+			Context.output_stream() << L"<w:date>";
+				Context.output_stream() << L"<w:dateFormat w:val=\"\"/>";
+				Context.output_stream() << L"<w:lid w:val=\"en-US\"/>";
+				Context.output_stream() << L"<w:storeMappedDataAs w:val=\"dateTime\"/>";
+				Context.output_stream() << L"<w:calendar w:val=\"gregorian\"/>";				
+			Context.output_stream() << L"</w:date>";
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+		{
+			Context.add_new_run(L"");
+				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+				if (current_value_)
+				{
+					Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				}
+				else
+				{
+					Context.output_stream() << L"[Insert time]";
+				}
+				Context.output_stream() << L"</w:t>";
+			Context.finish_run();
+		}
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
+	
+	if (label_)
+	{
+		Context.add_new_run(L"");
+			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
+			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << L"</w:t>";
+		Context.finish_run();
+	}
+}
+// form:listbox
+//----------------------------------------------------------------------------------
+const wchar_t * form_value_range::ns = L"form";
+const wchar_t * form_value_range::name = L"value-range";
+
+void form_value_range::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	form_element::add_attributes(Attributes);	
+
+	CP_APPLY_ATTR(L"form:min-value", min_value_);
+	CP_APPLY_ATTR(L"form:max-value", max_value_);
+	CP_APPLY_ATTR(L"form:step-size", step_size_);
+	CP_APPLY_ATTR(L"form:page-step-size", page_step_size_);
+	CP_APPLY_ATTR(L"form:orientation", orientation_);
+	CP_APPLY_ATTR(L"form:delay-for-repeat", delay_for_repeat_);
+}
+void form_value_range::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!control_implementation_) return;
+	
+	if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
+		Context.get_forms_context().start_element(7); //spin
+	else
+		Context.get_forms_context().start_element(8); //scroll
+
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::docx_convert(Context);
+}
+void form_value_range::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	if (!control_implementation_) return;
+	
+	if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
+		Context.get_forms_context().start_element(7); //spin
+	else
+		Context.get_forms_context().start_element(8); //scroll
+
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_value_range::serialize_control_props(std::wostream & strm)
+{
+	if (!control_implementation_) return;
+	
+	std::wstring object_type;
+	if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
+		object_type = L"Spin";
+	else
+		object_type = L"Scroll";
+
+	formulasconvert::odf2oox_converter converter;
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", object_type);
+
+			CP_XML_ATTR(L"noThreeD", L"1");
+			
+			if (linked_cell_)
+			{
+				std::wstring fmla = converter.convert_named_expr(*linked_cell_);
+				CP_XML_ATTR(L"fmlaLink", fmla);
+			}
+			if (value_)			CP_XML_ATTR(L"val", *value_);
+			if (min_value_)		CP_XML_ATTR(L"min", *min_value_);
+			if (max_value_)		CP_XML_ATTR(L"max", *max_value_);
+			if (step_size_)		CP_XML_ATTR(L"inc", *step_size_);
+			if (page_step_size_)CP_XML_ATTR(L"page",*page_step_size_);
+			if (orientation_)
+			{
+				if (*orientation_ == L"horizontal")
+					CP_XML_ATTR(L"horiz", 1);
+				else
+					CP_XML_ATTR(L"verticalBar", 1);
+			}
+		}
+	}
+}
+
 // form:item
 //----------------------------------------------------------------------------------
 const wchar_t * form_item::ns = L"form";

@@ -77,22 +77,22 @@ void xlsx_drawing_position::serialize(std::wostream & strm, const std::wstring &
     {
 		CP_XML_NODE( ns + (ns.empty() ? L"" : L":") + (type == xlsx_drawing_position::from ? L"from" : L"to") )
         {
-            CP_XML_NODE(ns + L":col")
+            CP_XML_NODE(ns + (ns.empty() ? L"" : L":") + L"col")
             {
                 CP_XML_CONTENT(position.col);
             }
             
-            CP_XML_NODE(ns + L":colOff")
+            CP_XML_NODE(ns + (ns.empty() ? L"" : L":") + L"colOff")
             {
                 CP_XML_CONTENT(static_cast<size_t>(position.colOff));
             }
 
-            CP_XML_NODE(ns + L":row")
+            CP_XML_NODE(ns + (ns.empty() ? L"" : L":") + L"row")
             {
                 CP_XML_CONTENT(position.row);
             }
 
-            CP_XML_NODE(ns + L":rowOff")
+            CP_XML_NODE(ns + (ns.empty() ? L"" : L":") + L"rowOff")
             {
                 CP_XML_CONTENT(static_cast<size_t>(position.rowOff));
             }  

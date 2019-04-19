@@ -320,6 +320,43 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_text);
 
+//  form:fixed-text 
+class form_fixed_text : public form_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormFixedText;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
+	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+public:
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_fixed_text);
+
+//  form:textarea 
+class form_textarea : public form_text
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormTextarea;
+    CPDOCCORE_DEFINE_VISITABLE();
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_textarea);
+
 //  form:checkbox
 class form_checkbox : public form_text
 {
@@ -351,6 +388,38 @@ public:
 	//form:visual-effect
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_checkbox);
+
+//  form:value-range
+class form_value_range : public form_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormValueRange;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control *draw){}
+	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw){}
+	
+	virtual void serialize_control_props(std::wostream & strm);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+public:
+	_CP_OPT(int)			min_value_;
+	_CP_OPT(int)			max_value_;
+	_CP_OPT(int)			step_size_;
+	_CP_OPT(int)			page_step_size_;
+	_CP_OPT(std::wstring)	orientation_;
+	_CP_OPT(std::wstring)	delay_for_repeat_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_value_range);
 
 //  form:combobox
 class form_combobox : public form_text
@@ -442,10 +511,34 @@ private:
 
 public:
 
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_date);
 
+//  form:time
+class form_time : public form_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormTime;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+public:
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_time);
 //  form:item
 class form_item : public office_element_impl<form_item>
 {
@@ -470,7 +563,6 @@ CP_REGISTER_OFFICE_ELEMENT2(form_item);
 }
 //<form:connection-resource>7.6.2,  
 //<form:file> 13.5.5,
-//<form:fixed-text> 13.5.10,
 //<form:form> 13.3, 
 //<form:formatted-text> 13.5.6, 
 //<form:frame> 13.5.19,
@@ -481,7 +573,3 @@ CP_REGISTER_OFFICE_ELEMENT2(form_item);
 //<form:image-frame> 13.5.20, 
 //<form:number> 13.5.7,
 //<form:password> 13.5.4, 
-//<form:radio> 13.5.18, 
-//<form:textarea> 13.5.3,
-//<form:time>
-//<form:value-range> 13.5.24 and 

@@ -18,7 +18,7 @@ CSVGTransformer::~CSVGTransformer()
     delete m_internal;
 }
 
-bool CSVGTransformer::LoadFile(const std::wstring& file)
+bool CSVGTransformer::OpenFromFile(const std::wstring& file)
 {
     m_internal->m_oStorage.Clear();
 
@@ -41,6 +41,18 @@ bool CSVGTransformer::Load(const std::wstring& content)
         return false;
 
     return true;
+}
+
+void CSVGTransformer::Close()
+{
+    delete m_internal;
+    m_internal = new CSVGTransformer_private();
+}
+
+void CSVGTransformer::SetFontManager(NSFonts::IFontManager* pFontManager)
+{
+    m_internal->m_oRender.SetFontManager(pFontManager);
+    return;
 }
 
 bool CSVGTransformer::Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)

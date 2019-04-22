@@ -4233,7 +4233,7 @@ namespace SVG
 			if (L"clipPath" == oXml.GetName())
 				return false;
 #ifdef _DEBUG
-			ATLTRACE (L"[svg] ClipPath-NodeName : %s\n", oXml.GetName());
+            //ATLTRACE (L"[svg] ClipPath-NodeName : %s\n", oXml.GetName());
 #endif
 
 			DrawElement* pClip = m_oBuilder.Build(oXml.GetName());
@@ -5080,10 +5080,13 @@ namespace SVG
 
             m_bEnableFonts	=	true;
 			m_CSS			=	NULL;
+
+            m_bIsExternalManager = false;
 		}
 		~Painter()
 		{
-			RELEASEINTERFACE (m_pManager);
+            if (!m_bIsExternalManager)
+                RELEASEINTERFACE (m_pManager);
 
             for (std::map<std::wstring, PatternImage*>::iterator iter = m_patterns.begin(); iter != m_patterns.end(); iter++)
             {
@@ -5110,6 +5113,12 @@ namespace SVG
 		}
 
         bool Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs);
+
+        void SetFontManager(NSFonts::IFontManager* pManager)
+        {
+            m_bIsExternalManager = true;
+            m_pManager = pManager;
+        }
 
 	private:
 
@@ -5170,6 +5179,7 @@ namespace SVG
 		// path
         bool PushPathCommands(Path* element, long PathType);
         bool ClipPathCommands(Path* element, long PathType);
+
 	private:	
 		// for arc render
         inline bool RenderArcAppx(const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
@@ -5238,7 +5248,7 @@ namespace SVG
 			}
 
 			return m_pManager;
-		}
+		}        
 
 		inline void UpdateClass(DrawElement* element)
 		{
@@ -5281,7 +5291,8 @@ namespace SVG
 		}
 
 	private:
-        NSFonts::IFontManager*          m_pManager;
+        bool                            m_bIsExternalManager;
+        NSFonts::IFontManager*          m_pManager;        
         NSFonts::IApplicationFonts*     m_pApplicationFonts;
 
         IRenderer*                      m_render;
@@ -5497,7 +5508,7 @@ namespace SVG
 				std::wstring sXml;
 				NSFile::CFileBinary::ReadAllTextUtf8(strFile, sXml);
 
-                LoadFromString(sXml, model);
+                return LoadFromString(sXml, model);
 			}
 
 			return false;

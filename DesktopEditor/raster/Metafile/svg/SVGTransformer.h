@@ -3,6 +3,7 @@
 
 #include "../../../graphics/IRenderer.h"
 #include "../../../graphics/config.h"
+#include "../../../graphics/pro/Fonts.h"
 
 class CSVGTransformer_private;
 class GRAPHICS_DECL CSVGTransformer
@@ -13,8 +14,12 @@ public:
 
 public:
 
-    bool LoadFile(const std::wstring& file);
+    bool OpenFromFile(const std::wstring& file);
     bool Load(const std::wstring& content);
+
+    void Close();
+
+    void SetFontManager(NSFonts::IFontManager* pFontManager);
 
     bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
     int get_Width();

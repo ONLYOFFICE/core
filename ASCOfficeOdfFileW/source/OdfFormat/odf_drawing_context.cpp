@@ -959,11 +959,15 @@ void odf_drawing_context::end_shape()
 		{
 			double angle = *rotate;//impl_->current_drawing_state_.rotateAngle_ ? *impl_->current_drawing_state_.rotateAngle_ : 0;
 
-			line->draw_line_attlist_.svg_x1_ = *line->draw_line_attlist_.svg_x1_ / 2 - (*line->draw_line_attlist_.svg_x1_ / 2 * cos(-angle) - *line->draw_line_attlist_.svg_y1_ / 2 * sin(-angle) );
-			line->draw_line_attlist_.svg_y1_ = *line->draw_line_attlist_.svg_y1_ / 2 - (*line->draw_line_attlist_.svg_x1_ / 2 * sin(-angle) + *line->draw_line_attlist_.svg_y1_ / 2 * cos(-angle) );
+            if (line->draw_line_attlist_.svg_x1_)
+                line->draw_line_attlist_.svg_x1_ = *line->draw_line_attlist_.svg_x1_ / 2 - (*line->draw_line_attlist_.svg_x1_ / 2 * cos(-angle) - *line->draw_line_attlist_.svg_y1_ / 2 * sin(-angle) );
+            if (line->draw_line_attlist_.svg_y1_)
+                line->draw_line_attlist_.svg_y1_ = *line->draw_line_attlist_.svg_y1_ / 2 - (*line->draw_line_attlist_.svg_x1_ / 2 * sin(-angle) + *line->draw_line_attlist_.svg_y1_ / 2 * cos(-angle) );
 
-			line->draw_line_attlist_.svg_x2_ = *line->draw_line_attlist_.svg_x2_ / 2 - (*line->draw_line_attlist_.svg_x2_ / 2 * cos(-angle) - *line->draw_line_attlist_.svg_y2_ / 2 * sin(-angle) );
-			line->draw_line_attlist_.svg_y2_ = *line->draw_line_attlist_.svg_y2_ / 2 - (*line->draw_line_attlist_.svg_x2_ / 2 * sin(-angle) + *line->draw_line_attlist_.svg_y2_ / 2 * cos(-angle) );
+            if (line->draw_line_attlist_.svg_x2_)
+                line->draw_line_attlist_.svg_x2_ = *line->draw_line_attlist_.svg_x2_ / 2 - (*line->draw_line_attlist_.svg_x2_ / 2 * cos(-angle) - *line->draw_line_attlist_.svg_y2_ / 2 * sin(-angle) );
+            if (line->draw_line_attlist_.svg_y2_)
+                line->draw_line_attlist_.svg_y2_ = *line->draw_line_attlist_.svg_y2_ / 2 - (*line->draw_line_attlist_.svg_x2_ / 2 * sin(-angle) + *line->draw_line_attlist_.svg_y2_ / 2 * cos(-angle) );
 
 			line->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_= L"";
 

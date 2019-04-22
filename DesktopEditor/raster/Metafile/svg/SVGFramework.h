@@ -4630,7 +4630,7 @@ namespace SVG
 			LoadElement ( oXmlNode );
 
 			XmlUtils::CXmlNodes oXmlNodes;
-            if ( oXmlNode.GetNodes ( L"", oXmlNodes ) )
+            if ( oXmlNode.GetNodes ( L"*", oXmlNodes ) )
 			{
 				for ( int i = 0; i < oXmlNodes.GetCount(); ++i )
 				{

@@ -2,12 +2,9 @@
 
 #include "../../../common/Directory.h"
 #include "../../../common/Array.h"
-#include "../../../graphics/IRenderer.h"
 #include "../../../xml/include/xmlutils.h"
-#include "../../../graphics/pro/Fonts.h"
-#include "../../../raster/BgraFrame.h"
 #include "../../../../Common/FileDownloader/FileDownloader.h"
-#include "../../../graphics/GraphicsPath.h"
+#include "../../../graphics/pro/Graphics.h"
 
 
 #define GET_ATTRIBUTEN(NAME)	if(style == NAME) return m_n##NAME;
@@ -892,11 +889,11 @@ namespace SVG
 			if (0.0 >= fWidth || 0.0 >= fHeight)
 				return false;
 
-			BOOL bClockDirection = FALSE;
+            bool bClockDirection = false;
 			double fEndAngle = 360 - ( fSweepAngle + fStartAngle );
 			double fSrtAngle = 360 - fStartAngle;
 			if( fSweepAngle > 0 )
-				bClockDirection = TRUE;
+                bClockDirection = true;
 
 			return (0 == EllipseArc(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2, fSrtAngle, fEndAngle, bClockDirection)) ? true : false;
 		}
@@ -1372,7 +1369,7 @@ namespace SVG
 		}
 
 		//
-        inline bool SetStyle (const std::wstring& Styles, BOOL Clear, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable()) //	from string
+        inline bool SetStyle (const std::wstring& Styles, bool Clear, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable()) //	from string
 		{
 			if ( Clear )
 			{
@@ -1778,7 +1775,7 @@ namespace SVG
 			return m_fillUrlRef;
 		}
 
-		inline void SetCSS(BOOL isCSS)
+        inline void SetCSS(bool isCSS)
 		{
 			m_IsCSS	=	isCSS;
 		}
@@ -2561,7 +2558,7 @@ namespace SVG
 
 		}
 
-		inline bool Push(const Matrix& transform, bool combine = TRUE)	//	каждая последующая трансформация применяется к вершине стэка
+        inline bool Push(const Matrix& transform, bool combine = true)	//	каждая последующая трансформация применяется к вершине стэка
 		{
 			if ((0 == m_transforms.GetCount()) || (false == combine))
 			{
@@ -2626,7 +2623,7 @@ namespace SVG
 			FromString (oUs, path);
 		}
 
-		inline BOOL FromString(UnitSystem& oUnitSystem, const std::wstring& path)
+        inline bool FromString(UnitSystem& oUnitSystem, const std::wstring& path)
 		{
 			m_Points.RemoveAll ();
 
@@ -2974,12 +2971,12 @@ namespace SVG
 			}
             */
 
-			return FALSE;
+            return false;
 		}
 
 	private:
 
-        BOOL CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder = INVALID_ENCODER)
+        bool CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder = INVALID_ENCODER)
         {
 
         }
@@ -3563,7 +3560,7 @@ namespace SVG
 			m_C	*=	Point(dAfX, dAfY);
 			m_R	*=	Point(dAfX, dAfY);
 
-			return TRUE;
+            return true;
 		}
 
 	public:
@@ -4028,7 +4025,7 @@ namespace SVG
 			if (m_bBrokeRefLink)		//	нету связи
 				return false;
 
-			if (m_XLinkRef.GetLength())
+            if (!m_XLinkRef.empty())
 			{
 				ISvgRef* pRefLink	=	NULL;
 				if (pStorage->GetRef(m_XLinkRef, pRefLink))
@@ -4351,7 +4348,7 @@ namespace SVG
 			for (size_t i = 0; i < m_elements.GetCount(); ++i)
 				m_elements[i]->Normalize(dAfX, dAfY);
 
-			return TRUE;
+            return true;
 		}
 
 	protected:
@@ -4434,7 +4431,7 @@ namespace SVG
 				return true;
 			}
 
-			return FALSE;
+            return false;
 		}
 
 	protected:
@@ -4467,8 +4464,8 @@ namespace SVG
 		~PatternImage()
 		{
 			RELEASEINTERFACE(m_render);
-			RELEASEINTERFACE(m_pFrame);
-			RELEASEINTERFACE(m_pPatternFrame);
+            RELEASEOBJECT(m_pFrame);
+            RELEASEOBJECT(m_pPatternFrame);
 
 			if (!m_sLivePath.empty())
 			{
@@ -4488,15 +4485,18 @@ namespace SVG
 		bool Build();
 		bool InitFrame();
 		bool InitPatternFrame();
-        bool InitRender(IRenderer* frame, int frameWidth, int frameHeight);
+        bool InitRender(Aggplus::CImage* frame, int frameWidth, int frameHeight);
 		bool Render();
-		bool SaveImage(std::wstring file);
+        bool SaveImage(Aggplus::CImage* pFrame, const std::wstring& file);
 		Point GetNormalizeFactor();
 
 	private:
 
-		IRenderer* m_baseRender;
-		IRenderer* m_render;
+        IRenderer* m_baseRender;
+        NSGraphics::IGraphicsRenderer* m_render;
+
+        Aggplus::CImage* m_pPatternFrame;
+        Aggplus::CImage* m_pFrame;
 		
 		std::wstring m_sLivePath;	
 		Pattern*	m_pattern;
@@ -5078,26 +5078,25 @@ namespace SVG
 			m_widthMM		=	0.0;
 			m_heightMM		=	0.0;
 
-			m_bEnableFonts	=	TRUE;
+            m_bEnableFonts	=	true;
 			m_CSS			=	NULL;
 		}
 		~Painter()
 		{
 			RELEASEINTERFACE (m_pManager);
 
-			POSITION pos = m_patterns.GetStartPosition();
-			while (NULL != pos)
-			{
-				PatternImage* image = m_patterns.GetNextValue(pos);
-				RELEASEOBJECT(image);
-			}
+            for (std::map<std::wstring, PatternImage*>::iterator iter = m_patterns.begin(); iter != m_patterns.end(); iter++)
+            {
+                PatternImage* p = iter->second;
+                RELEASEOBJECT(p);
+            }
 		}
 
         inline void SetWorkingDirectory(const std::wstring& sWorkingDirectory)
 		{
 			m_sWorkingDirectory	= sWorkingDirectory;
 		}
-		inline const CString& GetWorkingDirectory() const
+        inline const std::wstring& GetWorkingDirectory() const
 		{
 			return m_sWorkingDirectory;
 		}
@@ -5134,15 +5133,15 @@ namespace SVG
 
 		// commands only
 
-        void DoRectangle(Rectangle* element, long type, BOOL clipMode = false);
-        void DoCircle(Circle* element, long type, BOOL clipMode = false);
-        void DoEllipse(Ellipse* element, long type, BOOL clipMode = false);
-        void DoPolyline(Polyline* element, long type, BOOL clipMode = false);
-        void DoPolygon(Polygon* element, long type, BOOL clipMode = false);
-        void DoPath(Path* element, long type, BOOL clipMode = false);
+        void DoRectangle(Rectangle* element, long type, bool clipMode = false);
+        void DoCircle(Circle* element, long type, bool clipMode = false);
+        void DoEllipse(Ellipse* element, long type, bool clipMode = false);
+        void DoPolyline(Polyline* element, long type, bool clipMode = false);
+        void DoPolygon(Polygon* element, long type, bool clipMode = false);
+        void DoPath(Path* element, long type, bool clipMode = false);
 
 		// clip 
-		BOOL DoClip(ISvgRef* pRef, BOOL enable);
+        bool DoClip(ISvgRef* pRef, bool enable);
 
 		inline ISvgRef* FindEntry(Use* element)
 		{
@@ -5226,7 +5225,7 @@ namespace SVG
 
 		static double GetAngle(const double& CX, const double& CY, const double& X, const double& Y);
 		static Point GetCenter(int LargeFlag, int SweepFlag, Point Radi, Point P1, Point P2);
-		static BOOL GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep);
+        static bool GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep);
 
         inline NSFonts::IFontManager* GetFontManager()
 		{
@@ -5243,6 +5242,7 @@ namespace SVG
 
 		inline void UpdateClass(DrawElement* element)
 		{
+            /*
 			if (element)
 			{
 				if (element->ClassName().GetLength ())
@@ -5254,6 +5254,7 @@ namespace SVG
 					m_render->SetAdditionalParam(L"AttributeClassName", vt);
 				}
 			}
+            */
 		}
 		inline Style ComposeStyles(DrawElement* element, const Style& style)
 		{
@@ -5824,7 +5825,7 @@ namespace SVG
 				Create (oXml);				
 			}
 
-			return FALSE;
+            return false;
 		}
 		inline DrawElement* Create(XmlUtils::CXmlNode& oXmlNode, bool bAddStorage = true)
 		{
@@ -5952,7 +5953,7 @@ namespace SVG
 		LONG			m_nHeight;
 
 		LONG			m_nDefsLayer;
-		BOOL			m_bDefinesLayer;
+        bool			m_bDefinesLayer;
 
 		Storage*		m_model;
 		DrawBuilder		m_oDrawBuilder;

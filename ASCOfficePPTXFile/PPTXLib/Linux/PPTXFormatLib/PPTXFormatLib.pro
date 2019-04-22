@@ -410,7 +410,6 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/Logic/TextListStyle.h \
     ../../../PPTXFormat/Logic/TextParagraphPr.h \
     ../../../PPTXFormat/Logic/TextSpacing.h \
-    ../../../PPTXFormat/Logic/Timing.h \
     ../../../PPTXFormat/Logic/TxBody.h \
     ../../../PPTXFormat/Logic/TxStyles.h \
     ../../../PPTXFormat/Logic/UniColor.h \

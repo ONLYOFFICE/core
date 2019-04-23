@@ -118,7 +118,14 @@ int main(int argc, char *argv[])
     int nRasterW = 1000;
     int nRasterH = 1000;
     BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
-    memset(pData, 255, 4 * nRasterW * nRasterH);
+    //memset(pData, 255, 4 * nRasterW * nRasterH);
+
+    unsigned int back = 0xffffff;
+    unsigned int* pData32 = (unsigned int*)pData;
+    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+    //дефолтный тон должен быть прозрачным, а не белым
+    while (pData32 < pData32End)
+        *pData32++ = back;
 
     CBgraFrame oFrame;
     oFrame.put_Data(pData);
@@ -141,6 +148,7 @@ int main(int argc, char *argv[])
     pMetafile->GetBounds(&x, &y, &w, &h);
 
     pMetafile->DrawOnRenderer(pRasterRenderer, 0, 0, dW_MM, dH_MM);
+    pMetafile->ConvertToRaster(L"D:\\SVG\\out2.png", 4, nRasterW);
 
     oFrame.SaveFile(L"D:\\SVG\\out.png", 4);
 

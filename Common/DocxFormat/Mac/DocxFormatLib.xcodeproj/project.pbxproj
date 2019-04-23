@@ -229,6 +229,9 @@
 		8A404FCA2089FF7E00F2D5CF /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC92089FF7E00F2D5CF /* Base64.cpp */; };
 		8A404FCC2089FFE700F2D5CF /* Directory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCB2089FFE700F2D5CF /* Directory.cpp */; };
 		8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCD208A001D00F2D5CF /* Path.cpp */; };
+		8A5B8FD5226F5AF20093271E /* ActiveX.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A5B8FD3226F5AF20093271E /* ActiveX.h */; };
+		8A5B8FD6226F5AF20093271E /* ActiveX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5B8FD4226F5AF20093271E /* ActiveX.cpp */; };
+		8A5B8FD8226F61010093271E /* VmlDrawing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5B8FD7226F61000093271E /* VmlDrawing.cpp */; };
 		8AE10E722228255A00A542DE /* Comments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E712228255900A542DE /* Comments.cpp */; };
 		8AE10E742228257E00A542DE /* ConditionalFormatting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */; };
 		8AECC18F218C991900DEE19A /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC18E218C991900DEE19A /* App.cpp */; };
@@ -470,6 +473,9 @@
 		8A404FC92089FF7E00F2D5CF /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64.cpp; path = ../../../../DesktopEditor/common/Base64.cpp; sourceTree = "<group>"; };
 		8A404FCB2089FFE700F2D5CF /* Directory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Directory.cpp; path = ../../../../DesktopEditor/common/Directory.cpp; sourceTree = "<group>"; };
 		8A404FCD208A001D00F2D5CF /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Path.cpp; path = ../../../../DesktopEditor/common/Path.cpp; sourceTree = "<group>"; };
+		8A5B8FD3226F5AF20093271E /* ActiveX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveX.h; sourceTree = "<group>"; };
+		8A5B8FD4226F5AF20093271E /* ActiveX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActiveX.cpp; sourceTree = "<group>"; };
+		8A5B8FD7226F61000093271E /* VmlDrawing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VmlDrawing.cpp; sourceTree = "<group>"; };
 		8AE10E712228255900A542DE /* Comments.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Comments.cpp; sourceTree = "<group>"; };
 		8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConditionalFormatting.cpp; sourceTree = "<group>"; };
 		8AECC18E218C991900DEE19A /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
@@ -639,6 +645,7 @@
 				17E6A0961AC4262700F28F8B /* Unit.h */,
 				17E6A0971AC4262700F28F8B /* UnknowTypeFile.h */,
 				69B3ADA820120093000EC6A7 /* VmlDrawing.h */,
+				8A5B8FD7226F61000093271E /* VmlDrawing.cpp */,
 				17E6A0981AC4262700F28F8B /* WritingElement.h */,
 			);
 			path = DocxFormat;
@@ -735,6 +742,8 @@
 		17E6A0841AC4262700F28F8B /* Media */ = {
 			isa = PBXGroup;
 			children = (
+				8A5B8FD4226F5AF20093271E /* ActiveX.cpp */,
+				8A5B8FD3226F5AF20093271E /* ActiveX.h */,
 				17E6A0851AC4262700F28F8B /* Audio.h */,
 				17E6A0861AC4262700F28F8B /* Image.h */,
 				17E6A0871AC4262700F28F8B /* Media.h */,
@@ -1016,6 +1025,7 @@
 				17C1FBE21ACC4250006B99B3 /* SimpleTypes_Drawing.h in Headers */,
 				17C1FBE31ACC4250006B99B3 /* Types_32.h in Headers */,
 				17C1FBE61ACC4250006B99B3 /* ComplexTypes_Spreadsheet.h in Headers */,
+				8A5B8FD5226F5AF20093271E /* ActiveX.h in Headers */,
 				17C1FBE71ACC4250006B99B3 /* Workbook.h in Headers */,
 				17C1FBE81ACC4250006B99B3 /* RunProperty.h in Headers */,
 				69B3ADA920120093000EC6A7 /* VmlDrawing.h in Headers */,
@@ -1234,6 +1244,7 @@
 				17C1FB9D1ACC4250006B99B3 /* DateTime.cpp in Sources */,
 				8AECC191218C992900DEE19A /* Core.cpp in Sources */,
 				17C1FB9E1ACC4250006B99B3 /* Align.cpp in Sources */,
+				8A5B8FD6226F5AF20093271E /* ActiveX.cpp in Sources */,
 				17C1FB9F1ACC4250006B99B3 /* Index.cpp in Sources */,
 				17C1FBA01ACC4250006B99B3 /* TxtFile.cpp in Sources */,
 				69E6AC8F2031B72500795D9D /* Worksheet.cpp in Sources */,
@@ -1261,6 +1272,7 @@
 				8AE10E742228257E00A542DE /* ConditionalFormatting.cpp in Sources */,
 				691C3E131F20C3D500F1775E /* File.cpp in Sources */,
 				17C1FBB21ACC4250006B99B3 /* Vml.cpp in Sources */,
+				8A5B8FD8226F61010093271E /* VmlDrawing.cpp in Sources */,
 				17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */,
 				17C1FBB41ACC4250006B99B3 /* FldSimple.cpp in Sources */,
 				69DE2217206E24A700A07A0E /* JsaProject.cpp in Sources */,

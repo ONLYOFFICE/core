@@ -5124,7 +5124,7 @@ namespace SVG
 			m_CSS	=	css;
 		}
 
-        bool Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs);
+        bool Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs, double dW, double dH);
 
         void SetFontManager(NSFonts::IFontManager* pManager)
         {

@@ -275,7 +275,7 @@ namespace SVG
 
 namespace SVG
 {
-    bool Painter::Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs)
+    bool Painter::Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs, double dW, double dH)
 	{
 		if (NULL == model || NULL == render)
             return false;
@@ -295,8 +295,8 @@ namespace SVG
 			m_dpiY	=	m_oUs.GetHeight() / m_heightMM * 25.4;
 		}
 
-		m_dAddMX	=	25.4 / m_dpiX;
-		m_dAddMY	=	25.4 / m_dpiY;
+        m_dAddMX	=	dW / m_oUs.GetWidth();
+        m_dAddMY	=	dH / m_oUs.GetHeight();
 
 		m_model->Normalize(m_dAddMX, m_dAddMY);
 		return DrawStorage(m_model);
@@ -2227,7 +2227,7 @@ namespace SVG
 
 		Painter painter;
 		painter.SetWorkingDirectory(m_basePainter->GetWorkingDirectory());
-		painter.Draw(m_pattern, m_render, m_basePainter->GetUs());
+        painter.Draw(m_pattern, m_render, m_basePainter->GetUs(), 100, 100); // TODO:
 
 		RELEASEINTERFACE(m_render);
 		if (InitRender(m_pPatternFrame, m_pattern->GetBound().GetWidth(), m_pattern->GetBound().GetHeight()))

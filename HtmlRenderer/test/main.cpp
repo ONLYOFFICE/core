@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     int nRasterW = 1000;
     int nRasterH = 1000;
     BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
-    memset(pData, 0, 4 * nRasterW * nRasterH);
+    memset(pData, 255, 4 * nRasterW * nRasterH);
 
     CBgraFrame oFrame;
     oFrame.put_Data(pData);

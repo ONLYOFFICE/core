@@ -195,6 +195,12 @@ namespace StringHelpers
         const wchar_t* values = value.c_str();
 		std::wstring::size_type values_size = value.length();
 
+        if (off >= values_size)
+        {
+            off = std::wstring::npos;
+            return L"";
+        }
+
 		std::wstring::size_type index = off;
 		while (index < values_size)
 		{
@@ -217,21 +223,26 @@ namespace StringHelpers
 
 				std::wstring::size_type oldOff = off;
 				off = index + 1;
-				if (off >= values_size)
-					off = std::wstring::npos;
 				return value.substr(oldOff, index - oldOff);
 			}
 
 			++index;
 		}
 
+        std::wstring::size_type oldOff = off;
 		std::wstring::size_type len = index - off;
-		off = std::wstring::npos;
 
 		if (len == 0)
-			return L"";
+        {
+            off = std::wstring::npos;
+            return L"";
+        }
+        else
+        {
+            off = values_size;
+        }
 
-		return value.substr(off);
+        return value.substr(oldOff, len);
     }
 
 	static void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
@@ -996,7 +1007,8 @@ namespace SVG
                 return -1;
 
             unsigned int clr = iter->second;
-            return ((clr & 0xFF) << 16) | ((clr & 0xFF00)) | ((clr & 0xFF0000) >> 16);
+            return (int)clr;
+            //return ((clr & 0xFF) << 16) | ((clr & 0xFF00)) | ((clr & 0xFF0000) >> 16);
 		}
 
 	private:
@@ -1039,7 +1051,7 @@ namespace SVG
                 while (std::wstring::npos != sTok)
 				{
                     std::wstring sSrc =	StringHelpers::Tokenize(Styles, L";", sTok);
-                    if (std::wstring::npos != sTok)
+                    if (!sSrc.empty())
 					{
                         std::wstring::size_type index = 0;
 
@@ -1380,7 +1392,7 @@ namespace SVG
 			while ( std::wstring::npos != To )
 			{
                 std::wstring Source = StringHelpers::Tokenize(Styles, L";", To);
-				if (std::wstring::npos != To)
+                if (!Source.empty())
 				{
 					std::wstring::size_type Ind = 0;
 
@@ -1951,7 +1963,7 @@ namespace SVG
 			while (std::wstring::npos != To)
 			{
 				std::wstring Source	= StringHelpers::Tokenize(Styles, L";", To);
-				if (std::wstring::npos != To)
+                if (!Source.empty())
 				{
 					std::wstring::size_type Ind = 0;
 

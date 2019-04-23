@@ -239,7 +239,7 @@ namespace SVG
 		if (0 == Color[3])
 			return -2;
 
-		return ( ( (int) (Color [ 2 ]) << 16 ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 0 ]) );			
+        return ( ( (int) (Color [ 0 ]) << 16 ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 2 ]) );
 	}
     long ColorParser::ColorFromHexString(const std::wstring& Hex)
 	{
@@ -268,7 +268,8 @@ namespace SVG
 		}
 
         long InvCol = std::stoi( value, NULL, 16 );
-		return ( ( InvCol & 0xFF ) << 16 ) | ( ( InvCol & 0xFF00 ) ) | ( ( InvCol & 0xFF0000 ) >> 16 );
+        return InvCol;
+        //return ( ( InvCol & 0xFF ) << 16 ) | ( ( InvCol & 0xFF00 ) ) | ( ( InvCol & 0xFF0000 ) >> 16 );
 	}
 }
 

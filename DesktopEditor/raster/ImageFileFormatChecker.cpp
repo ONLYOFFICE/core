@@ -518,7 +518,7 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 ///////////////////////////////////////////////////////////////////////
 	if (isSvgFile(fileName))
 	{
-		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+        eFileType = _CXIMAGE_FORMAT_SVG;
 	}	
 	if (isRawFile(fileName))
 	{
@@ -599,8 +599,51 @@ bool CImageFileFormatChecker::isRawFile(std::wstring& fileName)
 }
 bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 {
-	//TODO:
-	return false;
+    NSFile::CFileBinary file;
+    if (!file.OpenFile(fileName))
+        return false;
+
+    DWORD nSize = (DWORD)file.GetFileSize();
+    if (nSize > 100)
+        nSize = 100;
+
+    BYTE* buffer = new BYTE[nSize];
+    if (!buffer)
+        return false;
+
+    DWORD sizeRead = 0;
+    if (!file.ReadFile(buffer, nSize, sizeRead))
+    {
+        delete []buffer;
+        return false;
+    }
+    file.CloseFile();
+
+    if ('<' == buffer[0] &&
+        's' == buffer[1] &&
+        'v' == buffer[2] &&
+        'g' == buffer[3])
+    {
+        delete [] buffer;
+        return true;
+    }
+
+    if ('<' == buffer[0] &&
+        '?' == buffer[1] &&
+        'x' == buffer[2] &&
+        'm' == buffer[3] &&
+        'l' == buffer[4])
+    {
+        std::string test((char*)buffer, nSize);
+        if (std::string::npos != test.find("<svg"))
+        {
+            delete [] buffer;
+            return true;
+        }
+    }
+
+    delete [] buffer;
+    return false;
 }
 
 std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSize)

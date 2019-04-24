@@ -47,8 +47,8 @@
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
-#define METAFILE_TEST_RASTER
-//#define ONLINE_WORD_TO_PDF
+//#define METAFILE_TEST_RASTER
+#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
 //#define TO_HTML_RENDERER
 //#define ONLY_TEXT
@@ -134,6 +134,7 @@ int main(int argc, char *argv[])
     oFrame.put_Stride(4 * nRasterW);
 
     pRasterRenderer->CreateFromBgraFrame(&oFrame);
+    pRasterRenderer->SetSwapRGB(false);
 
     double dW_MM = nRasterW * 25.4 / 96;
     double dH_MM = nRasterH * 25.4 / 96;
@@ -142,7 +143,7 @@ int main(int argc, char *argv[])
     pRasterRenderer->put_Height(dH_MM);
 
     MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-    pMetafile->LoadFromFile(L"D:\\SVG\\Disigner 2.svg");
+    pMetafile->LoadFromFile(L"D:\\test\\123.svg");
 
     double x = 0, y = 0, w = 0, h = 0;
     pMetafile->GetBounds(&x, &y, &w, &h);

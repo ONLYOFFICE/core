@@ -1367,7 +1367,10 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 	Aggplus::CImage* pAggImage = NULL;
 
 	CImageFileFormatChecker oImageFormat(wsImagePath);
-	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
+    if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+            _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+            _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+            _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 	{
 		// TODO: Реализовать отрисовку метафайлов по-нормальному
         MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
@@ -1802,7 +1805,10 @@ void CPdfRenderer::UpdateBrush()
 					pImage->LoadJpx(wsTexturePath.c_str(), nImageW, nImageH);
 			}
 		}
-		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
+        else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+                 _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+                 _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+                 _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
             MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);

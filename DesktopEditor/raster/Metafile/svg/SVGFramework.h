@@ -506,6 +506,7 @@ namespace SVG
         static inline long LongValue(const std::wstring& value)
         {
             size_t len = value.length(); const wchar_t* buf = value.c_str();
+            if (0 == len) return 0;
             for (size_t i = 0; i < len; ++i)
 			{
                 if (isdigit(buf[i]) || (buf[i] == L'-') /* || (value[i] == L'.') || (value[i] == L',') */)
@@ -519,6 +520,7 @@ namespace SVG
         static inline double DoubleValue(const std::wstring& value)
         {
             size_t len = value.length(); const wchar_t* buf = value.c_str();
+            if (0 == len) return 0;
             for (size_t i = 0; i < len; ++i)
 			{
                 if (isdigit(buf[i]) || (buf[i] == L'.') || (buf[i] == L',') || (buf[i] == L'-') || (buf[i] == 'e'))
@@ -538,6 +540,10 @@ namespace SVG
                     return std::stod(sVal.substr(0, sVal.length() - 1)) * 0.01;
 				}
 			}
+            else
+            {
+                return 0;
+            }
 
             return std::stod(sVal);
 		}

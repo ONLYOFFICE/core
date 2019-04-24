@@ -557,10 +557,10 @@ namespace DocFileFormat
 				pict->embeddedDataSize += lLenHeader;
 				delete []pict->embeddedData;
 				pict->embeddedData = newData;
-
 			}
+
 			m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipDIB), 
-					std::vector<unsigned char>(pict->embeddedData, (pict->embeddedData + pict->embeddedDataSize)), Global::msoblipDIB));
+				pict->embeddedData, pict->embeddedDataSize, Global::msoblipDIB));
 			
 			m_nImageId	=	m_context->_docx->RegisterImage(m_caller, btWin32);
 			result	=	true;
@@ -577,26 +577,44 @@ namespace DocFileFormat
 					if (metaBlip)
 					{//decompress inside MetafilePictBlip
 						unsigned char *newData	= NULL;
-						int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
-						
-						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<unsigned char>(newData, (newData + newDataSize))));
-						
-						RELEASEARRAYOBJECTS(newData);
-					}
-				}
-				break;
+						unsigned int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
 
+						boost::shared_array<unsigned char> arData(newData);						
+						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), arData, newDataSize));
+					}
+				}break;
+				case Global::msoblipDIB:
+				{//user_manual_v52.doc
+				
+  					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
+					if (bitBlip)
+					{
+						std::wstring file_name = m_context->_doc->m_sTempFolder + L"tmp_image";
+						oBlipEntry->btWin32 = ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name);
+
+						if (oBlipEntry->btWin32 == Global::msoblipPNG)
+						{
+							unsigned char* pData = NULL;
+							DWORD nData = 0;
+							if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
+							{
+								m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipPNG), 
+									boost::shared_array<unsigned char>(pData), nData, Global::msoblipPNG));
+								break;
+							}
+						}
+					}				
+				}//в случае ошибки конвертации -храним оригинальный dib
 				case Global::msoblipJPEG:
 				case Global::msoblipCMYKJPEG:
 				case Global::msoblipPNG:
 				case Global::msoblipTIFF:
-				case Global::msoblipDIB:
 				{
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
 					if (bitBlip)
 					{
 						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
-							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
+							bitBlip->m_pvBits, bitBlip->pvBitsSize, oBlipEntry->btWin32));
 					}
 				}break;			
 

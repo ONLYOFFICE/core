@@ -85,19 +85,19 @@ namespace DocFileFormat
 
 	struct ImageFileStructure
 	{
-		ImageFileStructure()
+		ImageFileStructure(const std::wstring& _ext, boost::shared_array<unsigned char> _data, unsigned int _size, Global::BlipType _blipType = Global::msoblipUNKNOWN) : ext(_ext), data(_data), size(_size), blipType(_blipType)
 		{
 
 		}
-
-		ImageFileStructure(const std::wstring& _ext, const std::vector<unsigned char>& _data, Global::BlipType	_blipType = Global::msoblipUNKNOWN) : ext(_ext), data(_data), blipType(_blipType)
+		ImageFileStructure(const std::wstring& _ext, unsigned char* _data, unsigned int _size, Global::BlipType _blipType = Global::msoblipUNKNOWN) : ext(_ext), size(_size), blipType(_blipType)
 		{
-
+			data = boost::shared_array<unsigned char>(new unsigned char[size]);
+			memcpy(data.get(), _data, size);
 		}
-
-		std::wstring				ext;
-		std::vector<unsigned char>	data;
-		Global::BlipType			blipType;	
+		std::wstring						ext;
+		boost::shared_array<unsigned char>	data;
+		unsigned int						size;
+		Global::BlipType					blipType;	
 	};
 
 	struct OleObjectFileStructure

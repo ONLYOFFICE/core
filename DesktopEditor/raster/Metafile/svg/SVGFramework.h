@@ -5,6 +5,7 @@
 #include "../../../xml/include/xmlutils.h"
 #include "../../../../Common/FileDownloader/FileDownloader.h"
 #include "../../../graphics/pro/Graphics.h"
+#include "../../../graphics/Matrix.h"
 
 
 #define GET_ATTRIBUTEN(NAME)	if(style == NAME) return m_n##NAME;
@@ -5124,7 +5125,7 @@ namespace SVG
 			m_CSS	=	css;
 		}
 
-        bool Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs, double dW, double dH);
+        bool Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs, double dX, double dY, double dW, double dH);
 
         void SetFontManager(NSFonts::IFontManager* pManager)
         {
@@ -5133,7 +5134,7 @@ namespace SVG
         }
 
 	private:
-
+        void SetTransform(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx, const double& ty);
         bool DrawLine (Line* element, const Style& oStyle, const std::wstring& strClassName = L"");
         bool DrawRectangle (Rectangle* element, const Style& oStyle, const std::wstring& strClassName = L"");
         bool DrawCircle (Circle* element,const Style& oStyle, const std::wstring& strClassName = L"");
@@ -5318,6 +5319,7 @@ namespace SVG
 		double							m_widthMM;
 		double							m_heightMM;
 
+        Aggplus::CMatrix                m_baseTransform;
 		MatrixStack						m_transforms;
         bool							m_bEnableFonts;
         std::wstring					m_sWorkingDirectory;

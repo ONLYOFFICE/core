@@ -58,7 +58,7 @@ void CSVGTransformer::SetFontManager(NSFonts::IFontManager* pFontManager)
 bool CSVGTransformer::Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 {
     m_internal->m_oRender.SetCSS(m_internal->m_oXmlParser.GetCSS());
-    m_internal->m_oRender.Draw(&m_internal->m_oStorage, pRenderer, m_internal->m_oXmlParser.GetUnitSystem(), dWidth, dHeight);
+    m_internal->m_oRender.Draw(&m_internal->m_oStorage, pRenderer, m_internal->m_oXmlParser.GetUnitSystem(), dX, dY, dWidth, dHeight);
     return true;
 }
 int CSVGTransformer::get_Width()

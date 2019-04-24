@@ -147,7 +147,8 @@ int main(int argc, char *argv[])
     double x = 0, y = 0, w = 0, h = 0;
     pMetafile->GetBounds(&x, &y, &w, &h);
 
-    pMetafile->DrawOnRenderer(pRasterRenderer, 0, 0, dW_MM, dH_MM);
+    pMetafile->DrawOnRenderer(pRasterRenderer, dW_MM / 4, dW_MM / 4, dW_MM / 2, dH_MM / 2);
+    pMetafile->ConvertToRaster(L"D:\\SVG\\out2.png", 4, 1000);
 
     oFrame.SaveFile(L"D:\\SVG\\out.png", 4);
 

@@ -275,7 +275,14 @@ namespace SVG
 
 namespace SVG
 {
-    bool Painter::Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs, double dW, double dH)
+    void Painter::SetTransform(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx, const double& ty)
+    {
+        Aggplus::CMatrix tmp(sx, shy, shx, sy, tx, ty);
+        tmp.Multiply(&m_baseTransform, Aggplus::MatrixOrderPrepend);
+        m_render->SetTransform(tmp.sx(), tmp.shy(), tmp.shx(), tmp.sy(), tmp.tx(), tmp.ty());
+    }
+
+    bool Painter::Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs, double dX, double dY, double dW, double dH)
 	{
 		if (NULL == model || NULL == render)
             return false;
@@ -295,11 +302,29 @@ namespace SVG
 			m_dpiY	=	m_oUs.GetHeight() / m_heightMM * 25.4;
 		}
 
+#if 0
         m_dAddMX	=	dW / m_oUs.GetWidth();
         m_dAddMY	=	dH / m_oUs.GetHeight();
 
 		m_model->Normalize(m_dAddMX, m_dAddMY);
-		return DrawStorage(m_model);
+#endif
+
+        double oldTransform[6];
+        oldTransform[0] = oldTransform[3] = 1;
+        oldTransform[1] = oldTransform[2] = oldTransform[4] = oldTransform[5] = 0;
+        m_render->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
+        m_baseTransform.SetElements(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
+
+        Aggplus::CMatrix rect(dW / m_oUs.GetWidth(), 0, 0, dH / m_oUs.GetHeight(), dX, dY);
+        m_baseTransform.Multiply(&rect, Aggplus::MatrixOrderAppend);
+
+        this->SetTransform(1, 0, 0, 1, 0, 0);
+
+        bool bRes = DrawStorage(m_model);
+
+        m_render->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
+
+        return bRes;
 	}
     bool Painter::DrawLine (Line* element, const Style& oStyle, const std::wstring& strClassName)
 	{
@@ -634,7 +659,7 @@ namespace SVG
 					mat *= Matrix::TranslateTransform(off.X, off.Y);
 					mat *= pE->GetTransform();
 
-					m_render->SetTransform(mat[0], mat[3], mat[1], mat[4], (mat[2] + m_oUs.OffSetX()) * m_dAddMX, (mat[5] + m_oUs.OffSetY()) * m_dAddMY);
+                    this->SetTransform(mat[0], mat[3], mat[1], mat[4], (mat[2] + m_oUs.OffSetX()) * m_dAddMX, (mat[5] + m_oUs.OffSetY()) * m_dAddMY);
 
 					UpdateClass(pE);
 
@@ -676,7 +701,7 @@ namespace SVG
 		mat *=	Matrix::TranslateTransform(off.X, off.Y);
 		mat *=	pE->GetTransform();
 
-		m_render->SetTransform (mat[0],	mat[3], mat[1], mat[4], (mat[2] + m_oUs.OffSetX()) * m_dAddMX,	(mat[5] + m_oUs.OffSetY()) * m_dAddMY);
+        this->SetTransform (mat[0],	mat[3], mat[1], mat[4], (mat[2] + m_oUs.OffSetX()) * m_dAddMX,	(mat[5] + m_oUs.OffSetY()) * m_dAddMY);
 
 		UpdateClass(pE);
 
@@ -2227,7 +2252,7 @@ namespace SVG
 
 		Painter painter;
 		painter.SetWorkingDirectory(m_basePainter->GetWorkingDirectory());
-        painter.Draw(m_pattern, m_render, m_basePainter->GetUs(), 100, 100); // TODO:
+        painter.Draw(m_pattern, m_render, m_basePainter->GetUs(), 0, 0, 100, 100); // TODO:
 
 		RELEASEINTERFACE(m_render);
 		if (InitRender(m_pPatternFrame, m_pattern->GetBound().GetWidth(), m_pattern->GetBound().GetHeight()))

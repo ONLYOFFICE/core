@@ -271,73 +271,6 @@
 		17513E222216E786008B45F7 /* xlsx_comments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513D1A2216E785008B45F7 /* xlsx_comments.cpp */; };
 		17513E232216E786008B45F7 /* xlsx_defined_names.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513D1C2216E785008B45F7 /* xlsx_defined_names.cpp */; };
 		17513E272216E8D1008B45F7 /* cextracttools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E252216E8D0008B45F7 /* cextracttools.cpp */; };
-		17513ED52216EB49008B45F7 /* text_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E2C2216EB48008B45F7 /* text_elements.cpp */; };
-		17513ED62216EB49008B45F7 /* office_annotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E2D2216EB48008B45F7 /* office_annotation.cpp */; };
-		17513ED72216EB49008B45F7 /* style_table_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E342216EB48008B45F7 /* style_table_properties.cpp */; };
-		17513ED82216EB49008B45F7 /* svg_creator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E352216EB48008B45F7 /* svg_creator.cpp */; };
-		17513ED92216EB49008B45F7 /* ods_table_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E372216EB48008B45F7 /* ods_table_state.cpp */; };
-		17513EDA2216EB49008B45F7 /* style_chart_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E392216EB48008B45F7 /* style_chart_properties.cpp */; };
-		17513EDB2216EB49008B45F7 /* oox_shape_defines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E3A2216EB48008B45F7 /* oox_shape_defines.cpp */; };
-		17513EDC2216EB49008B45F7 /* odf_chart_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E3C2216EB48008B45F7 /* odf_chart_context.cpp */; };
-		17513EDD2216EB49008B45F7 /* style_text_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E3E2216EB48008B45F7 /* style_text_properties.cpp */; };
-		17513EDE2216EB49008B45F7 /* logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E402216EB48008B45F7 /* logging.cpp */; };
-		17513EDF2216EB49008B45F7 /* table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E452216EB48008B45F7 /* table.cpp */; };
-		17513EE02216EB49008B45F7 /* office_chart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E462216EB48008B45F7 /* office_chart.cpp */; };
-		17513EE12216EB49008B45F7 /* odf_table_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E472216EB48008B45F7 /* odf_table_context.cpp */; };
-		17513EE22216EB49008B45F7 /* style_map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E492216EB48008B45F7 /* style_map.cpp */; };
-		17513EE32216EB49008B45F7 /* office_scripts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E4C2216EB48008B45F7 /* office_scripts.cpp */; };
-		17513EE42216EB49008B45F7 /* styles_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E4D2216EB48008B45F7 /* styles_list.cpp */; };
-		17513EE52216EB49008B45F7 /* styles_lite_container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E502216EB48008B45F7 /* styles_lite_container.cpp */; };
-		17513EE62216EB49008B45F7 /* style_paragraph_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E522216EB48008B45F7 /* style_paragraph_properties.cpp */; };
-		17513EE72216EB49008B45F7 /* office_document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E542216EB48008B45F7 /* office_document.cpp */; };
-		17513EE82216EB49008B45F7 /* anim_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E552216EB48008B45F7 /* anim_elements.cpp */; };
-		17513EE92216EB49008B45F7 /* odf_rels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E582216EB48008B45F7 /* odf_rels.cpp */; };
-		17513EEA2216EB49008B45F7 /* style_section_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E592216EB48008B45F7 /* style_section_properties.cpp */; };
-		17513EEB2216EB49008B45F7 /* office_elements_create.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E5A2216EB48008B45F7 /* office_elements_create.cpp */; };
-		17513EEC2216EB49008B45F7 /* odf_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E5C2216EB48008B45F7 /* odf_conversion_context.cpp */; };
-		17513EED2216EB49008B45F7 /* odf_text_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E732216EB48008B45F7 /* odf_text_context.cpp */; };
-		17513EEE2216EB49008B45F7 /* mediaitems.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E752216EB48008B45F7 /* mediaitems.cpp */; };
-		17513EEF2216EB49008B45F7 /* office_settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E772216EB48008B45F7 /* office_settings.cpp */; };
-		17513EF02216EB49008B45F7 /* style_presentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E782216EB48008B45F7 /* style_presentation.cpp */; };
-		17513EF12216EB49008B45F7 /* office_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E7B2216EB48008B45F7 /* office_text.cpp */; };
-		17513EF22216EB49008B45F7 /* odp_page_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E7F2216EB48008B45F7 /* odp_page_state.cpp */; };
-		17513EF32216EB49008B45F7 /* ods_table_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E802216EB48008B45F7 /* ods_table_context.cpp */; };
-		17513EF42216EB49008B45F7 /* calcext_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E832216EB48008B45F7 /* calcext_elements.cpp */; };
-		17513EF52216EB49008B45F7 /* odf_page_layout_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E852216EB48008B45F7 /* odf_page_layout_state.cpp */; };
-		17513EF62216EB49008B45F7 /* odf_settings_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E862216EB48008B45F7 /* odf_settings_context.cpp */; };
-		17513EF72216EB49008B45F7 /* style_page_layout_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E872216EB48008B45F7 /* style_page_layout_properties.cpp */; };
-		17513EF82216EB49008B45F7 /* odf_page_layout_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E892216EB48008B45F7 /* odf_page_layout_context.cpp */; };
-		17513EF92216EB49008B45F7 /* abstract_xml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E8A2216EB48008B45F7 /* abstract_xml.cpp */; };
-		17513EFA2216EB49008B45F7 /* table_named_expressions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E8B2216EB48008B45F7 /* table_named_expressions.cpp */; };
-		17513EFB2216EB49008B45F7 /* odf_notes_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E8C2216EB48008B45F7 /* odf_notes_context.cpp */; };
-		17513EFC2216EB49008B45F7 /* draw_page.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E8F2216EB48008B45F7 /* draw_page.cpp */; };
-		17513EFD2216EB49008B45F7 /* number_style.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E902216EB48008B45F7 /* number_style.cpp */; };
-		17513EFE2216EB49008B45F7 /* odp_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E922216EB48008B45F7 /* odp_conversion_context.cpp */; };
-		17513EFF2216EB49008B45F7 /* odf_drawing_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E932216EB48008B45F7 /* odf_drawing_context.cpp */; };
-		17513F002216EB49008B45F7 /* odf_comment_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E952216EB48008B45F7 /* odf_comment_context.cpp */; };
-		17513F012216EB49008B45F7 /* list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E962216EB48008B45F7 /* list.cpp */; };
-		17513F022216EB49008B45F7 /* odf_style_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E972216EB48008B45F7 /* odf_style_context.cpp */; };
-		17513F032216EB49008B45F7 /* ods_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E992216EB48008B45F7 /* ods_conversion_context.cpp */; };
-		17513F042216EB49008B45F7 /* styles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E9A2216EB48008B45F7 /* styles.cpp */; };
-		17513F052216EB49008B45F7 /* office_presentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E9C2216EB48008B45F7 /* office_presentation.cpp */; };
-		17513F062216EB49008B45F7 /* odf_table_styles_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E9D2216EB48008B45F7 /* odf_table_styles_context.cpp */; };
-		17513F072216EB49008B45F7 /* odt_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513E9E2216EB48008B45F7 /* odt_conversion_context.cpp */; };
-		17513F082216EB49008B45F7 /* odp_slide_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EA02216EB48008B45F7 /* odp_slide_context.cpp */; };
-		17513F092216EB49008B45F7 /* paragraph_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EA12216EB48008B45F7 /* paragraph_elements.cpp */; };
-		17513F0A2216EB49008B45F7 /* draw_frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EA32216EB48008B45F7 /* draw_frame.cpp */; };
-		17513F0B2216EB49008B45F7 /* object_package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EAB2216EB48008B45F7 /* object_package.cpp */; };
-		17513F0C2216EB49008B45F7 /* odf_number_styles_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EAC2216EB48008B45F7 /* odf_number_styles_context.cpp */; };
-		17513F0D2216EB49008B45F7 /* office_body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EAE2216EB48008B45F7 /* office_body.cpp */; };
-		17513F0E2216EB49008B45F7 /* header_footer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EB12216EB48008B45F7 /* header_footer.cpp */; };
-		17513F0F2216EB49008B45F7 /* office_event_listeners.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EB42216EB49008B45F7 /* office_event_listeners.cpp */; };
-		17513F102216EB49008B45F7 /* draw_shapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EB52216EB49008B45F7 /* draw_shapes.cpp */; };
-		17513F112216EB49008B45F7 /* odf_lists_styles_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EB62216EB49008B45F7 /* odf_lists_styles_context.cpp */; };
-		17513F122216EB49008B45F7 /* style_graphic_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EB72216EB49008B45F7 /* style_graphic_properties.cpp */; };
-		17513F132216EB49008B45F7 /* office_spreadsheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EBA2216EB49008B45F7 /* office_spreadsheet.cpp */; };
-		17513F142216EB49008B45F7 /* mediaitems_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EBD2216EB49008B45F7 /* mediaitems_utils.cpp */; };
-		17513F152216EB49008B45F7 /* draw_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EBE2216EB49008B45F7 /* draw_base.cpp */; };
-		17513F162216EB49008B45F7 /* table_database_ranges.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EC12216EB49008B45F7 /* table_database_ranges.cpp */; };
-		17513F172216EB49008B45F7 /* odf_style_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EC42216EB49008B45F7 /* odf_style_state.cpp */; };
 		17513F182216EB49008B45F7 /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EC62216EB49008B45F7 /* utils.cpp */; };
 		17513F192216EB49008B45F7 /* Converter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513EC92216EB49008B45F7 /* Converter.cpp */; };
 		17513F1A2216EB49008B45F7 /* ConverterChart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17513ECA2216EB49008B45F7 /* ConverterChart.cpp */; };
@@ -349,6 +282,163 @@
 		8A5834E9221D90BE0029F06B /* formulasconvert_odf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5834E6221D90BE0029F06B /* formulasconvert_odf.cpp */; };
 		8A5834EA221D90BE0029F06B /* formulasconvert_oox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5834E8221D90BE0029F06B /* formulasconvert_oox.cpp */; };
 		8A8753C52227F45600117573 /* OfficeOdfConverter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 17513B072216E721008B45F7 /* OfficeOdfConverter.h */; };
+		8A9873982270764C001F896F /* office_document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9872FA22707634001F896F /* office_document.cpp */; };
+		8A9873992270764C001F896F /* odf_style_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9872FB22707634001F896F /* odf_style_context.h */; };
+		8A98739A2270764C001F896F /* draw_shapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9872FC22707634001F896F /* draw_shapes.h */; };
+		8A98739B2270764C001F896F /* odp_page_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9872FD22707634001F896F /* odp_page_state.cpp */; };
+		8A98739C2270764C001F896F /* office_text.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9872FE22707634001F896F /* office_text.h */; };
+		8A98739D2270764C001F896F /* style_presentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9872FF22707634001F896F /* style_presentation.h */; };
+		8A98739E2270764C001F896F /* odf_drawing_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98730022707634001F896F /* odf_drawing_context.h */; };
+		8A98739F2270764C001F896F /* style_graphic_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98730122707634001F896F /* style_graphic_properties.h */; };
+		8A9873A02270764C001F896F /* odp_page_state.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98730222707634001F896F /* odp_page_state.h */; };
+		8A9873A12270764C001F896F /* draw_frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730322707634001F896F /* draw_frame.cpp */; };
+		8A9873A22270764C001F896F /* office_elements_create.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730422707634001F896F /* office_elements_create.cpp */; };
+		8A9873A32270764C001F896F /* odf_lists_styles_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730522707634001F896F /* odf_lists_styles_context.cpp */; };
+		8A9873A42270764C001F896F /* abstract_xml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730622707634001F896F /* abstract_xml.cpp */; };
+		8A9873A52270764C001F896F /* object_package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730722707635001F896F /* object_package.cpp */; };
+		8A9873A62270764C001F896F /* number_style.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730822707635001F896F /* number_style.cpp */; };
+		8A9873A72270764C001F896F /* office_annotation.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98730922707635001F896F /* office_annotation.h */; };
+		8A9873A82270764C001F896F /* odf_settings_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98730A22707635001F896F /* odf_settings_context.h */; };
+		8A9873A92270764C001F896F /* draw_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730B22707635001F896F /* draw_base.cpp */; };
+		8A9873AA2270764C001F896F /* odf_drawing_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730C22707635001F896F /* odf_drawing_context.cpp */; };
+		8A9873AB2270764C001F896F /* odt_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730D22707635001F896F /* odt_conversion_context.cpp */; };
+		8A9873AC2270764C001F896F /* office_event_listeners.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730E22707636001F896F /* office_event_listeners.cpp */; };
+		8A9873AD2270764C001F896F /* ods_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98730F22707636001F896F /* ods_conversion_context.cpp */; };
+		8A9873AE2270764C001F896F /* table_database_ranges.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98731022707636001F896F /* table_database_ranges.cpp */; };
+		8A9873AF2270764C001F896F /* oox_shapePrimitives.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731222707636001F896F /* oox_shapePrimitives.h */; };
+		8A9873B02270764C001F896F /* oox_shapeBents.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731322707636001F896F /* oox_shapeBents.h */; };
+		8A9873B12270764C001F896F /* oox_shapeConnectors.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731422707636001F896F /* oox_shapeConnectors.h */; };
+		8A9873B22270764C001F896F /* oox_shapeCallouts.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731522707636001F896F /* oox_shapeCallouts.h */; };
+		8A9873B32270764C001F896F /* oox_shapeCharts.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731622707636001F896F /* oox_shapeCharts.h */; };
+		8A9873B42270764C001F896F /* oox_shapeArrows.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731722707636001F896F /* oox_shapeArrows.h */; };
+		8A9873B52270764C001F896F /* oox_shapeWordArt.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731822707636001F896F /* oox_shapeWordArt.h */; };
+		8A9873B62270764C001F896F /* oox_shapeCurvedArrows.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731922707636001F896F /* oox_shapeCurvedArrows.h */; };
+		8A9873B72270764C001F896F /* oox_shapeStars.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731A22707636001F896F /* oox_shapeStars.h */; };
+		8A9873B82270764C001F896F /* oox_shapeActionButtons.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731B22707636001F896F /* oox_shapeActionButtons.h */; };
+		8A9873B92270764C001F896F /* oox_shapeCustoms.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731C22707636001F896F /* oox_shapeCustoms.h */; };
+		8A9873BA2270764C001F896F /* oox_shapeSnipRoundRects.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731D22707636001F896F /* oox_shapeSnipRoundRects.h */; };
+		8A9873BB2270764C001F896F /* odf_shape_mapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731E22707636001F896F /* odf_shape_mapping.h */; };
+		8A9873BC2270764C001F896F /* oox_shapeCurvedConnectors.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98731F22707636001F896F /* oox_shapeCurvedConnectors.h */; };
+		8A9873BD2270764C001F896F /* oox_shapeMaths.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732022707636001F896F /* oox_shapeMaths.h */; };
+		8A9873BE2270764C001F896F /* oox_shapeRibbons.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732122707636001F896F /* oox_shapeRibbons.h */; };
+		8A9873BF2270764C001F896F /* oox_shapeAccentCallouts.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732222707636001F896F /* oox_shapeAccentCallouts.h */; };
+		8A9873C02270764C001F896F /* odt_conversion_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732322707636001F896F /* odt_conversion_context.h */; };
+		8A9873C12270764C001F896F /* odf_comment_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732422707636001F896F /* odf_comment_context.h */; };
+		8A9873C22270764C001F896F /* odf_page_layout_state.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732522707636001F896F /* odf_page_layout_state.h */; };
+		8A9873C32270764C001F896F /* anim_elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732622707637001F896F /* anim_elements.h */; };
+		8A9873C42270764C001F896F /* odf_page_layout_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732722707637001F896F /* odf_page_layout_context.h */; };
+		8A9873C52270764C001F896F /* office_elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732822707637001F896F /* office_elements.h */; };
+		8A9873C62270764C001F896F /* odp_slide_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732922707637001F896F /* odp_slide_context.h */; };
+		8A9873C72270764C001F896F /* styles_lite_container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98732A22707637001F896F /* styles_lite_container.cpp */; };
+		8A9873C82270764C001F896F /* ods_table_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732B22707637001F896F /* ods_table_context.h */; };
+		8A9873C92270764C001F896F /* header_footer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98732C22707637001F896F /* header_footer.cpp */; };
+		8A9873CA2270764C001F896F /* style_map.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98732D22707637001F896F /* style_map.h */; };
+		8A9873CB2270764C001F896F /* style_paragraph_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98732E22707637001F896F /* style_paragraph_properties.cpp */; };
+		8A9873CC2270764C001F896F /* logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98732F22707638001F896F /* logging.cpp */; };
+		8A9873CD2270764C001F896F /* office_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733022707638001F896F /* office_text.cpp */; };
+		8A9873CE2270764C001F896F /* odf_table_styles_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733122707638001F896F /* odf_table_styles_context.h */; };
+		8A9873CF2270764C001F896F /* office_forms.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733222707638001F896F /* office_forms.h */; };
+		8A9873D02270764C001F896F /* odf_text_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733322707638001F896F /* odf_text_context.h */; };
+		8A9873D12270764C001F896F /* style_text_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733422707638001F896F /* style_text_properties.cpp */; };
+		8A9873D22270764C001F896F /* style_paragraph_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733522707638001F896F /* style_paragraph_properties.h */; };
+		8A9873D32270764C001F896F /* list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733622707639001F896F /* list.cpp */; };
+		8A9873D42270764C001F896F /* mediaitems_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733722707639001F896F /* mediaitems_utils.cpp */; };
+		8A9873D52270764C001F896F /* mediaitems.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733822707639001F896F /* mediaitems.h */; };
+		8A9873D62270764C001F896F /* ods_table_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733922707639001F896F /* ods_table_state.cpp */; };
+		8A9873D72270764C001F896F /* styles_lite_container.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733A22707639001F896F /* styles_lite_container.h */; };
+		8A9873D82270764C001F896F /* odf_page_layout_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733B22707639001F896F /* odf_page_layout_context.cpp */; };
+		8A9873D92270764C001F896F /* odf_number_styles_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733C22707639001F896F /* odf_number_styles_context.h */; };
+		8A9873DA2270764C001F896F /* style_graphic_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733D22707639001F896F /* style_graphic_properties.cpp */; };
+		8A9873DB2270764C001F896F /* style_chart_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98733E22707639001F896F /* style_chart_properties.cpp */; };
+		8A9873DC2270764C001F896F /* mediaitems_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98733F2270763A001F896F /* mediaitems_utils.h */; };
+		8A9873DD2270764C001F896F /* object_package.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873402270763A001F896F /* object_package.h */; };
+		8A9873DE2270764C001F896F /* odf_rels.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873412270763A001F896F /* odf_rels.h */; };
+		8A9873DF2270764C001F896F /* odf_page_layout_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873422270763A001F896F /* odf_page_layout_state.cpp */; };
+		8A9873E02270764C001F896F /* table.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873432270763A001F896F /* table.h */; };
+		8A9873E12270764C001F896F /* calcext_elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873442270763B001F896F /* calcext_elements.h */; };
+		8A9873E22270764C001F896F /* odf_comment_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873452270763B001F896F /* odf_comment_context.cpp */; };
+		8A9873E32270764C001F896F /* office_body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873462270763B001F896F /* office_body.cpp */; };
+		8A9873E42270764C001F896F /* odf_style_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873472270763B001F896F /* odf_style_context.cpp */; };
+		8A9873E52270764C001F896F /* oox_shape_defines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873482270763B001F896F /* oox_shape_defines.cpp */; };
+		8A9873E62270764C001F896F /* style_page_layout_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873492270763C001F896F /* style_page_layout_properties.cpp */; };
+		8A9873E72270764C001F896F /* visitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98734A2270763C001F896F /* visitor.h */; };
+		8A9873E82270764C001F896F /* style_chart_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98734B2270763C001F896F /* style_chart_properties.h */; };
+		8A9873E92270764C001F896F /* odf_style_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98734C2270763C001F896F /* odf_style_state.cpp */; };
+		8A9873EA2270764C001F896F /* header_footer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98734D2270763C001F896F /* header_footer.h */; };
+		8A9873EB2270764C001F896F /* odf_controls_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98734E2270763D001F896F /* odf_controls_context.h */; };
+		8A9873EC2270764C001F896F /* calcext_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98734F2270763D001F896F /* calcext_elements.cpp */; };
+		8A9873ED2270764C001F896F /* oox_shape_defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873502270763D001F896F /* oox_shape_defines.h */; };
+		8A9873EE2270764C001F896F /* styles_list.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873512270763D001F896F /* styles_list.h */; };
+		8A9873EF2270764C001F896F /* ods_conversion_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873522270763E001F896F /* ods_conversion_context.h */; };
+		8A9873F02270764C001F896F /* table_named_expressions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873532270763E001F896F /* table_named_expressions.cpp */; };
+		8A9873F12270764C001F896F /* paragraph_elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873542270763E001F896F /* paragraph_elements.h */; };
+		8A9873F22270764C001F896F /* odf_text_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873552270763E001F896F /* odf_text_context.cpp */; };
+		8A9873F32270764C001F896F /* style_section_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873562270763E001F896F /* style_section_properties.cpp */; };
+		8A9873F42270764C001F896F /* odf_chart_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873572270763F001F896F /* odf_chart_context.cpp */; };
+		8A9873F52270764C001F896F /* style_section_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873582270763F001F896F /* style_section_properties.h */; };
+		8A9873F62270764C001F896F /* odf_settings_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873592270763F001F896F /* odf_settings_context.cpp */; };
+		8A9873F72270764C001F896F /* office_chart.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98735A2270763F001F896F /* office_chart.h */; };
+		8A9873F82270764C001F896F /* ods_table_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98735B2270763F001F896F /* ods_table_context.cpp */; };
+		8A9873F92270764C001F896F /* office_scripts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98735C2270763F001F896F /* office_scripts.cpp */; };
+		8A9873FA2270764C001F896F /* office_spreadsheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98735D22707640001F896F /* office_spreadsheet.h */; };
+		8A9873FB2270764C001F896F /* styles_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98735E22707640001F896F /* styles_list.cpp */; };
+		8A9873FC2270764C001F896F /* style_table_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98735F22707640001F896F /* style_table_properties.h */; };
+		8A9873FD2270764C001F896F /* draw_frame.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98736022707640001F896F /* draw_frame.h */; };
+		8A9873FE2270764C001F896F /* odp_slide_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736122707640001F896F /* odp_slide_context.cpp */; };
+		8A9873FF2270764C001F896F /* office_body.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98736222707641001F896F /* office_body.h */; };
+		8A9874002270764C001F896F /* text_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736322707641001F896F /* text_elements.cpp */; };
+		8A9874012270764C001F896F /* odf_table_styles_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736422707641001F896F /* odf_table_styles_context.cpp */; };
+		8A9874022270764C001F896F /* draw_base.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98736522707641001F896F /* draw_base.h */; };
+		8A9874032270764C001F896F /* anim_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736622707642001F896F /* anim_elements.cpp */; };
+		8A9874042270764C001F896F /* odf_rels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736722707642001F896F /* odf_rels.cpp */; };
+		8A9874052270764C001F896F /* odf_notes_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736822707642001F896F /* odf_notes_context.cpp */; };
+		8A9874062270764C001F896F /* styles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736922707642001F896F /* styles.cpp */; };
+		8A9874072270764C001F896F /* table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736A22707642001F896F /* table.cpp */; };
+		8A9874082270764D001F896F /* mediaitems.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736B22707643001F896F /* mediaitems.cpp */; };
+		8A9874092270764D001F896F /* office_event_listeners.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98736C22707643001F896F /* office_event_listeners.h */; };
+		8A98740A2270764D001F896F /* office_chart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98736D22707643001F896F /* office_chart.cpp */; };
+		8A98740B2270764D001F896F /* office_document.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98736E22707643001F896F /* office_document.h */; };
+		8A98740C2270764D001F896F /* styles.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98736F22707644001F896F /* styles.h */; };
+		8A98740D2270764D001F896F /* list.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737022707644001F896F /* list.h */; };
+		8A98740E2270764D001F896F /* office_spreadsheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98737122707644001F896F /* office_spreadsheet.cpp */; };
+		8A98740F2270764D001F896F /* office_annotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98737222707644001F896F /* office_annotation.cpp */; };
+		8A9874102270764D001F896F /* svg_creator.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737322707644001F896F /* svg_creator.h */; };
+		8A9874112270764D001F896F /* odf_style_state.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737422707645001F896F /* odf_style_state.h */; };
+		8A9874122270764D001F896F /* abstract_xml.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737522707645001F896F /* abstract_xml.h */; };
+		8A9874132270764D001F896F /* odf_table_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737622707645001F896F /* odf_table_context.h */; };
+		8A9874142270764D001F896F /* office_elements_create.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737722707645001F896F /* office_elements_create.h */; };
+		8A9874152270764D001F896F /* odf_number_styles_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98737822707645001F896F /* odf_number_styles_context.cpp */; };
+		8A9874162270764D001F896F /* office_scripts.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737922707646001F896F /* office_scripts.h */; };
+		8A9874172270764D001F896F /* style_page_layout_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737A22707646001F896F /* style_page_layout_properties.h */; };
+		8A9874182270764D001F896F /* number_style.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737B22707646001F896F /* number_style.h */; };
+		8A9874192270764D001F896F /* office_settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98737C22707646001F896F /* office_settings.cpp */; };
+		8A98741A2270764D001F896F /* office_elements_type.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737D22707646001F896F /* office_elements_type.h */; };
+		8A98741B2270764D001F896F /* odf_lists_styles_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737E22707647001F896F /* odf_lists_styles_context.h */; };
+		8A98741C2270764D001F896F /* odf_conversion_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98737F22707647001F896F /* odf_conversion_context.h */; };
+		8A98741D2270764D001F896F /* paragraph_elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98738022707647001F896F /* paragraph_elements.cpp */; };
+		8A98741E2270764D001F896F /* odp_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98738122707647001F896F /* odp_conversion_context.cpp */; };
+		8A98741F2270764D001F896F /* style_text_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738222707647001F896F /* style_text_properties.h */; };
+		8A9874202270764D001F896F /* style_table_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98738322707648001F896F /* style_table_properties.cpp */; };
+		8A9874212270764D001F896F /* ods_table_state.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738422707648001F896F /* ods_table_state.h */; };
+		8A9874222270764D001F896F /* odf_chart_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738522707648001F896F /* odf_chart_context.h */; };
+		8A9874232270764D001F896F /* draw_page.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738622707648001F896F /* draw_page.h */; };
+		8A9874242270764D001F896F /* svg_creator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98738722707649001F896F /* svg_creator.cpp */; };
+		8A9874252270764D001F896F /* odf_conversion_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98738822707649001F896F /* odf_conversion_context.cpp */; };
+		8A9874262270764D001F896F /* text_elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738922707649001F896F /* text_elements.h */; };
+		8A9874272270764D001F896F /* odf_notes_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738A22707649001F896F /* odf_notes_context.h */; };
+		8A9874282270764D001F896F /* office_settings.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738B22707649001F896F /* office_settings.h */; };
+		8A9874292270764D001F896F /* style_map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98738C2270764A001F896F /* style_map.cpp */; };
+		8A98742A2270764D001F896F /* table_named_expressions.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738D2270764A001F896F /* table_named_expressions.h */; };
+		8A98742B2270764D001F896F /* draw_page.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A98738E2270764A001F896F /* draw_page.cpp */; };
+		8A98742C2270764D001F896F /* odp_conversion_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A98738F2270764A001F896F /* odp_conversion_context.h */; };
+		8A98742D2270764D001F896F /* table_database_ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873902270764A001F896F /* table_database_ranges.h */; };
+		8A98742E2270764D001F896F /* office_presentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9873912270764B001F896F /* office_presentation.h */; };
+		8A98742F2270764D001F896F /* odf_table_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873922270764B001F896F /* odf_table_context.cpp */; };
+		8A9874302270764D001F896F /* draw_shapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873932270764B001F896F /* draw_shapes.cpp */; };
+		8A9874312270764D001F896F /* office_forms.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873942270764B001F896F /* office_forms.cpp */; };
+		8A9874322270764D001F896F /* style_presentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873952270764B001F896F /* style_presentation.cpp */; };
+		8A9874332270764D001F896F /* odf_controls_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873962270764C001F896F /* odf_controls_context.cpp */; };
+		8A9874342270764D001F896F /* office_presentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A9873972270764C001F896F /* office_presentation.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -889,159 +979,6 @@
 		17513E262216E8D1008B45F7 /* cextracttools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cextracttools.h; path = ../../../../src/cextracttools.h; sourceTree = "<group>"; };
 		17513E292216EB48008B45F7 /* progressCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = progressCallback.h; path = ../../../../../ASCOfficeOdfFileW/source/progressCallback.h; sourceTree = "<group>"; };
 		17513E2A2216EB48008B45F7 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = ../../../../../ASCOfficeOdfFileW/source/utils.h; sourceTree = "<group>"; };
-		17513E2C2216EB48008B45F7 /* text_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = text_elements.cpp; sourceTree = "<group>"; };
-		17513E2D2216EB48008B45F7 /* office_annotation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_annotation.cpp; sourceTree = "<group>"; };
-		17513E2E2216EB48008B45F7 /* draw_frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_frame.h; sourceTree = "<group>"; };
-		17513E2F2216EB48008B45F7 /* styles_lite_container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styles_lite_container.h; sourceTree = "<group>"; };
-		17513E302216EB48008B45F7 /* ods_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ods_conversion_context.h; sourceTree = "<group>"; };
-		17513E312216EB48008B45F7 /* office_scripts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_scripts.h; sourceTree = "<group>"; };
-		17513E322216EB48008B45F7 /* draw_page.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_page.h; sourceTree = "<group>"; };
-		17513E332216EB48008B45F7 /* anim_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anim_elements.h; sourceTree = "<group>"; };
-		17513E342216EB48008B45F7 /* style_table_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_table_properties.cpp; sourceTree = "<group>"; };
-		17513E352216EB48008B45F7 /* svg_creator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = svg_creator.cpp; sourceTree = "<group>"; };
-		17513E362216EB48008B45F7 /* style_page_layout_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_page_layout_properties.h; sourceTree = "<group>"; };
-		17513E372216EB48008B45F7 /* ods_table_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ods_table_state.cpp; sourceTree = "<group>"; };
-		17513E382216EB48008B45F7 /* ods_table_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ods_table_context.h; sourceTree = "<group>"; };
-		17513E392216EB48008B45F7 /* style_chart_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_chart_properties.cpp; sourceTree = "<group>"; };
-		17513E3A2216EB48008B45F7 /* oox_shape_defines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oox_shape_defines.cpp; sourceTree = "<group>"; };
-		17513E3B2216EB48008B45F7 /* oox_shape_defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shape_defines.h; sourceTree = "<group>"; };
-		17513E3C2216EB48008B45F7 /* odf_chart_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_chart_context.cpp; sourceTree = "<group>"; };
-		17513E3D2216EB48008B45F7 /* style_section_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_section_properties.h; sourceTree = "<group>"; };
-		17513E3E2216EB48008B45F7 /* style_text_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_text_properties.cpp; sourceTree = "<group>"; };
-		17513E3F2216EB48008B45F7 /* odf_table_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_table_context.h; sourceTree = "<group>"; };
-		17513E402216EB48008B45F7 /* logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logging.cpp; sourceTree = "<group>"; };
-		17513E412216EB48008B45F7 /* calcext_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calcext_elements.h; sourceTree = "<group>"; };
-		17513E422216EB48008B45F7 /* office_elements_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_elements_type.h; sourceTree = "<group>"; };
-		17513E432216EB48008B45F7 /* odf_style_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_style_state.h; sourceTree = "<group>"; };
-		17513E442216EB48008B45F7 /* odf_rels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_rels.h; sourceTree = "<group>"; };
-		17513E452216EB48008B45F7 /* table.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = table.cpp; sourceTree = "<group>"; };
-		17513E462216EB48008B45F7 /* office_chart.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_chart.cpp; sourceTree = "<group>"; };
-		17513E472216EB48008B45F7 /* odf_table_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_table_context.cpp; sourceTree = "<group>"; };
-		17513E482216EB48008B45F7 /* odp_slide_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odp_slide_context.h; sourceTree = "<group>"; };
-		17513E492216EB48008B45F7 /* style_map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_map.cpp; sourceTree = "<group>"; };
-		17513E4A2216EB48008B45F7 /* style_paragraph_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_paragraph_properties.h; sourceTree = "<group>"; };
-		17513E4B2216EB48008B45F7 /* table_database_ranges.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = table_database_ranges.h; sourceTree = "<group>"; };
-		17513E4C2216EB48008B45F7 /* office_scripts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_scripts.cpp; sourceTree = "<group>"; };
-		17513E4D2216EB48008B45F7 /* styles_list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styles_list.cpp; sourceTree = "<group>"; };
-		17513E4E2216EB48008B45F7 /* odf_text_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_text_context.h; sourceTree = "<group>"; };
-		17513E4F2216EB48008B45F7 /* odf_notes_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_notes_context.h; sourceTree = "<group>"; };
-		17513E502216EB48008B45F7 /* styles_lite_container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styles_lite_container.cpp; sourceTree = "<group>"; };
-		17513E512216EB48008B45F7 /* office_annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_annotation.h; sourceTree = "<group>"; };
-		17513E522216EB48008B45F7 /* style_paragraph_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_paragraph_properties.cpp; sourceTree = "<group>"; };
-		17513E532216EB48008B45F7 /* office_chart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_chart.h; sourceTree = "<group>"; };
-		17513E542216EB48008B45F7 /* office_document.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_document.cpp; sourceTree = "<group>"; };
-		17513E552216EB48008B45F7 /* anim_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = anim_elements.cpp; sourceTree = "<group>"; };
-		17513E562216EB48008B45F7 /* office_event_listeners.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_event_listeners.h; sourceTree = "<group>"; };
-		17513E572216EB48008B45F7 /* style_table_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_table_properties.h; sourceTree = "<group>"; };
-		17513E582216EB48008B45F7 /* odf_rels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_rels.cpp; sourceTree = "<group>"; };
-		17513E592216EB48008B45F7 /* style_section_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_section_properties.cpp; sourceTree = "<group>"; };
-		17513E5A2216EB48008B45F7 /* office_elements_create.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_elements_create.cpp; sourceTree = "<group>"; };
-		17513E5B2216EB48008B45F7 /* office_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_elements.h; sourceTree = "<group>"; };
-		17513E5C2216EB48008B45F7 /* odf_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_conversion_context.cpp; sourceTree = "<group>"; };
-		17513E5D2216EB48008B45F7 /* office_settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_settings.h; sourceTree = "<group>"; };
-		17513E5F2216EB48008B45F7 /* oox_shapePrimitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapePrimitives.h; sourceTree = "<group>"; };
-		17513E602216EB48008B45F7 /* oox_shapeBents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeBents.h; sourceTree = "<group>"; };
-		17513E612216EB48008B45F7 /* oox_shapeConnectors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeConnectors.h; sourceTree = "<group>"; };
-		17513E622216EB48008B45F7 /* oox_shapeCallouts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCallouts.h; sourceTree = "<group>"; };
-		17513E632216EB48008B45F7 /* oox_shapeCharts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCharts.h; sourceTree = "<group>"; };
-		17513E642216EB48008B45F7 /* oox_shapeArrows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeArrows.h; sourceTree = "<group>"; };
-		17513E652216EB48008B45F7 /* oox_shapeWordArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeWordArt.h; sourceTree = "<group>"; };
-		17513E662216EB48008B45F7 /* oox_shapeCurvedArrows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCurvedArrows.h; sourceTree = "<group>"; };
-		17513E672216EB48008B45F7 /* oox_shapeStars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeStars.h; sourceTree = "<group>"; };
-		17513E682216EB48008B45F7 /* oox_shapeActionButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeActionButtons.h; sourceTree = "<group>"; };
-		17513E692216EB48008B45F7 /* oox_shapeCustoms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCustoms.h; sourceTree = "<group>"; };
-		17513E6A2216EB48008B45F7 /* oox_shapeSnipRoundRects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeSnipRoundRects.h; sourceTree = "<group>"; };
-		17513E6B2216EB48008B45F7 /* odf_shape_mapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_shape_mapping.h; sourceTree = "<group>"; };
-		17513E6C2216EB48008B45F7 /* oox_shapeCurvedConnectors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCurvedConnectors.h; sourceTree = "<group>"; };
-		17513E6D2216EB48008B45F7 /* oox_shapeMaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeMaths.h; sourceTree = "<group>"; };
-		17513E6E2216EB48008B45F7 /* oox_shapeRibbons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeRibbons.h; sourceTree = "<group>"; };
-		17513E6F2216EB48008B45F7 /* oox_shapeAccentCallouts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeAccentCallouts.h; sourceTree = "<group>"; };
-		17513E702216EB48008B45F7 /* mediaitems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediaitems.h; sourceTree = "<group>"; };
-		17513E712216EB48008B45F7 /* style_presentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_presentation.h; sourceTree = "<group>"; };
-		17513E722216EB48008B45F7 /* style_graphic_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_graphic_properties.h; sourceTree = "<group>"; };
-		17513E732216EB48008B45F7 /* odf_text_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_text_context.cpp; sourceTree = "<group>"; };
-		17513E742216EB48008B45F7 /* draw_shapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_shapes.h; sourceTree = "<group>"; };
-		17513E752216EB48008B45F7 /* mediaitems.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mediaitems.cpp; sourceTree = "<group>"; };
-		17513E762216EB48008B45F7 /* odf_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_conversion_context.h; sourceTree = "<group>"; };
-		17513E772216EB48008B45F7 /* office_settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_settings.cpp; sourceTree = "<group>"; };
-		17513E782216EB48008B45F7 /* style_presentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_presentation.cpp; sourceTree = "<group>"; };
-		17513E792216EB48008B45F7 /* visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = visitor.h; sourceTree = "<group>"; };
-		17513E7A2216EB48008B45F7 /* styles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styles.h; sourceTree = "<group>"; };
-		17513E7B2216EB48008B45F7 /* office_text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_text.cpp; sourceTree = "<group>"; };
-		17513E7C2216EB48008B45F7 /* odf_comment_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_comment_context.h; sourceTree = "<group>"; };
-		17513E7D2216EB48008B45F7 /* odf_page_layout_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_page_layout_state.h; sourceTree = "<group>"; };
-		17513E7E2216EB48008B45F7 /* style_map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_map.h; sourceTree = "<group>"; };
-		17513E7F2216EB48008B45F7 /* odp_page_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odp_page_state.cpp; sourceTree = "<group>"; };
-		17513E802216EB48008B45F7 /* ods_table_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ods_table_context.cpp; sourceTree = "<group>"; };
-		17513E812216EB48008B45F7 /* mediaitems_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediaitems_utils.h; sourceTree = "<group>"; };
-		17513E822216EB48008B45F7 /* odf_chart_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_chart_context.h; sourceTree = "<group>"; };
-		17513E832216EB48008B45F7 /* calcext_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calcext_elements.cpp; sourceTree = "<group>"; };
-		17513E842216EB48008B45F7 /* odf_page_layout_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_page_layout_context.h; sourceTree = "<group>"; };
-		17513E852216EB48008B45F7 /* odf_page_layout_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_page_layout_state.cpp; sourceTree = "<group>"; };
-		17513E862216EB48008B45F7 /* odf_settings_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_settings_context.cpp; sourceTree = "<group>"; };
-		17513E872216EB48008B45F7 /* style_page_layout_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_page_layout_properties.cpp; sourceTree = "<group>"; };
-		17513E882216EB48008B45F7 /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
-		17513E892216EB48008B45F7 /* odf_page_layout_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_page_layout_context.cpp; sourceTree = "<group>"; };
-		17513E8A2216EB48008B45F7 /* abstract_xml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abstract_xml.cpp; sourceTree = "<group>"; };
-		17513E8B2216EB48008B45F7 /* table_named_expressions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = table_named_expressions.cpp; sourceTree = "<group>"; };
-		17513E8C2216EB48008B45F7 /* odf_notes_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_notes_context.cpp; sourceTree = "<group>"; };
-		17513E8D2216EB48008B45F7 /* style_chart_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_chart_properties.h; sourceTree = "<group>"; };
-		17513E8E2216EB48008B45F7 /* styles_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styles_list.h; sourceTree = "<group>"; };
-		17513E8F2216EB48008B45F7 /* draw_page.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_page.cpp; sourceTree = "<group>"; };
-		17513E902216EB48008B45F7 /* number_style.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = number_style.cpp; sourceTree = "<group>"; };
-		17513E912216EB48008B45F7 /* office_elements_create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_elements_create.h; sourceTree = "<group>"; };
-		17513E922216EB48008B45F7 /* odp_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odp_conversion_context.cpp; sourceTree = "<group>"; };
-		17513E932216EB48008B45F7 /* odf_drawing_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_drawing_context.cpp; sourceTree = "<group>"; };
-		17513E942216EB48008B45F7 /* abstract_xml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = abstract_xml.h; sourceTree = "<group>"; };
-		17513E952216EB48008B45F7 /* odf_comment_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_comment_context.cpp; sourceTree = "<group>"; };
-		17513E962216EB48008B45F7 /* list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = list.cpp; sourceTree = "<group>"; };
-		17513E972216EB48008B45F7 /* odf_style_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_style_context.cpp; sourceTree = "<group>"; };
-		17513E982216EB48008B45F7 /* odt_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odt_conversion_context.h; sourceTree = "<group>"; };
-		17513E992216EB48008B45F7 /* ods_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ods_conversion_context.cpp; sourceTree = "<group>"; };
-		17513E9A2216EB48008B45F7 /* styles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styles.cpp; sourceTree = "<group>"; };
-		17513E9B2216EB48008B45F7 /* office_body.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_body.h; sourceTree = "<group>"; };
-		17513E9C2216EB48008B45F7 /* office_presentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_presentation.cpp; sourceTree = "<group>"; };
-		17513E9D2216EB48008B45F7 /* odf_table_styles_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_table_styles_context.cpp; sourceTree = "<group>"; };
-		17513E9E2216EB48008B45F7 /* odt_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odt_conversion_context.cpp; sourceTree = "<group>"; };
-		17513E9F2216EB48008B45F7 /* office_spreadsheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_spreadsheet.h; sourceTree = "<group>"; };
-		17513EA02216EB48008B45F7 /* odp_slide_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odp_slide_context.cpp; sourceTree = "<group>"; };
-		17513EA12216EB48008B45F7 /* paragraph_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = paragraph_elements.cpp; sourceTree = "<group>"; };
-		17513EA22216EB48008B45F7 /* table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = table.h; sourceTree = "<group>"; };
-		17513EA32216EB48008B45F7 /* draw_frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_frame.cpp; sourceTree = "<group>"; };
-		17513EA42216EB48008B45F7 /* style_text_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_text_properties.h; sourceTree = "<group>"; };
-		17513EA52216EB48008B45F7 /* header_footer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = header_footer.h; sourceTree = "<group>"; };
-		17513EA62216EB48008B45F7 /* paragraph_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = paragraph_elements.h; sourceTree = "<group>"; };
-		17513EA72216EB48008B45F7 /* text_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = text_elements.h; sourceTree = "<group>"; };
-		17513EA82216EB48008B45F7 /* ods_table_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ods_table_state.h; sourceTree = "<group>"; };
-		17513EA92216EB48008B45F7 /* odf_number_styles_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_number_styles_context.h; sourceTree = "<group>"; };
-		17513EAA2216EB48008B45F7 /* office_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_text.h; sourceTree = "<group>"; };
-		17513EAB2216EB48008B45F7 /* object_package.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = object_package.cpp; sourceTree = "<group>"; };
-		17513EAC2216EB48008B45F7 /* odf_number_styles_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_number_styles_context.cpp; sourceTree = "<group>"; };
-		17513EAD2216EB48008B45F7 /* number_style.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = number_style.h; sourceTree = "<group>"; };
-		17513EAE2216EB48008B45F7 /* office_body.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_body.cpp; sourceTree = "<group>"; };
-		17513EAF2216EB48008B45F7 /* table_named_expressions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = table_named_expressions.h; sourceTree = "<group>"; };
-		17513EB02216EB48008B45F7 /* odf_drawing_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_drawing_context.h; sourceTree = "<group>"; };
-		17513EB12216EB48008B45F7 /* header_footer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = header_footer.cpp; sourceTree = "<group>"; };
-		17513EB22216EB48008B45F7 /* object_package.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = object_package.h; sourceTree = "<group>"; };
-		17513EB32216EB48008B45F7 /* svg_creator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svg_creator.h; sourceTree = "<group>"; };
-		17513EB42216EB49008B45F7 /* office_event_listeners.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_event_listeners.cpp; sourceTree = "<group>"; };
-		17513EB52216EB49008B45F7 /* draw_shapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_shapes.cpp; sourceTree = "<group>"; };
-		17513EB62216EB49008B45F7 /* odf_lists_styles_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_lists_styles_context.cpp; sourceTree = "<group>"; };
-		17513EB72216EB49008B45F7 /* style_graphic_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_graphic_properties.cpp; sourceTree = "<group>"; };
-		17513EB82216EB49008B45F7 /* odf_settings_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_settings_context.h; sourceTree = "<group>"; };
-		17513EB92216EB49008B45F7 /* odp_page_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odp_page_state.h; sourceTree = "<group>"; };
-		17513EBA2216EB49008B45F7 /* office_spreadsheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_spreadsheet.cpp; sourceTree = "<group>"; };
-		17513EBB2216EB49008B45F7 /* office_document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_document.h; sourceTree = "<group>"; };
-		17513EBC2216EB49008B45F7 /* odf_lists_styles_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_lists_styles_context.h; sourceTree = "<group>"; };
-		17513EBD2216EB49008B45F7 /* mediaitems_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mediaitems_utils.cpp; sourceTree = "<group>"; };
-		17513EBE2216EB49008B45F7 /* draw_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_base.cpp; sourceTree = "<group>"; };
-		17513EBF2216EB49008B45F7 /* odf_table_styles_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_table_styles_context.h; sourceTree = "<group>"; };
-		17513EC02216EB49008B45F7 /* odp_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odp_conversion_context.h; sourceTree = "<group>"; };
-		17513EC12216EB49008B45F7 /* table_database_ranges.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = table_database_ranges.cpp; sourceTree = "<group>"; };
-		17513EC22216EB49008B45F7 /* office_presentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_presentation.h; sourceTree = "<group>"; };
-		17513EC32216EB49008B45F7 /* odf_style_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_style_context.h; sourceTree = "<group>"; };
-		17513EC42216EB49008B45F7 /* odf_style_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_style_state.cpp; sourceTree = "<group>"; };
-		17513EC52216EB49008B45F7 /* draw_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_base.h; sourceTree = "<group>"; };
 		17513EC62216EB49008B45F7 /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utils.cpp; path = ../../../../../ASCOfficeOdfFileW/source/utils.cpp; sourceTree = "<group>"; };
 		17513EC82216EB49008B45F7 /* DocxConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocxConverter.h; sourceTree = "<group>"; };
 		17513EC92216EB49008B45F7 /* Converter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Converter.cpp; sourceTree = "<group>"; };
@@ -1059,6 +996,163 @@
 		8A5834E6221D90BE0029F06B /* formulasconvert_odf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = formulasconvert_odf.cpp; sourceTree = "<group>"; };
 		8A5834E7221D90BE0029F06B /* formulasconvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = formulasconvert.h; sourceTree = "<group>"; };
 		8A5834E8221D90BE0029F06B /* formulasconvert_oox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = formulasconvert_oox.cpp; sourceTree = "<group>"; };
+		8A9872FA22707634001F896F /* office_document.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_document.cpp; sourceTree = "<group>"; };
+		8A9872FB22707634001F896F /* odf_style_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_style_context.h; sourceTree = "<group>"; };
+		8A9872FC22707634001F896F /* draw_shapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_shapes.h; sourceTree = "<group>"; };
+		8A9872FD22707634001F896F /* odp_page_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odp_page_state.cpp; sourceTree = "<group>"; };
+		8A9872FE22707634001F896F /* office_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_text.h; sourceTree = "<group>"; };
+		8A9872FF22707634001F896F /* style_presentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_presentation.h; sourceTree = "<group>"; };
+		8A98730022707634001F896F /* odf_drawing_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_drawing_context.h; sourceTree = "<group>"; };
+		8A98730122707634001F896F /* style_graphic_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_graphic_properties.h; sourceTree = "<group>"; };
+		8A98730222707634001F896F /* odp_page_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odp_page_state.h; sourceTree = "<group>"; };
+		8A98730322707634001F896F /* draw_frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_frame.cpp; sourceTree = "<group>"; };
+		8A98730422707634001F896F /* office_elements_create.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_elements_create.cpp; sourceTree = "<group>"; };
+		8A98730522707634001F896F /* odf_lists_styles_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_lists_styles_context.cpp; sourceTree = "<group>"; };
+		8A98730622707634001F896F /* abstract_xml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abstract_xml.cpp; sourceTree = "<group>"; };
+		8A98730722707635001F896F /* object_package.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = object_package.cpp; sourceTree = "<group>"; };
+		8A98730822707635001F896F /* number_style.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = number_style.cpp; sourceTree = "<group>"; };
+		8A98730922707635001F896F /* office_annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_annotation.h; sourceTree = "<group>"; };
+		8A98730A22707635001F896F /* odf_settings_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_settings_context.h; sourceTree = "<group>"; };
+		8A98730B22707635001F896F /* draw_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_base.cpp; sourceTree = "<group>"; };
+		8A98730C22707635001F896F /* odf_drawing_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_drawing_context.cpp; sourceTree = "<group>"; };
+		8A98730D22707635001F896F /* odt_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odt_conversion_context.cpp; sourceTree = "<group>"; };
+		8A98730E22707636001F896F /* office_event_listeners.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_event_listeners.cpp; sourceTree = "<group>"; };
+		8A98730F22707636001F896F /* ods_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ods_conversion_context.cpp; sourceTree = "<group>"; };
+		8A98731022707636001F896F /* table_database_ranges.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = table_database_ranges.cpp; sourceTree = "<group>"; };
+		8A98731222707636001F896F /* oox_shapePrimitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapePrimitives.h; sourceTree = "<group>"; };
+		8A98731322707636001F896F /* oox_shapeBents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeBents.h; sourceTree = "<group>"; };
+		8A98731422707636001F896F /* oox_shapeConnectors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeConnectors.h; sourceTree = "<group>"; };
+		8A98731522707636001F896F /* oox_shapeCallouts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCallouts.h; sourceTree = "<group>"; };
+		8A98731622707636001F896F /* oox_shapeCharts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCharts.h; sourceTree = "<group>"; };
+		8A98731722707636001F896F /* oox_shapeArrows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeArrows.h; sourceTree = "<group>"; };
+		8A98731822707636001F896F /* oox_shapeWordArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeWordArt.h; sourceTree = "<group>"; };
+		8A98731922707636001F896F /* oox_shapeCurvedArrows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCurvedArrows.h; sourceTree = "<group>"; };
+		8A98731A22707636001F896F /* oox_shapeStars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeStars.h; sourceTree = "<group>"; };
+		8A98731B22707636001F896F /* oox_shapeActionButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeActionButtons.h; sourceTree = "<group>"; };
+		8A98731C22707636001F896F /* oox_shapeCustoms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCustoms.h; sourceTree = "<group>"; };
+		8A98731D22707636001F896F /* oox_shapeSnipRoundRects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeSnipRoundRects.h; sourceTree = "<group>"; };
+		8A98731E22707636001F896F /* odf_shape_mapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_shape_mapping.h; sourceTree = "<group>"; };
+		8A98731F22707636001F896F /* oox_shapeCurvedConnectors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeCurvedConnectors.h; sourceTree = "<group>"; };
+		8A98732022707636001F896F /* oox_shapeMaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeMaths.h; sourceTree = "<group>"; };
+		8A98732122707636001F896F /* oox_shapeRibbons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeRibbons.h; sourceTree = "<group>"; };
+		8A98732222707636001F896F /* oox_shapeAccentCallouts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shapeAccentCallouts.h; sourceTree = "<group>"; };
+		8A98732322707636001F896F /* odt_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odt_conversion_context.h; sourceTree = "<group>"; };
+		8A98732422707636001F896F /* odf_comment_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_comment_context.h; sourceTree = "<group>"; };
+		8A98732522707636001F896F /* odf_page_layout_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_page_layout_state.h; sourceTree = "<group>"; };
+		8A98732622707637001F896F /* anim_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anim_elements.h; sourceTree = "<group>"; };
+		8A98732722707637001F896F /* odf_page_layout_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_page_layout_context.h; sourceTree = "<group>"; };
+		8A98732822707637001F896F /* office_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_elements.h; sourceTree = "<group>"; };
+		8A98732922707637001F896F /* odp_slide_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odp_slide_context.h; sourceTree = "<group>"; };
+		8A98732A22707637001F896F /* styles_lite_container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styles_lite_container.cpp; sourceTree = "<group>"; };
+		8A98732B22707637001F896F /* ods_table_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ods_table_context.h; sourceTree = "<group>"; };
+		8A98732C22707637001F896F /* header_footer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = header_footer.cpp; sourceTree = "<group>"; };
+		8A98732D22707637001F896F /* style_map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_map.h; sourceTree = "<group>"; };
+		8A98732E22707637001F896F /* style_paragraph_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_paragraph_properties.cpp; sourceTree = "<group>"; };
+		8A98732F22707638001F896F /* logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logging.cpp; sourceTree = "<group>"; };
+		8A98733022707638001F896F /* office_text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_text.cpp; sourceTree = "<group>"; };
+		8A98733122707638001F896F /* odf_table_styles_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_table_styles_context.h; sourceTree = "<group>"; };
+		8A98733222707638001F896F /* office_forms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_forms.h; sourceTree = "<group>"; };
+		8A98733322707638001F896F /* odf_text_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_text_context.h; sourceTree = "<group>"; };
+		8A98733422707638001F896F /* style_text_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_text_properties.cpp; sourceTree = "<group>"; };
+		8A98733522707638001F896F /* style_paragraph_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_paragraph_properties.h; sourceTree = "<group>"; };
+		8A98733622707639001F896F /* list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = list.cpp; sourceTree = "<group>"; };
+		8A98733722707639001F896F /* mediaitems_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mediaitems_utils.cpp; sourceTree = "<group>"; };
+		8A98733822707639001F896F /* mediaitems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediaitems.h; sourceTree = "<group>"; };
+		8A98733922707639001F896F /* ods_table_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ods_table_state.cpp; sourceTree = "<group>"; };
+		8A98733A22707639001F896F /* styles_lite_container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styles_lite_container.h; sourceTree = "<group>"; };
+		8A98733B22707639001F896F /* odf_page_layout_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_page_layout_context.cpp; sourceTree = "<group>"; };
+		8A98733C22707639001F896F /* odf_number_styles_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_number_styles_context.h; sourceTree = "<group>"; };
+		8A98733D22707639001F896F /* style_graphic_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_graphic_properties.cpp; sourceTree = "<group>"; };
+		8A98733E22707639001F896F /* style_chart_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_chart_properties.cpp; sourceTree = "<group>"; };
+		8A98733F2270763A001F896F /* mediaitems_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediaitems_utils.h; sourceTree = "<group>"; };
+		8A9873402270763A001F896F /* object_package.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = object_package.h; sourceTree = "<group>"; };
+		8A9873412270763A001F896F /* odf_rels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_rels.h; sourceTree = "<group>"; };
+		8A9873422270763A001F896F /* odf_page_layout_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_page_layout_state.cpp; sourceTree = "<group>"; };
+		8A9873432270763A001F896F /* table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = table.h; sourceTree = "<group>"; };
+		8A9873442270763B001F896F /* calcext_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calcext_elements.h; sourceTree = "<group>"; };
+		8A9873452270763B001F896F /* odf_comment_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_comment_context.cpp; sourceTree = "<group>"; };
+		8A9873462270763B001F896F /* office_body.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_body.cpp; sourceTree = "<group>"; };
+		8A9873472270763B001F896F /* odf_style_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_style_context.cpp; sourceTree = "<group>"; };
+		8A9873482270763B001F896F /* oox_shape_defines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oox_shape_defines.cpp; sourceTree = "<group>"; };
+		8A9873492270763C001F896F /* style_page_layout_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_page_layout_properties.cpp; sourceTree = "<group>"; };
+		8A98734A2270763C001F896F /* visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = visitor.h; sourceTree = "<group>"; };
+		8A98734B2270763C001F896F /* style_chart_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_chart_properties.h; sourceTree = "<group>"; };
+		8A98734C2270763C001F896F /* odf_style_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_style_state.cpp; sourceTree = "<group>"; };
+		8A98734D2270763C001F896F /* header_footer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = header_footer.h; sourceTree = "<group>"; };
+		8A98734E2270763D001F896F /* odf_controls_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_controls_context.h; sourceTree = "<group>"; };
+		8A98734F2270763D001F896F /* calcext_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calcext_elements.cpp; sourceTree = "<group>"; };
+		8A9873502270763D001F896F /* oox_shape_defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oox_shape_defines.h; sourceTree = "<group>"; };
+		8A9873512270763D001F896F /* styles_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styles_list.h; sourceTree = "<group>"; };
+		8A9873522270763E001F896F /* ods_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ods_conversion_context.h; sourceTree = "<group>"; };
+		8A9873532270763E001F896F /* table_named_expressions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = table_named_expressions.cpp; sourceTree = "<group>"; };
+		8A9873542270763E001F896F /* paragraph_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = paragraph_elements.h; sourceTree = "<group>"; };
+		8A9873552270763E001F896F /* odf_text_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_text_context.cpp; sourceTree = "<group>"; };
+		8A9873562270763E001F896F /* style_section_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_section_properties.cpp; sourceTree = "<group>"; };
+		8A9873572270763F001F896F /* odf_chart_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_chart_context.cpp; sourceTree = "<group>"; };
+		8A9873582270763F001F896F /* style_section_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_section_properties.h; sourceTree = "<group>"; };
+		8A9873592270763F001F896F /* odf_settings_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_settings_context.cpp; sourceTree = "<group>"; };
+		8A98735A2270763F001F896F /* office_chart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_chart.h; sourceTree = "<group>"; };
+		8A98735B2270763F001F896F /* ods_table_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ods_table_context.cpp; sourceTree = "<group>"; };
+		8A98735C2270763F001F896F /* office_scripts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_scripts.cpp; sourceTree = "<group>"; };
+		8A98735D22707640001F896F /* office_spreadsheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_spreadsheet.h; sourceTree = "<group>"; };
+		8A98735E22707640001F896F /* styles_list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styles_list.cpp; sourceTree = "<group>"; };
+		8A98735F22707640001F896F /* style_table_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_table_properties.h; sourceTree = "<group>"; };
+		8A98736022707640001F896F /* draw_frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_frame.h; sourceTree = "<group>"; };
+		8A98736122707640001F896F /* odp_slide_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odp_slide_context.cpp; sourceTree = "<group>"; };
+		8A98736222707641001F896F /* office_body.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_body.h; sourceTree = "<group>"; };
+		8A98736322707641001F896F /* text_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = text_elements.cpp; sourceTree = "<group>"; };
+		8A98736422707641001F896F /* odf_table_styles_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_table_styles_context.cpp; sourceTree = "<group>"; };
+		8A98736522707641001F896F /* draw_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_base.h; sourceTree = "<group>"; };
+		8A98736622707642001F896F /* anim_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = anim_elements.cpp; sourceTree = "<group>"; };
+		8A98736722707642001F896F /* odf_rels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_rels.cpp; sourceTree = "<group>"; };
+		8A98736822707642001F896F /* odf_notes_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_notes_context.cpp; sourceTree = "<group>"; };
+		8A98736922707642001F896F /* styles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styles.cpp; sourceTree = "<group>"; };
+		8A98736A22707642001F896F /* table.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = table.cpp; sourceTree = "<group>"; };
+		8A98736B22707643001F896F /* mediaitems.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mediaitems.cpp; sourceTree = "<group>"; };
+		8A98736C22707643001F896F /* office_event_listeners.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_event_listeners.h; sourceTree = "<group>"; };
+		8A98736D22707643001F896F /* office_chart.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_chart.cpp; sourceTree = "<group>"; };
+		8A98736E22707643001F896F /* office_document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_document.h; sourceTree = "<group>"; };
+		8A98736F22707644001F896F /* styles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styles.h; sourceTree = "<group>"; };
+		8A98737022707644001F896F /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
+		8A98737122707644001F896F /* office_spreadsheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_spreadsheet.cpp; sourceTree = "<group>"; };
+		8A98737222707644001F896F /* office_annotation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_annotation.cpp; sourceTree = "<group>"; };
+		8A98737322707644001F896F /* svg_creator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svg_creator.h; sourceTree = "<group>"; };
+		8A98737422707645001F896F /* odf_style_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_style_state.h; sourceTree = "<group>"; };
+		8A98737522707645001F896F /* abstract_xml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = abstract_xml.h; sourceTree = "<group>"; };
+		8A98737622707645001F896F /* odf_table_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_table_context.h; sourceTree = "<group>"; };
+		8A98737722707645001F896F /* office_elements_create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_elements_create.h; sourceTree = "<group>"; };
+		8A98737822707645001F896F /* odf_number_styles_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_number_styles_context.cpp; sourceTree = "<group>"; };
+		8A98737922707646001F896F /* office_scripts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_scripts.h; sourceTree = "<group>"; };
+		8A98737A22707646001F896F /* style_page_layout_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_page_layout_properties.h; sourceTree = "<group>"; };
+		8A98737B22707646001F896F /* number_style.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = number_style.h; sourceTree = "<group>"; };
+		8A98737C22707646001F896F /* office_settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_settings.cpp; sourceTree = "<group>"; };
+		8A98737D22707646001F896F /* office_elements_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_elements_type.h; sourceTree = "<group>"; };
+		8A98737E22707647001F896F /* odf_lists_styles_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_lists_styles_context.h; sourceTree = "<group>"; };
+		8A98737F22707647001F896F /* odf_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_conversion_context.h; sourceTree = "<group>"; };
+		8A98738022707647001F896F /* paragraph_elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = paragraph_elements.cpp; sourceTree = "<group>"; };
+		8A98738122707647001F896F /* odp_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odp_conversion_context.cpp; sourceTree = "<group>"; };
+		8A98738222707647001F896F /* style_text_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = style_text_properties.h; sourceTree = "<group>"; };
+		8A98738322707648001F896F /* style_table_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_table_properties.cpp; sourceTree = "<group>"; };
+		8A98738422707648001F896F /* ods_table_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ods_table_state.h; sourceTree = "<group>"; };
+		8A98738522707648001F896F /* odf_chart_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_chart_context.h; sourceTree = "<group>"; };
+		8A98738622707648001F896F /* draw_page.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw_page.h; sourceTree = "<group>"; };
+		8A98738722707649001F896F /* svg_creator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = svg_creator.cpp; sourceTree = "<group>"; };
+		8A98738822707649001F896F /* odf_conversion_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_conversion_context.cpp; sourceTree = "<group>"; };
+		8A98738922707649001F896F /* text_elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = text_elements.h; sourceTree = "<group>"; };
+		8A98738A22707649001F896F /* odf_notes_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odf_notes_context.h; sourceTree = "<group>"; };
+		8A98738B22707649001F896F /* office_settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_settings.h; sourceTree = "<group>"; };
+		8A98738C2270764A001F896F /* style_map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_map.cpp; sourceTree = "<group>"; };
+		8A98738D2270764A001F896F /* table_named_expressions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = table_named_expressions.h; sourceTree = "<group>"; };
+		8A98738E2270764A001F896F /* draw_page.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_page.cpp; sourceTree = "<group>"; };
+		8A98738F2270764A001F896F /* odp_conversion_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = odp_conversion_context.h; sourceTree = "<group>"; };
+		8A9873902270764A001F896F /* table_database_ranges.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = table_database_ranges.h; sourceTree = "<group>"; };
+		8A9873912270764B001F896F /* office_presentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = office_presentation.h; sourceTree = "<group>"; };
+		8A9873922270764B001F896F /* odf_table_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_table_context.cpp; sourceTree = "<group>"; };
+		8A9873932270764B001F896F /* draw_shapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_shapes.cpp; sourceTree = "<group>"; };
+		8A9873942270764B001F896F /* office_forms.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_forms.cpp; sourceTree = "<group>"; };
+		8A9873952270764B001F896F /* style_presentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = style_presentation.cpp; sourceTree = "<group>"; };
+		8A9873962270764C001F896F /* odf_controls_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = odf_controls_context.cpp; sourceTree = "<group>"; };
+		8A9873972270764C001F896F /* office_presentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = office_presentation.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1698,170 +1792,150 @@
 		17513E2B2216EB48008B45F7 /* OdfFormat */ = {
 			isa = PBXGroup;
 			children = (
-				17513E2C2216EB48008B45F7 /* text_elements.cpp */,
-				17513E2D2216EB48008B45F7 /* office_annotation.cpp */,
-				17513E2E2216EB48008B45F7 /* draw_frame.h */,
-				17513E2F2216EB48008B45F7 /* styles_lite_container.h */,
-				17513E302216EB48008B45F7 /* ods_conversion_context.h */,
-				17513E312216EB48008B45F7 /* office_scripts.h */,
-				17513E322216EB48008B45F7 /* draw_page.h */,
-				17513E332216EB48008B45F7 /* anim_elements.h */,
-				17513E342216EB48008B45F7 /* style_table_properties.cpp */,
-				17513E352216EB48008B45F7 /* svg_creator.cpp */,
-				17513E362216EB48008B45F7 /* style_page_layout_properties.h */,
-				17513E372216EB48008B45F7 /* ods_table_state.cpp */,
-				17513E382216EB48008B45F7 /* ods_table_context.h */,
-				17513E392216EB48008B45F7 /* style_chart_properties.cpp */,
-				17513E3A2216EB48008B45F7 /* oox_shape_defines.cpp */,
-				17513E3B2216EB48008B45F7 /* oox_shape_defines.h */,
-				17513E3C2216EB48008B45F7 /* odf_chart_context.cpp */,
-				17513E3D2216EB48008B45F7 /* style_section_properties.h */,
-				17513E3E2216EB48008B45F7 /* style_text_properties.cpp */,
-				17513E3F2216EB48008B45F7 /* odf_table_context.h */,
-				17513E402216EB48008B45F7 /* logging.cpp */,
-				17513E412216EB48008B45F7 /* calcext_elements.h */,
-				17513E422216EB48008B45F7 /* office_elements_type.h */,
-				17513E432216EB48008B45F7 /* odf_style_state.h */,
-				17513E442216EB48008B45F7 /* odf_rels.h */,
-				17513E452216EB48008B45F7 /* table.cpp */,
-				17513E462216EB48008B45F7 /* office_chart.cpp */,
-				17513E472216EB48008B45F7 /* odf_table_context.cpp */,
-				17513E482216EB48008B45F7 /* odp_slide_context.h */,
-				17513E492216EB48008B45F7 /* style_map.cpp */,
-				17513E4A2216EB48008B45F7 /* style_paragraph_properties.h */,
-				17513E4B2216EB48008B45F7 /* table_database_ranges.h */,
-				17513E4C2216EB48008B45F7 /* office_scripts.cpp */,
-				17513E4D2216EB48008B45F7 /* styles_list.cpp */,
-				17513E4E2216EB48008B45F7 /* odf_text_context.h */,
-				17513E4F2216EB48008B45F7 /* odf_notes_context.h */,
-				17513E502216EB48008B45F7 /* styles_lite_container.cpp */,
-				17513E512216EB48008B45F7 /* office_annotation.h */,
-				17513E522216EB48008B45F7 /* style_paragraph_properties.cpp */,
-				17513E532216EB48008B45F7 /* office_chart.h */,
-				17513E542216EB48008B45F7 /* office_document.cpp */,
-				17513E552216EB48008B45F7 /* anim_elements.cpp */,
-				17513E562216EB48008B45F7 /* office_event_listeners.h */,
-				17513E572216EB48008B45F7 /* style_table_properties.h */,
-				17513E582216EB48008B45F7 /* odf_rels.cpp */,
-				17513E592216EB48008B45F7 /* style_section_properties.cpp */,
-				17513E5A2216EB48008B45F7 /* office_elements_create.cpp */,
-				17513E5B2216EB48008B45F7 /* office_elements.h */,
-				17513E5C2216EB48008B45F7 /* odf_conversion_context.cpp */,
-				17513E5D2216EB48008B45F7 /* office_settings.h */,
-				17513E5E2216EB48008B45F7 /* Shapes */,
-				17513E702216EB48008B45F7 /* mediaitems.h */,
-				17513E712216EB48008B45F7 /* style_presentation.h */,
-				17513E722216EB48008B45F7 /* style_graphic_properties.h */,
-				17513E732216EB48008B45F7 /* odf_text_context.cpp */,
-				17513E742216EB48008B45F7 /* draw_shapes.h */,
-				17513E752216EB48008B45F7 /* mediaitems.cpp */,
-				17513E762216EB48008B45F7 /* odf_conversion_context.h */,
-				17513E772216EB48008B45F7 /* office_settings.cpp */,
-				17513E782216EB48008B45F7 /* style_presentation.cpp */,
-				17513E792216EB48008B45F7 /* visitor.h */,
-				17513E7A2216EB48008B45F7 /* styles.h */,
-				17513E7B2216EB48008B45F7 /* office_text.cpp */,
-				17513E7C2216EB48008B45F7 /* odf_comment_context.h */,
-				17513E7D2216EB48008B45F7 /* odf_page_layout_state.h */,
-				17513E7E2216EB48008B45F7 /* style_map.h */,
-				17513E7F2216EB48008B45F7 /* odp_page_state.cpp */,
-				17513E802216EB48008B45F7 /* ods_table_context.cpp */,
-				17513E812216EB48008B45F7 /* mediaitems_utils.h */,
-				17513E822216EB48008B45F7 /* odf_chart_context.h */,
-				17513E832216EB48008B45F7 /* calcext_elements.cpp */,
-				17513E842216EB48008B45F7 /* odf_page_layout_context.h */,
-				17513E852216EB48008B45F7 /* odf_page_layout_state.cpp */,
-				17513E862216EB48008B45F7 /* odf_settings_context.cpp */,
-				17513E872216EB48008B45F7 /* style_page_layout_properties.cpp */,
-				17513E882216EB48008B45F7 /* list.h */,
-				17513E892216EB48008B45F7 /* odf_page_layout_context.cpp */,
-				17513E8A2216EB48008B45F7 /* abstract_xml.cpp */,
-				17513E8B2216EB48008B45F7 /* table_named_expressions.cpp */,
-				17513E8C2216EB48008B45F7 /* odf_notes_context.cpp */,
-				17513E8D2216EB48008B45F7 /* style_chart_properties.h */,
-				17513E8E2216EB48008B45F7 /* styles_list.h */,
-				17513E8F2216EB48008B45F7 /* draw_page.cpp */,
-				17513E902216EB48008B45F7 /* number_style.cpp */,
-				17513E912216EB48008B45F7 /* office_elements_create.h */,
-				17513E922216EB48008B45F7 /* odp_conversion_context.cpp */,
-				17513E932216EB48008B45F7 /* odf_drawing_context.cpp */,
-				17513E942216EB48008B45F7 /* abstract_xml.h */,
-				17513E952216EB48008B45F7 /* odf_comment_context.cpp */,
-				17513E962216EB48008B45F7 /* list.cpp */,
-				17513E972216EB48008B45F7 /* odf_style_context.cpp */,
-				17513E982216EB48008B45F7 /* odt_conversion_context.h */,
-				17513E992216EB48008B45F7 /* ods_conversion_context.cpp */,
-				17513E9A2216EB48008B45F7 /* styles.cpp */,
-				17513E9B2216EB48008B45F7 /* office_body.h */,
-				17513E9C2216EB48008B45F7 /* office_presentation.cpp */,
-				17513E9D2216EB48008B45F7 /* odf_table_styles_context.cpp */,
-				17513E9E2216EB48008B45F7 /* odt_conversion_context.cpp */,
-				17513E9F2216EB48008B45F7 /* office_spreadsheet.h */,
-				17513EA02216EB48008B45F7 /* odp_slide_context.cpp */,
-				17513EA12216EB48008B45F7 /* paragraph_elements.cpp */,
-				17513EA22216EB48008B45F7 /* table.h */,
-				17513EA32216EB48008B45F7 /* draw_frame.cpp */,
-				17513EA42216EB48008B45F7 /* style_text_properties.h */,
-				17513EA52216EB48008B45F7 /* header_footer.h */,
-				17513EA62216EB48008B45F7 /* paragraph_elements.h */,
-				17513EA72216EB48008B45F7 /* text_elements.h */,
-				17513EA82216EB48008B45F7 /* ods_table_state.h */,
-				17513EA92216EB48008B45F7 /* odf_number_styles_context.h */,
-				17513EAA2216EB48008B45F7 /* office_text.h */,
-				17513EAB2216EB48008B45F7 /* object_package.cpp */,
-				17513EAC2216EB48008B45F7 /* odf_number_styles_context.cpp */,
-				17513EAD2216EB48008B45F7 /* number_style.h */,
-				17513EAE2216EB48008B45F7 /* office_body.cpp */,
-				17513EAF2216EB48008B45F7 /* table_named_expressions.h */,
-				17513EB02216EB48008B45F7 /* odf_drawing_context.h */,
-				17513EB12216EB48008B45F7 /* header_footer.cpp */,
-				17513EB22216EB48008B45F7 /* object_package.h */,
-				17513EB32216EB48008B45F7 /* svg_creator.h */,
-				17513EB42216EB49008B45F7 /* office_event_listeners.cpp */,
-				17513EB52216EB49008B45F7 /* draw_shapes.cpp */,
-				17513EB62216EB49008B45F7 /* odf_lists_styles_context.cpp */,
-				17513EB72216EB49008B45F7 /* style_graphic_properties.cpp */,
-				17513EB82216EB49008B45F7 /* odf_settings_context.h */,
-				17513EB92216EB49008B45F7 /* odp_page_state.h */,
-				17513EBA2216EB49008B45F7 /* office_spreadsheet.cpp */,
-				17513EBB2216EB49008B45F7 /* office_document.h */,
-				17513EBC2216EB49008B45F7 /* odf_lists_styles_context.h */,
-				17513EBD2216EB49008B45F7 /* mediaitems_utils.cpp */,
-				17513EBE2216EB49008B45F7 /* draw_base.cpp */,
-				17513EBF2216EB49008B45F7 /* odf_table_styles_context.h */,
-				17513EC02216EB49008B45F7 /* odp_conversion_context.h */,
-				17513EC12216EB49008B45F7 /* table_database_ranges.cpp */,
-				17513EC22216EB49008B45F7 /* office_presentation.h */,
-				17513EC32216EB49008B45F7 /* odf_style_context.h */,
-				17513EC42216EB49008B45F7 /* odf_style_state.cpp */,
-				17513EC52216EB49008B45F7 /* draw_base.h */,
+				8A98730622707634001F896F /* abstract_xml.cpp */,
+				8A98737522707645001F896F /* abstract_xml.h */,
+				8A98736622707642001F896F /* anim_elements.cpp */,
+				8A98732622707637001F896F /* anim_elements.h */,
+				8A98734F2270763D001F896F /* calcext_elements.cpp */,
+				8A9873442270763B001F896F /* calcext_elements.h */,
+				8A98730B22707635001F896F /* draw_base.cpp */,
+				8A98736522707641001F896F /* draw_base.h */,
+				8A98730322707634001F896F /* draw_frame.cpp */,
+				8A98736022707640001F896F /* draw_frame.h */,
+				8A98738E2270764A001F896F /* draw_page.cpp */,
+				8A98738622707648001F896F /* draw_page.h */,
+				8A9873932270764B001F896F /* draw_shapes.cpp */,
+				8A9872FC22707634001F896F /* draw_shapes.h */,
+				8A98732C22707637001F896F /* header_footer.cpp */,
+				8A98734D2270763C001F896F /* header_footer.h */,
+				8A98733622707639001F896F /* list.cpp */,
+				8A98737022707644001F896F /* list.h */,
+				8A98732F22707638001F896F /* logging.cpp */,
+				8A98733722707639001F896F /* mediaitems_utils.cpp */,
+				8A98733F2270763A001F896F /* mediaitems_utils.h */,
+				8A98736B22707643001F896F /* mediaitems.cpp */,
+				8A98733822707639001F896F /* mediaitems.h */,
+				8A98730822707635001F896F /* number_style.cpp */,
+				8A98737B22707646001F896F /* number_style.h */,
+				8A98730722707635001F896F /* object_package.cpp */,
+				8A9873402270763A001F896F /* object_package.h */,
+				8A9873572270763F001F896F /* odf_chart_context.cpp */,
+				8A98738522707648001F896F /* odf_chart_context.h */,
+				8A9873452270763B001F896F /* odf_comment_context.cpp */,
+				8A98732422707636001F896F /* odf_comment_context.h */,
+				8A9873962270764C001F896F /* odf_controls_context.cpp */,
+				8A98734E2270763D001F896F /* odf_controls_context.h */,
+				8A98738822707649001F896F /* odf_conversion_context.cpp */,
+				8A98737F22707647001F896F /* odf_conversion_context.h */,
+				8A98730C22707635001F896F /* odf_drawing_context.cpp */,
+				8A98730022707634001F896F /* odf_drawing_context.h */,
+				8A98730522707634001F896F /* odf_lists_styles_context.cpp */,
+				8A98737E22707647001F896F /* odf_lists_styles_context.h */,
+				8A98736822707642001F896F /* odf_notes_context.cpp */,
+				8A98738A22707649001F896F /* odf_notes_context.h */,
+				8A98737822707645001F896F /* odf_number_styles_context.cpp */,
+				8A98733C22707639001F896F /* odf_number_styles_context.h */,
+				8A98733B22707639001F896F /* odf_page_layout_context.cpp */,
+				8A98732722707637001F896F /* odf_page_layout_context.h */,
+				8A9873422270763A001F896F /* odf_page_layout_state.cpp */,
+				8A98732522707636001F896F /* odf_page_layout_state.h */,
+				8A98736722707642001F896F /* odf_rels.cpp */,
+				8A9873412270763A001F896F /* odf_rels.h */,
+				8A9873592270763F001F896F /* odf_settings_context.cpp */,
+				8A98730A22707635001F896F /* odf_settings_context.h */,
+				8A9873472270763B001F896F /* odf_style_context.cpp */,
+				8A9872FB22707634001F896F /* odf_style_context.h */,
+				8A98734C2270763C001F896F /* odf_style_state.cpp */,
+				8A98737422707645001F896F /* odf_style_state.h */,
+				8A9873922270764B001F896F /* odf_table_context.cpp */,
+				8A98737622707645001F896F /* odf_table_context.h */,
+				8A98736422707641001F896F /* odf_table_styles_context.cpp */,
+				8A98733122707638001F896F /* odf_table_styles_context.h */,
+				8A9873552270763E001F896F /* odf_text_context.cpp */,
+				8A98733322707638001F896F /* odf_text_context.h */,
+				8A98738122707647001F896F /* odp_conversion_context.cpp */,
+				8A98738F2270764A001F896F /* odp_conversion_context.h */,
+				8A9872FD22707634001F896F /* odp_page_state.cpp */,
+				8A98730222707634001F896F /* odp_page_state.h */,
+				8A98736122707640001F896F /* odp_slide_context.cpp */,
+				8A98732922707637001F896F /* odp_slide_context.h */,
+				8A98730F22707636001F896F /* ods_conversion_context.cpp */,
+				8A9873522270763E001F896F /* ods_conversion_context.h */,
+				8A98735B2270763F001F896F /* ods_table_context.cpp */,
+				8A98732B22707637001F896F /* ods_table_context.h */,
+				8A98733922707639001F896F /* ods_table_state.cpp */,
+				8A98738422707648001F896F /* ods_table_state.h */,
+				8A98730D22707635001F896F /* odt_conversion_context.cpp */,
+				8A98732322707636001F896F /* odt_conversion_context.h */,
+				8A98737222707644001F896F /* office_annotation.cpp */,
+				8A98730922707635001F896F /* office_annotation.h */,
+				8A9873462270763B001F896F /* office_body.cpp */,
+				8A98736222707641001F896F /* office_body.h */,
+				8A98736D22707643001F896F /* office_chart.cpp */,
+				8A98735A2270763F001F896F /* office_chart.h */,
+				8A9872FA22707634001F896F /* office_document.cpp */,
+				8A98736E22707643001F896F /* office_document.h */,
+				8A98730422707634001F896F /* office_elements_create.cpp */,
+				8A98737722707645001F896F /* office_elements_create.h */,
+				8A98737D22707646001F896F /* office_elements_type.h */,
+				8A98732822707637001F896F /* office_elements.h */,
+				8A98730E22707636001F896F /* office_event_listeners.cpp */,
+				8A98736C22707643001F896F /* office_event_listeners.h */,
+				8A9873942270764B001F896F /* office_forms.cpp */,
+				8A98733222707638001F896F /* office_forms.h */,
+				8A9873972270764C001F896F /* office_presentation.cpp */,
+				8A9873912270764B001F896F /* office_presentation.h */,
+				8A98735C2270763F001F896F /* office_scripts.cpp */,
+				8A98737922707646001F896F /* office_scripts.h */,
+				8A98737C22707646001F896F /* office_settings.cpp */,
+				8A98738B22707649001F896F /* office_settings.h */,
+				8A98737122707644001F896F /* office_spreadsheet.cpp */,
+				8A98735D22707640001F896F /* office_spreadsheet.h */,
+				8A98733022707638001F896F /* office_text.cpp */,
+				8A9872FE22707634001F896F /* office_text.h */,
+				8A9873482270763B001F896F /* oox_shape_defines.cpp */,
+				8A9873502270763D001F896F /* oox_shape_defines.h */,
+				8A98738022707647001F896F /* paragraph_elements.cpp */,
+				8A9873542270763E001F896F /* paragraph_elements.h */,
+				8A98731122707636001F896F /* Shapes */,
+				8A98733E22707639001F896F /* style_chart_properties.cpp */,
+				8A98734B2270763C001F896F /* style_chart_properties.h */,
+				8A98733D22707639001F896F /* style_graphic_properties.cpp */,
+				8A98730122707634001F896F /* style_graphic_properties.h */,
+				8A98738C2270764A001F896F /* style_map.cpp */,
+				8A98732D22707637001F896F /* style_map.h */,
+				8A9873492270763C001F896F /* style_page_layout_properties.cpp */,
+				8A98737A22707646001F896F /* style_page_layout_properties.h */,
+				8A98732E22707637001F896F /* style_paragraph_properties.cpp */,
+				8A98733522707638001F896F /* style_paragraph_properties.h */,
+				8A9873952270764B001F896F /* style_presentation.cpp */,
+				8A9872FF22707634001F896F /* style_presentation.h */,
+				8A9873562270763E001F896F /* style_section_properties.cpp */,
+				8A9873582270763F001F896F /* style_section_properties.h */,
+				8A98738322707648001F896F /* style_table_properties.cpp */,
+				8A98735F22707640001F896F /* style_table_properties.h */,
+				8A98733422707638001F896F /* style_text_properties.cpp */,
+				8A98738222707647001F896F /* style_text_properties.h */,
+				8A98735E22707640001F896F /* styles_list.cpp */,
+				8A9873512270763D001F896F /* styles_list.h */,
+				8A98732A22707637001F896F /* styles_lite_container.cpp */,
+				8A98733A22707639001F896F /* styles_lite_container.h */,
+				8A98736922707642001F896F /* styles.cpp */,
+				8A98736F22707644001F896F /* styles.h */,
+				8A98738722707649001F896F /* svg_creator.cpp */,
+				8A98737322707644001F896F /* svg_creator.h */,
+				8A98731022707636001F896F /* table_database_ranges.cpp */,
+				8A9873902270764A001F896F /* table_database_ranges.h */,
+				8A9873532270763E001F896F /* table_named_expressions.cpp */,
+				8A98738D2270764A001F896F /* table_named_expressions.h */,
+				8A98736A22707642001F896F /* table.cpp */,
+				8A9873432270763A001F896F /* table.h */,
+				8A98736322707641001F896F /* text_elements.cpp */,
+				8A98738922707649001F896F /* text_elements.h */,
+				8A98734A2270763C001F896F /* visitor.h */,
 			);
 			name = OdfFormat;
 			path = ../../../../../ASCOfficeOdfFileW/source/OdfFormat;
-			sourceTree = "<group>";
-		};
-		17513E5E2216EB48008B45F7 /* Shapes */ = {
-			isa = PBXGroup;
-			children = (
-				17513E5F2216EB48008B45F7 /* oox_shapePrimitives.h */,
-				17513E602216EB48008B45F7 /* oox_shapeBents.h */,
-				17513E612216EB48008B45F7 /* oox_shapeConnectors.h */,
-				17513E622216EB48008B45F7 /* oox_shapeCallouts.h */,
-				17513E632216EB48008B45F7 /* oox_shapeCharts.h */,
-				17513E642216EB48008B45F7 /* oox_shapeArrows.h */,
-				17513E652216EB48008B45F7 /* oox_shapeWordArt.h */,
-				17513E662216EB48008B45F7 /* oox_shapeCurvedArrows.h */,
-				17513E672216EB48008B45F7 /* oox_shapeStars.h */,
-				17513E682216EB48008B45F7 /* oox_shapeActionButtons.h */,
-				17513E692216EB48008B45F7 /* oox_shapeCustoms.h */,
-				17513E6A2216EB48008B45F7 /* oox_shapeSnipRoundRects.h */,
-				17513E6B2216EB48008B45F7 /* odf_shape_mapping.h */,
-				17513E6C2216EB48008B45F7 /* oox_shapeCurvedConnectors.h */,
-				17513E6D2216EB48008B45F7 /* oox_shapeMaths.h */,
-				17513E6E2216EB48008B45F7 /* oox_shapeRibbons.h */,
-				17513E6F2216EB48008B45F7 /* oox_shapeAccentCallouts.h */,
-			);
-			path = Shapes;
 			sourceTree = "<group>";
 		};
 		17513EC72216EB49008B45F7 /* Oox2OdfConverter */ = {
@@ -1896,6 +1970,30 @@
 			path = ../../../../../ASCOfficeOdfFile/formulasconvert;
 			sourceTree = "<group>";
 		};
+		8A98731122707636001F896F /* Shapes */ = {
+			isa = PBXGroup;
+			children = (
+				8A98731222707636001F896F /* oox_shapePrimitives.h */,
+				8A98731322707636001F896F /* oox_shapeBents.h */,
+				8A98731422707636001F896F /* oox_shapeConnectors.h */,
+				8A98731522707636001F896F /* oox_shapeCallouts.h */,
+				8A98731622707636001F896F /* oox_shapeCharts.h */,
+				8A98731722707636001F896F /* oox_shapeArrows.h */,
+				8A98731822707636001F896F /* oox_shapeWordArt.h */,
+				8A98731922707636001F896F /* oox_shapeCurvedArrows.h */,
+				8A98731A22707636001F896F /* oox_shapeStars.h */,
+				8A98731B22707636001F896F /* oox_shapeActionButtons.h */,
+				8A98731C22707636001F896F /* oox_shapeCustoms.h */,
+				8A98731D22707636001F896F /* oox_shapeSnipRoundRects.h */,
+				8A98731E22707636001F896F /* odf_shape_mapping.h */,
+				8A98731F22707636001F896F /* oox_shapeCurvedConnectors.h */,
+				8A98732022707636001F896F /* oox_shapeMaths.h */,
+				8A98732122707636001F896F /* oox_shapeRibbons.h */,
+				8A98732222707636001F896F /* oox_shapeAccentCallouts.h */,
+			);
+			path = Shapes;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1903,7 +2001,95 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A9873C52270764C001F896F /* office_elements.h in Headers */,
+				8A9873B02270764C001F896F /* oox_shapeBents.h in Headers */,
+				8A9874272270764D001F896F /* odf_notes_context.h in Headers */,
+				8A9873DC2270764C001F896F /* mediaitems_utils.h in Headers */,
+				8A9873BE2270764C001F896F /* oox_shapeRibbons.h in Headers */,
+				8A9873A72270764C001F896F /* office_annotation.h in Headers */,
+				8A9873B52270764C001F896F /* oox_shapeWordArt.h in Headers */,
+				8A9873C12270764C001F896F /* odf_comment_context.h in Headers */,
+				8A9873F72270764C001F896F /* office_chart.h in Headers */,
+				8A9873D02270764C001F896F /* odf_text_context.h in Headers */,
+				8A9873C42270764C001F896F /* odf_page_layout_context.h in Headers */,
+				8A9873FD2270764C001F896F /* draw_frame.h in Headers */,
+				8A9874182270764D001F896F /* number_style.h in Headers */,
+				8A9873CA2270764C001F896F /* style_map.h in Headers */,
+				8A9873C82270764C001F896F /* ods_table_context.h in Headers */,
+				8A9873B22270764C001F896F /* oox_shapeCallouts.h in Headers */,
+				8A98742D2270764D001F896F /* table_database_ranges.h in Headers */,
+				8A9873ED2270764C001F896F /* oox_shape_defines.h in Headers */,
+				8A98739F2270764C001F896F /* style_graphic_properties.h in Headers */,
+				8A9874112270764D001F896F /* odf_style_state.h in Headers */,
+				8A9874142270764D001F896F /* office_elements_create.h in Headers */,
+				8A9874162270764D001F896F /* office_scripts.h in Headers */,
+				8A9874212270764D001F896F /* ods_table_state.h in Headers */,
+				8A98739D2270764C001F896F /* style_presentation.h in Headers */,
+				8A98741A2270764D001F896F /* office_elements_type.h in Headers */,
+				8A9873CF2270764C001F896F /* office_forms.h in Headers */,
+				8A98740D2270764D001F896F /* list.h in Headers */,
+				8A9873B72270764C001F896F /* oox_shapeStars.h in Headers */,
+				8A9874092270764D001F896F /* office_event_listeners.h in Headers */,
+				8A9874132270764D001F896F /* odf_table_context.h in Headers */,
+				8A9873DE2270764C001F896F /* odf_rels.h in Headers */,
+				8A9873992270764C001F896F /* odf_style_context.h in Headers */,
+				8A9873C32270764C001F896F /* anim_elements.h in Headers */,
+				8A98739A2270764C001F896F /* draw_shapes.h in Headers */,
+				8A9873EB2270764C001F896F /* odf_controls_context.h in Headers */,
+				8A9873BF2270764C001F896F /* oox_shapeAccentCallouts.h in Headers */,
+				8A9873B82270764C001F896F /* oox_shapeActionButtons.h in Headers */,
+				8A9873E82270764C001F896F /* style_chart_properties.h in Headers */,
 				17513B0A2216E721008B45F7 /* OfficeOdfConverter.h in Headers */,
+				8A9873BB2270764C001F896F /* odf_shape_mapping.h in Headers */,
+				8A9874122270764D001F896F /* abstract_xml.h in Headers */,
+				8A9874222270764D001F896F /* odf_chart_context.h in Headers */,
+				8A9873A02270764C001F896F /* odp_page_state.h in Headers */,
+				8A98739C2270764C001F896F /* office_text.h in Headers */,
+				8A9873BC2270764C001F896F /* oox_shapeCurvedConnectors.h in Headers */,
+				8A98739E2270764C001F896F /* odf_drawing_context.h in Headers */,
+				8A9873C22270764C001F896F /* odf_page_layout_state.h in Headers */,
+				8A9873BA2270764C001F896F /* oox_shapeSnipRoundRects.h in Headers */,
+				8A98741C2270764D001F896F /* odf_conversion_context.h in Headers */,
+				8A9873D72270764C001F896F /* styles_lite_container.h in Headers */,
+				8A9873CE2270764C001F896F /* odf_table_styles_context.h in Headers */,
+				8A9873B92270764C001F896F /* oox_shapeCustoms.h in Headers */,
+				8A9873F12270764C001F896F /* paragraph_elements.h in Headers */,
+				8A9874262270764D001F896F /* text_elements.h in Headers */,
+				8A9873EF2270764C001F896F /* ods_conversion_context.h in Headers */,
+				8A9873FA2270764C001F896F /* office_spreadsheet.h in Headers */,
+				8A98742A2270764D001F896F /* table_named_expressions.h in Headers */,
+				8A9873EE2270764C001F896F /* styles_list.h in Headers */,
+				8A9873EA2270764C001F896F /* header_footer.h in Headers */,
+				8A9873B42270764C001F896F /* oox_shapeArrows.h in Headers */,
+				8A98742C2270764D001F896F /* odp_conversion_context.h in Headers */,
+				8A9873BD2270764C001F896F /* oox_shapeMaths.h in Headers */,
+				8A9873D92270764C001F896F /* odf_number_styles_context.h in Headers */,
+				8A9873C02270764C001F896F /* odt_conversion_context.h in Headers */,
+				8A9873B32270764C001F896F /* oox_shapeCharts.h in Headers */,
+				8A9873A82270764C001F896F /* odf_settings_context.h in Headers */,
+				8A9873F52270764C001F896F /* style_section_properties.h in Headers */,
+				8A98742E2270764D001F896F /* office_presentation.h in Headers */,
+				8A9873FF2270764C001F896F /* office_body.h in Headers */,
+				8A9873B12270764C001F896F /* oox_shapeConnectors.h in Headers */,
+				8A9874282270764D001F896F /* office_settings.h in Headers */,
+				8A9874022270764C001F896F /* draw_base.h in Headers */,
+				8A9874232270764D001F896F /* draw_page.h in Headers */,
+				8A9873FC2270764C001F896F /* style_table_properties.h in Headers */,
+				8A9873E12270764C001F896F /* calcext_elements.h in Headers */,
+				8A9873D52270764C001F896F /* mediaitems.h in Headers */,
+				8A9873DD2270764C001F896F /* object_package.h in Headers */,
+				8A9873D22270764C001F896F /* style_paragraph_properties.h in Headers */,
+				8A98741B2270764D001F896F /* odf_lists_styles_context.h in Headers */,
+				8A9873B62270764C001F896F /* oox_shapeCurvedArrows.h in Headers */,
+				8A9873E72270764C001F896F /* visitor.h in Headers */,
+				8A9873E02270764C001F896F /* table.h in Headers */,
+				8A9873C62270764C001F896F /* odp_slide_context.h in Headers */,
+				8A98740B2270764D001F896F /* office_document.h in Headers */,
+				8A98740C2270764D001F896F /* styles.h in Headers */,
+				8A98741F2270764D001F896F /* style_text_properties.h in Headers */,
+				8A9874102270764D001F896F /* svg_creator.h in Headers */,
+				8A9874172270764D001F896F /* style_page_layout_properties.h in Headers */,
+				8A9873AF2270764C001F896F /* oox_shapePrimitives.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1967,41 +2153,45 @@
 				17513DA42216E785008B45F7 /* office_settings.cpp in Sources */,
 				17513E122216E785008B45F7 /* xlsx_fonts.cpp in Sources */,
 				17513D5E2216E785008B45F7 /* chartlabelposition.cpp in Sources */,
+				8A9874322270764D001F896F /* style_presentation.cpp in Sources */,
+				8A9874072270764C001F896F /* table.cpp in Sources */,
 				17513DE42216E785008B45F7 /* xlsx_styles.cpp in Sources */,
 				17513F1B2216EB49008B45F7 /* XlsxConverter.cpp in Sources */,
 				17513D9C2216E785008B45F7 /* style_paragraph_properties.cpp in Sources */,
 				17513E162216E785008B45F7 /* xlsx_textcontext.cpp in Sources */,
 				17513DE92216E785008B45F7 /* xlsx_numFmts.cpp in Sources */,
 				17513D712216E785008B45F7 /* linestyle.cpp in Sources */,
+				8A9874052270764C001F896F /* odf_notes_context.cpp in Sources */,
 				17513E002216E785008B45F7 /* xlsx_utils.cpp in Sources */,
+				8A9873F32270764C001F896F /* style_section_properties.cpp in Sources */,
+				8A9873A42270764C001F896F /* abstract_xml.cpp in Sources */,
 				17513DDA2216E785008B45F7 /* conversionelement.cpp in Sources */,
 				17513DC62216E785008B45F7 /* office_meta.cpp in Sources */,
+				8A9874062270764C001F896F /* styles.cpp in Sources */,
 				17513D312216E785008B45F7 /* office_scripts.cpp in Sources */,
 				17513DA72216E785008B45F7 /* draw_shapes_docx.cpp in Sources */,
-				17513EF42216EB49008B45F7 /* calcext_elements.cpp in Sources */,
 				17513DA02216E785008B45F7 /* documentcontext.cpp in Sources */,
-				17513EF22216EB49008B45F7 /* odp_page_state.cpp in Sources */,
 				17513DFE2216E785008B45F7 /* pptx_comments_context.cpp in Sources */,
-				17513F112216EB49008B45F7 /* odf_lists_styles_context.cpp in Sources */,
+				8A9873C92270764C001F896F /* header_footer.cpp in Sources */,
 				17513D632216E785008B45F7 /* smil_transitiontype.cpp in Sources */,
 				17513D902216E785008B45F7 /* fontfamilygeneric.cpp in Sources */,
-				17513F002216EB49008B45F7 /* odf_comment_context.cpp in Sources */,
-				17513F062216EB49008B45F7 /* odf_table_styles_context.cpp in Sources */,
+				8A9873AB2270764C001F896F /* odt_conversion_context.cpp in Sources */,
 				17513D9D2216E785008B45F7 /* office_document.cpp in Sources */,
 				17513DF12216E785008B45F7 /* xlsx_border.cpp in Sources */,
 				17513DDC2216E785008B45F7 /* pptx_drawings.cpp in Sources */,
 				17513DED2216E785008B45F7 /* xlsxconversioncontext.cpp in Sources */,
+				8A9873DA2270764C001F896F /* style_graphic_properties.cpp in Sources */,
 				17513DD82216E785008B45F7 /* readdocelement.cpp in Sources */,
 				17513D612216E785008B45F7 /* tablealign.cpp in Sources */,
+				8A9873DF2270764C001F896F /* odf_page_layout_state.cpp in Sources */,
+				8A9873F62270764C001F896F /* odf_settings_context.cpp in Sources */,
 				17513DD32216E785008B45F7 /* sax.cpp in Sources */,
 				17513D782216E785008B45F7 /* tableorientation.cpp in Sources */,
+				8A98742F2270764D001F896F /* odf_table_context.cpp in Sources */,
 				17513D792216E785008B45F7 /* underlinecolor.cpp in Sources */,
 				17513D7E2216E785008B45F7 /* percentorscale.cpp in Sources */,
-				17513EE92216EB49008B45F7 /* odf_rels.cpp in Sources */,
-				17513EDF2216EB49008B45F7 /* table.cpp in Sources */,
-				17513EF52216EB49008B45F7 /* odf_page_layout_state.cpp in Sources */,
+				8A9873A52270764C001F896F /* object_package.cpp in Sources */,
 				17513D422216E785008B45F7 /* length.cpp in Sources */,
-				17513ED92216EB49008B45F7 /* ods_table_state.cpp in Sources */,
 				17513D4F2216E785008B45F7 /* percent.cpp in Sources */,
 				17513E0A2216E785008B45F7 /* oox_data_labels.cpp in Sources */,
 				17513D492216E785008B45F7 /* fontrelief.cpp in Sources */,
@@ -2009,147 +2199,144 @@
 				17513D842216E785008B45F7 /* stylefamily.cpp in Sources */,
 				17513E032216E785008B45F7 /* oox_types_chart.cpp in Sources */,
 				17513DAE2216E785008B45F7 /* math_elements.cpp in Sources */,
+				8A9874032270764C001F896F /* anim_elements.cpp in Sources */,
 				17513D7B2216E785008B45F7 /* shadowtype.cpp in Sources */,
+				8A9874082270764D001F896F /* mediaitems.cpp in Sources */,
 				17513D912216E785008B45F7 /* noteclass.cpp in Sources */,
 				17513DC52216E785008B45F7 /* math_elementaries.cpp in Sources */,
 				17513DCA2216E785008B45F7 /* ruby.cpp in Sources */,
 				17513D2E2216E785008B45F7 /* table_docx.cpp in Sources */,
 				17513DD12216E785008B45F7 /* sax_xmllite.cpp in Sources */,
+				8A9874202270764D001F896F /* style_table_properties.cpp in Sources */,
 				17513E152216E785008B45F7 /* oox_drawing_fills.cpp in Sources */,
 				17513E042216E785008B45F7 /* oox_title.cpp in Sources */,
 				17513DB92216E785008B45F7 /* table_xlsx.cpp in Sources */,
 				17513D952216E785008B45F7 /* tablefunction.cpp in Sources */,
+				8A9873D12270764C001F896F /* style_text_properties.cpp in Sources */,
+				8A9873DB2270764C001F896F /* style_chart_properties.cpp in Sources */,
 				17513DAF2216E785008B45F7 /* draw_page.cpp in Sources */,
 				17513DB12216E785008B45F7 /* list.cpp in Sources */,
 				17513F1E2216EB49008B45F7 /* ConvertVml.cpp in Sources */,
 				17513D9A2216E785008B45F7 /* styleverticalrel.cpp in Sources */,
+				8A9873F02270764C001F896F /* table_named_expressions.cpp in Sources */,
 				17513DAB2216E785008B45F7 /* abstract_xml.cpp in Sources */,
-				17513EEB2216EB49008B45F7 /* office_elements_create.cpp in Sources */,
 				17513D592216E785008B45F7 /* linewidth.cpp in Sources */,
+				8A9873D62270764C001F896F /* ods_table_state.cpp in Sources */,
 				17513D8E2216E785008B45F7 /* texttransform.cpp in Sources */,
+				8A9874152270764D001F896F /* odf_number_styles_context.cpp in Sources */,
+				8A98740F2270764D001F896F /* office_annotation.cpp in Sources */,
+				8A9874252270764D001F896F /* odf_conversion_context.cpp in Sources */,
 				17513D822216E785008B45F7 /* hatchstyle.cpp in Sources */,
 				17513DA92216E785008B45F7 /* math_layout_elements.cpp in Sources */,
-				17513EEF2216EB49008B45F7 /* office_settings.cpp in Sources */,
 				17513D302216E785008B45F7 /* style_paragraph_properties_pptx.cpp in Sources */,
 				17513D882216E785008B45F7 /* charterrorcategory.cpp in Sources */,
 				17513E182216E785008B45F7 /* xlsx_sharedstrings.cpp in Sources */,
+				8A9873C72270764C001F896F /* styles_lite_container.cpp in Sources */,
 				17513E1A2216E786008B45F7 /* xlsx_drawings.cpp in Sources */,
 				17513F192216EB49008B45F7 /* Converter.cpp in Sources */,
 				17513DFD2216E785008B45F7 /* namespaces.cpp in Sources */,
-				17513EEE2216EB49008B45F7 /* mediaitems.cpp in Sources */,
-				17513F0D2216EB49008B45F7 /* office_body.cpp in Sources */,
-				17513EF62216EB49008B45F7 /* odf_settings_context.cpp in Sources */,
+				8A9873E92270764C001F896F /* odf_style_state.cpp in Sources */,
 				17513DF32216E785008B45F7 /* xlsx_num_format_context.cpp in Sources */,
 				17513D472216E785008B45F7 /* clockvalue.cpp in Sources */,
 				17513DF92216E785008B45F7 /* xlsx_dxfs.cpp in Sources */,
 				17513E192216E786008B45F7 /* xlsx_cell_styles.cpp in Sources */,
 				8A5834EA221D90BE0029F06B /* formulasconvert_oox.cpp in Sources */,
-				17513EF32216EB49008B45F7 /* ods_table_context.cpp in Sources */,
 				17513E232216E786008B45F7 /* xlsx_defined_names.cpp in Sources */,
 				17513D5C2216E785008B45F7 /* tabletype.cpp in Sources */,
-				17513EF92216EB49008B45F7 /* abstract_xml.cpp in Sources */,
 				17513E1B2216E786008B45F7 /* oox_chart_shape.cpp in Sources */,
 				17513E092216E785008B45F7 /* xlsx_table_metrics.cpp in Sources */,
 				17513D9F2216E785008B45F7 /* anim_elements.cpp in Sources */,
 				17513E112216E785008B45F7 /* pptx_table_context.cpp in Sources */,
 				17513DE22216E785008B45F7 /* docx_content_type.cpp in Sources */,
+				8A9874302270764D001F896F /* draw_shapes.cpp in Sources */,
 				17513D3C2216E785008B45F7 /* tableorder.cpp in Sources */,
 				17513D732216E785008B45F7 /* punctuationwrap.cpp in Sources */,
 				17513D332216E785008B45F7 /* table_calculation_settings.cpp in Sources */,
-				17513F142216EB49008B45F7 /* mediaitems_utils.cpp in Sources */,
 				17513D542216E785008B45F7 /* writingmode.cpp in Sources */,
 				17513DC02216E785008B45F7 /* table_pptx.cpp in Sources */,
 				17513DDE2216E785008B45F7 /* xlsx_fill.cpp in Sources */,
 				17513DAA2216E785008B45F7 /* math_limit_elements.cpp in Sources */,
+				8A98741D2270764D001F896F /* paragraph_elements.cpp in Sources */,
 				17513DC92216E785008B45F7 /* draw_shapes.cpp in Sources */,
 				17513E222216E786008B45F7 /* xlsx_comments.cpp in Sources */,
-				17513F132216EB49008B45F7 /* office_spreadsheet.cpp in Sources */,
 				17513D322216E785008B45F7 /* styles_list.cpp in Sources */,
 				17513D292216E785008B45F7 /* table.cpp in Sources */,
-				17513EDD2216EB49008B45F7 /* style_text_properties.cpp in Sources */,
 				17513DB22216E785008B45F7 /* office_forms.cpp in Sources */,
 				17513E0C2216E785008B45F7 /* xlsx_fills.cpp in Sources */,
-				17513F162216EB49008B45F7 /* table_database_ranges.cpp in Sources */,
 				17513D832216E785008B45F7 /* fontpitch.cpp in Sources */,
-				17513EFA2216EB49008B45F7 /* table_named_expressions.cpp in Sources */,
-				17513F012216EB49008B45F7 /* list.cpp in Sources */,
 				17513DFC2216E785008B45F7 /* mediaitems.cpp in Sources */,
 				17513D872216E785008B45F7 /* fontstretch.cpp in Sources */,
 				17513F1F2216EB49008B45F7 /* ConvertDrawing.cpp in Sources */,
 				17513D7A2216E785008B45F7 /* linebreak.cpp in Sources */,
 				17513D202216E785008B45F7 /* draw_shapes_xlsx.cpp in Sources */,
-				17513F022216EB49008B45F7 /* odf_style_context.cpp in Sources */,
 				17513D252216E785008B45F7 /* style_chart_properties.cpp in Sources */,
 				17513D922216E785008B45F7 /* drawfill.cpp in Sources */,
-				17513F032216EB49008B45F7 /* ods_conversion_context.cpp in Sources */,
-				17513F0F2216EB49008B45F7 /* office_event_listeners.cpp in Sources */,
+				8A9873FB2270764C001F896F /* styles_list.cpp in Sources */,
 				17513D432216E785008B45F7 /* commandtype.cpp in Sources */,
-				17513EDA2216EB49008B45F7 /* style_chart_properties.cpp in Sources */,
 				17513DFB2216E785008B45F7 /* measuredigits.cpp in Sources */,
-				17513EEA2216EB49008B45F7 /* style_section_properties.cpp in Sources */,
 				17513D932216E785008B45F7 /* linemode.cpp in Sources */,
+				8A9873A22270764C001F896F /* office_elements_create.cpp in Sources */,
 				17513DD92216E785008B45F7 /* ConvertOO2OOX.cpp in Sources */,
-				17513EE52216EB49008B45F7 /* styles_lite_container.cpp in Sources */,
+				8A9873EC2270764C001F896F /* calcext_elements.cpp in Sources */,
 				17513DBF2216E785008B45F7 /* draw_frame.cpp in Sources */,
 				17513D9B2216E785008B45F7 /* math_token_elements.cpp in Sources */,
 				17513DD72216E785008B45F7 /* CPColorUtils.cpp in Sources */,
-				17513EE62216EB49008B45F7 /* style_paragraph_properties.cpp in Sources */,
+				8A9873F82270764C001F896F /* ods_table_context.cpp in Sources */,
 				17513D2C2216E785008B45F7 /* font_face.cpp in Sources */,
 				17513DDD2216E785008B45F7 /* xlsx_alignment.cpp in Sources */,
 				17513D8B2216E785008B45F7 /* textcombine.cpp in Sources */,
 				17513D482216E785008B45F7 /* rotationalign.cpp in Sources */,
 				17513D392216E785008B45F7 /* tablecentering.cpp in Sources */,
-				17513F0B2216EB49008B45F7 /* object_package.cpp in Sources */,
 				17513D762216E785008B45F7 /* chartregressiontype.cpp in Sources */,
 				17513DEE2216E785008B45F7 /* xlsx_output_xml.cpp in Sources */,
 				17513D982216E785008B45F7 /* targetframename.cpp in Sources */,
+				8A9874332270764D001F896F /* odf_controls_context.cpp in Sources */,
 				17513D8D2216E785008B45F7 /* xlink.cpp in Sources */,
 				17513E272216E8D1008B45F7 /* cextracttools.cpp in Sources */,
 				17513D972216E785008B45F7 /* layoutgridmode.cpp in Sources */,
 				17513DEC2216E785008B45F7 /* headers_footers.cpp in Sources */,
+				8A9873F22270764C001F896F /* odf_text_context.cpp in Sources */,
 				17513D2B2216E785008B45F7 /* draw_common.cpp in Sources */,
 				17513D722216E785008B45F7 /* grandtotal.cpp in Sources */,
 				17513E0E2216E785008B45F7 /* docx_conversion_context.cpp in Sources */,
 				17513DF72216E785008B45F7 /* pptx_output_xml.cpp in Sources */,
-				17513EDE2216EB49008B45F7 /* logging.cpp in Sources */,
-				17513F042216EB49008B45F7 /* styles.cpp in Sources */,
 				17513D552216E785008B45F7 /* chartsolidtype.cpp in Sources */,
 				17513DA82216E785008B45F7 /* calcext_elements.cpp in Sources */,
-				17513ED52216EB49008B45F7 /* text_elements.cpp in Sources */,
 				17513D742216E785008B45F7 /* stylehorizontalpos.cpp in Sources */,
+				8A9873E62270764C001F896F /* style_page_layout_properties.cpp in Sources */,
+				8A9873A62270764C001F896F /* number_style.cpp in Sources */,
 				17513E142216E785008B45F7 /* docx_package.cpp in Sources */,
 				17513D232216E785008B45F7 /* draw_frame_xlsx.cpp in Sources */,
+				8A9873AE2270764C001F896F /* table_database_ranges.cpp in Sources */,
 				17513D682216E785008B45F7 /* wrapoption.cpp in Sources */,
+				8A9873A12270764C001F896F /* draw_frame.cpp in Sources */,
 				17513D992216E785008B45F7 /* stylerepeat.cpp in Sources */,
-				17513F072216EB49008B45F7 /* odt_conversion_context.cpp in Sources */,
-				17513EE12216EB49008B45F7 /* odf_table_context.cpp in Sources */,
+				8A9873D82270764C001F896F /* odf_page_layout_context.cpp in Sources */,
 				17513D6E2216E785008B45F7 /* dropcaplength.cpp in Sources */,
-				17513EE72216EB49008B45F7 /* office_document.cpp in Sources */,
 				17513D812216E785008B45F7 /* fobreak.cpp in Sources */,
+				8A9873982270764C001F896F /* office_document.cpp in Sources */,
 				17513D6D2216E785008B45F7 /* hyphenationladdercount.cpp in Sources */,
 				17513DCD2216E785008B45F7 /* table_database_ranges.cpp in Sources */,
 				17513D362216E785008B45F7 /* bordermodel.cpp in Sources */,
+				8A9874312270764D001F896F /* office_forms.cpp in Sources */,
 				17513DD22216E785008B45F7 /* utils.cpp in Sources */,
 				17513DEF2216E785008B45F7 /* xlsx_table_state.cpp in Sources */,
 				17513D942216E785008B45F7 /* bool.cpp in Sources */,
 				17513DD02216E785008B45F7 /* odf_content_xml.cpp in Sources */,
-				17513EEC2216EB49008B45F7 /* odf_conversion_context.cpp in Sources */,
-				17513EFF2216EB49008B45F7 /* odf_drawing_context.cpp in Sources */,
 				17513DBA2216E785008B45F7 /* chart_build_oox.cpp in Sources */,
 				17513D4E2216E785008B45F7 /* stylehorizontalrel.cpp in Sources */,
 				17513D852216E785008B45F7 /* direction.cpp in Sources */,
 				17513DB02216E785008B45F7 /* number_style.cpp in Sources */,
 				17513DD42216E785008B45F7 /* xmlchar.cpp in Sources */,
+				8A9873A32270764C001F896F /* odf_lists_styles_context.cpp in Sources */,
 				17513E012216E785008B45F7 /* oox_package.cpp in Sources */,
 				17513D3E2216E785008B45F7 /* calcext_type.cpp in Sources */,
-				17513EF12216EB49008B45F7 /* office_text.cpp in Sources */,
 				17513DDB2216E785008B45F7 /* xlsx_font.cpp in Sources */,
-				17513EE42216EB49008B45F7 /* styles_list.cpp in Sources */,
 				17513D9E2216E785008B45F7 /* draw_frame_pptx.cpp in Sources */,
 				17513D2D2216E785008B45F7 /* style_map.cpp in Sources */,
-				17513EFE2216EB49008B45F7 /* odp_conversion_context.cpp in Sources */,
+				8A9873A92270764C001F896F /* draw_base.cpp in Sources */,
+				8A9873CB2270764C001F896F /* style_paragraph_properties.cpp in Sources */,
 				17513D502216E785008B45F7 /* iconset_type.cpp in Sources */,
-				17513F052216EB49008B45F7 /* office_presentation.cpp in Sources */,
 				17513DEB2216E785008B45F7 /* hyperlinks.cpp in Sources */,
 				17513DC32216E785008B45F7 /* skipelement.cpp in Sources */,
 				17513D7D2216E785008B45F7 /* officevaluetype.cpp in Sources */,
@@ -2159,50 +2346,48 @@
 				17513D532216E785008B45F7 /* dategroup.cpp in Sources */,
 				17513E172216E785008B45F7 /* oox_drawing.cpp in Sources */,
 				17513E212216E786008B45F7 /* xlsx_drawing.cpp in Sources */,
-				17513EE82216EB49008B45F7 /* anim_elements.cpp in Sources */,
 				17513F182216EB49008B45F7 /* utils.cpp in Sources */,
+				8A9874342270764D001F896F /* office_presentation.cpp in Sources */,
 				17513D462216E785008B45F7 /* backgroundcolor.cpp in Sources */,
-				17513EE32216EB49008B45F7 /* office_scripts.cpp in Sources */,
 				17513F1A2216EB49008B45F7 /* ConverterChart.cpp in Sources */,
 				17513E1D2216E786008B45F7 /* xlsx_pivots_context.cpp in Sources */,
 				17513D862216E785008B45F7 /* textposition.cpp in Sources */,
 				17513D342216E785008B45F7 /* styles_lite_container.cpp in Sources */,
 				17513E022216E785008B45F7 /* pptx_slide_context.cpp in Sources */,
-				17513ED62216EB49008B45F7 /* office_annotation.cpp in Sources */,
 				17513E072216E785008B45F7 /* pptx_conversion_context.cpp in Sources */,
 				17513E0D2216E785008B45F7 /* oox_layout.cpp in Sources */,
 				17513D602216E785008B45F7 /* styleverticalpos.cpp in Sources */,
 				17513D5B2216E785008B45F7 /* tablemode.cpp in Sources */,
 				17513DB72216E785008B45F7 /* office_presentation.cpp in Sources */,
 				17513D372216E785008B45F7 /* letterspacing.cpp in Sources */,
+				8A9873E42270764C001F896F /* odf_style_context.cpp in Sources */,
+				8A98741E2270764D001F896F /* odp_conversion_context.cpp in Sources */,
 				17513DA62216E785008B45F7 /* office_text.cpp in Sources */,
 				17513D622216E785008B45F7 /* chartseriessource.cpp in Sources */,
 				17513DE02216E785008B45F7 /* pptx_comments.cpp in Sources */,
 				17513D282216E785008B45F7 /* office_binary_data.cpp in Sources */,
 				17513E052216E785008B45F7 /* docx_table_context.cpp in Sources */,
-				17513EF72216EB49008B45F7 /* style_page_layout_properties.cpp in Sources */,
+				8A9873CD2270764C001F896F /* office_text.cpp in Sources */,
 				17513DA12216E785008B45F7 /* odfcontext.cpp in Sources */,
+				8A9874002270764C001F896F /* text_elements.cpp in Sources */,
 				17513DD62216E785008B45F7 /* CPString.cpp in Sources */,
+				8A9873E32270764C001F896F /* office_body.cpp in Sources */,
 				17513DF82216E785008B45F7 /* oox_plot_area.cpp in Sources */,
 				17513DF52216E785008B45F7 /* oox_rels.cpp in Sources */,
 				17513E0B2216E785008B45F7 /* docx_drawing.cpp in Sources */,
 				17513D4A2216E785008B45F7 /* pageusage.cpp in Sources */,
-				17513F092216EB49008B45F7 /* paragraph_elements.cpp in Sources */,
+				8A9874242270764D001F896F /* svg_creator.cpp in Sources */,
 				17513D242216E785008B45F7 /* calcs_styles.cpp in Sources */,
-				17513EFC2216EB49008B45F7 /* draw_page.cpp in Sources */,
-				17513EF82216EB49008B45F7 /* odf_page_layout_context.cpp in Sources */,
 				17513DC42216E785008B45F7 /* header_footer.cpp in Sources */,
 				17513DDF2216E785008B45F7 /* oox_chart_series.cpp in Sources */,
 				17513D5D2216E785008B45F7 /* fontsize.cpp in Sources */,
 				17513DC82216E785008B45F7 /* createandread.cpp in Sources */,
 				17513B092216E721008B45F7 /* OfficeOdfConverter.mm in Sources */,
-				17513EED2216EB49008B45F7 /* odf_text_context.cpp in Sources */,
 				17513D2A2216E785008B45F7 /* office_chart.cpp in Sources */,
 				17513D8F2216E785008B45F7 /* stylewrapcontourmode.cpp in Sources */,
-				17513F122216EB49008B45F7 /* style_graphic_properties.cpp in Sources */,
 				17513DAD2216E785008B45F7 /* draw_frame_docx.cpp in Sources */,
-				17513EE02216EB49008B45F7 /* office_chart.cpp in Sources */,
 				17513DA22216E785008B45F7 /* office_elements_create.cpp in Sources */,
+				8A98740E2270764D001F896F /* office_spreadsheet.cpp in Sources */,
 				17513D3A2216E785008B45F7 /* chartinterpolation.cpp in Sources */,
 				17513D412216E785008B45F7 /* borderwidths.cpp in Sources */,
 				17513D962216E785008B45F7 /* markerstyle.cpp in Sources */,
@@ -2211,95 +2396,98 @@
 				17513D4C2216E785008B45F7 /* hyphenationkeep.cpp in Sources */,
 				17513D3F2216E785008B45F7 /* runthrough.cpp in Sources */,
 				17513E1F2216E786008B45F7 /* xlsx_cell_style.cpp in Sources */,
+				8A9873CC2270764C001F896F /* logging.cpp in Sources */,
+				8A9873AC2270764C001F896F /* office_event_listeners.cpp in Sources */,
 				17513DE62216E785008B45F7 /* pptx_text_context.cpp in Sources */,
 				17513D672216E785008B45F7 /* keeptogether.cpp in Sources */,
 				17513E102216E785008B45F7 /* xlsx_comments_context.cpp in Sources */,
 				17513D452216E785008B45F7 /* styleposition.cpp in Sources */,
 				17513DBE2216E785008B45F7 /* odf_document_impl.cpp in Sources */,
-				17513F152216EB49008B45F7 /* draw_base.cpp in Sources */,
 				17513D402216E785008B45F7 /* stylewrap.cpp in Sources */,
 				17513E202216E786008B45F7 /* oox_conversion_context.cpp in Sources */,
 				17513E1E2216E786008B45F7 /* xlsx_complex_number_format.cpp in Sources */,
 				17513DF02216E785008B45F7 /* oox_chart_context.cpp in Sources */,
 				17513D522216E785008B45F7 /* gradientstyle.cpp in Sources */,
 				17513D442216E785008B45F7 /* textalignsource.cpp in Sources */,
+				8A98740A2270764D001F896F /* office_chart.cpp in Sources */,
 				17513D772216E785008B45F7 /* chartdatalabelnumber.cpp in Sources */,
 				17513D1E2216E785008B45F7 /* math_table_elements.cpp in Sources */,
 				17513DBC2216E785008B45F7 /* paragraph_elements.cpp in Sources */,
 				17513D222216E785008B45F7 /* style_table_properties.cpp in Sources */,
+				8A9873F42270764C001F896F /* odf_chart_context.cpp in Sources */,
+				8A9873D32270764C001F896F /* list.cpp in Sources */,
 				17513E062216E785008B45F7 /* xlsx_package.cpp in Sources */,
 				17513DFA2216E785008B45F7 /* xlsx_xf.cpp in Sources */,
-				17513EFB2216EB49008B45F7 /* odf_notes_context.cpp in Sources */,
 				17513D212216E785008B45F7 /* office_annotation.cpp in Sources */,
 				17513D3B2216E785008B45F7 /* fontvariant.cpp in Sources */,
 				17513D702216E785008B45F7 /* textdisplay.cpp in Sources */,
 				17513DC22216E785008B45F7 /* office_body.cpp in Sources */,
 				17513DE32216E785008B45F7 /* xlsx_protection.cpp in Sources */,
 				17513DF62216E785008B45F7 /* xlsx_borders.cpp in Sources */,
+				8A9874192270764D001F896F /* office_settings.cpp in Sources */,
 				17513D3D2216E785008B45F7 /* scripttype.cpp in Sources */,
 				17513E1C2216E786008B45F7 /* xlsx_color.cpp in Sources */,
 				17513DCC2216E785008B45F7 /* office_spreadsheet.cpp in Sources */,
 				17513D8C2216E785008B45F7 /* linetype.cpp in Sources */,
+				8A9873D42270764C001F896F /* mediaitems_utils.cpp in Sources */,
 				17513D6F2216E785008B45F7 /* style_ref.cpp in Sources */,
 				17513D6A2216E785008B45F7 /* chartlabelarrangement.cpp in Sources */,
 				17513E132216E785008B45F7 /* xlsx_drawing_context.cpp in Sources */,
 				17513DD52216E785008B45F7 /* attributes.cpp in Sources */,
 				17513DB82216E785008B45F7 /* style_paragraph_properties_docx.cpp in Sources */,
+				8A9873F92270764C001F896F /* office_scripts.cpp in Sources */,
 				17513D5F2216E785008B45F7 /* membertype.cpp in Sources */,
+				8A9874042270764C001F896F /* odf_rels.cpp in Sources */,
+				8A9874292270764D001F896F /* style_map.cpp in Sources */,
 				17513D382216E785008B45F7 /* textrotationscale.cpp in Sources */,
 				17513DCB2216E785008B45F7 /* style_graphic_properties.cpp in Sources */,
 				17513D272216E785008B45F7 /* logging.cpp in Sources */,
 				17513DF22216E785008B45F7 /* xlsx_data_validation.cpp in Sources */,
-				17513EF02216EB49008B45F7 /* style_presentation.cpp in Sources */,
-				17513F0E2216EB49008B45F7 /* header_footer.cpp in Sources */,
 				17513D4B2216E785008B45F7 /* chartsymbol.cpp in Sources */,
 				17513D7C2216E785008B45F7 /* styletype.cpp in Sources */,
 				17513DA52216E785008B45F7 /* style_presentation.cpp in Sources */,
 				17513DE52216E785008B45F7 /* xlsx_merge_cells.cpp in Sources */,
 				17513DBB2216E785008B45F7 /* odf_document.cpp in Sources */,
 				17513DB52216E785008B45F7 /* styles.cpp in Sources */,
-				17513F0C2216EB49008B45F7 /* odf_number_styles_context.cpp in Sources */,
 				17513DE82216E785008B45F7 /* xlsx_hyperlinks.cpp in Sources */,
-				17513F082216EB49008B45F7 /* odp_slide_context.cpp in Sources */,
 				17513DC72216E785008B45F7 /* office_event_listeners.cpp in Sources */,
+				8A9873FE2270764C001F896F /* odp_slide_context.cpp in Sources */,
+				8A98742B2270764D001F896F /* draw_page.cpp in Sources */,
 				17513DB32216E785008B45F7 /* text_content.cpp in Sources */,
 				17513DE72216E785008B45F7 /* oox_chart_legend.cpp in Sources */,
 				17513D2F2216E785008B45F7 /* svg_parser.cpp in Sources */,
 				17513D6C2216E785008B45F7 /* common_attlists.cpp in Sources */,
 				17513DCF2216E785008B45F7 /* note.cpp in Sources */,
+				8A9874012270764C001F896F /* odf_table_styles_context.cpp in Sources */,
 				17513D562216E785008B45F7 /* stylenumformat.cpp in Sources */,
 				17513D692216E785008B45F7 /* borderstyle.cpp in Sources */,
 				17513D802216E785008B45F7 /* bibliography.cpp in Sources */,
 				17513DF42216E785008B45F7 /* xlsx_cell_format.cpp in Sources */,
-				17513EFD2216EB49008B45F7 /* number_style.cpp in Sources */,
 				17513D5A2216E785008B45F7 /* textalign.cpp in Sources */,
-				17513F0A2216EB49008B45F7 /* draw_frame.cpp in Sources */,
 				17513DA32216E785008B45F7 /* draw_shapes_pptx.cpp in Sources */,
 				17513D892216E785008B45F7 /* fillimagerefpoint.cpp in Sources */,
-				17513F172216EB49008B45F7 /* odf_style_state.cpp in Sources */,
-				17513ED82216EB49008B45F7 /* svg_creator.cpp in Sources */,
 				17513DCE2216E785008B45F7 /* templates.cpp in Sources */,
 				17513F1C2216EB49008B45F7 /* DocxConverter.cpp in Sources */,
 				17513D752216E785008B45F7 /* tablevisibility.cpp in Sources */,
 				17513D582216E785008B45F7 /* mathvariant.cpp in Sources */,
 				17513D8A2216E785008B45F7 /* fontstyle.cpp in Sources */,
 				17513D1F2216E785008B45F7 /* text_elements.cpp in Sources */,
-				17513EE22216EB49008B45F7 /* style_map.cpp in Sources */,
 				17513D6B2216E785008B45F7 /* verticalalign.cpp in Sources */,
 				17513DE12216E785008B45F7 /* xlsx_conditionalFormatting.cpp in Sources */,
 				17513DBD2216E785008B45F7 /* style_regions.cpp in Sources */,
 				17513DAC2216E785008B45F7 /* table_named_expressions.cpp in Sources */,
+				8A9873AD2270764C001F896F /* ods_conversion_context.cpp in Sources */,
 				17513DEA2216E785008B45F7 /* oox_chart_axis.cpp in Sources */,
-				17513EDC2216EB49008B45F7 /* odf_chart_context.cpp in Sources */,
 				17513D642216E785008B45F7 /* textautospace.cpp in Sources */,
-				17513ED72216EB49008B45F7 /* style_table_properties.cpp in Sources */,
 				17513E0F2216E785008B45F7 /* pptx_package.cpp in Sources */,
 				17513D352216E785008B45F7 /* textemphasize.cpp in Sources */,
+				8A98739B2270764C001F896F /* odp_page_state.cpp in Sources */,
+				8A9873E22270764C001F896F /* odf_comment_context.cpp in Sources */,
+				8A9873AA2270764C001F896F /* odf_drawing_context.cpp in Sources */,
 				17513D512216E785008B45F7 /* lengthorpercent.cpp in Sources */,
-				17513F102216EB49008B45F7 /* draw_shapes.cpp in Sources */,
+				8A9873E52270764C001F896F /* oox_shape_defines.cpp in Sources */,
 				17513D662216E785008B45F7 /* anchortype.cpp in Sources */,
 				17513E082216E785008B45F7 /* pptx_drawing.cpp in Sources */,
-				17513EDB2216EB49008B45F7 /* oox_shape_defines.cpp in Sources */,
 				17513DB62216E785008B45F7 /* table_data_pilot_tables.cpp in Sources */,
 				17513D4D2216E785008B45F7 /* styleleadercolor.cpp in Sources */,
 				8A5834E9221D90BE0029F06B /* formulasconvert_odf.cpp in Sources */,

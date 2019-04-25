@@ -330,8 +330,10 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		
 		Context.get_drop_cap_context().state(1);//after 
 		Context.start_paragraph();
+		Context.process_paragraph_style(Context.get_current_paragraph_style());
 
 	}
+	Context.start_paragraph_style(styleName);
 
     int textStyle = Context.process_paragraph_attr(&attrs_);
 
@@ -396,6 +398,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	if (is_empty)
 		Context.output_stream() << emptyParagraphContent;
 
+	Context.end_paragraph_style();
 	Context.finish_paragraph();
 }
 

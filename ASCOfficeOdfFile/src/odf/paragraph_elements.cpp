@@ -307,7 +307,7 @@ void line_break::docx_convert(oox::docx_conversion_context & Context)
 		Context.finish_run();
 		Context.finish_paragraph();
 		Context.start_paragraph();
-
+		Context.process_paragraph_style(Context.get_current_paragraph_style());
 	}
 	else
 	{

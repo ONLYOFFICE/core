@@ -18,6 +18,8 @@
 #define	M_PI		3.14159265358979323846
 #endif
 
+#include <math.h>
+
 //------------------------------------------------------------------------------------------------------
 
 namespace SVG
@@ -657,6 +659,7 @@ namespace SVG
                     std::wstring::size_type Oct = str.find(L"#");
                     if (std::wstring::npos != Oct)
 					{
+                        Oct += 1; // #
                         if (')' == str[str.length() - 1])
                             return str.substr(Oct, str.length() - Oct - 1);
 
@@ -2469,7 +2472,7 @@ namespace SVG
 		}
 		inline static Matrix ReadMatrix(const std::wstring& sSrc, UnitSystem& us)
 		{
-			std::wstring::size_type index = std::wstring::npos;
+            std::wstring::size_type index = 0;
 			std::wstring matType = GetTransform(sSrc, index);
 			if (matType.empty() || std::wstring::npos == index)
 				return Matrix();
@@ -2559,7 +2562,9 @@ namespace SVG
 			std::wstring::size_type index = 0;
 			while (std::wstring::npos != index)
 			{
-				refTransforms.Add(StringHelpers::Tokenize(strMat, L")", index));
+                std::wstring sToken = StringHelpers::Tokenize(strMat, L")", index);
+                if (!sToken.empty())
+                    refTransforms.Add(sToken);
 			}
 
 			return (0 != refTransforms.GetSize());
@@ -3152,7 +3157,7 @@ namespace SVG
 		}
 		inline const std::wstring& GetXml()
 		{
-			if (m_sXml.empty())
+            if (m_sXml.empty())
 			{
 				NSStringUtils::CStringBuilder builder;
 				builder.WriteString(L"<linearGradient x1='");
@@ -3197,6 +3202,35 @@ namespace SVG
 
 			return m_sXml;
 		}
+
+        inline void ToRenderer(IRenderer* renderer)
+        {
+            double dAngle = 0;
+            if (fabs(m_end.X - m_begin.X) >= 0.00001 || fabs(m_end.Y - m_begin.Y) >= 0.00001)
+                dAngle = 180 * atan2(m_end.Y - m_begin.Y, m_end.X - m_begin.X) / M_PI;
+
+            renderer->put_BrushType(/*c_BrushTypePathGradient1*/2006);
+            renderer->put_BrushLinearAngle(dAngle);
+
+            int nCount = m_Color.Count();
+            LONG* pColors = new LONG[nCount];
+            double* pPositions = new double[nCount];
+
+            for (int i = 0; i < nCount; ++i)
+            {
+                LONG c = m_Color.Get(i).m_nColor;
+                LONG a = (LONG)(m_Color.Get(i).m_fOpacity * 255);
+                if (a < 0) a = 0;
+                if (a > 255) a = 255;
+                pColors[i] = c | (a << 24);
+                pPositions[i] = m_Color.Get(i).m_fOffset;
+            }
+
+            renderer->put_BrushGradientColors(pColors, pPositions, nCount);
+
+            delete[] pColors;
+            delete[] pPositions;
+        }
 
 	private:
 
@@ -3247,7 +3281,7 @@ namespace SVG
 			}
 
 			return false;
-		}
+		}        
 		virtual bool FromString(const std::wstring& Str, IRefStorage* pStorage, UnitSystem& oUs)
 		{
 			return false;
@@ -3335,6 +3369,30 @@ namespace SVG
 
 			return m_sXml;
 		}
+
+        inline void ToRenderer(IRenderer* renderer)
+        {
+            renderer->put_BrushType(/*c_BrushTypePathGradient2*/2007);
+
+            int nCount = m_Color.Count();
+            LONG* pColors = new LONG[nCount];
+            double* pPositions = new double[nCount];
+
+            for (int i = 0; i < nCount; ++i)
+            {
+                LONG c = m_Color.Get(i).m_nColor;
+                LONG a = (LONG)(m_Color.Get(i).m_fOpacity * 255);
+                if (a < 0) a = 0;
+                if (a > 255) a = 255;
+                pColors[i] = c | (a << 24);
+                pPositions[i] = m_Color.Get(i).m_fOffset;
+            }
+
+            renderer->put_BrushGradientColors(pColors, pPositions, nCount);
+
+            delete[] pColors;
+            delete[] pPositions;
+        }
 
 	private:
 

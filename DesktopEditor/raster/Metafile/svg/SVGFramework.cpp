@@ -254,15 +254,18 @@ namespace SVG
             tmp += buf[1];
             tmp += buf[2];
             tmp += buf[2];
+            value = tmp;
 		}
 
         buf = value.c_str();
         size_t len = value.length();
         for ( size_t i = 0; i < len; ++i )
 		{
-            if ( isdigit ( buf [ i ] ) || ( buf [ i ] >= L'a' ) || ( buf [ i ] >= L'f' ) || ( buf [ i ] >= L'A' ) || ( buf [ i ] >= L'F' ) )
+            if ( isdigit ( buf [ i ] ) || (( buf [ i ] >= L'a' ) && ( buf [ i ] <= L'f' )) || (( buf [ i ] >= L'A' ) && ( buf [ i ] <= L'F' )) )
 				continue;
 
+            if (0 == i)
+                return 0;
             long InvCol = std::stoi ( value.substr ( 0, i ), NULL, 16 );
 			return ( ( InvCol & 0xFF ) << 16 ) | ( ( InvCol & 0xFF00 ) ) | ( ( InvCol & 0xFF0000 ) >> 16 );
 		}
@@ -277,7 +280,7 @@ namespace SVG
     void Painter::SetTransform(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx, const double& ty)
     {
         Aggplus::CMatrix tmp(sx, shy, shx, sy, tx, ty);
-        tmp.Multiply(&m_baseTransform, Aggplus::MatrixOrderPrepend);
+        tmp.Multiply(&m_baseTransform, Aggplus::MatrixOrderAppend);
         m_render->SetTransform(tmp.sx(), tmp.shy(), tmp.shx(), tmp.sy(), tmp.tx(), tmp.ty());
     }
 
@@ -316,6 +319,9 @@ namespace SVG
 
         Aggplus::CMatrix rect(dW / m_oUs.GetWidth(), 0, 0, dH / m_oUs.GetHeight(), dX, dY);
         m_baseTransform.Multiply(&rect, Aggplus::MatrixOrderAppend);
+
+        m_dAddMX = 1;
+        m_dAddMY = 1;
 
         this->SetTransform(1, 0, 0, 1, 0, 0);
 
@@ -621,7 +627,13 @@ namespace SVG
                     m_transforms.Push(element->GetTransform(), false);
 
 					Matrix local = m_transforms.GetFinal();
-					retVal = DrawInternal (drawElement, local, element->GetFrom(), element->GetStyle());
+
+                    Style oCompleteStyle;
+                    Style::UpdateValidateAttributes(drawElement->GetStyle(), oCompleteStyle);
+                    Style::UpdateValidateAttributes(element->GetStyle(), oCompleteStyle);
+
+                    element->GetStyle();
+                    retVal = DrawInternal (drawElement, local, element->GetFrom(), oCompleteStyle);
 
 					m_transforms.Pop();
 				}
@@ -1465,20 +1477,9 @@ namespace SVG
 			if (ELinearGradient == pFill->nodeType())
 			{
 				LinearGradient* gradient = static_cast<LinearGradient*>(pFill);
-				if (gradient)
+                if (gradient && gradient->GetColors().Count())
 				{
-					if (gradient->GetColors().Count())
-					{
-						m_render->put_BrushColor1(gradient->GetColors().Get(0).m_nColor);
-						m_render->put_BrushAlpha1((long)(gradient->GetColors().Get(0).m_fOpacity * 255.0 * alpha));
-
-                        /*
-						VARIANT oVar;
-						oVar.vt			=	VT_BSTR;
-						oVar.bstrVal	=	CComBSTR(gradient->GetXml());
-						m_render->SetAdditionalParam(L"Fill-LinearGradient", oVar);
-                        */
-					}
+                    gradient->ToRenderer(m_render);
 				}
 			}
 			else if (ERadialGradient == pFill->nodeType())
@@ -1486,18 +1487,10 @@ namespace SVG
 				RadialGradient* gradient = static_cast<RadialGradient*>(pFill);
 				if (gradient)
 				{
-					if (gradient->GetColors().Count())
-					{
-						m_render->put_BrushColor1(gradient->GetColors().Get(0).m_nColor);
-						m_render->put_BrushAlpha1((long)(gradient->GetColors().Get(0).m_fOpacity * 255.0 * alpha));
-
-                        /*
-						VARIANT oVar;
-						oVar.vt			=	VT_BSTR;
-						oVar.bstrVal	=	CComBSTR(gradient->GetXml());
-						m_render->SetAdditionalParam(L"Fill-RadialGradient", oVar);
-                        */
-					}
+                    if (gradient && gradient->GetColors().Count())
+                    {
+                        gradient->ToRenderer(m_render);
+                    }
 				}
 			}
 			else if (EPattern == pFill->nodeType())

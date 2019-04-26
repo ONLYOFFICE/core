@@ -125,6 +125,15 @@ std::wostream & text::text_to_stream(std::wostream & _Wostream, bool bXmlEncode)
 	_Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_, true ) : text_);
     return _Wostream;
 }
+void text::add_space(const std::wstring & Text) 
+{
+	text_.reserve(Text.length());
+	for (size_t i =0; i < Text.length(); i++)
+	{
+		if (Text[i] < 0x20) continue;
+		text_ += Text[i];
+	}
+}
 
 void text::add_text(const std::wstring & Text) 
 {
@@ -498,7 +507,11 @@ void span::add_text(const std::wstring & Text)
     office_element_ptr elm = text::create(Text);
     content_.push_back( elm );
 }
-
+void span::add_space(const std::wstring & Text) 
+{
+    office_element_ptr elm = text::create(Text);
+    content_.push_back( elm );
+}
 void span::docx_convert(oox::docx_conversion_context & Context)
 {
 	bool addNewRun = false;
@@ -603,7 +616,11 @@ void a::add_text(const std::wstring & Text)
     office_element_ptr elm = text::create(Text) ;
     content_.push_back( elm );
 }
-
+void a::add_space(const std::wstring & Text) 
+{
+    office_element_ptr elm = text::create(Text);
+    content_.push_back( elm );
+}
 void a::docx_convert(oox::docx_conversion_context & Context)
 {
     bool pushed_style = false;
@@ -742,10 +759,6 @@ void note::add_child_element( xml::sax * Reader, const std::wstring & Ns, const 
     else
         CP_NOT_APPLICABLE_ELM();
 }
-
-void note::add_text(const std::wstring & Text)
-{
-}
 void note::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//см presentation:notes
@@ -835,12 +848,6 @@ void ruby::add_child_element( xml::sax * Reader, const std::wstring & Ns, const 
     else
         CP_NOT_APPLICABLE_ELM();
 }
-
-void ruby::add_text(const std::wstring & Text)
-{
-}
-
-
 // text:title
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * title::ns = L"text";

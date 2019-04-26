@@ -311,10 +311,6 @@ void default_style::add_child_element( xml::sax * Reader, const std::wstring & N
     content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
-void default_style::add_text(const std::wstring & Text)
-{    
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_fill_image::ns = L"draw";
 const wchar_t * draw_fill_image::name = L"fill-image";
@@ -478,10 +474,6 @@ void style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const
         content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
-void style::add_text(const std::wstring & Text)
-{
-}
-
 // styles & draw_styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -579,9 +571,6 @@ void office_automatic_styles::add_child_element( xml::sax * Reader, const std::w
     }
 }
 
-void office_automatic_styles::add_text(const std::wstring & Text)
-{}
-
 // office:master-styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * office_master_styles::ns = L"office";
@@ -609,11 +598,6 @@ void office_master_styles::add_child_element( xml::sax * Reader, const std::wstr
         CP_NOT_APPLICABLE_ELM();
     }
 }
-
-void office_master_styles::add_text(const std::wstring & Text)
-{
-}
-
 
 // office:styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1775,10 +1759,6 @@ void text_notes_configuration::add_child_element( xml::sax * Reader, const std::
         CP_CREATE_ELEMENT(text_note_continuation_notice_backward_);
     else
         CP_NOT_APPLICABLE_ELM();    
-}
-
-void text_notes_configuration::add_text(const std::wstring & Text)
-{
 }
 
 /// style:presentation-page-layout

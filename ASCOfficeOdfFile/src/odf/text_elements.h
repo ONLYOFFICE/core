@@ -58,6 +58,7 @@ public:
 	void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     void add_text			(const std::wstring & Text);
+	void add_space			(const std::wstring & Text);
 
  	_CP_OPT(std::wstring)	next_element_style_name; //for master page
    
@@ -118,6 +119,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+	virtual void add_space(const std::wstring & Text){}
 
     // heading-attrs
     _CP_OPT(unsigned int)	outline_level_;
@@ -155,6 +157,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+	virtual void add_space(const std::wstring & Text);
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(p);
@@ -179,7 +182,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
     std::wstring				style_name_;
     _CP_OPT(bool)				continue_numbering_;

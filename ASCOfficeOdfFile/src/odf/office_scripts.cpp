@@ -57,9 +57,6 @@ void office_scripts::add_child_element( xml::sax * Reader, const std::wstring & 
         CP_NOT_APPLICABLE_ELM();
 }
 
-void office_scripts::add_text(const std::wstring & Text)
-{
-}
 
 // office:script
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,10 +71,6 @@ void office_script::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void office_script::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
-}
-
-void office_script::add_text(const std::wstring & Text)
-{
 }
 
 }

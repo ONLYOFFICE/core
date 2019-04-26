@@ -19,6 +19,7 @@
 #endif
 
 #include <math.h>
+#include <algorithm>
 
 //------------------------------------------------------------------------------------------------------
 
@@ -5656,9 +5657,9 @@ namespace SVG
 					m_nHeight		=	m_oViewBox.m_nHeight; 
 
 					if (0 == (int)m_oViewBox.m_nWidth)
-						m_nWidth	=	__max (m_oViewBox.m_nWidth, m_oViewBox.m_nHeight);
+                        m_nWidth	=	std::max (m_oViewBox.m_nWidth, m_oViewBox.m_nHeight);
 					if (0 == (int)m_oViewBox.m_nHeight)
-						m_nHeight	=	__max (m_oViewBox.m_nWidth, m_oViewBox.m_nHeight);
+                        m_nHeight	=	std::max (m_oViewBox.m_nWidth, m_oViewBox.m_nHeight);
 				}
 				else
 				{

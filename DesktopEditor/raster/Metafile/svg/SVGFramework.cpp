@@ -2285,8 +2285,8 @@ namespace SVG
 					double dF	=	dfX / dfY - 1.0;
 					if (!(fabs(dF) < 0.000001))
 					{
-						dfY		/=	__min(dfY, dfX);
-						dfX		/=	__min(dfY, dfX);
+                        dfY		/=	std::min(dfY, dfX);
+                        dfX		/=	std::min(dfY, dfX);
 
 						Width	/=	dfY;
 						Height	/=	dfX;

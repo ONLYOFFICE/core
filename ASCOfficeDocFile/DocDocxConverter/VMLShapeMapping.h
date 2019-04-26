@@ -80,7 +80,7 @@ namespace DocFileFormat
 		void WriteShape (const ShapeContainer* pContainer);
 
 		std::wstring GenShapeId(const Shape* pShape) const;
-		bool copyPicture( const BlipStoreEntry* bse );
+		bool copyPicture( BlipStoreEntry* bse );
 		std::wstring GetTargetExt( Global::BlipType _type ) const;
 		
 		void AppendDimensionToStyle	( std::wstring& style, const PictureDescriptor* pict, bool twistDimensions ) const;

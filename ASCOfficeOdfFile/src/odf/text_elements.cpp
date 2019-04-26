@@ -161,6 +161,11 @@ void paragraph::add_text(const std::wstring & Text)
     office_element_ptr elm = text::create(Text) ;
 	content_.push_back( elm );
 }
+void paragraph::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+	content_.push_back( elm );
+}
 const wchar_t * emptyParagraphContent = L"<w:pPr></w:pPr><w:r><w:rPr></w:rPr></w:r>";
 
 const wchar_t * emptyParagraphDrawing = L"<w:p><w:pPr></w:pPr></w:p>";
@@ -330,8 +335,10 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		
 		Context.get_drop_cap_context().state(1);//after 
 		Context.start_paragraph();
+		Context.process_paragraph_style(Context.get_current_paragraph_style());
 
 	}
+	Context.start_paragraph_style(styleName);
 
     int textStyle = Context.process_paragraph_attr(&attrs_);
 
@@ -396,6 +403,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	if (is_empty)
 		Context.output_stream() << emptyParagraphContent;
 
+	Context.end_paragraph_style();
 	Context.finish_paragraph();
 }
 
@@ -508,6 +516,10 @@ void p::add_text(const std::wstring & Text)
 {
     paragraph_.add_text(Text);
 }
+void p::add_space(const std::wstring & Text)
+{
+    paragraph_.add_space(Text);
+}
 
 void p::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -559,11 +571,6 @@ void list::add_child_element( xml::sax * Reader, const std::wstring & Ns, const 
     {
         CP_CREATE_ELEMENT(list_items_);
     }
-}
-
-void list::add_text(const std::wstring & Text)
-{
-    // TODO : false
 }
 
 void list::docx_convert(oox::docx_conversion_context & Context)

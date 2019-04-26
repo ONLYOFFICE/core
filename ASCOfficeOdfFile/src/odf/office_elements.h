@@ -168,7 +168,9 @@ private:
     virtual void add_text(const std::wstring & Text)
     {
 	}
-
+    virtual void add_space(const std::wstring & Text)
+    {
+	}
 // office_element impl
 public:
     virtual ElementType get_type() const

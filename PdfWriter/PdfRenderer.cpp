@@ -1546,14 +1546,16 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 
 		::memcpy(pCopyImage, pData, 4 * nImageW * nImageH);
 
+        BYTE* pDataMem = pCopyImage;
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
-			if (pCopyImage[4 * nIndex + 3] < 32)
+            if (pDataMem[3] < 32)
 			{
-				pCopyImage[4 * nIndex + 0] = 255;
-				pCopyImage[4 * nIndex + 1] = 255;
-				pCopyImage[4 * nIndex + 2] = 255;
+                pDataMem[0] = 255;
+                pDataMem[1] = 255;
+                pDataMem[2] = 255;
 			}
+            pDataMem += 4;
 		}
 
 		oFrame.put_Width(nImageW);
@@ -1563,13 +1565,23 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 	}
 	else
 	{
+        BYTE* pDataMem = pData;
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
-			if (pData[4 * nIndex + 3] < 255)
+            // making full-transparent pixels white
+            if (pDataMem[3] == 0)
+            {
+                pDataMem[0] = 255;
+                pDataMem[1] = 255;
+                pDataMem[2] = 255;
+            }
+
+            if (!bAlpha && (pDataMem[3] < 255))
 			{
-				bAlpha = true;
-				break;
+                bAlpha = true;
 			}
+
+            pDataMem += 4;
 		}
 		oFrame.FromImage(pImage);
 	}

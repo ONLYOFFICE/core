@@ -93,7 +93,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
-
+	virtual void add_space(const std::wstring & Text);
 };
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -276,7 +276,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_ref);
 //-------------------------------------------------------------------------------------------------------------------
@@ -299,7 +298,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(reference_ref);
 //-------------------------------------------------------------------------------------------------------------------
@@ -395,6 +393,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+	virtual void add_space(const std::wstring & Text);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(span);
@@ -422,8 +421,9 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+	virtual void add_space(const std::wstring & Text);
 
-	odf_types::common_xlink_attlist xlink_attlist_;
+	odf_types::common_xlink_attlist			xlink_attlist_;
 
     std::wstring							office_name_;
     _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
@@ -456,7 +456,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 	std::wstring			text_id_;
 	odf_types::noteclass	text_note_class_;
@@ -482,7 +481,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
     std::wstring		text_style_name_;
     office_element_ptr	text_ruby_base_;

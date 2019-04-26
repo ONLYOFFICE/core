@@ -830,6 +830,7 @@ public:
     bool process_page_properties(std::wostream & strm);
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
 	
+	int process_paragraph_style (const std::wstring & style_name);
 	int process_paragraph_attr	(odf_reader::text::paragraph_attrs *attr);
 	int process_text_attr		(odf_reader::text::paragraph_attrs *Attr);
 	void process_page_break_after(const odf_reader::style_instance *styleInst);
@@ -873,8 +874,8 @@ public:
     void start_text_list_style	(const std::wstring & StyleName);
     void end_text_list_style	();
     
-	const std::wstring &	get_text_list_style_name();
-	const std::wstring		current_list_style		() const;
+	std::wstring	get_text_list_style_name();
+	std::wstring	current_list_style();
  
 	void start_list				(const std::wstring & StyleName, bool Continue = false);
     void end_list				();
@@ -928,6 +929,10 @@ public:
 	NoteType get_process_note	() const		{ return current_process_note_; }
 	void add_note_reference		();
 
+	void start_paragraph_style(const std::wstring& style_name) {paragraph_style_stack_.push_back(style_name);}
+	void end_paragraph_style() { if (!paragraph_style_stack_.empty()) paragraph_style_stack_.pop_back();}
+	std::wstring get_current_paragraph_style()	{return paragraph_style_stack_.empty() ? L"" : paragraph_style_stack_.back();}
+	
 	oox_chart_context & current_chart();
     void start_chart(std::wstring name);
     void end_chart	();
@@ -952,7 +957,7 @@ public:
    
 	headers_footers			& get_headers_footers()			{ return headers_footers_; }
 	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
-	drop_cap_context		& get_drop_cap_context()		{return drop_cap_context_;}
+	drop_cap_context		& get_drop_cap_context()		{ return drop_cap_context_; }
 	
 	styles_map	styles_map_;
 	bool		process_headers_footers_;
@@ -1020,8 +1025,8 @@ private:
 
     std::wstring				automatic_parent_style_; 
     std::wstring				current_master_page_name_;
-	std::wstring				text_list_style_name_;
-    
+	std::wstring				text_list_style_name_;	
+	std::vector<std::wstring>	paragraph_style_stack_;
 	std::vector<std::wstring>	list_style_stack_;
 	std::vector<std::wstring>	fields_names_stack_;
     

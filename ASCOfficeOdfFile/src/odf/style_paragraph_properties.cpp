@@ -73,12 +73,6 @@ void style_tab_stop::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void style_tab_stop::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{}
-
-void style_tab_stop::add_text(const std::wstring & Text)
-{}
-
 // style:tab-stop
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_tab_stops::ns = L"style";
@@ -117,12 +111,6 @@ void style_drop_cap::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"style:style-name", style_style_name_);
 }
 
-void style_drop_cap::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{}
-
-void style_drop_cap::add_text(const std::wstring & Text)
-{}
-
 // style-background-image
 // style:background-image
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,9 +145,6 @@ void style_background_image::add_child_element( xml::sax * Reader, const std::ws
         CP_NOT_APPLICABLE_ELM();
     }
 }
-
-void style_background_image::add_text(const std::wstring & Text)
-{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

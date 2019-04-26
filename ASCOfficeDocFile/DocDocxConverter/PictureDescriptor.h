@@ -134,3 +134,34 @@ namespace DocFileFormat
 		int				embeddedDataSize;						
 	};
 }
+
+
+namespace ImageHelper
+{
+    struct __BITMAPINFOHEADER
+    {
+        _UINT32     biSize;
+        _INT32      biWidth;
+        _INT32      biHeight;
+        _UINT16     biPlanes;
+        _UINT16     biBitCount;
+        _UINT32     biCompression;
+        _UINT32     biSizeImage;
+        _INT32      biXPelsPerMeter;
+        _INT32      biYPelsPerMeter;
+        _UINT32     biClrUsed;
+        _UINT32     biClrImportant;
+    };
+
+    struct __BITMAPCOREHEADER
+    {
+        _UINT32     bcSize;                 /* used to get to color table */
+        _UINT16     bcWidth;
+        _UINT16     bcHeight;
+        _UINT16     bcPlanes;
+        _UINT16     bcBitCount;
+    };
+
+	Global::_BlipType SaveImageToFileFromDIB(unsigned char* data, int size, const std::wstring& file_name);
+}
+

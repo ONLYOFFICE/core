@@ -94,11 +94,11 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
 					if (atrdPre10->m_BookmarkId < 0)//-1 - easy ref (not start/end comment ref)
 					{
-						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 + count + 1024 ));
+                        m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 + count + 1024 ));
 					}
 					else
 					{
-						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
+                        m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 ));
 					}
 					if (atrdPost10)
 					{

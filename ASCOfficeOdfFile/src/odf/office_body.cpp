@@ -75,11 +75,6 @@ void office_body::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 	CP_CREATE_ELEMENT(content_);
 }
 
-void office_body::add_text(const std::wstring & Text)
-{
-    // TODO : error
-}
-
 void office_body::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_body();

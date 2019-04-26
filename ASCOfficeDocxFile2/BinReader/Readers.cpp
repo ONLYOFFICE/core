@@ -7209,7 +7209,7 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 		if(NULL != m_pComments)
 		{
 			CComment* pComment = m_pComments->get(nId);
-			if(NULL != pComment && pComment->bIdFormat)
+			if(NULL != pComment) // могут быть и без start/end
 			{
                 GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
 			}

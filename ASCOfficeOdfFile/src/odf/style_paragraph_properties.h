@@ -95,8 +95,7 @@ public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
 
 public:
 	odf_types::length						style_position_;
@@ -136,6 +135,7 @@ private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_text(const std::wstring & Text){}
+	virtual void add_space(const std::wstring & Text){}
 
 };
 
@@ -160,8 +160,7 @@ public:
     _CP_OPT(std::wstring)			style_style_name_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
 
     _CP_OPT(odf_types::common_xlink_attlist) xlink_attlist_;
         
@@ -183,8 +182,7 @@ public:
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-    
+ 
     _CP_OPT(odf_types::style_repeat)			style_repeat_;
     _CP_OPT(odf_types::style_position)			style_position_;
     _CP_OPT(std::wstring)						filter_name_;

@@ -1470,7 +1470,7 @@ void docx_conversion_context::end_text_list_style()
     text_list_style_name_ = L"";
 }
 
-const std::wstring & docx_conversion_context::get_text_list_style_name()
+std::wstring docx_conversion_context::get_text_list_style_name()
 {
     return text_list_style_name_;
 }
@@ -1496,9 +1496,9 @@ void docx_conversion_context::end_list()
     list_style_stack_.pop_back();
 }
 
-const std::wstring docx_conversion_context::current_list_style() const
+std::wstring docx_conversion_context::current_list_style()
 {
-    if (!list_style_stack_.empty())
+    if (false == list_style_stack_.empty())
         return list_style_stack_.back();    
     else
         return L"";
@@ -1551,6 +1551,93 @@ int docx_conversion_context::process_text_attr(odf_reader::text::paragraph_attrs
 	push_text_properties(styleContent->get_style_text_properties());
 	return 1;
 }
+int docx_conversion_context::process_paragraph_style(const std::wstring & style_name)
+{
+	if (style_name.empty()) return 0;
+
+	if (odf_reader::style_instance * styleInst =
+			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))
+    {
+		double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+		if (font_size > 0) current_fontSize.push_back(font_size);
+		
+		process_page_break_after(styleInst);
+
+		if (styleInst->is_automatic())
+        {
+            if (odf_reader::style_content * styleContent = styleInst->content())
+            {
+                std::wstring id;
+				//office_element_ptr parent_tab_stops_;
+                if (const odf_reader::style_instance * parentStyleContent = styleInst->parent())
+				{
+					std::wstring parent_name = parentStyleContent->name();
+                    id = styles_map_.get( parent_name, parentStyleContent->type() );
+
+					if (in_table_content_ && table_content_context_.empty_current_table_content_level_index())
+					{
+						table_content_context_.set_current_level(parent_name);
+					}
+				}
+
+                start_automatic_style(id);
+
+				calc_tab_stops(styleInst, get_tabs_context());
+				
+				//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
+				odf_reader::paragraph_format_properties properties = odf_reader::calc_paragraph_properties_content(styleInst);
+				if (properties.style_writing_mode_)
+				{
+					odf_types::writing_mode::type type = properties.style_writing_mode_->get_type();
+					switch(type)
+					{
+					case odf_types::writing_mode::RlTb:
+					case odf_types::writing_mode::TbRl:
+					case odf_types::writing_mode::Rl:
+						set_rtl(true);
+						break;
+					default:
+						set_rtl(false);
+					}
+				}
+				set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
+
+				styleContent->docx_convert(*this);                
+               
+				end_automatic_style();
+
+                //push_text_properties(styleContent->get_style_text_properties());
+				return 1;
+            }            
+        }
+        else
+        {
+            const std::wstring id = styles_map_.get( styleInst->name(), styleInst->type() );
+            output_stream() << L"<w:pPr>";
+
+			output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
+
+			if (!get_text_tracked_context().dumpPPr_.empty())
+			{
+				output_stream() << get_text_tracked_context().dumpPPr_;
+				get_text_tracked_context().dumpPPr_.clear();
+			}
+
+			serialize_list_properties(output_stream());
+			
+			if (!get_text_tracked_context().dumpRPrInsDel_.empty())
+			{
+				output_stream() << L"<w:rPr>";
+					output_stream() << get_text_tracked_context().dumpRPrInsDel_;
+					get_text_tracked_context().dumpRPrInsDel_.clear();
+				output_stream() << L"</w:rPr>";
+			}
+            output_stream() << L"</w:pPr>";
+			return 2;
+		}
+	}
+	return 0;
+}
 int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_attrs *Attr)
 {
 	if (!Attr) return 0;
@@ -1571,22 +1658,22 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 		if (odf_reader::style_instance * styleInst =
 				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_)
             )
-        {
+		{
 			double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 			if (font_size > 0) current_fontSize.push_back(font_size);
-
-            process_page_break_after(styleInst);
+			
+			process_page_break_after(styleInst);
 
 			if (styleInst->is_automatic())
-            {
-                if (odf_reader::style_content * styleContent = styleInst->content())
-                {
-                    std::wstring id;
+			{
+				if (odf_reader::style_content * styleContent = styleInst->content())
+				{
+					std::wstring id;
 					//office_element_ptr parent_tab_stops_;
-                    if (const odf_reader::style_instance * parentStyleContent = styleInst->parent())
+					if (const odf_reader::style_instance * parentStyleContent = styleInst->parent())
 					{
 						std::wstring parent_name = parentStyleContent->name();
-                        id = styles_map_.get( parent_name, parentStyleContent->type() );
+						id = styles_map_.get( parent_name, parentStyleContent->type() );
 
 						if (in_table_content_ && table_content_context_.empty_current_table_content_level_index())
 						{
@@ -1594,7 +1681,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						}
 					}
 
-                    start_automatic_style(id);
+					start_automatic_style(id);
 
 					calc_tab_stops(styleInst, get_tabs_context());
 					
@@ -1620,10 +1707,10 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						set_outline_level(*Attr->outline_level_ - 1);
 					}
 					styleContent->docx_convert(*this);                
-                   
+	               
 					end_automatic_style();
 
-                    push_text_properties(styleContent->get_style_text_properties());
+					push_text_properties(styleContent->get_style_text_properties());
 
 					if (!get_section_context().dump_.empty()
 						&& !get_table_context().in_table()
@@ -1639,6 +1726,8 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 							output_stream() << L"</w:pPr>";
 							finish_paragraph();
 							start_paragraph();
+							//process_paragraph_style(Context.get_current_paragraph_style()); ??
+
 							if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
 							{
 								output_stream() << L"<w:pPr>";
@@ -1658,58 +1747,58 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 						}
 					}
 					return 1;
-                }            
-            }
-            else
-            {
-                const std::wstring id = styles_map_.get( styleInst->name(), styleInst->type() );
-                output_stream() << L"<w:pPr>";
-//todooo причесать			
-					if (!get_section_context().dump_.empty()
-						&& !get_table_context().in_table()
-						&& (get_process_note() == oox::docx_conversion_context::noNote)
-						&& !in_drawing)
+				}            
+			}
+			else
+			{
+				const std::wstring id = styles_map_.get( styleInst->name(), styleInst->type() );
+				output_stream() << L"<w:pPr>";
+	//todooo причесать			
+				if (!get_section_context().dump_.empty()
+					&& !get_table_context().in_table()
+					&& (get_process_note() == oox::docx_conversion_context::noNote)
+					&& !in_drawing)
+				{
+					if (is_paragraph_header() )
 					{
-						if (is_paragraph_header() )
-						{
-							output_stream() << get_section_context().dump_;
-							get_section_context().dump_.clear();
+						output_stream() << get_section_context().dump_;
+						get_section_context().dump_.clear();
 
-							output_stream() << L"</w:pPr>";
-							finish_paragraph();
-							start_paragraph();					
-							output_stream() << L"<w:pPr>";
-						}
-						else
-						{
-							output_stream() << get_section_context().dump_;
-							get_section_context().dump_.clear();
-						}
+						output_stream() << L"</w:pPr>";
+						finish_paragraph();
+						start_paragraph();					
+						output_stream() << L"<w:pPr>";
 					}
-
-					output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
-
-					if (!get_text_tracked_context().dumpPPr_.empty())
+					else
 					{
-						output_stream() << get_text_tracked_context().dumpPPr_;
-						get_text_tracked_context().dumpPPr_.clear();
+						output_stream() << get_section_context().dump_;
+						get_section_context().dump_.clear();
 					}
+				}
 
-					serialize_list_properties(output_stream());
-					
-					if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
-					{
-						output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\" />";
-					}
+				output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
-					if (!get_text_tracked_context().dumpRPrInsDel_.empty())
-					{
-						output_stream() << L"<w:rPr>";
-							output_stream() << get_text_tracked_context().dumpRPrInsDel_;
-							get_text_tracked_context().dumpRPrInsDel_.clear();
-						output_stream() << L"</w:rPr>";
-					}
-                output_stream() << L"</w:pPr>";
+				if (!get_text_tracked_context().dumpPPr_.empty())
+				{
+					output_stream() << get_text_tracked_context().dumpPPr_;
+					get_text_tracked_context().dumpPPr_.clear();
+				}
+
+				serialize_list_properties(output_stream());
+				
+				if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
+				{
+					output_stream() << L"<w:outlineLvl w:val=\"" << *Attr->outline_level_ - 1 << L"\" />";
+				}
+
+				if (!get_text_tracked_context().dumpRPrInsDel_.empty())
+				{
+					output_stream() << L"<w:rPr>";
+						output_stream() << get_text_tracked_context().dumpRPrInsDel_;
+						get_text_tracked_context().dumpRPrInsDel_.clear();
+					output_stream() << L"</w:rPr>";
+				}
+				output_stream() << L"</w:pPr>";
 				return 2;
 			}
 		}
@@ -1760,28 +1849,27 @@ void docx_conversion_context::process_page_break_after(const odf_reader::style_i
 }
 void docx_conversion_context::serialize_list_properties(std::wostream & strm)
 {
-    if (!list_style_stack_.empty())
+    if (list_style_stack_.empty()) return;
+   
+	if (first_element_list_item_)
     {
-        if (first_element_list_item_)
-        {
-            const int id = root()->odf_context().listStyleContainer().id_by_name( current_list_style() );
+        const int id = root()->odf_context().listStyleContainer().id_by_name( current_list_style() );
 
-			CP_XML_WRITER(strm)
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"w:numPr")
 			{
-				CP_XML_NODE(L"w:numPr")
+				CP_XML_NODE(L"w:ilvl")
 				{
-					CP_XML_NODE(L"w:ilvl")
-					{
-						CP_XML_ATTR(L"w:val", (list_style_stack_.size() - 1));
-					}
-					CP_XML_NODE(L"w:numId")
-					{
-						CP_XML_ATTR(L"w:val", id );
-					}
+					CP_XML_ATTR(L"w:val", (list_style_stack_.size() - 1));
+				}
+				CP_XML_NODE(L"w:numId")
+				{
+					CP_XML_ATTR(L"w:val", id );
 				}
 			}
-            first_element_list_item_ = false;
-        }
+		}
+        first_element_list_item_ = false;
     }
 }
 

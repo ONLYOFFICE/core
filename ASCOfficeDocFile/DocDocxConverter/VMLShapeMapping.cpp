@@ -1293,7 +1293,7 @@ namespace DocFileFormat
 
 	/// Copies the picture from the binary stream to the zip archive 
 	/// and creates the relationships for the image.
-	bool VMLShapeMapping::copyPicture(const BlipStoreEntry* oBlip)
+	bool VMLShapeMapping::copyPicture(BlipStoreEntry* oBlip)
 	{
 		bool result = false;
 
@@ -1304,9 +1304,9 @@ namespace DocFileFormat
 
 			switch (oBlip->btWin32)
 			{
-			case Global::msoblipEMF:
-			case Global::msoblipWMF:
-			case Global::msoblipPICT:
+				case Global::msoblipEMF:
+				case Global::msoblipWMF:
+				case Global::msoblipPICT:
 				{
 					//it's a meta image
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(RecordFactory::ReadRecord(&reader, 0));
@@ -1314,38 +1314,53 @@ namespace DocFileFormat
 					{
 						//meta images can be compressed
 						unsigned char* decompressed = NULL;
-						int decompressedSize = 0;
+						unsigned int decompressedSize = 0;
 
 						decompressedSize = metaBlip->Decompress(&decompressed);
+
 						if (0 != decompressedSize && NULL != decompressed)
 						{
-							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), std::vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
-							RELEASEARRAYOBJECTS(decompressed);
+							boost::shared_array<unsigned char> arDecompressed(decompressed);
+							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), arDecompressed, decompressedSize));
 						}
 
 						RELEASEOBJECT(metaBlip);
 					}
 				}
 				break;
-
-			case Global::msoblipJPEG:
-			case Global::msoblipCMYKJPEG:
-			case Global::msoblipPNG:
-			case Global::msoblipTIFF:
-			case Global::msoblipDIB:
-				{
-					//it's a bitmap image
+				case Global::msoblipJPEG:
+				case Global::msoblipCMYKJPEG:
+				case Global::msoblipPNG:
+				case Global::msoblipTIFF:
+				case Global::msoblipDIB:
+				{//it's a bitmap image					
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(RecordFactory::ReadRecord(&reader, 0));
 					if ((bitBlip) && (bitBlip->m_pvBits))
 					{
+						if (oBlip->btWin32 == Global::msoblipDIB)
+						{
+							std::wstring file_name = m_context->_doc->m_sTempFolder + L"tmp_image";
+
+							if (Global::msoblipPNG == ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name))
+							{
+								oBlip->btWin32 = Global::msoblipPNG;
+
+								unsigned char* pData = NULL;
+								DWORD nData = 0;
+								if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
+								{
+									m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipPNG), 
+										boost::shared_array<unsigned char>(pData), nData, Global::msoblipPNG));
+									break;
+								}
+							}//в случае ошибки конвертации -храним оригинальный dib
+						}
 						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
-							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
+							bitBlip->m_pvBits, bitBlip->pvBitsSize, oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
 					}
-				}
-				break;
-
-			default:
+				}break;				
+				default:
 				{
 					result = false;
 					return result;

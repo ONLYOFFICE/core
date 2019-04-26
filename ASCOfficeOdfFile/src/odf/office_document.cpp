@@ -82,10 +82,6 @@ void office_document_base::add_child_element( xml::sax * Reader, const std::wstr
         CP_NOT_APPLICABLE_ELM();
 }
 
-void office_document_base::add_text(const std::wstring & Text)
-{
-}
-
 void office_document_base::docx_convert(oox::docx_conversion_context & Context) 
 {
     if (office_body_)

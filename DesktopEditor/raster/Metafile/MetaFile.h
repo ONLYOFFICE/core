@@ -39,6 +39,7 @@
 #include "Wmf/WmfFile.h"
 #include "Emf/EmfFile.h"
 #include "StarView/SvmFile.h"
+#include "svg/SVGTransformer.h"
 
 namespace MetaFile
 {
@@ -63,6 +64,8 @@ namespace MetaFile
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;
 		CSvmFile           m_oSvmFile;
+        CSVGTransformer    m_oSvgFile;
+
 		int                m_lType;
 	};
 }

@@ -50,22 +50,20 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextNoteCitation;
     CPDOCCORE_DEFINE_VISITABLE();
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-public:
+    
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
-public:
     note_citation() {} 
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+    virtual void add_space(const std::wstring & Text);
 
-private:
-    std::wstring text_label_;
-    office_element_ptr_array content_;
+    std::wstring				text_label_;
+    office_element_ptr_array	content_;
 
 };
 
@@ -81,19 +79,18 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextNoteBody;
     CPDOCCORE_DEFINE_VISITABLE();
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-public:
+   
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
-public:
-    note_body() {} 
+
+	note_body() {} 
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+    virtual void add_space(const std::wstring & Text);
 
-private:
     office_element_ptr_array    content_;
 
 };

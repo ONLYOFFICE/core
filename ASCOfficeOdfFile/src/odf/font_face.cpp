@@ -52,9 +52,12 @@ std::wostream & svg_desc::text_to_stream(std::wostream & _Wostream, bool bXmlEnc
 
 void svg_desc::add_text(const std::wstring & Text) 
 {
-    text_ = Text;
+    text_ += Text;
 }
-
+void svg_desc::add_space(const std::wstring & Text) 
+{
+    text_ += Text;
+}
 // svg:font-face-uri
 //---------------------------------------------------------------------------------------
 const wchar_t * svg_font_face_uri::ns = L"svg";
@@ -80,9 +83,6 @@ void svg_font_face_uri::add_child_element( xml::sax * Reader, const std::wstring
         CP_NOT_APPLICABLE_ELM();
 }
 
-void svg_font_face_uri::add_text(const std::wstring & Text)
-{}
-
 // svg:font-face-format
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * svg_font_face_format::ns = L"svg";
@@ -103,9 +103,6 @@ void svg_font_face_format::add_child_element( xml::sax * Reader, const std::wstr
     CP_NOT_APPLICABLE_ELM();
 }
 
-void svg_font_face_format::add_text(const std::wstring & Text)
-{}
-
 // svg:font-face-name
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * svg_font_face_name::ns = L"svg";
@@ -125,9 +122,6 @@ void svg_font_face_name::add_child_element( xml::sax * Reader, const std::wstrin
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void svg_font_face_name::add_text(const std::wstring & Text)
-{}
 
     
 //////////////////////////////////////////////////////////////////////////////////////////////////

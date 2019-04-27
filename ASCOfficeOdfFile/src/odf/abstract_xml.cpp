@@ -74,6 +74,10 @@ void abstract_xml::add_text(const std::wstring & Text)
     office_element_ptr elm = text::text::create(Text) ;
     xml_content_.push_back( elm );
 }
-
+void abstract_xml::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::text::create(Text) ;
+    xml_content_.push_back( elm );
+}
 }
 }

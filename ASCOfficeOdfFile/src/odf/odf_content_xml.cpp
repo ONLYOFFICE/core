@@ -94,10 +94,7 @@ void content_xml_t::add_child_element( xml::sax * Reader, const std::wstring & N
     }	
 
 }
-
-void content_xml_t::add_text(const std::wstring & Text) 
-{
-}   
+  
 
 }
 }

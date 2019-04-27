@@ -151,7 +151,6 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 				break;
 			case odf_types::style_wrap::Left:
 			case odf_types::style_wrap::Right:
-			case odf_types::style_wrap::Dynamic:
 				serialize_wrap_square(strm, val);
 				break;
 			case odf_types::style_wrap::RunThrough:
@@ -160,6 +159,7 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 			case odf_types::style_wrap::None:
 				serialize_wrap_top_bottom(strm, val);
 				break;
+			case odf_types::style_wrap::Dynamic:
 			default:
 				CP_XML_NODE(L"wp:wrapTopAndBottom");
 				break;

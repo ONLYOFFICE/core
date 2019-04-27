@@ -75,7 +75,11 @@ void note_citation::add_text(const std::wstring & Text)
     office_element_ptr elm = text::create(Text) ;
     content_.push_back( elm );
 }
-
+void note_citation::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+    content_.push_back( elm );
+}
 void note_citation::docx_convert(oox::docx_conversion_context & Context)
 {
  	for (size_t i = 0; i < content_.size(); i++)
@@ -113,6 +117,11 @@ void note_body::add_text(const std::wstring & Text)
     content_.push_back( elm );
 }
 
+void note_body::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+    content_.push_back( elm );
+}
 void note_body::docx_convert(oox::docx_conversion_context & Context)
 {
     oox::StreamsManPtr prev = Context.get_stream_man();

@@ -63,8 +63,9 @@ public:
 
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) = 0;
 private:
-    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes ) = 0;
+    virtual void add_attributes		(const xml::attributes_wc_ptr & Attributes) = 0;
     virtual void add_text			(const std::wstring & Text) = 0;
+    virtual void add_space			(const std::wstring & Text) = 0;
 
 };
 

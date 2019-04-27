@@ -273,7 +273,8 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void add_text(const std::wstring & Text){}
+	virtual void add_space(const std::wstring & Text){}
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_text_box);

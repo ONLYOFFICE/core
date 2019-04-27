@@ -184,9 +184,7 @@ void number_style_base::add_child_element( xml::sax * Reader, const std::wstring
         CP_CREATE_ELEMENT(content_);
     }
 }
-void number_style_base::add_text(const std::wstring & Text)
-{
-}
+
 // number:number-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_number_style::ns = L"number";
@@ -211,7 +209,11 @@ void number_text::add_text(const std::wstring & Text)
     office_element_ptr elm = text::text::create(Text) ;
     text_.push_back( elm );
 }
-
+void number_text::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::text::create(Text) ;
+    text_.push_back( elm );
+}
 // number:embedded-text
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_embedded_text::ns = L"number";
@@ -228,6 +230,11 @@ void number_embedded_text::add_child_element( xml::sax * Reader, const std::wstr
 }
 
 void number_embedded_text::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text::text::create(Text) ;
+    text_.push_back( elm );
+}
+void number_embedded_text::add_space(const std::wstring & Text)
 {
     office_element_ptr elm = text::text::create(Text) ;
     text_.push_back( elm );
@@ -259,10 +266,6 @@ void number_number::add_child_element( xml::sax * Reader, const std::wstring & N
     }
     else
         CP_NOT_APPLICABLE_ELM();
-}
-
-void number_number::add_text(const std::wstring & Text)
-{
 }
 
 // number:scientific-number
@@ -304,7 +307,10 @@ void number_currency_symbol::add_text(const std::wstring & Text)
 {
     text_.push_back(Text);
 }
-
+void number_currency_symbol::add_space(const std::wstring & Text)
+{
+    text_.push_back(Text);
+}
 void number_currency_symbol::oox_convert(oox::num_format_context & Context)
 {
     std::wostream & strm = Context.output();
@@ -342,7 +348,11 @@ void number_text_content::add_text(const std::wstring & Text)
     office_element_ptr elm = text::text::create(Text) ;
     text_.push_back( elm );
 }
-
+void number_text_content::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::text::create(Text) ;
+    text_.push_back( elm );
+}
 void number_text_content::oox_convert(oox::num_format_context & Context)
 {
 }
@@ -443,9 +453,6 @@ void number_day::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_day::add_text(const std::wstring & Text)
-{
-}
 void number_day::oox_convert(oox::num_format_context & Context)
 {
     std::wostream & strm = Context.output();
@@ -475,9 +482,6 @@ void number_day_of_week::add_child_element( xml::sax * Reader, const std::wstrin
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_day_of_week::add_text(const std::wstring & Text)
-{
-}
 
 void number_day_of_week::oox_convert(oox::num_format_context & Context)
 {
@@ -506,10 +510,6 @@ void number_quarter::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void number_quarter::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
-}
-
-void number_quarter::add_text(const std::wstring & Text)
-{
 }
 
 void number_quarter::oox_convert(oox::num_format_context & Context) 
@@ -544,9 +544,7 @@ void number_month::add_child_element( xml::sax * Reader, const std::wstring & Ns
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_month::add_text(const std::wstring & Text)
-{
-}
+
 void number_month::oox_convert(oox::num_format_context & Context) 
 {
     std::wostream & strm = Context.output();
@@ -589,9 +587,7 @@ void number_year::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_year::add_text(const std::wstring & Text)
-{
-}
+
 void number_year::oox_convert(oox::num_format_context & Context)
 {
     std::wostream & strm = Context.output();
@@ -630,9 +626,6 @@ void number_hours::add_child_element( xml::sax * Reader, const std::wstring & Ns
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_hours::add_text(const std::wstring & Text)
-{
-}
 
 void number_hours::oox_convert(oox::num_format_context & Context) 
 {
@@ -663,9 +656,7 @@ void number_minutes::add_child_element( xml::sax * Reader, const std::wstring & 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_minutes::add_text(const std::wstring & Text)
-{
-}
+
 void number_minutes::oox_convert(oox::num_format_context & Context)
 {
     std::wostream & strm = Context.output();
@@ -696,9 +687,7 @@ void number_seconds::add_child_element( xml::sax * Reader, const std::wstring & 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_seconds::add_text(const std::wstring & Text)
-{
-}
+
 void number_seconds::oox_convert(oox::num_format_context & Context) 
 {
     std::wostream & strm = Context.output();
@@ -732,9 +721,7 @@ void number_am_pm::add_child_element( xml::sax * Reader, const std::wstring & Ns
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_am_pm::add_text(const std::wstring & Text)
-{
-}
+
 void number_am_pm::oox_convert(oox::num_format_context & Context) 
 {
     std::wostream & strm = Context.output();
@@ -760,9 +747,7 @@ void number_fraction::add_child_element( xml::sax * Reader, const std::wstring &
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void number_fraction::add_text(const std::wstring & Text)
-{
-}
+
 void number_fraction::oox_convert(oox::num_format_context & Context) 
 {
     std::wostream & strm = Context.output();
@@ -784,10 +769,6 @@ void number_fraction::oox_convert(oox::num_format_context & Context)
         else
             strm << *number_denominator_value_;
     }
-}
-
-void number_scientific_number::add_text(const std::wstring & Text)
-{
 }
 
 void number_scientific_number::oox_convert(oox::num_format_context & Context) 

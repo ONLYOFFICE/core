@@ -1477,7 +1477,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	bool bImage = false;
 	if (content_.empty() == false)
 	{
-		if (content_[0]->get_type() == typeDrawImage)
+		if (content_[0]->get_type() == typeDrawImage || content_[0]->get_type() == typeDrawObject || content_[0]->get_type() == typeDrawObjectOle )
 			bImage = true;
 	}
 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() && !bImage)

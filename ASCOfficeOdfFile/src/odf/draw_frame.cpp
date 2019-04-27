@@ -333,10 +333,6 @@ void draw_text_box::add_child_element( xml::sax * Reader, const std::wstring & N
     CP_CREATE_ELEMENT(content_); 
 }
 
-void draw_text_box::add_text(const std::wstring & Text)
-{
-}
-
 // draw:object
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_object::ns = L"draw";

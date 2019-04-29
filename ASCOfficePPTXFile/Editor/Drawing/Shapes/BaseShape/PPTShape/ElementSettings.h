@@ -173,7 +173,7 @@ public:
     std::vector<CProperty> m_arProperties;
     // по идее - это instance, но нам так удобнее,
     // тем более это класс - не связанный с RecordHeader
-    long m_lCount;
+    size_t m_lCount;
 
     CProperties() : m_arProperties()
     {
@@ -187,7 +187,7 @@ public:
     void FromStream(POLE::Stream* pStream, long lCount)
     {
         m_lCount = lCount;
-        for (long lIndex = 0; lIndex < m_lCount; ++lIndex)
+        for (size_t lIndex = 0; lIndex < m_lCount; ++lIndex)
         {
             CProperty elem;
             m_arProperties.push_back(elem);
@@ -195,7 +195,7 @@ public:
         }
         // теперь читаем дополнительную информацию
         // сортировано по pid'ам (но у нас пока просто по-порядку)
-        for (long lIndex = 0; lIndex < m_lCount; ++lIndex)
+        for (size_t lIndex = 0; lIndex < m_lCount; ++lIndex)
         {
             m_arProperties[lIndex].ComplexFromStream(pStream);
         }
@@ -205,7 +205,7 @@ public:
     _UINT32 GetLen()
     {
         _UINT32 dwLen = 6 * m_lCount;
-        for (long nIndex = 0; nIndex < m_lCount; ++nIndex)
+        for (size_t nIndex = 0; nIndex < m_lCount; ++nIndex)
         {
             if (m_arProperties[nIndex].m_bComplex)
             {

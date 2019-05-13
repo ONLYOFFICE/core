@@ -3302,6 +3302,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	std::map<std::wstring, std::wstring>::iterator pFind;
 
 	bool bIsInline = false;
+	bool bIsMargin = false;
 
 	if (oProps.IsTop == true)
 	{
@@ -3312,12 +3313,16 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		{
 			bIsInline = true;
 		}
-
+		if ((oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"margin-left"))	&&
+			(oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"margin-top")))
+		{
+			bIsMargin = true;
+		}
 		pFind = oCssStyles.m_mapSettings.find(L"mso-position-horizontal-relative");
-		if (oCssStyles.m_mapSettings.end() != pFind && (pFind->second == L"text" || pFind->second == L"char"))
+		if (oCssStyles.m_mapSettings.end() != pFind && ((pFind->second == L"text" && !bIsMargin) || pFind->second == L"char"))
 		{
 			pFind = oCssStyles.m_mapSettings.find(L"mso-position-vertical-relative");
-			if (oCssStyles.m_mapSettings.end() != pFind && (pFind->second == L"text" || pFind->second == L"line"))
+			if (oCssStyles.m_mapSettings.end() != pFind && ((pFind->second == L"text" && !bIsMargin) || pFind->second == L"line"))
 			{		
 				bIsInline = true;
 			}

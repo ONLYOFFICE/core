@@ -1818,7 +1818,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
         std::wstring strCoord1 = oNodeShape.GetAttributeOrValue(L"from");
         std::wstring strCoord2 = oNodeShape.GetAttributeOrValue(L"to");
 
-        if (strCoord1 != L"" && strCoord2 != L"")
+        if (!strCoord1.empty() && !strCoord2.empty())
 		{
 			std::vector<std::wstring> oArray1;
             boost::algorithm::split(oArray1, strCoord1, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
@@ -1905,7 +1905,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				int nOffsetX = _POINTS[0] - _x;
 				int nOffsetY = _POINTS[1] - _y;
 
-                strStyleAdvenced = L";margin-left:" + std::to_wstring(_x) + L";margin-top:" + std::to_wstring(_y)
+                strStyleAdvenced += L";margin-left:" + std::to_wstring(_x) + L";margin-top:" + std::to_wstring(_y)
                         + L";width:" + std::to_wstring(_r - _x) + L";height:" + std::to_wstring(_b - _y) + L";polyline_correct:true;";
 
                 double dKoefX = 21600.0 / (std::max)((_r - _x), 1);
@@ -3313,8 +3313,11 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		{
 			bIsInline = true;
 		}
-		if ((oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"margin-left"))	&&
+		if (((oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"margin-left"))	&&
 			(oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"margin-top")))
+		||
+			((oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"left"))	&&
+			(oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"top"))))
 		{
 			bIsMargin = true;
 		}
@@ -3360,7 +3363,13 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		if (oCssStyles.m_mapSettings.end() != pFind)
 		{
-			 left = (LONG)(dKoefSize * parserPoint.FromString(pFind->second) + 0.5);
+			std::vector<std::wstring> oArray1;
+            boost::algorithm::split(oArray1, pFind->second, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+			for (size_t i = 0; i < oArray1.size(); i++)
+			{
+				left += (LONG)(dKoefSize * parserPoint.FromString(oArray1[i]) + 0.5);
+			}
 		}
 
         pFind = oCssStyles.m_mapSettings.find(L"margin-top");
@@ -3370,7 +3379,12 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		if (oCssStyles.m_mapSettings.end() != pFind)
 		{
-			 top = (LONG)(dKoefSize * parserPoint.FromString(pFind->second) + 0.5);
+			std::vector<std::wstring> oArray1;
+			boost::algorithm::split(oArray1, pFind->second, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < oArray1.size(); i++)
+			{
+				top += (LONG)(dKoefSize * parserPoint.FromString(oArray1[i]) + 0.5);
+			}
 		}
 	}
 

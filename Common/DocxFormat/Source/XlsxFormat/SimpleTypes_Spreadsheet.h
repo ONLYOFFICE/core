@@ -2534,6 +2534,7 @@ namespace SimpleTypes
                 else if(L"5Arrows" == sValue)			this->m_eValue = Arrows5;
                 else if(L"5ArrowsGray" == sValue)		this->m_eValue = Arrows5Gray;
                 else if(L"5Quarters" == sValue)			this->m_eValue = Quarters5;
+		//..ext....
                 else if(L"5Rating" == sValue)			this->m_eValue = Rating5;
                 else if(L"3Triangles" == sValue)		this->m_eValue = Triangles3;
 				else if(L"3Stars" == sValue)			this->m_eValue = Stars3;

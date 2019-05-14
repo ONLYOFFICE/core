@@ -513,7 +513,7 @@ const CIconSet CIconSet::Merge(const CIconSet& oPrev, const CIconSet& oCurrent)
 }
 bool CIconSet::isExtended ()
 {
-	return (false == m_arrIconSets.empty());
+	return (false == m_arrIconSets.empty() || (m_oIconSet.IsInit() && m_oIconSet->GetValue() > 15));
 }
 void CIconSet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

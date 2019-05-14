@@ -42,9 +42,11 @@
 #define HTMLFILE_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
+class CHtmlFile_Private;
 class HTMLFILE_DECL_EXPORT CHtmlFile
 {
 private:
+    CHtmlFile_Private* m_internal;
 
 public:
 

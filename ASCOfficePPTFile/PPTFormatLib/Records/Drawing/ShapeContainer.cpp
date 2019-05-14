@@ -199,13 +199,13 @@ CColor CPPTElement::CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme
 }
 void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties)
 {
-	long lCount = pProperties->m_lCount;
+	size_t lCount = pProperties->m_lCount;
 	switch (pElement->m_etType)
 	{
 	case PPT_FORMAT::etVideo:
 		{
 			pElement->m_bLine = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
@@ -215,7 +215,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 		{
 			pElement->m_oBrush.Type = c_BrushTypeTexture;
 			pElement->m_bLine = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
@@ -224,7 +224,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 	case PPT_FORMAT::etAudio:
 		{
 			pElement->m_bLine = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
@@ -234,7 +234,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 		{
 			pElement->m_bLine = false;
 			pElement->m_bIsFilled = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
@@ -249,7 +249,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 				pPPTShape->m_oCustomVML.SetAdjusts(&pPPTShape->m_arAdjustments);
 			}
 
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyShape(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
@@ -838,22 +838,22 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
 		}break;
 	case cropFromTop:
 		{
-			image_element->m_lcropFromTop = pProperty->m_lValue; 
+			image_element->m_lcropFromTop = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case cropFromBottom:
 		{
-			image_element->m_lcropFromBottom = pProperty->m_lValue; 
+			image_element->m_lcropFromBottom = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case cropFromLeft:
 		{
-			image_element->m_lcropFromLeft = pProperty->m_lValue; 
+			image_element->m_lcropFromLeft = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case cropFromRight:
 		{
-			image_element->m_lcropFromRight = pProperty->m_lValue; 
+			image_element->m_lcropFromRight = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case pibFlags:

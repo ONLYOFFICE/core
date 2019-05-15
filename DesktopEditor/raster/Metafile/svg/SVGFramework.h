@@ -5580,6 +5580,10 @@ namespace SVG
 
 		inline bool	LoadFromFile (const std::wstring& strFile, Storage* model)
 		{
+            std::wstring sExt = NSFile::GetFileExtention(strFile);
+            if (sExt != L"svg" && sExt != L"xml")
+                return false;
+
 			if (model)
 			{
 				m_model = model;

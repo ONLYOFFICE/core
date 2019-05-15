@@ -58,7 +58,6 @@ public:
     std::wostream & sheetData();
     std::wostream & hyperlinks();
     std::wostream & mergeCells();
-    std::wostream & drawing(); 
     std::wostream & comments();
 	std::wostream & autofilter();
 	std::wostream & tableParts();

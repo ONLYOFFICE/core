@@ -558,18 +558,20 @@ void xl_control_props_files::write(const std::wstring & RootPath)
     }
 }
 //------------------------------------------------------------------------------------------------------
-xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
+xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms, const std::vector<drawing_elm> & vml_elms)
 {
-    return boost::make_shared<xl_drawings>(boost::ref(elms));
+    return boost::make_shared<xl_drawings>(boost::ref(elms), boost::ref(vml_elms));
 }
 
 void xl_drawings::write(const std::wstring & RootPath)
 {
-	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
-	
+	if (drawings_.empty() && vml_drawings_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
     NSDirectory::CreateDirectory(path.c_str());
 
+	content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
+	
 	pptx_document *pptx = dynamic_cast<pptx_document*>(this->get_main_document());
 	xlsx_document *xlsx = dynamic_cast<xlsx_document*>(this->get_main_document());
 	docx_document *docx = dynamic_cast<docx_document*>(this->get_main_document());
@@ -594,6 +596,20 @@ void xl_drawings::write(const std::wstring & RootPath)
        
 		contentTypes->add_override(override_str + drawings_[i].filename, kDrawingCT);
     }
+	for (size_t i = 0; i < vml_drawings_.size(); i++)
+    {
+        package::simple_element(vml_drawings_[i].filename, vml_drawings_[i].content).write(path);        
+
+        rels_files relFiles;
+        rels_file_ptr r = rels_file::create(vml_drawings_[i].filename + L".rels");
+        
+		vml_drawings_[i].drawings->dump_rels_vml_drawing(r->get_rels());
+                
+        relFiles.add_rel_file(r);
+        relFiles.write(path);
+
+		//content types - default
+    }
 }
 
 //////////////////////////////
@@ -604,9 +620,6 @@ xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)
 
 void xl_comments::write(const std::wstring & RootPath)
 {
-	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-    NSDirectory::CreateDirectory(vml_path.c_str());
-   
     for (size_t i = 0; i < comments_.size(); i++)
     {
 		content_type * contentTypes = this->get_main_document()->get_content_types_file().content();
@@ -615,7 +628,6 @@ void xl_comments::write(const std::wstring & RootPath)
         contentTypes->add_override(std::wstring(L"/xl/") + comments_[i].filename, kWSConType);
 			
 		package::simple_element(comments_[i].filename, comments_[i].content).write(RootPath);        
-		package::simple_element(comments_[i].vml_filename, comments_[i].vml_content).write(vml_path);        
 	}
 }
 

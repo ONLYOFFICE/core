@@ -694,7 +694,7 @@ void docx_conversion_context::end_document()
 	output_document_->get_word_files().set_comments	( comments_context_);
 	output_document_->get_word_files().set_headers_footers( headers_footers_);
  
-	package::xl_drawings_ptr drawings = package::xl_drawings::create(chart_drawing_handle_->content());
+	package::xl_drawings_ptr drawings = package::xl_drawings::create(chart_drawing_handle_->content(), chart_drawing_handle_->content_vml());
 	output_document_->get_word_files().set_drawings(drawings);
 
 	package::content_types_file	& content_file_ = output_document_->get_content_types_file();

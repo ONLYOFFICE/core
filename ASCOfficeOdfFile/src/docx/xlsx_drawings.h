@@ -66,13 +66,17 @@ public:
     static xlsx_drawings_ptr create(bool inGroup);
 
     void add ( _xlsx_drawing const & d,	bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel = false );
-    void add (							bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel = false );
+    void add (							bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel, bool vml_rel);
     
-	bool empty				() const;
-    void dump_rels_sheet	(rels & Rels);
-    void dump_rels_drawing	(rels & Rels);
+	bool empty() const;
+	bool vml_empty() const;
+   
+	void dump_rels_sheet		(rels & Rels);
+    void dump_rels_drawing		(rels & Rels);
+    void dump_rels_vml_drawing	(rels & Rels);
 
     void serialize			(std::wostream & _Wostream, const std::wstring & ns);  
+	void serialize_vml		(std::wostream & _Wostream);
 	void serialize_objects	(std::wostream & _Wostream);  
 	void serialize_controls	(std::wostream & _Wostream);  
 private:

@@ -1372,7 +1372,7 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				std::wstring href	= fill.bitmap->xlink_href_;
 				fill.bitmap->rId	= Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
 
-				Context.get_drawing_context().get_drawings()->add(fill.bitmap->isInternal, fill.bitmap->rId, href, oox::typeImage, true);
+				Context.get_drawing_context().get_drawings()->add(fill.bitmap->isInternal, fill.bitmap->rId, href, oox::typeImage, true, false);
 			}
 
 			Context.get_table_context().state()->set_background(fill.bitmap->rId);

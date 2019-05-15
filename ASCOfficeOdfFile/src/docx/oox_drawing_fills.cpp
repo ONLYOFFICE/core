@@ -245,7 +245,7 @@ void vml_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 		{
 			if (!val.gradient->colors.empty())
 			{
-				CP_XML_ATTR(L"color2", val.gradient->colors[val.gradient->colors.size() - 1].color_ref);
+				CP_XML_ATTR(L"color2", L"#" + val.gradient->colors[val.gradient->colors.size() - 1].color_ref);
 
 				std::wstring colors_value;
 				for (size_t i = 0; i < val.gradient->colors.size(); i++)
@@ -401,6 +401,27 @@ void vml_serialize_background (std::wostream & strm, const _oox_fill & val, cons
 					break;
 			}
 		}
+	}
+}
+
+void vml_serialize_fill (std::wostream & strm, const _oox_fill & val)
+{
+	switch (val.type)
+	{
+		case 0:	
+			break;
+		case 1:	
+			vml_serialize_solid_fill(strm, val);
+			break;
+		case 2:	
+			vml_serialize_bitmap_fill(strm, val);
+			break;
+		case 3:	
+			vml_serialize_gradient_fill(strm, val);
+			break;
+		case 4:	
+			//vml_serialize_hatch_fill(strm, val);
+			break;			
 	}
 }
 

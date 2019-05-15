@@ -112,7 +112,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	std::vector<const odf_reader::style_instance *> instances;
 
 	odf_reader::style_instance* styleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,false/*Context.process_headers_footers_*/);
+		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic, false/*Context.process_headers_footers_*/);
 	if (styleInst)
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);

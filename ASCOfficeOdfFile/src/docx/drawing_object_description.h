@@ -65,6 +65,9 @@ struct drawing_object_description
 	_CP_OPT(_INT32)							owner_cx_;
 	_CP_OPT(_INT32)							owner_cy_;
 
+	_CP_OPT(_INT32)							base_col_;
+	_CP_OPT(_INT32)							base_row_;
+
 	_action_desc							action_;
 	std::vector<_hlink_desc>				hlinks_;
 

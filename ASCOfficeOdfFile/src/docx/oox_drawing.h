@@ -124,6 +124,7 @@ namespace oox {
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset, const std::wstring &ns = L"a");
     void oox_serialize_action	(std::wostream & strm, const _action_desc & val);
     
+	void vml_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
 }
 }
 

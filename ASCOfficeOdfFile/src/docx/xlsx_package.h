@@ -244,20 +244,27 @@ class xl_drawings: public element
 {
 public:
     virtual void write(const std::wstring & RootPath);
-    void set_rels(rels_files * rels)
+   
+	//void set_rels(rels_files * rels)
+ //   {
+ //       rels_ = rels;
+ //   }
+	//void set_vml_rels(rels_files * rels)
+ //   {
+ //       vml_rels_ = rels;
+ //   }
+    xl_drawings(const std::vector<drawing_elm> & elms, const std::vector<drawing_elm> & vml_elms) : drawings_(elms), vml_drawings_(vml_elms)
     {
-        rels_ = rels;
     }
 
-    xl_drawings(const std::vector<drawing_elm> & elms) : drawings_ ( elms )
-    {
-    }
-
-    static xl_drawings_ptr create(const std::vector<drawing_elm> & elms);
+    static xl_drawings_ptr create(const std::vector<drawing_elm> & elms, const std::vector<drawing_elm> & vml_elms);
 
 private:
     const std::vector<drawing_elm> & drawings_;
-    rels_files * rels_;
+	const std::vector<drawing_elm> & vml_drawings_;
+	
+	//rels_files * rels_;
+	//rels_files * vml_rels_;
 };
 //----------------------------------------------------------------------------------------------------------
 class xl_control_props_files : public element

@@ -51,7 +51,7 @@ public:
     {
     }  
 
-    std::pair<std::wstring, std::wstring> add_comments_xml(std::wstring const & content,pptx_comments_ptr comments)
+    std::pair<std::wstring, std::wstring> add_comments_xml(std::wstring const & content, pptx_comments_ptr comments)
     {
  		const std::wstring file_id = std::to_wstring(next_file_id_++);
       

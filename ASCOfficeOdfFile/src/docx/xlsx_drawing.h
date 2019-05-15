@@ -50,8 +50,8 @@ struct xlsx_drawing_position
     xlsx_table_position		position;
 
 	void serialize(std::wostream & _Wostream, const std::wstring & ns = L"xdr");
+	std::wstring vml_serialize();
 };
-
 
 class _xlsx_drawing : public _oox_drawing
 {
@@ -66,11 +66,15 @@ public:
 	_CP_OPT(_INT32)			owner_cx_;
 	_CP_OPT(_INT32)			owner_cy_;
 
+	_CP_OPT(_INT32)			base_col_;
+	_CP_OPT(_INT32)			base_row_;
+
 	std::wstring			content_group_;
 
 	virtual void serialize	(std::wostream & strm) {return serialize(strm, L"xdr");}
 
     void serialize			(std::wostream & strm, const std::wstring & ns);    
+	void serialize_vml		(std::wostream & strm);    
 	void serialize_object	(std::wostream & strm);    
 	void serialize_control	(std::wostream & strm);    
 };

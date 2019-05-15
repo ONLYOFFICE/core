@@ -131,7 +131,16 @@ static const std::wstring _ooxDashStyle[]=
 	L"dashDot",
 	L"sysDashDotDot"
 };
-
+static const std::wstring _vmlDashStyle[]=
+{
+	L"none",
+	L"solid",
+	L"dot",
+	L"dash",
+	L"dash",
+	L"dashdot",
+	L"shortdashdotdot"
+};
 void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop, bool always_draw, const std::wstring &ns)
 {
 	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
@@ -152,7 +161,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
 	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
 	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
-
+	
 	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
 
 	CP_XML_WRITER(strm)
@@ -221,6 +230,69 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 					CP_XML_NODE(ns + L":tailEnd"){CP_XML_ATTR2(ns_att + L"type",strVal.get());}
 				}
 			}
+		}
+    }
+}
+void vml_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+{
+	_CP_OPT(std::wstring)	strStrokeColor; 
+	_CP_OPT(int)			iStroke;
+	_CP_OPT(double)			dStrokeWidth;
+	_CP_OPT(double)			dStrokeOpacity; 
+	_CP_OPT(bool)			bWordArt;
+	
+	odf_reader::GetProperty(prop, L"wordArt", bWordArt);
+	
+	odf_reader::GetProperty(prop, L"stroke-color"	, strStrokeColor);	
+	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
+	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
+	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
+
+	if (!strStrokeColor && !iStroke && !dStrokeWidth) return;
+
+	CP_XML_WRITER(strm)
+    {
+        CP_XML_NODE(L"v:stroke")
+        { 
+			std::wstring color, dash_style ;
+
+			if (strStrokeColor) color = *strStrokeColor;
+
+			if (iStroke)
+			{
+				if (iStroke.get() != 0 ) dash_style = _vmlDashStyle[iStroke.get()];	
+			}
+			
+			if ((dStrokeWidth) && (*dStrokeWidth >= 0))
+			{
+				int val = dStrokeWidth.get() * 12700;	//in emu (1 pt = 12700)
+				if (val < 10)	val = 12700;
+				
+				CP_XML_ATTR(L"weight", val);
+			}
+
+			if (false == color.empty())
+			{
+				CP_XML_ATTR(L"color", L"#" + color);
+			}
+			if (!dash_style.empty() && dash_style != L"solid")
+			{
+				CP_XML_ATTR(L"dashstyle", dash_style);
+			}
+			//odf_reader::GetProperty(prop,L"marker-start", strVal);	
+			//if (strVal)
+			//{
+			//}
+			//odf_reader::GetProperty(prop,L"marker-end",strVal);	
+			//if (strVal)
+			//{
+			//}
+
+			CP_XML_ATTR(L"startarrow", L"block"); 
+			CP_XML_ATTR(L"startarrowwidth", L"medium");  
+			CP_XML_ATTR(L"startarrowlength", L"medium"); 
+			CP_XML_ATTR(L"joinstyle", L"round");  
+			CP_XML_ATTR(L"endcap", L"flat"); 
 		}
     }
 }

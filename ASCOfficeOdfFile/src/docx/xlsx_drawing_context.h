@@ -63,7 +63,10 @@ public:
     ~xlsx_drawing_context_handle();
     
     std::pair<std::wstring, std::wstring>	add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_ = typeDefault);
-    const std::vector<drawing_elm>			& content() const;
+ 	std::pair<std::wstring, std::wstring>	add_drawing_vml(std::wstring const & content, xlsx_drawings_ptr drawings);
+   
+	const std::vector<drawing_elm> & content()		const;
+	const std::vector<drawing_elm> & content_vml()	const;
 
     friend class xlsx_drawing_context;
 
@@ -90,7 +93,6 @@ public:
     void end_group	();
 
 	void start_shape(int type);
-	//...пока тока общие свойства ... частные для каждого объекта пооозже
     void end_shape();
 
 	void start_frame();
@@ -101,6 +103,9 @@ public:
 		void set_control	(const std::wstring & ctrlPropId);
 		void set_text_box	();
 	void end_frame();
+
+	void start_comment(int base_col, int base_row);
+	void end_comment();
 
 	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
 
@@ -124,9 +129,12 @@ public:
 	void set_use_image_replacement();
 	
 	bool empty() const;
+	bool vml_empty() const;
+	
 	void clear();
 
 	void serialize(std::wostream & strm, const std::wstring& ns = L"xdr");
+	void serialize_vml(std::wostream & strm);
 
 	std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
 

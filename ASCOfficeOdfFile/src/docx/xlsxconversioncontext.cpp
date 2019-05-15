@@ -332,8 +332,8 @@ void xlsx_conversion_context::end_document()
 		output_document_->get_content_types_file().set_media(get_mediaitems());
         output_document_->get_xl_files().set_media(get_mediaitems());
 
-        package::xl_drawings_ptr drawings = package::xl_drawings::create(drawing_context_handle_->content());
-        output_document_->get_xl_files().set_drawings(drawings);
+		package::xl_drawings_ptr drawings = package::xl_drawings::create(drawing_context_handle_->content(), drawing_context_handle_->content_vml());
+		output_document_->get_xl_files().set_drawings(drawings);
 	
         package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
         output_document_->get_xl_files().set_comments(comments);        
@@ -514,33 +514,35 @@ void xlsx_conversion_context::end_table()
             = drawing_context_handle_->add_drawing_xml(strm.str(), get_drawing_context().get_drawings() );
 
         current_sheet().set_drawing_link(drawingName.first, drawingName.second);
-
-        CP_XML_WRITER(current_sheet().drawing())
-        {
-            CP_XML_NODE(L"drawing")
-            {
-                CP_XML_ATTR(L"r:id", drawingName.second);
-            }
-		}
 	}
-	get_table_context().serialize_background (current_sheet().drawing());
+	if (false == get_drawing_context().vml_empty())
+    {
+        std::wstringstream strm;
+        get_drawing_context().serialize_vml(strm);
+        
+        const std::pair<std::wstring, std::wstring> vml_drawingName 
+            = drawing_context_handle_->add_drawing_vml(strm.str(), get_drawing_context().get_drawings() );
 
-	if (!get_comments_context().empty())
+        current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
+	}
+	//get_table_context().serialize_background (current_sheet().picture());
+
+	if (false == get_comments_context().empty())
     {
         std::wstringstream strm;
         get_comments_context().serialize(strm);
         
-        std::wstringstream vml_strm;
-        get_comments_context().serialize_vml(vml_strm);
+        //std::wstringstream vml_strm;
+        //get_comments_context().serialize_vml(vml_strm);
 		
 		const std::pair<std::wstring, std::wstring> commentsName 
-            = xlsx_comments_context_handle_.add_comments_xml(strm.str(), vml_strm.str(),get_comments_context().get_comments() );
-
-		const std::pair<std::wstring, std::wstring> vml_drawingName 
-								=xlsx_comments_context_handle_.get_vml_drawing_xml();
+            = xlsx_comments_context_handle_.add_comments_xml(strm.str(), get_comments_context().get_comments() );
 
         current_sheet().set_comments_link(commentsName.first, commentsName.second);
-        current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
+		//const std::pair<std::wstring, std::wstring> vml_drawingName 
+		//						=xlsx_comments_context_handle_.get_vml_drawing_xml();
+
+  //      current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
     }    
     get_table_context().end_table();
 }

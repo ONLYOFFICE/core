@@ -53,15 +53,21 @@ namespace oox {
 class xlsx_drawing_context_handle::Impl
 {
 public:
-    Impl(mediaitems_ptr & items) : items_(items), next_rId_(1), next_drawing_id_(1) 
+    Impl(mediaitems_ptr & items) : items_(items), next_drawing_id_(1), next_vml_drawing_id_(1)
     {
     }  
 
     mediaitems_ptr & get_mediaitems() { return items_; }
 
-    size_t next_rId()
+    std::pair<std::wstring, std::wstring> add_drawing_vml(std::wstring const & content, xlsx_drawings_ptr drawings)
     {
-        return next_rId_++;
+        const std::wstring id = std::to_wstring(next_vml_drawing_id_++);
+        const std::wstring fileName = std::wstring(L"vmlDrawing") + id + L".vml";
+        
+		drawings_vml_.push_back(drawing_elm(fileName, content, drawings, typeDefault));
+        const std::wstring rId = std::wstring(L"rVId") + id;
+       
+		return std::pair<std::wstring, std::wstring>(fileName, rId);
     }
 
     std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_)
@@ -75,16 +81,22 @@ public:
 		return std::pair<std::wstring, std::wstring>(fileName, rId);
     }
 
-    const std::vector<drawing_elm> & content() const
-    {
-        return drawings_;
-    }
+	const std::vector<drawing_elm> & content() const
+	{
+		return drawings_;
+	}
+	 const std::vector<drawing_elm> & content_vml() const
+	 {
+        return drawings_vml_;
+	 }
 private:
     mediaitems_ptr				items_;    
-    std::vector<drawing_elm>	drawings_;
+    
+	std::vector<drawing_elm>	drawings_;
+    std::vector<drawing_elm>	drawings_vml_;
 
-    size_t						next_rId_;
     size_t						next_drawing_id_;
+    size_t						next_vml_drawing_id_;
 };
 
 xlsx_drawing_context_handle::xlsx_drawing_context_handle(mediaitems_ptr & items) :
@@ -100,12 +112,19 @@ std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_x
 {
     return impl_->add_drawing_xml(content, drawings, type_);
 }
+std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_vml(std::wstring const & content, xlsx_drawings_ptr drawings)
+{
+    return impl_->add_drawing_vml(content, drawings);
+}
 
 const std::vector<drawing_elm> & xlsx_drawing_context_handle::content() const
 {
     return impl_->content();
 }
-
+const std::vector<drawing_elm> & xlsx_drawing_context_handle::content_vml() const
+{
+    return impl_->content_vml();
+}
 class xlsx_drawing_context::Impl
 {
 public:    
@@ -131,16 +150,22 @@ public:
     {
         xlsx_drawings_->serialize(strm, ns);
     }
-
+	void serialize_vml(std::wostream & strm)
+    {
+        xlsx_drawings_->serialize_vml(strm);
+    }
     bool empty() const
     {
         return xlsx_drawings_->empty();
     }
-
-    size_t next_rId()
+    bool vml_empty() const
     {
-        return handle_->impl_->next_rId();
+        return xlsx_drawings_->vml_empty();
     }
+    //size_t next_rId()
+    //{
+    //    return handle_->impl_->next_rId();
+    //}
 
     xlsx_drawings_ptr get_drawings()
     {
@@ -282,7 +307,19 @@ void xlsx_drawing_context::end_shape()
 {
 	impl_->current_level_->push_back(impl_->object_description_);
 }
+void xlsx_drawing_context::start_comment(int base_col, int base_row)
+{
+	impl_->object_description_.type_ = typeComment;
+	impl_->object_description_.shape_type_ = 9; // object type for vml 
 
+	impl_->object_description_.base_col_ = base_col;
+	impl_->object_description_.base_row_ = base_row;
+}
+
+void xlsx_drawing_context::end_comment()
+{
+	impl_->current_level_->push_back(impl_->object_description_);
+}
 void xlsx_drawing_context::set_use_image_replacement()
 {
 	impl_->use_image_replacement_ = true;
@@ -446,7 +483,10 @@ bool xlsx_drawing_context::empty() const
 {
     return impl_->empty();
 }
-
+bool xlsx_drawing_context::vml_empty() const
+{
+    return impl_->vml_empty();
+}
 void xlsx_drawing_context::process_common_properties(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_table_metrics & table_metrics)
 {
 	if (obj.anchor_.empty())
@@ -585,7 +625,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 
 	if (drawing.type == typeShape)
 	{
-		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
+		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage, false, false);//собственно это не объект, а доп рел и ref объекта
 	
 		isMediaInternal=true;
 		std::wstring rId = impl_->get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref);
@@ -597,7 +637,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 		xlsx_drawings_->add(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, typeImage);//объект
 		
 		if (drawing.inGroup)
-			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, obj.type_); // не объект
+			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, obj.type_, false, false); // не объект
 	}
 }
 
@@ -610,8 +650,9 @@ void xlsx_drawing_context::process_chart(drawing_object_description & obj,_xlsx_
     xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_);
 	
 	if (drawing.inGroup)
-		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_); // не объект
+		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_, false, false); // не объект
 }
+
 void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx_table_metrics & table_metrics, _xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
 {
 	std::wstring ref;
@@ -637,10 +678,13 @@ void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx
 		drawing.to_.position.rowOff		= static_cast<size_t>(odf_types::length(to.rowOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 	}	
 
-	if (obj.type_ == typeControl)
+	if (obj.type_ == typeControl || obj.type_ == typeComment)
 	{
+		drawing.base_col_ = obj.base_col_;
+		drawing.base_row_ = obj.base_row_;
 		drawing.objectId = obj.xlink_href_;
-		xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_);
+
+		xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_, false);
 	}
 	else
 	{
@@ -651,14 +695,14 @@ void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx
 	}
 	
 	if (drawing.inGroup)
-		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_); // не объект
+		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_, false, false); // не объект
 }
 void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
 {
 	std::wstring ref;
     bool isMediaInternal = true;
 
-	std::wstring rId	= impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref);
+	std::wstring rId = impl_->get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref);
 	xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, obj.type_);
 }
 
@@ -698,11 +742,11 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 		drawing.name		= obj.name_;
 		drawing.fill		= obj.fill_;
 		drawing.inGroup		= obj.in_group_;
-		drawing.id			= impl_->next_rId();
+		//drawing.id			= impl_->next_rId();
 		drawing.lined		= obj.lined_;
 		drawing.connector	= obj.connector_;
 
-		drawing.sub_type = obj.shape_type_;
+		drawing.sub_type	= obj.shape_type_;
 		
 		if (drawing.fill.bitmap)
 		{
@@ -712,7 +756,7 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 			drawing.fill.bitmap->rId = impl_->get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
 			
 			bool in_sheet = (obj.type_== typeOleObject || obj.type_== typeMsObject) ? true : false;
-			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage, in_sheet);//собственно это не объект, а доп рел и ref объекта
+			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage, in_sheet, false);//собственно это не объект, а доп рел и ref объекта
 
 			//object dumps in sheet rels !!
 		}
@@ -727,8 +771,8 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 			case typeGroupShape:	process_group	( obj, table_metrics, drawing, xlsx_drawings_);	break;
 			case typeMsObject:	
 			case typeOleObject:
-			case typeControl:
-									process_object	( obj, table_metrics, drawing, xlsx_drawings_);	break;
+			case typeControl:									
+			case typeComment:		process_object	( obj, table_metrics, drawing, xlsx_drawings_);	break;
 		}
 	}
 }
@@ -736,6 +780,10 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 void xlsx_drawing_context::serialize(std::wostream & strm, const std::wstring& ns)
 {
     impl_->serialize(strm, ns);    
+}
+void xlsx_drawing_context::serialize_vml(std::wostream & strm)
+{
+    impl_->serialize_vml(strm);    
 }
 
 xlsx_drawings_ptr xlsx_drawing_context::get_drawings()

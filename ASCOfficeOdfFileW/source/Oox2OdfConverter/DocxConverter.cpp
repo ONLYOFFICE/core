@@ -2298,7 +2298,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	{
 		if (drawing_context->change_text_box_2_wordart())
 		{			
-			drawing_context->start_area_properties(true);				
+			drawing_context->start_area_properties();				
 			if(gradFill.IsInit())
 			{		
 				OoxConverter::convert(gradFill.operator->());

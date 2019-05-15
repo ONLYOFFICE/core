@@ -2390,7 +2390,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 		if (false == oCellAnchor.IsInit())
 		{
 			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
-			oCellAnchor->m_bShapeOle= true;			
+			oCellAnchor->m_bShapeControl = true;			
 		}
 		if ((oShape.IsInit()) && (OOX::et_v_shapetype != oShape->getType()))
 		{
@@ -2459,11 +2459,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			}
 			if (oFormControlPr->m_oFillColor.IsInit())
 			{
-				ods_context->drawing_context()->set_solid_fill(oFormControlPr->m_oFillColor->ToString());
+				ods_context->drawing_context()->start_area_properties(true);
+					ods_context->drawing_context()->set_solid_fill(oFormControlPr->m_oFillColor->ToString());
+				ods_context->drawing_context()->end_area_properties();
 			}
 			if (oFormControlPr->m_oBorderColor.IsInit())
 			{
-				ods_context->drawing_context()->set_line_color(oFormControlPr->m_oBorderColor->ToString());
+				ods_context->drawing_context()->start_line_properties();
+					ods_context->drawing_context()->set_line_color(oFormControlPr->m_oBorderColor->ToString());
+				ods_context->drawing_context()->end_line_properties();
 			}
 			if (oFormControlPr->m_oTextHAlign.IsInit())
 			{

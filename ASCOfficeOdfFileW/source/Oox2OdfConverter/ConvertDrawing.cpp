@@ -1998,7 +1998,7 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		{
 			if (oox_run_pr->Fill.is_init())
 			{
-				drawing->start_area_properties(true);
+				drawing->start_area_properties();
 					convert(&oox_run_pr->Fill);
 				drawing->end_area_properties();
 			}

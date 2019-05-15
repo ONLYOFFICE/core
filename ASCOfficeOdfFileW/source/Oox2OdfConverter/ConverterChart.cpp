@@ -161,7 +161,21 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Tx* ct_tx)
 {
 	if (ct_tx == NULL)return;
 
-	convert_chart_text(ct_tx->m_oRich.GetPointer());
+	if (ct_tx->m_oRich.IsInit())
+	{
+		convert_chart_text(ct_tx->m_oRich.GetPointer());
+	}
+	else if (ct_tx->m_strRef)
+	{
+		if (ct_tx->m_strRef->m_f)
+			odf_context()->chart_context()->set_label_formula(*ct_tx->m_strRef->m_f);
+		
+		if ((ct_tx->m_strRef->m_strCache) && (false == ct_tx->m_strRef->m_strCache->m_pt.empty()) 
+				&& (ct_tx->m_strRef->m_strCache->m_pt[0]) && (ct_tx->m_strRef->m_strCache->m_pt[0]->m_v))
+		{
+			odf_context()->chart_context()->add_text(*ct_tx->m_strRef->m_strCache->m_pt[0]->m_v);
+		}
+	}
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_Layout* ct_layout)
 {
@@ -293,6 +307,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 		
 		convert(axis->m_oSpPr.GetPointer());
 		
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -336,6 +354,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DateAx* axis)
 		
 		convert(axis->m_oSpPr.GetPointer());
 		
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -377,6 +399,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerAx* axis)
 		
 		convert(axis->m_oSpPr.GetPointer());
 		
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -417,6 +443,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 			odf_context()->chart_context()->set_axis_id(*axis->m_axId->m_val);
 		
 		convert(axis->m_oSpPr.GetPointer());
+
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		
 		if (axis->m_scaling)
 		{

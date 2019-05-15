@@ -103,7 +103,7 @@ namespace PPTX
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 				pWriter->WriteInt2(0, amt);
-				pWriter->WriteInt2(0, hue);
+				pWriter->WriteInt2(1, hue);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->EndRecord();

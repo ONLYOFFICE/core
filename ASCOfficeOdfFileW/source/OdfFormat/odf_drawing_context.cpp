@@ -167,7 +167,9 @@ enum _drawing_part
 	Unknown	= 0,
 	Area	= 1,
 	Line	= 2,
-	Shadow	= 3
+	Shadow	= 3,
+	Background = 4,
+	Border = 5
 };
 struct odf_drawing_state
 {
@@ -1253,9 +1255,9 @@ void odf_drawing_context::end_element()
 	impl_->current_level_.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::start_area_properties(bool reset)
+void odf_drawing_context::start_area_properties(bool bBackground)
 {
-	impl_->current_drawing_part_ = Area;
+	impl_->current_drawing_part_ = bBackground ? Background : Area;
 }
 void odf_drawing_context::end_area_properties()
 {
@@ -1463,7 +1465,12 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 
 	switch(impl_->current_drawing_part_)
 	{
+		case Background:
+		{
+			impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_ = color(hexColor); 
+		}break;
 		case Area:
+		{
 			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = hexColor;
 			//impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor); - default transparent
 			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
@@ -1475,14 +1482,15 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 			}
 			else
 				impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
-			break;
+		}break;
 		case Line:
+		{
 			impl_->current_graphic_properties->svg_stroke_color_ =  hexColor;
 			if (!impl_->current_graphic_properties->draw_stroke_)
 				impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::Solid);//default
 			if (!impl_->current_graphic_properties->svg_stroke_width_)
 				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
-			break;
+		}break;
 	}
 }
 	
@@ -2591,7 +2599,20 @@ void odf_drawing_context::start_control(const std::wstring& id)
 	if (control == NULL)return;
 
 	control->control_id_ = id;
+//--------------------	
+	impl_->styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
+	office_element_ptr & style_control_elm = impl_->styles_context_->last_state()->get_office_element();
+	
+	std::wstring style_name;
 
+	style* style_ = dynamic_cast<style*>(style_control_elm.get());
+	if (style_)
+	{
+        style_name = style_->style_name_;
+		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+	}
+	control->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
+//--------------------	
 	start_element(control_elm);
 }
 void odf_drawing_context::end_control()

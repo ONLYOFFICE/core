@@ -385,7 +385,7 @@ void odf_chart_context::set_chart_size(_CP_OPT(double) width_pt, _CP_OPT(double)
 	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 }
-void odf_chart_context::set_chart_type(std::wstring type)
+void odf_chart_context::set_chart_type(const std::wstring & type)
 {
 	chart_chart *chart = impl_->get_current_chart();
 	if (!chart)return;
@@ -610,7 +610,7 @@ void odf_chart_context::set_chart_scatter_type(int type)
 void odf_chart_context::start_group_series()
 {
 }
-void odf_chart_context::start_series(std::wstring type)
+void odf_chart_context::start_series(const std::wstring & type)
 {
 	office_element_ptr elm;
 	create_element(L"chart", L"series", elm, impl_->odf_context_);
@@ -677,6 +677,15 @@ void odf_chart_context::set_label_show_leader_line(bool val)
 void odf_chart_context::set_label_show_legend_key(bool val)
 {
 }
+void odf_chart_context::set_label_formula(const std::wstring & oox_formula) //в odf не поддерживается
+{
+	std::wstring odf_formula = impl_->convert_formula(oox_formula);
+	
+	if (!odf_formula.empty())
+	{
+	}
+}
+
 void odf_chart_context::set_label_show_percent(bool val)
 {
 	if (!impl_->current_level_.back().chart_properties_)return;
@@ -721,7 +730,7 @@ void odf_chart_context::end_group_series()
 	
 	if (countX < 1 && countY > 1)
 	{
-		impl_->axis_[0].dimension == 1;
+		impl_->axis_[0].dimension = 1;
 		chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_[0].elm.get());
 		axis->chart_axis_attlist_.chart_dimension_ = L"x";
 		countY--;
@@ -760,7 +769,7 @@ void odf_chart_context::end_group_series()
 	impl_->axis_group_series_.clear();
 }
 
-void odf_chart_context::add_domain(std::wstring formula)
+void odf_chart_context::add_domain(const std::wstring & formula)
 {
 	size_t level = impl_->current_level_.size();
 	if (level == 0)return;
@@ -779,7 +788,7 @@ void odf_chart_context::add_domain(std::wstring formula)
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 
-void odf_chart_context::add_categories(std::wstring odf_formula, office_element_ptr & axis)
+void odf_chart_context::add_categories(const std::wstring & odf_formula, office_element_ptr & axis)
 {
 	office_element_ptr elm;
 	create_element(L"chart", L"categories", elm, impl_->odf_context_);
@@ -942,25 +951,40 @@ void odf_chart_context::end_text()
 {
 	odf_text_context *text_context_ = text_context();
 	
-	if (text_context_ == NULL || impl_->current_level_.size() < 1 )return;
+	if (text_context_ == NULL || impl_->current_level_.empty())return;
 
 	for (size_t i = 0; i < text_context_->text_elements_list_.size(); i++)
 	{
-		if (text_context_->text_elements_list_[i].level ==0)
+		if (text_context_->text_elements_list_[i].level == 0)
 		{
 			impl_->current_level_.back().elm->add_child_element(text_context_->text_elements_list_[i].elm);
 		}
 		size_t level_root = impl_->current_level_.size() + 1;
 		
-		odf_element_state state={text_context_->text_elements_list_[i].elm, 
-								text_context_->text_elements_list_[i].style_name, 
-								text_context_->text_elements_list_[i].style_elm, 
-								text_context_->text_elements_list_[i].level + level_root};
+		odf_element_state state = { text_context_->text_elements_list_[i].elm, 
+									text_context_->text_elements_list_[i].style_name, 
+									text_context_->text_elements_list_[i].style_elm, 
+									text_context_->text_elements_list_[i].level + level_root};
 
 		impl_->current_chart_state_.elements_.push_back(state);
 	}
 
 	impl_->odf_context_->end_text_context();
+}
+
+void odf_chart_context::add_text(const std::wstring & val)
+{
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p", paragr_elm, impl_->odf_context_);
+
+	text_p* p = dynamic_cast<text_p*>(paragr_elm.get());
+	if (p)
+		p->add_text(val);
+
+	impl_->current_level_.back().elm->add_child_element(paragr_elm);
+	
+	odf_element_state state = {paragr_elm, L"", office_element_ptr(), impl_->current_level_.size() + 1};
+	impl_->current_chart_state_.elements_.push_back(state);
 }
 void odf_chart_context::set_textarea_vertical_align(int align)
 {
@@ -1303,6 +1327,11 @@ void odf_chart_context::set_axis_id(unsigned int id)
 {
 	if (impl_->axis_.size()>0)impl_->axis_.back().oox_id = id;
 }
+void odf_chart_context::set_axis_visible(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+	impl_->current_level_.back().chart_properties_->content_.chart_visible_ =  val;
+}
 void odf_chart_context::set_axis_dimension(int type)
 {
 	chart_axis *axis = impl_->get_current_axis();
@@ -1394,7 +1423,7 @@ void odf_chart_context::set_layout_h(double *val,int mode)
 	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_height_ = height_cm;
 }
 
-void odf_chart_context::start_element(office_element_ptr & elm, office_element_ptr & style_elm, std::wstring style_name)
+void odf_chart_context::start_element(office_element_ptr & elm, office_element_ptr & style_elm, const std::wstring & style_name)
 {
 	size_t level = impl_->current_level_.size();
 	
@@ -1402,14 +1431,13 @@ void odf_chart_context::start_element(office_element_ptr & elm, office_element_p
 	//if (impl_->current_level_.size()>0) impl_->current_level_.back()->add_child_element(elm); не надо...наследование через start_element в drawing
 	
 	odf_element_state		state={elm, style_name, style_elm, level};
-	odf_chart_level_state	level_state = {NULL,NULL,NULL,NULL,elm};
+	odf_chart_level_state	level_state = {NULL, NULL, NULL, NULL, elm};
 	
 	impl_->current_chart_state_.elements_.push_back(state);
 	
 	style* style_ = dynamic_cast<style*>(style_elm.get());
 	if (style_)
 	{
-		style_name = style_->style_name_;
 		level_state.chart_properties_ = style_->content_.get_style_chart_properties();
 	}
 	impl_->current_level_.push_back(level_state);//стоит ли сюда перенести и current_chart_properties ????
@@ -1485,7 +1513,7 @@ void odf_chart_context::end_chart()
 	impl_->clear_current();
 }
 
-void odf_chart_context::set_series_value_formula(std::wstring oox_formula)
+void odf_chart_context::set_series_value_formula(const std::wstring & oox_formula)
 {
 	std::wstring odf_formula = impl_->convert_formula(oox_formula);
 
@@ -1502,7 +1530,7 @@ void odf_chart_context::set_series_value_formula(std::wstring oox_formula)
 	}
 }
 
-void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
+void odf_chart_context::set_series_label_formula(const std::wstring & oox_formula)
 {
 	std::wstring odf_formula = impl_->convert_formula(oox_formula);
 
@@ -1518,7 +1546,7 @@ void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
 	}
 }
 
-void odf_chart_context::set_category_axis_formula(std::wstring oox_formula, int type)
+void odf_chart_context::set_category_axis_formula(const std::wstring & oox_formula, int type)
 {
 	std::wstring odf_formula = impl_->convert_formula(oox_formula);
 

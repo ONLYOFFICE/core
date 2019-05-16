@@ -41,6 +41,30 @@
 #include "serialize_elements.h"
 
 #include "../formulasconvert/formulasconvert.h"
+
+#define OBJ_Group			0x0000
+#define OBJ_Line			0x0001 
+#define OBJ_Rectangle		0x0002 
+#define OBJ_Oval			0x0003 
+#define OBJ_Arc				0x0004 
+#define OBJ_Text			0x0006 
+#define OBJ_OfficeArt		0x001E  
+#define OBJ_Polygon			0x0009 
+#define OBJ_Picture			0x0008 
+#define OBJ_Chart			0x0005   
+#define OBJ_Button			0x0007 
+#define OBJ_CheckBox		0x000B 
+#define OBJ_RadioButton		0x000C  
+#define OBJ_EditBox			0x000D 
+#define OBJ_Label			0x000E 
+#define OBJ_DialogBox		0x000F 
+#define OBJ_SpinControl		0x0010 
+#define OBJ_Scrollbar		0x0011 
+#define OBJ_List			0x0012 
+#define OBJ_GroupBox		0x0013 
+#define OBJ_DropdownList	0x0014 
+#define OBJ_Note			0x0019 
+
 namespace cpdoccore { 
 namespace odf_reader {
 
@@ -273,6 +297,7 @@ const wchar_t * form_button::name = L"button";
 
 void form_button::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = OBJ_Button;
 	form_element::add_attributes(Attributes);
 }
 void form_button::docx_convert(oox::docx_conversion_context & Context)
@@ -311,6 +336,7 @@ const wchar_t * form_text::name = L"text";
 
 void form_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = OBJ_EditBox;
 	form_element::add_attributes(Attributes);
 }
 void form_text::docx_convert(oox::docx_conversion_context & Context)
@@ -411,6 +437,7 @@ const wchar_t * form_fixed_text::name = L"fixed-text";
 
 void form_fixed_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = OBJ_Label;
 	form_element::add_attributes(Attributes);
 }
 void form_fixed_text::docx_convert(oox::docx_conversion_context & Context)
@@ -506,6 +533,8 @@ const wchar_t * form_checkbox::name = L"checkbox";
 
 void form_checkbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = OBJ_CheckBox;
+
 	_CP_OPT(std::wstring) strVal;
 	CP_APPLY_ATTR(L"form:current-state", strVal);
 	
@@ -617,6 +646,7 @@ const wchar_t * form_combobox::name = L"combobox";
 
 void form_combobox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = OBJ_DropdownList;
 	form_element::add_attributes(Attributes);
 	
 	CP_APPLY_ATTR(L"form:source-cell-range", source_cell_range_);
@@ -737,6 +767,7 @@ const wchar_t * form_listbox::name = L"listbox";
 
 void form_listbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = OBJ_List;
 	form_element::add_attributes(Attributes);
 	
 	CP_APPLY_ATTR(L"form:source-cell-range", source_cell_range_);
@@ -799,6 +830,7 @@ const wchar_t * form_date::name = L"date";
 
 void form_date::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = 15;
 	form_element::add_attributes(Attributes);
 }
 void form_date::docx_convert(oox::docx_conversion_context & Context)
@@ -873,6 +905,7 @@ const wchar_t * form_time::name = L"time";
 
 void form_time::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = 16;
 	form_element::add_attributes(Attributes);
 }
 void form_time::docx_convert(oox::docx_conversion_context & Context)
@@ -947,6 +980,8 @@ const wchar_t * form_value_range::name = L"value-range";
 
 void form_value_range::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	object_type_ = OBJ_Scrollbar;
+	
 	form_element::add_attributes(Attributes);	
 
 	CP_APPLY_ATTR(L"form:min-value", min_value_);
@@ -955,6 +990,12 @@ void form_value_range::add_attributes( const xml::attributes_wc_ptr & Attributes
 	CP_APPLY_ATTR(L"form:page-step-size", page_step_size_);
 	CP_APPLY_ATTR(L"form:orientation", orientation_);
 	CP_APPLY_ATTR(L"form:delay-for-repeat", delay_for_repeat_);
+
+	if (control_implementation_)
+	{
+		if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
+			object_type_ = OBJ_SpinControl;
+	}
 }
 void form_value_range::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -986,12 +1027,6 @@ void form_value_range::serialize_control_props(std::wostream & strm)
 {
 	if (!control_implementation_) return;
 	
-	std::wstring object_type;
-	if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
-		object_type = L"Spin";
-	else
-		object_type = L"Scroll";
-
 	formulasconvert::odf2oox_converter converter;
 	CP_XML_WRITER(strm)
 	{
@@ -999,7 +1034,7 @@ void form_value_range::serialize_control_props(std::wostream & strm)
 		{
 			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
-			CP_XML_ATTR(L"objectType", object_type);
+			CP_XML_ATTR(L"objectType", object_type_ == OBJ_SpinControl ? L"Spin" : L"Scroll");
 
 			CP_XML_ATTR(L"noThreeD", L"1");
 			

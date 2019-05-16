@@ -214,11 +214,11 @@ public:
     }
 	void serialize_controls(std::wostream & strm) 
     {
-		for (size_t i = 0 ; i < drawings_.size(); i++)
+		for (size_t i = 0 ; i < vml_drawings_.size(); i++)
 		{
-			if (drawings_[i].type != typeControl) continue;
+			if (vml_drawings_[i].type != typeControl) continue;
 
-			drawings_[i].serialize_control(strm);
+			vml_drawings_[i].serialize_control(strm);
 		}
     }    
     bool empty() const

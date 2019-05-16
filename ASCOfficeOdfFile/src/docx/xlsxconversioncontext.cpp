@@ -531,18 +531,11 @@ void xlsx_conversion_context::end_table()
     {
         std::wstringstream strm;
         get_comments_context().serialize(strm);
-        
-        //std::wstringstream vml_strm;
-        //get_comments_context().serialize_vml(vml_strm);
-		
+	
 		const std::pair<std::wstring, std::wstring> commentsName 
             = xlsx_comments_context_handle_.add_comments_xml(strm.str(), get_comments_context().get_comments() );
 
         current_sheet().set_comments_link(commentsName.first, commentsName.second);
-		//const std::pair<std::wstring, std::wstring> vml_drawingName 
-		//						=xlsx_comments_context_handle_.get_vml_drawing_xml();
-
-  //      current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
     }    
     get_table_context().end_table();
 }

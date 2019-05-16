@@ -70,6 +70,13 @@ public:
 
     friend class xlsx_drawing_context;
 
+    size_t next_rId()
+    {
+        return next_rId_++;
+    }
+private:
+	size_t	next_rId_;
+
 	class Impl;
     _CP_PTR(Impl) impl_;
 };
@@ -100,9 +107,11 @@ public:
 		void set_chart		(const std::wstring & path);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
 		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
-		void set_control	(const std::wstring & ctrlPropId);
 		void set_text_box	();
 	void end_frame();
+
+	void start_control(const std::wstring & ctrlPropId, int type);
+	void end_control();
 
 	void start_comment(int base_col, int base_row);
 	void end_comment();

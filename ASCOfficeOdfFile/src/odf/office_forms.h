@@ -218,7 +218,7 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeFormElement;
 
- 	form_element() {}
+	form_element() : object_type_(0) {}
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -253,6 +253,9 @@ public:
 	_CP_OPT(std::wstring)		xforms_bind_;
 	_CP_OPT(std::wstring)		current_value_;
 	_CP_OPT(odf_types::Bool)	dropdown_;
+//----------------------------------------------------------------------------------------------
+
+	int object_type_;
 };
 
 //  form:button

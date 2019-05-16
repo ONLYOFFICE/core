@@ -100,7 +100,7 @@ private:
 };
 
 xlsx_drawing_context_handle::xlsx_drawing_context_handle(mediaitems_ptr & items) :
-	impl_(new xlsx_drawing_context_handle::Impl(items))
+	next_rId_(1), impl_(new xlsx_drawing_context_handle::Impl(items))
 {
 }
 
@@ -162,10 +162,10 @@ public:
     {
         return xlsx_drawings_->vml_empty();
     }
-    //size_t next_rId()
-    //{
-    //    return handle_->impl_->next_rId();
-    //}
+    size_t next_rId()
+    {
+        return handle_->next_rId();
+    }
 
     xlsx_drawings_ptr get_drawings()
     {
@@ -310,13 +310,23 @@ void xlsx_drawing_context::end_shape()
 void xlsx_drawing_context::start_comment(int base_col, int base_row)
 {
 	impl_->object_description_.type_ = typeComment;
-	impl_->object_description_.shape_type_ = 9; // object type for vml 
+	impl_->object_description_.shape_type_ = 19; // OBJ_Note object type for vml 
 
-	impl_->object_description_.base_col_ = base_col;
-	impl_->object_description_.base_row_ = base_row;
+	set_property(odf_reader::_property(L"base_col", base_col));
+	set_property(odf_reader::_property(L"base_row", base_row));
 }
-
 void xlsx_drawing_context::end_comment()
+{
+	impl_->current_level_->push_back(impl_->object_description_);
+}
+void xlsx_drawing_context::start_control(const std::wstring & ctrlPropId, int type)
+{
+	impl_->object_description_.type_ = typeControl;
+	impl_->object_description_.shape_type_ = type; // object type for vml 
+	
+	impl_->object_description_.xlink_href_ = ctrlPropId;
+}
+void xlsx_drawing_context::end_control()
 {
 	impl_->current_level_->push_back(impl_->object_description_);
 }
@@ -341,11 +351,6 @@ void xlsx_drawing_context::set_ms_object(const std::wstring & path, const std::w
 	impl_->object_description_.type_		= typeMsObject;
 	impl_->object_description_.xlink_href_	= path; 
 	impl_->object_description_.descriptor_	= progId;
-}
-void xlsx_drawing_context::set_control(const std::wstring & ctrlPropId)
-{
-	impl_->object_description_.type_		= typeControl;
-	impl_->object_description_.xlink_href_	= ctrlPropId;
 }
 void xlsx_drawing_context::set_image(const std::wstring & path)
 {
@@ -680,8 +685,6 @@ void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx
 
 	if (obj.type_ == typeControl || obj.type_ == typeComment)
 	{
-		drawing.base_col_ = obj.base_col_;
-		drawing.base_row_ = obj.base_row_;
 		drawing.objectId = obj.xlink_href_;
 
 		xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_, false);
@@ -742,7 +745,7 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 		drawing.name		= obj.name_;
 		drawing.fill		= obj.fill_;
 		drawing.inGroup		= obj.in_group_;
-		//drawing.id			= impl_->next_rId();
+		drawing.id			= impl_->next_rId();
 		drawing.lined		= obj.lined_;
 		drawing.connector	= obj.connector_;
 

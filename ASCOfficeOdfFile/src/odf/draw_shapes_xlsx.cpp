@@ -396,28 +396,25 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
 
+	form_element* control = dynamic_cast<form_element*>(state.element);
+	if (!control) return;
+	
 	if (state.ctrlPropId.empty())
 	{
 		std::wstring target;
 		state.ctrlPropId = Context.get_mediaitems()->add_control_props(target);
 		
 		std::wstringstream strm;		
-		
-		form_element* control = dynamic_cast<form_element*>(state.element);
-		if (control)
-		{
-			control->serialize_control_props(strm);
-		}
+		control->serialize_control_props(strm);
 
 		Context.add_control_props(state.ctrlPropId, target, strm.str());
 	}
 
-	Context.get_drawing_context().start_frame();
-	Context.get_drawing_context().set_control(state.ctrlPropId);
+	Context.get_drawing_context().start_control(state.ctrlPropId, control->object_type_);
 	
 	common_xlsx_convert(Context);
 
-	Context.get_drawing_context().end_frame();
+	Context.get_drawing_context().end_control();
 	Context.get_drawing_context().clear();
 
 }

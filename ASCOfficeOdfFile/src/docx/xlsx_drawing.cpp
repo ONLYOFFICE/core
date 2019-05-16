@@ -36,6 +36,29 @@
 
 #include "../odf/datatypes/custom_shape_types_convert.h"
 
+#define OBJ_Group			0x0000
+#define OBJ_Line			0x0001 
+#define OBJ_Rectangle		0x0002 
+#define OBJ_Oval			0x0003 
+#define OBJ_Arc				0x0004 
+#define OBJ_Text			0x0006 
+#define OBJ_OfficeArt		0x001E  
+#define OBJ_Polygon			0x0009 
+#define OBJ_Picture			0x0008 
+#define OBJ_Chart			0x0005   
+#define OBJ_Button			0x0007 
+#define OBJ_CheckBox		0x000B 
+#define OBJ_RadioButton		0x000C  
+#define OBJ_EditBox			0x000D 
+#define OBJ_Label			0x000E 
+#define OBJ_DialogBox		0x000F 
+#define OBJ_SpinControl		0x0010 
+#define OBJ_Scrollbar		0x0011 
+#define OBJ_List			0x0012 
+#define OBJ_GroupBox		0x0013 
+#define OBJ_DropdownList	0x0014 
+#define OBJ_Note			0x0019 
+
 namespace cpdoccore {
 namespace oox {
 
@@ -77,11 +100,11 @@ std::wstring xlsx_drawing_position::vml_serialize()
 	return	std::to_wstring(position.col) + L"," + std::to_wstring((int)(position.colOff / 12700)) + L"," +
 			std::to_wstring(position.row) + L"," + std::to_wstring((int)(position.rowOff / 12700));
 }
-void xlsx_drawing_position::serialize(std::wostream & strm, const std::wstring & ns)
+void xlsx_drawing_position::serialize(std::wostream & strm, const std::wstring & ns_title, const std::wstring & ns)
 {
     CP_XML_WRITER(strm)
     {
-		CP_XML_NODE( ns + (ns.empty() ? L"" : L":") + (type == xlsx_drawing_position::from ? L"from" : L"to") )
+		CP_XML_NODE( ns_title + (ns_title.empty() ? L"" : L":") + (type == xlsx_drawing_position::from ? L"from" : L"to") )
         {
             CP_XML_NODE(ns + (ns.empty() ? L"" : L":") + L"col")
             {
@@ -394,9 +417,8 @@ void _xlsx_drawing::serialize_object (std::wostream & strm)
 				{
 					CP_XML_ATTR(L"moveWithCells", 1);
 
-					from_.serialize	(CP_XML_STREAM(), L"");
-					to_.serialize	(CP_XML_STREAM(), L"");
-
+					from_.serialize	(CP_XML_STREAM(), L"", L"");
+					to_.serialize	(CP_XML_STREAM(), L"", L"");
 				}
 			}
 		}
@@ -426,8 +448,8 @@ void _xlsx_drawing::serialize_control (std::wostream & strm)
 				{
 					CP_XML_ATTR(L"moveWithCells", 1);
 
-					from_.serialize	(CP_XML_STREAM(), L"");
-					to_.serialize	(CP_XML_STREAM(), L"");
+					from_.serialize	(CP_XML_STREAM(), L"", L"xdr");
+					to_.serialize	(CP_XML_STREAM(), L"", L"xdr");
 
 				}
 			}
@@ -441,8 +463,8 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
     {
 		CP_XML_NODE(L"v:shape")
 		{
-			CP_XML_ATTR(L"id", L"shape_" + std::to_wstring(id));
-			CP_XML_ATTR(L"type", sub_type == 9 ? L"_x0000_t202" : L"_x0000_t201");
+			CP_XML_ATTR(L"id", L"_x0000_s" + std::to_wstring(id));
+			CP_XML_ATTR(L"type", sub_type == 9 ? L"#_x0000_t202" : L"#_x0000_t201");
 
 			std::wstring color;
 			
@@ -476,8 +498,17 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 			{
 				switch(sub_type)
 				{
-				case 9:
-					CP_XML_ATTR(L"ObjectType", L"Note"); break;
+				case OBJ_Button:		CP_XML_ATTR(L"ObjectType", L"Button");	break;
+				case OBJ_CheckBox:		CP_XML_ATTR(L"ObjectType", L"Checkbox");break;
+				case OBJ_RadioButton:	CP_XML_ATTR(L"ObjectType", L"Radio");	break;
+				case OBJ_EditBox:		CP_XML_ATTR(L"ObjectType", L"Edit");	break;
+				case OBJ_Label:			CP_XML_ATTR(L"ObjectType", L"Label");	break;
+				case OBJ_DialogBox:		CP_XML_ATTR(L"ObjectType", L"Dialog");	break;
+				case OBJ_SpinControl:	CP_XML_ATTR(L"ObjectType", L"Spin");	break;
+				case OBJ_Scrollbar:		CP_XML_ATTR(L"ObjectType", L"Scroll");	break;
+				case OBJ_List:			CP_XML_ATTR(L"ObjectType", L"List");	break;
+				case OBJ_DropdownList:	CP_XML_ATTR(L"ObjectType", L"List");	break;
+				case OBJ_Note:			CP_XML_ATTR(L"ObjectType", L"Note");	break;
 				}
 
 				CP_XML_NODE(L"x:MoveWithCells");
@@ -490,18 +521,23 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 				{
 					CP_XML_STREAM() << L"False";
 				}
-				if (base_row_)
+
+				_CP_OPT(int) base_col, base_row;
+				GetProperty(additional, L"base_col", base_col);
+				GetProperty(additional, L"base_row", base_row);
+
+				if (base_row)
 				{
 					CP_XML_NODE(L"x:Row")
 					{
-						CP_XML_STREAM() << *base_row_;
+						CP_XML_STREAM() << *base_row;
 					}
 				}
-				if (base_col_)
+				if (base_col)
 				{
 					CP_XML_NODE(L"x:Column")
 					{
-						CP_XML_STREAM() << *base_col_;
+						CP_XML_STREAM() << *base_col;
 					}
 				}
 				CP_XML_NODE(L"x:Visible");

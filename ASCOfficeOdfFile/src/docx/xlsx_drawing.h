@@ -49,7 +49,7 @@ struct xlsx_drawing_position
     enum type_t {from, to}	type;
     xlsx_table_position		position;
 
-	void serialize(std::wostream & _Wostream, const std::wstring & ns = L"xdr");
+	void serialize(std::wostream & _Wostream, const std::wstring & ns_title = L"xdr", const std::wstring & ns = L"xdr");
 	std::wstring vml_serialize();
 };
 
@@ -65,9 +65,6 @@ public:
 
 	_CP_OPT(_INT32)			owner_cx_;
 	_CP_OPT(_INT32)			owner_cy_;
-
-	_CP_OPT(_INT32)			base_col_;
-	_CP_OPT(_INT32)			base_row_;
 
 	std::wstring			content_group_;
 

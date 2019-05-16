@@ -79,7 +79,7 @@ namespace PPTX
 			XmlMacroReadNodeValueBase(oNode, _T("cp:revision"), revision);
 			XmlMacroReadNodeValueBase(oNode, _T("dc:subject"), subject);
 			XmlMacroReadNodeValueBase(oNode, _T("dc:title"), title);
-			XmlMacroReadNodeValueBase(oNode, _T("cp:version"), title);
+			XmlMacroReadNodeValueBase(oNode, _T("cp:version"), version);
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
@@ -217,7 +217,7 @@ namespace PPTX
 			pWriter->EndAttributes();
 
 			pWriter->WriteNodeValue2(_T("dc:title"), title);
-			pWriter->WriteNodeValue2(_T("dc:subject"), title);
+			pWriter->WriteNodeValue2(_T("dc:subject"), subject);
 			pWriter->WriteNodeValue2(_T("dc:creator"), creator);
 			pWriter->WriteNodeValue2(_T("cp:keywords"), keywords);
 			pWriter->WriteNodeValue2(_T("dc:description"), description);
@@ -242,9 +242,9 @@ namespace PPTX
 				pWriter->WriteStringXML(*modified);
 				pWriter->WriteNodeEnd(_T("dcterms:modified"));
 			}
-			pWriter->WriteNodeValue2(_T("cp:category"), revision);
-			pWriter->WriteNodeValue2(_T("cp:contentStatus"), revision);
-			pWriter->WriteNodeValue2(_T("cp:version"), revision);
+			pWriter->WriteNodeValue2(_T("cp:category"), category);
+			pWriter->WriteNodeValue2(_T("cp:contentStatus"), contentStatus);
+			pWriter->WriteNodeValue2(_T("cp:version"), version);
 
 			pWriter->EndNode(_T("cp:coreProperties"));
 		}

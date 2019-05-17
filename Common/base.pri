@@ -37,6 +37,12 @@ CONFIG(debug, debug|release) {
 #PLATFORM
 win32 {
     CONFIG += core_windows
+
+    WINDOWS_VERSION_XP = $$(WINDOWS_VERSION_XP)
+    !isEmpty(WINDOWS_VERSION_XP) {
+        CONFIG += build_xp
+        message(xp using)
+    }
 }
 
 DST_ARCH=$$QMAKE_TARGET.arch

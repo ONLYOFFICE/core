@@ -2774,6 +2774,13 @@ void BinaryWorksheetTableWriter::WritePageMargins(const OOX::Spreadsheet::CPageM
 }
 void BinaryWorksheetTableWriter::WritePageSetup(const OOX::Spreadsheet::CPageSetup& oPageSetup)
 {
+	//PageSize
+	if(oPageSetup.m_oPaperSize.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PageSetup::PaperSize);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(oPageSetup.m_oPaperSize->GetValue());
+	}
 	if(oPageSetup.m_oBlackAndWhite.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_PageSetup::BlackAndWhite);
@@ -2846,13 +2853,6 @@ void BinaryWorksheetTableWriter::WritePageSetup(const OOX::Spreadsheet::CPageSet
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_PageSetup::PaperHeight);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 		m_oBcw.m_oStream.WriteDoubleReal(oPageSetup.m_oPaperHeight->GetValue());
-	}
-	//PageSize
-	if(oPageSetup.m_oPaperSize.IsInit())
-	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_PageSetup::PaperSize);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(oPageSetup.m_oPaperSize->GetValue());
 	}
 	if(oPageSetup.m_oPaperWidth.IsInit())
 	{

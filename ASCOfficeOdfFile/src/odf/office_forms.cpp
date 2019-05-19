@@ -692,7 +692,7 @@ void form_combobox::serialize_control_props(std::wostream & strm)
 			
 			if (linked_cell_)
 			{
-				std::wstring fmla = converter.convert_named_expr(*linked_cell_);
+				std::wstring fmla = converter.convert_named_ref(*linked_cell_);
 				CP_XML_ATTR(L"fmlaLink", fmla);
 			}
 			if (source_cell_range_)
@@ -808,7 +808,7 @@ void form_listbox::serialize_control_props(std::wostream & strm)
 			
 			if (linked_cell_)
 			{
-				std::wstring fmla = converter.convert_named_expr(*linked_cell_);
+				std::wstring fmla = converter.convert_named_ref(*linked_cell_);
 				CP_XML_ATTR(L"fmlaLink", fmla);
 			}
 			if (source_cell_range_)
@@ -994,7 +994,15 @@ void form_value_range::add_attributes( const xml::attributes_wc_ptr & Attributes
 	if (control_implementation_)
 	{
 		if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
+		{
 			object_type_ = OBJ_SpinControl;
+			if (!orientation_) orientation_ = L"vertical";
+		}
+		else
+		{
+			object_type_ = OBJ_Scrollbar;
+			if (!orientation_) orientation_ = L"horizontal";
+		}
 	}
 }
 void form_value_range::docx_convert(oox::docx_conversion_context & Context)
@@ -1040,7 +1048,7 @@ void form_value_range::serialize_control_props(std::wostream & strm)
 			
 			if (linked_cell_)
 			{
-				std::wstring fmla = converter.convert_named_expr(*linked_cell_);
+				std::wstring fmla = converter.convert_named_ref(*linked_cell_);
 				CP_XML_ATTR(L"fmlaLink", fmla);
 			}
 			if (value_)			CP_XML_ATTR(L"val", *value_);

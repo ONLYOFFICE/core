@@ -124,13 +124,13 @@ public:
 
 	void set_rel_anchor	(_INT32 owner_cx, _INT32 owner_cy);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt, bool group = false);
-	void set_property	(odf_reader::_property p);
     void set_clipping	(const std::wstring & str );
 	void set_fill		(_oox_fill & fill);
 
 	void set_is_line_shape(bool val);
 	void set_is_connector_shape(bool val);
 
+	void set_property	(odf_reader::_property p);
 	std::vector<odf_reader::_property> & get_properties();
 
 	std::wstring add_hyperlink(std::wstring const & ref);

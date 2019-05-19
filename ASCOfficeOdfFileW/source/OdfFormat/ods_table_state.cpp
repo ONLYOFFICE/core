@@ -496,15 +496,19 @@ void ods_table_state::set_row_height(double height)
 
 bool ods_table_state::is_cell_hyperlink()
 {
-	if (cells_size_ <1)return false;
-	return cells_.back().hyperlink_idx >=0 ? true : false;
+	if ( cells_size_ < 1 )return false;
+	return cells_.back().hyperlink_idx >= 0 ? true : false;
 }
 bool ods_table_state::is_cell_comment()
 {
-	if (cells_size_ <1)return false;
+	if ( cells_size_ < 1 )return false;
 	return cells_.back().comment_idx >= 0 ? true : false;
 }
-
+bool ods_table_state::is_cell_data_validation()
+{
+	if ( cells_size_ < 1 )return false;
+	return cells_.back().data_validation_name.empty() ? true : false;
+}
 int ods_table_state::is_cell_hyperlink(int col, int row)
 {
     for (size_t i = 0; i < hyperlinks_.size(); i++)
@@ -515,6 +519,11 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 		}
 	}
 	return -1;
+}
+std::wstring ods_table_state::is_cell_data_validation(int col, int row)
+{
+
+	return L"";
 }
 int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
@@ -616,8 +625,9 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
     state.row = current_table_row_;  state.col = current_table_column_ + 1;
 
-	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
-	state.comment_idx	= is_cell_comment(state.col, state.row);
+	state.hyperlink_idx			= is_cell_hyperlink(state.col, state.row);
+	state.comment_idx			= is_cell_comment(state.col, state.row);
+	state.data_validation_name	= is_cell_data_validation(state.col, state.row);
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
@@ -1290,6 +1300,11 @@ void ods_table_state::end_cell()
 		cells_.back().elm->add_child_element(comm_elm);
 		comments_[cells_.back().comment_idx].used = true;
 	}
+    if (false == cells_.back().data_validation_name.empty())
+	{
+		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+		if (cell)cell->attlist_.table_content_validation_name_ = cells_.back().data_validation_name;
+	}
 	if (cells_.back().empty)
 	{
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
@@ -1405,8 +1420,9 @@ void ods_table_state::add_default_cell( unsigned int repeated)
     state.row = current_table_row_;  
 	state.col = current_table_column_ + 1;
 
-	state.hyperlink_idx = is_cell_hyperlink(state.col, current_table_row_);
-	state.comment_idx = comment_idx;
+	state.hyperlink_idx			= is_cell_hyperlink(state.col, current_table_row_);
+	state.data_validation_name	= is_cell_data_validation(state.col, current_table_row_);
+	state.comment_idx			= comment_idx;
 	
 	cells_.push_back(state);
 	cells_size_++;

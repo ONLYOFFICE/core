@@ -35,6 +35,7 @@
 #include <xml/utils.h>
 
 #include "../odf/datatypes/custom_shape_types_convert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #define OBJ_Group			0x0000
 #define OBJ_Line			0x0001 
@@ -321,6 +322,7 @@ void xml_serialize(std::wostream & strm, _xlsx_drawing & val, const std::wstring
 	}
 }
 
+
 void _xlsx_drawing::serialize(std::wostream & strm, const std::wstring & ns)
 {
 	if (inGroup) 
@@ -540,7 +542,77 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 						CP_XML_STREAM() << *base_col;
 					}
 				}
-				CP_XML_NODE(L"x:Visible");
+				_CP_OPT(std::wstring) sVal;
+				GetProperty(additional, L"linked_cell", sVal);
+				if (sVal)
+				{
+					formulasconvert::odf2oox_converter converter;
+					std::wstring fmla = converter.convert_named_ref(*sVal);
+					CP_XML_NODE(L"x:FmlaLink")
+					{
+						CP_XML_STREAM() << fmla;
+					}
+				}				
+				_CP_OPT(bool) visible;
+				GetProperty(additional, L"visible", visible);
+				if ((visible) && (*visible == false))
+				{
+					CP_XML_NODE(L"x:Visible")
+					{
+						CP_XML_STREAM() << L"False";
+					}
+				}
+				else
+					CP_XML_NODE(L"x:Visible");
+				
+				_CP_OPT(int) nVal;
+				GetProperty(additional, L"min_value", nVal);
+				if (nVal)
+				{
+					CP_XML_NODE(L"x:Min")
+					{
+						CP_XML_STREAM() << *nVal;
+					}
+				}
+				GetProperty(additional, L"max_value", nVal);
+				if (nVal)
+				{
+					CP_XML_NODE(L"x:Max")
+					{
+						CP_XML_STREAM() << *nVal;
+					}
+				}
+				GetProperty(additional, L"step", nVal);
+				if (nVal)
+				{
+					CP_XML_NODE(L"x:Inc")
+					{
+						CP_XML_STREAM() << *nVal;
+					}
+				}
+				GetProperty(additional, L"page_step", nVal);
+				if (nVal)
+				{
+					CP_XML_NODE(L"x:Page")
+					{
+						CP_XML_STREAM() << *nVal;
+					}
+				}
+				GetProperty(additional, L"value", sVal);
+				if (sVal)
+				{
+					CP_XML_NODE(L"x:Val")
+					{
+						CP_XML_STREAM() << *sVal;
+					}
+				}
+
+				GetProperty(additional, L"orientation", sVal);
+				if (sVal)
+				{
+					if (*sVal == L"horizontal")	CP_XML_NODE(L"x:Horiz");
+					else						CP_XML_NODE(L"x:Vert");
+				}
 			}
 		}
 	}

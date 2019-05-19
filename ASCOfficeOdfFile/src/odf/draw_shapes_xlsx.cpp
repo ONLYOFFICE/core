@@ -413,6 +413,56 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().start_control(state.ctrlPropId, control->object_type_);
 	
 	common_xlsx_convert(Context);
+	
+	if (control->linked_cell_)
+	{
+
+		Context.get_drawing_context().set_property(_property(L"linked_cell", control->linked_cell_.get()));
+	}
+	if (control->disabled_)
+	{
+		Context.get_drawing_context().set_property(_property(L"disabled", control->disabled_->get()));
+	}
+	if (control->value_)
+	{
+		Context.get_drawing_context().set_property(_property(L"value", control->value_.get()));
+	}
+	else if (control->current_value_)
+	{
+		Context.get_drawing_context().set_property(_property(L"value", control->current_value_.get()));
+	}
+	//if (control->name_)
+	//{
+	//	Context.get_drawing_context().set_name(control->name_.get());
+	//}
+	form_value_range* value_range = dynamic_cast<form_value_range*>(control);
+
+	if (value_range)
+	{
+		if (value_range->min_value_)
+		{
+			Context.get_drawing_context().set_property(_property(L"min_value", value_range->min_value_.get()));
+		}
+		if (value_range->max_value_)
+		{
+			Context.get_drawing_context().set_property(_property(L"max_value", value_range->max_value_.get()));
+		}
+		if (value_range->step_size_)
+		{
+			Context.get_drawing_context().set_property(_property(L"step", value_range->step_size_.get()));
+		}
+		if (value_range->page_step_size_)
+		{
+			Context.get_drawing_context().set_property(_property(L"page_step", value_range->page_step_size_.get()));
+		}
+		if (value_range->orientation_)
+		{
+			Context.get_drawing_context().set_property(_property(L"orientation", value_range->orientation_.get()));
+		}
+	}
+	//_CP_OPT(std::wstring)		label_;
+	//_CP_OPT(std::wstring)		title_;
+	//_CP_OPT(odf_types::Bool)	dropdown_;
 
 	Context.get_drawing_context().end_control();
 	Context.get_drawing_context().clear();

@@ -684,8 +684,101 @@ public:
     office_element_ptr_array content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_shapes);
 
+//table:content-validations
+class table_content_validations : public office_element_impl<table_content_validations>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableContentValidations;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    office_element_ptr_array content_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_content_validations);
+
+//table:content-validation
+class table_content_validation : public office_element_impl<table_content_validation>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableContentValidation;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    _CP_OPT(std::wstring)		table_name_;
+	_CP_OPT(odf_types::Bool)	table_allowempty_cell_;
+	_CP_OPT(std::wstring)		table_display_list_;
+    _CP_OPT(std::wstring)		table_condition_;
+    _CP_OPT(std::wstring)		table_base_cell_address_;
+
+    office_element_ptr_array	content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_content_validation);
+
+//table:error-message
+class table_error_message : public office_element_impl<table_error_message>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableErrorMassage;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    _CP_OPT(std::wstring)		table_title_;
+	_CP_OPT(odf_types::Bool)	table_display_;
+    _CP_OPT(std::wstring)		table_message_type_;
+
+    office_element_ptr_array	content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_error_message);
+
+//table:help-message
+class table_help_message : public office_element_impl<table_help_message>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableHelpMassage;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    _CP_OPT(std::wstring)		table_title_;
+	_CP_OPT(odf_types::Bool)	table_display_;
+    _CP_OPT(std::wstring)		table_message_type_;
+
+    office_element_ptr_array	content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_help_message);
 }
 }

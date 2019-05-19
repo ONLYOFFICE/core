@@ -52,11 +52,17 @@ const wchar_t * office_presentation::name = L"presentation";
 void office_presentation::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	if	CP_CHECK_NAME(L"draw", L"page") 
+	{
 		CP_CREATE_ELEMENT(pages_);
+	}
 	else if CP_CHECK_NAME(L"presentation", L"footer-decl") 
+	{
 		CP_CREATE_ELEMENT(footer_decls_);
+	}
 	else if CP_CHECK_NAME(L"presentation", L"date-time-decl") 
+	{
 		CP_CREATE_ELEMENT(date_time_decls_);
+	}
 }
 
 void office_presentation::add_child_element( const office_element_ptr & child_element)

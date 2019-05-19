@@ -185,6 +185,8 @@ struct ods_cell_state : ods_element_state
 
     int hyperlink_idx = -1;
     int comment_idx = -1;
+
+	std::wstring data_validation_name;
 	
     bool empty = true;
 };
@@ -342,11 +344,14 @@ public:
 	office_element_ptr & current_row_element();
 	office_element_ptr & current_cell_element();
 
-	bool	is_cell_hyperlink	();
-    int		is_cell_hyperlink	(int col, int row);
-	bool	is_cell_comment		();
-    int		is_cell_comment		(int col, int row, unsigned int repeate_col = 1);
-	int		is_row_comment		(int row, int repeate_row = 1);
+	bool is_cell_data_validation();
+	bool is_cell_hyperlink();
+	bool is_cell_comment();
+
+    int is_cell_hyperlink(int col, int row);
+    int is_cell_comment(int col, int row, unsigned int repeate_col = 1);
+	int is_row_comment(int row, int repeate_row = 1);
+	std::wstring is_cell_data_validation(int col, int row);
 
 	unsigned int get_last_row_repeated ();
 

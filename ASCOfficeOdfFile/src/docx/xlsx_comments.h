@@ -42,17 +42,7 @@ namespace oox {
 
 	struct _xlsx_comment
 	{
-		//size_t left_, top_;
-		//size_t width_, height_;
-
 		std::wstring  ref_;
-
-		//int col_;
-		//int row_;
-
-		//bool visibly_;
-
-		//std::vector<odf_reader::_property> graphicProperties_;
 
 		std::wstring  author_;
 		std::wstring  content_;

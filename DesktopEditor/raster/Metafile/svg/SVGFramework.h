@@ -5580,9 +5580,11 @@ namespace SVG
 
 		inline bool	LoadFromFile (const std::wstring& strFile, Storage* model)
 		{
+#if 0
             std::wstring sExt = NSFile::GetFileExtention(strFile);
             if (sExt != L"svg" && sExt != L"xml")
                 return false;
+#endif
 
 			if (model)
 			{
@@ -5617,19 +5619,26 @@ namespace SVG
 				}
 
 				XmlUtils::CXmlNode oXml;
-				if (oXml.FromXmlString(sXml))
-				{
-					m_nLayerLevel = 0;
+                if (!oXml.FromXmlString(sXml))
+                    return false;
 
-					if (Explore(oXml))
-					{
-						m_model->JoinXLinkReference();
-						m_model->JoinClipPathLinks();
-						m_model->JoinStyleLinks();
+                std::wstring sNodeName = oXml.GetName();
+                if (L"svg" != sNodeName &&
+                    L"g" != sNodeName &&
+                    L"xml" != sNodeName)
+                    return false;
 
-						return true;
-					}
-				}
+
+                m_nLayerLevel = 0;
+
+                if (Explore(oXml))
+                {
+                    m_model->JoinXLinkReference();
+                    m_model->JoinClipPathLinks();
+                    m_model->JoinStyleLinks();
+
+                    return true;
+                }
 			}
 
 			return false;

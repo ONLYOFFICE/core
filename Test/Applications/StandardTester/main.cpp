@@ -28,6 +28,7 @@ public:
     std::wstring m_sOutputFolder;
 
     bool m_bIsStandard;
+    bool m_bIsDiffAllInOne;
 
     NSCriticalSection::CRITICAL_SECTION m_oCS;
     NSCriticalSection::CRITICAL_SECTION m_oCS_OfficeUtils;
@@ -54,6 +55,8 @@ public:
         m_nCount = 0;
         m_nCurrent = 0;
         m_nCurrentComplete = 0;
+
+        m_bIsDiffAllInOne = true;
 
         m_oCS.InitializeCriticalSection();
         m_oCS_OfficeUtils.InitializeCriticalSection();
@@ -521,7 +524,44 @@ public:
                     if (!NSDirectory::Exists(strDiffs))
                         NSDirectory::CreateDirectory(strDiffs);
 
-                    frameO.SaveFile(sPageDiff, 4);
+                    if (!m_pInternal->m_bIsDiffAllInOne)
+                    {
+                        frameO.SaveFile(sPageDiff, 4);
+                    }
+                    else
+                    {
+                        CBgraFrame frameOSrc;
+                        frameOSrc.OpenFile(sPageO);
+
+                        BYTE* pData1 = frameI.get_Data();
+                        BYTE* pData2 = frameOSrc.get_Data();
+                        BYTE* pData3 = frameO.get_Data();
+
+                        int nRowW = 4 * nW_I;
+                        BYTE* pDataAll = new BYTE[3 * nRowW * nH_I];
+                        BYTE* pDataAllSrc = pDataAll;
+                        for (int j = 0; j < nH_I; j++)
+                        {
+                            memcpy(pDataAll, pData1, nRowW);
+                            pDataAll += nRowW;
+                            pData1 += nRowW;
+
+                            memcpy(pDataAll, pData2, nRowW);
+                            pDataAll += nRowW;
+                            pData2 += nRowW;
+
+                            memcpy(pDataAll, pData3, nRowW);
+                            pDataAll += nRowW;
+                            pData3 += nRowW;
+                        }
+
+                        CBgraFrame oFrameAll;
+                        oFrameAll.put_Data(pDataAllSrc);
+                        oFrameAll.put_Width(3 * nW_I);
+                        oFrameAll.put_Height(nH_I);
+                        oFrameAll.put_Stride(-3 * nRowW);
+                        oFrameAll.SaveFile(sPageDiff, 4);
+                    }
 
                     std::cout << "file (diffs) : " << U_TO_UTF8(sPageDiff) << std::endl;
                 }

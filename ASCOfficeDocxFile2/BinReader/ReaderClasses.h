@@ -62,6 +62,8 @@ public:
     std::wstring pgBorders;
     std::wstring footnotePr;
     std::wstring endnotePr;
+	bool RtlGutter;
+	long Gutter;
 
 	bool bW;
 	bool bH;
@@ -76,6 +78,8 @@ public:
 	bool bEvenAndOddHeaders;
 	bool bSectionType;
 	bool bPageNumStart;
+	bool bRtlGutter;
+	bool bGutter;
 	SectPr()
 	{
 		sHeaderFooterReference = _T("");
@@ -94,6 +98,7 @@ public:
 		bEvenAndOddHeaders = false;
 		bSectionType = false;
 		bPageNumStart = false;
+		bRtlGutter = false;
 	}
     std::wstring Write()
 	{
@@ -152,13 +157,23 @@ public:
 				sRes += L" w:header=\"" + std::to_wstring(Header) + L"\"";
 			if(bFooter)
 				sRes += L" w:footer=\"" + std::to_wstring(Footer) + L"\"";
-			sRes += L" w:gutter=\"0\"/>";
+			if(bGutter)
+				sRes += L" w:gutter=\"" + std::to_wstring(Gutter) + L"\"";
+			sRes += L"/>";
 		}
         if(!pgBorders.empty())
             sRes += pgBorders;
 
         if(bPageNumStart)
             sRes += L"<w:pgNumType w:start=\"" + std::to_wstring(PageNumStart) + L"\"/>";
+
+		if(bRtlGutter)
+		{
+			if(RtlGutter)
+				sRes += L"<w:rtlGutter/>";
+			else
+				sRes += L"<w:rtlGutter w:val=\"0\"/>";
+		}
 
         if(!cols.empty())
             sRes += cols;

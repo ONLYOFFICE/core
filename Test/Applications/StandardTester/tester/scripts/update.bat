@@ -31,6 +31,6 @@ copy "%GIT_DIR%\web-apps-pro\vendor\xregexp\xregexp-all-min.js" "%RUN_DIR%\sdkjs
 
 rem DLLs UPDATE
 del /Q /F "%RUN_DIR%\*.dll"
-del /Q /F "%RUN_DIR%\*.exe"
+del /Q /F "%RUN_DIR%\x2t.exe"
 copy "%GIT_DIR%\server\FileConverter\bin\*.dll" "%RUN_DIR%\."
-copy "%GIT_DIR%\server\FileConverter\bin\*.exe" "%RUN_DIR%\."
+copy "%GIT_DIR%\server\FileConverter\bin\x2t.exe" "%RUN_DIR%\."

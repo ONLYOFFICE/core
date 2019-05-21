@@ -47,6 +47,32 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
+std::wstring getColAddress(size_t col)
+{
+    static const size_t r = (L'Z' - L'A' + 1);
+    std::wstring res;
+    size_t r0 = col / r;
+
+    if (r0 > 0)
+    {
+        const std::wstring rest = getColAddress(col - r * r0);
+        const std::wstring res	= getColAddress(r0-1) + rest;
+        return res;
+    }
+    else
+        return std::wstring(1, (wchar_t)(L'A' + col));
+}
+
+std::wstring getRowAddress(size_t row)
+{
+    return std::to_wstring(row + 1);
+}
+
+std::wstring getCellAddress(size_t col, size_t row)
+{
+	return getColAddress(col) + getRowAddress(row);
+}
+
 ods_table_context::ods_table_context(ods_conversion_context & Context): context_(Context)
 {        
 }
@@ -125,7 +151,6 @@ void ods_table_context::set_table_part_autofilter(bool val)
 void ods_table_context::end_table_part()
 {
 }
-
 void ods_table_context::add_autofilter(std::wstring ref)
 {
 	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
@@ -147,6 +172,126 @@ void ods_table_context::add_autofilter(std::wstring ref)
 	table_database_ranges_.elements.push_back(elm);
 
 }
+void ods_table_context::start_data_validation( const std::wstring &ref, int type)
+{
+	size_t r = ref.rfind(L":");
+	if (r == std::wstring::npos) return;//тута однозначно .. по правилам оох
+	
+	if (!table_content_validations_.root) create_element(L"table", L"content-validations", table_content_validations_.root, &context_);
+
+	office_element_ptr elm;
+	create_element(L"table", L"content-validation", elm, &context_);
+	table_content_validation *validation = dynamic_cast<table_content_validation*>(elm.get());
+
+	if (!validation)return;
+
+	data_validation_state validation_state;
+	validation_state.name	= L"DataValidation_" + std::to_wstring(state().data_validations_.size() + 1);
+	validation_state.ref	= ref;
+	validation_state.elm	= elm;
+	validation_state.type	= type;
+	
+	utils::parsing_ref (ref.substr(0, r), validation_state.col_start, validation_state.row_start);
+	utils::parsing_ref (ref.substr(r + 1, ref.size() - r), validation_state.col_end, validation_state.row_end);
+
+	validation->table_base_cell_address_	= state().office_table_name_ + L"." + getCellAddress(validation_state.col_start, validation_state.row_start);
+	validation->table_name_					= validation_state.name;
+
+	table_content_validations_.root->add_child_element(elm);
+	table_content_validations_.elements.push_back(elm);
+
+	state().data_validations_.push_back(validation_state);
+}
+void ods_table_context::set_data_validation_allow_empty(bool val)
+{
+	table_content_validation *validation = dynamic_cast<table_content_validation*>(state().data_validations_.back().elm.get());
+	validation->table_allowempty_cell_ = val;
+}
+void ods_table_context::set_data_validation_content( const std::wstring &oox_formula)
+{
+	formulasconvert::oox2odf_converter formulas_converter;
+
+	std::wstring odf_formula = formulas_converter.convert_formula(oox_formula);
+
+	if (false == odf_formula.empty())
+	{
+		odf_formula = odf_formula.substr(4);
+	}
+	table_content_validation *validation = dynamic_cast<table_content_validation*>(state().data_validations_.back().elm.get());
+	
+	switch (state().data_validations_.back().type)
+	{
+	case 0://SimpleTypes::spreadsheet::validationTypeNone:
+		break;
+	case 1://SimpleTypes::spreadsheet::validationTypeCustom:
+		break;
+	case 2://SimpleTypes::spreadsheet::validationTypeDate:
+		{
+			odf_formula = L"of:cell-content-is-date(" + odf_formula + L")";
+		}break;
+	case 3://SimpleTypes::spreadsheet::validationTypeDecimal:
+		{
+			odf_formula = L"of:cell-content-is-decimal-number(" + odf_formula + L")";
+		}break;
+	case 4://SimpleTypes::spreadsheet::validationTypeList:	
+		{
+			odf_formula = L"of:cell-content-is-in-list(" + odf_formula + L")";
+		}break;
+	case 5://SimpleTypes::spreadsheet::validationTypeTextLength:
+		break;
+	case 6://SimpleTypes::spreadsheet::validationTypeTime:
+		{
+			odf_formula = L"of:cell-content-is-time(" + odf_formula + L")";
+		}break;
+	case 7://SimpleTypes::spreadsheet::validationTypeWhole:
+		{
+			odf_formula = L"of:cell-content-is-whole-number(" + odf_formula + L")";
+		}break;
+	}
+	state().data_validations_.back().condition = odf_formula;
+	validation->table_condition_ = odf_formula;
+}
+void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content)
+{
+	office_element_ptr elm;
+	create_element(L"table", L"error-message", elm, &context_);
+
+	table_content_validations_.elements.back()->add_child_element(elm);
+
+	table_error_message *error_message = dynamic_cast<table_error_message*>(elm.get());
+
+	if (error_message)
+	{
+		error_message->table_display_ = true;
+		if (false == title.empty()) error_message->table_title_ = title;
+
+		if (false == content.empty())
+		{
+		}
+	}
+}
+void ods_table_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content)
+{
+	office_element_ptr elm;
+	create_element(L"table", L"help-message", elm, &context_);
+	
+	table_content_validations_.elements.back()->add_child_element(elm);
+	
+	table_help_message *help_message = dynamic_cast<table_help_message*>(elm.get());
+
+	if (help_message)
+	{
+		help_message->table_display_ = true;
+		if (false == title.empty()) help_message->table_title_ = title;
+		if (false == content.empty())
+		{
+		}	
+	}
+}
+void ods_table_context::end_data_validation()
+{
+}
+
 void ods_table_context::start_defined_expressions(office_element_ptr & root_elm)
 {
 	table_defined_expressions_.root = root_elm;

@@ -47,9 +47,6 @@ void CDataValidationFormula::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
 	m_sNodeName = oReader.GetName();
 
-	if (oReader.IsEmptyNode())
-		return;
-
 	m_sText = oReader.GetText3();
 }
 
@@ -86,7 +83,7 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 		WritingStringNullableAttrInt	(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
 		WritingStringNullableAttrInt	(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
 		WritingStringNullableAttrInt	(L"showInputMessage",m_oShowInputMessage,m_oShowInputMessage->GetValue());
-	writer.WriteString(bExtendedWrite ? L">" : L"/>");
+	writer.WriteString(L">");
 
 	if (bExtendedWrite)
 	{
@@ -106,8 +103,23 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 		{
 			writer.WriteString(L"<xm:sqref>" + m_oSqRef.get() + L"</xm:sqref>");
 		}
-		writer.WriteString(L"</" + node_name + L">");
 	}
+	else
+	{
+		if (m_oFormula1.IsInit())
+		{
+			writer.WriteString(L"<formula1>");
+				writer.WriteString(m_oFormula1->m_sText);
+			writer.WriteString(L"</formula1>");
+		}
+		if (m_oFormula2.IsInit())
+		{
+			writer.WriteString(L"<formula2>");
+				writer.WriteString(m_oFormula2->m_sText);
+			writer.WriteString(L"</formula2>");
+		}
+	}
+	writer.WriteString(L"</" + node_name + L">");
 }
 
 void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -137,7 +149,7 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 }
 bool CDataValidation::IsExtended()
 {
-	return (m_oFormula1.IsInit() || m_oFormula2.IsInit());
+	return (m_oUuid.IsInit());
 }
 void CDataValidation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

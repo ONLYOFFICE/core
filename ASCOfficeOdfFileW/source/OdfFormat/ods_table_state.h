@@ -240,6 +240,28 @@ struct table_part_state
 
 	std::vector<std::pair<std::wstring, std::wstring>> columns; //name, odf_ref
 };
+struct data_validation_state 
+{
+	std::wstring name;
+	std::wstring ref;
+	int type;
+
+	office_element_ptr elm;
+
+	int col_start = 0;
+	int row_start = 0;
+
+	int col_end = 0;
+	int row_end = 0;
+
+	std::wstring condition;
+
+	bool in_ref(int col, int row)
+	{
+		return (col >= col_start && col <= col_end && row >= row_start && row <= row_end);
+	}
+
+};
 struct ods_array_formula_state
 {
 	std::wstring formula;
@@ -408,6 +430,7 @@ private:
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
 
+//            row          column
 	std::map<int, std::map<int, _spanned_info>> map_merged_cells;
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
@@ -419,6 +442,8 @@ private:
 	std::vector<ods_shared_formula_state>	shared_formulas_;
 
 	std::vector<table_part_state>			table_parts_;
+
+	std::vector<data_validation_state>		data_validations_;
 
 	odf_drawing_context		drawing_context_;	
 	odf_controls_context	controls_context_;	

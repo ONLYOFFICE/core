@@ -522,7 +522,13 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 }
 std::wstring ods_table_state::is_cell_data_validation(int col, int row)
 {
-
+    for (size_t i = 0; i < data_validations_.size(); i++)
+	{
+		if (data_validations_[i].in_ref(col, row))
+		{
+            return data_validations_[i].name;
+		}
+	}
 	return L"";
 }
 int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
@@ -766,7 +772,7 @@ void ods_table_state::check_spanned_cells()
 			int start_col = jt->first;
 			int end_col = jt->first + jt->second.spanned_cols;
 
-			for (size_t i = 0; i < cells_.size(); ++i)
+			for (size_t i = 0; i < cells_.size(); ++i) //todooo cells_ vector -> map by row
 			{
 				if (cells_[i].row > end_row) break;
 

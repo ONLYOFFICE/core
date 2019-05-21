@@ -102,6 +102,9 @@ void ods_conversion_context::end_document()
 	if (table_context_.table_defined_expressions_.root)
 		root_spreadsheet_->add_child_element(table_context_.table_defined_expressions_.root);
 
+	if (table_context_.table_content_validations_.root)
+		root_spreadsheet_->add_child_element(table_context_.table_content_validations_.root);
+	
 	odf_conversion_context::end_document();
 }
 
@@ -331,11 +334,34 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		current_table().add_hyperlink(ref, col, row, link, bLocation);
 	}
 }
-
+void ods_conversion_context::start_data_validation(const std::wstring & ref, int type)
+{
+	table_context_.start_data_validation(ref, type);
+}
+void ods_conversion_context::end_data_validation()
+{
+	table_context_.end_data_validation();
+}
+void ods_conversion_context::set_data_validation_allow_empty(bool val)
+{
+	table_context_.set_data_validation_allow_empty(val);
+}
+void ods_conversion_context::set_data_validation_content(const std::wstring &val)
+{
+	table_context_.set_data_validation_content(val);
+}
+void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content)
+{
+	table_context_.set_data_validation_error(title, content);
+}
+void ods_conversion_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content)
+{
+	table_context_.set_data_validation_promt(title, content);
+}
 void ods_conversion_context::add_merge_cells(const std::wstring & ref)
 {
  	std::vector<std::wstring> ref_cells;
-	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+	boost::algorithm::split(ref_cells, ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
 	if (ref_cells.size() != 2) return;//тута однозначно .. по правилам оохml
 

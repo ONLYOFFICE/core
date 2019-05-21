@@ -305,6 +305,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			}
 		}
 	}
+	convert(oox_sheet->m_oDataValidations.GetPointer());
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//колонки
 		ods_context->start_columns();
@@ -368,7 +369,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 
 /////////////////////////////////////////////////////////////////////////
-	convert(oox_sheet->m_oDataValidations.GetPointer());
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
@@ -428,6 +428,33 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
 void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
 {
 	if (!oox_validation) return;
+	if (!oox_validation->m_oSqRef.IsInit()) return;
+
+	ods_context->start_data_validation(*oox_validation->m_oSqRef, oox_validation->m_oType.IsInit() ? oox_validation->m_oType->GetValue() : 0);
+
+	if (oox_validation->m_oAllowBlank.IsInit())
+	{
+		ods_context->set_data_validation_allow_empty(oox_validation->m_oAllowBlank->ToBool());
+	}
+	if (oox_validation->m_oFormula1.IsInit())
+	{
+		ods_context->set_data_validation_content(oox_validation->m_oFormula1->m_sText);
+	}
+	if (oox_validation->m_oFormula2.IsInit())
+	{
+		ods_context->set_data_validation_content(oox_validation->m_oFormula2->m_sText);
+	}
+	if (oox_validation->m_oShowErrorMessage.IsInit() && oox_validation->m_oShowErrorMessage->ToBool())
+	{
+		ods_context->set_data_validation_error(oox_validation->m_oErrorTitle.IsInit() ? *oox_validation->m_oErrorTitle : L"", 
+											oox_validation->m_oError.IsInit() ? *oox_validation->m_oError : L"");
+	}
+	if (oox_validation->m_oShowInputMessage.IsInit() && oox_validation->m_oShowInputMessage->ToBool())
+	{
+		ods_context->set_data_validation_promt(oox_validation->m_oPromptTitle.IsInit() ? *oox_validation->m_oPromptTitle : L"", 
+											oox_validation->m_oPromt.IsInit() ? *oox_validation->m_oPromt : L"");
+	}
+	ods_context->end_data_validation();
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)

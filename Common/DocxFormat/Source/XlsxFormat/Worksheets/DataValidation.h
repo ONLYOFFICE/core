@@ -117,7 +117,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>									m_oShowInputMessage;
 
 			nullable_string									m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
-	//ext
+
 			mutable nullable_string							m_oUuid;
 			nullable<CDataValidationFormula>				m_oFormula1;
 			nullable<CDataValidationFormula>				m_oFormula2;

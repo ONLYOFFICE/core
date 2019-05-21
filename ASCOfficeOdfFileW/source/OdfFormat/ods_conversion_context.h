@@ -98,9 +98,16 @@ public:
 	void start_comment		(int col, int row, std::wstring & author);
 	void set_comment_rect	(double l, double t, double w, double h);
 	void end_comment		();
-///////////////////////////////////////////////////////
-	ods_table_state &		current_table() { return table_context_.state();}
-/////////////////////////////////////////////////////
+
+	void start_data_validation(const std::wstring & ref, int type);
+		void set_data_validation_content(const std::wstring &val);
+		void set_data_validation_allow_empty(bool val);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content);
+		void set_data_validation_promt(const std::wstring &title, const std::wstring &content);
+	void end_data_validation();
+//-----------------------------------------------------------------------
+	ods_table_state & current_table() { return table_context_.state();}
+//-----------------------------------------------------------------------
 	virtual void start_text_context();
 	virtual void end_text_context();
 

@@ -74,6 +74,12 @@ public:
 		void add_table_part_column(std::wstring name);
 	void end_table_part();
 
+	void start_data_validation(const std::wstring &ref, int type);
+		void set_data_validation_content(const std::wstring &val);
+		void set_data_validation_allow_empty(bool val);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content);
+		void set_data_validation_promt(const std::wstring &title, const std::wstring &content);
+	void end_data_validation();
 private:
 
     ods_conversion_context & context_;
@@ -82,6 +88,7 @@ private:
 	
 	table_additional_elements_state	table_defined_expressions_;
 	table_additional_elements_state	table_database_ranges_;
+	table_additional_elements_state	table_content_validations_;
 
 	friend class ods_conversion_context;
 

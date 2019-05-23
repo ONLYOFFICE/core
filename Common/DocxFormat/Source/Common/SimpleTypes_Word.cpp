@@ -40,6 +40,11 @@ namespace SimpleTypes
             this->m_eValue = hexcolorAuto;
         else
         {
+			size_t split = sValue.find(L" ["); //index ala #ff9 [43]
+			if (std::wstring::npos != split)
+			{
+				sValue = sValue.substr(0, split);
+			}
             //В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
             //CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
             CHighlightColor<> oHighlightColor(sValue);

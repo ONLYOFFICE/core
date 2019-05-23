@@ -74,7 +74,7 @@ public:
 		void add_table_part_column(std::wstring name);
 	void end_table_part();
 
-	void start_data_validation(const std::wstring &ref, int type);
+	bool start_data_validation(const std::wstring &ref, int type);
 		void set_data_validation_content(const std::wstring &val);
 		void set_data_validation_allow_empty(bool val);
 		void set_data_validation_error(const std::wstring &title, const std::wstring &content);

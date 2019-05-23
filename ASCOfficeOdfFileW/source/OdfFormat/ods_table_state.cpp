@@ -49,7 +49,6 @@
 #include "style_table_properties.h"
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
-#include "style_graphic_properties.h"
 
 namespace cpdoccore {
 
@@ -722,20 +721,51 @@ void ods_table_state::start_comment(int col, int row, std::wstring & author)
 	state.row = row;  state.col = col; state.author = author;	
 	create_element(L"office", L"annotation", state.elm, context_);
 
+	office_annotation * annotation = dynamic_cast<office_annotation*>(state.elm.get());
+	if (!annotation)return;	
+
+	context_->styles_context()->create_style(L"", style_family::Graphic, true, false, -1);		
+	
+	office_element_ptr & style_elm = context_->styles_context()->last_state()->get_office_element();
+	state.graphic_properties = context_->styles_context()->last_state()->get_graphic_properties();
+	
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_)
+	{
+		annotation->attr_.draw_style_name_ = style_->style_name_;
+	}
+
 	comments_.push_back(state);
 }
+void ods_table_state::set_comment_color(const std::wstring & color)
+{
+	if (color.empty()) return;
+	if (comments_.empty()) return;
+	if (!comments_.back().graphic_properties) return;
 
+	comments_.back().graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = L"#" + color;
+	comments_.back().graphic_properties->common_draw_fill_attlist_.draw_fill_ = odf_types::draw_fill::solid;
+}
+void ods_table_state::set_comment_visible(bool val)
+{
+	if (comments_.empty()) return;
+
+	office_annotation * annotation = dynamic_cast<office_annotation*>(comments_.back().elm.get());
+	if (!annotation)return;	
+
+	annotation->attr_.display_ = val;
+}
 void ods_table_state::set_comment_rect(double l, double t, double w, double h)
 {
-	if (comments_.size() < 1)return;
+	if (comments_.empty())return;
 
 	office_annotation * annotation = dynamic_cast<office_annotation*>(comments_.back().elm.get());
 	if (!annotation)return;		
 
-	annotation->office_annotation_attr_.svg_y_		= length(t/10.,length::cm);
-	annotation->office_annotation_attr_.svg_x_		= length(l/10.,length::cm);
-	annotation->office_annotation_attr_.svg_width_	= length(w/10.,length::cm);
-	annotation->office_annotation_attr_.svg_height_	= length(h/10.,length::cm);
+	annotation->attr_.svg_y_		= length(t/10.,length::cm);
+	annotation->attr_.svg_x_		= length(l/10.,length::cm);
+	annotation->attr_.svg_width_	= length(w/10.,length::cm);
+	annotation->attr_.svg_height_	= length(h/10.,length::cm);
 }
 void ods_table_state::end_comment(odf_text_context *text_context)
 {
@@ -895,7 +925,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	
 	//test external link
 	bool bExternal = !ods_context->externals_.empty();
-	boost::wregex re(L"([\[]\\d+[\]])+");
+	boost::wregex re(L"([\\[]\\d+[\\]])+");
 
 	while(bExternal)
 	{
@@ -1012,7 +1042,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 
 	std::wstring odf_formula;
 	
-	if (formula.size() > 0)
+	if (false == formula.empty())
 	{
 		odf_formula = formulas_converter_table.convert_formula(formula);
 
@@ -1020,14 +1050,14 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 		
 		std::vector<std::wstring> distance;
 		boost::algorithm::split(distance, ref,boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
-		if (distance.size() >1)
+		if (distance.size() > 1)
 		{
             int col1, row1, col2, row2;
 			utils::parsing_ref(distance[0],col1,row1);
 			utils::parsing_ref(distance[1],col2,row2);
 
-			if (row2-row1 >0)moving_type = 2;
-			if (col2-col1 >0)moving_type = 1;
+			if (row2 - row1 > 0) moving_type = 2;
+			if (col2 - col1 > 0)moving_type = 1;
 		}
 		ods_shared_formula_state state = {(unsigned int)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
 		shared_formulas_.push_back(state);

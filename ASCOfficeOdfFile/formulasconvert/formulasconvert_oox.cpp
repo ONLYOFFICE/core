@@ -174,6 +174,7 @@ public:
 	}
 	void replace_named_ref(std::wstring & expr);
     void replace_named_formula(std::wstring & expr);
+	bool is_simple_ref(std::wstring const & expr);
 	
 	static bool isFindBaseCell_;
 
@@ -195,7 +196,7 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr, bool bSele
 
 	if (b)
 	{
-		boost::wregex re1(L"(\\$?[^\']+\\!)?([\\w^0-9$]*\\d*)\\:?([\\w^0-9$]*\\d*)?");
+		boost::wregex re1(L"(\\$?[^\\']+\\!)?([a-zA-Z$]+\\d*)(\\:[a-zA-Z$]+\\d*)?");
 //                          $   Sheet2   ! $ A1                 :  $ B5    
 //                          $   Sheet2   ! $ A                  :  $ A    
 //                          $   Sheet2   ! $ 1                  :  $ 1    
@@ -238,9 +239,11 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 
 			if (isFindBaseCell_ && table_name_.empty() && !sheet.empty())
 			{
-				table_name_ = sheet + L".$A$1";
+				table_name_ = L"$" + sheet + L".$A$1";
 			}	
 			if (!sheet.empty()  && (std::wstring::npos != c1.find(L"$"))) sheet = L"$"  + sheet;
+			if (!c2.empty() && c2.substr(0, 1) == L":") 
+				c2 = c2.substr(1);
 
 
 			s =  L"["  + sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"]");
@@ -281,10 +284,12 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
 
 			if (isFindBaseCell_ && table_name_.empty() && !sheet.empty())
 			{
-				table_name_ = sheet + L".$A$1";
+				table_name_ = L"$" + sheet + L".$A$1";
 			}	
 			if (!sheet.empty()  && (std::wstring::npos != c1.find(L"$"))) sheet = L"$"  + sheet;
-
+			
+			if (!c2.empty() && c2.substr(0, 1) == L":") 
+				c2 = c2.substr(1);
 
 			s =  sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"");
 		}
@@ -309,6 +314,19 @@ void oox2odf_converter::Impl::replace_named_formula(std::wstring & expr)
 	isFindBaseCell_ = true;
 	expr = convert_formula(expr);
 	isFindBaseCell_ = false;
+}
+bool oox2odf_converter::Impl::is_simple_ref(std::wstring const & expr)
+{
+	if (expr.find(L"(") != std::wstring::npos) return false;
+	if (expr.find(L" ") != std::wstring::npos) return false;
+	if (expr.find(L";") != std::wstring::npos) return false;
+
+	boost::wsmatch match;
+	if (boost::regex_search(expr, match, boost::wregex(L"([\\w]+\\!)?\\$?[a-zA-Z]+\\$?\\d+(\\:\\$?[a-zA-Z]+\\$?\\d+)?")))
+	{
+		return true;
+	}
+	return false;
 }
 
 void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
@@ -644,6 +662,11 @@ std::wstring oox2odf_converter::convert_named_formula(const std::wstring& expr)
     impl_->replace_named_formula(workstr);
     return workstr;
 }
+bool oox2odf_converter::is_simple_ref(std::wstring const & expr)
+{
+	return impl_->is_simple_ref(expr);
+}
+
 std::wstring oox2odf_converter::get_table_name()
 {
     return impl_->table_name_;

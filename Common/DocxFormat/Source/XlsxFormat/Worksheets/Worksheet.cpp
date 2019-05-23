@@ -344,13 +344,23 @@ namespace OOX
 									pCommentItem->m_nBottom = m_aAnchor[6];
 									pCommentItem->m_nBottomOffset = m_aAnchor[7];
 								}
+								pCommentItem->m_bMove = pClientData->m_oMoveWithCells;
+								pCommentItem->m_bSize = pClientData->m_oSizeWithCells;
+								pCommentItem->m_bVisible = pClientData->m_oVisible;
 
-								if(pClientData->m_oMoveWithCells.IsInit())
-									pCommentItem->m_bMove = *pClientData->m_oMoveWithCells;
-								if(pClientData->m_oSizeWithCells.IsInit())
-									pCommentItem->m_bSize = *pClientData->m_oSizeWithCells;
+								if (pShape->m_oFillColor.IsInit())
+								{
+									BYTE r = pShape->m_oFillColor->Get_R();
+									BYTE g = pShape->m_oFillColor->Get_G();
+									BYTE b = pShape->m_oFillColor->Get_B();
+									
+									std::wstringstream sstream;
+									sstream << boost::wformat( L"%02X%02X%02X" ) % r % g % b;
 
-								for(size_t k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
+									pCommentItem->m_sFillColorRgb = sstream.str();
+								}
+
+								for(size_t k = 0; k < pShape->m_oStyle->m_arrProperties.size(); ++k)
 								{
 									if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
 

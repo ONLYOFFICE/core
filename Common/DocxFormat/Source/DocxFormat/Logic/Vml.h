@@ -1529,6 +1529,7 @@ namespace OOX
 			nullable_int											m_oVal;
 			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>	m_oTextHAlign;
 			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>m_oTextVAlign;
+			nullable_bool											m_oVisible;
 
 //x:Accel
 //x:Accel2
@@ -1555,7 +1556,6 @@ namespace OOX
 //x:ScriptText
 //x:UIObj
 //x:ValidIds
-//x:Visible
 //x:VTEdit
 		};
 		//--------------------------------------------------------------------------------

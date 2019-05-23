@@ -62,18 +62,18 @@ namespace utils
 
 void calculate_size_font_symbols(_font_metrix & metrix, NSFonts::IApplicationFonts *appFonts)
 {
-    double appr_px = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name, metrix.font_size, metrix.italic, metrix.bold, appFonts);
+    std::pair<float,float> appr = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name, metrix.font_size, metrix.italic, metrix.bold, appFonts);
 	
-	if (appr_px <0.01)
+	if (appr.first < 0.01 || appr.second < 0.01)
 	{
-        appr_px = _graphics_utils_::calculate_size_symbol_win(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
-		appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
+        appr.first = _graphics_utils_::calculate_size_symbol_win(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
+		appr.first = ((int)(appr.first + 0.5) + 2 * (int)appr.first)/3.;
 	}
 
-	if (appr_px > 0)
+	if (appr.first > 0)
 	{
 		//pixels to pt
-		metrix.approx_symbol_size = appr_px ;///1.1;//"1.2" волшебное число оО
+		metrix.approx_symbol_size = appr.first ;///1.1;//"1.2" волшебное число оО
 		metrix.IsCalc = true;
 	}
 
@@ -298,7 +298,14 @@ void ods_conversion_context::end_comment()
 	current_table().end_comment(current_text_context_);
 	end_text_context();
 }
-
+void ods_conversion_context::set_comment_color(const std::wstring & color)
+{
+	current_table().set_comment_color(color);
+}
+void ods_conversion_context::set_comment_visible(bool val)
+{
+	current_table().set_comment_visible(val);
+}
 void ods_conversion_context::set_comment_rect(double l, double t, double w, double h)//in mm
 {
 	current_table().set_comment_rect(l,t,w,h);
@@ -334,9 +341,9 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		current_table().add_hyperlink(ref, col, row, link, bLocation);
 	}
 }
-void ods_conversion_context::start_data_validation(const std::wstring & ref, int type)
+bool ods_conversion_context::start_data_validation(const std::wstring & ref, int type)
 {
-	table_context_.start_data_validation(ref, type);
+	return table_context_.start_data_validation(ref, type);
 }
 void ods_conversion_context::end_data_validation()
 {

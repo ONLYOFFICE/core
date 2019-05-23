@@ -52,17 +52,19 @@ namespace OOX
 			nullable<unsigned int> m_nTopOffset;
 			nullable<unsigned int> m_nRightOffset;
 			nullable<unsigned int> m_nBottomOffset;
-			nullable<double> m_dLeftMM;
-			nullable<double> m_dTopMM;
-			nullable<double> m_dWidthMM;
-			nullable<double> m_dHeightMM;
-			nullable<std::wstring> m_sAuthor;
+			nullable_double	m_dLeftMM;
+			nullable_double m_dTopMM;
+			nullable_double m_dWidthMM;
+			nullable_double m_dHeightMM;
+			nullable_string	m_sAuthor;
 			nullable<unsigned int> m_nRow;
 			nullable<unsigned int> m_nCol;
-			nullable<bool> m_bMove;
-			nullable<bool> m_bSize;
-			nullable<CSi> m_oText;
-            nullable<std::wstring> m_sGfxdata;
+			nullable_bool	m_bMove;
+			nullable_bool	m_bSize;
+			nullable<CSi>	m_oText;
+            nullable_string m_sGfxdata;
+            nullable_bool	m_bVisible;
+            nullable_string m_sFillColorRgb;
 			CCommentItem()
 			{
 			}

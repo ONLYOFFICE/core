@@ -3098,8 +3098,7 @@ int BinaryCommentReader::ReadComment(BYTE type, long length, void* poResult)
 
             if(!sGfxdata.empty())
 			{
-				pNewComment->m_sGfxdata.Init();
-                pNewComment->m_sGfxdata->append(sGfxdata);
+				pNewComment->m_sGfxdata = sGfxdata;
 			}
 		}
 		READ1_DEF(length, res, this->ReadCommentDatas, pNewComment);

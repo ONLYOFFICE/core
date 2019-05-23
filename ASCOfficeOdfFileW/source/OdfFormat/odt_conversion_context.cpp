@@ -62,15 +62,15 @@ namespace utils
 
 double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, NSFonts::IApplicationFonts *appFonts)
 {
-    double appr_px = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
+    std::pair<float,float> appr = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
 	
-	if (appr_px <0.01)
+	if (appr.first < 0.01 || appr.second < 0.01)
 	{
-        appr_px = _graphics_utils_::calculate_size_symbol_win(font_name, font_size, false, false, str_test);
+        appr.first = _graphics_utils_::calculate_size_symbol_win(font_name, font_size, false, false, str_test);
 		//appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
 	}
 
-	return appr_px*0.55;
+	return appr.first * 0.55;
 }
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 

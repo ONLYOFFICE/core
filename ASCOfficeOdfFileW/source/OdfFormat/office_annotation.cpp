@@ -142,7 +142,7 @@ void office_annotation_end::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			office_annotation_attr_.serialize(CP_GET_XML_NODE());
+			attr_.serialize(CP_GET_XML_NODE());
 		}
 	}
 }
@@ -152,7 +152,7 @@ void office_annotation::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			office_annotation_attr_.serialize(CP_GET_XML_NODE());
+			attr_.serialize(CP_GET_XML_NODE());
 
 			if (dc_creator_)dc_creator_->serialize(CP_XML_STREAM());
 			if (dc_date_)	dc_date_->serialize(CP_XML_STREAM());
@@ -203,7 +203,7 @@ void officeooo_annotation::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			office_annotation_attr_.serialize(CP_GET_XML_NODE());
+			attr_.serialize(CP_GET_XML_NODE());
 
 			if (dc_creator_)dc_creator_->serialize(CP_XML_STREAM());
 			if (dc_date_)	dc_date_->serialize(CP_XML_STREAM());

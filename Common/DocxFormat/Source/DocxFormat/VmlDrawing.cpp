@@ -380,7 +380,7 @@ xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
 
 				std::wstring sGfxdata;
 				if(comment->m_sGfxdata.IsInit())
-					sGfxdata = L"o:gfxdata=\"" + comment->m_sGfxdata.get2() + L"\"";
+					sGfxdata = L"o:gfxdata=\"" + *comment->m_sGfxdata + L"\"";
 
 				std::wstring sShape;
 				sShape += L"<v:shape id=\"_x0000_s" + boost::lexical_cast<std::wstring>(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";

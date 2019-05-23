@@ -122,7 +122,7 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 	
-	office_annotation_attr office_annotation_attr_;
+	office_annotation_attr attr_;
 
 private:
     office_element_ptr_array content_;
@@ -148,7 +148,7 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 	
-	office_annotation_attr office_annotation_attr_;
+	office_annotation_attr attr_;
 //
 //private:
 //    office_element_ptr_array content_;
@@ -176,7 +176,7 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
 private:
-	office_annotation_attr		office_annotation_attr_;
+	office_annotation_attr		attr_;
 	office_element_ptr_array	content_;
 
     office_element_ptr			dc_date_;

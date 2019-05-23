@@ -43,6 +43,7 @@
 #include "odf_controls_context.h"
 
 #include "office_elements_create.h"
+#include "style_graphic_properties.h"
 
 #include "officevaluetype.h"
 
@@ -208,6 +209,8 @@ struct ods_comment_state
 
 	office_element_ptr elm;
 
+	graphic_format_properties *graphic_properties = NULL;
+
 	bool used = false;
 };
 struct ods_shared_formula_state
@@ -243,22 +246,31 @@ struct table_part_state
 struct data_validation_state 
 {
 	std::wstring name;
-	std::wstring ref;
 	int type;
 
 	office_element_ptr elm;
 
-	int col_start = 0;
-	int row_start = 0;
+	struct _ref
+	{
+		std::wstring ref;
+		int col_start = 0;
+		int row_start = 0;
 
-	int col_end = 0;
-	int row_end = 0;
+		int col_end = 0;
+		int row_end = 0;
+	};
+	std::vector<_ref> refs;
 
 	std::wstring condition;
 
 	bool in_ref(int col, int row)
 	{
-		return (col >= col_start && col <= col_end && row >= row_start && row <= row_end);
+		for (size_t i = 0; i < refs.size(); i++)
+		{
+			if (col >= refs[i].col_start && col <= refs[i].col_end && row >= refs[i].row_start && row <= refs[i].row_end)
+				return true;
+		}
+		return false;
 	}
 
 };
@@ -359,6 +371,8 @@ public:
 
     void start_comment(int col, int row, std::wstring & author);
 		void set_comment_rect(double l, double t, double w, double h);
+		void set_comment_visible(bool val);
+		void set_comment_color(const std::wstring & color);
 	void end_comment(odf_text_context *text_context);
 	
     void set_merge_cells(int start_col, int start_row, int end_col, int end_row);

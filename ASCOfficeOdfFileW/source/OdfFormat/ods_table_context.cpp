@@ -37,7 +37,7 @@
 #include "ods_conversion_context.h"
 #include "logging.h"
 
-#include <iostream>
+#include <boost/algorithm/string.hpp>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
@@ -172,35 +172,56 @@ void ods_table_context::add_autofilter(std::wstring ref)
 	table_database_ranges_.elements.push_back(elm);
 
 }
-void ods_table_context::start_data_validation( const std::wstring &ref, int type)
+bool ods_table_context::start_data_validation( const std::wstring &strRef, int type)
 {
-	size_t r = ref.rfind(L":");
-	if (r == std::wstring::npos) return;//тута однозначно .. по правилам оох
-	
 	if (!table_content_validations_.root) create_element(L"table", L"content-validations", table_content_validations_.root, &context_);
 
 	office_element_ptr elm;
 	create_element(L"table", L"content-validation", elm, &context_);
 	table_content_validation *validation = dynamic_cast<table_content_validation*>(elm.get());
 
-	if (!validation)return;
+	if (!validation) return false;
 
+	std::vector<std::wstring> arRefs;
+	boost::algorithm::split(arRefs, strRef, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+	
 	data_validation_state validation_state;
 	validation_state.name	= L"DataValidation_" + std::to_wstring(state().data_validations_.size() + 1);
-	validation_state.ref	= ref;
 	validation_state.elm	= elm;
 	validation_state.type	= type;
 	
-	utils::parsing_ref (ref.substr(0, r), validation_state.col_start, validation_state.row_start);
-	utils::parsing_ref (ref.substr(r + 1, ref.size() - r), validation_state.col_end, validation_state.row_end);
+	for (size_t i = 0; i < arRefs.size(); i++)
+	{
+		data_validation_state::_ref ref;
+		ref.ref = arRefs[i];
+		
+		size_t r = arRefs[i].rfind(L":");
+		if (r == std::wstring::npos)
+		{
+			utils::parsing_ref (arRefs[i].substr(0, r), ref.col_start, ref.row_start);
+			ref.col_end = ref.col_start;
+			ref.row_end = ref.row_start;
+		}
+		else
+		{
+			utils::parsing_ref (arRefs[i].substr(0, r), ref.col_start, ref.row_start);
+			utils::parsing_ref (arRefs[i].substr(r + 1, arRefs[i].size() - r), ref.col_end, ref.row_end);
+		}
 
-	validation->table_base_cell_address_	= state().office_table_name_ + L"." + getCellAddress(validation_state.col_start, validation_state.row_start);
+		validation_state.refs.push_back(ref);	
+	}
+
+	if (validation_state.refs.empty()) return false;
+
+	validation->table_base_cell_address_	= state().office_table_name_ + L"." + getCellAddress(validation_state.refs[0].col_start, validation_state.refs[0].row_start);
 	validation->table_name_					= validation_state.name;
 
 	table_content_validations_.root->add_child_element(elm);
 	table_content_validations_.elements.push_back(elm);
 
 	state().data_validations_.push_back(validation_state);
+
+	return true;
 }
 void ods_table_context::set_data_validation_allow_empty(bool val)
 {
@@ -309,14 +330,14 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 
 	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - разделить конвертацию диапазонов/рэнжей на c [] и без
 	
-	std::wstring odf_base_cell = formulas_converter.get_table_name() + L".$A$1";
+	std::wstring odf_base_cell = formulas_converter.get_table_name();
 
 	named_range->table_name_ = name;
 	named_range->table_cell_range_address_ = odf_range;
 	if (printable)
 		named_range->table_range_usable_as_ = L"print-range";
 	
-	if (odf_base_cell.length() > 0)
+	if (false == odf_base_cell.empty())
 		named_range->table_base_cell_address_ =  odf_base_cell;
 
 	table_defined_expressions_.elements.push_back(elm);
@@ -342,23 +363,29 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 }
 void ods_table_context::add_defined_expression(const std::wstring & name, const std::wstring & value, int sheet_id, bool printable)
 {
+	formulasconvert::oox2odf_converter formulas_converter;
+	
+	bool simple_range = formulas_converter.is_simple_ref(value);
+
+	if (simple_range)//если простой - range, составной - выражение
+		return add_defined_range (name, value, sheet_id, printable);
+
 	office_element_ptr elm;
 	create_element(L"table", L"named-expression",elm, &context_);
 	
 	table_named_expression* named_expression = dynamic_cast<table_named_expression*>(elm.get());
 	if (named_expression == NULL)return;
 
-	formulasconvert::oox2odf_converter formulas_converter;
 
 	std::wstring odf_value		= formulas_converter.convert_named_formula(value);
-	std::wstring odf_base_cell	= formulas_converter.get_table_name() + L".$A$1";
+	std::wstring odf_base_cell	= formulas_converter.get_table_name();
 
 	named_expression->table_name_		= name;
 	named_expression->table_expression_ = odf_value;
 	
 	if (sheet_id >=0 && sheet_id < table_state_list_.size())
 	{
-		odf_base_cell = table_state_list_[sheet_id].office_table_name_ + L".$A$1";
+		odf_base_cell = L"$" + table_state_list_[sheet_id].office_table_name_ + L".$A$1";
 		table_state_list_[sheet_id].add_definded_expression(elm);
 		
 		if ( printable)

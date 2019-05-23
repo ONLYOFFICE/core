@@ -243,14 +243,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 		bool printable = false;
 		if (name  == L"_xlnm.Print_Area")printable = true;
 
-		//todoooo !!!! сделать анализ на функцию, диапазон, константы .... !!!
-
-		if (false)//если простой - range, составной - выражение
-			ods_context->add_defined_range (name, oox_defined->m_oRef.get2(), sheet_id, printable);
-		else
-			ods_context->add_defined_expression (name, oox_defined->m_oRef.get2(), sheet_id, printable);
+		ods_context->add_defined_expression (name, oox_defined->m_oRef.get2(), sheet_id, printable);
 	}
-
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
@@ -430,7 +424,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
 	if (!oox_validation) return;
 	if (!oox_validation->m_oSqRef.IsInit()) return;
 
-	ods_context->start_data_validation(*oox_validation->m_oSqRef, oox_validation->m_oType.IsInit() ? oox_validation->m_oType->GetValue() : 0);
+	if (false == ods_context->start_data_validation(*oox_validation->m_oSqRef, oox_validation->m_oType.IsInit() ? oox_validation->m_oType->GetValue() : 0)) return;
 
 	if (oox_validation->m_oAllowBlank.IsInit())
 	{
@@ -543,7 +537,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	{
 		ods_context->set_comment_rect(oox_comment->m_dLeftMM.get(), oox_comment->m_dTopMM.get(), oox_comment->m_dWidthMM.get(), oox_comment->m_dHeightMM.get());
 	}
-
+	if (oox_comment->m_bVisible.IsInit())
+	{
+		ods_context->set_comment_visible(*oox_comment->m_bVisible);
+	}
+	if (oox_comment->m_sFillColorRgb.IsInit())
+	{
+		ods_context->set_comment_color(*oox_comment->m_sFillColorRgb);
+	}
+	else
+	{
+		ods_context->set_comment_color(L"CCFFFF"); //default ms
+	}
 	if (oox_comment->m_oText.IsInit())
 	{
 		for(size_t i = 0; i < oox_comment->m_oText->m_arrItems.size(); ++i)

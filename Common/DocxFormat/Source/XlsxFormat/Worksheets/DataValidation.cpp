@@ -149,7 +149,18 @@ void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
 }
 bool CDataValidation::IsExtended()
 {
-	return (m_oUuid.IsInit());
+	bool result = true;
+	if (m_oFormula1.IsInit())
+	{
+		if (m_oFormula1->m_sText.find(L"!") != std::wstring::npos && m_oFormula1->m_sText != L"#REF!")
+			result = false;
+	}
+	if (m_oFormula2.IsInit())
+	{
+		if (m_oFormula2->m_sText.find(L"!") != std::wstring::npos && m_oFormula2->m_sText != L"#REF!")
+			result = false;
+	}
+	return result;
 }
 void CDataValidation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

@@ -4943,7 +4943,7 @@ void BinaryWorksheetTableWriter::getSavedComment(OOX::Spreadsheet::CCommentItem&
 {
 	if(oComment.m_sGfxdata.IsInit())
 	{
-        const std::wstring& sGfxData = oComment.m_sGfxdata.get2();
+        const std::wstring& sGfxData = *oComment.m_sGfxdata;
 		std::wstring sSignatureBase64Old(_T("WExTV"));//XLST
 		std::wstring sSignatureBase64(_T("WExTM"));//XLS2
 		//compatibility with fact that previously used long that can be 4 or 8 byte
@@ -5180,7 +5180,7 @@ void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CComm
 		if(pComment->m_sAuthor.IsInit())
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserName);
-			m_oBcw.m_oStream.WriteStringW(pComment->m_sAuthor.get2());
+			m_oBcw.m_oStream.WriteStringW(*pComment->m_sAuthor);
 		}
 	}
 }

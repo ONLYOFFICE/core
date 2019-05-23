@@ -230,13 +230,29 @@ void ods_table_context::set_data_validation_allow_empty(bool val)
 }
 void ods_table_context::set_data_validation_content( const std::wstring &oox_formula)
 {
-	formulasconvert::oox2odf_converter formulas_converter;
-
-	std::wstring odf_formula = formulas_converter.convert_formula(oox_formula);
-
-	if (false == odf_formula.empty())
+	if (oox_formula.empty()) return;
+	
+	std::wstring odf_formula;
+	if (oox_formula[0] == L'\"' && oox_formula[oox_formula.length() - 1] == L'\"')
 	{
-		odf_formula = odf_formula.substr(4);
+		std::vector<std::wstring> arItems;
+		boost::algorithm::split(arItems, oox_formula.substr(1, oox_formula.length() - 2), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+		
+		for (size_t i = 0; i < arItems.size(); ++i)
+		{
+			odf_formula += L"\"" + arItems[i] + L"\"" + (i < arItems.size() - 1 ? L";" : L"");
+		}
+	}
+	else
+	{
+		formulasconvert::oox2odf_converter formulas_converter;
+
+		odf_formula = formulas_converter.convert_formula(oox_formula);
+
+		if (false == odf_formula.empty())
+		{
+			odf_formula = odf_formula.substr(4);
+		}
 	}
 	table_content_validation *validation = dynamic_cast<table_content_validation*>(state().data_validations_.back().elm.get());
 	

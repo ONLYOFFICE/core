@@ -645,15 +645,18 @@ namespace PdfWriter
 		}
 		delete[] pA;
 
-		if (!m_pTransparencyGroup)
-		{
-			m_pTransparencyGroup = new CDictObject();
-			m_pTransparencyGroup->Add("Type", "Group");
-			m_pTransparencyGroup->Add("S", "Transparency");
-			m_pTransparencyGroup->Add("CS", "DeviceRGB");
-		}
+        if (!IsPDFA())
+        {
+            if (!m_pTransparencyGroup)
+            {
+                m_pTransparencyGroup = new CDictObject();
+                m_pTransparencyGroup->Add("Type", "Group");
+                m_pTransparencyGroup->Add("S", "Transparency");
+                m_pTransparencyGroup->Add("CS", "DeviceRGB");
+            }
 
-		pPage->Add("Group", m_pTransparencyGroup);
+            pPage->Add("Group", m_pTransparencyGroup);
+        }
 		double dWidth  = pPage->GetWidth();
 		double dHeight = pPage->GetHeight();
 
@@ -662,7 +665,8 @@ namespace PdfWriter
 		pXObject->Add("Type", "XObject");
 		pXObject->Add("Subtype", "Form");
 		pXObject->Add("BBox", CArrayObject::CreateBox(0, 0, dWidth, dHeight));
-		pXObject->Add("Group", m_pTransparencyGroup);
+        if (m_pTransparencyGroup)
+            pXObject->Add("Group", m_pTransparencyGroup);
 		CDictObject* pResources = new CDictObject();
 		pXObject->Add("Resources", pResources);
 		CDictObject* pResShadings = new CDictObject();

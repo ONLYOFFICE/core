@@ -34,9 +34,8 @@
 
 class CRecordRoundTripNewPlaceholderId12Atom : public CUnknownRecord
 {
-	BYTE m_nFlags;
-
 public:
+	BYTE m_nFlags;
 	
 	CRecordRoundTripNewPlaceholderId12Atom()
 	{

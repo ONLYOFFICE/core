@@ -32,6 +32,8 @@ SOURCES += \
     ../../XlsxSerializerCom/Reader/ChartFromToBinary.cpp \
     ../../XlsxSerializerCom/Reader/CommonWriter.cpp \
     ../../XlsxSerializerCom/Reader/CSVReader.cpp \
+    ../../XlsxSerializerCom/Reader/BinaryWriter.cpp \
+    ../../XlsxSerializerCom/Writer/BinaryReader.cpp \
     ../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../OfficeCryptReader/source/ECMACryptFile.cpp \
     ../../OfficeCryptReader/source/CryptTransform.cpp \

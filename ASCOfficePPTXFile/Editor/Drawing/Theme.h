@@ -33,8 +33,16 @@
 #include "Structures.h"
 #include "Layout.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
+	enum _typeMaster
+	{
+		typeMaster,
+		typeNotesMaster,
+		typeHandoutMaster
+
+	};
+	
 	const long g_ThemeTextStylesCount	= 4;
 
 	class CTheme
@@ -47,9 +55,12 @@ namespace NSPresentationEditor
 		std::multimap<int,CElementPtr>	m_mapPlaceholders;
 
 		std::vector<CColor>				m_arColorScheme;
-		std::vector<CFont>				m_arFonts;
+		std::vector<CFontProperty>		m_arFonts;
 		std::vector<CBrush>				m_arBrushes;
 		std::vector<CPen>				m_arPens;
+
+		CFontProperties					majorFont;
+		CFontProperties					minorFont;
 
 		std::vector<CEffects>			m_arEffects;
 		CTextStyles						m_pStyles[g_ThemeTextStylesCount];
@@ -100,13 +111,13 @@ namespace NSPresentationEditor
 		virtual ~CTheme()
 		{
 		}
-		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
+		ODRAW::CColor GetColor(const LONG& lIndexScheme)
 		{
 			if (lIndexScheme < (LONG)m_arColorScheme.size())
 			{
 				return m_arColorScheme[lIndexScheme];
 			}
-			return NSPresentationEditor::CColor();
+			return ODRAW::CColor();
 		}
 
 		void CalculateStyles()
@@ -115,7 +126,7 @@ namespace NSPresentationEditor
 
 			for (int pos = 0; pos < g_ThemeTextStylesCount; ++pos)
 			{
-				NSPresentationEditor::CTextStyles& oStyle = m_pStyles[pos];
+				PPT_FORMAT::CTextStyles& oStyle = m_pStyles[pos];
 
 				size_t nLevels = 10;
 				for (size_t i = 0; i < nLevels; ++i)
@@ -147,26 +158,49 @@ namespace NSPresentationEditor
 							oColor.A	= m_arColorScheme[oColor.m_lSchemeIndex].A;
 						}
 					}
-					if (pLevel->m_oCFRun.fontRef.IsInit())
-					{
-						WORD lFontIndex = pLevel->m_oCFRun.fontRef.get();
-						if (lFontIndex < (WORD)m_arFonts.size())
-						{
-							if (!pLevel->m_oCFRun.FontProperties.is_init())
-								pLevel->m_oCFRun.FontProperties = new CFontProperties();
-
-							pLevel->m_oCFRun.FontProperties->SetFont(m_arFonts[lFontIndex]);
-						}
-					}
 					if (pLevel->m_oPFRun.bulletFontRef.IsInit())
 					{
 						WORD lFontIndex = pLevel->m_oPFRun.bulletFontRef.get();
 						if (lFontIndex < (WORD)m_arFonts.size())
 						{
 							if (!pLevel->m_oPFRun.bulletFontProperties.is_init())
-								pLevel->m_oPFRun.bulletFontProperties = new CFontProperties();
-
-							pLevel->m_oPFRun.bulletFontProperties->SetFont(m_arFonts[lFontIndex]);
+								pLevel->m_oPFRun.bulletFontProperties = new CFontProperty(m_arFonts[lFontIndex]);
+						}
+					}
+					if (pLevel->m_oCFRun.fontRef.IsInit())
+					{
+						WORD lFontIndex = pLevel->m_oCFRun.fontRef.get();
+						if (lFontIndex < (WORD)m_arFonts.size())
+						{
+							if (!pLevel->m_oCFRun.font.font.is_init())
+								pLevel->m_oCFRun.font.font = new CFontProperty(m_arFonts[lFontIndex]);
+						}
+					}
+					if (pLevel->m_oCFRun.eaFontRef.IsInit())
+					{
+						WORD lFontIndex = pLevel->m_oCFRun.eaFontRef.get();
+						if (lFontIndex < (WORD)m_arFonts.size())
+						{
+							if (!pLevel->m_oCFRun.font.ea.is_init())
+								pLevel->m_oCFRun.font.ea = new CFontProperty(m_arFonts[lFontIndex]);
+						}
+					}
+					if (pLevel->m_oCFRun.ansiFontRef.IsInit())
+					{
+						WORD lFontIndex = pLevel->m_oCFRun.ansiFontRef.get();
+						if (lFontIndex < (WORD)m_arFonts.size())
+						{
+							if (!pLevel->m_oCFRun.font.ansi.is_init())
+								pLevel->m_oCFRun.font.ansi = new CFontProperty(m_arFonts[lFontIndex]);
+						}
+					}
+					if (pLevel->m_oCFRun.symbolFontRef.IsInit())
+					{
+						WORD lFontIndex = pLevel->m_oCFRun.symbolFontRef.get();
+						if (lFontIndex < (WORD)m_arFonts.size())
+						{
+							if (!pLevel->m_oCFRun.font.sym.is_init())
+								pLevel->m_oCFRun.font.sym = new CFontProperty(m_arFonts[lFontIndex]);
 						}
 					}
 				}
@@ -213,10 +247,35 @@ namespace NSPresentationEditor
 					WORD lFontIndex = pLevel->m_oCFRun.fontRef.get();
 					if (lFontIndex < (WORD)pTheme->m_arFonts.size())
 					{
-						if (!pLevel->m_oCFRun.FontProperties.is_init())
-							pLevel->m_oCFRun.FontProperties = new CFontProperties();
-
-						pLevel->m_oCFRun.FontProperties->SetFont(pTheme->m_arFonts[lFontIndex]);
+						if (!pLevel->m_oCFRun.font.font.is_init())
+							pLevel->m_oCFRun.font.font = new CFontProperty(pTheme->m_arFonts[lFontIndex]);
+					}
+				}
+				if (pLevel->m_oCFRun.eaFontRef.IsInit())
+				{
+					WORD lFontIndex = pLevel->m_oCFRun.eaFontRef.get();
+					if (lFontIndex < (WORD)pTheme->m_arFonts.size())
+					{
+						if (!pLevel->m_oCFRun.font.ea.is_init())
+							pLevel->m_oCFRun.font.ea = new CFontProperty(pTheme->m_arFonts[lFontIndex]);
+					}
+				}
+				if (pLevel->m_oCFRun.ansiFontRef.IsInit())
+				{
+					WORD lFontIndex = pLevel->m_oCFRun.ansiFontRef.get();
+					if (lFontIndex < (WORD)pTheme->m_arFonts.size())
+					{
+						if (!pLevel->m_oCFRun.font.ansi.is_init())
+							pLevel->m_oCFRun.font.ansi = new CFontProperty(pTheme->m_arFonts[lFontIndex]);
+					}
+				}
+				if (pLevel->m_oCFRun.symbolFontRef.IsInit())
+				{
+					WORD lFontIndex = pLevel->m_oCFRun.symbolFontRef.get();
+					if (lFontIndex < (WORD)pTheme->m_arFonts.size())
+					{
+						if (!pLevel->m_oCFRun.font.sym.is_init())
+							pLevel->m_oCFRun.font.sym = new CFontProperty(pTheme->m_arFonts[lFontIndex]);
 					}
 				}
 			}

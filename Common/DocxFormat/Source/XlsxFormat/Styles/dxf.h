@@ -64,7 +64,11 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<dxf>");
+				toXML2(writer, L"dxf");
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring &node_name) const
+			{
+				writer.WriteString(L"<" + node_name + L">");
 				if(m_oFont.IsInit())
 					m_oFont->toXML(writer);
 				if(m_oNumFmt.IsInit())
@@ -77,8 +81,9 @@ namespace OOX
 					m_oBorder->toXML(writer);
 				if(m_oProtection.IsInit())
 					m_oProtection->toXML(writer);
-				writer.WriteString(L"</dxf>");
+				writer.WriteString(L"</" + node_name + L">");
 			}
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );

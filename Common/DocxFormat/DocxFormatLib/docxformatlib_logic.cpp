@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "common_formatlib.cpp"
+#include "xlsxformatlib_logic.cpp"
 
 #include "../Source/DocxFormat/Logic/AlternateContent.cpp"
 #include "../Source/DocxFormat/Logic/Annotations.cpp"
@@ -51,22 +53,11 @@
 #include "../Source/DocxFormat/Media/VbaProject.cpp"
 #include "../Source/DocxFormat/Media/JsaProject.cpp"
 #include "../Source/DocxFormat/Docx.cpp"
+#include "../Source/DocxFormat/Comments.cpp"
+#include "../Source/DocxFormat/App.cpp"
+#include "../Source/DocxFormat/Core.cpp"
 #include "../Source/DocxFormat/FileFactory.cpp"
 #include "../Source/DocxFormat/IFileContainer.cpp"
 #include "../Source/DocxFormat/Drawing/DrawingExt.cpp"
 #include "../Source/MathEquation/MathEquation.cpp"
-#include "../Source/Common/Align.cpp"
-#include "../Source/Common/Color.cpp"
-#include "../Source/Common/Index.cpp"
-#include "../Source/Common/NumFormat.cpp"
-#include "../Source/Common/Position.cpp"
-#include "../Source/Common/Wrap.cpp"
-#include "../Source/Common/ZIndex.cpp"
-#include "../Source/Common/SimpleTypes_Word.cpp"
-#include "../Source/SystemUtility/SystemUtility.cpp"
-#include "../Source/XlsxFormat/Chart/ChartSerialize.cpp"
-#include "../Source/XlsxFormat/Common.cpp"
-#include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
-#include "../Source/XlsxFormat/Xlsx.cpp"
-#include "../Source/XlsxFormat/Worksheets/SheetData.cpp"
-#include "../Source/XlsxFormat/Worksheets/Worksheet.cpp"
+

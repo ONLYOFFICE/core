@@ -53,6 +53,11 @@ struct _font_metrix
 	double		 approx_symbol_size;//in pt
 };
 
+struct ods_external_state
+{
+	std::wstring ref;
+};
+
 class ods_conversion_context : public odf_conversion_context
 {
 public:
@@ -85,8 +90,10 @@ public:
     void add_text_content(const std::wstring & text);
 	void end_cell_text();
 
+	void add_external_reference(const std::wstring & ref);
+
     void add_merge_cells(const std::wstring & ref);
-	void add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display);
+	void add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, bool external = true);
 
 	void start_comment		(int col, int row, std::wstring & author);
 	void set_comment_rect	(double l, double t, double w, double h);
@@ -120,16 +127,13 @@ public:
 	void start_table_view(int view_id);
 	void end_table_view();
 
+	std::vector<ods_external_state>	externals_;
 private:
 	_font_metrix				font_metrix_;
 	ods_table_context			table_context_;
 	
 	odf_text_context*			current_text_context_;
 	office_spreadsheet*			root_spreadsheet_;
-
-
-	
-
 };
 
 

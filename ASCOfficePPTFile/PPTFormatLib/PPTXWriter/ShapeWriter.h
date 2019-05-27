@@ -35,7 +35,7 @@
 
 #include "ImageManager.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
     static inline LONG GetPPTXPlaceHolderType(const int & lType)
 	{
@@ -64,7 +64,6 @@ namespace NSPresentationEditor
 			return 13;	// subtitle
 
 		case PT_Object:
-		case PT_VerticalObject:
 			return 9;	// object
 
 		case PT_MasterNotesSlideImage:
@@ -85,9 +84,6 @@ namespace NSPresentationEditor
 
 		case PT_Media:
 			return 8;	// media
-
-		case PT_Picture:
-			return 10;	// picture
 
 		case PT_MasterDate:
 			return 5;	// date
@@ -138,15 +134,15 @@ namespace NSPresentationEditor
 	class CShapeWriter
 	{
 	private:
-		NSPresentationEditor::CStringWriter		m_oWriterPath;
-		NSPresentationEditor::CStringWriter		m_oWriterVML;
-		NSPresentationEditor::CStringWriter		m_oWriter;
+		PPT_FORMAT::CStringWriter		m_oWriterPath;
+		PPT_FORMAT::CStringWriter		m_oWriterVML;
+		PPT_FORMAT::CStringWriter		m_oWriter;
 
-		NSPresentationEditor::CElementPtr		m_pElement;
+		PPT_FORMAT::CElementPtr		m_pElement;
 		
-		NSPresentationEditor::CRelsGenerator*	m_pRels;
+		PPT_FORMAT::CRelsGenerator*	m_pRels;
 
-		NSPresentationEditor::CTheme*			m_pTheme;
+		PPT_FORMAT::CTheme*			m_pTheme;
 
         LONG									m_lNextShapeID;
 

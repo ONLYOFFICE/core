@@ -161,6 +161,7 @@ namespace DocFileFormat
 		{
 			bool bBegin = false;
 			bool bSeparate = false;
+			bool bResult = false;
 			//bool bInstrText = false;
 			bool bEnd = false;
 		};

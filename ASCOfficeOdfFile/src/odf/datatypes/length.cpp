@@ -76,27 +76,26 @@ std::wostream & operator<< (std::wostream & _Wostream, const length & _Length)
     _Wostream  << std::setprecision(4) << _Length.get_value() << _Length.get_unit();
     return _Wostream;
 }
-length operator+ (length & _Length1, length & _Length2)
+length operator+ (length _Length1, length _Length2)
 {
 	return length(_Length1.get_value() + _Length2.get_value(),_Length1.get_unit()); //проверка на одинаковость типа .. или приведение к одному
 }
 
-length operator+ (length & _Length1, double val)
+length operator+ (length _Length1, double val)
 {
     return length(_Length1.get_value() + val,_Length1.get_unit());
 }
-
-length operator- (length & _Length1, length & _Length2)
+length operator- (length _Length1, length _Length2)
 {
-	return length(_Length1.get_value() - _Length2.get_value(),_Length1.get_unit()); //проверка на одинаковость типа .. или приведение к одному
+	return length(_Length1.get_value() - _Length2.get_value(), _Length1.get_unit()); //проверка на одинаковость типа .. или приведение к одному
 }
-length operator/ (length & _Length1, double val)
+length operator/ (length _Length1, double val)
 {
-	return length(_Length1.get_value() / val ,_Length1.get_unit()); 
+	return length(_Length1.get_value() / val, _Length1.get_unit()); 
 }
-length operator* (length & _Length1, double val)
+length operator* (length _Length1, double val)
 {
-	return length(_Length1.get_value() * val ,_Length1.get_unit()); 
+	return length(_Length1.get_value() * val, _Length1.get_unit()); 
 }
 bool operator== (length & _Length1, length & _Length2)
 {

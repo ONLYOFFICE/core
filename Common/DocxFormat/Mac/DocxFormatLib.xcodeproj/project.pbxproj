@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1732414A1BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; };
 		1732414C1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; };
+		17ADFF1E2215FD50002B6005 /* ThreadedComments.h in Headers */ = {isa = PBXBuildFile; fileRef = 17ADFF1D2215FD50002B6005 /* ThreadedComments.h */; };
 		17C1FB941ACC4250006B99B3 /* Hyperlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0621AC4262700F28F8B /* Hyperlink.cpp */; };
 		17C1FB951ACC4250006B99B3 /* Sdt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A06D1AC4262700F28F8B /* Sdt.cpp */; };
 		17C1FB961ACC4250006B99B3 /* oMathContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0801AC4262700F28F8B /* oMathContent.cpp */; };
@@ -223,11 +224,16 @@
 		8A404FCA2089FF7E00F2D5CF /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FC92089FF7E00F2D5CF /* Base64.cpp */; };
 		8A404FCC2089FFE700F2D5CF /* Directory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCB2089FFE700F2D5CF /* Directory.cpp */; };
 		8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCD208A001D00F2D5CF /* Path.cpp */; };
+		8AE10E722228255A00A542DE /* Comments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E712228255900A542DE /* Comments.cpp */; };
+		8AE10E742228257E00A542DE /* ConditionalFormatting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */; };
+		8AECC18F218C991900DEE19A /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC18E218C991900DEE19A /* App.cpp */; };
+		8AECC191218C992900DEE19A /* Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC190218C992900DEE19A /* Core.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		173241431BBEC90000E67992 /* pole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pole.cpp; sourceTree = "<group>"; };
 		173241441BBEC90000E67992 /* pole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pole.h; sourceTree = "<group>"; };
+		17ADFF1D2215FD50002B6005 /* ThreadedComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadedComments.h; sourceTree = "<group>"; };
 		17C1FC9C1ACC4250006B99B3 /* libDocxFormatLib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDocxFormatLib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E69FEE1AC4262700F28F8B /* ASCWinAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCWinAPI.h; sourceTree = "<group>"; };
 		17E69FEF1AC4262700F28F8B /* Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base.h; sourceTree = "<group>"; };
@@ -450,6 +456,10 @@
 		8A404FC92089FF7E00F2D5CF /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64.cpp; path = ../../../../DesktopEditor/common/Base64.cpp; sourceTree = "<group>"; };
 		8A404FCB2089FFE700F2D5CF /* Directory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Directory.cpp; path = ../../../../DesktopEditor/common/Directory.cpp; sourceTree = "<group>"; };
 		8A404FCD208A001D00F2D5CF /* Path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Path.cpp; path = ../../../../DesktopEditor/common/Path.cpp; sourceTree = "<group>"; };
+		8AE10E712228255900A542DE /* Comments.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Comments.cpp; sourceTree = "<group>"; };
+		8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConditionalFormatting.cpp; sourceTree = "<group>"; };
+		8AECC18E218C991900DEE19A /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
+		8AECC190218C992900DEE19A /* Core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Core.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -570,10 +580,13 @@
 			isa = PBXGroup;
 			children = (
 				17E6A01E1AC4262700F28F8B /* App.h */,
+				8AECC18E218C991900DEE19A /* App.cpp */,
 				17E6A01F1AC4262700F28F8B /* Bibliography.h */,
 				17E6A0201AC4262700F28F8B /* Comments.h */,
+				8AE10E712228255900A542DE /* Comments.cpp */,
 				17E6A0211AC4262700F28F8B /* ContentTypes.h */,
 				17E6A0221AC4262700F28F8B /* Core.h */,
+				8AECC190218C992900DEE19A /* Core.cpp */,
 				17E6A0231AC4262700F28F8B /* CustomXml.h */,
 				17E6A0241AC4262700F28F8B /* Diagram */,
 				17E6A0261AC4262700F28F8B /* Document.h */,
@@ -815,6 +828,7 @@
 			isa = PBXGroup;
 			children = (
 				17E6A1521AC4262800F28F8B /* Comments.h */,
+				17ADFF1D2215FD50002B6005 /* ThreadedComments.h */,
 			);
 			path = Comments;
 			sourceTree = "<group>";
@@ -897,6 +911,7 @@
 			children = (
 				17E6A1881AC4262800F28F8B /* Cols.h */,
 				17E6A1891AC4262800F28F8B /* ConditionalFormatting.h */,
+				8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */,
 				17E6A18A1AC4262800F28F8B /* Hyperlinks.h */,
 				17E6A18B1AC4262800F28F8B /* MergeCells.h */,
 				17E6A18C1AC4262800F28F8B /* SheetData.h */,
@@ -1108,6 +1123,7 @@
 				17C1FC941ACC4250006B99B3 /* Styles.h in Headers */,
 				17C1FC961ACC4250006B99B3 /* oMathBottomNodes.h in Headers */,
 				17C1FC971ACC4250006B99B3 /* CalcChain.h in Headers */,
+				17ADFF1E2215FD50002B6005 /* ThreadedComments.h in Headers */,
 				17C1FC981ACC4250006B99B3 /* Common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1173,6 +1189,7 @@
 				17C1FB9B1ACC4250006B99B3 /* Annotations.cpp in Sources */,
 				17C1FB9C1ACC4250006B99B3 /* FileFactory.cpp in Sources */,
 				17C1FB9D1ACC4250006B99B3 /* DateTime.cpp in Sources */,
+				8AECC191218C992900DEE19A /* Core.cpp in Sources */,
 				17C1FB9E1ACC4250006B99B3 /* Align.cpp in Sources */,
 				17C1FB9F1ACC4250006B99B3 /* Index.cpp in Sources */,
 				17C1FBA01ACC4250006B99B3 /* TxtFile.cpp in Sources */,
@@ -1190,11 +1207,14 @@
 				17C1FBAC1ACC4250006B99B3 /* AlternateContent.cpp in Sources */,
 				17C1FBAD1ACC4250006B99B3 /* SmartTag.cpp in Sources */,
 				17C1FBAE1ACC4250006B99B3 /* oMath.cpp in Sources */,
+				8AECC18F218C991900DEE19A /* App.cpp in Sources */,
+				8AE10E722228255A00A542DE /* Comments.cpp in Sources */,
 				69E6AC892031AC3500795D9D /* SheetData.cpp in Sources */,
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,
 				17C1FBB11ACC4250006B99B3 /* Position.cpp in Sources */,
 				69E6AC8C2031ACA900795D9D /* VbaProject.cpp in Sources */,
 				8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */,
+				8AE10E742228257E00A542DE /* ConditionalFormatting.cpp in Sources */,
 				691C3E131F20C3D500F1775E /* File.cpp in Sources */,
 				17C1FBB21ACC4250006B99B3 /* Vml.cpp in Sources */,
 				17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */,
@@ -1231,9 +1251,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
 					MAC,
 					unix,
 					_IOS,
@@ -1245,7 +1262,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
-					/usr/include/libxml2/,
+					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/**",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",
@@ -1273,9 +1290,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
 					MAC,
 					unix,
 					_IOS,
@@ -1287,7 +1301,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
-					/usr/include/libxml2/,
+					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/**",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",

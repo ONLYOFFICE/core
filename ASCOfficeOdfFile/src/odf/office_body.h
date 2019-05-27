@@ -61,17 +61,15 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
-public:
     office_body();
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-
+	virtual void add_text(const std::wstring & Text) {}
+	virtual void add_space(const std::wstring & Text) {}
 public:
     office_element_ptr content_;
 };

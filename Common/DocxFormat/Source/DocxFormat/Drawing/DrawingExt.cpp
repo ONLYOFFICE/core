@@ -65,6 +65,7 @@ namespace OOX
                                       *m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"	|| 
 									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}"	|| 
 									  *m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}"	||
+									  *m_sUri == L"{B025F937-C7B1-47D3-B67F-A62EFF666E3E}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -83,7 +84,7 @@ namespace OOX
 					{
 						m_oDataModelExt = oReader;
 					}
-					else if (sName == _T("table"))
+					else if (sName == L"table")
 					{
 						m_oAltTextTable = oReader;
 					}
@@ -98,6 +99,10 @@ namespace OOX
 							m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(oReader));
 						}
 					}
+					else if (sName == L"id")
+					{
+						m_oId = oReader.GetText2();
+					}
 				}
 			}
 			else
@@ -108,13 +113,11 @@ namespace OOX
 		}
         std::wstring COfficeArtExtension::toXML() const
         {
-            return toXMLWithNS(_T("a:"));
+            return toXMLWithNS(L"a:");
         }
         std::wstring COfficeArtExtension::toXMLWithNS(const std::wstring& sNamespace) const
 		{
-            std::wstring sResult = _T("<");
-            sResult += sNamespace;
-            sResult += _T("ext");
+            std::wstring sResult = L"<" + sNamespace + L"ext";
 
             if ( m_sUri.IsInit() )
 			{
@@ -125,8 +128,8 @@ namespace OOX
 			{
 				sResult += L" " + m_sAdditionalNamespace;
 			}
-			
-			sResult += _T(">");
+
+			sResult += L">";
 
 			if(m_oCompatExt.IsInit())
 			{
@@ -143,11 +146,23 @@ namespace OOX
 				NSStringUtils::CStringBuilder writer;
 				m_oAltTextTable->toXML(writer);
 				sResult += writer.GetData().c_str();
+			}			
+			if (false == m_arrConditionalFormatting.empty())
+			{
+				sResult += L"<x14:conditionalFormattings>";
+				NSStringUtils::CStringBuilder writer;
+				for (size_t i = 0; i < m_arrConditionalFormatting.size(); i++)
+				{
+					m_arrConditionalFormatting[i]->toXML2(writer, true);
+				}
+				sResult += writer.GetData().c_str();
+				sResult += L"</x14:conditionalFormattings>";
 			}
-
-            sResult += _T("</");
-            sResult += sNamespace;
-            sResult += _T("ext>");
+			if (m_oId.IsInit())
+			{
+				sResult += L"<" + sNamespace + L"id>" + m_oId.get2() + L"</" + sNamespace + L"id>";
+			}
+            sResult += L"</" + sNamespace + L"ext>";
 
 			return sResult;
 		}

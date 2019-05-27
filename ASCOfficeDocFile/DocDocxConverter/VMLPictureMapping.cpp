@@ -33,41 +33,18 @@
 #include "VMLPictureMapping.h"
 #include "VMLShapeMapping.h"
 
-#include "OfficeDrawing/GeometryBooleanProperties.h"
-#include "OfficeDrawing/GeometryTextBooleanProperties.h"
-#include "OfficeDrawing/GroupShapeBooleanProperties.h"
 #include "OfficeDrawing/MetafilePictBlip.h"
 
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 
+#include "../../ASCOfficePPTFile/PPTFormatLib/Reader/ReadStructures.h"
+
 using namespace DocFileFormat;
 
-typedef struct
-{
-    DWORD   iType;              // Record type EMR_HEADER
-    DWORD   nSize;              // Record size in bytes.  This may be greater
-                                // than the sizeof(ENHMETAHEADER).
-    RECT   rclBounds;          // Inclusive-inclusive bounds in device units
-    RECT   rclFrame;           // Inclusive-inclusive Picture Frame .01mm unit
-    DWORD   dSignature;         // Signature.  Must be ENHMETA_SIGNATURE.
-    DWORD   nVersion;           // Version number
-    DWORD   nBytes;             // Size of the metafile in bytes
-    DWORD   nRecords;           // Number of records in the metafile
-    WORD    nHandles;           // Number of handles in the handle table
-                                // Handle index zero is reserved.
-    WORD    sReserved;          // Reserved.  Must be zero.
-    DWORD   nDescription;       // Number of chars in the unicode desc string
-                                // This is 0 if there is no description string
-    DWORD   offDescription;     // Offset to the metafile description record.
-                                // This is 0 if there is no description string
-    DWORD   nPalEntries;        // Number of entries in the metafile palette.
-    SIZE   szlDevice;          // Size of the reference device in pels
-    SIZE   szlMillimeters;     // Size of the reference device in millimeters
-} ENHMETAHEADER3;
 
 namespace DocFileFormat
 {
@@ -138,6 +115,51 @@ namespace DocFileFormat
 		}
 		return btWin32;
 	}
+	bool VMLPictureMapping::ParseEmbeddedBlob( const std::string & xmlString, std::wstring & newXmlString)
+	{
+		newXmlString.clear();
+
+		std::wstring sTempFolder = m_context->_doc->m_sTempFolder;
+		if (sTempFolder.empty())
+		{
+            sTempFolder = NSFile::CFileBinary::GetTempPath();
+		}
+
+		std::wstring sTempXmlFile = NSDirectory::CreateTempFileWithUniqueName(sTempFolder, L"emb");
+
+		NSFile::CFileBinary file; 
+		file.CreateFileW(sTempXmlFile);
+		file.WriteFile((BYTE*)xmlString.c_str(), xmlString.size());
+		file.CloseFile();
+
+		COfficeUtils officeUtils(NULL);
+
+		BYTE *utf8Data = NULL; 
+		ULONG utf8DataSize = 0;
+		if (S_OK != officeUtils.LoadFileFromArchive(sTempXmlFile, L"drs/shapexml.xml", &utf8Data, utf8DataSize))
+		{
+			if (S_OK == officeUtils.IsFileExistInArchive(sTempXmlFile, L"drs/diagrams"))
+			{
+				officeUtils.LoadFileFromArchive(sTempXmlFile, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize);
+			}
+			else if (S_OK != officeUtils.LoadFileFromArchive(sTempXmlFile, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+			{
+
+			}
+		}
+
+		if (utf8Data && utf8DataSize > 0)
+		{
+			newXmlString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+
+			delete []utf8Data;
+		}
+		NSFile::CFileBinary::Remove(sTempXmlFile);
+
+		if (newXmlString.empty()) return false;
+
+		return true;
+	}
 	bool VMLPictureMapping::ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
 	{
 		newXmlString.clear();
@@ -198,15 +220,12 @@ namespace DocFileFormat
 		return res;
 	}
 //---------------------------------------------------------------
-	void VMLPictureMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
+	void VMLPictureMapping::appendStyleProperty(std::wstring& style, const std::wstring& propName, const std::wstring& propValue) const
 	{
-		if ( b != NULL )
-		{
-			b->operator += ( propName );
-			b->operator += ( L":" );
-			b->operator += ( propValue );
-			b->operator +=( L";" );
-		}
+		style += ( propName );
+		style += ( L":" );
+		style += ( propValue );
+		style +=( L";" );
 	}
 
 	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture) : PropertiesMapping(writer)
@@ -221,6 +240,7 @@ namespace DocFileFormat
 		m_isBullete			=	false;
 		m_isEquation		=	false;
 		m_isEmbedded		=	false;
+		m_isBlob			=	false;
 
         m_imageData			=	new XMLTools::XMLElement( L"v:imagedata" );
 	}
@@ -256,7 +276,7 @@ namespace DocFileFormat
 		std::wstring strHeight = FormatUtils::DoubleToWideString( height.ToPoints() );
 		std::wstring strStyle;
 	
-		std::vector<OptionEntryPtr> options;
+		std::vector<ODRAW::OfficeArtFOPTEPtr> options;
 		
 		PictureFrameType type;
 		Shape* pShape = NULL;
@@ -272,6 +292,7 @@ namespace DocFileFormat
 
 			type.Convert( vmlShapeTypeMapping );
 			RELEASEOBJECT( vmlShapeTypeMapping );
+
 		}
 		else if (pict->embeddedData)
 		{
@@ -296,31 +317,37 @@ namespace DocFileFormat
 
 		for (size_t i = 0; i < options.size(); i++)
 		{
-			OptionEntryPtr & iter = options[i];
-			switch ( iter->pid )
+			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
+			switch ( iter->opid )
 			{
 			case wzEquationXML:
 				{
-					m_isEquation = true;
-					m_isEmbedded = true;
-					
-					m_embeddedData = std::string((char*)iter->opComplex.get(), iter->op);
-
-					if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
+					ODRAW::XmlString *pXml = dynamic_cast<ODRAW::XmlString*>(iter.get());
+					if (pXml)
 					{
-						m_isEmbedded = false;
+						m_isEquation = true;
+						m_isEmbedded = true;
+						
+						m_embeddedData = pXml->data;
+
+						if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
+						{
+							m_isEmbedded = false;
+						}
 					}
 				}break;
 			case metroBlob:
-				{
-					//встроенная неведомая хуйня
-					m_isEmbedded	= true;
-					m_embeddedData	= std::string((char*)iter->opComplex.get(), iter->op);
-					
-					//if (ParseEmbeddedBlob( m_embeddedData, m_blobXml)) // todoooo
-					//{
-					//	m_isEmbedded = false;
-					//}
+				{//встроенная неведомая хуйня
+					ODRAW::MetroBlob* blob = dynamic_cast<ODRAW::MetroBlob*>(iter.get());
+					if (blob)
+					{						
+						m_isBlob		= true;
+						m_isEmbedded	= true;
+						//if (ParseEmbeddedBlob( blob->data.first, blob->data.second)) // todoooo
+						//{
+						//	m_isEmbedded = false;
+						//}
+					}
 				}break;
 //BORDERS
 			case borderBottomColor:
@@ -391,41 +418,41 @@ namespace DocFileFormat
 					std::wstring v = strHeight;
 					strHeight = strWidth; strWidth = v;
 
-					appendStyleProperty(&strStyle, L"rotation", FormatUtils::DoubleToWideString(dAngle));
+					appendStyleProperty(strStyle, L"rotation", FormatUtils::DoubleToWideString(dAngle));
 				}break;
 			case posh:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-horizontal", VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-horizontal", VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
 				}break;
 			case posrelh:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}break;
 			case posv:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-vertical", VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-vertical", VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
 				}break;
 			case posrelv:
 				{
-					appendStyleProperty(&strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+					appendStyleProperty(strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
 			case groupShapeBooleans:
 				{
-					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
+					ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 
-					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument)
+					if (booleans->fUsefBehindDocument && booleans->fBehindDocument)
 					{
 						//The shape is behind the text, so the z-index must be negative.
-						appendStyleProperty(&strStyle, L"z-index", L"-1" );
+						appendStyleProperty(strStyle, L"z-index", L"-1" );
 					}
 					//else if (!m_isInlinePicture)
 					//{
 					//	appendStyleProperty( &strStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 					//}
 
-					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
+					if (booleans->fHidden && booleans->fUsefHidden)
 					{
-						appendStyleProperty(&strStyle, L"visibility", L"hidden");
+						appendStyleProperty(strStyle, L"visibility", L"hidden");
 					}
 				}break;
 			default:
@@ -470,7 +497,8 @@ namespace DocFileFormat
 			appendValueAttribute(m_imageData, L"o:title", L"" );
 			m_pXmlWriter->WriteString(m_imageData->GetXMLString());
 		}
-
+		else
+			m_isPictureBroken = true;
 
 		{//borders			
 			writePictureBorder( L"bordertop",		pict->brcTop );
@@ -529,10 +557,10 @@ namespace DocFileFormat
 				pict->embeddedDataSize += lLenHeader;
 				delete []pict->embeddedData;
 				pict->embeddedData = newData;
-
 			}
+
 			m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipDIB), 
-					std::vector<unsigned char>(pict->embeddedData, (pict->embeddedData + pict->embeddedDataSize)), Global::msoblipDIB));
+				pict->embeddedData, pict->embeddedDataSize, Global::msoblipDIB));
 			
 			m_nImageId	=	m_context->_docx->RegisterImage(m_caller, btWin32);
 			result	=	true;
@@ -549,26 +577,44 @@ namespace DocFileFormat
 					if (metaBlip)
 					{//decompress inside MetafilePictBlip
 						unsigned char *newData	= NULL;
-						int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
-						
-						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<unsigned char>(newData, (newData + newDataSize))));
-						
-						RELEASEARRAYOBJECTS(newData);
-					}
-				}
-				break;
+						unsigned int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
 
+						boost::shared_array<unsigned char> arData(newData);						
+						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), arData, newDataSize));
+					}
+				}break;
+				case Global::msoblipDIB:
+				{//user_manual_v52.doc
+				
+  					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
+					if (bitBlip)
+					{
+						std::wstring file_name = m_context->_doc->m_sTempFolder + L"tmp_image";
+						oBlipEntry->btWin32 = ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name);
+
+						if (oBlipEntry->btWin32 == Global::msoblipPNG)
+						{
+							unsigned char* pData = NULL;
+							DWORD nData = 0;
+							if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
+							{
+								m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipPNG), 
+									boost::shared_array<unsigned char>(pData), nData, Global::msoblipPNG));
+								break;
+							}
+						}
+					}				
+				}//в случае ошибки конвертации -храним оригинальный dib
 				case Global::msoblipJPEG:
 				case Global::msoblipCMYKJPEG:
 				case Global::msoblipPNG:
 				case Global::msoblipTIFF:
-				case Global::msoblipDIB:
 				{
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
 					if (bitBlip)
 					{
 						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
-							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
+							bitBlip->m_pvBits, bitBlip->pvBitsSize, oBlipEntry->btWin32));
 					}
 				}break;			
 

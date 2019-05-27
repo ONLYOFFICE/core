@@ -107,7 +107,9 @@ HEADERS += \
     \
     ./Fonts.h \
     ./Graphics.h \
-    ./Image.h
+    ./Image.h \
+    ./../../raster/Metafile/svg/SVGFramework.h \
+    ./../../raster/Metafile/svg/SVGTransformer.h
 
 SOURCES += \
     ./../Matrix.cpp \
@@ -133,7 +135,9 @@ SOURCES += \
     \
     ./pro_Fonts.cpp \
     ./pro_Image.cpp \
-    ./pro_Graphics.cpp
+    ./pro_Graphics.cpp \
+    ./../../raster/Metafile/svg/SVGFramework.cpp \
+    ./../../raster/Metafile/svg/SVGTransformer.cpp
 
 SOURCES += $$PWD/graphics_pri.cpp
 

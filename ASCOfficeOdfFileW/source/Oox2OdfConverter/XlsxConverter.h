@@ -93,6 +93,10 @@ namespace OOX
 		class CHeaderFooter;		
 		class CSparklineGroups;
 		class CAltTextTable;
+		class CExternalLink;
+		class CDataValidations;
+		class CSheetProtection;
+		class CDataValidation;
 	}
 }
 
@@ -131,16 +135,16 @@ namespace Oox2Odf
 	public:
 		friend class OoxConverter;
 
-		XlsxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
+		XlsxConverter(const std::wstring & path, bool bTemplate);
 		~XlsxConverter();
 
 		virtual void convertDocument();
 		
-		virtual OOX::IFileContainer						*current_document();
-		virtual odf_writer::odf_conversion_context		*odf_context();		
-		virtual PPTX::Theme								*oox_theme();
-        virtual std::wstring							find_link_by_id (std::wstring sId, int t);
-		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id(std::wstring sId);
+		virtual OOX::IFileContainer					*current_document();
+		virtual odf_writer::odf_conversion_context	*odf_context();		
+		virtual PPTX::Theme							*oox_theme();
+        virtual std::wstring						find_link_by_id (const std::wstring & sId, int t);
+		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id (const std::wstring & sId);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
@@ -177,6 +181,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CPageSetup			*oox_page);
 		void convert(OOX::Spreadsheet::CPageMargins			*oox_page);
 		void convert(OOX::Spreadsheet::CWorkbookView		*oox_book_views);
+		void convert(OOX::Spreadsheet::CExternalLink		*oox_external_link);
 
 		void convert(OOX::Spreadsheet::CFont				*font,		odf_writer::style_text_properties		*text_properties);		
 		void convert(OOX::Spreadsheet::CBorder				*border,	odf_writer::style_table_cell_properties *cell_properties);
@@ -199,6 +204,9 @@ namespace Oox2Odf
 
 		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position *pos);
 
+		void convert(OOX::Spreadsheet::CSheetProtection				*oox_prot);
+		void convert(OOX::Spreadsheet::CDataValidations				*oox_validations);
+		void convert(OOX::Spreadsheet::CDataValidation				*oox_validation);
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);
 		void convert(OOX::Spreadsheet::CAutofilter					*oox_filter);

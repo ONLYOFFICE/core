@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "BiffRecordContinued.h"
 
 #include "../Biff_structures/FrtRefHeaderU.h"
 #include "../Biff_structures/CellRangeRef.h"
@@ -40,12 +40,12 @@
 namespace XLS
 {
 
-class Feature11: public BiffRecord
+class Feature11 : public BiffRecordContinued //: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Feature11)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Feature11)
 public:
-	Feature11();
+	Feature11(bool bFeat12 = false);
 	~Feature11();
 
 	BaseObjectPtr clone();
@@ -62,6 +62,8 @@ public:
 	std::wstring			sqref;
 
 	TableFeatureType		rgbFeat;
+
+	bool bFeature12;
 };
 
 } // namespace XLS

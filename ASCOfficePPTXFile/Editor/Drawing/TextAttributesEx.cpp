@@ -32,7 +32,7 @@
 #include "TextAttributesEx.h"
 #include "Theme.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 
 	void CTextAttributesEx::RecalcParagraphsPPT()
@@ -246,14 +246,12 @@ namespace NSPresentationEditor
 
 				if (m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
 				{
-					m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();				
-					m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperties();
-
 					int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();
 
 					if (ref < (int)pTheme->m_arFonts.size())
 					{
-						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties->SetFont(pTheme->m_arFonts[ref]);
+						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();				
+						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperty(pTheme->m_arFonts[ref]);
 					}
 				}
 

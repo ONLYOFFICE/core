@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of CRT union of records 
 class CRT: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CRT)

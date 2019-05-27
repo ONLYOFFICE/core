@@ -212,13 +212,13 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 
 		oox_convert(chart_context);
 
-		if (embeddedData.empty())
+		if (false == embeddedData.empty())
 		{
-			chart_context.set_cache_only(true);
+			chart_context.set_externalData(embeddedData);
 		}
 		else
 		{
-			chart_context.set_externalData(embeddedData);
+			chart_context.set_cache_only(true);
 		}
 
 		Context.end_chart();
@@ -416,11 +416,13 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		std::vector<std::wstring>		domain_cash;
 		std::vector<std::wstring>		cell_cash;
 		std::vector<std::wstring>		cat_cash;
+		std::vector<std::wstring>		label_cash;
 
 		calc_cache_series (domain_cell_range_adress_,			domain_cash);
 		calc_cache_series (series_[i].cell_range_address_,		cell_cash);
+		calc_cache_series (series_[i].label_cell_address_,		label_cash);
 		
-		if (categories_.size() >0)
+		if (false == categories_.empty())
 			calc_cache_series (categories_[0],	cat_cash);
 
 		std::wstring			formatCode	= L"General";
@@ -433,6 +435,11 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		if ((strVal) && (strVal->length() > 1))
 		{
 			formatCode = *strVal;
+		}
+
+		if (false == series_[i].label_cell_address_.empty())
+		{
+			current->set_label_series(series_[i].label_cell_address_, label_cash);//_oox_strRef  
 		}
 		
 		if (domain_cell_range_adress_.empty() == false || 
@@ -450,14 +457,14 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			}
 			else
 			{	//x
-				if (false == domain_cash.empty())
+				if (false == domain_cash.empty() || false == cash_values.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
 					current->set_values_series (2, domain_cash);		
 				}
 				//y
-				if (false == cell_cash.empty())
+				if (false == cell_cash.empty() || false == cash_values.empty())
 				{
 					if (!bPivotChart_)
 						current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				
@@ -737,7 +744,7 @@ void process_build_object::visit(chart_title& val)
 	if (val.text_p_)
 	{
 		std::wstringstream v;
-		val.text_p_->text_to_stream(v);
+		val.text_p_->text_to_stream(v, false);
 		t.content_ = v.str();
 	}
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
@@ -764,7 +771,7 @@ void process_build_object::visit(chart_subtitle & val)
 {
 	title t;
 	std::wstringstream v;
-	val.text_p_->text_to_stream(v);
+	val.text_p_->text_to_stream(v, false);
 	t.content_ = v.str();
 
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)
@@ -1038,15 +1045,15 @@ void process_build_object::visit(table_table_cell& val)
 	for (size_t i = 0 ; i < val.content_.elements_.size(); i++)
 	{
 		std::wstringstream  wstream_temp;	
-		val.content_.elements_[i]->text_to_stream(wstream_temp);
+		val.content_.elements_[i]->text_to_stream(wstream_temp, false);
 		
 		if (val.content_.elements_[i]->get_type() == typeTextP)
 		{
-			cell_cash += xml::utils::replace_xml_to_text(wstream_temp.str());
+			cell_cash += wstream_temp.str();
 		}
 		else if (val.content_.elements_[i]->get_type() == typeDrawG)
 		{
-			cell_desc += xml::utils::replace_xml_to_text(wstream_temp.str());
+			cell_desc += wstream_temp.str();
 		}
 	}   
 

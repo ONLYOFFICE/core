@@ -92,7 +92,7 @@ namespace DocFileFormat
 			{
 				//start abstractNum
                 m_pXmlWriter->WriteNodeBegin( L"w:abstractNum", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i /*+ 1 */));
+                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::SizeTToWideString( i /*+ 1 */));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				//nsid
@@ -140,7 +140,7 @@ namespace DocFileFormat
 			{
 				//start abstractNum
                 m_pXmlWriter->WriteNodeBegin( L"w:abstractNum", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( rglst->listNumbering[i]->id ));
+                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::SizeTToWideString( rglst->listNumbering[i]->id ));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				////nsid
@@ -169,7 +169,7 @@ namespace DocFileFormat
 
 				//start num
                 m_pXmlWriter->WriteNodeBegin( L"w:num", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::IntToWideString(i + 1));
+                m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::SizeTToWideString(i + 1));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				int index = FindIndexbyId( rglst->listData, lfo->lsid );
@@ -205,12 +205,12 @@ namespace DocFileFormat
 				for (size_t i = 0; i < rglst->listNumbering.size(); ++i)
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:num", TRUE );
-                    m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::IntToWideString(rglst->listNumbering[i]->id));
+                    m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::SizeTToWideString(rglst->listNumbering[i]->id));
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 
                     m_pXmlWriter->WriteNodeBegin( L"w:abstractNumId", TRUE );
-                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString( rglst->listNumbering[i]->id ));
+                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::SizeTToWideString( rglst->listNumbering[i]->id ));
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
                     m_pXmlWriter->WriteNodeEnd(L"w:num");
@@ -285,7 +285,7 @@ namespace DocFileFormat
 					newResult = find_if((result + 1), lvl->xst.end(), &NumberingMapping::IsPlaceholder);
 
                     ret += L"%";
-					ret += FormatUtils::IntToWideString(*result + 1);
+                    ret += FormatUtils::SizeTToWideString(*result + 1);
 					ret += std::wstring((result + 1), newResult);
 					result = newResult;
 				}

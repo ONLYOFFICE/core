@@ -33,7 +33,7 @@
 #define _METAFILE_COMMON_METAFILETYPES_H
 
 #include <string>
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 
 #ifndef BYTE
 typedef unsigned char BYTE;
@@ -274,6 +274,9 @@ typedef unsigned char BYTE;
 #ifndef LAYOUT_BITMAPORIENTATIONPRESERVED
 	#define LAYOUT_BITMAPORIENTATIONPRESERVED	0x0008
 #endif
+
+#define GM_COMPATIBLE       1
+#define GM_ADVANCED         2
 
 namespace MetaFile
 {

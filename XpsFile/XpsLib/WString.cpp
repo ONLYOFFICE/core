@@ -32,7 +32,7 @@
 #include "WString.h"
 #include "Utils.h"
 
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/common/Types.h"
 
 #define MAX_STRING_LEN 2147483648 

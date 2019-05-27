@@ -36,7 +36,7 @@
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
 
-using namespace NSPresentationEditor;
+using namespace PPT_FORMAT;
 
 namespace CRYPT
 {
@@ -89,26 +89,27 @@ struct SFileIdCluster
 	}
 };
 #if !defined(_WIN32) && !defined (_WIN64)
-    typedef struct tagPOINT
-    {
-        long x;
-        long y;
-    } POINT;
-
-    typedef struct tagSIZE
-    {
-        long cx;
-        long cy;
-    }SIZE;
-
-    typedef struct tagRECT
-    {
-        long left;
-        long top;
-        long right;
-        long bottom;
-    }RECT;
- #endif
+    #ifndef customTagPoint
+        #define customTagPoint
+        typedef struct tagPOINT
+        {
+            _INT32  x;
+            _INT32  y;
+        } POINT;
+        typedef struct tagRECT
+        {
+            _INT32    left;
+            _INT32    top;
+            _INT32    right;
+            _INT32    bottom;
+        } RECT;
+        typedef struct tagSIZE
+        {
+            _INT32 cx;
+            _INT32 cy;
+        }SIZE;
+     #endif
+#endif
 
 namespace Gdiplus
 {
@@ -284,27 +285,27 @@ namespace NSStreamReader
 		}
 	}
 	
-	void Read(POLE::Stream* pStream, NSPresentationEditor::CTextSIRun& oRun, bool bIsIndentation = true);
-	void Read(POLE::Stream* pStream, NSPresentationEditor::CTextRuler& oRun);
+	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation = true);
+	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun);
 }
 
-class CTextPFRun_ppt
+class CTextPFRunRecord
 {
 public:
-	NSPresentationEditor::CTextPFRun	m_oRun;
-	LONG								m_lLevel;
-	LONG								m_lCount;
+	PPT_FORMAT::CTextPFRun	m_oRun;
+	LONG					m_lLevel;
+	LONG					m_lCount;
 
-	CTextPFRun_ppt() : m_oRun()
+	CTextPFRunRecord() : m_oRun()
 	{
 		m_lLevel = -1;
 		m_lCount = 0;
 	}
-	CTextPFRun_ppt(const CTextPFRun_ppt& oSrc)
+	CTextPFRunRecord(const CTextPFRunRecord& oSrc)
 	{
 		*this = oSrc;
 	}
-	CTextPFRun_ppt& operator=(const CTextPFRun_ppt& oSrc)
+	CTextPFRunRecord& operator=(const CTextPFRunRecord& oSrc)
 	{
 		m_oRun		= oSrc.m_oRun;
 		m_lLevel	= oSrc.m_lLevel;
@@ -315,21 +316,21 @@ public:
 	void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
 };
 
-class CTextCFRun_ppt
+class CTextCFRunRecord
 {
 public:
-	NSPresentationEditor::CTextCFRun	m_oRun;
-	LONG								m_lCount;
+	PPT_FORMAT::CTextCFRun	m_oRun;
+	LONG					m_lCount;
 
-	CTextCFRun_ppt() : m_oRun()
+	CTextCFRunRecord() : m_oRun()
 	{
 		m_lCount = 0;
 	}
-	CTextCFRun_ppt(const CTextCFRun_ppt& oSrc)
+	CTextCFRunRecord(const CTextCFRunRecord& oSrc)
 	{
 		*this = oSrc;
 	}
-	CTextCFRun_ppt& operator=(const CTextCFRun_ppt& oSrc)
+	CTextCFRunRecord& operator=(const CTextCFRunRecord& oSrc)
 	{
 		m_oRun		= oSrc.m_oRun;
 		m_lCount	= oSrc.m_lCount;
@@ -339,8 +340,8 @@ public:
 	void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
 };
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
-	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRun_ppt>& oArrayPF, std::vector<CTextCFRun_ppt>& oArrayCF, 
-		std::wstring& strText, NSPresentationEditor::CTextAttributesEx& oAttributes);
+	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
+		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
 }

@@ -31,11 +31,12 @@
  */
 
 #include "Feature11.h"
+#include "ContinueFrt11.h"
 
 namespace XLS
 {
 
-Feature11::Feature11()
+Feature11::Feature11(bool bFeat12) : bFeature12(bFeat12)
 {
 }
 
@@ -50,6 +51,18 @@ BaseObjectPtr Feature11::clone()
 
 void Feature11::readFields(CFRecord& record)
 {
+	size_t sz = continue_records.size();
+	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt11];
+
+	while (!recs.empty())
+	{
+		ContinueFrt11 continueFrt;
+		continueFrt.readFields(*recs.front());
+
+		record.appendRawData(continueFrt.pData.get(), continueFrt.nData);
+		recs.pop_front();
+	}	
+
 	record >> frtRefHeaderU;
 	record >> isf;
 	
@@ -67,7 +80,13 @@ void Feature11::readFields(CFRecord& record)
 		refs2.push_back(BiffStructurePtr(new Ref8U(reff)));
 		sqref += reff.toString() + ((i == cref2 - 1) ? L"" : L" ");
 	}
+	if (cbFeatData == 0)
+	{
+		cbFeatData = record.getDataSize() - (cref2 * 8) - 27;
+	}
 
+	rgbFeat.bFeature12 = bFeature12;
+	rgbFeat.cbFeatData = cbFeatData;
 	record >> rgbFeat;	
 }
 

@@ -145,8 +145,11 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);
-
-		instances.push_back(baseStyleInst);
+		instances.push_back(baseStyleInst);	
+	}
+	else if (common_presentation_attlist_.presentation_class_)
+	{
+		instances.push_back(baseStyleInst);	
 	}
 	if (grStyleInst)//обычная векторная фигура
 	{		

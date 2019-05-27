@@ -40,7 +40,7 @@ public:
 
     {
         m_bConcentricFill = true;
-        m_eJoin = NSOfficeDrawing::lineJoinMiter;
+        m_eJoin = ODRAW::lineJoinMiter;
 
         m_strPath = _T("m,l,21600r21600,l21600,xe");
         LoadConnectorsList(_T("Rectangle"));

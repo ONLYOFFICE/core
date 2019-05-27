@@ -43,9 +43,9 @@ namespace odf_reader {
 
 
 
-std::wostream & office_document_base::text_to_stream(std::wostream & _Wostream) const
+std::wostream & office_document_base::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    office_body_->text_to_stream(_Wostream);
+    office_body_->text_to_stream(_Wostream, bXmlEncode);
     return _Wostream;    
 }
 
@@ -80,10 +80,6 @@ void office_document_base::add_child_element( xml::sax * Reader, const std::wstr
         CP_CREATE_ELEMENT(manifests_);
 	else
         CP_NOT_APPLICABLE_ELM();
-}
-
-void office_document_base::add_text(const std::wstring & Text)
-{
 }
 
 void office_document_base::docx_convert(oox::docx_conversion_context & Context) 

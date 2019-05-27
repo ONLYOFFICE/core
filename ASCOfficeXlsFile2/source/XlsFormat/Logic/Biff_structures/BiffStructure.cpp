@@ -35,11 +35,11 @@
 namespace XLS
 {
 
-
-// this function will never be called ( look at operator>>(CFRecord& record, T& val))
 void BiffStructure_NoVtbl::load(CFRecord& record)
 {
-	// EXCEPT::LE::HowCouldItHappen("Unexpected behaviour.", __FUNCTION__);
+}
+void BiffStructure_NoVtbl::load(IBinaryReader* reader)
+{
 }
 
 

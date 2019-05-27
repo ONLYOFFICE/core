@@ -39,6 +39,8 @@
 
 namespace MetaFile
 {
+	class CEmfDC;
+
 	typedef enum
 	{
 		EMF_CLIPCOMMAND_UNKNOWN   = 0x00,
@@ -81,9 +83,7 @@ namespace MetaFile
 	class CEmfClipCommandPath : public CEmfClipCommandBase
 	{
 	public:
-		CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode) : m_oPath(pPath), m_unMode(unMode)
-		{
-		}
+		CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform);
 		~CEmfClipCommandPath()
 		{
 		}
@@ -94,6 +94,7 @@ namespace MetaFile
 
 	public:
 
+		TEmfXForm    m_oTransform;
 		CEmfPath     m_oPath;
 		unsigned int m_unMode;
 	};
@@ -126,7 +127,7 @@ namespace MetaFile
 		void Reset();
 		bool Intersect(TRectD& oRect);
 		bool Exclude(TRectD& oClip, TRectD& oBB);
-		bool SetPath(CEmfPath* pPath, unsigned int umMode);
+		bool SetPath(CEmfPath* pPath, unsigned int umMode, TEmfXForm* pTransform);
 		void ClipOnRenderer(IOutputDevice* pOutput);
 
 	private:

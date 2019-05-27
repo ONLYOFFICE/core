@@ -35,15 +35,13 @@
 namespace XLS
 {
 
-ContinueFrt11::ContinueFrt11()
+ContinueFrt11::ContinueFrt11(): nData(0)
 {
 }
-
 
 ContinueFrt11::~ContinueFrt11()
 {
 }
-
 
 BaseObjectPtr ContinueFrt11::clone()
 {
@@ -53,6 +51,15 @@ BaseObjectPtr ContinueFrt11::clone()
 
 void ContinueFrt11::readFields(CFRecord& record)
 {
+	record >> frtHeaderOld;
+
+	nData = record.getDataSize() - 4;
+
+	pData = boost::shared_array<char>(new char[nData]);
+
+	memcpy(pData.get(), record.getCurData<char>(), nData);
+
+	record.skipNunBytes(nData);
 }
 
 } // namespace XLS

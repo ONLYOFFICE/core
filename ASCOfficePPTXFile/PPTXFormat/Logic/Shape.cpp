@@ -205,8 +205,10 @@ namespace PPTX
 		{
 			std::wstring name_ = m_name;
 
-			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	name_ = L"wps:wsp";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:sp";
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			name_ = L"wps:wsp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:sp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:sp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp";
 				
 			pWriter->StartNode(name_);
 
@@ -235,15 +237,15 @@ namespace PPTX
 			{
 				pWriter->m_lFlag -= 0x02;
 			}
-			
 			if (style.is_init())
-			{ 
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = L"wps";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = L"xdr";
+			{
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			style->m_namespace = L"wps";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
 
                 pWriter->Write(style);
             }
-			
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 			{	
 				bool bIsWritedBodyPr = false;
@@ -272,12 +274,24 @@ namespace PPTX
 					pWriter->WriteString(_T("<wps:bodyPr rot=\"0\"><a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/></wps:bodyPr>"));
 				}
 			}
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)
+			{
+				txBody->m_name = L"a:txBody";
+
+				pWriter->StartNode(L"a:txSp");
+				pWriter->EndAttributes();
+					pWriter->Write(txBody);
+					pWriter->WriteString(L"<a:useSpRect/>");
+				pWriter->EndNode(L"a:txSp");
+			}
 			else
 			{
 				if (txBody.is_init())
 				{
 					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	
 						txBody->m_name = L"xdr:txBody";
+					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	
+						txBody->m_name = L"cdr:txBody";
 				}
 				pWriter->Write(txBody);
 			}
@@ -488,15 +502,18 @@ namespace PPTX
 				{
 					if (parentFileIs<Slide>())
 					{
-						parentFileAs<Slide>().Layout->GetLevelUp(this);
+						if (parentFileAs<Slide>().Layout.IsInit())
+							parentFileAs<Slide>().Layout->GetLevelUp(this);
 					}
 					else if(parentFileIs<SlideLayout>())
 					{
-						parentFileAs<SlideLayout>().Master->GetLevelUp(this);
+						if (parentFileAs<SlideLayout>().Master.IsInit())
+							parentFileAs<SlideLayout>().Master->GetLevelUp(this);
 					}
 					else if(parentFileIs<NotesSlide>())
 					{
-						parentFileAs<NotesSlide>().master_->GetLevelUp(this);
+						if (parentFileAs<NotesSlide>().master_.IsInit())
+							parentFileAs<NotesSlide>().master_->GetLevelUp(this);
 					}
 				}
 			}

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of HCenter record in BIFF8
 class HCenter: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(HCenter)
@@ -47,11 +45,10 @@ public:
 	~HCenter();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeHCenter;
+	static const ElementType type = typeHCenter;
 
 //-----------------------------
 	Boolean<unsigned short> hcenter;

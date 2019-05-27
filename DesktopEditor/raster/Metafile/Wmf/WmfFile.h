@@ -32,7 +32,7 @@
 #ifndef _METAFILE_WMF_WMFFILE_H
 #define _METAFILE_WMF_WMFFILE_H
 
-#include "../../../common/String.h"
+#include "../../../common/StringExt.h"
 #include "../../../fontengine/FontManager.h"
 
 #include "../Common/IOutputDevice.h"
@@ -319,7 +319,7 @@ namespace MetaFile
 		{
 			return m_pDC->GetInverseTransform();
 		}
-		TXForm*      GetTransform()
+		TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED)
 		{
 			return m_pDC->GetTransform();
 		}
@@ -342,6 +342,16 @@ namespace MetaFile
 		int          GetCharSpace()
 		{
 			return m_pDC->GetCharSpacing();
+		}
+		bool         IsWindowFlippedY()
+		{
+			TWmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->h < 0);
+		}
+		bool         IsWindowFlippedX()
+		{
+			TWmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->w < 0);
 		}
 
 

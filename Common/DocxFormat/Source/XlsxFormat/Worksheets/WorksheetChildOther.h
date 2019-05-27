@@ -846,13 +846,13 @@ namespace OOX
 					{
 						m_oEvenFooter->toXML2(writer, _T("evenFooter"));
 					}
-					if (m_oFirstFooter.IsInit())
-					{
-						m_oFirstFooter->toXML2(writer, _T("firstFooter"));
-					}
 					if (m_oFirstHeader.IsInit())
 					{
 						m_oFirstHeader->toXML2(writer, _T("firstHeader"));
+					}
+					if (m_oFirstFooter.IsInit())
+					{
+						m_oFirstFooter->toXML2(writer, _T("firstFooter"));
 					}
 				writer.WriteString(_T("</headerFooter>"));
 			}

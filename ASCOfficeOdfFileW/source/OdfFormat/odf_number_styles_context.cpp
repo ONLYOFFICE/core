@@ -240,14 +240,14 @@ void odf_number_styles_context::set_odf_context(odf_conversion_context * Context
 }
 void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 {
-	if (oox_num_fmt <164)return create_default(oox_num_fmt,formatCode);
+	if (oox_num_fmt < 164) return create_default(oox_num_fmt, formatCode);
 
 	number_format_state state;
 
 	state.oox_num_fmt = oox_num_fmt;
 	state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size()+1);
 	state.ods_type = office_value_type::Custom;
-	state.language_code=0;
+	state.language_code = 0;
 
 //////////////////////////////
 
@@ -259,7 +259,7 @@ void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 	}
 
 	number_format_array_.push_back(state);
-	named_link_map_[oox_num_fmt] = number_format_array_.size() - 1;
+	named_link_map_[oox_num_fmt] = (int)number_format_array_.size() - 1;
 
 	detect_format(number_format_array_.back());
 }
@@ -271,8 +271,14 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 	
 	state.oox_num_fmt = oox_num_fmt;
 	state.ods_type = office_value_type::Custom;
-	state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size()+1);
-	state.language_code=0;
+	state.language_code = 0;
+
+	if (oox_num_fmt == 0 && formatCode.empty()) 
+	{
+		//general
+	}
+	else
+		state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size()+1);
 
 	switch (oox_num_fmt)
 	{
@@ -342,7 +348,7 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 ////////////////////////////////////////////
 
 	number_format_array_.push_back(state);
-	named_link_map_[oox_num_fmt] = number_format_array_.size() - 1;
+	named_link_map_[oox_num_fmt] = (int)number_format_array_.size() - 1;
 
 	detect_format(number_format_array_.back());
 
@@ -355,7 +361,7 @@ number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, st
 	}
 	else
 	{
-		create(oox_num_fmt,formatCode);
+		create(oox_num_fmt, formatCode);
 		return number_format_array_.back();
 	}
 }
@@ -434,7 +440,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 			if (std::wstring::npos != splits[i].find(L"\""))
 			{
 				bText = true;
-				indText = i;
+				indText = (int)i;
 				break;
 			}
 		}
@@ -442,7 +448,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 		{
 			if (i != indText)
 			{
-				indNumber = i;
+				indNumber = (int)i;
 				break;
 			}
 		}
@@ -533,12 +539,13 @@ void odf_number_styles_context::create_percentage_style(number_format_state & st
     create_numbers(state, elm, empty);
 	root_elm->add_child_element(elm); 
 
-	create_element(L"number", L"text", elm, odf_context_);
-	number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
+	office_element_ptr elm_text;
+	create_element(L"number", L"text", elm_text, odf_context_);
+	number_text* number_text_ = dynamic_cast<number_text*>(elm_text.get());
 	if (number_text_)number_text_->add_text(L"%"); 	
 
-	root_elm->add_child_element(elm);
-	styles_elments.push_back(elm);
+	root_elm->add_child_element(elm_text);
+	styles_elments.push_back(elm_text);
 }
 
 void odf_number_styles_context::create_currency_style(number_format_state & state, office_element_ptr & root_elm)
@@ -568,7 +575,7 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 				}
 			}
 
-			if (number_country.length()>0)
+			if (false == number_country.empty())
 			{
 				number_currency_symbol_->number_country_ = number_country;
 			}			

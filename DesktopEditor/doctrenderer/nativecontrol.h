@@ -36,13 +36,13 @@
 #include <iostream>
 
 #include "../graphics/pro/Fonts.h"
-#include "../../graphics/Timer.h"
-#include "../../common/Directory.h"
-#include "../../common/Array.h"
-#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../graphics/Timer.h"
+#include "../common/Directory.h"
+#include "../common/Array.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "memorystream.h"
-#include "../../fontengine/application_generate_fonts_common.h"
+#include "../fontengine/application_generate_fonts_common.h"
 
 #if defined(CreateDirectory)
 #undef CreateDirectory

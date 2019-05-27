@@ -282,7 +282,7 @@ namespace PPTX2EditorAdvanced
 }
 
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CImageElement : public CElement
 	{
@@ -293,10 +293,10 @@ namespace NSPresentationEditor
 
 		bool			m_bCropEnabled;
 
-		long			m_lcropFromRight;
-		long			m_lcropFromLeft;
-		long			m_lcropFromTop;
-		long			m_lcropFromBottom;
+		_INT32			m_lcropFromRight;
+		_INT32			m_lcropFromLeft;
+		_INT32			m_lcropFromTop;
+		_INT32			m_lcropFromBottom;
 
 		bool			m_bStretch;
 		bool			m_bTile;

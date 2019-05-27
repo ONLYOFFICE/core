@@ -42,6 +42,8 @@
 #include "../../../../ASCOfficeOdfFile/src/odf/svg_parser.h"
 #include <boost/algorithm/string.hpp>
 
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
+
 #ifndef RGB
     #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
 #endif
@@ -1590,7 +1592,7 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 	if (OOX::Vml::CShapeType* shape_type = dynamic_cast<OOX::Vml::CShapeType*>(m_vmlElement))
 	{
 		if (pOutput->m_nShapeType == PROP_DEF)
-			pOutput->m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
+			pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
 		
 		if (shape_type->m_oSpt.IsInit())
 		{
@@ -1644,7 +1646,7 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 		}
 		else if (pOutput->m_nShapeType == PROP_DEF)
 		{
-			pOutput->m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
+			pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
 		}
 		custom_path = shape->m_oPath.GetPointer();
 		if (shape->m_oCoordOrigin.IsInit())
@@ -1655,15 +1657,15 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 	}
 	else if (OOX::Vml::CRect* rect = dynamic_cast<OOX::Vml::CRect*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= NSOfficeDrawing::sptRectangle;
+		pOutput->m_nShapeType	= ODRAW::sptRectangle;
 	}
 	else if (OOX::Vml::COval* oval = dynamic_cast<OOX::Vml::COval*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= NSOfficeDrawing::sptEllipse;
+		pOutput->m_nShapeType	= ODRAW::sptEllipse;
 	}
 	else if (OOX::Vml::CLine* line = dynamic_cast<OOX::Vml::CLine*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= NSOfficeDrawing::sptLine;
+		pOutput->m_nShapeType	= ODRAW::sptLine;
 		double x1 = line->m_oFrom.GetX();
 		double y1 = line->m_oFrom.GetY();
 		double x2 = line->m_oTo.GetX();
@@ -1678,22 +1680,22 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 	}
 	else if (OOX::Vml::CArc* arc = dynamic_cast<OOX::Vml::CArc*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= NSOfficeDrawing::sptArc;
+		pOutput->m_nShapeType	= ODRAW::sptArc;
 	}
 	else if (OOX::Vml::CCurve* curve= dynamic_cast<OOX::Vml::CCurve*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= NSOfficeDrawing::sptNotPrimitive;
+		pOutput->m_nShapeType	= ODRAW::sptNotPrimitive;
 	}
 	else if (OOX::Vml::CRoundRect* curve= dynamic_cast<OOX::Vml::CRoundRect*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= NSOfficeDrawing::sptRoundRectangle;
+		pOutput->m_nShapeType	= ODRAW::sptRoundRectangle;
 	}
 	else if (OOX::Vml::CPolyLine* polyline = dynamic_cast<OOX::Vml::CPolyLine*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= NSOfficeDrawing::sptNotPrimitive;
+		pOutput->m_nShapeType	= ODRAW::sptNotPrimitive;
 	}
 
-	if (pOutput->m_nShapeType == NSOfficeDrawing::sptNotPrimitive && custom_path)
+	if (pOutput->m_nShapeType == ODRAW::sptNotPrimitive && custom_path)
 	{
 		ParseVmlPath(pOutput, custom_path->GetValue());
 		
@@ -1924,7 +1926,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 
 		for (size_t i = 0; i < m_ooxGroup->SpTreeElems.size() ; i++ )
 		{
-			if (m_ooxGroup->SpTreeElems[i].getType() == OOX::et_p_ShapeTree)
+			if (m_ooxGroup->SpTreeElems[i].getType() == OOX::et_p_ShapeTree ||
+				m_ooxGroup->SpTreeElems[i].getType() == OOX::et_lc_LockedCanvas)
 			{
 				RtfShapePtr pNewShape( new RtfShape() );
 				pNewShape->m_bIsGroup = true;

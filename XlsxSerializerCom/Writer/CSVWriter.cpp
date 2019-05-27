@@ -175,8 +175,8 @@ namespace CSVWriter
 		m_nRowCurrent = 1;
 		m_nColCurrent = 1;
 		m_bIsWriteCell = false;
-		bool m_bStartRow = true;
-		bool m_bStartCell = true;
+		m_bStartRow = true;
+		m_bStartCell = true;
 	}
 	CCSVWriter::~CCSVWriter()
 	{
@@ -234,9 +234,8 @@ namespace CSVWriter
 		INT nRowTmp = 0;
 		INT nCol = 0;
 
-		if (pCell->isInitRef())
+		if (pCell->isInitRef() && pCell->getRowCol(nRowTmp, nCol))
 		{
-			pCell->getRowCol(nRowTmp, nCol);
 			nRowTmp++;
 			nCol++;
 		}

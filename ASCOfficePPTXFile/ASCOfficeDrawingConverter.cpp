@@ -50,6 +50,7 @@
 
 #include "./Editor/Drawing/Elements.h"
 #include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/Pptx2PptShapeConverter.h"
+#include "./Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
 
 #include "../DesktopEditor/common/Directory.h"
 
@@ -279,9 +280,9 @@ namespace NS_DWC_Common
 	//	0x00FFFFFF,	0x00000000,	0x00000000,	0x00000000,	
 	//	0x00000000,	0x00000000,	0x00FFFFFF,	0x00FFFFFF
 	//};
-	NSPresentationEditor::CColor getColorFromString(const std::wstring& colorStr)
+	ODRAW::CColor getColorFromString(const std::wstring& colorStr)
 	{
-		NSPresentationEditor::CColor color;
+		ODRAW::CColor color;
 		bool bSet = false;
 		if (colorStr.find(L"#") != std::wstring::npos)
 		{
@@ -1780,7 +1781,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
     std::wstring strStyleAdvenced = L"";
 
-	NSPresentationEditor::CShapeElement oShapeElem;
+	PPT_FORMAT::CShapeElement oShapeElem;
 	CPPTShape* pPPTShape = NULL;
 	bool bSetShape = false;
 
@@ -1817,7 +1818,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
         std::wstring strCoord1 = oNodeShape.GetAttributeOrValue(L"from");
         std::wstring strCoord2 = oNodeShape.GetAttributeOrValue(L"to");
 
-        if (strCoord1 != L"" && strCoord2 != L"")
+        if (!strCoord1.empty() && !strCoord2.empty())
 		{
 			std::vector<std::wstring> oArray1;
             boost::algorithm::split(oArray1, strCoord1, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
@@ -1904,7 +1905,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				int nOffsetX = _POINTS[0] - _x;
 				int nOffsetY = _POINTS[1] - _y;
 
-                strStyleAdvenced = L";margin-left:" + std::to_wstring(_x) + L";margin-top:" + std::to_wstring(_y)
+                strStyleAdvenced += L";margin-left:" + std::to_wstring(_x) + L";margin-top:" + std::to_wstring(_y)
                         + L";width:" + std::to_wstring(_r - _x) + L";height:" + std::to_wstring(_b - _y) + L";polyline_correct:true;";
 
                 double dKoefX = 21600.0 / (std::max)((_r - _x), 1);
@@ -2144,7 +2145,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					{
 						eFillType = etSolidFill;
 						
-						NSPresentationEditor::CColor color	= NS_DWC_Common::getColorFromString(*sFillColor);
+						ODRAW::CColor color	= NS_DWC_Common::getColorFromString(*sFillColor);
 						PPTX::Logic::SolidFill* pSolid		= new PPTX::Logic::SolidFill();
 						pSolid->m_namespace = L"a";
 						
@@ -2302,7 +2303,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							}
 							if (sColor.is_init())
 							{
-								NSPresentationEditor::CColor color;
+								ODRAW::CColor color;
 								if (sColor->find(L"fill") != -1)
 								{
 									std::wstring sColorEffect = *sColor;
@@ -2341,7 +2342,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							}
 							if (sColor2.is_init())
 							{
-								NSPresentationEditor::CColor color;
+								ODRAW::CColor color;
 								if (sColor2->find(L"fill") != -1)
 								{
 									std::wstring sColorEffect = *sColor2;
@@ -2407,7 +2408,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 									double pos = strPos.empty() ? 0 : _wtof(strPos.c_str());
 
-									NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(strColor);
+									ODRAW::CColor color = NS_DWC_Common::getColorFromString(strColor);
 									PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
 									oColor->Color = new PPTX::Logic::SrgbClr();
 									oColor->Color->SetRGB(color.R, color.G, color.B);
@@ -2628,7 +2629,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					smart_ptr<PPTX::Logic::SolidFill> pSolid = new PPTX::Logic::SolidFill();
 					pSolid->m_namespace = L"a";
 					pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-					NSPresentationEditor::CColor color;
+					ODRAW::CColor color;
 					
 					if (sStroked.is_init())
 					{
@@ -3008,7 +3009,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 		if (bStroked)
 		{
-		CheckPenShape(elem, oNodeShape, pPPTShape);		
+			CheckPenShape(elem, oNodeShape, pPPTShape);		
 		}
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
@@ -3301,21 +3302,42 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	std::map<std::wstring, std::wstring>::iterator pFind;
 
 	bool bIsInline = false;
+	bool bIsMargin = false;
 
-    if ((oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"left"))			&&
-        (oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-left"))	&&
-        (oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"top"))			&&
-        (oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-top")))
+	if (oProps.IsTop == true)
 	{
-		bIsInline = true;
-	}
-
-	if (!bIsInline)
-	{
-        pFind = oCssStyles.m_mapSettings.find(L"position");
-        if (oCssStyles.m_mapSettings.end() != pFind && pFind->second == L"static")
+		if ((oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"left"))			&&
+			(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-left"))	&&
+			(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"top"))			&&
+			(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(L"margin-top")))
 		{
 			bIsInline = true;
+		}
+		if (((oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"margin-left"))	&&
+			(oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"margin-top")))
+		||
+			((oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"left"))	&&
+			(oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"top"))))
+		{
+			bIsMargin = true;
+		}
+		pFind = oCssStyles.m_mapSettings.find(L"mso-position-horizontal-relative");
+		if (oCssStyles.m_mapSettings.end() != pFind && ((pFind->second == L"text" && !bIsMargin) || pFind->second == L"char"))
+		{
+			pFind = oCssStyles.m_mapSettings.find(L"mso-position-vertical-relative");
+			if (oCssStyles.m_mapSettings.end() != pFind && ((pFind->second == L"text" && !bIsMargin) || pFind->second == L"line"))
+			{		
+				bIsInline = true;
+			}
+		}	
+
+		if (!bIsInline)
+		{
+			pFind = oCssStyles.m_mapSettings.find(L"position");
+			if (oCssStyles.m_mapSettings.end() != pFind && pFind->second == L"static")
+			{
+				bIsInline = true;
+			}
 		}
 	}
 
@@ -3341,7 +3363,13 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		if (oCssStyles.m_mapSettings.end() != pFind)
 		{
-			 left = (LONG)(dKoefSize * parserPoint.FromString(pFind->second) + 0.5);
+			std::vector<std::wstring> oArray1;
+            boost::algorithm::split(oArray1, pFind->second, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+			for (size_t i = 0; i < oArray1.size(); i++)
+			{
+				left += (LONG)(dKoefSize * parserPoint.FromString(oArray1[i]) + 0.5);
+			}
 		}
 
         pFind = oCssStyles.m_mapSettings.find(L"margin-top");
@@ -3351,7 +3379,12 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		if (oCssStyles.m_mapSettings.end() != pFind)
 		{
-			 top = (LONG)(dKoefSize * parserPoint.FromString(pFind->second) + 0.5);
+			std::vector<std::wstring> oArray1;
+			boost::algorithm::split(oArray1, pFind->second, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < oArray1.size(); i++)
+			{
+				top += (LONG)(dKoefSize * parserPoint.FromString(oArray1[i]) + 0.5);
+			}
 		}
 	}
 
@@ -4090,18 +4123,21 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 
 	if (oNodeBorder.IsValid())
 	{
-		pSpPr->ln.Init();
-		nullable_int nWidthBorder;
-        XmlMacroReadAttributeBase(oNode, L"width", nWidthBorder);
-		
 		nullable_string sTypeBorder;
-        XmlMacroReadAttributeBase(oNode, L"type", sTypeBorder);
-
+        XmlMacroReadAttributeBase(oNodeBorder, L"type", sTypeBorder);
+		
+		SimpleTypes::CBorderType<> borderType;
 		if (sTypeBorder.IsInit())
 		{
-			SimpleTypes::CBorderType<> borderType;
 			borderType.FromString(sTypeBorder.get());
+		}
+		if (borderType.GetValue() != SimpleTypes::bordertypeNone)
+		{
+			pSpPr->ln.Init();
 			
+			nullable_int nWidthBorder;
+			XmlMacroReadAttributeBase(oNodeBorder, L"width", nWidthBorder);
+
 			if (borderType.GetValue() > 0 && 
 				borderType.GetValue() < 6)
 			{
@@ -4117,30 +4153,29 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 					case SimpleTypes::bordertypeDotDash:		pSpPr->ln->prstDash->val->SetBYTECode(1); break;
 				}
 			}
-
-		}
-		if (nWidthBorder.IsInit())
-		{
-			pSpPr->ln->w = (int)(*nWidthBorder * g_emu_koef);//pt to emu
-		}
-		if (sColorBorder.IsInit())
-		{
-			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-            pSolid->m_namespace = L"a";
-			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-			
-			if (std::wstring::npos != sColorBorder->find(L"#"))
+			if (nWidthBorder.IsInit())
 			{
-				pSolid->Color.Color->SetHexString(sColorBorder->substr(1));
+				pSpPr->ln->w = (int)(*nWidthBorder * g_emu_koef);//pt to emu
 			}
-			else
+			if (sColorBorder.IsInit())
 			{
-				//"red", L"black" , .. to color
+				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+				pSolid->m_namespace = L"a";
+				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+				
+				if (std::wstring::npos != sColorBorder->find(L"#"))
+				{
+					pSolid->Color.Color->SetHexString(sColorBorder->substr(1));
+				}
+				else
+				{
+					//"red", L"black" , .. to color
+				}
+
+				pSpPr->ln->Fill.m_type	= PPTX::Logic::UniFill::solidFill;
+				pSpPr->ln->Fill.Fill	= pSolid;
+
 			}
-
-			pSpPr->ln->Fill.m_type	= PPTX::Logic::UniFill::solidFill;
-			pSpPr->ln->Fill.Fill	= pSolid;
-
 		}
 	}
 }
@@ -4167,7 +4202,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
     XmlMacroReadAttributeBase(oNode, L"fillcolor", sFillColor);
 	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
 	{
-		NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
+		ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
 
 		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
         pSolid->m_namespace = L"a";
@@ -4240,7 +4275,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
         XmlMacroReadAttributeBase(oNodeFill, L"color", sColor);
 		if (sColor.is_init())
 		{
-			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor);
+			ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor);
 
 			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
             pSolid->m_namespace = L"a";
@@ -4303,7 +4338,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		
 			if (sColor.is_init())
 			{
-				NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor);
+				ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor);
 
 				PPTX::Logic::Gs Gs_;
 				Gs_.color.Color = new PPTX::Logic::SrgbClr();
@@ -4333,7 +4368,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				}
 				else
 				{
-					NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
+					ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
 					Gs_.color.Color->SetRGB(color.R, color.G, color.B);
 				}
 
@@ -4543,7 +4578,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
     XmlMacroReadAttributeBase(oNode, L"strokecolor", sStrokeColor);
 	if (sStrokeColor.is_init())
 	{
-		NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+		ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
 
 		if (!pSpPr->ln.is_init())
 			pSpPr->ln = new PPTX::Logic::Ln();
@@ -4616,7 +4651,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
         XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor);
 		if (sStrokeColor.is_init())
 		{
-			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+			ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
 
 			if (!pSpPr->ln.is_init())
 				pSpPr->ln = new PPTX::Logic::Ln();

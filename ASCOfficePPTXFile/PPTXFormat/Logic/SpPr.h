@@ -80,24 +80,23 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				std::wstring name_ = L"a:spPr";
+
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					if (0 == (pWriter->m_lFlag & 0x01))
-						pWriter->StartNode(_T("wps:spPr"));
-					else
-						pWriter->StartNode(_T("pic:spPr"));
+					if (0 == (pWriter->m_lFlag & 0x01))								name_ = L"wps:spPr";
+					else															name_ = L"pic:spPr";
 				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:spPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)
-					pWriter->StartNode(_T("c:spPr"));
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)			name_ = L"c:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:spPr";
 				else
-				{
-					if (0 != (pWriter->m_lFlag & 0x04))//theme
-						pWriter->StartNode(_T("a:spPr"));
-					else
-						pWriter->StartNode(_T("p:spPr"));
+				{//theme
+					if (0 != (pWriter->m_lFlag & 0x04))								name_ = L"a:spPr";
+					else															name_ = L"p:spPr";
 				}
+				pWriter->StartNode(name_);
 				
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("bwMode"), bwMode);
@@ -117,24 +116,7 @@ namespace PPTX
 				pWriter->Write(scene3d);
 				pWriter->Write(sp3d);
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-				{
-					if (0 == (pWriter->m_lFlag & 0x01))
-						pWriter->EndNode(_T("wps:spPr"));
-					else
-						pWriter->EndNode(_T("pic:spPr"));
-				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:spPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)
-					pWriter->EndNode(_T("c:spPr"));
-				else
-				{
-					if (0 != (pWriter->m_lFlag & 0x04))//theme
-						pWriter->EndNode(_T("a:spPr"));
-					else
-						pWriter->EndNode(_T("p:spPr"));
-				}
+				pWriter->EndNode(name_);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

@@ -35,6 +35,7 @@
 #include "../../common/Types.h"
 #include "./Fonts.h"
 #include "./../IRenderer.h"
+#include "./../Image.h"
 
 namespace NSImages
 {
@@ -43,6 +44,8 @@ namespace NSImages
     public:
         ICacheImage() : NSBase::CBaseRefCounter() {}
         virtual ~ICacheImage() {}
+
+        virtual Aggplus::CImage* GetImage() { return NULL; }
     };
 
     namespace NSCacheImage

@@ -36,24 +36,19 @@
 #include "Docx.h"
 #include "File.h"
 #include "../Base/Nullable.h"
+#include "../../../../DesktopEditor/common/SystemUtils.h"
 
+namespace PPTX
+{
+	class Core;
+}
 namespace OOX
 {
 	class CCore : public OOX::File
 	{
 	public:
-		CCore(OOX::Document* pMain) : OOX::File(pMain)
-		{
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pCore = this;
-		}
-		CCore(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
-		{
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pCore = this;
-
-			read( oPath );
-		}
+		CCore(OOX::Document* pMain);
+		CCore(OOX::Document* pMain, const CPath& oPath);
 		virtual ~CCore()
 		{
 		}
@@ -115,113 +110,103 @@ namespace OOX
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-
-			if ( m_sCategory.IsInit() )
-			{
-				sXml += _T("<cp:category>");
-				sXml += m_sCategory.get();
-				sXml += _T("</cp:category>");
-			}
-
-			if ( m_sContentStatus.IsInit() )
-			{
-				sXml += _T("<cp:contentStatus>");
-				sXml += m_sContentStatus.get();
-				sXml += _T("</cp:contentStatus>");
-			}
-
-			if ( m_sCreated.IsInit() )
-			{
-				sXml += _T("<dcterms:created xsi:type=\"dcterms:W3CDTF\">");
-				sXml += m_sCreated.get();
-				sXml += _T("</dcterms:created>");
-			}
-
-			if ( m_sCreator.IsInit() )
-			{
-				sXml += _T("<dc:creator>");
-				sXml += m_sCreator.get();
-				sXml += _T("</dc:creator>");
-			}
-
-			if ( m_sDescription.IsInit() )
-			{
-				sXml += _T("<dc:description>");
-				sXml += m_sDescription.get();
-				sXml += _T("</dc:description>");
-			}
-
-			if ( m_sIdentifier.IsInit() )
-			{
-				sXml += _T("<dc:identifier>");
-				sXml += m_sIdentifier.get();
-				sXml += _T("</dc:identifier>");
-			}
-
-			if ( m_sKeywords.IsInit() )
-			{
-				sXml += _T("<cp:keywords>");
-				sXml += m_sKeywords.get();
-				sXml += _T("</cp:keywords>");
-			}
-
-			if ( m_sLanguage.IsInit() )
-			{
-				sXml += _T("<dc:language>");
-				sXml += m_sLanguage.get();
-				sXml += _T("</dc:language>");
-			}
-
-			if ( m_sLastModifiedBy.IsInit() )
-			{
-				sXml += _T("<cp:lastModifiedBy>");
-				sXml += m_sLastModifiedBy.get();
-				sXml += _T("</cp:lastModifiedBy>");
-			}
-
-			if ( m_sLastPrinted.IsInit() )
-			{
-				sXml += _T("<cp:lastPrinted>");
-				sXml += m_sLastPrinted.get();
-				sXml += _T("</cp:lastPrinted>");
-			}
-
-			if ( m_sModified.IsInit() )
-			{
-				sXml += _T("<dcterms:modified xsi:type=\"dcterms:W3CDTF\">");
-				sXml += m_sModified.get();
-				sXml += _T("</dcterms:modified>");
-			}
-
-			if ( m_sRevision.IsInit() )
-			{
-				sXml += _T("<cp:revision>");
-				sXml += m_sRevision.get();
-				sXml += _T("</cp:revision>");
-			}
-
-			if ( m_sSubject.IsInit() )
-			{
-				sXml += _T("<dc:subject>");
-				sXml += m_sSubject.get();
-				sXml += _T("</dc:subject>");
-			}
-
+			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<cp:coreProperties \
+xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" \
+xmlns:dc=\"http://purl.org/dc/elements/1.1/\" \
+xmlns:dcterms=\"http://purl.org/dc/terms/\" \
+xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" \
+xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 			if ( m_sTitle.IsInit() )
 			{
 				sXml += _T("<dc:title>");
-				sXml += m_sTitle.get();
+				sXml += XmlUtils::EncodeXmlString(m_sTitle.get());
 				sXml += _T("</dc:title>");
 			}
-
+			if ( m_sSubject.IsInit() )
+			{
+				sXml += _T("<dc:subject>");
+				sXml += XmlUtils::EncodeXmlString(m_sSubject.get());
+				sXml += _T("</dc:subject>");
+			}
+			if ( m_sCreator.IsInit() )
+			{
+				sXml += _T("<dc:creator>");
+				sXml += XmlUtils::EncodeXmlString(m_sCreator.get());
+				sXml += _T("</dc:creator>");
+			}
+			if ( m_sKeywords.IsInit() )
+			{
+				sXml += _T("<cp:keywords>");
+				sXml += XmlUtils::EncodeXmlString(m_sKeywords.get());
+				sXml += _T("</cp:keywords>");
+			}
+			if ( m_sDescription.IsInit() )
+			{
+				sXml += _T("<dc:description>");
+				sXml += XmlUtils::EncodeXmlString(m_sDescription.get());
+				sXml += _T("</dc:description>");
+			}
+			if ( m_sIdentifier.IsInit() )
+			{
+				sXml += _T("<dc:identifier>");
+				sXml += XmlUtils::EncodeXmlString(m_sIdentifier.get());
+				sXml += _T("</dc:identifier>");
+			}
+			if ( m_sLanguage.IsInit() )
+			{
+				sXml += _T("<dc:language>");
+				sXml += XmlUtils::EncodeXmlString(m_sLanguage.get());
+				sXml += _T("</dc:language>");
+			}
+			if ( m_sLastModifiedBy.IsInit() )
+			{
+				sXml += _T("<cp:lastModifiedBy>");
+				sXml += XmlUtils::EncodeXmlString(m_sLastModifiedBy.get());
+				sXml += _T("</cp:lastModifiedBy>");
+			}
+			if ( m_sRevision.IsInit() )
+			{
+				sXml += _T("<cp:revision>");
+				sXml += XmlUtils::EncodeXmlString(m_sRevision.get());
+				sXml += _T("</cp:revision>");
+			}
+			if ( (m_sLastPrinted.IsInit()) && (!m_sLastPrinted->empty()))
+			{
+				sXml += _T("<cp:lastPrinted>");
+				sXml += XmlUtils::EncodeXmlString(m_sLastPrinted.get());
+				sXml += _T("</cp:lastPrinted>");
+			}
+			if ( (m_sCreated.IsInit()) && (!m_sCreated->empty()))
+			{
+				sXml += _T("<dcterms:created xsi:type=\"dcterms:W3CDTF\">");
+				sXml += XmlUtils::EncodeXmlString(m_sCreated.get());
+				sXml += _T("</dcterms:created>");
+			}
+			if ( (m_sModified.IsInit()) && (!m_sModified->empty()))
+			{
+				sXml += _T("<dcterms:modified xsi:type=\"dcterms:W3CDTF\">");
+				sXml += XmlUtils::EncodeXmlString(m_sModified.get());
+				sXml += _T("</dcterms:modified>");
+			}
+			if ( m_sCategory.IsInit() )
+			{
+				sXml += _T("<cp:category>");
+				sXml += XmlUtils::EncodeXmlString(m_sCategory.get());
+				sXml += _T("</cp:category>");
+			}
+			if ( m_sContentStatus.IsInit() )
+			{
+				sXml += _T("<cp:contentStatus>");
+				sXml += XmlUtils::EncodeXmlString(m_sContentStatus.get());
+				sXml += _T("</cp:contentStatus>");
+			}
 			if ( m_sVersion.IsInit() )
 			{
 				sXml += _T("<cp:version>");
-				sXml += m_sVersion.get();
+				sXml += XmlUtils::EncodeXmlString(m_sVersion.get());
 				sXml += _T("</cp:version>");
 			}
-
 			sXml += _T("</cp:coreProperties>");
 
 			NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml );
@@ -243,8 +228,30 @@ namespace OOX
 		}
 		void SetDefaults()
 		{
-			m_sCreator = L"";
+//			m_sCreator = L"";
 			m_sLastModifiedBy = L"";
+		}
+		void SetRequiredDefaults()
+		{
+			if (m_sCreator.IsInit())
+			{
+				std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreator);
+				if (!sCreator.empty())
+					m_sCreator = sCreator;
+			}
+			if (m_sCreated.IsInit())
+			{
+				std::wstring sCreated = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCreated);
+				if (!sCreated.empty())
+					m_sCreated = sCreated;
+			}
+			std::wstring sLastModifiedBy = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvLastModifiedBy);
+			if (!sLastModifiedBy.empty())
+				m_sLastModifiedBy = sLastModifiedBy;
+
+			std::wstring sModified = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvModified);
+			if (!sModified.empty())
+				m_sModified = sModified;
 		}
 		void SetCreator(std::wstring sVal)
 		{
@@ -254,6 +261,8 @@ namespace OOX
 		{
 			m_sLastModifiedBy = sVal;
 		}
+		PPTX::Core* ToPptxCore();
+		void FromPptxCore(PPTX::Core* pCore);
 
 		nullable<std::wstring> m_sCategory;
 		nullable<std::wstring> m_sContentStatus;

@@ -74,6 +74,7 @@ namespace BinXlsxRW {
 		void setIsNoBase64		(bool bIsNoBase64);
 
 		bool writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
+		bool hasPivot			(const std::wstring& sSrcPath);
 	};
 }
 #endif	// #ifndef XLSX_SERIALIZER

@@ -776,10 +776,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\DiagramBooleanProperties.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\DocDocxConverter\OfficeDrawing\DrawingContainer.h"
 					>
 				</File>
@@ -796,31 +792,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\FillStyleBooleanProperties.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\GeometryBooleanProperties.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\GeometryTextBooleanProperties.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\DocDocxConverter\OfficeDrawing\GroupContainer.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\GroupShapeBooleanProperties.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\DocDocxConverter\OfficeDrawing\GroupShapeRecord.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\LineStyleBooleanProperties.h"
 					>
 				</File>
 				<File
@@ -829,18 +805,6 @@
 				</File>
 				<File
 					RelativePath="..\..\DocDocxConverter\OfficeDrawing\OfficeArtClientTextbox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\PathParser.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\PathSegment.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\ProtectionBooleanProperties.h"
 					>
 				</File>
 				<File
@@ -861,10 +825,6 @@
 				</File>
 				<File
 					RelativePath="..\..\DocDocxConverter\OfficeDrawing\RegularContainer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\DocDocxConverter\OfficeDrawing\ShadowStyleBooleanProperties.h"
 					>
 				</File>
 				<File

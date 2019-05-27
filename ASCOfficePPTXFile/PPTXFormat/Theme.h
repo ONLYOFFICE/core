@@ -78,6 +78,8 @@ namespace PPTX
 		}
 		Theme(OOX::Document *pMain, const OOX::CPath& filename) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
+			IFileContainer::Read( filename, filename );
+			
 			FileMap map;
 			
 			isThemeOverride = false;

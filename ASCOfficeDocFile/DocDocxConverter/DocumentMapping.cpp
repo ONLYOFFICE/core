@@ -406,8 +406,8 @@ namespace DocFileFormat
 				//if it's a inserted run
                 m_pXmlWriter->WriteNodeBegin(L"w:ins", true);
                 m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
+                m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));
                 m_pXmlWriter->WriteNodeEnd(L"", true, false);
-				//rev.Dttm.Convert(new DateMapping(m_pXmlWriter));
 			}
 
 			//start run
@@ -716,7 +716,7 @@ namespace DocFileFormat
 						RELEASEOBJECT( chpxs );
 					}
 				}
-				oleWriter.WriteString( _lastOLEObject );
+				oleWriter.WriteString( _lastOLEObject ); _lastOLEObject.clear();
                 oleWriter.WriteNodeEnd( L"w:object" );
 
 				if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
@@ -912,6 +912,7 @@ namespace DocFileFormat
 					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
 				}
 
+				bool bPicture = false;
 				if (pSpa)
 				{
 					PictureDescriptor pictDiscr(chpx, m_document->WordDocumentStream, 0x7fffffff, m_document->nWordVersion);
@@ -925,6 +926,8 @@ namespace DocFileFormat
 							
 						pShape->Convert(&oVmlWriter);
 						m_pXmlWriter->WriteNodeEnd (L"w:pict");
+
+						bPicture = true;
 					}
 					
 					if (!pSpa->primitives.empty())
@@ -933,8 +936,13 @@ namespace DocFileFormat
 						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, &pictDiscr,  _caller);
 						pSpa->primitives.Convert(&oVmlWriter);
                         m_pXmlWriter->WriteNodeEnd (L"w:pict");
+						
+						bPicture = true;
 					}
 				}
+
+				if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate))
+					_fieldLevels.back().bResult = bPicture;
 			}
 			else if (TextMark::Picture == code && fSpec)
 			{
@@ -992,6 +1000,11 @@ namespace DocFileFormat
 								_writeAfterRun = oVmlMapper.m_equationXml;
 								bFormula = true;
 							}
+							else if (oVmlMapper.m_isBlob)
+							{
+								_writeAfterRun = oVmlMapper.m_blobXml;
+								bFormula = true;
+							}
 						}
 						else
 						{
@@ -999,10 +1012,23 @@ namespace DocFileFormat
 							oPicture.shapeContainer->Convert(&oVmlMapper);
 						}
 						
-						pictWriter.WriteNodeEnd	 (L"w:pict");
+						pictWriter.WriteNodeEnd (L"w:pict");
 
 						if (!bFormula)
-							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+						{
+							if (false == _fieldLevels.empty())
+							{
+								if (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult)	//ege15.doc
+								{
+									m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+									_fieldLevels.back().bResult = true;
+								}
+							}
+							else
+							{
+								m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+							}
+						}
 					}
 
 				}                   
@@ -1053,7 +1079,15 @@ namespace DocFileFormat
 				else if ((m_document->AnnotationsReferencePlex) && (_commentNr <= m_document->AnnotationsReferencePlex->Elements.size()))
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
-					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr++ ));
+
+					int index = _commentNr++;
+
+					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index - 1]);
+
+					if (atrdPre10->m_BookmarkId < 0)
+						index += m_document->AnnotationsReferencePlex->Elements.size() + 1024;
+					
+					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(index));
 					m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 			}
@@ -1766,7 +1800,7 @@ namespace DocFileFormat
 			if (m_document->AnnotStartEndCPs[i].second == cp)
 			{
 				result = writeAnnotationEnd(i + 1);  
-				_commentNr = i + 1;
+				//_commentNr = i + 1;
 			}
 		}
 

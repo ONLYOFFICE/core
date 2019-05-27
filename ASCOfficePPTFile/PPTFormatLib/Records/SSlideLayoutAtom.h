@@ -34,10 +34,9 @@
 
 class CRecordSSlideLayoutAtom : public CUnknownRecord
 {
+public:
 	INT m_nGeom;
 	BYTE m_pPlaceHolderID[8];
-
-public:
 	
 	CRecordSSlideLayoutAtom()
 	{

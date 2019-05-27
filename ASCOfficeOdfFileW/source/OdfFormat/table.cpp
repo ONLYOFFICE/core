@@ -50,13 +50,17 @@ using xml::xml_char_wc;
 
 void table_table_attlist::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT( L"table:name",			table_name_);
-	CP_XML_ATTR_OPT( L"table:style-name",	table_style_name_);
-	CP_XML_ATTR_OPT( L"table:template-name", table_template_name_);
+	CP_XML_ATTR_OPT( L"table:name",				table_name_);
+	CP_XML_ATTR_OPT( L"table:style-name",		table_style_name_);
+	CP_XML_ATTR_OPT( L"table:template-name",	table_template_name_);
 
-	if (table_protected_)
-		CP_XML_ATTR_OPT( L"table:protection-key", table_protection_key_); 
-	
+	if (table_protected_ && table_protected_->get())
+	{
+		CP_XML_ATTR_OPT( L"table:protected",					table_protected_); 
+		CP_XML_ATTR_OPT( L"table:protection-key",				table_protection_key_); 
+		CP_XML_ATTR_OPT( L"table:protection-digest-algorithm",	table_protection_key_digest_algorithm_); 
+	}	
+
 	if (table_print_)
 		CP_XML_ATTR_OPT( L"table:print-ranges", table_print_ranges_);
 }
@@ -118,6 +122,28 @@ void table_table_column_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"table:default-cell-style-name", table_default_cell_style_name_);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const wchar_t * table_table_protection::ns = L"loext"; //table ???
+const wchar_t * table_table_protection::name = L"table-protection";
+
+void table_table_protection::serialize(std::wostream & _Wostream)
+{
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR(L"loext:select-protected-cells", select_protected_cells);
+			CP_XML_ATTR(L"loext:select-unprotected-cells", select_unprotected_cells);
+
+			CP_XML_ATTR_OPT(L"loext:insert-columns", insert_columns);
+			CP_XML_ATTR_OPT(L"loext:insert-rows", insert_rows);
+
+			CP_XML_ATTR_OPT(L"loext:delete-columns", delete_columns);
+			CP_XML_ATTR_OPT(L"loext:delete-rows", delete_rows);
+		}
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const wchar_t * table_table_source::ns = L"table";
@@ -225,7 +251,9 @@ void table_table::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			table_table_attlist_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
+			
+			if (table_protection_)table_protection_->serialize(CP_XML_STREAM());
 		
 			if (table_shapes_)table_shapes_->serialize(CP_XML_STREAM());
    
@@ -257,7 +285,7 @@ void table_table_column::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			table_table_column_attlist_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}
 }
@@ -553,12 +581,12 @@ const wchar_t * table_table_cell::name = L"table-cell";
 
 void table_table_cell::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    table_table_cell_content_.create_child_element(Ns, Name, getContext());
+    content_.create_child_element(Ns, Name, getContext());
 }
 
 void table_table_cell::add_child_element( const office_element_ptr & child_element)
 {
-	table_table_cell_content_.add_child_element(child_element);
+	content_.add_child_element(child_element);
 }
 void table_table_cell::serialize(std::wostream & _Wostream)
 {
@@ -566,10 +594,10 @@ void table_table_cell::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			table_table_cell_attlist_.serialize(CP_GET_XML_NODE());
-			table_table_cell_attlist_extra_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
+			attlist_extra_.serialize(CP_GET_XML_NODE());
 				
-			table_table_cell_content_.serialize(CP_XML_STREAM());
+			content_.serialize(CP_XML_STREAM());
 		}
 	}	
 }
@@ -582,12 +610,12 @@ const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
 void table_covered_table_cell::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
 	empty_ = false;
-    table_table_cell_content_.create_child_element( Ns, Name, getContext());
+    content_.create_child_element( Ns, Name, getContext());
 }
 void table_covered_table_cell::add_child_element( const office_element_ptr & child_element)
 {
 	empty_ = false;
-	table_table_cell_content_.add_child_element(child_element);
+	content_.add_child_element(child_element);
 }
 void table_covered_table_cell::serialize(std::wostream & _Wostream)
 {
@@ -595,9 +623,9 @@ void table_covered_table_cell::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			table_table_cell_attlist_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
 				
-			table_table_cell_content_.serialize(CP_XML_STREAM());
+			content_.serialize(CP_XML_STREAM());
 		}
 	}	
 }
@@ -632,7 +660,7 @@ void table_table_row::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			table_table_row_attlist_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
 				
 			for (size_t i = 0; i < content_.size(); i++)
 			{

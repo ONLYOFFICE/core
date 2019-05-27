@@ -61,26 +61,25 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-            XmlMacroReadNodeValueBase(oNode, _T("dc:title"), title);
-            XmlMacroReadAttributeBase(oNode, _T("dc:creator"), creator);
-            XmlMacroReadAttributeBase(oNode, _T("cp:lastModifiedBy"), lastModifiedBy);
-            XmlMacroReadAttributeBase(oNode, _T("cp:revision"), revision);
-            XmlMacroReadAttributeBase(oNode, _T("dcterms:modified"), modified);
-            XmlMacroReadAttributeBase(oNode, _T("dcterms:created"), created);
-
-	//		created = PPTX::DateTime::Parse(document.Root.element("created").text().ToString());
-	//			modified = PPTX::DateTime::Parse(document.Root.element("modified").text().ToString());
-	/*
-			category = document.Root.element("category").text();
-			contentStatus = document.Root.element("contentStatus").text();
-			description = document.Root.element("description").text();
-	//identifier - ???
-	//			keywords = document.Root.element("keywords").text();
-			language = document.Root.element("language").text();
-	//			lastPrinted = PPTX::DateTime::Parse(document.Root.element("lastPrinted").text().ToString());
-			subject = document.Root.element("subject").text();
-			version = document.Root.element("version").text();
-	*/
+			XmlMacroReadNodeValueBase(oNode, _T("cp:category"), category);
+			XmlMacroReadNodeValueBase(oNode, _T("cp:contentStatus"), contentStatus);
+			XmlMacroReadNodeValueBase(oNode, _T("dcterms:created"), created);
+			//created = PPTX::DateTime::Parse(document.Root.element("created").text().ToString());
+			XmlMacroReadNodeValueBase(oNode, _T("dc:creator"), creator);
+			XmlMacroReadNodeValueBase(oNode, _T("dc:description"), description);
+			XmlMacroReadNodeValueBase(oNode, _T("dc:identifier"), identifier);
+			//todo keywords is complex by spec there is no real example
+			XmlMacroReadNodeValueBase(oNode, _T("cp:keywords"), keywords);
+			XmlMacroReadNodeValueBase(oNode, _T("dc:language"), language);
+			XmlMacroReadNodeValueBase(oNode, _T("cp:lastModifiedBy"), lastModifiedBy);
+			XmlMacroReadNodeValueBase(oNode, _T("cp:lastPrinted"), lastPrinted);
+			//lastPrinted = PPTX::DateTime::Parse(document.Root.element("lastPrinted").text().ToString());
+			XmlMacroReadNodeValueBase(oNode, _T("dcterms:modified"), modified);
+			//modified = PPTX::DateTime::Parse(document.Root.element("modified").text().ToString());
+			XmlMacroReadNodeValueBase(oNode, _T("cp:revision"), revision);
+			XmlMacroReadNodeValueBase(oNode, _T("dc:subject"), subject);
+			XmlMacroReadNodeValueBase(oNode, _T("dc:title"), title);
+			XmlMacroReadNodeValueBase(oNode, _T("cp:version"), version);
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
@@ -116,7 +115,92 @@ namespace PPTX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
+			//start new record because new attributes is incompatible with previous versions
+			pWriter->StartRecord(0);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			pWriter->WriteString2(6, category);
+			pWriter->WriteString2(7, contentStatus);
+			pWriter->WriteString2(8, description);
+			pWriter->WriteString2(9, identifier);
+			pWriter->WriteString2(10, keywords);
+			pWriter->WriteString2(11, language);
+			pWriter->WriteString2(12, lastPrinted);
+			pWriter->WriteString2(13, subject);
+			pWriter->WriteString2(14, version);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			pWriter->EndRecord();
+
+			pWriter->EndRecord();
+		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			pReader->Skip(1); // type
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0: title = pReader->GetString2(); break;
+				case 1: creator = pReader->GetString2(); break;
+				case 2: lastModifiedBy = pReader->GetString2(); break;
+				case 3: revision = pReader->GetString2(); break;
+				case 4: created = pReader->GetString2(); break;
+				case 5: modified = pReader->GetString2(); break;
+				default: break;
+				}
+			}
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+
+						pReader->Skip(1); // start attributes
+
+						while (true)
+						{
+							BYTE _at = pReader->GetUChar_TypeNode();
+							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+								break;
+
+							switch (_at)
+							{
+							case 6: category = pReader->GetString2(); break;
+							case 7: contentStatus = pReader->GetString2(); break;
+							case 8: description = pReader->GetString2(); break;
+							case 9: identifier = pReader->GetString2(); break;
+							case 10: keywords = pReader->GetString2(); break;
+							case 11: language = pReader->GetString2(); break;
+							case 12: lastPrinted = pReader->GetString2(); break;
+							case 13: subject = pReader->GetString2(); break;
+							case 14: version = pReader->GetString2(); break;
+							}
+						}
+
+						pReader->Seek(_end_rec2);
+					}
+					break;
+					default:
+					{
+						pReader->SkipRecord();
+						break;
+					}
+				}
+			}
+
+			pReader->Seek(_end_rec);
 		}
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -127,41 +211,63 @@ namespace PPTX
 			pWriter->WriteAttribute(_T("xmlns:cp"), PPTX::g_Namespaces.cp.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:dcterms"), PPTX::g_Namespaces.dcterms.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:dcmitype"), PPTX::g_Namespaces.dcmitype.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:xsi"), PPTX::g_Namespaces.xsi.m_strLink);
 
 			pWriter->EndAttributes();
 
-			pWriter->WriteNodeValue(_T("dc:title"), title);
-			pWriter->WriteNodeValue(_T("dc:creator"), creator);
-			pWriter->WriteNodeValue(_T("cp:lastModifiedBy"), lastModifiedBy);
-			pWriter->WriteNodeValue(_T("cp:revision"), revision);
+			pWriter->WriteNodeValue2(_T("dc:title"), title);
+			pWriter->WriteNodeValue2(_T("dc:subject"), subject);
+			pWriter->WriteNodeValue2(_T("dc:creator"), creator);
+			pWriter->WriteNodeValue2(_T("cp:keywords"), keywords);
+			pWriter->WriteNodeValue2(_T("dc:description"), description);
+			pWriter->WriteNodeValue2(_T("dc:identifier"), identifier);
+			pWriter->WriteNodeValue2(_T("dc:language"), language);
+			pWriter->WriteNodeValue2(_T("cp:lastModifiedBy"), lastModifiedBy);
+			pWriter->WriteNodeValue2(_T("cp:revision"), revision);
 
-			pWriter->WriteNodeValue(_T("dcterms:created xsi:type=\"dcterms:W3CDTF\""), created);
-			pWriter->WriteNodeValue(_T("dcterms:modified xsi:type=\"dcterms:W3CDTF\""), modified);
-			
+			if ((lastPrinted.IsInit()) && (false == lastPrinted->empty()))
+			{
+				pWriter->WriteNodeValue2(_T("cp:lastPrinted"), lastPrinted);
+			}
+			if ((created.IsInit()) && (false == created->empty()))
+			{
+				pWriter->WriteNodeBegin(_T("dcterms:created xsi:type=\"dcterms:W3CDTF\""));
+				pWriter->WriteStringXML(*created);
+				pWriter->WriteNodeEnd(_T("dcterms:created"));
+			}
+			if ((modified.IsInit()) && (false == modified->empty()))
+			{
+				pWriter->WriteNodeBegin(_T("dcterms:modified xsi:type=\"dcterms:W3CDTF\""));
+				pWriter->WriteStringXML(*modified);
+				pWriter->WriteNodeEnd(_T("dcterms:modified"));
+			}
+			pWriter->WriteNodeValue2(_T("cp:category"), category);
+			pWriter->WriteNodeValue2(_T("cp:contentStatus"), contentStatus);
+			pWriter->WriteNodeValue2(_T("cp:version"), version);
+
 			pWriter->EndNode(_T("cp:coreProperties"));
 		}
 
 	public:
-		nullable_string		title;
-		nullable_string		creator;
-		nullable_string		lastModifiedBy;
-		nullable_string		revision;
-//		nullable_property<PPTX::DateTime> created;
+		nullable_string		category;
+		nullable_string		contentStatus;
+		//nullable_property<std::string, Limit::ContentStatus> contentStatus;
 		nullable_string		created;
-//		nullable_property<PPTX::DateTime> modified;
+		//nullable_property<PPTX::DateTime> created;
+		nullable_string		creator;
+		nullable_string		description;
+		nullable_string		identifier;
+		nullable_string		keywords;
+		nullable_string		language;
+		nullable_string		lastModifiedBy;
+		nullable_string		lastPrinted;
 		nullable_string		modified;
-/*
-		nullable_property<std::string> category;
-		nullable_property<std::string, Limit::ContentStatus> contentStatus;
-		nullable_property<std::string> description;
-//identifier - ???
-//			nullable_property<std::string> keywords;
-		nullable_property<std::string> language;
-		nullable_property<PPTX::DateTime> lastPrinted;
-		nullable_property<std::string> subject;
-		nullable_property<std::string> version;
-*/
+		//nullable_property<PPTX::DateTime> modified;
+		nullable_string		revision;
+		nullable_string		subject;
+		nullable_string		title;
+		nullable_string		version;
 	};
 } // namespace PPTX
 

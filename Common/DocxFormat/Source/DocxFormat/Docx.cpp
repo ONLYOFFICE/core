@@ -61,7 +61,32 @@ namespace OOX {
         OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
         IFileContainer::Read( oRels, oFilePath, oFilePath );
 
+		FixAfterRead();
          return true;
+	}
+	void CDocx::FixAfterRead()
+	{
+		//solve id conflict between comments and documentComments
+		if(NULL != m_pComments && m_pComments->m_arrComments.size() > 0 && NULL != m_pDocumentComments && NULL != m_pDocumentComments->m_arrComments.size() > 0)
+		{
+			int maxId = INT_MIN;
+			for (size_t i = 0; i < m_pComments->m_arrComments.size(); ++i)
+			{
+				OOX::CComment* pComment = m_pComments->m_arrComments[i];
+				if (pComment->m_oId.IsInit() && maxId < pComment->m_oId->GetValue())
+				{
+					maxId = pComment->m_oId->GetValue();
+				}
+			}
+			m_pDocumentComments->m_mapComments.clear();
+			for (size_t i = 0; i < m_pDocumentComments->m_arrComments.size(); ++i)
+			{
+				OOX::CComment* pComment = m_pDocumentComments->m_arrComments[i];
+				pComment->m_oId.Init();
+				pComment->m_oId->SetValue(++maxId);
+				m_pDocumentComments->m_mapComments.insert( std::make_pair( pComment->m_oId->GetValue(), i));
+			}
+		}
 	}
 	OOX::CHdrFtr *CDocx::GetHeaderOrFooter(const OOX::RId& rId) const
 	{

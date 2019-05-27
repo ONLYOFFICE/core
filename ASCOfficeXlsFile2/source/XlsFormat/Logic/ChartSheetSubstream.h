@@ -80,6 +80,7 @@ public:
 	BaseObjectPtr				m_PrintSize;
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_WriteProtect;
+	
 private:
 
 	void recalc(CHARTFORMATS*	charts);

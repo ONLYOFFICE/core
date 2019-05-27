@@ -52,6 +52,7 @@
     #include <string.h>
 #endif
 
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "../../DesktopEditor/common/Types.h"
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
@@ -768,12 +769,18 @@ namespace DocFileFormat
 
 			return bytes;
 		}
-
-        static inline std::wstring IntToWideString(int value)
+		static inline std::wstring IntToWideString(unsigned int value)
 		{
             return (std::to_wstring(value));
 		}
-
+        static inline std::wstring IntToWideString(int value)
+		{
+            return (std::to_wstring(value));
+		}  
+        static inline std::wstring SizeTToWideString(size_t value)
+		{
+            return (std::to_wstring((unsigned int)value));
+		}
 		static inline std::wstring DoubleToWideString(double value)
 		{
 			std::wstringstream src;			

@@ -122,9 +122,9 @@ void process_paragraph_index(const paragraph_attrs & Attr, oox::docx_conversion_
 
 }
 
-std::wostream & paragraph::text_to_stream(std::wostream & _Wostream) const
+std::wostream & paragraph::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     //_Wostream << L"\n";
     return _Wostream;
 }
@@ -157,6 +157,11 @@ void paragraph::add_child_element( xml::sax * Reader, const std::wstring & Ns, c
 }
 
 void paragraph::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+	content_.push_back( elm );
+}
+void paragraph::add_space(const std::wstring & Text)
 {
     office_element_ptr elm = text::create(Text) ;
 	content_.push_back( elm );
@@ -255,7 +260,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		if (sequence_)
 		{
 			std::wstringstream _Wostream;
-			CP_SERIALIZE_TEXT(content_);///todooo
+			CP_SERIALIZE_TEXT(content_, true);///todooo
 
 			Context.get_drawing_context().set_next_object_caption(_Wostream.str());
 		}
@@ -330,8 +335,10 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		
 		Context.get_drop_cap_context().state(1);//after 
 		Context.start_paragraph();
+		Context.process_paragraph_style(Context.get_current_paragraph_style());
 
 	}
+	Context.start_paragraph_style(styleName);
 
     int textStyle = Context.process_paragraph_attr(&attrs_);
 
@@ -370,7 +377,9 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     if (textStyle > 0)
 	{
 		is_empty = false;
-        if (textStyle==1) Context.pop_text_properties();
+        if (textStyle == 1) Context.pop_text_properties();
+		
+		Context.pop_current_fontSize();
 	}
 
     Context.finish_run();
@@ -394,6 +403,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	if (is_empty)
 		Context.output_stream() << emptyParagraphContent;
 
+	Context.end_paragraph_style();
 	Context.finish_paragraph();
 }
 
@@ -431,9 +441,9 @@ void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
 
 //////////////////////////////////////////////
 
-std::wostream & h::text_to_stream(std::wostream & _Wostream) const
+std::wostream & h::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return paragraph_.text_to_stream(_Wostream);
+    return paragraph_.text_to_stream(_Wostream, bXmlEncode);
 }
 
 void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -485,9 +495,9 @@ void h::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * p::ns = L"text";
 const wchar_t * p::name = L"p";
 
-std::wostream & p::text_to_stream(std::wostream & _Wostream) const
+std::wostream & p::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return paragraph_.text_to_stream(_Wostream);
+    return paragraph_.text_to_stream(_Wostream, bXmlEncode);
 }
 
 void p::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -505,6 +515,10 @@ void p::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std
 void p::add_text(const std::wstring & Text)
 {
     paragraph_.add_text(Text);
+}
+void p::add_space(const std::wstring & Text)
+{
+    paragraph_.add_space(Text);
 }
 
 void p::docx_convert(oox::docx_conversion_context & Context)
@@ -531,11 +545,11 @@ void p::afterReadContent()
 const wchar_t * list::ns = L"text";
 const wchar_t * list::name = L"list";
 
-std::wostream & list::text_to_stream(std::wostream & _Wostream) const
+std::wostream & list::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
   	for (size_t i = 0; i < list_items_.size(); i++)
     {
-        list_items_[i]->text_to_stream(_Wostream);
+        list_items_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }
@@ -557,11 +571,6 @@ void list::add_child_element( xml::sax * Reader, const std::wstring & Ns, const 
     {
         CP_CREATE_ELEMENT(list_items_);
     }
-}
-
-void list::add_text(const std::wstring & Text)
-{
-    // TODO : false
 }
 
 void list::docx_convert(oox::docx_conversion_context & Context)
@@ -599,7 +608,7 @@ void list::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * soft_page_break::ns = L"text";
 const wchar_t * soft_page_break::name = L"soft-page-break";
 
-std::wostream & soft_page_break::text_to_stream(std::wostream & _Wostream) const
+std::wostream & soft_page_break::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     _Wostream << L"\n";
     return _Wostream;
@@ -618,9 +627,9 @@ void soft_page_break::add_child_element( xml::sax * Reader, const std::wstring &
 const wchar_t * section::ns = L"text";
 const wchar_t * section::name = L"section";
 
-std::wostream & section::text_to_stream(std::wostream & _Wostream) const
+std::wostream & section::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return serialize_elements_text(_Wostream, content_);
+    return serialize_elements_text(_Wostream, content_, bXmlEncode);
 }
 
 void section::afterCreate()
@@ -768,9 +777,9 @@ void section_source::add_child_element( xml::sax * Reader, const std::wstring & 
 const wchar_t * index_body::ns = L"text";
 const wchar_t * index_body::name = L"index-body";
 
-std::wostream & index_body::text_to_stream(std::wostream & _Wostream) const
+std::wostream & index_body::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 
@@ -829,9 +838,9 @@ void index_title::pptx_convert(oox::pptx_conversion_context & Context)
         content_[i]->pptx_convert(Context);
     }
 }
-std::wostream & index_title::text_to_stream(std::wostream & _Wostream) const
+std::wostream & index_title::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 
@@ -914,9 +923,9 @@ void table_of_content::pptx_convert(oox::pptx_conversion_context & Context)
 }
 
 
-std::wostream & table_of_content::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_of_content::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(index_body_);
+    CP_SERIALIZE_TEXT(index_body_, bXmlEncode);
     return _Wostream;
 }
 // text:table-of-content-source
@@ -1032,9 +1041,9 @@ void table_index::pptx_convert(oox::pptx_conversion_context & Context)
     if (index_body_)
         index_body_->pptx_convert(Context);
 }
-std::wostream & table_index::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_index::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(index_body_);
+    CP_SERIALIZE_TEXT(index_body_, bXmlEncode);
     return _Wostream;
 }
 void table_index::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -1155,9 +1164,9 @@ void illustration_index::pptx_convert(oox::pptx_conversion_context & Context)
         index_body_->pptx_convert(Context);
 }
 
-std::wostream & illustration_index::text_to_stream(std::wostream & _Wostream) const
+std::wostream & illustration_index::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(index_body_);
+    CP_SERIALIZE_TEXT(index_body_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1307,9 +1316,9 @@ void alphabetical_index::pptx_convert(oox::pptx_conversion_context & Context)
     if (index_body_)
         index_body_->pptx_convert(Context);
 }
-std::wostream & alphabetical_index::text_to_stream(std::wostream & _Wostream) const
+std::wostream & alphabetical_index::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(index_body_);
+    CP_SERIALIZE_TEXT(index_body_, bXmlEncode);
     return _Wostream;
 }
 //----------------------------------------------------------------------------------------
@@ -1418,9 +1427,9 @@ void object_index::pptx_convert(oox::pptx_conversion_context & Context)
     if (index_body_)
         index_body_->pptx_convert(Context);
 }
-std::wostream & object_index::text_to_stream(std::wostream & _Wostream) const
+std::wostream & object_index::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(index_body_);
+    CP_SERIALIZE_TEXT(index_body_, bXmlEncode);
     return _Wostream;
 }
 void object_index::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -1531,9 +1540,9 @@ void user_index::pptx_convert(oox::pptx_conversion_context & Context)
     if (index_body_)
         index_body_->pptx_convert(Context);
 }
-std::wostream & user_index::text_to_stream(std::wostream & _Wostream) const
+std::wostream & user_index::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(index_body_);
+    CP_SERIALIZE_TEXT(index_body_, bXmlEncode);
     return _Wostream;
 }
 void user_index::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -1692,9 +1701,9 @@ void bibliography::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 }
 
-std::wostream & bibliography::text_to_stream(std::wostream & _Wostream) const
+std::wostream & bibliography::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(index_body_);
+    CP_SERIALIZE_TEXT(index_body_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1949,9 +1958,9 @@ void variable_input::add_text(const std::wstring & Text)
 {
     text_ = Text;
 }
-std::wostream & variable_input::text_to_stream(std::wostream & _Wostream) const
+std::wostream & variable_input::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    _Wostream << xml::utils::replace_text_to_xml( text_, bXmlEncode );
     return _Wostream;
 }
 

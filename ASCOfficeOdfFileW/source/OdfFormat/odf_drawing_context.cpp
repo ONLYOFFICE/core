@@ -70,20 +70,22 @@ typedef shared_ptr<odf_group_state>::Type odf_group_state_ptr;
 
 struct 	odf_group_state
 {
-	odf_group_state(office_element_ptr	elm_, int level_, odf_group_state_ptr prev)
+	odf_group_state(office_element_ptr	elm_, size_t level_, odf_group_state_ptr prev)
 	{
-		shift_x = shift_y = x = y = cx = cy = rotate = 0;
+		shift_x = shift_y = x = y = cx = cy = 0;
 		scale_cx = scale_cy = 1.;
 		flipH = flipV = false;
 
-		elm		= elm_;
+		elm = elm_;
 		level = level_;
 		
 		prev_group = prev;
+
+		graphic_properties = NULL;
 	}
 	office_element_ptr	elm;
 	
-	int level;
+	size_t level;
 
 	double shift_x;
 	double shift_y;
@@ -97,10 +99,12 @@ struct 	odf_group_state
 	double scale_cx;
 	double scale_cy;
 
-	double rotate;
+	_CP_OPT(double) rotate;
 
 	bool flipH;
 	bool flipV;
+
+	graphic_format_properties *graphic_properties;
 
 	odf_group_state_ptr prev_group;
 };
@@ -175,8 +179,11 @@ struct odf_drawing_state
 		svg_y_				= boost::none;
 		svg_height_			= boost::none;
 		svg_width_			= boost::none;
-		fill_color_			= boost::none;
 
+		cx_					= boost::none;
+		cy_					= boost::none;
+		
+		fill_color_			= boost::none;
 		name_				= L"";
 		description_		= L"";
 		hidden_				= false;
@@ -209,6 +216,9 @@ struct odf_drawing_state
 	_CP_OPT(length) svg_y_;
 	_CP_OPT(length) svg_height_;
 	_CP_OPT(length) svg_width_;	
+
+	_CP_OPT(double) cx_;
+	_CP_OPT(double) cy_;
 
 	bool flipH_;
 	bool flipV_;
@@ -414,6 +424,7 @@ void odf_drawing_context::start_group()
 		style_name = style_->style_name_;
 		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
 	}
+	group_state->graphic_properties = impl_->current_graphic_properties;
 
 	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 
@@ -451,7 +462,9 @@ void odf_drawing_context::end_group()
 	
 	impl_->current_group_ = impl_->group_list_.back()->prev_group;
 	impl_->group_list_.pop_back();
-	impl_->current_level_.pop_back();
+
+	if (!impl_->current_level_.empty())
+		impl_->current_level_.pop_back();
 }
 
 
@@ -540,54 +553,60 @@ void odf_drawing_context::end_drawing()
 
 		std::wstring strTransform;
 
-		if (impl_->current_drawing_state_.in_group_ && impl_->current_group_)
+		_CP_OPT(double) rotate = impl_->current_drawing_state_.rotateAngle_;
+		
+		if (impl_->current_drawing_state_.in_group_)
 		{
-			double rotate = impl_->current_group_->rotate;
-			if (impl_->current_drawing_state_.rotateAngle_)
-				rotate += *impl_->current_drawing_state_.rotateAngle_;
+			odf_group_state_ptr gr = impl_->current_group_;
 
-			if (fabs(rotate) > 0.001)impl_->current_drawing_state_.rotateAngle_ = rotate;
+			while(gr)
+			{
+				impl_->current_drawing_state_.flipH_ = impl_->current_drawing_state_.flipH_ ^ gr->flipH;
+				impl_->current_drawing_state_.flipV_ = impl_->current_drawing_state_.flipV_ ^ gr->flipV;
+				
+				gr = gr->prev_group;
+			}			
+			
+			if (impl_->current_group_->rotate)
+				rotate = (rotate ? *rotate : 0) + *impl_->current_group_->rotate;
+
 		}
         double x = impl_->current_drawing_state_.svg_x_ ? impl_->current_drawing_state_.svg_x_->get_value() : 0;
         double y = impl_->current_drawing_state_.svg_y_ ? impl_->current_drawing_state_.svg_y_->get_value() : 0;
 
-		if (impl_->current_drawing_state_.rotateAngle_)
+		if (rotate)
 		{
-			if (impl_->current_drawing_state_.in_group_)
+			double angle = *rotate;//impl_->current_drawing_state_.rotateAngle_ ? *impl_->current_drawing_state_.rotateAngle_ : 0;
+			
+			length new_x;
+			length new_y;
+			
+			if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 			{
-				if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
-				{
-					strTransform += std::wstring(L" translate(-") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_width_.get()/2)
-											+ std::wstring(L",-") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_height_.get()/2)
-											+ std::wstring(L")" ); 
-				}
-
+				length cx = *impl_->current_drawing_state_.svg_width_;
+				length cy = *impl_->current_drawing_state_.svg_height_;
+ 
+                new_x = (cx / 2.) - ((cx / 2.) * cos(-angle) - (cy / 2.) * sin(-angle) );
+                new_y = (cy / 2.) - ((cx / 2.) * sin(-angle) + (cy / 2.) * cos(-angle) );
 			}
-			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle_.get()) + std::wstring(L")");
-			//так как вращения все в мс относительно центра фигуры, а не от начала координат - убираем смещение
+
+			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(*rotate) + std::wstring(L")");
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
 			{
-                odf_types::length pos_x = odf_types::length(impl_->current_drawing_state_.svg_x_->get_value() +
-                        (impl_->current_drawing_state_.svg_width_ ? (impl_->current_drawing_state_.svg_width_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_x_->get_unit());
+				length pos_x = *impl_->current_drawing_state_.svg_x_ + new_x;
+				length pos_y = *impl_->current_drawing_state_.svg_y_ + new_y;
                 
-				odf_types::length pos_y = odf_types::length(impl_->current_drawing_state_.svg_y_->get_value() +
-                        (impl_->current_drawing_state_.svg_height_ ? (impl_->current_drawing_state_.svg_height_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_y_->get_unit());
-
-				if (pos_x.get_unit() != odf_types::length::none && pos_y.get_unit() != odf_types::length::none)
-				{
-					strTransform +=   std::wstring(L" translate(")  + boost::lexical_cast<std::wstring>(pos_x)
-									+ std::wstring(L",")            + boost::lexical_cast<std::wstring>(pos_y)
-									+ std::wstring(L")") ;
-					
-					impl_->current_drawing_state_.svg_x_ = boost::none;
-					impl_->current_drawing_state_.svg_y_ = boost::none;
-				}
+				strTransform +=   std::wstring(L" translate(")  + boost::lexical_cast<std::wstring>(pos_x)
+								+ std::wstring(L",")            + boost::lexical_cast<std::wstring>(pos_y)
+								+ std::wstring(L")") ;
+				
+				impl_->current_drawing_state_.svg_x_ = boost::none;
+				impl_->current_drawing_state_.svg_y_ = boost::none;
 			}
-
 		}
 
-		if (strTransform.empty() == false)
+		if (strTransform.empty() == false && !draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_ = strTransform;
 
 		draw->common_draw_attlists_.position_.svg_x_ = impl_->current_drawing_state_.svg_x_;
@@ -607,18 +626,7 @@ void odf_drawing_context::end_drawing()
 		placeholder->svg_height_			= impl_->current_drawing_state_.svg_height_;
 		placeholder->svg_width_				= impl_->current_drawing_state_.svg_width_;
 	}
-	if (impl_->current_drawing_state_.in_group_)
-	{
-		odf_group_state_ptr gr = impl_->current_group_;
 
-		while(gr)
-		{
-			impl_->current_drawing_state_.flipH_ = impl_->current_drawing_state_.flipH_ ^ gr->flipH;
-			impl_->current_drawing_state_.flipV_ = impl_->current_drawing_state_.flipV_ ^ gr->flipV;
-			
-			gr = gr->prev_group;
-		}
-	}
 	draw_custom_shape* custom = dynamic_cast<draw_custom_shape*>(draw);
 	if (custom)
 	{
@@ -877,7 +885,8 @@ bool odf_drawing_context::change_text_box_2_wordart()
 			draw_base* draw_old = dynamic_cast<draw_base*>(impl_->current_level_[sz - 1].get());
 			if (draw_old)
 			{
-				draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
+				if (draw_old->content_.size() > 1)
+					draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
 			}
 		}
 	//----------------------------------------------
@@ -939,34 +948,28 @@ void odf_drawing_context::end_shape()
 		if (line->draw_line_attlist_.svg_y1_ && impl_->current_drawing_state_.svg_height_ && !line->draw_line_attlist_.svg_y2_)
 			line->draw_line_attlist_.svg_y2_ = line->draw_line_attlist_.svg_y1_.get() + impl_->current_drawing_state_.svg_height_.get();
 		
-		if (impl_->current_drawing_state_.rotateAngle_)
+		_CP_OPT(double) rotate = impl_->current_drawing_state_.rotateAngle_;
+		if (impl_->current_drawing_state_.in_group_ && impl_->current_group_)
+		{			
+			if (impl_->current_group_->rotate)
+				rotate = (rotate ? *rotate : 0) + *impl_->current_group_->rotate;
+		}
+
+		if (rotate)
 		{
-			std::wstring strTransform;
+			double angle = *rotate;//impl_->current_drawing_state_.rotateAngle_ ? *impl_->current_drawing_state_.rotateAngle_ : 0;
 
-			odf_types::length x11 = odf_types::length((line->draw_line_attlist_.svg_x1_->get_value() + line->draw_line_attlist_.svg_x2_->get_value()) / 2., line->draw_line_attlist_.svg_x2_->get_unit());
-			odf_types::length y11 = odf_types::length((line->draw_line_attlist_.svg_y1_->get_value() + line->draw_line_attlist_.svg_y2_->get_value()) / 2., line->draw_line_attlist_.svg_y2_->get_unit());
+            if (line->draw_line_attlist_.svg_x1_)
+                line->draw_line_attlist_.svg_x1_ = *line->draw_line_attlist_.svg_x1_ / 2 - (*line->draw_line_attlist_.svg_x1_ / 2 * cos(-angle) - *line->draw_line_attlist_.svg_y1_ / 2 * sin(-angle) );
+            if (line->draw_line_attlist_.svg_y1_)
+                line->draw_line_attlist_.svg_y1_ = *line->draw_line_attlist_.svg_y1_ / 2 - (*line->draw_line_attlist_.svg_x1_ / 2 * sin(-angle) + *line->draw_line_attlist_.svg_y1_ / 2 * cos(-angle) );
 
-			//if (impl_->current_drawing_state_.in_group_)
-			{
-				if (line->draw_line_attlist_.svg_x1_&& line->draw_line_attlist_.svg_y1_)
-				{
-					strTransform += std::wstring(L" translate(-") +	boost::lexical_cast<std::wstring>(x11)
-											+ std::wstring(L",-") + boost::lexical_cast<std::wstring>(y11)
-											+ std::wstring(L")" ); 
-				}
+            if (line->draw_line_attlist_.svg_x2_)
+                line->draw_line_attlist_.svg_x2_ = *line->draw_line_attlist_.svg_x2_ / 2 - (*line->draw_line_attlist_.svg_x2_ / 2 * cos(-angle) - *line->draw_line_attlist_.svg_y2_ / 2 * sin(-angle) );
+            if (line->draw_line_attlist_.svg_y2_)
+                line->draw_line_attlist_.svg_y2_ = *line->draw_line_attlist_.svg_y2_ / 2 - (*line->draw_line_attlist_.svg_x2_ / 2 * sin(-angle) + *line->draw_line_attlist_.svg_y2_ / 2 * cos(-angle) );
 
-			}
-			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle_.get()) + std::wstring(L")");
-			if (line->draw_line_attlist_.svg_x1_&& line->draw_line_attlist_.svg_y1_)
-			{
-				strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(x11)
-										+ std::wstring(L",") + boost::lexical_cast<std::wstring>(y11)
-										+ std::wstring(L")" ); 
-			}
-			if (strTransform.empty() == false)
-			{
-				line->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_ = strTransform;
-			}
+			line->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_= L"";
 
 			impl_->current_drawing_state_.rotateAngle_ = boost::none;
 		}
@@ -1313,6 +1316,15 @@ void odf_drawing_context::set_grayscale()
 
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = L"greyscale";
 }
+void odf_drawing_context::set_white_balance(double red, double green, double blue)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_red_ = red;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_green_ = green;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_blue_ = blue;
+}
+
 void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y )
 {
 	if (!impl_->current_graphic_properties)return;
@@ -1375,9 +1387,22 @@ void odf_drawing_context::set_placeholder_type (int val)
 	}
 	//todooo draw_layer for master for sldnum, datetime ...
 }
+void odf_drawing_context::set_group_fill()
+{
+	if (!impl_->current_graphic_properties) return;
+	
+	if (!impl_->current_group_) return;
+	if (!impl_->current_group_->graphic_properties) return;
+
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = impl_->current_group_->graphic_properties->common_draw_fill_attlist_.draw_fill_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = impl_->current_group_->graphic_properties->common_draw_fill_attlist_.draw_fill_color_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_name_ = impl_->current_group_->graphic_properties->common_draw_fill_attlist_.draw_fill_image_name_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_ = impl_->current_group_->graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_ = impl_->current_group_->graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_;
+}
 void odf_drawing_context::set_no_fill()
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
 
 	switch(impl_->current_drawing_part_)
 	{
@@ -1924,9 +1949,13 @@ void odf_drawing_context::set_group_size( _CP_OPT(double) cx, _CP_OPT(double) cy
 
     if (change_cx && impl_->current_group_->cx)
         impl_->current_group_->cx = *change_cx;
-    if (change_cy && impl_->current_group_->cy)
+	else if (cx)
+		impl_->current_group_->cx = *cx;
+    
+	if (change_cy && impl_->current_group_->cy)
         impl_->current_group_->cy = *change_cy;
-
+	else if (cy)
+		impl_->current_group_->cy = *cy;
 }
 void odf_drawing_context::set_group_flip_V(bool bVal)
 {
@@ -1963,15 +1992,15 @@ void odf_drawing_context::set_group_flip_H(bool bVal)
 void odf_drawing_context::set_group_rotate(int iVal)
 {
 	if ( impl_->group_list_.empty() )return;
-
-	double dRotate = (360 - iVal/60000.)/180. * 3.14159265358979323846;
-
+	
 	odf_group_state_ptr gr = impl_->current_group_;
+
+	double dRotate = (360 - iVal)/180. * 3.14159265358979323846;
 
 	int step = 2;
 	while (gr && step > 0)
 	{
-		dRotate += gr->rotate;
+		dRotate += gr->rotate ? *gr->rotate : 0;
 		gr = gr->prev_group;
 		step--;
 	}
@@ -2027,39 +2056,36 @@ void odf_drawing_context::get_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 }
 void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
 {
-	if (x_pt)
-	{
-		double x = *x_pt;
-		
-		if (impl_->current_drawing_state_.in_group_)
-		{
-			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
-			{
-				x = (x + impl_->group_list_[i]->shift_x) * impl_->group_list_[i]->scale_cx ;	
-			}
-		}
-		if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group_)
-		{
-			impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm), length::cm);
-		}	
-	}
+	double x = x_pt ? *x_pt : 0;
+	double y = y_pt ? *y_pt : 0;
+
+	//double cx = *impl_->current_drawing_state_.cx_;
+	//double cy = *impl_->current_drawing_state_.cy_;
 	
-	if (y_pt)
+	if (impl_->current_drawing_state_.in_group_)
 	{
-		double y = *y_pt;
+		for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
+		{			
+			//if (impl_->group_list_[i]->rotate)
+			//{
+			//	x = (x * cos(-impl_->group_list_[i]->rotate.get()) - y * sin(-impl_->group_list_[i]->rotate.get()) );
+			//	y = (x * sin(-impl_->group_list_[i]->rotate.get()) + y * cos(-impl_->group_list_[i]->rotate.get()) );
+			//}
+			x = (x + impl_->group_list_[i]->shift_x) * impl_->group_list_[i]->scale_cx ;	
+			y = (y + impl_->group_list_[i]->shift_y) * impl_->group_list_[i]->scale_cy;
 
-		if (impl_->current_drawing_state_.in_group_)
-		{
-			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
-			{
-				y = (y + impl_->group_list_[i]->shift_y) * impl_->group_list_[i]->scale_cy;
-			}
+			//cx *= impl_->group_list_[i]->scale_cx;
+			//cy *= impl_->group_list_[i]->scale_cy;
 		}
+	}
 
-		if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group_)
-		{
-			impl_->current_drawing_state_.svg_y_ = length(length(y, length::pt).get_value_unit(length::cm),length::cm);
-		}
+	if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group_)
+	{
+		impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm), length::cm);
+	}	
+	if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group_)
+	{
+		impl_->current_drawing_state_.svg_y_ = length(length(y, length::pt).get_value_unit(length::cm), length::cm);
 	}
 }
 void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
@@ -2077,10 +2103,14 @@ void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 }
 void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
+	impl_->current_drawing_state_.cx_ = width_pt;
+	impl_->current_drawing_state_.cy_ = height_pt;
+	
 	if (impl_->current_drawing_state_.in_group_)
 	{
 		if (width_pt)
 		{
+
 			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				width_pt  = *width_pt * impl_->group_list_[i]->scale_cx;
@@ -2350,6 +2380,7 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 {
+	if (hexColor.empty()) return;
 	if (impl_->current_drawing_state_.elements_.empty())return;
 
 	odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
@@ -3047,7 +3078,7 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (270 - angle) * 10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = (int)((270 - angle) * 10);//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r, double b)
 {
@@ -3104,7 +3135,7 @@ void odf_drawing_context::set_opacity_angle(double angle)
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
 	if (!opacity) return;
 
-	opacity->draw_angle_ = (270-angle)*10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+	opacity->draw_angle_ = (int)((270-angle)*10);//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
 void odf_drawing_context::set_opacity_type(gradient_style style)
 {

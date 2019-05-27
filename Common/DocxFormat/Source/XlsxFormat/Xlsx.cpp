@@ -72,48 +72,7 @@ bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 
 	if (!m_pWorkbook) return false;
 
-//Theme
-	//smart_ptr<OOX::File> pFile = m_pWorkbook->Find(OOX::FileTypes::Theme);
-	//m_pTheme = pFile.smart_dynamic_cast<PPTX::Theme>();
-
-    for (size_t i = 0; i < m_arWorksheets.size(); i++)
-	{
-		OOX::Spreadsheet::CWorksheet* sheet = m_arWorksheets[i];
-
-//dxf from x14:... to styles
-		if (sheet->m_oExtLst.IsInit() && m_pStyles)
-		{
-			for(size_t i = 0; i < sheet->m_oExtLst->m_arrExt.size(); ++i)
-			{
-				OOX::Drawing::COfficeArtExtension* pExt = sheet->m_oExtLst->m_arrExt[i];
-				if ( !pExt->m_arrConditionalFormatting.empty() )
-				{
-					for (size_t j = 0; j < pExt->m_arrConditionalFormatting.size(); j++)
-					{
-						if (!pExt->m_arrConditionalFormatting[j]) continue;
-
-                        for ( size_t i = 0; i < pExt->m_arrConditionalFormatting[j]->m_arrItems.size(); ++i)
-						{
-							OOX::Spreadsheet::CConditionalFormattingRule *rule = pExt->m_arrConditionalFormatting[j]->m_arrItems[i];
-							if (!rule) continue;
-
-							if (rule->m_oDxf.IsInit())
-							{
-								if (!m_pStyles->m_oDxfs.IsInit())
-									m_pStyles->m_oDxfs.Init();
-
-								//DxfId starts from 0
-								rule->m_oDxfId = std::to_wstring((unsigned int)m_pStyles->m_oDxfs->m_arrItems.size());
-								m_pStyles->m_oDxfs->m_arrItems.push_back(rule->m_oDxf.GetPointerEmptyNullable());
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return true;
+ 	return true;
 }
 bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {
@@ -123,30 +82,22 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
         return false;
 
 //CApp
-    OOX::CApp* pApp = new OOX::CApp(this);
+	if(NULL == m_pApp)
+	{
+		OOX::CApp* pApp = new OOX::CApp(this);
+		pApp->SetDefaults();
+		smart_ptr<OOX::File> pAppFile(pApp);
+		Add(pAppFile);
+	}
 
-	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-	if (sApplication.empty())
-		sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-	pApp->SetApplication(sApplication);
-
-#if defined(INTVER)
-    pApp->SetAppVersion(VALUE2STR(INTVER));
-#endif
-    pApp->SetDocSecurity(0);
-    pApp->SetScaleCrop(false);
-    pApp->SetLinksUpToDate(false);
-    pApp->SetSharedDoc(false);
-    pApp->SetHyperlinksChanged(false);
-
-    smart_ptr<OOX::File> pAppFile(pApp);
-    const OOX::RId oAppRId =  Add(pAppFile);
 //CCore
-    OOX::CCore* pCore = new OOX::CCore(this);
-    pCore->SetCreator(_T(""));
-    pCore->SetLastModifiedBy(_T(""));
-    smart_ptr<OOX::File> pCoreFile(pCore);
-    const OOX::RId oCoreRId = Add(pCoreFile);
+	if(NULL == m_pCore)
+	{
+		OOX::CCore* pCore = new OOX::CCore(this);
+		pCore->SetDefaults();
+		smart_ptr<OOX::File> pCoreFile(pCore);
+		Add(pCoreFile);
+	}
 
 //xl
     CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();

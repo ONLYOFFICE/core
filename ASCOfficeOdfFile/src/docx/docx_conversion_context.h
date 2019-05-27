@@ -829,6 +829,7 @@ public:
     bool process_page_properties(std::wostream & strm);
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
 	
+	int process_paragraph_style (const std::wstring & style_name);
 	int process_paragraph_attr	(odf_reader::text::paragraph_attrs *attr);
 	int process_text_attr		(odf_reader::text::paragraph_attrs *Attr);
 	void process_page_break_after(const odf_reader::style_instance *styleInst);
@@ -872,8 +873,8 @@ public:
     void start_text_list_style	(const std::wstring & StyleName);
     void end_text_list_style	();
     
-	const std::wstring &	get_text_list_style_name();
-	const std::wstring		current_list_style		() const;
+	std::wstring	get_text_list_style_name();
+	std::wstring	current_list_style();
  
 	void start_list				(const std::wstring & StyleName, bool Continue = false);
     void end_list				();
@@ -910,23 +911,32 @@ public:
     StreamsManPtr	get_stream_man() const				{ return streams_man_; }
     void			set_stream_man(StreamsManPtr Sm)	{ streams_man_ = Sm; }
 
-    void set_rtl(bool val)	{ is_rtl_ = val; }
-    bool get_rtl() const	{return is_rtl_;}
+    void set_rtl(bool val)			{ is_rtl_ = val; }
+    bool get_rtl() const			{return is_rtl_;}
    
+	double get_current_fontSize()	{return current_fontSize.empty() ? 0 : current_fontSize.back();}
+	void pop_current_fontSize()		{if (!current_fontSize.empty()) current_fontSize.pop_back();}
+	
 	void set_margin_left(int val)	{current_margin_left_ = val;}
 	int get_margin_left()			{return current_margin_left_;}
 
-	void set_process_note		(NoteType Val) { process_note_ = Val; }
-	NoteType get_process_note	() const		{ return process_note_; }
+	void set_outline_level(int val)	{current_outline_level_ = val;}
+	int get_outline_level()			{return current_outline_level_;}
+
+	void set_process_note		(NoteType Val) { current_process_note_ = Val; }
+	NoteType get_process_note	() const		{ return current_process_note_; }
 	void add_note_reference		();
 
+	void start_paragraph_style(const std::wstring& style_name) {paragraph_style_stack_.push_back(style_name);}
+	void end_paragraph_style() { if (!paragraph_style_stack_.empty()) paragraph_style_stack_.pop_back();}
+	std::wstring get_current_paragraph_style()	{return paragraph_style_stack_.empty() ? L"" : paragraph_style_stack_.back();}
+	
 	oox_chart_context & current_chart();
     void start_chart(std::wstring name);
     void end_chart	();
 
-	void start_comment	()	{process_comment_ = true;}
-	void end_comment	()	{process_comment_ = false;}
-	bool process_comment_;
+	void start_comment	()	{current_process_comment_ = true;}
+	void end_comment	()	{current_process_comment_ = false;}
    
 	void start_math_formula	();
 	void end_math_formula	();
@@ -945,7 +955,7 @@ public:
    
 	headers_footers			& get_headers_footers()			{ return headers_footers_; }
 	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
-	drop_cap_context		& get_drop_cap_context()		{return drop_cap_context_;}
+	drop_cap_context		& get_drop_cap_context()		{ return drop_cap_context_; }
 	
 	styles_map	styles_map_;
 	bool		process_headers_footers_;
@@ -956,6 +966,7 @@ public:
 	void		end_changes();
 
 	void		add_jsaProject(const std::string &content);
+
 private:
 
 	struct _context_state
@@ -1008,14 +1019,14 @@ private:
 	std::vector<oox_chart_context_ptr>		charts_;
     headers_footers							headers_footers_;
 
-    std::wstring			automatic_parent_style_; 
-    std::wstring			current_master_page_name_;
-	std::wstring			text_list_style_name_;
-
-    std::vector<std::wstring> list_style_stack_;
-	std::vector<std::wstring> fields_names_stack_;
+    std::wstring				automatic_parent_style_; 
+    std::wstring				current_master_page_name_;
+	std::wstring				text_list_style_name_;	
+	std::vector<std::wstring>	paragraph_style_stack_;
+	std::vector<std::wstring>	list_style_stack_;
+	std::vector<std::wstring>	fields_names_stack_;
     
-	bool					first_element_list_item_;
+	bool first_element_list_item_;
     
 	bool page_break_after_;
     bool page_break_before_;
@@ -1029,10 +1040,13 @@ private:
 	bool is_delete_text_;
     bool is_rtl_; // right-to-left
  
-	std::wstring current_alphabetic_index_;
-	int current_margin_left_;
-    int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
-	NoteType process_note_;
+	NoteType			current_process_note_;
+	bool				current_process_comment_;
+	std::vector<double> current_fontSize;
+	std::wstring		current_alphabetic_index_;
+	int					current_margin_left_;
+	int					current_outline_level_;
+    int					new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
     
 	std::vector<odf_reader::office_element*>							delayed_elements_;
 

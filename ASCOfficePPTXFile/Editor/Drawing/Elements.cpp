@@ -32,7 +32,7 @@
 
 #include "Slide.h"
 
-void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
+void PPT_FORMAT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
 	LONG lOldIndex = oColor.m_lSchemeIndex;
 	if (-1 == oColor.m_lSchemeIndex)
@@ -61,9 +61,9 @@ void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide*
 	oColor.m_lSchemeIndex = lOldIndex;
 }
 
-void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
+void PPT_FORMAT::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
-	NSPresentationEditor::CTextAttributesEx* pAttributes = &m_pShape->m_oText;
+	PPT_FORMAT::CTextAttributesEx* pAttributes = &m_pShape->m_oText;
 	int nCountColors = 0;
 	if (NULL != pTheme)
 		nCountColors = (int)pTheme->m_arColorScheme.size();
@@ -99,31 +99,32 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 			{
 				if ((pRun->fontRef.is_init()) && (pRun->fontRef.get() < pTheme->m_arFonts.size()))
 				{
-					pRun->FontProperties = new CFontProperties();
-					pRun->FontProperties->SetFont(pTheme->m_arFonts[pRun->fontRef.get()]);
+					pRun->font.font = new CFontProperty(pTheme->m_arFonts[pRun->fontRef.get()]);
 
-					if (1 < pRun->fontRef.get())
-						pRun->fontRef.reset();
+					//if (1 < pRun->fontRef.get())
+					//	pRun->fontRef.reset();
 				}
-				if ((pRun->EAFontRef.is_init()) && (pRun->EAFontRef.get() < pTheme->m_arFonts.size()))
+				if ((pRun->ansiFontRef.is_init()) && (pRun->ansiFontRef.get() < pTheme->m_arFonts.size()))
 				{
-					pRun->FontPropertiesEA = new CFontProperties();
-					pRun->FontPropertiesEA->SetFont(pTheme->m_arFonts[pRun->EAFontRef.get()]);
+					pRun->font.ansi = new CFontProperty(pTheme->m_arFonts[pRun->ansiFontRef.get()]);
 				}
-				if ((pRun->SymbolFontRef.is_init()) && (pRun->SymbolFontRef.get() < pTheme->m_arFonts.size()))
+				if ((pRun->eaFontRef.is_init()) && (pRun->eaFontRef.get() < pTheme->m_arFonts.size()))
 				{
-					pRun->FontPropertiesSym = new CFontProperties();
-					pRun->FontPropertiesSym->SetFont(pTheme->m_arFonts[pRun->SymbolFontRef.get()]);
+					pRun->font.ea = new CFontProperty(pTheme->m_arFonts[pRun->eaFontRef.get()]);
+				}
+				if ((pRun->symbolFontRef.is_init()) && (pRun->symbolFontRef.get() < pTheme->m_arFonts.size()))
+				{
+					pRun->font.sym = new CFontProperty(pTheme->m_arFonts[pRun->symbolFontRef.get()]);
 				}
 			}
 		}
 	}
 }
 
-bool NSPresentationEditor::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
+bool PPT_FORMAT::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
 {
 	bool result = false;
-	NSPresentationEditor::CTextAttributesEx* pText = &m_pShape->m_oText;
+	PPT_FORMAT::CTextAttributesEx* pText = &m_pShape->m_oText;
 
 	for (size_t p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
 	{

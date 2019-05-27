@@ -32,6 +32,7 @@
 //#include <QCoreApplication>
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 
 #include "../../PdfReader/PdfReader.h"
 #include "../../DjVuFile/DjVu.h"
@@ -46,9 +47,10 @@
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
-//#define ONLINE_WORD_TO_PDF
+//#define METAFILE_TEST_RASTER
+#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
-#define TO_HTML_RENDERER
+//#define TO_HTML_RENDERER
 //#define ONLY_TEXT
 
 int main(int argc, char *argv[])
@@ -74,14 +76,15 @@ int main(int argc, char *argv[])
 
 #ifdef METAFILE_TEST
 
-    NSHtmlRenderer::CASCSVGWriter oWriterSVG;
     NSFonts::IFontManager* pManager = pFonts->GenerateFontManager();
+
+    NSHtmlRenderer::CASCSVGWriter oWriterSVG;
     oWriterSVG.SetFontManager(pManager);
 
     MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
 
     //pMetafile->LoadFromFile(L"D:\\2\\ppt\\media\\image4.wmf");
-    pMetafile->LoadFromFile(L"/home/oleg/activex/1/image2.wmf");
+    pMetafile->LoadFromFile(L"D:\\SVG\\Disigner 2.svg");
 
     double x = 0, y = 0, w = 0, h = 0;
     pMetafile->GetBounds(&x, &y, &w, &h);
@@ -96,11 +99,63 @@ int main(int argc, char *argv[])
     oWriterSVG.put_Height(HH);
     pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
 
-    oWriterSVG.SaveFile(L"/home/oleg/activex/1/oleg.svg");
+    oWriterSVG.SaveFile(L"D:\\SVG\\out.png");
 
     RELEASEOBJECT(pMetafile);
     RELEASEINTERFACE(pManager);
     RELEASEOBJECT(pFonts);
+    return 0;
+
+#endif
+
+#ifdef METAFILE_TEST_RASTER
+
+    NSFonts::IFontManager* pManager = pFonts->GenerateFontManager();
+
+    NSGraphics::IGraphicsRenderer* pRasterRenderer = NSGraphics::Create();
+    pRasterRenderer->SetFontManager(pManager);
+
+    int nRasterW = 1000;
+    int nRasterH = 1000;
+    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+    //memset(pData, 255, 4 * nRasterW * nRasterH);
+
+    unsigned int back = 0xffffff;
+    unsigned int* pData32 = (unsigned int*)pData;
+    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+    //дефолтный тон должен быть прозрачным, а не белым
+    while (pData32 < pData32End)
+        *pData32++ = back;
+
+    CBgraFrame oFrame;
+    oFrame.put_Data(pData);
+    oFrame.put_Width(nRasterW);
+    oFrame.put_Height(nRasterH);
+    oFrame.put_Stride(4 * nRasterW);
+
+    pRasterRenderer->CreateFromBgraFrame(&oFrame);
+    pRasterRenderer->SetSwapRGB(false);
+
+    double dW_MM = nRasterW * 25.4 / 96;
+    double dH_MM = nRasterH * 25.4 / 96;
+
+    pRasterRenderer->put_Width(dW_MM);
+    pRasterRenderer->put_Height(dH_MM);
+
+    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+    pMetafile->LoadFromFile(L"D:\\test\\123.svg");
+
+    double x = 0, y = 0, w = 0, h = 0;
+    pMetafile->GetBounds(&x, &y, &w, &h);
+
+    pMetafile->DrawOnRenderer(pRasterRenderer, dW_MM / 4, dW_MM / 4, dW_MM / 2, dH_MM / 2);
+    pMetafile->ConvertToRaster(L"D:\\SVG\\out2.png", 4, 1000);
+
+    oFrame.SaveFile(L"D:\\SVG\\out.png", 4);
+
+    RELEASEOBJECT(pMetafile);
+    RELEASEINTERFACE(pManager);
+    RELEASEINTERFACE(pRasterRenderer);
     return 0;
 
 #endif

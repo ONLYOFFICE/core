@@ -35,7 +35,7 @@
 #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CMediaManager
 	{
@@ -170,7 +170,7 @@ namespace NSPresentationEditor
 	class CRelsGenerator
 	{
 	private:
-		NSPresentationEditor::CStringWriter		m_oWriter;
+		PPT_FORMAT::CStringWriter		m_oWriter;
 		int										m_lNextRelsID;
 		std::map<std::wstring, int>				m_mapMediaRelsID;
 		CMediaManager*							m_pManager;

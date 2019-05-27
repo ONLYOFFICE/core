@@ -48,7 +48,6 @@ namespace OOX
 			WritingElement_AdditionConstructors(CFormulaCF)
 			CFormulaCF()
 			{
-				m_sNodeName = L"formula";
 			}
 			virtual ~CFormulaCF()
 			{
@@ -58,33 +57,24 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<" + m_sNodeName + L">");
-				writer.WriteEncodeXmlString(m_sText);
-				writer.WriteString(L"</" + m_sNodeName + L">");
+				toXML2(writer, false);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_sNodeName = oReader.GetName();
-
-				if (oReader.IsEmptyNode())
-					return;
-
-				m_sText = oReader.GetText3();
-			}
-
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_FormulaCF;
 			}
+			static const CFormulaCF Merge(const CFormulaCF& oPrev, const CFormulaCF& oCurrent);
+			bool isExtended ();
 
 			std::wstring m_sNodeName;
 			std::wstring m_sText;
 		};
-
 
 		class CConditionalFormatValueObject : public WritingElement
 		{
@@ -101,52 +91,30 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (m_oType.IsInit())
-				{
-					writer.WriteString(L"<cfvo");
-					WritingStringAttrString(L"type", m_oType->ToString());
-					if (m_oGte.IsInit() && false == m_oGte->ToBool())
-						writer.WriteString(L" gte=\"0\"");
-					WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
-					writer.WriteString(_T("/>"));
-				}
+				toXML2(writer, false);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-				
-				if (oReader.IsEmptyNode())
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (L"formula" == sName || L"f" == sName)
-						m_oFormula = oReader;
-				}
-			}
-
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormatValueObject;
 			}
-
+			bool isExtended ()
+			{
+				return (m_oFormula.IsInit());
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
-
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("gte")		, m_oGte)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("type")	, m_oType)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("val")		, m_oVal)
-
+					WritingElement_ReadAttributes_Read_if		(oReader, L"gte"	, m_oGte)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"	, m_oType)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, L"val"	, m_oVal)
 				WritingElement_ReadAttributes_End(oReader)
 			}
 
@@ -158,7 +126,40 @@ namespace OOX
 			nullable<CFormulaCF>								m_oFormula;
 		};
 
-		class CColorScale : public WritingElementWithChilds<>
+		class CConditionalFormatIconSet : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CConditionalFormatIconSet)
+			CConditionalFormatIconSet()
+			{
+			}
+			virtual ~CConditionalFormatIconSet()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				toXML2(writer, false);
+			}
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const
+			{
+				return et_x_ConditionalFormatIconSet;
+			}
+
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>	m_oIconSet;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oIconId;
+		};
+
+		class CColorScale : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorScale)
@@ -173,51 +174,30 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (3 < m_arrItems.size()) // min 2 + 2
-				{
-                    std::wstring sValue;
-					writer.WriteString(_T("<colorScale>"));
-
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
-
-					writer.WriteString(_T("</colorScale>"));
-				}
+				toXML2(writer, false);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if (oReader.IsEmptyNode())
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("cfvo") == sName)
-						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
-					else if (_T("color") == sName)
-						m_arrItems.push_back(new CColor(oReader));
-				}
-			}
-
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_ColorScale;
 			}
-
-		public:
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
+			static const CColorScale Merge(const CColorScale& oPrev, const CColorScale& oCurrent);
+			bool isExtended ()
+			{
+				return false;
+			}
+			std::vector<nullable<CConditionalFormatValueObject>>	m_arrValues;
+			std::vector<nullable<CColor>>							m_arrColors;
 		};
 
-		class CDataBar : public WritingElementWithChilds<CConditionalFormatValueObject>
+		class CDataBar : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataBar)
@@ -232,81 +212,51 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
+			bool isExtended ();
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (2 == m_arrItems.size() && m_oColor.IsInit())
-				{
-                    std::wstring sValue;
-					writer.WriteString(_T("<dataBar"));
-					WritingStringNullableAttrInt(L"maxLength", m_oMaxLength, m_oMaxLength->GetValue());
-					WritingStringNullableAttrInt(L"minLength", m_oMinLength, m_oMinLength->GetValue());
-					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
-					{
-						writer.WriteString(_T(" showValue=\"0\""));
-					}
-
-					writer.WriteString(_T(">"));
-
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
-
-					m_oColor->toXML2(writer, _T("color"));
-
-					writer.WriteString(_T("</dataBar>"));
-				}
+				toXML2(writer, false);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-
-				if (oReader.IsEmptyNode())
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("cfvo") == sName)
-						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
-					else if (_T("color") == sName)
-						m_oColor = oReader;
-				}
-			}
-
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_DataBar;
 			}
-
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
+			static const CDataBar Merge(const CDataBar& oPrev, const CDataBar& oCurrent);
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start(oReader)
-
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("maxLength")	, m_oMaxLength)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("minLength")	, m_oMinLength)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("showValue")	, m_oShowValue)
-
-				WritingElement_ReadAttributes_End(oReader)
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-
+			
 			nullable<CColor>								m_oColor;
+
+			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
+
+//---ext-----------
+			nullable<SimpleTypes::Spreadsheet::ST_DataBarAxisPosition<>>	m_oAxisPosition;
+			nullable<SimpleTypes::Spreadsheet::ST_DataBarDirection<>>		m_oDirection;			
+			nullable<SimpleTypes::COnOff<>>									m_oBorder;
+			nullable<SimpleTypes::COnOff<>>									m_oGradient;
+			nullable<SimpleTypes::COnOff<>>									m_oNegativeBarColorSameAsPositive;
+			nullable<SimpleTypes::COnOff<>>									m_oNegativeBarBorderColorSameAsPositive;
+
+			nullable<CColor>								m_oAxisColor;
+			nullable<CColor>								m_oBorderColor;
+			
+			nullable<CColor>								m_oNegativeFillColor;
+			nullable<CColor>								m_oNegativeBorderColor;
 		};
 
-		class CIconSet : public WritingElementWithChilds<CConditionalFormatValueObject>
+		class CIconSet : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CIconSet)
@@ -321,91 +271,43 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (1 < m_arrItems.size()) // min value = 2
-				{
-                    std::wstring sValue;
-					writer.WriteString(_T("<iconSet"));
-					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
-					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
-					{
-						writer.WriteString(_T(" percent=\"0\""));
-					}
-					if (m_oReverse.IsInit() && true == m_oReverse->ToBool())
-					{
-						writer.WriteString(_T(" reverse=\"1\""));
-					}
-					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
-					{
-						writer.WriteString(_T(" showValue=\"0\""));
-					}
-
-					writer.WriteString(_T(">"));
-
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
-
-					writer.WriteString(_T("</iconSet>"));
-				}
+				toXML2(writer, false);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-
-				if (oReader.IsEmptyNode())
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("cfvo") == sName)
-						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
-				}
-			}
-
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_IconSet;
 			}
-
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
+			static const CIconSet Merge(const CIconSet& oPrev, const CIconSet& oCurrent);
+			bool isExtended ();
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start(oReader)
-
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("iconSet")		, m_oIconSet)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("percent")		, m_oPercent)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("reverse")		, m_oReverse)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("showValue")	, m_oShowValue)
-
-				WritingElement_ReadAttributes_End(oReader)
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>m_oIconSet;
 			nullable<SimpleTypes::COnOff<>>						m_oPercent;
 			nullable<SimpleTypes::COnOff<>>						m_oReverse;
 			nullable<SimpleTypes::COnOff<>>						m_oShowValue;
+			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
+
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>m_oIconSet;
+//---ext-----------
+			nullable<SimpleTypes::COnOff<>>						m_oCustom;
+			std::vector<nullable<CConditionalFormatIconSet>>	m_arrIconSets;
 		};
 
-		//необработано:
-		//<extLst>
-		class CConditionalFormattingRule : public WritingElementWithChilds<WritingElement>
+		class CConditionalFormattingRule : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormattingRule)
-			CConditionalFormattingRule()
+				CConditionalFormattingRule() : bUsage (false)
 			{
 			}
 			virtual ~CConditionalFormattingRule()
@@ -416,104 +318,30 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
+			bool isExtended();
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (isValid())
-				{
-					writer.WriteString(L"<cfRule");
-					WritingStringAttrString(L"type", m_oType->ToString());
-					WritingStringAttrInt(L"priority", m_oPriority->GetValue());
-					if (m_oAboveAverage.IsInit() && false == m_oAboveAverage->ToBool())
-						writer.WriteString(_T (" aboveAverage=\"0\""));
-					if (m_oBottom.IsInit() && true == m_oBottom->ToBool())
-						writer.WriteString(_T (" bottom=\"1\""));
-					WritingStringNullableAttrInt(L"dxfId", m_oDxfId, m_oDxfId->GetValue());
-					if (m_oEqualAverage.IsInit() && true == m_oEqualAverage->ToBool())
-						writer.WriteString(_T (" equalAverage=\"1\""));
-					WritingStringNullableAttrString(L"operator", m_oOperator, m_oOperator->ToString());
-					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
-						writer.WriteString(_T (" percent=\"1\""));
-					WritingStringNullableAttrInt(L"rank", m_oRank, m_oRank->GetValue());
-					WritingStringNullableAttrInt(L"stdDev", m_oStdDev, m_oStdDev->GetValue());
-					if (m_oStopIfTrue.IsInit() && true == m_oStopIfTrue->ToBool())
-						writer.WriteString(_T (" stopIfTrue=\"1\""));
-					WritingStringNullableAttrEncodeXmlString(L"text", m_oText, m_oText.get());
-					WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod.get());
-
-					writer.WriteString(_T(">"));
-
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
-
-					writer.WriteString(_T("</cfRule>"));
-				}
+				toXML2(writer, false);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-
-				if (oReader.IsEmptyNode())
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (L"colorScale" == sName)
-						m_arrItems.push_back(new CColorScale(oReader));
-					else if (L"dataBar" == sName)
-						m_arrItems.push_back(new CDataBar(oReader));
-					else if (L"formula" == sName || L"f" == sName)
-						m_arrItems.push_back(new CFormulaCF(oReader));
-					else if (L"iconSet" == sName)
-						m_arrItems.push_back(new CIconSet(oReader));
-					else if (L"dxf" == sName)
-						m_oDxf = oReader;
-
-				}
-			}
-
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormattingRule;
 			}
-
 			bool isValid () const
 			{
 				return m_oType.IsInit() && m_oPriority.IsInit();
 			}
 
+			template<typename Type>
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
+			static const CConditionalFormattingRule Merge(const CConditionalFormattingRule& oPrev, const CConditionalFormattingRule& oCurrent);
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start(oReader)
-
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("aboveAverage")	, m_oAboveAverage)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("bottom")			, m_oBottom)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("dxfId")			, m_oDxfId)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("equalAverage")	, m_oEqualAverage)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("operator")		, m_oOperator)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("percent")			, m_oPercent)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("priority")		, m_oPriority)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("rank")			, m_oRank)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("stdDev")			, m_oStdDev)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("stopIfTrue")		, m_oStopIfTrue)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("text")			, m_oText)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("timePeriod")		, m_oTimePeriod)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("type")			, m_oType)
-
-				WritingElement_ReadAttributes_End(oReader)
-			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable<CDxf>										m_oDxf;
 			nullable<SimpleTypes::COnOff<>>						m_oAboveAverage;
@@ -526,18 +354,27 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRank;
 			nullable<SimpleTypes::CDecimalNumber<>>				m_oStdDev;
 			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
+			nullable<std::wstring>								m_oId;
 			nullable<std::wstring>								m_oText;
 			nullable<std::wstring>								m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
 			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;	
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
+			nullable<std::wstring>								m_oExtId;
+
+			nullable<CIconSet>					m_oIconSet;
+			nullable<CColorScale>				m_oColorScale;
+			nullable<CDataBar>					m_oDataBar;
+			std::vector<nullable<CFormulaCF>>	m_arrFormula;
+
+			bool bUsage;
 		};
 
-		//необработано:
-		//<extLst>
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormatting)
-			CConditionalFormatting()
+			CConditionalFormatting() : m_bIsExtended(false), m_bIsValid(false)
 			{
 			}
 			virtual ~CConditionalFormatting()
@@ -548,81 +385,34 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
+			bool IsExtended();
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				bool isValid = false;
+				if (m_bIsValid == false) return;
 
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-                    if ( (m_arrItems[i]) && (m_arrItems[i]->isValid()) )
-					{
-						isValid = true;
-						break;
-					}
-				}
-				if (m_oSqRef.IsInit() && isValid)
-				{
-					writer.WriteString(L"<conditionalFormatting");
-					WritingStringAttrString(L"sqref", m_oSqRef.get());
-
-					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())
-					{
-						writer.WriteString(_T (" pivot=\"1\""));
-					}
-
-					writer.WriteString(_T(">"));
-
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
-
-					writer.WriteString(_T("</conditionalFormatting>"));
-				}
+				if (m_bIsExtended == false)
+					toXML2(writer, false);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-
-				if (oReader.IsEmptyNode())
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (_T("cfRule") == sName)
-						m_arrItems.push_back(new CConditionalFormattingRule(oReader));
-					if (_T("sqref") == sName)
-						m_oSqRef = oReader.GetText2();
-				}
-			}
-
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormatting;
 			}
+
+			bool IsUsage();
 		
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start(oReader)
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_ReadAttributes_Read_if		(oReader, _T("sqref")	, m_oSqRef)
-				WritingElement_ReadAttributes_Read_else_if	(oReader, _T("pivot")	, m_oPivot)
-
-				WritingElement_ReadAttributes_End(oReader)
-			}
+			mutable bool m_bIsExtended;
+			mutable bool m_bIsValid;
 		public:
-			nullable<SimpleTypes::COnOff<>>			m_oPivot;
-			nullable<std::wstring >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
+
+			nullable<SimpleTypes::COnOff<>>	m_oPivot;
+			nullable<std::wstring >			m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 		};
 	} //Spreadsheet
 } // namespace OOX

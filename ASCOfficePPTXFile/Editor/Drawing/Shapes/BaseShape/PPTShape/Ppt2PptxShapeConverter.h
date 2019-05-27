@@ -276,7 +276,7 @@ namespace NSGuidesVML
         }
 
 
-        void ConvertPath ( std::wstring strPath, NSPresentationEditor::CPath &oPath )
+        void ConvertPath ( std::wstring strPath, PPT_FORMAT::CPath &oPath )
         {
 
             m_arParts.clear();
@@ -2128,7 +2128,7 @@ namespace NSGuidesVML
 
 
 
-        void ConvertPath(std::wstring strPath, const NSPresentationEditor::CPath& oPath)
+        void ConvertPath(std::wstring strPath, const ODRAW::CPath& oPath)
         {
             m_arParts.clear();
             std::vector<std::wstring> oArray;

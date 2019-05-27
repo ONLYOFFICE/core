@@ -38,24 +38,11 @@
 #include "OfficeDrawing/Shapetypes/OvalType.h"
 #include "OfficeDrawing/Shapetypes/RectangleType.h"
 #include "OfficeDrawing/Shapetypes/RoundedRectangleType.h"
-
-#include "OfficeDrawing/threeDBooleanProperties.h"
 #include "OfficeDrawing/OfficeArtClientTextbox.h"
-#include "OfficeDrawing/DiagramBooleanProperties.h"
-#include "OfficeDrawing/GeometryBooleanProperties.h"
-#include "OfficeDrawing/ShadowStyleBooleanProperties.h"
-#include "OfficeDrawing/GeometryBooleanProperties.h"
-#include "OfficeDrawing/FillStyleBooleanProperties.h"
-#include "OfficeDrawing/GeometryBooleanProperties.h"
-#include "OfficeDrawing/FillStyleBooleanProperties.h"
-#include "OfficeDrawing/LineStyleBooleanProperties.h"
-#include "OfficeDrawing/GeometryTextBooleanProperties.h"
-#include "OfficeDrawing/GroupShapeBooleanProperties.h"
-#include "OfficeDrawing/ProtectionBooleanProperties.h"
 
 #include "DrawingPrimitives.h"
 
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 
 #include "../Common/FormatUtils.h"
 
@@ -65,6 +52,7 @@ namespace DocFileFormat
 	{		
 		m_isInlineShape		=	isInlineShape;
 		m_isBullete			=	false;
+		m_isPictureBroken	=	false;
 
 		m_pSpa				=	pSpa;
 		m_pCaller			=	pCaller;
@@ -141,12 +129,13 @@ namespace DocFileFormat
 	{
 		if ((container != NULL) && (!container->Children.empty()))
 		{
-			ShapeContainer* groupShape		=	static_cast<ShapeContainer*>(container->Children[0]);
-			GroupShapeRecord* gsr			=	static_cast<GroupShapeRecord*>(groupShape->Children[0]);
-			Shape* shape					=	static_cast<Shape*>(groupShape->Children[1]);
+			ShapeContainer* groupShape	=	static_cast<ShapeContainer*>(container->Children[0]);
+			GroupShapeRecord* gsr		=	static_cast<GroupShapeRecord*>(groupShape->Children[0]);
+			Shape* shape				=	static_cast<Shape*>(groupShape->Children[1]);
 			
-			ChildAnchor* anchor					=	groupShape->FirstChildWithType<ChildAnchor>();			
-			std::vector<OptionEntryPtr> options	=	groupShape->ExtractOptions();
+			ChildAnchor* anchor			=	groupShape->FirstChildWithType<ChildAnchor>();			
+			
+			std::vector<ODRAW::OfficeArtFOPTEPtr> options = groupShape->ExtractOptions();
 
 			m_shapeId = GetShapeID(shape);
 
@@ -159,12 +148,12 @@ namespace DocFileFormat
 			// Write wrap coords			
 			for (size_t i = 0; i < options.size(); i++)
 			{
-				switch (options[i]->pid)
+				switch (options[i]->opid)
 				{
 					case pWrapPolygonVertices:
 					{
 						std::wstring wrapCoords	= GetWrapCoords(options[i]);
-						if (wrapCoords.length())
+						if (!wrapCoords.empty())
 							m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
 					}
 					break;
@@ -229,9 +218,10 @@ namespace DocFileFormat
 		bool			freeform =	true;
 		std::wstring	sShapeId;
 
-		std::vector<OptionEntryPtr> options	=	pContainer->ExtractOptions();
-		ChildAnchor* pAnchor				=	pContainer->FirstChildWithType<ChildAnchor>();
-		ClientAnchor* clientAnchor			=	pContainer->FirstChildWithType<ClientAnchor>();
+		std::vector<ODRAW::OfficeArtFOPTEPtr> options =	pContainer->ExtractOptions();
+		
+		ChildAnchor* pAnchor		=	pContainer->FirstChildWithType<ChildAnchor>();
+		ClientAnchor* clientAnchor	=	pContainer->FirstChildWithType<ClientAnchor>();
 
 		WriteBeginShapeNode (pShape);
 
@@ -267,20 +257,20 @@ namespace DocFileFormat
 			}
 		}
 
-		EmuValue ShadowOffsetX;
-		EmuValue ShadowOffsetY;
-		EmuValue SecondShadowOffsetX;
-		EmuValue SecondShadowOffsetY;
-		EmuValue ViewPointX;
-		EmuValue ViewPointY;
-		EmuValue ViewPointZ;
+		boost::optional<EmuValue> ShadowOffsetX;
+		boost::optional<EmuValue> ShadowOffsetY;
+		boost::optional<EmuValue> SecondShadowOffsetX;
+		boost::optional<EmuValue> SecondShadowOffsetY;
+		boost::optional<EmuValue> ViewPointX;
+		boost::optional<EmuValue> ViewPointY;
+		boost::optional<EmuValue> ViewPointZ;
 
-		double viewPointOriginX	=	0;
-		double viewPointOriginY	=	0;
-		double ShadowOriginX	=	0;
-		double ShadowOriginY	=	0;
-		unsigned int xCoord		=	0;
-		unsigned int yCoord		=	0;
+		boost::optional<double> viewPointOriginX;
+		boost::optional<double> viewPointOriginY;
+		boost::optional<double> ShadowOriginX;
+		boost::optional<double> ShadowOriginY;
+		boost::optional<unsigned int> xCoord;
+		boost::optional<unsigned int> yCoord;
 		
 		bool bStroked			=	true;
 		bool bFilled			=	true;
@@ -288,6 +278,7 @@ namespace DocFileFormat
 		bool layoutInCell		=	true; //anmeldebogenfos.doc
 		bool b3D				=	false;
 		bool bShadow			=	false;
+		bool bPicturePresent	=	false;
 		
 		int ndxTextLeft			=	-1;
 		int ndyTextTop			=	-1;
@@ -301,36 +292,34 @@ namespace DocFileFormat
 
 		std::wstring				sTextboxStyle;
 				
-		OptionEntryPtr				opSegmentInfo;
-		OptionEntryPtr				opVerticles;
-		OptionEntryPtr				opInscribe;
-		OptionEntryPtr				opConnectAngles;
-		OptionEntryPtr				opConnectLocs;
-
-		ThreeDStyleBooleanProperties threeDStyleProps_(0);
+		ODRAW::OfficeArtFOPTEPtr	opSegmentInfo;
+		ODRAW::OfficeArtFOPTEPtr	opVerticles;
+		ODRAW::OfficeArtFOPTEPtr	opInscribe;
+		ODRAW::OfficeArtFOPTEPtr	opConnectAngles;
+		ODRAW::OfficeArtFOPTEPtr	opConnectLocs;
 
 		for (size_t i = 0; i < options.size(); i++)
 		{
-			OptionEntryPtr & iter = options[i];
-			switch (iter->pid)
+			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
+			switch (iter->opid)
 			{
 	//BOOLEANS
 			case geometryBooleans:
 				{
-					GeometryBooleanProperties booleans(iter->op);
-					if (booleans.fUsefLineOK && !booleans.fLineOK)
+					ODRAW::GeometryBooleanProperties *booleans = dynamic_cast<ODRAW::GeometryBooleanProperties*>(iter.get());
+					if (booleans->fUsefLineOK && !booleans->fLineOK)
 					{
 						bStroked	=	false;
 					}
-					if (booleans.fUsefFillOK && !booleans.fFillOK)
+					if (booleans->fUsefFillOK && !booleans->fFillOK)
 					{
 						bFilled	=	false;
 					}
-					if (booleans.fUsef3DOK && booleans.f3DOK)
+					if (booleans->fUsef3DOK && booleans->f3DOK)
 					{
 						b3D	=	true;
 					}
-					if (booleans.fUsefShadowOK && booleans.fShadowOK)
+					if (booleans->fUsefShadowOK && booleans->fShadowOK)
 					{
 						bShadow	=	true;
 					}
@@ -338,21 +327,21 @@ namespace DocFileFormat
 				break;
 			case fillStyleBooleanProperties:
 				{
-					FillStyleBooleanProperties booleans(iter->op);
-					if (booleans.fUsefFilled && !booleans.fFilled)
+					ODRAW::FillStyleBooleanProperties *booleans = dynamic_cast<ODRAW::FillStyleBooleanProperties *>(iter.get());
+					if (booleans->fUsefFilled && !booleans->fFilled)
 					{
 						bFilled = false;
 					}
 
-					if (booleans.fUsefUseShapeAnchor && booleans.fUseShapeAnchor)
+					if (booleans->fUsefUseShapeAnchor && booleans->fUseShapeAnchor)
 					{
 						appendValueAttribute(&m_fill, L"rotate", L"t");
 					}
 				}break;
 			case lineStyleBooleans:
 				{
-					LineStyleBooleanProperties booleans(iter->op);
-					if (booleans.fUsefLine && !booleans.fLine)
+					ODRAW::LineStyleBooleanProperties *booleans = dynamic_cast<ODRAW::LineStyleBooleanProperties *>(iter.get());
+					if (booleans->fUsefLine && !booleans->fLine)
 					{
 						bStroked = false;
 					}
@@ -360,20 +349,19 @@ namespace DocFileFormat
 				break;
 			case protectionBooleans:
 				{
-					ProtectionBooleanProperties booleans(iter->op);
+					//ProtectionBooleanProperties booleans(iter->op);
 				}
 				break;
 			case diagramBooleans:
 				{
-					DiagramBooleanProperties booleans(iter->op);
 				}
 				break;
 			case groupShapeBooleans:
 				{
-					GroupShapeBooleanProperties booleans(iter->op);
-					if (booleans.fUsefLayoutInCell)
+					ODRAW::GroupShapeBooleanProperties *booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties *>(iter.get());
+					if (booleans->fUsefLayoutInCell)
 					{
-						layoutInCell = booleans.fLayoutInCell;
+						layoutInCell = booleans->fLayoutInCell;
 					}
 				}
 				break;
@@ -541,8 +529,8 @@ namespace DocFileFormat
 				}break;
 			case fillAngle:
 				{
-					FixedPointNumber fllAngl( iter->op );
-					appendValueAttribute(&m_fill, L"angle", FormatUtils::DoubleToWideString( fllAngl.ToAngle() ));
+					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+					if (point) appendValueAttribute(&m_fill, L"angle", FormatUtils::DoubleToWideString( point->dVal ));
 				}break;
 			case fillShadeType:
 				{
@@ -550,7 +538,7 @@ namespace DocFileFormat
 				}break;
 			case fillShadeColors:
 				{
-					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter->opComplex.get(), iter->op ));
+					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter ));
 				}break;
 			case fillFocus:
 				{
@@ -579,14 +567,16 @@ namespace DocFileFormat
 					{
 						appendValueAttribute(&m_fill, L"r:id", std::wstring(( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
 					}
+
+					bPicturePresent = true;
 				}break;
 			case fillBlipName:
 				{
-					std::wstring name;
-					FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex.get(), iter->op, ENCODING_UTF16);
-					if (!name.empty())
-						appendValueAttribute(&m_fill, L"o:title", FormatUtils::XmlEncode(name));
-
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
+					if ((str) && (!str->string_.empty()))
+					{
+						appendValueAttribute(&m_fill, L"o:title", FormatUtils::XmlEncode(str->string_));
+					}
 				}break;
 			case fillOpacity:
 				{
@@ -640,7 +630,7 @@ namespace DocFileFormat
 				}break;
 			case shadowStyleBooleanProperties:
 				{
-					ShadowStyleBooleanProperties props(iter->op);
+					//ODRAW::ShadowStyleBooleanProperties
 
 				}break;
 // OLE
@@ -661,24 +651,27 @@ namespace DocFileFormat
 							appendValueAttribute(&m_imagedata, L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
 						}
 					}
+					bPicturePresent = true;
 				}break;
 			case pibName:
 				{
-					std::wstring name;
-					FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex.get(), iter->op, ENCODING_UTF16);
-					if (!name.empty())
-						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(name));
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
+					if ((str) && (!str->string_.empty()))
+					{
+						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(str->string_));
+					}
 				}break;
 // 3D STYLE
 			case threeDStyleBooleanProperties:
 				{
-                    threeDStyleProps_ = ThreeDStyleBooleanProperties(iter->op);
+					ODRAW::ThreeDStyleBooleanProperties* booleans = dynamic_cast<ODRAW::ThreeDStyleBooleanProperties*>(iter.get());
 				}break;
 			case threeDObjectBooleanProperties:
 				{
-                    ThreeDObjectBooleanProperties booleans(iter->op);
+                    ODRAW::ThreeDObjectBooleanProperties* booleans = dynamic_cast<ODRAW::ThreeDObjectBooleanProperties*>(iter.get());
 
-					if (booleans.fUsef3D && !booleans.f3D) b3D = false;
+					if ((booleans) && (booleans->fUsef3D && !booleans->f3D))
+						b3D = false;
 				}break;
 			case c3DRenderMode:
 				{
@@ -715,37 +708,34 @@ namespace DocFileFormat
 					appendValueAttribute(&m_3dstyle, L"color", color);
 				}break;
 			case c3DSkewAngle:
-				if (threeDStyleProps_.fUsefc3DParallel && threeDStyleProps_.fc3DParallel)
 				{
-					FixedPointNumber skewAngle( iter->op );
-					appendValueAttribute(&m_3dstyle, L"skewangle", FormatUtils::DoubleToWideString( skewAngle.ToAngle() ));
+					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+					if (point) appendValueAttribute(&m_3dstyle, L"skewangle", FormatUtils::DoubleToWideString( point->dVal ));
 				}break;
 			case c3DXViewpoint:
-				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
-					ViewPointX = EmuValue( FixedPointNumber( iter->op ).Integral );
-				}break;
+					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+                    if (point) ViewPointX = EmuValue( (int)point->dVal );
+                }break;
 			case c3DYViewpoint:
-				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{				
-					ViewPointY = EmuValue( FixedPointNumber( iter->op ).Integral );
+					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+                    if (point) ViewPointY = EmuValue( (int)point->dVal );
 				}break;
 			case c3DZViewpoint:
-				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
-					ViewPointZ = EmuValue( FixedPointNumber( iter->op ).Integral );
+					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+                    if (point) ViewPointZ = EmuValue( (int)point->dVal );
 				}break;
 			case c3DOriginX:
-				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
-					FixedPointNumber dOriginX( iter->op );
-					viewPointOriginX = ( dOriginX.Integral / 65536.0 );
+					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+					if (point) viewPointOriginX = point->dVal;
 				}break;
 			case c3DOriginY:
-				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
-					FixedPointNumber dOriginY( iter->op );
-					viewPointOriginY = (dOriginY.Integral / 65536.0 );
+					ODRAW::FixedPoint* point = dynamic_cast<ODRAW::FixedPoint*>(iter.get());
+					if (point) viewPointOriginY = point->dVal;
 				}break;
 // TEXTBOX
 			case lTxid:
@@ -766,79 +756,84 @@ namespace DocFileFormat
 						break;
 					case 1:
 					case 5://верт (склони голову направо)						
-						appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+						appendStyleProperty(sTextboxStyle, L"layout-flow", L"vertical");
 						break;
 					case 2://верт (склони голову налево)	
-						appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
-						appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
+						appendStyleProperty(sTextboxStyle, L"layout-flow", L"vertical");
+						appendStyleProperty(sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
 						break;
 					}
 				}break;	
 // Word Art
 			case gtextUNICODE:
 				{
-					std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex.get(), (iter->op)/2);
-
-					text = FormatUtils::XmlEncode(text);
-
-					if (std::wstring::npos != text.find(L"\n"))
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
+					if ((str) && (!str->string_.empty()))
 					{
-						m_textpath.AppendText(text);
+						std::wstring text = FormatUtils::XmlEncode(str->string_);
+						if (std::wstring::npos != text.find(L"\n"))
+						{
+							m_textpath.AppendText(text);
+						}
+						text = ReplaceString(text, L"\n", L"&#xA;");						
+						appendValueAttribute(&m_textpath, L"string", text);	
 					}
-					text = ReplaceString(text, L"\n", L"&#xA;");						
-					appendValueAttribute(&m_textpath, L"string", text);
 				}break;
 			case gtextFont:
 				{
-					std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex.get(), (iter->op)/2);
-					size_t i = font.size();
-					while (i > 0)
+					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
+					if ((str) && (!str->string_.empty()))
 					{
-						if (font[i-1] != 0) break;
-						i--;
-					}
-					if (i < font.size()) font.erase(font.begin() + i, font.end());
+						std::wstring font = str->string_;
+						size_t i = font.size();
+						while (i > 0)
+						{
+							if (font[i-1] != 0) break;
+							i--;
+						}
+						if (i < font.size()) font.erase(font.begin() + i, font.end());
 
-					font = std::wstring(L"\"") + font + std::wstring(L"\"");
-					appendStyleProperty(&m_textPathStyle, L"font-family", font);
+						font = std::wstring(L"\"") + font + std::wstring(L"\"");
+						appendStyleProperty(m_textPathStyle, L"font-family", font);
+					}
 				}break;
 			case gtextSize:
 				{
 					std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
-					appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
+					appendStyleProperty(m_textPathStyle, L"font-size", fontSize + L"pt");
 				}break;
 			case gtextSpacing:
 				{
 					std::wstring spacing = FormatUtils::IntToWideString(iter->op);
-					appendStyleProperty(&m_textPathStyle, L"v-text-spacing", spacing + L"f");
+					appendStyleProperty(m_textPathStyle, L"v-text-spacing", spacing + L"f");
 				}break;
 			case geometryTextBooleanProperties:
 				{
-					GeometryTextBooleanProperties props(iter->op);
-					if (props.fUsegtextFBestFit && props.gtextFBestFit)
+					ODRAW::GeometryTextBooleanProperties *props = dynamic_cast<ODRAW::GeometryTextBooleanProperties*>(iter.get());
+					if (props->fUsegFBestFit && props->fBestFit)
 					{
 						appendValueAttribute(&m_textpath, L"fitshape", L"t");
 					}
-					if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
+					if (props->fUsegFShrinkFit && props->fShrinkFit)
 					{
 						appendValueAttribute(&m_textpath, L"trim", L"t");
 					}
-					if (props.fUsegtextFVertical && props.gtextFVertical)
+					if (props->fUsegFVertical && props->fVertical)
 					{
-						appendStyleProperty(&m_textPathStyle, L"v-rotate-letters", L"t");
+						appendStyleProperty(m_textPathStyle, L"v-rotate-letters", L"t");
 						//_twistDimension = true;
 					}
-					if (props.fUsegtextFKern && props.gtextFKern)
+					if (props->fUsegFKern && props->fKern)
 					{
-						appendStyleProperty(&m_textPathStyle, L"v-text-kern", L"t");
+						appendStyleProperty(m_textPathStyle, L"v-text-kern", L"t");
 					}
-					if (props.fUsegtextFItalic && props.gtextFItalic)
+					if (props->fUsegFItalic && props->fItalic)
 					{
-						appendStyleProperty(&m_textPathStyle, L"font-style", L"italic");
+						appendStyleProperty(m_textPathStyle, L"font-style", L"italic");
 					}
-					if (props.fUsegtextFBold && props.gtextFBold)
+					if (props->fUsegFBold && props->fBold)
 					{
-						appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
+						appendStyleProperty(m_textPathStyle, L"font-weight", L"bold");
 					}
 				}break;
 			default:
@@ -848,20 +843,17 @@ namespace DocFileFormat
 			}
 		}
 
-		if (opVerticles && opSegmentInfo)
-		{
-			const unsigned char*	pVP	=	opVerticles->opComplex.get();
-			unsigned int			nVP	=	opVerticles->op;
-			const unsigned char*	pSI	=	opSegmentInfo->opComplex.get();
-			unsigned int			nSI	=	opSegmentInfo->op;
-		
-			PathParser oParser (pSI, nSI, pVP, nVP, m_arrGuides);
-			std::wstring path	=	oParser.GetVmlPath();
+		ODRAW::PVertices*		pVP	= dynamic_cast<ODRAW::PVertices*>(opVerticles.get());
+		ODRAW::PSegmentInfo*	pSI	= dynamic_cast<ODRAW::PSegmentInfo*>(opSegmentInfo.get());
+		if (pVP && pSI)
+		{		
+			ODRAW::PathParser oParser (pSI->complex.data, pVP->complex.data, m_arrGuides);
+			std::wstring path = oParser.GetVmlPath();
 
 			if (false == path.empty())
 				m_pXmlWriter->WriteAttribute (L"path", path);
 		}
-		if (freeform && (xCoord == 0 || yCoord == 0 ))
+		if (freeform && (!xCoord || !yCoord ))
 		{
 			xCoord = 21600;
 			yCoord = 21600;
@@ -881,15 +873,15 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute(L"o:allowincell", L"f");
 		}
 
-		if ( xCoord > 0 && yCoord > 0 )
+		if ( xCoord && yCoord )
 		{
-			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString( xCoord ) + L"," + FormatUtils::IntToWideString( yCoord ) ));
+			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString( *xCoord ) + L"," + FormatUtils::IntToWideString( *yCoord ) ));
 		} 
 
-		int nCode	=	0;
+		int nCode =	0;
 		if (pShape->GetShapeType())
 		{
-			nCode	=	pShape->GetShapeType()->GetTypeCode();
+			nCode =	pShape->GetShapeType()->GetTypeCode();
 		}
 
 		if (DocFileFormat::msosptRoundRectangle == nCode)
@@ -898,6 +890,11 @@ namespace DocFileFormat
 			{
 				m_pXmlWriter->WriteAttribute(L"arcsize", m_nAdjValues[0]);
 			}
+		}
+		else if (DocFileFormat::msosptPictureFrame == nCode)
+		{
+			if (bPicturePresent == false)
+				m_isPictureBroken = true;
 		}
 		else
 		{
@@ -917,15 +914,15 @@ namespace DocFileFormat
 //build shadow offsets
 		std::wstring offset;
 
-		if ( ShadowOffsetX != 0 )
+		if ( ShadowOffsetX)
 		{
-			offset += FormatUtils::DoubleToWideString( ShadowOffsetX.ToPoints() );
+			offset += FormatUtils::DoubleToWideString( ShadowOffsetX->ToPoints() );
 			offset += L"pt";
 		}
-		if ( ShadowOffsetY != 0 )
+		if ( ShadowOffsetY )
 		{
 			offset += L",";
-			offset += FormatUtils::DoubleToWideString( ShadowOffsetY.ToPoints() );
+			offset += FormatUtils::DoubleToWideString( ShadowOffsetY->ToPoints() );
 			offset += L"pt";
 		}
 		if ( !offset.empty() )
@@ -935,16 +932,16 @@ namespace DocFileFormat
 
 		std::wstring offset2;
 
-		if ( SecondShadowOffsetX != 0 )
+		if ( SecondShadowOffsetX)
 		{
-			offset2 += FormatUtils::DoubleToWideString( SecondShadowOffsetX.ToPoints() );
+			offset2 += FormatUtils::DoubleToWideString( SecondShadowOffsetX->ToPoints() );
 			offset2 += L"pt";
 		}
 
-		if ( SecondShadowOffsetY != 0 )
+		if ( SecondShadowOffsetY)
 		{
 			offset2 += L",";
-			offset2 += FormatUtils::DoubleToWideString(SecondShadowOffsetY.ToPoints());
+			offset2 += FormatUtils::DoubleToWideString(SecondShadowOffsetY->ToPoints());
 			offset2 += L"pt";
 		}
 
@@ -954,9 +951,9 @@ namespace DocFileFormat
 		}
 
 //build shadow origin
-		if ( ( ShadowOriginX != 0 ) && ( ShadowOriginY != 0 ) )
+		if ( ShadowOriginX && ShadowOriginY)
 		{
-			appendValueAttribute(&m_shadow, L"origin", (FormatUtils::DoubleToWideString(shadowOriginX) + std::wstring(L"," ) + FormatUtils::DoubleToWideString(shadowOriginY)));
+			appendValueAttribute(&m_shadow, L"origin", FormatUtils::DoubleToWideString(*ShadowOriginX) + std::wstring(L"," ) + FormatUtils::DoubleToWideString(*ShadowOriginY));
 		}
 
 // write shadow
@@ -967,41 +964,41 @@ namespace DocFileFormat
 		}
 
 //write the viewpoint
-		if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
+		if ( ViewPointX || ViewPointY || ViewPointZ )
 		{
 			std::wstring viewPoint;
 
-			if ( ViewPointX != 0 )
+			if ( ViewPointX )
 			{
-				viewPoint += FormatUtils::IntToWideString( ViewPointX ) + L"pt";
+				viewPoint += FormatUtils::IntToWideString( *ViewPointX ) + L"pt";
 			}
 			viewPoint += L",";
-			if ( ViewPointY != 0 )
+			if ( ViewPointY)
 			{
-				viewPoint += FormatUtils::IntToWideString( ViewPointY ) + L"pt";
+				viewPoint += FormatUtils::IntToWideString( *ViewPointY ) + L"pt";
 			}
 			viewPoint += L",";
-			if ( ViewPointZ != 0 )
+			if ( ViewPointZ)
 			{
-				viewPoint += FormatUtils::IntToWideString( ViewPointZ ) + L"pt";
+				viewPoint += FormatUtils::IntToWideString( *ViewPointZ ) + L"pt";
 			}
 
 			appendValueAttribute(&m_3dstyle, L"viewpoint", viewPoint);
 		}
 // write the viewpointorigin
-		if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
+		if ( viewPointOriginX || viewPointOriginY)
 		{
 			std::wstring viewPointOrigin;
 
-			if ( viewPointOriginX != 0 )
+			if ( viewPointOriginX )
 			{
-				viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginX, L"%.2f" );
+				viewPointOrigin += FormatUtils::DoubleToFormattedWideString( *viewPointOriginX, L"%.2f" );
 			}
 
-			if ( viewPointOriginY != 0 )
+			if ( viewPointOriginY )
 			{
 				viewPointOrigin += L",";
-				viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginY, L"%.2f" );
+				viewPointOrigin += FormatUtils::DoubleToFormattedWideString( *viewPointOriginY, L"%.2f" );
 			}
 
 			appendValueAttribute(&m_3dstyle, L"viewpointorigin", viewPointOrigin);
@@ -1272,43 +1269,31 @@ namespace DocFileFormat
 	}
 
 	/// Build the VML wrapcoords string for a given pWrapPolygonVertices
-	std::wstring VMLShapeMapping::GetWrapCoords(const OptionEntryPtr& pWrapPolygonVertices) const
+	std::wstring VMLShapeMapping::GetWrapCoords(const ODRAW::OfficeArtFOPTEPtr& pOpt) const
 	{
+		ODRAW::PWrapPolygonVertices* pWrapPolygonVertices = dynamic_cast<ODRAW::PWrapPolygonVertices*>(pOpt.get());
+		
 		if (!pWrapPolygonVertices) return L"";
+		if (pWrapPolygonVertices->complex.data.empty()) return L"";
 
 		std::wstring coords;
 
-		MemoryStream oStream(pWrapPolygonVertices->opComplex.get(), pWrapPolygonVertices->op);
-		std::list<int> arrVertices;
-
-		unsigned short nElems		=	oStream.ReadUInt16();
-		unsigned short nElemsAlloc	=	oStream.ReadUInt16();
-		unsigned short cbElem		=	oStream.ReadUInt16();
-
-		if ( ( nElems > 0 ) && ( cbElem > 0 ) && ( nElems <= nElemsAlloc ) )
+		for (size_t i = 0; i < pWrapPolygonVertices->complex.data.size(); ++i)
 		{
-			//!!!TODO: read the Int32 coordinates!!!
-			while (oStream.GetPosition() < oStream.GetSize())
-			{
-				arrVertices.push_back(oStream.ReadInt32());
-			}
-
-			std::list<int>::const_iterator end = arrVertices.end();
-			for (std::list<int>::const_iterator iter = arrVertices.begin(); iter != end; ++iter)
-			{
-				coords += FormatUtils::IntToWideString(*iter);
-				coords += L",";
-			}
-
-			coords.erase(coords.size() - 1);
+			coords += FormatUtils::IntToWideString(pWrapPolygonVertices->complex.data[i++].x);
+			coords += L",";
+			coords += FormatUtils::IntToWideString(pWrapPolygonVertices->complex.data[i].y);
+			coords += L",";
 		}
+
+		coords.erase(coords.size() - 1);
 
 		return coords;
 	}
 
 	/// Copies the picture from the binary stream to the zip archive 
 	/// and creates the relationships for the image.
-	bool VMLShapeMapping::copyPicture(const BlipStoreEntry* oBlip)
+	bool VMLShapeMapping::copyPicture(BlipStoreEntry* oBlip)
 	{
 		bool result = false;
 
@@ -1319,9 +1304,9 @@ namespace DocFileFormat
 
 			switch (oBlip->btWin32)
 			{
-			case Global::msoblipEMF:
-			case Global::msoblipWMF:
-			case Global::msoblipPICT:
+				case Global::msoblipEMF:
+				case Global::msoblipWMF:
+				case Global::msoblipPICT:
 				{
 					//it's a meta image
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(RecordFactory::ReadRecord(&reader, 0));
@@ -1329,38 +1314,53 @@ namespace DocFileFormat
 					{
 						//meta images can be compressed
 						unsigned char* decompressed = NULL;
-						int decompressedSize = 0;
+						unsigned int decompressedSize = 0;
 
 						decompressedSize = metaBlip->Decompress(&decompressed);
+
 						if (0 != decompressedSize && NULL != decompressed)
 						{
-							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), std::vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
-							RELEASEARRAYOBJECTS(decompressed);
+							boost::shared_array<unsigned char> arDecompressed(decompressed);
+							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), arDecompressed, decompressedSize));
 						}
 
 						RELEASEOBJECT(metaBlip);
 					}
 				}
 				break;
-
-			case Global::msoblipJPEG:
-			case Global::msoblipCMYKJPEG:
-			case Global::msoblipPNG:
-			case Global::msoblipTIFF:
-			case Global::msoblipDIB:
-				{
-					//it's a bitmap image
+				case Global::msoblipJPEG:
+				case Global::msoblipCMYKJPEG:
+				case Global::msoblipPNG:
+				case Global::msoblipTIFF:
+				case Global::msoblipDIB:
+				{//it's a bitmap image					
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(RecordFactory::ReadRecord(&reader, 0));
 					if ((bitBlip) && (bitBlip->m_pvBits))
 					{
+						if (oBlip->btWin32 == Global::msoblipDIB)
+						{
+							std::wstring file_name = m_context->_doc->m_sTempFolder + L"tmp_image";
+
+							if (Global::msoblipPNG == ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name))
+							{
+								oBlip->btWin32 = Global::msoblipPNG;
+
+								unsigned char* pData = NULL;
+								DWORD nData = 0;
+								if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
+								{
+									m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipPNG), 
+										boost::shared_array<unsigned char>(pData), nData, Global::msoblipPNG));
+									break;
+								}
+							}//в случае ошибки конвертации -храним оригинальный dib
+						}
 						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
-							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
+							bitBlip->m_pvBits, bitBlip->pvBitsSize, oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
 					}
-				}
-				break;
-
-			default:
+				}break;				
+				default:
 				{
 					result = false;
 					return result;
@@ -1416,9 +1416,9 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendDimensionToStyle(std::wstring* style, const PictureDescriptor* pict, bool twistDimensions) const
+	void VMLShapeMapping::AppendDimensionToStyle(std::wstring& style, const PictureDescriptor* pict, bool twistDimensions) const
 	{
-		if ( ( style != NULL ) && ( pict != NULL ) )
+		if (  pict != NULL ) 
 		{
 			double xScaling = pict->mx / 1000.0;
 			double yScaling = pict->my / 1000.0;
@@ -1435,26 +1435,23 @@ namespace DocFileFormat
 			std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
 			std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
 
-			style->operator += ( std::wstring( L"width:" ) + widthString + std::wstring( L"pt;" ) );
-			style->operator += ( std::wstring( L"height:" ) + heightString + std::wstring( L"pt;" ) );
+			style += L"width:" + widthString + L"pt;" ;
+			style += L"height:" + heightString + L"pt;";
 		}
 	}
 
-	void VMLShapeMapping::AppendDimensionToStyle(std::wstring* style, const Spa* pSpa, bool twistDimensions) const
+	void VMLShapeMapping::AppendDimensionToStyle(std::wstring& style, const Spa* pSpa, bool twistDimensions) const
 	{
-		if ( ( style != NULL ) && (pSpa != NULL ) )
+		if (pSpa != NULL )
 		{
 			//append size and position ...
 
-			//if (pSpa->fAnchorLock )
-			//if (pSpa->bx == TEXT && pSpa->by == TEXT)
-			//{
+			if (m_isInlineShape)
+			{
 			//	appendStyleProperty( style, L"position", L"static" );
-			//}
-			//else
-			//{
-				appendStyleProperty( style, L"position", L"absolute" );
-			//}
+			}
+			else
+				appendStylePropertyFirst( style, L"position", L"absolute" );
 
 			TwipsValue left	 (pSpa->xaLeft);
 			TwipsValue top	 (pSpa->yaTop);
@@ -1477,9 +1474,9 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendDimensionToStyle(std::wstring* style, const ChildAnchor* anchor, bool twistDimensions) const
+	void VMLShapeMapping::AppendDimensionToStyle(std::wstring& style, const ChildAnchor* anchor, bool twistDimensions) const
 	{
-		if ((style != NULL) && (anchor != NULL))
+		if (anchor != NULL)
 		{
 			DocFileFormat::Rectangle bounds = anchor->rcgBounds;
 
@@ -1489,34 +1486,40 @@ namespace DocFileFormat
 				bounds.topLeftAngle.y	=	static_cast<LONG>(((anchor->Bottom	+	anchor->Top)  * 0.5 - (anchor->Right	-	anchor->Left) * 0.5));
 			}
 
-			appendStyleProperty(style, L"position", L"absolute");
-			appendStyleProperty(style, L"left",	FormatUtils::IntToWideString(bounds.topLeftAngle.x));
-			appendStyleProperty(style, L"top",	FormatUtils::IntToWideString(bounds.topLeftAngle.y));
+			appendStylePropertyFirst(style, L"top",	FormatUtils::IntToWideString(bounds.topLeftAngle.y));
+			appendStylePropertyFirst(style, L"left",	FormatUtils::IntToWideString(bounds.topLeftAngle.x));
+			appendStylePropertyFirst(style, L"position", L"absolute");
 
 			if (twistDimensions)
 			{
-				appendStyleProperty(style, L"width",	 FormatUtils::IntToWideString(bounds.size.cy));
-				appendStyleProperty(style, L"height", FormatUtils::IntToWideString(bounds.size.cx));
+				appendStylePropertyFirst(style, L"width",	 FormatUtils::IntToWideString(bounds.size.cy));
+				appendStylePropertyFirst(style, L"height", FormatUtils::IntToWideString(bounds.size.cx));
 			}
 			else
 			{
-				appendStyleProperty(style, L"width",  FormatUtils::IntToWideString(bounds.size.cx));
-				appendStyleProperty(style, L"height", FormatUtils::IntToWideString(bounds.size.cy));
+				appendStylePropertyFirst(style, L"width",  FormatUtils::IntToWideString(bounds.size.cx));
+				appendStylePropertyFirst(style, L"height", FormatUtils::IntToWideString(bounds.size.cy));
 			}
 		}
 	}
 
-	void VMLShapeMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
+	void VMLShapeMapping::appendStyleProperty(std::wstring& style, const std::wstring& propName, const std::wstring& propValue) const
 	{
-		if ( b != NULL )
-		{
-			b->operator += ( propName );
-			b->operator += ( L":" );
-			b->operator += ( propValue );
-			b->operator +=( L";" );
-		}
+		style += ( propName );
+		style += ( L":" );
+		style += ( propValue );
+		style +=( L";" );
 	}
-
+	void VMLShapeMapping::appendStylePropertyFirst(std::wstring& style, const std::wstring& propName, const std::wstring& propValue) const
+	{
+		std::wstring s;
+		s += ( propName );
+		s += ( L":" );
+		s += ( propValue );
+		s +=( L";" );
+		
+		style = s + style;
+	}
 	std::wstring VMLShapeMapping::getTextboxAnchor(unsigned int anchor) const
 	{
 		switch ( anchor )
@@ -1585,69 +1588,73 @@ namespace DocFileFormat
 		PositionHorizontalRelative hRel = (PositionHorizontalRelative )hRel_;
 		switch ( hRel ) 
 		{
-			case msoprhMargin:	return L"margin";
-			case msoprhPage:	return L"page";
-			case msoprhText:	return L"text";
-			case msoprhChar:	return L"char";
+			case msoprhMargin:	return L"margin";	//0 //MARGIN = anchor
+			case msoprhPage:	return L"page";		//1 //PAGE
+			case msoprhText:	return L"text";		//2 //TEXT
+			case msoprhChar:	return L"char";		//3
 			default:
 				return L"margin";
 		}
 	}
 
-	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::vector<OptionEntryPtr>& options, int zIndex) const
+	void VMLShapeMapping::AppendOptionsToStyle (std::wstring& oStyle, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex) const
 	{
-		bool bRelH = false;
-		bool bRelV = false;
+		int nRelH = -1;
+		int nRelV = -1;
 
-		bool bPosH = false;
-		bool bPosV = false;
+		int nPosH = -1;
+		int nPosV = -1;
 
 		bool bZIndex = false;
 
 		for (size_t i = 0; i < options.size(); i++)
 		{
-			const OptionEntryPtr & iter = options[i];
-			switch (iter->pid)
+			const ODRAW::OfficeArtFOPTEPtr & iter = options[i];
+			switch (iter->opid)
 			{
 //	POSITIONING
 			case posh:
 				{
-					appendStyleProperty(oStyle, L"mso-position-horizontal", mapHorizontalPosition((PositionHorizontal)iter->op));
-					bPosH = true;
+					nPosH = iter->op;
 				}break;
 			case posrelh:
 				{
+					nRelH = iter->op;
 					appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
-					bRelH = true;
 				}break;
 			case posv:
 				{
-					appendStyleProperty(oStyle, L"mso-position-vertical", mapVerticalPosition((PositionVertical)iter->op));
-					bPosV = true;
+					nPosV = iter->op;
 				}break;
 			case posrelv:
 				{
+					nRelV = iter->op;
 					appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
-					bRelV = true;
 				}break;
 //	BOOLEANS
 			case groupShapeBooleans:
 				{
-					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
+					ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 
-					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument && !bZIndex)
+					if (booleans->fUsefBehindDocument && booleans->fBehindDocument)
 					{
-						//The shape is behind the text, so the z-index must be negative.
-						appendStyleProperty(oStyle, L"z-index", L"-1" );
-						bZIndex = true;
+						//за текстом (The shape is behind the text, so the z-index must be negative.)
+						m_isInlineShape = false;
+
+						if (!bZIndex)
+						{
+							appendStyleProperty(oStyle, L"z-index", FormatUtils::IntToWideString(-zIndex - 0x7ffff));
+							bZIndex = true;
+						}
 					}
-					else if (!m_isInlineShape && !bZIndex)
+					
+					if (!m_isInlineShape && !bZIndex)
 					{
 						appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 						bZIndex = true;
 					}
 
-					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
+					if (booleans->fHidden && booleans->fUsefHidden)
 					{
 						appendStyleProperty(oStyle, L"visibility", L"hidden" );
 					}
@@ -1689,13 +1696,25 @@ namespace DocFileFormat
 			}
 		}
 		
-		if (!bRelH && m_pSpa)
+		if (nRelH < 0 && m_pSpa)
 		{
-			appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(m_pSpa->bx));
+			if (m_pSpa->bx == TEXT && bZIndex)
+			{
+				m_pSpa->bx = PAGE;
+			}
+			else
+			{//rel column
+			}
 		}
-		if (!bRelV && m_pSpa)
+		if (nRelV < 0 && m_pSpa)
 		{
-			appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative(m_pSpa->by));
+			if (m_pSpa->by == TEXT && bZIndex) 
+			{
+				m_pSpa->by = PAGE;
+			}
+			else
+			{//rel paragraph
+			}
 		}
 		if (!m_isInlineShape && !bZIndex)
 		{
@@ -1703,6 +1722,19 @@ namespace DocFileFormat
 			bZIndex = true;
 		}
 
+		if (nRelH == 3 && nRelV == 3)
+		{
+			m_isInlineShape = true;
+		}
+
+		if (nPosH >= 0 && !m_isInlineShape)
+		{
+			appendStyleProperty(oStyle, L"mso-position-horizontal", mapHorizontalPosition((PositionHorizontal)nPosH));
+		}
+		if (nPosV >= 0 && !m_isInlineShape)
+		{
+			appendStyleProperty(oStyle, L"mso-position-vertical", mapVerticalPosition((PositionVertical)nPosV));
+		}
 		//if (!bPosH)
 		//{
 		//	appendStyleProperty(oStyle, L"mso-position-horizontal", L"absolute" );
@@ -1714,7 +1746,7 @@ namespace DocFileFormat
 	}
 
 	//
-	std::wstring VMLShapeMapping::buildStyle (const Shape* shape, const ChildAnchor* anchor, const std::vector<OptionEntryPtr>& options, int zIndex) const
+	std::wstring VMLShapeMapping::buildStyle (const Shape* shape, const ChildAnchor* anchor, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex) const
 	{
 		std::wstring style;
 
@@ -1722,19 +1754,19 @@ namespace DocFileFormat
 		
 		for (size_t i = 0; i < options.size(); i++)
 		{
-			const OptionEntryPtr & iter = options[i];
+			const ODRAW::OfficeArtFOPTEPtr & iter = options[i];
 
-			if (geometryTextBooleanProperties ==  iter->pid)
+			if (geometryTextBooleanProperties ==  iter->opid)
 			{
-				GeometryTextBooleanProperties props(iter->op);
+				ODRAW::GeometryTextBooleanProperties* booleans = dynamic_cast<ODRAW::GeometryTextBooleanProperties*>(iter.get());
 
-				if (props.fUsegtextFVertical && props.gtextFVertical)
+				if (booleans->fUsegFVertical && booleans->fVertical)
 				{
 					twistDimensions = true;
 				}
 			}
 
-			if (PropertyId_rotation ==  iter->pid)
+			else if (PropertyId_rotation ==  iter->opid)
 			{
 				double dAngle = (double)((int)iter->op) / 65535.0;
 
@@ -1746,26 +1778,38 @@ namespace DocFileFormat
 			}
 		}
 
+		if ( shape->fFlipH )
+		{
+			appendStyleProperty( style, L"flip", L"x" );
+		}
+
+		if ( shape->fFlipV )
+		{
+			appendStyleProperty( style, L"flip", L"y" );
+		}
+
+		AppendOptionsToStyle( style, options, zIndex );
+		
 		//don't append the dimension info to lines, 
 		// because they have "from" and "to" attributes to decline the dimension
-		if(!shape->is<LineType>())
+		if(false == shape->is<LineType>())
 		{
 			if ( (m_pSpa != NULL) && ( anchor == NULL ) )
 			{
 				//this shape is placed directly in the document, 
 				//so use the FSPA to build the style
-				AppendDimensionToStyle(&style, m_pSpa, twistDimensions);
+				AppendDimensionToStyle( style, m_pSpa, twistDimensions);
 			}
 			else if (anchor)
 			{
 				//the style is part of a group, 
 				//so use the anchor
-				AppendDimensionToStyle(&style, anchor, twistDimensions);
+				AppendDimensionToStyle( style, anchor, twistDimensions);
 			}
 			else if (m_pict)
 			{
 				// it is some kind of PICT shape (e.g. WordArt)
-				AppendDimensionToStyle(&style, m_pict, twistDimensions);
+				AppendDimensionToStyle( style, m_pict, twistDimensions);
 			}
 		}
 		else
@@ -1773,36 +1817,23 @@ namespace DocFileFormat
 			//если не написать тип позиции, то будет inline
 			if ( anchor != NULL )
 			{
-				appendStyleProperty( &style, L"position", L"absolute" );
+				appendStylePropertyFirst( style, L"position", L"absolute" );
 			}
 			else if (m_pSpa)
 			{
 				//append size and position ...
 				//if (m_pSpa->fAnchorLock)//это возможность смены привязки , а не ее тип
 
-				//if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
-				//{
-				//	appendStyleProperty( &style, L"position", L"static" );
-				//}
-				//else
+				if (m_isInlineShape)/*m_pSpa->bx == TEXT && m_pSpa->by == TEXT*/
 				{
-					appendStyleProperty( &style, L"position", L"absolute" );
+				//	appendStyleProperty( style, L"position", L"static" );
+				}
+				else
+				{
+					appendStylePropertyFirst( style, L"position", L"absolute" );
 				}
 			}
 		}
-
-		if ( shape->fFlipH )
-		{
-			appendStyleProperty( &style, L"flip", L"x" );
-		}
-
-		if ( shape->fFlipV )
-		{
-			appendStyleProperty( &style, L"flip", L"y" );
-		}
-
-		AppendOptionsToStyle( &style, options, zIndex );
-		
 		return style;
 	}
 
@@ -1867,29 +1898,18 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::getFillColorString(const unsigned char* p, unsigned int size)  const
+	std::wstring VMLShapeMapping::getFillColorString(const ODRAW::OfficeArtFOPTEPtr& pOpt)  const
 	{
+		ODRAW::FillShadeColors* pColors = dynamic_cast<ODRAW::FillShadeColors*>(pOpt.get());
+		if (!pColors) return L"";
+		
 		std::wstring result;
-
-		if ( ( p != NULL ) && ( size > 0 ) )
+		for (size_t i = 0; i < pColors->complex.data.size(); ++i)
 		{
-			// parse the IMsoArray
-			unsigned short nElems		=	FormatUtils::BytesToUInt16(p, 0, size);
-			unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(p, 2, size);
-			unsigned short cb			=	FormatUtils::BytesToUInt16(p, 4, size);
-
-			for ( unsigned short i = 0; i < nElems; i++ )
-			{
-				int pos = ( 6 + ( i * cb ) );
-
-				RGBColor color(FormatUtils::BytesToInt32(p, pos, size ), RedFirst);
-				int colorPos = FormatUtils::BytesToInt32(p, ( pos + 4 ), size);
-
-				result += FormatUtils::IntToWideString(colorPos);
-				result += L"f #";
-				result += color.SixDigitHexCode;
-				result += L";";
-			}
+			result += FormatUtils::IntToWideString((int)pColors->complex.data[i].dPosition);
+			result += L"f #";
+			result += pColors->complex.data[i].color.sColorRGB;
+			result += L";";
 		}
 
 		return result;
@@ -1959,41 +1979,15 @@ namespace DocFileFormat
 
 		return wrapType;
 	}
-	std::wstring VMLShapeMapping::GetConnectAngles(const OptionEntryPtr& opAngles) const
+	std::wstring VMLShapeMapping::GetConnectAngles(const ODRAW::OfficeArtFOPTEPtr& pOpt) const
 	{
-		if (!opAngles)				return L"";
-		if (!opAngles->opComplex)	return L"";
+		ODRAW::PConnectionSitesDir* pAngles = dynamic_cast<ODRAW::PConnectionSitesDir*>(pOpt.get());
+		if (!pAngles) return L"";
 		
-		MemoryStream reader(opAngles->opComplex.get(), opAngles->op);
-
-		unsigned short nElems		=	reader.ReadUInt16();
-		unsigned short nElemsAlloc	=	reader.ReadUInt16();
-		unsigned short nElemSize	=	reader.ReadUInt16();
-
-		bool bTruncated = false;
-
-        if (0xFFF0 == nElemSize)
-        {
-            nElemSize = 4;
-            bTruncated = true;
-        }
-
-        long dwSize = nElems * nElemSize;
-
-        if (opAngles->op - 6 != (dwSize))
-        {
-            bool b = false;
-        }
-		if (nElemSize < 1) return L"";
-
-		int count = dwSize / nElemSize; 
-
 		std::wstring angles;
-		for (int i = 0; i < count; ++i)
+		for (size_t i = 0; i < pAngles->complex.data.size(); ++i)
 		{
-            DWORD v = reader.ReadUInt32();
-			double val = (double)((WORD)(v >> 16) + ((WORD)(v) / 65536.0));
-			angles += std::to_wstring((int)val) + (i < (count - 1) ? L"," : L"");
+			angles += std::to_wstring((int)pAngles->complex.data[i].dVal) + (i < (pAngles->complex.data.size() - 1) ? L"," : L"");
 		}
 		return angles;
 	}
@@ -2007,180 +2001,74 @@ namespace DocFileFormat
 		
 			if (index >= 0 && index < (int)m_arrGuides.size())
 			{
-				new_val = m_arrGuides[index].param3;
+				new_val = m_arrGuides[index].m_param_value3;
 			}
 
         }
 		return new_val;
 	}
-	void VMLShapeMapping::GetGuides( const OptionEntryPtr& opGuides )
+	void VMLShapeMapping::GetGuides( const ODRAW::OfficeArtFOPTEPtr& pOpt )
 	{
-		if (!opGuides)				return;
-		if (!opGuides->opComplex)	return;
-		
-		MemoryStream reader(opGuides->opComplex.get(), opGuides->op);
+		ODRAW::PGuides* pGuides = dynamic_cast<ODRAW::PGuides*>(pOpt.get());
+		if (!pGuides) return;
 
-		unsigned short nElems		=	reader.ReadUInt16();
-		unsigned short nElemsAlloc	=	reader.ReadUInt16();
-		unsigned short nElemSize	=	reader.ReadUInt16();
+		m_arrGuides = pGuides->complex.data;
+		//for (size_t i = 0; i < pGuides->complex.data.size(); ++i)
+		//{
+		//	_guides g;
 
-		bool bTruncated = false;
+		//	g.type = pGuides->complex.data[i].type;
 
-        if (0xFFF0 == nElemSize)
-        {
-            nElemSize = 4;
-            bTruncated = true;
-        }
-		if (nElemSize == 0)
-		{
-			nElemSize = 2; //enredobar.doc
-		}
-        long dwSize = nElems * nElemSize;
+		//	g.param_type1 = pGuides->complex.data[i].param_type1;
+		//	g.param_type2 = pGuides->complex.data[i].param_type2;
+		//	g.param_type3 = pGuides->complex.data[i].param_type3;
 
-        if (opGuides->op - 6 != (dwSize))
-        {
-            bool b = false;
-			if (nElems > 0x7fff)
-			{
-				dwSize = (opGuides->op - 6);
-			}
-        }
-		int count = dwSize / nElemSize;  //1x (int or short)
-		for (int i = 0; i < count; ++i)
-		{
-			_guides g;
-			WORD flags	= reader.ReadUInt16();
+		//	g.param1 = pGuides->complex.data[i].param1;
+		//	g.param2 = pGuides->complex.data[i].param2;
+		//	g.param3 = pGuides->complex.data[i].param3;
 
-			g.type = flags & 0x1FFF;
-
-			g.param_type1 = (unsigned char)(flags & 0x04);
-			g.param_type2 = (unsigned char)(flags & 0x02);
-			g.param_type3 = (unsigned char)(flags & 0x01);
-
-			g.param1	= reader.ReadUInt16();
-			g.param2	= reader.ReadUInt16();
-			g.param3	= reader.ReadUInt16();
-
-			m_arrGuides.push_back(g);
-		}
+		//	m_arrGuides.push_back(g);
+		//}
 	}
 
-	std::wstring VMLShapeMapping::GetConnectLocs( const OptionEntryPtr& opLocs ) const
+	std::wstring VMLShapeMapping::GetConnectLocs( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const
 	{
-		if (!opLocs)			return L"";
-		if (!opLocs->opComplex) return L"";
+		ODRAW::PConnectionSites* pConnection = dynamic_cast<ODRAW::PConnectionSites*>(pOpt.get());
+		if (!pConnection) return L"";
 
-		MemoryStream reader(opLocs->opComplex.get(), opLocs->op);
-
-		unsigned short nElems		=	reader.ReadUInt16();
-		unsigned short nElemsAlloc	=	reader.ReadUInt16();
-		unsigned short nElemSize	=	reader.ReadUInt16();
-
-		bool bTruncated = false;
-
-        if (0xFFF0 == nElemSize)
-        {
-            nElemSize = 4;
-            bTruncated = true;
-        }
-		if (nElemSize == 0)
-		{
-			nElemSize = 2; //enredobar.doc
-		}
-        long dwSize = nElems * nElemSize;
-
-        if (opLocs->op - 6 != (dwSize))
-        {
-            bool b = false;
-			if (nElems > 0x7fff)
-			{
-				dwSize = (opLocs->op - 6);
-			}
-        }
-		int count = dwSize / nElemSize;  //2x (int or short)
-		
 		std::wstring locs;
-		for (int i = 0; i < count; ++i)
+		for (size_t i = 0; i < pConnection->complex.data.size(); ++i)
 		{
 			POINT pt;
 
-			if (bTruncated)
-			{
-				pt.x =	reader.ReadInt16();
-				pt.y =	reader.ReadInt16();
-			}
-			else
-			{
-				pt.x =	reader.ReadInt32();
-				pt.y =	reader.ReadInt32();
-			}
-           
-			pt.x = UpdateFromGuides(pt.x);
-			pt.y = UpdateFromGuides(pt.y);
+			pt.x = UpdateFromGuides(pConnection->complex.data[i].x);
+			pt.y = UpdateFromGuides(pConnection->complex.data[i].y);
 			
-			locs += std::to_wstring(pt.x) + L"," + std::to_wstring(pt.y) + (i < (count - 1) ? L";" : L"");
+			locs += std::to_wstring(pt.x) + L"," + std::to_wstring(pt.y) + (i < (pConnection->complex.data.size() - 1) ? L";" : L"");
 		}
 
 		return locs;
 	}
 
-	std::vector<std::wstring> VMLShapeMapping::GetTextRectangles( const OptionEntryPtr& opInscribe ) const
+	std::vector<std::wstring> VMLShapeMapping::GetTextRectangles( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const
 	{
 		std::vector<std::wstring> rectangles;
 		
-		if (!opInscribe) return rectangles;
-		if (!opInscribe->opComplex) return rectangles;
-
-		MemoryStream reader(opInscribe->opComplex.get(), opInscribe->op);
-
-		unsigned short nElems		=	reader.ReadUInt16();
-		unsigned short nElemsAlloc	=	reader.ReadUInt16();
-		unsigned short nElemSize	=	reader.ReadUInt16();
-
-		bool bTruncated = false;
-
-        if (0xFFF0 == nElemSize)
-        {
-            nElemSize = 4;
-            bTruncated = true;
-        }
-        else nElemSize = 2;
-
-        long dwSize = nElems * nElemSize;
-
-        if (opInscribe->op - 6 != (dwSize))
-        {
-            bool b = false;
-        }
-		int count = dwSize / nElemSize; //4x (int or short)
+		ODRAW::PInscribe* pInscribe = dynamic_cast<ODRAW::PInscribe*>(pOpt.get());
+		if (!pInscribe) return rectangles;
 		
-		for (int i = 0; i < count; ++i)
+		for (size_t i = 0; i < pInscribe->complex.data.size(); ++i)
 		{
 			RECT rc;
 
-			if (bTruncated)
-			{
-				rc.top		=	reader.ReadInt16();
-				rc.left		=	reader.ReadInt16();
-				rc.right	=	reader.ReadInt16();
-				rc.bottom	=	reader.ReadInt16();
-			}
-			else
-			{
-				rc.top		=	reader.ReadInt32();
-				rc.left		=	reader.ReadInt32();
-				rc.right	=	reader.ReadInt32();
-				rc.bottom	=	reader.ReadInt32();
-			}
-			rc.top		= UpdateFromGuides(rc.top);
-			rc.left		= UpdateFromGuides(rc.left);
-			rc.right	= UpdateFromGuides(rc.right);
-			rc.bottom	= UpdateFromGuides(rc.bottom);
+			rc.top		= UpdateFromGuides(pInscribe->complex.data[i].t);
+			rc.left		= UpdateFromGuides(pInscribe->complex.data[i].l);
+			rc.right	= UpdateFromGuides(pInscribe->complex.data[i].r);
+			rc.bottom	= UpdateFromGuides(pInscribe->complex.data[i].b);
 
 			rectangles.push_back(	std::to_wstring(rc.top)		+ L","	+ std::to_wstring(rc.left) + L"," + 
 									std::to_wstring(rc.right)	+ L","	+ std::to_wstring(rc.bottom));
 		}
-
 		return rectangles;
 	}
 //------------------------------------------------------------------------------------------------------

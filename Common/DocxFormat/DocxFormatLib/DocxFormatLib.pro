@@ -51,11 +51,15 @@ SOURCES += \
     ../Source/DocxFormat/Math/oMathPara.cpp \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
+    ../Source/DocxFormat/Comments.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/Xlsx.cpp \
     ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
     ../Source/XlsxFormat/Worksheets/SheetData.cpp \
+    ../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp \
+    ../Source/DocxFormat/App.cpp \
+    ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \

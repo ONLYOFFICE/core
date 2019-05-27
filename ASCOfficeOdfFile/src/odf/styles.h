@@ -129,7 +129,7 @@ public:
     static const ElementType type = typeStyleDefaultStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     default_style() {};
 
@@ -142,7 +142,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(default_style);
@@ -350,15 +349,14 @@ public:
     static const ElementType type = typeStyleStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     style() : style_auto_update_(false) { }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-    
+   
 public:
     std::wstring			style_name_;
     bool					style_auto_update_;	// default = false
@@ -442,7 +440,7 @@ public:
     static const ElementType type = typeOfficeAutomaticStyles;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     styles						styles_; ///< styles
     office_element_ptr_array	style_page_layout_;
@@ -452,7 +450,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_automatic_styles);
@@ -467,7 +464,7 @@ public:
     static const ElementType type = typeOfficeMasterStyles;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     office_element_ptr_array	style_master_page_;			// разметки тем
     office_element_ptr			style_handout_master_;		// разметки для принтера - .. второстепенно
@@ -480,7 +477,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_master_styles);
@@ -512,7 +508,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -843,7 +839,7 @@ public:
     static const ElementType type = typeStyleHeaderStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	office_element_ptr style_header_footer_properties_;
 
@@ -864,7 +860,7 @@ public:
     static const ElementType type = typeStyleFooterStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	office_element_ptr style_header_footer_properties_;
 
@@ -885,7 +881,7 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
    
     std::wstring				style_name_;
     odf_types::page_usage		style_page_usage_; // default All
@@ -1045,7 +1041,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 public:
     odf_types::noteclass	noteclass_;
@@ -1082,7 +1077,7 @@ public:
 
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
    
     _CP_OPT(std::wstring)		style_name_;
 	office_element_ptr_array	content_;

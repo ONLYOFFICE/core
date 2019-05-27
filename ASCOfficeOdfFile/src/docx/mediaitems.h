@@ -123,16 +123,17 @@ public:
 
 		if (sExt == L"wmv") return typeVideo;
 		if (sExt == L"avi") return typeVideo;
-		if (sExt == L"wmv") return typeVideo;
-		if (sExt == L"wma") return typeAudio;
-		if (sExt == L"wav") return typeAudio;
-		
-		if (sExt == L"mp3") return typeAudio;
-		if (sExt == L"m4a") return typeAudio;
 		if (sExt == L"m4v") return typeVideo;
 		if (sExt == L"mp4") return typeVideo;
 		if (sExt == L"mov") return typeVideo;
 		if (sExt == L"mkv") return typeVideo;
+		if (sExt == L"webm") return typeVideo;
+
+		if (sExt == L"wmv") return typeVideo;
+		if (sExt == L"wma") return typeAudio;
+		if (sExt == L"wav") return typeAudio;		
+		if (sExt == L"mp3") return typeAudio;
+		if (sExt == L"m4a") return typeAudio;
 
 		return typeMedia;
 	}

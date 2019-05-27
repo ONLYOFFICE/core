@@ -43,9 +43,6 @@
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
-using namespace NSOfficeDrawing;
-using namespace NSPresentationEditor;
-
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 {
 	CBgraFrame bgraFrame;
@@ -202,47 +199,47 @@ CColor CPPTElement::CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme
 }
 void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties)
 {
-	long lCount = pProperties->m_lCount;
+	size_t lCount = pProperties->m_lCount;
 	switch (pElement->m_etType)
 	{
-	case NSPresentationEditor::etVideo:
+	case PPT_FORMAT::etVideo:
 		{
 			pElement->m_bLine = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
 			break;
 		}
-	case NSPresentationEditor::etPicture:
+	case PPT_FORMAT::etPicture:
 		{
 			pElement->m_oBrush.Type = c_BrushTypeTexture;
 			pElement->m_bLine = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
 			break;
 		}
-	case NSPresentationEditor::etAudio:
+	case PPT_FORMAT::etAudio:
 		{
 			pElement->m_bLine = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
 			break;
 		}
-	case NSPresentationEditor::etGroup:
+	case PPT_FORMAT::etGroup:
 		{
 			pElement->m_bLine = false;
 			pElement->m_bIsFilled = false;
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
 		}break;
-	case NSPresentationEditor::etShape:
+	case PPT_FORMAT::etShape:
 		{
 			CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
 			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_pShape->getBaseShape().get());
@@ -252,7 +249,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 				pPPTShape->m_oCustomVML.SetAdjusts(&pPPTShape->m_arAdjustments);
 			}
 
-			for (long i = 0; i < lCount; ++i)
+			for (size_t i = 0; i < lCount; ++i)
 			{
 				SetUpPropertyShape(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
@@ -321,29 +318,29 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			_UINT32 dwType = pProperty->m_lValue;
 			switch(dwType)
 			{
-				case NSOfficeDrawing::fillPattern:
+				case ODRAW::fillPattern:
 				{
 					pElement->m_oBrush.Type = c_BrushTypePattern;
 					//texture + change black to color2, white to color1
 				}break;
-				case NSOfficeDrawing::fillTexture :
-				case NSOfficeDrawing::fillPicture :
+				case ODRAW::fillTexture :
+				case ODRAW::fillPicture :
 				{
 					pElement->m_oBrush.Type			= c_BrushTypeTexture;
-					pElement->m_oBrush.TextureMode	= (NSOfficeDrawing::fillPicture == dwType) ? c_BrushTextureModeStretch : c_BrushTextureModeTile;
+					pElement->m_oBrush.TextureMode	= (ODRAW::fillPicture == dwType) ? c_BrushTextureModeStretch : c_BrushTextureModeTile;
 				}break;
-				case NSOfficeDrawing::fillShadeCenter://1 color
-				case NSOfficeDrawing::fillShadeShape:
+				case ODRAW::fillShadeCenter://1 color
+				case ODRAW::fillShadeShape:
 				{
 					pElement->m_oBrush.Type = c_BrushTypeCenter;
 				}break;//
-				case NSOfficeDrawing::fillShadeTitle://2 colors and more
-				case NSOfficeDrawing::fillShade : 
-				case NSOfficeDrawing::fillShadeScale: 
+				case ODRAW::fillShadeTitle://2 colors and more
+				case ODRAW::fillShade : 
+				case ODRAW::fillShadeScale: 
 				{
 					pElement->m_oBrush.Type = c_BrushTypePathGradient1;
 				}break;
-				case NSOfficeDrawing::fillBackground:
+				case ODRAW::fillBackground:
 				{
 					pElement->m_oBrush.Type = c_BrushTypeNoFill;
 				}break;				
@@ -532,7 +529,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 
 			break;
 		}
-	case NSOfficeDrawing::geoBoolean:
+	case ODRAW::geoBoolean:
 		{
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
 			BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
@@ -821,7 +818,7 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
 
 	switch(pProperty->m_ePID)
 	{
-	case Pib:
+	case pib:
 		{
 			int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
 			if (dwOffset >=0)
@@ -841,22 +838,22 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
 		}break;
 	case cropFromTop:
 		{
-			image_element->m_lcropFromTop = pProperty->m_lValue; 
+			image_element->m_lcropFromTop = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case cropFromBottom:
 		{
-			image_element->m_lcropFromBottom = pProperty->m_lValue; 
+			image_element->m_lcropFromBottom = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case cropFromLeft:
 		{
-			image_element->m_lcropFromLeft = pProperty->m_lValue; 
+			image_element->m_lcropFromLeft = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case cropFromRight:
 		{
-			image_element->m_lcropFromRight = pProperty->m_lValue; 
+			image_element->m_lcropFromRight = (_INT32)pProperty->m_lValue; 
 			image_element->m_bCropEnabled = true;
 		}break;
 	case pibFlags:
@@ -881,7 +878,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 
 	switch (pProperty->m_ePID)
 	{
-	case NSOfficeDrawing::metroBlob:
+	case ODRAW::metroBlob:
 	{
 		NSFile::CFileBinary file;
 
@@ -911,22 +908,22 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 		}
 		NSFile::CFileBinary::Remove(tempFileName);
 	}break;
-	case NSOfficeDrawing::geoRight:
+	case ODRAW::geoRight:
 	{
 		if (0 < pProperty->m_lValue)
 			pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
 	}break;
-	case NSOfficeDrawing::geoBottom:
+	case ODRAW::geoBottom:
 	{
 		if (0 < pProperty->m_lValue)
 			pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
 	}break;
-	case NSOfficeDrawing::shapePath:
+	case ODRAW::shapePath:
 	{
 		pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
 		pShape->m_bCustomShape = true;
 	}break;
-	case NSOfficeDrawing::pSegmentInfo:
+	case ODRAW::pSegmentInfo:
 	{
 		if (pProperty->m_bComplex)
 		{
@@ -934,7 +931,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			pShape->m_bCustomShape = true;
 		}				
 	}break;
-	case NSOfficeDrawing::pVertices:
+	case ODRAW::pVertices:
 	{
 		if (pProperty->m_bComplex)
 		{
@@ -942,53 +939,53 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			pShape->m_bCustomShape = true;
 		}				
 	}break;
-	case NSOfficeDrawing::pConnectionSites:
+	case ODRAW::pConnectionSites:
 	{
 		if (pProperty->m_bComplex)
 		{
 			pShape->m_oCustomVML.LoadConnectionSites(pProperty);
 		}				
 	}break;
-	case NSOfficeDrawing::pConnectionSitesDir:
+	case ODRAW::pConnectionSitesDir:
 	{
 		if (pProperty->m_bComplex)
 		{
 			pShape->m_oCustomVML.LoadConnectionSitesDir(pProperty);
 		}				
 	}break;
-	case NSOfficeDrawing::pGuides:
+	case ODRAW::pGuides:
 	{
 		if (pProperty->m_bComplex/* && pShape->m_eType != sptNotchedCircularArrow*/)
 		{//Тікбұрышты үшбұрыштарды.ppt - slide 25
 			pShape->m_oCustomVML.LoadGuides(pProperty);
 		}				
 	}break;
-	case NSOfficeDrawing::pInscribe:
+	case ODRAW::pInscribe:
 	{
 		if (pProperty->m_bComplex)
 		{
 			pShape->m_oCustomVML.LoadInscribe(pProperty);
 		}
 	}break;
-	case NSOfficeDrawing::pAdjustHandles:
+	case ODRAW::pAdjustHandles:
 	{
 		if (pProperty->m_bComplex)
 		{
 			pShape->m_oCustomVML.LoadAHs(pProperty);
 		}				
 	}break;
-	case NSOfficeDrawing::adjustValue:
-	case NSOfficeDrawing::adjust2Value:
-	case NSOfficeDrawing::adjust3Value:
-	case NSOfficeDrawing::adjust4Value:
-	case NSOfficeDrawing::adjust5Value:
-	case NSOfficeDrawing::adjust6Value:
-	case NSOfficeDrawing::adjust7Value:
-	case NSOfficeDrawing::adjust8Value:
-	case NSOfficeDrawing::adjust9Value:
-	case NSOfficeDrawing::adjust10Value:
+	case ODRAW::adjustValue:
+	case ODRAW::adjust2Value:
+	case ODRAW::adjust3Value:
+	case ODRAW::adjust4Value:
+	case ODRAW::adjust5Value:
+	case ODRAW::adjust6Value:
+	case ODRAW::adjust7Value:
+	case ODRAW::adjust8Value:
+	case ODRAW::adjust9Value:
+	case ODRAW::adjust10Value:
 		{
-			LONG lIndexAdj = pProperty->m_ePID - NSOfficeDrawing::adjustValue;
+			LONG lIndexAdj = pProperty->m_ePID - ODRAW::adjustValue;
 			if (lIndexAdj >= 0 && lIndexAdj < (LONG)pShape->m_arAdjustments.size())
 			{
 				pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
@@ -1002,27 +999,27 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 	case lTxid:
 		{
 		}break;
-	case NSOfficeDrawing::dxTextLeft:
+	case ODRAW::dxTextLeft:
 		{
 			pParentShape->m_dTextMarginX = pProperty->m_lValue;				
 		}break;
-	case NSOfficeDrawing::dxTextRight:
+	case ODRAW::dxTextRight:
 		{
 			pParentShape->m_dTextMarginRight = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::dyTextTop:
+	case ODRAW::dyTextTop:
 		{
 			pParentShape->m_dTextMarginY = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::dyTextBottom:
+	case ODRAW::dyTextBottom:
 		{
 			pParentShape->m_dTextMarginBottom = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::WrapText:
+	case ODRAW::WrapText:
 		{
 			pParentShape->m_oText.m_lWrapMode = (LONG)pProperty->m_lValue;				
 		}break;
-	case NSOfficeDrawing::gtextUNICODE://word art text
+	case ODRAW::gtextUNICODE://word art text
 		{
 			if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 			{
@@ -1037,15 +1034,15 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 						if (str.at(i) > 13 ) break;
 						length--;
 					}
-					NSPresentationEditor::CParagraph p;
-					NSPresentationEditor::CSpan s;
+					PPT_FORMAT::CParagraph p;
+					PPT_FORMAT::CSpan s;
 					s.m_strText = str.substr(0,length);
 					p.m_arSpans.push_back(s);
 					pParentShape->m_oText.m_arParagraphs.push_back(p);
 				}
 			}				
 		}break;
-	case NSOfficeDrawing::gtextFont:
+	case ODRAW::gtextFont:
 		{
 			if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 			{
@@ -1053,48 +1050,48 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 				pParentShape->m_oText.m_oAttributes.m_oFont.Name = str;
 			}				
 		}break;
-	case NSOfficeDrawing::gtextSize:
+	case ODRAW::gtextSize:
 		{
 			pParentShape->m_oText.m_oAttributes.m_oFont.Size = (INT)((pProperty->m_lValue >> 16) & 0x0000FFFF);
 			break;
 		}
-	case NSOfficeDrawing::anchorText:
+	case ODRAW::anchorText:
 		{
 			switch (pProperty->m_lValue)
 			{
-			case NSOfficeDrawing::anchorTop:
-			case NSOfficeDrawing::anchorTopBaseline:
+			case ODRAW::anchorTop:
+			case ODRAW::anchorTopBaseline:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
 					break;
 				}
-			case NSOfficeDrawing::anchorMiddle:
+			case ODRAW::anchorMiddle:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
 					break;
 				}
-			case NSOfficeDrawing::anchorBottom:
-			case NSOfficeDrawing::anchorBottomBaseline:
+			case ODRAW::anchorBottom:
+			case ODRAW::anchorBottomBaseline:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
 					break;
 				}
-			case NSOfficeDrawing::anchorTopCentered:
-			case NSOfficeDrawing::anchorTopCenteredBaseline:
+			case ODRAW::anchorTopCentered:
+			case ODRAW::anchorTopCenteredBaseline:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
 					break;
 				}
-			case NSOfficeDrawing::anchorMiddleCentered:
+			case ODRAW::anchorMiddleCentered:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
 					break;
 				}
-			case NSOfficeDrawing::anchorBottomCentered:
-			case NSOfficeDrawing::anchorBottomCenteredBaseline:
+			case ODRAW::anchorBottomCentered:
+			case ODRAW::anchorBottomCenteredBaseline:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
@@ -1109,19 +1106,19 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			};
 			break;
 		}
-	case NSOfficeDrawing::gtextAlign:
+	case ODRAW::gtextAlign:
 		{
 			switch (pProperty->m_lValue)
 			{
-			case NSOfficeDrawing::alignTextLeft:
+			case ODRAW::alignTextLeft:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;					
 				}break;
-			case NSOfficeDrawing::alignTextCenter:
+			case ODRAW::alignTextCenter:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;					
 				}break;
-			case NSOfficeDrawing::alignTextRight:
+			case ODRAW::alignTextRight:
 				{
 					pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;					
 				}break;
@@ -1132,7 +1129,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			};
 			break;
 		}
-	case NSOfficeDrawing::gtextBoolean:
+	case ODRAW::gtextBoolean:
 		{
 			// вот здесь - нужно единицы перевести в пикселы
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
@@ -1182,7 +1179,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
                 pParentShape->m_oText.m_bVertical = (true == bVertical) ? true : false;
 			}				
 		}break;
-	case NSOfficeDrawing::cdirFont:
+	case ODRAW::cdirFont:
 		{
 			switch (pProperty->m_lValue)
 			{
@@ -1198,11 +1195,11 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 				break;
 			}
 		}break;
-	case NSOfficeDrawing::txflTextFlow:
+	case ODRAW::txflTextFlow:
 		{
 			pParentShape->m_oText.m_nTextFlow = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::textBoolean:
+	case ODRAW::textBoolean:
 		{
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
 			BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
@@ -1231,35 +1228,35 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 				pParentShape->m_oText.m_bAutoFit = bFitShapeToText;
 
 		}break;
-	case NSOfficeDrawing::c3DSpecularAmt:
+	case ODRAW::c3DSpecularAmt:
 		{
 			pShape->m_o3dOptions.dSpecularAmt = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DDiffuseAmt:
+	case ODRAW::c3DDiffuseAmt:
 		{
 			pShape->m_o3dOptions.dDiffuseAmt = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-    case NSOfficeDrawing::c3DShininess:
+    case ODRAW::c3DShininess:
 		{
 			pShape->m_o3dOptions.dShininess = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-    case NSOfficeDrawing::c3DEdgeThickness:
+    case ODRAW::c3DEdgeThickness:
 		{
 			pShape->m_o3dOptions.nEdgeThickness = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::C3DExtrudeForward:
+	case ODRAW::C3DExtrudeForward:
 		{
 			pShape->m_o3dOptions.nExtrudeForward = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::c3DExtrudeBackward:
+	case ODRAW::c3DExtrudeBackward:
 		{
 			pShape->m_o3dOptions.nExtrudeBackward = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::c3DExtrudePlane:
+	case ODRAW::c3DExtrudePlane:
 		{
 			//ExtrudePlane = 0;
 		}break;
-	case NSOfficeDrawing::c3DExtrusionColor:
+	case ODRAW::c3DExtrusionColor:
 		{
 			SColorAtom oAtom;
 			oAtom.FromValue(pProperty->m_lValue);
@@ -1270,7 +1267,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 
 			pShape->m_o3dOptions.oExtrusionColor = tmp;
 		}break;
-	case NSOfficeDrawing::c3DCrMod:
+	case ODRAW::c3DCrMod:
 		{
 			SColorAtom oAtom;
 			oAtom.FromValue(pProperty->m_lValue);
@@ -1281,7 +1278,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 				
 			pShape->m_o3dOptions.oCrMod = tmp;
 		}break;
-	case NSOfficeDrawing::c3DExtrusionColorExt:
+	case ODRAW::c3DExtrusionColorExt:
 		{
 			SColorAtom oAtom;
 			oAtom.FromValue(pProperty->m_lValue);
@@ -1291,35 +1288,35 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			else				oAtom.ToColor(&tmp);			
 			pShape->m_o3dOptions.oExtrusionColorExt = tmp;
 		}break;
-	case NSOfficeDrawing::c3DExtrusionColorExtMod:			
+	case ODRAW::c3DExtrusionColorExtMod:			
 		{
 			pShape->m_o3dOptions.nTypeExtrusionColorExt = (pProperty->m_lValue & 0x00000300) >> 8;
 		}break;
-	case NSOfficeDrawing::c3DBottomBevelWidth:
+	case ODRAW::c3DBottomBevelWidth:
 		{
 			pShape->m_o3dOptions.dBottomBevelWidth = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DBottomBevelHeight:
+	case ODRAW::c3DBottomBevelHeight:
 		{
 			pShape->m_o3dOptions.dBottomBevelHeight = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DBottomBevelType:
+	case ODRAW::c3DBottomBevelType:
 		{
 			pShape->m_o3dOptions.nBottomBevelType = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::c3DTopBevelWidth:
+	case ODRAW::c3DTopBevelWidth:
 		{
 			pShape->m_o3dOptions.dTopBevelWidth = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DTopBevelHeight:
+	case ODRAW::c3DTopBevelHeight:
 		{
 			pShape->m_o3dOptions.dTopBevelHeight = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DTopBevelType:
+	case ODRAW::c3DTopBevelType:
 		{
 			pShape->m_o3dOptions.nTopBevelType = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::c3DBoolean:
+	case ODRAW::c3DBoolean:
 		{
 			bool fUsef3D					= GETBIT(pProperty->m_lValue, 19);
 			bool fUsefc3DMetallic			= GETBIT(pProperty->m_lValue, 18);
@@ -1332,121 +1329,121 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 			pShape->m_o3dOptions.bLightFace		= fUsefc3DLightFace			? GETBIT(pProperty->m_lValue, 0)	: true;
 
 		}break;
-	case NSOfficeDrawing::c3DYRotationAngle:
+	case ODRAW::c3DYRotationAngle:
 		{
 			double val = FixedPointToDouble(pProperty->m_lValue);
 			if (val < 0) val += 360;
 			pShape->m_o3dOptions.dYRotationAngle = val;
 		}break;
-	case NSOfficeDrawing::c3DXRotationAngle:
+	case ODRAW::c3DXRotationAngle:
 		{
 			double val = FixedPointToDouble(pProperty->m_lValue);
 			if (val < 0) val += 360;
 			pShape->m_o3dOptions.dXRotationAngle = val;
 		}break;
-	case NSOfficeDrawing::c3DRotationAxisX:
+	case ODRAW::c3DRotationAxisX:
 		{
 			pShape->m_o3dOptions.dRotationAxisX = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DRotationAxisY:
+	case ODRAW::c3DRotationAxisY:
 		{
 			pShape->m_o3dOptions.dRotationAxisY = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DRotationAxisZ:
+	case ODRAW::c3DRotationAxisZ:
 		{
 			pShape->m_o3dOptions.dRotationAxisZ = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DRotationAngle:
+	case ODRAW::c3DRotationAngle:
 		{
 			pShape->m_o3dOptions.dRotationAngle = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DRotationCenterX:
+	case ODRAW::c3DRotationCenterX:
 		{
 			pShape->m_o3dOptions.dRotationCenterX = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DRotationCenterY:
+	case ODRAW::c3DRotationCenterY:
 		{
 			pShape->m_o3dOptions.dRotationCenterY = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DRotationCenterZ:
+	case ODRAW::c3DRotationCenterZ:
 		{
 			pShape->m_o3dOptions.dRotationCenterZ = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DRenderMode:
+	case ODRAW::c3DRenderMode:
 		{
 			pShape->m_o3dOptions.nRenderMode = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::c3DTolerance:
+	case ODRAW::c3DTolerance:
 		{
 			pShape->m_o3dOptions.dTolerance = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DXViewpoint:
+	case ODRAW::c3DXViewpoint:
 		{
 			pShape->m_o3dOptions.dXViewpoint = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DYViewpoint:
+	case ODRAW::c3DYViewpoint:
 		{
 			pShape->m_o3dOptions.dYViewpoint = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DZViewpoint:
+	case ODRAW::c3DZViewpoint:
 		{
 			pShape->m_o3dOptions.dZViewpoint = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DOriginX:
+	case ODRAW::c3DOriginX:
 		{
 			pShape->m_o3dOptions.dOriginX = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DOriginY:
+	case ODRAW::c3DOriginY:
 		{
 			pShape->m_o3dOptions.dOriginY = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DSkewAngle:
+	case ODRAW::c3DSkewAngle:
 		{
 			double val = FixedPointToDouble(pProperty->m_lValue);
 			if (val <= 0) val += 360;
 			pShape->m_o3dOptions.dSkewAngle = val;
 		}break;
-	case NSOfficeDrawing::c3DSkewAmount:
+	case ODRAW::c3DSkewAmount:
 		{
 			pShape->m_o3dOptions.nSkewAmount = pProperty->m_lValue;
 		}break;
-	case NSOfficeDrawing::c3DAmbientIntensity:
+	case ODRAW::c3DAmbientIntensity:
 		{
 			pShape->m_o3dOptions.dAmbientIntensity = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DKeyX:
+	case ODRAW::c3DKeyX:
 		{
 			pShape->m_o3dOptions.dKeyX = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DKeyY:
+	case ODRAW::c3DKeyY:
 		{
 			pShape->m_o3dOptions.dKeyY = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DKeyZ:
+	case ODRAW::c3DKeyZ:
 		{
 			pShape->m_o3dOptions.dKeyZ = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DKeyIntensity:
+	case ODRAW::c3DKeyIntensity:
 		{
 			pShape->m_o3dOptions.dKeyIntensity = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DFillX:
+	case ODRAW::c3DFillX:
 		{
 			pShape->m_o3dOptions.dFillX = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DFillY:
+	case ODRAW::c3DFillY:
 		{
 			pShape->m_o3dOptions.dFillY = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DFillZ:
+	case ODRAW::c3DFillZ:
 		{
 			pShape->m_o3dOptions.dFillZ = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DFillIntensity:
+	case ODRAW::c3DFillIntensity:
 		{
 			pShape->m_o3dOptions.dFillIntensity = FixedPointToDouble(pProperty->m_lValue);
 		}break;
-	case NSOfficeDrawing::c3DStyleBoolean:
+	case ODRAW::c3DStyleBoolean:
 		{
 			bool fUsefc3DConstrainRotation	= GETBIT(pProperty->m_lValue, 20);
 			bool fUsefc3DRotationCenterAuto	= GETBIT(pProperty->m_lValue, 19);
@@ -1488,7 +1485,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 	GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
 
 	PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
-	ElementType			elType = GetTypeElem((NSOfficeDrawing::SPT)oArrayShape[0]->m_oHeader.RecInstance); 
+	ElementType			elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance); 
 
 	int lMasterID = -1;
 
@@ -1813,9 +1810,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 		}
 		else
 		{
-			pShapeElem->m_pShape->m_oText.m_lTextType		= NSOfficePPT::NoPresent;
-			pShapeElem->m_pShape->m_oText.m_lTextMasterType	= NSOfficePPT::NoPresent;
-			oElementInfo.m_lMasterTextType					= NSOfficePPT::NoPresent;
+			pShapeElem->m_pShape->m_oText.m_lTextType		= NoPresent;
+			pShapeElem->m_pShape->m_oText.m_lTextMasterType	= NoPresent;
+			oElementInfo.m_lMasterTextType					= NoPresent;
 		}
 
 		// проверка на ссылку в персист
@@ -2060,9 +2057,9 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
     bool bIsPersistPresentSettings	= false;
     bool bIsOwnPresentSettings		= false;
 
-	NSOfficePPT::TextType eTypeMaster	= NSOfficePPT::NoPresent;
-	NSOfficePPT::TextType eTypePersist	= NSOfficePPT::NoPresent;
-	NSOfficePPT::TextType eTypeOwn		= (NSOfficePPT::TextType)pTextSettings->m_lTextType;
+	eTextType eTypeMaster	= NoPresent;
+	eTextType eTypePersist	= NoPresent;
+	eTextType eTypeOwn		= (eTextType)pTextSettings->m_lTextType;
 
 	CShapeElement* pElementLayoutPH = NULL;
 
@@ -2084,7 +2081,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
                 if ((etShape == pPh->m_etType) && (ph_type == pPh->m_lPlaceholderType) && (/*ph_pos == pPh->m_lPlaceholderID*/true))
                 {
                     pElementLayoutPH = dynamic_cast<CShapeElement*>(pPh.get());
-                    eTypeMaster = (NSOfficePPT::TextType)pElementLayoutPH->m_pShape->m_oText.m_lTextMasterType;
+                    eTypeMaster = (eTextType)pElementLayoutPH->m_pShape->m_oText.m_lTextMasterType;
                     break;
                 }
             }
@@ -2092,7 +2089,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 	}
 	else
 	{
-		eTypeMaster = (NSOfficePPT::TextType)pTextSettings->m_lTextMasterType;
+		eTypeMaster = (eTextType)pTextSettings->m_lTextMasterType;
 	}
 
 	// ------------------------------------------------------------------------------
@@ -2110,7 +2107,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 	{
 		CTextFullSettings* pSettings = &pArrayPlaceHolders->at(lPersistIndex);
 
-		eTypePersist = (NSOfficePPT::TextType)pSettings->m_nTextType;
+		eTypePersist = (eTextType)pSettings->m_nTextType;
 		strText = pSettings->ApplyProperties(pTextSettings);
 
 		if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oTextActions.m_arRanges.size()))
@@ -2141,7 +2138,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
 			pStyle->ReadFromStream(oHeader, oElemInfo.m_pStream);
 
-			NSPresentationEditor::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
+			PPT_FORMAT::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
 
 			bIsOwnPresentSettings = (0 < pStyle->m_lCount);
 
@@ -2160,13 +2157,13 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		{
 			switch (oElemInfo.m_lMasterPlaceholderType)
 			{
-			case NSOfficePPT::Title:
-			case NSOfficePPT::MasterTitle:
-			case NSOfficePPT::VerticalTextTitle:
+			case PT_Title:
+			case PT_MasterTitle:
+			case PT_VerticalTitle:
 				{
 					pTextSettings->m_lStyleThemeIndex = 1;
 
-					if (NSOfficePPT::_Title != eTypeMaster)
+					if (Tx_TYPE_TITLE != eTypeMaster)
 					{
 						if (0 <= nTextMasterType && nTextMasterType < 9)
 						{
@@ -2176,12 +2173,12 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 					}
 					break;
 				}
-			case NSOfficePPT::CenteredTitle:
-			case NSOfficePPT::MasterCenteredTitle:
+			case PT_CenterTitle:
+			case PT_MasterCenterTitle:
 				{
 					pTextSettings->m_lStyleThemeIndex = 1;
 
-					if (NSOfficePPT::_Title != eTypeMaster)
+					if (Tx_TYPE_TITLE != eTypeMaster)
 					{
 						if (0 <= nTextMasterType && nTextMasterType < 9)
 						{
@@ -2191,17 +2188,17 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 					}
 					break;
 				}
-			case NSOfficePPT::Body:
-			case NSOfficePPT::MasterBody:
-			case NSOfficePPT::NotesBody:
-			case NSOfficePPT::MasterNotesBody:
-			case NSOfficePPT::VerticalTextBody:
-			case NSOfficePPT::MasterSubtitle:
-			case NSOfficePPT::Subtitle:
+			case PT_Body:
+			case PT_MasterBody:
+			case PT_NotesBody:
+			case PT_MasterNotesBody:
+			case PT_VerticalBody:
+			case PT_MasterSubTitle:
+			case PT_SubTitle:
 				{
 					pTextSettings->m_lStyleThemeIndex = 2;
 
-					if ((NSOfficePPT::_Body != eTypeMaster) || !pLayout) 
+					if ((Tx_TYPE_BODY != eTypeMaster) || !pLayout) 
 					{
 						if (0 <= nTextMasterType && nTextMasterType < 9)
 						{
@@ -2215,7 +2212,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 				{
 					pTextSettings->m_lStyleThemeIndex = 3;
 
-					if ((NSOfficePPT::Other != eTypeMaster) || !pLayout) 
+					if ((Tx_TYPE_OTHER != eTypeMaster) || !pLayout) 
 					{
 						if (0 <= nTextMasterType && nTextMasterType < 9)
 						{
@@ -2233,7 +2230,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		{
 			//pTextSettings->m_lTextType = 0;
 
-			//if (NSOfficePPT::Other != eTypeMaster)
+			//if (Other != eTypeMaster)
 			//{
 			//	if (0 <= nTextMasterType && nTextMasterType < 9)
 			//	{
@@ -2244,7 +2241,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		}
 
 		// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles
-		if (eTypePersist != NSOfficePPT::NoPresent && eTypePersist != eTypeMaster)
+		if (eTypePersist != NoPresent && eTypePersist != eTypeMaster)
 		{
 			int nIndexType = (int)eTypePersist;
 			if (0 <= nIndexType && nIndexType < 9)
@@ -2253,7 +2250,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 					pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 			}
 		}
-		if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+		if (eTypeOwn != NoPresent && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
 		{
 			int nIndexType = (int)eTypeOwn;
 			if (0 <= nIndexType && nIndexType < 9)
@@ -2277,24 +2274,24 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 			{	
 				switch (oElemInfo.m_lMasterPlaceholderType)
 				{
-				case NSOfficePPT::Title:
-				case NSOfficePPT::MasterTitle:
-				case NSOfficePPT::VerticalTextTitle:
+				case PT_Title:
+				case PT_MasterTitle:
+				case PT_VerticalTitle:
 					{
 						pTextSettings->m_lStyleThemeIndex = 1;
 						break;
 					}
-				case NSOfficePPT::CenteredTitle:
-				case NSOfficePPT::MasterCenteredTitle:
+				case PT_CenterTitle:
+				case PT_MasterCenterTitle:
 					{
 						pTextSettings->m_lStyleThemeIndex = 1;
 						break;
 					}
-				case NSOfficePPT::Body:
-				case NSOfficePPT::MasterBody:
-				case NSOfficePPT::NotesBody:
-				case NSOfficePPT::MasterNotesBody:
-				case NSOfficePPT::VerticalTextBody:
+				case PT_Body:
+				case PT_MasterBody:
+				case PT_NotesBody:
+				case PT_MasterNotesBody:
+				case PT_VerticalBody:
 					{
 						pTextSettings->m_lStyleThemeIndex = 2;
 						break;
@@ -2313,7 +2310,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 		}
 
 		// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles
-		if (eTypePersist != NSOfficePPT::NoPresent && eTypePersist != eTypeMaster)
+		if (eTypePersist != NoPresent && eTypePersist != eTypeMaster)
 		{
 			int nIndexType = (int)eTypePersist;
 			if (0 <= nIndexType && nIndexType < 9)
@@ -2322,13 +2319,13 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 					pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 			}
 		}
-		if (eTypeOwn != NSOfficePPT::NoPresent/* && eTypeOwn != NSOfficePPT::Other*/ && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
-		{
+		if (eTypeOwn != NoPresent && eTypeOwn != Tx_TYPE_OTHER && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+		{//齐孟尧-2015年度职工考核报告.ppt
 			int nIndexType = (int)eTypeOwn;
 			
 			if (0 <= nIndexType && nIndexType < 9 && pLayout)
 			{
-				if (eTypeOwn == NSOfficePPT::HalfBody || eTypeOwn == NSOfficePPT::QuarterBody)
+				if (eTypeOwn == Tx_TYPE_HALFBODY || eTypeOwn == Tx_TYPE_QUARTERBODY)
 				{
 					if (pThemeWrapper->m_pStyles[1].IsInit())//body -> (560).ppt
 					{
@@ -2346,23 +2343,23 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 	if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.size())
 	{
 		// значит никаких своих настроек нету. Значит просто пустые свои настройки
-		std::vector<CTextPFRun_ppt> oArrayPF;
+		std::vector<CTextPFRunRecord> oArrayPF;
 		
-		CTextPFRun_ppt elm;
+		CTextPFRunRecord elm;
 		
 		elm.m_lCount = strText.length();
 		elm.m_lLevel = 0;
 		
 		oArrayPF.push_back(elm);
 
-		std::vector<CTextCFRun_ppt> oArrayCF;
+		std::vector<CTextCFRunRecord> oArrayCF;
 		
-		CTextCFRun_ppt elm1;
+		CTextCFRunRecord elm1;
 		elm1.m_lCount = elm.m_lCount;
 		
 		oArrayCF.push_back(elm1);
 		
-		NSPresentationEditor::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
+		PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
 	}
 
 	if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)
@@ -2394,7 +2391,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 	if (pShape->m_oTextActions.m_bPresent)
 	{
 		//todooo разобраться нужно ли менять цвет на гиперлинк - 1-(34).ppt
-		NSPresentationEditor::CColor oColor;
+		ODRAW::CColor oColor;
 		if ((NULL != pSlide) && !pSlide->m_bUseLayoutColorScheme)			oColor = pSlide->GetColor(11);
 		else if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))	oColor = pLayout->GetColor(11);
 		else if (NULL != pTheme)											oColor = pTheme->GetColor(11);

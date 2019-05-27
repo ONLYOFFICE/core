@@ -34,10 +34,9 @@
 
 class CRecordMasterPersistAtom : public CUnknownRecord
 {
+public:
 	UINT m_nPsrRef;
 	INT m_nMasterID;
-
-public:
 	
 	CRecordMasterPersistAtom()
 	{

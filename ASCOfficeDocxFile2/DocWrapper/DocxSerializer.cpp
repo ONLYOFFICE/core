@@ -30,15 +30,20 @@
  *
  */
 #include "DocxSerializer.h"
+ 
+#include "../BinWriter/BinWriters.h"
+#include "../BinReader/Readers.h"
+
+#include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
+#include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
+
+#include "FontProcessor.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
-#include "../BinWriter/BinWriters.h"
-#include "../BinReader/Readers.h"
-#include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
@@ -296,33 +301,28 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				
                 OOX::CPath DocProps = std::wstring(_T("docProps"));
 
-				OOX::CApp* pApp = new OOX::CApp(NULL);
-				if (pApp)
+				if (NULL != m_pCurFileWriter->m_pApp)
 				{
-					std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-					if (sApplication.empty())
-						sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-					pApp->SetApplication(sApplication);
-#if defined(INTVER)
-                    pApp->SetAppVersion(VALUE2STR(INTVER));
-#endif
-					pApp->SetDocSecurity(0);
-					pApp->SetScaleCrop(false);
-					pApp->SetLinksUpToDate(false);
-					pApp->SetSharedDoc(false);
-					pApp->SetHyperlinksChanged(false);
-					
-					pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
-					delete pApp;
-				}				
-				OOX::CCore* pCore = new OOX::CCore(NULL);
-				if (pCore)
+					m_pCurFileWriter->m_pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
+				}
+				else
 				{
-					pCore->SetCreator(_T(""));
-					pCore->SetLastModifiedBy(_T(""));
-					pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
-					delete pCore;
-				} 
+					OOX::CApp pApp(NULL);
+					pApp.SetDefaults();
+					pApp.write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
+				}
+
+				if (NULL != m_pCurFileWriter->m_pCore)
+				{
+					m_pCurFileWriter->m_pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
+				}
+				else
+				{
+					OOX::CCore pCore(NULL);
+					pCore.SetDefaults();
+					pCore.write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
+				}
+
 /////////////////////////////////////////////////////////////////////////////////////
 				m_pCurFileWriter->Write();
 				pContentTypes->Write(sDstPath);

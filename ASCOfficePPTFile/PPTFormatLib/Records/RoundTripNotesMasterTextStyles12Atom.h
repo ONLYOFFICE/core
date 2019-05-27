@@ -35,7 +35,7 @@
 class CRecordRoundTripNotesMasterTextStyles12Atom : public CUnknownRecord
 {
 public:
-    std::string m_strData;
+	std::pair<boost::shared_array<unsigned char>, _INT32> data;
 	
 	CRecordRoundTripNotesMasterTextStyles12Atom()
 	{
@@ -48,6 +48,30 @@ public:
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
 		m_oHeader = oHeader;
-		m_strData = StreamUtils::ReadStringA(pStream, (long)m_oHeader.RecLen);
+		
+		data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
+		pStream->read(data.first.get(), data.second);
+	}
+};
+
+class CRecordRoundTripCustomTableStyles12Atom : public CUnknownRecord
+{
+public:
+	std::pair<boost::shared_array<unsigned char>, _INT32> data;
+	
+	CRecordRoundTripCustomTableStyles12Atom()
+	{
+	}
+
+	~CRecordRoundTripCustomTableStyles12Atom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+		
+		data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
+		pStream->read(data.first.get(), data.second);
 	}
 };

@@ -491,6 +491,7 @@
 #define c_oAscTypeSelectElement_Shape				6
 #define c_oAscTypeSelectElement_Slide				7
 #define c_oAscTypeSelectElement_Chart				8
+#define c_oAscTypeSelectElement_Math                9
 
 #define c_oAscTableBordersType_LEFT					0
 #define c_oAscTableBordersType_TOP					1
@@ -547,6 +548,10 @@
 
 #define shd_Clear			0
 #define shd_Nil				1
+
+#define c_oAscHyperlinkType_InternalLink            0
+#define c_oAscHyperlinkType_WebLink                 1
+#define c_oAscHyperlinkType_RangeLink               2
 
 #define c_oAscContextMenuTypes_Common				0	// Обычное контекстное меню
 #define c_oAscContextMenuTypes_ChangeHdrFtr			1	// Специальное контестное меню для попадания в колонтитул
@@ -690,6 +695,8 @@
 #define ASC_MENU_EVENT_TYPE_SECTION					17
 #define ASC_MENU_EVENT_TYPE_SHAPE                   18
 #define ASC_MENU_EVENT_TYPE_SLIDE                   20
+#define ASC_MENU_EVENT_TYPE_CHART                   21
+#define ASC_MENU_EVENT_TYPE_MATH                    22
 
 // insert commands
 #define ASC_MENU_EVENT_TYPE_INSERT_IMAGE			50
@@ -748,6 +755,7 @@
 #define ASC_MENU_EVENT_TYPE_USER_ZOOM               301
 
 #define ASC_MENU_EVENT_TYPE_INSERT_CHART            400
+#define ASC_MENU_EVENT_TYPE_ADD_CHART_DATA          440
 #define ASC_MENU_EVENT_TYPE_GET_CHART_DATA          450
 #define ASC_MENU_EVENT_TYPE_SET_CHART_DATA          460
 
@@ -757,6 +765,8 @@
 
 #define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
 #define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
+
+#define ASC_MENU_EVENT_TYPE_GO_TO_INTERNAL_LINK     5000
 
 #define ASC_SOCKET_EVENT_TYPE_OPEN                  10000
 #define ASC_SOCKET_EVENT_TYPE_ON_CLOSE              10010
@@ -774,5 +784,8 @@
 
 #define ASC_MENU_EVENT_TYPE_ADVANCED_OPTIONS        22000
 #define ASC_MENU_EVENT_TYPE_SET_PASSWORD            22001
+#define ASC_MENU_EVENT_TYPE_SET_TRANSLATIONS        22002
+
+#define ASC_MENU_EVENT_TYPE_ON_EDIT_TEXT            22003
 
 #endif //_BUILD_EDITOR_DEFINES_CROSSPLATFORM_H_

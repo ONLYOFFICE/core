@@ -31,187 +31,9 @@
  */
 #pragma once
 
-namespace NSOfficePPT
+namespace ODRAW
 {
-	enum SlideSizeType
-	{
-                OnScreen	 = 0,
-		LetterSizedPaper = 1,
-		A4Paper          = 2,
-		Size35mm         = 3,
-                Overhead	 = 4,
-                Banner		 = 5,
-		Custom           = 6
-	};
-
-	enum StyleMask
-	{
-                None				= 0,
-
-                IsBold				= 1 << 0,
-                IsItalic			= 1 << 1,
-		IsUnderlined			= 1 << 2,
-
-                HasShadow			= 1 << 4,
-		HasAsianSmartQuotes		= 1 << 5,
-
-                HasHorizonNumRendering          = 1 << 7,
-
-                IsEmbossed			= 1 << 9,
-
-		ExtensionNibble			= 0xF << 10 
-	};
-
-	enum CharacterMask
-	{
-                _None				= 0,
-
-		StyleFlagsFieldPresent		= 0xFFFF,
-
-                TypefacePresent			= 1 << 16,
-                SizePresent			= 1 << 17,
-                ColorPresent			= 1 << 18,
-                PositionPresent			= 1 << 19,
-
-		FEOldTypefacePresent		= 1 << 21,
-                ANSITypefacePresent		= 1 << 22,
-		SymbolTypefacePresent		= 1 << 23
-	};
-
-	enum PlaceholderEnum
-	{
-                __None				= 0,
-                MasterTitle			= 1,
-                MasterBody			= 2,
-                MasterCenteredTitle		= 3,
-                MasterSubtitle			= 4,
-		MasterNotesSlideImage		= 5,
-                MasterNotesBody			= 6,
-                MasterDate			= 7,
-                MasterSlideNumber		= 8,
-                MasterFooter			= 9,
-                MasterHeader			= 10,
-                NotesSlideImage			= 11,
-                NotesBody			= 12,
-                Title				= 13,
-                Body				= 14,
-                CenteredTitle			= 15,
-                Subtitle			= 16,
-                VerticalTextTitle		= 17,
-                VerticalTextBody		= 18,
-                Object				= 19,
-                Graph				= 20,
-                Table				= 21,
-                ClipArt				= 22,
-                OrganizationChart		= 23,
-                MediaClip			= 24
-	};
-
-	enum ParagraphMask
-	{
-                ___None				= 0,
-                HasBullet			= 1 << 0,
-                BulletHasFont			= 1 << 1,
-                BulletHasColor			= 1 << 2,
-                BulletHasSize			= 1 << 3,
-		BulletFlagsFieldExists		= HasBullet | BulletHasFont | BulletHasColor | BulletHasSize,
-
-                BulletFont			= 1 << 4,
-                BulletColor			= 1 << 5,
-                BulletSize			= 1 << 6,
-                BulletChar			= 1 << 7,
-                LeftMargin			= 1 << 8,
-                Indent				= 1 << 10,
-                Align				= 1 << 11,
-                LineSpacing			= 1 << 12,
-                SpaceBefore			= 1 << 13,
-                SpaceAfter			= 1 << 14,
-                DefaultTabSize			= 1 << 15,
-                FontAlign			= 1 << 16,
-                CharWrap			= 1 << 17,
-                WordWrap			= 1 << 18,
-                Overflow			= 1 << 19,
-		WrapFlagsFieldExists		= CharWrap | WordWrap | Overflow,
-                TabStops			= 1 << 20,
-                TextDirection			= 1 << 21,
-                BulletBlip			= 1 << 23,
-                BulletScheme			= 1 << 24,
-                BulletHasScheme			= 1 << 25
-	};
-
-	enum Instances
-	{
-                CollectionOfSlides		= 0,
-		CollectionOfMasterSlides	= 1,
-		CollectionOfNotesSlides		= 2
-	};
-
-	enum SlideLayoutType
-	{
-                TitleSlide			= 0,
-		TitleAndBody			= 1,
-		TitleMaster			= 2,
-	    
-                MasterNotes			= 4,
-                NotesTitleAndBody		= 5,
-                Handout				= 6,
-                TitleOnly			= 7,
-                TwoColumnsAndTitle		= 8,
-                TwoRowsAndTitle			= 9,
-                TwoColumnsRightTwoRows		= 10,
-                TwoColumnsLeftTwoRows		= 11,
-                TwoRowsBottomTwoColumns		= 12,
-                TwoRowsTopTwoColumns		= 13,
-                FourObjects			= 14,
-                BigObject			= 15,
-                Blank				= 16,
-                VerticalTitleRightBodyLeft	= 17,
-                VerticalTitleRightBodyLeftTwoRows= 18
-	};
-
-	enum TextType
-	{
-		_Title		= 0,
-		_Body		= 1,
-		Notes		= 2,
-		Outline		= 3,
-		Other		= 4,
-		CenterBody	= 5,
-		CenterTitle	= 6,
-		HalfBody	= 7,
-		QuarterBody	= 8,
-
-		NoPresent   = 0xFF
-	};
-
-	enum ActionTable
-	{
-		NoAction			= 0, 
-		MacroAction			= 1, 
-		RunProgramAction	= 2,
-		JumpAction			= 3, 
-		HyperlinkAction		= 4,
-		OLEAction			= 5, 
-		MediaAction			= 6, 
-		CustomShowAction	= 7
-	};
-
-	enum JumpTable
-	{
-		NoJump				= 0, 
-		NextSlide			= 1, 
-		PreviousSlide		= 2,
-		FirstSlide			= 3, 
-		LastSlide			= 4,
-		LastSlideViewed		= 5, 
-		EndShow				= 6, 
-		SlideId				= 7
-	};
-}
-
-namespace NSOfficeDrawing
-{
-	enum ShapePath
+	enum eShapePath
 	{
 		shapeLines,        // A line of straight segments    
 		shapeLinesClosed,  // A closed polygonal object    
@@ -220,7 +42,7 @@ namespace NSOfficeDrawing
 		shapeComplex       // pSegmentInfo must be non-empty 
 	};
 
-	enum WrapMode
+	enum eWrapMode
 	{    
 		wrapSquare,    
 		wrapByPoints,    
@@ -229,7 +51,7 @@ namespace NSOfficeDrawing
 		wrapThrough    
 	}; 
 
-	enum BwMode
+	enum eBwMode
 	{    
 		bwColor,          // only used for predefined shades    
 		bwAutomatic,      // depends on object type    
@@ -245,7 +67,7 @@ namespace NSOfficeDrawing
 		bwNumModes        // number of Black and white modes    
 	};
 
-	enum AnchorMode
+	enum eAnchorMode
 	{    
 		anchorTop,     
 		anchorMiddle,     
@@ -259,7 +81,7 @@ namespace NSOfficeDrawing
 		anchorBottomCenteredBaseline    
 	}; 
 
-	enum CdirMode
+	enum eCdirMode
 	{    
 		cdir0,     // Right    
 		cdir90,    // Down    
@@ -267,7 +89,7 @@ namespace NSOfficeDrawing
 		cdir270    // Up    
 	};
 
-	enum CxStyle   
+	enum eCxStyle   
 	{    
 		cxstyleStraight = 0,    
 		cxstyleBent,    
@@ -275,7 +97,7 @@ namespace NSOfficeDrawing
 		cxstyleNone    
 	};
 
-	enum CXKMode  
+	enum eCXKMode  
 	{    
 		cxkNone = 0,      // No connection sites    
 		cxkSegments = 1,  // Connection sites at the segments    
@@ -283,7 +105,7 @@ namespace NSOfficeDrawing
 		cxkRect = 3       // Use the connection sites for a rectangle    
 	};
 
-	enum TxflMode
+	enum eTxflMode
 	{    
 		txflHorzN,           //Horizontal non-@    
 		txflTtoBA,           //Top to Bottom @-font    
@@ -293,14 +115,14 @@ namespace NSOfficeDrawing
 		txflVertN            //Vertical, non-@    
 	};
 
-	enum TxDirMode
+	enum eTxDirMode
 	{    
 		txdirLTR,		// left-to-right text direction    
 		txdirRTL,		// right-to-left text direction    
 		txdirContext    // context text direction     
 	}; 
 
-	enum SpcotMode
+	enum eSpcotMode
 	{    
 		spcotRightAngle = 1,    
 		spcotOneSegment = 2, 
@@ -308,7 +130,7 @@ namespace NSOfficeDrawing
 		spcotThreeSegment = 4    
 	};
 
-	enum SpcoaMode
+	enum eSpcoaMode
 	{   
 		spcoaAny,    
 		spcoa30,    
@@ -318,7 +140,7 @@ namespace NSOfficeDrawing
 		spcoa0    
 	};
 
-	enum SpcodMode
+	enum eSpcodMode
 	{    
 		spcodTop,    
 		spcodCenter,    
@@ -326,7 +148,7 @@ namespace NSOfficeDrawing
 		spcodSpecified    
 	};
 
-	enum GeoTextAlign
+	enum eGeoTextAlign
 	{   
 		alignTextStretch,      /* Stretch each line of text to fit width. */    
 		alignTextCenter,       /* Center text on width. */    
@@ -337,7 +159,7 @@ namespace NSOfficeDrawing
 		alignTextInvalid       /* Invalid */    
 	};
 
-	enum BlipFlags
+	enum eBlipFlags
 	{    
 		blipflagDefault = 0,    
 		blipflagComment = 0,		// Blip name is a comment    
@@ -361,14 +183,14 @@ namespace NSOfficeDrawing
 		BoundingCube  // Generate a bounding cube    
 	};
 
-	enum XFormType
+	enum eXFormType
 	{    
 		xformAbsolute,   // Apply transform in absolute space centered on shape    
 		xformShape,      // Apply transform to shape geometry    
 		xformDrawing     // Apply transform in drawing space    
 	};
 
-	enum ShadowType
+	enum eShadowType
 	{    
 		shadowOffset,    // N pixel offset shadow    
 		shadowDouble,    // Use second offset too    
@@ -378,7 +200,7 @@ namespace NSOfficeDrawing
 		shadowEmbossOrEngrave    
 	};
 
-	enum DzType
+	enum eDzType
 	{    
 		dztypeMin					= 0,    
 		dztypeDefault				= 0,	// Default size, ignore the values    
@@ -396,7 +218,7 @@ namespace NSOfficeDrawing
 		dztypeMax					= 11    
 	};
 
-	enum FillType
+	enum eFillType
 	{    
 		fillSolid,             // Fill with a solid color    
 		fillPattern,           // Fill with a pattern (bitmap)    
@@ -413,7 +235,7 @@ namespace NSOfficeDrawing
 		fillBackground         // Use the background fill color/pattern    
 	}; 
 
-	enum ShadeType
+	enum eShadeType
 	{    
 		shadeNone  = 0,        // Interpolate without correction between RGBs    
 		shadeGamma = 1,        // Apply gamma correction to colors    
@@ -433,7 +255,7 @@ namespace NSOfficeDrawing
 		shadeDefault = (shadeGamma | shadeSigma | (16384 << shadeParameterShift))    
 	};
 
-	enum LinesStyle
+	enum eLinesStyle
 	{    
 		lineSimple,     // Single line (of width lineWidth)    
 		lineDouble,     // Double lines of equal width    
@@ -442,7 +264,7 @@ namespace NSOfficeDrawing
 		lineTriple      // Three lines, thin, thick, thin    
 	};
 
-	enum LineType
+	enum eLineType
 	{    
 		lineSolidType,         // Fill with a solid color    
 		linePattern,           // Fill with a pattern (bitmap)    
@@ -450,7 +272,7 @@ namespace NSOfficeDrawing
 		linePicture            // Center a picture in the shape    
 	};
 
-	enum LineDashing
+	enum eLineDashing
 	{
 		lineSolid,				// Solid (continuous) pen    
 		lineDashSys,			// PS_DASH system  dash style    
@@ -465,7 +287,7 @@ namespace NSOfficeDrawing
 		lineLongDashDotDotGEL	// long dash short dash short dash    
 	}; 
 
-	enum LineEnd
+	enum eLineEnd
 	{    
 		lineNoEnd,   
 		lineArrowEnd,    
@@ -475,35 +297,35 @@ namespace NSOfficeDrawing
 		lineArrowOpenEnd    
 	}; 
 
-	enum LineEndWidth
+	enum eLineEndWidth
 	{    
 		lineNarrowArrow,    
 		lineMediumWidthArrow,    
 		lineWideArrow    
 	};
 
-	enum LineEndLength
+	enum eLineEndLength
 	{    
 		lineShortArrow,    
 		lineMediumLenArrow,    
 		lineLongArrow    
 	};
 
-	enum _LineJoin
+	enum eLineJoin
 	{    
 		lineJoinBevel,    // Join edges by a straight line    
 		lineJoinMiter,    // Extend edges until they join    
 		lineJoinRound     // Draw an arc between the two edges    
 	};
 
-	enum _LineCap
+	enum eLineCap
 	{    
 		lineEndCapRound,   // Rounded ends - the default    
 		lineEndCapSquare,  // Square protrudes by half line width    
 		lineEndCapFlat     // Line ends at end point              
 	};
 
-	enum SGF     
+	enum eSGF     
 	{    
 		// Arithmetic    
 		sgfSum,					// guide := value + parameter1 - parameter2    
@@ -529,7 +351,7 @@ namespace NSOfficeDrawing
 		sgfTan				    // guide := value * tan(param1)  [param2 ignored]  
 	};
 
-	enum SGVT    
+	enum eSGVT    
 	{    
 		sgvtV  = 0x2000,     // Value is adjust value or guide    
 		sgvtP1 = 0x4000,     // Parameter1 is adjust value or guide    
@@ -584,14 +406,14 @@ namespace NSOfficeDrawing
 	// <- а нужно ли...?
 	////////////////////////////////////////////////////////////
 
-	enum BlipUsage
+	enum eBlipUsage
 	{                
 		blipUsageDefault,  // All non-texture fill blips get this.    
 		blipUsageTexture,    
 		blipUsageMax = 255 // Since this is stored in a byte    
 	};
 	
-	enum BlipType
+	enum eBlipType
 	{                   
 		// GEL provided types...    
 		blipERROR = 0,			// An error occured during loading    
@@ -608,7 +430,7 @@ namespace NSOfficeDrawing
 		blipLastClient  = 255   // Last client defined blip type    
 	};    
 	
-	enum BlipSignature
+	enum eBlipSignature
 	{    
 		biUNKNOWN = 0,    
 		biWMF  = 0x216,		// Metafile header then compressed WMF    
@@ -623,14 +445,14 @@ namespace NSOfficeDrawing
 		biClient = 0x800,	// Clients should set this bit    
 	}; 
 
-	enum BlipFilter
+	enum eBlipFilter
     {
         filterAdaptive = 0,
         filterNone = 254,
         filterTest = 255
     };
 
-	enum DGMNK   
+	enum eDGMNK   
 	{    
 		dgmnkMin = 0,    
 		dgmnkNode = dgmnkMin,    
@@ -645,7 +467,7 @@ namespace NSOfficeDrawing
 		dgmnkNil = 0xFFFF   
 	}; 
 
-	enum DGMLO
+	enum eDGMLO
 	{          
 		dgmloFirst = 0, 
 		dgmloMin = dgmloFirst, 
@@ -689,7 +511,7 @@ namespace NSOfficeDrawing
 		dgmloNil = 0xFF
 	};
 
-	enum ODGMT
+	enum eODGMT
 	{          
 		dgmtMin                       = 0,          
 		dgmtCanvas                    = dgmtMin,          
@@ -704,7 +526,7 @@ namespace NSOfficeDrawing
 		dgmtNil                       = 0x0FFF
 	}; 
 
-	enum DGMST
+	enum eDGMST
 	{          
 		/***WARNING: This is written out to the file format! ***/          
 		/***NOTE: If you add a new style enum, you need to update vrgdgmstdesc ***/            
@@ -815,7 +637,7 @@ namespace NSOfficeDrawing
 		dgmstNil = 0xFFFF         
 	};
 
-	enum SPT
+	enum eSPT
 	{    
 		sptMin = 0,    
 		sptNotPrimitive = sptMin,    
@@ -1025,7 +847,7 @@ namespace NSOfficeDrawing
 		sptNil = 0x0FFF
 	};
 
-	enum PropertyId
+	enum ePropertyId
     {
         //Transform
         left=0,
@@ -1083,7 +905,7 @@ namespace NSOfficeDrawing
         cropFromBottom=257,
         cropFromLeft=258,
         cropFromRight=259,
-        Pib=260,
+        pib=260,
         pibName=261,
         pibFlags=262,
         pictureTransparent=263,
@@ -1441,7 +1263,7 @@ namespace NSOfficeDrawing
 
 	namespace NSAnimation
 	{
-		enum ConditionType     
+		enum eConditionType     
 		{        
 			_NA,    // obsolete identifier; not used        
 			ctBegin,        
@@ -1452,7 +1274,7 @@ namespace NSOfficeDrawing
 			ConditionType_MaxEnumIDs     
 		};
 
-		enum TLTimeNodeType  
+		enum eTLTimeNodeType  
 		{     
 			TLTimeNodeTypeParallel = 0,     
 			TLTimeNodeTypeSequential,     
@@ -1462,7 +1284,7 @@ namespace NSOfficeDrawing
 			TLTimeNodeType_MaxEnumIDs  
 		};
 
-		enum TLTimeNodeRestartType  
+		enum eTLTimeNodeRestartType  
 		{     
 			TLR_NoRestartType = 0,     
 			TLR_AlwaysRestart = 1,     
@@ -1471,7 +1293,7 @@ namespace NSOfficeDrawing
 			TLTimeNodeRestartType_MaxEnumIDs = 4  
 		}; 
 
-		enum TLTimeNodeFillType 
+		enum eTLTimeNodeFillType 
 		{     
 			TLF_NoFillType = 0,     
 			TLF_FillRemove = 1,     
@@ -1481,7 +1303,7 @@ namespace NSOfficeDrawing
 			TLTimeNodeFillType_MaxEnumIDs = 5  
 		}; 
 
-		enum TLTimeNodeSyncType  
+		enum eTLTimeNodeSyncType  
 		{     
 			TLS_NoSyncType = 0,     
 			TLS_CanSlipSyncType = 1,     
@@ -1496,7 +1318,7 @@ namespace NSOfficeDrawing
 		const int groupingTypeProperty = (1 << 3);  
 		const int durationProperty     = (1 << 4);
 
-		enum TotEventType
+		enum eTotEventType
 		{     
 			totNone,     
 			totVisualElement,     
@@ -1505,7 +1327,7 @@ namespace NSOfficeDrawing
 			TriggerObjectType_MaxEnumIDs  
 		}; 
 
-		enum TriggerEventType  
+		enum eTriggerEventType  
 		{     
 			tetNone = 0,     
 			tetOnBegin,     
@@ -1522,7 +1344,7 @@ namespace NSOfficeDrawing
 			TriggerEventType_MaxEnumIDs 
 		}; 
 
-		enum RuntimeNodeReferenceType  
+		enum eRuntimeNodeReferenceType  
 		{     
 			rnrtWithFirstChild,     
 			rnrtWithLastChild,     
@@ -1530,7 +1352,7 @@ namespace NSOfficeDrawing
 			RuntimeNodeReferenceType_MaxEnumIDs  
 		}; 
 
-		enum Type     
+		enum eType     
 		{        
 			RepeatCount = 0,  // The number of times to repeat        
 			RepeatDur,        // Duration of repeats        
@@ -1545,7 +1367,7 @@ namespace NSOfficeDrawing
 			Type_MaxEnumIDs     
 		};
 
-		enum PropertyUsedFlag  
+		enum ePropertyUsedFlag  
 		{     
 			PUF_NONE             = 0,     
 			PUF_Additive         = 1 << 0,     
@@ -1557,7 +1379,7 @@ namespace NSOfficeDrawing
 			PUF_ByFormula        = 1 << 6  
 		}; 
 
-		enum Additive
+		enum eAdditive
 		{     
 			BaseAdditive,     
 			SumAdditive,     
@@ -1567,21 +1389,21 @@ namespace NSOfficeDrawing
 			Additive_MaxEnumIDs  
 		};
 
-		enum Accumulate  
+		enum eAccumulate  
 		{     
 			NoAccumulate,     
 			AlwaysAccumulate,     
 			Accumulate_MaxEnumIDs  
 		};    
 		
-		enum TransformType  
+		enum eTransformType  
 		{     
 			PropertyTransformType,     
 			ImageTransformType,     
 			TransformType_MaxEnumIDs  
 		}; 
 
-		enum CalcMode  
+		enum eCalcMode  
 		{     
 			DiscreteMode,     
 			LinearMode,     
@@ -1589,7 +1411,7 @@ namespace NSOfficeDrawing
 			CalcMode_MaxEnumIDs  
 		};    
 		
-		enum AnimatePropertyUsedFlag  
+		enum eAnimatePropertyUsedFlag  
 		{     
 			APUF_NONE                = 0,     
 			APUF_By                  = 1 << 0,     
@@ -1600,7 +1422,7 @@ namespace NSOfficeDrawing
 			APUF_ValueType           = 1 << 5  
 		}; 
 
-		enum ValueType  
+		enum eValueType  
 		{    
 			StringType,     
 			NumberType,     
@@ -1608,7 +1430,7 @@ namespace NSOfficeDrawing
 			ValueType_MaxEnumIDs  
 		}; 
 
-		enum AnimateColorPropertyUsedFlag  
+		enum eAnimateColorPropertyUsedFlag  
 		{     
 			ACPUF_NONE                = 0,     
 			ACPUF_By                  = 1 << 0,     
@@ -1618,7 +1440,7 @@ namespace NSOfficeDrawing
 			ACPUF_Direction           = 1 << 4  
 		};    
 			
-		enum ColorModel  
+		enum eColorModel  
 		{     
 			RGBColorModel   = 0,     
 			HSLColorModel   = 1,     
@@ -1626,7 +1448,7 @@ namespace NSOfficeDrawing
 			ColorModel_MaxEnumIDs  
 		}; 
 
-		enum AnimateEffectPropertyUsedFlag  
+		enum eAnimateEffectPropertyUsedFlag  
 		{     
 			AEPUF_NONE                    = 0,     
 			AEPUF_Transition              = 1 << 0,     
@@ -1635,7 +1457,7 @@ namespace NSOfficeDrawing
 			AEPUF_RuntimeContext_Obsolete = 1 << 3 // Keep this for backward binary persistence  
 		};   
 		
-		enum Transition  
+		enum eTransition  
 		{     
 			TransitionIn,     
 			TransitionOut,     
@@ -1643,7 +1465,7 @@ namespace NSOfficeDrawing
 			Transition_MaxEnumIDs  
 		}; 
 
-		enum AnimateMotionPropertyUsedFlag
+		enum eAnimateMotionPropertyUsedFlag
 		{     
 			AMPUF_NONE                = 0,     
 			AMPUF_By                  = 1 << 0,     
@@ -1656,7 +1478,7 @@ namespace NSOfficeDrawing
 			AMPUF_PointsTypes         = 1 << 7  
 		};    
 		
-		enum Origin  
+		enum eOrigin  
 		{     
 			DefaultOrigin,     
 			ParentOrigin,     
@@ -1664,7 +1486,7 @@ namespace NSOfficeDrawing
 			Origin_MaxEnumIDs  
 		}; 
 
-		enum AnimateRotationPropertyUsedFlag  
+		enum eAnimateRotationPropertyUsedFlag  
 		{     
 			ARPUF_NONE                = 0,     
 			ARPUF_By                  = 1 << 0,     
@@ -1673,14 +1495,14 @@ namespace NSOfficeDrawing
 			ARPUF_Direction           = 1 << 3  
 		};    
 		
-		enum Direction  
+		enum eAnimateDirection  
 		{     
 			Clockwise,     
 			CounterClockwise,     
 			Direction_MaxEnumIDs  
 		};
 
-		enum AnimateScalePropertyUsedFlag  
+		enum eAnimateScalePropertyUsedFlag  
 		{     
 			ASPUF_NONE                = 0,     
 			ASPUF_By                  = 1 << 0,     
@@ -1689,21 +1511,21 @@ namespace NSOfficeDrawing
 			ASPUF_ZoomContents        = 1 << 3  
 		};
 
-		enum SetPropertyUsedFlag  
+		enum eSetPropertyUsedFlag  
 		{     
 			SPUF_NONE                = 0,     
 			SPUF_To                  = 1 << 0,     
 			SPUF_ValueType           = 1 << 1  
 		};    
 
-		enum CommandPropertyUsedFlag  
+		enum eCommandPropertyUsedFlag  
 		{     
 			CPUF_NONE                = 0,     
 			CPUF_Type                = 1 << 0,     
 			CPUF_Command             = 1 << 1  
 		};    
 		
-		enum CommandType  
+		enum eCommandType  
 		{     
 			EventType,     
 			CallType,     
@@ -1711,7 +1533,7 @@ namespace NSOfficeDrawing
 			CommandType_MaxEnumIDs  
 		};
 
-		enum TLTimePropertyID  
+		enum eTLTimePropertyID  
 		{     
 			tpidUnknown                  = 0,     
 			tpidID                       = 1, // string     
@@ -1743,7 +1565,7 @@ namespace NSOfficeDrawing
 			tpidDVDEndTime               = 30  
 		}; 
 
-		enum IterationType  
+		enum eIterationType  
 		{     
 			AllAtOnce,     
 			ByWord,
@@ -1751,21 +1573,21 @@ namespace NSOfficeDrawing
 			IterationType_MaxEnumIDs  
 		}; 
 
-		enum IntervalType  
+		enum eIntervalType  
 		{     
 			Seconds,     
 			Percentage,     
 			IntervalType_MaxEnumIDs  
 		};    
 		
-		enum _Direction  
+		enum eDirection  
 		{     
 			Backwards,     
 			Forwards,     
 			_Direction_MaxEnumIDs  
 		};    
 		
-		enum PropertyUsed 
+		enum ePropertyUsed 
 		{     
 			DirectionProperty      = 1 << 0,     
 			IterationTypeProperty  = 1 << 1,     
@@ -1773,28 +1595,28 @@ namespace NSOfficeDrawing
 			IntervalTypeProperty   = 1 << 3,  
 		};
 
-		enum ConcurrencyType  
+		enum eConcurrencyType  
 		{     
 			Disabled,     
 			Enabled,     
 			ConcurrencyType_MaxEnumIDs  
 		};    
 		
-		enum NextActionType  
+		enum eNextActionType  
 		{     
 			NoNextActionType,     
 			Seek,
 			NextActionType_MaxEnumIDs  
 		}; 
 
-		enum PreviousActionType  
+		enum ePreviousActionType  
 		{     
 			NoPreviousActionType,     
 			SkipTimed,     
 			PreviousActionType_MaxEnumIDs  
 		};    
 		
-		enum EnableNextType  
+		enum eEnableNextType  
 		{     
 			End,     
 			Begin,     
@@ -1807,7 +1629,7 @@ namespace NSOfficeDrawing
 		const int SF_PreviousAction = (1 << 2);  
 		const int SF_EnableNext     = (1 << 3);
 
-		enum _Type  
+		enum eAnimateValueType  
 		{     
 			None     = -1,     
 			Bool     = 0,     

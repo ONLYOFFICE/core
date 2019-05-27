@@ -31,7 +31,7 @@
  */
 //Generated code
 #include "ChartSerialize.h"
-#include "../../../../../DesktopEditor/common/String.h"
+#include "../../../../../DesktopEditor/common/StringExt.h"
 namespace OOX{
 	namespace Spreadsheet{
 
@@ -1121,9 +1121,17 @@ namespace OOX{
 			}
 		}
 		void CT_ChartSpace::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
-			writer.WriteString(L"<");
-			writer.WriteString(sNodeName);
-			writer.WriteString(L" xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
+			writer.WriteString(L"<" + sNodeName + L" \
+xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
+
+			if (m_userShapes)
+			{
+				writer.WriteString(L" xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
+			}
 			writer.WriteString(L">");
 			if(NULL != m_date1904)
 			{

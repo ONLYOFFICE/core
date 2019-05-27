@@ -34,10 +34,9 @@
 
 class CRecordBlipEntityAtom : public CUnknownRecord
 {
-	BYTE m_nWinBlipType;
-	BYTE* m_pImage;
-
 public:
+	BYTE m_nWinBlipType;
+	std::pair<boost::shared_array<unsigned char>, _INT32> data;
 	
 	CRecordBlipEntityAtom()
 	{

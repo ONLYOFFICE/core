@@ -117,7 +117,7 @@ namespace PPTX
 					return;
 				}
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)
 				{
 					pWriter->StartNode(_T("xdr:nvGraphicFramePr"));
 					pWriter->EndAttributes();
@@ -128,15 +128,19 @@ namespace PPTX
 					pWriter->EndNode(_T("xdr:nvGraphicFramePr"));
 					return;
 				}
+				std::wstring namespace_ = m_namespace;
+				
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)				namespace_ = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
 
-				pWriter->StartNode(_T("p:nvGraphicFramePr"));
+				pWriter->StartNode(namespace_ + L":nvGraphicFramePr");
 				pWriter->EndAttributes();
 
 				cNvPr.toXmlWriter(pWriter);
 				cNvGraphicFramePr.toXmlWriter(pWriter);
 				nvPr.toXmlWriter(pWriter);
 				
-				pWriter->EndNode(_T("p:nvGraphicFramePr"));
+				pWriter->EndNode(namespace_ + L":nvGraphicFramePr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

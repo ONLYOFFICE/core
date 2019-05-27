@@ -87,15 +87,14 @@ namespace DocFileFormat
 		}
 		else
 		{
-			m_nDTTM					= reader->ReadUInt32(); 
+			m_nDTTM					= DateAndTime(reader->ReadUInt32()); 
 			reader->ReadUInt16(); //padding1
 			m_nDepth				= reader->ReadUInt32(); 
 			m_nDiatrdParent			= reader->ReadUInt32(); 
 			unsigned int flag		= reader->ReadUInt32(); 
+			
 			m_fInkAtn = GETBIT(flag, 1);
 		}
-
-
 		return static_cast<ByteStructure*>(newObject);
 	}
 }

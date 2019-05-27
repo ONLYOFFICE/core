@@ -59,12 +59,11 @@ public:
 
 class CRecordBitmapBlip : public CUnknownRecord
 {
+public:
 	BYTE m_pRgbUid[16];
 	BYTE m_nTag;
 
-	BYTE* m_pScan0;
-
-public:
+	//BYTE* m_pScan0;
 	
 	CRecordBitmapBlip()
 	{

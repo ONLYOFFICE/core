@@ -84,7 +84,7 @@ namespace DocFileFormat
 		Text(NULL), RevisionAuthorTable(NULL), FontTable(NULL), BookmarkNames(NULL), AutoTextNames(NULL), 
 		IndividualFootnotesPlex(NULL), FootnoteReferenceCharactersPlex(NULL), IndividualEndnotesPlex(NULL),
 		EndnoteReferenceCharactersPlex(NULL), FieldsPlex(NULL), FootnoteDocumentFieldsPlex(NULL),
-		EndnoteDocumentFieldsPlex(NULL), HeadersAndFootersDocumentFieldsPlex(NULL), HeaderStoriesPlex(NULL),
+		EndnoteDocumentFieldsPlex(NULL), HeadersAndFootersDocumentFieldsPlex(NULL), HeaderStoriesPlex(NULL), AnnotationsFieldsPlex(NULL),
 		AnnotationsReferencePlex(NULL), AnnotationsReferenceExPlex(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
 		TextboxIndividualPlex(NULL),AssocNames(NULL), BookmarkAnnotNames(NULL), Captions(NULL), AutoCaptions(NULL), ListPlex(NULL),
 		OfficeDrawingPlex(NULL), OfficeDrawingPlexHeader(NULL), SectionPlex(NULL), BookmarkStartPlex(NULL), BookmarkEndPlex(NULL),
@@ -353,7 +353,7 @@ namespace DocFileFormat
 
 		TextboxIndividualPlex				=	new Plex<FTXBXS>			(FTXBXS::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	nWordVersion);
 
-		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::GetSize(nWordVersion),	TableStream, FIB->m_FibWord97.fcPlcfSed,		FIB->m_FibWord97.lcbPlcfSed,		nWordVersion);
+		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::GetSize(nWordVersion),	TableStream, FIB->m_FibWord97.fcPlcfSed,FIB->m_FibWord97.lcbPlcfSed,		nWordVersion);
 		
 		BookmarkStartPlex					=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfBkf,		FIB->m_FibWord97.lcbPlcfBkf,		nWordVersion);
 		BookmarkEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBkl,		FIB->m_FibWord97.lcbPlcfBkl,		nWordVersion);
@@ -387,10 +387,13 @@ namespace DocFileFormat
 		}
 
 		AutoTextPlex						=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfGlsy,   FIB->m_FibWord97.lcbPlcfGlsy, nWordVersion);
+		
 		FieldsPlex							=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldMom, FIB->m_FibWord97.lcbPlcfFldMom, nWordVersion);
 		FootnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldFtn, FIB->m_FibWord97.lcbPlcfFldFtn, nWordVersion);
 		EndnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldEdn, FIB->m_FibWord97.lcbPlcfFldEdn, nWordVersion);
 		HeadersAndFootersDocumentFieldsPlex	=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldHdr, FIB->m_FibWord97.lcbPlcfFldHdr, nWordVersion);
+		AnnotationsFieldsPlex				=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldAtn, FIB->m_FibWord97.lcbPlcfFldAtn, nWordVersion);
+		
 		ListPlex							=	new Plex<ListNumCache>	(ListNumCache::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBteLvc, FIB->m_FibWord97.lcbPlcfBteLvc, nWordVersion);
 		
 		if (m_pCallFunc)
@@ -872,6 +875,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(FootnoteDocumentFieldsPlex);
 		RELEASEOBJECT(EndnoteDocumentFieldsPlex);
 		RELEASEOBJECT(HeadersAndFootersDocumentFieldsPlex);
+		RELEASEOBJECT(AnnotationsFieldsPlex);
 		RELEASEOBJECT(HeaderStoriesPlex);
 		RELEASEOBJECT(IndividualCommentsPlex);
 		RELEASEOBJECT(AnnotationsReferencePlex);

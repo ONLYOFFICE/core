@@ -32,7 +32,7 @@
 #pragma once
 #include "Attributes.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
     enum PointPathType
     {
@@ -346,24 +346,24 @@ namespace NSPresentationEditor
 
 //                m_oQuery.clear ();
 
-//                m_oQuery.push_back ( _T(" id		=	'") + NSPresentationEditor::ToString (pEffect->m_nEffectID)		+ _T("' "));
-//                m_oQuery.push_back ( _T(" type	=	'")		+ NSPresentationEditor::ToString (pEffect->m_nEffectType)	+ _T("' "));
-//                m_oQuery.push_back ( _T(" dir		=	'") + NSPresentationEditor::ToString (pEffect->m_nEffectDir)	+ _T("' "));
+//                m_oQuery.push_back ( _T(" id		=	'") + PPT_FORMAT::ToString (pEffect->m_nEffectID)		+ _T("' "));
+//                m_oQuery.push_back ( _T(" type	=	'")		+ PPT_FORMAT::ToString (pEffect->m_nEffectType)	+ _T("' "));
+//                m_oQuery.push_back ( _T(" dir		=	'") + PPT_FORMAT::ToString (pEffect->m_nEffectDir)	+ _T("' "));
 
-//                m_oQuery.push_back ( _T(" begin	=	'")		+ NSPresentationEditor::ToString (dEffectBegin)				+ _T("' "));
-//                m_oQuery.push_back ( _T(" dur		=	'") + NSPresentationEditor::ToString (pEffect->m_nDuration)		+ _T("' "));
-//                m_oQuery.push_back ( _T(" accel	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dTimeAccel)	+ _T("' "));
-//                m_oQuery.push_back ( _T(" decel	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dTimeDecel)	+ _T("' "));
+//                m_oQuery.push_back ( _T(" begin	=	'")		+ PPT_FORMAT::ToString (dEffectBegin)				+ _T("' "));
+//                m_oQuery.push_back ( _T(" dur		=	'") + PPT_FORMAT::ToString (pEffect->m_nDuration)		+ _T("' "));
+//                m_oQuery.push_back ( _T(" accel	=	'")		+ PPT_FORMAT::ToString (pEffect->m_dTimeAccel)	+ _T("' "));
+//                m_oQuery.push_back ( _T(" decel	=	'")		+ PPT_FORMAT::ToString (pEffect->m_dTimeDecel)	+ _T("' "));
 
-//                m_oQuery.push_back ( _T(" sx		=	'")	+ NSPresentationEditor::ToString (pEffect->m_dSX)			+ _T("' "));
-//                m_oQuery.push_back ( _T(" sy		=	'") + NSPresentationEditor::ToString (pEffect->m_dSY)			+ _T("' "));
-//                m_oQuery.push_back ( _T(" alpha	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dTransparency)	+ _T("' "));
+//                m_oQuery.push_back ( _T(" sx		=	'")	+ PPT_FORMAT::ToString (pEffect->m_dSX)			+ _T("' "));
+//                m_oQuery.push_back ( _T(" sy		=	'") + PPT_FORMAT::ToString (pEffect->m_dSY)			+ _T("' "));
+//                m_oQuery.push_back ( _T(" alpha	=	'")		+ PPT_FORMAT::ToString (pEffect->m_dTransparency)	+ _T("' "));
 
-//                m_oQuery.push_back ( _T(" angle	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dRotateAngle)	+ _T("' "));
-//                m_oQuery.push_back ( _T(" color	=	'")		+ NSPresentationEditor::ToString (pEffect->m_nColorTo)		+ _T("' "));
+//                m_oQuery.push_back ( _T(" angle	=	'")		+ PPT_FORMAT::ToString (pEffect->m_dRotateAngle)	+ _T("' "));
+//                m_oQuery.push_back ( _T(" color	=	'")		+ PPT_FORMAT::ToString (pEffect->m_nColorTo)		+ _T("' "));
 
-//                m_oQuery.push_back ( _T(" block	=	'")		+ NSPresentationEditor::ToString (pEffect->m_nTextSequence)	+ _T("' "));
-//                m_oQuery.push_back ( _T(" removeemptyblocks	=	'") + NSPresentationEditor::ToString (pEffect->m_bRemoveEmptyBlocks) + _T("' "));
+//                m_oQuery.push_back ( _T(" block	=	'")		+ PPT_FORMAT::ToString (pEffect->m_nTextSequence)	+ _T("' "));
+//                m_oQuery.push_back ( _T(" removeemptyblocks	=	'") + PPT_FORMAT::ToString (pEffect->m_bRemoveEmptyBlocks) + _T("' "));
 
 //                std::wstring Effect;
 

@@ -36,23 +36,26 @@
 #include "../FixedPoint.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
-
-#ifndef customTagPoint
-#define customTagPoint
-    typedef struct tagPOINT
-    {
-        _INT32  x;
-        _INT32  y;
-    } POINT;
-#endif
-
-    typedef struct tagRECT
-    {
-        _INT32    left;
-        _INT32    top;
-        _INT32    right;
-        _INT32    bottom;
-    } RECT;
+    #ifndef customTagPoint
+        #define customTagPoint
+        typedef struct tagPOINT
+        {
+            _INT32  x;
+            _INT32  y;
+        } POINT;
+        typedef struct tagRECT
+        {
+            _INT32    left;
+            _INT32    top;
+            _INT32    right;
+            _INT32    bottom;
+        } RECT;
+        typedef struct tagSIZE
+        {
+            _INT32 cx;
+            _INT32 cy;
+        }SIZE;
+    #endif
 #else
 	#include <windows.h>
 #endif

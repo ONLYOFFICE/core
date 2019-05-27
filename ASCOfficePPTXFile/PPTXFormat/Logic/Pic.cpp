@@ -30,8 +30,17 @@
  *
  */
 
-
 #include "Pic.h"
+
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
+#include "../../../ASCOfficeDocxFile2/BinReader/Readers.h"
+#include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
+#include "../../../XlsxSerializerCom/Writer/BinaryReader.h"
+#include "../../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
 #include "SpTree.h"
 #include "Shape.h"
 
@@ -50,17 +59,9 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 
-#include "../../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
-
-#include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
-#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
-#include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
-
-#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
-#include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
-#include "../../../ASCOfficeDocxFile2/BinReader/Readers.h"
-
 #include "../../../Common/OfficeFileFormatChecker.h"
+
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 namespace PPTX
 {
@@ -425,7 +426,11 @@ namespace PPTX
 							OOX::Spreadsheet::CXlsx			oXlsx;
 							BinXlsxRW::BinaryFileReader		oEmbeddedReader;				
 							NSBinPptxRW::CDrawingConverter	oDrawingConverter;
-							BinXlsxRW::SaveParams			oSaveParams(pReader->m_strFolderThemes, oDrawingConverter.GetContentTypes());							
+
+							std::wstring sDrawingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"drawings";
+							std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
+
+							BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sThemePath, oDrawingConverter.GetContentTypes());							
 
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
@@ -751,8 +756,10 @@ namespace PPTX
 			std::wstring namespace_ = m_namespace;
 			bool bOle = false;
 			
-			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"pic";
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_ = L"pic";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
 
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
 				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
@@ -1077,7 +1084,7 @@ namespace PPTX
 				file = parentFileAs<Slide>().Find(nvPicPr.nvPr.media.as<MediaFile>().link.get());		
 				smart_ptr<OOX::Media> mediaFile = file.smart_dynamic_cast<OOX::Media>();
 				
-				if ( mediaFile.IsInit() == false && !nvPicPr.nvPr.extLst.empty())
+				if ( (mediaFile.IsInit() == false || mediaFile->filename().GetPath() == L"NULL") && !nvPicPr.nvPr.extLst.empty())
 				{
 					//todooo - почему везде нулевой то? - сделать поиск по всем uri
 					file = parentFileAs<Slide>().Find(nvPicPr.nvPr.extLst[0].link.get());

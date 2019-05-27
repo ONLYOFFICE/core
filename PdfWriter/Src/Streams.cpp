@@ -39,7 +39,7 @@
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 

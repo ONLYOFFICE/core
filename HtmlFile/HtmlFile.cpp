@@ -38,7 +38,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringBuilder.h"
-#include "../DesktopEditor/common/String.h"
+#include "../DesktopEditor/common/StringExt.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/fontengine/application_generate_fonts_common.h"
 
@@ -51,14 +51,26 @@
 #include <stdio.h>
 #endif
 
+class CHtmlFile_Private
+{
+public:
+    bool m_bIsEpub;
+
+public:
+    CHtmlFile_Private()
+    {
+        m_bIsEpub = false;
+    }
+};
+
 CHtmlFile::CHtmlFile()
 {
-
+    m_internal = new CHtmlFile_Private();
 }
 
 CHtmlFile::~CHtmlFile()
 {
-
+    RELEASEOBJECT(m_internal);
 }
 
 static std::wstring GetSdkPath()
@@ -261,7 +273,20 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
             oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sFilePath));
         else
         {
-            std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"HTM");
+            std::wstring sTmpDir = L"";
+            if (m_internal->m_bIsEpub)
+            {
+                // чтобы ссылки на картинки остались
+                sTmpDir = NSFile::GetDirectoryName(sFilePath);
+                if (!NSDirectory::Exists(sTmpDir))
+                    sTmpDir = NSDirectory::GetTempPath();
+            }
+            else
+            {
+                sTmpDir = NSDirectory::GetTempPath();
+            }
+
+            std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTmpDir, L"HTM");
             if (NSFile::CFileBinary::Exists(sTmpFile))
                 NSFile::CFileBinary::Remove(sTmpFile);
 
@@ -665,7 +690,10 @@ int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo,
     if (arHtmls.size() == 0)
         return 1;
 
-    return this->Convert(arHtmls, sDstfolder, sPathInternal);
+    m_internal->m_bIsEpub = true;
+    int nErr = this->Convert(arHtmls, sDstfolder, sPathInternal);
+    m_internal->m_bIsEpub = false;
+    return nErr;
 }
 
 /////////////////////////////////////////////////////////////////

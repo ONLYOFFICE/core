@@ -55,10 +55,10 @@ namespace odf_reader {
 const wchar_t * office_body::ns = L"office";
 const wchar_t * office_body::name = L"body";
 
-std::wostream & office_body::text_to_stream(std::wostream & _Wostream) const
+std::wostream & office_body::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     if (content_)
-        content_->text_to_stream(_Wostream);
+        content_->text_to_stream(_Wostream, bXmlEncode);
     return _Wostream;
 }
 
@@ -73,11 +73,6 @@ void office_body::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void office_body::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
-}
-
-void office_body::add_text(const std::wstring & Text)
-{
-    // TODO : error
 }
 
 void office_body::xlsx_convert(oox::xlsx_conversion_context & Context)

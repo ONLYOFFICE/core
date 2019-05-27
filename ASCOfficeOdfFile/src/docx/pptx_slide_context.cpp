@@ -493,6 +493,10 @@ void pptx_slide_context::set_image(const std::wstring & path)
 		impl_->object_description_.type_		= typeImage;	
 		impl_->object_description_.xlink_href_	= path; 
 	}
+	else if (impl_->object_description_.type_ == typeImage && impl_->object_description_.xlink_href_.rfind(L".svg") != std::wstring::npos)
+	{
+		impl_->object_description_.xlink_href_	= path; 
+	}
 	else if (impl_->use_image_replacement_)
 	{
 		impl_->object_description_.fill_.type = 2;

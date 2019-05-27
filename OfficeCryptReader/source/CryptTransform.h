@@ -74,6 +74,13 @@ class Decryptor
 };
 typedef boost::shared_ptr<Decryptor> DecryptorPtr;
 
+struct _ecmaWriteProtectData
+{
+	CRYPT_METHOD::_hashAlgorithm hashAlgorithm = CRYPT_METHOD::SHA512;
+	int spinCount = 100000;
+	std::string saltValue;
+	std::string hashValue;
+};
 struct _ecmaCryptData
 {
 //default ms2010		
@@ -124,6 +131,44 @@ struct _odfCryptData
 	std::string						checksum;
 	int								checksum_size = 1024;
 	CRYPT_METHOD::_hashAlgorithm	checksum_hashAlgorithm = CRYPT_METHOD::SHA1;
+};
+//---------------------------------------------------------------------------------------------------
+class ECMAWriteProtect
+{
+public:
+	ECMAWriteProtect(){}
+	virtual ~ECMAWriteProtect(){}
+
+	void SetPassword (const std::wstring &password);
+	
+	void SetCryptData(_ecmaWriteProtectData &data);
+	void GetCryptData(_ecmaWriteProtectData &data);
+
+	void Generate();
+	bool Verify();
+
+	bool VerifyWrike();
+private:
+	std::wstring			password;
+	_ecmaWriteProtectData	data;
+};
+
+//---------------------------------------------------------------------------------------------------
+class odfWriteProtect
+{
+public:
+	odfWriteProtect() : hash(CRYPT_METHOD::SHA1) {}
+
+	void SetPassword (const std::wstring & password);
+	void SetProtectKey (const std::string & protect_key);
+	void SetProtectAlgorithm (const CRYPT_METHOD::_hashAlgorithm & hash);
+
+	void Generate();
+	bool Verify();
+private:
+	std::wstring password;
+	CRYPT_METHOD::_hashAlgorithm hash;
+	std::string protect_key;
 };
 //---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 

@@ -34,7 +34,9 @@
 #include "Interactive.h"
 #include "Animations.h"
 
-namespace NSPresentationEditor
+using namespace ODRAW;
+
+namespace PPT_FORMAT
 {
 	enum ElementType
 	{
@@ -45,81 +47,6 @@ namespace NSPresentationEditor
 		etShape      = 4,
 		etText		 = 5
 	};
-
-	enum enumPlaceholderType
-	{
-		PT_None	= 0,
-		
-		PT_MasterTitle,
-		PT_MasterBody,
-		PT_MasterCenterTitle,
-		PT_MasterSubTitle, 
-		PT_MasterNotesSlideImage, 
-		PT_MasterNotesBody, 
-		
-		PT_MasterDate, 
-		PT_MasterSlideNumber, 
-		PT_MasterFooter, 
-		PT_MasterHeader, 
-		
-		PT_NotesSlideImage, 
-		PT_NotesBody, 
-		
-		PT_Title,
-		PT_Body, 
-		PT_CenterTitle, 
-		PT_SubTitle, 
-		PT_VerticalTitle, 
-		PT_VerticalBody, 
-		PT_Object, 
-		PT_Graph, 
-		PT_Table, 
-		PT_ClipArt, 
-		PT_OrgChart, 
-		PT_Media,
-		PT_VerticalObject, 
-		PT_Picture 
-	};
-
-	static void CorrectPlaceholderType(int & type)
-	{
-		switch (type)
-		{
-		case PT_MasterTitle:			type = PT_Title;			break;
-		case PT_MasterBody:				type = PT_Body;				break;
-		case PT_MasterCenterTitle:		type = PT_CenterTitle;		break;
-		case PT_MasterSubTitle:			type = PT_SubTitle;			break;
-		case PT_MasterNotesSlideImage:	type = PT_NotesSlideImage;	break;
-		case PT_MasterNotesBody:		type = PT_NotesBody;		break;
-		}
-	}
-
-	static bool isTitlePlaceholder(int type)
-	{
-		switch (type)
-		{
-		case PT_MasterTitle:			
-		case PT_MasterCenterTitle:
-		case PT_Title:
-		case PT_CenterTitle:
-		case PT_VerticalTitle:
-			return true;
-		default:
-			return false;
-		}
-	}
-	static bool isBodyPlaceholder(int type)
-	{
-		switch (type)
-		{
-		case PT_MasterBody:			
-		case PT_Body:
-		case PT_VerticalBody:
-			return true;
-		default:
-			return false;
-		}
-	}
 
 	class CTheme;
 	class CLayout;

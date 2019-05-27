@@ -54,7 +54,16 @@ void OfficeArtRecordHeader::load(XLS::CFRecord& record)
 	recVer		= GETBITS(ver_inst, 0, 3);
 	recInstance = GETBITS(ver_inst, 4, 15);
 }
+void OfficeArtRecordHeader::load(IBinaryReader* reader)
+{
+	unsigned short ver_inst = reader->ReadUInt16();
 
+	recType = reader->ReadUInt16();
+	recLen = reader->ReadUInt32();
+	
+	recVer		= GETBITS(ver_inst, 0, 3);
+	recInstance = GETBITS(ver_inst, 4, 15);
+}
 
 const size_t OfficeArtRecordHeader::size() const
 {

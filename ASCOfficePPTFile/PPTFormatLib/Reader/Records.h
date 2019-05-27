@@ -38,7 +38,9 @@
 #include "../../../Common/3dParty/pole/pole.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 
-using namespace NSPresentationEditor;
+#include <boost/smart_ptr/shared_array.hpp>
+
+using namespace PPT_FORMAT;
 using namespace XLS;
 
 class SRecordHeader 
@@ -249,7 +251,6 @@ public:
 
 /*
 class CRecordDocument					: public CRecordsContainer {};
-class CRecordEnvironment				: public CRecordsContainer {};
 class CRecordExAviMovie					: public CRecordsContainer {};
 class CRecordExCDAudio					: public CRecordsContainer {};
 class CRecordExControl					: public CRecordsContainer {};
@@ -265,7 +266,6 @@ class CRecordExQuickTimeMovie			: public CRecordsContainer {};
 class CRecordExVideo					: public CRecordsContainer {};
 class CRecordExWAVAudioEmbedded			: public CRecordsContainer {};
 class CRecordExWAVAudioLink				: public CRecordsContainer {};
-class CRecordFontCollection				: public CRecordsContainer {};
 class CRecordFontCollection10			: public CRecordsContainer {};
 class CRecordHandout					: public CRecordsContainer {};
 class CRecordHeadersFooters				: public CRecordsContainer {};

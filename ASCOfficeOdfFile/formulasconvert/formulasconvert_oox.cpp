@@ -188,7 +188,7 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr, bool bSele
 	if ((0 == expr.find(L"KAVYCHKA")) && (expr.length() - 8 == expr.rfind(L"KAVYCHKA") ))
 		return;
 
-	boost::wregex re(L"([:$!])+");
+	boost::wregex re(L"(([:$!])+)|(\\S+\\d+)");
 
 	boost::wsmatch result;
 	bool b = boost::regex_search(expr, result, re);

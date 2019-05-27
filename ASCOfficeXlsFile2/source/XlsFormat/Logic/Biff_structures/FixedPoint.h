@@ -47,7 +47,7 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-
+	virtual void load(IBinaryReader* reader);
 
 	short			Integral;
 	unsigned short	Fractional;

@@ -34,10 +34,9 @@
 
 class CRecordNotesPersistAtom : public CUnknownRecord
 {
+public:
 	UINT m_nPsrRef;
 	INT m_nNotesID;
-
-public:
 	
 	CRecordNotesPersistAtom()
 	{

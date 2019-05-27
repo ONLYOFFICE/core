@@ -61,7 +61,8 @@ enum __ENUM_CXIMAGE_FORMATS
     _CXIMAGE_FORMAT_PSD = 20,
     _CXIMAGE_FORMAT_EMF = 21,
     _CXIMAGE_FORMAT_WB = 22,
-    _CXIMAGE_FORMAT_SVM = 23
+    _CXIMAGE_FORMAT_SVM = 23,
+    _CXIMAGE_FORMAT_SVG = 24,
 };
 
 class GRAPHICS_DECL CImageFileFormatChecker
@@ -103,6 +104,7 @@ public:
 	bool isMj2File(BYTE* pBuffer,DWORD dwBytes);
 	bool isIpodFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isPgxFile(BYTE* pBuffer,DWORD dwBytes);
+	bool isSvgFile(BYTE* pBuffer,DWORD dwBytes);
 
 	std::wstring DetectFormatByData(BYTE *Data, int DataSize);
 

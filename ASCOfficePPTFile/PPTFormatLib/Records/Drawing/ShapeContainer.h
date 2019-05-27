@@ -57,8 +57,8 @@
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
-using namespace NSOfficeDrawing;
-using namespace NSPresentationEditor;
+using namespace ODRAW;
+using namespace PPT_FORMAT;
 
 class CPPTElement
 {
@@ -107,7 +107,7 @@ public:
 							CTheme* pTheme, CLayout* pLayout, 
 							CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 
-	NSPresentationEditor::ElementType GetTypeElem(SPT eType)
+	PPT_FORMAT::ElementType GetTypeElem(eSPT eType)
 	{
 		switch (eType)
 		{

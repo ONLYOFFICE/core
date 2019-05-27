@@ -73,7 +73,7 @@ using namespace cpdoccore;
 namespace Oox2Odf
 {
 
-PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* CallBack)
+PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 {
  	current_clrMap		= NULL;
 	current_slide		= NULL;
@@ -83,8 +83,6 @@ PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* 
 	presentation		= NULL;
 	output_document		= NULL;
 	odp_context			= NULL;
-
-	pCallBack		= CallBack;
 
 	const OOX::CPath oox_path(std::wstring(path.c_str()));
 
@@ -105,10 +103,8 @@ PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* 
 	}
 	presentation = presentation_ptr.operator->();
 	
-	output_document = new odf_writer::package::odf_document(L"presentation");
+	output_document = new odf_writer::package::odf_document(L"presentation", bTemplate);
     odp_context     = new odf_writer::odp_conversion_context(output_document);
-	
-	if (UpdateProgress(290000))return;
 }
 PptxConverter::~PptxConverter()
 {
@@ -143,7 +139,7 @@ OOX::IFileContainer* PptxConverter::current_document()
 	else
 		return pptx_document;
 }
-NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(std::wstring sId)
+NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(const std::wstring & sId)
 {
 	smart_ptr<OOX::File> oFile;
 	if (pptx_document)
@@ -159,7 +155,7 @@ NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(std::wstring sId)
 	return oFile;
 }
 
-std::wstring PptxConverter::find_link_by_id (std::wstring sId, int type)
+std::wstring PptxConverter::find_link_by_id (const std::wstring & sId, int type)
 {
 	if(!pptx_document) return L"";
 
@@ -186,20 +182,15 @@ void PptxConverter::convertDocument()
 		
 	odp_context->start_document();
 
-	if (UpdateProgress(300000))return;
-
 	convert_styles();
 	convert_settings(); 
 	
 	convert_slides();
 
-	if (UpdateProgress(800000))return;
 	//удалим уже ненужный документ pptx 
 	delete pptx_document; pptx_document = NULL;
 
 	odp_context->end_document();
- 	
-	if (UpdateProgress(850000))return;
 }
 void PptxConverter::convert_styles()
 {
@@ -319,8 +310,8 @@ void PptxConverter::convert_slides()
 				bool bShowLayoutMasterAnim	= slide->Layout->showMasterPhAnim.get_value_or(true);
 				bool bShowLayoutMasterSp	= slide->Layout->showMasterSp.get_value_or(true);
 				
-				if (slide->Master->cSld.attrName.IsInit())	master_style_name = slide->Master->cSld.attrName.get();
-				else if (current_theme->name.IsInit())		master_style_name = current_theme->name.get();
+				if (slide->Master->cSld.attrName.IsInit())					master_style_name = slide->Master->cSld.attrName.get();
+				else if ((current_theme) && (current_theme->name.IsInit()))	master_style_name = current_theme->name.get();
 
 				master_style_name += L"_" ;
 				
@@ -555,10 +546,11 @@ void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 	
 	if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
 	{
-		std::wstring sID		= oox_transition->sndAc->stSnd->embed.get();
-		std::wstring pathAudio	= find_link_by_id(sID, 3);
+		std::wstring sID = oox_transition->sndAc->stSnd->embed.get();
 		
-		std::wstring odf_ref	= odf_context()->add_media(pathAudio);
+		std::wstring pathAudio = find_link_by_id(sID, 3);
+		
+		std::wstring odf_ref = odf_context()->add_media(pathAudio);
 
 		odp_context->current_slide().set_transition_sound(odf_ref, oox_transition->sndAc->stSnd->loop.get_value_or(false));
 	}

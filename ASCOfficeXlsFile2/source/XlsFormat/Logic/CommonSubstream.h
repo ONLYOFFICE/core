@@ -62,6 +62,7 @@ public:
 	BaseObjectPtr					m_CodeName;
 	BaseObjectPtr					m_SheetExt;
 	BaseObjectPtr					m_SXADDLDBQUERY;
+	BaseObjectPtr					m_CRTMLFRT;
 	
 	std::vector<BaseObjectPtr>		m_arHFPicture;
 	std::vector<BaseObjectPtr>		m_arWINDOW;

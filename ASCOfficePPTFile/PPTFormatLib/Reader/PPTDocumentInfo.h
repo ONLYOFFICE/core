@@ -121,8 +121,15 @@ public:
 	{
 		if (m_arUsers.empty()) return false;
 		
-		m_arUsers[0]->ReadExtenalObjects(strFolderMem);
-		m_arUsers[0]->FromDocument();
+		try
+		{
+			m_arUsers[0]->ReadExtenalObjects(strFolderMem);
+			m_arUsers[0]->FromDocument();
+		}
+		catch(int) //error code
+		{
+			return false;
+		}
 
 		return true;
 	}

@@ -231,6 +231,7 @@ namespace OOX
 		class CT_TextLanguageID;
 		class CTextProperties;
 	}
+	class CSizeAnchor;
 	namespace Vml
 	{
 		class CShapeType;
@@ -355,19 +356,14 @@ public:
 		
 		void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID);
 		
-		OoxConverter(const ProgressCallback* CallBack = NULL){
-																oox_current_child_document = NULL; 
-																
-																pCallBack = CallBack;
-																bUserStopConvert = 0;
-															 }
+		OoxConverter()
+		{
+			oox_current_child_document = NULL; 
+		}
+		virtual ~OoxConverter(){}
 
         void set_fonts_directory (const std::wstring & fontsPath);
 		
-		const	ProgressCallback* pCallBack;
-		short	bUserStopConvert;
-		bool	UpdateProgress(long nComplete);	
-
 		bool encrypt_document (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
 		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);
 
@@ -379,11 +375,11 @@ public:
        
 		cpdoccore::odf_writer::package::odf_document		*output_document;
 
-				std::wstring								find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type);
-		virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
-		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;
+				std::wstring						find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type);
+		virtual std::wstring						find_link_by_id(const std::wstring & sId, int type) = 0;
+		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id(const std::wstring & sId) = 0;
 		
-		OOX::IFileContainer									*oox_current_child_document;
+		OOX::IFileContainer							*oox_current_child_document;
 		
 		void convert (OOX::JsaProject *jsaProject);	
 		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
@@ -458,20 +454,20 @@ public:
 		void convert(PPTX::Logic::AhXY							*oox_handle);
 		void convert(PPTX::Logic::AhPolar						*oox_handle);
 		
-		void convert(PPTX::Logic::EffectStyle					*oox_effect);
-		void convert(PPTX::Logic::EffectLst						*oox_effect_list);
-		void convert(PPTX::Logic::EffectDag						*oox_effect_dag);
-		void convert(PPTX::Logic::InnerShdw						*oox_effect);
-		void convert(PPTX::Logic::OuterShdw						*oox_effect);
-		void convert(PPTX::Logic::PrstShdw						*oox_effect);
-		void convert(PPTX::Logic::AlphaModFix					*oox_effect);
-		void convert(PPTX::Logic::Blur							*oox_effect);
-		void convert(PPTX::Logic::FillOverlay					*oox_effect);
-		void convert(PPTX::Logic::Glow							*oox_effect);
-		void convert(PPTX::Logic::Reflection					*oox_effect);
-		void convert(PPTX::Logic::SoftEdge						*oox_effect);
-		void convert(PPTX::Logic::Grayscl						*oox_effect);
-		void convert(PPTX::Logic::Duotone						*oox_effect);
+		void convert(PPTX::Logic::EffectStyle					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::EffectLst						*oox_effect_list, DWORD ARGB = 0);
+		void convert(PPTX::Logic::EffectDag						*oox_effect_dag, DWORD ARGB = 0);
+		void convert(PPTX::Logic::InnerShdw						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::OuterShdw						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::PrstShdw						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::AlphaModFix					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Blur							*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::FillOverlay					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Glow							*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Reflection					*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::SoftEdge						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Grayscl						*oox_effect, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Duotone						*oox_effect, DWORD ARGB = 0);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
@@ -524,6 +520,8 @@ public:
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool categories, bool label);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool categories, bool label);
+		
+		void convert(OOX::CSizeAnchor *sz_anchor, double x0, double y0, double width, double height);
 
 //.vml............................................................................................................................
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);

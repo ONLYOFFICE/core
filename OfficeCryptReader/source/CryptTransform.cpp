@@ -53,9 +53,9 @@
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "../../DesktopEditor/common/File.h"
-
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
 static const unsigned char encrVerifierHashValueBlockKey[8]			= { 0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e };
 static const unsigned char encrKeyValueBlockKey[8]					= { 0x14, 0x6e, 0x0b, 0xe7, 0xab, 0xac, 0xd0, 0xd6 };
@@ -810,7 +810,114 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 		DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
 	}
 }
+//-----------------------------------------------------------------------------------------------------------
+void odfWriteProtect::SetPassword (const std::wstring &password_)
+{
+	password = password_;
+}
+void odfWriteProtect::SetProtectKey (const std::string &key)
+{
+	protect_key = key;
+}
+void odfWriteProtect::SetProtectAlgorithm (const CRYPT_METHOD::_hashAlgorithm &alg)
+{
+	hash = alg;
+}
+void odfWriteProtect::Generate()
+{
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
 
+	_buf pHashTest = HashAppend(empty, pPassword, hash);
+		
+	protect_key = std::string((char*)pHashTest.ptr, pHashTest.size);
+}
+bool odfWriteProtect::Verify()
+{
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
+	_buf pHash		(protect_key);
+
+	_buf pHashTest = HashAppend(empty, pPassword, hash);
+		
+	return (pHashTest == pHash);
+}
+//----------------------------------------------------------------------------------------------------------
+void ECMAWriteProtect::SetPassword (const std::wstring &password_)
+{
+	password = password_;
+}
+void ECMAWriteProtect::SetCryptData(_ecmaWriteProtectData &_data)
+{
+	data = _data;
+}
+void ECMAWriteProtect::GetCryptData(_ecmaWriteProtectData &_data)
+{
+	_data = data;
+}
+void ECMAWriteProtect::Generate()
+{
+	//сгенерить соль
+	RandomPool prng;
+	SecByteBlock seed_salt(16);
+	OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
+	prng.IncorporateEntropy(seed_salt, seed_salt.size());
+
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
+	_buf pSalt		(seed_salt.data(), seed_salt.size());
+
+	_buf pHashBuf = HashAppend(pSalt, pPassword, data.hashAlgorithm);
+		
+	for (int i = 0; i < data.spinCount; i++)
+	{
+        _buf iterator((unsigned char*)&i, 4, false);
+        pHashBuf = HashAppend(pHashBuf, iterator, data.hashAlgorithm);
+	}
+
+	data.saltValue = std::string((char*)pSalt.ptr, pSalt.size);
+	data.hashValue = std::string((char*)pHashBuf.ptr, pHashBuf.size);
+}
+bool ECMAWriteProtect::VerifyWrike()
+{
+	std::string p = std::string(password.begin(), password.end());
+
+    unsigned int wPasswordHash = 0;
+  
+    const char* pch = p.c_str() + p.length();
+    while (pch-- != p.c_str())
+    {
+        wPasswordHash = ((wPasswordHash >> 14) & 0x01) | 
+                        ((wPasswordHash << 1) & 0x7fff);
+        wPasswordHash ^= *pch;
+    }
+ 
+    wPasswordHash = ((wPasswordHash >> 14) & 0x01) | 
+                    ((wPasswordHash << 1) & 0x7fff);
+ 
+    wPasswordHash ^= (0x8000 | ('N' << 8) | 'K');
+    wPasswordHash ^= p.length();
+
+	std::string sPasswordHash = XmlUtils::IntToString(wPasswordHash, "%4.4X");
+	
+	return data.hashValue == sPasswordHash;
+}
+bool ECMAWriteProtect::Verify()
+{
+	_buf pPassword	(password);
+	_buf empty		(NULL, 0, false);		
+	_buf pSalt		(data.saltValue);
+	_buf pHash		(data.hashValue);
+
+	_buf pHashTest = HashAppend(pSalt, pPassword, data.hashAlgorithm);
+		
+	for (int i = 0; i < data.spinCount; i++)
+	{
+        _buf iterator((unsigned char*)&i, 4, false);
+        pHashTest = HashAppend(pHashTest, iterator, data.hashAlgorithm);
+	}
+	return (pHashTest == pHash);
+}
 //-----------------------------------------------------------------------------------------------------------
 ECMAEncryptor::ECMAEncryptor()
 {

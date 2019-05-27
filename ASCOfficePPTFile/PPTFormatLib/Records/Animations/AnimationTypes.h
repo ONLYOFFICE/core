@@ -39,7 +39,7 @@
 
 #define MIN_SLIDE_TIME	5000.0
 
-inline int sort (const long* a, const long* b) { return *a > *b ? 1 : -1; }
+//inline int sort (const long* a, const long* b) { return *a > *b ? 1 : -1; }
 
 #if !defined(_WIN32) && !defined (_WIN64)
 
@@ -440,7 +440,7 @@ namespace Animations
 
 		virtual ~ParaBuildContainer()
 		{
-			for ( long i = 0; i < (long)rgParaBuildLevel.size(); ++i )
+			for ( size_t i = 0; i < rgParaBuildLevel.size(); ++i )
 				RELEASEOBJECT (rgParaBuildLevel[i]);
 		}
 
@@ -510,7 +510,7 @@ namespace Animations
 
 		virtual ~BuildListContainer()
 		{
-			for ( long i = 0; i < (long)rgChildRec.size(); ++i )
+			for ( size_t i = 0; i < rgChildRec.size(); ++i )
 				RELEASEOBJECT (rgChildRec[i]);
 		}
 
@@ -1051,7 +1051,7 @@ namespace Animations
 		}
 		void ClearNodes ()
 		{
-			for ( long i = 0; i < (long)m_arrElements.size(); ++i )
+			for ( size_t i = 0; i < m_arrElements.size(); ++i )
 			{
 				RELEASEOBJECT ( m_arrElements[i] );
 			}
@@ -1399,7 +1399,7 @@ namespace Animations
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF12A; }
 
- 		inline long GetObjectID ()
+ 		inline _UINT32 GetObjectID ()
 		{
 			return clientVisualElement.m_oVisualShapeAtom.m_nObjectIdRef;
 		}
@@ -2481,13 +2481,13 @@ namespace Animations
 
 			RELEASEOBJECT(rgSlave);
 
-			for ( long i = 0; i < (long)rgExtTimeNodeChildren.size(); ++i )
+			for ( size_t i = 0; i < rgExtTimeNodeChildren.size(); ++i )
 				RELEASEOBJECT ( rgExtTimeNodeChildren[i] );
 
-			for ( long i = 0; i < (long)timeCondition.size(); ++i )
+			for ( size_t i = 0; i < timeCondition.size(); ++i )
 				RELEASEOBJECT ( timeCondition[i] );
 
-			for ( long i = 0; i < (long)rgTimeModifierAtom.size(); ++i )
+			for ( size_t i = 0; i < rgTimeModifierAtom.size(); ++i )
 				RELEASEOBJECT ( rgTimeModifierAtom[i] );
 		}
 
@@ -2714,7 +2714,7 @@ namespace Animations
 		//
 		inline TimeModifierAtom* GetModifier (long Type)
 		{
-			for ( long i = 0; i < (long)rgTimeModifierAtom.size(); ++i )
+			for ( size_t i = 0; i < rgTimeModifierAtom.size(); ++i )
 				if (rgTimeModifierAtom[i]->type == Type)
 					return rgTimeModifierAtom[i];
 
@@ -2878,7 +2878,7 @@ namespace Animations
 
 namespace Animations
 {
-	typedef NSPresentationEditor::CAnimationSimple Effect;
+	typedef PPT_FORMAT::CAnimationSimple Effect;
 	typedef std::vector <Effect> Effects;
 	typedef std::map<_UINT32,Effects*> EffectsMap;
 	typedef std::vector <double> TimeArray;
@@ -3008,7 +3008,7 @@ namespace Animations
 
 		inline long GetBuild (long nShapeID)
 		{
-			for ( long i = 0; i < (long)m_arrBuilds.size(); ++i )
+			for ( size_t i = 0; i < m_arrBuilds.size(); ++i )
 			{
 				if (m_arrBuilds[i].m_nShapeID == nShapeID)
 					return m_arrBuilds[i].m_nBuildType;
@@ -3023,7 +3023,7 @@ namespace Animations
 		{
 			if ( pContainer->buildList )
 			{
-				for ( long i = 0; i < (long)pContainer->buildList->rgChildRec.size(); ++i )
+				for ( size_t i = 0; i < pContainer->buildList->rgChildRec.size(); ++i )
 					m_arrBuilds.push_back(EffectBuild(pContainer->buildList->rgChildRec[i]->buildAtom.shapeIdRef,	pContainer->buildList->rgChildRec[i]->paraBuildAtom.buildLevel) );
 
                 return true;
@@ -3193,7 +3193,7 @@ namespace Animations
 		}
 
 		//
-		inline void	AddAnimation (ExtTimeNodeContainer* pTimeNode, long nID)
+		inline void	AddAnimation (ExtTimeNodeContainer* pTimeNode, int nID)
 		{
 			CalculateTimeEffect (pTimeNode);
 
@@ -3407,9 +3407,9 @@ namespace Animations
 
 			if (MediaCallEffect == m_oTopEffect.m_nEffectType)
 			{
-				if ((long)pContainer->rgExtTimeNodeChildren.size())
+				if (!pContainer->rgExtTimeNodeChildren.empty())
 				{
-					ExtTimeNodeContainer* pChild	=	pContainer->rgExtTimeNodeChildren[0];
+					ExtTimeNodeContainer* pChild = pContainer->rgExtTimeNodeChildren[0];
 					if (pChild)
 					{
 						if (pChild->timeNodeAtom.m_bDurationProperty)		
@@ -3474,7 +3474,7 @@ namespace Animations
 
 			if (26 == m_oTopEffect.m_nEffectID)
 			{
-				if ((long)m_arDurations.size() && (long)m_arBeginTimes.size() )
+				if (!m_arDurations.empty() && !m_arBeginTimes.empty() )
 					m_dEffectDuration	=	m_arDurations.at(m_arDurations.size()-1) + m_arBeginTimes.at(m_arBeginTimes.size()-1);
 			}
 
@@ -3563,7 +3563,7 @@ namespace Animations
 				m_oTopEffect.m_nTextSequence		=	container.clientVisualElement.m_oVisualShapeAtom.m_nData1;	//	номер параграфа - не нормальзован
                 m_oTopEffect.m_bRemoveEmptyBlocks	=	true;
 
-				for (long i = 0; i < (long)m_arParIndexer.size(); ++i)
+				for (size_t i = 0; i < m_arParIndexer.size(); ++i)
 				{
 					if (m_oTopEffect.m_nTextSequence == m_arParIndexer.at(i))
 						return;
@@ -3575,7 +3575,7 @@ namespace Animations
 
         inline bool UpdateParagraph ()
 		{
-			if ((long)m_arParIndexer.size())
+			if (!m_arParIndexer.empty())
 			{
 				//ATLTRACE ( _T("====================PARAGRAPH==========================================\n"));
 				//qsort ( m_arParIndexer.GetData(), m_arParIndexer.size(), sizeof (long), (int(*)(const void*, const void*))sort );
@@ -3587,12 +3587,12 @@ namespace Animations
 					Effects* arEffects = pPair->second;
 					if (arEffects)
 					{
-						for (long i = 0; i < (long)arEffects->size(); ++i)
+						for (size_t i = 0; i < arEffects->size(); ++i)
 						{
 							Effect& oEffect = arEffects->at(i);
 							if (oEffect.m_nTextSequence >= 0)
 							{
-								for (long ind = 0; ind < (long)m_arParIndexer.size(); ++ind)
+								for (size_t ind = 0; ind < m_arParIndexer.size(); ++ind)
 								{
 									if (oEffect.m_nTextSequence == m_arParIndexer.at(ind))
 									{
@@ -3646,7 +3646,7 @@ namespace Animations
 				}
 			}
 
-			for (long i = 0; i < (long)pContainer->rgExtTimeNodeChildren.size(); ++i )
+			for (size_t i = 0; i < pContainer->rgExtTimeNodeChildren.size(); ++i )
 			{
 				if (GetMediaID(pContainer->rgExtTimeNodeChildren [i]))
                     return true;
@@ -3668,7 +3668,7 @@ namespace Animations
 				}
 			}
 
-			for (long i = 0; i < (long)pContainer->rgExtTimeNodeChildren.size(); ++i )
+			for (size_t i = 0; i < pContainer->rgExtTimeNodeChildren.size(); ++i )
 			{
 				if (CNodeTiming::AfterPreviousNode == pContainer->rgExtTimeNodeChildren [i]->GetEffectNodeType ())		//	нод с описанием эффекта
                     return false;
@@ -3704,20 +3704,20 @@ namespace Animations
 		TimeArray			m_arDurations;
 		TimeArray			m_arBeginTimes;
 
-        std::wstring				m_ComposeEffectMothionPath;
+        std::wstring		m_ComposeEffectMothionPath;
         bool				m_HaveAfterEffect;
 
 		EffectsMap			m_oAnimation;
 		CParagraphBuilds	m_oParagraphBuilds;
 
-		std::vector <long>	m_arParIndexer;
+		std::vector <_INT32>	m_arParIndexer;
 		
 		// media
 		int					m_nMediaID;
 		int					m_nMediaShapeID;
 		int					m_nMediaPush;					//	глубина поиска
 
-		std::vector <int>		m_arrMedia;
+		std::vector <_INT32> m_arrMedia;
 	};
 }
 

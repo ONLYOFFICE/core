@@ -35,8 +35,7 @@
 #include "PptShapeEnum.h"
 #include "../../../../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"
 
-using namespace NSOfficeDrawing;
-using namespace NSPresentationEditor;
+using namespace ODRAW;
 
 static  double FixedPointToDouble(unsigned int op)
 {
@@ -46,7 +45,7 @@ static  double FixedPointToDouble(unsigned int op)
 	return Integral + (Fractional / 65536.0);
 }
 
-namespace PPTShapes
+namespace ODRAW
 {
 	struct _3dOptions
 	{
@@ -139,7 +138,7 @@ public:
     NSGuidesVML::CFormulasManager	m_oManager;
     NSCustomVML::CCustomVML			m_oCustomVML;
 
-	PPTShapes::_3dOptions			m_o3dOptions;
+	ODRAW::_3dOptions				m_o3dOptions;
 
 	std::wstring m_strPathLimoX;
     std::wstring m_strPathLimoY;

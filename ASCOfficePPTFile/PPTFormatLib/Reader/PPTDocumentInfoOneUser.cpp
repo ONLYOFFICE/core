@@ -42,6 +42,7 @@
 #include "../Records/SoundCollectionContainer.h"
 #include "../Records/SoundContainer.h"
 
+
 CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 								m_oUser(),
 								m_mapOffsetInPIDs(), 
@@ -446,7 +447,7 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
 	// так... теперь берем всю инфу о ExObject -----------------------------
 	m_oExMedia.m_strPresentationDirectory	= strFolderMem;
 
-	NSPresentationEditor::CExFilesInfo oInfo;
+	PPT_FORMAT::CExFilesInfo oInfo;
 
 	oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory;
 	oInfo.m_dwID		= 0xFFFFFFFF;
@@ -475,10 +476,10 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
 
 	for (size_t nIndex = 0; nIndex < oArrayFonts.size(); ++nIndex)
 	{
-		CFont oFont;
+		CFontProperty oFont;
+		
 		oFont.Name		= oArrayFonts[nIndex]->m_strFaceName;
 		oFont.Charset	= oArrayFonts[nIndex]->m_lfCharSet;
-
 		oFont.PitchFamily = oArrayFonts[nIndex]->m_lfPitchAndFamily;
 
 		m_arrFonts.push_back(oFont);
@@ -510,7 +511,7 @@ void CPPTUserInfo::FromDocument()
 		oArrayInfo[0]->GetRecordsByType(&oStyles, false, false);
 
 		if (0 != oStyles.size())
-			m_oDefaultTextStyle.SetStyles((NSPresentationEditor::CTextStyles*)oStyles[0]);		
+			m_oDefaultTextStyle.SetStyles((PPT_FORMAT::CTextStyles*)oStyles[0]);		
 
 		std::vector<CRecordTextSIExceptionAtom*> oSI;
 		oArrayInfo[0]->GetRecordsByType(&oSI, false, false);
@@ -674,7 +675,7 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
 
 	CLayout* pLayout	= NULL;
 //-----------------------------------------------------
-	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = pTheme ? &pTheme->m_arColorScheme : NULL;
+	std::vector<ODRAW::CColor>* pArrayColorScheme = pTheme ? &pTheme->m_arColorScheme : NULL;
 
 // читаем цветовую схему -----------------------------------------------------------
 	pNotes->m_bUseLayoutColorScheme = true;
@@ -800,7 +801,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 
 		pTransition->m_bAudioPresent	= pAtom->m_bSound;
 
-		NSPresentationEditor::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
+		PPT_FORMAT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
 		if (NULL != pInfo)
 		{
 			pTransition->m_oAudio.m_strAudioFileName = pInfo->m_strFilePath;
@@ -818,7 +819,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 	CSlideShowSlideInfoAtom* pAtom	= &pRecordSlide->m_oSlideShowSlideInfoAtom;
 	if (pAtom->m_bSound)
 	{
-		NSPresentationEditor::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
+		PPT_FORMAT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
 		if (NULL != pInfo)
 			AddAudioTransition (dwSlideID, pTransition, pInfo->m_strFilePath);
 	}
@@ -859,7 +860,12 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 	if (pPairTheme == m_mapMasterToTheme.end())
 	{
 		//????? слайду не присвоена тема !!!
-		pPairTheme = m_mapMasterToTheme.begin();
+		if (false == m_mapMasterToTheme.empty())
+			pPairTheme = m_mapMasterToTheme.begin();
+		else
+		{			
+			throw 1;	// file format error
+		}
 	}
 //-----------------	
 	pSlide->m_lThemeID			= pPairTheme->second;
@@ -897,7 +903,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 		}
 	}
 
-	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
+	std::vector<ODRAW::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
 	if (!pLayout->m_bUseThemeColorScheme)
 		pArrayColorScheme = &pLayout->m_arColorScheme;
 
@@ -1024,16 +1030,16 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 	}
 	std::multimap<int, int>::iterator it;
 		
-	if (bHasSlideNumber)	AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber, pLayout, true);	
+	if (bHasSlideNumber)	AddLayoutSlidePlaceholder(pSlide, PT_MasterSlideNumber, pLayout, true);	
 	
 	if (bHasDate)
 	{
-		CElementPtr pElement = AddLayoutSlidePlaceholder(pSlide, MasterDate, pLayout, true);
+		CElementPtr pElement = AddLayoutSlidePlaceholder(pSlide, PT_MasterDate, pLayout, true);
 	
 		if (pElement) pElement->m_nFormatDate = nFormatDate;
 	}
 
-	if (bHasFooter)	AddLayoutSlidePlaceholder(pSlide, MasterFooter, pLayout, true);
+	if (bHasFooter)	AddLayoutSlidePlaceholder(pSlide, PT_MasterFooter, pLayout, true);
 }
 
 void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupContainer, std::vector<CElementPtr>* pParentElements, CTheme* pTheme, CLayout* pLayout,												
@@ -1101,9 +1107,9 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
 						{
 							if (pElement->m_lPlaceholderID >= 0)
 							{
-								if (pElement->m_lPlaceholderType == MasterSlideNumber)	pLayout->m_bHasSlideNumber	= true;
-								if (pElement->m_lPlaceholderType == MasterDate)			pLayout->m_bHasDate			= true;
-								if (pElement->m_lPlaceholderType == MasterFooter)		pLayout->m_bHasFooter		= true;
+								if (pElement->m_lPlaceholderType == PT_MasterSlideNumber)	pLayout->m_bHasSlideNumber	= true;
+								if (pElement->m_lPlaceholderType == PT_MasterDate)			pLayout->m_bHasDate			= true;
+								if (pElement->m_lPlaceholderType == PT_MasterFooter)		pLayout->m_bHasFooter		= true;
 							}
 							pLayout->m_mapPlaceholders.insert(std::make_pair(pElement->m_lPlaceholderType, pElement)); 
 						}
@@ -1230,7 +1236,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	
 	int ind = pTheme->m_arLayouts.size();
 	
-	pTheme->m_arLayouts.push_back(boost::make_shared<NSPresentationEditor::CLayout>());
+	pTheme->m_arLayouts.push_back(boost::make_shared<PPT_FORMAT::CLayout>());
 	CLayout *pLayout = pTheme->m_arLayouts.back().get();
 	
 	pLayout->m_bUseThemeColorScheme = true;
@@ -1270,16 +1276,16 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 
 		switch(layoutRecord.m_pPlaceHolderID[i])
 		{
-		case NSOfficePPT::MasterTitle	:
-		case NSOfficePPT::MasterBody			:
-		case NSOfficePPT::MasterCenteredTitle	:
-		case NSOfficePPT::MasterSubtitle		:
-		case NSOfficePPT::MasterNotesSlideImage	:
-		case NSOfficePPT::MasterNotesBody:
-		case NSOfficePPT::MasterSlideNumber:
-		case NSOfficePPT::MasterDate:
-		case NSOfficePPT::MasterHeader:
-		case NSOfficePPT::MasterFooter:
+		case PT_MasterTitle:
+		case PT_MasterBody:
+		case PT_MasterCenterTitle:
+		case PT_MasterSubTitle:
+		case PT_MasterNotesSlideImage:
+		case PT_MasterNotesBody:
+		case PT_MasterDate:
+		case PT_MasterSlideNumber:
+		case PT_MasterFooter:
+		case PT_MasterHeader:
 			{
 				int usualType = layoutRecord.m_pPlaceHolderID[i];
 				CorrectPlaceholderType(usualType);
@@ -1331,9 +1337,9 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 
 	for (int i = 0; i < 3; i++) pLayout->m_PlaceholdersReplaceString[i] = pTheme->m_PlaceholdersReplaceString[i];
 
-	if (pLayout->m_bHasSlideNumber)		AddThemeLayoutPlaceholder(pLayout, MasterSlideNumber,	pTheme, true);
-	if (pLayout->m_bHasDate)			AddThemeLayoutPlaceholder(pLayout, MasterDate,			pTheme, true);
-	if (pLayout->m_bHasFooter)			AddThemeLayoutPlaceholder(pLayout, MasterFooter,		pTheme, true);
+	if (pLayout->m_bHasSlideNumber)		AddThemeLayoutPlaceholder(pLayout, PT_MasterSlideNumber,	pTheme, true);
+	if (pLayout->m_bHasDate)			AddThemeLayoutPlaceholder(pLayout, PT_MasterDate,			pTheme, true);
+	if (pLayout->m_bHasFooter)			AddThemeLayoutPlaceholder(pLayout, PT_MasterFooter,			pTheme, true);
 
 	return ind;
 }
@@ -1387,7 +1393,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 	if (0 == oArraySlideAtoms.size())
 		return;
 
-	_UINT32 dwID				= (_UINT32)oArraySlideAtoms[0]->m_nMasterIDRef;
+	_UINT32 dwID = (_UINT32)oArraySlideAtoms[0]->m_nMasterIDRef;
 	if (0 != dwID)
 	{
 		// этот мастер - не main!!!
@@ -1419,7 +1425,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 	
 	m_mapMasterToTheme.insert(std::pair<_UINT32, LONG>(dwMasterID, lIndexTheme));
 
-	m_arThemes.push_back(boost::make_shared<NSPresentationEditor::CTheme>());
+	m_arThemes.push_back(boost::make_shared<PPT_FORMAT::CTheme>());
 	CTheme* pTheme = m_arThemes[lIndexTheme].get();
 
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
@@ -1463,8 +1469,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 	CSlideInfo* pMasterWrapper = &m_arMasterWrapper[lIndexTheme];
 
 	// записываем шрифты ---------------------------------------------------------------
-	int nCountFonts = m_arrFonts.size();
-	for (int i = 0; i < nCountFonts; ++i)
+	for (size_t i = 0; i < m_arrFonts.size(); ++i)
 	{
 		pTheme->m_arFonts.push_back(m_arrFonts[i]);
 	}
@@ -1531,8 +1536,8 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 		if ((0 > lType) || (lType > 8))
 			continue;
 
-		pMasterWrapper->m_pStyles[lType] = new NSPresentationEditor::CTextStyles();
-		pMasterWrapper->m_pStyles[lType]->SetStyles((NSPresentationEditor::CTextStyles*)oArrayTextMasters[i]);
+		pMasterWrapper->m_pStyles[lType] = new PPT_FORMAT::CTextStyles();
+		pMasterWrapper->m_pStyles[lType]->SetStyles((PPT_FORMAT::CTextStyles*)oArrayTextMasters[i]);
 
 		CTheme::CalculateStyle(pTheme, pMasterWrapper->m_pStyles[lType].get());
 	}
@@ -1671,7 +1676,7 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
 		}
 	}
 
-	pTheme = boost::make_shared<NSPresentationEditor::CTheme>(type);
+	pTheme = boost::make_shared<PPT_FORMAT::CTheme>(type);
 
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
 	pMaster->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
@@ -1712,8 +1717,7 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
 	pMasterWrapper = new CSlideInfo();
 
 	// записываем шрифты ---------------------------------------------------------------
-	int nCountFonts = m_arrFonts.size();
-	for (int i = 0; i < nCountFonts; ++i)
+	for (size_t i = 0; i < m_arrFonts.size(); ++i)
 	{
 		pTheme->m_arFonts.push_back(m_arrFonts[i]);
 	}
@@ -1767,8 +1771,10 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
 
 	//настройки текстовых стилей -----------------------------------------------
 	
-	for (size_t i = 0; i < 9; ++i)
+	for (size_t i = 0; i < 9 && false == m_arMasterWrapper.empty(); ++i)
+	{
 		pMasterWrapper->m_pStyles[i] = m_arMasterWrapper[0].m_pStyles[i]; //main master
+	}
 	
 	CLayout* pLayout = NULL; // ну нету тут разметок ...!!
 	
@@ -1891,7 +1897,7 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 
 	pTheme->m_mapTitleLayout[dwMasterID] = lLayoutID;
 
-	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
+	std::vector<ODRAW::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
 	// читаем цветовую схему -----------------------------------------------------------
 	if (!bMasterColorScheme)
 	{
@@ -2006,23 +2012,23 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 
 	if (pLayout->m_bHasSlideNumber)
 	{
-		if (pLayout->m_mapPlaceholders.find(MasterSlideNumber) == pLayout->m_mapPlaceholders.end())
+		if (pLayout->m_mapPlaceholders.find(PT_MasterSlideNumber) == pLayout->m_mapPlaceholders.end())
 		{
-			AddNewLayoutPlaceholder(pLayout, MasterSlideNumber, 2);
+			AddNewLayoutPlaceholder(pLayout, PT_MasterSlideNumber, 2);
 		}
 	}
 	if (pLayout->m_bHasDate && pLayout->m_nFormatDate == 1)
 	{
-		if (pLayout->m_mapPlaceholders.find(MasterDate) == pLayout->m_mapPlaceholders.end())
+		if (pLayout->m_mapPlaceholders.find(PT_MasterDate) == pLayout->m_mapPlaceholders.end())
 		{
-			AddNewLayoutPlaceholder(pLayout, MasterDate, 2);
+			AddNewLayoutPlaceholder(pLayout, PT_MasterDate, 2);
 		}
 	}
 	if (pLayout->m_bHasFooter)
 	{
-		if (pLayout->m_mapPlaceholders.find(MasterFooter) == pLayout->m_mapPlaceholders.end())
+		if (pLayout->m_mapPlaceholders.find(PT_MasterFooter) == pLayout->m_mapPlaceholders.end())
 		{
-			AddNewLayoutPlaceholder(pLayout, MasterFooter, 1);
+			AddNewLayoutPlaceholder(pLayout, PT_MasterFooter, 1);
 		}		
 	}
 
@@ -2249,7 +2255,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
 			if ((3 <= oArrayStrings.size()) && (1 == oArrayData.size()))
 			{
-				NSPresentationEditor::CExFilesInfo oInfo;
+				PPT_FORMAT::CExFilesInfo oInfo;
 
 				oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + _T(".audio");
 				oInfo.m_dwID		= (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
@@ -2300,10 +2306,10 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 		_UINT32 dwKeySound	= oArrayAudioEmbedded[nIndex]->m_nSoundID;
 		_UINT32 dwKeyObj		= oArrayAudioEmbedded[nIndex]->m_oMedia.m_nExObjID;
 
-		NSPresentationEditor::CExFilesInfo* pInfo = m_oExMedia.LockAudioFromCollection(dwKeySound);
+		PPT_FORMAT::CExFilesInfo* pInfo = m_oExMedia.LockAudioFromCollection(dwKeySound);
 		if (NULL != pInfo)
 		{
-			NSPresentationEditor::CExFilesInfo oAudio;
+			PPT_FORMAT::CExFilesInfo oAudio;
 
 			oAudio.m_dwID			= dwKeyObj;
 			oAudio.m_strFilePath	= pInfo->m_strFilePath;
@@ -2316,7 +2322,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 	{
 		_UINT32 dwKeyObj			= oArrayAudioCD[nIndex]->m_oMedia.m_nExObjID;
 
-		NSPresentationEditor::CExFilesInfo* pInfo		= m_oExMedia.LockAudio(dwKeyObj);
+		PPT_FORMAT::CExFilesInfo* pInfo		= m_oExMedia.LockAudio(dwKeyObj);
 
 		if (NULL != pInfo)
 		{
@@ -2342,7 +2348,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
 		if (oArrayCString.size() > 0 && oArrayHyperlink.size() > 0)
 		{
-			NSPresentationEditor::CExFilesInfo oInfo;
+			PPT_FORMAT::CExFilesInfo oInfo;
 
 			oInfo.m_dwID = oArrayHyperlink[0]->m_nHyperlinkID;
 			for (size_t i = 0 ; i < oArrayCString.size(); i++)
@@ -2365,7 +2371,7 @@ void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 
 	if ((1 == oArrayExMedia.size()) && (1 == oArrayCString.size()))
 	{
-		NSPresentationEditor::CExFilesInfo oInfo;
+		PPT_FORMAT::CExFilesInfo oInfo;
 
 		oInfo.m_dwID			= oArrayExMedia[0]->m_nExObjID;
 		oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
@@ -2388,7 +2394,7 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
 
 	if ((1 == oArrayExMedia.size()) && (1 == oArrayCString.size()))
 	{
-		NSPresentationEditor::CExFilesInfo oInfo;
+		PPT_FORMAT::CExFilesInfo oInfo;
 
 		oInfo.m_dwID			= oArrayExMedia[0]->m_nExObjID;
 		oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
@@ -2459,22 +2465,21 @@ void CPPTUserInfo::AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransiti
 	delete pAudio;
 }
 
-void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle, NSPresentationEditor::CTheme* pTheme)
+void CPPTUserInfo::CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme)
 {
 	for (int i = 0; i < 10; ++i)
 	{
 		if (!pStyle.m_pLevels[i].is_init())
-			pStyle.m_pLevels[i] = new NSPresentationEditor::CTextStyleLevel();
+			pStyle.m_pLevels[i] = new PPT_FORMAT::CTextStyleLevel();
 
-		NSPresentationEditor::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
-		NSPresentationEditor::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
+		PPT_FORMAT::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
+		PPT_FORMAT::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
 
 		pCF->Language		= m_wLanguage;
 
 		pCF->Size			= 18;
 
-		pCF->FontProperties = new NSPresentationEditor::CFontProperties();
-		pCF->FontProperties->SetFont(pTheme->m_arFonts[0]);
+		pCF->font.font = new PPT_FORMAT::CFontProperty(pTheme->m_arFonts.size() > 1 ? pTheme->m_arFonts[1] : pTheme->m_arFonts[0]);
 	}
 }
 

@@ -36,9 +36,7 @@
 #include "../../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 
-using namespace NSPresentationEditor;
-
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	static CColor GetStandartPaletteColor(int index)
 	{
@@ -108,7 +106,7 @@ namespace NSPresentationEditor
 
 namespace NSStreamReader
 {
-	void Read(POLE::Stream* pStream, NSPresentationEditor::CTextSIRun& oRun, bool bIsIndentation)
+	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation)
 	{
 		if (bIsIndentation)
 		{
@@ -170,7 +168,7 @@ namespace NSStreamReader
 		}*/
 	}
 
-	void Read(POLE::Stream* pStream, NSPresentationEditor::CTextRuler& oRun)
+	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun)
 	{
 		double dScaleX				= 625 * 2.54 ;
 		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
@@ -237,7 +235,7 @@ namespace NSStreamReader
 }
 
 
-void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
+void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 {
 	double dScaleX				= 625 * 2.54 ;
 	//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
@@ -345,7 +343,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		SColorAtom oColorAtom;
 		NSStreamReader::Read(pStream, oColorAtom);
 
-		NSPresentationEditor::CColor oColor;
+		ODRAW::CColor oColor;
 		
 		oColor.R = oColorAtom.R;
 		oColor.G = oColorAtom.G;
@@ -356,7 +354,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		if (oColorAtom.bSchemeIndex)
 		{
 			oColor.m_lSchemeIndex = oColorAtom.Index;
-			NSPresentationEditor::CorrectColorPPT(oColor.m_lSchemeIndex);
+			ODRAW::CorrectColorPPT(oColor.m_lSchemeIndex);
 		}
 
 		if (oColorAtom.bSchemeIndex || oColorAtom.bPaletteRGB)
@@ -413,7 +411,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 }
 
 
-void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
+void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 {
 	if (bIsIndentation)
 	{
@@ -474,13 +472,13 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		m_oRun.fontRef = StreamUtils::ReadWORD(pStream);
 
 	if (EAFontRef_)
-		m_oRun.EAFontRef = StreamUtils::ReadWORD(pStream);
+		m_oRun.eaFontRef = StreamUtils::ReadWORD(pStream);
 
 	if (AnsiFontRef_)
-		m_oRun.AnsiFontRef = StreamUtils::ReadWORD(pStream);
+		m_oRun.ansiFontRef = StreamUtils::ReadWORD(pStream);
 
 	if (SymbolFontRef_)
-		m_oRun.SymbolFontRef = StreamUtils::ReadWORD(pStream);
+		m_oRun.symbolFontRef = StreamUtils::ReadWORD(pStream);
 	
 	if (size_)
 		m_oRun.Size = StreamUtils::ReadWORD(pStream);
@@ -490,7 +488,7 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		SColorAtom oColorAtom;
 		NSStreamReader::Read(pStream, oColorAtom);
 
-		NSPresentationEditor::CColor oColor;
+		ODRAW::CColor oColor;
 		
 		oColor.R = oColorAtom.R;
 		oColor.G = oColorAtom.G;
@@ -501,7 +499,7 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		if (oColorAtom.Index < 8 && oColorAtom.bSchemeIndex)
 		{
 			oColor.m_lSchemeIndex = oColorAtom.Index;
-			NSPresentationEditor::CorrectColorPPT(oColor.m_lSchemeIndex);
+			ODRAW::CorrectColorPPT(oColor.m_lSchemeIndex);
 		}
 		if (oColorAtom.bSchemeIndex || oColorAtom.bPaletteRGB)
 		{
@@ -516,10 +514,10 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 }
 
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
-	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRun_ppt>& oArrayPF, std::vector<CTextCFRun_ppt>& oArrayCF, 
-		std::wstring& strText, NSPresentationEditor::CTextAttributesEx& oAttributes)
+	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
+		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes)
 	{
 		int nCountPFs = (int)oArrayPF.size();
 		int nCountCFs = (int)oArrayCF.size();
@@ -536,7 +534,7 @@ namespace NSPresentationEditor
 		{
 			CParagraph elm;
 			oAttributes.m_arParagraphs.push_back(elm);
-			NSPresentationEditor::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
+			PPT_FORMAT::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
 
 			pPar->m_lTextLevel			= oArrayPF[nIndexPF].m_lLevel;
 			pPar->m_oPFRun				= oArrayPF[nIndexPF].m_oRun;
@@ -564,7 +562,7 @@ namespace NSPresentationEditor
 				{
 					nOffsetCF += nCountInPF;
 
-					NSPresentationEditor::CSpan oSpan;
+					PPT_FORMAT::CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 
 					nCountAddTrue = nCountInPF;
@@ -586,7 +584,7 @@ namespace NSPresentationEditor
 				{					
 					nOffsetCF = 0;
 
-					NSPresentationEditor::CSpan oSpan;
+					PPT_FORMAT::CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 
 					if (nCountAddTrue > 0)
@@ -602,7 +600,7 @@ namespace NSPresentationEditor
 				{
 					nOffsetCF = 0;
 
-					NSPresentationEditor::CSpan oSpan;
+					PPT_FORMAT::CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 
 					if (nCountAddTrue > 0)

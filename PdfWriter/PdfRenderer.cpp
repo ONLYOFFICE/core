@@ -383,14 +383,16 @@ void CPdfRenderer::CCommandManager::Flush()
 					oTextLine.Flush(pPage);
 					lTextColor = pText->GetColor();
 					TColor oColor = lTextColor;
-					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);					
+					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);
+					pPage->SetStrokeColor(oColor.r, oColor.g, oColor.b);
 				}
 
 				if (nTextAlpha != pText->GetAlpha())
 				{
 					oTextLine.Flush(pPage);
 					nTextAlpha = pText->GetAlpha();
-					pPage->SetFillAlpha(nTextAlpha);					
+					pPage->SetFillAlpha(nTextAlpha);
+					pPage->SetStrokeAlpha(nTextAlpha);
 				}
 
 				if (fabs(dTextSpace - pText->GetSpace()) > 0.001)
@@ -1365,7 +1367,10 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 	Aggplus::CImage* pAggImage = NULL;
 
 	CImageFileFormatChecker oImageFormat(wsImagePath);
-	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
+    if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+            _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+            _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+            _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 	{
 		// TODO: Реализовать отрисовку метафайлов по-нормальному
         MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
@@ -1544,14 +1549,16 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 
 		::memcpy(pCopyImage, pData, 4 * nImageW * nImageH);
 
+        BYTE* pDataMem = pCopyImage;
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
-			if (pCopyImage[4 * nIndex + 3] < 32)
+            if (pDataMem[3] < 32)
 			{
-				pCopyImage[4 * nIndex + 0] = 255;
-				pCopyImage[4 * nIndex + 1] = 255;
-				pCopyImage[4 * nIndex + 2] = 255;
+                pDataMem[0] = 255;
+                pDataMem[1] = 255;
+                pDataMem[2] = 255;
 			}
+            pDataMem += 4;
 		}
 
 		oFrame.put_Width(nImageW);
@@ -1561,13 +1568,23 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 	}
 	else
 	{
+        BYTE* pDataMem = pData;
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
-			if (pData[4 * nIndex + 3] < 255)
+            // making full-transparent pixels white
+            if (pDataMem[3] == 0)
+            {
+                pDataMem[0] = 255;
+                pDataMem[1] = 255;
+                pDataMem[2] = 255;
+            }
+
+            if (!bAlpha && (pDataMem[3] < 255))
 			{
-				bAlpha = true;
-				break;
+                bAlpha = true;
 			}
+
+            pDataMem += 4;
 		}
 		oFrame.FromImage(pImage);
 	}
@@ -1800,7 +1817,10 @@ void CPdfRenderer::UpdateBrush()
 					pImage->LoadJpx(wsTexturePath.c_str(), nImageW, nImageH);
 			}
 		}
-		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
+        else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+                 _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+                 _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+                 _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
             MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);

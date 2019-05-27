@@ -71,6 +71,8 @@ public:
 			odp_slide_context		* slide_context();
 			odf_comment_context		* comment_context();
 
+	virtual odf_style_context		* styles_context();
+
 	void start_drawings();
 	void end_drawings();
 

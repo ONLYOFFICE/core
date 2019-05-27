@@ -65,20 +65,16 @@ using namespace cpdoccore;
 namespace Oox2Odf
 {
 
-XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* CallBack) 
+XlsxConverter::XlsxConverter(const std::wstring & path, bool bTemplate) 
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
     xlsx_document   = new OOX::Spreadsheet::CXlsx(oox_path);
 
-	output_document = new odf_writer::package::odf_document(L"spreadsheet");
+	output_document = new odf_writer::package::odf_document(L"spreadsheet", bTemplate);
     ods_context     = new odf_writer::ods_conversion_context(output_document);
 
-    pCallBack = CallBack;
-
     xlsx_current_container = NULL;
-
-	if (UpdateProgress(400000))return;
 }
 XlsxConverter::~XlsxConverter() 
 {
@@ -106,32 +102,32 @@ OOX::IFileContainer* XlsxConverter::current_document()
 	else
 		return NULL;
 }
-smart_ptr<OOX::File> XlsxConverter::find_file_by_id(std::wstring sId)
+smart_ptr<OOX::File> XlsxConverter::find_file_by_id(const std::wstring & sId)
 {
 	smart_ptr<OOX::File> oFile;
 	
-	if (xlsx_current_container)
-		oFile = xlsx_current_container->Find(sId);
-	else if (oox_current_child_document)
+	if (oox_current_child_document)
 		oFile = oox_current_child_document->Find(sId);
+	else if (xlsx_current_container)
+		oFile = xlsx_current_container->Find(sId);
 		
 	return oFile;
 }
-std::wstring XlsxConverter::find_link_by_id (std::wstring sId, int type)
+std::wstring XlsxConverter::find_link_by_id (const std::wstring & sId, int type)
 {
     smart_ptr<OOX::File>	oFile;
 	std::wstring			ref;
 
-	if (xlsx_current_container)
-	{
-		oFile	= xlsx_current_container->Find(sId);
-		ref		= OoxConverter::find_link_by(oFile, type);
-	}
-	if (!ref.empty()) return ref;
-
 	if (oox_current_child_document)
 	{
 		oFile	= oox_current_child_document->Find(sId);
+		ref		= OoxConverter::find_link_by(oFile, type);
+	}	
+	if (!ref.empty()) return ref;
+
+	if (xlsx_current_container)
+	{
+		oFile	= xlsx_current_container->Find(sId);
 		ref		= OoxConverter::find_link_by(oFile, type);
 	}
 	return ref;
@@ -147,27 +143,47 @@ void XlsxConverter::convertDocument()
 	ods_context->start_document();
 
 	convert_styles();
-	if (UpdateProgress(500000))return;
 
 	convert_sheets();
 
-	if (UpdateProgress(800000))return;
 	delete xlsx_document; xlsx_document = NULL;
 
 	ods_context->end_document();
-
-	if (UpdateProgress(850000))return;
 }
 
 void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
 	
-	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
+	OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
 	std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 	
+	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(Workbook);
+	
+	if(Workbook->m_oExternalReferences.IsInit())
+	{	
+		for (size_t i = 0; i < Workbook->m_oExternalReferences->m_arrItems.size(); i++)
+		{
+			OOX::Spreadsheet::CExternalReference *externalRef = dynamic_cast<OOX::Spreadsheet::CExternalReference*>(Workbook->m_oExternalReferences->m_arrItems[i]);
+			if((externalRef) && (externalRef->m_oRid.IsInit()))
+			{
+				smart_ptr<OOX::File> file = find_file_by_id(externalRef->m_oRid->GetValue());
+				
+				smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
+				if (fileExternal.IsInit())
+				{
+					ods_context->add_external_reference(fileExternal->Uri().GetPath());
+				}
+				else
+				{
+					smart_ptr<OOX::Spreadsheet::CExternalLink> externalLink = file.smart_dynamic_cast<OOX::Spreadsheet::CExternalLink>();
+					convert(externalLink.operator->());
+				}
+			}
+		}
+	}
 	if(Workbook->m_oBookViews.IsInit())
 	{	
 		for (size_t i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
@@ -350,11 +366,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 
 /////////////////////////////////////////////////////////////////////////
+	convert(oox_sheet->m_oDataValidations.GetPointer());
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
 	convert(oox_sheet->m_oPicture.GetPointer());
+	convert(oox_sheet->m_oSheetProtection.GetPointer());
 	
 	OoxConverter::convert(oox_sheet->m_oExtLst.GetPointer());
 
@@ -365,13 +383,58 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter * oox_header_footer)
 	if (!oox_header_footer) return;
 
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
+{
+	if (!oox_prot) return;
+
+	ods_context->current_table().set_table_protection(true);
+
+	if (oox_prot->m_oInsertColumns.IsInit())
+	{
+		ods_context->current_table().set_table_protection_insert_columns(oox_prot->m_oInsertColumns->ToBool());
+	}
+	if (oox_prot->m_oInsertRows.IsInit())
+	{
+		ods_context->current_table().set_table_protection_insert_rows(oox_prot->m_oInsertRows->ToBool());
+	}
+	if (oox_prot->m_oDeleteColumns.IsInit())
+	{
+		ods_context->current_table().set_table_protection_delete_columns(oox_prot->m_oDeleteColumns->ToBool());
+	}
+	if (oox_prot->m_oDeleteRows.IsInit())
+	{
+		ods_context->current_table().set_table_protection_delete_rows(oox_prot->m_oDeleteRows->ToBool());
+	}
+	if (oox_prot->m_oSelectLockedCells.IsInit())
+	{
+		ods_context->current_table().set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
+	}
+	if (oox_prot->m_oSelectUnlockedCell.IsInit())
+	{
+		ods_context->current_table().set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCell->ToBool());
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
+{
+	if (!oox_validations) return;
+
+	for (size_t i = 0; i < oox_validations->m_arrItems.size(); i++)
+	{
+		convert(oox_validations->m_arrItems[i]);
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
+{
+	if (!oox_validation) return;
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
 {
 	if (!oox_background) return;
 	if (!oox_background->m_oId.IsInit())return;
 
-	std::wstring sID, pathImage, href;
-	sID         = oox_background->m_oId->GetValue();
+	std::wstring pathImage, href, sID = oox_background->m_oId->GetValue();
+
 	pathImage   = find_link_by_id(sID, 1);
 	href		= ods_context->add_image(pathImage);
 
@@ -468,8 +531,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 	if (oox_sheet == NULL)return;
 
 	std::wstring ref = oox_hyperlink->m_oRef.IsInit() ? oox_hyperlink->m_oRef.get() : L"";
-	std::wstring link;
-	
+	std::wstring link;	
+	std::wstring display = oox_hyperlink->m_oDisplay.IsInit() ? oox_hyperlink->m_oDisplay.get() : L"";
+
 	if (oox_hyperlink->m_oRid.IsInit() && oox_sheet->m_pCurRels.IsInit())
 	{
 		OOX::Rels::CRelationShip* oRels = NULL;
@@ -479,10 +543,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 			if(oRels->IsExternal())
 				link= oRels->Target().GetPath();
 		}
+		ods_context->add_hyperlink(ref, link, display, false);
 	}
-	std::wstring display = oox_hyperlink->m_oDisplay.IsInit() ? oox_hyperlink->m_oDisplay.get() : L"";
-	ods_context->add_hyperlink(ref, link, display);
-
+	else if (oox_hyperlink->m_oLocation.IsInit())
+	{
+		link = oox_hyperlink->m_oLocation.get();
+		ods_context->add_hyperlink(ref, link, display, true);
+	}
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::CRow *oox_row_prev)
@@ -729,9 +796,32 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
 	ods_context->end_cell_text();
 	ods_context->current_table().set_cell_text( ods_context->text_context());
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CExternalLink *oox_external_link)
+{
+	if (!oox_external_link) return;
+
+	OOX::IFileContainer* old_container = xlsx_current_container;
+	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(oox_external_link);
+	
+	if (oox_external_link->m_oExternalBook.IsInit())
+	{
+		if (oox_external_link->m_oExternalBook->m_oRid.IsInit())
+		{
+			smart_ptr<OOX::File> file = find_file_by_id(oox_external_link->m_oExternalBook->m_oRid->GetValue());
+			
+			smart_ptr<OOX::External> fileExternal = file.smart_dynamic_cast<OOX::External>();
+			if (fileExternal.IsInit())
+			{
+				ods_context->add_external_reference(fileExternal->Uri().GetPath());
+			}
+		}
+	}
+	xlsx_current_container = old_container;
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 {
-	if (oox_unknown == NULL)return;
+	if (!oox_unknown)return;
 
 	switch(oox_unknown->getType())
 	{
@@ -1651,23 +1741,23 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorder *oox_border, odf_writer::s
 	convert(oox_border->m_oStart.GetPointer()	, left);
 	convert(oox_border->m_oEnd.GetPointer()		, right);
 	
-	if (bottom == top && top == left && left== right && bottom.length() > 0)
+	if (bottom == top && top == left && left == right && !bottom.empty())
 	{
 		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = left;
 	}
 	else
 	{
-		if (bottom.length() >0 )table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if (top.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
-		if (left.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
-		if (right.length() >0 ) table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
+		if (!bottom.empty())table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (!top.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
+		if (!left.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
+		if (!right.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
 	}
 
 	convert(oox_border->m_oDiagonal.GetPointer(), other);
 	
-	if (oox_border->m_oDiagonalDown.IsInit() && other.length()>0) //and true???
+	if (oox_border->m_oDiagonalDown.IsInit() && !other.empty()) //and true???
 		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_= other;
-	if (oox_border->m_oDiagonalUp.IsInit() && other.length()>0) //and true???
+	if (oox_border->m_oDiagonalUp.IsInit() && !other.empty()) //and true???
 		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_= other;
 	//nullable<CBorderProp>						m_oHorizontal;
 	//nullable<CBorderProp>						m_oVertical;
@@ -2111,19 +2201,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 		}
 		if (object->m_oRid.IsInit())
 		{
-			std::wstring pathOle;
-	
 			std::wstring sID = object->m_oRid->GetValue();
-			pathOle = find_link_by_id(sID, 4);
+			
+			std::wstring pathOle = find_link_by_id(sID, 4);
 
 			odf_ref_object = odf_context()->add_oleobject(pathOle);
 		}
 		if ((object->m_oObjectPr.IsInit()) && (object->m_oObjectPr->m_oRid.IsInit()))
 		{
-			std::wstring pathImage;
-	
 			std::wstring sID = object->m_oObjectPr->m_oRid->GetValue();
-			pathImage = find_link_by_id(sID, 1);
+			
+			std::wstring pathImage = find_link_by_id(sID, 1);
 					
 			odf_ref_image = odf_context()->add_imageobject(pathImage);
 		}
@@ -2257,27 +2345,30 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 {
 	if (!oox_cond_rule)return;
 
-	if (oox_cond_rule->m_oType.IsInit())
+	if (false == oox_cond_rule->m_oType.IsInit()) return;
+	
+	ods_context->current_table().start_conditional_rule(oox_cond_rule->m_oType->GetValue());
 	{
-		ods_context->current_table().start_conditional_rule(oox_cond_rule->m_oType->GetValue());
+		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{
-			if (oox_cond_rule->m_oDxfId.IsInit()) 
-			{
-				std::wstring odf_style_name = odf_context()->styles_context()->find_conditional_style_name(oox_cond_rule->m_oDxfId->GetValue(), odf_types::style_family::TableCell);
+			std::wstring odf_style_name = odf_context()->styles_context()->find_conditional_style_name(oox_cond_rule->m_oDxfId->GetValue(), odf_types::style_family::TableCell);
 
-				ods_context->current_table().set_conditional_style_name(odf_style_name);
-			}
-			if (oox_cond_rule->m_oOperator.IsInit()) 
-				ods_context->current_table().set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
+			ods_context->current_table().set_conditional_style_name(odf_style_name);
+		}
+		if (oox_cond_rule->m_oOperator.IsInit()) 
+			ods_context->current_table().set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
 
-			if (oox_cond_rule->m_oText.IsInit()) 
-				ods_context->current_table().set_conditional_text(oox_cond_rule->m_oText.get2());
-			
-			for (size_t i=0; i< oox_cond_rule->m_arrItems.size(); i++)
-				convert(oox_cond_rule->m_arrItems[i]);
-		}	
-		ods_context->current_table().end_conditional_rule();
-	}
+		if (oox_cond_rule->m_oText.IsInit()) 
+			ods_context->current_table().set_conditional_text(oox_cond_rule->m_oText.get2());
+		
+		convert(oox_cond_rule->m_oIconSet.GetPointer());
+		convert(oox_cond_rule->m_oColorScale.GetPointer());
+		convert(oox_cond_rule->m_oDataBar.GetPointer());
+		
+		for (size_t i = 0; i < oox_cond_rule->m_arrFormula.size(); ++i)
+			convert(oox_cond_rule->m_arrFormula[i].GetPointer());
+	}	
+	ods_context->current_table().end_conditional_rule();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataBar *oox_cond_databar)
 {
@@ -2290,33 +2381,26 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataBar *oox_cond_databar)
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-	for (size_t i=0; i< oox_cond_databar->m_arrItems.size(); i++)
-		convert(oox_cond_databar->m_arrItems[i]);
+	for (size_t i=0; i< oox_cond_databar->m_arrValues.size(); i++)
+		convert(oox_cond_databar->m_arrValues[i].GetPointer());
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CColorScale *oox_cond_colorscale)
 {
 	if (!oox_cond_colorscale)return;
 
 	int index = 0;
-	
-    for (std::vector<OOX::Spreadsheet::WritingElement*>::iterator	it = oox_cond_colorscale->m_arrItems.begin();
-																it != oox_cond_colorscale->m_arrItems.end(); ++it)
+
+	for (size_t i = 0; i < oox_cond_colorscale->m_arrValues.size(); ++i)
 	{
-		if (*it == NULL )continue;
-	
-		OOX::EElementType type = (*it)->getType();
-		if (type == OOX::et_x_ConditionalFormatValueObject)
-		{
-			convert(*it);
-		}
-		else
-		{
-			_CP_OPT(odf_types::color) color;
-			convert(dynamic_cast<OOX::Spreadsheet::CColor*>(*it), color);
-			
-			ods_context->current_table().add_conditional_colorscale( index++, color );
-		}
+		convert(oox_cond_colorscale->m_arrValues[i].GetPointer());
 	}
+	for (size_t i = 0; i < oox_cond_colorscale->m_arrColors.size(); ++i)
+	{
+		_CP_OPT(odf_types::color) color;
+		convert(dynamic_cast<OOX::Spreadsheet::CColor*>(oox_cond_colorscale->m_arrColors[i].GetPointer()), color);
+
+		ods_context->current_table().add_conditional_colorscale( index++, color );
+	}	
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
 {
@@ -2327,8 +2411,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-	for (size_t i=0; i< oox_cond_iconset->m_arrItems.size(); i++)
-		convert(oox_cond_iconset->m_arrItems[i]);
+	for (size_t i=0; i< oox_cond_iconset->m_arrValues.size(); i++)
+	{
+		convert(oox_cond_iconset->m_arrValues[i].GetPointer());
+	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox_cond_value)
 {

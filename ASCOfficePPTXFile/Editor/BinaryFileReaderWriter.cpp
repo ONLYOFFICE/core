@@ -717,7 +717,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteUSHORT(const _UINT16& lValue)
 	{
 		CheckBufferSize(UINT16_SIZEOF);
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         memcpy(m_pStreamCur, &lValue, sizeof(_UINT16));
 #else
         *((_UINT16*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
@@ -728,7 +728,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteULONG(const _UINT32& lValue)
 	{
 		CheckBufferSize(UINT32_SIZEOF);
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         memcpy(m_pStreamCur, &lValue, sizeof(_UINT32));
 #else
         *((_UINT32*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
@@ -739,7 +739,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteLONG(const _INT32& lValue)
 	{
 		CheckBufferSize(INT32_SIZEOF);
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         memcpy(m_pStreamCur, &lValue, sizeof(_INT32));
 #else
         *((_INT32*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
@@ -750,7 +750,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteLONG64(const _INT64& lValue)
 	{
 		CheckBufferSize(INT64_SIZEOF);
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         memcpy(m_pStreamCur, &lValue, sizeof(_INT64));
 #else
         *((_INT64*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
@@ -761,7 +761,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteINT(const _INT32& lValue)
 	{
 		CheckBufferSize(INT32_SIZEOF);
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         memcpy(m_pStreamCur, &lValue, sizeof(_INT32));
 #else
         *((_INT32*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
@@ -794,7 +794,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
 	{
 		CheckBufferSize(DOUBLE_SIZEOF);
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         memcpy(m_pStreamCur, &dValue, sizeof(double));
 #else
 		*((double*)m_pStreamCur) = dValue; // EXC_ARM_DA_ALIGN on ios
@@ -815,7 +815,7 @@ namespace NSBinPptxRW
 		_UINT32 lSizeMem	= lSize * sizeof(char);
 
 		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         memcpy(m_pStreamCur, &lSizeMem, sizeof(_UINT32));
 #else
         *((_UINT32*)m_pStreamCur) = lSizeMem; // EXC_ARM_DA_ALIGN on ios
@@ -926,7 +926,7 @@ namespace NSBinPptxRW
 		{
 			*pData = (BYTE)m_arMainTables[i].Type;
 			++pData;
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
             memcpy(pData, &m_arMainTables[i].SeekPos, sizeof(_INT32));
 #else
             *((_INT32*)pData) = m_arMainTables[i].SeekPos; // EXC_ARM_DA_ALIGN on ios
@@ -1661,7 +1661,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 1 >= m_lSize)
 			return 0;
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         _UINT16 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_UINT16));
 #else
@@ -1677,7 +1677,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 3 >= m_lSize)
 			return 0;
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         _UINT32 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_UINT32));
 #else
@@ -1691,7 +1691,7 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 7 >= m_lSize)
 			return 0;
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         _INT64 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_INT64));
 #else
@@ -1717,7 +1717,7 @@ namespace NSBinPptxRW
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
             return 0;
-#ifdef _IOS
+#if defined(_IOS) || defined(__ANDROID__)
         double res = 0.0;
         memcpy(&res, m_pDataCur, sizeof(double));
 #else

@@ -79,7 +79,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if( oReader, _T("spid"), m_sSpId )
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -125,7 +124,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if( oReader, _T("relId"), m_oRelId )
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -133,10 +131,7 @@ namespace OOX
 
 		public:
 
-			// Attributes
             nullable<std::wstring> m_oRelId;
-
-			// Childs
 		};
 
 
@@ -168,23 +163,21 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
-                WritingElement_ReadAttributes_Read_if( oReader, _T("uri"), m_sUri )
+                WritingElement_ReadAttributes_Read_if ( oReader, L"uri", m_sUri )
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 
 		public:
 
-			// Attributes
             nullable<std::wstring>  m_sUri;
             std::wstring            m_sAdditionalNamespace;
 
-			// Childs
 			nullable<CCompatExt>							m_oCompatExt;
 			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
 			nullable<CDataModelExt>							m_oDataModelExt;
 			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
+            nullable<std::wstring>							m_oId;
 			
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 		};
@@ -200,16 +193,13 @@ namespace OOX
 			}
 			virtual ~COfficeArtExtensionList()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
 				{
 					if ( m_arrExt[nIndex] ) delete m_arrExt[nIndex];
 					m_arrExt[nIndex] = NULL;
 				}
 				m_arrExt.clear();
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
@@ -230,25 +220,23 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
             {
-                return toXMLWithNS(_T("a:"));
+                return toXMLWithNS(L"a:");
             }
             std::wstring toXMLWithNS(const std::wstring& sNamespace) const
 			{
-                std::wstring sResult = _T("<");
-                sResult += sNamespace;
-                sResult += _T("extLst>");
+				if (m_arrExt.empty()) return L"";
+
+                std::wstring sResult = L"<" + sNamespace + L"extLst>";
 				
-                for ( unsigned int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
+                for ( size_t nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
 				{
 					if (m_arrExt[nIndex])
                         sResult += m_arrExt[nIndex]->toXMLWithNS(sNamespace);
 				}
 
-                sResult += _T("</");
-                sResult += sNamespace;
-                sResult += _T("extLst>");
+                sResult += L"</" + sNamespace + L"extLst>";
 
 				return sResult;
 			}
@@ -257,9 +245,6 @@ namespace OOX
 				return OOX::et_a_extLst;
 			}
 
-		public:
-
-			// Childs
             std::vector<OOX::Drawing::COfficeArtExtension*> m_arrExt;
 		};
 	} // namespace Drawing

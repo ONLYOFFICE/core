@@ -79,6 +79,15 @@ void OfficeArtBlip::readCompressedData(XLS::CFRecord& record, OfficeArtMetafileH
 	record.skipNunBytes(metafileHeader.cbSave);					
 
 }
+void OfficeArtBlip::loadFields(IBinaryReader* reader)
+{
+	OfficeArtRecordHeader rc_header;
+	rc_header.load(reader);
+	
+	BYTE tag	= 0xff;	
+	recType		= rc_header.recType;	
+	bool isCompressed = false;
+}
 
 void OfficeArtBlip::loadFields(XLS::CFRecord& record)
 {

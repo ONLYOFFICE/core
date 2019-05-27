@@ -34,7 +34,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/Base64.h"
-#include "../DesktopEditor/common/String.h"
+#include "../DesktopEditor/common/StringExt.h"
 
 #include "../DesktopEditor/graphics/MetafileToRenderer.h"
 #include "../DesktopEditor/raster/BgraFrame.h"

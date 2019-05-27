@@ -52,6 +52,8 @@
 
 namespace MetaFile
 {
+	class CEmfClip;
+
 	class CMetaFileRenderer : public IOutputDevice
 	{
 	public:
@@ -136,18 +138,51 @@ namespace MetaFile
 
 			TPointD oTL = TranslatePoint(dX, dY);
 			TPointD oBR = TranslatePoint(dX + dW, dY + dH);
-			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
+
+			double dImageX = oTL.x;
+			double dImageY = oTL.y;
+			double dImageW = oBR.x - oTL.x;
+			double dImageH = oBR.y - oTL.y;
+
+			if (dImageH < 0 || dImageW < 0)
+			{
+				double dM11, dM12, dM21, dM22, dMx, dMy;
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dMx, &dMy);
+
+				double dKx = 1, dKy = 1, dShiftKoefX = 0, dShiftKoefY = 0;
+				if (dImageW < 0)
+				{
+					dKx = -1;
+					dShiftKoefX = 2 * dImageX + dImageW;
+
+					dImageW = -dImageW;
+					dImageX -= dImageW;
+				}
+
+				if (dImageH < 0)
+				{
+					dKy = -1;
+					dShiftKoefY = 2 * dImageY + dImageH;
+
+					dImageH = -dImageH;
+					dImageY -= dImageH;
+				}
+
+				m_pRenderer->SetTransform(dKx * dM11, dKx * dM12, dKy * dM21, dKy * dM22, dShiftKoefX * dM11 + dShiftKoefY * dM21 + dMx, dShiftKoefX * dM12 + dShiftKoefY * dM22 + dMy);
+			}
+
+			m_pRenderer->DrawImage(&oImage, dImageX, dImageY, dImageW, dImageH);
 		}
-		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx)
+		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode)
 		{
 			CheckEndPath();
-
-			UpdateTransform();
-			UpdateClip();
 
 			IFont* pFont = m_pFile->GetFont();
 			if (!pFont)
 				return;
+
+			UpdateClip();
+			UpdateTransform(iGraphicsMode);
 
 			int lLogicalFontHeight = pFont->GetHeight();
 			if (lLogicalFontHeight < 0)
@@ -155,7 +190,7 @@ namespace MetaFile
 			if (lLogicalFontHeight < 0.01)
 				lLogicalFontHeight = 18;
 
-			double dFontHeight = fabs(lLogicalFontHeight * m_dScaleY * m_pFile->GetPixelHeight() / 25.4 * 72);
+			double dFontHeight = fabs(lLogicalFontHeight * m_dScaleY / 25.4 * 72);
 
 			std::wstring wsFaceName = pFont->GetFaceName();
 			m_pRenderer->put_FontName(wsFaceName);
@@ -292,6 +327,52 @@ namespace MetaFile
 			}
 
 			bool bChangeCTM = false;
+
+			if (iGraphicsMode == GM_COMPATIBLE)
+			{
+				// В данной ситуации матрица преобразования должна быть диагональной, в ней могут быть только отражения,
+				// которые в данном случае нужно проправить
+
+				double dM11, dM12, dM21, dM22, dRx, dRy;
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+				double dShiftX = 0;
+				double dShiftY = 0;
+
+				// Нам нужно знать в следствие чего происходит флип, из-за Window или Viewport
+				if (dM11 < -0.00001)
+				{
+					dX -= fabs(fW);
+
+					if (m_pFile->IsWindowFlippedX())
+					{
+						dShiftX = (2 * dX + fabs(fW)) * dM11;
+					}
+					else
+					{
+						dShiftX = (2 * dX - fabs(fW)) * dM11;
+					}
+				}
+
+				if (dM22 < - 0.00001)
+				{
+					dY -= fabs(fH);
+					if (m_pFile->IsWindowFlippedY())
+					{
+						dShiftY = (2 * dY + fabs(fH)) * dM22;
+					}
+					else
+					{
+						dShiftY = (2 * dY - fabs(fH)) * dM22;
+					}
+				}
+
+				m_pRenderer->ResetTransform();
+				m_pRenderer->SetTransform(fabs(dM11), 0, 0, fabs(dM22), dShiftX + dRx, dShiftY + dRy);
+
+				bChangeCTM = true;
+			}
+
 			if (0 != pFont->GetEscapement())
 			{
 				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
@@ -372,8 +453,8 @@ namespace MetaFile
 		{
 			CheckEndPath();
 
-			UpdateTransform();
 			UpdateClip();
+			UpdateTransform();
 
 			m_lDrawPathType = -1;
 			if (true == UpdateBrush())
@@ -537,6 +618,25 @@ namespace MetaFile
 			m_pRenderer->PathCommandEnd();
 
 			m_bStartedPath = false;
+		}		
+		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY)
+		{
+			double dKoefX = m_dScaleX;
+			double dKoefY = m_dScaleY;
+
+			m_pRenderer->ResetTransform();
+			m_pRenderer->SetTransform(dM11, dM12 * dKoefY / dKoefX, dM21 * dKoefX / dKoefY, dM22, dX * dKoefX, dY * dKoefY);
+		}
+		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY)
+		{
+			double dKoefX = m_dScaleX;
+			double dKoefY = m_dScaleY;
+
+			m_pRenderer->GetTransform(pdM11, pdM12, pdM21, pdM22, pdX, pdY);
+			*pdM12 *= dKoefX / dKoefY;
+			*pdM21 *= dKoefY / dKoefX;
+			*pdX /= dKoefX;
+			*pdY /= dKoefY;
 		}
 
 	private:
@@ -666,12 +766,12 @@ namespace MetaFile
 
 			return true;
 		}
-		void UpdateTransform()
+		void UpdateTransform(int iGraphicsMode = GM_ADVANCED)
 		{
 			double dKoefX = m_dScaleX;
 			double dKoefY = m_dScaleY;
 
-			TEmfXForm* pMatrix = m_pFile->GetTransform();
+			TEmfXForm* pMatrix = m_pFile->GetTransform(iGraphicsMode);
 			m_pRenderer->ResetTransform();
 			m_pRenderer->SetTransform(pMatrix->M11, pMatrix->M12 * dKoefY / dKoefX, pMatrix->M21 * dKoefX / dKoefY, pMatrix->M22, pMatrix->Dx * dKoefX, pMatrix->Dy * dKoefY);
 		}
@@ -682,10 +782,9 @@ namespace MetaFile
 				return false;
 
 			int nColor = pPen->GetColor();
-			double dPixelWidth = m_pFile->GetPixelWidth();
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
-			double dWidth = pPen->GetWidth() * m_dScaleX * dPixelWidth;
+			double dWidth = pPen->GetWidth() * m_dScaleX;
 			if (dWidth <= 0.01)
 				dWidth = 0;
 
@@ -711,7 +810,7 @@ namespace MetaFile
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
 
-			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX * dPixelWidth;
+			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX;
 
 			// TODO: Реализовать PS_USERSTYLE
 			BYTE nDashStyle = Aggplus::DashStyleSolid;;
@@ -719,7 +818,12 @@ namespace MetaFile
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
 			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle)
 			{
-				dWidth = 0; // Специальное значение для 1pх карандаша
+				// TODO: Ранее здесь специально ставилась толщина 0, что любой рендерер должен
+				//       воспринимать как толщину в 1px. Но сейчас это не работает в графическом ренедерере,
+				//       поэтому временно это убрано.
+				//       Толщиной в 1px - именно так рисуется в винде любая пунктирная линия в метафайле.
+
+				//dWidth = 0; // Специальное значение для 1pх карандаша
 
 				double dDpiX;
 				m_pRenderer->get_DpiX(&dDpiX);
@@ -823,7 +927,7 @@ namespace MetaFile
 			return true;
 		}
 		bool UpdateClip()
-		{
+		{			
 			IClip* pClip = m_pFile->GetClip();
 			if (!pClip)
 				return false;

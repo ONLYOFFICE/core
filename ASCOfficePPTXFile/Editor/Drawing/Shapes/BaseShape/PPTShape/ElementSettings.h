@@ -42,7 +42,7 @@
 class CProperty
 {
 public:
-    NSOfficeDrawing::PropertyId		m_ePID;
+    ODRAW::ePropertyId				m_ePID;
     bool							m_bIsBlip;
     bool							m_bComplex;
     _UINT32							m_lValue;
@@ -52,7 +52,7 @@ public:
 
     CProperty()
     {
-        m_ePID = NSOfficeDrawing::left;
+        m_ePID = ODRAW::left;
         m_bIsBlip = false;
         m_bComplex = false;
         m_lValue = 0;
@@ -70,7 +70,7 @@ public:
         // только пока без учета bComplex
         // т.к. Complex - учитывается в контейнере, хранящем все проперти
         USHORT lMem = StreamUtils::ReadWORD(pStream);
-        m_ePID = (NSOfficeDrawing::PropertyId)(lMem & 0x3FFF);
+        m_ePID = (ODRAW::ePropertyId)(lMem & 0x3FFF);
 
         m_bIsBlip = ((lMem & 0x4000) == 0x4000);
         m_bComplex = ((lMem & 0x8000) == 0x8000);
@@ -82,23 +82,23 @@ public:
     {
         if (m_bComplex && m_lValue > 0)
         {
-            if (NSOfficeDrawing::dgmConstrainBounds		== m_ePID ||
-                    NSOfficeDrawing::fillShadeColors		== m_ePID ||
-                    NSOfficeDrawing::lineDashStyle			== m_ePID ||
-                    NSOfficeDrawing::pAdjustHandles			== m_ePID ||
-                    NSOfficeDrawing::pConnectionSites		== m_ePID ||
-                    NSOfficeDrawing::pConnectionSitesDir	== m_ePID ||
-                    NSOfficeDrawing::pInscribe				== m_ePID ||
-                    NSOfficeDrawing::pSegmentInfo			== m_ePID ||
-                    NSOfficeDrawing::pVertices				== m_ePID ||
-                    NSOfficeDrawing::pGuides				== m_ePID ||
-                    NSOfficeDrawing::pWrapPolygonVertices	== m_ePID ||
-                    NSOfficeDrawing::pRelationTbl			== m_ePID ||
-                    NSOfficeDrawing::tableRowProperties		== m_ePID ||
-                    NSOfficeDrawing::lineLeftDashStyle		== m_ePID ||
-                    NSOfficeDrawing::lineTopDashStyle		== m_ePID ||
-                    NSOfficeDrawing::lineRightDashStyle		== m_ePID ||
-                    NSOfficeDrawing::lineBottomDashStyle	== m_ePID)
+            if (ODRAW::dgmConstrainBounds		== m_ePID ||
+                    ODRAW::fillShadeColors		== m_ePID ||
+                    ODRAW::lineDashStyle		== m_ePID ||
+                    ODRAW::pAdjustHandles		== m_ePID ||
+                    ODRAW::pConnectionSites		== m_ePID ||
+                    ODRAW::pConnectionSitesDir	== m_ePID ||
+                    ODRAW::pInscribe			== m_ePID ||
+                    ODRAW::pSegmentInfo			== m_ePID ||
+                    ODRAW::pVertices			== m_ePID ||
+                    ODRAW::pGuides				== m_ePID ||
+                    ODRAW::pWrapPolygonVertices	== m_ePID ||
+                    ODRAW::pRelationTbl			== m_ePID ||
+                    ODRAW::tableRowProperties	== m_ePID ||
+                    ODRAW::lineLeftDashStyle	== m_ePID ||
+                    ODRAW::lineTopDashStyle		== m_ePID ||
+                    ODRAW::lineRightDashStyle	== m_ePID ||
+                    ODRAW::lineBottomDashStyle	== m_ePID)
             {
                 WORD nElems			= StreamUtils::ReadWORD(pStream);
                 WORD nElemsAlloc	= StreamUtils::ReadWORD(pStream);
@@ -122,7 +122,7 @@ public:
 
             switch( m_ePID )
             {
-            case NSOfficeDrawing::fillBlip:
+            case ODRAW::fillBlip:
             {
                 SRecordHeader oHeader;
                 if (oHeader.ReadFromStream(pStream) == false )
@@ -173,7 +173,7 @@ public:
     std::vector<CProperty> m_arProperties;
     // по идее - это instance, но нам так удобнее,
     // тем более это класс - не связанный с RecordHeader
-    long m_lCount;
+    size_t m_lCount;
 
     CProperties() : m_arProperties()
     {
@@ -187,7 +187,7 @@ public:
     void FromStream(POLE::Stream* pStream, long lCount)
     {
         m_lCount = lCount;
-        for (long lIndex = 0; lIndex < m_lCount; ++lIndex)
+        for (size_t lIndex = 0; lIndex < m_lCount; ++lIndex)
         {
             CProperty elem;
             m_arProperties.push_back(elem);
@@ -195,7 +195,7 @@ public:
         }
         // теперь читаем дополнительную информацию
         // сортировано по pid'ам (но у нас пока просто по-порядку)
-        for (long lIndex = 0; lIndex < m_lCount; ++lIndex)
+        for (size_t lIndex = 0; lIndex < m_lCount; ++lIndex)
         {
             m_arProperties[lIndex].ComplexFromStream(pStream);
         }
@@ -205,7 +205,7 @@ public:
     _UINT32 GetLen()
     {
         _UINT32 dwLen = 6 * m_lCount;
-        for (long nIndex = 0; nIndex < m_lCount; ++nIndex)
+        for (size_t nIndex = 0; nIndex < m_lCount; ++nIndex)
         {
             if (m_arProperties[nIndex].m_bComplex)
             {

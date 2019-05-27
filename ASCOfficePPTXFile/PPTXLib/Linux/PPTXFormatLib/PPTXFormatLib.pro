@@ -83,6 +83,7 @@ SOURCES += \
 
 SOURCES += pptxformatlib.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/BaseShape.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/toVmlConvert.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptFormula.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxFormula.cpp \
@@ -409,7 +410,6 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/Logic/TextListStyle.h \
     ../../../PPTXFormat/Logic/TextParagraphPr.h \
     ../../../PPTXFormat/Logic/TextSpacing.h \
-    ../../../PPTXFormat/Logic/Timing.h \
     ../../../PPTXFormat/Logic/TxBody.h \
     ../../../PPTXFormat/Logic/TxStyles.h \
     ../../../PPTXFormat/Logic/UniColor.h \

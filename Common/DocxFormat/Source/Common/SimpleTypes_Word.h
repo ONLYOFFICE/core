@@ -4884,11 +4884,11 @@ namespace SimpleTypes
 	enum EShd
 	{
 		shdClear                 =  0,
-		shdDiagCross             =  1,
-		shdDiagStripe            =  2,
-		shdHorzCross             =  3,
-		shdHorzStripe            =  4,
-		shdNil                   =  5,
+		shdNil                   =  1,
+		shdDiagCross             =  2,
+		shdDiagStripe            =  3,
+		shdHorzCross             =  4,
+		shdHorzStripe            =  5,
 		shdPct10                 =  6,
 		shdPct12                 =  7,
 		shdPct15                 =  8,
@@ -6778,22 +6778,23 @@ namespace SimpleTypes
 
         virtual ECryptAlgoritmName FromString(std::wstring &sValue)
 		{
-            if       ( (L"MD2")        == sValue ) this->m_eValue = cryptalgoritmnameMD2;
-            else if  ( (L"MD4")        == sValue ) this->m_eValue = cryptalgoritmnameMD4;
-            else if  ( (L"MD5")        == sValue ) this->m_eValue = cryptalgoritmnameMD5;
-            else if  ( (L"RIPEMD-128") == sValue ) this->m_eValue = cryptalgoritmnameRIPEMD128;
-            else if  ( (L"RIPEMD-160") == sValue ) this->m_eValue = cryptalgoritmnameRIPEMD160;
-            else if  ( (L"SHA-1")      == sValue ) this->m_eValue = cryptalgoritmnameSHA1;
-            else if  ( (L"SHA-256")    == sValue ) this->m_eValue = cryptalgoritmnameSHA256;
-            else if  ( (L"SHA-384")    == sValue ) this->m_eValue = cryptalgoritmnameSHA384;
-            else if  ( (L"SHA-512")    == sValue ) this->m_eValue = cryptalgoritmnameSHA512;
-            else if  ( (L"WHIRLPOOL")  == sValue ) this->m_eValue = cryptalgoritmnameWHIRLPOOL;
-            else                                    this->m_eValue = eDefValue;
+            if       ( L"MD2"        == sValue || L"1"	== sValue ) this->m_eValue = cryptalgoritmnameMD2;
+            else if  ( L"MD4"        == sValue || L"2"	== sValue ) this->m_eValue = cryptalgoritmnameMD4;
+            else if  ( L"MD5"        == sValue || L"3"	== sValue ) this->m_eValue = cryptalgoritmnameMD5;
+            else if  ( L"RIPEMD-128" == sValue || L"6"	== sValue ) this->m_eValue = cryptalgoritmnameRIPEMD128;
+            else if  ( L"RIPEMD-160" == sValue || L"7"	== sValue ) this->m_eValue = cryptalgoritmnameRIPEMD160;
+            else if  ( L"SHA-1"      == sValue || L"4"	== sValue ) this->m_eValue = cryptalgoritmnameSHA1;
+            else if  ( L"SHA-256"    == sValue || L"12"	== sValue ) this->m_eValue = cryptalgoritmnameSHA256;
+            else if  ( L"SHA-384"    == sValue || L"13"	== sValue ) this->m_eValue = cryptalgoritmnameSHA384;
+            else if  ( L"SHA-512"    == sValue || L"14"	== sValue ) this->m_eValue = cryptalgoritmnameSHA512;
+            else if  ( L"WHIRLPOOL"  == sValue ) this->m_eValue = cryptalgoritmnameWHIRLPOOL;
+            else 
+				this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-        virtual std::wstring            ToString  () const
+        virtual std::wstring ToString() const
 		{
             switch(this->m_eValue)
 			{
@@ -6810,7 +6811,6 @@ namespace SimpleTypes
 			default                         : return (L"");
 			}
 		}
-
 		SimpleType_FromString     (ECryptAlgoritmName)
 		SimpleType_Operator_Equal (CCryptAlgoritmName)
 	};

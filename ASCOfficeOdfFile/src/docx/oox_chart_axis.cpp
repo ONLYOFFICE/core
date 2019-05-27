@@ -122,6 +122,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 	oox_chart_shape			shape;
 	_CP_OPT(bool)			boolVal;
 	_CP_OPT(std::wstring)	strVal;
+	_CP_OPT(double)			doubleVal;
 	
 	oox_title title;
 	title.set_content(content_.title_);//todo нужно задать понармальному layout
@@ -146,7 +147,23 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 					CP_XML_ATTR(L"val", "minMax");//default
 				}
 			}
-			odf_reader::GetProperty(content_.properties_,L"logarithmic",boolVal);
+			odf_reader::GetProperty(content_.properties_,L"maximum", doubleVal);
+			if (doubleVal)
+			{
+				CP_XML_NODE(L"c:max")
+				{
+					CP_XML_ATTR(L"val", *doubleVal);
+				}
+			}
+			odf_reader::GetProperty(content_.properties_,L"minimum", doubleVal);
+			if (doubleVal)
+			{
+				CP_XML_NODE(L"c:min")
+				{
+					CP_XML_ATTR(L"val", *doubleVal);
+				}
+			}
+			odf_reader::GetProperty(content_.properties_,L"logarithmic", boolVal);
 			if ((boolVal == true) && (boolVal.get()==true))
 			{
 				CP_XML_NODE(L"c:logBase")

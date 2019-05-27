@@ -34,8 +34,9 @@
 
 #include "BinReaderWriterDefines.h"
 
-#include "../../Common/DocxFormat/Source/Common/SimpleTypes_OMath.h"
 #include "../../Common/DocxFormat/Source/MathEquation/OutputDev.h"
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_OMath.h"
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_Shared.h"
 #include <stack>
 
 namespace MathEquation

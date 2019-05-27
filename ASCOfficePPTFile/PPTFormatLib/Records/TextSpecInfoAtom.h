@@ -40,7 +40,7 @@ public:
 	LONG											m_lOffsetInStream;
 	_UINT32											m_lCount; 
 
-	std::vector<NSPresentationEditor::CTextSIRun>	m_arrSIs;
+	std::vector<PPT_FORMAT::CTextSIRun>	m_arrSIs;
 
 	
 	CRecordTextSpecInfoAtom()
@@ -62,7 +62,7 @@ public:
 		_UINT32 lMemCount = 0;
 		while (true)
 		{
-			NSPresentationEditor::CTextSIRun elm;
+			PPT_FORMAT::CTextSIRun elm;
 			m_arrSIs.push_back(elm);
 			
 			NSStreamReader::Read(pStream, m_arrSIs.back());

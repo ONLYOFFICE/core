@@ -47,7 +47,7 @@ public:
     CRecordTextSpecInfoAtom*    m_pTextSpecInfo;
     CRecordTextRulerAtom*       m_pTextRuler;
 
-	std::vector<NSPresentationEditor::CTextRange> m_arRanges;
+	std::vector<PPT_FORMAT::CTextRange> m_arRanges;
 
 	std::wstring	m_strText;
 	_UINT32			m_nTextType;
@@ -97,7 +97,7 @@ public:
 		pTextAttributes->m_lStyleThemeIndex	= m_lStyleThemeIndex;
 
 		if (NULL != m_pTextStyleProp)
-			NSPresentationEditor::ConvertPPTTextToEditorStructure(m_pTextStyleProp->m_arrPFs, m_pTextStyleProp->m_arrCFs, m_strText, *pTextAttributes); 
+			PPT_FORMAT::ConvertPPTTextToEditorStructure(m_pTextStyleProp->m_arrPFs, m_pTextStyleProp->m_arrCFs, m_strText, *pTextAttributes); 
 
 		if (NULL != m_pTextRuler)
 			pTextAttributes->m_oRuler = m_pTextRuler->m_oTextRuler;

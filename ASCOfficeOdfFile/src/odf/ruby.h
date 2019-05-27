@@ -53,9 +53,7 @@ public:
     static const ElementType type = typeTextRubyBase;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-public:
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     ruby_base() {}
 
 private:
@@ -63,7 +61,6 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
     office_element_ptr_array content_;
   
 };
@@ -82,10 +79,8 @@ public:
     static const ElementType type = typeTextRubyText;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
-public:
     ruby_text() {}
 
 private:
@@ -93,7 +88,6 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
 	odf_types::style_ref		text_style_name_;    
     office_element_ptr_array	content_;
   

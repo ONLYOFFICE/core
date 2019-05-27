@@ -89,7 +89,7 @@ namespace PPTX
 
 				if (oBlip.blip.is_init() && oBlip.blip->embed.is_init())
 				{
-					std::wstring fopacity = _T("");
+					std::wstring fopacity;
 					size_t eff_count = oBlip.blip->Effects.size();
 					for (size_t eff = 0; eff < eff_count; ++eff)
 					{
@@ -108,7 +108,7 @@ namespace PPTX
 								if (nA > 65536)
 									nA = 65536;
 
-                                fopacity = _T(" opacity=\"") + std::to_wstring(nA) + _T("f\"");
+                                fopacity = L" opacity=\"" + std::to_wstring(nA) + L"f\"";
 							}
 							break;
 						}
@@ -118,28 +118,28 @@ namespace PPTX
 
 					if (bOle || bSignature)
 					{
-						strAttr = _T(" filled=\"f\"");
-						strNode = _T("<v:imagedata r:id=\"") + strId + _T("\" o:title=\"\" />");
+						strAttr = L" filled=\"f\"";
+						strNode = L"<v:imagedata r:id=\"" + strId + L"\" o:title=\"\" />";
 					}
 					else
 					{
 						if (oBlip.tile.is_init())
-							strNode = _T("<v:fill r:id=\"") + strId + _T("\" o:title=\"\" type=\"tile\"") + fopacity + _T(" />");
+							strNode = L"<v:fill r:id=\"" + strId + L"\" o:title=\"\" type=\"tile\"" + fopacity + L" />";
 						else
-							strNode = _T("<v:fill r:id=\"") + strId + _T("\" o:title=\"\" type=\"frame\"") + fopacity + _T(" />");
+							strNode = L"<v:fill r:id=\"" + strId + L"\" o:title=\"\" type=\"frame\"" + fopacity + L" />";
 					}
 				}				
 			}
 			else if (fill.is<SolidFill>())
 			{
 				ARGB = fill.as<SolidFill>().Color.GetRGBColor(oTheme, oClrMap, ARGB);
-				strAttr = _T(" fillcolor=\"") + GetHexColor(ARGB) + _T("\"");
+				strAttr = L" fillcolor=\"" + GetHexColor(ARGB) + L"\"";
 
 				BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 				if (A != 255)
 				{
 					int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
-                    strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
+                    strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 				}
 			}
 			else if (fill.is<GradFill>())
@@ -148,29 +148,29 @@ namespace PPTX
 				if (oGrad.GsLst.size() > 0)
 				{
 					ARGB = oGrad.GsLst[0].color.GetRGBColor(oTheme, oClrMap, ARGB);
-					strAttr = _T(" fillcolor=\"") + GetHexColor(ARGB) + _T("\"");
+					strAttr = L" fillcolor=\"" + GetHexColor(ARGB) + L"\"";
 
 					BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 					if (A != 255)
 					{
 						int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
-                        strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
+                        strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 					}
 				}
 			}
 			else if (fill.is<NoFill>() || !fill.is_init())
 			{
-				strAttr = _T(" filled=\"f\"");
+				strAttr = L" filled=\"f\"";
 			}
 			else
 			{
-				strAttr = _T(" fillcolor=\"") + GetHexColor(ARGB) + _T("\"");
+				strAttr = L" fillcolor=\"" + GetHexColor(ARGB) + L"\"";
 
 				BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 				if (A != 255)
 				{
 					int fopacity = (int)(((double)A / 255.0) * 65536);
-                    strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
+                    strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 				}
 			}
 
@@ -200,10 +200,10 @@ namespace PPTX
 			if (line.Fill.is<SolidFill>())
 			{
 				ARGB = line.Fill.as<SolidFill>().Color.GetRGBColor(oTheme, oClrMap, ARGB);
-				strAttr = _T(" strokecolor=\"") + GetHexColor(ARGB) + _T("\"");
+				strAttr = L" strokecolor=\"" + GetHexColor(ARGB) + L"\"";
 			}
 			else if (bOle || bSignature)
-				strAttr = _T(" stroked=\"f\"");
+				strAttr = L" stroked=\"f\"";
 
 			if (line.w.is_init())
 			{
@@ -241,15 +241,17 @@ namespace PPTX
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if (name == _T("sp") || name == _T("wsp"))
+			if (name == L"sp" || name == L"wsp")
 				m_elem.reset(new Logic::Shape(oReader));
-			else if (name == _T("pic"))
+			else if (name == L"pic")
 				m_elem.reset(new Logic::Pic(oReader));
-			else if (name == _T("cxnSp"))
+			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(oReader));
-			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas") || name == _T("wpc"))
+			else if (name == L"lockedCanvas")
+				m_elem.reset(new Logic::LockedCanvas(oReader));
+			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
 				m_elem.reset(new Logic::SpTree(oReader));
-			else if (name == _T("graphicFrame"))
+			else if (name == L"graphicFrame")
 			{
 				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame(oReader);
 
@@ -258,7 +260,7 @@ namespace PPTX
 				else
 					RELEASEOBJECT(pGraphic);
 			}
-			else if (name == _T("AlternateContent"))
+			else if (name == L"AlternateContent")
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -291,21 +293,23 @@ namespace PPTX
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
-			if (name == _T("sp") || name == _T("wsp"))
+			if (name == L"sp" || name == L"wsp")
 				m_elem.reset(new Logic::Shape(node));
-			else if (name == _T("pic"))
+			else if (name == L"pic")
 				m_elem.reset(new Logic::Pic(node));
-			else if (name == _T("cxnSp"))
+			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(node));
-			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas") || name == _T("wpc"))
+			else if (name == L"lockedCanvas")
+				m_elem.reset(new Logic::LockedCanvas(node));
+			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
 				m_elem.reset(new Logic::SpTree(node));
-			else if (name == _T("graphicFrame"))
+			else if (name == L"graphicFrame")
 				m_elem.reset(new Logic::GraphicFrame(node));
-			else if (name == _T("AlternateContent"))
+			else if (name == L"AlternateContent")
 			{
 				bool isEmpty = true;
 				XmlUtils::CXmlNode oNodeChoice;
-				if (node.GetNode(_T("mc:Choice"), oNodeChoice))
+				if (node.GetNode(L"mc:Choice", oNodeChoice))
 				{
 					XmlUtils::CXmlNode oNodeFall;
 					XmlUtils::CXmlNodes oNodesC;
@@ -313,11 +317,11 @@ namespace PPTX
 					//todo better check (a14 can be math, slicer)
 					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 					{
-						oNodeChoice.GetNodes(_T("*"), oNodesC);
+						oNodeChoice.GetNodes(L"*", oNodesC);
 					}
-					else if (node.GetNode(_T("mc:Fallback"), oNodeFall))
+					else if (node.GetNode(L"mc:Fallback", oNodeFall))
 					{
-						oNodeFall.GetNodes(_T("*"), oNodesC);
+						oNodeFall.GetNodes(L"*", oNodesC);
 					}
 					if (1 == oNodesC.GetCount())
 					{
@@ -337,6 +341,30 @@ namespace PPTX
 			else m_elem.reset();
 		}
 
+		std::wstring SpTreeElem::GetUriElem()
+		{
+			if (m_elem.IsInit() == false)
+			{
+				return L"";
+				//return L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
+			}
+			else if (m_elem->getType() == OOX::et_lc_LockedCanvas)
+			{
+				return L"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas";
+			}
+			else if (m_elem->getType() == OOX::et_p_ShapeTree)
+			{
+				return L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup";
+			}
+			else if (m_elem->getType() == OOX::et_pic)
+			{
+				return L"http://schemas.openxmlformats.org/drawingml/2006/picture";
+			}
+			else
+			{
+				return L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
+			}
+		}
 		void SpTreeElem::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			BYTE _type = pReader->GetUChar();
@@ -347,9 +375,8 @@ namespace PPTX
 				{
 					Logic::Shape* p = new Logic::Shape();
 					p->fromPPTY(pReader);
-					m_elem.reset(p);
-					break;
-				}
+					m_elem.reset(p);					
+				}break;
 			case SPTREE_TYPE_OLE:
 			case SPTREE_TYPE_PIC:
 			case SPTREE_TYPE_AUDIO:
@@ -369,16 +396,27 @@ namespace PPTX
 					}
 					
 					p->fromPPTY(pReader);
-					m_elem.reset(p);
-					break;
-				}
+					m_elem.reset(p);					
+				}break;
 			case SPTREE_TYPE_CXNSP:
 				{
 					Logic::CxnSp* p = new Logic::CxnSp();
 					p->fromPPTY(pReader);
-					m_elem.reset(p);
-					break;
-				}
+					m_elem.reset(p);					
+				}break;
+			case SPTREE_TYPE_LOCKED_CANVAS:
+				{
+					Logic::LockedCanvas* p = new Logic::LockedCanvas();
+					pReader->Seek(pReader->GetPos() - 5); // type back + len
+					p->fromPPTY(pReader);
+
+					if (getType() == OOX::et_lc_LockedCanvas)
+					{
+                        smart_ptr<PPTX::Logic::LockedCanvas> parent = GetElem().smart_dynamic_cast<PPTX::Logic::LockedCanvas>();
+						p->m_lGroupIndex = parent->m_lGroupIndex + 1;
+					}
+					m_elem.reset(p);					
+				}break;
 			case SPTREE_TYPE_SPTREE:
 				{
 					Logic::SpTree* p = new Logic::SpTree();
@@ -390,23 +428,19 @@ namespace PPTX
                         smart_ptr<PPTX::Logic::SpTree> parent = GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 						p->m_lGroupIndex = parent->m_lGroupIndex + 1;
 					}
-					m_elem.reset(p);
-					break;
-				}
+					m_elem.reset(p);					
+				}break;
 			case SPTREE_TYPE_GRFRAME:
 				{
 					Logic::GraphicFrame* pFrame = new Logic::GraphicFrame();
 					pFrame->fromPPTY(pReader);
-					m_elem.reset(pFrame);					
-					break;
-				}
+					m_elem.reset(pFrame);
+				}break;
 			case SPTREE_TYPE_NONE:
-				{
-					pReader->SkipRecord();
-					break;
-				}
 			default:
-				break;
+				{
+					pReader->SkipRecord();					
+				}break;
 			}
 		}
 
@@ -414,7 +448,7 @@ namespace PPTX
 		{
 			if (m_elem.IsInit())
 				return m_elem->toXML();
-			return _T("");
+			return L"";
 		}
 
 		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId) const
@@ -434,6 +468,7 @@ namespace PPTX
 					if (oPic.IsInit()) oPic->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);
 				}break;
 				case OOX::et_p_ShapeTree:
+				case OOX::et_lc_LockedCanvas:
 				{
 					smart_ptr<PPTX::Logic::SpTree> oSpTree = m_elem.smart_dynamic_cast<PPTX::Logic::SpTree>();
 					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);

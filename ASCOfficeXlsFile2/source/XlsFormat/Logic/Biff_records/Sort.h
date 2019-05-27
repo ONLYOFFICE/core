@@ -63,9 +63,9 @@ public:
 	_INT16 iOrder;
 	bool fAltMethod;
 
-	XLUnicodeStringNoCch stKey1;
-	XLUnicodeStringNoCch stKey2;
-	XLUnicodeStringNoCch stKey3;
+	std::wstring stKey1;
+	std::wstring stKey2;
+	std::wstring stKey3;
 };
 
 } // namespace XLS

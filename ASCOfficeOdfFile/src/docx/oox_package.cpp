@@ -75,6 +75,7 @@ static std::wstring get_mime_type(const std::wstring & extension)
  	else if (L"tiff" == extension)	return  L"image/x-tiff";
 	else if (L"pdf" == extension)	return  L"application/pdf";
 	else if (L"bmp" == extension)	return  L"image/bmp";
+	else if (L"wdp" == extension)	return  L"image/vnd.ms-photo";
 
 	else if (L"wav" == extension)	return  L"audio/wav";
 	else if (L"mp3" == extension)	return  L"audio/mpeg";

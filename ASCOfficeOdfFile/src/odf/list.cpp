@@ -48,9 +48,9 @@ namespace text {
 const wchar_t * number::ns = L"text";
 const wchar_t * number::name = L"number";
 
-std::wostream & number::text_to_stream(std::wostream & _Wostream) const
+std::wostream & number::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << xml::utils::replace_xml_to_text( string_ );
+	_Wostream << (bXmlEncode ? xml::utils::replace_xml_to_text( string_ ) : string_);
     return _Wostream;
 }
 
@@ -64,11 +64,11 @@ void number::add_text(const std::wstring & Text)
 const wchar_t * list_item::ns = L"text";
 const wchar_t * list_item::name = L"list-item";
 
-std::wostream & list_item::text_to_stream(std::wostream & _Wostream) const
+std::wostream & list_item::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
 	for (size_t i = 0; i < content_.size(); i++)
     {
-        content_[i]->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }
@@ -161,11 +161,11 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 }
 
 
-std::wostream & list_header::text_to_stream(std::wostream & _Wostream) const
+std::wostream & list_header::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
  	for (size_t i = 0; i < content_.size(); i++)
     {
-        content_[i]->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }

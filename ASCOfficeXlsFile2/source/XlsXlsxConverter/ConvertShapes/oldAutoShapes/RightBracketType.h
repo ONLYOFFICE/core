@@ -42,7 +42,7 @@ public:
 
     {
         m_bConcentricFill = false;
-        m_eJoin = NSOfficeDrawing::lineJoinRound;
+        m_eJoin = ODRAW::lineJoinRound;
         //Endcaps: Flat
 
         m_strPath = _T("m,qx21600@0l21600@1qy,21600e");

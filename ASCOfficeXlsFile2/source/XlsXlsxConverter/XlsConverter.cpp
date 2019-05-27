@@ -1454,7 +1454,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 	{
 		switch(props[i]->opid)
 		{
-			case NSOfficeDrawing::fillType:
+			case ODRAW::fillType:
 			{
 				switch(props[i]->op)
 				{
@@ -1490,10 +1490,10 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}break;				
 				}
 			}break;
-			case NSOfficeDrawing::fillColor:
-			case NSOfficeDrawing::fillColorExt:
+			case ODRAW::fillColor:
+			case ODRAW::fillColorExt:
 			{
-				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
+				ODRAW::FillColor * fill = (ODRAW::FillColor *)(props[i].get());
 				ODRAW::OfficeArtCOLORREF color((_UINT32)fill->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB, color.sColorRGB);
@@ -1509,15 +1509,15 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				else
 					xlsx_context->get_drawing_context().set_fill_color(color.index, color.fSchemeIndex ? 1 : 3 );
 			}break;
-			case NSOfficeDrawing::fillOpacity:
+			case ODRAW::fillOpacity:
 			{
 				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 				xlsx_context->get_drawing_context().set_fill_opacity(fixed_point->dVal);
 			}break;
-			case NSOfficeDrawing::fillBackColor:
-			case NSOfficeDrawing::fillBackColorExt:
+			case ODRAW::fillBackColor:
+			case ODRAW::fillBackColorExt:
 			{
-				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
+				ODRAW::FillColor * fill = (ODRAW::FillColor *)(props[i].get());
 				ODRAW::OfficeArtCOLORREF color((_UINT32)fill->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB,color.sColorRGB, true );
@@ -1533,15 +1533,15 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				else
 					xlsx_context->get_drawing_context().set_fill_color(color.index, color.fSchemeIndex ? 1 : 3, true );
 			}break;
-			case NSOfficeDrawing::fillBackOpacity:
+			case ODRAW::fillBackOpacity:
 			{
 				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 				xlsx_context->get_drawing_context().set_fill_opacity(fixed_point->dVal, true);
 			}break;
-			case NSOfficeDrawing::fillBlip:
+			case ODRAW::fillBlip:
 			{
 				std::wstring target;
-				ODRAW::fillBlip *fillBlip = (ODRAW::fillBlip *)(props[i].get());
+				ODRAW::FillBlip *fillBlip = (ODRAW::FillBlip *)(props[i].get());
 				if ((fillBlip) && (fillBlip->blip))
 				{
 					target = WriteMediaFile(fillBlip->blip->pict_data,fillBlip->blip->pict_size, fillBlip->blip->pict_type);
@@ -1553,29 +1553,29 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				}
 				xlsx_context->get_drawing_context().set_fill_texture(target);
 			}break;
-			case NSOfficeDrawing::fillAngle:
+			case ODRAW::fillAngle:
 			{
-				ODRAW::fillAngle * angle = (ODRAW::fillAngle *)(props[i].get());
+				ODRAW::FillAngle * angle = (ODRAW::FillAngle *)(props[i].get());
 				xlsx_context->get_drawing_context().set_fill_angle(angle->dVal);
 			}break;
-			case NSOfficeDrawing::fillFocus:
+			case ODRAW::fillFocus:
 			{
 				xlsx_context->get_drawing_context().set_fill_focus(props[i]->op);
 			}break;
-			case NSOfficeDrawing::fillShadeType:
+			case ODRAW::fillShadeType:
 			{
-				ODRAW::fillShadeType *shadeType = dynamic_cast<ODRAW::fillShadeType*>(props[i].get());
+				ODRAW::FillShadeType *shadeType = dynamic_cast<ODRAW::FillShadeType*>(props[i].get());
 			}break;
-			case NSOfficeDrawing::fillShadePreset:
+			case ODRAW::fillShadePreset:
 			{
 			}break;
-			case NSOfficeDrawing::fillShadeColors:
+			case ODRAW::fillShadeColors:
 			{
-				ODRAW::fillShadeColors *shadeColors = dynamic_cast<ODRAW::fillShadeColors*>(props[i].get());
+				ODRAW::FillShadeColors *shadeColors = dynamic_cast<ODRAW::FillShadeColors*>(props[i].get());
 
-				for (size_t i = 0 ; (shadeColors) && (i < shadeColors->fillShadeColors_complex.data.size()); i++)
+				for (size_t i = 0 ; (shadeColors) && (i < shadeColors->complex.data.size()); i++)
 				{
-					ODRAW::OfficeArtCOLORREF & color = shadeColors->fillShadeColors_complex.data[i].color;
+					ODRAW::OfficeArtCOLORREF & color = shadeColors->complex.data[i].color;
 
 					std::wstring strColor;
 					if (!color.sColorRGB.empty())	strColor = color.sColorRGB;
@@ -1585,15 +1585,15 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 						if (it != xls_global_info->colors_palette.end())	strColor = it->second;
 					}
 					if (!strColor.empty())
-						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->fillShadeColors_complex.data[i].dPosition, strColor);
+						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->complex.data[i].dPosition, strColor);
 					else
 					{
-						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->fillShadeColors_complex.data[i].dPosition, 
+						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->complex.data[i].dPosition, 
 																									color.index, color.fSchemeIndex ? 1 : 3 );
 					}
 				}
 			}break;
-			case NSOfficeDrawing::fillBoolean:
+			case ODRAW::fillBoolean:
 			{
 				ODRAW::FillStyleBooleanProperties * bools = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
 				if (bools)
@@ -1617,7 +1617,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 	{
 		switch(props[i]->opid)
 		{
-			case NSOfficeDrawing::lineColor:
+			case ODRAW::lineColor:
 			{
 				ODRAW::OfficeArtCOLORREF color((_UINT32)props[i]->op);
 				if (!color.sColorRGB.empty())
@@ -1634,50 +1634,50 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				else
 					xlsx_context->get_drawing_context().set_line_color(color.index, color.fSchemeIndex ? 1 : 3 );
 			}break;
-			case NSOfficeDrawing::lineType:
+			case ODRAW::lineType:
 			{
 				xlsx_context->get_drawing_context().set_line_type(props[i]->op);
 			}break;
-			case NSOfficeDrawing::lineFillBlip: //blip 
+			case ODRAW::lineFillBlip: //blip 
 			{
 			}break;
-			case NSOfficeDrawing::lineWidth: 
+			case ODRAW::lineWidth: 
 				xlsx_context->get_drawing_context().set_line_width(props[i]->op);
 			{
 			}break;
-			case NSOfficeDrawing::lineStyle:
+			case ODRAW::lineStyle:
 			{
 				xlsx_context->get_drawing_context().set_line_style(props[i]->op);
 			}break;
-			case NSOfficeDrawing::lineDashing:
+			case ODRAW::lineDashing:
 			{
 				xlsx_context->get_drawing_context().set_line_dash(props[i]->op);
 			}break;
-        	case NSOfficeDrawing::lineStartArrowhead:
+        	case ODRAW::lineStartArrowhead:
 			{
 				xlsx_context->get_drawing_context().set_arrow_start(props[i]->op);
 			}break;
-        	case NSOfficeDrawing::lineEndArrowhead:
+        	case ODRAW::lineEndArrowhead:
 			{
 				xlsx_context->get_drawing_context().set_arrow_end(props[i]->op);
 			}break;
-        	case NSOfficeDrawing::lineStartArrowWidth:
+        	case ODRAW::lineStartArrowWidth:
 			{
 				xlsx_context->get_drawing_context().set_arrow_start_width(props[i]->op);
 			}break;
-        	case NSOfficeDrawing::lineStartArrowLength:
+        	case ODRAW::lineStartArrowLength:
 			{
 				xlsx_context->get_drawing_context().set_arrow_start_length(props[i]->op);
 			}break;
-        	case NSOfficeDrawing::lineEndArrowWidth:
+        	case ODRAW::lineEndArrowWidth:
 			{
 				xlsx_context->get_drawing_context().set_arrow_end_width(props[i]->op);
 			}break;
-        	case NSOfficeDrawing::lineEndArrowLength:
+        	case ODRAW::lineEndArrowLength:
 			{
 				xlsx_context->get_drawing_context().set_arrow_end_length(props[i]->op);
 			}break;
-			case NSOfficeDrawing::lineBoolean:
+			case ODRAW::lineBoolean:
 			{
 				ODRAW::LineStyleBooleanProperties * bools = (ODRAW::LineStyleBooleanProperties *)(props[i].get());
 				if (bools)
@@ -1691,15 +1691,15 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}
 				}
 			}break;
-			case NSOfficeDrawing::lineMiterLimit:
+			case ODRAW::lineMiterLimit:
 			{
 				xlsx_context->get_drawing_context().set_line_miter(props[i]->op);
 			}break;
-			case NSOfficeDrawing::lineJoinStyle:
+			case ODRAW::lineJoinStyle:
 			{
 				xlsx_context->get_drawing_context().set_line_join(props[i]->op);
 			}break;
-			case NSOfficeDrawing::lineEndCapStyle:
+			case ODRAW::lineEndCapStyle:
 			{
 				xlsx_context->get_drawing_context().set_line_endcap(props[i]->op);
 			}break;
@@ -1790,12 +1790,12 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 			}break;
 		case 0x0151:
 			{
-				ODRAW::pConnectionSites * a = (ODRAW::pConnectionSites *)(props[i].get());
+				ODRAW::PConnectionSites * a = (ODRAW::PConnectionSites *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_connection(a->complex.data);
 			}break;
 		case 0x0152:
 			{
-				ODRAW::pConnectionSitesDir * a = (ODRAW::pConnectionSitesDir *)(props[i].get());
+				ODRAW::PConnectionSitesDir * a = (ODRAW::PConnectionSitesDir *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_connectionDir(a->complex.data);
 			}break;
 		case 0x0153:
@@ -1808,17 +1808,17 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 			}break;
 		case 0x0155:
 			{
-				ODRAW::pAdjustHandles * a = (ODRAW::pAdjustHandles *)(props[i].get());
+				ODRAW::PAdjustHandles * a = (ODRAW::PAdjustHandles *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_adjustHandles(a->complex.data);
 			}break;
 		case 0x0156:
 			{
-				ODRAW::pGuides* s = (ODRAW::pGuides *)(props[i].get());
+				ODRAW::PGuides* s = (ODRAW::PGuides *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_guides(s->complex.data);
 			}break;
 		case 0x0157:
 			{
-				ODRAW::pInscribe * a = (ODRAW::pInscribe *)(props[i].get());
+				ODRAW::PInscribe * a = (ODRAW::PInscribe *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_inscribe(a->complex.data);
 			}break;
 		//case 0x0158:
@@ -1842,38 +1842,38 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 	{
 		switch(props[i]->opid)
 		{
-		case NSOfficeDrawing::gtextUNICODE://word art text
+		case ODRAW::gtextUNICODE://word art text
 			{
-				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
+				ODRAW::AnyString *str = dynamic_cast<ODRAW::AnyString*>(props[i].get());
 				if (str) xlsx_context->get_drawing_context().set_wordart_text(str->string_);
 			}break;
-		case NSOfficeDrawing::gtextFont:
+		case ODRAW::gtextFont:
 			{
-				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
+				ODRAW::AnyString *str = dynamic_cast<ODRAW::AnyString*>(props[i].get());
 				if (str) xlsx_context->get_drawing_context().set_wordart_font(str->string_);
 			}break;
-		case NSOfficeDrawing::gtextSize:
+		case ODRAW::gtextSize:
 			{
 				xlsx_context->get_drawing_context().set_wordart_size((INT)((props[i]->op >> 16) & 0x0000FFFF));
 			}break;
-		case NSOfficeDrawing::gtextSpacing:
+		case ODRAW::gtextSpacing:
 			{
 				ODRAW::FixedPoint *val = dynamic_cast<ODRAW::FixedPoint*>(props[i].get());
 				if (val) xlsx_context->get_drawing_context().set_wordart_spacing(val->dVal);
 			}break;
-		case NSOfficeDrawing::gtextAlign:
+		case ODRAW::gtextAlign:
 			{
 				switch (props[i]->op)
 				{
-				case NSOfficeDrawing::alignTextLeft:
+				case ODRAW::alignTextLeft:
 					xlsx_context->get_drawing_context().set_text_align(1);	break;
-				case NSOfficeDrawing::alignTextCenter:
+				case ODRAW::alignTextCenter:
 					xlsx_context->get_drawing_context().set_text_align(2);	break;
-				case NSOfficeDrawing::alignTextRight:
+				case ODRAW::alignTextRight:
 					xlsx_context->get_drawing_context().set_text_align(3);	break;
-				case NSOfficeDrawing::alignTextWordJust:
+				case ODRAW::alignTextWordJust:
 					xlsx_context->get_drawing_context().set_text_align(4);	break;
-				case NSOfficeDrawing::alignTextLetterJust:
+				case ODRAW::alignTextLetterJust:
 					xlsx_context->get_drawing_context().set_text_align(5);	break;
 				}				
 			}break;
@@ -1903,21 +1903,21 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 	{
 		switch(props[i]->opid)
 		{
-		case NSOfficeDrawing::lTxid: break;
-		case NSOfficeDrawing::txdir: break;
-		case NSOfficeDrawing::dxTextLeft:		text_margin.left	= props[i]->op;	break;
-		case NSOfficeDrawing::dxTextRight:		text_margin.right	= props[i]->op;	break;			
-		case NSOfficeDrawing::dyTextTop:		text_margin.top		= props[i]->op;	break;
-		case NSOfficeDrawing::dyTextBottom:		text_margin.bottom	= props[i]->op;	break;
-		case NSOfficeDrawing::WrapText:
+		case ODRAW::lTxid: break;
+		case ODRAW::txdir: break;
+		case ODRAW::dxTextLeft:		text_margin.left	= props[i]->op;	break;
+		case ODRAW::dxTextRight:		text_margin.right	= props[i]->op;	break;			
+		case ODRAW::dyTextTop:		text_margin.top		= props[i]->op;	break;
+		case ODRAW::dyTextBottom:		text_margin.bottom	= props[i]->op;	break;
+		case ODRAW::WrapText:
 			{
 				xlsx_context->get_drawing_context().set_text_wrap(props[i]->op);				
 			}break;
-		case NSOfficeDrawing::txflTextFlow:
+		case ODRAW::txflTextFlow:
 			{
 				xlsx_context->get_drawing_context().set_text_vertical(props[i]->op);
 			}break;
-		case NSOfficeDrawing::textBoolean:
+		case ODRAW::textBoolean:
 			{
 				ODRAW::TextBooleanProperties *bools = dynamic_cast<ODRAW::TextBooleanProperties*>(props[i].get());
 				if (bools)
@@ -1931,40 +1931,40 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 					}
 				}
 			}break;
-		case NSOfficeDrawing::anchorText:
+		case ODRAW::anchorText:
 			{
 				switch (props[i]->op)
 				{
-				case NSOfficeDrawing::anchorTop:
-				case NSOfficeDrawing::anchorTopBaseline:
+				case ODRAW::anchorTop:
+				case ODRAW::anchorTopBaseline:
 					{	
 						xlsx_context->get_drawing_context().set_text_align		(1);
 						xlsx_context->get_drawing_context().set_text_vert_align	(1);
 					}break;
-				case NSOfficeDrawing::anchorMiddle:
+				case ODRAW::anchorMiddle:
 					{
 						xlsx_context->get_drawing_context().set_text_align		(1);
 						xlsx_context->get_drawing_context().set_text_vert_align	(2);
 					}break;						
-				case NSOfficeDrawing::anchorBottom:
-				case NSOfficeDrawing::anchorBottomBaseline:
+				case ODRAW::anchorBottom:
+				case ODRAW::anchorBottomBaseline:
 					{
 						xlsx_context->get_drawing_context().set_text_align		(1);
 						xlsx_context->get_drawing_context().set_text_vert_align	(3);
 					}break;
-				case NSOfficeDrawing::anchorTopCentered:
-				case NSOfficeDrawing::anchorTopCenteredBaseline:
+				case ODRAW::anchorTopCentered:
+				case ODRAW::anchorTopCenteredBaseline:
 					{
 						xlsx_context->get_drawing_context().set_text_align		(2);
 						xlsx_context->get_drawing_context().set_text_vert_align	(1);
 					}break;
-				case NSOfficeDrawing::anchorMiddleCentered:
+				case ODRAW::anchorMiddleCentered:
 					{
 						xlsx_context->get_drawing_context().set_text_align		(2);
 						xlsx_context->get_drawing_context().set_text_vert_align	(2);
 					}break;
-				case NSOfficeDrawing::anchorBottomCentered:
-				case NSOfficeDrawing::anchorBottomCenteredBaseline:
+				case ODRAW::anchorBottomCentered:
+				case ODRAW::anchorBottomCenteredBaseline:
 					{
 						xlsx_context->get_drawing_context().set_text_align		(2);
 						xlsx_context->get_drawing_context().set_text_vert_align	(3);
@@ -2005,17 +2005,17 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 		{
 		case 0x380:
 			{
-				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
+				ODRAW::AnyString *str = dynamic_cast<ODRAW::AnyString*>(props[i].get());
 				xlsx_context->get_drawing_context().set_name(str->string_);
 			}break;
 		case 0x381:
 			{
-				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
+				ODRAW::AnyString *str = dynamic_cast<ODRAW::AnyString*>(props[i].get());
 				xlsx_context->get_drawing_context().set_description(str->string_);
 			}break;
 		case 0x0382:
 			{
-				ODRAW::pihlShape *pihlShape = dynamic_cast<ODRAW::pihlShape*>(props[i].get());
+				ODRAW::PihlShape *pihlShape = dynamic_cast<ODRAW::PihlShape*>(props[i].get());
 				if (pihlShape)
 				{
 					std::wstring	sTarget;					
@@ -2039,7 +2039,7 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 			}break;
 		case 0x03A9:
 			{
-				ODRAW::metroBlob *alternative_data = dynamic_cast<ODRAW::metroBlob*>(props[i].get());
+				ODRAW::MetroBlob *alternative_data = dynamic_cast<ODRAW::MetroBlob*>(props[i].get());
 				if (alternative_data)
 				{
 					xlsx_context->get_drawing_context().set_alternative_drawing( alternative_data->xmlString);				

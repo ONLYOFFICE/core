@@ -58,6 +58,7 @@
 #include "Diagram/DiagramDrawing.h"
 #include "Diagram/DiagramData.h"
 #include "VmlDrawing.h"
+#include "ChartDrawing.h"
 #include "CustomXml.h"
 
 #include "../XlsxFormat/Chart/Chart.h"
@@ -96,10 +97,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Comments)
 			return smart_ptr<OOX::File>(new CComments( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentComments)
+			return smart_ptr<OOX::File>(new CDocumentComments( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsExt )
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentPeople )
+			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
 //common		
 		else if ( oRelation.Type() == FileTypes::Setting)
 			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
@@ -129,6 +136,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
 			return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartDrawing)
+			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
@@ -211,14 +220,22 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Comments)
 			return smart_ptr<OOX::File>(new CComments( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentComments)
+			return smart_ptr<OOX::File>(new CDocumentComments( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsExt )
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentPeople )
+			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
 		else if (pRelation->Type() == FileTypes::Data)
 			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
+		else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)
+			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )

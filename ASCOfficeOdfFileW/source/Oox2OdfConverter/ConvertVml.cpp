@@ -352,10 +352,9 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 	if (vml_image_data == NULL) return;
 		
     std::wstring pathImage;
-	double Width=0, Height = 0;
+	double Width = 0, Height = 0;
 
 	std::wstring sID;
-
 		 if (vml_image_data->m_rId.IsInit())	sID = vml_image_data->m_rId->GetValue();
 	else if (vml_image_data->m_oRelId.IsInit())	sID = vml_image_data->m_oRelId->GetValue();
 	else if (vml_image_data->m_rPict.IsInit())	sID = vml_image_data->m_rPict->GetValue();
@@ -448,10 +447,10 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 	
 	if (!sID.empty())
 	{
-		//bitmap fill
+//bitmap fill
 		odf_context()->drawing_context()->start_bitmap_style();
 		{
-			double Width=0, Height = 0;
+			double Width = 0, Height = 0;
 			
 			sImagePath	= find_link_by_id(sID, 1);
 

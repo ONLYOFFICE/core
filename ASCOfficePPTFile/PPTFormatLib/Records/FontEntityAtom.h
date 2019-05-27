@@ -47,15 +47,9 @@ public:
 
     BYTE m_lfPitchAndFamily;
 
-public:
-	
-	CRecordFontEntityAtom()
-	{
-	}
+	CRecordFontEntityAtom(){}
 
-	~CRecordFontEntityAtom()
-	{
-	}
+	~CRecordFontEntityAtom(){}
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
@@ -107,5 +101,24 @@ public:
 		m_bIsNoFontSubstitution = ((Mem & 0x08) == 0x08);
 
 		m_lfPitchAndFamily = StreamUtils::ReadBYTE(pStream);
+	}
+};
+
+
+class CRecordFontEmbedDataBlob : public CUnknownRecord
+{
+public:
+	std::pair<boost::shared_array<unsigned char>, _INT32> data;
+		//font data of an embedded font
+	
+	CRecordFontEmbedDataBlob(){}
+	~CRecordFontEmbedDataBlob(){}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+
+		data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
+		pStream->read(data.first.get(), data.second);
 	}
 };

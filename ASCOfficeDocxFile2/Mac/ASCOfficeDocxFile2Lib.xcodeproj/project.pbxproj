@@ -53,6 +53,10 @@
 		69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
 		8A404FD3208A01AF00F2D5CF /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FD2208A01AF00F2D5CF /* FileDownloader.cpp */; };
 		8A404FD5208A01CE00F2D5CF /* FileDownloader_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A404FD4208A01CE00F2D5CF /* FileDownloader_private.h */; };
+		8AB24BFD213004E400E80DDD /* CustormXmlWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AB24BFB213004E300E80DDD /* CustormXmlWriter.cpp */; };
+		8AB24BFE213004E400E80DDD /* CustormXmlWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AB24BFC213004E300E80DDD /* CustormXmlWriter.h */; };
+		8AE10E6E222824F400A542DE /* BinaryWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E6D222824F400A542DE /* BinaryWriter.cpp */; };
+		8AE10E702228251000A542DE /* BinaryReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E6F2228251000A542DE /* BinaryReader.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -103,6 +107,10 @@
 		69F181AD1C77274E00B2952B /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader/FileDownloader.h; sourceTree = "<group>"; };
 		8A404FD2208A01AF00F2D5CF /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader.cpp; path = ../../../Common/FileDownloader/FileDownloader.cpp; sourceTree = "<group>"; };
 		8A404FD4208A01CE00F2D5CF /* FileDownloader_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader_private.h; path = ../../../Common/FileDownloader/FileDownloader_private.h; sourceTree = "<group>"; };
+		8AB24BFB213004E300E80DDD /* CustormXmlWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustormXmlWriter.cpp; sourceTree = "<group>"; };
+		8AB24BFC213004E300E80DDD /* CustormXmlWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustormXmlWriter.h; sourceTree = "<group>"; };
+		8AE10E6D222824F400A542DE /* BinaryWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryWriter.cpp; sourceTree = "<group>"; };
+		8AE10E6F2228251000A542DE /* BinaryReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryReader.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +157,8 @@
 			children = (
 				17E17EEB1AC4544900BEA2EA /* ChartWriter.h */,
 				17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */,
+				8AB24BFB213004E300E80DDD /* CustormXmlWriter.cpp */,
+				8AB24BFC213004E300E80DDD /* CustormXmlWriter.h */,
 				17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */,
 				17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */,
 				17E17EF11AC4544900BEA2EA /* DocumentWriter.h */,
@@ -209,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				17E17F211AC4549B00BEA2EA /* BinaryWriter.h */,
+				8AE10E6D222824F400A542DE /* BinaryWriter.cpp */,
 				17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */,
 				17E17F231AC4549B00BEA2EA /* ChartFromToBinary.h */,
 				17E17F241AC4549B00BEA2EA /* CommonWriter.cpp */,
@@ -224,6 +235,7 @@
 			children = (
 				17E17F2D1AC4549B00BEA2EA /* BinaryCommonReader.h */,
 				17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */,
+				8AE10E6F2228251000A542DE /* BinaryReader.cpp */,
 				17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */,
 				17E17F301AC4549B00BEA2EA /* CSVWriter.h */,
 			);
@@ -292,6 +304,7 @@
 				17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */,
 				17C1FEBD1ACC42C4006B99B3 /* FileWriter.h in Headers */,
 				17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */,
+				8AB24BFE213004E400E80DDD /* CustormXmlWriter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,6 +359,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AB24BFD213004E400E80DDD /* CustormXmlWriter.cpp in Sources */,
 				17C1FE961ACC42C4006B99B3 /* Common.cpp in Sources */,
 				17C1FE971ACC42C4006B99B3 /* ChartFromToBinary.cpp in Sources */,
 				17C1FE981ACC42C4006B99B3 /* CSVReader.cpp in Sources */,
@@ -354,11 +368,13 @@
 				17C1FE9B1ACC42C4006B99B3 /* CSVWriter.cpp in Sources */,
 				69414A301CB51666003E771B /* ChartWriter.cpp in Sources */,
 				6967917E1D9E8AEE002CA4BA /* BinWriters.cpp in Sources */,
+				8AE10E702228251000A542DE /* BinaryReader.cpp in Sources */,
 				69BBDF251F0B8AAC00EB1BF7 /* FileDownloader_mac.mm in Sources */,
 				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
 				690FE0851E9BBD68004B26D0 /* Readers.cpp in Sources */,
 				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
 				8A404FD3208A01AF00F2D5CF /* FileDownloader.cpp in Sources */,
+				8AE10E6E222824F400A542DE /* BinaryWriter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,18 +391,12 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					NODOCX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					USE_ATL_CSTRING,
-					USE_AVSOFFICESTUDIO_XMLUTILS,
+					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
 					SOLUTION_ASCOFFICEDOCXFILE2,
-					_USE_LIBXML2_READER_,
-					LIBXML_READER_ENABLED,
+					DONT_WRITE_EMBEDDED_FONTS,
 					MAC,
 					unix,
 					_IOS,
-					DONT_WRITE_EMBEDDED_FONTS,
 					_XCODE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -414,18 +424,12 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					NODOCX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					USE_ATL_CSTRING,
-					USE_AVSOFFICESTUDIO_XMLUTILS,
+					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
 					SOLUTION_ASCOFFICEDOCXFILE2,
-					_USE_LIBXML2_READER_,
-					LIBXML_READER_ENABLED,
+					DONT_WRITE_EMBEDDED_FONTS,
 					MAC,
 					unix,
 					_IOS,
-					DONT_WRITE_EMBEDDED_FONTS,
 					_XCODE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;

@@ -79,7 +79,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	bool preserve_;
     
@@ -93,7 +93,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
-
+	virtual void add_space(const std::wstring & Text);
 };
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     
     s(unsigned int c) : text_c_(c) {};
     s() {};
@@ -146,7 +146,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
     
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
    
     _CP_OPT(unsigned int) text_tab_ref_;
 
@@ -174,7 +174,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
@@ -196,7 +196,7 @@ public:
     static const ElementType type = typeTextBookmark;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	std::wstring text_name_;
 
@@ -220,7 +220,7 @@ public:
     static const ElementType type = typeTextBookmarkStart;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
 
     std::wstring name_;
@@ -244,7 +244,7 @@ public:
     static const ElementType type = typeTextBookmarkEnd;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
 
     std::wstring name_;
@@ -276,7 +276,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_ref);
 //-------------------------------------------------------------------------------------------------------------------
@@ -299,7 +298,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(reference_ref);
 //-------------------------------------------------------------------------------------------------------------------
@@ -382,7 +380,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	span() {}
    
@@ -395,6 +393,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+	virtual void add_space(const std::wstring & Text);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(span);
@@ -414,7 +413,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	a() {}
 
@@ -422,8 +421,9 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
+	virtual void add_space(const std::wstring & Text);
 
-	odf_types::common_xlink_attlist xlink_attlist_;
+	odf_types::common_xlink_attlist			xlink_attlist_;
 
     std::wstring							office_name_;
     _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
@@ -450,13 +450,12 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     note();
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 	std::wstring			text_id_;
 	odf_types::noteclass	text_note_class_;
@@ -477,12 +476,11 @@ public:
     static const ElementType type = typeTextRuby;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
     std::wstring		text_style_name_;
     office_element_ptr	text_ruby_base_;
@@ -502,7 +500,7 @@ public:
     static const ElementType type = typeTextTitle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -530,7 +528,7 @@ public:
     static const ElementType type = typeTextChapter;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
@@ -556,7 +554,7 @@ public:
     static const ElementType type = typeTextSubject;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
@@ -584,7 +582,7 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(std::wstring)	text_description_;
 	_CP_OPT(std::wstring)	text_placeholder_type_;
@@ -611,7 +609,7 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -643,7 +641,7 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(odf_types::style_numformat)	style_num_format_;
 	_CP_OPT(odf_types::Bool)			style_num_letter_sync_;
@@ -672,7 +670,7 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 	
 	_CP_OPT(std::wstring)		style_data_style_name_;
 	_CP_OPT(odf_types::Bool)	text_fixed_;
@@ -727,7 +725,7 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(std::wstring)	style_data_style_name_;
 	_CP_OPT(odf_types::Bool)text_fixed_;
@@ -782,7 +780,7 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -858,7 +856,7 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(odf_types::style_numformat)	style_num_format_;
 	_CP_OPT(std::wstring)				style_num_letter_sync_;
@@ -888,7 +886,7 @@ public:
  
 	void docx_convert(oox::docx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(std::wstring)						style_data_style_name_;
 	_CP_OPT(std::wstring)						text_display_;
@@ -916,7 +914,7 @@ public:
  
 	void docx_convert(oox::docx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(std::wstring)	text_description_;
 	std::wstring			text_; 
@@ -965,7 +963,7 @@ public:
  
 	void docx_convert(oox::docx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -1099,7 +1097,7 @@ public:
     static const ElementType type = typeTextSenderPostalCode;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 	
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1316,7 +1314,7 @@ public:
 
 	void serialize(std::wostream & strm);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     std::wstring			identifier_;
 	odf_types::bibliography	bibliography_type_; 

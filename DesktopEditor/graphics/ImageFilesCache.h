@@ -84,7 +84,7 @@ public:
     {
     }
 
-	Aggplus::CImage* GetImage()
+    virtual Aggplus::CImage* GetImage()
 	{
 		return &m_oImage;
 	}

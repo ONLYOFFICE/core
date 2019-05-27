@@ -31,13 +31,15 @@
  */
 #pragma once
 
-#include "ProtectionBooleanProperties.h"
 #include "../IVisitable.h"
 #include "../../Common/XmlTools.h"
+#include <boost/shared_ptr.hpp>
 
-
-#include <list>
-
+namespace ODRAW
+{
+	class OfficeArtFOPTE;
+	typedef boost::shared_ptr<OfficeArtFOPTE> OfficeArtFOPTEPtr;
+}
 namespace DocFileFormat
 {
 	enum MSOSPT
@@ -274,9 +276,6 @@ namespace DocFileFormat
 			position	=	pos;
 			xrange		=	xRange;
 		}
-
-	public: 
-
 		std::wstring position;
 		std::wstring xrange;
 		std::wstring switchHandle;
@@ -289,7 +288,7 @@ namespace DocFileFormat
 	{
 	public:
 
-		ShapeType (unsigned int typeCode) : Filled(true), Stroked(true), Lock(0), TypeCode(typeCode), Joins(miter), ShapeConcentricFill(false)
+		ShapeType (unsigned int typeCode) : Filled(true), Stroked(true), TypeCode(typeCode), Joins(miter), ShapeConcentricFill(false)
 		{
 		}
 
@@ -301,8 +300,7 @@ namespace DocFileFormat
 		{
 			return TypeCode;
 		}
-
-	public:      
+    
 		/// This string describes a sequence of commands that define the shape’s path.
 		/// This string describes both the pSegmentInfo array and pVertices array in the shape’s geometry properties.
 		std::wstring Path;
@@ -344,7 +342,7 @@ namespace DocFileFormat
 		bool Stroked;
 		/// Speicfies the locked properties of teh shape.
 		/// By default nothing is locked.
-		ProtectionBooleanProperties Lock;
+		ODRAW::OfficeArtFOPTEPtr Lock;
 
 		///
 		std::wstring Textpath;

@@ -59,12 +59,19 @@ oox_chart_series::oox_chart_series()
 	bLocalTable_		= false;
 	labelPosEnabled_	= true;
 }
-void oox_chart_series::setName(std::wstring &value)
+void oox_chart_series::setName(const std::wstring &value)
 {
-	name_=value;
+	name_ = value;
 }
+void oox_chart_series::setLabels(const std::wstring &formula, std::vector<std::wstring> & cash)
+{
+	formulasconvert::odf2oox_converter converter;
 
-void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & formatCode, bool link_to_source)
+	label_.present	= true;
+	label_.formula = converter.convert_chart_distance(formula);
+	label_.str_cache = cash;
+}
+void oox_chart_series::setFormula(int ind, const std::wstring &value, const std::wstring & formatCode, bool link_to_source)
 {
 	formulasconvert::odf2oox_converter converter;
 
@@ -137,6 +144,7 @@ void oox_chart_series::parse_properties()
 		data_labels_->set_position(*intVal); 
 	}
 }
+
 void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 {
 	values_[ind].present = true;
@@ -214,6 +222,44 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		}
 		shape.set(content_.graphic_properties_, content_.fill_);
 		shape.oox_serialize(_Wostream);
+
+		if (label_.present)
+		{
+			CP_XML_NODE(L"c:tx")
+			{
+				CP_XML_NODE(L"c:strRef")
+				{
+					if (!label_.formula.empty())
+					{
+						CP_XML_NODE(L"c:f")
+						{
+							CP_XML_STREAM() << label_.formula;
+						}
+					}
+					if (false == label_.str_cache.empty())
+					{
+						CP_XML_NODE(L"c:strCache")
+						{
+							CP_XML_NODE(L"c:ptCount")
+							{
+								CP_XML_ATTR(L"val", label_.str_cache.size());
+							}
+							for (size_t i = 0; i < label_.str_cache.size(); i++)
+							{
+								CP_XML_NODE(L"c:pt")
+								{
+									CP_XML_ATTR(L"idx", i);
+									CP_XML_NODE(L"c:v")
+									{
+										CP_XML_STREAM() <<  label_.str_cache[i];
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
 		for (int i = 0; i < 5; i++)
 		{

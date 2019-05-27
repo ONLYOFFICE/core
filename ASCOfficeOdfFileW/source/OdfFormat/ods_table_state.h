@@ -102,7 +102,7 @@ namespace utils
 				f = false;
 			else
 				v += 1;
-			res += v * mul;
+			res += (int)(v * mul);
 			mul *= r;
 		}
 		return res;
@@ -179,8 +179,8 @@ struct ods_element_state
 
 struct ods_cell_state : ods_element_state
 {
-    int col;
-    int row;
+    int col = -1;
+    int row = -1;
 
     int hyperlink_idx = -1;
     int comment_idx = -1;
@@ -191,14 +191,16 @@ struct ods_cell_state : ods_element_state
 struct ods_hyperlink_state
 {
 	std::wstring ref;
-    int col;
-    int row;
+    int col = -1;
+    int row = -1;
+	
 	std::wstring link;
+	bool bLocation = false;
 };
 struct ods_comment_state
 {
-    int col;
-    int row;
+    int col = -1;
+    int row = -1;
 	std::wstring author;
 
 	office_element_ptr elm;
@@ -253,6 +255,14 @@ public:
 		void set_table_tab_color(_CP_OPT(odf_types::color) & _color);
         void set_table_dimension(int col, int row);
 		void set_print_range(std::wstring range);
+		
+		void set_table_protection(bool Val);
+		void set_table_protection_insert_columns(bool Val);
+		void set_table_protection_insert_rows(bool Val);
+		void set_table_protection_delete_columns(bool Val);
+		void set_table_protection_delete_rows(bool Val);
+		void set_table_protection_unprotected_cells(bool Val);
+		void set_table_protection_protected_cells(bool Val);
 
     void add_column(office_element_ptr & elm, unsigned int repeated ,office_element_ptr & style);
 		void set_column_width(double width);
@@ -318,7 +328,8 @@ public:
 	void end_conditional_formats();
 
 ///////////////////////////////
-    void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
+    void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation = false);
+	
 	void add_definded_expression(office_element_ptr & elm);
 
     void start_comment(int col, int row, std::wstring & author);

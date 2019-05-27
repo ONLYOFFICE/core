@@ -89,9 +89,11 @@ namespace PPTX
 			{
 				std::wstring namespace_ = m_namespace;
 
-                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wps";
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
-                    
+                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_ = L"wps";
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
+ 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
+                   
 				pWriter->StartNode(namespace_ + L":cxnSp");
 
                 pWriter->EndAttributes();
@@ -101,10 +103,10 @@ namespace PPTX
 
                 if (style.is_init())
                 {
-                    if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                        style->m_namespace = _T("wps");
-                    else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                        style->m_namespace = _T("xdr");
+						 if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			style->m_namespace = L"wps";
+                    else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
+					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
+					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
 
                     pWriter->Write(style);
                 }

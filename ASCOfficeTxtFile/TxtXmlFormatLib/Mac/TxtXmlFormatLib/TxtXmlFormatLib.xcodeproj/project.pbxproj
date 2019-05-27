@@ -14,6 +14,7 @@
 		6967AFE91E279C6F00A129E2 /* ToString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967AFE51E279C6F00A129E2 /* ToString.cpp */; };
 		6967AFF01E279C7700A129E2 /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967AFEB1E279C7700A129E2 /* File.cpp */; };
 		6967AFF11E279C7700A129E2 /* TxtFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967AFED1E279C7700A129E2 /* TxtFile.cpp */; };
+		8AB24C012130055700E80DDD /* SystemUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AB24C002130055700E80DDD /* SystemUtils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,6 +50,8 @@
 		6967AFED1E279C7700A129E2 /* TxtFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TxtFile.cpp; sourceTree = "<group>"; };
 		6967AFEE1E279C7700A129E2 /* TxtFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TxtFile.h; sourceTree = "<group>"; };
 		6967AFEF1E279C7700A129E2 /* TxtFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TxtFormat.h; sourceTree = "<group>"; };
+		8AB24BFF2130055700E80DDD /* SystemUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemUtils.h; path = ../../../../DesktopEditor/common/SystemUtils.h; sourceTree = "<group>"; };
+		8AB24C002130055700E80DDD /* SystemUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemUtils.cpp; path = ../../../../DesktopEditor/common/SystemUtils.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +107,8 @@
 				6967AFE51E279C6F00A129E2 /* ToString.cpp */,
 				6967AFE61E279C6F00A129E2 /* ToString.h */,
 				6967AFE71E279C6F00A129E2 /* Utility.h */,
+				8AB24C002130055700E80DDD /* SystemUtils.cpp */,
+				8AB24BFF2130055700E80DDD /* SystemUtils.h */,
 			);
 			name = Common;
 			path = ../../../Source/Common;
@@ -186,6 +191,7 @@
 				6967AFD61E2798DB00A129E2 /* TxtXmlFile.cpp in Sources */,
 				6967AFF01E279C7700A129E2 /* File.cpp in Sources */,
 				6967AFD51E2798DB00A129E2 /* ConvertTxt2Docx.cpp in Sources */,
+				8AB24C012130055700E80DDD /* SystemUtils.cpp in Sources */,
 				6967AFD41E2798DB00A129E2 /* ConvertDocx2Txt.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,10 +310,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					LIBXML_READER_ENABLED,
 					MAC,
 					unix,
 					_IOS,
@@ -316,8 +318,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/,
-					/usr/include/libxml2/,
+					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../../Common/3dParty/boost/boost_1_58_0",
 					"$(PROJECT_DIR)/../../../../DesktopEditor/xml/libxml2/include",
 					"$(PROJECT_DIR)/../../../../DesktopEditor/freetype-2.5.2/include",
@@ -335,10 +336,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					LIBXML_READER_ENABLED,
 					MAC,
 					unix,
 					_IOS,
@@ -347,8 +344,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/,
-					/usr/include/libxml2/,
+					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../../Common/3dParty/boost/boost_1_58_0",
 					"$(PROJECT_DIR)/../../../../DesktopEditor/xml/libxml2/include",
 					"$(PROJECT_DIR)/../../../../DesktopEditor/freetype-2.5.2/include",

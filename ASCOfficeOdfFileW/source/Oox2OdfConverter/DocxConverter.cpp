@@ -103,22 +103,18 @@ namespace Oox2Odf
 		}
 		return cols_1 == cols_2;
 	}
-DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* CallBack)
+DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate)
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
 
     docx_document   = new OOX::CDocx(oox_path);
 
-    output_document = new odf_writer::package::odf_document(L"text");
+	output_document = new odf_writer::package::odf_document(L"text", bTemplate);
     odt_context     = new odf_writer::odt_conversion_context(output_document);
-
-	pCallBack = CallBack;
 
 //set flags to default
 	current_section_properties	= NULL;
     last_section_properties		= NULL;
-	
-	if (UpdateProgress(290000))return;
 }
 DocxConverter::~DocxConverter()
 {
@@ -146,7 +142,7 @@ OOX::IFileContainer* DocxConverter::current_document()
 		return dynamic_cast<OOX::IFileContainer*>(docx_document->m_pDocument);
 	}
 }
-NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
+NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(const std::wstring &sId)
 {
 	smart_ptr<OOX::File> oFile;
 
@@ -158,7 +154,7 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
 	return oFile;
 }
 
-std::wstring DocxConverter::find_link_by_id (std::wstring sId, int type)
+std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
 {
 	if (!docx_document) return L"";
 
@@ -190,19 +186,14 @@ void DocxConverter::convertDocument()
 	convert_lists_styles();
 	convert_styles();
 
-	if (UpdateProgress(300000))return;
-
 	convert_settings(); 
 	
 	convert_document();
 
-	if (UpdateProgress(800000))return;
 	//удалим уже ненужный документ docx 
 	delete docx_document; docx_document = NULL;
 
 	odt_context->end_document();
- 	
-	if (UpdateProgress(850000))return;
 }
 
 void DocxConverter::convert_document()
@@ -3142,6 +3133,9 @@ void DocxConverter::convert_settings()
 
 	if (!docx_document->m_pSettings) return;
 
+	if (docx_document->m_pSettings->m_oWriteProtection.IsInit())
+	{
+	}
 	if (docx_document->m_pSettings->m_oZoom.IsInit())
 	{
 	}
@@ -3273,7 +3267,7 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(),2);
+		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
 	}
 	else if (oox_hyperlink->m_sAnchor.IsInit())
 	{
@@ -3387,14 +3381,12 @@ void DocxConverter::convert(OOX::Numbering::CAbstractNum* oox_num_style)
 
 
 	odt_context->styles_context()->lists_styles().start_style(true, oox_num_style->m_oAbstractNumId->GetValue());
-	//// Childs
-	//std::vector<OOX::Numbering::CLvl                            >  m_arrLvl;
-	//nullable<ComplexTypes::Word::CMultiLevelType                 > m_oMultiLevelType;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oName;
-	//nullable<ComplexTypes::Word::CLongHexNumber                  > m_oNsid;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oNumStyleLink;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oStyleLink;
-	//nullable<ComplexTypes::Word::CLongHexNumber                  > m_oTmpl;
+	//nullable<ComplexTypes::Word::CMultiLevelType>	m_oMultiLevelType;
+    //nullable<ComplexTypes::Word::std::wstring_>	m_oName;
+	//nullable<ComplexTypes::Word::CLongHexNumber>	m_oNsid;
+    //nullable<ComplexTypes::Word::std::wstring_>	m_oNumStyleLink;
+    //nullable<ComplexTypes::Word::std::wstring_>	m_oStyleLink;
+	//nullable<ComplexTypes::Word::CLongHexNumber>	m_oTmpl;
 
 	for (size_t i=0; i < oox_num_style->m_arrLvl.size(); i++)
 	{
@@ -3428,9 +3420,9 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	//nullable<SimpleTypes::CLongHexNumber<> > m_oTplc;
 
 	//// Childs
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oIsLgl;
-	//nullable<ComplexTypes::Word::CLvlLegacy                      > m_oLegacy;
-    //nullable<ComplexTypes::Word::std::wstring_                        > m_oPStyle;
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oIsLgl;
+	//nullable<ComplexTypes::Word::CLvlLegacy> m_oLegacy;
+    //nullable<ComplexTypes::Word::std::wstring_> m_oPStyle;
 
 	double  size_bullet_number_marker = 0;
 	if (oox_num_lvl->m_oLvlJc.IsInit())

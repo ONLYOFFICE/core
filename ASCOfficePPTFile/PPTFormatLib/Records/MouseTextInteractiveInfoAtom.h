@@ -34,9 +34,8 @@
 
 class CRecordMouseTextInteractiveInfoAtom : public CUnknownRecord
 {
-	STextRange m_oRange;
-
 public:
+	STextRange m_oRange;
 	
 	CRecordMouseTextInteractiveInfoAtom()
 	{

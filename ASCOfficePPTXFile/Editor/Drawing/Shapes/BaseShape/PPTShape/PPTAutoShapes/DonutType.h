@@ -40,7 +40,7 @@ public:
 
     {
         m_bConcentricFill = false;
-        m_eJoin = NSOfficeDrawing::lineJoinRound;
+        m_eJoin = ODRAW::lineJoinRound;
         m_strPath = _T("m,10800qy10800,,21600,10800,10800,21600,,10800xm@0,10800qy10800@2@1,10800,10800@0@0,10800xe");
                    
         AddGuide(_T("val #0"));

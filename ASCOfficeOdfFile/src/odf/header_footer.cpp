@@ -87,9 +87,9 @@ void common_style_header_footer_attlist::add_attributes( const xml::attributes_w
 }
 
 // header-footer-content
-std::wostream & header_footer_content::text_to_stream(std::wostream & _Wostream) const
+std::wostream & header_footer_content::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    serialize_elements_text(_Wostream, content_);
+    serialize_elements_text(_Wostream, content_, bXmlEncode);
     return _Wostream;
 }
 

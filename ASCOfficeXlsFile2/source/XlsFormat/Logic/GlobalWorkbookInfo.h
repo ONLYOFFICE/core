@@ -150,6 +150,12 @@ public:
 	
 	unsigned int					startAddedSharedStrings;
 	std::vector<std::wstring>		arAddedSharedStrings;
+	
+	struct _row_info
+	{
+		BaseObjectPtr row_info;
+		std::map<int, BaseObjectPtr> mapCells;
+	};
 
 	struct _sheet_info
 	{
@@ -161,6 +167,8 @@ public:
 		
 		double						defaultColumnWidth = 8.0;
 		double						defaultRowHeight = 14.4;
+
+		std::map<int, _row_info>	mapRows;
 	};
 	std::vector<_sheet_info>		sheets_info;
 	std::vector<std::wstring>		external_sheets_info; //current

@@ -29,6 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#ifdef __ANDROID__
+#include <pthread_setcanceltype.h>
+#endif
+
 #include "./BaseThread.h"
 
 #if defined(_WIN32) || defined(_WIN64) ||defined(_WIN32_WCE)

@@ -61,6 +61,9 @@ namespace OOX
 	class CComments;
 	class CCommentsExt;
 	class CPeople;
+	class CDocumentComments;
+	class CDocumentCommentsExt;
+	class CDocumentPeople;
 	class VbaProject;
 	class JsaProject;
 	class CHdrFtr;
@@ -79,6 +82,7 @@ namespace OOX
 			Read( oFilePath );
 		}
         bool Read(const CPath& oFilePath);
+		void FixAfterRead();
         bool Write(const CPath& oFilePath)
 		{
 
@@ -115,6 +119,9 @@ namespace OOX
 		OOX::CComments		*m_pComments;   //			         word/comments.xml
 		OOX::CCommentsExt	*m_pCommentsExt;//					word/commentsExtended.xml
 		OOX::CPeople		*m_pPeople;		//					word/people.xml
+		OOX::CDocumentComments		*m_pDocumentComments;   //			         word/documentComments.xml
+		OOX::CDocumentCommentsExt	*m_pDocumentCommentsExt;//					word/documentCommentsExtended.xml
+		OOX::CDocumentPeople		*m_pDocumentPeople;		//					word/documentPeople.xml
 		
 		OOX::VbaProject		*m_pVbaProject;
 		OOX::JsaProject		*m_pJsaProject;
@@ -137,6 +144,9 @@ private:
 			m_pComments  = NULL;
 			m_pCommentsExt	= NULL;
 			m_pPeople		= NULL;
+			m_pDocumentComments  = NULL;
+			m_pDocumentCommentsExt	= NULL;
+			m_pDocumentPeople		= NULL;
 			m_pVbaProject	= NULL;
 			m_pJsaProject	= NULL;
 		}

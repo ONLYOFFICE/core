@@ -19,7 +19,6 @@
 		17C1FCB71ACC429D006B99B3 /* CxnSp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44361AC57B83005A27F7 /* CxnSp.cpp */; };
 		17C1FCB81ACC429D006B99B3 /* Hyperlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44771AC57B83005A27F7 /* Hyperlink.cpp */; };
 		17C1FCB91ACC429D006B99B3 /* SpPr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44B11AC57B83005A27F7 /* SpPr.cpp */; };
-		17C1FCBA1ACC429D006B99B3 /* TableCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44BC1AC57B83005A27F7 /* TableCell.cpp */; };
 		17C1FCBB1ACC429D006B99B3 /* FileFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A43A11AC57B83005A27F7 /* FileFactory.cpp */; };
 		17C1FCBC1ACC429D006B99B3 /* pptxformatlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A43681AC57B46005A27F7 /* pptxformatlib.cpp */; };
 		17C1FCBD1ACC429D006B99B3 /* TxBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A45091AC57B83005A27F7 /* TxBody.cpp */; };
@@ -831,7 +830,16 @@
 		696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */; };
 		696791831D9E8B81002CA4BA /* MathParaWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791811D9E8B81002CA4BA /* MathParaWrapper.h */; };
 		697DFC1E200F51A700F0A9AF /* WavAudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */; };
+		8A35A6FF215E612C005CC806 /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A35A6FE215E612B005CC806 /* xmlutils.h */; };
+		8A35A701215E6194005CC806 /* xmldom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A700215E6194005CC806 /* xmldom.cpp */; };
+		8A35A706215E61BE005CC806 /* xmllight_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A35A703215E61BE005CC806 /* xmllight_private.h */; };
+		8A35A707215E61BE005CC806 /* xmllight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A704215E61BE005CC806 /* xmllight.cpp */; };
+		8A35A709215E622B005CC806 /* BlipFill.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A708215E622B005CC806 /* BlipFill.cpp */; };
+		8A35A70B215E626D005CC806 /* UniFill.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A70A215E626D005CC806 /* UniFill.cpp */; };
+		8A35A70D215E62D0005CC806 /* TableCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A35A70C215E62D0005CC806 /* TableCell.cpp */; };
 		8A9FACE120777BA7007787F6 /* Structures.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9FACE020777BA7007787F6 /* Structures.h */; };
+		8AE10E6A2228249E00A542DE /* toVmlConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AE10E692228249E00A542DE /* toVmlConvert.h */; };
+		8AE10E6C222824A300A542DE /* toVmlConvert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E6B222824A300A542DE /* toVmlConvert.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1109,7 +1117,6 @@
 		179A44B81AC57B83005A27F7 /* SupplementalFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SupplementalFont.h; sourceTree = "<group>"; };
 		179A44B91AC57B83005A27F7 /* Tab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tab.h; sourceTree = "<group>"; };
 		179A44BB1AC57B83005A27F7 /* Table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Table.h; sourceTree = "<group>"; };
-		179A44BC1AC57B83005A27F7 /* TableCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TableCell.cpp; sourceTree = "<group>"; };
 		179A44BD1AC57B83005A27F7 /* TableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCell.h; sourceTree = "<group>"; };
 		179A44BE1AC57B83005A27F7 /* TableCellProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCellProperties.h; sourceTree = "<group>"; };
 		179A44BF1AC57B83005A27F7 /* TableCol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCol.h; sourceTree = "<group>"; };
@@ -1662,7 +1669,16 @@
 		696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathParaWrapper.cpp; sourceTree = "<group>"; };
 		696791811D9E8B81002CA4BA /* MathParaWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathParaWrapper.h; sourceTree = "<group>"; };
 		697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WavAudioFile.cpp; sourceTree = "<group>"; };
+		8A35A6FE215E612B005CC806 /* xmlutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlutils.h; path = ../../../DesktopEditor/xml/include/xmlutils.h; sourceTree = "<group>"; };
+		8A35A700215E6194005CC806 /* xmldom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmldom.cpp; path = ../../../DesktopEditor/xml/src/xmldom.cpp; sourceTree = "<group>"; };
+		8A35A703215E61BE005CC806 /* xmllight_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmllight_private.h; path = ../../../DesktopEditor/xml/src/xmllight_private.h; sourceTree = "<group>"; };
+		8A35A704215E61BE005CC806 /* xmllight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmllight.cpp; path = ../../../DesktopEditor/xml/src/xmllight.cpp; sourceTree = "<group>"; };
+		8A35A708215E622B005CC806 /* BlipFill.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlipFill.cpp; sourceTree = "<group>"; };
+		8A35A70A215E626D005CC806 /* UniFill.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UniFill.cpp; sourceTree = "<group>"; };
+		8A35A70C215E62D0005CC806 /* TableCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TableCell.cpp; sourceTree = "<group>"; };
 		8A9FACE020777BA7007787F6 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Structures.h; path = Drawing/Structures.h; sourceTree = "<group>"; };
+		8AE10E692228249E00A542DE /* toVmlConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = toVmlConvert.h; sourceTree = "<group>"; };
+		8AE10E6B222824A300A542DE /* toVmlConvert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = toVmlConvert.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1679,6 +1695,7 @@
 		17063B5A1AC5708E0056A3F1 = {
 			isa = PBXGroup;
 			children = (
+				8A35A6FD215E6124005CC806 /* XmlUtils */,
 				695BC0221C070DCB00817D7E /* HtmlRenderer */,
 				175CC2441AC96AA0007D7DEC /* OfficeDrawing */,
 				17D91A141AC5A4DF0096D788 /* Editor */,
@@ -1983,14 +2000,15 @@
 				179A44CC1AC57B83005A27F7 /* TextSpacing.h */,
 				179A44CD1AC57B83005A27F7 /* Timing */,
 				179A44FA1AC57B83005A27F7 /* Transitions */,
-				179A45091AC57B83005A27F7 /* TxBody.cpp */,
 				179A450A1AC57B83005A27F7 /* TxBody.h */,
+				179A45091AC57B83005A27F7 /* TxBody.cpp */,
 				179A450B1AC57B83005A27F7 /* TxStyles.h */,
 				179A450C1AC57B83005A27F7 /* UniColor.cpp */,
 				179A450D1AC57B83005A27F7 /* UniColor.h */,
-				179A450E1AC57B83005A27F7 /* UniEffect.cpp */,
 				179A450F1AC57B83005A27F7 /* UniEffect.h */,
+				179A450E1AC57B83005A27F7 /* UniEffect.cpp */,
 				179A45101AC57B83005A27F7 /* UniFill.h */,
+				8A35A70A215E626D005CC806 /* UniFill.cpp */,
 				179A45111AC57B83005A27F7 /* UniMedia.h */,
 				179A45121AC57B83005A27F7 /* UniPath2D.h */,
 				179A45131AC57B83005A27F7 /* Xfrm.h */,
@@ -2076,6 +2094,7 @@
 				179A44611AC57B83005A27F7 /* Blip.cpp */,
 				179A44621AC57B83005A27F7 /* Blip.h */,
 				179A44631AC57B83005A27F7 /* BlipFill.h */,
+				8A35A708215E622B005CC806 /* BlipFill.cpp */,
 				179A44641AC57B83005A27F7 /* GradFill.h */,
 				179A44651AC57B83005A27F7 /* NoFill.h */,
 				179A44661AC57B83005A27F7 /* PattFill.h */,
@@ -2128,8 +2147,8 @@
 			isa = PBXGroup;
 			children = (
 				179A44BB1AC57B83005A27F7 /* Table.h */,
-				179A44BC1AC57B83005A27F7 /* TableCell.cpp */,
 				179A44BD1AC57B83005A27F7 /* TableCell.h */,
+				8A35A70C215E62D0005CC806 /* TableCell.cpp */,
 				179A44BE1AC57B83005A27F7 /* TableCellProperties.h */,
 				179A44BF1AC57B83005A27F7 /* TableCol.h */,
 				179A44C01AC57B83005A27F7 /* TableProperties.h */,
@@ -2313,6 +2332,8 @@
 				69656C411FC2FF7F0028C4BA /* BaseShape.h */,
 				69656C421FC2FF7F0028C4BA /* Common.h */,
 				69656C431FC2FF7F0028C4BA /* GraphicsPath.h */,
+				8AE10E692228249E00A542DE /* toVmlConvert.h */,
+				8AE10E6B222824A300A542DE /* toVmlConvert.cpp */,
 				69656C441FC2FF7F0028C4BA /* Path.h */,
 				69656C451FC2FF7F0028C4BA /* PPTShape */,
 				69656CDF1FC2FF7F0028C4BA /* PPTXShape */,
@@ -2737,6 +2758,17 @@
 			path = OOXMLShapes;
 			sourceTree = "<group>";
 		};
+		8A35A6FD215E6124005CC806 /* XmlUtils */ = {
+			isa = PBXGroup;
+			children = (
+				8A35A6FE215E612B005CC806 /* xmlutils.h */,
+				8A35A703215E61BE005CC806 /* xmllight_private.h */,
+				8A35A704215E61BE005CC806 /* xmllight.cpp */,
+				8A35A700215E6194005CC806 /* xmldom.cpp */,
+			);
+			name = XmlUtils;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2817,6 +2849,7 @@
 				69656E871FC2FF800028C4BA /* CBorderCallout3.h in Headers */,
 				69656EEC1FC2FF800028C4BA /* CNoSmoking.h in Headers */,
 				17C1FD001ACC429D006B99B3 /* TextFont.h in Headers */,
+				8AE10E6A2228249E00A542DE /* toVmlConvert.h in Headers */,
 				69656E0C1FC2FF800028C4BA /* FlowChartCollateType.h in Headers */,
 				17C1FD011ACC429D006B99B3 /* Core.h in Headers */,
 				69656EE31FC2FF800028C4BA /* CLineInv.h in Headers */,
@@ -3230,6 +3263,7 @@
 				69656E411FC2FF800028C4BA /* QuadArrowCalloutType.h in Headers */,
 				17C1FDE51ACC429D006B99B3 /* OuterShdw.h in Headers */,
 				69656E5F1FC2FF800028C4BA /* WaveType.h in Headers */,
+				8A35A6FF215E612C005CC806 /* xmlutils.h in Headers */,
 				17C1FDE61ACC429D006B99B3 /* PPTXEvent.h in Headers */,
 				69656ED01FC2FF800028C4BA /* CHeptagon.h in Headers */,
 				69656EF71FC2FF800028C4BA /* CQuadArrowCallout.h in Headers */,
@@ -3380,6 +3414,7 @@
 				17C1FE401ACC429D006B99B3 /* Conformance.h in Headers */,
 				17C1FE411ACC429D006B99B3 /* TLColorSpace.h in Headers */,
 				69656E5C1FC2FF800028C4BA /* UturnArrowType.h in Headers */,
+				8A35A706215E61BE005CC806 /* xmllight_private.h in Headers */,
 				69656EFF1FC2FF800028C4BA /* CRound1Rect.h in Headers */,
 				69656EA21FC2FF800028C4BA /* CDiagStripe.h in Headers */,
 				17C1FE421ACC429D006B99B3 /* Sld.h in Headers */,
@@ -3588,8 +3623,8 @@
 				17C1FCB91ACC429D006B99B3 /* SpPr.cpp in Sources */,
 				695BBFF81C06FFA100817D7E /* TextAttributesEx.cpp in Sources */,
 				17C1E3E11AD40612001E3D18 /* Controls.cpp in Sources */,
-				17C1FCBA1ACC429D006B99B3 /* TableCell.cpp in Sources */,
 				17C1FCBB1ACC429D006B99B3 /* FileFactory.cpp in Sources */,
+				8A35A709215E622B005CC806 /* BlipFill.cpp in Sources */,
 				17C1FCBC1ACC429D006B99B3 /* pptxformatlib.cpp in Sources */,
 				17C1FCBD1ACC429D006B99B3 /* TxBody.cpp in Sources */,
 				697DFC1E200F51A700F0A9AF /* WavAudioFile.cpp in Sources */,
@@ -3598,12 +3633,15 @@
 				695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,
 				17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */,
 				696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */,
+				8AE10E6C222824A300A542DE /* toVmlConvert.cpp in Sources */,
 				17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */,
 				17C1FCC51ACC429D006B99B3 /* Shape.cpp in Sources */,
 				17C1FCC71ACC429D006B99B3 /* BuildNodeBase.cpp in Sources */,
 				17C1FCC81ACC429D006B99B3 /* ContentPart.cpp in Sources */,
+				8A35A707215E61BE005CC806 /* xmllight.cpp in Sources */,
 				69656F501FC2FF800028C4BA /* PptxShape.cpp in Sources */,
 				69656E631FC2FF800028C4BA /* PptFormula.cpp in Sources */,
+				8A35A70D215E62D0005CC806 /* TableCell.cpp in Sources */,
 				17C1FCC91ACC429D006B99B3 /* CNvGrpSpPr.cpp in Sources */,
 				17C1FCCA1ACC429D006B99B3 /* EffectStyle.cpp in Sources */,
 				17C1FCCB1ACC429D006B99B3 /* UniColor.cpp in Sources */,
@@ -3615,6 +3653,7 @@
 				17C1FCD11ACC429D006B99B3 /* Bg.cpp in Sources */,
 				17C1FCD21ACC429D006B99B3 /* Folder.cpp in Sources */,
 				17C1FCD31ACC429D006B99B3 /* BinaryFileReaderWriter.cpp in Sources */,
+				8A35A701215E6194005CC806 /* xmldom.cpp in Sources */,
 				17C1FCD41ACC429D006B99B3 /* TimeNodeBase.cpp in Sources */,
 				17C1FCD51ACC429D006B99B3 /* GraphicFrame.cpp in Sources */,
 				69656E651FC2FF800028C4BA /* PptShape.cpp in Sources */,
@@ -3623,6 +3662,7 @@
 				17C1FCD81ACC429D006B99B3 /* UniEffect.cpp in Sources */,
 				17C1FCDA1ACC429D006B99B3 /* Pic.cpp in Sources */,
 				17C1FCDB1ACC429D006B99B3 /* NvGraphicFramePr.cpp in Sources */,
+				8A35A70B215E626D005CC806 /* UniFill.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3738,20 +3778,9 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					PPTX_DEF,
-					PPT_DEF,
-					ENABLE_PPT_TO_PPTX_CONVERT,
+					DONT_WRITE_EMBEDDED_FONTS,
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
-					NODOCX,
-					CXIMAGE_DONT_DECLARE_TCHAR,
-					BUILD_CONFIG_FULL_VERSION,
-					DONT_WRITE_EMBEDDED_FONTS,
-					CXIMAGE_DONT_DECLARE_TCHAR,
 					_IOS,
-					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -3780,20 +3809,9 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					PPTX_DEF,
-					PPT_DEF,
-					ENABLE_PPT_TO_PPTX_CONVERT,
+					DONT_WRITE_EMBEDDED_FONTS,
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
-					NODOCX,
-					CXIMAGE_DONT_DECLARE_TCHAR,
-					BUILD_CONFIG_FULL_VERSION,
-					DONT_WRITE_EMBEDDED_FONTS,
-					CXIMAGE_DONT_DECLARE_TCHAR,
 					_IOS,
-					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

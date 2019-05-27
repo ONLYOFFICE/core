@@ -33,6 +33,7 @@
 #include "VMLShapeTypeMapping.h"
 #include "OfficeDrawing/Shapetypes/OvalType.h"
 #include "OfficeDrawing/Shapetypes/WordArtText.h"
+#include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h"
 
 namespace DocFileFormat
 {
@@ -170,13 +171,18 @@ namespace DocFileFormat
 			
             m_pXmlWriter->WriteNodeEnd( L"", true );
 
-			//Lock
-			if ( ( pShape->Lock.fUsefLockAspectRatio ) && ( pShape->Lock.fLockAspectRatio ) )
+	//Lock ??? 
+			ODRAW::ProtectionBooleanProperties *prot = dynamic_cast<ODRAW::ProtectionBooleanProperties*>(pShape->Lock.get());
+			if ((prot) && (prot->fUsefLockAspectRatio))
 			{
-                appendValueAttribute( _lock, L"aspectratio", L"t" );
+				appendValueAttribute( _lock, L"aspectratio", prot->fLockAspectRatio ? L"t" : L"f" );
+			}
+			else
+			{
+				appendValueAttribute( _lock, L"aspectratio", L"t");
 			}
 
-			if ( _lock->GetAttributeCount() > 1 )
+			if ( _lock->GetAttributeCount() > 0 )
 			{
 				m_pXmlWriter->WriteString( _lock->GetXMLString() );
 			}

@@ -36,7 +36,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-namespace NSPresentationEditor
+namespace ODRAW
 {
     using namespace NSBaseShape;
     class CHandle_
@@ -49,7 +49,6 @@ namespace NSPresentationEditor
         std::wstring polar;
         std::wstring radiusrange;
 
-    public:
         CHandle_()
         {
         }

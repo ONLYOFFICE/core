@@ -65,6 +65,48 @@ XLS::BiffStructurePtr HyperlinkMoniker::clone()
 {
 	return XLS::BiffStructurePtr(new HyperlinkMoniker(*this));
 }
+void HyperlinkMoniker::load(IBinaryReader* reader)
+{
+    _GUID_ clsid={};
+	
+	clsid.Data1 = reader->ReadUInt32();
+	clsid.Data2 = reader->ReadUInt16();
+	clsid.Data3 = reader->ReadUInt16();
+    
+	unsigned char* pData = reader->ReadBytes(8, true);
+	memcpy(clsid.Data4, pData, 8) ;
+	delete pData;
+
+	if(URLMoniker_CLSID == clsid)
+	{
+		data.reset(new URLMoniker);
+	}
+	else if (FileMoniker_CLSID == clsid)
+	{
+		data.reset(new FileMoniker);
+	} 
+	else if (CompositeMoniker_CLSID == clsid)
+	{
+		data.reset(new CompositeMoniker);
+	} 
+	else if (AntiMoniker_CLSID == clsid)
+	{
+		data.reset(new AntiMoniker);
+	} 
+	else if (ItemMoniker_CLSID == clsid)
+	{
+		data.reset(new ItemMoniker);
+	}
+	else
+	{
+		//throw;
+	}
+
+	if (data)
+	{
+		data->load(reader);
+	}
+}
 
 void HyperlinkMoniker::load(XLS::CFRecord& record)
 {

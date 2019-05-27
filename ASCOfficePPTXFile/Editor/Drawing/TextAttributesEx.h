@@ -40,7 +40,7 @@
 #include "Structures.h"
 #include "TextStructures.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CTheme;
 	class CLayout;

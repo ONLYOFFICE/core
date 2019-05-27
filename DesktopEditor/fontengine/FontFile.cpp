@@ -35,6 +35,10 @@
 #include "../common/Types.h"
 #include "../common/File.h"
 
+#ifdef GetCharWidth
+#undef GetCharWidth
+#endif
+
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif
@@ -1845,6 +1849,10 @@ bool CFontFile::IsBold()
 {
 	if (!m_pFace)
 		return false;
+
+	TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+	if (pOS2 && pOS2->version != 0xFFFF && pOS2->usWeightClass >= 800)
+		return true;
 
 	return ((m_pFace->style_flags & FT_STYLE_FLAG_BOLD) != 0) ? true : false;
 }

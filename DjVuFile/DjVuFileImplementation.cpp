@@ -40,7 +40,7 @@
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
 
-#include "../DesktopEditor/common/String.h"
+#include "../DesktopEditor/common/StringExt.h"
 
 #define VER_DPI		96
 #define HOR_DPI		96

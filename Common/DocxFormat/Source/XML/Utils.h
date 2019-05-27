@@ -281,6 +281,29 @@ namespace XmlUtils
         sstream << boost::format(format) % value;
         return sstream.str();
     }
+
+	static std::wstring GenerateGuid()
+	{
+		std::wstring result;
+//#if defined (_WIN32) || defined(_WIN64)
+//		GUID guid;
+//		CoCreateGuid(&guid);
+//
+//		OLECHAR* guidString;
+//		StringFromCLSID(guid, &guidString);
+//		
+//		result = std::wstring(guidString);
+//
+//		CoTaskMemFree(guidString);
+//#else
+		srand((unsigned int) time(NULL));
+
+        std::wstringstream sstream;
+		sstream << boost::wformat(L"%X%X-%X-%X-%X-%X%X%X") % std::rand() % std::rand() % std::rand() % ((std::rand() & 0x0fff) | 0x4000) % ((rand() % 0x3fff) + 0x8000) %  rand() % rand() % rand();
+        result = sstream.str();
+//#endif	
+		return result;
+	}
     AVSINLINE static std::wstring DoubleToString( double value, wchar_t* format )
     {
         if ( format == NULL ) return L"";

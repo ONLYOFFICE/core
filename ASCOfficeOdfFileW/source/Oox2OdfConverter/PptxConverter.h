@@ -110,7 +110,7 @@ namespace Oox2Odf
 	class PptxConverter : public OoxConverter
 	{
 	public:
-		PptxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
+		PptxConverter(const std::wstring & path, bool bTemplate);
 		~PptxConverter();
 
 		virtual void convertDocument();
@@ -120,8 +120,8 @@ namespace Oox2Odf
 		virtual PPTX::Theme								*oox_theme();
 		virtual PPTX::Logic::ClrMap						*oox_clrMap();
        
-		virtual std::wstring							find_link_by_id (std::wstring sId, int t);
-		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id	(std::wstring sId);
+		virtual std::wstring							find_link_by_id (const std::wstring & sId, int t);
+		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id	(const std::wstring & sId);
 
 		void convert(OOX::WritingElement *oox_unknown);
  		

@@ -40,7 +40,7 @@ public:
 
     {
         m_bConcentricFill = true;
-        m_eJoin = NSOfficeDrawing::lineJoinMiter;
+        m_eJoin = ODRAW::lineJoinMiter;
         m_strPath = _T("m21600,10800l@2@3,10800,0@3@3,,10800@3@2,10800,21600@2@2xe");
 
         AddGuide(_T("sum 10800 0 #0"));     

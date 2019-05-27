@@ -58,7 +58,7 @@ namespace OOX
 		// CParagraph 17.3.1.22 (Part 1)
 		//--------------------------------------------------------------------------------	
 
-		void    CParagraph::fromXML(XmlUtils::CXmlNode& oNode)
+		void CParagraph::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			m_oParagraphProperty = NULL;
 
@@ -139,7 +139,17 @@ namespace OOX
 							pItem = new CPermStart( oItem );
 						else if ( _T("w:pPr") == sName )
 						{
-							pItem = m_oParagraphProperty  = new CParagraphProperty( oItem );
+							if (m_oParagraphProperty)
+							{
+								CParagraphProperty prop2(oItem);
+								CParagraphProperty newProp = CParagraphProperty::Merge(*m_oParagraphProperty, prop2);
+
+								pItem = m_oParagraphProperty = new CParagraphProperty(newProp);
+							}
+							else
+							{
+								pItem = m_oParagraphProperty = new CParagraphProperty( oItem );
+							}
 						}
 						else if ( _T("w:proofErr") == sName )
 							pItem = new CProofErr( oItem );
@@ -160,7 +170,7 @@ namespace OOX
 		}
 
 
-		void    CParagraph::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CParagraph::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_oParagraphProperty = NULL;
 			
@@ -234,8 +244,18 @@ namespace OOX
 				else if ( _T("w:permStart") == sName )
 					pItem = new CPermStart( oReader );
 				else if ( _T("w:pPr") == sName )
-				{
-					pItem = m_oParagraphProperty = new CParagraphProperty( oReader );// c копией  .. для быстрого доступа/анализа
+				{// c копией  .. для быстрого доступа/анализа
+					if (m_oParagraphProperty)
+					{
+						CParagraphProperty prop2(oReader);
+						CParagraphProperty newProp = CParagraphProperty::Merge(*m_oParagraphProperty, prop2);
+
+						pItem = m_oParagraphProperty = new CParagraphProperty(newProp);
+					}
+					else
+					{
+						pItem = m_oParagraphProperty = new CParagraphProperty( oReader );
+					}
 				}
 				else if ( _T("w:proofErr") == sName )
 					pItem = new CProofErr( oReader );
@@ -286,7 +306,7 @@ namespace OOX
 			return sResult;
 		}
 
-		void    CParagraph::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		void CParagraph::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )

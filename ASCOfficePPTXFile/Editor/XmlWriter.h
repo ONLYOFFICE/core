@@ -531,6 +531,12 @@ namespace NSBinPptxRW
             WriteString(val);
             WriteNodeEnd(strNodeName);
         }
+		AVSINLINE void WriteNodeValue2(const std::wstring& strNodeName, const std::wstring& val)
+		{
+			WriteNodeBegin(strNodeName);
+			WriteStringXML(val);
+			WriteNodeEnd(strNodeName);
+		}
         AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const bool& val)
         {
             WriteNodeBegin(strNodeName);
@@ -613,7 +619,12 @@ namespace NSBinPptxRW
 		AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_sizet& value)
         {
             if (value.IsInit())
-                WriteAttribute(strName, *value);
+                #ifdef __ANDROID__
+                    WriteAttribute(strName, (int)(*value));
+                #else
+                    WriteAttribute(strName, *value);
+                #endif
+
         }
         AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_double& value)
         {
@@ -658,6 +669,11 @@ namespace NSBinPptxRW
             if (value.IsInit())
                 WriteNodeValue(strName, *value);
         }
+		AVSINLINE void WriteNodeValue2(const std::wstring& strName, const nullable_string& value)
+		{
+			if (value.IsInit())
+				WriteNodeValue2(strName, *value);
+		}
         AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_bool& value)
         {
             if (value.IsInit())

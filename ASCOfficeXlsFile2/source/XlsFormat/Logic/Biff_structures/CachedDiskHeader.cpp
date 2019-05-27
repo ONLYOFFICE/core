@@ -50,7 +50,10 @@ void CachedDiskHeader::load(CFRecord& record)
 		rgHdrDisk.size = cbdxfHdrDisk;
 		rgHdrDisk.load(record);
 	}
-	record >> strStyleName;	
+	if (fSaveStyleName)
+	{
+		record >> strStyleName;	
+	}
 }
 
 } // namespace XLS

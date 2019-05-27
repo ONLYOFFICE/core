@@ -50,7 +50,7 @@ namespace MetaFile
 		// pBuffer - BGRA картинка размерами ulWidth, ulHeight, которую надо нарисовать в заданном ректе
 		virtual void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) = 0;
 
-		virtual void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx) = 0;
+		virtual void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx, int iGraphicsMode = 1) = 0;
 
 		virtual void StartPath() = 0;
 		virtual void MoveTo(double dX, double dY) = 0;
@@ -67,6 +67,8 @@ namespace MetaFile
 		virtual void EndClipPath(unsigned int unMode) = 0;
 
 		virtual void UpdateDC() = 0;
+		virtual void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) = 0;
+		virtual void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) = 0;
 	};
 
 }

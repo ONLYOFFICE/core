@@ -73,7 +73,7 @@ namespace BinXlsxRW {
 	}\
 }
 
-#define READ2_DEF(stLen, res, fReadFunction, arg) {\
+#define READ2_DEF_SPREADSHEET(stLen, res, fReadFunction, arg) {\
 	long read2defCurPos = 0;\
 	while(read2defCurPos < stLen)\
 	{\

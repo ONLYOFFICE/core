@@ -34,9 +34,8 @@
 
 class CRecordBookmarkSeedAtom : public CUnknownRecord
 {
-	INT m_nBookmarkID;
-
 public:
+	INT m_nBookmarkID;
 	
 	CRecordBookmarkSeedAtom()
 	{

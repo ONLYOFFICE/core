@@ -33,6 +33,7 @@
 #include "Worksheet.h"
 
 #include "../Comments/Comments.h"
+#include "../Comments/ThreadedComments.h"
 
 #include "../../DocxFormat/External/HyperLink.h"
 #include "../../DocxFormat/Media/Image.h"
@@ -47,6 +48,8 @@ namespace OOX
 			m_bSpreadsheets = true;
 			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
+			m_pPersonList = NULL;
+			m_pThreadedComments = NULL;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -64,6 +67,8 @@ namespace OOX
 			m_bSpreadsheets = true;
 			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
+			m_pPersonList = NULL;
+			m_pThreadedComments = NULL;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -96,7 +101,7 @@ namespace OOX
 				return;
 
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if ( _T("worksheet") == sName || _T("chartsheet") == sName)
+			if ( L"worksheet" == sName || L"chartsheet" == sName)
 			{
 				read(oReader);
 			}
@@ -114,9 +119,8 @@ namespace OOX
 					PrepareComments(m_pComments, pVmlDrawing);
 				}
 			}
-			if (m_oHeaderFooter.IsInit() && m_oLegacyDrawing.IsInit() && m_oLegacyDrawing.IsInit())
-			{
-			}	
+
+			PrepareConditionalFormatting();
 		}
 		void CWorksheet::read(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -203,6 +207,30 @@ namespace OOX
 		}
 
 
+
+		void CWorksheet::PrepareConditionalFormatting()
+		{
+			if (m_oExtLst.IsInit() == false) return;
+
+			for (size_t i = 0; i < m_oExtLst->m_arrExt.size(); ++i)
+			{
+				for (size_t j = 0; j < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting.size(); ++j)
+				{
+					if (!m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]) continue;
+
+					for (size_t k = 0; k < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems.size(); ++k)
+					{
+						if (!m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]) continue;
+
+						if (m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId.IsInit())
+						{
+							std::wstring id = m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId.get2();
+							m_mapConditionalFormattingEx.insert(std::make_pair(id, m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]));
+						}
+					}
+				}
+			}
+		}
 		void CWorksheet::PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing)
 		{
             std::vector<std::wstring> & arAuthors = pComments->m_oAuthors->m_arrItems;
@@ -478,6 +506,8 @@ namespace OOX
 			}
 
 			m_mapComments.clear();
+
+			m_mapConditionalFormattingEx.clear();
 
 			// delete Conditional Formatting
 			for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)

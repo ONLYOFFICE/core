@@ -35,8 +35,8 @@
 
 #include "../Biff_records/Blank.h"
 #include "../Biff_records/MulBlank.h"
-#include "../Biff_records/RK.h"
 #include "../Biff_records/MulRk.h"
+#include "../Biff_records/RK.h"
 #include "../Biff_records/BoolErr.h"
 #include "../Biff_records/Number.h"
 #include "../Biff_records/LabelSst.h"

@@ -322,7 +322,21 @@ bool CImageFileFormatChecker::isSvmFile(BYTE* pBuffer,DWORD dwBytes)
 	 
 	return false;
 }
+bool CImageFileFormatChecker::isSvgFile(BYTE* pBuffer,DWORD dwBytes)
+{
+	if (eFileType)return false;
 
+	if ( (6 <= dwBytes) &&(0x3C == pBuffer[0] && 0x3F == pBuffer[1]  && 0x78 == pBuffer[2] && 0x6D == pBuffer[3]
+						 && 0x6C == pBuffer[4] && 0x20 == pBuffer[5]))
+	{
+		std::string sXml_part = std::string((char*)pBuffer, dwBytes);
+		if (sXml_part.find(std::string("svg")) != std::string::npos)
+		{
+			return true;
+		}
+	} 
+	return false;
+}
 
 bool CImageFileFormatChecker::isJ2kFile(BYTE* pBuffer,DWORD dwBytes)
 {
@@ -504,7 +518,7 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 ///////////////////////////////////////////////////////////////////////
 	if (isSvgFile(fileName))
 	{
-		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+        eFileType = _CXIMAGE_FORMAT_SVG;
 	}	
 	if (isRawFile(fileName))
 	{
@@ -585,8 +599,51 @@ bool CImageFileFormatChecker::isRawFile(std::wstring& fileName)
 }
 bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 {
-	//TODO:
-	return false;
+    NSFile::CFileBinary file;
+    if (!file.OpenFile(fileName))
+        return false;
+
+    DWORD nSize = (DWORD)file.GetFileSize();
+    if (nSize > 100)
+        nSize = 100;
+
+    BYTE* buffer = new BYTE[nSize];
+    if (!buffer)
+        return false;
+
+    DWORD sizeRead = 0;
+    if (!file.ReadFile(buffer, nSize, sizeRead))
+    {
+        delete []buffer;
+        return false;
+    }
+    file.CloseFile();
+
+    if ('<' == buffer[0] &&
+        's' == buffer[1] &&
+        'v' == buffer[2] &&
+        'g' == buffer[3])
+    {
+        delete [] buffer;
+        return true;
+    }
+
+    if ('<' == buffer[0] &&
+        '?' == buffer[1] &&
+        'x' == buffer[2] &&
+        'm' == buffer[3] &&
+        'l' == buffer[4])
+    {
+        std::string test((char*)buffer, nSize);
+        if (std::string::npos != test.find("<svg"))
+        {
+            delete [] buffer;
+            return true;
+        }
+    }
+
+    delete [] buffer;
+    return false;
 }
 
 std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSize)
@@ -602,6 +659,7 @@ std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSiz
 	else if (isTiffFile(Data,DataSize))return L"tif";
 	else if (isWmfFile(Data,DataSize)) return L"wmf";
 	else if (isSvmFile(Data,DataSize)) return L"svm";
+	else if (isSvgFile(Data,DataSize)) return L"svg";
 	
-	return L"jpg";
+    return L"";
 }

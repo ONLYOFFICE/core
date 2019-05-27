@@ -39,11 +39,9 @@ VCenter::VCenter()
 {
 }
 
-
 VCenter::~VCenter()
 {
 }
-
 
 BaseObjectPtr VCenter::clone()
 {

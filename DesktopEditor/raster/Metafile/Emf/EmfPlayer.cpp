@@ -36,7 +36,7 @@ namespace MetaFile
 {
 	CEmfPlayer::CEmfPlayer(CEmfFile* pFile)
 	{
-		CEmfDC* pDC = new CEmfDC();
+		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
 			pFile->SetError();
@@ -81,7 +81,7 @@ namespace MetaFile
 		}
 		m_mObjects.clear();
 
-		CEmfDC* pDC = new CEmfDC();
+		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
 			m_pEmfFile->SetError();
@@ -248,8 +248,9 @@ namespace MetaFile
 		RegisterObject(ulIndex, (CEmfObjectBase*)pPen);
 	}
 
-	CEmfDC::CEmfDC()
+	CEmfDC::CEmfDC(CEmfPlayer* pPlayer)
 	{
+		m_pPlayer   = pPlayer;
 		m_ulMapMode = MM_TEXT;
 		m_pBrush    = NULL;
 		m_pPen      = NULL;
@@ -277,7 +278,7 @@ namespace MetaFile
 	}
 	CEmfDC*         CEmfDC::Copy()
 	{
-		CEmfDC* pNewDC = new CEmfDC();
+		CEmfDC* pNewDC = new CEmfDC(m_pPlayer);
 		if (!pNewDC)
 			return NULL;
 
@@ -375,8 +376,11 @@ namespace MetaFile
 	{
 		return &m_oInverseTransform;
 	}
-	TEmfXForm*      CEmfDC::GetFinalTransform()
+	TEmfXForm*      CEmfDC::GetFinalTransform(int iGraphicsMode)
 	{
+		if (GM_COMPATIBLE == iGraphicsMode)
+			return &m_oFinalTransform2;
+
 		return &m_oFinalTransform;
 	}
 	void            CEmfDC::MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode)
@@ -581,38 +585,17 @@ namespace MetaFile
 		TEmfWindow* pWindow   = GetWindow();
 		TEmfWindow* pViewPort = GetViewport();
 
-		int nWindowX = pWindow->lX;
-		int nWindowY = pWindow->lY;
-
-		double dPixelW = GetPixelWidth();
-		double dPixelH = GetPixelHeight();
-
-		// Вообще отрицательных высоты и ширины быть не должно, но если так встречается, то
-		// мы считаем, что это не перевернутая система координат, а просто сдвинутая
-
-		if (pWindow->ulH < 0)
-		{
-			if (dPixelH < 0)
-				dPixelH = -dPixelH;
-
-			nWindowY += pWindow->ulH;
-		}
-
-		if (pWindow->ulW < 0)
-		{
-			if (dPixelW < 0)
-				dPixelW = -dPixelW;
-
-			nWindowY += pWindow->ulW;
-		}
-
-		TEmfXForm oWindowXForm(1, 0, 0, 1, -nWindowX, -nWindowY);
-		TEmfXForm oViewportXForm(dPixelW, 0, 0, dPixelH, pViewPort->lX, pViewPort->lY);
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -pWindow->lX, -pWindow->lY);
+		TEmfXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->lX, pViewPort->lY);
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+
+		m_oFinalTransform2.Init();
+		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)
 	{
@@ -652,9 +635,9 @@ namespace MetaFile
 	{
 		return &m_oClip;
 	}
-	void            CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode)
+	void            CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform)
 	{
-		m_oClip.SetPath(pPath, unMode);
+		m_oClip.SetPath(pPath, unMode, pTransform);
 	}
 	void            CEmfDC::SetArcDirection(unsigned int unDirection)
 	{

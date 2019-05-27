@@ -82,6 +82,7 @@ int Pos::serialize(std::wostream & _stream)
 		bAutoPosition	= Frame_->fAutoPosition;
 		bAutoSize		= Frame_->fAutoSize;
 	}
+
 	double x = x1 / 4000.;
 	double y = y1 / 4000.;
 

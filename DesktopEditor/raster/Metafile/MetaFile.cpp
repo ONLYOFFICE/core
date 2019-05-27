@@ -93,6 +93,8 @@ namespace MetaFile
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
 		m_oSvmFile.SetFontManager(m_pFontManager);
+        m_oSvgFile.SetFontManager(m_pFontManager);
+
 		//------------------------------------------------------
 
 
@@ -134,6 +136,12 @@ namespace MetaFile
 
 			m_oSvmFile.Close();
 		}
+        // Это не svm
+        if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
+        {
+            m_lType = c_lMetaSvg;
+            return true;
+        }
 
 		return false;
 	};
@@ -162,6 +170,10 @@ namespace MetaFile
 			m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
 			m_oSvmFile.PlayMetaFile();
 		}
+        else if (c_lMetaSvg == m_lType)
+        {
+            m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+        }
 		pRenderer->EndCommand(c_nImageType);
 		return true;
 	};
@@ -170,6 +182,7 @@ namespace MetaFile
 		m_oWmfFile.Close();
 		m_oEmfFile.Close();
 		m_oSvmFile.Close();
+        m_oSvgFile.Close();
 
 		m_lType  = 0;
 	};
@@ -177,49 +190,56 @@ namespace MetaFile
 	{
 		return m_lType;
 	}
-        void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
+    void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
+    {
+        if (c_lMetaWmf == m_lType)
         {
-            if (c_lMetaWmf == m_lType)
-            {
-                const TRectD& oRect = m_oWmfFile.GetBounds();
-                *pdX = oRect.dLeft;
-                *pdY = oRect.dTop;
-                *pdW = oRect.dRight - oRect.dLeft;
-                *pdH = oRect.dBottom - oRect.dTop;
-            }
-            else if (c_lMetaEmf == m_lType)
-            {
-                TEmfRectL* pRect = m_oEmfFile.GetBounds();
-                *pdX = pRect->lLeft;
-                *pdY = pRect->lTop;
-                *pdW = pRect->lRight - pRect->lLeft;
-                *pdH = pRect->lBottom - pRect->lTop;
-            }
-            else if (c_lMetaSvm == m_lType)
-            {
-                TRect* pRect = m_oSvmFile.GetBounds();
-                *pdX = pRect->nLeft;
-                *pdY = pRect->nTop;
-                *pdW = pRect->nRight - pRect->nLeft;
-                *pdH = pRect->nBottom - pRect->nTop;
+            const TRectD& oRect = m_oWmfFile.GetBounds();
+            *pdX = oRect.dLeft;
+            *pdY = oRect.dTop;
+            *pdW = oRect.dRight - oRect.dLeft;
+            *pdH = oRect.dBottom - oRect.dTop;
+        }
+        else if (c_lMetaEmf == m_lType)
+        {
+            TEmfRectL* pRect = m_oEmfFile.GetBounds();
+            *pdX = pRect->lLeft;
+            *pdY = pRect->lTop;
+            *pdW = pRect->lRight - pRect->lLeft;
+            *pdH = pRect->lBottom - pRect->lTop;
+        }
+        else if (c_lMetaSvm == m_lType)
+        {
+            TRect* pRect = m_oSvmFile.GetBounds();
+            *pdX = pRect->nLeft;
+            *pdY = pRect->nTop;
+            *pdW = pRect->nRight - pRect->nLeft;
+            *pdH = pRect->nBottom - pRect->nTop;
 
-                if (*pdW > 10000 || *pdH > 10000)
-                {
-                    *pdW /= 10;
-                    *pdH /= 10;
-                }
-            }
-            else
+            if (*pdW > 10000 || *pdH > 10000)
             {
-                *pdX = 0;
-                *pdY = 0;
-                *pdW = 0;
-                *pdH = 0;
+                *pdW /= 10;
+                *pdH /= 10;
             }
-            if (*pdW < 0) *pdW = -*pdW;
-            if (*pdH < 0) *pdH = -*pdH;
-        };
-        void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
+        }
+        else if (c_lMetaSvg == m_lType)
+        {
+            *pdX = 0;
+            *pdY = 0;
+            *pdW = m_oSvgFile.get_Width();
+            *pdH = m_oSvgFile.get_Height();
+        }
+        else
+        {
+            *pdX = 0;
+            *pdY = 0;
+            *pdW = 0;
+            *pdH = 0;
+        }
+        if (*pdW < 0) *pdW = -*pdW;
+        if (*pdH < 0) *pdH = -*pdH;
+    };
+    void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
 		CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
 		CFontsCache* pFontCache = new CFontsCache();

@@ -160,11 +160,11 @@ namespace NExtractTools
     _UINT32 odf_flat2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
 	_UINT32 docx2odt        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
-    _UINT32 docx_dir2odt    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    _UINT32 docx_dir2odt    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params, bool bTemplate);
     _UINT32 xlsx2ods        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
-    _UINT32 xlsx_dir2ods    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    _UINT32 xlsx_dir2ods    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params, bool bTemplate);
     _UINT32 pptx2odp        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
-    _UINT32 pptx_dir2odp    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    _UINT32 pptx_dir2odp    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params, bool bTemplate);
 
 	_UINT32 fromMscrypt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	_UINT32 mscrypt2oox		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);

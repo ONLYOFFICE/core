@@ -64,8 +64,9 @@ namespace OOX
                 m_mTable.insert( std::make_pair(  _T("emf"),  _T("image/x-emf")));
                 m_mTable.insert( std::make_pair(  _T("emz"),  _T("image/x-emz")));
                 m_mTable.insert( std::make_pair(  _T("wmf"),  _T("image/x-wmf")));
-                m_mTable.insert( std::make_pair(  _T("svg"), _T("image/svg+xml")));
+                m_mTable.insert( std::make_pair(  _T("svg"),  _T("image/svg+xml")));
                 m_mTable.insert( std::make_pair(  _T("svm"),  _T("image/svm")));
+				m_mTable.insert( std::make_pair(  _T("wdp"),  _T("image/vnd.ms-photo")));
                 m_mTable.insert( std::make_pair(  _T("wav"),  _T("audio/wav")));
 				m_mTable.insert( std::make_pair(  _T("wma"),  _T("audio/x-wma")));    
 				m_mTable.insert( std::make_pair(  _T("m4a"),  _T("audio/unknown"))); 
@@ -76,6 +77,7 @@ namespace OOX
 				m_mTable.insert( std::make_pair(  _T("mkv"),  _T("video/unknown"))); 
 				m_mTable.insert( std::make_pair(  _T("avi"),  _T("video/avi"))); 
 				m_mTable.insert( std::make_pair(  _T("wmv"),  _T("video/x-wmv"))); 
+				m_mTable.insert( std::make_pair(  _T("webm"), _T("video/webm"))); 
 				m_mTable.insert( std::make_pair(  _T("xls"),  _T("application/vnd.ms-excel")));
                 m_mTable.insert( std::make_pair(  _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12")));
                 m_mTable.insert( std::make_pair(  _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12")));

@@ -57,6 +57,7 @@ namespace odf_reader {
 style_instance::style_instance(
 		styles_container   *Container,
 		const std::wstring  &Name,
+		const std::wstring	&DisplayName,
 		style_family::type	Type,
 		style_content      *Content,
 		bool IsAutomatic,
@@ -68,6 +69,7 @@ style_instance::style_instance(
 		) :
 	container_		(Container),
     name_			(Name),
+	display_name_	(DisplayName),
     style_type_		(Type),
     content_		(Content),
     is_automatic_	(IsAutomatic),
@@ -110,7 +112,7 @@ void styles_container::add_style(	const std::wstring & Name,
 	{
 		ParentStyleName = L"";//иначе в коде возможно зацикливание.
 	}
-    style_instance_ptr newStyle = style_instance_ptr( new style_instance(this, Name, Type, Content, IsAutomatic, IsDefault, 
+    style_instance_ptr newStyle = style_instance_ptr( new style_instance(this, Name, DisplayName, Type, Content, IsAutomatic, IsDefault, 
 							ParentStyleName, NextStyleName, DataStyleName, StyleClass));
 
     instances_.push_back(newStyle);
@@ -143,7 +145,10 @@ const std::wstring & style_instance::name() const
 {
     return name_;
 }
-
+const std::wstring & style_instance::display_name() const
+{
+    return display_name_;
+}
 style_family::type style_instance::type() const
 {
     return style_type_;
@@ -518,11 +523,7 @@ const std::wstring & font_instance::style_name() const
 
 const std::wstring & font_instance::name() const
 {
-    static const std::wstring Symbol = L"Symbol";
-    if (name_ == L"StarSymbol")
-        return Symbol;
-    else
-        return name_;
+	return name_;
 }
 
 const std::wstring & font_instance::charset() const

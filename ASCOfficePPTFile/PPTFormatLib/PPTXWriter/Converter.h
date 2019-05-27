@@ -37,7 +37,7 @@
 class CStylesWriter;
 class CPPTUserInfo;
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CDocument;
 	class CShapeWriter;

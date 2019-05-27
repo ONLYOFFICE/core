@@ -173,7 +173,7 @@
 		17A7F02B1B13154500760AFB /* SvmPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0221B13154500760AFB /* SvmPlayer.cpp */; };
 		17DD67B71B7E2778000F800F /* lepton_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DD67B51B7E2778000F800F /* lepton_utils.cpp */; };
 		697B72D41E3B78D90054C17C /* EmfFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697B72D31E3B78D90054C17C /* EmfFile.cpp */; };
-		8A404FD1208A00F100F2D5CF /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A404FCF208A00F000F2D5CF /* String.cpp */; };
+		8AC2819D2195A582006FA3D7 /* StringExt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2819B2195A582006FA3D7 /* StringExt.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -436,8 +436,8 @@
 		17A7F0231B13154500760AFB /* SvmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmPlayer.h; sourceTree = "<group>"; };
 		17DD67B51B7E2778000F800F /* lepton_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lepton_utils.cpp; sourceTree = "<group>"; };
 		697B72D31E3B78D90054C17C /* EmfFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmfFile.cpp; sourceTree = "<group>"; };
-		8A404FCF208A00F000F2D5CF /* String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = String.cpp; path = ../../../common/String.cpp; sourceTree = "<group>"; };
-		8A404FD0208A00F100F2D5CF /* String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = String.h; path = ../../../common/String.h; sourceTree = "<group>"; };
+		8AC2819B2195A582006FA3D7 /* StringExt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringExt.cpp; path = ../../../common/StringExt.cpp; sourceTree = "<group>"; };
+		8AC2819C2195A582006FA3D7 /* StringExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringExt.h; path = ../../../common/StringExt.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -478,8 +478,8 @@
 				17A762EF1B0F36790046BC0B /* Wmf */,
 				17A762EB1B0F366F0046BC0B /* MetaFile.cpp */,
 				17A762EC1B0F366F0046BC0B /* MetaFile.h */,
-				8A404FCF208A00F000F2D5CF /* String.cpp */,
-				8A404FD0208A00F100F2D5CF /* String.h */,
+				8AC2819B2195A582006FA3D7 /* StringExt.cpp */,
+				8AC2819C2195A582006FA3D7 /* StringExt.h */,
 			);
 			path = metafile;
 			sourceTree = "<group>";
@@ -914,6 +914,7 @@
 				17A764131B0F39370046BC0B /* ccthin.cpp in Sources */,
 				17A764091B0F39370046BC0B /* boxbasic.cpp in Sources */,
 				17A764211B0F39370046BC0B /* colorseg.cpp in Sources */,
+				8AC2819D2195A582006FA3D7 /* StringExt.cpp in Sources */,
 				17A764F51B0F39370046BC0B /* tiffiostub.cpp in Sources */,
 				17A764011B0F39370046BC0B /* blend1.cpp in Sources */,
 				17A7641D1B0F39370046BC0B /* colorquant1.cpp in Sources */,
@@ -988,7 +989,6 @@
 				17A764E51B0F39370046BC0B /* selgen.cpp in Sources */,
 				17A7630E1B0F38480046BC0B /* EmfPath.cpp in Sources */,
 				17A764831B0F39370046BC0B /* partition.cpp in Sources */,
-				8A404FD1208A00F100F2D5CF /* String.cpp in Sources */,
 				17A763FF1B0F39370046BC0B /* binreducelow.cpp in Sources */,
 				17A764E31B0F39370046BC0B /* sel2.cpp in Sources */,
 				17A764E91B0F39370046BC0B /* skew.cpp in Sources */,

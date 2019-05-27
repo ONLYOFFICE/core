@@ -34,10 +34,9 @@
 
 class CRecordExOleLinkAtom : public CUnknownRecord
 {
+public:
 	UINT m_nSlideID;
 	UINT m_nOleUpdateMode;
-
-public:
 	
 	CRecordExOleLinkAtom()
 	{

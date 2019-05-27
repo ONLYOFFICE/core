@@ -34,8 +34,6 @@
 
 class CRecordAnimationInfoAtom : public CUnknownRecord
 {
-	// поля...
-
 public:
 	
 	CRecordAnimationInfoAtom()

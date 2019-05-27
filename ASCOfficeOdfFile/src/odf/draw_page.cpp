@@ -224,7 +224,11 @@ void presentation_footer_decl::add_attributes( const xml::attributes_wc_ptr & At
 }
 void presentation_footer_decl::add_text(const std::wstring & text)
 {
-    text_ = text; 
+    text_ += text; 
+}
+void presentation_footer_decl::add_space(const std::wstring & text)
+{
+    text_ += text; 
 }
 void presentation_footer_decl::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -242,7 +246,11 @@ void presentation_date_time_decl::add_attributes( const xml::attributes_wc_ptr &
 }
 void presentation_date_time_decl::add_text(const std::wstring & text)
 {
-    text_ = text;
+    text_ += text;
+}
+void presentation_date_time_decl::add_space(const std::wstring & text)
+{
+    text_ += text;
 }
 void presentation_date_time_decl::pptx_convert(oox::pptx_conversion_context & Context)
 {

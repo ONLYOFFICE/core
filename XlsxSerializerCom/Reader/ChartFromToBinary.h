@@ -44,6 +44,9 @@ namespace OOX
 	{
 		class CChartSpace;
 	}
+	class CSizeAnchor;
+	class CFromTo;
+	class CExt;
 }
 
 namespace BinXlsxRW
@@ -51,10 +54,11 @@ namespace BinXlsxRW
 	class SaveParams
 	{
 	public:
-		SaveParams	(const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes, CSVWriter::CCSVWriter* pCSVWriter = NULL);
+		SaveParams	(const std::wstring& _sDrawingsPath, const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes, CSVWriter::CCSVWriter* pCSVWriter = NULL);
 
 		smart_ptr<PPTX::Theme>			pTheme;
 		std::wstring					sThemePath;
+		std::wstring					sDrawingsPath;
 		OOX::CContentTypes*				pContentTypes;
 		int								nThemeOverrideCount;
 		CSVWriter::CCSVWriter*			pCSVWriter;
@@ -67,13 +71,11 @@ namespace BinXlsxRW
 	public:
 		BinaryChartReader	(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 		
-		int ReadCT_ChartSpace			(long length, OOX::Spreadsheet::CT_ChartSpace* poResult);
-		int ReadCT_RelId				(long length, OOX::Spreadsheet::CT_RelId* poResult);
+		int ReadCT_ChartSpace			(long length, OOX::Spreadsheet::CChartSpace* poResult);
 	private: 
 		int ReadCT_extLst				(BYTE type, long length, void* poResult);
 		int ReadCT_ChartSpace			(BYTE type, long length, void* poResult);
 		int ReadCT_Boolean				(BYTE type, long length, void* poResult);
-		int ReadCT_RelId				(BYTE type, long length, void* poResult);
 		int ReadCT_PageSetup			(BYTE type, long length, void* poResult);
 		int ReadCT_PageMargins			(BYTE type, long length, void* poResult);
 		int ReadCT_HeaderFooter			(BYTE type, long length, void* poResult);
@@ -212,6 +214,11 @@ namespace BinXlsxRW
 		int ReadAlternateContentFallback(BYTE type, long length, void* poResult);
 		int ReadCT_SpPr					(BYTE type, long length, void* poResult);
 		int ReadCT_TxPr					(BYTE type, long length, void* poResult);
+		
+		int ReadCT_userShapes			(BYTE type, long length, void* poResult);
+		int ReadCT_userShape			(BYTE type, long length, void* poResult);
+		int ReadCT_FromTo				(BYTE type, long length, void* poResult);
+		int ReadCT_Ext					(BYTE type, long length, void* poResult);
 	};
 	class BinaryChartWriter
 	{
@@ -356,6 +363,10 @@ namespace BinXlsxRW
 		void WriteCT_Style1			(OOX::Spreadsheet::CT_Style1& oVal);
 		void WriteCT_Style			(OOX::Spreadsheet::CT_Style& oVal);
 		void WriteCT_TextLanguageID	(OOX::Spreadsheet::CT_TextLanguageID& oVal);
+		
+		void WriteCT_Shape			(OOX::CSizeAnchor* pVal);
+		void WriteCT_FromTo			(OOX::CFromTo& oFromTo);
+		void WriteCT_Ext			(OOX::CExt& oExt);
 	
 		void WriteAlternateContent			(OOX::Spreadsheet::AlternateContent& oVal);
 		void WriteAlternateContentChoice	(OOX::Spreadsheet::AlternateContentChoice& oVal);

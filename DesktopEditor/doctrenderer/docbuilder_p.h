@@ -223,6 +223,51 @@ public:
         return sReturn;
     }
 
+    std::wstring GetJSVariable(std::wstring sParam)
+    {
+        std::string sParamA = U_TO_UTF8(sParam);
+        NSCommon::string_replaceA(sParamA, "\\\"", "\"");
+        std::string commandA = "(function(){ return (" + sParamA + "); })()";
+
+        v8::Context::Scope context_scope(m_context);
+
+        v8::TryCatch try_catch;
+
+        v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
+        v8::Local<v8::Script> script = v8::Script::Compile(source);
+
+        if (try_catch.HasCaught())
+        {
+            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+            _LOGGING_ERROR_(L"execute_compile_code", strCode);
+            _LOGGING_ERROR_(L"execute_compile", strException);
+
+            return L"jsValue(" + sParam + L")";
+        }
+        else
+        {
+            v8::Local<v8::Value> _value = script->Run();
+
+            if (try_catch.HasCaught())
+            {
+                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                _LOGGING_ERROR_(L"execute_run_code", strCode);
+                _LOGGING_ERROR_(L"execute_run", strException);
+
+                return L"jsValue(" + sParam + L")";
+            }
+
+            if (_value->IsString())
+                return to_cstring(_value);
+        }
+
+        return L"jsValue(" + sParam + L")";
+    }
+
     bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath)
     {
         LOGGER_SPEED_START
@@ -1154,6 +1199,25 @@ namespace NSDoctRenderer
             RELEASEOBJECT(m_pWorker);
         }
 
+        std::wstring GetSaveFilePath(const std::wstring& path)
+        {
+            std::wstring _path = path;
+            if (!m_sFolderForSaveOnlyUseNames.empty())
+            {
+                _path = m_sFolderForSaveOnlyUseNames;
+                wchar_t last = m_sFolderForSaveOnlyUseNames.c_str()[m_sFolderForSaveOnlyUseNames.length() - 1];
+                if (last != '/' && last != '\\')
+                    _path += L"/";
+                _path += NSCommon::GetFileName(path);
+            }
+
+            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);
+            if ((sDstFileDir != _path) && !NSDirectory::Exists(sDstFileDir))
+                NSDirectory::CreateDirectories(sDstFileDir);
+
+            return _path;
+        }
+
         int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
         {
             Init();
@@ -1176,19 +1240,7 @@ namespace NSDoctRenderer
 
             NSStringUtils::CStringBuilder oBuilder;
 
-            std::wstring _path = path;
-            if (!m_sFolderForSaveOnlyUseNames.empty())
-            {
-                _path = m_sFolderForSaveOnlyUseNames;
-                wchar_t last = m_sFolderForSaveOnlyUseNames.c_str()[m_sFolderForSaveOnlyUseNames.length() - 1];
-                if (last != '/' && last != '\\')
-                    _path += L"/";
-                _path += NSCommon::GetFileName(path);
-            }
-
-            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);
-            if ((sDstFileDir != _path) && !NSDirectory::Exists(sDstFileDir))
-                NSDirectory::CreateDirectories(sDstFileDir);
+            std::wstring _path = GetSaveFilePath(path);
 
             oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
             oBuilder.WriteEncodeXmlString(m_sFileDir);
@@ -1498,6 +1550,27 @@ namespace NSDoctRenderer
             RELEASEARRAYOBJECTS(pData);
             return sReturn;
         }
+
+        void WriteData(const wchar_t* path, const wchar_t* value, const bool& append)
+        {
+            std::wstring sValue(value);
+            std::string sValueA = U_TO_UTF8(sValue);
+            NSCommon::string_replaceA(sValueA, "%", "%%");
+
+            std::wstring _sFile(path);
+            std::wstring sFile = GetSaveFilePath(_sFile);
+
+            if (!append && NSFile::CFileBinary::Exists(sFile))
+                NSFile::CFileBinary::Remove(sFile);
+
+            NSFile::CFileBinary oFile;
+            FILE* pFile = oFile.OpenFileNative(sFile, append ? L"a+" : L"a");
+            if (pFile)
+            {
+                fprintf(pFile, sValueA.c_str());
+                fclose(pFile);
+            }
+        }
     };
 }
 
@@ -1702,6 +1775,15 @@ namespace NSDoctRenderer
                 int nCountParameters = 0;
                 ParceParameters(command, _builder_params, nCountParameters);
 
+                for (int nCheckParam = 0; nCheckParam < nCountParameters; ++nCheckParam)
+                {
+                    if (0 == _builder_params[nCheckParam].find(L"jsValue(") && _builder_params[nCheckParam].length() > 9)
+                    {
+                        std::wstring sParam = _builder_params[nCheckParam].substr(8, _builder_params[nCheckParam].length() - 9);
+                        _builder_params[nCheckParam] = m_pInternal->m_pWorker->GetJSVariable(sParam);
+                    }
+                }
+
                 if ("OpenFile" == sFuncNum)
                     bIsNoError = (0 == this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str()));
                 else if ("CreateFile" == sFuncNum)
@@ -1764,6 +1846,14 @@ namespace NSDoctRenderer
 
                     this->SaveFile(nFormat, _builder_params[1].c_str(), sParams);
                 }
+                else if ("WriteData" == sFuncNum)
+                {
+                    bool isAppend = true;
+                    if (nCountParameters > 2)
+                        isAppend = (L"true" == _builder_params[2]) ? true : false;
+
+                    this->WriteData(_builder_params[0].c_str(), _builder_params[1].c_str(), isAppend);
+                }
             }
             else
             {
@@ -1818,6 +1908,16 @@ namespace NSDoctRenderer
     void CDocBuilder::Dispose()
     {
         CV8Worker::Dispose();
+    }
+
+    void CDocBuilder::WriteData(const wchar_t* path, const wchar_t* value, const bool& append)
+    {
+        return m_pInternal->WriteData(path, value, append);
+    }
+
+    bool CDocBuilder::IsSaveWithDoctrendererMode()
+    {
+        return m_pInternal->m_oParams.m_bSaveWithDoctrendererMode;
     }
 }
 

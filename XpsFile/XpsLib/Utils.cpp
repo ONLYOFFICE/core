@@ -30,7 +30,7 @@
  *
  */
 #include "Utils.h"
-#include "../../DesktopEditor/common/String.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"

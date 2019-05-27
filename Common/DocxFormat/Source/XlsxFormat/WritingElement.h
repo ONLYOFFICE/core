@@ -49,7 +49,7 @@ namespace Spreadsheet
 //		writer.WriteString(end);
 #define WritingStringCommonDouble(start, val, end) \
 		writer.WriteString(start); \
-		writer.WriteString(OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(val)); \
+		writer.WriteString(XmlUtils::DoubleToString(val)); \
 		writer.WriteString(end);
 
 

@@ -300,8 +300,8 @@ private:
 		{
 			std::vector<std::wstring> oArrayParams;
 			NSStringUtils::ParseString(_T(" "), strFormula, oArrayParams);
-			int nCount = oArrayParams.size();
-			if (0 >= nCount)
+			size_t nCount = oArrayParams.size();
+			if (nCount == 0)
 				return;
 
 			bool bRes = true;
@@ -387,14 +387,14 @@ private:
 		}
 		void AddFormula(std::wstring strFormula)
 		{
-			CFormula oFormula(m_arFormulas.size());
+			CFormula oFormula((int)m_arFormulas.size());
 			oFormula.FromString(strFormula, m_lShapeWidth, m_lShapeHeight);
 			m_arFormulas.push_back(oFormula);
 			m_arResults.push_back(0xFFFFFFFF);
 		}
 		void AddFormula(CFormula oFormula)
 		{
-			oFormula.m_lIndex = m_arFormulas.size();
+			oFormula.m_lIndex = (int)m_arFormulas.size();
 			m_arFormulas.push_back(oFormula);
 			m_arResults.push_back(0xFFFFFFFF);
 		}

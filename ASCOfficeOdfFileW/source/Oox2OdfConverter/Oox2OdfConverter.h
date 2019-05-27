@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../progressCallback.h"
 #include <string>
 
 namespace Oox2Odf
@@ -41,7 +40,7 @@ namespace Oox2Odf
 	class Converter
 	{
 	public:
-        Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, const ProgressCallback* ffCallBack);
+        Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate);
         virtual ~Converter();
 
 		void convert();

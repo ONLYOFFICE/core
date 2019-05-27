@@ -42,6 +42,9 @@
 
 namespace OOX
 {
+	class CApp;
+	class CCore;
+
 	namespace Spreadsheet
 	{
 		class CWorksheet;
@@ -85,6 +88,9 @@ namespace OOX
 			}
 			smart_ptr<PPTX::Theme>							m_pTheme;
 
+			CApp*											m_pApp;
+			CCore*											m_pCore;
+
 			CWorkbook*                                      m_pWorkbook;
             CSharedStrings*                                 m_pSharedStrings;
             CStyles*                                        m_pStyles;
@@ -101,6 +107,9 @@ namespace OOX
 			void init()
 			{
 				m_bSpreadsheets		= true;
+
+				m_pApp				= NULL;
+				m_pCore				= NULL;
 
 				m_pWorkbook			= NULL;
 				m_pSharedStrings	= NULL;

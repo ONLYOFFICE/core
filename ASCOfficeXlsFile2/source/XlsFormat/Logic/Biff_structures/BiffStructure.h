@@ -48,7 +48,7 @@ class BiffStructure_NoVtbl
 {
 public:
 	void load(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
-
+	void load(IBinaryReader* reader);
 };
 
 class BiffStructure;
@@ -62,7 +62,10 @@ public:
 	virtual BiffStructurePtr clone() = 0;
 
 	virtual void load(CFRecord& record) = 0;
-	
+	virtual void load(IBinaryReader* reader)
+	{
+	}
+
 	virtual ElementType get_type() = 0;
 
 	virtual int serialize(std::wostream & _stream)

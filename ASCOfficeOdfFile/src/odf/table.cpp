@@ -369,9 +369,9 @@ void table_columns_and_groups::add_child_element( xml::sax * Reader, const std::
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::wostream & table_table_cell_content::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_table_cell_content::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return CP_SERIALIZE_TEXT(elements_);
+    return CP_SERIALIZE_TEXT(elements_, bXmlEncode);
 }
 
 void table_table_cell_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
@@ -384,9 +384,9 @@ void table_table_cell_content::add_child_element( xml::sax * Reader, const std::
 const wchar_t * table_table_cell::ns = L"table";
 const wchar_t * table_table_cell::name = L"table-cell";
 
-std::wostream & table_table_cell::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_table_cell::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return content_.text_to_stream(_Wostream);
+    return content_.text_to_stream(_Wostream, bXmlEncode);
 }
 
 void table_table_cell::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -420,9 +420,9 @@ bool table_table_cell::empty(bool bWithStyle)
 const wchar_t * table_covered_table_cell::ns = L"table";
 const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
 
-std::wostream & table_covered_table_cell::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_covered_table_cell::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return content_.text_to_stream(_Wostream);
+    return content_.text_to_stream(_Wostream, bXmlEncode);
 }
 
 void table_covered_table_cell::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -451,9 +451,9 @@ bool table_covered_table_cell::empty()
 const wchar_t * table_table_row::ns = L"table";
 const wchar_t * table_table_row::name = L"table-row";
 
-std::wostream & table_table_row::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_table_row::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return CP_SERIALIZE_TEXT(content_);  
+    return CP_SERIALIZE_TEXT(content_, bXmlEncode);  
 }
 
 void table_table_row::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -508,9 +508,9 @@ bool table_table_row::empty_content_cells(bool bWithCellStyle)
 const wchar_t * table_table_rows::ns = L"table";
 const wchar_t * table_table_rows::name = L"table-rows";
 
-std::wostream & table_table_rows::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_table_rows::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return CP_SERIALIZE_TEXT(table_table_row_);  
+    return CP_SERIALIZE_TEXT(table_table_row_, bXmlEncode);  
 }
 
 void table_table_rows::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -527,9 +527,9 @@ void table_table_rows::add_child_element( xml::sax * Reader, const std::wstring 
 const wchar_t * table_table_header_rows::ns = L"table";
 const wchar_t * table_table_header_rows::name = L"table-header-rows";
 
-std::wostream & table_table_header_rows::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_table_header_rows::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return serialize_elements_text(_Wostream, table_table_row_);  
+    return serialize_elements_text(_Wostream, table_table_row_, bXmlEncode);  
 }
 
 void table_table_header_rows::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -552,12 +552,12 @@ void table_table_header_rows::add_text(const std::wstring & Text)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // table:rows
-std::wostream & table_rows::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_rows::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     if (table_table_rows_)
-        CP_SERIALIZE_TEXT(table_table_rows_);
+        CP_SERIALIZE_TEXT(table_table_rows_, bXmlEncode);
     else
-        CP_SERIALIZE_TEXT(table_table_row_);
+        CP_SERIALIZE_TEXT(table_table_row_, bXmlEncode);
     return _Wostream;
 }
 
@@ -628,10 +628,10 @@ table_rows_no_group::table_rows_no_group() : was_header_(false)
 {
 };
 
-std::wostream & table_rows_no_group::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_rows_no_group::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     table_rows_1_.text_to_stream(_Wostream);
-    CP_SERIALIZE_TEXT(table_table_header_rows_);
+    CP_SERIALIZE_TEXT(table_table_header_rows_, bXmlEncode);
     table_rows_2_.text_to_stream(_Wostream);
     return _Wostream;    
 }
@@ -663,9 +663,9 @@ table_rows_and_groups::table_rows_and_groups()
 {
 }
 
-std::wostream & table_rows_and_groups::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_rows_and_groups::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(content_);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 
@@ -706,9 +706,9 @@ void table_rows_and_groups::add_child_element( xml::sax * Reader, const std::wst
 const wchar_t * table_table_row_group::ns = L"table";
 const wchar_t * table_table_row_group::name = L"table-row-group";
 
-std::wostream & table_table_row_group::text_to_stream(std::wostream & _Wostream) const
+std::wostream & table_table_row_group::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    return table_rows_and_groups_.text_to_stream(_Wostream);
+    return table_rows_and_groups_.text_to_stream(_Wostream, bXmlEncode);
 }
 
 void table_table_row_group::add_attributes( const xml::attributes_wc_ptr & Attributes )

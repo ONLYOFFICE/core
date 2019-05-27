@@ -70,7 +70,9 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+	virtual void load(IBinaryReader* reader);
 	
+	void load(IBinaryReader* reader, const size_t cch1, const bool is_wide1);
 	void load(CFRecord& record, const size_t cch, const bool is_wide);
 
 	void			setSize(const size_t size);		// Set cch for string that don't have own cch field
@@ -222,6 +224,7 @@ public:
 	BiffStructurePtr clone();
 	
 	virtual void load(CFRecord& record);
+	virtual void load(IBinaryReader* reader);
 
 	static const ElementType type = typeStringSegmented;
 

@@ -95,7 +95,7 @@ const bool IVAXIS::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-	if (proc.mandatory<AxcExt>()) // 4-th place
+	if (proc.optional<AxcExt>()) // 4-th place
 	{
 		m_AxcExt = elements_.back();
 		elements_.pop_back();
@@ -109,7 +109,7 @@ const bool IVAXIS::loadContent(BinProcessor& proc)
 		m_CatLab = elements_.back();
 		elements_.pop_back();
 	}
-	if (proc.mandatory<AXS>())
+	if (proc.optional<AXS>())
 	{
 		m_AXS = elements_.back();
 		elements_.pop_back();

@@ -36,7 +36,7 @@
 #include "BaseShape/PPTXShape/PptxShape.h"
 #include "BaseShape/PPTShape/PptShape.h"
 
-using namespace NSPresentationEditor;
+using namespace PPT_FORMAT;
 
 /***************************************************************
 вот, создавая автофигуру, или любой другой элемент

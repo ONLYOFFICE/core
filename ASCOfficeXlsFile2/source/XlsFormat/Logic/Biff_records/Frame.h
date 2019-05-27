@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Frame record in BIFF8
 class Frame: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Frame)
@@ -47,11 +45,10 @@ public:
 	~Frame();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeFrame;
+	static const ElementType type = typeFrame;
 
 //-----------------------------
 	_UINT16 frt;

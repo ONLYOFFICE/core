@@ -260,8 +260,7 @@ namespace BinXlsxRW{
 		{
 			OOX::Spreadsheet::CTableFile* pTable = new OOX::Spreadsheet::CTableFile(NULL);
 			pTable->m_oTable.Init();
-			pTable->m_oTable->m_oDisplayName.Init();
-			pTable->m_oTable->m_oDisplayName->append(L"Table1");
+			pTable->m_oTable->m_oDisplayName = L"Table1";
 			pTable->m_oTable->m_oRef.Init();
 			pTable->m_oTable->m_oRef->SetValue(OOX::Spreadsheet::CCell::combineRef(m_nRow1 - 1, m_nCol1 - 1) + L":" + OOX::Spreadsheet::CCell::combineRef(m_nRow2 - 1, m_nCol2 - 1));
 			pTable->m_oTable->m_oTotalsRowCount.Init();

@@ -344,6 +344,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\XlsxSerializerCom\Writer\BinaryReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\BinaryWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
 				>
 			</File>

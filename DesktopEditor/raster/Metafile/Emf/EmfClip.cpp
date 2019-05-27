@@ -30,12 +30,17 @@
  *
  */
 #include "EmfClip.h"
+#include "EmfPlayer.h"
 
 namespace MetaFile
 {
+	CEmfClipCommandPath::CEmfClipCommandPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform) : m_oPath(pPath), m_unMode(unMode)
+	{
+		m_oTransform.Copy(pTransform);
+	}
+
 	CEmfClip::CEmfClip()
 	{
-
 	}
 	CEmfClip::~CEmfClip()
 	{
@@ -58,7 +63,7 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pPathCommand = (CEmfClipCommandPath*)pCommand;
-					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode);
+					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode, &pPathCommand->m_oTransform);
 					break;
 				}
 				case EMF_CLIPCOMMAND_EXCLUDE:
@@ -95,9 +100,9 @@ namespace MetaFile
 		m_vCommands.push_back(pCommand);
 		return true;
 	}
-	bool CEmfClip::SetPath(CEmfPath* pPath, unsigned int unMode)
+	bool CEmfClip::SetPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform)
 	{
-		CEmfClipCommandBase* pCommand = new CEmfClipCommandPath(pPath, unMode);
+		CEmfClipCommandBase* pCommand = new CEmfClipCommandPath(pPath, unMode, pTransform);
 		if (!pCommand)
 			return false;
 
@@ -110,6 +115,7 @@ namespace MetaFile
 			return;
 
 		pOutput->ResetClip();
+
 		for (unsigned int ulIndex = 0; ulIndex < m_vCommands.size(); ulIndex++)
 		{
 			CEmfClipCommandBase* pCommand = m_vCommands.at(ulIndex);
@@ -124,7 +130,15 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pClipPath = (CEmfClipCommandPath*)pCommand;
+
+					double dM11, dM12, dM21, dM22, dDx, dDy;
+					pOutput->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+					pOutput->SetTransform(pClipPath->m_oTransform.M11, pClipPath->m_oTransform.M12, pClipPath->m_oTransform.M21, pClipPath->m_oTransform.M22, pClipPath->m_oTransform.Dx, pClipPath->m_oTransform.Dy);
+
 					pClipPath->m_oPath.Draw(pOutput, false, false, pClipPath->m_unMode);
+
+					pOutput->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+
 					break;
 				}
 				case EMF_CLIPCOMMAND_EXCLUDE:
@@ -153,7 +167,6 @@ namespace MetaFile
 				}
 			}
 		}
-
 	}
 	void CEmfClip::Clear()
 	{

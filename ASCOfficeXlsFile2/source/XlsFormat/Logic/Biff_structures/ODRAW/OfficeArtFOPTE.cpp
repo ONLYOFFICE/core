@@ -117,6 +117,15 @@ XLS::BiffStructurePtr OfficeArtFOPTE::clone()
 	return XLS::BiffStructurePtr(new OfficeArtFOPTE(*this));
 }
 
+void OfficeArtFOPTE::load(IBinaryReader* _reader)
+{
+	unsigned short flags = _reader->ReadUInt16();
+	op			= _reader->ReadUInt32();
+	
+	opid		= GETBITS(flags, 0, 13);
+	fBid		= GETBIT(flags, 14);
+	fComplex	= GETBIT(flags, 15);
+}
 void OfficeArtFOPTE::load(XLS::CFRecord& record)
 {
 	unsigned short flags;
@@ -126,12 +135,8 @@ void OfficeArtFOPTE::load(XLS::CFRecord& record)
 	fBid		= GETBIT(flags, 14);
 	fComplex	= GETBIT(flags, 15);
 }
-
-OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
+OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 {
-	const unsigned short* op = record.getCurData<unsigned short>();
-	unsigned short opid = GETBITS(*op, 0, 13);
-
 	OfficeArtFOPTEPtr fopte;
 	switch(opid)
 	{
@@ -141,59 +146,59 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x007F:
 			fopte = OfficeArtFOPTEPtr(new ProtectionBooleanProperties);
 			break;
-		case NSOfficeDrawing::lTxid:
-		case NSOfficeDrawing::dxTextLeft:
-		case NSOfficeDrawing::dyTextTop:
-		case NSOfficeDrawing::dxTextRight:
-		case NSOfficeDrawing::dyTextBottom:
-		case NSOfficeDrawing::WrapText:
-		case NSOfficeDrawing::anchorText:
-		case NSOfficeDrawing::txflTextFlow:
-		case NSOfficeDrawing::cdirFont:
-		case NSOfficeDrawing::hspNext:
-		case NSOfficeDrawing::txdir:
-		case NSOfficeDrawing::gtextRTF:
-		case NSOfficeDrawing::gtextAlign:
-		case NSOfficeDrawing::gtextSize:
-		case NSOfficeDrawing::gtextCSSFont:
+		case ODRAW::lTxid:
+		case ODRAW::dxTextLeft:
+		case ODRAW::dyTextTop:
+		case ODRAW::dxTextRight:
+		case ODRAW::dyTextBottom:
+		case ODRAW::WrapText:
+		case ODRAW::anchorText:
+		case ODRAW::txflTextFlow:
+		case ODRAW::cdirFont:
+		case ODRAW::hspNext:
+		case ODRAW::txdir:
+		case ODRAW::gtextRTF:
+		case ODRAW::gtextAlign:
+		case ODRAW::gtextSize:
+		case ODRAW::gtextCSSFont:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
-		case NSOfficeDrawing::gtextSpacing:
+		case ODRAW::gtextSpacing:
 			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
-		case NSOfficeDrawing::textBoolean:
+		case ODRAW::textBoolean:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
 			break;
-		case NSOfficeDrawing::gtextUNICODE:
-		case NSOfficeDrawing::gtextFont:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+		case ODRAW::gtextUNICODE:
+		case ODRAW::gtextFont:
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x00ff:
 			fopte = OfficeArtFOPTEPtr(new GeometryTextBooleanProperties);
 			break;
 		case 0x0100:
-			fopte = OfficeArtFOPTEPtr(new cropFromTop);
+			fopte = OfficeArtFOPTEPtr(new CropFromTop);
 			break;
 		case 0x0101:
-			fopte = OfficeArtFOPTEPtr(new cropFromBottom);
+			fopte = OfficeArtFOPTEPtr(new CropFromBottom);
 			break;
 		case 0x0102:
-			fopte = OfficeArtFOPTEPtr(new cropFromLeft);
+			fopte = OfficeArtFOPTEPtr(new CropFromLeft);
 			break;
 		case 0x0103:
-			fopte = OfficeArtFOPTEPtr(new cropFromRight);
+			fopte = OfficeArtFOPTEPtr(new CropFromRight);
 			break;
 		case 0x0104:
-			fopte = OfficeArtFOPTEPtr(new pib);
+			fopte = OfficeArtFOPTEPtr(new Pib);
 			break;
 		case 0x0105:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x010B:
-			fopte = OfficeArtFOPTEPtr(new pictureId);
+			fopte = OfficeArtFOPTEPtr(new PictureId);
 			break;
 		case 0x011A:
-			fopte = OfficeArtFOPTEPtr(new pictureRecolor);
+			fopte = OfficeArtFOPTEPtr(new PictureRecolor);
 			break;
 		case 0x013F:
 			fopte = OfficeArtFOPTEPtr(new BlipBooleanProperties);
@@ -224,23 +229,23 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			fopte = OfficeArtFOPTEPtr(new AdjustValue);
 			break;
 		case 0x0151:
-			fopte = OfficeArtFOPTEPtr(new pConnectionSites);
+			fopte = OfficeArtFOPTEPtr(new PConnectionSites);
 			break;
 		case 0x0152:
-			fopte = OfficeArtFOPTEPtr(new pConnectionSitesDir);
+			fopte = OfficeArtFOPTEPtr(new PConnectionSitesDir);
 			break;
 		case 0x0153:
 		case 0x0154:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
 		case 0x0155:
-			fopte = OfficeArtFOPTEPtr(new pAdjustHandles);
+			fopte = OfficeArtFOPTEPtr(new PAdjustHandles);
 			break;
 		case 0x0156:
-			fopte = OfficeArtFOPTEPtr(new pGuides);
+			fopte = OfficeArtFOPTEPtr(new PGuides);
 			break;
 		case 0x0157:
-			fopte = OfficeArtFOPTEPtr(new pInscribe);
+			fopte = OfficeArtFOPTEPtr(new PInscribe);
 			break;
 		case 0x0158:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);//cxk
@@ -249,154 +254,154 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			fopte = OfficeArtFOPTEPtr(new GeometryBooleanProperties);
 			break;
 		case 0x0180:
-			fopte = OfficeArtFOPTEPtr(new fillType);
+			fopte = OfficeArtFOPTEPtr(new FillType);
 			break;
 		case 0x0181:
-			fopte = OfficeArtFOPTEPtr(new fillColor);
+			fopte = OfficeArtFOPTEPtr(new FillColor);
 			break;
 		case 0x0182:
-			fopte = OfficeArtFOPTEPtr(new fillOpacity);
+			fopte = OfficeArtFOPTEPtr(new FillOpacity);
 			break;
 		case 0x0183:
-			fopte = OfficeArtFOPTEPtr(new fillBackColor);
+			fopte = OfficeArtFOPTEPtr(new FillBackColor);
 			break;
 		case 0x0184:
-			fopte = OfficeArtFOPTEPtr(new fillBackOpacity);
+			fopte = OfficeArtFOPTEPtr(new FillBackOpacity);
 			break;
 		case 0x0185:
-			fopte = OfficeArtFOPTEPtr(new fillCrMod);
+			fopte = OfficeArtFOPTEPtr(new FillCrMod);
 			break;
 		case 0x0186:
-			fopte = OfficeArtFOPTEPtr(new fillBlip);
+			fopte = OfficeArtFOPTEPtr(new FillBlip);
 			break;
 		case 0x0187:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x0188:
-			fopte = OfficeArtFOPTEPtr(new fillBlipFlags);
+			fopte = OfficeArtFOPTEPtr(new FillBlipFlags);
 			break;
 		case 0x0189:
-			fopte = OfficeArtFOPTEPtr(new fillWidth);
+			fopte = OfficeArtFOPTEPtr(new FillWidth);
 			break;
 		case 0x018A:
-			fopte = OfficeArtFOPTEPtr(new fillHeight);
+			fopte = OfficeArtFOPTEPtr(new FillHeight);
 			break;
 		case 0x018B:
-			fopte = OfficeArtFOPTEPtr(new fillAngle);
+			fopte = OfficeArtFOPTEPtr(new FillAngle);
 			break;
 		case 0x018C:
-			fopte = OfficeArtFOPTEPtr(new fillFocus);
+			fopte = OfficeArtFOPTEPtr(new FillFocus);
 			break;
 		case 0x018D:
-			fopte = OfficeArtFOPTEPtr(new fillToLeft);
+			fopte = OfficeArtFOPTEPtr(new FillToLeft);
 			break;
 		case 0x018E:
-			fopte = OfficeArtFOPTEPtr(new fillToTop);
+			fopte = OfficeArtFOPTEPtr(new FillToTop);
 			break;
 		case 0x018F:
-			fopte = OfficeArtFOPTEPtr(new fillToRight);
+			fopte = OfficeArtFOPTEPtr(new FillToRight);
 			break;
 		case 0x0190:
-			fopte = OfficeArtFOPTEPtr(new fillToBottom);
+			fopte = OfficeArtFOPTEPtr(new FillToBottom);
 			break;
 		case 0x0191:
-			fopte = OfficeArtFOPTEPtr(new fillRectLeft);
+			fopte = OfficeArtFOPTEPtr(new FillRectLeft);
 			break;
 		case 0x0192:
-			fopte = OfficeArtFOPTEPtr(new fillRectTop);
+			fopte = OfficeArtFOPTEPtr(new FillRectTop);
 			break;
 		case 0x0193:
-			fopte = OfficeArtFOPTEPtr(new fillRectRight);
+			fopte = OfficeArtFOPTEPtr(new FillRectRight);
 			break;
 		case 0x0194:
-			fopte = OfficeArtFOPTEPtr(new fillRectBottom);
+			fopte = OfficeArtFOPTEPtr(new FillRectBottom);
 			break;
 		case 0x0195:
-			fopte = OfficeArtFOPTEPtr(new fillDztype);
+			fopte = OfficeArtFOPTEPtr(new FillDztype);
 			break;
 		case 0x0196:
-			fopte = OfficeArtFOPTEPtr(new fillShadePreset);
+			fopte = OfficeArtFOPTEPtr(new FillShadePreset);
 			break;
 		case 0x0197:
-			fopte = OfficeArtFOPTEPtr(new fillShadeColors);
+			fopte = OfficeArtFOPTEPtr(new FillShadeColors);
 			break;
 		case 0x0198:
-			fopte = OfficeArtFOPTEPtr(new fillOriginX);
+			fopte = OfficeArtFOPTEPtr(new FillOriginX);
 			break;
 		case 0x0199:
-			fopte = OfficeArtFOPTEPtr(new fillOriginY);
+			fopte = OfficeArtFOPTEPtr(new FillOriginY);
 			break;
 		case 0x019A:
-			fopte = OfficeArtFOPTEPtr(new fillShapeOriginX);
+			fopte = OfficeArtFOPTEPtr(new FillShapeOriginX);
 			break;
 		case 0x019B:
-			fopte = OfficeArtFOPTEPtr(new fillShapeOriginY);
+			fopte = OfficeArtFOPTEPtr(new FillShapeOriginY);
 			break;
 		case 0x019C:
-			fopte = OfficeArtFOPTEPtr(new fillShadeType);
+			fopte = OfficeArtFOPTEPtr(new FillShadeType);
 			break;
 		case 0x019E:
-			fopte = OfficeArtFOPTEPtr(new fillColorExt);
+			fopte = OfficeArtFOPTEPtr(new FillColorExt);
 			break;
 		case 0x019F:
-			fopte = OfficeArtFOPTEPtr(new reserved415);
+			fopte = OfficeArtFOPTEPtr(new Reserved415);
 			break;
 		case 0x01A0:
-			fopte = OfficeArtFOPTEPtr(new fillColorExtMod);
+			fopte = OfficeArtFOPTEPtr(new FillColorExtMod);
 			break;
 		case 0x01A1:
-			fopte = OfficeArtFOPTEPtr(new reserved417);
+			fopte = OfficeArtFOPTEPtr(new Reserved417);
 			break;
 		case 0x01A2:
-			fopte = OfficeArtFOPTEPtr(new fillBackColorExt);
+			fopte = OfficeArtFOPTEPtr(new FillBackColorExt);
 			break;
 		case 0x01A3:
-			fopte = OfficeArtFOPTEPtr(new reserved419);
+			fopte = OfficeArtFOPTEPtr(new Reserved419);
 			break;
 		case 0x01A4:
-			fopte = OfficeArtFOPTEPtr(new fillBackColorExtMod);
+			fopte = OfficeArtFOPTEPtr(new FillBackColorExtMod);
 			break;
 		case 0x01A5:
-			fopte = OfficeArtFOPTEPtr(new reserved421);
+			fopte = OfficeArtFOPTEPtr(new Reserved421);
 			break;
 		case 0x01A6:
-			fopte = OfficeArtFOPTEPtr(new reserved422);
+			fopte = OfficeArtFOPTEPtr(new Reserved422);
 			break;
 		case 0x01A7:
-			fopte = OfficeArtFOPTEPtr(new reserved423);
+			fopte = OfficeArtFOPTEPtr(new Reserved423);
 			break;
 		case 0x01BF:
 			fopte = OfficeArtFOPTEPtr(new FillStyleBooleanProperties);
 			break;
 		case 0x01C0:
-			fopte = OfficeArtFOPTEPtr(new lineColor);
+			fopte = OfficeArtFOPTEPtr(new LineColor);
 			break;
 		case 0x01C1:
-			fopte = OfficeArtFOPTEPtr(new lineOpacity);
+			fopte = OfficeArtFOPTEPtr(new LineOpacity);
 			break;
 		case 0x01C2:
-			fopte = OfficeArtFOPTEPtr(new lineBackColor);
+			fopte = OfficeArtFOPTEPtr(new LineBackColor);
 			break;
 		case 0x01C3:
-			fopte = OfficeArtFOPTEPtr(new lineCrMod);
+			fopte = OfficeArtFOPTEPtr(new LineCrMod);
 			break;
 		case 0x01C4:
-			fopte = OfficeArtFOPTEPtr(new lineType);
+			fopte = OfficeArtFOPTEPtr(new LineType);
 			break;
 		case 0x01C5:
-			fopte = OfficeArtFOPTEPtr(new fillBlip);
+			fopte = OfficeArtFOPTEPtr(new FillBlip);
 			break;
 		case 0x01CB:
-			fopte = OfficeArtFOPTEPtr(new lineWidth);
+			fopte = OfficeArtFOPTEPtr(new LineWidth);
 			break;
 		case 0x01CC:
-			fopte = OfficeArtFOPTEPtr(new lineMiterLimit);
+			fopte = OfficeArtFOPTEPtr(new LineMiterLimit);
 			break;
 		case 0x01CD:
-			fopte = OfficeArtFOPTEPtr(new lineStyle);
+			fopte = OfficeArtFOPTEPtr(new LineStyle);
 			break;
 		case 0x01CE:
-			fopte = OfficeArtFOPTEPtr(new lineDashing);
+			fopte = OfficeArtFOPTEPtr(new LineDashing);
 			break;
 /*todo*/case 0x1D0:	//lineStartArrowhead
 /*todo*/case 0x1D1:	//lineEndArrowhead
@@ -406,26 +411,35 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			fopte = OfficeArtFOPTEPtr(new LineStyleBooleanProperties);
 			break;
 		case 0x0204:
-			fopte = OfficeArtFOPTEPtr(new shadowOpacity);
+			fopte = OfficeArtFOPTEPtr(new ShadowOpacity);
 			break;
 		case 0x023F:
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
 			break;
+		case 0x02bf:
+			fopte = OfficeArtFOPTEPtr(new ThreeDObjectBooleanProperties);
+			break;
 /*todo*/case 0x0303: //cxstyle
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+			break;
+		case 0x030C:
+			fopte = OfficeArtFOPTEPtr(new XmlString);
 			break;
 		case 0x033F:
 			fopte = OfficeArtFOPTEPtr(new ShapeBooleanProperties);
 			break;
 		case 0x0380:
 		case 0x0381:
-			fopte = OfficeArtFOPTEPtr(new anyString);
+			fopte = OfficeArtFOPTEPtr(new AnyString);
 			break;
 		case 0x0382:
-			fopte = OfficeArtFOPTEPtr(new pihlShape);
+			fopte = OfficeArtFOPTEPtr(new PihlShape);
+			break;
+		case 0x0383:
+			fopte = OfficeArtFOPTEPtr(new PWrapPolygonVertices);
 			break;
 		case 0x03A9:
-			fopte = OfficeArtFOPTEPtr(new metroBlob);
+			fopte = OfficeArtFOPTEPtr(new MetroBlob);
 			break;
 		case 0x03BF:
 			fopte = OfficeArtFOPTEPtr(new GroupShapeBooleanProperties);
@@ -434,8 +448,34 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
 	}
+	return fopte;
+}
 
-	fopte->load(record);
+OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(IBinaryReader* _reader)
+{
+	if (!_reader) return OfficeArtFOPTEPtr();
+	
+	long pos = _reader->GetPosition();
+	unsigned short opid = _reader->ReadUInt16();
+	
+	opid = GETBITS(opid, 0, 13);
+	
+	_reader->Seek(pos, 0);
+
+	OfficeArtFOPTEPtr fopte = create(opid);
+
+	if (fopte) fopte->load(_reader);
+	return fopte;
+}
+
+OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
+{
+	const unsigned short* op = record.getCurData<unsigned short>();
+	unsigned short opid = GETBITS(*op, 0, 13);
+
+	OfficeArtFOPTEPtr fopte = create(opid);
+
+	if (fopte) fopte->load(record);
 
 	return fopte;
 }
@@ -456,15 +496,35 @@ void FixedPoint::load(XLS::CFRecord& record)
 
 	dVal = Integral + (Fractional / 65536.0);
 }
+void FixedPoint::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+
+	short			Integral	= op >> 16;
+	unsigned short Fractional	= op - (Integral << 16);
+
+	dVal = Integral + (Fractional / 65536.0);
+}
 void OfficeArtFOPTE::ReadComplexData(XLS::CFRecord& record)
 {
 	record.skipNunBytes(op); // default is to skip complex data
 }
-
+void OfficeArtFOPTE::ReadComplexData(IBinaryReader* reader)
+{
+	reader->ReadBytes( op, false ); // default is to skip complex data
+}
 void TextBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-	
+	set();
+}
+void TextBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void TextBooleanProperties::set()
+{
 	fUsefFitShapeToText = GETBIT(op, 17);
 	fUsefAutoTextMargin = GETBIT(op, 19);
 	fUsefSelectText		= GETBIT(op, 20);
@@ -476,11 +536,19 @@ void TextBooleanProperties::load(XLS::CFRecord& record)
 void GeometryTextBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void GeometryTextBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void GeometryTextBooleanProperties::set()
+{
 	fUsegFReverseRows	= GETBIT(op, 31);
 	fUsefGtext			= GETBIT(op, 30);
 	fUsegFVertical		= GETBIT(op, 29);
-	fUsegtextFKern		= GETBIT(op, 28);
+	fUsegFKern			= GETBIT(op, 28);
 	fUsegTight			= GETBIT(op, 27);
 	fUsegFStretch		= GETBIT(op, 26);
 	fUsegFShrinkFit		= GETBIT(op, 25);
@@ -511,10 +579,18 @@ void GeometryTextBooleanProperties::load(XLS::CFRecord& record)
 	fSmallcaps		= GETBIT(op,  1);
 	fStrikethrough	= GETBIT(op,  0);
 }
+void GroupShapeBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void GroupShapeBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void GroupShapeBooleanProperties::set()
+{
 	fUsefLayoutInCell	= GETBIT(op, 31);
 	fUsefIsBullet		= GETBIT(op, 30);
 	fUsefStandardHR		= GETBIT(op, 29);
@@ -549,7 +625,7 @@ void GroupShapeBooleanProperties::load(XLS::CFRecord& record)
 	fHidden				= GETBIT(op,  1);
 	fPrint				= GETBIT(op,  0);
 }
-void fillShadeType::load(XLS::CFRecord& record)
+void FillShadeType::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 	
@@ -559,11 +635,28 @@ void fillShadeType::load(XLS::CFRecord& record)
 	msoshadeBand		= GETBIT(op, 3);
 	msoshadeOneColor	= GETBIT(op, 4);
 }
+void FillShadeType::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
 
+	msoshadeNone		= GETBIT(op, 0);
+	msoshadeGamma		= GETBIT(op, 1);
+	msoshadeSigma		= GETBIT(op, 2);
+	msoshadeBand		= GETBIT(op, 3);
+	msoshadeOneColor	= GETBIT(op, 4);
+}
 void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void FillStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void FillStyleBooleanProperties::set()
+{
 	fNoFillHitTest				= GETBIT(op, 0);
 	fillUseRect					= GETBIT(op, 1);
 	fillShape					= GETBIT(op, 2);
@@ -580,8 +673,7 @@ void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 	fUsefUseShapeAnchor			= GETBIT(op, 21);
 	fUsefRecolorFillAsPicture	= GETBIT(op, 22);
 }
-
-void fillBlip::ReadComplexData(XLS::CFRecord& record)
+void FillBlip::ReadComplexData(XLS::CFRecord& record)
 {
 	OfficeArtRecordHeader rh_child;
 	record >> rh_child;
@@ -591,8 +683,39 @@ void fillBlip::ReadComplexData(XLS::CFRecord& record)
 	blip = OfficeArtBlipPtr(new OfficeArtBlip(rh_child.recType));
 	blip->loadFields(record);
 }
+void FillBlip::ReadComplexData(IBinaryReader* reader)
+{
+	long pos = reader->GetPosition();
+	
+	OfficeArtRecordHeader rh_child;
+	rh_child.load(reader);
+	
+	reader->Seek(pos, 0);
 
-void anyString::ReadComplexData(XLS::CFRecord& record)
+	blip = OfficeArtBlipPtr(new OfficeArtBlip(rh_child.recType));
+	blip->loadFields(reader);
+}
+void AnyString::ReadComplexData(IBinaryReader* reader)
+{
+	unsigned char* pData = reader->ReadBytes(op, true);
+#if defined(_WIN32) || defined(_WIN64)
+		string_ = std::wstring((wchar_t*)pData, op);
+#else
+        string_ = convertUtf16ToWString((UTF16*)pData, op);
+#endif
+	if (!string_.empty())
+	{
+        int i, length = (std::min)(op, (_INT32)string_.length());
+
+		for (i = 0; i < length; i++)
+		{
+			if (string_.at(i) < 14 ) break;
+		}
+		string_ = string_.substr(0, i);
+	}
+	delete []pData;
+}
+void AnyString::ReadComplexData(XLS::CFRecord& record)
 {	
 #if defined(_WIN32) || defined(_WIN64)
         string_ = std::wstring(record.getCurData<wchar_t>(), op);
@@ -612,16 +735,28 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 	record.skipNunBytes(op);
 }
 
-void fillShadeColors::ReadComplexData(XLS::CFRecord& record)
+void FillShadeColors::ReadComplexData(XLS::CFRecord& record)
 {
-	fillShadeColors_complex.op = op;
-	record >> fillShadeColors_complex;
+	complex.op = op;
+	record >> complex;
 }
-
+void FillShadeColors::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void ProtectionBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void ProtectionBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void ProtectionBooleanProperties::set()
+{
 	fLockAgainstGrouping	= GETBIT(op, 0);
 	fLockAdjustHandles		= GETBIT(op, 1);
 	fLockText				= GETBIT(op, 2);
@@ -645,10 +780,18 @@ void ProtectionBooleanProperties::load(XLS::CFRecord& record)
 	fUsefLockAgainstUngrouping = GETBIT(op, 25);
 }
 
+void LineStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void LineStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void LineStyleBooleanProperties::set()
+{
 	fNoLineDrawDash			= GETBIT(op, 0);
 	fLineFillShape			= GETBIT(op, 1);
 	fHitTestLine			= GETBIT(op, 2);
@@ -666,21 +809,35 @@ void LineStyleBooleanProperties::load(XLS::CFRecord& record)
 	fUsefInsetPen			= GETBIT(op, 22);
 	fUsefLineOpaqueBackColor= GETBIT(op, 25);
 }
-
 void ShadowStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void ShadowStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void ShadowStyleBooleanProperties::set()
+{
 	fshadowObscured		= GETBIT(op, 0);
 	fShadow				= GETBIT(op, 1);
 	fUsefshadowObscured = GETBIT(op, 16);
 	fUsefShadow			= GETBIT(op, 17);
 }
-
+void GeometryBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
 void GeometryBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
+	set();
+}
+void GeometryBooleanProperties::set()
+{
 	fUsefShadowOK			= GETBIT(op, 8);
 	fUsef3DOK				= GETBIT(op, 9);
 	fUsefLineOK				= GETBIT(op, 10);
@@ -695,6 +852,54 @@ void GeometryBooleanProperties::load(XLS::CFRecord& record)
 	fFillShadeShapeOK		= GETBIT(op, 26);
 	fFillOK					= GETBIT(op, 27);
 }
+void ThreeDObjectBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void ThreeDObjectBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+	set();
+}
+void ThreeDObjectBooleanProperties::set()
+{
+	fUsef3D						=	GETBIT(op, 0);
+	fUsefc3DMetallic			=	GETBIT(op, 1);
+	fUsefc3DUseExtrusionColor	=	GETBIT(op, 2);
+	fUsefc3DLightFace			=	GETBIT(op, 3);
+
+	// 12 unused
+
+	f3D							=	GETBIT(op, 16);
+	fc3DMetallic				=	GETBIT(op, 17);
+	fc3DUseExtrusionColor		=	GETBIT(op, 18);
+	fc3DLightFace				=	GETBIT(op, 19);
+}
+void ThreeDStyleBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void ThreeDStyleBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+	set();
+}
+void ThreeDStyleBooleanProperties::set()
+{
+	fUsefc3DConstrainRotation	=	GETBIT(op, 0);
+	fUsefc3DRotationCenterAuto	=	GETBIT(op, 1);
+	fUsefc3DParallel			=	GETBIT(op, 2);
+	fUsefc3DKeyHarsh			=	GETBIT(op, 3);
+	fUsefc3DFillHarsh			=	GETBIT(op, 4);
+
+	fc3DConstrainRotation		=	GETBIT(op, 16);
+	fc3DRotationCenterAuto		=	GETBIT(op, 17);
+	fc3DParallel				=	GETBIT(op, 18);
+	fc3DKeyHarsh				=	GETBIT(op, 19);
+	fc3DFillHarsh				=	GETBIT(op, 20);
+}
 XLS::BiffStructurePtr IHlink::clone()
 {
 	return XLS::BiffStructurePtr(new IHlink(*this));
@@ -705,14 +910,49 @@ void IHlink::load(XLS::CFRecord& record)
 	record >> CLSID_StdHlink;
 	record >> hyperlink;
 }
+void IHlink::load(IBinaryReader* reader)
+{
+	CLSID_StdHlink.Data1 = reader->ReadUInt32();
+	CLSID_StdHlink.Data2 = reader->ReadUInt16();
+	CLSID_StdHlink.Data3 = reader->ReadUInt16();
+    
+	unsigned char* pData = reader->ReadBytes(8, true);
+	memcpy(CLSID_StdHlink.Data4, pData, 8) ;
+	delete pData;
 
-void pihlShape::ReadComplexData(XLS::CFRecord& record)
+	hyperlink.load(reader);
+}
+void PihlShape::ReadComplexData(XLS::CFRecord& record)
 {
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void metroBlob::ReadComplexData(XLS::CFRecord& record)
+void PihlShape::ReadComplexData(IBinaryReader* reader)
+{
+	complex.load(reader);
+}
+void XmlString::ReadComplexData(IBinaryReader* reader)
+{
+	unsigned char* pData = reader->ReadBytes(op, true);
+	
+	data = std::string((char*)pData, op);
+
+	delete []pData;
+}
+void XmlString::ReadComplexData(XLS::CFRecord& record)
+{
+	data = std::string(record.getCurData<char>(), op);
+
+	record.skipNunBytes(op);
+}
+void MetroBlob::ReadComplexData(IBinaryReader* reader)
+{
+	unsigned char* pData = reader->ReadBytes(op, true);
+	
+	data = std::make_pair(boost::shared_array<unsigned char>(pData), op);
+}
+void MetroBlob::ReadComplexData(XLS::CFRecord& record)
 {
 	int pos = record.getRdPtr();
 
@@ -770,7 +1010,23 @@ XLS::BiffStructurePtr MSOPOINT::clone()
 {
 	return XLS::BiffStructurePtr(new MSOPOINT(*this));
 }
-
+void MSOPOINT::load(IBinaryReader* reader)
+{
+	if (cbElement == 4)
+	{
+		x = reader->ReadInt32();
+		y = reader->ReadInt32();
+	}
+	else
+	{
+		unsigned short x_, y_;
+		x_ = reader->ReadInt16();
+		y_ = reader->ReadInt16();
+		
+		x = x_;
+		y = y_;
+	}
+}
 void MSOPOINT::load(XLS::CFRecord& record)
 {
 	if (cbElement == 4)
@@ -806,7 +1062,30 @@ XLS::BiffStructurePtr MSORECT::clone()
 {
 	return XLS::BiffStructurePtr(new MSORECT(*this));
 }
-
+void MSORECT::load(IBinaryReader* reader)
+{
+	if (cbElement == 8)
+	{
+		l = reader->ReadInt32();
+		t = reader->ReadInt32();
+		r = reader->ReadInt32();
+		b = reader->ReadInt32();
+	}
+	else
+	{
+		unsigned short l_, t_, r_, b_;
+		
+		l_ = reader->ReadInt16();
+		t_ = reader->ReadInt16();
+		r_ = reader->ReadInt16();
+		b_ = reader->ReadInt16();
+		
+		l = l_;
+		t = t_;
+		r = r_;
+		b = b_;
+	}
+}
 void MSORECT::load(XLS::CFRecord& record)
 {
 	if (cbElement == 8)
@@ -841,7 +1120,121 @@ XLS::BiffStructurePtr MSOPATHINFO::clone()
 {
 	return XLS::BiffStructurePtr(new MSOPATHINFO(*this));
 }
+void MSOPATHINFO::load(IBinaryReader* reader)
+{
+	_UINT16 mem = reader->ReadInt16();
+	
+	unsigned char type = (mem >> 13 & 0x07);
+	
+	if (type <= 4)
+	{
+		m_eRuler	= (NSCustomShapesConvert::RulesType)type;
+		m_nCount	= (mem & 0x1FFF);
+		m_nCount	= (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
+		return;
+	}
 
+	type = (mem >> 8) & 0x1F;
+	mem = mem & 0xFF;
+
+	switch (type)
+	{
+	case 0x00:
+		{
+			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			break;
+		}
+	case 0x01:
+		{
+			m_eRuler = NSCustomShapesConvert::rtAngleEllipseTo;
+			break;
+		}
+	case 0x02:
+		{
+			m_eRuler = NSCustomShapesConvert::rtAngleEllipse;
+			break;
+		}
+	case 0x03:
+		{
+			m_eRuler = NSCustomShapesConvert::rtArcTo;
+			break;
+		}
+	case 0x04:
+		{
+			m_eRuler = NSCustomShapesConvert::rtArc;
+			break;
+		}
+	case 0x05:
+		{
+			m_eRuler = NSCustomShapesConvert::rtClockwiseArcTo;
+			break;
+		}
+	case 0x06:
+		{
+			m_eRuler = NSCustomShapesConvert::rtClockwiseArc;
+			break;
+		}
+	case 0x07:
+		{
+			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrX;
+			break;
+		}
+	case 0x08:
+		{
+			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrY;
+			break;
+		}
+	case 0x09:
+		{
+			m_eRuler = NSCustomShapesConvert::rtQuadrBesier;
+			break;
+		}
+	case 0x0A:
+		{
+			m_eRuler = NSCustomShapesConvert::rtNoFill;
+			break;
+		}
+	case 0x0B:
+		{
+			m_eRuler = NSCustomShapesConvert::rtNoStroke;
+			break;
+		}
+	case 0x0C:
+	case 0x10:
+		{
+			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			break;
+		}
+	case 0x0D:
+	case 0x0E:
+	case 0x0F:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+		{
+			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+			break;
+		}
+	case 0x15:
+		{
+			m_eRuler = NSCustomShapesConvert::rtFillColor;
+			break;
+		}
+	case 0x16:
+		{
+			m_eRuler = NSCustomShapesConvert::rtLineColor;
+			break;
+		}
+	default:
+		{
+			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+		}
+	};
+
+	m_nCount = (_UINT16)mem;
+	m_nCount = (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
+}
 void MSOPATHINFO::load(XLS::CFRecord& record)
 {
 	_UINT16 mem = 0;
@@ -977,6 +1370,21 @@ XLS::BiffStructurePtr MSOSG::clone()
 	return XLS::BiffStructurePtr(new MSOSG(*this));
 }
 
+void MSOSG::load(IBinaryReader* reader)
+{
+	_UINT16 ftType = reader->ReadUInt16();
+	
+	m_eType = NSCustomShapesConvert::FormulaType(ftType & 0x1FFF);
+
+	m_param_type1 = (unsigned char)(ftType & 0x04);
+	m_param_type2 = (unsigned char)(ftType & 0x02);
+	m_param_type3 = (unsigned char)(ftType & 0x01);
+
+	m_param_value1 = reader->ReadUInt16();
+	m_param_value2 = reader->ReadUInt16();
+	m_param_value3 = reader->ReadUInt16();
+}
+
 void MSOSG::load(XLS::CFRecord& record)
 {
 	_UINT16 ftType;
@@ -1004,6 +1412,55 @@ ADJH::ADJH(unsigned short cbElement_)
 XLS::BiffStructurePtr ADJH::clone() 
 {
 	return XLS::BiffStructurePtr(new ADJH(*this));
+}
+
+void ADJH::load(IBinaryReader* reader)
+{
+	_UINT32 flag = reader->ReadUInt32();
+	
+	fahInverseX			= GETBIT(flag, 31);
+	fahInverseY			= GETBIT(flag, 30);
+	fahSwitchPosition	= GETBIT(flag, 29);
+	fahPolar			= GETBIT(flag, 28);
+	fahPin				= GETBIT(flag, 27);
+	fahUnused			= GETBIT(flag, 26);
+	fahxMin				= GETBIT(flag, 25);
+	fahxMax				= GETBIT(flag, 24);
+	fahyMin				= GETBIT(flag, 23);
+	fahyMax				= GETBIT(flag, 22);
+	fahxRange			= GETBIT(flag, 21);
+	fahyRange			= GETBIT(flag, 20);
+	fahPolarPin			= GETBIT(flag, 19);
+
+	cbElement -= 4;
+
+	if (cbElement == 4)
+	{
+		_UINT16 x, y;
+		x = reader->ReadUInt16();
+		y = reader->ReadUInt16();
+		
+		apX	= x;
+		apY = y;
+
+		cbElement -= 4;
+	}
+	else 
+	{	
+		apX = reader->ReadUInt32();
+		apY = reader->ReadUInt32();
+	
+		cbElement -= 8;
+	}
+	
+	if (cbElement < 1) return;
+	
+	if (fahxRange)	xRange =  reader->ReadInt16(); 
+	if (fahyRange)	yRange =  reader->ReadInt16(); 
+	if (fahxMin)	xMin =  reader->ReadInt16(); 
+	if (fahxMax)	xMax =  reader->ReadInt16(); 
+	if (fahyMin)	yMin =  reader->ReadInt16(); 
+	if (fahyMax)	yMax =  reader->ReadInt16(); 
 }
 
 void ADJH::load(XLS::CFRecord& record)
@@ -1061,7 +1518,11 @@ void PVertices::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
-
+void PVertices::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
 void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
@@ -1069,15 +1530,24 @@ void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
-
-void pGuides::ReadComplexData(XLS::CFRecord& record)
+void PSegmentInfo::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void PGuides::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
+void PGuides::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void PAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 
@@ -1085,25 +1555,58 @@ void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 
 	record >> complex;
 }
-void pConnectionSites::ReadComplexData(XLS::CFRecord& record)
+void PAdjustHandles::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void PConnectionSites::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pConnectionSitesDir::ReadComplexData(XLS::CFRecord& record)
+void PConnectionSites::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void PConnectionSitesDir::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
-void pInscribe::ReadComplexData(XLS::CFRecord& record)
+void PConnectionSitesDir::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void PInscribe::ReadComplexData(XLS::CFRecord& record)
 {
 	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
 }
+void PInscribe::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+void PWrapPolygonVertices::ReadComplexData(XLS::CFRecord& record)
+{
+	complex.op = op;
+	int pos = record.getRdPtr();
+
+	record >> complex;
+}
+void PWrapPolygonVertices::ReadComplexData(IBinaryReader* reader)
+{
+	complex.op = op;
+	complex.load(reader);
+}
+
 } 

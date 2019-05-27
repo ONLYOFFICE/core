@@ -47,9 +47,11 @@
 
 using namespace std;
 
-#include "zlib-1.2.3/contrib/minizip/unzip.h"
-#include "zlib-1.2.3/contrib/minizip/zip.h"
-
+#include "zlib-1.2.11/contrib/minizip/unzip.h"
+#include "zlib-1.2.11/contrib/minizip/zip.h"
+#if defined(_WIN32) || defined (_WIN64)
+	#include "zlib-1.2.11/contrib/minizip/iowin32.h"
+#endif
 #include <zlib.h>
 
 namespace ZLibZipUtils

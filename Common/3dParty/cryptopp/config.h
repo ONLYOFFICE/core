@@ -708,7 +708,7 @@ NAMESPACE_END
 // ***************** Miscellaneous ********************
 
 // Nearly all Intel's and AMD's have SSE. Enable it independent of SSE ASM and intrinscs
-#if (CRYPTOPP_BOOL_X86 || CRYPTOPP_BOOL_X32 || CRYPTOPP_BOOL_X64 || CRYPTOPP_BOOL_PPC32 || CRYPTOPP_BOOL_PPC64) && !defined(CRYPTOPP_DISABLE_ASM) && !defined(_IOS)
+#if (CRYPTOPP_BOOL_X86 || CRYPTOPP_BOOL_X32 || CRYPTOPP_BOOL_X64 || CRYPTOPP_BOOL_PPC32 || CRYPTOPP_BOOL_PPC64) && !defined(CRYPTOPP_DISABLE_ASM) && !defined(_IOS) && !defined(__ANDROID__)
 	#define CRYPTOPP_BOOL_ALIGN16 1
 #else
 	#define CRYPTOPP_BOOL_ALIGN16 0

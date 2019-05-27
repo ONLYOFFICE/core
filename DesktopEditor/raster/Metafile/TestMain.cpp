@@ -63,54 +63,54 @@ std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstrin
 	}
 	return vwsNames;
 }
-void ConvertFileToRaster(MetaFile::CMetaFile &oMetaFile, std::wstring wsFilePath)
+void ConvertFileToRaster(MetaFile::IMetaFile *pMetaFile, std::wstring wsFilePath)
 {
-	oMetaFile.Close();
+	pMetaFile->Close();
 
 	std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"png");
-	if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
+	if (pMetaFile->LoadFromFile(wsFilePath.c_str()))
 	{
-		oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 1000);
+		pMetaFile->ConvertToRaster(wsDstFilePath.c_str(), 4, 1000);
 		
-		oMetaFile.Close();
+		pMetaFile->Close();
 	}
 }
-void ConvertFileToSVG(MetaFile::CMetaFile &oMetafile, NSHtmlRenderer::CASCSVGWriter &oWriterSVG, std::wstring wsFilePath)
+//void ConvertFileToSVG(MetaFile::IMetaFile* pMetaFile, NSHtmlRenderer::CASCSVGWriter &oWriterSVG, std::wstring wsFilePath)
+//{
+//	pMetaFile->Close();
+//
+//	std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"svg");
+//	
+//	if (pMetaFile->LoadFromFile(wsFilePath.c_str()))
+//	{
+//		double x = 0, y = 0, w = 0, h = 0;
+//		pMetaFile->GetBounds(&x, &y, &w, &h);
+//
+//		double _max = (w >= h) ? w : h;
+//		double dKoef = 100000.0 / _max;
+//
+//		int WW = (int)(dKoef * w + 0.5);
+//		int HH = (int)(dKoef * h + 0.5);
+//
+//		oWriterSVG.Reset();
+//		oWriterSVG.put_Width(WW);
+//		oWriterSVG.put_Height(HH);
+//		
+//		pMetaFile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);		
+//		
+//		oWriterSVG.SaveFile(wsDstFilePath);
+//
+//		pMetaFile->Close();
+//	}
+//}
+void ConvertFolder(MetaFile::IMetaFile* pMetaFile, std::wstring wsFolderPath, const int nType)
 {
-	oMetafile.Close();
-
-	std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"svg");
-	
-	if (oMetafile.LoadFromFile(wsFilePath.c_str()))
-	{
-		double x = 0, y = 0, w = 0, h = 0;
-		oMetafile.GetBounds(&x, &y, &w, &h);
-
-		double _max = (w >= h) ? w : h;
-		double dKoef = 100000.0 / _max;
-
-		int WW = (int)(dKoef * w + 0.5);
-		int HH = (int)(dKoef * h + 0.5);
-
-		oWriterSVG.Reset();
-		oWriterSVG.put_Width(WW);
-		oWriterSVG.put_Height(HH);
-		
-		oMetafile.DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);		
-		
-		oWriterSVG.SaveFile(wsDstFilePath);
-
-		oMetafile.Close();
-	}
-}
-void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nType)
-{
-	oMetaFile.Close();
+	pMetaFile->Close();
 
 	std::wstring sExt = L"*";
 
-	NSHtmlRenderer::CASCSVGWriter oWriterSVG;		
-	oWriterSVG.SetFontManager(oMetaFile.get_FontManager());
+	//NSHtmlRenderer::CASCSVGWriter oWriterSVG;		
+	//oWriterSVG.SetFontManager(pMetaFile->get_FontManager());
 
 	switch(nType)
 	{
@@ -125,8 +125,8 @@ void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, co
 		std::wstring wsFilePath = wsFolderPath;
 		wsFilePath.append(vFiles.at(nIndex));
 		
-		ConvertFileToSVG(oMetaFile, oWriterSVG, wsFilePath);
-		//ConvertFileToRaster(oMetaFile, wsFilePath);
+		//ConvertFileToSVG(pMetaFile, oWriterSVG, wsFilePath);
+		ConvertFileToRaster(pMetaFile, wsFilePath);
 
 		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
 	}
@@ -134,8 +134,8 @@ void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, co
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	CApplicationFonts oFonts;
-	oFonts.Initialize();
+	NSFonts::IApplicationFonts *pFonts = NSFonts::NSApplication::Create();
+	pFonts->Initialize();
 
 	std::wstring	sMetafilesFolder	= L"D://test//_emf//";
 	int				nType				= MetaFile::c_lMetaEmf;
@@ -153,18 +153,19 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	MetaFile::CMetaFile oMetaFile(&oFonts);
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
 
 	if (NSFile::CFileBinary::Exists(sMetafilesFolder))
 	{	
-		NSHtmlRenderer::CASCSVGWriter oWriterSVG;		
-		oWriterSVG.SetFontManager(oMetaFile.get_FontManager());
+		//NSHtmlRenderer::CASCSVGWriter oWriterSVG;		
+		//oWriterSVG.SetFontManager(pMetafile->get_FontManager());
 		
-		ConvertFileToSVG(oMetaFile, oWriterSVG, sMetafilesFolder);
+		//ConvertFileToSVG(pMetafile, oWriterSVG, sMetafilesFolder);
+		ConvertFileToRaster(pMetafile, sMetafilesFolder);
 	}
 	else if (NSDirectory::Exists(sMetafilesFolder))
 	{
-		ConvertFolder(oMetaFile, sMetafilesFolder, nType);
+		ConvertFolder(pMetafile, sMetafilesFolder, nType);
 	}
 
 	return 0;

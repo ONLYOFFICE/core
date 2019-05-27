@@ -59,7 +59,17 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
     POLE::Storage *pStgFrom = new POLE::Storage(sFileName.c_str());
 	if (pStgFrom == NULL) return AVS_ERROR_FILEFORMAT;
 	
-	pStgFrom->open(false, false);
+	try
+	{
+		if (false == pStgFrom->open(false, false))
+		{
+			return AVS_ERROR_FILEACCESS; //file access error or not compound file
+		}
+	}
+	catch(...)
+	{
+		return AVS_ERROR_FILEACCESS; 
+	}
 
 	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
 	CPPTFileReader* pptReader = (CPPTFileReader*)m_pReader;	
@@ -119,7 +129,7 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	}
 	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
-		NSPresentationEditor::CPPTXWriter oPPTXWriter;
+		PPT_FORMAT::CPPTXWriter oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = sDstPath;
 		
 		

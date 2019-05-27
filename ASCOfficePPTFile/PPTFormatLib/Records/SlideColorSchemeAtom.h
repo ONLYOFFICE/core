@@ -32,23 +32,56 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordSlideColorSchemeAtom : public CUnknownRecord
+class CRecordSplitMenuColorRecord: public CUnknownRecord
 {
 public:
-	SColorAtom m_arColors[8];
+	SColorAtom m_oFillColor;
+	SColorAtom m_oLineColor;
+	SColorAtom m_oShadowColor;
+	SColorAtom m_o3DColor;
 	
-	CRecordSlideColorSchemeAtom()
+	CRecordSplitMenuColorRecord()
 	{
 	}
 
-	~CRecordSlideColorSchemeAtom()
+	~CRecordSplitMenuColorRecord()
 	{
 	}
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		m_oHeader = oHeader;
+		
+		NSStreamReader::Read(pStream, m_oFillColor);
+		NSStreamReader::Read(pStream, m_oLineColor);
+		NSStreamReader::Read(pStream, m_oShadowColor);
+		NSStreamReader::Read(pStream, m_o3DColor);
 	}
 };
 
-typedef		CRecordSlideColorSchemeAtom		CRecordSchemeListElementColorSchemeAtom;
+class CRecordMostRecentlyUserColors : public CUnknownRecord
+{
+public:
+	std::vector<SColorAtom>	m_oColors;
+	
+	CRecordMostRecentlyUserColors()
+	{
+	}
+
+	~CRecordMostRecentlyUserColors()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+
+		for (int i = 0; i < m_oHeader.RecLen / 4; i++)
+		{
+			SColorAtom color;
+			NSStreamReader::Read(pStream, color);
+
+			m_oColors.push_back(color);
+		}
+	}
+};

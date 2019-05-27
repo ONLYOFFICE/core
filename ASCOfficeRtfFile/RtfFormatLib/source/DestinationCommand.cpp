@@ -1467,19 +1467,19 @@ bool RtfOldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
     else if ( "picprop" == sCommand )
 		return true;
 //-------------------------------------------------------- type primitives
-    else if ( "dprect"		== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptRectangle;
-    else if ( "dpline"		== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptLine;
-    else if ( "dpellipse"	== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptEllipse;
-    else if ( "dparc"		== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptArc;
-    else if ( "dppolyline"	== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
-    else if ( "dppolygon"	== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
-    else if ( "dpcallout"	== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
-    else if ( "dptxbx"		== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
-    else if ( "dproundr"	== sCommand)	m_oShape.m_nShapeType = NSOfficeDrawing::sptRoundRectangle;
+    else if ( "dprect"		== sCommand)	m_oShape.m_nShapeType = ODRAW::sptRectangle;
+    else if ( "dpline"		== sCommand)	m_oShape.m_nShapeType = ODRAW::sptLine;
+    else if ( "dpellipse"	== sCommand)	m_oShape.m_nShapeType = ODRAW::sptEllipse;
+    else if ( "dparc"		== sCommand)	m_oShape.m_nShapeType = ODRAW::sptArc;
+    else if ( "dppolyline"	== sCommand)	m_oShape.m_nShapeType = ODRAW::sptNotPrimitive;
+    else if ( "dppolygon"	== sCommand)	m_oShape.m_nShapeType = ODRAW::sptNotPrimitive;
+    else if ( "dpcallout"	== sCommand)	m_oShape.m_nShapeType = ODRAW::sptTextBox;
+    else if ( "dptxbx"		== sCommand)	m_oShape.m_nShapeType = ODRAW::sptTextBox;
+    else if ( "dproundr"	== sCommand)	m_oShape.m_nShapeType = ODRAW::sptRoundRectangle;
     else if ( "dptxbxtext" == sCommand )
 	{
 		if ( PROP_DEF == m_oShape.m_nShapeType )
-			m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+			m_oShape.m_nShapeType = ODRAW::sptTextBox;
 		
         RtfParagraphReader oParagraphReader("shptxt", oReader);
 		StartSubReader( oParagraphReader, oDocument, oReader );
@@ -1537,7 +1537,7 @@ bool RtfShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
     else if ( "shptxt" == sCommand )
 	{
 		if ( PROP_DEF == m_oShape.m_nShapeType )
-			m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+			m_oShape.m_nShapeType = ODRAW::sptTextBox;
 		
         RtfParagraphReader oParagraphReader("shptxt", oReader);
 		StartSubReader( oParagraphReader, oDocument, oReader );
@@ -2765,7 +2765,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	{
 		RtfShapePtr oNewShape ( new RtfShape() );
 		oNewShape->m_oCharProperty		= oReader.m_oState->m_oCharProp;
-		oNewShape->m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
+		oNewShape->m_nShapeType			= ODRAW::sptPictureFrame;
 		oNewShape->m_nWrapType			= 3; // none
 		oNewShape->m_nPositionHRelative = 3;//TCHAR
 		oNewShape->m_nPositionVRelative = 3;//line

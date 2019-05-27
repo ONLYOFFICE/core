@@ -306,36 +306,16 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="include"
-			>
-			<File
-				RelativePath="..\include\cpdoccore\xml\attributes.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\cpdoccore\xml\nodetype.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\cpdoccore\xml\sax.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\cpdoccore\xml\simple_xml_writer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\cpdoccore\xml\xmlchar.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\cpdoccore\xml\xmlelement.h"
-				>
-			</File>
-		</Filter>
 		<File
 			RelativePath="..\src\xml\attributes.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\include\xml\attributes.h"
+			>
+		</File>
+		<File
+			RelativePath="..\include\xml\nodetype.h"
 			>
 		</File>
 		<File
@@ -351,6 +331,14 @@
 			</FileConfiguration>
 		</File>
 		<File
+			RelativePath="..\include\xml\sax.h"
+			>
+		</File>
+		<File
+			RelativePath="..\include\xml\simple_xml_writer.h"
+			>
+		</File>
+		<File
 			RelativePath="..\src\xml\utils.cpp"
 			>
 			<FileConfiguration
@@ -363,11 +351,19 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\include\cpdoccore\xml\utils.h"
+			RelativePath="..\include\xml\utils.h"
 			>
 		</File>
 		<File
 			RelativePath="..\src\xml\xmlchar.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\include\xml\xmlchar.h"
+			>
+		</File>
+		<File
+			RelativePath="..\include\xml\xmlelement.h"
 			>
 		</File>
 	</Files>

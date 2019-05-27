@@ -195,12 +195,15 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				std::wstring name_;
+				
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
 					if (pWriter->m_lGroupIndex == 0)	name_ = L"wpg:wgp";
 					else								name_ = L"wpg:grpSp";
 				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:grpSp";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:grpSp";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:grpSp";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:grpSp";
 				else
 				{
 					if (pWriter->m_lGroupIndex == 0)	name_ = L"p:spTree";
@@ -212,7 +215,7 @@ namespace PPTX
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					nvGrpSpPr.cNvGrpSpPr.toXmlWriter2(_T("wpg"), pWriter);
+					nvGrpSpPr.cNvGrpSpPr.toXmlWriter2(L"wpg", pWriter);
 				}
 				else
 					nvGrpSpPr.toXmlWriter(pWriter);
@@ -221,8 +224,7 @@ namespace PPTX
 				
 				pWriter->m_lGroupIndex++;
 
-				size_t nCount = SpTreeElems.size();
-				for (size_t i = 0; i < nCount; ++i)
+				for (size_t i = 0; i < SpTreeElems.size(); ++i)
 					SpTreeElems[i].toXmlWriter(pWriter);
 
 				pWriter->m_lGroupIndex--;
@@ -252,7 +254,10 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				pWriter->StartRecord(SPTREE_TYPE_SPTREE);
+				if (getType() == OOX::et_lc_LockedCanvas)
+					pWriter->StartRecord(SPTREE_TYPE_LOCKED_CANVAS);
+				else
+					pWriter->StartRecord(SPTREE_TYPE_SPTREE);
 
 				pWriter->WriteRecord1(0, nvGrpSpPr);
 				pWriter->WriteRecord1(1, grpSpPr);
@@ -263,7 +268,8 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
 				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
-				pReader->Skip(5); // type SPTREE + len
+
+				pReader->Skip(5); //+ len
 
 				while (pReader->GetPos() < _end_rec)
 				{
@@ -329,10 +335,165 @@ namespace PPTX
 				nvGrpSpPr.SetParentPointer(this);
 				grpSpPr.SetParentPointer(this);
 
-				size_t count = SpTreeElems.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < SpTreeElems.size(); ++i)
 					SpTreeElems[i].SetParentPointer(this);
 			}
+		};
+		class LockedCanvas : public SpTree
+		{
+		public:
+			WritingElement_AdditionConstructors(LockedCanvas)
+
+			LockedCanvas() : SpTree(L"a") 
+			{
+			}
+
+			LockedCanvas& operator=(const LockedCanvas& oSrc)
+			{
+				parentFile		= oSrc.parentFile;
+				parentElement	= oSrc.parentElement;
+
+				nvGrpSpPr	= oSrc.nvGrpSpPr;
+				grpSpPr		= oSrc.grpSpPr;
+
+				for (size_t i=0; i < oSrc.SpTreeElems.size(); i++)
+					SpTreeElems.push_back(oSrc.SpTreeElems[i]);
+
+				m_lGroupIndex	= oSrc.m_lGroupIndex;
+
+				return *this;
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_lc_LockedCanvas;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				SpTree::fromXML(oReader);
+			}
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+				SpTree::fromXML(node);
+			}
+
+			virtual std::wstring toXML() const
+			{
+				XmlUtils::CAttribute oAttr;
+				oAttr.Write(L"xmlns:lc", L"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas");
+
+				XmlUtils::CNodeValue oValue;
+				oValue.Write(nvGrpSpPr);
+				oValue.Write(grpSpPr);
+				
+				oValue.WriteArray(SpTreeElems);
+
+				return XmlUtils::CreateNode(L"lc:lockedCanvas", oAttr, oValue);
+			}
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				BYTE lDocType = pWriter->m_lDocType;
+				pWriter->m_lDocType = XMLWRITER_DOC_TYPE_GRAPHICS;
+
+				pWriter->StartNode(L"lc:lockedCanvas");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"xmlns:lc", L"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas");
+
+				pWriter->EndAttributes();
+
+				nvGrpSpPr.toXmlWriter(pWriter);
+				
+				grpSpPr.toXmlWriter(pWriter);
+				
+				pWriter->m_lGroupIndex++;
+
+				for (size_t i = 0; i < SpTreeElems.size(); ++i)
+				{
+					SpTreeElems[i].toXmlWriter(pWriter);
+				}
+
+				pWriter->m_lGroupIndex--;
+
+				pWriter->EndNode(L"lc:lockedCanvas");
+
+				pWriter->m_lDocType = lDocType;
+			}
+ 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				BinDocxRW::CDocxSerializer* docx = pWriter->m_pMainDocument;
+				pWriter->m_pMainDocument = NULL;
+				
+				pWriter->StartRecord(SPTREE_TYPE_LOCKED_CANVAS);
+
+				pWriter->WriteRecord1(0, nvGrpSpPr);
+				pWriter->WriteRecord1(1, grpSpPr);
+				pWriter->WriteRecordArray(2, 0, SpTreeElems);
+
+				pWriter->EndRecord();
+				pWriter->m_pMainDocument = docx;
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(5); // type + len
+
+				BinDocxRW::CDocxSerializer* docx = pReader->m_pMainDocument;
+				pReader->m_pMainDocument = NULL;
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							nvGrpSpPr.fromPPTY(pReader);
+							break;
+						}
+						case 1:
+						{
+							grpSpPr.fromPPTY(pReader);
+							break;
+						}
+						case 2:
+						{
+							pReader->Skip(4); // len
+							ULONG _c = pReader->GetULong();
+
+							for (ULONG i = 0; i < _c; ++i)
+							{
+								pReader->Skip(1); // type (0)
+								LONG nElemLength = pReader->GetLong(); // len
+								//SpTreeElem::fromPPTY сразу делает GetChar, а toPPTY ничего не пишет если не инициализирован
+								if(nElemLength > 0)
+								{
+									SpTreeElem elm;
+									elm.fromPPTY(pReader);
+
+                                    if (elm.is_init())
+									{
+										if (elm.getType() == OOX::et_p_ShapeTree)
+										{
+                                            smart_ptr<SpTree> e = elm.GetElem().smart_dynamic_cast<SpTree>();
+											e->m_lGroupIndex = m_lGroupIndex + 1;
+										}
+										SpTreeElems.push_back(elm);
+									}
+								}
+							}
+						}
+						default:
+						{
+							break;
+						}
+					}				
+				}
+				pReader->Seek(_end_rec);
+				pReader->m_pMainDocument = docx;
+			}
+
 		};
 	} // namespace Logic
 } // namespace PPTX

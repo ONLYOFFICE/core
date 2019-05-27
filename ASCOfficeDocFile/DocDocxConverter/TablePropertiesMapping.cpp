@@ -67,7 +67,7 @@ namespace DocFileFormat
         XMLTools::XMLAttribute layoutType	( L"w:type", L"fixed");
 		bool bLayoutFixed = true;
 
-		short tblIndent		= 0;
+		_CP_OPT(short) tblIndent;
 		short gabHalf		= 0;
 		short marginLeft	= 0;
 		short marginRight	= 0;
@@ -98,8 +98,7 @@ namespace DocFileFormat
 					//For this cases we can calculate the indent of the table by getting the 
 					//first boundary of the TDef and adding the padding of the cells
 					
-					tblIndent = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
-					tblIndent += gabHalf;
+					tblIndent = gabHalf + FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 					//If there follows a real sprmTWidthIndent, this value will be overwritten
 
                     //tblIndent = (std::max)((int)tblIndent,0); //cerere.doc
@@ -404,11 +403,11 @@ namespace DocFileFormat
 		}
 
 	//indent
-		if ( tblIndent != 0 )
+		if ( tblIndent )
 		{
             XMLTools::XMLElement tblInd( L"w:tblInd");
 
-            XMLTools::XMLAttribute tblIndW( L"w:w", FormatUtils::IntToWideString( tblIndent ) );
+            XMLTools::XMLAttribute tblIndW( L"w:w", FormatUtils::IntToWideString( *tblIndent ) );
 			tblInd.AppendAttribute( tblIndW );
 
             XMLTools::XMLAttribute tblIndType( L"w:type", L"dxa");

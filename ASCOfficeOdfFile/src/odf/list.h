@@ -52,7 +52,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 public:
     number() {}
@@ -90,7 +90,7 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 public:
     list_item() {} 
 
@@ -128,7 +128,7 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 public:
     list_header() {} 

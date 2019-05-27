@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of MarkerFormat record in BIFF8
 class MarkerFormat: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MarkerFormat)
@@ -48,10 +46,10 @@ public:
 	~MarkerFormat();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & _stream, int index);
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgbFore;

@@ -32,7 +32,7 @@
 #pragma once
 #include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
-namespace NSOfficeDrawing
+namespace ODRAW
 {
 	#define BINARY_READER_CHECK_OUT_RANGE(index, count)     \
 	if (index > count)										\
@@ -63,7 +63,6 @@ namespace NSOfficeDrawing
 			m_lCount = 0;
 		}
 
-	public:
 		LONG ReadLONG() // int32 подразумевается
 		{
 			DWORD lOldOrigin = m_lOrigin;

@@ -39,13 +39,13 @@
 #include "SlideInfo.h"
 
 class CPPTDocumentInfo;
-using namespace NSPresentationEditor;
+using namespace PPT_FORMAT;
 
 class CPPTUserInfo : public CDocument
 {
 public:
 	CUserEdit										m_oUser;
-	std::map<_UINT32, _UINT32>							m_mapOffsetInPIDs;
+	std::map<_UINT32, _UINT32>						m_mapOffsetInPIDs;
 	CRecordDocument									m_oDocument;
 	
 	CEncryptionHeader								m_oEncryptionHeader;
@@ -55,16 +55,16 @@ public:
 	POLE::Storage*									m_pStorageDecrypt;
 	std::vector<CFStreamPtr>						m_arStreamDecrypt; // на каждый Persist свой ... оО
 	
-	std::map<_UINT32, CRecordSlide*>					m_mapSlides;
-	std::map<_UINT32, CRecordSlide*>					m_mapMasters;
-	std::map<_UINT32, CRecordSlide*>					m_mapNotes;
+	std::map<_UINT32, CRecordSlide*>				m_mapSlides;
+	std::map<_UINT32, CRecordSlide*>				m_mapMasters;
+	std::map<_UINT32, CRecordSlide*>				m_mapNotes;
 
-	std::map<_UINT32, CRecordSlide*>					m_mapNotesMasters;
-	std::map<_UINT32, CRecordSlide*>					m_mapHandoutMasters;
+	std::map<_UINT32, CRecordSlide*>				m_mapNotesMasters;
+	std::map<_UINT32, CRecordSlide*>				m_mapHandoutMasters;
 
-	std::vector<_UINT32>								m_arrSlidesOrder;
-	std::vector<_UINT32>								m_arrMastersOrder;
-	std::vector<_UINT32>								m_arrNotesOrder;
+	std::vector<_UINT32>							m_arrSlidesOrder;
+	std::vector<_UINT32>							m_arrMastersOrder;
+	std::vector<_UINT32>							m_arrNotesOrder;
 
 	// перевод id мастера в индекс темы/шаблона
 	std::map<_UINT32, LONG>							m_mapMasterToTheme;
@@ -72,7 +72,6 @@ public:
 	// original id -> natural id
 	std::map<_UINT32, _UINT32>							m_mapMasterOriginalIds;
 
-	// это как бы ППT-шная обертка над слайдом
 	std::vector<CSlideInfo>							m_arSlideWrapper;
 	std::vector<CSlideInfo>							m_arMasterWrapper;
 	std::vector<CSlideInfo>							m_arNotesWrapper;
@@ -80,11 +79,10 @@ public:
 	CSlideInfo*										m_pNotesMasterWrapper;
 	CSlideInfo*										m_pHandoutMasterWrapper;
 
-	// эти параметры - одни на весь документ. 
-	// чтобы поддержать нашу схему (пптх) - копируем их в темы
 	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
-	std::vector<CFont>								m_arrFonts;
-	NSPresentationEditor::CTextStyles				m_oDefaultTextStyle;
+	std::vector<CFontProperty>						m_arrFonts;
+
+	PPT_FORMAT::CTextStyles							m_oDefaultTextStyle;
 
 	vector_string									m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
@@ -93,12 +91,10 @@ public:
 	bool											m_bHasFooter;
 	int												m_nFormatDate;
 
-	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
 	CPPTDocumentInfo*								m_pDocumentInfo;
 	CRecordVbaProjectStg*							m_VbaProjectStg;
 	int												m_lIndexThisUser;
 
-	// Animations structures
 	std::map <_UINT32, Animations::CSlideTimeLine*>	m_mapAnimations;
 
 	double											m_nWriteSlideTimeOffset;
@@ -106,7 +102,6 @@ public:
 
 	std::map<_UINT32, CSlideShowSlideInfoAtom>		m_mapTransitions;
 
-	// номера "пустых" картинок - в эти пути не будем сохранять
     std::vector<int>								m_arOffsetPictures;
     bool											m_bIsSetupEmpty;
 
@@ -161,7 +156,7 @@ public:
 	void LoadExVideo(CRecordsContainer* pExObject);
 	void LoadExAudio(CRecordsContainer* pExObject);
 
-	void CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle, NSPresentationEditor::CTheme* pTheme);
+	void CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme);
 	void CorrectColorScheme(std::vector<CColor>& oScheme)
 	{
 		if (oScheme.size() < 1) return;
@@ -174,10 +169,10 @@ public:
 		oArrayMem.push_back(oScheme[0]);//4
 		oArrayMem.push_back(oScheme[4]);//5 //accent1
 		oArrayMem.push_back(oScheme[5]);//6 //accent2
-		oArrayMem.push_back(oScheme[0]);//7 //accent3
-		oArrayMem.push_back(oScheme[5]);//8 //accent4
-		oArrayMem.push_back(oScheme[4]);//9 //accent5
-		oArrayMem.push_back(oScheme[7]);//10 //accent6
+		oArrayMem.push_back(CColor(0xAAAAAA));//(oScheme[0]);//7 //accent3
+		oArrayMem.push_back(CColor(0xDCDCDC));//(oScheme[5]);//8 //accent4
+		oArrayMem.push_back(CColor(0xDBF1FA));//(oScheme[4]);//9 //accent5
+		oArrayMem.push_back(CColor(0x4B9DCA));//(oScheme[7]);//10 //accent6
 		oArrayMem.push_back(oScheme[6]);//11 //hlink
 		oArrayMem.push_back(oScheme[7]);//12 //folHlink
 		oArrayMem.push_back(oScheme[0]);//13 //lt1
@@ -201,122 +196,109 @@ public:
 	{
 		switch (nGeom)
 		{
-		case 0x00:	//SL_TitleSlide
-		case 0x02:	//SL_MasterTitle
-			return _T("title");
-		case 0x01:	// SL_TitleBody
+		case SL_TitleSlide:
+		case SL_MasterTitle:				return L"title";
+		case SL_TitleBody:
 			{
 				int ind = 0;
 				if (pPlaceholders[0] == 13 && pPlaceholders[1] != 0) ind++;
-				NSOfficePPT::PlaceholderEnum phbody = (NSOfficePPT::PlaceholderEnum)pPlaceholders[ind];
+				ePlaceholderType phbody = (ePlaceholderType)pPlaceholders[ind];
 				switch (phbody)
 				{
-				case NSOfficePPT::MasterTitle:
-					return _T("title");
-				case NSOfficePPT::Table:
-					return _T("tbl");
-				case NSOfficePPT::OrganizationChart:
-					return _T("dgm");
-				case NSOfficePPT::Graph:
-					return _T("chart");
+					case PT_MasterTitle:	return L"title";
+					case PT_Table:			return L"tbl";
+					case PT_OrgChart:		return L"dgm";
+					case PT_Graph:			return L"chart";
 				default:
 					break;
 				}
-				return _T("obj");
+				return L"obj";
 			}
-		case 0x07:	//SL_TitleOnly
-			return _T("titleOnly");
-		case 0x08:	//SL_TwoColumns
+		case SL_TitleOnly:					return L"titleOnly";
+		case SL_TwoColumns:
 			{
-				NSOfficePPT::PlaceholderEnum leftType  = (NSOfficePPT::PlaceholderEnum)pPlaceholders[1];
-                NSOfficePPT::PlaceholderEnum rightType = (NSOfficePPT::PlaceholderEnum)pPlaceholders[2];
+				ePlaceholderType leftType  = (ePlaceholderType)pPlaceholders[1];
+                ePlaceholderType rightType = (ePlaceholderType)pPlaceholders[2];
 
-				if (leftType == NSOfficePPT::Body && rightType == NSOfficePPT::Object)
+				if (leftType == PT_Body && rightType == PT_Object)
                 {
-                    return _T("txAndObj");
+                    return L"txAndObj";
                 }
-				else if (leftType == NSOfficePPT::Object && rightType == NSOfficePPT::Body)
+				else if (leftType == PT_Object && rightType == PT_Body)
                 {
-                    return _T("objAndTx");
+                    return L"objAndTx";
                 }
-				else if (leftType == NSOfficePPT::Body && rightType == NSOfficePPT::ClipArt)
+				else if (leftType == PT_Body && rightType == PT_ClipArt)
                 {
-                    return _T("txAndClipArt");
+                    return L"txAndClipArt";
                 }
-				else if (leftType == NSOfficePPT::ClipArt && rightType == NSOfficePPT::Body)
+				else if (leftType == PT_ClipArt && rightType == PT_Body)
                 {
-                    return _T("clipArtAndTx");
+                    return L"clipArtAndTx";
                 }
-				else if (leftType == NSOfficePPT::Body && rightType == NSOfficePPT::Graph)
+				else if (leftType == PT_Body && rightType == PT_Graph)
                 {
-                    return _T("txAndChart");
+                    return L"txAndChart";
                 }
-				else if (leftType == NSOfficePPT::Graph && rightType == NSOfficePPT::Body)
+				else if (leftType == PT_Graph && rightType == PT_Body)
                 {
-                    return _T("chartAndTx");
+                    return L"chartAndTx";
                 }
-				else if (leftType == NSOfficePPT::Body && rightType == NSOfficePPT::MediaClip)
+				else if (leftType == PT_Body && rightType == PT_Media)
                 {
-                    return _T("txAndMedia");
+                    return L"txAndMedia";
                 }
-				else if (leftType == NSOfficePPT::MediaClip && rightType == NSOfficePPT::Body)
+				else if (leftType == PT_Media && rightType == PT_Body)
                 {
-                    return _T("mediaAndTx");
+                    return L"mediaAndTx";
                 }
-                return _T("twoObj");
+                return L"twoObj";
 			}
-		case 0x09:	//SL_TwoRows
+		case SL_TwoRows:
 			{
-				NSOfficePPT::PlaceholderEnum topType	= (NSOfficePPT::PlaceholderEnum)pPlaceholders[1];
-                NSOfficePPT::PlaceholderEnum bottomType = (NSOfficePPT::PlaceholderEnum)pPlaceholders[2];
+				ePlaceholderType topType	= (ePlaceholderType)pPlaceholders[1];
+                ePlaceholderType bottomType = (ePlaceholderType)pPlaceholders[2];
 
-				if (topType == NSOfficePPT::Body && bottomType == NSOfficePPT::Object)
+				if (topType == PT_Body && bottomType == PT_Object)
                 {
-                    return _T("txOverObj");
+                    return L"txOverObj";
                 }
-                return _T("objOverTx");
+                return L"objOverTx";
 			}
-		case 0x0A:	//SL_ColumnTwoRows
+		case SL_ColumnTwoRows:
 			{
-				NSOfficePPT::PlaceholderEnum leftType	= (NSOfficePPT::PlaceholderEnum)pPlaceholders[1];
+				ePlaceholderType leftType = (ePlaceholderType)pPlaceholders[1];
 
-				if (leftType == NSOfficePPT::Object)
+				if (leftType == PT_Object)
                 {
-                    return _T("objAndTwoObj");
+                    return L"objAndTwoObj";
                 }
-                return _T("txAndTwoObj");
+                return L"txAndTwoObj";
 			}
-		case 0x0B:	//SL_TwoRowsColumn
+		case SL_TwoRowsColumn:
 			{
-				NSOfficePPT::PlaceholderEnum rightType = (NSOfficePPT::PlaceholderEnum)pPlaceholders[2];
+				ePlaceholderType rightType = (ePlaceholderType)pPlaceholders[2];
 
-				if (rightType == NSOfficePPT::Object)
+				if (rightType == PT_Object)
                 {
-                    return _T("twoObjAndObj");
+					return L"twoObjAndObj";
                 }
-                return _T("twoObjAndTx");
+                return L"twoObjAndTx";
 			}
-		case 0x0D:	//SL_TwoColumnsRow
-			return _T("twoObjOverTx");
-		case 0x0E://SL_FourObjects
-			return _T("fourObj");		
-		case 0x0F:	//SL_BigObject
-			//return _T("tx");
-			return _T("objOnly");
-		case 0x10:	//SL_Blank
-			return _T("blank");
-		case 0x11:	//SL_VerticalTitleBody
-			return _T("vertTitleAndTx");
-		case 0x12:	//SL_VerticalTwoRows
-			return _T("vertTx");
+		case SL_TwoColumnsRow:		return L"twoObjOverTx";
+		case SL_FourObjects:		return L"fourObj";		
+		case SL_BigObject:			return L"objOnly";
+		case SL_Blank:				return L"blank";
+		case SL_VerticalTitleBody:	return L"vertTitleAndTx";
+		case SL_VerticalTwoRows:	return L"vertTx";
 		}
-		return _T("blank");
+		return L"blank";
 	}
 	
 	void AddAnimation		(_UINT32 dwSlideID, double Width, double Height, CElementPtr pElement);
 	void AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 
-	int			AddNewLayout(NSPresentationEditor::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
+	int			AddNewLayout(PPT_FORMAT::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
 	
 	CElementPtr	AddNewLayoutPlaceholder		(CLayout *pLayout,	int placeholderType, int placeholderSizePreset = -1);
 

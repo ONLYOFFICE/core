@@ -452,7 +452,7 @@ wchar_t convert_bullet_char(wchar_t c)
     switch(c)
     {
     case L'\xf075': res = L'\xE00C';; break; 
-    case L'\xf0A7': res = L'\xE00A'; break; 
+    //case L'\xf0A7': res = L'\xE00A'; break; 
     case L'\xf0FE': res = L'\x2611'; break; 
     case L'\xf0B7': res = L'\x25CF'; break; 
     case L'\xf0D8': res = L'\x27A2'; break; 
@@ -546,8 +546,10 @@ void odf_lists_styles_context::set_bullet_char(std::wstring val)
 	text_list_level_style_bullet *style_bullet_ = dynamic_cast<text_list_level_style_bullet *>(lists_format_array_.back().elements.back().get());
 
 	if (style_bullet_ == NULL) return;
+	
 	wchar_t char_ = convert_bullet_char(val.at(0));
-	style_bullet_->text_list_level_style_bullet_attr_.text_bullet_char_ = char_;
+	
+	style_bullet_->text_list_level_style_bullet_attr_.text_bullet_char_ = val;//char_;
 }
 void odf_lists_styles_context::set_bullet_image_size(double size)
 {

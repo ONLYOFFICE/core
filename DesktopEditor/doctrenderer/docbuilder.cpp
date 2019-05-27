@@ -57,5 +57,5 @@ namespace NSDoctRenderer
     bool CDocBuilder::ExecuteCommand(const wchar_t* command)
     {
         return m_pInternal->ExecuteCommand(command);
-    }
+    }    
 }

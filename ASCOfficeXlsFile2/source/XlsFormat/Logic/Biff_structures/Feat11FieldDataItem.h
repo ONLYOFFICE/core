@@ -50,7 +50,7 @@ class Feat11FieldDataItem : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(Feat11FieldDataItem)
 public:
-	Feat11FieldDataItem(_UINT32 lt, bool bDskHeaderCache);
+	Feat11FieldDataItem(_UINT32 lt, bool bDskHeaderCache, bool bFeat12);
 	BiffStructurePtr clone();
 
 	static const ElementType type = typeFeat11FieldDataItem;
@@ -97,6 +97,7 @@ public:
 //------------------------------------------------
 	_UINT32					lt;
 	bool					bDiskHdrCache;
+	bool					bFeature12;
 };
 
 typedef boost::shared_ptr<Feat11FieldDataItem> Feat11FieldDataItemPtr;

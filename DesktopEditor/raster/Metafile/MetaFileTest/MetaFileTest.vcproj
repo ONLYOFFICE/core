@@ -43,7 +43,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -170,11 +170,23 @@
 	</References>
 	<Files>
 		<File
+			RelativePath="..\..\..\..\build\lib\win_32\DEBUG\graphics.lib"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\build\lib\win_32\DEBUG\HtmlRenderer.lib"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\build\lib\win_32\DEBUG\kernel.lib"
+			>
+		</File>
+		<File
 			RelativePath="..\TestMain.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\..\build\lib\win_32\UnicodeConverter.lib"
+			RelativePath="..\..\..\..\build\lib\win_32\DEBUG\UnicodeConverter.lib"
 			>
 		</File>
 	</Files>

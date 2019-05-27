@@ -79,6 +79,7 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_NAMEDSHOW							1041
 #define		RECORD_TYPE_NAMEDSHOW_SLIDES					1042
 #define		RECORD_TYPE_SHEET_PROPERTIES					1044
+#define		RECORD_TYPE_NORMALVIEW_SETINFO9					1045
 
 #define		RECORD_TYPE_ORIGINALMAINMASTERID							1052
 #define		RECORD_TYPE_COMPOSITEMASTERID								1053
@@ -95,6 +96,7 @@ typedef BYTE BOOL1;
 
 #define		RECORD_TYPE_LIST								2000
 #define		RECORD_TYPE_FONTCOLLECTION						2005
+#define		RECORD_TYPE_FONTCOLLECTION10					2006
 #define		RECORD_TYPE_BOOKMARKCOLLECTION					2019
 #define		RECORD_TYPE_SOUNDCOLLECTION						2020
 #define		RECORD_TYPE_SOUNDCOLL_ATOM						2021
@@ -381,6 +383,7 @@ static std::string GetRecordName(_UINT32 dwType)
 	case RECORD_TYPE_PERSISTPTRINCREMENTALBLOCK			: { strName = ("PersistPtrIncrementalBlock"); break; }
 	case RECORD_TYPE_GSCALING_ATOM2						: { strName = ("GScalingAtom2"); break; }
 	case RECORD_TYPE_GRCOLOR_ATOM2						: { strName = ("GRColorAtom2"); break; }
+	case RECORD_TYPE_NORMALVIEW_SETINFO9				: { strName = ("NormalViewSetInfoAtom"); break; }
 
 	// Records ~12000 seem to be related to the Comments used in PPT 2000/XP
 	// (Comments in PPT97 are normal Escher text boxes)

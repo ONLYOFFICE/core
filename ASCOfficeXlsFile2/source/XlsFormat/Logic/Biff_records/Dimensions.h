@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Dimensions record in BIFF8
 class Dimensions: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Dimensions)
@@ -47,11 +45,10 @@ public:
 	~Dimensions();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDimensions;
+	static const ElementType type = typeDimensions;
 
 	int serialize(std::wostream & stream);
 	

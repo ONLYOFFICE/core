@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of VCenter record in BIFF8
 class VCenter: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(VCenter)
@@ -50,7 +48,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeVCenter;
+	static const ElementType type = typeVCenter;
 
 //-----------------------------
 	Boolean<unsigned short> vcenter;

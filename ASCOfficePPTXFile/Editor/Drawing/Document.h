@@ -34,7 +34,7 @@
 #include "AudioOverlay.h"
 #include "Slide.h"
 
-namespace NSPresentationEditor
+namespace PPT_FORMAT
 {
 	class CDocument
 	{
@@ -157,11 +157,11 @@ namespace NSPresentationEditor
 			
 			if (NULL == pShape) return;
 			
-			if (pElement->m_lPlaceholderType == NSOfficePPT::MasterSlideNumber)	pShape->SetUpTextPlaceholder(L"<#>");
+			if (pElement->m_lPlaceholderType == PT_MasterSlideNumber)	pShape->SetUpTextPlaceholder(L"<#>");
 			
 			int ind = -1;
-			if (pElement->m_lPlaceholderType == NSOfficePPT::MasterDate)	ind = 0;
-			if (pElement->m_lPlaceholderType == NSOfficePPT::MasterFooter)	ind = 2;
+			if (pElement->m_lPlaceholderType == PT_MasterDate)	ind = 0;
+			if (pElement->m_lPlaceholderType == PT_MasterFooter)	ind = 2;
 
 			if (pElement->m_lPlaceholderUserStr >= 0 && ind >= 0)
 			{
@@ -171,7 +171,7 @@ namespace NSPresentationEditor
 			}
 			else
 			{
-				if (pElement->m_lPlaceholderType == NSOfficePPT::MasterDate && pElement->m_nFormatDate == 1)
+				if (pElement->m_lPlaceholderType == PT_MasterDate && pElement->m_nFormatDate == 1)
 				{
 					std::wstring current_date = L"11.11.2015";
 					pShape->SetUpTextPlaceholder(current_date);

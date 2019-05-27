@@ -25,8 +25,6 @@ include(../OfficeUtils/OfficeUtils.pri)
 CONFIG += core_static_link_xml_full
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
-include(../Common/3dParty/curl/curl.pri)
-
 # DOWNLOADER
 HEADERS += \
     ./FileDownloader/FileDownloader.h \
@@ -44,6 +42,14 @@ core_windows {
     LIBS += -lShell32
 }
 core_linux {
+    CONFIG += use_external_download
+
+    use_external_download {
+        DEFINES += USE_EXTERNAL_DOWNLOAD
+    } else {
+        include(../Common/3dParty/curl/curl.pri)
+    }
+
     SOURCES += \
         ./FileDownloader/FileDownloader_curl.cpp
 }
@@ -86,8 +92,8 @@ SOURCES += ./../DesktopEditor/common/Path.cpp
 HEADERS += ./../DesktopEditor/common/StringBuilder.h
 SOURCES += ./../DesktopEditor/common/StringBuilder.cpp
 
-HEADERS += ./../DesktopEditor/common/String.h
-SOURCES += ./../DesktopEditor/common/String.cpp
+HEADERS += ./../DesktopEditor/common/StringExt.h
+SOURCES += ./../DesktopEditor/common/StringExt.cpp
 
 # BASE64
 HEADERS += ./../DesktopEditor/common/Base64.h

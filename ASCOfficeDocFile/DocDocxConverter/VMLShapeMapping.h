@@ -48,7 +48,6 @@
 #include "OfficeDrawing/ChildAnchor.h"
 #include "OfficeDrawing/ClientAnchor.h"
 #include "OfficeDrawing/Shapetypes/LineType.h"
-#include "OfficeDrawing/PathParser.h"
 #include "OfficeDrawing/MetafilePictBlip.h"
 #include "OfficeDrawing/BitmapBlip.h"
 
@@ -68,6 +67,7 @@ namespace DocFileFormat
         static std::wstring mapHorizontalPositionRelative(int hRel );
 
 		bool			m_isBullete;
+		bool			m_isPictureBroken;
 		std::wstring	m_shapeId;
 	private:
 
@@ -80,18 +80,19 @@ namespace DocFileFormat
 		void WriteShape (const ShapeContainer* pContainer);
 
 		std::wstring GenShapeId(const Shape* pShape) const;
-		bool copyPicture( const BlipStoreEntry* bse );
+		bool copyPicture( BlipStoreEntry* bse );
 		std::wstring GetTargetExt( Global::BlipType _type ) const;
 		
-		void AppendDimensionToStyle	( std::wstring* style, const PictureDescriptor* pict, bool twistDimensions ) const;
-		void AppendDimensionToStyle	( std::wstring* style, const Spa* pSpa, bool twistDimensions ) const;
-		void AppendDimensionToStyle	( std::wstring* style, const ChildAnchor* anchor, bool twistDimensions ) const;
-		void appendStyleProperty	( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
+		void AppendDimensionToStyle	( std::wstring& style, const PictureDescriptor* pict, bool twistDimensions ) const;
+		void AppendDimensionToStyle	( std::wstring& style, const Spa* pSpa, bool twistDimensions ) const;
+		void AppendDimensionToStyle	( std::wstring& style, const ChildAnchor* anchor, bool twistDimensions ) const;
+		void appendStyleProperty	( std::wstring& style, const std::wstring& propName, const std::wstring& propValue ) const;
+		void appendStylePropertyFirst( std::wstring& style, const std::wstring& propName, const std::wstring& propValue ) const;
 		
 		std::wstring getTextboxAnchor( unsigned int anchor ) const;
 				
-		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::vector<OptionEntryPtr>& options, int zIndex ) const;
-		void AppendOptionsToStyle	( std::wstring* style, const std::vector<OptionEntryPtr>& options, int zIndex ) const;
+		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex ) const;
+		void AppendOptionsToStyle	( std::wstring& style, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex ) const;
 		
 		int UpdateFromGuides(const int val) const;
 
@@ -100,7 +101,7 @@ namespace DocFileFormat
 		std::wstring getArrowLength	( unsigned int op ) const;
 		std::wstring getArrowWidth	( unsigned int op ) const;
 		std::wstring getFillMethod	( unsigned int p ) const;
-		std::wstring getFillColorString( const unsigned char* p, unsigned int size ) const;
+		std::wstring getFillColorString( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const;
 
 		std::wstring getFillType	( unsigned int p ) const;
 		std::wstring getShadowType	( unsigned int p ) const;
@@ -114,16 +115,16 @@ namespace DocFileFormat
 		std::wstring GetLineFrom	(const ChildAnchor* pAnchor) const;
 		std::wstring GetLineTo		(const ChildAnchor* pAnchor) const;
 
-		std::wstring				GetWrapCoords		( const OptionEntryPtr& pOpt ) const;
-		std::vector<std::wstring>	GetTextRectangles	( const OptionEntryPtr& pOpt ) const;
-		std::wstring				GetConnectAngles	( const OptionEntryPtr& pOpt ) const;
-		std::wstring				GetConnectLocs		( const OptionEntryPtr& pOpt ) const;
-		void						GetGuides			( const OptionEntryPtr& pOpt );
+		std::wstring				GetWrapCoords		( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const;
+		std::vector<std::wstring>	GetTextRectangles	( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const;
+		std::wstring				GetConnectAngles	( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const;
+		std::wstring				GetConnectLocs		( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const;
+		void						GetGuides			( const ODRAW::OfficeArtFOPTEPtr& pOpt );
 
 		int								m_nAdjValues[8];
-		std::vector<_guides>			m_arrGuides;
+		std::vector<ODRAW::MSOSG>		m_arrGuides;
 		
-		bool							m_isInlineShape;
+		mutable bool					m_isInlineShape;
 		Spa*							m_pSpa;
 		IMapping*						m_pCaller;
 		BlipStoreContainer*				m_pBlipStore;

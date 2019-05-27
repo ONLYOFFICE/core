@@ -48,14 +48,14 @@ namespace text {
 const wchar_t * note_citation::ns = L"text";
 const wchar_t * note_citation::name = L"note-citation";
 
-std::wostream & note_citation::text_to_stream(std::wostream & _Wostream) const
+std::wostream & note_citation::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     if (!text_label_.empty())
         _Wostream << text_label_;
 
  	for (size_t i = 0; i < content_.size(); i++)
     {
-        content_[i]->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }
@@ -75,7 +75,11 @@ void note_citation::add_text(const std::wstring & Text)
     office_element_ptr elm = text::create(Text) ;
     content_.push_back( elm );
 }
-
+void note_citation::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+    content_.push_back( elm );
+}
 void note_citation::docx_convert(oox::docx_conversion_context & Context)
 {
  	for (size_t i = 0; i < content_.size(); i++)
@@ -89,11 +93,11 @@ void note_citation::docx_convert(oox::docx_conversion_context & Context)
 const wchar_t * note_body::ns = L"text";
 const wchar_t * note_body::name = L"note-body";
 
-std::wostream & note_body::text_to_stream(std::wostream & _Wostream) const
+std::wostream & note_body::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
  	for (size_t i = 0; i < content_.size(); i++)
     {
-        content_[i]->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream, bXmlEncode);
     }
     return _Wostream;
 }
@@ -113,6 +117,11 @@ void note_body::add_text(const std::wstring & Text)
     content_.push_back( elm );
 }
 
+void note_body::add_space(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+    content_.push_back( elm );
+}
 void note_body::docx_convert(oox::docx_conversion_context & Context)
 {
     oox::StreamsManPtr prev = Context.get_stream_man();

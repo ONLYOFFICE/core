@@ -31,9 +31,8 @@
  */
 #pragma once
 
-#include "BiffStructure.h"
-#include <Logic/Biff_structures/HyperlinkMoniker.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "HyperlinkMoniker.h"
+#include "BiffString.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
@@ -57,11 +56,11 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-
+	void load(IBinaryReader* reader);
 
 	_UINT32 streamVersion;
 
-	static const XLS::ElementType	type = XLS::typeHyperlinkObject;
+	static const XLS::ElementType type = XLS::typeHyperlinkObject;
 
 	bool hlstmfHasMoniker;
 	bool hlstmfIsAbsolute;

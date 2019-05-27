@@ -1130,7 +1130,7 @@ public:
         else if( "pict" == sCommand )
 		{
 			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
-			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
+			m_oShape.m_nShapeType			= ODRAW::sptPictureFrame;
 			m_oShape.m_nWrapType			= 3; // none
 			m_oShape.m_nPositionHRelative	= 3;//TCHAR
 			m_oShape.m_nPositionVRelative	= 3;//line
@@ -1174,7 +1174,7 @@ public:
 		else if( "pict" == sCommand )
 		{
 			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
-			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
+			m_oShape.m_nShapeType			= ODRAW::sptPictureFrame;
 			m_oShape.m_nWrapType			= 3;	// none
 			m_oShape.m_nPositionHRelative	= 3;	//TCHAR
 			m_oShape.m_nPositionVRelative	= 3;	//line

@@ -35,7 +35,7 @@
 #include "agg_math.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
-#include "../common/String.h"
+#include "../common/StringExt.h"
 #endif
 
 IMetafileToRenderter::IMetafileToRenderter(IRenderer* pRenderer)

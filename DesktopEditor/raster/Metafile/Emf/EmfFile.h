@@ -140,14 +140,14 @@ namespace MetaFile
 		{
 			return m_pDC->GetInverseTransform();
 		}
-		TXForm* GetTransform()
+		TXForm* GetTransform(int iGraphicsMode)
 		{
 			TRect* pBounds = GetDCBounds();
 			double dT = pBounds->nTop;
 			double dL = pBounds->nLeft;
 
 			TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
-			m_oTransform.Copy(m_pDC->GetFinalTransform());
+			m_oTransform.Copy(m_pDC->GetFinalTransform(iGraphicsMode));
 			m_oTransform.Multiply(oShiftXForm, MWT_RIGHTMULTIPLY);
 			return &m_oTransform;
 		}
@@ -170,6 +170,16 @@ namespace MetaFile
 		int GetCharSpace()
 		{
 			return 0;
+		}
+		bool IsWindowFlippedY()
+		{
+			TEmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->ulH < 0);
+		}
+		bool IsWindowFlippedX()
+		{
+			TEmfWindow* pWindow = m_pDC->GetWindow();
+			return (pWindow->ulW < 0);
 		}
 
 	private:
@@ -217,9 +227,9 @@ namespace MetaFile
 			if (m_pOutput)
 				m_pOutput->UpdateDC();
 		}
-		void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL);
-		void DrawTextA(TEmfEmrText& oText);
-		void DrawTextW(TEmfEmrText& oText);
+		void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL, int iGraphicsMode = GM_ADVANCED);
+		void DrawTextA(TEmfEmrText& oText, int iGraphicsMode);
+		void DrawTextW(TEmfEmrText& oText, int iGraphicsMode);
 		void Read_EMR_HEADER();
 		void Read_EMR_ALPHABLEND();
 		void Read_EMR_STRETCHDIBITS();
@@ -324,6 +334,7 @@ namespace MetaFile
 		TEmfXForm         m_oTransform;
 
 		friend class CEmfPlayer;
+		friend class CEmfClip;
 	};
 }
 

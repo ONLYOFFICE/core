@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -33,33 +33,12 @@
 #include "Timer.h"
 #include "time.h"
 
-#ifdef _MAC
-#include "mach/mach.h"
-#include "mach/mach_time.h"
-#endif
-
 #if defined(_WIN32) || defined (_WIN64)
 //#define _CAN_USE_COM_THREADS
 #endif
 
 namespace NSTimers
-{
-#ifdef _MAC
-    static DWORD getUptimeInMilliseconds()
-    {
-        const int64_t kOneMillion = 1000 * 1000;
-        static mach_timebase_info_data_t s_timebase_info;
-        
-        if (s_timebase_info.denom == 0) {
-            (void) mach_timebase_info(&s_timebase_info);
-        }
-        
-        // mach_absolute_time() returns billionth of seconds,
-        // so divide by one million to get milliseconds
-        return (DWORD)((mach_absolute_time() * s_timebase_info.numer) / (kOneMillion * s_timebase_info.denom));
-    }
-#endif
-    
+{    
     // CLOCK_MONOTONIC defined ONLY since macOS 10.12!!! (crash on earlier version)
     DWORD GetTickCount()
 	{

@@ -34,8 +34,6 @@
 
 class CRecordTextBox : public CUnknownRecord
 {
-	BYTE* m_pData;
-
 public:
 	
 	CRecordTextBox()

@@ -45,7 +45,7 @@ namespace odf_reader {
 const wchar_t * office_binary_data::ns = L"office";
 const wchar_t * office_binary_data::name = L"binary-data";
 
-std::wostream & office_binary_data::text_to_stream(std::wostream & _Wostream) const
+std::wostream & office_binary_data::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
     return _Wostream;
 }

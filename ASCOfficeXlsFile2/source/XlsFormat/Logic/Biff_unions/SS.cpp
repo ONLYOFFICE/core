@@ -31,23 +31,22 @@
  */
 
 #include "SS.h"
-#include <Logic/Biff_records/DataFormat.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/Chart3DBarShape.h>
-#include <Logic/Biff_records/LineFormat.h>
-#include <Logic/Biff_records/AreaFormat.h>
-#include <Logic/Biff_records/PieFormat.h>
-#include <Logic/Biff_records/SerFmt.h>
-#include <Logic/Biff_records/MarkerFormat.h>
-#include <Logic/Biff_records/AttachedLabel.h>
-#include <Logic/Biff_records/End.h>
+#include "GELFRAME.h"
+#include "SHAPEPROPS.h"
+#include "CRTMLFRT.h"
 
-#include <Logic/Biff_unions/GELFRAME.h>
-#include <Logic/Biff_unions/SHAPEPROPS.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/EndObject.h>
+#include"../Biff_records/DataFormat.h"
+#include"../Biff_records/Begin.h"
+#include"../Biff_records/Chart3DBarShape.h"
+#include"../Biff_records/LineFormat.h"
+#include"../Biff_records/AreaFormat.h"
+#include"../Biff_records/PieFormat.h"
+#include"../Biff_records/SerFmt.h"
+#include"../Biff_records/MarkerFormat.h"
+#include"../Biff_records/AttachedLabel.h"
+#include"../Biff_records/End.h"
+#include"../Biff_records/StartObject.h"
+#include"../Biff_records/EndObject.h"
 
 namespace XLS
 {
@@ -64,14 +63,14 @@ namespace XLS
 
 	std::wstring default_series_line_color[] =
 	{	
-		L"800000", 	L"FF00FF", 	L"FFFF00", 	L"00FFFF", 	L"800080", 	L"800000", 	L"808000", 	L"0000FF", 	L"00CCFF", 	L"CCFFFF", 	
+		L"000080", 	L"FF00FF", 	L"FFFF00", 	L"00FFFF", 	L"800080", 	L"800000", 	L"808000", 	L"0000FF", 	L"00CCFF", 	L"CCFFFF", 	
 		L"CCFFCC", 	L"FFFF99", 	L"99CCFF", 	L"FF99CC", 	L"CC99FF", 	L"FFCC99", 	L"3366FF", 	L"33CCCC", 	L"99CC00", 	L"FFCC00", 	
 		L"FF9900", 	L"FF6600", 	L"666699", 	L"969696", 	L"336600", 	L"339966", 	L"330000", 	L"333300", 	L"993300", 	L"993366", 	
 		L"333399", 	L"000000", 	L"FFFFFF", 	L"FF0000", 	L"00FF00", 	L"0000FF", 	L"FFFF00", 	L"FF00FF", 	L"00FFFF", 	L"800000", 	
 		L"800000", 	L"800000", 	L"808000", 	L"800080", 	L"808000", 	L"C0C0C0", 	L"808080", 	L"9999FF", 	L"993366", 	L"FFFFCC", 
 		L"CCFFFF", 	L"660066", 	L"FF8080", 	L"0066CC", 	L"CCCCFF",
 		//todoooo - подглядеть какие в мс далее 
-		L"800000", 	L"FF00FF", 	L"FFFF00", 	L"00FFFF", 	L"800080", 	L"800000", 	L"808000", 	L"0000FF", 	L"00CCFF", 	L"CCFFFF", 	
+		L"000080", 	L"FF00FF", 	L"FFFF00", 	L"00FFFF", 	L"800080", 	L"800000", 	L"808000", 	L"0000FF", 	L"00CCFF", 	L"CCFFFF", 	
 		L"CCFFCC", 	L"FFFF99", 	L"99CCFF", 	L"FF99CC", 	L"CC99FF", 	L"FFCC99", 	L"3366FF", 	L"33CCCC", 	L"99CC00", 	L"FFCC00", 	
 		L"FF9900", 	L"FF6600", 	L"666699", 	L"969696", 	L"336600", 	L"339966", 	L"330000", 	L"333300", 	L"993300", 	L"993366", 	
 		L"333399", 	L"000000", 	L"FFFFFF", 	L"FF0000", 	L"00FF00", 	L"0000FF", 	L"FFFF00", 	L"FF00FF", 	L"00FFFF", 	L"800000", 	
@@ -114,9 +113,18 @@ const bool SS::loadContent(BinProcessor& proc)
 	m_DataFormat = elements_.back();
 	elements_.pop_back();
 
-	if (proc.mandatory<Begin>())
+	bool  bRead = false;
+	if (proc.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
+		bRead = true;
+	}
+	if (proc.optional<Begin>()) //при biff5 может быть или нет, biff8 - обязано быть
+	{
+		bRead = true;
 		elements_.pop_back();
+	}
+	if (bRead)
+	{
 		while (true)
 		{
 			CFRecordType::TypeId type = proc.getNextRecordType();
@@ -234,7 +242,8 @@ void SS::apply_crt_ss (BaseObjectPtr crt_ss)
 	SS * ss_common = dynamic_cast<SS*>(crt_ss.get());
 	if (ss_common == NULL) return;
 
-	if (ss_common->m_PieFormat && !m_PieFormat)	m_PieFormat = ss_common->m_PieFormat;
+	if (ss_common->m_PieFormat && !m_PieFormat)			m_PieFormat = ss_common->m_PieFormat;
+	if (ss_common->m_MarkerFormat && !m_MarkerFormat)	m_MarkerFormat = ss_common->m_MarkerFormat;
 	//.... ???
 }
 
@@ -327,8 +336,9 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 
 int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 {
-	DataFormat	*series_data_format = dynamic_cast<DataFormat *>(m_DataFormat.get());
-	SerFmt		*series_format		= dynamic_cast<SerFmt *>	(m_SerFmt.get());
+	DataFormat		*series_data_format = dynamic_cast<DataFormat*>		(m_DataFormat.get());
+	SerFmt			*series_format		= dynamic_cast<SerFmt*>			(m_SerFmt.get());
+	MarkerFormat	*marker_format		= dynamic_cast<MarkerFormat*>	(m_MarkerFormat.get());
 
 	int ind = series_data_format->iss;
 
@@ -383,31 +393,26 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 				else
 				{
 					//генерация (automatic)
-					if ( series_type != CHART_TYPE_Line || m_is3D == true ) //line & !3dLine
+					if (series_type == CHART_TYPE_Scatter || series_type == CHART_TYPE_Stock) 
+					{
+					}	
+					else if ( series_type != CHART_TYPE_Line || m_is3D == true ) //line & !3dLine
 						ind = 31; //black
+
 					CP_XML_NODE(L"a:ln")
 					{
 						CP_XML_ATTR(L"w", 12700);//single
 
-						if (series_type == CHART_TYPE_Scatter || series_type == CHART_TYPE_Stock) 
-							//points only - todooo сделать дефолтовые точки ala 95 стиль & stork
+						CP_XML_NODE(L"a:solidFill")
 						{
-							m_isAutoLine = false;
-							//CP_XML_NODE(L"a:noFill");
+							CP_XML_NODE(L"a:srgbClr")
+							{
+								CP_XML_ATTR(L"val",  default_series_line_color[ind]);		
+							}
 						}
-						else
+						CP_XML_NODE(L"a:prstDash")
 						{
-							CP_XML_NODE(L"a:solidFill")
-							{
-								CP_XML_NODE(L"a:srgbClr")
-								{
-									CP_XML_ATTR(L"val",  default_series_line_color[ind]);		
-								}
-							}
-							CP_XML_NODE(L"a:prstDash")
-							{
-								CP_XML_ATTR(L"val", L"solid");
-							}
+							CP_XML_ATTR(L"val", L"solid");
 						}
 					}
 				}
@@ -416,15 +421,25 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 		if (m_PieFormat && (series_type == CHART_TYPE_Doughnut	|| 
 							series_type == CHART_TYPE_BopPop	|| 
 							series_type == CHART_TYPE_Pie))
+		{
 			m_PieFormat->serialize(_stream);
+		}
 
-		if (m_MarkerFormat &&	series_type != CHART_TYPE_Bubble	&& 
+		if (marker_format &&	series_type != CHART_TYPE_Bubble	&& 
 								series_type != CHART_TYPE_Bar		&&	
 								series_type != CHART_TYPE_BopPop )
-			m_MarkerFormat->serialize(_stream);
+		{
+			marker_format->serialize(_stream, ind);
+		}
 		else if (/*series_type == CHART_TYPE_Line ||*/ series_type == CHART_TYPE_Scatter)
 		{
-			CP_XML_NODE(L"c:marker");
+			CP_XML_NODE(L"c:marker")
+			{
+				CP_XML_NODE(L"c:symbol")
+				{
+					CP_XML_ATTR(L"val", L"none");
+				}
+			}
 		}
 		
 	}

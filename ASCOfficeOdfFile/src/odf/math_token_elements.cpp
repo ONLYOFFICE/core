@@ -65,7 +65,7 @@ void math_mi::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-std::wostream & math_mi::text_to_stream(std::wostream & _strm) const
+std::wostream & math_mi::text_to_stream(std::wostream & _strm, bool bXmlEncode) const
 {
 	if (text_) 
 		_strm << *text_;
@@ -143,7 +143,7 @@ void math_mo::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-std::wostream & math_mo::text_to_stream(std::wostream & _strm) const
+std::wostream & math_mo::text_to_stream(std::wostream & _strm, bool bXmlEncode) const
 {
 	if (text_) 
 		_strm << *text_;

@@ -75,9 +75,9 @@ namespace DocFileFormat
 					}
 					else 
 					{
-						for ( std::vector<Record*>::const_iterator iter1 = this->Children.begin(); iter1 != this->Children.end(); iter1++ )
+						for ( size_t j = 0; j < this->Children.size(); ++j)
 						{
-							ShapeOptions* sh_options = dynamic_cast<ShapeOptions*>( *iter1 );
+							ShapeOptions* sh_options = dynamic_cast<ShapeOptions*>( this->Children[j] );
 							if (sh_options)
 							{
 								if (sh_options->OptionsByID.end() != sh_options->OptionsByID.find(Pib))
@@ -101,16 +101,17 @@ namespace DocFileFormat
 			return new ShapeContainer( _reader, bodySize, typeCode, version, instance );
 		}
 
-		OptionEntryPtr ExtractOption(const PropertyId & prop) const
+		ODRAW::OfficeArtFOPTEPtr ExtractOption(const PropertyId & prop) const
 		{
-			OptionEntryPtr ret;
+			ODRAW::OfficeArtFOPTEPtr ret;
+			
 			for ( size_t i = 0; i < this->Children.size(); ++i )
 			{
 				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( this->Children[i] );
 
 				if ( opt == NULL ) continue;
 
-				std::map<PropertyId, OptionEntryPtr>::iterator pFind = opt->OptionsByID.find(prop);
+				std::map<PropertyId, ODRAW::OfficeArtFOPTEPtr>::iterator pFind = opt->OptionsByID.find(prop);
 				if (pFind != opt->OptionsByID.end())
 				{
 					ret = pFind->second;
@@ -119,9 +120,9 @@ namespace DocFileFormat
 			return ret;
 		}
 
-		std::vector<OptionEntryPtr> ExtractOptions() const
+		std::vector<ODRAW::OfficeArtFOPTEPtr> ExtractOptions() const
 		{
-			std::vector<OptionEntryPtr> ret;
+			std::vector<ODRAW::OfficeArtFOPTEPtr> ret;
 
 			//build the list of all option entries of this shape
 			for ( size_t i = 0; i < this->Children.size(); ++i )

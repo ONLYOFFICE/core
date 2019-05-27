@@ -79,7 +79,9 @@ namespace BinXlsxRW
 		Styles = 2,
 		Workbook = 3,
 		Worksheets = 4,
-		CalcChain = 5
+		CalcChain = 5,
+		App = 6,
+		Core = 7
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes
@@ -151,8 +153,21 @@ namespace BinXlsxRW
 	};}
 	namespace c_oSerFillTypes{enum c_oSerFillTypes
 	{
-		PatternFill = 0,
-		PatternFillBgColor = 1
+		Pattern = 0,
+		PatternBgColor_deprecated = 1,
+		PatternType = 2,
+		PatternFgColor = 3,
+		PatternBgColor = 4,
+		Gradient = 5,
+		GradientType = 6,
+		GradientLeft = 7,
+		GradientTop = 8,
+		GradientRight = 9,
+		GradientBottom = 10,
+		GradientDegree = 11,
+		GradientStop = 12,
+		GradientStopPosition = 13,
+		GradientStopColor = 14
 	};}
 	namespace c_oSerFontTypes{enum c_oSerFontTypes
 	{
@@ -716,7 +731,8 @@ namespace BinXlsxRW
 		ColorScale = 14,
 		DataBar = 15,
 		FormulaCF = 16,
-		IconSet = 17
+		IconSet = 17,
+		Dxf = 18
 	};}
 	namespace c_oSer_ConditionalFormattingRuleColorScale{enum c_oSer_ConditionalFormattingRuleElement
 	{
@@ -729,7 +745,16 @@ namespace BinXlsxRW
 		Color = 1,
 		MaxLength = 2,
 		MinLength = 3,
-		ShowValue = 4
+		ShowValue = 4,
+		NegativeColor = 5,
+		BorderColor = 6,
+		AxisColor = 7,
+		NegativeBorderColor = 8,
+		AxisPosition = 9,
+		Direction = 10,
+		GradientEnabled = 11,
+		NegativeBarColorSameAsPositive = 12,
+		NegativeBarBorderColorSameAsPositive = 13
 	};}
 	namespace c_oSer_ConditionalFormattingIconSet{enum c_oSer_ConditionalFormattingIconSet
 	{
@@ -737,13 +762,20 @@ namespace BinXlsxRW
 		IconSet = 1,
 		Percent = 2,
 		Reverse = 3,
-		ShowValue = 4
+		ShowValue = 4,
+		CFIcon = 5
 	};}
 	namespace c_oSer_ConditionalFormattingValueObject{enum c_oSer_ConditionalFormattingValueObject
 	{
 		Gte = 0,
 		Type = 1,
-		Val = 2
+		Val = 2,
+		Formula = 3
+	};}
+	namespace c_oSer_ConditionalFormattingIcon{enum c_oSer_ConditionalFormattingIcon
+	{
+		iconSet = 0,
+		iconId = 1
 	};}
 	namespace c_oSer_SheetView{enum c_oSer_SheetView
 	{

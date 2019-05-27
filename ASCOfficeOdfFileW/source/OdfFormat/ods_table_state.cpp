@@ -77,7 +77,7 @@ std::wstring convert_date(const std::wstring & oox_date)
 	{
 		return oox_date;
 	}
-	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
+	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate - 2);
 
 	////to for example, "1899-12-31T05:37:46.66569
 	std::wstring date_str;
@@ -110,19 +110,18 @@ std::wstring convert_time(const std::wstring & oox_time)
 	}
 
 	//PT12H15M42S
-	int hours=0, minutes=0;
-	double sec=0;
+	int hours = 0, minutes = 0;
+	double sec = 0;
 	
-	//todooo ПЕРЕПИСАТЬ !!!
-	//boost::posix_time::time_duration day(24, 0, 0);
-	//
-	//double millisec = day.total_milliseconds() * dTime;
+	boost::posix_time::time_duration day(24, 0, 0);
+	
+	double millisec = day.total_milliseconds() * dTime;
 
 
-	//sec		= millisec /1000.;
-	//hours	= sec/60./60.;
-	//minutes = (sec - (hours * 60 * 60))/60.;
-	//sec		= sec - (hours *60 + minutes) * 60.;
+	sec		= millisec /1000.;
+	hours	= sec/60./60.;
+	minutes = (sec - (hours * 60 * 60))/60.;
+	sec		= sec - (hours *60 + minutes) * 60.;
 
 	int sec1 = sec;
 
@@ -169,7 +168,7 @@ void ods_table_state::set_table_name(std::wstring name)
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
-	table->table_table_attlist_.table_name_ = name;
+	table->attlist_.table_name_ = name;
 }
 
 void ods_table_state::set_table_master_page(std::wstring name)
@@ -178,7 +177,74 @@ void ods_table_state::set_table_master_page(std::wstring name)
 
 	office_table_style_->style_master_page_name_ = name;
 }
+void ods_table_state::set_table_protection(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
 
+	table->attlist_.table_protected_ = true;
+	create_element(L"loext", L"table-protection", table->table_protection_, context_);
+}
+void ods_table_state::set_table_protection_insert_columns(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->insert_columns = Val;
+}
+void ods_table_state::set_table_protection_insert_rows(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->insert_rows = Val;
+}
+void ods_table_state::set_table_protection_delete_columns(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->delete_columns = Val;
+}
+void ods_table_state::set_table_protection_delete_rows(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->delete_rows = Val;
+}
+void ods_table_state::set_table_protection_protected_cells(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->select_protected_cells = Val;
+}
+void ods_table_state::set_table_protection_unprotected_cells(bool Val)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table_table_protection *prot = dynamic_cast<table_table_protection*>(table->table_protection_.get());
+	if (!prot) return;
+
+	prot->select_unprotected_cells = Val;
+}
 void ods_table_state::set_table_hidden(bool Val)
 {
 	if (!office_table_style_)return;
@@ -205,7 +271,7 @@ void ods_table_state::set_print_range(std::wstring range)
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
-	table->table_table_attlist_.table_print_ranges_ = range;
+	table->attlist_.table_print_ranges_ = range;
 }
 
 void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
@@ -227,7 +293,7 @@ void ods_table_state::set_table_style(office_element_ptr & elm)
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 	
-	table->table_table_attlist_.table_style_name_ = office_table_style_->style_name_;
+	table->attlist_.table_style_name_ = office_table_style_->style_name_;
 	//потом в принципе и по имени можно будет связать(найти)
 
 
@@ -273,8 +339,8 @@ void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	if (style_name.length()>0) column->table_table_column_attlist_.table_style_name_ = style_name;
-	column->table_table_column_attlist_.table_number_columns_repeated_ = repeated;
+	if (style_name.length()>0) column->attlist_.table_style_name_ = style_name;
+	column->attlist_.table_number_columns_repeated_ = repeated;
 	
 }
 void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
@@ -284,7 +350,7 @@ void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	column->table_table_column_attlist_.table_default_cell_style_name_ = style_name;
+	column->attlist_.table_default_cell_style_name_ = style_name;
 
 	columns_.back().cell_style_name = style_name;
 }
@@ -330,7 +396,7 @@ void ods_table_state::set_column_hidden(bool val)
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	column->table_table_column_attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
+	column->attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
 }
 void ods_table_state::set_table_dimension(int col, int row)
 {
@@ -370,8 +436,8 @@ void ods_table_state::add_row(office_element_ptr & elm, unsigned int repeated, o
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	if (row == NULL)return;
 
-	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_name;
-	row->table_table_row_attlist_.table_number_rows_repeated_ = repeated;
+	if (style_name.length()>0) row->attlist_.table_style_name_ = style_name;
+	row->attlist_.table_number_rows_repeated_ = repeated;
 
 	row_default_cell_style_name_ = L"";
 
@@ -394,14 +460,14 @@ void ods_table_state::add_row_repeated()
 			i--;
 		}
 	}
-	row->table_table_row_attlist_.table_number_rows_repeated_ = rows_.back().repeated;
+	row->attlist_.table_number_rows_repeated_ = rows_.back().repeated;
 }
 void ods_table_state::set_row_hidden(bool Val)
 {
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	if (row == NULL)return;
 
-	row->table_table_row_attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
+	row->attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
 }
 void ods_table_state::set_row_optimal_height(bool val)
 {
@@ -496,7 +562,7 @@ void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 	//table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	//if (row == NULL)return;
 
-	//row->table_table_row_attlist_.table_default_cell_style_name_ = style_name;
+	//row->attlist_.table_default_cell_style_name_ = style_name;
 }
 
 office_element_ptr  & ods_table_state::current_row_element()
@@ -515,7 +581,7 @@ office_element_ptr  & ods_table_state::current_cell_element()
 }
 ods_hyperlink_state & ods_table_state::current_hyperlink()
 {
-	if ((cells_size_ >0 && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
+	if ((cells_size_ > 0 && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
 	{
 		return hyperlinks_[cells_.back().hyperlink_idx];
 	}
@@ -536,12 +602,12 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
 	if (cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
 	{
-		cell->table_table_cell_attlist_.table_style_name_ =	style_name;
+		cell->attlist_.table_style_name_ =	style_name;
 	}
 	table_covered_table_cell* covered_cell = dynamic_cast<table_covered_table_cell*>(elm.get());
 	if (covered_cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
 	{
-		covered_cell->table_table_cell_attlist_.table_style_name_ =	style_name;
+		covered_cell->attlist_.table_style_name_ =	style_name;
 	}
 	ods_cell_state state;
 
@@ -571,7 +637,7 @@ void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 	common_value_and_type_attlist cell_type;
 	cell_type.office_value_type_ = office_value_type(value_type);
 
-	cell->table_table_cell_attlist_.common_value_and_type_attlist_ = cell_type;
+	cell->attlist_.common_value_and_type_attlist_ = cell_type;
 
 }
 void ods_table_state::set_cell_type(int type)
@@ -599,29 +665,36 @@ void ods_table_state::set_cell_type(int type)
 	}
 	if (cell_type)
 	{
-		if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+		if (!cell->attlist_.common_value_and_type_attlist_)
 		{
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+			cell->attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 		}
-		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+		cell->attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
 	}
 }
 void ods_table_state::add_definded_expression(office_element_ptr & elm)
 {
 	if (!table_defined_expressions_)
 	{
-		create_element(L"table", L"named-expressions",table_defined_expressions_,context_);
+		create_element(L"table", L"named-expressions", table_defined_expressions_, context_);
 		office_table_->add_child_element(table_defined_expressions_);
 	}
 	if (!table_defined_expressions_)return;
 	table_defined_expressions_->add_child_element(elm);
 }
-void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link)
+void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation)
 {
 	ods_hyperlink_state state;
-	
+	state.row = row;  state.col = col; state.ref = ref; state.bLocation = bLocation;
 
-	state.row=row;  state.col =col; state.ref = ref, state.link = link;
+	if (state.bLocation)
+	{
+		state.link = L"#" + formulas_converter_table.convert_named_ref(link);
+	}
+	else
+	{
+		state.link = link;		
+	}
 
 	hyperlinks_.push_back(state);
 }
@@ -629,8 +702,8 @@ void ods_table_state::start_comment(int col, int row, std::wstring & author)
 {
 	ods_comment_state state;
 
-	state.row=row;  state.col =col; state.author = author;	
-	create_element(L"office", L"annotation",state.elm,context_);
+	state.row = row;  state.col = col; state.author = author;	
+	create_element(L"office", L"annotation", state.elm, context_);
 
 	comments_.push_back(state);
 }
@@ -661,7 +734,7 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 	if (comments_.back().author.length() > 0 && comments_.back().elm)
 	{
 		office_element_ptr dc_elm;
-		create_element(L"dc", L"creator",dc_elm,context_);
+		create_element(L"dc", L"creator", dc_elm, context_);
 		if (dc_elm)
 		{
 			dc_elm->add_text(comments_.back().author);
@@ -693,8 +766,8 @@ void ods_table_state::check_spanned_cells()
 						table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
 						if (cell_elm == NULL)break;
 
-						cell_elm->table_table_cell_attlist_extra_.table_number_columns_spanned_ = jt->second.spanned_cols;
-						cell_elm->table_table_cell_attlist_extra_.table_number_rows_spanned_ = jt->second.spanned_rows;
+						cell_elm->attlist_extra_.table_number_columns_spanned_ = jt->second.spanned_cols;
+						cell_elm->attlist_extra_.table_number_rows_spanned_ = jt->second.spanned_rows;
 
 						break;
 					}
@@ -794,23 +867,59 @@ void ods_table_state::set_cell_spanned(int spanned_cols, int spanned_rows)
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
 
-	cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
-	cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+	cell->attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+	cell->attlist_extra_.table_number_rows_spanned_ = spanned_rows;
 }
 void ods_table_state::set_cell_formula(std::wstring & formula)
 {
-	if (formula.length() < 1)return;
+	if (formula.empty())return;
 
+	ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
+	
 	//test external link
-	{
-		boost::wregex re(L"([\[]\\d+\[\]])+");
+	bool bExternal = !ods_context->externals_.empty();
+	boost::wregex re(L"([\[]\\d+[\]])+");
 
+	while(bExternal)
+	{
 		boost::wsmatch result;
-		bool b = boost::regex_search(formula, result, re);
-		if (b) return;  //todoooo
+		bExternal = boost::regex_search(formula, result, re);
+		if (!bExternal) break;
+
+		
+		std::wstring refExternal = result[1].str();
+		int idExternal = XmlUtils::GetInteger(refExternal.substr(1, refExternal.length() - 1)) - 1;
+
+		bExternal = idExternal >= 0 && idExternal < ods_context->externals_.size();
+
+		while(idExternal >= 0 && idExternal < ods_context->externals_.size())
+		{
+			size_t pos = formula.find(refExternal);
+			if (pos == std::wstring::npos)
+				break;
+
+			std::wstring new_formula; 
+			
+			if (pos > 0 && formula[pos - 1] == L'\'')
+			{
+				new_formula = formula.substr(0, pos - 1);
+				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+				new_formula += L"'";
+			}
+			else
+			{
+				new_formula = formula.substr(0, pos);
+				new_formula += L"'EXTERNALREF" + ods_context->externals_[idExternal].ref + L"'#";
+			}
+			pos += refExternal.length();
+			new_formula += formula.substr(pos, formula.length() - pos);
+			formula = new_formula;
+		}
 	}
 
 	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
+
+	XmlUtils::replace_all(odfFormula, L"EXTERNALREF", L"file://");//снятие экранирования
 
 	if (std::wstring::npos != odfFormula.find(L"["))
 	{
@@ -833,7 +942,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
 
-	cell->table_table_cell_attlist_.table_formula_ = odfFormula;
+	cell->attlist_.table_formula_ = odfFormula;
 	cells_.back().empty = false;
 }
 
@@ -906,7 +1015,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 		ods_shared_formula_state state = {(unsigned int)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
 		shared_formulas_.push_back(state);
 		
-		cell->table_table_cell_attlist_.table_formula_ = odf_formula;
+		cell->attlist_.table_formula_ = odf_formula;
 		cells_.back().empty = false;
 	}
 	else
@@ -942,7 +1051,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 						boost::match_default | boost::format_all);
 					odf_formula = res;
 				}
-				cell->table_table_cell_attlist_.table_formula_ = odf_formula;				
+				cell->attlist_.table_formula_ = odf_formula;				
 				cells_.back().empty = false;
 			}
 		}
@@ -983,8 +1092,8 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 		if (cell == NULL)return;
 
-		cell->table_table_cell_attlist_extra_.table_number_matrix_columns_spanned_ = col_span;
-		cell->table_table_cell_attlist_extra_.table_number_matrix_rows_spanned_ = row_span;
+		cell->attlist_extra_.table_number_matrix_columns_spanned_ = col_span;
+		cell->attlist_extra_.table_number_matrix_rows_spanned_ = row_span;
 
 	}
 }
@@ -1067,11 +1176,11 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 		if (cell)
 		{
-			if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+			if (!cell->attlist_.common_value_and_type_attlist_)
 			{
-				cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+				cell->attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 			}
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+			cell->attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
 		}
 		cells_.back().empty = false;
 
@@ -1094,35 +1203,35 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
 
-	if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+	if (!cell->attlist_.common_value_and_type_attlist_)
 	{
-		cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
-		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
+		cell->attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+		cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
 		//временно... пока нет определялки типов
 	}
 	cells_.back().empty = false;
 	
-	if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+	if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 	{
-		switch(cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type())
+		switch(cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type())
 		{
 		case office_value_type::String:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_string_value_ = value;
+			cell->attlist_.common_value_and_type_attlist_->office_string_value_ = value;
 			break;
 		case office_value_type::Boolean:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
+			cell->attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
+			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
 			break;
 		case office_value_type::Time:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
+			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
 			break;
 		case office_value_type::Currency:
 		case office_value_type::Percentage:
 		case office_value_type::Float:
 		default:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = value;
+			cell->attlist_.common_value_and_type_attlist_->office_value_ = value;
 		}
 	}
 	else
@@ -1135,11 +1244,11 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	{
 		bool need_test_cach = false;
 
-		if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 		{
-			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
- 			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
-			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
+			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
+ 			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
+			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
 		}
 		try
 		{
@@ -1153,8 +1262,8 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		{
 			if (need_cash)
 			{
-				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = boost::none;
-				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
+				cell->attlist_.common_value_and_type_attlist_->office_value_ = boost::none;
+				cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
 			}
 		}
 		if (need_cash)
@@ -1183,7 +1292,7 @@ void ods_table_state::end_cell()
 	if (cells_.back().empty)
 	{
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
-		if (cell)cell->table_table_cell_attlist_.common_value_and_type_attlist_ = boost::none;
+		if (cell)cell->attlist_.common_value_and_type_attlist_ = boost::none;
 	}
 }
 
@@ -1282,8 +1391,8 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 		int spanned_rows = 0, spanned_cols = 0;
 		if (cell && isSpannedCell(current_table_column_, current_table_row_, spanned_cols, spanned_rows))
 		{
-			cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
-			cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+			cell->attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+			cell->attlist_extra_.table_number_rows_spanned_ = spanned_rows;
 		}
 	}
 	
@@ -1305,17 +1414,17 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 	if (cell)
 	{
-		cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
+		cell->attlist_.table_number_columns_repeated_ = repeated;
 
 		if (!row_default_cell_style_name_.empty())
-			cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+			cell->attlist_.table_style_name_ = row_default_cell_style_name_;
 	}
 	if (covered_cell)
 	{
-		covered_cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
+		covered_cell->attlist_.table_number_columns_repeated_ = repeated;
 
 		if (!row_default_cell_style_name_.empty())
-			covered_cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+			covered_cell->attlist_.table_style_name_ = row_default_cell_style_name_;
 
 		current_covered_cols_ -= repeated;
 	}
@@ -1324,7 +1433,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 ///////////////////////////////////////////////////
 void ods_table_state::start_conditional_formats()
 {
-	office_element_ptr		elm;
+	office_element_ptr elm;
 	create_element(L"calcext", L"conditional-formats",elm,context_);
 
 	current_level_.back()->add_child_element(elm);
@@ -1337,8 +1446,8 @@ void ods_table_state::end_conditional_formats()
 }
 void ods_table_state::start_conditional_format(std::wstring ref)
 {
-	office_element_ptr		elm;
-	create_element(L"calcext", L"conditional-format",elm,context_);
+	office_element_ptr elm;
+	create_element(L"calcext", L"conditional-format", elm, context_);
 
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
@@ -1363,13 +1472,13 @@ void ods_table_state::start_conditional_rule(int rule_type)
 {
 	office_element_ptr		elm;
 
-	if (rule_type == 3)		create_element(L"calcext", L"color-scale",elm,context_); 
-	else if (rule_type == 7)create_element(L"calcext", L"data-bar",elm,context_);
-	else if (rule_type ==10)create_element(L"calcext", L"icon-set",elm,context_);
-	else if (rule_type ==14)create_element(L"calcext", L"date-is",elm,context_);
+	if (rule_type == 3)		create_element(L"calcext", L"color-scale",  elm, context_); 
+	else if (rule_type == 7)create_element(L"calcext", L"data-bar", elm ,context_);
+	else if (rule_type ==10)create_element(L"calcext", L"icon-set", elm, context_);
+	else if (rule_type ==14)create_element(L"calcext", L"date-is", elm, context_);
 	else
 	{
-		create_element(L"calcext", L"condition",elm,context_);
+		create_element(L"calcext", L"condition", elm, context_);
 		calcext_condition* condition = dynamic_cast<calcext_condition*>	 (elm.get());
 		
 		if (condition) 

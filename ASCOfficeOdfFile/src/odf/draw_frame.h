@@ -70,7 +70,7 @@ public:
     static const ElementType type = typeDrawImage;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -114,7 +114,7 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -160,7 +160,7 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
     virtual void pptx_convert_placeHolder(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	int idx_in_owner ;
 	
@@ -211,7 +211,7 @@ public:
 
 	draw_g() : position_child_x1(0x7fffffff), position_child_y1(0x7fffffff), position_child_x2(0x7fffffff), position_child_y2(0x7fffffff) {}
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -263,7 +263,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     draw_text_box_attlist		draw_text_box_attlist_;
     office_element_ptr_array	content_;
@@ -271,7 +271,8 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+	virtual void add_text(const std::wstring & Text){}
+	virtual void add_space(const std::wstring & Text){}
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_text_box);

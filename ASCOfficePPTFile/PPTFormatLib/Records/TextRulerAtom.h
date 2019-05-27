@@ -35,7 +35,7 @@
 class CRecordTextRulerAtom : public CUnknownRecord
 {
 public:
-	NSPresentationEditor::CTextRuler m_oTextRuler;
+	PPT_FORMAT::CTextRuler m_oTextRuler;
 
 public:
 	

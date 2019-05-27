@@ -1410,6 +1410,10 @@
 			Name="Comments"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Comments.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Comments.h"
 				>
 			</File>
@@ -1501,6 +1505,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\DocxFormat\ChartDrawing.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Chart\ChartSerialize.cpp"
 					>
 				</File>
@@ -1514,6 +1522,14 @@
 				>
 				<File
 					RelativePath="..\Source\XlsxFormat\Comments\Comments.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Comments\ThreadedComments.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\WorkbookComments.h"
 					>
 				</File>
 			</Filter>
@@ -1625,6 +1641,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Table\Connections.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Table\QueryTable.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Table\Table.h"
 					>
 				</File>
@@ -1662,6 +1686,10 @@
 				>
 				<File
 					RelativePath="..\Source\XlsxFormat\Worksheets\Cols.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\ConditionalFormatting.cpp"
 					>
 				</File>
 				<File
@@ -1988,6 +2016,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\Source\DocxFormat\App.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\DocxFormat\Core.cpp"
+			>
+		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\Docx.cpp"
 			>

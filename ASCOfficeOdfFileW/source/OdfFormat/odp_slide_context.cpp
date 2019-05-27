@@ -44,7 +44,7 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-odp_slide_context::odp_slide_context(odp_conversion_context & Context) : context_(Context), table_context_(&Context), comment_context_(&Context)
+odp_slide_context::odp_slide_context(odp_conversion_context & Context) : styles_context_(NULL), context_(Context), table_context_(&Context), comment_context_(&Context)
 {       
 	count_slides_	= 0;
 	styles_context_ = Context.styles_context();

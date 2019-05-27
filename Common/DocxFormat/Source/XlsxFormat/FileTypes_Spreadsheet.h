@@ -43,65 +43,92 @@ namespace OOX
 		namespace FileTypes
 		{
 			const FileType Workbook			(L"xl", L"workbook.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
 
 			const FileType WorkbookMacro	(L"xl", L"workbook.xml",
-												_T("application/vnd.ms-excel.sheet.macroEnabled.main+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
+												L"application/vnd.ms-excel.sheet.macroEnabled.main+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
 
 			const FileType SharedStrings	(L"", L"sharedStrings.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings"));
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings");
 
 			const FileType Styles			(L"", L"styles.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"));
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles");
 
 			const FileType Worksheet		(L"worksheets", L"sheet.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"), true);
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
+												L"worksheets/sheet", true);
 
 			const FileType Chartsheets		(L"chartsheets", L"sheet.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet"), true);
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet", 
+												L"chartsheets/sheet", true);
 
 			const FileType CalcChain		(L"", L"calcChain.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.calcChain+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/calcChain"));
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.calcChain+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/calcChain");
+
+			const FileType ThreadedComments	(L"../threadedComments", L"threadedComment.xml",
+												L"application/vnd.ms-excel.threadedcomments+xml",
+												L"http://schemas.microsoft.com/office/2017/10/relationships/threadedComment", 
+												L"threadedComments/threadedComment", true, true);
+
+			const FileType Persons			(L"../persons", L"person.xml", 
+												L"application/vnd.ms-excel.person+xml",
+												L"http://schemas.microsoft.com/office/2017/10/relationships/person");
 
 			const FileType Comments			(L"../", L"comments.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments"), true, true);
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", 
+												L"comments", true, true);
 
 			const FileType Table			(L"../tables", L"table.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"), true, true);
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", 
+												L"tables/table", true, true);
+
+			const FileType QueryTable		(L"../queryTables", L"queryTable.xml",
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.queryTable+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/queryTable", 
+												L"queryTables/queryTable", true, true);
+
+			const FileType Connections		(L"", L"connections.xml",
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections");
 
 			const FileType Drawings			(L"../drawings", L"drawing.xml",
-												_T("application/vnd.openxmlformats-officedocument.drawing+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing"), true, true);
+												L"application/vnd.openxmlformats-officedocument.drawing+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing", 
+												L"drawings/drawing", true, true);
 
 			const FileType ExternalLinks	(L"externalLinks", L"externalLink.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink"), true, true);
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink",
+												L"externalLinks/externalLink", true, true);
 
 			const FileType PivotTable		(L"../pivotTables", L"pivotTable.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable"), true, true);
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
+												L"pivotTables/pivotTable", true, true);
 
 			const FileType PivotCacheDefinition(L"pivotCache", L"pivotCacheDefinition.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition"), true);
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
+												L"pivotCache/pivotCacheDefinition", true);
 
-			const FileType PivotCacheRecords(L"", L"pivotCacheRecords.xml",
-												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords"), true, true);
+			const FileType PivotCacheRecords(L"pivotCache", L"pivotCacheRecords.xml",
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
+												L"pivotCache/pivotCacheRecords", true, true);
 
 			//onlyoffice workbook comments
 			const FileType WorkbookComments(L"", L"workbookComments.bin",
-													_T(""),
-													_T("http://schemas.onlyoffice.com/workbookComments"));
+												L"",
+												L"http://schemas.onlyoffice.com/workbookComments");
 		
 
 		} // namespace FileTypes

@@ -349,6 +349,14 @@
 				Name="oox"
 				>
 				<File
+					RelativePath="..\..\XlsxSerializerCom\Writer\BinaryReader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\XlsxSerializerCom\Reader\BinaryWriter.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
 					>
 				</File>

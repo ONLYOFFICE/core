@@ -39,7 +39,7 @@ public:
 	CCircularArrowType()
 	{
 		m_bConcentricFill = false;
-		m_eJoin = NSOfficeDrawing::lineJoinMiter;
+		m_eJoin = ODRAW::lineJoinMiter;
 		m_strPath = _T("al10800,10800@8@8@4@6,10800,10800,10800,10800@9@7l@30@31@17@18@24@25@15@16@32@33xe"); 
 
 		AddGuide(_T("val #1")); 

@@ -88,6 +88,7 @@ namespace DocFileFormat
 		friend class VMLPictureMapping;
 		friend class OpenXmlPackage;
 		friend class TextboxMapping;
+		friend class SettingsMapping;
 
 	public:
 
@@ -223,6 +224,7 @@ namespace DocFileFormat
 		Plex<FieldCharacter>				*FootnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*EndnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*HeadersAndFootersDocumentFieldsPlex;
+		Plex<FieldCharacter>				*AnnotationsFieldsPlex;
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
 		Plex<AnnotationReferenceExDescriptor> *AnnotationsReferenceExPlex;
 		Plex<EmptyStructure>				*AutoTextPlex;		

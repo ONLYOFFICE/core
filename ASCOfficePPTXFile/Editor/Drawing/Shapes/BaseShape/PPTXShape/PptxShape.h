@@ -32,7 +32,7 @@
 #pragma once
 #include "../BaseShape.h"
 
-using namespace NSPresentationEditor;
+using namespace ODRAW;
 
 namespace OOXMLShapes
 {

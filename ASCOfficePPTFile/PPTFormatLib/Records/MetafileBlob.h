@@ -34,12 +34,11 @@
 
 class CRecordMetafileBlob : public CUnknownRecord
 {
+public:
 	SHORT m_nMM;
 	SHORT m_nExtX;
 	SHORT m_nExtY;
 	BYTE* m_pData;
-
-public:
 	
 	CRecordMetafileBlob()
 	{

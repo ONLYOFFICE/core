@@ -50,6 +50,7 @@ namespace MetaFile
 		virtual bool         IsUnderline() = 0;
 		virtual int          GetEscapement() = 0;
 		virtual int          GetCharSet() = 0;
+		virtual int          GetOrientation() = 0;
 	};
 
 	class IBrush

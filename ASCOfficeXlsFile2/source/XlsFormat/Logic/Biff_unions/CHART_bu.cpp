@@ -31,9 +31,12 @@
  */
 
 #include "CHART.h"
-#include <Logic/Biff_records/BOF.h>
-#include <Logic/ChartSheetSubstream.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../ChartSheetSubstream.h"
+#include "../Biff_records/BOF.h"
+#include "../Biff_records/Continue.h"
+#include "../Biff_unions/CELLTABLE.h"
+#include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_records/EOF.h"
 
 namespace XLS
 {
@@ -51,12 +54,17 @@ BaseObjectPtr CHART::clone()
 
 const bool CHART::loadContent(BinProcessor& proc)
 {
+	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+
 	unsigned short ss_type;
 	if(!proc.getNextSubstreamType(ss_type) || BOF::st_Chart != ss_type)
 	{
 		return false;
 	}
-	ChartSheetSubstream chart_sheet(-1);
+
+	size_t tmp_index_table = global_info->sheets_info.size(); //if present table
+
+	ChartSheetSubstream chart_sheet(tmp_index_table); 
 	if(!proc.mandatory(chart_sheet))
 	{
 		return false;
@@ -81,6 +89,20 @@ const bool CHART::loadContent(BinProcessor& proc)
 		}
 		elements_.pop_back();
 		count--;
+	}
+//chart_sourcedata_missing_import_biff5.xls
+	if (proc.getGlobalWorkbookInfo()->Version < 0x0600)	
+	{
+		std::vector<CellRangeRef> shared_formulas_locations;
+		CELLTABLE cell_table_temlate(shared_formulas_locations);
+		
+		if (proc.optional(cell_table_temlate))
+		{
+			//cash table
+		}
+		if (proc.optional<EOF_T>())
+		{//???
+		}
 	}
 	return true;
 }

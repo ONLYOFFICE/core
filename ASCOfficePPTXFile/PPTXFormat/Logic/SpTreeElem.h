@@ -71,8 +71,7 @@ namespace PPTX
 			{
 				m_elem = oSrc.m_elem;
 				return *this;
-			}
-			
+			}			
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
@@ -88,6 +87,7 @@ namespace PPTX
 				m_elem.reset(pElem);
 			}
 			
+
 			virtual void fromPPTY	(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY		(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
@@ -100,7 +100,8 @@ namespace PPTX
 				if (m_elem.is_init())
 					m_elem->toXmlWriter(pWriter);
 			}
-
+			std::wstring GetUriElem();
+			
 			smart_ptr<WrapperWritingElement> GetElem()
 			{
 				return m_elem;

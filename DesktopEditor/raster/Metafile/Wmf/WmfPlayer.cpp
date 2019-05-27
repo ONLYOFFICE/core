@@ -253,6 +253,8 @@ namespace MetaFile
 		m_ushTextAlign      = TA_TOP | TA_LEFT | TA_NOUPDATECP;
 		m_ushCharSpacing    = 0;
 		m_oTransform.Init();
+		m_oFinalTransform.Init();
+		m_oFinalTransform2.Init();
 	}
 	CWmfDC::~CWmfDC()
 	{
@@ -286,6 +288,7 @@ namespace MetaFile
 		pNewDC->m_ushCharSpacing    = m_ushCharSpacing;
 		pNewDC->m_oTransform.Init();
 		pNewDC->m_oClip             = m_oClip;
+		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
 
 		return pNewDC;
 	}
@@ -363,53 +366,55 @@ namespace MetaFile
 
 		switch (m_ushMapMode)
 		{
-		case MM_TEXT: // 1 unit = 1pt
-		{
-			SetPixelWidth(1);
-			SetPixelHeight(1);
-			break;
+			case MM_TEXT: // 1 unit = 1pt
+			{
+				SetPixelWidth(1);
+				SetPixelHeight(1);
+				break;
+			}
+			case MM_LOMETRIC: // 1 unit = 0.1mm
+			{
+				double dPixel = 0.1 * 72 / 25.4;
+				SetPixelWidth(dPixel);
+				SetPixelHeight(dPixel);
+				break;
+			}
+			case MM_HIMETRIC: // 1 unit = 0.01mm
+			{
+				double dPixel = 0.01 * 72 / 25.4;
+				SetPixelWidth(dPixel);
+				SetPixelHeight(dPixel);
+				break;
+			}
+			case MM_LOENGLISH: // 1 unit = 0.01 inch
+			{
+				double dPixel = 0.01 * 72;
+				SetPixelWidth(dPixel);
+				SetPixelHeight(dPixel);
+				break;
+			}
+			case MM_HIENGLISH: // 1 unit = 0.001 inch
+			{
+				double dPixel = 0.001 * 72;
+				SetPixelWidth(dPixel);
+				SetPixelHeight(dPixel);
+				break;
+			}
+			case MM_TWIPS: // 1 unit = 1/1440 inch
+			{
+				SetPixelWidth(0.05);
+				SetPixelHeight(0.05);
+				break;
+			}
+			case MM_ISOTROPIC:
+			case MM_ANISOTROPIC:
+			{
+				UpdatePixelMetrics();
+				break;
+			}
 		}
-		case MM_LOMETRIC: // 1 unit = 0.1mm
-		{
-			double dPixel = 0.1 * 72 / 25.4;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_HIMETRIC: // 1 unit = 0.01mm
-		{
-			double dPixel = 0.01 * 72 / 25.4;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_LOENGLISH: // 1 unit = 0.01 inch
-		{
-			double dPixel = 0.01 * 72;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_HIENGLISH: // 1 unit = 0.001 inch
-		{
-			double dPixel = 0.001 * 72;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_TWIPS: // 1 unit = 1/1440 inch
-		{
-			SetPixelWidth(0.05);
-			SetPixelHeight(0.05);
-			break;
-		}
-		case MM_ISOTROPIC:
-		case MM_ANISOTROPIC:
-		{
-			UpdatePixelMetrics();
-			break;
-		}
-		}
+
+		UpdateFinalTransform();
 	}
 	unsigned int   CWmfDC::GetMapMode()
 	{
@@ -440,24 +445,28 @@ namespace MetaFile
 		m_oWindow.x = shX;
 		m_oWindow.y = shY;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void CWmfDC::SetWindowExt(short shW, short shH)
 	{
 		m_oWindow.w = shW;
 		m_oWindow.h = shH;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void CWmfDC::SetWindowOff(short shX, short shY)
 	{
 		m_oWindow.x += shX;
 		m_oWindow.y += shY;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void CWmfDC::SetWindowScale(double dX, double dY)
 	{
 		m_oWindow.w = (short)(m_oWindow.w * dX);
 		m_oWindow.h = (short)(m_oWindow.h * dY);
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	TWmfWindow*    CWmfDC::GetViewport()
 	{
@@ -468,24 +477,28 @@ namespace MetaFile
 		m_oViewport.x = shX;
 		m_oViewport.y = shY;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void  CWmfDC::SetViewportExt(short shW, short shH)
 	{
 		m_oViewport.w = shW;
 		m_oViewport.h = shH;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void CWmfDC::SetViewportOff(short shX, short shY)
 	{
 		m_oViewport.x += shX;
 		m_oViewport.y += shY;
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	void CWmfDC::SetViewportScale(double dX, double dY)
 	{
 		m_oViewport.w = (short)(m_oViewport.w * dX);
 		m_oViewport.h = (short)(m_oViewport.h * dY);
 		UpdatePixelMetrics();
+		UpdateFinalTransform();
 	}
 	bool CWmfDC::UpdatePixelMetrics()
 	{
@@ -509,6 +522,23 @@ namespace MetaFile
 		}
 
 		return true;
+	}
+	void CWmfDC::UpdateFinalTransform()
+	{
+		TWmfWindow* pWindow   = GetWindow();
+		TWmfWindow* pViewPort = GetViewport();
+
+		TXForm oWindowXForm(1, 0, 0, 1, -pWindow->x, -pWindow->y);
+		TXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->x, pViewPort->y);
+
+		m_oFinalTransform.Init();
+		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+
+		m_oFinalTransform2.Init();
+		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 	}
 	void CWmfDC::SetTextColor(TWmfColor& oColor)
 	{
@@ -602,6 +632,13 @@ namespace MetaFile
 	TXForm*        CWmfDC::GetInverseTransform()
 	{
 		return &m_oTransform;
+	}
+	TXForm*        CWmfDC::GetFinalTransform(int iGraphicsMode)
+	{
+		if (GM_COMPATIBLE == iGraphicsMode)
+			return &m_oFinalTransform2;
+
+		return &m_oFinalTransform;
 	}
 	unsigned int   CWmfDC::GetMiterLimit()
 	{

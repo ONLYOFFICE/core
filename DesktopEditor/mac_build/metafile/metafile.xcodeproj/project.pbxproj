@@ -173,6 +173,8 @@
 		17A7F02B1B13154500760AFB /* SvmPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0221B13154500760AFB /* SvmPlayer.cpp */; };
 		17DD67B71B7E2778000F800F /* lepton_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DD67B51B7E2778000F800F /* lepton_utils.cpp */; };
 		697B72D41E3B78D90054C17C /* EmfFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697B72D31E3B78D90054C17C /* EmfFile.cpp */; };
+		8AA0EB9B229BE96B00297DE5 /* SVGTransformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA0EB99229BE96B00297DE5 /* SVGTransformer.cpp */; };
+		8AA0EB9C229BE96B00297DE5 /* SVGFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA0EB9A229BE96B00297DE5 /* SVGFramework.cpp */; };
 		8AC2819D2195A582006FA3D7 /* StringExt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2819B2195A582006FA3D7 /* StringExt.cpp */; };
 /* End PBXBuildFile section */
 
@@ -436,6 +438,10 @@
 		17A7F0231B13154500760AFB /* SvmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmPlayer.h; sourceTree = "<group>"; };
 		17DD67B51B7E2778000F800F /* lepton_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lepton_utils.cpp; sourceTree = "<group>"; };
 		697B72D31E3B78D90054C17C /* EmfFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmfFile.cpp; sourceTree = "<group>"; };
+		8AA0EB97229BE96B00297DE5 /* SVGFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGFramework.h; sourceTree = "<group>"; };
+		8AA0EB98229BE96B00297DE5 /* SVGTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGTransformer.h; sourceTree = "<group>"; };
+		8AA0EB99229BE96B00297DE5 /* SVGTransformer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SVGTransformer.cpp; sourceTree = "<group>"; };
+		8AA0EB9A229BE96B00297DE5 /* SVGFramework.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SVGFramework.cpp; sourceTree = "<group>"; };
 		8AC2819B2195A582006FA3D7 /* StringExt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringExt.cpp; path = ../../../common/StringExt.cpp; sourceTree = "<group>"; };
 		8AC2819C2195A582006FA3D7 /* StringExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringExt.h; path = ../../../common/StringExt.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -470,6 +476,7 @@
 		17A762BC1B0F35320046BC0B /* metafile */ = {
 			isa = PBXGroup;
 			children = (
+				8AA0EB96229BE96B00297DE5 /* svg */,
 				17A7F0191B13154500760AFB /* StarView */,
 				17A765081B0F3A3E0046BC0B /* Jp2 */,
 				17A7631F1B0F38FE0046BC0B /* JBig2 */,
@@ -793,6 +800,18 @@
 			path = ../../../raster/Metafile/StarView;
 			sourceTree = "<group>";
 		};
+		8AA0EB96229BE96B00297DE5 /* svg */ = {
+			isa = PBXGroup;
+			children = (
+				8AA0EB97229BE96B00297DE5 /* SVGFramework.h */,
+				8AA0EB98229BE96B00297DE5 /* SVGTransformer.h */,
+				8AA0EB99229BE96B00297DE5 /* SVGTransformer.cpp */,
+				8AA0EB9A229BE96B00297DE5 /* SVGFramework.cpp */,
+			);
+			name = svg;
+			path = ../../../raster/Metafile/svg;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -827,6 +846,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 17A762B11B0F35320046BC0B;
@@ -1002,6 +1022,8 @@
 				17A763EF1B0F39370046BC0B /* bardecode.cpp in Sources */,
 				17A7631E1B0F389C0046BC0B /* MetaFileUtils.cpp in Sources */,
 				17A763231B0F39120046BC0B /* JBig2File.cpp in Sources */,
+				8AA0EB9C229BE96B00297DE5 /* SVGFramework.cpp in Sources */,
+				8AA0EB9B229BE96B00297DE5 /* SVGTransformer.cpp in Sources */,
 				17A765031B0F39370046BC0B /* writefile.cpp in Sources */,
 				17A764B11B0F39370046BC0B /* psio2stub.cpp in Sources */,
 				17A764FF1B0F39370046BC0B /* webpio.cpp in Sources */,

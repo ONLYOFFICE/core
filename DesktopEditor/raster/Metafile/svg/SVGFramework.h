@@ -3003,8 +3003,9 @@ namespace SVG
 
         bool CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder = INVALID_ENCODER)
         {
-
+            return false;
         }
+        
 	private:
 
 		BYTE*			m_pBuffer;
@@ -5935,8 +5936,9 @@ namespace SVG
 			std::wstring strXmlNode = oXmlNode.GetName();
 			if (!strXmlNode.empty())
 			{
-				if ('#' == strXmlNode.c_str()[0]) 
-					return false;
+                const char symbol = strXmlNode.c_str()[0];
+				if ('#' == symbol) 
+					return NULL;
 			}
 
 #ifdef _DEBUG

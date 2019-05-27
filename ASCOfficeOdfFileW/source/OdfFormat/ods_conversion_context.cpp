@@ -353,9 +353,13 @@ void ods_conversion_context::set_data_validation_allow_empty(bool val)
 {
 	table_context_.set_data_validation_allow_empty(val);
 }
-void ods_conversion_context::set_data_validation_content(const std::wstring &val)
+void ods_conversion_context::set_data_validation_content(const std::wstring &val1, const std::wstring &val2)
 {
-	table_context_.set_data_validation_content(val);
+	table_context_.set_data_validation_content(val1, val2);
+}
+void ods_conversion_context::set_data_validation_operator(int val)
+{
+	table_context_.set_data_validation_operator(val);
 }
 void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content)
 {

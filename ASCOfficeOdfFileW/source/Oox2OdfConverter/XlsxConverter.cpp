@@ -426,18 +426,21 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
 
 	if (false == ods_context->start_data_validation(*oox_validation->m_oSqRef, oox_validation->m_oType.IsInit() ? oox_validation->m_oType->GetValue() : 0)) return;
 
+	if (oox_validation->m_oOperator.IsInit())
+	{
+		ods_context->set_data_validation_operator(oox_validation->m_oOperator->GetValue());
+	}
 	if (oox_validation->m_oAllowBlank.IsInit())
 	{
 		ods_context->set_data_validation_allow_empty(oox_validation->m_oAllowBlank->ToBool());
 	}
-	if (oox_validation->m_oFormula1.IsInit())
-	{
-		ods_context->set_data_validation_content(oox_validation->m_oFormula1->m_sText);
-	}
-	if (oox_validation->m_oFormula2.IsInit())
-	{
-		ods_context->set_data_validation_content(oox_validation->m_oFormula2->m_sText);
-	}
+	std::wstring formula_1, formula_2;
+
+	if (oox_validation->m_oFormula1.IsInit()) formula_1 = oox_validation->m_oFormula1->m_sText;
+	if (oox_validation->m_oFormula2.IsInit()) formula_2 = oox_validation->m_oFormula2->m_sText;
+
+	ods_context->set_data_validation_content(formula_1, formula_2);
+	
 	if (oox_validation->m_oShowErrorMessage.IsInit() && oox_validation->m_oShowErrorMessage->ToBool())
 	{
 		ods_context->set_data_validation_error(oox_validation->m_oErrorTitle.IsInit() ? *oox_validation->m_oErrorTitle : L"", 

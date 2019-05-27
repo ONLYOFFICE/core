@@ -225,37 +225,91 @@ bool ods_table_context::start_data_validation( const std::wstring &strRef, int t
 }
 void ods_table_context::set_data_validation_allow_empty(bool val)
 {
+	if (state().data_validations_.empty()) return;
+	
 	table_content_validation *validation = dynamic_cast<table_content_validation*>(state().data_validations_.back().elm.get());
 	validation->table_allowempty_cell_ = val;
 }
-void ods_table_context::set_data_validation_content( const std::wstring &oox_formula)
+void ods_table_context::set_data_validation_operator(int val)
 {
-	if (oox_formula.empty()) return;
+	if (state().data_validations_.empty()) return;
+
+	state().data_validations_.back().operator_ = val;
+}
+void ods_table_context::set_data_validation_content( std::wstring oox_formula1, std::wstring oox_formula2)
+{
+	if (state().data_validations_.empty()) return;
+	if (oox_formula1.empty() && oox_formula2.empty()) return;
 	
-	std::wstring odf_formula;
-	if (oox_formula[0] == L'\"' && oox_formula[oox_formula.length() - 1] == L'\"')
+	std::wstring odf_formula1, odf_formula2;
+	if (false == oox_formula1.empty() && oox_formula1[0] == L'\"' && oox_formula1[oox_formula1.length() - 1] == L'\"')
 	{
+		oox_formula1 = oox_formula1.substr(1, oox_formula1.length() - 2);
+
 		std::vector<std::wstring> arItems;
-		boost::algorithm::split(arItems, oox_formula.substr(1, oox_formula.length() - 2), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+		boost::algorithm::split(arItems, oox_formula1, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 		
 		for (size_t i = 0; i < arItems.size(); ++i)
 		{
-			odf_formula += L"\"" + arItems[i] + L"\"" + (i < arItems.size() - 1 ? L";" : L"");
+			odf_formula1 += L"\"" + arItems[i] + L"\"" + (i < arItems.size() - 1 ? L";" : L"");
 		}
 	}
 	else
 	{
 		formulasconvert::oox2odf_converter formulas_converter;
 
-		odf_formula = formulas_converter.convert_formula(oox_formula);
+		odf_formula1 = formulas_converter.convert_formula(oox_formula1);
 
-		if (false == odf_formula.empty())
+		if (false == odf_formula1.empty())
 		{
-			odf_formula = odf_formula.substr(4);
+			odf_formula1 = odf_formula1.substr(4);
+		}
+	}
+	if (false == oox_formula2.empty() && oox_formula2[0] == L'\"' && oox_formula2[oox_formula2.length() - 1] == L'\"')
+	{
+		oox_formula2 = oox_formula1.substr(1, oox_formula2.length() - 2);
+
+		std::vector<std::wstring> arItems;
+		boost::algorithm::split(arItems, oox_formula2.substr(1, oox_formula1.length() - 2), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+		
+		for (size_t i = 0; i < arItems.size(); ++i)
+		{
+			odf_formula2 += L"\"" + arItems[i] + L"\"" + (i < arItems.size() - 1 ? L";" : L"");
+		}
+	}
+	else
+	{
+		formulasconvert::oox2odf_converter formulas_converter;
+
+		odf_formula2 = formulas_converter.convert_formula(oox_formula2);
+
+		if (false == odf_formula2.empty())
+		{
+			odf_formula2 = odf_formula2.substr(4);
 		}
 	}
 	table_content_validation *validation = dynamic_cast<table_content_validation*>(state().data_validations_.back().elm.get());
 	
+	std::wstring odf_condition;
+	switch(state().data_validations_.back().operator_)
+	{
+		case 0: // SimpleTypes::spreadsheet::operatorBetween
+			odf_condition = L" and cell-content-between(" + odf_formula1 + L"," + odf_formula1 + L")"; break;
+		case 1: // SimpleTypes::spreadsheet::operatorNotBetween
+			odf_condition = L" and cell-content--not-between(" + odf_formula1 + L"," + odf_formula1 + L")"; break;
+		case 2: // SimpleTypes::spreadsheet::operatorEqual
+			odf_condition = L" and cell-content() == " + odf_formula1; break;
+		case 3: // SimpleTypes::spreadsheet::operatorNotEqual
+			odf_condition = L" and cell-content() <> " + odf_formula1; break;
+		case 4: // SimpleTypes::spreadsheet::operatorLessThan
+			odf_condition = L" and cell-content() < " + odf_formula1; break;
+		case 5: // SimpleTypes::spreadsheet::operatorLessThanOrEqual
+			odf_condition = L" and cell-content() <= " + odf_formula1; break;
+		case 6: // SimpleTypes::spreadsheet::operatorGreaterThan
+			odf_condition = L" and cell-content() > " + odf_formula1; break;
+		case 7: // SimpleTypes::spreadsheet::operatorGreaterThanOrEqual
+			odf_condition = L" and cell-content() >= " + odf_formula1; break;
+	}
 	switch (state().data_validations_.back().type)
 	{
 	case 0://SimpleTypes::spreadsheet::validationTypeNone:
@@ -264,32 +318,63 @@ void ods_table_context::set_data_validation_content( const std::wstring &oox_for
 		break;
 	case 2://SimpleTypes::spreadsheet::validationTypeDate:
 		{
-			odf_formula = L"of:cell-content-is-date(" + odf_formula + L")";
+			if (state().data_validations_.back().operator_ >= 0)
+			{
+				odf_condition = L"of:cell-content-is-date()" + odf_condition;
+			}
+			else
+			{
+				odf_condition = L"of:cell-content-is-date(" + odf_formula1 + L")";
+			}
 		}break;
 	case 3://SimpleTypes::spreadsheet::validationTypeDecimal:
 		{
-			odf_formula = L"of:cell-content-is-decimal-number(" + odf_formula + L")";
+			if (state().data_validations_.back().operator_ >= 0)
+			{
+				odf_condition = L"of:cell-content-is-decimal-number()" + odf_condition;
+			}
+			else
+			{
+				odf_condition = L"of:cell-content-is-decimal-number(" + odf_formula1 + L")";
+			}
 		}break;
 	case 4://SimpleTypes::spreadsheet::validationTypeList:	
 		{
-			odf_formula = L"of:cell-content-is-in-list(" + odf_formula + L")";
+			odf_condition = L"of:cell-content-is-in-list(" + odf_formula1 + L")";
 		}break;
 	case 5://SimpleTypes::spreadsheet::validationTypeTextLength:
 		break;
 	case 6://SimpleTypes::spreadsheet::validationTypeTime:
 		{
-			odf_formula = L"of:cell-content-is-time(" + odf_formula + L")";
+			if (state().data_validations_.back().operator_ >= 0)
+			{
+				odf_condition = L"of:cell-content-is-time()" + odf_condition;
+			}
+			else
+			{
+				odf_condition = L"of:cell-content-is-time(" + odf_formula1 + L")";
+			}
 		}break;
 	case 7://SimpleTypes::spreadsheet::validationTypeWhole:
 		{
-			odf_formula = L"of:cell-content-is-whole-number(" + odf_formula + L")";
+			if (state().data_validations_.back().operator_ >= 0)
+			{
+				odf_condition = L"of:cell-content-is-whole-number()" + odf_condition;
+			}
+			else
+			{
+				odf_condition = L"of:cell-content-is-whole-number(" + odf_formula1 + L")";
+			}
 		}break;
 	}
-	state().data_validations_.back().condition = odf_formula;
-	validation->table_condition_ = odf_formula;
+	state().data_validations_.back().condition = odf_condition;
+	
+	validation->table_condition_ = odf_condition;
 }
 void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content)
 {
+	if (state().data_validations_.empty()) return;
+
 	office_element_ptr elm;
 	create_element(L"table", L"error-message", elm, &context_);
 
@@ -309,6 +394,8 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 }
 void ods_table_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content)
 {
+	if (state().data_validations_.empty()) return;
+
 	office_element_ptr elm;
 	create_element(L"table", L"help-message", elm, &context_);
 	

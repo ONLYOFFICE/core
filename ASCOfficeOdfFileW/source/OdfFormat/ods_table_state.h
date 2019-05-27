@@ -246,7 +246,8 @@ struct table_part_state
 struct data_validation_state 
 {
 	std::wstring name;
-	int type;
+	int type = 0;
+	int operator_ = -1;
 
 	office_element_ptr elm;
 

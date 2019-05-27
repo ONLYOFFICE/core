@@ -1002,7 +1002,7 @@ void table_content_validation::serialize(std::wostream & _Wostream)
 			CP_XML_ATTR_OPT(L"table:name",				table_name_);
 			CP_XML_ATTR_OPT(L"table:condition",			table_condition_);
 			CP_XML_ATTR_OPT(L"table:display-list",		table_display_list_);
-			CP_XML_ATTR_OPT(L"table:allowempty-cell",	table_allowempty_cell_);
+			CP_XML_ATTR_OPT(L"table:allow-empty-cell",	table_allowempty_cell_);
 			CP_XML_ATTR_OPT(L"table:base-cell-address",	table_base_cell_address_);
 			
 			for (size_t i = 0; i < content_.size(); i++)

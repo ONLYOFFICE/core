@@ -38,6 +38,8 @@
 #include "logging.h"
 
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
@@ -264,21 +266,24 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 		{
 			odf_formula1 = odf_formula1.substr(4);
 		}
-	}
-	if (false == oox_formula2.empty() && oox_formula2[0] == L'\"' && oox_formula2[oox_formula2.length() - 1] == L'\"')
-	{
-		oox_formula2 = oox_formula1.substr(1, oox_formula2.length() - 2);
-
-		std::vector<std::wstring> arItems;
-		boost::algorithm::split(arItems, oox_formula2.substr(1, oox_formula1.length() - 2), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
-		
-		for (size_t i = 0; i < arItems.size(); ++i)
-		{
-			odf_formula2 += L"\"" + arItems[i] + L"\"" + (i < arItems.size() - 1 ? L";" : L"");
-		}
-	}
-	else
-	{
+    }
+    if (false == oox_formula2.empty() && oox_formula2[0] == L'\"' && oox_formula2[oox_formula2.length() - 1] == L'\"')
+    {
+        oox_formula2 = oox_formula1.substr(1, oox_formula2.length() - 2);
+        
+        std::vector<std::wstring> arItems;
+        std::wstring str = oox_formula2.substr(1, oox_formula1.length() - 2);
+        boost::algorithm::split(arItems, str,
+                                boost::algorithm::is_any_of(L","),
+                                boost::algorithm::token_compress_on);
+        
+        for (size_t i = 0; i < arItems.size(); ++i)
+        {
+            odf_formula2 += L"\"" + arItems[i] + L"\"" + (i < arItems.size() - 1 ? L";" : L"");
+        }
+    }
+    else
+    {
 		formulasconvert::oox2odf_converter formulas_converter;
 
 		odf_formula2 = formulas_converter.convert_formula(oox_formula2);

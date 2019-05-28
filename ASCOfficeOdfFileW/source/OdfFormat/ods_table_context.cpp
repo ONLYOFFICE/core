@@ -33,6 +33,7 @@
 
 #include "ods_table_context.h"
 #include "table.h"
+#include "text_elements.h"
 
 #include "ods_conversion_context.h"
 #include "logging.h"
@@ -319,12 +320,14 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 	switch (state().data_validations_.back().type)
 	{
 	case 0://SimpleTypes::spreadsheet::validationTypeNone:
+		odf_condition.clear();
 		break;
 	case 1://SimpleTypes::spreadsheet::validationTypeCustom:
+		odf_condition = L"of:is-true-formula(" + odf_formula1 + L")";
 		break;
 	case 2://SimpleTypes::spreadsheet::validationTypeDate:
 		{
-				odf_condition = L"of:cell-content-is-date()" + odf_condition;
+			odf_condition = L"of:cell-content-is-date()" + odf_condition;
 		}break;
 	case 3://SimpleTypes::spreadsheet::validationTypeDecimal:
 		{
@@ -365,8 +368,16 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 		error_message->table_display_ = true;
 		if (false == title.empty()) error_message->table_title_ = title;
 
+		//error_message->message_type_
+
 		if (false == content.empty())
 		{
+			error_message->create_child_element(L"text", L"p");
+			text_p *p = dynamic_cast<text_p*>(error_message->content_.back().get());
+			if (p)
+			{
+				p->paragraph_.add_text(content);
+			}
 		}
 	}
 }
@@ -387,6 +398,12 @@ void ods_table_context::set_data_validation_promt(const std::wstring &title, con
 		if (false == title.empty()) help_message->table_title_ = title;
 		if (false == content.empty())
 		{
+			help_message->create_child_element(L"text", L"p");
+			text_p *p = dynamic_cast<text_p*>(help_message->content_.back().get());
+			if (p)
+			{
+				p->paragraph_.add_text(content);
+			}
 		}	
 	}
 }

@@ -133,6 +133,7 @@ public:
 	}
 	static void oox_replace_tmp_back(std::wstring &expr)
 	{
+		XmlUtils::replace_all( expr, L"MINYS", L"-");
 		XmlUtils::replace_all( expr, L"ТОСHKA", L".");
 		XmlUtils::replace_all( expr, L"VOSKL", L"!");
 
@@ -149,6 +150,7 @@ public:
 
 	static void oox_replace_tmp(std::wstring &expr)
 	{
+		XmlUtils::replace_all( expr, L"-", L"MINYS");
 		XmlUtils::replace_all( expr, L".", L"ТОСHKA");
 		XmlUtils::replace_all( expr, L"!", L"VOSKL");
 

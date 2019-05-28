@@ -310,7 +310,7 @@ void xlsx_drawing_context::end_shape()
 void xlsx_drawing_context::start_comment(int base_col, int base_row)
 {
 	impl_->object_description_.type_ = typeComment;
-	impl_->object_description_.shape_type_ = 19; // OBJ_Note object type for vml 
+	impl_->object_description_.shape_type_ = 0x0019; // OBJ_Note object type for vml 
 
 	set_property(odf_reader::_property(L"base_col", base_col));
 	set_property(odf_reader::_property(L"base_row", base_row));

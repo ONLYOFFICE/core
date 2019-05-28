@@ -466,7 +466,7 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 		CP_XML_NODE(L"v:shape")
 		{
 			CP_XML_ATTR(L"id", L"_x0000_s" + std::to_wstring(id));
-			CP_XML_ATTR(L"type", sub_type == 9 ? L"#_x0000_t202" : L"#_x0000_t201");
+			CP_XML_ATTR(L"type", sub_type == OBJ_Note ? L"#_x0000_t202" : L"#_x0000_t201");
 
 			std::wstring color;
 			
@@ -488,10 +488,10 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 				CP_XML_ATTR(L"obscured", L"t");
 				CP_XML_ATTR(L"color", L"black");
 			}
-			CP_XML_NODE(L"w10:wrap")
-			{
-				CP_XML_ATTR(L"type", L"none");
-			}
+			//CP_XML_NODE(L"w10:wrap")
+			//{
+			//	CP_XML_ATTR(L"type", L"none");
+			//}
 			vml_serialize_fill(CP_XML_STREAM(), fill);
 
 			vml_serialize_ln(CP_XML_STREAM(), additional);
@@ -555,15 +555,18 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 				}				
 				_CP_OPT(bool) visible;
 				GetProperty(additional, L"visible", visible);
-				if ((visible) && (*visible == false))
+				if (visible)
 				{
-					CP_XML_NODE(L"x:Visible")
+					if (*visible == false)
 					{
-						CP_XML_STREAM() << L"False";
+						CP_XML_NODE(L"x:Visible")
+						{
+							CP_XML_STREAM() << L"False";
+						}
 					}
+					else
+						CP_XML_NODE(L"x:Visible");
 				}
-				else
-					CP_XML_NODE(L"x:Visible");
 				
 				_CP_OPT(int) nVal;
 				GetProperty(additional, L"min_value", nVal);

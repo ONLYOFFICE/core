@@ -82,6 +82,7 @@ public:
 						{
 							CP_XML_ATTR(L"ref", c.ref_);
 							CP_XML_ATTR(L"authorId", c.author_);
+							CP_XML_ATTR(L"shapeId", 0);
 							
 							CP_XML_NODE(L"text")
 							{

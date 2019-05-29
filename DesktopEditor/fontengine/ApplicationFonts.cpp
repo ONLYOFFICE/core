@@ -1626,6 +1626,25 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
             continue;
         }
     }
+
+    if (true)
+    {
+        std::vector<std::wstring> oArray2 = NSDirectory::GetFiles(L"C:/Windows/Fonts", true);
+
+        wchar_t sUserName[1000];
+        DWORD nUserNameLen = 1000 + 1;
+        GetUserNameW(sUserName, &nUserNameLen);
+        std::wstring strUserName(sUserName, nUserNameLen - 1);
+
+        NSDirectory::GetFiles2(L"C:\\Users\\" + strUserName + L"\\AppData\\Local\\Microsoft\\Windows\\Fonts", oArray2, true);
+
+        for (std::vector<std::wstring>::iterator i = oArray2.begin(); i != oArray2.end(); i++)
+        {
+            if (map_files.end() == map_files.find(*i))
+                oArray.push_back(*i);
+        }
+    }
+
     return oArray;
 #endif
 

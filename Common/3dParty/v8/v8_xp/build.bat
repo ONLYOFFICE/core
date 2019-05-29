@@ -1,7 +1,7 @@
 SET SCRIPTPATH=%~dp0
 CD /D %~dp0
 
-SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\win_tools-2_7_6_bin\python\bin;%PATH%
+SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\win_tools-2_7_13_chromium7_bin\python\bin;%PATH%
 SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET GYP_MSVS_VERSION=2015
 

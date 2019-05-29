@@ -110,7 +110,7 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::CDataValidationErrorStyle<>>	m_oErrorStyle; 
 			nullable<SimpleTypes::Spreadsheet::CDataValidationImeMode<>>	m_oImeMode; 
 			nullable<SimpleTypes::Spreadsheet::CDataValidationOperator<>>	m_oOperator; 
-			nullable_string													m_oPromt;
+			nullable_string													m_oPrompt;
 			nullable_string													m_oPromptTitle;
 			nullable<SimpleTypes::COnOff<>>									m_oShowDropDown;
 			nullable<SimpleTypes::COnOff<>>									m_oShowErrorMessage;

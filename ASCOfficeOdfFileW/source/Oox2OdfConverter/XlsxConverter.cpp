@@ -446,7 +446,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
 											oox_validation->m_oShowErrorMessage.IsInit() ? oox_validation->m_oShowErrorMessage->ToBool() : true);
 
 	ods_context->set_data_validation_promt(oox_validation->m_oPromptTitle.IsInit() ? *oox_validation->m_oPromptTitle : L"", 
-											oox_validation->m_oPromt.IsInit() ? *oox_validation->m_oPromt : L"", 
+											oox_validation->m_oPrompt.IsInit() ? *oox_validation->m_oPrompt : L"", 
 											oox_validation->m_oShowInputMessage.IsInit() ? oox_validation->m_oShowInputMessage->ToBool() : true);
 	ods_context->end_data_validation();
 }

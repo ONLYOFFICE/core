@@ -78,7 +78,7 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 		WritingStringNullableAttrString	(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
 		WritingStringNullableAttrString	(L"imeMode",		m_oImeMode,			m_oImeMode->ToString());
 		WritingStringNullableAttrString	(L"operator",		m_oOperator,		m_oOperator->ToString());
-		WritingStringNullableAttrString	(L"promt",			m_oPromt,			m_oPromt.get());
+		WritingStringNullableAttrString	(L"promt",			m_oPrompt,			m_oPrompt.get());
 		WritingStringNullableAttrString	(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
 		WritingStringNullableAttrInt	(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
 		WritingStringNullableAttrInt	(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
@@ -171,7 +171,7 @@ void CDataValidation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errorTitle"),	m_oErrorTitle)
 		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("imeMode"),		m_oImeMode)				
 		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("operator"),		m_oOperator)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("promt"),			m_oPromt)
+		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prompt"),		m_oPrompt)
 		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("promptTitle"),	m_oPromptTitle)
 		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showDropDown"),	m_oShowDropDown)
 		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showErrorMessage"),m_oShowErrorMessage)

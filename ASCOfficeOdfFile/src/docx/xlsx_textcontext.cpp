@@ -74,7 +74,10 @@ public:
 	void			start_drawing_content();
 	std::wstring	end_drawing_content(); 
 
-    void serialize_shared_strings(std::wostream & strm);
+	void start_only_text();
+	std::wstring end_only_text();
+	
+	void serialize_shared_strings(std::wostream & strm);
 	
 	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut);
 	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut);
@@ -94,6 +97,7 @@ private:
 	bool in_span;
 	bool in_paragraph;
 	bool in_cell_content;
+	bool only_text;
 
 	odf_reader::styles_container				& styles_;
 	odf_reader::text_format_properties_content	* text_properties_cell_;
@@ -126,7 +130,7 @@ void xlsx_text_context::Impl::serialize_shared_strings(std::wostream & strm)
 
 
 xlsx_text_context::Impl::Impl(odf_reader::styles_container & styles): paragraphs_cout_(0),styles_(styles),
-				in_comment(false),in_draw(false),in_paragraph(false),in_span(false),in_cell_content(false)
+				in_comment(false),in_draw(false),in_paragraph(false),in_span(false),in_cell_content(false),only_text(false)
 {
 	local_styles_ptr_		= NULL;
 	text_properties_cell_	= NULL;
@@ -136,7 +140,7 @@ void xlsx_text_context::Impl::add_text(const std::wstring & text)
 {
     text_ << text;
 	
-	if (!in_comment && !in_draw)
+	if (!in_comment && !in_draw && !only_text)
 		dump_run();
 }
 
@@ -149,7 +153,7 @@ void xlsx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 {
     if (paragraphs_cout_++ > 0)
     {	
-		if ( in_comment == true )
+		if ( in_comment || only_text)
 		{
 		// конец предыдущего абзаца и начало следующего
 		//text_ << L"&#10;";
@@ -169,7 +173,7 @@ void xlsx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 
 void xlsx_text_context::Impl::end_paragraph()
 {
-    if (!in_comment && !in_draw)
+    if (!in_comment && !in_draw && !only_text)
 	{
 		dump_run();
 		paragraph_style_name_ = L"";
@@ -181,7 +185,7 @@ void xlsx_text_context::Impl::start_span(const std::wstring & styleName)//кус
 {
  	int text_size = text_.str().length();
 
-	if (in_comment || in_draw)
+	if (in_comment || in_draw || only_text)
 	 {
 		if (( span_style_name_ != styleName && text_size > 0 ) || in_span)
 		{
@@ -202,12 +206,12 @@ void xlsx_text_context::Impl::start_span(const std::wstring & styleName)//кус
 void xlsx_text_context::Impl::end_span() //odf корявенько написан - возможны повторы стилей в последовательных кусках текста
 //пока с анализом стилей тока комменты - остальные текстовые куски как есть.. с охрененным возможно дубляжом
 {
-     if (!in_comment)
+     if (!in_comment && !only_text)
 	 {
 		dump_run();
-		span_style_name_=L"";
+		span_style_name_ = L"";
 	 }
-	 in_span=false;
+	 in_span = false;
 }
 
 std::wstring xlsx_text_context::Impl::end_span2()
@@ -375,7 +379,9 @@ std::wstring xlsx_text_context::Impl::dump_paragraph(/*bool last*/)
 
     std::wstring str_run = run_.str();
 
-	if (str_run.length() > 0 || paragraph_style_name_.length() > 0)
+	if (only_text) return str_run;
+
+	if (false == str_run.empty() || false == paragraph_style_name_.empty())
 	{
 		CP_XML_WRITER(paragraph_)
 		{
@@ -402,8 +408,7 @@ std::wstring xlsx_text_context::Impl::dump_run()
 {
     const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
 	
-	if (content.empty()) 
-		return L"";
+	if (content.empty()) return L"";
 
 	std::wstring	prefix_draw;
 	if (in_draw)	prefix_draw = L"a:";
@@ -449,7 +454,35 @@ void xlsx_text_context::Impl::start_cell_content()
 	
 	text_properties_cell_	= NULL;
 }
+void xlsx_text_context::Impl::start_only_text()
+{
+    paragraphs_cout_ = 0;
+   
+	run_.str(std::wstring());
+	paragraph_.str(std::wstring());
+    text_.str(std::wstring());
+    
+	paragraph_style_name_	= L"";
+    span_style_name_		= L"";
+	
+	only_text				= true;
+}
+std::wstring xlsx_text_context::Impl::end_only_text()
+{
+	std::wstring message = dump_run();
+  
+	paragraphs_cout_ = 0;
+    
+	run_.str(std::wstring());
+	paragraph_.str(std::wstring());
+    text_.str(std::wstring());
 
+	paragraph_style_name_	= L"";
+    span_style_name_		= L"";
+
+	only_text				= false;
+	return message;
+}
 void xlsx_text_context::Impl::start_comment_content()
 {
     paragraphs_cout_ = 0;
@@ -585,25 +618,29 @@ bool xlsx_text_context::is_drawing_context()
 {
 	return impl_->is_drawing_context();
 }
-
 void xlsx_text_context::start_cell_content()
 {
     return impl_->start_cell_content();
 }
-
 int xlsx_text_context::end_cell_content()
 {
     return impl_->end_cell_content();
 }
-
 void xlsx_text_context::start_comment_content()
 {
 	return impl_->start_comment_content();
 }
-
 std::wstring xlsx_text_context::end_comment_content()
 {
 	return impl_->end_comment_content();
+}
+void xlsx_text_context::start_only_text()
+{
+	return impl_->start_only_text();
+}
+std::wstring xlsx_text_context::end_only_text()
+{
+	return impl_->end_only_text();
 }
 void xlsx_text_context::start_drawing_content()
 {

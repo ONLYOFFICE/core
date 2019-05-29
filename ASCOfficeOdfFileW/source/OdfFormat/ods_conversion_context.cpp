@@ -361,13 +361,13 @@ void ods_conversion_context::set_data_validation_operator(int val)
 {
 	table_context_.set_data_validation_operator(val);
 }
-void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content)
+void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display)
 {
-	table_context_.set_data_validation_error(title, content);
+	table_context_.set_data_validation_error(title, content, display);
 }
-void ods_conversion_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content)
+void ods_conversion_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display)
 {
-	table_context_.set_data_validation_promt(title, content);
+	table_context_.set_data_validation_promt(title, content, display);
 }
 void ods_conversion_context::add_merge_cells(const std::wstring & ref)
 {

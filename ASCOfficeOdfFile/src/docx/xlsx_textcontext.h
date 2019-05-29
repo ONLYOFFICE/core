@@ -70,6 +70,9 @@ public:
     void			start_cell_content();
     int				end_cell_content();
 
+	void			start_only_text();
+	std::wstring	end_only_text();
+
 	void			start_comment_content();
 	std::wstring	end_comment_content();
 	

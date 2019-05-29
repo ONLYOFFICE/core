@@ -302,17 +302,17 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 		case 1: // SimpleTypes::spreadsheet::operatorNotBetween
 			odf_condition = L" and cell-content-is-not-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
 		case 2: // SimpleTypes::spreadsheet::operatorEqual
-			odf_condition = L" and cell-content() == " + odf_formula1; break;
+			odf_condition = L" and cell-content()==" + odf_formula1; break;
 		case 3: // SimpleTypes::spreadsheet::operatorNotEqual
-			odf_condition = L" and cell-content() <> " + odf_formula1; break;
+			odf_condition = L" and cell-content()<>" + odf_formula1; break;
 		case 4: // SimpleTypes::spreadsheet::operatorLessThan
-			odf_condition = L" and cell-content() < " + odf_formula1; break;
+			odf_condition = L" and cell-content()<" + odf_formula1; break;
 		case 5: // SimpleTypes::spreadsheet::operatorLessThanOrEqual
-			odf_condition = L" and cell-content() <= " + odf_formula1; break;
+			odf_condition = L" and cell-content()<=" + odf_formula1; break;
 		case 6: // SimpleTypes::spreadsheet::operatorGreaterThan
-			odf_condition = L" and cell-content() > " + odf_formula1; break;
+			odf_condition = L" and cell-content()>" + odf_formula1; break;
 		case 7: // SimpleTypes::spreadsheet::operatorGreaterThanOrEqual
-			odf_condition = L" and cell-content() >= " + odf_formula1; break;
+			odf_condition = L" and cell-content()>=" + odf_formula1; break;
 		case 0: // SimpleTypes::spreadsheet::operatorBetween
 		default:
 			odf_condition = L" and cell-content-is-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
@@ -352,7 +352,7 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 	
 	validation->table_condition_ = odf_condition;
 }
-void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content)
+void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display)
 {
 	if (state().data_validations_.empty()) return;
 
@@ -365,7 +365,7 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 
 	if (error_message)
 	{
-		error_message->table_display_ = true;
+		error_message->table_display_ = display;
 		if (false == title.empty()) error_message->table_title_ = title;
 
 		//error_message->message_type_
@@ -381,7 +381,7 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 		}
 	}
 }
-void ods_table_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content)
+void ods_table_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display)
 {
 	if (state().data_validations_.empty()) return;
 
@@ -394,8 +394,10 @@ void ods_table_context::set_data_validation_promt(const std::wstring &title, con
 
 	if (help_message)
 	{
-		help_message->table_display_ = true;
+		help_message->table_display_ = display;
+		
 		if (false == title.empty()) help_message->table_title_ = title;
+
 		if (false == content.empty())
 		{
 			help_message->create_child_element(L"text", L"p");

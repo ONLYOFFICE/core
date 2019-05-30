@@ -6013,11 +6013,11 @@ void BinaryWorksheetTableWriter::WriteDataValidation(const OOX::Spreadsheet::CDa
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(oDataValidation.m_oOperator->GetValue());
     }
-    if (oDataValidation.m_oPromt.IsInit())
+    if (oDataValidation.m_oPrompt.IsInit())
     {
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::Promt);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oPromt.get());
+		m_oBcw.m_oStream.WriteStringW(oDataValidation.m_oPrompt.get());
     }
     if (oDataValidation.m_oPromptTitle.IsInit())
     {

@@ -5993,7 +5993,7 @@ int BinaryWorksheetsTableReader::ReadDataValidation(BYTE type, long length, void
     }
 	else if(c_oSer_DataValidation::Promt == type)
     {
-        pDataValidation->m_oPromt = m_oBufferedStream.GetString4(length);
+        pDataValidation->m_oPrompt = m_oBufferedStream.GetString4(length);
     }
 	else if(c_oSer_DataValidation::PromptTitle == type)
     {

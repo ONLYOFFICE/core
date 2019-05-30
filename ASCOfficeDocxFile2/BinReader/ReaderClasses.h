@@ -1481,14 +1481,25 @@ public:
             std::wstring sFormat;
 			switch(Format)
 			{
-			case numbering_numfmt_None:sFormat = _T("none");break;
-			case numbering_numfmt_Bullet:sFormat = _T("bullet");break;
-			case numbering_numfmt_Decimal:sFormat = _T("decimal");break;
-			case numbering_numfmt_LowerRoman:sFormat = _T("lowerRoman");break;
-			case numbering_numfmt_UpperRoman:sFormat = _T("upperRoman");break;
-			case numbering_numfmt_LowerLetter:sFormat = _T("lowerLetter");break;
-			case numbering_numfmt_UpperLetter:sFormat = _T("upperLetter");break;
-			case numbering_numfmt_DecimalZero:sFormat = _T("decimalZero");break;
+			case numbering_numfmt_None:			sFormat = L"none";			break;
+			case numbering_numfmt_Bullet:		sFormat = L"bullet";		break;
+			case numbering_numfmt_Decimal:		sFormat = L"decimal";		break;
+			case numbering_numfmt_LowerRoman:	sFormat = L"lowerRoman";	break;
+			case numbering_numfmt_UpperRoman:	sFormat = L"upperRoman";	break;
+			case numbering_numfmt_LowerLetter:	sFormat = L"lowerLetter";	break;
+			case numbering_numfmt_UpperLetter:	sFormat = L"upperLetter";	break;
+			case numbering_numfmt_DecimalZero:	sFormat = L"decimalZero";	break;
+			default:
+			{
+				Format -= 0x2008;
+				if (Format >= 0)
+				{
+					SimpleTypes::CNumberFormat<> numFormat;
+					numFormat.SetValue((SimpleTypes::ENumberFormat)Format);
+
+					sFormat = numFormat.ToString();
+				}
+			}break;
 			}
             if(!sFormat.empty())
 			{

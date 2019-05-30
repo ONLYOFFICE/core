@@ -2757,15 +2757,16 @@ void BinaryNumberingTableWriter::WriteLevel(const OOX::Numbering::CLvl& lvl)
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 			switch(oNumberFormat.GetValue())
 			{
-			case SimpleTypes::numberformatNone: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_None);break;
-			case SimpleTypes::numberformatBullet: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Bullet);break;
-			case SimpleTypes::numberformatDecimal: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Decimal);break;
-			case SimpleTypes::numberformatLowerRoman: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerRoman);break;
-			case SimpleTypes::numberformatUpperRoman: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperRoman);break;
-			case SimpleTypes::numberformatLowerLetter: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerLetter);break;
-			case SimpleTypes::numberformatUpperLetter: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperLetter);break;
-			case SimpleTypes::numberformatDecimalZero: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_DecimalZero);break;
-			default: m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Decimal);break;
+			case SimpleTypes::numberformatNone:			m_oBcw.m_oStream.WriteLONG(numbering_numfmt_None);break;
+			case SimpleTypes::numberformatBullet:		m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Bullet);break;
+			case SimpleTypes::numberformatDecimal:		m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Decimal);break;
+			case SimpleTypes::numberformatLowerRoman:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerRoman);break;
+			case SimpleTypes::numberformatUpperRoman:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperRoman);break;
+			case SimpleTypes::numberformatLowerLetter:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerLetter);break;
+			case SimpleTypes::numberformatUpperLetter:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperLetter);break;
+			case SimpleTypes::numberformatDecimalZero:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_DecimalZero);break;
+			default: 
+				m_oBcw.m_oStream.WriteLONG(oNumberFormat.GetValue() + 0x2008);break; //max our numbering
 			}
 		}
 	}

@@ -54,7 +54,6 @@ class ods_table_context
 public:
     ods_table_context(ods_conversion_context & Context/*, ods_text_context & textCotnext*/);
 
-public:
     void start_table(office_element_ptr & elm);
     void end_table();
 
@@ -90,6 +89,8 @@ private:
 	table_additional_elements_state	table_defined_expressions_;
 	table_additional_elements_state	table_database_ranges_;
 	table_additional_elements_state	table_content_validations_;
+
+	size_t count_validations_;
 
 	friend class ods_conversion_context;
 

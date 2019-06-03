@@ -44,7 +44,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(HF)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"dt", dt);
@@ -55,12 +54,12 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("dt"), dt);
-				oAttr.Write(_T("ftr"), ftr);
-				oAttr.Write(_T("hdr"), hdr);
-				oAttr.Write(_T("sldNum"), sldNum);
+				oAttr.Write(L"dt", dt);
+				oAttr.Write(L"ftr", ftr);
+				oAttr.Write(L"hdr", hdr);
+				oAttr.Write(L"sldNum", sldNum);
 
-				return XmlUtils::CreateNode(_T("p:hf"), oAttr);
+				return XmlUtils::CreateNode(L"p:hf", oAttr);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -74,16 +73,16 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:hf"));
+				pWriter->StartNode(L"p:hf");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("dt"), dt.get_value_or(false));
-				pWriter->WriteAttribute(_T("ftr"), ftr.get_value_or(false));
-				pWriter->WriteAttribute(_T("hdr"), hdr.get_value_or(false));
-				pWriter->WriteAttribute(_T("sldNum"), sldNum.get_value_or(false));
+					pWriter->WriteAttribute(L"dt", dt);
+					pWriter->WriteAttribute(L"ftr", ftr);
+					pWriter->WriteAttribute(L"hdr", hdr);
+					pWriter->WriteAttribute(L"sldNum", sldNum);
 				pWriter->EndAttributes();
 
-				pWriter->EndNode(_T("p:hf"));
+				pWriter->EndNode(L"p:hf");
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -109,7 +108,6 @@ namespace PPTX
 				pReader->Seek(_e);
 			}
 
-		public:
 			nullable_bool		dt;
 			nullable_bool		ftr;
 			nullable_bool		hdr;

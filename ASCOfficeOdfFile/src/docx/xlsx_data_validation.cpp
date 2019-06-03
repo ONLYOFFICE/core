@@ -110,24 +110,23 @@ public:
 								if (jt2_next == mapCells.end() || jt2->first + 1 != jt2_next->first)
 									break;
 								
-								size_t j = 0; bool bFound = false;
-								for (size_t j = 0; j < jt2_next->second.size(); j++)
+								//size_t j = 0; 
+								bool bFound = false;
+
+								for (std::vector<std::pair<int, int>>::iterator v_jt2 = jt2_next->second.begin();
+									v_jt2 != jt2_next->second.end(); ++v_jt2)
 								{
-									if (jt1->second[i].first == jt2_next->second[j].first || 
-										jt1->second[i].second == jt2_next->second[j].second)
+									if (jt1->second[i].first == v_jt2->first || 
+										jt1->second[i].second == v_jt2->second)
 									{
 										bFound = true;
+										jt2_next->second.erase(v_jt2);
 										break;
 									}
 								}
-								if (bFound)
-								{
-									jt2_next->second.erase(jt2_next->second.begin() + j, jt2_next->second.begin() + j + 1);
-								}
-								else
-								{
+								if (false == bFound)
 									break;
-								}
+
 								jt2 = jt2_next;
 							}
 							if (!activate_ref.empty()) activate_ref += L" ";
@@ -163,11 +162,11 @@ public:
 						}
 						if (!it->second->promt_title.empty())
 						{
-							CP_XML_ATTR(L"promtTitle", it->second->promt_title);
+							CP_XML_ATTR(L"promptTitle", it->second->promt_title);
 						}
 						if (!it->second->promt_text.empty())
 						{
-							CP_XML_ATTR(L"promt", it->second->promt_text);
+							CP_XML_ATTR(L"prompt", it->second->promt_text);
 						}
 
 						if (!it->second->formula1.empty())

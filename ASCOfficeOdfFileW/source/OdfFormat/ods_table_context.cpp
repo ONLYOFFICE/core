@@ -76,7 +76,7 @@ std::wstring getCellAddress(size_t col, size_t row)
 	return getColAddress(col) + getRowAddress(row);
 }
 
-ods_table_context::ods_table_context(ods_conversion_context & Context): context_(Context)
+ods_table_context::ods_table_context(ods_conversion_context & Context): context_(Context), count_validations_(0)
 {        
 }
 
@@ -189,7 +189,7 @@ bool ods_table_context::start_data_validation( const std::wstring &strRef, int t
 	boost::algorithm::split(arRefs, strRef, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 	
 	data_validation_state validation_state;
-	validation_state.name	= L"DataValidation_" + std::to_wstring(state().data_validations_.size() + 1);
+	validation_state.name	= L"DataValidation_" + std::to_wstring(++count_validations_);
 	validation_state.elm	= elm;
 	validation_state.type	= type;
 	

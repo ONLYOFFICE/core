@@ -1261,7 +1261,7 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 			Context.get_dataValidations_context().add_error_msg(name, error->table_title_.get_value_or(L""), content, 
 																error->table_display_ ? error->table_display_->get() : true);
 		}
-		else if (content_[i]->get_type() == typeTableErrorMassage)
+		else if (content_[i]->get_type() == typeTableHelpMassage)
 		{
 			table_help_message* help = dynamic_cast<table_help_message*>(content_[i].get());
 			

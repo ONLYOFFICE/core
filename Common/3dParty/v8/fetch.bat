@@ -24,3 +24,8 @@ call git checkout -b 6.0 -t branch-heads/6.0
 cd ../
 
 call gclient sync --no-history
+
+if not "%BUILD_PLATFORM%"=="%BUILD_PLATFORM:xp=%" (
+	call v8_xp\fetch.bat
+	cd %~dp0
+)

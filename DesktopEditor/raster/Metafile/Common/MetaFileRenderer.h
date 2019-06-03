@@ -107,6 +107,17 @@ namespace MetaFile
 
 		void Begin()
 		{
+			if (m_pFile)
+			{
+				TRect* pBounds = m_pFile->GetDCBounds();
+				int nL = pBounds->nLeft;
+				int nR = pBounds->nRight;
+				int nT = pBounds->nTop;
+				int nB = pBounds->nBottom;
+
+				m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
+				m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
+			}
 		}
 		void End()
 		{

@@ -64,10 +64,7 @@ namespace MetaFile
             TRectD oBounds = oBoundsBox;
 			if (IsPlaceable())
 			{				
-				double dLogicalToMM = 25.4 / 72;
-				if (m_oPlaceable.Inch > 0)
-					dLogicalToMM /= m_oPlaceable.Inch;
-
+				double dLogicalToMM = (m_oPlaceable.Inch > 0 ? 25.4 / m_oPlaceable.Inch : 25.4 / 1440);
 				oBounds *= dLogicalToMM;
 			}
 			else
@@ -111,100 +108,100 @@ namespace MetaFile
 					//-----------------------------------------------------------
 					// 2.3.1 Bitmap records
 					//-----------------------------------------------------------
-				case META_BITBLT: Read_META_BITBLT(); break;
-				case META_DIBBITBLT: Read_META_DIBBITBLT(); break;
-				case META_DIBSTRETCHBLT: Read_META_DIBSTRETCHBLT(); break;
-				case META_SETDIBTODEV: Read_META_SETDIBTODEV(); break;
-				case META_STRETCHBLT: Read_META_STRETCHBLT(); break;
-				case META_STRETCHDIB: Read_META_STRETCHDIB(); break;
+					case META_BITBLT: Read_META_BITBLT(); break;
+					case META_DIBBITBLT: Read_META_DIBBITBLT(); break;
+					case META_DIBSTRETCHBLT: Read_META_DIBSTRETCHBLT(); break;
+					case META_SETDIBTODEV: Read_META_SETDIBTODEV(); break;
+					case META_STRETCHBLT: Read_META_STRETCHBLT(); break;
+					case META_STRETCHDIB: Read_META_STRETCHDIB(); break;
 					//-----------------------------------------------------------
 					// 2.3.2 Control records
 					//-----------------------------------------------------------
-				case META_EOF: bEof = true; break;
+					case META_EOF: bEof = true; break;
 					//-----------------------------------------------------------
 					// 2.3.3 Drawing records
 					//-----------------------------------------------------------
-				case META_ARC: Read_META_ARC(); break;
-				case META_CHORD: Read_META_CHORD(); break;
-				case META_ELLIPSE: Read_META_ELLIPSE(); break;
-				case META_EXTFLOODFILL: Read_META_UNSUPPORTED(); break;
-				case META_EXTTEXTOUT: Read_META_EXTTEXTOUT(); break;
-				case META_FILLREGION: Read_META_FILLREGION(); break;
-				case META_FLOODFILL: Read_META_UNSUPPORTED(); break;
-				case META_FRAMEREGION: Read_META_FRAMEREGION(); break;
-				case META_INVERTREGION: Read_META_INVERTREGION(); break;
-				case META_LINETO: Read_META_LINETO(); break;
-				case META_PAINTREGION: Read_META_PAINTREGION(); break;
-				case META_PATBLT: Read_META_PATBLT(); break;
-				case META_PIE: Read_META_PIE(); break;
-				case META_POLYLINE: Read_META_POLYLINE(); break;
-				case META_POLYGON: Read_META_POLYGON(); break;
-				case META_POLYPOLYGON: Read_META_POLYPOLYGON(); break;
-				case META_RECTANGLE: Read_META_RECTANGLE(); break;
-				case META_ROUNDRECT: Read_META_ROUNDRECT(); break;
-				case META_SETPIXEL: Read_META_SETPIXEL(); break;
-				case META_TEXTOUT: Read_META_TEXTOUT(); break;
+					case META_ARC: Read_META_ARC(); break;
+					case META_CHORD: Read_META_CHORD(); break;
+					case META_ELLIPSE: Read_META_ELLIPSE(); break;
+					case META_EXTFLOODFILL: Read_META_UNSUPPORTED(); break;
+					case META_EXTTEXTOUT: Read_META_EXTTEXTOUT(); break;
+					case META_FILLREGION: Read_META_FILLREGION(); break;
+					case META_FLOODFILL: Read_META_UNSUPPORTED(); break;
+					case META_FRAMEREGION: Read_META_FRAMEREGION(); break;
+					case META_INVERTREGION: Read_META_INVERTREGION(); break;
+					case META_LINETO: Read_META_LINETO(); break;
+					case META_PAINTREGION: Read_META_PAINTREGION(); break;
+					case META_PATBLT: Read_META_PATBLT(); break;
+					case META_PIE: Read_META_PIE(); break;
+					case META_POLYLINE: Read_META_POLYLINE(); break;
+					case META_POLYGON: Read_META_POLYGON(); break;
+					case META_POLYPOLYGON: Read_META_POLYPOLYGON(); break;
+					case META_RECTANGLE: Read_META_RECTANGLE(); break;
+					case META_ROUNDRECT: Read_META_ROUNDRECT(); break;
+					case META_SETPIXEL: Read_META_SETPIXEL(); break;
+					case META_TEXTOUT: Read_META_TEXTOUT(); break;
 					//-----------------------------------------------------------
 					// 2.3.4 Object records
 					//-----------------------------------------------------------
-				case META_CREATEBRUSHINDIRECT: Read_META_CREATEBRUSHINDIRECT(); break;
-				case META_CREATEFONTINDIRECT: Read_META_CREATEFONTINDIRECT(); break;
-				case META_CREATEPALETTE: Read_META_CREATEPALETTE(); break;
-				case META_CREATEPATTERNBRUSH: Read_META_CREATEPATTERNBRUSH(); break;
-				case META_CREATEPENINDIRECT: Read_META_CREATEPENINDIRECT(); break;
-				case META_CREATEREGION: Read_META_CREATEREGION(); break;
-				case META_DELETEOBJECT: Read_META_DELETEOBJECT(); break;
-				case META_DIBCREATEPATTERNBRUSH: Read_META_DIBCREATEPATTERNBRUSH(); break;
-				case META_SELECTCLIPREGION: Read_META_SELECTCLIPREGION(); break;
-				case META_SELECTOBJECT: Read_META_SELECTOBJECT(); break;
-				case META_SELECTPALETTE: Read_META_SELECTPALETTE(); break;
+					case META_CREATEBRUSHINDIRECT: Read_META_CREATEBRUSHINDIRECT(); break;
+					case META_CREATEFONTINDIRECT: Read_META_CREATEFONTINDIRECT(); break;
+					case META_CREATEPALETTE: Read_META_CREATEPALETTE(); break;
+					case META_CREATEPATTERNBRUSH: Read_META_CREATEPATTERNBRUSH(); break;
+					case META_CREATEPENINDIRECT: Read_META_CREATEPENINDIRECT(); break;
+					case META_CREATEREGION: Read_META_CREATEREGION(); break;
+					case META_DELETEOBJECT: Read_META_DELETEOBJECT(); break;
+					case META_DIBCREATEPATTERNBRUSH: Read_META_DIBCREATEPATTERNBRUSH(); break;
+					case META_SELECTCLIPREGION: Read_META_SELECTCLIPREGION(); break;
+					case META_SELECTOBJECT: Read_META_SELECTOBJECT(); break;
+					case META_SELECTPALETTE: Read_META_SELECTPALETTE(); break;
 					//-----------------------------------------------------------
 					// 2.3.5 State records
 					//-----------------------------------------------------------
-				case META_ANIMATEPALETTE: Read_META_UNSUPPORTED(); break;
-				case META_EXCLUDECLIPRECT: Read_META_EXCLUDECLIPRECT(); break;
-				case META_INTERSECTCLIPRECT: Read_META_INTERSECTCLIPRECT(); break;
-				case META_MOVETO: Read_META_MOVETO(); break;
-				case META_OFFSETCLIPRGN: Read_META_OFFSETCLIPRGN(); break;
-				case META_OFFSETVIEWPORTORG: Read_META_OFFSETVIEWPORTORG(); break;
-				case META_OFFSETWINDOWORG: Read_META_OFFSETWINDOWORG(); break;
-				case META_REALIZEPALETTE: Read_META_UNSUPPORTED(); break;
-				case META_RESIZEPALETTE: Read_META_UNSUPPORTED(); break;
-				case META_RESTOREDC: Read_META_RESTOREDC(); break;
-				case META_SAVEDC: Read_META_SAVEDC(); break;
-				case META_SCALEVIEWPORTEXT: Read_META_SCALEVIEWPORTEXT(); break;
-				case META_SCALEWINDOWEXT: Read_META_SCALEWINDOWEXT(); break;
-				case META_SETBKCOLOR: Read_META_SETBKCOLOR(); break;
-				case META_SETBKMODE: Read_META_SETBKMODE(); break;
-				case META_SETLAYOUT: Read_META_SETLAYOUT(); break;
-				case META_SETMAPMODE: Read_META_SETMAPMODE(); break;
-				case META_SETMAPPERFLAGS: Read_META_UNSUPPORTED(); break;
-				case META_SETPALENTRIES: Read_META_UNSUPPORTED(); break;
-				case META_SETPOLYFILLMODE: Read_META_SETPOLYFILLMODE(); break;
-				case META_SETRELABS: Read_META_UNSUPPORTED(); break;
-				case META_SETROP2: Read_META_SETROP2(); break;
-				case META_SETSTRETCHBLTMODE: Read_META_SETSTRETCHBLTMODE(); break;
-				case META_SETTEXTALIGN: Read_META_SETTEXTALIGN(); break;
-				case META_SETTEXTCHAREXTRA: Read_META_SETTEXTCHAREXTRA(); break;
-				case META_SETTEXTCOLOR: Read_META_SETTEXTCOLOR(); break;
-				case META_SETTEXTJUSTIFICATION: Read_META_SETTEXTJUSTIFICATION(); break;
-				case META_SETVIEWPORTEXT: Read_META_SETVIEWPORTEXT(); break;
-				case META_SETVIEWPORTORG: Read_META_SETVIEWPORTORG(); break;
-				case META_SETWINDOWEXT: Read_META_SETWINDOWEXT(); break;
-				case META_SETWINDOWORG: Read_META_SETWINDOWORG(); break;
+					case META_ANIMATEPALETTE: Read_META_UNSUPPORTED(); break;
+					case META_EXCLUDECLIPRECT: Read_META_EXCLUDECLIPRECT(); break;
+					case META_INTERSECTCLIPRECT: Read_META_INTERSECTCLIPRECT(); break;
+					case META_MOVETO: Read_META_MOVETO(); break;
+					case META_OFFSETCLIPRGN: Read_META_OFFSETCLIPRGN(); break;
+					case META_OFFSETVIEWPORTORG: Read_META_OFFSETVIEWPORTORG(); break;
+					case META_OFFSETWINDOWORG: Read_META_OFFSETWINDOWORG(); break;
+					case META_REALIZEPALETTE: Read_META_UNSUPPORTED(); break;
+					case META_RESIZEPALETTE: Read_META_UNSUPPORTED(); break;
+					case META_RESTOREDC: Read_META_RESTOREDC(); break;
+					case META_SAVEDC: Read_META_SAVEDC(); break;
+					case META_SCALEVIEWPORTEXT: Read_META_SCALEVIEWPORTEXT(); break;
+					case META_SCALEWINDOWEXT: Read_META_SCALEWINDOWEXT(); break;
+					case META_SETBKCOLOR: Read_META_SETBKCOLOR(); break;
+					case META_SETBKMODE: Read_META_SETBKMODE(); break;
+					case META_SETLAYOUT: Read_META_SETLAYOUT(); break;
+					case META_SETMAPMODE: Read_META_SETMAPMODE(); break;
+					case META_SETMAPPERFLAGS: Read_META_UNSUPPORTED(); break;
+					case META_SETPALENTRIES: Read_META_UNSUPPORTED(); break;
+					case META_SETPOLYFILLMODE: Read_META_SETPOLYFILLMODE(); break;
+					case META_SETRELABS: Read_META_UNSUPPORTED(); break;
+					case META_SETROP2: Read_META_SETROP2(); break;
+					case META_SETSTRETCHBLTMODE: Read_META_SETSTRETCHBLTMODE(); break;
+					case META_SETTEXTALIGN: Read_META_SETTEXTALIGN(); break;
+					case META_SETTEXTCHAREXTRA: Read_META_SETTEXTCHAREXTRA(); break;
+					case META_SETTEXTCOLOR: Read_META_SETTEXTCOLOR(); break;
+					case META_SETTEXTJUSTIFICATION: Read_META_SETTEXTJUSTIFICATION(); break;
+					case META_SETVIEWPORTEXT: Read_META_SETVIEWPORTEXT(); break;
+					case META_SETVIEWPORTORG: Read_META_SETVIEWPORTORG(); break;
+					case META_SETWINDOWEXT: Read_META_SETWINDOWEXT(); break;
+					case META_SETWINDOWORG: Read_META_SETWINDOWORG(); break;
 					//-----------------------------------------------------------
 					// 2.3.6 State records
 					//-----------------------------------------------------------
-				case META_ESCAPE: Read_META_ESCAPE(); break;
+					case META_ESCAPE: Read_META_ESCAPE(); break;
 					//-----------------------------------------------------------
 					// Неизвестные записи
 					//-----------------------------------------------------------
-				default:
-				{
-					//std::cout << ushType << " ";
-					Read_META_UNKNOWN();
-					break;
-				}
+					default:
+					{
+						//std::cout << ushType << " ";
+						Read_META_UNKNOWN();
+						break;
+					}
 				}
 
 				if (bEof)
@@ -236,23 +233,8 @@ namespace MetaFile
 			m_oDCRect.nTop    = pViewport->y;
 			m_oDCRect.nRight  = pViewport->w + pViewport->x;
 			m_oDCRect.nBottom = pViewport->h + pViewport->y;
+
 			return &m_oDCRect;
-
-			unsigned short ushMapMode = m_pDC->GetMapMode();
-			if (MM_ANISOTROPIC == ushMapMode || MM_ISOTROPIC == ushMapMode)
-			{
-				TWmfWindow* pViewport = m_pDC->GetViewport();
-
-				m_oDCRect.nLeft   = pViewport->x;
-				m_oDCRect.nTop    = pViewport->y;
-				m_oDCRect.nRight  = pViewport->w + pViewport->x;
-				m_oDCRect.nBottom = pViewport->h + pViewport->y;
-				return &m_oDCRect;
-			}
-			else
-			{
-				return &m_oRect;
-			}
 		}
 		double       GetPixelHeight()
 		{
@@ -321,7 +303,14 @@ namespace MetaFile
 		}
 		TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED)
 		{
-			return m_pDC->GetTransform();
+			TRect* pBounds = GetDCBounds();
+			double dT = pBounds->nTop;
+			double dL = pBounds->nLeft;
+
+			TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
+			m_oTransform.Copy(m_pDC->GetFinalTransform(iGraphicsMode));
+			m_oTransform.Multiply(oShiftXForm, MWT_RIGHTMULTIPLY);
+			return &m_oTransform;
 		}
 		unsigned int GetMiterLimit()
 		{
@@ -359,24 +348,8 @@ namespace MetaFile
 
 		void TranslatePoint(short shX, short shY, double& dX, double &dY)
 		{
-			TWmfWindow* pWindow   = m_pDC->GetWindow();
-			TWmfWindow* pViewport = m_pDC->GetViewport();
-
-			dX = (double)((double)(shX - pWindow->x) * m_pDC->GetPixelWidth()) + pViewport->x;
-			dY = (double)((double)(shY - pWindow->y) * m_pDC->GetPixelHeight()) + pViewport->y;
-
-			// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
-			// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
-			TRect* pBounds = GetDCBounds();
-			double dT = pBounds->nTop;
-			double dL = pBounds->nLeft;
-
-			TEmfXForm* pInverse   = GetInverseTransform();
-			TEmfXForm* pTransform = GetTransform();
-			pTransform->Apply(dX, dY);
-			dX -= dL;
-			dY -= dT;
-			pInverse->Apply(dX, dY);
+			dX = (double)shX;
+			dY = (double)shY;
 		}
         TRect GetBoundingBox()
 		{
@@ -820,6 +793,9 @@ namespace MetaFile
 				m_oStream >> m_oPlaceable.Inch;
 				m_oStream >> m_oPlaceable.Reserved;
 				m_oStream >> m_oPlaceable.Checksum;
+
+				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Top);
+				m_pDC->SetViewportExt(m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top);
 			}
 			else
 			{
@@ -852,7 +828,7 @@ namespace MetaFile
 			if (0x0100 != m_oHeader.Version && 0x0300 != m_oHeader.Version)
 				return SetError();
 
-			// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла. 
+			// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла.
 			// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
 			if (m_pOutput)
 			{
@@ -1627,6 +1603,8 @@ namespace MetaFile
 
 		TRect          m_oBoundingBox;
 		bool           m_bFirstPoint;
+
+		TXForm         m_oTransform;
 	};
 }
 

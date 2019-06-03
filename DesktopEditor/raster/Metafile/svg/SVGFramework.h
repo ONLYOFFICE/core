@@ -5936,9 +5936,8 @@ namespace SVG
 			std::wstring strXmlNode = oXmlNode.GetName();
 			if (!strXmlNode.empty())
 			{
-                const char symbol = strXmlNode.c_str()[0];
-				if ('#' == symbol) 
-					return NULL;
+				if ('#' == strXmlNode.c_str()[0]) 
+                    return NULL;
 			}
 
 #ifdef _DEBUG

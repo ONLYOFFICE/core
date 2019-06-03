@@ -129,6 +129,7 @@ namespace MetaFile
 		unsigned short GetCharSpacing();
 		TXForm*        GetTransform();
 		TXForm*        GetInverseTransform();
+		TXForm*        GetFinalTransform(int iGraphicsMode);
 		unsigned int   GetMiterLimit();
 		CWmfClip*      GetClip();
 
@@ -137,6 +138,7 @@ namespace MetaFile
 		void           SetPixelWidth(double dW);
 		void           SetPixelHeight(double dH);
 		bool           UpdatePixelMetrics();
+		void           UpdateFinalTransform();
 
 	private:
 
@@ -163,6 +165,8 @@ namespace MetaFile
 		unsigned short m_ushTextAlign;
 		unsigned short m_ushCharSpacing;
 		TXForm         m_oTransform;
+		TXForm         m_oFinalTransform;
+		TXForm         m_oFinalTransform2;
 		CWmfClip       m_oClip;
 	};
 }

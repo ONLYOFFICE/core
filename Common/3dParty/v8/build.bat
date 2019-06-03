@@ -21,3 +21,7 @@ call gn gen out.gn/win_32/debug --args="is_debug=true target_cpu=\"x86\" v8_targ
 call ninja -C out.gn/win_32/debug
 
 rem v8_use_snapshot=true v8_use_external_startup_data=true
+if not "%BUILD_PLATFORM%"=="%BUILD_PLATFORM:xp=%" (
+	call %~dp0v8_xp\build.bat
+	cd %~dp0
+)

@@ -2090,6 +2090,120 @@ namespace SimpleTypes
 			SimpleType_FromString     (EPageUnits)
 			SimpleType_Operator_Equal (CPageUnits)
 		};
+
+		enum ECellComments
+		{
+			cellcommentsNone = 0,
+			cellcommentsAsDisplayed = 1,
+			cellcommentsAtEnd = 2
+		};
+
+		template<ECellComments eDefValue = cellcommentsNone>
+		class CCellComments : public CSimpleType<ECellComments, eDefValue>
+		{
+		public:
+			CCellComments() {}
+
+			virtual ECellComments FromString(std::wstring &sValue)
+			{
+				if      ( (L"asDisplayed") == sValue ) this->m_eValue = cellcommentsAsDisplayed;
+				else if ( (L"atEnd")  == sValue ) this->m_eValue = cellcommentsAtEnd;
+				else if ( (L"none")  == sValue ) this->m_eValue = cellcommentsNone;
+				else                                  this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual std::wstring          ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case cellcommentsAsDisplayed : return (L"asDisplayed");
+				case cellcommentsAtEnd  : return (L"atEnd");
+				case cellcommentsNone  : return (L"none");
+				default                  : return (L"none");
+				}
+			}
+
+			SimpleType_FromString     (ECellComments)
+			SimpleType_Operator_Equal (CCellComments)
+		};
+
+		enum EPrintError
+		{
+			printerrorDisplayed  = 0,
+			printerrorBlank = 1,
+			printerrorDash  = 2,
+			printerrorNA  = 3
+		};
+
+		template<EPrintError eDefValue = printerrorDisplayed>
+		class CPrintError : public CSimpleType<EPrintError, eDefValue>
+		{
+		public:
+			CPrintError() {}
+
+			virtual EPrintError FromString(std::wstring &sValue)
+			{
+				if      ( (L"blank") == sValue ) this->m_eValue = printerrorBlank;
+				else if ( (L"dash")  == sValue ) this->m_eValue = printerrorDash;
+				else if ( (L"displayed")  == sValue ) this->m_eValue = printerrorDisplayed;
+				else if ( (L"NA")  == sValue ) this->m_eValue = printerrorNA;
+				else                                  this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual std::wstring          ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case printerrorBlank : return (L"blank");
+				case printerrorDash  : return (L"dash");
+				case printerrorDisplayed  : return (L"displayed");
+				case printerrorNA  : return (L"NA");
+				default                  : return (L"displayed");
+				}
+			}
+
+			SimpleType_FromString     (EPrintError)
+			SimpleType_Operator_Equal (CPrintError)
+		};
+
+		enum EPageOrder
+		{
+			pageorderDownThenOver = 0,
+			pageorderOverThenDown  = 1
+		};
+
+		template<EPageOrder eDefValue = pageorderDownThenOver>
+		class CPageOrder : public CSimpleType<EPageOrder, eDefValue>
+		{
+		public:
+			CPageOrder() {}
+
+			virtual EPageOrder FromString(std::wstring &sValue)
+			{
+				if      ( (L"downThenOver") == sValue ) this->m_eValue = pageorderDownThenOver;
+				else if ( (L"overThenDown")  == sValue ) this->m_eValue = pageorderOverThenDown;
+				else                                  this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual std::wstring          ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case pageorderDownThenOver : return (L"downThenOver");
+				case pageorderOverThenDown  : return (L"overThenDown");
+				default                  : return (L"downThenOver");
+				}
+			}
+
+			SimpleType_FromString     (EPageOrder)
+			SimpleType_Operator_Equal (CPageOrder)
+		};
 		enum ETotalsRowFunction
 		{
 			totalrowfunctionAverage		=  1,

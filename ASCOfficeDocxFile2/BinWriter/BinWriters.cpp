@@ -1313,6 +1313,12 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 					NULL, &pSectPr->m_oEndnotePr->m_oPos, NULL);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(pSectPr->m_oRtlGutter.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrType::rtlGutter);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oRtlGutter->m_oVal.ToBool());
+	}
 }
 void Binary_pPrWriter::WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 {
@@ -1410,6 +1416,12 @@ void Binary_pPrWriter::WritePageMargin(OOX::Logic::CSectionProperty* pSectPr)
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_pgMarType::FooterTwips);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 			m_oBcw.m_oStream.WriteLONG(pMar.m_oFooter->ToTwips());
+		}
+		if(pMar.m_oGutter.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_pgMarType::GutterTwips);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+			m_oBcw.m_oStream.WriteLONG(pMar.m_oGutter->ToTwips());
 		}
 	}				
 }
@@ -7543,6 +7555,42 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::ListSeparator);
 		m_oBcw.m_oStream.WriteStringW3(oSettings.m_oListSeparator->m_sVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettings.m_oGutterAtTop.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::GutterAtTop);
+		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oGutterAtTop->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettings.m_oMirrorMargins.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::MirrorMargins);
+		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oMirrorMargins->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettings.m_oPrintTwoOnOne.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::PrintTwoOnOne);
+		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oPrintTwoOnOne->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettings.m_oBookFoldPrinting.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::BookFoldPrinting);
+		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oBookFoldPrinting->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettings.m_oBookFoldPrintingSheets.IsInit() && oSettings.m_oBookFoldPrintingSheets->m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::BookFoldPrintingSheets);
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oBookFoldPrintingSheets->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSettings.m_oBookFoldRevPrinting.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::BookFoldRevPrinting);
+		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oBookFoldRevPrinting->m_oVal.ToBool());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if(oSettingsCustom.m_oSdtGlobalColor.IsInit())

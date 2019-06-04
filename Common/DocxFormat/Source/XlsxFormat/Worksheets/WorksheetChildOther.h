@@ -125,18 +125,26 @@ namespace OOX
 				if(m_oPaperSize.IsInit() || m_oOrientation.IsInit())
 				{
 					writer.WriteString(L"<pageSetup");
+					WritingStringNullableAttrBool(L"blackAndWhite", m_oBlackAndWhite);
+					WritingStringNullableAttrString(L"cellComments", m_oCellComments, m_oCellComments->ToString());
+					WritingStringNullableAttrInt(L"copies", m_oCopies, m_oCopies->GetValue());
+					WritingStringNullableAttrBool(L"draft", m_oDraft);
+					WritingStringNullableAttrString(L"errors", m_oErrors, m_oErrors->ToString());
+					WritingStringNullableAttrInt(L"firstPageNumber", m_oFirstPageNumber, m_oFirstPageNumber->GetValue());
+					WritingStringNullableAttrInt(L"fitToHeight", m_oFitToHeight, m_oFitToHeight->GetValue());
+					WritingStringNullableAttrInt(L"fitToWidth", m_oFitToWidth, m_oFitToWidth->GetValue());
+					WritingStringNullableAttrInt(L"horizontalDpi", m_oHorizontalDpi, m_oHorizontalDpi->GetValue());
+					WritingStringNullableAttrString(L"r:id", m_oRId, m_oRId->ToString());
+					WritingStringNullableAttrString(L"orientation", m_oOrientation, m_oOrientation->ToString());
+					WritingStringNullableAttrString(L"pageOrder", m_oPageOrder, m_oPageOrder->ToString());
+					WritingStringNullableAttrDouble(L"paperHeight", m_oPaperHeight, m_oPaperHeight->GetValue());
 					WritingStringNullableAttrString(L"paperSize", m_oPaperSize, m_oPaperSize->ToString());
-					if (m_oOrientation.IsInit())
-					{
-                        std::wstring sOrientation = m_oOrientation->ToString();
-						writer.WriteString(L" orientation=\"");
-                        writer.WriteString(sOrientation.c_str());
-						writer.WriteString(L"\"");
-					}
-					if (m_oRId.IsInit())
-					{
-						WritingStringAttrString(L"r:id", m_oRId->ToString());
-					}
+					WritingStringNullableAttrDouble(L"paperWidth", m_oPaperWidth, m_oPaperWidth->GetValue());
+					WritingStringNullableAttrString(L"paperUnits", m_oPaperUnits, m_oPaperUnits->ToString());
+					WritingStringNullableAttrInt(L"scale", m_oScale, m_oScale->GetValue());
+					WritingStringNullableAttrBool(L"useFirstPageNumber", m_oUseFirstPageNumber);
+					WritingStringNullableAttrBool(L"usePrinterDefaults", m_oUsePrinterDefaults);
+					WritingStringNullableAttrInt(L"verticalDpi", m_oVerticalDpi, m_oVerticalDpi->GetValue());
 					writer.WriteString(L"/>");
 				}
 			}
@@ -155,20 +163,48 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("orientation"),	m_oOrientation)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperSize"),	m_oPaperSize)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperUnits"),	m_oPaperUnits)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperWidth"),	m_oPaperWidth)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperHeight"),	m_oPaperHeight)
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("blackAndWhite"),	m_oBlackAndWhite)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cellComments"),	m_oCellComments)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("copies"),	m_oCopies)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("draft"),	m_oDraft)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errors"),	m_oErrors)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("firstPageNumber"),	m_oFirstPageNumber)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fitToHeight"),	m_oFitToHeight)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fitToWidth"),	m_oFitToWidth)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("horizontalDpi"),	m_oHorizontalDpi)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:id"),		m_oRId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("orientation"),	m_oOrientation)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pageOrder"),	m_oPageOrder)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperHeight"),	m_oPaperHeight)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperSize"),	m_oPaperSize)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperWidth"),	m_oPaperWidth)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperUnits"),	m_oPaperUnits)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("scale"),	m_oScale)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("useFirstPageNumber"),	m_oUseFirstPageNumber)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("usePrinterDefaults"),	m_oUsePrinterDefaults)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("verticalDpi"),	m_oVerticalDpi)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable<SimpleTypes::CRelationshipId>				m_oRId;
-			nullable<SimpleTypes::CPageOrientation<>>			m_oOrientation;
-			nullable<SimpleTypes::Spreadsheet::CPageSize<>>		m_oPaperSize;
-			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>	m_oPaperUnits;
-			nullable<SimpleTypes::CDouble>						m_oPaperWidth;
-			nullable<SimpleTypes::CDouble>						m_oPaperHeight;
+			nullable<SimpleTypes::COnOff<>>							m_oBlackAndWhite;
+			nullable<SimpleTypes::Spreadsheet::CCellComments<>>		m_oCellComments;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oCopies;
+			nullable<SimpleTypes::COnOff<>>							m_oDraft;
+			nullable<SimpleTypes::Spreadsheet::CPrintError<>>		m_oErrors;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFirstPageNumber;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFitToHeight;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFitToWidth;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oHorizontalDpi;
+			nullable<SimpleTypes::CRelationshipId>					m_oRId;
+			nullable<SimpleTypes::CPageOrientation<>>				m_oOrientation;
+			nullable<SimpleTypes::Spreadsheet::CPageOrder<>>		m_oPageOrder;
+			nullable<SimpleTypes::CDouble>							m_oPaperHeight;
+			nullable<SimpleTypes::Spreadsheet::CPageSize<>>			m_oPaperSize;
+			nullable<SimpleTypes::CDouble>							m_oPaperWidth;
+			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>		m_oPaperUnits;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oScale;
+			nullable<SimpleTypes::COnOff<>>							m_oUseFirstPageNumber;
+			nullable<SimpleTypes::COnOff<>>							m_oUsePrinterDefaults;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oVerticalDpi;
 		};
 		class CPrintOptions : public WritingElement
 		{

@@ -1397,6 +1397,11 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 		READ1_DEF(length, res, this->ReadEndnotePr, &oEdnProps);
 		pSectPr->endnotePr = oEdnProps.toXML();
 	}
+	else if( c_oSerProp_secPrType::rtlGutter == type )
+	{
+		pSectPr->bRtlGutter = true;
+		pSectPr->RtlGutter = m_oBufferedStream.GetBool();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -1591,6 +1596,11 @@ int Binary_pPrReader::Read_pgMar(BYTE type, long length, void* poResult)
 	{
 		pSectPr->bFooter = true;
 		pSectPr->Footer = m_oBufferedStream.GetLong();
+	}
+	else if( c_oSer_pgMarType::GutterTwips == type )
+	{
+		pSectPr->bGutter = true;
+		pSectPr->Gutter = m_oBufferedStream.GetLong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3517,6 +3527,50 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		std::wstring sListSeparator = m_oBufferedStream.GetString3(length);
 		m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:listSeparator w:val=\"" + XmlUtils::EncodeXmlString(sListSeparator) + L"\"/>");
+	}
+	else if( c_oSer_SettingsType::GutterAtTop == type )
+	{
+		bool bGutterAtTop = m_oBufferedStream.GetBool();
+		if (bGutterAtTop)
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:gutterAtTop/>");
+		else
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:gutterAtTop w:val=\"0\"/>");
+	}
+	else if( c_oSer_SettingsType::MirrorMargins == type )
+	{
+		bool bMirrorMargins = m_oBufferedStream.GetBool();
+		if (bMirrorMargins)
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:mirrorMargins/>");
+		else
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:mirrorMargins w:val=\"0\"/>");
+	}
+	else if( c_oSer_SettingsType::PrintTwoOnOne == type )
+	{
+		bool bPrintTwoOnOne = m_oBufferedStream.GetBool();
+		if (bPrintTwoOnOne)
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:printTwoOnOne/>");
+		else
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:printTwoOnOne w:val=\"0\"/>");
+	}
+	else if( c_oSer_SettingsType::BookFoldPrinting == type )
+	{
+		bool bBookFoldPrinting = m_oBufferedStream.GetBool();
+		if (bBookFoldPrinting)
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:bookFoldPrinting/>");
+		else
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:bookFoldPrinting w:val=\"0\"/>");
+	}
+	else if( c_oSer_SettingsType::BookFoldPrintingSheets == type )
+	{
+		m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:bookFoldPrintingSheets w:val=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\"/>");
+	}
+	else if( c_oSer_SettingsType::BookFoldRevPrinting == type )
+	{
+		bool bBookFoldRevPrinting = m_oBufferedStream.GetBool();
+		if (bBookFoldRevPrinting)
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:bookFoldRevPrinting/>");
+		else
+			m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:bookFoldRevPrinting w:val=\"0\"/>");
 	}
 	else if( c_oSer_SettingsType::SdtGlobalColor == type )
 	{

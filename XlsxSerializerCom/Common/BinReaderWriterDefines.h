@@ -671,7 +671,24 @@ namespace BinXlsxRW
 	namespace c_oSer_PageSetup{enum c_oSer_PageSetup
 	{
 		Orientation = 0,
-		PaperSize = 1
+		PaperSize = 1,
+		BlackAndWhite = 2,
+		CellComments = 3,
+		Copies = 4,
+		Draft = 5,
+		Errors = 6,
+		FirstPageNumber = 7,
+		FitToHeight = 8,
+		FitToWidth = 9,
+		HorizontalDpi = 10,
+		PageOrder = 11,
+		PaperHeight = 12,
+		PaperWidth = 13,
+		PaperUnits = 14,
+		Scale = 15,
+		UseFirstPageNumber = 16,
+		UsePrinterDefaults = 17,
+		VerticalDpi = 18
 	};}
 	namespace c_oSer_PrintOptions{enum c_oSer_PrintOptions
 	{

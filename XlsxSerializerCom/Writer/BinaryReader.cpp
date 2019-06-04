@@ -4160,15 +4160,100 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::CPageSetup* pPageSetup = static_cast<OOX::Spreadsheet::CPageSetup*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_PageSetup::Orientation == type)
+	if(c_oSer_PageSetup::BlackAndWhite == type)
+	{
+		pPageSetup->m_oBlackAndWhite.Init();
+		pPageSetup->m_oBlackAndWhite->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_PageSetup::CellComments == type)
+	{
+		pPageSetup->m_oCellComments.Init();
+		pPageSetup->m_oCellComments->SetValue((SimpleTypes::Spreadsheet::ECellComments)m_oBufferedStream.GetUChar());
+	}
+	else if(c_oSer_PageSetup::Copies == type)
+	{
+		pPageSetup->m_oCopies.Init();
+		pPageSetup->m_oCopies->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if(c_oSer_PageSetup::Draft == type)
+	{
+		pPageSetup->m_oDraft.Init();
+		pPageSetup->m_oDraft->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_PageSetup::Errors == type)
+	{
+		pPageSetup->m_oErrors.Init();
+		pPageSetup->m_oErrors->SetValue((SimpleTypes::Spreadsheet::EPrintError)m_oBufferedStream.GetUChar());
+	}
+	else if(c_oSer_PageSetup::FirstPageNumber == type)
+	{
+		pPageSetup->m_oFirstPageNumber.Init();
+		pPageSetup->m_oFirstPageNumber->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if(c_oSer_PageSetup::FitToHeight == type)
+	{
+		pPageSetup->m_oFitToHeight.Init();
+		pPageSetup->m_oFitToHeight->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if(c_oSer_PageSetup::FitToWidth == type)
+	{
+		pPageSetup->m_oFitToWidth.Init();
+		pPageSetup->m_oFitToWidth->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if(c_oSer_PageSetup::HorizontalDpi == type)
+	{
+		pPageSetup->m_oHorizontalDpi.Init();
+		pPageSetup->m_oHorizontalDpi->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if(c_oSer_PageSetup::Orientation == type)
 	{
 		pPageSetup->m_oOrientation.Init();
 		pPageSetup->m_oOrientation->SetValue((SimpleTypes::EPageOrientation)m_oBufferedStream.GetUChar());
+	}
+	else if(c_oSer_PageSetup::PageOrder == type)
+	{
+		pPageSetup->m_oPageOrder.Init();
+		pPageSetup->m_oPageOrder->SetValue((SimpleTypes::Spreadsheet::EPageOrder)m_oBufferedStream.GetUChar());
+	}
+	else if(c_oSer_PageSetup::PaperHeight == type)
+	{
+		pPageSetup->m_oPaperHeight.Init();
+		pPageSetup->m_oPaperHeight->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
 	else if(c_oSer_PageSetup::PaperSize == type)
 	{
 		pPageSetup->m_oPaperSize.Init();
 		pPageSetup->m_oPaperSize->SetValue((SimpleTypes::Spreadsheet::EPageSize)m_oBufferedStream.GetUChar());
+	}
+	else if(c_oSer_PageSetup::PaperWidth == type)
+	{
+		pPageSetup->m_oPaperWidth.Init();
+		pPageSetup->m_oPaperWidth->SetValue(m_oBufferedStream.GetDoubleReal());
+	}
+	else if(c_oSer_PageSetup::PaperUnits == type)
+	{
+		pPageSetup->m_oPaperUnits.Init();
+		pPageSetup->m_oPaperUnits->SetValue((SimpleTypes::Spreadsheet::EPageUnits)m_oBufferedStream.GetUChar());
+	}
+	else if(c_oSer_PageSetup::Scale == type)
+	{
+		pPageSetup->m_oScale.Init();
+		pPageSetup->m_oScale->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if(c_oSer_PageSetup::UseFirstPageNumber == type)
+	{
+		pPageSetup->m_oUseFirstPageNumber.Init();
+		pPageSetup->m_oUseFirstPageNumber->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_PageSetup::UsePrinterDefaults == type)
+	{
+		pPageSetup->m_oUsePrinterDefaults.Init();
+		pPageSetup->m_oUsePrinterDefaults->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_PageSetup::VerticalDpi == type)
+	{
+		pPageSetup->m_oVerticalDpi.Init();
+		pPageSetup->m_oVerticalDpi->SetValue(m_oBufferedStream.GetLong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

@@ -467,7 +467,8 @@ extern int g_nCurFormatVersion;
 		cols = 8,
 		pgBorders = 9,
 		footnotePr = 10,
-		endnotePr = 11
+		endnotePr = 11,
+		rtlGutter = 12
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -782,7 +783,8 @@ extern int g_nCurFormatVersion;
 		RightTwips = 8,
 		BottomTwips = 9,
 		HeaderTwips = 10,
-		FooterTwips = 11
+		FooterTwips = 11,
+		GutterTwips = 12
 	};}
 	namespace c_oSer_ColorType{enum c_oSer_ColorType
 	{
@@ -816,7 +818,13 @@ extern int g_nCurFormatVersion;
 		Compat = 8,
 		DefaultTabStopTwips = 9,
 		DecimalSymbol = 10,
-		ListSeparator = 11
+		ListSeparator = 11,
+		GutterAtTop = 12,
+		MirrorMargins = 13,
+		PrintTwoOnOne = 14,
+		BookFoldPrinting = 15,
+		BookFoldPrintingSheets = 16,
+		BookFoldRevPrinting = 17
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

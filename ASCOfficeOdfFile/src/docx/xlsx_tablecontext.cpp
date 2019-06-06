@@ -340,6 +340,12 @@ void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & 
 
 // из за дебелизма мсофис которому ОБЯЗАТЕЛЬНО нужно прописывать имена колонок таблицы (и они должны быть еще 
 // прописаны и в самих данных таблицы !!
+
+		while (xlsx_data_ranges_[it->second]->header_values.size() > xlsx_data_ranges_[it->second]->cell_end.first - 
+											xlsx_data_ranges_[it->second]->cell_start.first + 1)
+		{
+			xlsx_data_ranges_[it->second]->header_values.pop_back();
+		}
 		int i = xlsx_data_ranges_[it->second]->header_values.size() - 1;
 		for (; i >= 0; i--)
 		{

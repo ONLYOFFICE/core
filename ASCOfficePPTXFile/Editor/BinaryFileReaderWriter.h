@@ -36,6 +36,7 @@
 #endif
 
 #include "../../DesktopEditor/common/Types.h"
+#include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include <vector>
@@ -66,6 +67,10 @@ namespace NSStringUtils
 {
 	class CStringBuilder;
 }
+namespace NSFile
+{
+	class CFileBinary;
+}
 namespace PPTX
 {
 	class Theme;
@@ -91,6 +96,7 @@ namespace NSBinPptxRW
 {
 	class CCommonWriter;
 	class CSeekTableEntry;
+	class CStreamBinaryWriter;
 
 	struct _imageManager2Info
 	{
@@ -241,7 +247,7 @@ namespace NSBinPptxRW
 
 		NSCommon::smart_ptr<PPTX::Theme>*			m_pTheme;
 		NSCommon::smart_ptr<PPTX::Logic::ClrMap>*	m_pClrMap;
-	private:
+	protected:
 		BYTE*		m_pStreamData;
 		BYTE*		m_pStreamCur;
 		_UINT32		m_lSize;
@@ -260,7 +266,7 @@ namespace NSBinPptxRW
 		_INT32	m_lYCurShape;
 
 		BYTE*	GetBuffer();
-		_UINT32	GetPosition();
+		virtual _UINT32	GetPosition();
 		void	SetPosition(const _UINT32& lPosition);
 		void	Skip(const _UINT32& lSize);
 
@@ -277,7 +283,7 @@ namespace NSBinPptxRW
 
 		void ClearNoAttack();
 
-		void CheckBufferSize(_UINT32 lPlus);
+		virtual void CheckBufferSize(_UINT32 lPlus);
 		
 		void WriteBYTE	(const BYTE& lValue);
 		void WriteSBYTE	(const signed char& lValue);
@@ -310,7 +316,7 @@ namespace NSBinPptxRW
 		// --------------------------------------------------------
 
 		CBinaryFileWriter();
-		~CBinaryFileWriter();
+		virtual ~CBinaryFileWriter();
 
 		void StartRecord(_INT32 lType);
 		void EndRecord();
@@ -400,6 +406,32 @@ namespace NSBinPptxRW
 		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
 		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
 	};
+
+
+	class CStreamBinaryWriter : public NSFile::CFileBinary, public CBinaryFileWriter
+	{
+	protected:
+		_UINT32 m_lPositionFlushed;
+
+		BYTE*		m_pXlsbStreamData;
+		BYTE*		m_pXlsbStreamCur;
+		_UINT32		m_lXlsbSize;
+		_UINT32		m_lXlsbPosition;
+	public:
+		CStreamBinaryWriter(size_t bufferSize = 16777216);
+		~CStreamBinaryWriter();
+
+		void CheckBufferSize(_UINT32 lPlus);
+		_UINT32 CStreamBinaryWriter::GetPosition();
+		void CloseFile();
+		void Flush();
+
+		void XlsbStartRecord();
+		void XlsbEndRecord(_INT16 lType);
+	protected:
+		void XlsbSwapBuffers();
+	};
+
 	class CRelsGenerator
 	{
 	private:
@@ -489,6 +521,7 @@ namespace NSBinPptxRW
 
 		// 2 byte
 		_UINT16 GetUShort();
+		_INT16 GetShort();
 
 		// 4 byte
 		_UINT32 GetULong();
@@ -517,5 +550,9 @@ namespace NSBinPptxRW
 
 		BYTE* GetData();
 		BYTE* GetPointer(int nSize);
+
+		_UINT16 XlsbReadRecordType();
+		void XlsbSkipRecord();
+		_UINT32 XlsbReadRecordLength();
 	};
 }

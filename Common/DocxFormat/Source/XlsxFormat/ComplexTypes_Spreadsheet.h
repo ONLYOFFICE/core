@@ -85,6 +85,10 @@ namespace ComplexTypes
 			{
 				m_oVal.FromBool(bVal);
 			}
+			bool ToBool()
+			{
+				return m_oVal.ToBool();
+			}
 			
 		public:
 

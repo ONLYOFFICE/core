@@ -37,6 +37,20 @@
 
 #include "../SharedStrings/Si.h"
 
+namespace NSBinPptxRW
+{
+	class CBinaryFileReader;
+	class CStreamBinaryWriter;
+}
+namespace CSVWriter
+{
+	class CCSVWriter;
+}
+namespace NSFile
+{
+	class CStreamWriter;
+}
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -170,6 +184,8 @@ namespace OOX
 				}
 				PrepareForBinaryWriter();
 			}
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
+			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
 
 			virtual EElementType getType () const
 			{
@@ -320,7 +336,6 @@ namespace OOX
 			static std::wstring combineRef(int nRow, int nCol);
 		private:
 			void PrepareForBinaryWriter();
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -403,31 +418,9 @@ namespace OOX
 			{
 				writer.WriteString(_T("</row>"));
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("c") == sName )
-					{
-						CCell *pCell = new CCell();
-						if (pCell)
-						{
-							pCell->m_pMainDocument = m_pMainDocument;
-							pCell->fromXML(oReader);
-							m_arrItems.push_back(pCell);
-						}
-					}
-				}
-			}
-
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
+			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
 			virtual EElementType getType () const
 			{
 				return et_x_Row;
@@ -452,6 +445,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x14ac:dyDescent"),	m_oDyDescent )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+			void CheckIndex();
 
 		public:
 			nullable<SimpleTypes::COnOff<>>					m_oCollapsed;
@@ -506,37 +500,20 @@ namespace OOX
 			{
 				writer.WriteString(_T("</sheetData>"));
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("row") == sName )
-					{
-						CRow *pRow = new CRow();
-						if (pRow)
-						{
-							pRow->m_pMainDocument = m_pMainDocument;
-							pRow->fromXML(oReader);
-							m_arrItems.push_back(pRow);
-						}
-					}
-				}
-			}
-
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
 			virtual EElementType getType () const
 			{
 				return et_x_SheetData;
 			}
 		
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXlsbPos;
 		private:
+			void fromXLSBToXmlCell (CCell& pCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			CRow* fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}

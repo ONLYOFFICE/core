@@ -35,6 +35,12 @@
 
 #include "../CommonInclude.h"
 
+namespace NSBinPptxRW
+{
+	class CBinaryFileReader;
+	class CStreamBinaryWriter;
+}
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -810,6 +816,9 @@ namespace OOX
 
 				}
 			}
+
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
+			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
 
 			virtual EElementType getType () const
 			{

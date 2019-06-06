@@ -1144,6 +1144,105 @@ namespace NSBinPptxRW
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
+
+	CStreamBinaryWriter::CStreamBinaryWriter(size_t bufferSize)
+	{
+		m_lSize		= bufferSize;
+		m_pStreamData	= new BYTE[bufferSize];
+
+		m_lPosition = 0;
+		m_pStreamCur = m_pStreamData;
+
+		m_lXlsbSize = 0;
+		m_pXlsbStreamData = NULL;
+		m_lXlsbPosition = 0;
+		m_pXlsbStreamCur = m_pXlsbStreamData;
+
+		m_lPositionFlushed = 0;
+	}
+	CStreamBinaryWriter::~CStreamBinaryWriter()
+	{
+		RELEASEARRAYOBJECTS(m_pXlsbStreamData);
+	}
+	void CStreamBinaryWriter::CheckBufferSize(_UINT32 lPlus)
+	{
+		if ((m_lPosition + lPlus) > m_lSize)
+		{
+			Flush();
+			if ((m_lPosition + lPlus) > m_lSize)
+			{
+				CBinaryFileWriter::CheckBufferSize(lPlus);
+			}
+		}
+	}
+	_UINT32 CStreamBinaryWriter::GetPosition()
+	{
+		return m_lPosition + m_lPositionFlushed;
+	}
+	void CStreamBinaryWriter::CloseFile()
+	{
+		Flush();
+		CFileBinary::CloseFile();
+	}
+	void CStreamBinaryWriter::Flush()
+	{
+		if (m_lPosition > 0)
+		{
+			CFileBinary::WriteFile(m_pStreamData, m_lPosition);
+		}
+		m_lPositionFlushed += m_lPosition;
+		m_lPosition = 0;
+		m_pStreamCur = m_pStreamData;
+	}
+	void CStreamBinaryWriter::XlsbStartRecord()
+	{
+		XlsbSwapBuffers();
+
+		m_lPosition = 0;
+		m_pStreamCur = m_pStreamData;
+	}
+	void CStreamBinaryWriter::XlsbEndRecord(_INT16 lType)
+	{
+		XlsbSwapBuffers();
+		//Type
+		if (lType < 0x80)
+		{
+			WriteBYTE(lType);
+		}
+		else
+		{
+			WriteBYTE((lType & 0x7F) | 0x80);
+			WriteBYTE(lType >> 7);
+		}
+		//Len
+		_UINT32 nLen = m_lXlsbPosition;
+		do
+		{
+			WriteBYTE((nLen & 0x7F) | 0x80);
+			nLen = nLen >> 7;
+		} while (nLen > 0);
+		//Data
+		WriteBYTEArray(m_pXlsbStreamData, m_lXlsbPosition);
+	}
+	void CStreamBinaryWriter::XlsbSwapBuffers()
+	{
+		_UINT32 m_lTmp = m_lXlsbSize;
+		m_lXlsbSize		= m_lSize;
+		m_lSize = m_lTmp;
+
+		m_lTmp = m_lXlsbPosition;
+		m_lXlsbPosition		= m_lPosition;
+		m_lPosition = m_lTmp;
+
+		BYTE* m_pTmp = m_pXlsbStreamData;
+		m_pXlsbStreamData	= m_pStreamData;
+		m_pStreamData = m_pTmp;
+
+		m_pTmp = m_pXlsbStreamCur;
+		m_pXlsbStreamCur	= m_pStreamCur;
+		m_pStreamCur = m_pTmp;
+	}
+
 	CRelsGenerator::CRelsGenerator(CImageManager2* pManager) : m_lNextRelsID(1), m_mapImages()
 	{
 		m_pManager = pManager;
@@ -1671,6 +1770,20 @@ namespace NSBinPptxRW
 		m_pDataCur += 2;
 		return res;		
 	}
+	_INT16 CBinaryFileReader::GetShort()
+	{
+		if (m_lPos + 1 >= m_lSize)
+			return 0;
+#if defined(_IOS) || defined(__ANDROID__)
+		_INT16 res = 0;
+		memcpy(&res, m_pDataCur, sizeof(_INT16));
+#else
+		_INT16 res = *((_INT16*)m_pDataCur);   // EXC_ARM_DA_ALIGN on ios
+#endif
+		m_lPos += 2;
+		m_pDataCur += 2;
+		return res;
+	}
 
 	// 4 byte
 	_UINT32 CBinaryFileReader::GetULong()
@@ -1868,5 +1981,33 @@ namespace NSBinPptxRW
 		m_lPos += nSize;
 		m_pDataCur += nSize;
 		return res;
+	}
+	_UINT16 CBinaryFileReader::XlsbReadRecordType()
+	{
+		_UINT16 nValue = GetUChar();
+		if(0 != nValue & 0x80)
+		{
+			BYTE nPart = GetUChar();
+			nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
+		}
+		return nValue;
+	}
+	void CBinaryFileReader::XlsbSkipRecord()
+	{
+		Skip(XlsbReadRecordLength());
+	}
+	_UINT32 CBinaryFileReader::XlsbReadRecordLength()
+	{
+		_UINT16 nValue = 0;
+		for (int i = 0; i < 4; ++i)
+		{
+			BYTE nPart = GetUChar();
+			nValue |= (nPart & 0x7F) << (7 * i);
+			if(0 == nPart & 0x80)
+			{
+				break;
+			}
+		}
+		return nValue;
 	}
 }

@@ -41,3 +41,5 @@
 #include "../Source/XlsxFormat/Worksheets/DataValidation.cpp"
 #include "../Source/XlsxFormat/Table/Tables.cpp"
 #include "../Source/XlsxFormat/Controls/Controls.cpp"
+#include "../Source/XlsxFormat/Styles/rPr.cpp"
+

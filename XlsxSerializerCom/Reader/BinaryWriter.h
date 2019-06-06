@@ -307,6 +307,7 @@ namespace BinXlsxRW
        std::wstring WriteFileHeader(int nDataSize, int version);
 		void WriteMainTableStart();
 		void WriteMainTableEnd();
+		int GetMainTableSize();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 	};

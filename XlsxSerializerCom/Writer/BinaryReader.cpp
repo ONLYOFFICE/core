@@ -3367,9 +3367,9 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	SEEK_TO_POS_END(oCols);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData);
-		OOX::Spreadsheet::CSheetData oSheetData;
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{
+			OOX::Spreadsheet::CSheetData oSheetData;
 			oSheetData.toXMLStart(oStreamWriter);
 			READ1_DEF(length, res, this->ReadSheetData, NULL);
 			oSheetData.toXMLEnd(oStreamWriter);
@@ -4908,7 +4908,13 @@ int BinaryWorksheetsTableReader::ReadPos(BYTE type, long length, void* poResult)
 int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::Row == type)
+	if(c_oSerWorksheetsTypes::XlsbPos == type)
+	{
+		OOX::Spreadsheet::CSheetData oSheetData;
+		m_oBufferedStream.XlsbReadRecordType();//XLSB::rt_BEGIN_SHEET_DATA
+		oSheetData.fromXLSB(m_oBufferedStream, m_oBufferedStream.XlsbReadRecordType(), m_oSaveParams.pCSVWriter, *m_pCurStreamWriter);
+	}
+	else if(c_oSerWorksheetsTypes::Row == type)
 	{
 		OOX::Spreadsheet::CRow oRow;
 		READ2_DEF_SPREADSHEET(length, res, this->ReadRow, &oRow);

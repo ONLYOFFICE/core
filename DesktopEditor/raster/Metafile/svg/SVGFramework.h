@@ -5936,7 +5936,7 @@ namespace SVG
 			if (!strXmlNode.empty())
 			{
 				if ('#' == strXmlNode.c_str()[0]) 
-					return false;
+                    return NULL;
 			}
 
 #ifdef _DEBUG

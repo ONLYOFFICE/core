@@ -6311,6 +6311,7 @@ void BinaryOtherTableWriter::WriteOtherTableContent()
 BinaryFileWriter::BinaryFileWriter(DocWrapper::FontProcessor& oFontProcessor) : m_oBcw(NULL), m_oFontProcessor(oFontProcessor)
 {
 	m_nLastFilePos = 0;
+	m_nLastFilePosOffset = 0;
 	m_nRealTableCount = 0;
 }
 BinaryFileWriter::~BinaryFileWriter()
@@ -6341,6 +6342,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	BYTE saveFileType;
 	SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
 
+	m_nLastFilePosOffset = 0;
 	OOX::Spreadsheet::CXlsx *pXlsx = NULL;
 	switch(fileType)
 	{
@@ -6356,17 +6358,19 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			{
 				pXlsx = new OOX::Spreadsheet::CXlsx();
 
-				NSBinPptxRW::CStreamBinaryWriter oXlsbWriter;
+				NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
 				oXlsbWriter.CreateFileW(sFileDst);
 				//write dummy header and main table
 				oXlsbWriter.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 				oXlsbWriter.WriteReserved(GetMainTableSize());
+				int nDataStartPos = oXlsbWriter.GetPosition();
 				pXlsx->m_pXlsbWriter = &oXlsbWriter;
 				//parse
 				pXlsx->Read(OOX::CPath(sInputDir));
 
 				pXlsx->m_pXlsbWriter = NULL;
 				oXlsbWriter.CloseFile();
+				m_nLastFilePosOffset = oXlsbWriter.GetPosition() - nDataStartPos;
 			}
 			else
 			{
@@ -6549,7 +6553,7 @@ int BinaryFileWriter::WriteTableStart(BYTE type, int nStartPos)
 	//Write mtiType
 	m_oBcw->m_oStream.WriteBYTE(type);
 	//Write mtiOffBits
-	m_oBcw->m_oStream.WriteLONG(m_nLastFilePos);
+	m_oBcw->m_oStream.WriteLONG(m_nLastFilePos + m_nLastFilePosOffset);
 
 	//Write table
 	//Запоминаем позицию в MainTable

@@ -1153,16 +1153,7 @@ namespace NSBinPptxRW
 		m_lPosition = 0;
 		m_pStreamCur = m_pStreamData;
 
-		m_lXlsbSize = 0;
-		m_pXlsbStreamData = NULL;
-		m_lXlsbPosition = 0;
-		m_pXlsbStreamCur = m_pXlsbStreamData;
-
 		m_lPositionFlushed = 0;
-	}
-	CStreamBinaryWriter::~CStreamBinaryWriter()
-	{
-		RELEASEARRAYOBJECTS(m_pXlsbStreamData);
 	}
 	void CStreamBinaryWriter::CheckBufferSize(_UINT32 lPlus)
 	{
@@ -1194,14 +1185,33 @@ namespace NSBinPptxRW
 		m_lPosition = 0;
 		m_pStreamCur = m_pStreamData;
 	}
-	void CStreamBinaryWriter::XlsbStartRecord()
-	{
-		XlsbSwapBuffers();
 
-		m_lPosition = 0;
-		m_pStreamCur = m_pStreamData;
+	CXlsbBinaryWriter::CXlsbBinaryWriter(size_t bufferSize) : CStreamBinaryWriter(bufferSize)
+	{
+		m_bIsSwapped = false;
+		m_lXlsbSize = 0;
+		m_pXlsbStreamData = NULL;
+		m_lXlsbPosition = 0;
+		m_pXlsbStreamCur = m_pXlsbStreamData;
 	}
-	void CStreamBinaryWriter::XlsbEndRecord(_INT16 lType)
+	CXlsbBinaryWriter::~CXlsbBinaryWriter()
+	{
+		RELEASEARRAYOBJECTS(m_pXlsbStreamData);
+	}
+	void CXlsbBinaryWriter::Flush()
+	{
+		if(!m_bIsSwapped)
+		{
+			CStreamBinaryWriter::Flush();
+		}
+	}
+	void CXlsbBinaryWriter::XlsbStartRecord()
+	{
+		m_lXlsbPosition = 0;
+		m_pXlsbStreamCur = m_pXlsbStreamData;
+		XlsbSwapBuffers();
+	}
+	void CXlsbBinaryWriter::XlsbEndRecord(_INT16 lType)
 	{
 		XlsbSwapBuffers();
 		//Type
@@ -1216,15 +1226,20 @@ namespace NSBinPptxRW
 		}
 		//Len
 		_UINT32 nLen = m_lXlsbPosition;
-		do
+		for (int i = 0; i < 4; ++i)
 		{
-			WriteBYTE((nLen & 0x7F) | 0x80);
+			BYTE nPart = nLen & 0x7F;
+			WriteBYTE(nPart);
 			nLen = nLen >> 7;
-		} while (nLen > 0);
+			if(nLen == 0)
+			{
+				break;
+			}
+		}
 		//Data
 		WriteBYTEArray(m_pXlsbStreamData, m_lXlsbPosition);
 	}
-	void CStreamBinaryWriter::XlsbSwapBuffers()
+	void CXlsbBinaryWriter::XlsbSwapBuffers()
 	{
 		_UINT32 m_lTmp = m_lXlsbSize;
 		m_lXlsbSize		= m_lSize;
@@ -1241,6 +1256,8 @@ namespace NSBinPptxRW
 		m_pTmp = m_pXlsbStreamCur;
 		m_pXlsbStreamCur	= m_pStreamCur;
 		m_pStreamCur = m_pTmp;
+
+		m_bIsSwapped = !m_bIsSwapped;
 	}
 
 	CRelsGenerator::CRelsGenerator(CImageManager2* pManager) : m_lNextRelsID(1), m_mapImages()
@@ -1985,7 +2002,7 @@ namespace NSBinPptxRW
 	_UINT16 CBinaryFileReader::XlsbReadRecordType()
 	{
 		_UINT16 nValue = GetUChar();
-		if(0 != nValue & 0x80)
+		if(0 != (nValue & 0x80))
 		{
 			BYTE nPart = GetUChar();
 			nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
@@ -2003,7 +2020,7 @@ namespace NSBinPptxRW
 		{
 			BYTE nPart = GetUChar();
 			nValue |= (nPart & 0x7F) << (7 * i);
-			if(0 == nPart & 0x80)
+			if(0 == (nPart & 0x80))
 			{
 				break;
 			}

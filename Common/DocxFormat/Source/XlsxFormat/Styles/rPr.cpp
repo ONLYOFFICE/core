@@ -39,7 +39,7 @@ namespace OOX
 	{
 		void CRPr::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
-			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
+			//LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
 
 			_UINT16 dyHeight = oStream.GetUShort();
 			if(dyHeight >= 0x0014)
@@ -49,32 +49,32 @@ namespace OOX
 				m_oSz->m_oVal->SetValue(dyHeight / 20);
 			}
 			_UINT16 grbit = oStream.GetUShort();
-			if(0 != grbit & 0x2)
+			if(0 != (grbit & 0x2))
 			{
 				m_oItalic.Init();
 				m_oItalic->FromBool(true);
 			}
-			if(0 != grbit & 0x8)
+			if(0 != (grbit & 0x8))
 			{
 				m_oStrike.Init();
 				m_oStrike->FromBool(true);
 			}
-			if(0 != grbit & 0x10)
+			if(0 != (grbit & 0x10))
 			{
 				m_oOutline.Init();
 				m_oOutline->FromBool(true);
 			}
-			if(0 != grbit & 0x20)
+			if(0 != (grbit & 0x20))
 			{
 				m_oShadow.Init();
 				m_oShadow->FromBool(true);
 			}
-			if(0 != grbit & 0x40)
+			if(0 != (grbit & 0x40))
 			{
 				m_oCondense.Init();
 				m_oCondense->FromBool(true);
 			}
-			if(0 != grbit & 0x80)
+			if(0 != (grbit & 0x80))
 			{
 				m_oExtend.Init();
 				m_oExtend->FromBool(true);
@@ -142,7 +142,7 @@ namespace OOX
 			_INT16 nTintAndShade = oStream.GetShort();
 			_UINT32 rgba = oStream.GetULong();
 			m_oColor.Init();
-			if(0 != xColorType & 0x1)
+			if(0 != (xColorType & 0x1))
 			{
 				m_oColor->m_oRgb.Init();
 				m_oColor->m_oRgb->Set_R((unsigned char)(rgba & 0xFF));
@@ -150,12 +150,12 @@ namespace OOX
 				m_oColor->m_oRgb->Set_B((unsigned char)((rgba & 0xFF0000)>>16));
 				m_oColor->m_oRgb->Set_A((unsigned char)((rgba & 0xFF000000)>>24));
 			}
-			if(0 != xColorType & 0x2)
+			if(0 != (xColorType & 0x2))
 			{
 				m_oColor->m_oIndexed.Init();
 				m_oColor->m_oIndexed->SetValue(index);
 			}
-			else if(0 != xColorType & 0x6)
+			else if(0 != (xColorType & 0x6))
 			{
 				m_oColor->m_oThemeColor.Init();
 				SimpleTypes::Spreadsheet::EThemeColor eColor = SimpleTypes::Spreadsheet::themecolorDark1;
@@ -230,11 +230,11 @@ namespace OOX
 			m_oRFont->m_sVal.Init();
 			m_oRFont->m_sVal->append(oStream.GetString2());
 
-			oStream.Seek(nEnd);
+			//oStream.Seek(nEnd);
 		}
-		void CRPr::toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const
+		void CRPr::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
 		{
-			oStream.XlsbStartRecord();
+			//oStream.XlsbStartRecord();
 
 			_UINT16 dyHeight = 0;
 			if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
@@ -410,7 +410,7 @@ namespace OOX
 			oStream.WriteBYTE(bFontScheme);
 			oStream.WriteString(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit() ? m_oRFont->m_sVal.get() : L"");
 
-			oStream.XlsbEndRecord(XLSB::rt_FONT);
+			//oStream.XlsbEndRecord(XLSB::rt_FONT);
 		}
 
 	} //Spreadsheet

@@ -38,7 +38,7 @@
 namespace NSBinPptxRW
 {
 	class CBinaryFileReader;
-	class CStreamBinaryWriter;
+	class CXlsbBinaryWriter;
 }
 
 namespace OOX
@@ -818,7 +818,7 @@ namespace OOX
 			}
 
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
-			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
+			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 
 			virtual EElementType getType () const
 			{

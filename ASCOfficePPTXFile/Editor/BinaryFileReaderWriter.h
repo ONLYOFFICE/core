@@ -96,7 +96,6 @@ namespace NSBinPptxRW
 {
 	class CCommonWriter;
 	class CSeekTableEntry;
-	class CStreamBinaryWriter;
 
 	struct _imageManager2Info
 	{
@@ -412,18 +411,26 @@ namespace NSBinPptxRW
 	{
 	protected:
 		_UINT32 m_lPositionFlushed;
+	public:
+		CStreamBinaryWriter(size_t bufferSize = 16777216);
 
+		void CheckBufferSize(_UINT32 lPlus);
+		_UINT32 GetPosition();
+		void CloseFile();
+		virtual void Flush();
+	};
+	class CXlsbBinaryWriter : public CStreamBinaryWriter
+	{
+	protected:
+		bool		m_bIsSwapped;
 		BYTE*		m_pXlsbStreamData;
 		BYTE*		m_pXlsbStreamCur;
 		_UINT32		m_lXlsbSize;
 		_UINT32		m_lXlsbPosition;
 	public:
-		CStreamBinaryWriter(size_t bufferSize = 16777216);
-		~CStreamBinaryWriter();
+		CXlsbBinaryWriter(size_t bufferSize = 16777216);
+		~CXlsbBinaryWriter();
 
-		void CheckBufferSize(_UINT32 lPlus);
-		_UINT32 CStreamBinaryWriter::GetPosition();
-		void CloseFile();
 		void Flush();
 
 		void XlsbStartRecord();

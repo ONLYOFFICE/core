@@ -4910,9 +4910,14 @@ int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerWorksheetsTypes::XlsbPos == type)
 	{
+		int nOldPos = m_oBufferedStream.GetPos();
+		m_oBufferedStream.Seek(m_oBufferedStream.GetULong());
+
 		OOX::Spreadsheet::CSheetData oSheetData;
-		m_oBufferedStream.XlsbReadRecordType();//XLSB::rt_BEGIN_SHEET_DATA
 		oSheetData.fromXLSB(m_oBufferedStream, m_oBufferedStream.XlsbReadRecordType(), m_oSaveParams.pCSVWriter, *m_pCurStreamWriter);
+
+		m_oBufferedStream.Seek(nOldPos);
+		res = c_oSerConstants::ReadUnknown;
 	}
 	else if(c_oSerWorksheetsTypes::Row == type)
 	{

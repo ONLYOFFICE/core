@@ -99,7 +99,7 @@ namespace OOX
 			OOX::JsaProject*								m_pJsaProject;
             
 			WorkbookComments*								m_pWorkbookComments;
-			NSBinPptxRW::CStreamBinaryWriter*				m_pXlsbWriter;
+			NSBinPptxRW::CXlsbBinaryWriter*					m_pXlsbWriter;
 			int												m_nLastReadRow;
 			int												m_nLastReadCol;
 

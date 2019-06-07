@@ -98,6 +98,25 @@ namespace OOX
 			L"WLN", L"WLO", L"WLP", L"WLQ", L"WLR", L"WLS", L"WLT", L"WLU", L"WLV", L"WLW", L"WLX", L"WLY", L"WLZ", L"WMA", L"WMB", L"WMC", L"WMD", L"WME", L"WMF", L"WMG", L"WMH", L"WMI", L"WMJ", L"WMK", L"WML", L"WMM", L"WMN", L"WMO", L"WMP", L"WMQ", L"WMR", L"WMS", L"WMT", L"WMU", L"WMV", L"WMW", L"WMX", L"WMY", L"WMZ", L"WNA", L"WNB", L"WNC", L"WND", L"WNE", L"WNF", L"WNG", L"WNH", L"WNI", L"WNJ", L"WNK", L"WNL", L"WNM", L"WNN", L"WNO", L"WNP", L"WNQ", L"WNR", L"WNS", L"WNT", L"WNU", L"WNV", L"WNW", L"WNX", L"WNY", L"WNZ", L"WOA", L"WOB", L"WOC", L"WOD", L"WOE", L"WOF", L"WOG", L"WOH", L"WOI", L"WOJ", L"WOK", L"WOL", L"WOM", L"WON", L"WOO", L"WOP", L"WOQ", L"WOR", L"WOS", L"WOT", L"WOU", L"WOV", L"WOW", L"WOX", L"WOY", L"WOZ", L"WPA", L"WPB", L"WPC", L"WPD", L"WPE", L"WPF", L"WPG", L"WPH", L"WPI", L"WPJ", L"WPK", L"WPL", L"WPM", L"WPN", L"WPO", L"WPP", L"WPQ", L"WPR", L"WPS", L"WPT", L"WPU", L"WPV", L"WPW", L"WPX", L"WPY", L"WPZ", L"WQA", L"WQB", L"WQC", L"WQD", L"WQE", L"WQF", L"WQG", L"WQH", L"WQI", L"WQJ", L"WQK", L"WQL", L"WQM", L"WQN", L"WQO", L"WQP", L"WQQ", L"WQR", L"WQS", L"WQT", L"WQU", L"WQV", L"WQW", L"WQX", L"WQY", L"WQZ", L"WRA", L"WRB", L"WRC", L"WRD", L"WRE", L"WRF", L"WRG", L"WRH", L"WRI", L"WRJ", L"WRK", L"WRL", L"WRM", L"WRN", L"WRO", L"WRP", L"WRQ", L"WRR", L"WRS", L"WRT", L"WRU", L"WRV", L"WRW", L"WRX", L"WRY", L"WRZ", L"WSA", L"WSB", L"WSC", L"WSD", L"WSE", L"WSF", L"WSG", L"WSH", L"WSI", L"WSJ", L"WSK", L"WSL", L"WSM", L"WSN", L"WSO", L"WSP", L"WSQ", L"WSR", L"WSS", L"WST", L"WSU", L"WSV", L"WSW", L"WSX", L"WSY", L"WSZ", L"WTA", L"WTB", L"WTC", L"WTD", L"WTE", L"WTF", L"WTG", L"WTH", L"WTI", L"WTJ", L"WTK", L"WTL", L"WTM", L"WTN", L"WTO", L"WTP", L"WTQ", L"WTR", L"WTS", L"WTT", L"WTU", L"WTV", L"WTW", L"WTX", L"WTY", L"WTZ", L"WUA", L"WUB", L"WUC", L"WUD", L"WUE", L"WUF", L"WUG", L"WUH", L"WUI", L"WUJ", L"WUK", L"WUL", L"WUM", L"WUN", L"WUO", L"WUP", L"WUQ", L"WUR", L"WUS", L"WUT", L"WUU", L"WUV", L"WUW", L"WUX", L"WUY", L"WUZ", L"WVA", L"WVB", L"WVC", L"WVD", L"WVE", L"WVF", L"WVG", L"WVH", L"WVI", L"WVJ", L"WVK", L"WVL", L"WVM", L"WVN", L"WVO", L"WVP", L"WVQ", L"WVR", L"WVS", L"WVT", L"WVU", L"WVV", L"WVW", L"WVX", L"WVY", L"WVZ", 
 			L"WWA", L"WWB", L"WWC", L"WWD", L"WWE", L"WWF", L"WWG", L"WWH", L"WWI", L"WWJ", L"WWK", L"WWL", L"WWM", L"WWN", L"WWO", L"WWP", L"WWQ", L"WWR", L"WWS", L"WWT", L"WWU", L"WWV", L"WWW", L"WWX", L"WWY", L"WWZ", L"WXA", L"WXB", L"WXC", L"WXD", L"WXE", L"WXF", L"WXG", L"WXH", L"WXI", L"WXJ", L"WXK", L"WXL", L"WXM", L"WXN", L"WXO", L"WXP", L"WXQ", L"WXR", L"WXS", L"WXT", L"WXU", L"WXV", L"WXW", L"WXX", L"WXY", L"WXZ", L"WYA", L"WYB", L"WYC", L"WYD", L"WYE", L"WYF", L"WYG", L"WYH", L"WYI", L"WYJ", L"WYK", L"WYL", L"WYM", L"WYN", L"WYO", L"WYP", L"WYQ", L"WYR", L"WYS", L"WYT", L"WYU", L"WYV", L"WYW", L"WYX", L"WYY", L"WYZ", L"WZA", L"WZB", L"WZC", L"WZD", L"WZE", L"WZF", L"WZG", L"WZH", L"WZI", L"WZJ", L"WZK", L"WZL", L"WZM", L"WZN", L"WZO", L"WZP", L"WZQ", L"WZR", L"WZS", L"WZT", L"WZU", L"WZV", L"WZW", L"WZX", L"WZY", L"WZZ", L"XAA", L"XAB", L"XAC", L"XAD", L"XAE", L"XAF", L"XAG", L"XAH", L"XAI", L"XAJ", L"XAK", L"XAL", L"XAM", L"XAN", L"XAO", L"XAP", L"XAQ", L"XAR", L"XAS", L"XAT", L"XAU", L"XAV", L"XAW", L"XAX", L"XAY", L"XAZ", L"XBA", L"XBB", L"XBC", L"XBD", L"XBE", L"XBF", L"XBG", L"XBH", L"XBI", L"XBJ", L"XBK", L"XBL", L"XBM", L"XBN", L"XBO", L"XBP", L"XBQ", L"XBR", L"XBS", L"XBT", L"XBU", L"XBV", L"XBW", L"XBX", L"XBY", L"XBZ", L"XCA", L"XCB", L"XCC", L"XCD", L"XCE", L"XCF", L"XCG", L"XCH", L"XCI", L"XCJ", L"XCK", L"XCL", L"XCM", L"XCN", L"XCO", L"XCP", L"XCQ", L"XCR", L"XCS", L"XCT", L"XCU", L"XCV", L"XCW", L"XCX", L"XCY", L"XCZ", L"XDA", L"XDB", L"XDC", L"XDD", L"XDE", L"XDF", L"XDG", L"XDH", L"XDI", L"XDJ", L"XDK", L"XDL", L"XDM", L"XDN", L"XDO", L"XDP", L"XDQ", L"XDR", L"XDS", L"XDT", L"XDU", L"XDV", L"XDW", L"XDX", L"XDY", L"XDZ", L"XEA", L"XEB", L"XEC", L"XED", L"XEE", L"XEF", L"XEG", L"XEH", L"XEI", L"XEJ", L"XEK", L"XEL", L"XEM", L"XEN", L"XEO", L"XEP", L"XEQ", L"XER", L"XES", L"XET", L"XEU", L"XEV", L"XEW", L"XEX", L"XEY", L"XEZ", L"XFA", L"XFB", L"XFC", L"XFD" };
 
+		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<f"));
+			WritingStringNullableAttrString(L"t", m_oT, m_oT->ToString());
+			WritingStringNullableAttrBool(L"aca", m_oAca);
+			WritingStringNullableAttrString(L"ref", m_oRef, m_oRef.get());
+			WritingStringNullableAttrBool(L"dt2D", m_oDt2D);
+			WritingStringNullableAttrBool(L"dtr", m_oDtr);
+			WritingStringNullableAttrBool(L"del1", m_oDel1);
+			WritingStringNullableAttrBool(L"del2", m_oDel2);
+			WritingStringNullableAttrString(L"r1", m_oR1, m_oR1.get());
+			WritingStringNullableAttrString(L"r2", m_oR2, m_oR2.get());
+			WritingStringNullableAttrBool(L"ca", m_oCa);
+			WritingStringNullableAttrInt(L"si", m_oSi, m_oSi->GetValue());
+			WritingStringNullableAttrBool(L"bx", m_oBx);
+			writer.WriteString(_T(">"));
+			writer.WriteEncodeXmlString(m_sText);
+			writer.WriteString(_T("</f>"));
+		}
 		std::wstring CCell::combineRef(int nRow, int nCol)
 		{
 			if (nCol < 0 || nCol > 16383)
@@ -109,8 +128,6 @@ namespace OOX
 		void CCell::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(_T("<c"));
-			WritingStringNullableAttrInt(L"cm", m_oCellMetadata, m_oCellMetadata->GetValue());
-			WritingStringNullableAttrBool(L"ph", m_oShowPhonetic);
 			if (m_oRow.IsInit() && m_oCol.IsInit())
 			{
 				int nCol = m_oCol->GetValue();
@@ -134,14 +151,20 @@ namespace OOX
 				writer.WriteString(m_oType->ToString());
 				writer.WriteString(L"\"");
 			}
+			WritingStringNullableAttrInt(L"cm", m_oCellMetadata, m_oCellMetadata->GetValue());
 			WritingStringNullableAttrInt(L"vm", m_oValueMetadata, m_oValueMetadata->GetValue());
+			WritingStringNullableAttrBool(L"ph", m_oShowPhonetic);
 			if(m_oFormula.IsInit() || m_oRichText.IsInit() || m_oValue.IsInit())
 			{
 				writer.WriteString(_T(">"));
 				if(m_oFormula.IsInit())
 					m_oFormula->toXML(writer);
 				if(m_oRichText.IsInit())
+				{
+					writer.WriteString(_T("<is>"));
 					m_oRichText->toXML2(writer);
+					writer.WriteString(_T("</is>"));
+				}
 				if(m_oValue.IsInit())
 					m_oValue->toXML2(writer, _T("v"));
 				writer.WriteString(_T("</c>"));
@@ -154,14 +177,14 @@ namespace OOX
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
 			if (!xlsx) return;
 
-			if(false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
-
 			//for xml with empty cell reference
 			int nRow = 0;
 			int nCol = 0;
 			getRowCol(nRow, nCol);
 			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
 			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+
+			if(false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
 
 			if( !xlsx->m_pSharedStrings)
 			{	// еще не прочитался rels
@@ -236,20 +259,22 @@ namespace OOX
 				}
 			}
 		}
-		void CCell::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
+		void CCell::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow)
 		{
 			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
 
+			m_oRow.Init();
+			m_oRow->SetValue(nRow);
 			m_oCol.Init();
 			m_oCol->SetValue(oStream.GetULong());
 			_UINT32 nStyleRef = oStream.GetULong();
-			if(0 != nStyleRef & 0xFFFFFF)
+			if(0 != (nStyleRef & 0xFFFFFF))
 			{
 				m_oStyle.Init();
 				m_oStyle->SetValue(nStyleRef & 0xFFFFFF);
 			}
 
-			if(0 != nStyleRef & 0x1000000)
+			if(0 != (nStyleRef & 0x1000000))
 			{
 				m_oShowPhonetic.Init();
 				m_oShowPhonetic->FromBool(true);
@@ -288,7 +313,7 @@ namespace OOX
 			else if (XLSB::rt_CELL_REAL == nType || XLSB::rt_FMLA_NUM == nType)
 			{
 				m_oValue.Init();
-				m_oValue->m_sText = std::to_wstring(oStream.GetDoubleReal());
+				m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oStream.GetDoubleReal());
 			}
 			else if (XLSB::rt_CELL_ST == nType || XLSB::rt_FMLA_STRING == nType)
 			{
@@ -311,7 +336,7 @@ namespace OOX
 				BYTE nFlags = oStream.GetUChar();
 				oStream.Skip(1);
 				m_oFormula.Init();
-				if(0 != nFlags & 0x2)
+				if(0 != (nFlags & 0x2))
 				{
 					m_oFormula->m_oCa.Init();
 					m_oFormula->m_oCa->FromBool(true);
@@ -321,7 +346,7 @@ namespace OOX
 			}
 			//todo it breaks xslb format
 			_UINT16 nFlags = oStream.GetUShort();
-			if(0 != nFlags & 0x4)
+			if(0 != (nFlags & 0x4))
 			{
 				if(!m_oFormula.IsInit())
 				{
@@ -334,60 +359,63 @@ namespace OOX
 					m_oFormula->m_oT->SetValue(eType);
 				}
 				m_oFormula->m_sText = oStream.GetString2();
-				if(0 != nFlags & 0x8)
+				if(0 != (nFlags & 0x8))
 				{
 					m_oFormula->m_oAca.Init();
 					m_oFormula->m_oAca->FromBool(true);
 				}
-				if(0 != nFlags & 0x10)
+				if(0 != (nFlags & 0x10))
 				{
 					m_oFormula->m_oBx.Init();
 					m_oFormula->m_oBx->FromBool(true);
 				}
-				if(0 != nFlags & 0x20)
+				if(0 != (nFlags & 0x20))
 				{
 					m_oFormula->m_oDel1.Init();
 					m_oFormula->m_oDel1->FromBool(true);
 				}
-				if(0 != nFlags & 0x40)
+				if(0 != (nFlags & 0x40))
 				{
 					m_oFormula->m_oDel2.Init();
 					m_oFormula->m_oDel2->FromBool(true);
 				}
-				if(0 != nFlags & 0x80)
+				if(0 != (nFlags & 0x80))
 				{
 					m_oFormula->m_oDt2D.Init();
 					m_oFormula->m_oDt2D->FromBool(true);
 				}
-				if(0 != nFlags & 0x100)
+				if(0 != (nFlags & 0x100))
 				{
 					m_oFormula->m_oR1.Init();
 					m_oFormula->m_oR1->append(oStream.GetString2());
 				}
-				if(0 != nFlags & 0x200)
+				if(0 != (nFlags & 0x200))
 				{
 					m_oFormula->m_oR2.Init();
 					m_oFormula->m_oR2->append(oStream.GetString2());
 				}
-				if(0 != nFlags & 0x400)
+				if(0 != (nFlags & 0x400))
 				{
 					m_oFormula->m_oRef.Init();
 					m_oFormula->m_oRef->append(oStream.GetString2());
 				}
-				if(0 != nFlags & 0x800)
+				if(0 != (nFlags & 0x800))
 				{
 					m_oFormula->m_oSi.Init();
 					m_oFormula->m_oSi->SetValue(oStream.GetULong());
 				}
 			}
-			if(0 != nFlags & 0x1000)
+			if(0 != (nFlags & 0x1000))
 			{
+				m_oType.Init();
+				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+
 				m_oRichText.Init();
 				_UINT32 nCount = oStream.GetULong();
 				for(_UINT32 i = 0; i < nCount; ++i)
 				{
-					BYTE nType = oStream.GetUChar();
-					if(0x1 == nType)
+					BYTE nTypeRun = oStream.GetUChar();
+					if(0x1 == nTypeRun)
 					{
 						OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
 						if(oStream.GetBool())
@@ -404,7 +432,7 @@ namespace OOX
 						}
 						m_oRichText->m_arrItems.push_back(pRun);
 					}
-					else if(0x2 == nType)
+					else if(0x2 == nTypeRun)
 					{
 						OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 						pText->m_sText.append(oStream.GetString2());
@@ -416,7 +444,7 @@ namespace OOX
 
 			oStream.Seek(nEnd);
 		}
-		void CCell::toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const
+		void CCell::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
 		{
 			oStream.XlsbStartRecord();
 			int nRow = 0;
@@ -435,8 +463,9 @@ namespace OOX
 			}
 			oStream.WriteULONG(nStyleRef);
 
+			bool bForceFormula = false;
 			_UINT16 nType = XLSB::rt_CELL_BLANK;
-			if(m_oValue.IsInit() && m_oValue->m_sText.empty())
+			if(m_oValue.IsInit() && !m_oValue->m_sText.empty())
 			{
 				if(!m_oType.IsInit() || SimpleTypes::Spreadsheet::celltypeNumber == m_oType->GetValue())
 				{
@@ -509,13 +538,19 @@ namespace OOX
 					oOnOff.FromString(m_oValue->m_sText);
 					oStream.WriteBOOL(oOnOff.ToBool());
 				}
-				else if(SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
+				else if(SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue())
 				{
 					nType = XLSB::rt_CELL_ST;
 					oStream.WriteString(m_oValue->m_sText);
 				}
+				else if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
+				{
+					bForceFormula = true;
+					nType = XLSB::rt_CELL_ST;
+					oStream.WriteString(m_oValue->m_sText);
+				}
 			}
-			if(m_oFormula.IsInit())
+			if(m_oFormula.IsInit() || bForceFormula)
 			{
 				if(XLSB::rt_CELL_REAL == nType)
 				{
@@ -539,7 +574,7 @@ namespace OOX
 					oStream.WriteString(L"");
 				}
 				_UINT16 nFlags = 0;
-				if(m_oFormula->m_oCa.IsInit() && m_oFormula->m_oCa->ToBool())
+				if(m_oFormula.IsInit() && m_oFormula->m_oCa.IsInit() && m_oFormula->m_oCa->ToBool())
 				{
 					nFlags |= 0x2;
 				}
@@ -669,6 +704,26 @@ namespace OOX
 			oStream.XlsbEndRecord(nType);
 		}
 
+		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<row"));
+			WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
+			WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
+			WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
+			WritingStringNullableAttrDouble(L"ht", m_oHt, m_oHt->GetValue());
+			WritingStringNullableAttrBool(L"hidden", m_oHidden);
+			WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
+			WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
+			WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
+			WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
+			WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
+			WritingStringNullableAttrBool(L"ph", m_oPh);
+			writer.WriteString(_T(">"));
+		}
+		void CRow::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("</row>"));
+		}
 		void CRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -727,14 +782,14 @@ namespace OOX
 			m_oR.Init();
 			m_oR->SetValue(oStream.GetULong() & 0xFFFFF);
 			_UINT32 nS = oStream.GetULong();
-			_UINT16 nHt = (oStream.GetUShort() & 0x1FFF) / 20;//twips to pt
+			_UINT16 nHt = oStream.GetUShort() & 0x1FFF;
 			BYTE byteExtra1 = oStream.GetUChar();
-			if(0 != byteExtra1 & 0x1)
+			if(0 != (byteExtra1 & 0x1))
 			{
 				m_oThickTop.Init();
 				m_oThickTop->FromBool(true);
 			}
-			if(0 != byteExtra1 & 0x2)
+			if(0 != (byteExtra1 & 0x2))
 			{
 				m_oThickBot.Init();
 				m_oThickBot->FromBool(true);
@@ -746,38 +801,38 @@ namespace OOX
 				m_oOutlineLevel.Init();
 				m_oOutlineLevel->SetValue(nOutlineLevel);
 			}
-			if(0 != byteExtra2 & 0x8)
+			if(0 != (byteExtra2 & 0x8))
 			{
 				m_oCollapsed.Init();
 				m_oCollapsed->FromBool(true);
 			}
-			if(0 != byteExtra2 & 0x10)
+			if(0 != (byteExtra2 & 0x10))
 			{
 				m_oHidden.Init();
 				m_oHidden->FromBool(true);
 			}
-			if(0 != byteExtra2 & 0x20)
+			if(0 != (byteExtra2 & 0x20))
 			{
 				m_oCustomHeight.Init();
 				m_oCustomHeight->FromBool(true);
 			}
-			if(0 != nHt || m_oCustomHeight->ToBool())
+			if(0 != nHt || (m_oCustomHeight.IsInit() && m_oCustomHeight->ToBool()))
 			{
 				m_oHt.Init();
-				m_oHt->SetValue(nHt);
+				m_oHt->SetValue(((double)nHt) / 20);//twips to pt
 			}
-			if(0 != byteExtra2 & 0x40)
+			if(0 != (byteExtra2 & 0x40))
 			{
 				m_oCustomFormat.Init();
 				m_oCustomFormat->FromBool(true);
 			}
-			if(m_oCustomFormat->ToBool())
+			if(m_oCustomFormat.IsInit() && m_oCustomFormat->ToBool())
 			{
 				m_oS.Init();
 				m_oS->SetValue(nS);
 			}
 			BYTE byteExtra3 = oStream.GetUChar();
-			if(0 != byteExtra3 & 0x1)
+			if(0 != (byteExtra3 & 0x1))
 			{
 				m_oPh.Init();
 				m_oPh->FromBool(true);
@@ -785,7 +840,7 @@ namespace OOX
 			//todo ccolspan
 			oStream.Seek(nEnd);
 		}
-		void CRow::toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const
+		void CRow::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
 		{
 			oStream.XlsbStartRecord();
 			_UINT32 nRow = 0;
@@ -875,7 +930,7 @@ namespace OOX
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
 			if (xlsx && xlsx->m_pXlsbWriter)
 			{
-				NSBinPptxRW::CStreamBinaryWriter &oStream = *xlsx->m_pXlsbWriter;
+				NSBinPptxRW::CXlsbBinaryWriter& oStream = *xlsx->m_pXlsbWriter;
 				m_oXlsbPos.Init();
 				m_oXlsbPos->SetValue(oStream.GetPosition());
 
@@ -922,19 +977,19 @@ namespace OOX
 		}
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
-			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
+			oStream.XlsbSkipRecord();//XLSB::rt_BEGIN_SHEET_DATA
 
 			CRow* pRow = NULL;
 			LONG nOldPos = -1;
 			while (nOldPos != oStream.GetPos())
 			{
 				nOldPos = oStream.GetPos();
-				_UINT16 nType = oStream.XlsbReadRecordType();
+				nType = oStream.XlsbReadRecordType();
 				if (XLSB::rt_CELL_BLANK <= nType && nType <= XLSB::rt_FMLA_ERROR)
 				{
 					CCell oCell;
 					oCell.m_pMainDocument = m_pMainDocument;
-					oCell.fromXLSB(oStream, nType);
+					oCell.fromXLSB(oStream, nType, pRow->m_oR->GetValue() - 1);
 					fromXLSBToXmlCell(oCell, pCSVWriter, oStreamWriter);
 				}
 				else if (XLSB::rt_ROW_HDR == nType)
@@ -957,9 +1012,7 @@ namespace OOX
 				{
 					oStream.XlsbSkipRecord();
 				}
-
 			}
-			oStream.Seek(nEnd);
 		}
 		void CSheetData::fromXLSBToXmlCell (CCell& oCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
@@ -999,7 +1052,7 @@ namespace OOX
 			}
 			return pRow;
 		}
-		void CSheetData::toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const
+		void CSheetData::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
 		{
 			oStream.XlsbStartRecord();
 			oStream.XlsbEndRecord(XLSB::rt_BEGIN_SHEET_DATA);

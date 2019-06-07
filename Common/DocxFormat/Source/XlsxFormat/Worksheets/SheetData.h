@@ -40,7 +40,7 @@
 namespace NSBinPptxRW
 {
 	class CBinaryFileReader;
-	class CStreamBinaryWriter;
+	class CXlsbBinaryWriter;
 }
 namespace CSVWriter
 {
@@ -72,25 +72,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<f"));
-				WritingStringNullableAttrBool(L"aca", m_oAca);
-				WritingStringNullableAttrBool(L"bx", m_oBx);
-				WritingStringNullableAttrBool(L"ca", m_oCa);
-				WritingStringNullableAttrBool(L"del1", m_oDel1);
-				WritingStringNullableAttrBool(L"del2", m_oDel2);
-				WritingStringNullableAttrBool(L"dt2D", m_oDt2D);
-				WritingStringNullableAttrBool(L"dtr", m_oDtr);
-				WritingStringNullableAttrString(L"r1", m_oR1, m_oR1.get());
-				WritingStringNullableAttrString(L"r2", m_oR2, m_oR2.get());
-				WritingStringNullableAttrString(L"ref", m_oRef, m_oRef.get());
-				WritingStringNullableAttrInt(L"si", m_oSi, m_oSi->GetValue());
-				WritingStringNullableAttrString(L"t", m_oT, m_oT->ToString());
-                writer.WriteString(_T(">"));
-                writer.WriteEncodeXmlString(m_sText);
-				writer.WriteString(_T("</f>"));
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
@@ -184,8 +166,8 @@ namespace OOX
 				}
 				PrepareForBinaryWriter();
 			}
-			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
-			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
+			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 
 			virtual EElementType getType () const
 			{
@@ -398,29 +380,11 @@ namespace OOX
 				
 				toXMLEnd(writer);
 			}
-			virtual void toXMLStart(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<row"));
-				WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
-				WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
-				WritingStringNullableAttrDouble(L"ht", m_oHt, m_oHt->GetValue());
-				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
-				WritingStringNullableAttrBool(L"hidden", m_oHidden);
-				WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
-				WritingStringNullableAttrBool(L"ph", m_oPh);
-				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
-				WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
-				WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
-				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
-				writer.WriteString(_T(">"));
-			}
-			virtual void toXMLEnd(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("</row>"));
-			}
+			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
+			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
-			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
+			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			virtual EElementType getType () const
 			{
 				return et_x_Row;
@@ -502,7 +466,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-			void toXLSB (NSBinPptxRW::CStreamBinaryWriter &oStream) const;
+			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			virtual EElementType getType () const
 			{
 				return et_x_SheetData;

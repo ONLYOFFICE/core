@@ -294,6 +294,7 @@ namespace BinXlsxRW
 	private:
 		BinaryCommonWriter* m_oBcw;
 		int m_nLastFilePos;
+		int m_nLastFilePosOffset;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 		DocWrapper::FontProcessor& m_oFontProcessor;

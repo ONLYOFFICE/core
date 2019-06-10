@@ -726,6 +726,17 @@ namespace NSBinPptxRW
 		m_lPosition += UINT16_SIZEOF;
 		m_pStreamCur += UINT16_SIZEOF;
 	}
+	void CBinaryFileWriter::WriteSHORT(const _INT16& lValue)
+	{
+		CheckBufferSize(INT16_SIZEOF);
+#if defined(_IOS) || defined(__ANDROID__)
+		memcpy(m_pStreamCur, &lValue, sizeof(_INT16));
+#else
+		*((_INT16*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
+#endif
+		m_lPosition += INT16_SIZEOF;
+		m_pStreamCur += INT16_SIZEOF;
+	}
 	void CBinaryFileWriter::WriteULONG(const _UINT32& lValue)
 	{
 		CheckBufferSize(UINT32_SIZEOF);
@@ -1229,11 +1240,15 @@ namespace NSBinPptxRW
 		for (int i = 0; i < 4; ++i)
 		{
 			BYTE nPart = nLen & 0x7F;
-			WriteBYTE(nPart);
 			nLen = nLen >> 7;
 			if(nLen == 0)
 			{
+				WriteBYTE(nPart);
 				break;
+			}
+			else
+			{
+				WriteBYTE(nPart | 0x80);
 			}
 		}
 		//Data

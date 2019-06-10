@@ -288,6 +288,7 @@ namespace NSBinPptxRW
 		void WriteSBYTE	(const signed char& lValue);
 		void WriteBOOL	(const bool& bValue);
 		void WriteUSHORT(const _UINT16& lValue);
+		void WriteSHORT(const _INT16& lValue);
 		
 		void WriteULONG	(const _UINT32& lValue);
 		void WriteLONG	(const _INT32& lValue);

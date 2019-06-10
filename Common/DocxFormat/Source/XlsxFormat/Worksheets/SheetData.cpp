@@ -386,26 +386,31 @@ namespace OOX
 				}
 				if(0 != (nFlags & 0x100))
 				{
+					m_oFormula->m_oDtr.Init();
+					m_oFormula->m_oDtr->FromBool(true);
+				}
+				if(0 != (nFlags & 0x200))
+				{
 					m_oFormula->m_oR1.Init();
 					m_oFormula->m_oR1->append(oStream.GetString2());
 				}
-				if(0 != (nFlags & 0x200))
+				if(0 != (nFlags & 0x400))
 				{
 					m_oFormula->m_oR2.Init();
 					m_oFormula->m_oR2->append(oStream.GetString2());
 				}
-				if(0 != (nFlags & 0x400))
+				if(0 != (nFlags & 0x800))
 				{
 					m_oFormula->m_oRef.Init();
 					m_oFormula->m_oRef->append(oStream.GetString2());
 				}
-				if(0 != (nFlags & 0x800))
+				if(0 != (nFlags & 0x1000))
 				{
 					m_oFormula->m_oSi.Init();
 					m_oFormula->m_oSi->SetValue(oStream.GetULong());
 				}
 			}
-			if(0 != (nFlags & 0x1000))
+			if(0 != (nFlags & 0x2000))
 			{
 				m_oType.Init();
 				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
@@ -421,7 +426,7 @@ namespace OOX
 						if(oStream.GetBool())
 						{
 							pRun->m_oRPr.Init();
-							pRun->m_oRPr->fromXLSB(oStream, oStream.XlsbReadRecordType());
+							pRun->m_oRPr->fromXLSB(oStream, XLSB::rt_FONT);
 						}
 						_UINT32 nTextCount = oStream.GetULong();
 						for(_UINT32 j = 0; j < nTextCount; ++j)
@@ -596,46 +601,50 @@ namespace OOX
 					nFlags2 |= SimpleTypes::Spreadsheet::cellformulatypeNormal;
 				}
 				nFlags2 |= 0x4;
-				if(m_oFormula->m_oAca.IsInit())
+				if(m_oFormula->m_oAca.IsInit() && m_oFormula->m_oAca->ToBool())
 				{
 					nFlags2 |= 0x8;
 				}
-				if(m_oFormula->m_oBx.IsInit())
+				if(m_oFormula->m_oBx.IsInit() && m_oFormula->m_oBx->ToBool())
 				{
 					nFlags2 |= 0x10;
 				}
-				if(m_oFormula->m_oDel1.IsInit())
+				if(m_oFormula->m_oDel1.IsInit() && m_oFormula->m_oDel1->ToBool())
 				{
 					nFlags2 |= 0x20;
 				}
-				if(m_oFormula->m_oDel2.IsInit())
+				if(m_oFormula->m_oDel2.IsInit() && m_oFormula->m_oDel2->ToBool())
 				{
 					nFlags2 |= 0x40;
 				}
-				if(m_oFormula->m_oDt2D.IsInit())
+				if(m_oFormula->m_oDt2D.IsInit() && m_oFormula->m_oDt2D->ToBool())
 				{
 					nFlags2 |= 0x80;
 				}
-				if(m_oFormula->m_oR1.IsInit())
+				if(m_oFormula->m_oDtr.IsInit() && m_oFormula->m_oDtr->ToBool())
 				{
 					nFlags2 |= 0x100;
 				}
-				if(m_oFormula->m_oR2.IsInit())
+				if(m_oFormula->m_oR1.IsInit())
 				{
 					nFlags2 |= 0x200;
 				}
-				if(m_oFormula->m_oRef.IsInit())
+				if(m_oFormula->m_oR2.IsInit())
 				{
 					nFlags2 |= 0x400;
 				}
-				if(m_oFormula->m_oSi.IsInit())
+				if(m_oFormula->m_oRef.IsInit())
 				{
 					nFlags2 |= 0x800;
+				}
+				if(m_oFormula->m_oSi.IsInit())
+				{
+					nFlags2 |= 0x1000;
 				}
 			}
 			if(m_oRichText.IsInit())
 			{
-				nFlags2 |= 0x1000;
+				nFlags2 |= 0x2000;
 			}
 			oStream.WriteUSHORT(nFlags2);
 			if(m_oFormula.IsInit())
@@ -674,9 +683,9 @@ namespace OOX
 							pRun->m_oRPr->toXLSB(oStream);
 						}
 						oStream.WriteULONG(pRun->m_arrItems.size());
-						for(size_t i = 0, length = pRun->m_arrItems.size(); i < length; ++i)
+						for(size_t j = 0, length = pRun->m_arrItems.size(); j < length; ++j)
 						{
-							OOX::Spreadsheet::WritingElement* we = pRun->m_arrItems[i];
+							OOX::Spreadsheet::WritingElement* we = pRun->m_arrItems[j];
 							if(OOX::et_x_t == we->getType())
 							{
 								OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(we);

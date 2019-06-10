@@ -150,12 +150,13 @@ namespace OOX
 				m_oColor->m_oRgb->Set_B((unsigned char)((rgba & 0xFF0000)>>16));
 				m_oColor->m_oRgb->Set_A((unsigned char)((rgba & 0xFF000000)>>24));
 			}
-			if(0 != (xColorType & 0x2))
+			xColorType &= 0xFE;
+			if(0x2 == xColorType)
 			{
 				m_oColor->m_oIndexed.Init();
 				m_oColor->m_oIndexed->SetValue(index);
 			}
-			else if(0 != (xColorType & 0x6))
+			else if(0x6 == xColorType)
 			{
 				m_oColor->m_oThemeColor.Init();
 				SimpleTypes::Spreadsheet::EThemeColor eColor = SimpleTypes::Spreadsheet::themecolorDark1;
@@ -203,7 +204,7 @@ namespace OOX
 			if(0 != nTintAndShade)
 			{
 				m_oColor->m_oTint.Init();
-				m_oColor->m_oTint->SetValue(((double)nTintAndShade) / 0xFFFF);
+				m_oColor->m_oTint->SetValue(((double)nTintAndShade) / 0x7FFF);
 			}
 			if(!m_oColor->m_oThemeColor.IsInit() && !m_oColor->m_oRgb.IsInit() && !m_oColor->m_oIndexed.IsInit())
 			{
@@ -216,7 +217,7 @@ namespace OOX
 			{
 				m_oScheme.Init();
 				m_oScheme->m_oFontScheme.Init();
-				switch(sss)
+				switch(bFontScheme)
 				{
 					case 0x01:
 						m_oScheme->m_oFontScheme->SetValue(SimpleTypes::Spreadsheet::fontschemeMajor);
@@ -284,9 +285,13 @@ namespace OOX
 			}
 			oStream.WriteUSHORT(sss);
 			BYTE uls = 0;
-			if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
+			if(m_oUnderline.IsInit())
 			{
-				switch(m_oUnderline->m_oUnderline->GetValue())
+				SimpleTypes::Spreadsheet::EUnderline eType = SimpleTypes::Spreadsheet::underlineSingle;
+				if(m_oUnderline->m_oUnderline.IsInit())
+					eType = m_oUnderline->m_oUnderline->GetValue();
+
+				switch(eType)
 				{
 					case SimpleTypes::Spreadsheet::underlineSingle:
 						uls = 0x01;
@@ -316,15 +321,16 @@ namespace OOX
 			}
 			oStream.WriteBYTE(bCharSet);
 			oStream.WriteBYTE(0);
+			BYTE xColorType = 0;
+			_UINT32 rgba = 0;
+			BYTE index = 0;
+			_INT16 nTintAndShade = 0;
 			if(m_oColor.IsInit())
 			{
-				BYTE xColorType = 0;
-				_UINT32 rgba = 0;
-				BYTE index = 0;
-				_INT16 nTintAndShade = 0;
 				if(m_oColor->m_oRgb.IsInit())
 				{
-					xColorType |= 5;
+					xColorType |= 0x1;
+					xColorType |= 0x4;
 					rgba = m_oColor->m_oRgb->Get_R() | (m_oColor->m_oRgb->Get_G() << 8) | (m_oColor->m_oRgb->Get_B() << 16) | (m_oColor->m_oRgb->Get_A() << 24);
 				}
 				else if(m_oColor->m_oIndexed.IsInit())
@@ -335,62 +341,63 @@ namespace OOX
 					BYTE ucB;
 					if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(m_oColor->m_oIndexed->GetValue(), ucR, ucG, ucB, ucA))
 					{
-						xColorType |= 5;
+						xColorType |= 0x1;
+						xColorType |= 0x4;
 						rgba = ucR | (ucG << 8) | (ucB << 16) | (ucA << 24);
 					}
 				}
 				else if(m_oColor->m_oThemeColor.IsInit())
 				{
-					xColorType |= 6;
+					xColorType |= 0x6;
 					switch(m_oColor->m_oThemeColor->GetValue())
 					{
 						case SimpleTypes::Spreadsheet::themecolorLight1:
-							uls = 0x01;
+							index = 0x01;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorDark1:
-							uls = 0x00;
+							index = 0x00;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorLight2:
-							uls = 0x03;
+							index = 0x03;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorDark2:
-							uls = 0x02;
+							index = 0x02;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorAccent1:
-							uls = 0x04;
+							index = 0x04;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorAccent2:
-							uls = 0x05;
+							index = 0x05;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorAccent3:
-							uls = 0x06;
+							index = 0x06;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorAccent4:
-							uls = 0x07;
+							index = 0x07;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorAccent5:
-							uls = 0x08;
+							index = 0x08;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorAccent6:
-							uls = 0x09;
+							index = 0x09;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorHyperlink:
-							uls = 0x0A;
+							index = 0x0A;
 							break;
 						case SimpleTypes::Spreadsheet::themecolorFollowedHyperlink:
-							uls = 0x0B;
+							index = 0x0B;
 							break;
 					}
 				}
 				if(m_oColor->m_oTint.IsInit())
 				{
-					nTintAndShade = _UINT16(0xFFFF * m_oColor->m_oTint->GetValue());
+					nTintAndShade = _INT16(0x7FFF * m_oColor->m_oTint->GetValue());
 				}
-				oStream.WriteBYTE(xColorType);
-				oStream.WriteBYTE(index);
-				oStream.WriteLONG(nTintAndShade);
-				oStream.WriteULONG(rgba);
 			}
+			oStream.WriteBYTE(xColorType);
+			oStream.WriteBYTE(index);
+			oStream.WriteSHORT(nTintAndShade);
+			oStream.WriteULONG(rgba);
 			BYTE bFontScheme = 0;
 			if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
 			{

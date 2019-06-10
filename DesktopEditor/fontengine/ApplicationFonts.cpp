@@ -1493,12 +1493,16 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
 	InitFromReg();
 #endif
 
-#if defined(_LINUX) && !defined(_MAC)
+#if defined(_LINUX) && !defined(_MAC) && !defined(__ANDROID__)
 	m_oList.LoadFromFolder(L"/usr/share/fonts");
 #endif
 
 #if defined(_MAC) && !defined(_IOS)
 	m_oList.LoadFromFolder(L"/Library/Fonts/");
+#endif
+
+#ifdef __ANDROID__
+    m_oList.LoadFromFolder(L"/system/fonts");
 #endif
 
 	m_oCache.m_pApplicationFontStreams = &m_oStreams;

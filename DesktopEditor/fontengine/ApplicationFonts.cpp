@@ -1648,7 +1648,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
     return oArray;
 #endif
 
-#if defined(__linux__) && !defined(_MAC)
+#if defined(__linux__) && !defined(_MAC) && !defined(__ANDROID__)
      std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/usr/share/fonts", true);
      NSDirectory::GetFiles2(L"/usr/share/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
@@ -1665,6 +1665,11 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #ifdef _IOS
     // own realization (objective c code)
     return GetSetupFontFiles_ios();
+#endif
+
+#ifdef __ANDROID__
+    std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/system/fonts", true);
+    return _array;
 #endif
 
 	std::vector<std::wstring> ret;

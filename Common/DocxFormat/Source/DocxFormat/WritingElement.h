@@ -91,6 +91,15 @@ namespace OOX
     while( !wsName.empty() )\
 	{
 
+#define WritingElement_ReadAttributes_StartChar(Reader) \
+	if ( Reader.GetAttributesCount() <= 0 )\
+		return;\
+	if ( !Reader.MoveToFirstAttribute() )\
+		return;\
+	const char* wsName = Reader.GetNameChar();\
+	while( strlen(wsName) == 0 )\
+	{
+
 #define WritingElement_ReadAttributes_Start_No_NS(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
 		return;\
@@ -106,9 +115,19 @@ namespace OOX
             Value = Reader.GetText();\
         }
 
+#define WritingElement_ReadAttributes_Read_ifChar(Reader, AttrName, Value) \
+		if ( strcmp(AttrName, wsName) != 0 )\
+		{\
+			Value = Reader.GetText();\
+		}
+
 #define WritingElement_ReadAttributes_Read_else_if(Reader, AttrName, Value) \
 		else if ( AttrName == wsName )\
             Value = Reader.GetText();
+
+#define WritingElement_ReadAttributes_Read_else_ifChar(Reader, AttrName, Value) \
+		else if ( strcmp(AttrName, wsName) != 0 )\
+			Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \
 		if ( AttrName == wsName )\
@@ -121,6 +140,13 @@ namespace OOX
 		if ( !Reader.MoveToNextAttribute() ) \
 			break;\
 		wsName = Reader.GetName();\
+	}\
+	Reader.MoveToElement();
+
+#define WritingElement_ReadAttributes_EndChar(Reader) \
+		if ( !Reader.MoveToNextAttribute() ) \
+			break;\
+		wsName = Reader.GetNameChar();\
 	}\
 	Reader.MoveToElement();
 

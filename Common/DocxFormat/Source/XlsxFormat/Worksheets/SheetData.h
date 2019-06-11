@@ -145,27 +145,7 @@ namespace OOX
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("f") == sName )
-						m_oFormula = oReader;
-					else if ( _T("is") == sName )
-						m_oRichText = oReader;
-					else if ( _T("v") == sName )
-						m_oValue = oReader;
-				}
-				PrepareForBinaryWriter();
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 
@@ -182,7 +162,8 @@ namespace OOX
 			{
 				if (m_oRef.IsInit())
 				{
-					return m_oRef.get();
+					const std::string& s = m_oRef.get();
+					return std::wstring(s.begin(), s.end());
 				}
 				else if (m_oRow.IsInit() && m_oCol.IsInit())
 				{
@@ -195,28 +176,27 @@ namespace OOX
 			}
 			void setRef(const std::wstring& sRef) 
 			{
-				m_oRef = sRef;
+				m_oRef = std::string(sRef.begin(), sRef.end());
 			}
 			bool getRowCol(int& nRow, int& nCol) const
 			{
 				bool bRes = false;
 				nRow = 0;
 				nCol = 0;
-				if (m_oRef.IsInit())
+				if (m_oRow.IsInit() && m_oCol.IsInit())
 				{
-					if (parseRef(m_oRef.get(), nRow, nCol))
+					bRes = true;
+					nRow = m_oRow->GetValue();
+					nCol = m_oCol->GetValue();
+				}
+				else if (m_oRef.IsInit())
+				{
+					if (parseRefA(m_oRef->c_str(), nRow, nCol))
 					{
 						bRes = true;
 						nRow--;
 						nCol--;
 					}
-
-				}
-				else if (m_oRow.IsInit() && m_oCol.IsInit())
-				{
-					bRes = true;
-					nRow = m_oRow->GetValue();
-					nCol = m_oCol->GetValue();
 				}
 				return bRes;
 			}
@@ -281,58 +261,14 @@ namespace OOX
 				}
 				return bRes;
 			}
-			static bool parseRef(std::wstring sRef, int& nRow, int& nCol)
-			{
-				bool bRes = false;
-
-				nRow = 0;
-				nCol = 0;
-				int nLegnth = (int)sRef.length();
-				if (nLegnth > 0)
-				{
-					int nIndex = 0;
-					NSStringExt::ToUpper(sRef);
-                    wchar_t cCurLetter = sRef[nIndex];
-					while ('A' <= cCurLetter && cCurLetter <= 'Z' && nIndex < nLegnth)
-					{
-						nIndex++;
-						cCurLetter = sRef[nIndex];
-					}
-					if (nIndex > 0)
-					{
-						std::wstring sAdd = sRef.substr(0, nIndex);
-						std::wstring sDig = sRef.substr(nIndex, nLegnth - nIndex);
-						for (size_t i = 0, length = sAdd.length(); i < length; ++i)
-						{
-							nCol = nCol * 26 + sAdd[i] - 'A' + 1;
-						}
-						if (!sDig.empty())
-						{
-							nRow = _wtoi(sDig.c_str());
-							bRes = true;
-						}
-					}
-				}
-				return bRes;
-			}
+			static bool parseRef(std::wstring sRef, int& nRow, int& nCol);
+			static bool parseRefA(const char* sRef, int& nRow, int& nCol);
 			static std::wstring combineRef(int nRow, int nCol);
 		private:
 			void PrepareForBinaryWriter();
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("cm"), m_oCellMetadata )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("ph"), m_oShowPhonetic )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("r"), m_oRef )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("s"), m_oStyle )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("t"), m_oType )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("vm"), m_oValueMetadata )
-
-					WritingElement_ReadAttributes_End( oReader )
-			}
-
-			nullable<std::wstring>								m_oRef;
+			nullable<std::string>								m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRow;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCol;
 		public:
@@ -392,23 +328,7 @@ namespace OOX
 
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),		m_oCollapsed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customFormat"),    m_oCustomFormat )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),    m_oCustomHeight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),			m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ht"),				m_oHt )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevel"),    m_oOutlineLevel )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ph"),				m_oPh )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r"),				m_oR )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("s"),				m_oS )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickBot"),		m_oThickBot )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickTop"),		m_oThickTop )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x14ac:dyDescent"),	m_oDyDescent )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			void CheckIndex();
 
 		public:

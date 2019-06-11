@@ -126,6 +126,10 @@ namespace XmlUtils
 	{
 		return m_pInternal->GetNameA();
 	}
+	const char* CXmlLiteReader::GetNameChar()
+	{
+		return m_pInternal->GetNameChar();
+	}
 	int CXmlLiteReader::GetDepth()
 	{
 		return m_pInternal->GetDepth();
@@ -142,6 +146,10 @@ namespace XmlUtils
 	std::string CXmlLiteReader::GetTextA()
 	{
 		return m_pInternal->GetTextA();
+	}
+	const char* CXmlLiteReader::GetTextChar()
+	{
+		return m_pInternal->GetTextChar();
 	}
 
 	std::wstring CXmlLiteReader::GetText2()

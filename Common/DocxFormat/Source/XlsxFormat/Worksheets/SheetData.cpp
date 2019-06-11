@@ -117,6 +117,32 @@ namespace OOX
 			writer.WriteEncodeXmlString(m_sText);
 			writer.WriteString(_T("</f>"));
 		}
+		bool CCell::parseRef(std::wstring sRef, int& nRow, int& nCol)
+		{
+			std::string sResA(sRef.begin(), sRef.end());
+			return parseRefA(sResA.c_str(), nRow, nCol);
+		}
+		bool CCell::parseRefA(const char* sRef, int& nRow, int& nCol)
+		{
+			bool bRes = false;
+			nRow = 0;
+			nCol = 0;
+			size_t len = strlen(sRef);
+			for(size_t i = 0; i < len; ++i)
+			{
+				if(!('0' <= sRef[i] && sRef[i] <= '9'))
+				{
+					nCol = nCol * 26 + sRef[0] - 'A' + 1;
+				}
+				else
+				{
+					nRow = atoi(sRef + i);
+					bRes = true;
+					break;
+				}
+			}
+			return bRes;
+		}
 		std::wstring CCell::combineRef(int nRow, int nCol)
 		{
 			if (nCol < 0 || nCol > 16383)
@@ -142,7 +168,7 @@ namespace OOX
 			}
 			else
 			{
-				WritingStringNullableAttrString(L"r", m_oRef, m_oRef.get());
+				WritingStringNullableAttrString(L"r", m_oRef, getRef());
 			}
 			WritingStringNullableAttrInt(L"s", m_oStyle, m_oStyle->GetValue());
 			if(m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != m_oType->GetValue())
@@ -171,6 +197,27 @@ namespace OOX
 			}
 			else
 				writer.WriteString(_T("/>"));
+		}
+		void CCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				const char* sName = oReader.GetNameChar();
+
+				if ( strcmp("v", sName) != 0 )
+					m_oValue = oReader;
+				else if ( strcmp("f", sName) != 0 )
+					m_oFormula = oReader;
+				else if ( strcmp("is", sName) != 0 )
+					m_oRichText = oReader;
+			}
+			PrepareForBinaryWriter();
 		}
 		void CCell::PrepareForBinaryWriter()
 		{
@@ -712,6 +759,22 @@ namespace OOX
 
 			oStream.XlsbEndRecord(nType);
 		}
+		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
+
+				if (strcmp("r", wsName) != 0)
+				{
+					m_oRef = oReader.GetTextA();
+				}
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "s", m_oStyle )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "t", m_oType )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "cm", m_oCellMetadata )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "vm", m_oValueMetadata )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ph", m_oShowPhonetic )
+
+				WritingElement_ReadAttributes_EndChar( oReader )
+		}
 
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -750,9 +813,9 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					const char* sName = oReader.GetNameChar();
 
-					if ( _T("c") == sName )
+					if ( strcmp("c", sName) != 0 )
 					{
 						CCell oCell;
 						oCell.m_pMainDocument = m_pMainDocument;
@@ -769,9 +832,9 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					const char* sName = oReader.GetNameChar();
 
-					if ( _T("c") == sName )
+					if ( strcmp("c", sName) != 0 )
 					{
 						CCell *pCell = new CCell();
 						if (pCell)
@@ -929,6 +992,23 @@ namespace OOX
 				xlsx->m_nLastReadRow = m_oR->GetValue();
 			}
 			xlsx->m_nLastReadCol = 0;
+		}
+		void CRow::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
+				WritingElement_ReadAttributes_Read_ifChar     ( oReader, "r",				m_oR )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "s",				m_oS )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "customFormat",    m_oCustomFormat )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "ht",				m_oHt )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "hidden",			m_oHidden )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "customHeight",    m_oCustomHeight )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "outlineLevel",    m_oOutlineLevel )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "collapsed",		m_oCollapsed )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "x14ac:dyDescent",	m_oDyDescent )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "thickBot",		m_oThickBot )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "thickTop",		m_oThickTop )
+				WritingElement_ReadAttributes_Read_else_ifChar     ( oReader, "ph",				m_oPh )
+			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{

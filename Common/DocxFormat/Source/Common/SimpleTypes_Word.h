@@ -6736,6 +6736,14 @@ namespace SimpleTypes
 
             return this->m_eValue;
 		}
+		EXmlSpace FromStringA(const char* pValue)
+		{
+			if       ( strcmp("default", pValue)  == 0 ) this->m_eValue = xmlspaceDefault;
+			else if  ( strcmp("preserve", pValue) == 0 ) this->m_eValue = xmlspacePreserve;
+			else                                  this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
 
         virtual std::wstring   ToString  () const
 		{

@@ -97,7 +97,7 @@ namespace OOX
 	if ( !Reader.MoveToFirstAttribute() )\
 		return;\
 	const char* wsName = Reader.GetNameChar();\
-	while( strlen(wsName) == 0 )\
+	while( strlen(wsName) != 0 )\
 	{
 
 #define WritingElement_ReadAttributes_Start_No_NS(Reader) \
@@ -116,7 +116,7 @@ namespace OOX
         }
 
 #define WritingElement_ReadAttributes_Read_ifChar(Reader, AttrName, Value) \
-		if ( strcmp(AttrName, wsName) != 0 )\
+		if ( strcmp(AttrName, wsName) == 0 )\
 		{\
 			Value = Reader.GetText();\
 		}
@@ -126,7 +126,7 @@ namespace OOX
             Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_Read_else_ifChar(Reader, AttrName, Value) \
-		else if ( strcmp(AttrName, wsName) != 0 )\
+		else if ( strcmp(AttrName, wsName) == 0 )\
 			Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \

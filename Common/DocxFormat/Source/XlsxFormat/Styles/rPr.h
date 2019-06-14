@@ -820,6 +820,7 @@ namespace OOX
 
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
+			_UINT32 getXLSBSize() const;
 
 			virtual EElementType getType () const
 			{

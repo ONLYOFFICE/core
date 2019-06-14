@@ -564,6 +564,22 @@ namespace SimpleTypes
 
             return this->m_eValue;
 		}
+		virtual EOnOff  FromStringA(const char* sValue)
+		{
+			if		(strcmp("1",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("0",		sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("true",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("True",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("t",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("on",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("f",		sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("false",	sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("False",	sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("off",		sValue) == 0) this->m_eValue = onoffFalse;
+			else                              this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
 
         virtual std::wstring ToString  () const
 		{

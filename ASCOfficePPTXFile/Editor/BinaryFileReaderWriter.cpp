@@ -1199,32 +1199,9 @@ namespace NSBinPptxRW
 
 	CXlsbBinaryWriter::CXlsbBinaryWriter(size_t bufferSize) : CStreamBinaryWriter(bufferSize)
 	{
-		m_bIsSwapped = false;
-		m_lXlsbSize = 0;
-		m_pXlsbStreamData = NULL;
-		m_lXlsbPosition = 0;
-		m_pXlsbStreamCur = m_pXlsbStreamData;
 	}
-	CXlsbBinaryWriter::~CXlsbBinaryWriter()
+	void CXlsbBinaryWriter::XlsbStartRecord(_INT16 lType, _INT32 nLen)
 	{
-		RELEASEARRAYOBJECTS(m_pXlsbStreamData);
-	}
-	void CXlsbBinaryWriter::Flush()
-	{
-		if(!m_bIsSwapped)
-		{
-			CStreamBinaryWriter::Flush();
-		}
-	}
-	void CXlsbBinaryWriter::XlsbStartRecord()
-	{
-		m_lXlsbPosition = 0;
-		m_pXlsbStreamCur = m_pXlsbStreamData;
-		XlsbSwapBuffers();
-	}
-	void CXlsbBinaryWriter::XlsbEndRecord(_INT16 lType)
-	{
-		XlsbSwapBuffers();
 		//Type
 		if (lType < 0x80)
 		{
@@ -1236,7 +1213,6 @@ namespace NSBinPptxRW
 			WriteBYTE(lType >> 7);
 		}
 		//Len
-		_UINT32 nLen = m_lXlsbPosition;
 		for (int i = 0; i < 4; ++i)
 		{
 			BYTE nPart = nLen & 0x7F;
@@ -1251,29 +1227,11 @@ namespace NSBinPptxRW
 				WriteBYTE(nPart | 0x80);
 			}
 		}
-		//Data
-		WriteBYTEArray(m_pXlsbStreamData, m_lXlsbPosition);
 	}
-	void CXlsbBinaryWriter::XlsbSwapBuffers()
+	void CXlsbBinaryWriter::XlsbEndRecord()
 	{
-		_UINT32 m_lTmp = m_lXlsbSize;
-		m_lXlsbSize		= m_lSize;
-		m_lSize = m_lTmp;
-
-		m_lTmp = m_lXlsbPosition;
-		m_lXlsbPosition		= m_lPosition;
-		m_lPosition = m_lTmp;
-
-		BYTE* m_pTmp = m_pXlsbStreamData;
-		m_pXlsbStreamData	= m_pStreamData;
-		m_pStreamData = m_pTmp;
-
-		m_pTmp = m_pXlsbStreamCur;
-		m_pXlsbStreamCur	= m_pStreamCur;
-		m_pStreamCur = m_pTmp;
-
-		m_bIsSwapped = !m_bIsSwapped;
 	}
+
 
 	CRelsGenerator::CRelsGenerator(CImageManager2* pManager) : m_lNextRelsID(1), m_mapImages()
 	{

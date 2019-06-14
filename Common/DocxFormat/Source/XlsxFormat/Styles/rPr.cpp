@@ -419,6 +419,12 @@ namespace OOX
 
 			//oStream.XlsbEndRecord(XLSB::rt_FONT);
 		}
+		_UINT32 CRPr::getXLSBSize() const
+		{
+			_UINT32 nLen = 2 + 2 + 2 + 2 + 1 + 1 + 1 + 1 + 1 + 1 + 2 + 4 + 1;
+			nLen += 4 + 2 * (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit() ? m_oRFont->m_sVal->length() : 0);
+			return nLen;
+		}
 
 	} //Spreadsheet
 } // OOX

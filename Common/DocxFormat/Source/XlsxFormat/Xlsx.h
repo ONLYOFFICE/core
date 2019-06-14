@@ -123,7 +123,7 @@ namespace OOX
 				m_pWorkbookComments = NULL;
 				m_pXlsbWriter = NULL;
 				m_nLastReadRow = 0;
-				m_nLastReadCol = 0;
+				m_nLastReadCol = -1;
 
 				bDeleteWorkbook			= false;
 				bDeleteSharedStrings	= false;

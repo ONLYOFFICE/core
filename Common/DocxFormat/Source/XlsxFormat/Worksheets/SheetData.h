@@ -82,6 +82,11 @@ namespace OOX
 
 				m_sText = oReader.GetText3();
 			}
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
+			_UINT16 toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream);
+			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
+			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);
+			_UINT32 getXLSBSize() const;
 
 			virtual EElementType getType () const
 			{
@@ -146,6 +151,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void fromXMLtoXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 
@@ -263,10 +269,13 @@ namespace OOX
 			}
 			static bool parseRef(std::wstring sRef, int& nRow, int& nCol);
 			static bool parseRefA(const char* sRef, int& nRow, int& nCol);
+			static bool parseRefColA(const char* sRef, int& nCol);
 			static std::wstring combineRef(int nRow, int nCol);
 		private:
 			void PrepareForBinaryWriter();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributesToXLSB(XmlUtils::CXmlLiteReader& oReader, int& nCol, unsigned int& nStyle, SimpleTypes::Spreadsheet::CCellTypeType<>& oType, bool& bShowPhonetic);
+			void toXLSB2 (NSBinPptxRW::CXlsbBinaryWriter& oStream, int nCol, unsigned int nStyle, bool bShowPhonetic, _UINT16 nType, double dValue, unsigned int nValue, BYTE bValue, std::wstring** psValue, bool bForceFormula, const nullable<CFormula>& oFormula, const nullable<CSi>& oRichText) const;
 
 			nullable<std::string>								m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRow;
@@ -396,7 +405,7 @@ namespace OOX
 		private:
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-			CRow* fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{

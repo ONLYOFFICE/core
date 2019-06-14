@@ -342,7 +342,7 @@ namespace XmlUtils
         inline const char* GetTextChar()
         {
             if (!IsValid())
-                return NULL;
+                return "";
 
             const xmlChar* pValue = xmlTextReaderConstValue(reader);
             if (NULL == pValue)

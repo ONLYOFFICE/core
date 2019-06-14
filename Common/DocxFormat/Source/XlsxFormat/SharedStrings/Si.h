@@ -38,6 +38,12 @@
 #include "PhoneticPr.h"
 #include "Run.h"
 
+namespace NSBinPptxRW
+{
+	class CBinaryFileReader;
+	class CXlsbBinaryWriter;
+}
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -140,6 +146,10 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
+
+			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream);
+			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);
+			_UINT32 getXLSBSize() const;
 
 			virtual EElementType getType () const
 			{

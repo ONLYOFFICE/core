@@ -42,4 +42,5 @@
 #include "../Source/XlsxFormat/Table/Tables.cpp"
 #include "../Source/XlsxFormat/Controls/Controls.cpp"
 #include "../Source/XlsxFormat/Styles/rPr.cpp"
-
+#include "../Source/XlsxFormat/SharedStrings/Si.cpp"
+#include "../Source/XlsxFormat/SharedStrings/Text.cpp"

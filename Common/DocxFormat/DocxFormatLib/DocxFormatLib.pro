@@ -79,7 +79,9 @@ SOURCES += \
     ../Source/Common/ZIndex.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
-    ../Source/XlsxFormat/Styles/rPr.cpp
+    ../Source/XlsxFormat/Styles/rPr.cpp \
+    ../Source/XlsxFormat/SharedStrings/Si.cpp \
+    ../Source/XlsxFormat/SharedStrings/Text.cpp
 }
 
 
@@ -88,7 +90,7 @@ SOURCES += docxformatlib.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
-	../../3dParty/pole/pole.cpp
+    ../../3dParty/pole/pole.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \

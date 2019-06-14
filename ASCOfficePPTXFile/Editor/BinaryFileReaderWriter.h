@@ -422,22 +422,11 @@ namespace NSBinPptxRW
 	};
 	class CXlsbBinaryWriter : public CStreamBinaryWriter
 	{
-	protected:
-		bool		m_bIsSwapped;
-		BYTE*		m_pXlsbStreamData;
-		BYTE*		m_pXlsbStreamCur;
-		_UINT32		m_lXlsbSize;
-		_UINT32		m_lXlsbPosition;
 	public:
 		CXlsbBinaryWriter(size_t bufferSize = 16777216);
-		~CXlsbBinaryWriter();
 
-		void Flush();
-
-		void XlsbStartRecord();
-		void XlsbEndRecord(_INT16 lType);
-	protected:
-		void XlsbSwapBuffers();
+		void XlsbStartRecord(_INT16 lType, _INT32 nLen);
+		void XlsbEndRecord();
 	};
 
 	class CRelsGenerator

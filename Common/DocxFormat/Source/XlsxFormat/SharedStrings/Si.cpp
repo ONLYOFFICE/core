@@ -41,7 +41,7 @@ namespace OOX
 		void CSi::fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream)
 		{
 			_UINT32 nCount = oStream.GetULong();
-			for(_UINT32 i = 0; i < nCount; ++i)
+			while(nCount-- > 0)
 			{
 				BYTE nTypeRun = oStream.GetUChar();
 				if(0x1 == nTypeRun)
@@ -53,7 +53,7 @@ namespace OOX
 						pRun->m_oRPr->fromXLSB(oStream, XLSB::rt_FONT);
 					}
 					_UINT32 nTextCount = oStream.GetULong();
-					for(_UINT32 j = 0; j < nTextCount; ++j)
+					while(nTextCount-- > 0)
 					{
 						OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 						pText->m_sText.append(oStream.GetString2());

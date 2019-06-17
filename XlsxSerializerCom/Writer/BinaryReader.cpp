@@ -3366,6 +3366,24 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
 	SEEK_TO_POS_END(oCols);
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::XlsbPos);
+		int nOldPos = m_oBufferedStream.GetPos();
+		m_oBufferedStream.Seek(m_oBufferedStream.GetULong());
+		OOX::Spreadsheet::CSheetData oSheetData;
+		if (NULL == m_oSaveParams.pCSVWriter)
+		{
+			oSheetData.toXMLStart(oStreamWriter);
+			oSheetData.fromXLSB(m_oBufferedStream, m_oBufferedStream.XlsbReadRecordType(), m_oSaveParams.pCSVWriter, *m_pCurStreamWriter);
+			oSheetData.toXMLEnd(oStreamWriter);
+		}
+		else if(m_arWorksheets.size() == m_oWorkbook.GetActiveSheetIndex())
+		{
+			m_oSaveParams.pCSVWriter->WriteSheetStart(m_pCurWorksheet.GetPointer());
+			oSheetData.fromXLSB(m_oBufferedStream, m_oBufferedStream.XlsbReadRecordType(), m_oSaveParams.pCSVWriter, *m_pCurStreamWriter);
+			m_oSaveParams.pCSVWriter->WriteSheetEnd(m_pCurWorksheet.GetPointer());
+		}
+	SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData);
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{
@@ -4908,18 +4926,7 @@ int BinaryWorksheetsTableReader::ReadPos(BYTE type, long length, void* poResult)
 int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::XlsbPos == type)
-	{
-		int nOldPos = m_oBufferedStream.GetPos();
-		m_oBufferedStream.Seek(m_oBufferedStream.GetULong());
-
-		OOX::Spreadsheet::CSheetData oSheetData;
-		oSheetData.fromXLSB(m_oBufferedStream, m_oBufferedStream.XlsbReadRecordType(), m_oSaveParams.pCSVWriter, *m_pCurStreamWriter);
-
-		m_oBufferedStream.Seek(nOldPos);
-		res = c_oSerConstants::ReadUnknown;
-	}
-	else if(c_oSerWorksheetsTypes::Row == type)
+	if(c_oSerWorksheetsTypes::Row == type)
 	{
 		OOX::Spreadsheet::CRow oRow;
 		READ2_DEF_SPREADSHEET(length, res, this->ReadRow, &oRow);

@@ -3014,9 +3014,18 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet& oSheet
 	//SheetData
 	if(oWorksheet.m_oSheetData.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SheetData);
-		WriteSheetData(oWorksheet.m_oSheetData.get());
-		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		if(oWorksheet.m_oSheetData->m_oXlsbPos.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::XlsbPos);
+			m_oBcw.m_oStream.WriteLONG(oWorksheet.m_oSheetData->m_oXlsbPos->GetValue());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		else
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SheetData);
+			WriteSheetData(oWorksheet.m_oSheetData.get());
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
 	}
 	// ConditionalFormatting
 	if ( !oWorksheet.m_arrConditionalFormatting.empty() )
@@ -3811,21 +3820,12 @@ void BinaryWorksheetTableWriter::WriteMergeCells(const OOX::Spreadsheet::CMergeC
 void BinaryWorksheetTableWriter::WriteSheetData(const OOX::Spreadsheet::CSheetData& oSheetData)
 {
 	int nCurPos;
-	if(oSheetData.m_oXlsbPos.IsInit())
+	for(size_t i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::XlsbPos);
-		m_oBcw.m_oStream.WriteLONG(oSheetData.m_oXlsbPos->GetValue());
+		OOX::Spreadsheet::CRow* pRow = oSheetData.m_arrItems[i];
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
+		WriteRow(*pRow);
 		m_oBcw.WriteItemEnd(nCurPos);
-	}
-	else
-	{
-		for(size_t i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
-		{
-			OOX::Spreadsheet::CRow* pRow = oSheetData.m_arrItems[i];
-			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
-			WriteRow(*pRow);
-			m_oBcw.WriteItemEnd(nCurPos);
-		}
 	}
 }
 void BinaryWorksheetTableWriter::WriteRow(const OOX::Spreadsheet::CRow& oRows)

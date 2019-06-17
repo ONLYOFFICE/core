@@ -549,7 +549,7 @@ namespace OOX
 			m_oRow.Init();
 			m_oRow->SetValue(nRow);
 			m_oCol.Init();
-			m_oCol->SetValue(oStream.GetULong());
+			m_oCol->SetValue(oStream.GetULong() & 0x3FFF);
 			_UINT32 nStyleRef = oStream.GetULong();
 			if(0 != (nStyleRef & 0xFFFFFF))
 			{
@@ -727,7 +727,7 @@ namespace OOX
 			}
 
 			oStream.XlsbStartRecord(nType, nLen);
-			oStream.WriteULONG(nCol);
+			oStream.WriteULONG(nCol & 0x3FFF);
 
 			if (bShowPhonetic)
 			{
@@ -905,7 +905,7 @@ namespace OOX
 			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
 
 			m_oR.Init();
-			m_oR->SetValue(oStream.GetULong() & 0xFFFFF);
+			m_oR->SetValue((oStream.GetULong() & 0xFFFFF) + 1);
 			_UINT32 nS = oStream.GetULong();
 			_UINT16 nHt = oStream.GetUShort() & 0x1FFF;
 			BYTE byteExtra1 = oStream.GetUChar();
@@ -972,7 +972,7 @@ namespace OOX
 			//
 			if(m_oR.IsInit())
 			{
-				nRow = m_oR->GetValue() & 0xFFFFF;
+				nRow = (m_oR->GetValue() - 1) & 0xFFFFF;
 			}
 			oStream.WriteULONG(nRow);
 			_UINT32 nS = 0;

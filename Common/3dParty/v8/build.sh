@@ -38,6 +38,7 @@ fi
 
 if [[ "$platform" == "mac" ]]
 then
+sed -i 's/if (mac_sdk_version != mac_sdk_min_build_override/if (false \&\& mac_sdk_version != mac_sdk_min_build_override/g' build/config/mac/mac_sdk.gni
 # for new macOS!!!
 #sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 gn gen out.gn/mac_64 --args='is_debug=false target_cpu="x64" v8_static_library=true is_component_build=false v8_use_snapshot=false'

@@ -103,11 +103,13 @@ namespace XmlUtils
 		
 		std::wstring	GetName();
                 std::string     GetNameA();
+                const char*     GetNameChar();
                 int             GetDepth();
                 bool            IsEmptyNode();
 
 		std::wstring	GetText();
                 std::string     GetTextA();
+                const char*		GetTextChar();
 
 		std::wstring	GetText2();
                 std::string     GetText2A();

@@ -238,7 +238,7 @@ namespace BinXlsxRW
 	class BinaryWorksheetsTableReader : public Binary_CommonReader
 	{
 		Binary_CommonReader2				m_oBcr2;
-		NSFile::CStreamWriter*				m_pCurStreamWriter;
+		NSFile::CStreamWriter*		m_pCurStreamWriter;
 		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
 
         OOX::Spreadsheet::CWorkbook&					m_oWorkbook;

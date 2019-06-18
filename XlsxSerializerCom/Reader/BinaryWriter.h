@@ -294,6 +294,7 @@ namespace BinXlsxRW
 	private:
 		BinaryCommonWriter* m_oBcw;
 		int m_nLastFilePos;
+		int m_nLastFilePosOffset;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 		DocWrapper::FontProcessor& m_oFontProcessor;
@@ -307,6 +308,7 @@ namespace BinXlsxRW
        std::wstring WriteFileHeader(int nDataSize, int version);
 		void WriteMainTableStart();
 		void WriteMainTableEnd();
+		int GetMainTableSize();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 	};

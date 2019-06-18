@@ -1536,6 +1536,26 @@ namespace SimpleTypes
                     this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
+			ECellTypeType FromStringA(const char* sValue)
+			{
+				if(strcmp("s", sValue) == 0)
+					this->m_eValue = celltypeSharedString;
+				else if(strcmp("str", sValue) == 0)
+					this->m_eValue = celltypeStr;
+				else if(strcmp("n", sValue) == 0)
+					this->m_eValue = celltypeNumber;
+				else if(strcmp("e", sValue) == 0)
+					this->m_eValue = celltypeError;
+				else if(strcmp("b", sValue) == 0)
+					this->m_eValue = celltypeBool;
+				else if(strcmp("inlineStr", sValue) == 0)
+					this->m_eValue = celltypeInlineStr;
+				else if(strcmp("d", sValue) == 0)
+					this->m_eValue = celltypeDate;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
 
 			virtual std::wstring     ToString  () const 
 			{

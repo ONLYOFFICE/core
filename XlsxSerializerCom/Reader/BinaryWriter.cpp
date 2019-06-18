@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#include <stdio.h>
 #include "BinaryWriter.h"
 #include "../Writer/BinaryReader.h"
 
@@ -3809,12 +3811,21 @@ void BinaryWorksheetTableWriter::WriteMergeCells(const OOX::Spreadsheet::CMergeC
 void BinaryWorksheetTableWriter::WriteSheetData(const OOX::Spreadsheet::CSheetData& oSheetData)
 {
 	int nCurPos;
-	for(size_t i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
+	if(oSheetData.m_oXlsbPos.IsInit())
 	{
-		OOX::Spreadsheet::CRow* pRow = oSheetData.m_arrItems[i];
-		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
-		WriteRow(*pRow);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::XlsbPos);
+		m_oBcw.m_oStream.WriteLONG(oSheetData.m_oXlsbPos->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	else
+	{
+		for(size_t i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
+		{
+			OOX::Spreadsheet::CRow* pRow = oSheetData.m_arrItems[i];
+			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
+			WriteRow(*pRow);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 	}
 }
 void BinaryWorksheetTableWriter::WriteRow(const OOX::Spreadsheet::CRow& oRows)
@@ -6300,6 +6311,7 @@ void BinaryOtherTableWriter::WriteOtherTableContent()
 BinaryFileWriter::BinaryFileWriter(DocWrapper::FontProcessor& oFontProcessor) : m_oBcw(NULL), m_oFontProcessor(oFontProcessor)
 {
 	m_nLastFilePos = 0;
+	m_nLastFilePosOffset = 0;
 	m_nRealTableCount = 0;
 }
 BinaryFileWriter::~BinaryFileWriter()
@@ -6319,7 +6331,6 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
     pOfficeDrawingConverter->SetDstPath(path.GetDirectory() + FILE_SEPARATOR_STR + L"word");
     pOfficeDrawingConverter->SetMediaDstPath(mediaDir);
 
-	long nGrowSize = 1 * 1024 * 1024;//1мб
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *pOfficeDrawingConverter->m_pBinaryWriter;
 
 	m_oBcw = new BinaryCommonWriter(oBufferedStream);
@@ -6331,6 +6342,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	BYTE saveFileType;
 	SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
 
+	m_nLastFilePosOffset = 0;
 	OOX::Spreadsheet::CXlsx *pXlsx = NULL;
 	switch(fileType)
 	{
@@ -6342,7 +6354,28 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		case BinXlsxRW::c_oFileTypes::XLSX:
 		default:
 		{
-			pXlsx = new OOX::Spreadsheet::CXlsx(OOX::CPath(sInputDir));
+			if (bIsNoBase64)
+			{
+				pXlsx = new OOX::Spreadsheet::CXlsx();
+
+				NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
+				oXlsbWriter.CreateFileW(sFileDst);
+				//write dummy header and main table
+				oXlsbWriter.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
+				oXlsbWriter.WriteReserved(GetMainTableSize());
+				int nDataStartPos = oXlsbWriter.GetPosition();
+				pXlsx->m_pXlsbWriter = &oXlsbWriter;
+				//parse
+				pXlsx->Read(OOX::CPath(sInputDir));
+
+				pXlsx->m_pXlsbWriter = NULL;
+				oXlsbWriter.CloseFile();
+				m_nLastFilePosOffset = oXlsbWriter.GetPosition() - nDataStartPos;
+			}
+			else
+			{
+				pXlsx = new OOX::Spreadsheet::CXlsx(OOX::CPath(sInputDir));
+			}
 		}break;
 	}		
 	if (0 != result)
@@ -6370,15 +6403,22 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		{
 			oBufferedStream.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 		}
+		int nHeaderLen = oBufferedStream.GetPosition();
 		intoBindoc(*pXlsx, oBufferedStream, pEmbeddedFontsManager, pOfficeDrawingConverter);
 
 		BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 		int nBinBufferLen = oBufferedStream.GetPosition();
 		if (bIsNoBase64)
 		{
+			int nMidPoint = nHeaderLen + GetMainTableSize();
 			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(sFileDst);
-			oFile.WriteFile(pbBinBuffer, nBinBufferLen);
+			oFile.OpenFile(sFileDst, true);
+			//write header and main table
+			oFile.WriteFile(pbBinBuffer, nMidPoint);
+			//skip xlsb records written on xml reading
+			oFile.SeekFile(0, SEEK_END);
+			//write other records
+			oFile.WriteFile(pbBinBuffer + nMidPoint, nBinBufferLen - nMidPoint);
 			oFile.CloseFile();
 		}
 		else
@@ -6486,14 +6526,16 @@ std::wstring BinaryFileWriter::WriteFileHeader(int nDataSize, int version)
 }
 void BinaryFileWriter::WriteMainTableStart()
 {
-	int nTableCount = 128;//Специально ставим большое число, чтобы не увеличивать его при добавлении очередной таблицы.
 	m_nRealTableCount = 0;
 	m_nMainTableStart = m_oBcw->m_oStream.GetPosition();
 	//вычисляем с какой позиции можно писать таблицы
-	int nmtItemSize = 5;//5 byte
-	m_nLastFilePos = m_nMainTableStart + nTableCount * nmtItemSize;
-	//Write mtLen 
+	m_nLastFilePos = m_nMainTableStart + GetMainTableSize();
+	//Write mtLen
 	m_oBcw->m_oStream.WriteBYTE(0);
+}
+int BinaryFileWriter::GetMainTableSize()
+{
+	return 128 * 5;//128 items of 5 bytes
 }
 void BinaryFileWriter::WriteMainTableEnd()
 {
@@ -6511,7 +6553,7 @@ int BinaryFileWriter::WriteTableStart(BYTE type, int nStartPos)
 	//Write mtiType
 	m_oBcw->m_oStream.WriteBYTE(type);
 	//Write mtiOffBits
-	m_oBcw->m_oStream.WriteLONG(m_nLastFilePos);
+	m_oBcw->m_oStream.WriteLONG(m_nLastFilePos + m_nLastFilePosOffset);
 
 	//Write table
 	//Запоминаем позицию в MainTable

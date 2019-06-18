@@ -35,6 +35,10 @@
 #include "../SharedStrings/SharedStrings.h"
 #include "Worksheet.h"
 
+#include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
+#include "../../../../../XlsxSerializerCom/Writer/CSVWriter.h"
+#include "../../../../../DesktopEditor/common/StreamWriter.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -93,135 +97,1170 @@ namespace OOX
 			L"WBA", L"WBB", L"WBC", L"WBD", L"WBE", L"WBF", L"WBG", L"WBH", L"WBI", L"WBJ", L"WBK", L"WBL", L"WBM", L"WBN", L"WBO", L"WBP", L"WBQ", L"WBR", L"WBS", L"WBT", L"WBU", L"WBV", L"WBW", L"WBX", L"WBY", L"WBZ", L"WCA", L"WCB", L"WCC", L"WCD", L"WCE", L"WCF", L"WCG", L"WCH", L"WCI", L"WCJ", L"WCK", L"WCL", L"WCM", L"WCN", L"WCO", L"WCP", L"WCQ", L"WCR", L"WCS", L"WCT", L"WCU", L"WCV", L"WCW", L"WCX", L"WCY", L"WCZ", L"WDA", L"WDB", L"WDC", L"WDD", L"WDE", L"WDF", L"WDG", L"WDH", L"WDI", L"WDJ", L"WDK", L"WDL", L"WDM", L"WDN", L"WDO", L"WDP", L"WDQ", L"WDR", L"WDS", L"WDT", L"WDU", L"WDV", L"WDW", L"WDX", L"WDY", L"WDZ", L"WEA", L"WEB", L"WEC", L"WED", L"WEE", L"WEF", L"WEG", L"WEH", L"WEI", L"WEJ", L"WEK", L"WEL", L"WEM", L"WEN", L"WEO", L"WEP", L"WEQ", L"WER", L"WES", L"WET", L"WEU", L"WEV", L"WEW", L"WEX", L"WEY", L"WEZ", L"WFA", L"WFB", L"WFC", L"WFD", L"WFE", L"WFF", L"WFG", L"WFH", L"WFI", L"WFJ", L"WFK", L"WFL", L"WFM", L"WFN", L"WFO", L"WFP", L"WFQ", L"WFR", L"WFS", L"WFT", L"WFU", L"WFV", L"WFW", L"WFX", L"WFY", L"WFZ", L"WGA", L"WGB", L"WGC", L"WGD", L"WGE", L"WGF", L"WGG", L"WGH", L"WGI", L"WGJ", L"WGK", L"WGL", L"WGM", L"WGN", L"WGO", L"WGP", L"WGQ", L"WGR", L"WGS", L"WGT", L"WGU", L"WGV", L"WGW", L"WGX", L"WGY", L"WGZ", L"WHA", L"WHB", L"WHC", L"WHD", L"WHE", L"WHF", L"WHG", L"WHH", L"WHI", L"WHJ", L"WHK", L"WHL", L"WHM", L"WHN", L"WHO", L"WHP", L"WHQ", L"WHR", L"WHS", L"WHT", L"WHU", L"WHV", L"WHW", L"WHX", L"WHY", L"WHZ", L"WIA", L"WIB", L"WIC", L"WID", L"WIE", L"WIF", L"WIG", L"WIH", L"WII", L"WIJ", L"WIK", L"WIL", L"WIM", L"WIN", L"WIO", L"WIP", L"WIQ", L"WIR", L"WIS", L"WIT", L"WIU", L"WIV", L"WIW", L"WIX", L"WIY", L"WIZ", L"WJA", L"WJB", L"WJC", L"WJD", L"WJE", L"WJF", L"WJG", L"WJH", L"WJI", L"WJJ", L"WJK", L"WJL", L"WJM", L"WJN", L"WJO", L"WJP", L"WJQ", L"WJR", L"WJS", L"WJT", L"WJU", L"WJV", L"WJW", L"WJX", L"WJY", L"WJZ", L"WKA", L"WKB", L"WKC", L"WKD", L"WKE", L"WKF", L"WKG", L"WKH", L"WKI", L"WKJ", L"WKK", L"WKL", L"WKM", L"WKN", L"WKO", L"WKP", L"WKQ", L"WKR", L"WKS", L"WKT", L"WKU", L"WKV", L"WKW", L"WKX", L"WKY", L"WKZ", L"WLA", L"WLB", L"WLC", L"WLD", L"WLE", L"WLF", L"WLG", L"WLH", L"WLI", L"WLJ", L"WLK", L"WLL", L"WLM", 
 			L"WLN", L"WLO", L"WLP", L"WLQ", L"WLR", L"WLS", L"WLT", L"WLU", L"WLV", L"WLW", L"WLX", L"WLY", L"WLZ", L"WMA", L"WMB", L"WMC", L"WMD", L"WME", L"WMF", L"WMG", L"WMH", L"WMI", L"WMJ", L"WMK", L"WML", L"WMM", L"WMN", L"WMO", L"WMP", L"WMQ", L"WMR", L"WMS", L"WMT", L"WMU", L"WMV", L"WMW", L"WMX", L"WMY", L"WMZ", L"WNA", L"WNB", L"WNC", L"WND", L"WNE", L"WNF", L"WNG", L"WNH", L"WNI", L"WNJ", L"WNK", L"WNL", L"WNM", L"WNN", L"WNO", L"WNP", L"WNQ", L"WNR", L"WNS", L"WNT", L"WNU", L"WNV", L"WNW", L"WNX", L"WNY", L"WNZ", L"WOA", L"WOB", L"WOC", L"WOD", L"WOE", L"WOF", L"WOG", L"WOH", L"WOI", L"WOJ", L"WOK", L"WOL", L"WOM", L"WON", L"WOO", L"WOP", L"WOQ", L"WOR", L"WOS", L"WOT", L"WOU", L"WOV", L"WOW", L"WOX", L"WOY", L"WOZ", L"WPA", L"WPB", L"WPC", L"WPD", L"WPE", L"WPF", L"WPG", L"WPH", L"WPI", L"WPJ", L"WPK", L"WPL", L"WPM", L"WPN", L"WPO", L"WPP", L"WPQ", L"WPR", L"WPS", L"WPT", L"WPU", L"WPV", L"WPW", L"WPX", L"WPY", L"WPZ", L"WQA", L"WQB", L"WQC", L"WQD", L"WQE", L"WQF", L"WQG", L"WQH", L"WQI", L"WQJ", L"WQK", L"WQL", L"WQM", L"WQN", L"WQO", L"WQP", L"WQQ", L"WQR", L"WQS", L"WQT", L"WQU", L"WQV", L"WQW", L"WQX", L"WQY", L"WQZ", L"WRA", L"WRB", L"WRC", L"WRD", L"WRE", L"WRF", L"WRG", L"WRH", L"WRI", L"WRJ", L"WRK", L"WRL", L"WRM", L"WRN", L"WRO", L"WRP", L"WRQ", L"WRR", L"WRS", L"WRT", L"WRU", L"WRV", L"WRW", L"WRX", L"WRY", L"WRZ", L"WSA", L"WSB", L"WSC", L"WSD", L"WSE", L"WSF", L"WSG", L"WSH", L"WSI", L"WSJ", L"WSK", L"WSL", L"WSM", L"WSN", L"WSO", L"WSP", L"WSQ", L"WSR", L"WSS", L"WST", L"WSU", L"WSV", L"WSW", L"WSX", L"WSY", L"WSZ", L"WTA", L"WTB", L"WTC", L"WTD", L"WTE", L"WTF", L"WTG", L"WTH", L"WTI", L"WTJ", L"WTK", L"WTL", L"WTM", L"WTN", L"WTO", L"WTP", L"WTQ", L"WTR", L"WTS", L"WTT", L"WTU", L"WTV", L"WTW", L"WTX", L"WTY", L"WTZ", L"WUA", L"WUB", L"WUC", L"WUD", L"WUE", L"WUF", L"WUG", L"WUH", L"WUI", L"WUJ", L"WUK", L"WUL", L"WUM", L"WUN", L"WUO", L"WUP", L"WUQ", L"WUR", L"WUS", L"WUT", L"WUU", L"WUV", L"WUW", L"WUX", L"WUY", L"WUZ", L"WVA", L"WVB", L"WVC", L"WVD", L"WVE", L"WVF", L"WVG", L"WVH", L"WVI", L"WVJ", L"WVK", L"WVL", L"WVM", L"WVN", L"WVO", L"WVP", L"WVQ", L"WVR", L"WVS", L"WVT", L"WVU", L"WVV", L"WVW", L"WVX", L"WVY", L"WVZ", 
 			L"WWA", L"WWB", L"WWC", L"WWD", L"WWE", L"WWF", L"WWG", L"WWH", L"WWI", L"WWJ", L"WWK", L"WWL", L"WWM", L"WWN", L"WWO", L"WWP", L"WWQ", L"WWR", L"WWS", L"WWT", L"WWU", L"WWV", L"WWW", L"WWX", L"WWY", L"WWZ", L"WXA", L"WXB", L"WXC", L"WXD", L"WXE", L"WXF", L"WXG", L"WXH", L"WXI", L"WXJ", L"WXK", L"WXL", L"WXM", L"WXN", L"WXO", L"WXP", L"WXQ", L"WXR", L"WXS", L"WXT", L"WXU", L"WXV", L"WXW", L"WXX", L"WXY", L"WXZ", L"WYA", L"WYB", L"WYC", L"WYD", L"WYE", L"WYF", L"WYG", L"WYH", L"WYI", L"WYJ", L"WYK", L"WYL", L"WYM", L"WYN", L"WYO", L"WYP", L"WYQ", L"WYR", L"WYS", L"WYT", L"WYU", L"WYV", L"WYW", L"WYX", L"WYY", L"WYZ", L"WZA", L"WZB", L"WZC", L"WZD", L"WZE", L"WZF", L"WZG", L"WZH", L"WZI", L"WZJ", L"WZK", L"WZL", L"WZM", L"WZN", L"WZO", L"WZP", L"WZQ", L"WZR", L"WZS", L"WZT", L"WZU", L"WZV", L"WZW", L"WZX", L"WZY", L"WZZ", L"XAA", L"XAB", L"XAC", L"XAD", L"XAE", L"XAF", L"XAG", L"XAH", L"XAI", L"XAJ", L"XAK", L"XAL", L"XAM", L"XAN", L"XAO", L"XAP", L"XAQ", L"XAR", L"XAS", L"XAT", L"XAU", L"XAV", L"XAW", L"XAX", L"XAY", L"XAZ", L"XBA", L"XBB", L"XBC", L"XBD", L"XBE", L"XBF", L"XBG", L"XBH", L"XBI", L"XBJ", L"XBK", L"XBL", L"XBM", L"XBN", L"XBO", L"XBP", L"XBQ", L"XBR", L"XBS", L"XBT", L"XBU", L"XBV", L"XBW", L"XBX", L"XBY", L"XBZ", L"XCA", L"XCB", L"XCC", L"XCD", L"XCE", L"XCF", L"XCG", L"XCH", L"XCI", L"XCJ", L"XCK", L"XCL", L"XCM", L"XCN", L"XCO", L"XCP", L"XCQ", L"XCR", L"XCS", L"XCT", L"XCU", L"XCV", L"XCW", L"XCX", L"XCY", L"XCZ", L"XDA", L"XDB", L"XDC", L"XDD", L"XDE", L"XDF", L"XDG", L"XDH", L"XDI", L"XDJ", L"XDK", L"XDL", L"XDM", L"XDN", L"XDO", L"XDP", L"XDQ", L"XDR", L"XDS", L"XDT", L"XDU", L"XDV", L"XDW", L"XDX", L"XDY", L"XDZ", L"XEA", L"XEB", L"XEC", L"XED", L"XEE", L"XEF", L"XEG", L"XEH", L"XEI", L"XEJ", L"XEK", L"XEL", L"XEM", L"XEN", L"XEO", L"XEP", L"XEQ", L"XER", L"XES", L"XET", L"XEU", L"XEV", L"XEW", L"XEX", L"XEY", L"XEZ", L"XFA", L"XFB", L"XFC", L"XFD" };
-		} //Spreadsheet
-} // OOX
-std::wstring OOX::Spreadsheet::CCell::combineRef(int nRow, int nCol)
-{
-	if (nCol < 0 || nCol > 16383)
-	{
-		nCol = 0;
-	}
-    return (m_aLetters[nCol] + std::to_wstring(nRow + 1));
-}
-void OOX::Spreadsheet::CCell::toXML(NSStringUtils::CStringBuilder& writer) const
-{
-	writer.WriteString(_T("<c"));
-	WritingStringNullableAttrInt(L"cm", m_oCellMetadata, m_oCellMetadata->GetValue());
-	WritingStringNullableAttrBool(L"ph", m_oShowPhonetic);
-	if (m_oRow.IsInit() && m_oCol.IsInit())
-	{
-		int nCol = m_oCol->GetValue();
-		if (nCol < 0 || nCol > 16383)
+
+		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<f"));
+			WritingStringNullableAttrString(L"t", m_oT, m_oT->ToString());
+			WritingStringNullableAttrBool(L"aca", m_oAca);
+			WritingStringNullableAttrString(L"ref", m_oRef, m_oRef.get());
+			WritingStringNullableAttrBool(L"dt2D", m_oDt2D);
+			WritingStringNullableAttrBool(L"dtr", m_oDtr);
+			WritingStringNullableAttrBool(L"del1", m_oDel1);
+			WritingStringNullableAttrBool(L"del2", m_oDel2);
+			WritingStringNullableAttrString(L"r1", m_oR1, m_oR1.get());
+			WritingStringNullableAttrString(L"r2", m_oR2, m_oR2.get());
+			WritingStringNullableAttrBool(L"ca", m_oCa);
+			WritingStringNullableAttrInt(L"si", m_oSi, m_oSi->GetValue());
+			WritingStringNullableAttrBool(L"bx", m_oBx);
+			writer.WriteString(_T(">"));
+			writer.WriteEncodeXmlString(m_sText);
+			writer.WriteString(_T("</f>"));
+		}
+
+		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)
+		{
+			BYTE nFlags = oStream.GetUChar();
+			oStream.Skip(1);
+			if(0 != (nFlags & 0x2))
+			{
+				m_oCa.Init();
+				m_oCa->FromBool(true);
+			}
+			oStream.GetULong();//cce
+			oStream.GetULong();//cb
+		}
+		void CFormula::fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags)
+		{
+			SimpleTypes::Spreadsheet::ECellFormulaType eType = SimpleTypes::Spreadsheet::ECellFormulaType(nFlags & 0x3);
+			if(SimpleTypes::Spreadsheet::cellformulatypeNormal != eType)
+			{
+				m_oT.Init();
+				m_oT->SetValue(eType);
+			}
+			m_sText = oStream.GetString2();
+			if(0 != (nFlags & 0x8))
+			{
+				m_oAca.Init();
+				m_oAca->FromBool(true);
+			}
+			if(0 != (nFlags & 0x10))
+			{
+				m_oBx.Init();
+				m_oBx->FromBool(true);
+			}
+			if(0 != (nFlags & 0x20))
+			{
+				m_oDel1.Init();
+				m_oDel1->FromBool(true);
+			}
+			if(0 != (nFlags & 0x40))
+			{
+				m_oDel2.Init();
+				m_oDel2->FromBool(true);
+			}
+			if(0 != (nFlags & 0x80))
+			{
+				m_oDt2D.Init();
+				m_oDt2D->FromBool(true);
+			}
+			if(0 != (nFlags & 0x100))
+			{
+				m_oDtr.Init();
+				m_oDtr->FromBool(true);
+			}
+			if(0 != (nFlags & 0x200))
+			{
+				m_oR1.Init();
+				m_oR1->append(oStream.GetString2());
+			}
+			if(0 != (nFlags & 0x400))
+			{
+				m_oR2.Init();
+				m_oR2->append(oStream.GetString2());
+			}
+			if(0 != (nFlags & 0x800))
+			{
+				m_oRef.Init();
+				m_oRef->append(oStream.GetString2());
+			}
+			if(0 != (nFlags & 0x1000))
+			{
+				m_oSi.Init();
+				m_oSi->SetValue(oStream.GetULong());
+			}
+		}
+
+		_UINT16 CFormula::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream)
+		{
+			_UINT16 nFlags = 0;
+			if(m_oCa.IsInit() && m_oCa->ToBool())
+			{
+				nFlags |= 0x2;
+			}
+			oStream.WriteUSHORT(nFlags);
+			oStream.WriteULONG(0);//cce
+			oStream.WriteULONG(0);//cb
+
+			_UINT16 nFlagsExt = 0;
+			if(m_oT.IsInit())
+			{
+				nFlagsExt |= m_oT->GetValue();
+			}
+			else
+			{
+				nFlagsExt |= SimpleTypes::Spreadsheet::cellformulatypeNormal;
+			}
+			nFlagsExt |= 0x4;
+			if(m_oAca.IsInit() && m_oAca->ToBool())
+			{
+				nFlagsExt |= 0x8;
+			}
+			if(m_oBx.IsInit() && m_oBx->ToBool())
+			{
+				nFlagsExt |= 0x10;
+			}
+			if(m_oDel1.IsInit() && m_oDel1->ToBool())
+			{
+				nFlagsExt |= 0x20;
+			}
+			if(m_oDel2.IsInit() && m_oDel2->ToBool())
+			{
+				nFlagsExt |= 0x40;
+			}
+			if(m_oDt2D.IsInit() && m_oDt2D->ToBool())
+			{
+				nFlagsExt |= 0x80;
+			}
+			if(m_oDtr.IsInit() && m_oDtr->ToBool())
+			{
+				nFlagsExt |= 0x100;
+			}
+			if(m_oR1.IsInit())
+			{
+				nFlagsExt |= 0x200;
+			}
+			if(m_oR2.IsInit())
+			{
+				nFlagsExt |= 0x400;
+			}
+			if(m_oRef.IsInit())
+			{
+				nFlagsExt |= 0x800;
+			}
+			if(m_oSi.IsInit())
+			{
+				nFlagsExt |= 0x1000;
+			}
+			return nFlagsExt;
+		}
+
+		void CFormula::toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream)
+		{
+			oStream.WriteString(m_sText);
+			if(m_oR1.IsInit())
+			{
+				oStream.WriteString(m_oR1.get());
+			}
+			if(m_oR2.IsInit())
+			{
+				oStream.WriteString(m_oR2.get());
+			}
+			if(m_oRef.IsInit())
+			{
+				oStream.WriteString(m_oRef.get());
+			}
+			if(m_oSi.IsInit())
+			{
+				oStream.WriteULONG(m_oSi->GetValue());
+			}
+		}
+
+		_UINT32 CFormula::getXLSBSize() const
+		{
+			_UINT32 nLen = 2+4+4;
+			nLen += 4 + 2 * m_sText.length();
+			if(m_oR1.IsInit())
+			{
+				nLen += 4 + 2 * m_oR1->length();
+			}
+			if(m_oR2.IsInit())
+			{
+				nLen += 4 + 2 * m_oR2->length();
+			}
+			if(m_oRef.IsInit())
+			{
+				nLen += 4 + 2 * m_oRef->length();
+			}
+			if(m_oSi.IsInit())
+			{
+				nLen += 4;
+			}
+			return nLen;
+		}
+		bool CCell::parseRef(std::wstring sRef, int& nRow, int& nCol)
+		{
+			std::string sResA(sRef.begin(), sRef.end());
+			return parseRefA(sResA.c_str(), nRow, nCol);
+		}
+		bool CCell::parseRefA(const char* sRef, int& nRow, int& nCol)
+		{
+			bool bRes = false;
+			nRow = 0;
+			nCol = 0;
+			size_t len = strlen(sRef);
+			for(size_t i = 0; i < len; ++i)
+			{
+				if('A' <= sRef[i] && sRef[i] <= 'Z')
+				{
+					//'a's
+					nCol = nCol * 26 + sRef[0] - 'A' + 1;
+				}
+				else
+				{
+					nRow = atoi(sRef + i);
+					bRes = 0 != i;
+					break;
+				}
+			}
+			return bRes;
+		}
+		bool CCell::parseRefColA(const char* sRef, int& nCol)
 		{
 			nCol = 0;
-		}
-		writer.WriteString(L" r=\"");
-		writer.WriteString(m_aLetters[nCol]);
-		writer.AddInt(m_oRow->GetValue() + 1);
-		writer.WriteString(L"\"");
-	}
-	else
-	{
-		WritingStringNullableAttrString(L"r", m_oRef, m_oRef.get());
-	}
-	WritingStringNullableAttrInt(L"s", m_oStyle, m_oStyle->GetValue());
-	if(m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != m_oType->GetValue())
-	{
-		writer.WriteString(L" t=\"");
-		writer.WriteString(m_oType->ToString());
-		writer.WriteString(L"\"");
-	}
-	WritingStringNullableAttrInt(L"vm", m_oValueMetadata, m_oValueMetadata->GetValue());
-	if(m_oFormula.IsInit() || m_oRichText.IsInit() || m_oValue.IsInit())
-	{
-		writer.WriteString(_T(">"));
-		if(m_oFormula.IsInit())
-			m_oFormula->toXML(writer);
-		if(m_oRichText.IsInit())
-			m_oRichText->toXML2(writer);
-		if(m_oValue.IsInit())
-			m_oValue->toXML2(writer, _T("v"));
-		writer.WriteString(_T("</c>"));
-	}
-	else
-		writer.WriteString(_T("/>"));
-}
-void OOX::Spreadsheet::CCell::PrepareForBinaryWriter()
-{
-	CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
-	if (!xlsx) return;
-
-	if(false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
-	
-	if( !xlsx->m_pSharedStrings)
-	{	// еще не прочитался rels
-
-		xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter = false;
-		return; 
-	}
-
-	
-	if(m_oType.IsInit())
-	{
-		if(SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue())
-		{
-			{
-				xlsx->CreateSharedStrings();
+			size_t len = strlen(sRef);
+			size_t i = 0;
+			while(i < len && 'A' <= sRef[i] && sRef[i] <= 'Z'){
+				nCol = nCol * 26 + sRef[0] - 'A' + 1;
+				i++;
 			}
-			OOX::Spreadsheet::CSi* pSi = m_oRichText.GetPointerEmptyNullable();
-			if(NULL != pSi)
+			return 0 != i;
+		}
+		std::wstring CCell::combineRef(int nRow, int nCol)
+		{
+			if (nCol < 0 || nCol > 16383)
 			{
-				int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
-				//меняем значение ячейки
+				nCol = 0;
+			}
+			return (m_aLetters[nCol] + std::to_wstring(nRow + 1));
+		}
+		void CCell::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<c"));
+			if (m_oRow.IsInit() && m_oCol.IsInit())
+			{
+				int nCol = m_oCol->GetValue();
+				if (nCol < 0 || nCol > 16383)
+				{
+					nCol = 0;
+				}
+				writer.WriteString(L" r=\"");
+				writer.WriteString(m_aLetters[nCol]);
+				writer.AddInt(m_oRow->GetValue() + 1);
+				writer.WriteString(L"\"");
+			}
+			else
+			{
+				WritingStringNullableAttrString(L"r", m_oRef, getRef());
+			}
+			WritingStringNullableAttrInt(L"s", m_oStyle, m_oStyle->GetValue());
+			if(m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != m_oType->GetValue())
+			{
+				writer.WriteString(L" t=\"");
+				writer.WriteString(m_oType->ToString());
+				writer.WriteString(L"\"");
+			}
+			WritingStringNullableAttrInt(L"cm", m_oCellMetadata, m_oCellMetadata->GetValue());
+			WritingStringNullableAttrInt(L"vm", m_oValueMetadata, m_oValueMetadata->GetValue());
+			WritingStringNullableAttrBool(L"ph", m_oShowPhonetic);
+			if(m_oFormula.IsInit() || m_oRichText.IsInit() || m_oValue.IsInit())
+			{
+				writer.WriteString(_T(">"));
+				if(m_oFormula.IsInit())
+					m_oFormula->toXML(writer);
+				if(m_oRichText.IsInit())
+				{
+					writer.WriteString(_T("<is>"));
+					m_oRichText->toXML2(writer);
+					writer.WriteString(_T("</is>"));
+				}
+				if(m_oValue.IsInit())
+					m_oValue->toXML2(writer, _T("v"));
+				writer.WriteString(_T("</c>"));
+			}
+			else
+				writer.WriteString(_T("/>"));
+		}
+		void CCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				const char* sName = oReader.GetNameChar();
+
+				if ( strcmp("v", sName) == 0 )
+					m_oValue = oReader;
+				else if ( strcmp("f", sName) == 0 )
+					m_oFormula = oReader;
+				else if ( strcmp("is", sName) == 0 )
+					m_oRichText = oReader;
+			}
+			PrepareForBinaryWriter();
+		}
+		void CCell::PrepareForBinaryWriter()
+		{
+			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
+			if (!xlsx) return;
+
+			//for xml with empty cell reference
+			int nRow = 0;
+			int nCol = 0;
+			getRowCol(nRow, nCol);
+			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
+			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+
+			if(false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
+
+			if( !xlsx->m_pSharedStrings)
+			{	// еще не прочитался rels
+
+				xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter = false;
+				return;
+			}
+
+
+			if(m_oType.IsInit())
+			{
+				if(SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue())
+				{
+					if(!xlsx->m_pSharedStrings)
+					{
+						xlsx->CreateSharedStrings();
+					}
+					OOX::Spreadsheet::CSi* pSi = m_oRichText.GetPointerEmptyNullable();
+					if(NULL != pSi)
+					{
+						int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
+						//меняем значение ячейки
+						m_oValue.Init();
+						m_oValue->m_sText = std::to_wstring(nIndex);
+						//меняем тип ячейки
+						m_oType.Init();
+						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+					}
+				}
+				else if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
+				{
+					if (m_oValue.IsInit())
+					{
+						if(!xlsx->m_pSharedStrings)
+							xlsx->CreateSharedStrings();
+						//добавляем в SharedStrings
+						CSi* pSi = new CSi();
+						CText* pText =  new CText();
+						pText->m_sText = m_oValue->ToString();
+						pSi->m_arrItems.push_back(pText);
+						int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
+						//меняем значение ячейки
+						m_oValue.Init();
+						m_oValue->m_sText = std::to_wstring(nIndex);
+						//меняем тип ячейки
+						if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
+						{
+							m_oType.Init();
+							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+						}
+					}
+					else
+					{
+						m_oValue.reset();
+						m_oType.reset();
+					}
+				}
+				else if(SimpleTypes::Spreadsheet::celltypeBool == m_oType->GetValue())
+				{
+					//обычно пишется 1/0, но встречается, что пишут true/false
+					if(m_oValue.IsInit())
+					{
+						SimpleTypes::COnOff<> oOnOff;
+						std::wstring sVal = m_oValue->ToString();
+						oOnOff.FromString(sVal.c_str());
+						m_oValue.Init();
+						if(oOnOff.ToBool())
+							m_oValue->m_sText = _T("1");
+						else
+							m_oValue->m_sText = _T("0");
+					}
+				}
+			}
+		}
+		void CCell::fromXMLtoXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream)
+		{
+			int nCol = 0;
+			_UINT32 nStyle = 0;
+			SimpleTypes::Spreadsheet::CCellTypeType<SimpleTypes::Spreadsheet::celltypeNumber> oType;
+			bool bShowPhonetic = false;
+			ReadAttributesToXLSB(oReader, nCol, nStyle, oType, bShowPhonetic);
+
+			nullable<CFormula>	oFormula;
+			nullable<CSi>		oRichText;
+			double dValue = 0;
+			unsigned int nValue = 0;
+			BYTE bValue = 0;
+			std::wstring* psValue = NULL;
+			bool bForceFormula = false;
+			_UINT16 nType = XLSB::rt_CELL_BLANK;
+			if (!oReader.IsEmptyNode())
+			{
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					const char* sName = oReader.GetNameChar();
+
+					if ( strcmp("v", sName) == 0 )
+					{
+						CText::fromXMLToXLSB(oReader, oType.GetValue(), nType, dValue, nValue, bValue, &psValue, bForceFormula);
+					}
+					else if ( strcmp("f", sName) == 0 )
+						oFormula = oReader;
+					else if ( strcmp("is", sName) == 0 )
+						oRichText = oReader;
+				}
+			}
+
+			//check index
+			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
+			if (xlsx)
+			{
+				nCol = xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
+			}
+			toXLSB2(oStream, nCol, nStyle, bShowPhonetic, nType, dValue, nValue, bValue, &psValue, bForceFormula, oFormula, oRichText);
+			RELEASEOBJECT(psValue);
+		}
+		void CCell::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow)
+		{
+			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
+
+			m_oRow.Init();
+			m_oRow->SetValue(nRow);
+			m_oCol.Init();
+			m_oCol->SetValue(oStream.GetULong() & 0x3FFF);
+			_UINT32 nStyleRef = oStream.GetULong();
+			if(0 != (nStyleRef & 0xFFFFFF))
+			{
+				m_oStyle.Init();
+				m_oStyle->SetValue(nStyleRef & 0xFFFFFF);
+			}
+
+			if(0 != (nStyleRef & 0x1000000))
+			{
+				m_oShowPhonetic.Init();
+				m_oShowPhonetic->FromBool(true);
+			}
+
+			if (XLSB::rt_CELL_RK == nType)
+			{
 				m_oValue.Init();
-                m_oValue->m_sText = std::to_wstring(nIndex);
-				//меняем тип ячейки
+				m_oValue->m_sText = std::to_wstring(oStream.GetULong());
+			}
+			else if (XLSB::rt_CELL_ERROR == nType || XLSB::rt_FMLA_ERROR == nType)
+			{
+				m_oType.Init();
+				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
+				BYTE nError = oStream.GetUChar();
+				m_oValue.Init();
+				switch(nError)
+				{
+				case 0x00: m_oValue->m_sText = L"#NULL!"; break;
+				case 0x07: m_oValue->m_sText = L"#DIV/0!"; break;
+				case 0x0F: m_oValue->m_sText = L"#VALUE!"; break;
+				case 0x17: m_oValue->m_sText = L"#REF!"; break;
+				case 0x1D: m_oValue->m_sText = L"#NAME?"; break;
+				case 0x24: m_oValue->m_sText = L"#NUM!"; break;
+				case 0x2A: m_oValue->m_sText = L"#N/A"; break;
+				case 0x2B: m_oValue->m_sText = L"#GETTING_DATA"; break;
+				}
+			}
+			else if (XLSB::rt_CELL_BOOL == nType || XLSB::rt_FMLA_BOOL == nType)
+			{
+				m_oType.Init();
+				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+				m_oValue.Init();
+				m_oValue->m_sText = oStream.GetBool() ? L"1" : L"0";
+			}
+			else if (XLSB::rt_CELL_REAL == nType || XLSB::rt_FMLA_NUM == nType)
+			{
+				m_oValue.Init();
+				m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oStream.GetDoubleReal());
+			}
+			else if (XLSB::rt_CELL_ST == nType || XLSB::rt_FMLA_STRING == nType)
+			{
+				m_oType.Init();
+				m_oType->SetValue(XLSB::rt_CELL_ST == nType ? SimpleTypes::Spreadsheet::celltypeInlineStr : SimpleTypes::Spreadsheet::celltypeStr);
+				m_oValue.Init();
+				m_oValue->m_sText = oStream.GetString2();
+			}
+			else if (XLSB::rt_CELL_ISST == nType)
+			{
 				m_oType.Init();
 				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
-			}
-		}
-		else if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
-		{
-			if (m_oValue.IsInit())
-			{
-				if(!xlsx->m_pSharedStrings)
-					xlsx->CreateSharedStrings();
-				//добавляем в SharedStrings
-				CSi* pSi = new CSi();
-				CText* pText =  new CText();
-				pText->m_sText = m_oValue->ToString();
-				pSi->m_arrItems.push_back(pText);
-				int nIndex = xlsx->m_pSharedStrings->AddSi(pSi);
-				//меняем значение ячейки
 				m_oValue.Init();
-				m_oValue->m_sText = std::to_wstring(nIndex);
-				//меняем тип ячейки
-				if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
+				m_oValue->m_sText = std::to_wstring(oStream.GetULong());
+			}
+
+
+			if (XLSB::rt_FMLA_STRING <= nType && nType <= XLSB::rt_FMLA_ERROR)
+			{
+				m_oFormula.Init();
+				m_oFormula->fromXLSB(oStream);
+			}
+			//todo it breaks xslb format
+			_UINT16 nFlags = oStream.GetUShort();
+			if(0 != (nFlags & 0x4))
+			{
+				if(!m_oFormula.IsInit())
 				{
-					m_oType.Init();
-					m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+					m_oFormula.Init();
+				}
+				m_oFormula->fromXLSBExt(oStream, nFlags);
+			}
+			if(0 != (nFlags & 0x2000))
+			{
+				m_oType.Init();
+				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+
+				m_oRichText.Init();
+				m_oRichText->fromXLSBExt(oStream);
+			}
+
+			oStream.Seek(nEnd);
+		}
+		void CCell::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
+		{
+			int nRow = 0;
+			int nCol = 0;
+			getRowCol(nRow, nCol);
+
+			_UINT32 nStyle = 0;
+			SimpleTypes::Spreadsheet::ECellTypeType eType = m_oType.IsInit() ? m_oType->GetValue() : SimpleTypes::Spreadsheet::celltypeNumber;
+			bool bShowPhonetic = m_oShowPhonetic.IsInit() && m_oShowPhonetic->ToBool();
+			if(m_oStyle.IsInit())
+			{
+				nStyle = m_oStyle->GetValue();
+			}
+
+			double dValue = 0;
+			unsigned int nValue = 0;
+			BYTE bValue = 0;
+			std::wstring* psValue = NULL;
+			bool bForceFormula = false;
+			_UINT16 nType = XLSB::rt_CELL_BLANK;
+			if(m_oValue.IsInit() && !m_oValue->m_sText.empty())
+			{
+				CText::fromXMLToXLSB(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(m_oValue->m_sText).c_str(), m_oValue->GetSpace(), eType, nType, dValue, nValue, bValue, &psValue, bForceFormula);
+			}
+
+			toXLSB2(oStream, nCol, nStyle, bShowPhonetic, nType, dValue, nValue, bValue, &psValue, bForceFormula, m_oFormula, m_oRichText);
+			RELEASEOBJECT(psValue);
+		}
+		void CCell::toXLSB2 (NSBinPptxRW::CXlsbBinaryWriter& oStream, int nCol, unsigned int nStyle, bool bShowPhonetic, _UINT16 nType, double dValue, unsigned int nValue, BYTE bValue, std::wstring** psValue, bool bForceFormula, const nullable<CFormula>& oFormula, const nullable<CSi>& oRichText) const
+		{
+			_UINT32 nLen = 4+4+2;
+			switch(nType)
+			{
+				case XLSB::rt_CELL_REAL:
+					nLen += 8;
+				break;
+				case XLSB::rt_CELL_ISST:
+					nLen += 4;
+				break;
+				case XLSB::rt_CELL_ST:
+					nLen += 4 + 2 * (*psValue)->length();
+				break;
+				case XLSB::rt_CELL_ERROR:
+				case XLSB::rt_CELL_BOOL:
+					nLen += 1;
+				break;
+			}
+			bool bWriteFormula = (oFormula.IsInit() || bForceFormula) && XLSB::rt_CELL_ISST != nType;
+			if(bWriteFormula)
+			{
+				if(oFormula.IsInit())
+				{
+					nLen += oFormula->getXLSBSize();
+				}
+				else
+				{
+					nLen += 2+4+4;
+				}
+				if(XLSB::rt_CELL_REAL == nType)
+				{
+					nType = XLSB::rt_FMLA_NUM;
+				}
+				else if(XLSB::rt_CELL_ST == nType)
+				{
+					nType = XLSB::rt_FMLA_STRING;
+				}
+				else if(XLSB::rt_CELL_BOOL == nType)
+				{
+					nType = XLSB::rt_FMLA_BOOL;
+				}
+				else if(XLSB::rt_CELL_ERROR == nType)
+				{
+					nType = XLSB::rt_FMLA_ERROR;
+				}
+				else if(XLSB::rt_CELL_BLANK == nType)
+				{
+					nType = XLSB::rt_FMLA_STRING;
+					(*psValue) = new std::wstring();
+					(*psValue)->append(L"");
+				}
+			}
+			if(oRichText.IsInit())
+			{
+				nLen += oRichText->getXLSBSize();
+			}
+
+			oStream.XlsbStartRecord(nType, nLen);
+			oStream.WriteULONG(nCol & 0x3FFF);
+
+			if (bShowPhonetic)
+			{
+				nStyle |= 0x1000000;
+			}
+			oStream.WriteULONG(nStyle);
+			//todo RkNumber
+			switch(nType)
+			{
+				case XLSB::rt_CELL_REAL:
+				case XLSB::rt_FMLA_NUM:
+					oStream.WriteDoubleReal(dValue);
+				break;
+				case XLSB::rt_CELL_ISST:
+					oStream.WriteULONG(nValue);
+				break;
+				case XLSB::rt_CELL_ST:
+				case XLSB::rt_FMLA_STRING:
+					oStream.WriteString(**psValue);
+				break;
+				case XLSB::rt_CELL_ERROR:
+				case XLSB::rt_FMLA_ERROR:
+				case XLSB::rt_CELL_BOOL:
+				case XLSB::rt_FMLA_BOOL:
+					oStream.WriteBYTE(bValue);
+				break;
+			}
+
+			_UINT16 nFlags = 0;
+			if(bWriteFormula)
+			{
+				if(oFormula.IsInit())
+				{
+					nFlags = oFormula->toXLSB(oStream);
+				}
+				else if(bForceFormula)
+				{
+					CFormula oTmp;
+					nFlags = oTmp.toXLSB(oStream);
+				}
+			}
+
+			if(oRichText.IsInit())
+			{
+				nFlags |= 0x2000;
+			}
+			oStream.WriteUSHORT(nFlags);
+			if(bWriteFormula && oFormula.IsInit())
+			{
+				oFormula->toXLSBExt(oStream);
+			}
+			if(oRichText.IsInit())
+			{
+				oRichText->toXLSBExt(oStream);
+			}
+
+			oStream.XlsbEndRecord();
+		}
+
+		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
+
+				if (strcmp("r", wsName) == 0)
+				{
+					m_oRef = oReader.GetTextA();
+				}
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "s", m_oStyle )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "t", m_oType )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "cm", m_oCellMetadata )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "vm", m_oValueMetadata )
+				WritingElement_ReadAttributes_Read_else_ifChar ( oReader, "ph", m_oShowPhonetic )
+
+				WritingElement_ReadAttributes_EndChar( oReader )
+		}
+		void CCell::ReadAttributesToXLSB(XmlUtils::CXmlLiteReader& oReader, int& nCol, unsigned int& nStyle, SimpleTypes::Spreadsheet::CCellTypeType<>& oType, bool& bShowPhonetic)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
+
+				if (strcmp("r", wsName) == 0)
+				{
+					if(parseRefColA(oReader.GetTextChar(), nCol))
+					{
+						nCol--;
+					}
+				}
+				else if (strcmp("s", wsName) == 0)
+				{
+					nStyle = atol(oReader.GetTextChar());
+				}
+				else if (strcmp("t", wsName) == 0)
+				{
+					oType.FromStringA(oReader.GetTextChar());
+				}
+				else if (strcmp("ph", wsName) == 0)
+				{
+					bShowPhonetic = 1;
+				}
+
+				WritingElement_ReadAttributes_EndChar( oReader )
+		}
+
+		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<row"));
+			WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
+			WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
+			WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
+			WritingStringNullableAttrDouble(L"ht", m_oHt, m_oHt->GetValue());
+			WritingStringNullableAttrBool(L"hidden", m_oHidden);
+			WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
+			WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
+			WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
+			WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
+			WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
+			WritingStringNullableAttrBool(L"ph", m_oPh);
+			writer.WriteString(_T(">"));
+		}
+		void CRow::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("</row>"));
+		}
+		void CRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			CheckIndex();
+
+			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
+			if (xlsx && xlsx->m_pXlsbWriter)
+			{
+				toXLSB(*xlsx->m_pXlsbWriter);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					const char* sName = oReader.GetNameChar();
+
+					if ( strcmp("c", sName) == 0 )
+					{
+						CCell oCell;
+						oCell.m_pMainDocument = m_pMainDocument;
+						oCell.fromXMLtoXLSB(oReader, *xlsx->m_pXlsbWriter);
+					}
 				}
 			}
 			else
 			{
-				m_oValue.reset();
-				m_oType.reset();
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					const char* sName = oReader.GetNameChar();
+
+					if ( strcmp("c", sName) == 0 )
+					{
+						CCell *pCell = new CCell();
+						if (pCell)
+						{
+							pCell->m_pMainDocument = m_pMainDocument;
+							pCell->fromXML(oReader);
+							m_arrItems.push_back(pCell);
+						}
+					}
+				}
 			}
 		}
-		else if(SimpleTypes::Spreadsheet::celltypeBool == m_oType->GetValue())
+		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
-			//обычно пишется 1/0, но встречается, что пишут true/false
-			if(m_oValue.IsInit())
+			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
+
+			m_oR.Init();
+			m_oR->SetValue((oStream.GetULong() & 0xFFFFF) + 1);
+			_UINT32 nS = oStream.GetULong();
+			_UINT16 nHt = oStream.GetUShort() & 0x1FFF;
+			BYTE byteExtra1 = oStream.GetUChar();
+			if(0 != (byteExtra1 & 0x1))
 			{
-				SimpleTypes::COnOff<> oOnOff;
-                std::wstring sVal = m_oValue->ToString();
-                oOnOff.FromString(sVal.c_str());
-				m_oValue.Init();
-				if(oOnOff.ToBool())
-					m_oValue->m_sText = _T("1");
-				else
-					m_oValue->m_sText = _T("0");
+				m_oThickTop.Init();
+				m_oThickTop->FromBool(true);
+			}
+			if(0 != (byteExtra1 & 0x2))
+			{
+				m_oThickBot.Init();
+				m_oThickBot->FromBool(true);
+			}
+			BYTE byteExtra2 = oStream.GetUChar();
+			BYTE nOutlineLevel = byteExtra2 & 0x7;
+			if(nOutlineLevel > 0)
+			{
+				m_oOutlineLevel.Init();
+				m_oOutlineLevel->SetValue(nOutlineLevel);
+			}
+			if(0 != (byteExtra2 & 0x8))
+			{
+				m_oCollapsed.Init();
+				m_oCollapsed->FromBool(true);
+			}
+			if(0 != (byteExtra2 & 0x10))
+			{
+				m_oHidden.Init();
+				m_oHidden->FromBool(true);
+			}
+			if(0 != (byteExtra2 & 0x20))
+			{
+				m_oCustomHeight.Init();
+				m_oCustomHeight->FromBool(true);
+			}
+			if(0 != nHt || (m_oCustomHeight.IsInit() && m_oCustomHeight->ToBool()))
+			{
+				m_oHt.Init();
+				m_oHt->SetValue(((double)nHt) / 20);//twips to pt
+			}
+			if(0 != (byteExtra2 & 0x40))
+			{
+				m_oCustomFormat.Init();
+				m_oCustomFormat->FromBool(true);
+			}
+			if(m_oCustomFormat.IsInit() && m_oCustomFormat->ToBool())
+			{
+				m_oS.Init();
+				m_oS->SetValue(nS);
+			}
+			BYTE byteExtra3 = oStream.GetUChar();
+			if(0 != (byteExtra3 & 0x1))
+			{
+				m_oPh.Init();
+				m_oPh->FromBool(true);
+			}
+			//todo ccolspan
+			oStream.Seek(nEnd);
+		}
+		void CRow::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
+		{
+			oStream.XlsbStartRecord(XLSB::rt_ROW_HDR, 4 + 4 + 2 + 1 + 1 + 1 + 4);
+			_UINT32 nRow = 0;
+			//
+			if(m_oR.IsInit())
+			{
+				nRow = (m_oR->GetValue() - 1) & 0xFFFFF;
+			}
+			oStream.WriteULONG(nRow);
+			_UINT32 nS = 0;
+			if(m_oS.IsInit())
+			{
+				nS = m_oS->GetValue();
+			}
+			oStream.WriteULONG(nS);
+			_UINT16 nHt = 0;
+			if(m_oHt.IsInit())
+			{
+				nHt = ((_UINT16)(m_oHt->GetValue() * 20)) & 0x1FFF;//pt to twips
+			}
+			oStream.WriteUSHORT(nHt);
+
+			BYTE byteExtra1 = 0;
+			if(m_oThickTop.IsInit() && m_oThickTop->ToBool())
+			{
+				byteExtra1 |= 0x1;
+			}
+			if(m_oThickTop.IsInit() && m_oThickTop->ToBool())
+			{
+				byteExtra1 |= 0x2;
+			}
+			oStream.WriteBYTE(byteExtra1);
+			BYTE byteExtra2 = 0;
+			if(m_oOutlineLevel.IsInit())
+			{
+				byteExtra2 |= m_oOutlineLevel->GetValue() & 0x7;
+			}
+			if(m_oCollapsed.IsInit() && m_oCollapsed->ToBool())
+			{
+				byteExtra2 |= 0x8;
+			}
+			if(m_oHidden.IsInit() && m_oHidden->ToBool())
+			{
+				byteExtra2 |= 0x10;
+			}
+			if(m_oCustomHeight.IsInit() && m_oCustomHeight->ToBool())
+			{
+				byteExtra2 |= 0x20;
+			}
+			if(m_oCustomFormat.IsInit() && m_oCustomFormat->ToBool())
+			{
+				byteExtra2 |= 0x40;
+			}
+			oStream.WriteBYTE(byteExtra2);
+			BYTE byteExtra3 = 0;
+			if(m_oPh.IsInit() && m_oPh->ToBool())
+			{
+				byteExtra3 |= 0x1;
+			}
+			oStream.WriteBYTE(byteExtra3);
+			//ccolspan
+			oStream.WriteULONG(0);
+
+			oStream.XlsbEndRecord();
+		}
+		void CRow::CheckIndex()
+		{
+			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
+			if (!m_oR.IsInit() || m_oR->GetValue() <= xlsx->m_nLastReadRow)
+			{
+				xlsx->m_nLastReadRow = xlsx->m_nLastReadRow + 1;
+				m_oR.Init();
+				m_oR->SetValue(xlsx->m_nLastReadRow);
+			}
+			else
+			{
+				xlsx->m_nLastReadRow = m_oR->GetValue();
+			}
+			xlsx->m_nLastReadCol = -1;
+		}
+		void CRow::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
+				if ( strcmp("r", wsName) == 0 )\
+				{
+					m_oR.Init();
+					m_oR->SetValue(atoi(oReader.GetTextChar()));
+				}
+				else if ( strcmp("s", wsName) == 0 )\
+				{
+					m_oS.Init();
+					m_oS->SetValue(atoi(oReader.GetTextChar()));
+				}
+				else if ( strcmp("customFormat", wsName) == 0 )\
+				{
+					m_oCustomFormat.Init();
+					m_oCustomFormat->FromStringA(oReader.GetTextChar());
+				}
+				else if ( strcmp("ht", wsName) == 0 )\
+				{
+					m_oHt.Init();
+					m_oHt->SetValue(atof(oReader.GetTextChar()));
+				}
+				else if ( strcmp("hidden", wsName) == 0 )\
+				{
+					m_oHidden.Init();
+					m_oHidden->FromStringA(oReader.GetTextChar());
+				}
+				else if ( strcmp("customHeight", wsName) == 0 )\
+				{
+					m_oCustomHeight.Init();
+					m_oCustomHeight->FromStringA(oReader.GetTextChar());
+				}
+				else if ( strcmp("outlineLevel", wsName) == 0 )\
+				{
+					m_oOutlineLevel.Init();
+					m_oOutlineLevel->SetValue(atoi(oReader.GetTextChar()));
+				}
+				else if ( strcmp("collapsed", wsName) == 0 )\
+				{
+					m_oCollapsed.Init();
+					m_oCollapsed->FromStringA(oReader.GetTextChar());
+				}
+				else if ( strcmp("x14ac:dyDescent", wsName) == 0 )\
+				{
+					m_oDyDescent.Init();
+					m_oDyDescent->SetValue(atof(oReader.GetTextChar()));
+				}
+				else if ( strcmp("thickBot", wsName) == 0 )\
+				{
+					m_oThickBot.Init();
+					m_oThickBot->FromStringA(oReader.GetTextChar());
+				}
+				else if ( strcmp("thickTop", wsName) == 0 )\
+				{
+					m_oThickTop.Init();
+					m_oThickTop->FromStringA(oReader.GetTextChar());
+				}
+				else if ( strcmp("ph", wsName) == 0 )\
+				{
+					m_oPh.Init();
+					m_oPh->FromStringA(oReader.GetTextChar());
+				}
+			WritingElement_ReadAttributes_EndChar( oReader )
+		}
+		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
+			if(xlsx)
+			{
+				xlsx->m_nLastReadRow = 0;
+			}
+			if (xlsx && xlsx->m_pXlsbWriter)
+			{
+
+				NSBinPptxRW::CXlsbBinaryWriter& oStream = *xlsx->m_pXlsbWriter;
+				m_oXlsbPos.Init();
+				m_oXlsbPos->SetValue(oStream.GetPosition());
+
+				oStream.XlsbStartRecord(XLSB::rt_BEGIN_SHEET_DATA, 0);
+				oStream.XlsbEndRecord();
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					const char* sName = oReader.GetNameChar();
+
+					if ( strcmp("row", sName) == 0 )
+					{
+						CRow oRow;
+						oRow.m_pMainDocument = m_pMainDocument;
+						oRow.fromXML(oReader);
+					}
+				}
+
+				oStream.XlsbStartRecord(XLSB::rt_END_SHEET_DATA, 0);
+				oStream.XlsbEndRecord();
+			}
+			else
+			{
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					const char* sName = oReader.GetNameChar();
+
+					if ( strcmp("row", sName) == 0 )
+					{
+						CRow *pRow = new CRow();
+						if (pRow)
+						{
+							pRow->m_pMainDocument = m_pMainDocument;
+							pRow->fromXML(oReader);
+							m_arrItems.push_back(pRow);
+						}
+					}
+				}
 			}
 		}
-	}
-}
+		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		{
+			oStream.XlsbSkipRecord();//XLSB::rt_BEGIN_SHEET_DATA
+
+			CRow* pRow = NULL;
+			LONG nOldPos = -1;
+			while (nOldPos != oStream.GetPos())
+			{
+				nOldPos = oStream.GetPos();
+				nType = oStream.XlsbReadRecordType();
+				if (XLSB::rt_CELL_BLANK <= nType && nType <= XLSB::rt_FMLA_ERROR)
+				{
+					CCell oCell;
+					oCell.m_pMainDocument = m_pMainDocument;
+					oCell.fromXLSB(oStream, nType, pRow->m_oR->GetValue() - 1);
+					fromXLSBToXmlCell(oCell, pCSVWriter, oStreamWriter);
+				}
+				else if (XLSB::rt_ROW_HDR == nType)
+				{
+					fromXLSBToXmlRowEnd(pRow, pCSVWriter, oStreamWriter);
+					RELEASEOBJECT(pRow);
+
+					pRow = new CRow();
+					pRow->m_pMainDocument = m_pMainDocument;
+					pRow->fromXLSB(oStream, nType);
+
+					fromXLSBToXmlRowStart(pRow, pCSVWriter, oStreamWriter);
+				}
+				else if (XLSB::rt_END_SHEET_DATA == nType)
+				{
+					fromXLSBToXmlRowEnd(pRow, pCSVWriter, oStreamWriter);
+					RELEASEOBJECT(pRow);
+					oStream.XlsbSkipRecord();
+					break;
+				}
+				else
+				{
+					oStream.XlsbSkipRecord();
+				}
+			}
+			RELEASEOBJECT(pRow);
+		}
+		void CSheetData::fromXLSBToXmlCell (CCell& oCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		{
+			if (NULL == pCSVWriter)
+			{
+				oCell.toXML(oStreamWriter);
+			}
+			else
+			{
+				pCSVWriter->WriteCell(&oCell);
+			}
+		}
+		void CSheetData::fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		{
+			if (NULL == pCSVWriter)
+			{
+				pRow->toXMLStart(oStreamWriter);
+			}
+			else
+			{
+				pCSVWriter->WriteRowStart(pRow);
+			}
+		}
+		void CSheetData::fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		{
+			if(pRow)
+			{
+				if (NULL == pCSVWriter)
+				{
+					pRow->toXMLEnd(oStreamWriter);
+				}
+				else
+				{
+					pCSVWriter->WriteRowEnd(pRow);
+				}
+			}
+		}
+		void CSheetData::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
+		{
+			oStream.XlsbStartRecord(XLSB::rt_BEGIN_SHEET_DATA, 0);
+			oStream.XlsbEndRecord();
+			for(size_t indexRow = 0; indexRow < m_arrItems.size(); ++indexRow)
+			{
+				CRow* pRow = m_arrItems[indexRow];
+				pRow->toXLSB(oStream);
+				for(size_t indexCol = 0; indexCol < pRow->m_arrItems.size(); ++indexCol)
+				{
+					pRow->m_arrItems[indexCol]->toXLSB(oStream);
+				}
+			}
+			oStream.XlsbStartRecord(XLSB::rt_END_SHEET_DATA, 0);
+			oStream.XlsbEndRecord();
+		}
+	} //Spreadsheet
+} // OOX

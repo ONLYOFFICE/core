@@ -369,7 +369,8 @@ namespace BinXlsxRW
 		ColBreaks = 31,
 		DataValidations = 32,
 		QueryTable = 33,
-		Controls = 34
+		Controls = 34,
+		XlsbPos = 35
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{

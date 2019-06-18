@@ -266,12 +266,11 @@ namespace XmlUtils
             if (!IsValid())
                 return L"";
 
-            xmlChar* pName = xmlTextReaderName(reader);
+            const xmlChar* pName = xmlTextReaderConstName(reader);
             if (NULL == pName)
                 return L"";
 
             std::wstring sRet = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
-            free(pName);
             return sRet;
         }
         std::string GetNameA()
@@ -279,14 +278,25 @@ namespace XmlUtils
             if (!IsValid())
                 return "";
 
-            xmlChar* pName = xmlTextReaderName(reader);
+            const xmlChar* pName = xmlTextReaderConstName(reader);
             if (NULL == pName)
                 return "";
 
             std::string sRet((char*)pName);
-            free(pName);
             return sRet;
         }
+        const char* GetNameChar()
+        {
+            if (!IsValid())
+                return "";
+
+            const xmlChar* pName = xmlTextReaderConstName(reader);
+            if (NULL == pName)
+                return "";
+
+            return (const char*)pName;
+        }
+
         inline int GetDepth()
         {
             if (!IsValid())
@@ -310,12 +320,11 @@ namespace XmlUtils
             if (!IsValid())
                 return NULL;
 
-            xmlChar* pValue = xmlTextReaderValue(reader);
+            const xmlChar* pValue = xmlTextReaderConstValue(reader);
             if (NULL == pValue)
                 return L"";
 
             std::wstring sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen((const char*)pValue));
-            free(pValue);
             return sTemp;
         }
         inline std::string GetTextA()
@@ -323,13 +332,23 @@ namespace XmlUtils
             if (!IsValid())
                 return NULL;
 
-            xmlChar* pValue = xmlTextReaderValue(reader);
+            const xmlChar* pValue = xmlTextReaderConstValue(reader);
             if (NULL == pValue)
                 return "";
 
             std::string sTemp((const char*)pValue);
-            free(pValue);
             return sTemp;
+        }
+        inline const char* GetTextChar()
+        {
+            if (!IsValid())
+                return "";
+
+            const xmlChar* pValue = xmlTextReaderConstValue(reader);
+            if (NULL == pValue)
+                return "";
+
+            return (const char*)pValue;
         }
 
         std::wstring GetText2()
@@ -440,12 +459,11 @@ namespace XmlUtils
 
         std::wstring GetNamespacePrefix()
         {
-            xmlChar* pName = xmlTextReaderPrefix(reader);
+            const xmlChar* pName = xmlTextReaderConstPrefix(reader);
             if (NULL == pName)
                 return L"";
 
             std::wstring sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
-            free(pName);
             return sTemp;
         }
         XmlNodeType GetNodeType()

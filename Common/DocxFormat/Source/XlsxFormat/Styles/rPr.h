@@ -35,6 +35,12 @@
 
 #include "../CommonInclude.h"
 
+namespace NSBinPptxRW
+{
+	class CBinaryFileReader;
+	class CXlsbBinaryWriter;
+}
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -391,7 +397,7 @@ namespace OOX
 				writer.WriteString(sName);
 				WritingStringNullableAttrBool(L"auto", m_oAuto);
 				WritingStringNullableAttrInt(L"indexed", m_oIndexed, m_oIndexed->GetValue());
-				if(m_oRgb.IsInit())
+				if(m_oRgb.IsInit() && !m_oIndexed.IsInit())
 				{
 					int nIndex = OOX::Spreadsheet::CIndexedColors::GetDefaultIndexByRGBA(m_oRgb->Get_R(), m_oRgb->Get_G(), m_oRgb->Get_B(), m_oRgb->Get_A());
 					if(-1 == nIndex)
@@ -681,12 +687,45 @@ namespace OOX
 					else
 						writer.WriteString(_T("<b val=\"false\"/>"));
 				}
-				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
+				if(m_oItalic.IsInit())
 				{
-					WritingStringValAttrString(L"charset", m_oCharset->m_oCharset->ToString());
+					if(SimpleTypes::onoffTrue == m_oItalic->m_oVal.GetValue())
+						writer.WriteString(_T("<i/>"));
+					else
+						writer.WriteString(_T("<i val=\"false\"/>"));
 				}
-				if(m_oColor.IsInit())
-					m_oColor->toXML2(writer, _T("color"));
+				if(m_oStrike.IsInit())
+				{
+					if(SimpleTypes::onoffTrue == m_oStrike->m_oVal.GetValue())
+						writer.WriteString(_T("<strike/>"));
+					else
+						writer.WriteString(_T("<strike val=\"false\"/>"));
+				}
+				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
+				{
+					if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
+					{
+						WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
+					}
+					else
+					{
+						writer.WriteString(L"<u/>");
+					}
+				}
+				if(m_oOutline.IsInit())
+				{
+					if(SimpleTypes::onoffTrue == m_oOutline->m_oVal.GetValue())
+						writer.WriteString(_T("<outline/>"));
+					else
+						writer.WriteString(_T("<outline val=\"false\"/>"));
+				}
+				if(m_oShadow.IsInit())
+				{
+					if(SimpleTypes::onoffTrue == m_oShadow->m_oVal.GetValue())
+						writer.WriteString(_T("<shadow/>"));
+					else
+						writer.WriteString(_T("<shadow val=\"false\"/>"));
+				}
 				if(m_oCondense.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
@@ -701,67 +740,35 @@ namespace OOX
 					else
 						writer.WriteString(_T("<extend val=\"false\"/>"));
 				}
-				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
+				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
-					WritingStringValAttrString(L"family", m_oFamily->m_oFontFamily->ToString());
-				}
-				if(m_oItalic.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oItalic->m_oVal.GetValue())
-						writer.WriteString(_T("<i/>"));
-					else
-						writer.WriteString(_T("<i val=\"false\"/>"));
-				}
-				if(m_oOutline.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oOutline->m_oVal.GetValue())
-						writer.WriteString(_T("<outline/>"));
-					else
-						writer.WriteString(_T("<outline val=\"false\"/>"));
-				}
-				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
-				{
-					WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal.get());
-				}
-				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
-				{
-					WritingStringValAttrString(L"scheme", m_oScheme->m_oFontScheme->ToString());
-				}
-				if(m_oShadow.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oShadow->m_oVal.GetValue())
-						writer.WriteString(_T("<shadow/>"));
-					else
-						writer.WriteString(_T("<shadow val=\"false\"/>"));
-				}
-				if(m_oStrike.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oStrike->m_oVal.GetValue())
-						writer.WriteString(_T("<strike/>"));
-					else
-						writer.WriteString(_T("<strike val=\"false\"/>"));
+					std::wstring sVerticalAlign = m_oVertAlign->m_oVerticalAlign->ToString();
+					writer.WriteString(L"<vertAlign val=\"");
+					writer.WriteString(sVerticalAlign);
+					writer.WriteString(L"\"/>");
 				}
 				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 				{
 					WritingStringValAttrDouble(L"sz", m_oSz->m_oVal->GetValue());
 				}
-				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
+				if(m_oColor.IsInit())
+					m_oColor->toXML2(writer, _T("color"));
+
+				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
-					if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
-					{
-						WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
-					}
-					else
-					{
-						writer.WriteString(L"<u/>");
-					}
+					WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal.get());
 				}
-				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
+				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 				{
-                    std::wstring sVerticalAlign = m_oVertAlign->m_oVerticalAlign->ToString();
-					writer.WriteString(L"<vertAlign val=\"");
-                    writer.WriteString(sVerticalAlign);
-					writer.WriteString(L"\"/>");
+					WritingStringValAttrString(L"family", m_oFamily->m_oFontFamily->ToString());
+				}
+				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
+				{
+					WritingStringValAttrString(L"charset", m_oCharset->m_oCharset->ToString());
+				}
+				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
+				{
+					WritingStringValAttrString(L"scheme", m_oScheme->m_oFontScheme->ToString());
 				}
 				writer.WriteString(_T("</rPr>"));
 			}
@@ -810,6 +817,10 @@ namespace OOX
 
 				}
 			}
+
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
+			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
+			_UINT32 getXLSBSize() const;
 
 			virtual EElementType getType () const
 			{

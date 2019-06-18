@@ -4647,10 +4647,12 @@ int BinaryWorksheetsTableReader::ReadDrawing(BYTE type, long length, void* poRes
 	
 	int res = ReadCellAnchor(type, length, poResult);
 
-	if (res == c_oSerConstants::ReadOk) return res;	
+	if (res != c_oSerConstants::ReadUnknown) return res;	
+	res = c_oSerConstants::ReadOk;
 
 	if(c_oSer_DrawingType::pptxDrawing == type)
 	{
+		LONG nOldPos = m_oBufferedStream.GetPos();
 		pCellAnchor->m_oElement.Init();
 
 		BYTE typeRec1   = m_oBufferedStream.GetUChar();    // must be 0;
@@ -4661,7 +4663,10 @@ int BinaryWorksheetsTableReader::ReadDrawing(BYTE type, long length, void* poRes
 		pCellAnchor->m_oElement->fromPPTY(&m_oBufferedStream);
 
 		if (!pCellAnchor->m_oElement->is_init())
+		{
+			m_oBufferedStream.Seek(nOldPos);
 			res = c_oSerConstants::ReadUnknown;
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

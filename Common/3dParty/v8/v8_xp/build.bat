@@ -27,8 +27,8 @@ if not exist "win_32" (
 
   cd "%SCRIPTPATH%v8\tools\gyp"
 
-  call devenv v8.sln /Rebuild "Release"
-  call devenv v8.sln /Rebuild "Debug"
+  call devenv v8.sln /Rebuild "Release" || goto :error
+  call devenv v8.sln /Rebuild "Debug" || goto :error
 
   cd "%SCRIPTPATH%"
 
@@ -51,8 +51,8 @@ if not exist "win_64" (
 
   cd "%SCRIPTPATH%v8\tools\gyp"
 
-  call devenv v8.sln /Rebuild "Release"
-  call devenv v8.sln /Rebuild "Debug"
+  call devenv v8.sln /Rebuild "Release" || goto :error
+  call devenv v8.sln /Rebuild "Debug" || goto :error
 
   cd "%SCRIPTPATH%"
 
@@ -62,3 +62,9 @@ if not exist "win_64" (
   XCOPY /Y "v8\build\Debug\lib\*" "win_64\debug\"
   XCOPY /Y "v8\build\Debug\icudt.dll" "win_64\debug\"
 )
+
+exit
+
+:error
+echo "Failed with error #%errorlevel%."
+exit /b %errorlevel%

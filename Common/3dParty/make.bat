@@ -14,7 +14,13 @@ FOR /f "tokens=*" %%i in ('DIR /a:d /b *') DO (
 	ECHO %%i
 
 	if exist %%i/build.bat (
-		call %%i/build.bat
+		call %%i/build.bat || goto :error
 	)
 	
 )
+
+exit
+
+:error
+echo "Failed with error #%errorlevel%."
+exit /b %errorlevel%

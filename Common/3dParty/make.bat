@@ -19,7 +19,7 @@ FOR /f "tokens=*" %%i in ('DIR /a:d /b *') DO (
 	
 )
 
-exit
+exit /b 0
 
 :error
 echo "Failed with error #%errorlevel%."

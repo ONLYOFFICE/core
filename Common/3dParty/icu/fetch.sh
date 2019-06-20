@@ -1,7 +1,5 @@
 #!/bin/bash
-
-SCRIPT=$(readlink -f "$0" || grealpath "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 ICU_MAJOR_VER=58
 ICU_MINOR_VER=2
@@ -63,7 +61,12 @@ fi
 # on systems without xlocale.h (removed from glibc since 2.26)
 # See https://sourceware.org/glibc/wiki/Release/2.26#Removal_of_.27xlocale.h.27
 # See https://bugs.archlinux.org/task/55246
-sed -i 's/xlocale/locale/' ./icu/source/i18n/digitlst.cpp
+sed -i -e 's/xlocale/locale/' ./icu/source/i18n/digitlst.cpp
+
+if [[ "$platform" == *"mac"* ]]
+then
+  sed -i -e 's/cmd\, \"%s %s -o %s%s %s %s%s %s %s\"\,/cmd\, \"%s %s -o %s%s %s %s %s %s %s\"\,/' ./icu/source/tools/pkgdata/pkgdata2.cpp
+fi
 
 cd ./icu/source/
 

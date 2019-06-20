@@ -82,6 +82,7 @@ then
     echo "cef_binary already extracted"
   else
     wget $cef_url || curl -O $cef_url
-    7za x $cef_arch "-obuild/Chromium Embedded Framework.framework"
+    7za x $cef_arch
+    mv "$cef_binary" "build/Chromium Embedded Framework.framework"
   fi
 fi

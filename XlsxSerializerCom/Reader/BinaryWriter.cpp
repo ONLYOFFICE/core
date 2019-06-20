@@ -6412,7 +6412,14 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		{
 			int nMidPoint = nHeaderLen + GetMainTableSize();
 			NSFile::CFileBinary oFile;
-			oFile.OpenFile(sFileDst, true);
+			if(0 != m_nLastFilePosOffset)
+			{
+				oFile.OpenFile(sFileDst, true);
+			}
+			else
+			{
+				oFile.CreateFileW(sFileDst);
+			}
 			//write header and main table
 			oFile.WriteFile(pbBinBuffer, nMidPoint);
 			//skip xlsb records written on xml reading

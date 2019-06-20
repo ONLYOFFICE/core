@@ -314,7 +314,7 @@ namespace OOX
 				if('A' <= sRef[i] && sRef[i] <= 'Z')
 				{
 					//'a's
-					nCol = nCol * 26 + sRef[0] - 'A' + 1;
+					nCol = nCol * 26 + sRef[i] - 'A' + 1;
 				}
 				else
 				{
@@ -331,7 +331,7 @@ namespace OOX
 			size_t len = strlen(sRef);
 			size_t i = 0;
 			while(i < len && 'A' <= sRef[i] && sRef[i] <= 'Z'){
-				nCol = nCol * 26 + sRef[0] - 'A' + 1;
+				nCol = nCol * 26 + sRef[i] - 'A' + 1;
 				i++;
 			}
 			return 0 != i;

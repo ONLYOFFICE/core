@@ -77,7 +77,7 @@ fi
 
 if [[ "$platform" == *"mac"* ]]
 then
-  if [ -d $cef_binary ]
+  if [ -d "build/Chromium Embedded Framework.framework" ]
   then
     echo "cef_binary already extracted"
   else

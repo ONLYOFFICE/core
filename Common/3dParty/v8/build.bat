@@ -26,7 +26,7 @@ if not "%BUILD_PLATFORM%"=="%BUILD_PLATFORM:xp=%" (
 	cd %~dp0
 )
 
-exit
+exit /b 0
 
 :error
 echo "Failed with error #%errorlevel%."

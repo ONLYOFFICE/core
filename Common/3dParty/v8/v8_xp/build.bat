@@ -63,7 +63,7 @@ if not exist "win_64" (
   XCOPY /Y "v8\build\Debug\icudt.dll" "win_64\debug\"
 )
 
-exit
+exit /b 0
 
 :error
 echo "Failed with error #%errorlevel%."

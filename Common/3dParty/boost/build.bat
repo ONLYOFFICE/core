@@ -66,7 +66,7 @@ if not exist "%folder%" (
   XCOPY /Y stage\lib\* "%folder%\shared\"
 )
 
-exit
+exit /b 0
 
 :error
 echo "Failed with error #%errorlevel%."

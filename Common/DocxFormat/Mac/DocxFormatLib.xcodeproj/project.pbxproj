@@ -232,6 +232,9 @@
 		8A5B8FD5226F5AF20093271E /* ActiveX.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A5B8FD3226F5AF20093271E /* ActiveX.h */; };
 		8A5B8FD6226F5AF20093271E /* ActiveX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5B8FD4226F5AF20093271E /* ActiveX.cpp */; };
 		8A5B8FD8226F61010093271E /* VmlDrawing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A5B8FD7226F61000093271E /* VmlDrawing.cpp */; };
+		8ADF9DA222BB9C4800918F34 /* Si.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADF9DA122BB9C4700918F34 /* Si.cpp */; };
+		8ADF9DA422BB9C4F00918F34 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADF9DA322BB9C4F00918F34 /* Text.cpp */; };
+		8ADF9DA622BBA07D00918F34 /* rPr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ADF9DA522BBA07D00918F34 /* rPr.cpp */; };
 		8AE10E722228255A00A542DE /* Comments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E712228255900A542DE /* Comments.cpp */; };
 		8AE10E742228257E00A542DE /* ConditionalFormatting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */; };
 		8AECC18F218C991900DEE19A /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AECC18E218C991900DEE19A /* App.cpp */; };
@@ -476,6 +479,9 @@
 		8A5B8FD3226F5AF20093271E /* ActiveX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveX.h; sourceTree = "<group>"; };
 		8A5B8FD4226F5AF20093271E /* ActiveX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActiveX.cpp; sourceTree = "<group>"; };
 		8A5B8FD7226F61000093271E /* VmlDrawing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VmlDrawing.cpp; sourceTree = "<group>"; };
+		8ADF9DA122BB9C4700918F34 /* Si.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Si.cpp; sourceTree = "<group>"; };
+		8ADF9DA322BB9C4F00918F34 /* Text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Text.cpp; sourceTree = "<group>"; };
+		8ADF9DA522BBA07D00918F34 /* rPr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rPr.cpp; sourceTree = "<group>"; };
 		8AE10E712228255900A542DE /* Comments.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Comments.cpp; sourceTree = "<group>"; };
 		8AE10E732228257D00A542DE /* ConditionalFormatting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConditionalFormatting.cpp; sourceTree = "<group>"; };
 		8AECC18E218C991900DEE19A /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
@@ -891,7 +897,9 @@
 				17E6A16B1AC4262800F28F8B /* Run.h */,
 				17E6A16C1AC4262800F28F8B /* SharedStrings.h */,
 				17E6A16D1AC4262800F28F8B /* Si.h */,
+				8ADF9DA122BB9C4700918F34 /* Si.cpp */,
 				17E6A16E1AC4262800F28F8B /* Text.h */,
+				8ADF9DA322BB9C4F00918F34 /* Text.cpp */,
 			);
 			path = SharedStrings;
 			sourceTree = "<group>";
@@ -907,6 +915,7 @@
 				17E6A1761AC4262800F28F8B /* Fonts.h */,
 				17E6A1771AC4262800F28F8B /* NumFmts.h */,
 				17E6A1781AC4262800F28F8B /* rPr.h */,
+				8ADF9DA522BBA07D00918F34 /* rPr.cpp */,
 				17E6A1791AC4262800F28F8B /* Styles.h */,
 				17E6A17A1AC4262800F28F8B /* TableStyles.h */,
 				17E6A17B1AC4262800F28F8B /* Xfs.h */,
@@ -1254,6 +1263,7 @@
 				17C1FBA41ACC4250006B99B3 /* Docx.cpp in Sources */,
 				17C1FBA51ACC4250006B99B3 /* ZIndex.cpp in Sources */,
 				8A404FCC2089FFE700F2D5CF /* Directory.cpp in Sources */,
+				8ADF9DA422BB9C4F00918F34 /* Text.cpp in Sources */,
 				17C1FBA61ACC4250006B99B3 /* ParagraphProperty.cpp in Sources */,
 				17C1FBA71ACC4250006B99B3 /* NumFormat.cpp in Sources */,
 				17C1FBA81ACC4250006B99B3 /* SystemUtility.cpp in Sources */,
@@ -1268,11 +1278,13 @@
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,
 				17C1FBB11ACC4250006B99B3 /* Position.cpp in Sources */,
 				69E6AC8C2031ACA900795D9D /* VbaProject.cpp in Sources */,
+				8ADF9DA222BB9C4800918F34 /* Si.cpp in Sources */,
 				8A404FCE208A001E00F2D5CF /* Path.cpp in Sources */,
 				8AE10E742228257E00A542DE /* ConditionalFormatting.cpp in Sources */,
 				691C3E131F20C3D500F1775E /* File.cpp in Sources */,
 				17C1FBB21ACC4250006B99B3 /* Vml.cpp in Sources */,
 				8A5B8FD8226F61010093271E /* VmlDrawing.cpp in Sources */,
+				8ADF9DA622BBA07D00918F34 /* rPr.cpp in Sources */,
 				17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */,
 				17C1FBB41ACC4250006B99B3 /* FldSimple.cpp in Sources */,
 				69DE2217206E24A700A07A0E /* JsaProject.cpp in Sources */,
@@ -1301,7 +1313,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
@@ -1339,7 +1351,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;

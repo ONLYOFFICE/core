@@ -122,6 +122,10 @@ namespace NSFile
     {
         return GetUnicodeFromCharPtr(sParam.c_str(), (LONG)sParam.length(), bIsUtf8);
     }
+	LONG CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(LONG lCount)
+    {
+        return lCount + 1;
+    }
     std::wstring CUtf8Converter::GetUnicodeStringFromUTF8_4bytes( BYTE* pBuffer, LONG lCount )
     {
         WCHAR* pUnicodeString = new WCHAR[lCount + 1];
@@ -303,6 +307,237 @@ namespace NSFile
         if (sizeof(WCHAR) == 2)
             return GetUnicodeStringFromUTF8_2bytes(pBuffer, lCount);
         return GetUnicodeStringFromUTF8_4bytes(pBuffer, lCount);
+    }
+
+	bool CUtf8Converter::CheckEscapeChar(const BYTE* pBuffer, LONG lIndex, LONG lCount, wchar_t& code, LONG& lOffset)
+    {
+        code = '\0';
+        lOffset = 0;
+        if('_' == pBuffer[lIndex] && lIndex + 6 < lCount && 'x' == pBuffer[lIndex + 1] && '_' == pBuffer[lIndex + 6])
+        {
+            int i = lIndex + 2;
+            for(; i < lIndex + 6; ++i)
+            {
+                code *= 16;
+                BYTE tmpByte = pBuffer[lIndex + i];
+                if('0' <= tmpByte && tmpByte <= '9')
+                {
+                    code += tmpByte - '0';
+                }
+                else if('A' <= tmpByte && tmpByte <= 'Z')
+                {
+                    code += tmpByte - 'A' + 10;
+                }
+                else if('a' <= tmpByte && tmpByte <= 'z')
+                {
+                    code += tmpByte - 'a' + 10;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if(i >= lIndex + 6)
+            {
+                if(0x005F == code)
+                {
+                    code = '_';
+                }
+                lOffset = 7;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void CUtf8Converter::GetUnescapedUnicodeStringFromUTF8_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    {
+        if (NULL == pUnicodes)
+        {
+            pUnicodes = new wchar_t[GetUnicodeStringFromUTF8BufferSize(lCount)];
+        }
+        WCHAR* pUnicodeString = pUnicodes;
+        LONG lIndexUnicode = 0;
+
+        LONG lIndex = 0;
+        while (lIndex < lCount)
+        {
+            BYTE byteMain = pBuffer[lIndex];
+            if (0x00 == (byteMain & 0x80))
+            {
+                // 1 byte
+                pUnicodeString[lIndexUnicode++] = (WCHAR)byteMain;
+                ++lIndex;
+            }
+            else if (0x00 == (byteMain & 0x20))
+            {
+                // 2 byte
+                int val = (int)(((byteMain & 0x1F) << 6) |
+                    (pBuffer[lIndex + 1] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 2;
+            }
+            else if (0x00 == (byteMain & 0x10))
+            {
+                // 3 byte
+                int val = (int)(((byteMain & 0x0F) << 12) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 2] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 3;
+            }
+            else if (0x00 == (byteMain & 0x0F))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x08))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x04))
+            {
+                // 5 byte
+                int val = (int)(((byteMain & 0x03) << 24) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 4] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 5;
+            }
+            else
+            {
+                // 6 byte
+                int val = (int)(((byteMain & 0x01) << 30) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 5] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 5;
+            }
+        }
+
+        pUnicodeString[lIndexUnicode] = 0;
+        lOutputCount = lIndexUnicode;
+    }
+    void CUtf8Converter::GetUnescapedUnicodeStringFromUTF8_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    {
+        if (NULL == pUnicodes)
+        {
+            pUnicodes = new wchar_t[GetUnicodeStringFromUTF8BufferSize(lCount)];
+        }
+        WCHAR* pUnicodeString = pUnicodes;
+        WCHAR* pStart = pUnicodeString;
+        LONG lIndex = 0;
+        while (lIndex < lCount)
+        {
+            BYTE byteMain = pBuffer[lIndex];
+            if (0x00 == (byteMain & 0x80))
+            {
+                // 1 byte
+                WCHAR code;
+                LONG lOffset;
+                if(!CheckEscapeChar(pBuffer, lIndex, lCount, code, lOffset))
+                {
+                    *pUnicodeString++ = (WCHAR)byteMain;
+                    ++lIndex;
+                }
+                else
+                {
+                    *pUnicodeString++ = code;
+                    lIndex += lOffset;
+                }
+
+            }
+            else if (0x00 == (byteMain & 0x20))
+            {
+                // 2 byte
+                int val = (int)(((byteMain & 0x1F) << 6) |
+                    (pBuffer[lIndex + 1] & 0x3F));
+                *pUnicodeString++ = (WCHAR)(val);
+                lIndex += 2;
+            }
+            else if (0x00 == (byteMain & 0x10))
+            {
+                // 3 byte
+                int val = (int)(((byteMain & 0x0F) << 12) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 2] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 3;
+            }
+            else if (0x00 == (byteMain & 0x0F))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x08))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x04))
+            {
+                // 5 byte
+                int val = (int)(((byteMain & 0x03) << 24) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 4] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 5;
+            }
+            else
+            {
+                // 6 byte
+                int val = (int)(((byteMain & 0x01) << 30) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 5] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 5;
+            }
+        }
+
+        *pUnicodeString++ = 0;
+        lOutputCount = pUnicodeString - pStart;
+    }
+    void CUtf8Converter::GetUnescapedUnicodeStringFromUTF8( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    {
+        if (sizeof(WCHAR) == 2)
+            return GetUnescapedUnicodeStringFromUTF8_2bytes(pBuffer, lCount, pUnicodes, lOutputCount);
+        return GetUnescapedUnicodeStringFromUTF8_4bytes(pBuffer, lCount, pUnicodes, lOutputCount);
     }
 
     void CUtf8Converter::GetUtf8StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM)

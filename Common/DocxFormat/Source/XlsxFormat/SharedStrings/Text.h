@@ -83,7 +83,21 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				m_sText = oReader.GetText3();
+				int nDepth = oReader.GetDepth();
+				XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+				while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
+				{
+					if (eNodeType == XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
+					{
+						std::string sTemp = oReader.GetText2A();
+						wchar_t* pUnicodes = NULL;
+						LONG lOutputCount = 0;
+						NSFile::CUtf8Converter::GetUnescapedUnicodeStringFromUTF8((BYTE*)sTemp.c_str(), sTemp.length(), pUnicodes, lOutputCount);
+						m_sText.append(pUnicodes);
+						RELEASEARRAYOBJECTS(pUnicodes);
+					}
+				}
+
 				NSStringExt::Replace(m_sText, L"\t", L"");
 				if(!(m_oSpace.IsInit() && SimpleTypes::xmlspacePreserve == m_oSpace->GetValue()))
 				{

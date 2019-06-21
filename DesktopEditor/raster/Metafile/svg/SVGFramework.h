@@ -3003,7 +3003,7 @@ namespace SVG
 
         bool CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder = INVALID_ENCODER)
         {
-
+            return false;
         }
 	private:
 

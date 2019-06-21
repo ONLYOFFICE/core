@@ -26,15 +26,15 @@ if not exist "%folder%" (
   md  %folder%\shared
 
   .\b2.exe --clean
-  .\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex --toolset=%TOOLSET%
+  .\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex --toolset=%TOOLSET% || goto :error
   XCOPY /Y stage\lib\* "%folder%\static\"
 
   .\b2.exe --clean
-  .\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex --toolset=%TOOLSET%
+  .\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex --toolset=%TOOLSET% || goto :error
   XCOPY /Y stage\lib\* "%folder%\static_fpic\"
 
   .\b2.exe --clean
-  .\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex --toolset=%TOOLSET%
+  .\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex --toolset=%TOOLSET% || goto :error
   XCOPY /Y stage\lib\* "%folder%\shared\"
 )
 
@@ -54,14 +54,20 @@ if not exist "%folder%" (
   md  %folder%\shared
 
   .\b2.exe --clean
-  .\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex address-model=64 --toolset=%TOOLSET%
+  .\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex address-model=64 --toolset=%TOOLSET% || goto :error
   XCOPY /Y stage\lib\* "%folder%\static\"
 
   .\b2.exe --clean
-  .\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex address-model=64 --toolset=%TOOLSET%
+  .\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex address-model=64 --toolset=%TOOLSET% || goto :error
   XCOPY /Y stage\lib\* "%folder%\static_fpic\"
 
   .\b2.exe --clean
-  .\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex address-model=64 --toolset=%TOOLSET%
+  .\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex address-model=64 --toolset=%TOOLSET% || goto :error
   XCOPY /Y stage\lib\* "%folder%\shared\"
 )
+
+exit /b 0
+
+:error
+echo "Failed with error #%errorlevel%."
+exit /b %errorlevel%

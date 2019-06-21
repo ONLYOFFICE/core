@@ -144,7 +144,7 @@ namespace MetaFile
         }
 
 		return false;
-	};
+    }
 	bool CMetaFile::DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		if (NULL == pRenderer)
@@ -176,7 +176,7 @@ namespace MetaFile
         }
 		pRenderer->EndCommand(c_nImageType);
 		return true;
-	};
+    }
 	void CMetaFile::Close()
 	{
 		m_oWmfFile.Close();
@@ -185,7 +185,7 @@ namespace MetaFile
         m_oSvgFile.Close();
 
 		m_lType  = 0;
-	};
+    }
 	int  CMetaFile::GetType()
 	{
 		return m_lType;

@@ -828,6 +828,12 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCSVGWriter::GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
 	{
+        *pdA = m_pTransform->sx();
+        *pdB = m_pTransform->shy();
+        *pdC = m_pTransform->shx();
+        *pdD = m_pTransform->sy();
+        *pdE = m_pTransform->tx();
+        *pdF = m_pTransform->ty();
 		return S_OK;
 	}
 	HRESULT CASCSVGWriter::ResetTransform(void)

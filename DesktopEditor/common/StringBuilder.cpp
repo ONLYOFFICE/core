@@ -30,6 +30,7 @@
  *
  */
 #include "StringBuilder.h"
+#include "File.h"
 
 namespace NSStringUtils
 {
@@ -301,6 +302,18 @@ namespace NSStringUtils
 		else
 			WriteEncodeXmlString_4bytes(pString, nCount);
 	}
+	void CStringBuilder::WriteEncodeXmlStringHHHH(const std::wstring& sString)
+	{
+		WriteEncodeXmlStringHHHH(sString.c_str(), (int)sString.length());
+	}
+
+	void CStringBuilder::WriteEncodeXmlStringHHHH(const wchar_t* pString, int nCount)
+	{
+		if (sizeof(wchar_t) == 2)
+			WriteEncodeXmlStringHHHH_2bytes(pString, nCount);
+		else
+			WriteEncodeXmlStringHHHH_4bytes(pString, nCount);
+	}
 	inline void CStringBuilder::WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount)
 	{
 		const wchar_t* pData = pString;
@@ -342,6 +355,59 @@ namespace NSStringUtils
 			else
 			{
 				type = CheckXmlCode(code);
+			}
+			WriteEncodeXmlChar(*pData, type);
+
+			++pData;
+			if (-1 != nCount)
+			{
+				++nCounter;
+				if (nCounter >= nCount)
+					break;
+			}
+		}
+	}
+	inline void CStringBuilder::WriteEncodeXmlStringHHHH_4bytes(const wchar_t* pString, int nCount)
+	{
+		const wchar_t* pData = pString;
+		int nCounter = 0;
+		unsigned int code;
+		while (*pData != 0)
+		{
+			code = (unsigned int)*pData;
+			WriteEncodeXmlChar(*pData, CheckXmlCodeHHHH(code, pData));
+
+			++pData;
+			if (-1 != nCount)
+			{
+				++nCounter;
+				if (nCounter >= nCount)
+					break;
+			}
+		}
+	}
+	inline void CStringBuilder::WriteEncodeXmlStringHHHH_2bytes(const wchar_t* pString, int nCount)
+	{
+		const wchar_t* pData = pString;
+		int nCounter = 0;
+		unsigned int code;
+		BYTE type;
+		while (*pData != 0)
+		{
+			code = (unsigned int)*pData;
+			if (code >= 0xD800 && code <= 0xDFFF && *(pData + 1) != 0)
+			{
+				code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & *(pData + 1)));
+				type = CheckXmlCodeHHHH(code, pData);
+				if(0 != type)
+				{
+					WriteEncodeXmlChar(*pData, type);
+					++pData;
+				}
+			}
+			else
+			{
+				type = CheckXmlCodeHHHH(code, pData);
 			}
 			WriteEncodeXmlChar(*pData, type);
 
@@ -435,6 +501,27 @@ namespace NSStringUtils
 			*m_pDataCur++ = (wchar_t)('9');
 			*m_pDataCur++ = (wchar_t)(';');
 			m_lSizeCur += 5;
+			break;
+		case 10:
+			AddSize(7);
+			*m_pDataCur++ = (wchar_t)('_');
+			*m_pDataCur++ = (wchar_t)('x');
+			*m_pDataCur++ = (wchar_t)('0');
+			*m_pDataCur++ = (wchar_t)('0');
+			*m_pDataCur++ = (wchar_t)('5');
+			*m_pDataCur++ = (wchar_t)('F');
+			*m_pDataCur++ = (wchar_t)('_');
+			m_lSizeCur += 7;
+			break;
+		case 11:
+			AddSize(7);
+			*m_pDataCur++ = (wchar_t)('_');
+			*m_pDataCur++ = (wchar_t)('x');
+			m_lSizeCur += 2;
+			WriteHexByteNoSafe((code >> 8) & 0xFF);
+			WriteHexByteNoSafe(code & 0xFF);
+			*m_pDataCur++ = (wchar_t)('_');
+			++m_lSizeCur;
 			break;
 		default:
 			break;
@@ -748,6 +835,35 @@ namespace NSStringUtils
 		//xml 1.0 Character Range https://www.w3.org/TR/xml/#charsets
 		if ((0x20 <= c && c <= 0xD7FF) || (0xE000 <= c && c <= 0xFFFD) || (0x10000 <= c && c <= 0x10FFFF))
 			return 1;
+
+		return 0;
+	}
+	unsigned char CStringBuilder::CheckXmlCodeHHHH(unsigned int c, const wchar_t* pData)
+	{
+		if ('&' == c)
+			return 2;
+		if ('\'' == c)
+			return 3;
+		if ('<' == c)
+			return 4;
+		if ('>' == c)
+			return 5;
+		if ('\"' == c)
+			return 6;
+		if ('\n' == c)//when reading from the attributes is replaced by a space.
+			return 7;
+		if ('\r' == c)//when reading from the attributes is replaced by a space.
+			return 8;
+		if ('\t' == c)//when reading from the attributes is replaced by a space.
+			return 9;
+		if (NSFile::CUtf8Converter::CheckHHHHChar(pData) >= 0)
+			return 10;
+
+		//xml 1.0 Character Range https://www.w3.org/TR/xml/#charsets
+		if ((0x20 <= c && c <= 0xD7FF) || (0xE000 <= c && c <= 0xFFFD) || (0x10000 <= c && c <= 0x10FFFF))
+			return 1;
+		else if(c <= 0xFFFF)
+			return 11;
 
 		return 0;
 	}

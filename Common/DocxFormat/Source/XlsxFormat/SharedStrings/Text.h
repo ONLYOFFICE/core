@@ -61,7 +61,7 @@ namespace OOX
 				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
 					writer.WriteString(_T(" xml:space=\"preserve\""));
 				writer.WriteString(_T(">"));
-				writer.WriteEncodeXmlString(m_sText);
+				writer.WriteEncodeXmlStringHHHH(m_sText);
 				writer.WriteString(_T("</t>"));
 			}
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const
@@ -71,7 +71,7 @@ namespace OOX
 				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
 					writer.WriteString(_T(" xml:space=\"preserve\""));
 				writer.WriteString(_T(">"));
-				writer.WriteEncodeXmlString(m_sText);
+				writer.WriteEncodeXmlStringHHHH(m_sText);
 				writer.WriteString(_T("</"));
 				writer.WriteString(name);
 				writer.WriteString(_T(">"));
@@ -83,7 +83,21 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				m_sText = oReader.GetText3();
+				int nDepth = oReader.GetDepth();
+				XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+				while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
+				{
+					if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
+					{
+						std::string sTemp = oReader.GetTextA();
+						wchar_t* pUnicodes = NULL;
+						LONG lOutputCount = 0;
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((BYTE*)sTemp.c_str(), sTemp.length(), pUnicodes, lOutputCount);
+						m_sText.append(pUnicodes);
+						RELEASEARRAYOBJECTS(pUnicodes);
+					}
+				}
+
 				NSStringExt::Replace(m_sText, L"\t", L"");
 				if(!(m_oSpace.IsInit() && SimpleTypes::xmlspacePreserve == m_oSpace->GetValue()))
 				{

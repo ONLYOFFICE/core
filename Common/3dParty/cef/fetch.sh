@@ -1,7 +1,5 @@
 #!/bin/bash
-
-SCRIPT=$(readlink -f "$0" || grealpath "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 os=$(uname -s)
 platform=""
@@ -42,9 +40,10 @@ cef_version="3163"
 if [[ "$platform" == *"linux"* ]]
 then
 cef_version="3202"
-fi
-
 cef_url=http://d2ettrnqo7v976.cloudfront.net/cef/$cef_version/$platform$arch/$cef_arch
+else
+cef_url=http://d2ettrnqo7v976.cloudfront.net/cef/$cef_version/$platform/$cef_arch
+fi
 
 if [[ "$platform" == *"linux"* ]]
 then
@@ -74,4 +73,16 @@ then
 
   cp -r -t build/ ./$cef_binary/Release/*  ./$cef_binary/Resources/*
   chmod a+xr build/locales
+fi
+
+if [[ "$platform" == *"mac"* ]]
+then
+  if [ -d "build/Chromium Embedded Framework.framework" ]
+  then
+    echo "cef_binary already extracted"
+  else
+    wget $cef_url || curl -O $cef_url
+    7za x $cef_arch
+    mv "$cef_binary" "build/Chromium Embedded Framework.framework"
+  fi
 fi

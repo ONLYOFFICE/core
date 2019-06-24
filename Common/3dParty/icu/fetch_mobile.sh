@@ -1,7 +1,5 @@
 #!/bin/bash
-
-SCRIPT=$(readlink -f "$0" || grealpath "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPTPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 ICU_MAJOR_VER=62
 ICU_MINOR_VER=1

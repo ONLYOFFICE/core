@@ -122,6 +122,10 @@ namespace NSFile
     {
         return GetUnicodeFromCharPtr(sParam.c_str(), (LONG)sParam.length(), bIsUtf8);
     }
+	LONG CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(LONG lCount)
+    {
+        return lCount + 1;
+    }
     std::wstring CUtf8Converter::GetUnicodeStringFromUTF8_4bytes( BYTE* pBuffer, LONG lCount )
     {
         WCHAR* pUnicodeString = new WCHAR[lCount + 1];
@@ -303,6 +307,249 @@ namespace NSFile
         if (sizeof(WCHAR) == 2)
             return GetUnicodeStringFromUTF8_2bytes(pBuffer, lCount);
         return GetUnicodeStringFromUTF8_4bytes(pBuffer, lCount);
+    }
+
+#define CHECK_HHHH(pBuffer) \
+    wchar_t code = 0; \
+    if('_' == pBuffer[0] && 'x' == pBuffer[1] && 0 != pBuffer[2] && 0 != pBuffer[3] && 0 != pBuffer[4] && 0 != pBuffer[5]  && '_' == pBuffer[6]) \
+    { \
+        int i = 2; \
+        for(; i < 6; ++i) \
+        { \
+            code *= 16; \
+            if('0' <= pBuffer[i] && pBuffer[i] <= '9') \
+            { \
+                code += pBuffer[i] - '0'; \
+            } \
+            else if('A' <= pBuffer[i] && pBuffer[i] <= 'F') \
+            { \
+                code += pBuffer[i] - 'A' + 10; \
+            } \
+            else if('a' <= pBuffer[i] && pBuffer[i] <= 'f') \
+            { \
+                code += pBuffer[i] - 'a' + 10; \
+            } \
+            else \
+            { \
+                break; \
+            } \
+        } \
+        if(i == 6) \
+        { \
+            if(0x005F == code) \
+            { \
+                code = '_'; \
+            } \
+            return code; \
+        } \
+    } \
+    return -1;
+
+    long CUtf8Converter::CheckHHHHChar(const BYTE* pBuffer)
+	{
+        CHECK_HHHH(pBuffer);
+	}
+    long CUtf8Converter::CheckHHHHChar(const wchar_t* pBuffer)
+	{
+        CHECK_HHHH(pBuffer);
+	}
+
+    void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    {
+        if (NULL == pUnicodes)
+        {
+            pUnicodes = new wchar_t[GetUnicodeStringFromUTF8BufferSize(lCount)];
+        }
+        WCHAR* pUnicodeString = pUnicodes;
+        LONG lIndexUnicode = 0;
+
+        LONG lIndex = 0;
+        while (lIndex < lCount)
+        {
+            BYTE byteMain = pBuffer[lIndex];
+            if (0x00 == (byteMain & 0x80))
+            {
+				// 1 byte
+                long code = CheckHHHHChar(pBuffer + lIndex);
+                if(code < 0)
+                {
+					pUnicodeString[lIndexUnicode++] = (WCHAR)byteMain;
+					++lIndex;
+				}
+                else
+                {
+                    pUnicodeString[lIndexUnicode++] = (WCHAR)code;
+                    lIndex += 7;
+                }
+            }
+            else if (0x00 == (byteMain & 0x20))
+            {
+                // 2 byte
+                int val = (int)(((byteMain & 0x1F) << 6) |
+                    (pBuffer[lIndex + 1] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 2;
+            }
+            else if (0x00 == (byteMain & 0x10))
+            {
+                // 3 byte
+                int val = (int)(((byteMain & 0x0F) << 12) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 2] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 3;
+            }
+            else if (0x00 == (byteMain & 0x0F))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x08))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x04))
+            {
+                // 5 byte
+                int val = (int)(((byteMain & 0x03) << 24) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 4] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 5;
+            }
+            else
+            {
+                // 6 byte
+                int val = (int)(((byteMain & 0x01) << 30) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 5] & 0x3F));
+                pUnicodeString[lIndexUnicode++] = (WCHAR)(val);
+                lIndex += 5;
+            }
+        }
+
+        pUnicodeString[lIndexUnicode] = 0;
+        lOutputCount = lIndexUnicode;
+    }
+    void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    {
+        if (NULL == pUnicodes)
+        {
+            pUnicodes = new wchar_t[GetUnicodeStringFromUTF8BufferSize(lCount)];
+        }
+        WCHAR* pUnicodeString = pUnicodes;
+        WCHAR* pStart = pUnicodeString;
+        LONG lIndex = 0;
+        while (lIndex < lCount)
+        {
+            BYTE byteMain = pBuffer[lIndex];
+            if (0x00 == (byteMain & 0x80))
+            {
+                // 1 byte
+                long code = CheckHHHHChar(pBuffer + lIndex);
+                if(code < 0)
+                {
+                    *pUnicodeString++ = (WCHAR)byteMain;
+                    ++lIndex;
+                }
+                else
+                {
+                    *pUnicodeString++ = (WCHAR)code;
+                    lIndex += 7;
+                }
+
+            }
+            else if (0x00 == (byteMain & 0x20))
+            {
+                // 2 byte
+                int val = (int)(((byteMain & 0x1F) << 6) |
+                    (pBuffer[lIndex + 1] & 0x3F));
+                *pUnicodeString++ = (WCHAR)(val);
+                lIndex += 2;
+            }
+            else if (0x00 == (byteMain & 0x10))
+            {
+                // 3 byte
+                int val = (int)(((byteMain & 0x0F) << 12) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 2] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 3;
+            }
+            else if (0x00 == (byteMain & 0x0F))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x08))
+            {
+                // 4 byte
+                int val = (int)(((byteMain & 0x07) << 18) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 3] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 4;
+            }
+            else if (0x00 == (byteMain & 0x04))
+            {
+                // 5 byte
+                int val = (int)(((byteMain & 0x03) << 24) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 4] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 5;
+            }
+            else
+            {
+                // 6 byte
+                int val = (int)(((byteMain & 0x01) << 30) |
+                    ((pBuffer[lIndex + 1] & 0x3F) << 24) |
+                    ((pBuffer[lIndex + 2] & 0x3F) << 18) |
+                    ((pBuffer[lIndex + 3] & 0x3F) << 12) |
+                    ((pBuffer[lIndex + 4] & 0x3F) << 6) |
+                    (pBuffer[lIndex + 5] & 0x3F));
+
+                WriteUtf16_WCHAR(val, pUnicodeString);
+                lIndex += 5;
+            }
+        }
+
+        *pUnicodeString++ = 0;
+        lOutputCount = pUnicodeString - pStart;
+    }
+    void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    {
+        if (sizeof(WCHAR) == 2)
+            return GetUnicodeStringFromUTF8WithHHHH_2bytes(pBuffer, lCount, pUnicodes, lOutputCount);
+        return GetUnicodeStringFromUTF8WithHHHH_4bytes(pBuffer, lCount, pUnicodes, lOutputCount);
     }
 
     void CUtf8Converter::GetUtf8StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM)

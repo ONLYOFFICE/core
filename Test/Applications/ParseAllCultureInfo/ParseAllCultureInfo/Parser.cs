@@ -194,6 +194,7 @@ namespace ParseAllCultureInfo
             {38, 1},
             {42, 1},
             {44, 1},
+            {1026, 1},
             {1028, 1},
             {1029, 1},
             {1031, 1},
@@ -204,9 +205,12 @@ namespace ParseAllCultureInfo
             {1040, 1},
             {1041, 1},
             {1042, 1},
+            {1043, 1},
             {1045, 1},
             {1046, 1},
             {1049, 1},
+            {1051, 1},
+            {1053, 1},
             {1055, 1},
             {1058, 1},
             {1060, 1},
@@ -221,6 +225,7 @@ namespace ParseAllCultureInfo
             {2064, 1},
             {2070, 1},
             {2073, 1},
+            {2077, 1},
             {2092, 1},
             {3076, 1},
             {3079, 1},
@@ -289,7 +294,7 @@ namespace ParseAllCultureInfo
             Dictionary<int, CultureInfo> aInfos = new Dictionary<int, CultureInfo>();
             foreach (CultureInfo ci in CultureInfo.GetCultures(CultureTypes.AllCultures))
             {
-                if (!aInfos.ContainsKey(ci.LCID) && g_mapUsedValues.ContainsKey(ci.LCID))
+                if (!aInfos.ContainsKey(ci.LCID) && (false || g_mapUsedValues.ContainsKey(ci.LCID)))
                 {
                     aLcid.Add(ci.LCID);
                     aInfos[ci.LCID] = ci;

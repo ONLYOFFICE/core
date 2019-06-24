@@ -109,8 +109,10 @@ namespace NSStringUtils
         void AddChar2Safe(const wchar_t _c1, const wchar_t& _c2);
 
         void WriteEncodeXmlString(const std::wstring& sString);
-
         void WriteEncodeXmlString(const wchar_t* pString, int nCount = -1);
+
+        void WriteEncodeXmlStringHHHH(const std::wstring& sString);
+        void WriteEncodeXmlStringHHHH(const wchar_t* pString, int nCount = -1);
 
         size_t GetCurSize();
         void SetCurSize(size_t lCurSize);
@@ -147,8 +149,11 @@ namespace NSStringUtils
 	protected:
         inline void WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount);
         inline void WriteEncodeXmlString_2bytes(const wchar_t* pString, int nCount);
+        inline void WriteEncodeXmlStringHHHH_4bytes(const wchar_t* pString, int nCount);
+        inline void WriteEncodeXmlStringHHHH_2bytes(const wchar_t* pString, int nCount);
         inline void WriteEncodeXmlChar(wchar_t code, unsigned char type);
         inline unsigned char CheckXmlCode(unsigned int c);
+        inline unsigned char CheckXmlCodeHHHH(unsigned int c, const wchar_t* pData);
 	};
 
     KERNEL_DECL void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo);

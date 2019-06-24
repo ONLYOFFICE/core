@@ -105,9 +105,9 @@ namespace NSFile
         static std::wstring GetUnicodeStringFromUTF8_2bytes( BYTE* pBuffer, LONG lCount );
         static std::wstring GetUnicodeStringFromUTF8( BYTE* pBuffer, LONG lCount );
 
-        static void GetUnescapedUnicodeStringFromUTF8_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
-        static void GetUnescapedUnicodeStringFromUTF8_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
-        static void GetUnescapedUnicodeStringFromUTF8( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
+        static void GetUnicodeStringFromUTF8WithHHHH_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
+        static void GetUnicodeStringFromUTF8WithHHHH_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
+        static void GetUnicodeStringFromUTF8WithHHHH( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
 
         static inline LONG GetUnicodeStringFromUTF8BufferSize( LONG lCount );
 
@@ -125,7 +125,8 @@ namespace NSFile
         static std::wstring GetWStringFromUTF16(const CStringUtf16& data);
         static std::wstring GetWStringFromUTF16(const unsigned short* pUtf16, LONG lCount);
 
-		static inline bool CheckEscapeChar(const BYTE* pBuffer, LONG lIndex, LONG lCount, wchar_t& code, LONG& lOffset);
+        static inline long CheckHHHHChar(const BYTE* pBuffer);
+        static inline long CheckHHHHChar(const wchar_t* pBuffer);
 	};
 
     class KERNEL_DECL CFileBinary

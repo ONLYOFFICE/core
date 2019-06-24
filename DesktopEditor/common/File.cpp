@@ -309,48 +309,52 @@ namespace NSFile
         return GetUnicodeStringFromUTF8_4bytes(pBuffer, lCount);
     }
 
-	bool CUtf8Converter::CheckEscapeChar(const BYTE* pBuffer, LONG lIndex, LONG lCount, wchar_t& code, LONG& lOffset)
-    {
-        code = '\0';
-        lOffset = 0;
-        if('_' == pBuffer[lIndex] && lIndex + 6 < lCount && 'x' == pBuffer[lIndex + 1] && '_' == pBuffer[lIndex + 6])
-        {
-            int i = lIndex + 2;
-            for(; i < lIndex + 6; ++i)
-            {
-                code *= 16;
-                BYTE tmpByte = pBuffer[lIndex + i];
-                if('0' <= tmpByte && tmpByte <= '9')
-                {
-                    code += tmpByte - '0';
-                }
-                else if('A' <= tmpByte && tmpByte <= 'Z')
-                {
-                    code += tmpByte - 'A' + 10;
-                }
-                else if('a' <= tmpByte && tmpByte <= 'z')
-                {
-                    code += tmpByte - 'a' + 10;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            if(i >= lIndex + 6)
-            {
-                if(0x005F == code)
-                {
-                    code = '_';
-                }
-                lOffset = 7;
-                return true;
-            }
-        }
-        return false;
-    }
+#define CHECK_HHHH(pBuffer) \
+    wchar_t code = 0; \
+    if('_' == pBuffer[0] && 'x' == pBuffer[1] && 0 != pBuffer[2] && 0 != pBuffer[3] && 0 != pBuffer[4] && 0 != pBuffer[5]  && '_' == pBuffer[6]) \
+    { \
+        int i = 2; \
+        for(; i < 6; ++i) \
+        { \
+            code *= 16; \
+            if('0' <= pBuffer[i] && pBuffer[i] <= '9') \
+            { \
+                code += pBuffer[i] - '0'; \
+            } \
+            else if('A' <= pBuffer[i] && pBuffer[i] <= 'F') \
+            { \
+                code += pBuffer[i] - 'A' + 10; \
+            } \
+            else if('a' <= pBuffer[i] && pBuffer[i] <= 'f') \
+            { \
+                code += pBuffer[i] - 'a' + 10; \
+            } \
+            else \
+            { \
+                break; \
+            } \
+        } \
+        if(i == 6) \
+        { \
+            if(0x005F == code) \
+            { \
+                code = '_'; \
+            } \
+            return code; \
+        } \
+    } \
+    return -1;
 
-    void CUtf8Converter::GetUnescapedUnicodeStringFromUTF8_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    long CUtf8Converter::CheckHHHHChar(const BYTE* pBuffer)
+	{
+        CHECK_HHHH(pBuffer);
+	}
+    long CUtf8Converter::CheckHHHHChar(const wchar_t* pBuffer)
+	{
+        CHECK_HHHH(pBuffer);
+	}
+
+    void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
     {
         if (NULL == pUnicodes)
         {
@@ -365,9 +369,18 @@ namespace NSFile
             BYTE byteMain = pBuffer[lIndex];
             if (0x00 == (byteMain & 0x80))
             {
-                // 1 byte
-                pUnicodeString[lIndexUnicode++] = (WCHAR)byteMain;
-                ++lIndex;
+				// 1 byte
+                long code = CheckHHHHChar(pBuffer + lIndex);
+                if(code < 0)
+                {
+					pUnicodeString[lIndexUnicode++] = (WCHAR)byteMain;
+					++lIndex;
+				}
+                else
+                {
+                    pUnicodeString[lIndexUnicode++] = (WCHAR)code;
+                    lIndex += 7;
+                }
             }
             else if (0x00 == (byteMain & 0x20))
             {
@@ -434,7 +447,7 @@ namespace NSFile
         pUnicodeString[lIndexUnicode] = 0;
         lOutputCount = lIndexUnicode;
     }
-    void CUtf8Converter::GetUnescapedUnicodeStringFromUTF8_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
     {
         if (NULL == pUnicodes)
         {
@@ -449,17 +462,16 @@ namespace NSFile
             if (0x00 == (byteMain & 0x80))
             {
                 // 1 byte
-                WCHAR code;
-                LONG lOffset;
-                if(!CheckEscapeChar(pBuffer, lIndex, lCount, code, lOffset))
+                long code = CheckHHHHChar(pBuffer + lIndex);
+                if(code < 0)
                 {
                     *pUnicodeString++ = (WCHAR)byteMain;
                     ++lIndex;
                 }
                 else
                 {
-                    *pUnicodeString++ = code;
-                    lIndex += lOffset;
+                    *pUnicodeString++ = (WCHAR)code;
+                    lIndex += 7;
                 }
 
             }
@@ -533,11 +545,11 @@ namespace NSFile
         *pUnicodeString++ = 0;
         lOutputCount = pUnicodeString - pStart;
     }
-    void CUtf8Converter::GetUnescapedUnicodeStringFromUTF8( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
+    void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
     {
         if (sizeof(WCHAR) == 2)
-            return GetUnescapedUnicodeStringFromUTF8_2bytes(pBuffer, lCount, pUnicodes, lOutputCount);
-        return GetUnescapedUnicodeStringFromUTF8_4bytes(pBuffer, lCount, pUnicodes, lOutputCount);
+            return GetUnicodeStringFromUTF8WithHHHH_2bytes(pBuffer, lCount, pUnicodes, lOutputCount);
+        return GetUnicodeStringFromUTF8WithHHHH_4bytes(pBuffer, lCount, pUnicodes, lOutputCount);
     }
 
     void CUtf8Converter::GetUtf8StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM)

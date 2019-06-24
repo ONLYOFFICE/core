@@ -8,7 +8,7 @@ TEMPLATE = app
 CONFIG   += console
 CONFIG   -= app_bundle
 
-include(X2tConverter_simple.pri)
+include(X2tConverter.pri)
 
 SOURCES += ../../src/main.cpp
 

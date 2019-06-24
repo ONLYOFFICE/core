@@ -1,4 +1,4 @@
 
-include(X2tSLN_simple.pri)
+include(X2tSLN.pri)
 
 X2tConverter.file = ./X2tConverter.pro

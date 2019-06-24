@@ -43,16 +43,16 @@ using namespace NExtractTools;
 #if !defined(_WIN32) && !defined (_WIN64)
 static std::wstring utf8_to_unicode(const char *src)
 {
-	if (src == NULL) return _T("");
+    if (src == NULL) return _T("");
     std::string temp = src;
 
-	unsigned int nLength = temp.length();
+    unsigned int nLength = temp.length();
 
-	UTF32 *pStrUtf32 = new UTF32 [nLength+1];
+    UTF32 *pStrUtf32 = new UTF32 [nLength+1];
     memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
 
 
-	UTF8 *pStrUtf8 = (UTF8 *) src;
+    UTF8 *pStrUtf8 = (UTF8 *) src;
 
     // this values will be modificated
     const UTF8 *pStrUtf8_Conv = pStrUtf8;

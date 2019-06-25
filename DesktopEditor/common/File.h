@@ -125,8 +125,13 @@ namespace NSFile
         static std::wstring GetWStringFromUTF16(const CStringUtf16& data);
         static std::wstring GetWStringFromUTF16(const unsigned short* pUtf16, LONG lCount);
 
-        static inline long CheckHHHHChar(const BYTE* pBuffer);
+	#ifdef __ANDROID__
+        static long CheckHHHHChar(const BYTE* pBuffer);
+        static long CheckHHHHChar(const wchar_t* pBuffer);
+    #else
+		static inline long CheckHHHHChar(const BYTE* pBuffer);
         static inline long CheckHHHHChar(const wchar_t* pBuffer);
+	#endif
 	};
 
     class KERNEL_DECL CFileBinary

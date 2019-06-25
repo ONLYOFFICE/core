@@ -1129,7 +1129,17 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte)
 	{
-		CheckBufferSize(UINT32_SIZEOF);
+		//CheckBufferSize at first to prevent negative m_lPosition after Flush in CStreamBinaryWriter
+		if (sizeof(wchar_t) == 4)
+		{
+			_INT32 lSizeMemMax = 4 * lCount + 2;//2 - for null terminator
+			CheckBufferSize(UINT32_SIZEOF + lSizeMemMax);
+		}
+		else
+		{
+			_INT32 lSizeMem = 2 * lCount;
+			CheckBufferSize(UINT32_SIZEOF + lSizeMem);
+		}
 		//skip size
 		m_lPosition += UINT32_SIZEOF;
 		m_pStreamCur += UINT32_SIZEOF;

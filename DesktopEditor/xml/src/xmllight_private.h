@@ -411,6 +411,48 @@ namespace XmlUtils
 
             return sResult;
         }
+		void CheckBufferSize(unsigned int nOffset, unsigned int nRequired, wchar_t*& sBuffer, long& nSize)
+		{
+			if(nOffset + nRequired > nSize)
+			{
+				while(nOffset + nRequired > nSize)
+				{
+					nSize *= 2;
+				}
+				RELEASEOBJECT(sBuffer);
+				sBuffer = new WCHAR[nSize];
+			}
+		}
+		void GetInnerText(wchar_t*& sBuffer, long& nSize, long& nLen)
+		{
+			nLen = 0;
+			if ( !IsValid() )
+				return;
+
+			if ( 0 != xmlTextReaderIsEmptyElement(reader) )
+				return;
+
+			LONG lOutputCount = 0;
+			int nDepth = GetDepth();
+			XmlNodeType eNodeType = XmlNodeType_EndElement;
+			while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
+			{
+				if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
+				{
+					const xmlChar* pValue = xmlTextReaderConstValue(reader);
+					if (NULL != pValue)
+					{
+						LONG nLen = strlen((const char*)pValue);
+						LONG nRequired = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLen);
+						CheckBufferSize(nLen, nRequired, sBuffer, nSize);
+						wchar_t* sBufferCur = sBuffer + nLen;
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValue, nLen, sBufferCur, lOutputCount);
+						nLen += lOutputCount;
+					}
+				}
+
+			}
+		}
         inline std::wstring GetOuterXml()
         {
             return GetXml(false);

@@ -35,18 +35,62 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		void CText::fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType, _UINT16& nType, double& dValue, unsigned int& nValue, BYTE& bValue, std::wstring** psValue, bool& bForceFormula)
+		CStringXLSB::CStringXLSB(_UINT32 nSize)
 		{
-			SimpleTypes::EXmlSpace eSpace = SimpleTypes::xmlspaceDefault;
-			ReadAttributesToXLSB( oReader, eSpace );
+			m_nSize = nSize;
+			Clean();
+		}
+		CStringXLSB::~CStringXLSB()
+		{
+			RELEASEARRAYOBJECTS(m_sBuffer);
+		}
+		void CStringXLSB::Clean()
+		{
+			m_nLen = 0;
+		}
+		void CStringXLSB::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			oReader.GetInnerText(m_sBuffer, m_nLen, m_nSize);
+		}
+		void CStringXLSB::fromStringA(const char* sVal)
+		{
+			LONG nLen = strlen((const char*)sVal);
+			checkBufferSize(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLen));
+			NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)sVal, nLen, m_sBuffer, m_nLen);
+		}
+		void CStringXLSB::checkBufferSize(_UINT32 nRequired)
+		{
+			if(nRequired > m_nSize)
+			{
+				while(nRequired > m_nSize)
+				{
+					m_nSize *= 2;
+				}
+				RELEASEOBJECT(m_sBuffer);
+				m_sBuffer = new WCHAR[m_nSize];
+			}
+		}
+		CTextXLSB::CTextXLSB(_UINT32 nSize):m_oValue(nSize)
+		{
+			Clean();
+		}
+		void CTextXLSB::Clean()
+		{
+			m_oSpace.SetValue(SimpleTypes::xmlspaceDefault);
+			m_dValue = 0;
+			m_nValue = 0;
+			m_oValue.Clean();
+		}
+		void CTextXLSB::fromXML(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType)
+		{
+			ReadAttributes( oReader );
 
 			if ( oReader.IsEmptyNode() )
 				return;
 
 			if(SimpleTypes::Spreadsheet::celltypeStr == eType || SimpleTypes::Spreadsheet::celltypeInlineStr == eType)
 			{
-				std::string sVal = oReader.GetText2A();
-				fromXMLToXLSB(sVal.c_str(), eSpace, eType, nType, dValue, nValue, bValue, psValue, bForceFormula);
+				m_oValue.fromXML(oReader);
 			}
 			else
 			{
@@ -56,114 +100,85 @@ namespace OOX
 				{
 					if (eNodeType == XmlUtils::XmlNodeType_Text)
 					{
-						fromXMLToXLSB(oReader.GetTextChar(), eSpace, eType, nType, dValue, nValue, bValue, psValue, bForceFormula);
+						const char* pVal = oReader.GetTextChar();
+						if(pVal[0] == '\0')
+							return;
+						if(SimpleTypes::Spreadsheet::celltypeNumber == eType)
+						{
+							//todo RkNumber
+							try
+							{
+								m_dValue = atof(pVal);
+							}
+							catch(...)
+							{   //1.3912059045063478e-310
+								//Lighting Load Calculation.xls
+							}
+						}
+						else if(SimpleTypes::Spreadsheet::celltypeSharedString == eType)
+						{
+							try
+							{
+								m_nValue = atoi(pVal);
+							}
+							catch(...)
+							{
+							}
+						}
+						else if(SimpleTypes::Spreadsheet::celltypeError == eType)
+						{
+							if(strcmp("#NULL!", pVal) == 0)
+							{
+								m_nValue = 0x00;
+							}
+							else if(strcmp("#DIV/0!", pVal) == 0)
+							{
+								m_nValue = 0x07;
+							}
+							else if(strcmp("#VALUE!", pVal) == 0)
+							{
+								m_nValue = 0x0F;
+							}
+							else if(strcmp("#REF!", pVal) == 0)
+							{
+								m_nValue = 0x17;
+							}
+							else if(strcmp("#NAME?", pVal) == 0)
+							{
+								m_nValue = 0x1D;
+							}
+							else if(strcmp("#NUM!", pVal) == 0)
+							{
+								m_nValue = 0x24;
+							}
+							else if(strcmp("#N/A", pVal) == 0)
+							{
+								m_nValue = 0x2A;
+							}
+							else if(strcmp("#GETTING_DATA", pVal) == 0)
+							{
+								m_nValue = 0x2B;
+							}
+						}
+						else if(SimpleTypes::Spreadsheet::celltypeBool == eType)
+						{
+							SimpleTypes::COnOff<> oOnOff;
+							oOnOff.FromStringA(pVal);
+							m_nValue = oOnOff.ToBool() ? 1 : 0;
+						}
 					}
 				}
 			}
 		}
-		void CText::fromXMLToXLSB(const char* pVal, SimpleTypes::EXmlSpace eSpace, SimpleTypes::Spreadsheet::ECellTypeType eType, _UINT16& nType, double& dValue, unsigned int& nValue, BYTE& bValue, std::wstring** psValue, bool& bForceFormula)
-		{
-			if(pVal[0] == '\0')
-				return;
-			if(SimpleTypes::Spreadsheet::celltypeNumber == eType)
-			{
-				//todo RkNumber
-				nType = XLSB::rt_CELL_REAL;
-				try
-				{
-					dValue = atof(pVal);
-				}
-				catch(...)
-				{   //1.3912059045063478e-310
-					//Lighting Load Calculation.xls
-				}
-			}
-			else if(SimpleTypes::Spreadsheet::celltypeSharedString == eType)
-			{
-				nType = XLSB::rt_CELL_ISST;
-				try
-				{
-					nValue = atoi(pVal);
-				}
-				catch(...)
-				{
-				}
-			}
-			else if(SimpleTypes::Spreadsheet::celltypeError == eType)
-			{
-				nType = XLSB::rt_CELL_ERROR;
-				if(strcmp("#NULL!", pVal) == 0)
-				{
-					bValue = 0x00;
-				}
-				else if(strcmp("#DIV/0!", pVal) == 0)
-				{
-					bValue = 0x07;
-				}
-				else if(strcmp("#VALUE!", pVal) == 0)
-				{
-					bValue = 0x0F;
-				}
-				else if(strcmp("#REF!", pVal) == 0)
-				{
-					bValue = 0x17;
-				}
-				else if(strcmp("#NAME?", pVal) == 0)
-				{
-					bValue = 0x1D;
-				}
-				else if(strcmp("#NUM!", pVal) == 0)
-				{
-					bValue = 0x24;
-				}
-				else if(strcmp("#N/A", pVal) == 0)
-				{
-					bValue = 0x2A;
-				}
-				else if(strcmp("#GETTING_DATA", pVal) == 0)
-				{
-					bValue = 0x2B;
-				}
-			}
-			else if(SimpleTypes::Spreadsheet::celltypeBool == eType)
-			{
-				nType = XLSB::rt_CELL_BOOL;
-				SimpleTypes::COnOff<> oOnOff;
-				oOnOff.FromStringA(pVal);
-				bValue = oOnOff.ToBool() ? 1 : 0;
-			}
-			else if(SimpleTypes::Spreadsheet::celltypeInlineStr == eType)
-			{
-				nType = XLSB::rt_CELL_ST;
-				if(NULL == (*psValue))
-				{
-					(*psValue) = new std::wstring();
-				}
-				(*psValue)->append(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pVal, (LONG)strlen(pVal)));
-				trimString(**psValue, eSpace);
-			}
-			else if(SimpleTypes::Spreadsheet::celltypeStr == eType)
-			{
-				bForceFormula = true;
-				nType = XLSB::rt_CELL_ST;
-				if(NULL == (*psValue))
-				{
-					(*psValue) = new std::wstring();
-				}
-				(*psValue)->append(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pVal, (LONG)strlen(pVal)));
-				trimString(**psValue, eSpace);
-			}
-		}
-		void CText::ReadAttributesToXLSB(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::EXmlSpace& eSpace)
+		void CTextXLSB::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar( oReader )
-				if ( strcmp("space", wsName) == 0 )
-				{
-					SimpleTypes::CXmlSpace<> oSpace;
-					oSpace.FromStringA(oReader.GetTextChar());
-					eSpace = oSpace.GetValue();
-					break;
-				}
+
+			if ( strcmp("xml:space", wsName) == 0 )
+			{
+				m_oSpace.FromStringA(oReader.GetTextChar());
+				break;
+			}
 
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}

@@ -40,6 +40,35 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CStringXLSB
+		{
+		public:
+			CStringXLSB(_UINT32 nSize);
+			~CStringXLSB();
+			void Clean();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void fromStringA(const char* sVal);
+		public:
+			WCHAR* m_sBuffer;
+			LONG m_nSize;
+			LONG m_nLen;
+		protected:
+			void checkBufferSize(_UINT32 nRequired);
+		};
+		class CTextXLSB
+		{
+		public:
+			CTextXLSB(_UINT32 nSize);
+			void Clean();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			SimpleTypes::CXmlSpace<> m_oSpace;
+
+			double m_dValue;
+			_UINT32 m_nValue;
+			CStringXLSB m_oValue;
+		};
 		//необработано:
 		class CText : public WritingElement
 		{
@@ -100,9 +129,6 @@ namespace OOX
 
 				trimString(m_sText, GetSpace());
 			}
-			static void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType, _UINT16& nType, double& dValue, unsigned int& nValue, BYTE& bValue, std::wstring** psValue, bool& bForceFormula);
-			static void fromXMLToXLSB(const char* pVal, SimpleTypes::EXmlSpace eSpace, SimpleTypes::Spreadsheet::ECellTypeType eType, _UINT16& nType, double& dValue, unsigned int& nValue, BYTE& bValue, std::wstring** psValue, bool& bForceFormula);
-
 			static void trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace);
 			std::wstring ToString() const
 			{
@@ -140,7 +166,6 @@ namespace OOX
 
 				oReader.MoveToElement();
 			}
-			static void ReadAttributesToXLSB(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::EXmlSpace& eSpace);
 
 		public:
 

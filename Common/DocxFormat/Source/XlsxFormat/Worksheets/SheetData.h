@@ -55,6 +55,55 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CFormulaXLSB
+		{
+		public:
+			CFormulaXLSB();
+			void Clean();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			_UINT32 getXLSBSize() const;
+			_UINT16 toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream);
+			void toXLSBExt(NSBinPptxRW::CXlsbBinaryWriter& oStream);
+		public:
+			bool m_bIsInit;
+			CStringXLSB m_oFormula;
+			SimpleTypes::Spreadsheet::CCellFormulaType<SimpleTypes::Spreadsheet::cellformulatypeNormal> m_oT;
+			_INT32 m_nSi;
+			CStringXLSB m_oRef;
+			CStringXLSB m_oR1;
+			CStringXLSB m_oR2;
+			SimpleTypes::COnOff<> m_oAca;
+			SimpleTypes::COnOff<> m_oBx;
+			SimpleTypes::COnOff<> m_oCa;
+			SimpleTypes::COnOff<> m_oDel1;
+			SimpleTypes::COnOff<> m_oDel2;
+			SimpleTypes::COnOff<> m_oDt2D;
+			SimpleTypes::COnOff<> m_oDtr;
+		protected:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CCellXLSB
+		{
+		public:
+			CCellXLSB();
+			void Clean();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream);
+		public:
+			OOX::Document *m_pMainDocument;
+			_UINT32 m_nCol;
+			_UINT32 m_nStyle;
+			SimpleTypes::Spreadsheet::CCellTypeType<SimpleTypes::Spreadsheet::celltypeNumber> m_oType;
+			SimpleTypes::COnOff<> m_oShowPhonetic;
+
+			CTextXLSB m_oValue;
+			CFormulaXLSB m_oFormula;
+			nullable<CSi> m_oRichText;
+		protected:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+
+
 		class CFormula : public WritingElement
 		{
 		public:
@@ -83,11 +132,7 @@ namespace OOX
 				m_sText = oReader.GetText3();
 			}
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
-			_UINT16 toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream);
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
-			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);
-			_UINT32 getXLSBSize() const;
-
 			virtual EElementType getType () const
 			{
 				return et_x_Formula;
@@ -152,9 +197,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void fromXMLtoXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
-			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 
 			virtual EElementType getType () const
 			{
@@ -270,13 +313,11 @@ namespace OOX
 			}
 			static bool parseRef(std::wstring sRef, int& nRow, int& nCol);
 			static bool parseRefA(const char* sRef, int& nRow, int& nCol);
-			static bool parseRefColA(const char* sRef, int& nCol);
+			static bool parseRefColA(const char* sRef, _UINT32& nCol);
 			static std::wstring combineRef(int nRow, int nCol);
 		private:
 			void PrepareForBinaryWriter();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributesToXLSB(XmlUtils::CXmlLiteReader& oReader, int& nCol, unsigned int& nStyle, SimpleTypes::Spreadsheet::CCellTypeType<>& oType, bool& bShowPhonetic);
-			void toXLSB2 (NSBinPptxRW::CXlsbBinaryWriter& oStream, int nCol, unsigned int nStyle, bool bShowPhonetic, _UINT16 nType, double dValue, unsigned int nValue, BYTE bValue, std::wstring** psValue, bool bForceFormula, const nullable<CFormula>& oFormula, const nullable<CSi>& oRichText) const;
 
 			nullable<std::string>								m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRow;
@@ -329,6 +370,7 @@ namespace OOX
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			virtual EElementType getType () const
@@ -396,7 +438,6 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			virtual EElementType getType () const
 			{
 				return et_x_SheetData;

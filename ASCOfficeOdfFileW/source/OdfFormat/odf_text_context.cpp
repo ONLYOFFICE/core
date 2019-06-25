@@ -303,14 +303,14 @@ void odf_text_context::start_element(office_element_ptr & elm, office_element_pt
 
 	text_elements_list_.push_back(state);
 	
-	if (!current_level_.empty())
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);
 
 	current_level_.push_back(state);
 }
 void odf_text_context::end_element()
 {
-	if (single_paragraph_ == false && !current_level_.empty())
+	if (single_paragraph_ == false && false == current_level_.empty())
 	{
 		current_level_.pop_back();
 	}
@@ -349,7 +349,7 @@ void odf_text_context::start_span(bool styled)
 
 		if (style_)
 		{
-			if (parent_span_style_.length() >0)
+			if (false == parent_span_style_.empty())
 			{
 				style_->style_parent_style_name_ = parent_span_style_;
 			}
@@ -371,7 +371,7 @@ void odf_text_context::end_span()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
 	
-	if (current_level_.size() > 0)	
+	if (false == current_level_.empty())	
 		current_level_.pop_back();
 
 	text_properties_ = NULL;
@@ -396,7 +396,7 @@ void odf_text_context::start_list_item()
 
 	text_elements_list_.push_back(state);
 	
-	if (current_level_.size()>0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(list_elm);
 
 	current_level_.push_back(state);
@@ -410,14 +410,14 @@ void odf_text_context::end_list_item()
 
 	if (list_state_.levels.back() == false) return;
 
-	if (current_level_.size() > 0)	
+	if (false == current_level_.empty())	
 		current_level_.pop_back();
 
 	list_state_.levels.back() = false;
 }
-void odf_text_context::start_list(std::wstring style_name) //todoooo add new_numbering ???
+bool odf_text_context::start_list(std::wstring style_name) //todoooo add new_numbering ???
 {
-	if (styles_context_ == NULL || single_paragraph_)return;
+	if (styles_context_ == NULL || single_paragraph_)return false;
 
 	office_element_ptr list_elm;
 	create_element(L"text", L"list", list_elm, odf_context_);
@@ -427,7 +427,7 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 	office_element_ptr style_elm;
 	odf_element_state state = {	list_elm, style_name, style_elm, level};
 	
-	if (style_name.length() > 0)
+	if (false == style_name.empty())
 	{		
 		text_list* list = dynamic_cast<text_list*>(list_elm.get());
 		if (list)
@@ -443,13 +443,15 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 	}
 	text_elements_list_.push_back(state);
 	
-	if (current_level_.size()>0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(list_elm);
 
 	current_level_.push_back(state);
 
 	list_state_.levels.push_back(false);
 	list_state_.started_list = true;
+
+	return true;
 }
 void odf_text_context::end_list()
 {
@@ -574,7 +576,7 @@ void odf_text_context::add_hyperlink (std::wstring ref, std::wstring display_tex
 	hyperlink->common_xlink_attlist_.href_	= ref;
 	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 	
-	if (current_level_.size()>0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);
 }
 
@@ -657,7 +659,7 @@ bool odf_text_context::set_type_break(int type, int clear)//todooo clear ???
 		office_element_ptr elm;
 		create_element(L"text", L"line-break", elm, odf_context_);
 
-		if (current_level_.size()>0)
+		if (false == current_level_.empty())
 			current_level_.back().elm->add_child_element(elm);	
 	}
 	return need_restart;

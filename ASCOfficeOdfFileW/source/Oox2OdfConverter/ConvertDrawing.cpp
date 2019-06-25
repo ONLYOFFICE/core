@@ -1854,7 +1854,10 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 		{
 			while ((int)odf_context()->text_context()->list_state_.levels.size() < list_level)
 			{
-				odf_context()->text_context()->start_list(list_style_name);
+				if (false == odf_context()->text_context()->start_list(list_style_name))
+				{
+					break;
+				}
 				odf_context()->text_context()->start_list_item();
 				
 				if (odf_context()->text_context()->list_state_.style_name == list_style_name)

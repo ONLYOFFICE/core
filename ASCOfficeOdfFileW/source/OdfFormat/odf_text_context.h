@@ -107,7 +107,7 @@ public:
 	void start_list_item	();
 	void end_list_item		();
 
-	void start_list			(std::wstring style_name);
+	bool start_list			(std::wstring style_name);
 	void end_list			();
 
 	bool is_need_break		(){return bool(need_break_);}

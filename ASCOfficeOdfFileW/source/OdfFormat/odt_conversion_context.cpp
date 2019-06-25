@@ -1052,19 +1052,22 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 
 	if (text_context()->list_state_.started_list == false)
 	{
-		text_context()->start_list(style_name);
-		//text_context()->set_list_continue(true); //??? держать в памяти все списки????
-		add_to_root();
+		if (text_context()->start_list(style_name))
+		{
+			//text_context()->set_list_continue(true); //??? держать в памяти все списки????
+			add_to_root();
+		}
 		
 	}
-	text_context()->start_list_item();
+	text_context()->start_list_item(); 
 
 	if (text_context()->list_state_.style_name == style_name)
 		style_name = L"";
 
 	while (text_context()->list_state_.levels.size() < level)
 	{
-		text_context()->start_list(style_name);
+		if (false == text_context()->start_list(style_name))
+			break;
 		text_context()->start_list_item();
 	}	
 }
@@ -1076,7 +1079,7 @@ void odt_conversion_context::set_no_list()
 {
 	if (text_context()->list_state_.started_list == false) return;
 
-	while (text_context()->list_state_.levels.size()>0)
+	while (false == text_context()->list_state_.levels.empty())
 	{
 		text_context()->end_list_item();
 		text_context()->end_list();	
@@ -1205,16 +1208,16 @@ void odt_conversion_context::end_comment_content()
 }
 void odt_conversion_context::end_comment(int oox_comm_id)
 {
-	bool added = comment_context_.find_by_id(oox_comm_id);
+	int index_added = comment_context_.find_by_id(oox_comm_id);
 
-	if (added == true)
+	if (index_added > 0 )
 	{
 		office_element_ptr comm_elm;
 		create_element(L"office", L"annotation-end", comm_elm, this);
 
 		comment_context_.end_comment(comm_elm, oox_comm_id);
 		
-		if (text_context()->current_level_.size() > 0)
+		if (false == text_context()->current_level_.empty())
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 	}
 }

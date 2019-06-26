@@ -212,7 +212,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				count = proc.repeated<BIGNAME>(0, 0);
 				while(count > 0)
 				{
-					m_arBIGNAME.insert(m_arNote.begin(), elements_.back());
+					m_arBIGNAME.insert(m_arBIGNAME.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
 				}

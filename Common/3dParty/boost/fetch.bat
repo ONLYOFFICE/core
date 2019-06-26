@@ -4,7 +4,7 @@ CD /D %~dp0
 if exist "%SCRIPTPATH%boost_1_58_0.7z" (
     echo "boost already downloaded"
 ) else (
-    Powershell.exe Invoke-WebRequest -OutFile boost_1_58_0.7z https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.7z
+    Powershell.exe Invoke-WebRequest -OutFile boost_1_58_0.7z https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.7z -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
 )
 
 SET UNSIP_PROGRAMM="C:\Program Files\7-Zip\7z.exe"

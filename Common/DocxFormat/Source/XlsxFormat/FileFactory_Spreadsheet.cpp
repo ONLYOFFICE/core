@@ -88,8 +88,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, oRelation.rId().ToString() ));
 			else if ( oRelation.Type() == FileTypes::Drawings )
 				return smart_ptr<OOX::File>(new CDrawing( pMain, oRootPath, oFileName ));
-//			else if ( oRelation.Type() == FileTypes::CalcChain )
-//				return smart_ptr<OOX::File>(new CCalcChain( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::CalcChain )
+				return smart_ptr<OOX::File>(new CCalcChain( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Chartsheets )
 				return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, oRelation.rId().ToString() ));
 			else if ( oRelation.Type() == FileTypes::Table )
@@ -193,8 +193,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Drawings )
 				return smart_ptr<OOX::File>(new CDrawing( pMain, oRootPath, oFileName ));
-//			else if ( pRelation->Type() == FileTypes::CalcChain )
-//				return smart_ptr<OOX::File>(new CCalcChain( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::CalcChain )
+				return smart_ptr<OOX::File>(new CCalcChain( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::Image )
 				return smart_ptr<OOX::File>(new Image( pMain, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Chartsheets )

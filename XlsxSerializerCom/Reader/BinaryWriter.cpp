@@ -6357,20 +6357,21 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			if (bIsNoBase64)
 			{
 				pXlsx = new OOX::Spreadsheet::CXlsx();
+				pXlsx->m_bNeedCalcChain = false;
 
 				NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
 				oXlsbWriter.CreateFileW(sFileDst);
 				//write dummy header and main table
 				oXlsbWriter.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 				oXlsbWriter.WriteReserved(GetMainTableSize());
-				int nDataStartPos = oXlsbWriter.GetPosition();
+				int nDataStartPos = oXlsbWriter.GetPositionAbsolute();
 				pXlsx->m_pXlsbWriter = &oXlsbWriter;
 				//parse
 				pXlsx->Read(OOX::CPath(sInputDir));
 
 				pXlsx->m_pXlsbWriter = NULL;
 				oXlsbWriter.CloseFile();
-				m_nLastFilePosOffset = oXlsbWriter.GetPosition() - nDataStartPos;
+				m_nLastFilePosOffset = oXlsbWriter.GetPositionAbsolute() - nDataStartPos;
 			}
 			else
 			{

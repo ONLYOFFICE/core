@@ -415,6 +415,10 @@ namespace XmlUtils
 		{
 			if(nOffset + nRequired > nSize)
 			{
+				if(0 == nSize)
+				{
+					nSize = nOffset + nRequired;
+				}
 				while(nOffset + nRequired > nSize)
 				{
 					nSize *= 2;
@@ -442,11 +446,11 @@ namespace XmlUtils
 					const xmlChar* pValue = xmlTextReaderConstValue(reader);
 					if (NULL != pValue)
 					{
-						LONG nLen = strlen((const char*)pValue);
-						LONG nRequired = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLen);
+						LONG nLenCur = strlen((const char*)pValue);
+						LONG nRequired = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLenCur);
 						CheckBufferSize(nLen, nRequired, sBuffer, nSize);
 						wchar_t* sBufferCur = sBuffer + nLen;
-						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValue, nLen, sBufferCur, lOutputCount);
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValue, nLenCur, sBufferCur, lOutputCount);
 						nLen += lOutputCount;
 					}
 				}

@@ -63,6 +63,7 @@ namespace OOX
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
+			bool m_bIsInit;
 			SimpleTypes::CXmlSpace<> m_oSpace;
 
 			double m_dValue;

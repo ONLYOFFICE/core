@@ -38,6 +38,7 @@ namespace OOX
 		CStringXLSB::CStringXLSB(_UINT32 nSize)
 		{
 			m_nSize = nSize;
+			m_sBuffer = new WCHAR[m_nSize];
 			Clean();
 		}
 		CStringXLSB::~CStringXLSB()
@@ -50,7 +51,7 @@ namespace OOX
 		}
 		void CStringXLSB::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			oReader.GetInnerText(m_sBuffer, m_nLen, m_nSize);
+			oReader.GetInnerText(m_sBuffer, m_nSize, m_nLen);
 		}
 		void CStringXLSB::fromStringA(const char* sVal)
 		{
@@ -76,6 +77,7 @@ namespace OOX
 		}
 		void CTextXLSB::Clean()
 		{
+			m_bIsInit = false;
 			m_oSpace.SetValue(SimpleTypes::xmlspaceDefault);
 			m_dValue = 0;
 			m_nValue = 0;
@@ -90,6 +92,7 @@ namespace OOX
 
 			if(SimpleTypes::Spreadsheet::celltypeStr == eType || SimpleTypes::Spreadsheet::celltypeInlineStr == eType)
 			{
+				m_bIsInit = true;
 				m_oValue.fromXML(oReader);
 			}
 			else
@@ -102,7 +105,8 @@ namespace OOX
 					{
 						const char* pVal = oReader.GetTextChar();
 						if(pVal[0] == '\0')
-							return;
+							continue;
+						m_bIsInit = true;
 						if(SimpleTypes::Spreadsheet::celltypeNumber == eType)
 						{
 							//todo RkNumber

@@ -1191,7 +1191,7 @@ namespace NSBinPptxRW
 			}
 		}
 	}
-	_UINT32 CStreamBinaryWriter::GetPosition()
+	_UINT32 CStreamBinaryWriter::GetPositionAbsolute()
 	{
 		return m_lPosition + m_lPositionFlushed;
 	}

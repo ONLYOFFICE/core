@@ -279,11 +279,11 @@ namespace OOX
 			}
 			if(m_oR2.m_nLen > 0)
 			{
-				oStream.WriteStringData(m_oR1.m_sBuffer, m_oR1.m_nLen);
+				oStream.WriteStringData(m_oR2.m_sBuffer, m_oR2.m_nLen);
 			}
 			if(m_oRef.m_nLen > 0)
 			{
-				oStream.WriteStringData(m_oR1.m_sBuffer, m_oR1.m_nLen);
+				oStream.WriteStringData(m_oRef.m_sBuffer, m_oRef.m_nLen);
 			}
 			if(m_nSi >= 0)
 			{
@@ -292,7 +292,6 @@ namespace OOX
 		}
 		CCellXLSB::CCellXLSB():m_oValue(256)
 		{
-			m_pMainDocument = NULL;
 			Clean();
 		}
 		void CCellXLSB::Clean()
@@ -327,12 +326,6 @@ namespace OOX
 				else if ( strcmp("is", sName) == 0 )
 					m_oRichText = oReader;
 			}
-			//check index
-			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
-			if (xlsx)
-			{
-				m_nCol = xlsx->m_nLastReadCol = m_nCol > xlsx->m_nLastReadCol ? m_nCol : xlsx->m_nLastReadCol + 1;
-			}
 		}
 		void CCellXLSB::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -363,14 +356,22 @@ namespace OOX
 		void CCellXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream)
 		{
 			_INT16 nType = XLSB::rt_CELL_BLANK;
-			switch(m_oType.GetValue())
+			bool bWriteFormula = (m_oFormula.m_bIsInit || SimpleTypes::Spreadsheet::celltypeStr == m_oType.GetValue()) && SimpleTypes::Spreadsheet::celltypeSharedString != m_oType.GetValue();
+			if(m_oValue.m_bIsInit)
 			{
-				case SimpleTypes::Spreadsheet::celltypeNumber: nType = XLSB::rt_CELL_REAL; break;
-				case SimpleTypes::Spreadsheet::celltypeSharedString: nType = XLSB::rt_CELL_ISST; break;
-				case SimpleTypes::Spreadsheet::celltypeError: nType = XLSB::rt_CELL_ERROR; break;
-				case SimpleTypes::Spreadsheet::celltypeBool: nType = XLSB::rt_CELL_BOOL; break;
-				case SimpleTypes::Spreadsheet::celltypeInlineStr:
-				case SimpleTypes::Spreadsheet::celltypeStr: nType = XLSB::rt_CELL_ST; break;
+				switch(m_oType.GetValue())
+				{
+					case SimpleTypes::Spreadsheet::celltypeNumber: nType = XLSB::rt_CELL_REAL; break;
+					case SimpleTypes::Spreadsheet::celltypeSharedString: nType = XLSB::rt_CELL_ISST; break;
+					case SimpleTypes::Spreadsheet::celltypeError: nType = XLSB::rt_CELL_ERROR; break;
+					case SimpleTypes::Spreadsheet::celltypeBool: nType = XLSB::rt_CELL_BOOL; break;
+					case SimpleTypes::Spreadsheet::celltypeInlineStr:
+					case SimpleTypes::Spreadsheet::celltypeStr: nType = XLSB::rt_CELL_ST; break;
+				}
+			}
+			if(XLSB::rt_CELL_BLANK == nType && bWriteFormula)
+			{
+				nType = XLSB::rt_CELL_ST;
 			}
 
 			_UINT32 nLen = 4+4+2;
@@ -382,7 +383,6 @@ namespace OOX
 				case XLSB::rt_CELL_ERROR:
 				case XLSB::rt_CELL_BOOL: nLen += 1; break;
 			}
-			bool bWriteFormula = (m_oFormula.m_bIsInit || SimpleTypes::Spreadsheet::celltypeStr == m_oType.GetValue()) && XLSB::rt_CELL_ISST != nType;
 			if(bWriteFormula)
 			{
 				nLen += m_oFormula.getXLSBSize();
@@ -464,6 +464,150 @@ namespace OOX
 			}
 
 			oStream.XlsbEndRecord();
+		}
+		CRowXLSB::CRowXLSB()
+		{
+			Clean();
+		}
+		void CRowXLSB::Clean()
+		{
+			m_nR = 0;
+			m_nS = 0;
+			m_oCustomFormat.FromBool(false);
+			m_dHt = 0;
+			m_oHidden.FromBool(false);
+			m_oCustomHeight.FromBool(false);
+			m_nOutlineLevel = 0;
+			m_oCollapsed.FromBool(false);
+			m_oThickBot.FromBool(false);
+			m_oThickTop.FromBool(false);
+			m_oPh.FromBool(false);
+		}
+		void CRowXLSB::fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell)
+		{
+			ReadAttributes( oReader );
+
+			toXLSB(oStream);
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nLastCol = -1;
+			oCell.m_nCol = nLastCol;
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				const char* sName = oReader.GetNameChar();
+
+				if ( strcmp("c", sName) == 0 )
+				{
+					nLastCol = oCell.m_nCol;
+					oCell.Clean();
+					oCell.m_nCol = nLastCol + 1;
+					oCell.fromXML(oReader);
+					oCell.toXLSB(oStream);
+				}
+			}
+		}
+		void CRowXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream)
+		{
+			oStream.XlsbStartRecord(XLSB::rt_ROW_HDR, 17);
+			oStream.WriteULONG(m_nR & 0xFFFFF);
+			oStream.WriteULONG(m_nS);
+			oStream.WriteUSHORT(((_UINT16)(m_dHt * 20)) & 0x1FFF);//pt to twips;
+
+			BYTE byteExtra1 = 0;
+			if(m_oThickTop.ToBool())
+			{
+				byteExtra1 |= 0x1;
+			}
+			if(m_oThickTop.ToBool())
+			{
+				byteExtra1 |= 0x2;
+			}
+			oStream.WriteBYTE(byteExtra1);
+			BYTE byteExtra2 = m_nOutlineLevel & 0x7;
+			if(m_oCollapsed.ToBool())
+			{
+				byteExtra2 |= 0x8;
+			}
+			if(m_oHidden.ToBool())
+			{
+				byteExtra2 |= 0x10;
+			}
+			if(m_oCustomHeight.ToBool())
+			{
+				byteExtra2 |= 0x20;
+			}
+			if(m_oCustomFormat.ToBool())
+			{
+				byteExtra2 |= 0x40;
+			}
+			oStream.WriteBYTE(byteExtra2);
+			BYTE byteExtra3 = 0;
+			if(m_oPh.ToBool())
+			{
+				byteExtra3 |= 0x1;
+			}
+			oStream.WriteBYTE(byteExtra3);
+			//ccolspan
+			oStream.WriteULONG(0);
+
+			oStream.XlsbEndRecord();
+		}
+		void CRowXLSB::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
+
+			if ( strcmp("r", wsName) == 0 )\
+			{
+				m_nR = atoi(oReader.GetTextChar()) - 1;
+			}
+			else if ( strcmp("s", wsName) == 0 )\
+			{
+				m_nS = atoi(oReader.GetTextChar());
+			}
+			else if ( strcmp("customFormat", wsName) == 0 )\
+			{
+				m_oCustomFormat.FromStringA(oReader.GetTextChar());
+			}
+			else if ( strcmp("ht", wsName) == 0 )\
+			{
+				m_dHt = atof(oReader.GetTextChar());
+			}
+			else if ( strcmp("hidden", wsName) == 0 )\
+			{
+				m_oHidden.FromStringA(oReader.GetTextChar());
+			}
+			else if ( strcmp("customHeight", wsName) == 0 )\
+			{
+				m_oCustomHeight.FromStringA(oReader.GetTextChar());
+			}
+			else if ( strcmp("outlineLevel", wsName) == 0 )\
+			{
+				m_nOutlineLevel = atoi(oReader.GetTextChar());
+			}
+			else if ( strcmp("collapsed", wsName) == 0 )\
+			{
+				m_oCollapsed.FromStringA(oReader.GetTextChar());
+			}
+//			else if ( strcmp("x14ac:dyDescent", wsName) == 0 )\
+//			{
+//				m_dDyDescent = atof(oReader.GetTextChar());
+//			}
+			else if ( strcmp("thickBot", wsName) == 0 )\
+			{
+				m_oThickBot.FromStringA(oReader.GetTextChar());
+			}
+			else if ( strcmp("thickTop", wsName) == 0 )\
+			{
+				m_oThickTop.FromStringA(oReader.GetTextChar());
+			}
+			else if ( strcmp("ph", wsName) == 0 )\
+			{
+				m_oPh.FromStringA(oReader.GetTextChar());
+			}
+			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 
 		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -922,30 +1066,6 @@ namespace OOX
 				}
 			}
 		}
-		void CRow::fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell)
-		{
-			ReadAttributes( oReader );
-
-			CheckIndex();
-
-			toXLSB(oStream);
-
-			if ( oReader.IsEmptyNode() )
-				return;
-
-			int nCurDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nCurDepth ) )
-			{
-				const char* sName = oReader.GetNameChar();
-
-				if ( strcmp("c", sName) == 0 )
-				{
-					oCell.Clean();
-					oCell.fromXML(oReader);
-					oCell.toXLSB(oStream);
-				}
-			}
-		}
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
 			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
@@ -1010,72 +1130,6 @@ namespace OOX
 			}
 			//todo ccolspan
 			oStream.Seek(nEnd);
-		}
-		void CRow::toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const
-		{
-			oStream.XlsbStartRecord(XLSB::rt_ROW_HDR, 4 + 4 + 2 + 1 + 1 + 1 + 4);
-			_UINT32 nRow = 0;
-			//
-			if(m_oR.IsInit())
-			{
-				nRow = (m_oR->GetValue() - 1) & 0xFFFFF;
-			}
-			oStream.WriteULONG(nRow);
-			_UINT32 nS = 0;
-			if(m_oS.IsInit())
-			{
-				nS = m_oS->GetValue();
-			}
-			oStream.WriteULONG(nS);
-			_UINT16 nHt = 0;
-			if(m_oHt.IsInit())
-			{
-				nHt = ((_UINT16)(m_oHt->GetValue() * 20)) & 0x1FFF;//pt to twips
-			}
-			oStream.WriteUSHORT(nHt);
-
-			BYTE byteExtra1 = 0;
-			if(m_oThickTop.IsInit() && m_oThickTop->ToBool())
-			{
-				byteExtra1 |= 0x1;
-			}
-			if(m_oThickTop.IsInit() && m_oThickTop->ToBool())
-			{
-				byteExtra1 |= 0x2;
-			}
-			oStream.WriteBYTE(byteExtra1);
-			BYTE byteExtra2 = 0;
-			if(m_oOutlineLevel.IsInit())
-			{
-				byteExtra2 |= m_oOutlineLevel->GetValue() & 0x7;
-			}
-			if(m_oCollapsed.IsInit() && m_oCollapsed->ToBool())
-			{
-				byteExtra2 |= 0x8;
-			}
-			if(m_oHidden.IsInit() && m_oHidden->ToBool())
-			{
-				byteExtra2 |= 0x10;
-			}
-			if(m_oCustomHeight.IsInit() && m_oCustomHeight->ToBool())
-			{
-				byteExtra2 |= 0x20;
-			}
-			if(m_oCustomFormat.IsInit() && m_oCustomFormat->ToBool())
-			{
-				byteExtra2 |= 0x40;
-			}
-			oStream.WriteBYTE(byteExtra2);
-			BYTE byteExtra3 = 0;
-			if(m_oPh.IsInit() && m_oPh->ToBool())
-			{
-				byteExtra3 |= 0x1;
-			}
-			oStream.WriteBYTE(byteExtra3);
-			//ccolspan
-			oStream.WriteULONG(0);
-
-			oStream.XlsbEndRecord();
 		}
 		void CRow::CheckIndex()
 		{
@@ -1170,11 +1224,13 @@ namespace OOX
 			}
 			if (xlsx && xlsx->m_pXlsbWriter)
 			{
+				int nLastRow = -1;
+				CRowXLSB oRow;
+				oRow.m_nR = nLastRow;
 				CCellXLSB oCell;
-				oCell.m_pMainDocument = m_pMainDocument;
 				NSBinPptxRW::CXlsbBinaryWriter& oStream = *xlsx->m_pXlsbWriter;
 				m_oXlsbPos.Init();
-				m_oXlsbPos->SetValue(oStream.GetPosition());
+				m_oXlsbPos->SetValue(oStream.GetPositionAbsolute());
 
 				oStream.XlsbStartRecord(XLSB::rt_BEGIN_SHEET_DATA, 0);
 				oStream.XlsbEndRecord();
@@ -1186,8 +1242,9 @@ namespace OOX
 
 					if ( strcmp("row", sName) == 0 )
 					{
-						CRow oRow;
-						oRow.m_pMainDocument = m_pMainDocument;
+						nLastRow = oRow.m_nR;
+						oRow.Clean();
+						oRow.m_nR = nLastRow + 1;
 						oRow.fromXMLToXLSB(oReader, *xlsx->m_pXlsbWriter, oCell);
 					}
 				}

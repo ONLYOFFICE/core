@@ -90,7 +90,6 @@ namespace OOX
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream);
 		public:
-			OOX::Document *m_pMainDocument;
 			_UINT32 m_nCol;
 			_UINT32 m_nStyle;
 			SimpleTypes::Spreadsheet::CCellTypeType<SimpleTypes::Spreadsheet::celltypeNumber> m_oType;
@@ -99,6 +98,28 @@ namespace OOX
 			CTextXLSB m_oValue;
 			CFormulaXLSB m_oFormula;
 			nullable<CSi> m_oRichText;
+		protected:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CRowXLSB
+		{
+		public:
+			CRowXLSB();
+			void Clean();
+			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
+			void toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream);
+		public:
+			_UINT32 m_nR;
+			_UINT32 m_nS;
+			SimpleTypes::COnOff<> m_oCustomFormat;
+			double m_dHt;
+			SimpleTypes::COnOff<> m_oHidden;
+			SimpleTypes::COnOff<> m_oCustomHeight;
+			BYTE m_nOutlineLevel;
+			SimpleTypes::COnOff<> m_oCollapsed;
+			SimpleTypes::COnOff<> m_oThickBot;
+			SimpleTypes::COnOff<> m_oThickTop;
+			SimpleTypes::COnOff<> m_oPh;
 		protected:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};

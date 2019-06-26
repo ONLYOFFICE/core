@@ -1445,13 +1445,13 @@ namespace SimpleTypes
 			}
 			ECellFormulaType FromStringA(const char* sValue)
 			{
-				if(strcmp("array", sValue))
+				if(strcmp("array", sValue) == 0)
 					this->m_eValue = cellformulatypeArray;
-				else if(strcmp("dataTable", sValue))
+				else if(strcmp("dataTable", sValue) == 0)
 					this->m_eValue = cellformulatypeDataTable;
-				else if(strcmp("normal", sValue))
+				else if(strcmp("normal", sValue) == 0)
 					this->m_eValue = cellformulatypeNormal;
-				else if(strcmp("shared", sValue))
+				else if(strcmp("shared", sValue) == 0)
 					this->m_eValue = cellformulatypeShared;
 				else
 					this->m_eValue = eDefValue;

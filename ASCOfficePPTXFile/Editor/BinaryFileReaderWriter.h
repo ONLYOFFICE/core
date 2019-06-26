@@ -417,7 +417,7 @@ namespace NSBinPptxRW
 		CStreamBinaryWriter(size_t bufferSize = 16777216);
 
 		void CheckBufferSize(_UINT32 lPlus);
-		_UINT32 GetPosition();
+		_UINT32 GetPositionAbsolute();
 		void CloseFile();
 		virtual void Flush();
 	};

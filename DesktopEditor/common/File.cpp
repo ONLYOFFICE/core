@@ -445,7 +445,7 @@ namespace NSFile
         }
 
         pUnicodeString[lIndexUnicode] = 0;
-        lOutputCount = lIndexUnicode;
+		lOutputCount = lIndexUnicode;
     }
     void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
     {
@@ -542,8 +542,8 @@ namespace NSFile
             }
         }
 
+		lOutputCount = pUnicodeString - pStart;
         *pUnicodeString++ = 0;
-        lOutputCount = pUnicodeString - pStart;
     }
     void CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount )
     {

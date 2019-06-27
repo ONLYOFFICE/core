@@ -453,8 +453,8 @@ private:
 	std::vector<ods_cell_state>	cells_;
 	long						cells_size_;
 	
-	std::vector<ods_hyperlink_state>		hyperlinks_;
-	std::vector<ods_shared_formula_state>	shared_formulas_;
+	std::vector<ods_hyperlink_state>					hyperlinks_;
+	std::map<unsigned int, ods_shared_formula_state>	shared_formulas_;
 
 	std::vector<table_part_state>			table_parts_;
 

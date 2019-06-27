@@ -102,6 +102,7 @@ namespace OOX
 			NSBinPptxRW::CXlsbBinaryWriter*					m_pXlsbWriter;
 			int												m_nLastReadRow;
 			int												m_nLastReadCol;
+			bool											m_bNeedCalcChain;// disable because it is useless but reading takes considerable time
 
 			std::vector<CWorksheet*>								m_arWorksheets;	//order as is
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>	m_mapWorksheets; //copy, for fast find - order by rId(name) 
@@ -124,6 +125,7 @@ namespace OOX
 				m_pXlsbWriter = NULL;
 				m_nLastReadRow = 0;
 				m_nLastReadCol = -1;
+				m_bNeedCalcChain = true;
 
 				bDeleteWorkbook			= false;
 				bDeleteSharedStrings	= false;

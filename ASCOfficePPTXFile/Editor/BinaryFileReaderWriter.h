@@ -329,6 +329,7 @@ namespace NSBinPptxRW
 		void WriteString1	(int type, const std::wstring& val);
 		void WriteString2	(int type, const NSCommon::nullable_string& val);
 		void WriteString	(const std::wstring& val);
+		void WriteStringData(const WCHAR* pData, _UINT32 len);
 
 		void WriteString1Data(int type, const WCHAR* pData, _UINT32 len);
 
@@ -416,7 +417,7 @@ namespace NSBinPptxRW
 		CStreamBinaryWriter(size_t bufferSize = 16777216);
 
 		void CheckBufferSize(_UINT32 lPlus);
-		_UINT32 GetPosition();
+		_UINT32 GetPositionAbsolute();
 		void CloseFile();
 		virtual void Flush();
 	};

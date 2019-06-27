@@ -33,6 +33,7 @@
 #define _BUILD_XMLLIGHT_PRIVATE_CROSSPLATFORM_H_
 
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/StringExt.h"
 
 #ifdef _IOS
     #include <libxml2/libxml/xmlreader.h>
@@ -411,6 +412,65 @@ namespace XmlUtils
 
             return sResult;
         }
+		void CheckBufferSize(unsigned int nOffset, unsigned int nRequired, wchar_t*& sBuffer, long& nSize)
+		{
+			if(nOffset + nRequired > nSize)
+			{
+				if(0 == nSize)
+				{
+					nSize = nOffset + nRequired;
+				}
+				while(nOffset + nRequired > nSize)
+				{
+					nSize *= 2;
+				}
+				RELEASEOBJECT(sBuffer);
+				sBuffer = new WCHAR[nSize];
+			}
+		}
+		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen)
+		{
+			nLen = 0;
+			if ( !IsValid() )
+				return;
+
+			if ( 0 != xmlTextReaderIsEmptyElement(reader) )
+				return;
+			bool bTrimLeft, bTrimRight;
+			bTrimLeft = bTrimRight = !bPreserve;
+			LONG lOutputCount = 0;
+			int nDepth = GetDepth();
+			XmlNodeType eNodeType = XmlNodeType_EndElement;
+			while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
+			{
+				if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
+				{
+					const xmlChar* pValue = xmlTextReaderConstValue(reader);
+					if(NULL != pValue)
+					{
+						const char* pValueA = (const char*)pValue;
+						if(bTrimLeft)
+						{
+							bTrimLeft = false;
+							pValueA += NSStringExt::FindFirstNotOfA(pValueA, " \n\r\t");
+						}
+						if('\0' != pValueA[0])
+						{
+							LONG nLenA = strlen((const char*)pValueA);
+							LONG nRequired = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8BufferSize(nLenA);
+							CheckBufferSize(nLen, nRequired, sBuffer, nSize);
+							wchar_t* sBufferCur = sBuffer + nLen;
+							NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValueA, nLenA, sBufferCur, lOutputCount);
+							nLen += lOutputCount;
+						}
+					}
+				}
+			}
+			if(bTrimRight)
+			{
+				nLen = NSStringExt::FindLastNotOf(sBuffer, nLen, L" \n\r\t") + 1;
+			}
+		}
         inline std::wstring GetOuterXml()
         {
             return GetXml(false);

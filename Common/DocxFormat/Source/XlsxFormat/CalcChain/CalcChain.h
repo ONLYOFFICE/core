@@ -106,16 +106,25 @@ namespace OOX
 				m_bSpreadsheets = true;
   				
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pCalcChain = this;
+				if (xlsx && xlsx->m_bNeedCalcChain) xlsx->m_pCalcChain = this;
 			}
 			CCalcChain(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pCalcChain = this;
-
-				read( oRootPath, oPath );
+				if (xlsx)
+				{
+					if(xlsx->m_bNeedCalcChain)
+					{
+						xlsx->m_pCalcChain = this;
+						read( oRootPath, oPath );
+					}
+				}
+				else
+				{
+					read( oRootPath, oPath );
+				}
 			}
 			virtual ~CCalcChain()
 			{

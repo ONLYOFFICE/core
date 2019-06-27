@@ -105,6 +105,10 @@ namespace NSFile
         static std::wstring GetUnicodeStringFromUTF8_2bytes( BYTE* pBuffer, LONG lCount );
         static std::wstring GetUnicodeStringFromUTF8( BYTE* pBuffer, LONG lCount );
 
+		static void GetUnicodeStringFromUTF8_4bytes( BYTE* pBuffer, LONG lCount, std::wstring& sOutput );
+		static void GetUnicodeStringFromUTF8_2bytes( BYTE* pBuffer, LONG lCount, std::wstring& sOutput );
+		static void GetUnicodeStringFromUTF8( BYTE* pBuffer, LONG lCount, std::wstring& sOutput );
+
         static void GetUnicodeStringFromUTF8WithHHHH_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
         static void GetUnicodeStringFromUTF8WithHHHH_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
         static void GetUnicodeStringFromUTF8WithHHHH( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );

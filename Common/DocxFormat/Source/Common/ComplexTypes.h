@@ -333,7 +333,6 @@ namespace ComplexTypes
 
 				return sResult;
 			}
-		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -693,8 +692,6 @@ namespace ComplexTypes
 
 				return sResult;
 			}
-		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты

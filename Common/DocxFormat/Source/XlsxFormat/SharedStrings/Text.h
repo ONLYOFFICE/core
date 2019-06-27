@@ -46,7 +46,7 @@ namespace OOX
 			CStringXLSB(_UINT32 nSize);
 			~CStringXLSB();
 			void Clean();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void fromXML(XmlUtils::CXmlLiteReader& oReader, bool bPreserve);
 			void fromStringA(const char* sVal);
 		public:
 			WCHAR* m_sBuffer;

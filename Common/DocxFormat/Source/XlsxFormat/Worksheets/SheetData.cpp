@@ -130,7 +130,7 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
-			m_oFormula.fromXML(oReader);
+			m_oFormula.fromXML(oReader, false);
 		}
 		void CFormulaXLSB::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

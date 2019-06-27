@@ -128,6 +128,26 @@ namespace NSFile
     }
     std::wstring CUtf8Converter::GetUnicodeStringFromUTF8_4bytes( BYTE* pBuffer, LONG lCount )
     {
+        std::wstring strRes;
+        GetUnicodeStringFromUTF8_4bytes(pBuffer, lCount, strRes);
+        return strRes;
+    }
+    std::wstring CUtf8Converter::GetUnicodeStringFromUTF8_2bytes( BYTE* pBuffer, LONG lCount )
+    {
+        std::wstring strRes;
+        GetUnicodeStringFromUTF8_2bytes(pBuffer, lCount, strRes);
+        return strRes;
+    }
+
+    std::wstring CUtf8Converter::GetUnicodeStringFromUTF8( BYTE* pBuffer, LONG lCount )
+    {
+        std::wstring strRes;
+        GetUnicodeStringFromUTF8(pBuffer, lCount, strRes);
+        return strRes;
+    }
+
+    void CUtf8Converter::GetUnicodeStringFromUTF8_4bytes( BYTE* pBuffer, LONG lCount, std::wstring& sOutput )
+    {
         WCHAR* pUnicodeString = new WCHAR[lCount + 1];
         LONG lIndexUnicode = 0;
 
@@ -205,13 +225,11 @@ namespace NSFile
 
         pUnicodeString[lIndexUnicode] = 0;
 
-        std::wstring strRes(pUnicodeString);
+        sOutput.append(pUnicodeString);
 
         delete [] pUnicodeString;
-
-        return strRes;
     }
-    std::wstring CUtf8Converter::GetUnicodeStringFromUTF8_2bytes( BYTE* pBuffer, LONG lCount )
+    void CUtf8Converter::GetUnicodeStringFromUTF8_2bytes( BYTE* pBuffer, LONG lCount, std::wstring& sOutput )
     {
         WCHAR* pUnicodeString = new WCHAR[lCount + 1];
         WCHAR* pStart = pUnicodeString;
@@ -295,18 +313,16 @@ namespace NSFile
 
         *pUnicodeString++ = 0;
 
-        std::wstring strRes(pStart);
+        sOutput.append(pStart);
 
         delete [] pStart;
-
-        return strRes;
     }
-
-    std::wstring CUtf8Converter::GetUnicodeStringFromUTF8( BYTE* pBuffer, LONG lCount )
+    void CUtf8Converter::GetUnicodeStringFromUTF8( BYTE* pBuffer, LONG lCount, std::wstring& sOutput )
     {
         if (sizeof(WCHAR) == 2)
-            return GetUnicodeStringFromUTF8_2bytes(pBuffer, lCount);
-        return GetUnicodeStringFromUTF8_4bytes(pBuffer, lCount);
+            GetUnicodeStringFromUTF8_2bytes(pBuffer, lCount, sOutput);
+        else
+            GetUnicodeStringFromUTF8_4bytes(pBuffer, lCount, sOutput);
     }
 
 #define CHECK_HHHH(pBuffer) \

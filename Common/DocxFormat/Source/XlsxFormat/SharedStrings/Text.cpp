@@ -49,9 +49,9 @@ namespace OOX
 		{
 			m_nLen = 0;
 		}
-		void CStringXLSB::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CStringXLSB::fromXML(XmlUtils::CXmlLiteReader& oReader, bool bPreserve)
 		{
-			oReader.GetInnerText(m_sBuffer, m_nSize, m_nLen);
+			oReader.GetTextWithHHHH(bPreserve, m_sBuffer, m_nSize, m_nLen);
 		}
 		void CStringXLSB::fromStringA(const char* sVal)
 		{
@@ -93,7 +93,7 @@ namespace OOX
 			if(SimpleTypes::Spreadsheet::celltypeStr == eType || SimpleTypes::Spreadsheet::celltypeInlineStr == eType)
 			{
 				m_bIsInit = true;
-				m_oValue.fromXML(oReader);
+				m_oValue.fromXML(oReader, SimpleTypes::xmlspacePreserve == m_oSpace.GetValue());
 			}
 			else
 			{

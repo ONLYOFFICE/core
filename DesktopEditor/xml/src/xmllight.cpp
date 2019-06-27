@@ -164,9 +164,9 @@ namespace XmlUtils
 	{
 		return m_pInternal->GetText3();
 	}
-	void CXmlLiteReader::GetInnerText(wchar_t*& sBuffer, long& nSize, long& nLen)
+	void CXmlLiteReader::GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen)
 	{
-		return m_pInternal->GetInnerText(sBuffer, nSize,nLen);
+		return m_pInternal->GetTextWithHHHH(bPreserve, sBuffer, nSize,nLen);
 	}
 
 	std::wstring CXmlLiteReader::GetOuterXml()

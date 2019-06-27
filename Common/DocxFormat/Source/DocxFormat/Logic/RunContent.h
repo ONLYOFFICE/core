@@ -810,9 +810,7 @@ namespace OOX
 			{
 				return et_w_t;
 			}
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			static void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CXmlSpace<> >& oSpace)
 			{
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
@@ -825,7 +823,7 @@ namespace OOX
 				{
 					if ( _T("xml:space") == wsName )
 					{
-						m_oSpace = oReader.GetText();
+						oSpace = oReader.GetText();
 						break;
 					}
 
@@ -836,6 +834,12 @@ namespace OOX
 				}
 
 				oReader.MoveToElement();
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader, m_oSpace);
 			}
 
 		public:

@@ -31,6 +31,21 @@
  */
 #include "RunProperty.h"
 #include "RunContent.h"
+#include "Run.h"
+
+#define FROM_XML_ELEM(oElem, oReader, pRun) \
+{ \
+	oElem.Init(); \
+	if(pRun) \
+	{ \
+		oElem->ReadAttributes(oReader); \
+		pRun->fromXMLElems(oReader); \
+	} \
+	else \
+	{ \
+		oElem->FromXML(oReader); \
+	} \
+}
 
 namespace OOX
 {
@@ -153,50 +168,35 @@ namespace OOX
 
 		void CRunProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			fromXML(oReader, NULL);
+		}
+		void CRunProperty::fromXML(XmlUtils::CXmlLiteReader& oReader, CRun* pRun)
+		{
+			//pRun for Run object -> XpertdocOnlineDemoEn.docx
 			if ( oReader.IsEmptyNode() )
 				return;
 
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth )  )
 			{
-                std::wstring sName = oReader.GetName();
-				WritingElement *pItem = NULL;
+				std::wstring sName = oReader.GetName();
 
 				if ( _T("w:b") == sName )
-					m_oBold = oReader;
+					FROM_XML_ELEM(m_oBold, oReader, pRun)
 				else if ( _T("w:bCs") == sName )
-				{
-					if (!oReader.IsEmptyNode())
-					{
-						m_oBoldCs.Init();
-
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-						{
-							std::wstring sName1 = oReader.GetName();
-
-							if ( _T("w:t") == sName1 )
-							{
-								m_pText = new CText( oReader );
-								break;
-							}
-						}
-					}
-					else
-						m_oBoldCs = oReader;
-				}
+					FROM_XML_ELEM(m_oBoldCs, oReader, pRun)
 				else if ( _T("w:bdr") == sName )
 					m_oBdr = oReader;
 				else if ( _T("w:caps") == sName )
-					m_oCaps = oReader;
+					FROM_XML_ELEM(m_oCaps, oReader, pRun)
 				else if ( _T("w:color") == sName )
 					m_oColor = oReader;
 				else if ( _T("w:cs") == sName )
-					m_oCs = oReader;
+					FROM_XML_ELEM(m_oCs, oReader, pRun)
 				else if ( _T("w:del") == sName )
 					m_oDel = oReader;
 				else if ( _T("w:dstrike") == sName )
-					m_oDStrike = oReader;
+					FROM_XML_ELEM(m_oDStrike, oReader, pRun)
 				else if ( _T("w:eastAsianLayout") == sName )
 					m_oEastAsianLayout = oReader;
 				else if ( _T("w:effect") == sName )
@@ -204,7 +204,7 @@ namespace OOX
 				else if ( _T("w:em") == sName )
 					m_oEm = oReader;
 				else if ( _T("w:emboss") == sName )
-					m_oEmboss = oReader;
+					FROM_XML_ELEM(m_oEmboss, oReader, pRun)
 				else if ( _T("w:fitText") == sName )
 					m_oFitText = oReader;
 				else if ( _T("w:highlight") == sName )
@@ -212,25 +212,25 @@ namespace OOX
 				else if ( _T("w:ins") == sName )
 					m_oIns = oReader;
 				else if ( _T("w:i") == sName )
-					m_oItalic = oReader;
+					FROM_XML_ELEM(m_oItalic, oReader, pRun)
 				else if ( _T("w:iCs") == sName )
-					m_oItalicCs = oReader;
+					FROM_XML_ELEM(m_oItalicCs, oReader, pRun)
 				else if ( _T("w:imprint") == sName )
-					m_oImprint = oReader;
+					FROM_XML_ELEM(m_oImprint, oReader, pRun)
 				else if ( _T("w:kern") == sName )
 					m_oKern = oReader;
 				else if ( _T("w:lang") == sName )
-					m_oLang = oReader;
+					FROM_XML_ELEM(m_oLang, oReader, pRun)
 				else if ( _T("w:noProof") == sName )
-					m_oNoProof = oReader;
+					FROM_XML_ELEM(m_oNoProof, oReader, pRun)
 				else if ( _T("m:oMath") == sName )
-					m_oMath = oReader;
+					FROM_XML_ELEM(m_oMath, oReader, pRun)
 				else if ( _T("w:moveFrom") == sName )
 					m_oMoveFrom = oReader;
 				else if ( _T("w:moveTo") == sName )
 					m_oMoveTo = oReader;
 				else if ( _T("w:outline") == sName )
-					m_oOutline = oReader;
+					FROM_XML_ELEM(m_oOutline, oReader, pRun)
 				else if ( _T("w:position") == sName )
 					m_oPosition = oReader;
 				else if ( _T("w:rFonts") == sName )
@@ -244,21 +244,21 @@ namespace OOX
 				else if ( !m_oRStyle.IsInit() && _T("w:pStyle") == sName )
 					m_oRStyle = oReader;
 				else if ( _T("w:rtl") == sName )
-					m_oRtL = oReader;
+					FROM_XML_ELEM(m_oRtL, oReader, pRun)
 				else if ( _T("w:shadow") == sName )
-					m_oShadow = oReader;
+					FROM_XML_ELEM(m_oShadow, oReader, pRun)
 				else if ( _T("w:shd") == sName )
 					m_oShd = oReader;
 				else if ( _T("w:smallCaps") == sName )
-					m_oSmallCaps = oReader;
+					FROM_XML_ELEM(m_oSmallCaps, oReader, pRun)
 				else if ( _T("w:snapToGrid") == sName )
-					m_oSnapToGrid = oReader;
+					FROM_XML_ELEM(m_oSnapToGrid, oReader, pRun)
 				else if ( _T("w:spacing") == sName )
 					m_oSpacing = oReader;
 				else if ( _T("w:specVanish") == sName )
-					m_oSpecVanish = oReader;
+					FROM_XML_ELEM(m_oSpecVanish, oReader, pRun)
 				else if ( _T("w:strike") == sName )
-					m_oStrike = oReader;
+					FROM_XML_ELEM(m_oStrike, oReader, pRun)
 				else if ( _T("w:sz") == sName )
 					m_oSz = oReader;
 				else if ( _T("w:szCs") == sName )
@@ -266,13 +266,13 @@ namespace OOX
 				else if ( _T("w:u") == sName )
 					m_oU = oReader;
 				else if ( _T("w:vanish") == sName )
-					m_oVanish = oReader;
+					FROM_XML_ELEM(m_oVanish, oReader, pRun)
 				else if ( _T("w:vertAlign") == sName )
 					m_oVertAlign = oReader;
 				else if ( _T("w:w") == sName )
 					m_oW = oReader;
 				else if ( _T("w:webHidden") == sName )
-					m_oWebHidden = oReader;
+					FROM_XML_ELEM(m_oWebHidden, oReader, pRun)
 				else if (_T("w14:textOutline") == sName)
 					m_oTextOutline = oReader;
 				else if (_T("w14:textFill") == sName)

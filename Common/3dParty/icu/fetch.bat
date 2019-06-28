@@ -25,6 +25,10 @@ if defined BUILD_PLATFORM (
 		SET "BUILD_PLATFORMS=win_64 win_32"
 		GOTO :found
 	)
+	if not "%BUILD_PLATFORM%"=="%BUILD_PLATFORM:xp=%" (
+		SET "BUILD_PLATFORMS=win_64 win_32"
+		GOTO :found
+	)
 )
 
 SET "BUILD_PLATFORMS=win_32"

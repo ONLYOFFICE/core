@@ -1417,7 +1417,12 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_types::color)& odf_color)
 {	
 	if (!shading) return;	
-		
+	
+	if ((shading->m_oVal.IsInit()) && ( shading->m_oVal->GetValue() == SimpleTypes::shdClear || 
+										shading->m_oVal->GetValue() == SimpleTypes::shdNil))
+	{
+		return;
+	}
 	convert(shading->m_oFill.GetPointer(), shading->m_oThemeFill.GetPointer(),
 		shading->m_oThemeFillTint.GetPointer(), shading->m_oThemeShade.GetPointer(), odf_color);
 		

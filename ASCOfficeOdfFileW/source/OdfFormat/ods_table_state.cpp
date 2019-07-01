@@ -1060,46 +1060,49 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 			if (col2 - col1 > 0)moving_type = 1;
 		}
 		ods_shared_formula_state state = {(unsigned int)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
-		shared_formulas_.insert(std::make_pair((unsigned int)ind, state));
+		shared_formulas_.push_back(state);
 		
 		cell->attlist_.table_formula_ = odf_formula;
 		cells_.back().empty = false;
 	}
 	else
 	{
-		std::unordered_map<unsigned int, ods_shared_formula_state>::iterator pFind = shared_formulas_.find(ind);
-		
-		if (pFind != shared_formulas_.end())
+		for ( size_t i = 0; i < shared_formulas_.size(); i++)
 		{
-			odf_formula = pFind->second.formula;
+			if (shared_formulas_[i].index == ind)
+			{
+				odf_formula = shared_formulas_[i].formula;
 
-			//поменять по ref формулу !!!
-			if (pFind->second.moving_type == 1)
-			{
-				tmp_column_ = pFind->second.base_column;
-				tmp_row_	= pFind->second.base_row;
+				//поменять по ref формулу !!!
+				if (shared_formulas_[i].moving_type == 1)
+				{
+					tmp_column_ = shared_formulas_[i].base_column;
+					tmp_row_	= shared_formulas_[i].base_row;
+					
+					const std::wstring res = boost::regex_replace(
+						odf_formula,
+						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
+						&ods_table_state::replace_cell_column,
+						boost::match_default | boost::format_all);
+					odf_formula = res;
+				}
+				else if (shared_formulas_[i].moving_type == 2)
+				{
+					tmp_column_ = shared_formulas_[i].base_column;
+					tmp_row_	= shared_formulas_[i].base_row;
+					
+					const std::wstring res = boost::regex_replace(
+						odf_formula,
+						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
+						&ods_table_state::replace_cell_row,
+						boost::match_default | boost::format_all);
+					odf_formula = res;
+				}
+				cell->attlist_.table_formula_ = odf_formula;				
+				cells_.back().empty = false;
 				
-				const std::wstring res = boost::regex_replace(
-					odf_formula,
-					boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
-					&ods_table_state::replace_cell_column,
-					boost::match_default | boost::format_all);
-				odf_formula = res;
+				break;
 			}
-			else if (pFind->second.moving_type == 2)
-			{
-				tmp_column_ = pFind->second.base_column;
-				tmp_row_	= pFind->second.base_row;
-				
-				const std::wstring res = boost::regex_replace(
-					odf_formula,
-					boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
-					&ods_table_state::replace_cell_row,
-					boost::match_default | boost::format_all);
-				odf_formula = res;
-			}
-			cell->attlist_.table_formula_ = odf_formula;				
-			cells_.back().empty = false;
 		}
 	}
 }

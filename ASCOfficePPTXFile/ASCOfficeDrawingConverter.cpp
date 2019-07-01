@@ -3042,8 +3042,19 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 			{
 				AddShapeType(oNodeT);
 			}
-			else if (
-				L"shape"		== strNameP ||
+		}
+	}
+    if (oNode.GetNodes(L"*", oNodes))
+	{
+		int nCount = oNodes.GetCount();
+		for (int i = 0; i < nCount; ++i)
+		{
+			XmlUtils::CXmlNode oNodeT;
+			oNodes.GetAt(i, oNodeT);
+
+			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
+
+			if (L"shape"		== strNameP ||
                 L"rect"         == strNameP ||
                 L"oval"         == strNameP ||
                 L"line"         == strNameP ||

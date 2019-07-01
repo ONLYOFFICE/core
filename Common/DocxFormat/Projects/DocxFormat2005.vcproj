@@ -1597,7 +1597,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\SharedStrings\Si.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\SharedStrings\Si.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\SharedStrings\Text.cpp"
 					>
 				</File>
 				<File
@@ -1634,6 +1642,10 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Styles\NumFmts.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Styles\rPr.cpp"
 					>
 				</File>
 				<File

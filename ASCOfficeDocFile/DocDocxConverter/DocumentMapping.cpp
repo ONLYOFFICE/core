@@ -800,8 +800,9 @@ namespace DocFileFormat
 					}
 				}
 				XMLTools::XMLElement elem(L"w:br");
-                elem.AppendAttribute(L"w:type", L"textWrapping");
-                elem.AppendAttribute(L"w:clear", L"all");
+				//СЗ в МРФ Техноград о предоставлении ТП 1 квартал 2019_MO_Q31.doc
+                //elem.AppendAttribute(L"w:type", L"textWrapping");
+                //elem.AppendAttribute(L"w:clear", L"all");
 
 				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}

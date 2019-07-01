@@ -848,7 +848,7 @@ public:
 		m_eType		= bt_brdrnone;
 		m_nWidth	= 0;
 		m_nSpace	= 0;
-		m_nColor	= PROP_DEF;
+		m_nColor	= -1; //auto
 	}
 	void Merge( RtfBorder& oBorPr )
 	{
@@ -2416,18 +2416,18 @@ public:
 	void SetDefaultOOX()
 	{
 		SetDefault();
-	}
-	void SetDefault()
-	{
-		RtfTableProperty::SetDefault();
 //не SetEmpty() !!!		
 		m_oBorderLeft.SetDefault();
 		m_oBorderRight.SetDefault();
 		m_oBorderTop.SetDefault();
 		m_oBorderBottom.SetDefault();
 		m_oBorderVert.SetDefault();
-		m_oBorderHor.SetDefault();
-
+		m_oBorderHor.SetDefault();	
+	}
+	//5.5 Доверенность_MO_Q139.rtf
+	void SetDefault()
+	{
+		RtfTableProperty::SetDefault();
 		DEFAULT_PROPERTY( m_nIndex )
 		DEFAULT_PROPERTY( m_nBandIndex )
 		DEFAULT_PROPERTY( m_bLastRow )
@@ -2649,6 +2649,10 @@ public:
 	void SetDefaultRtf()
 	{
 		SetDefault();
+		
+		//4.1 Наряд_R7_M133.rtf
+		m_nSpaceAfter = 0;
+		m_nSpaceBetween = 240;
 	}
 	void SetDefaultOOX()
 	{
@@ -2701,7 +2705,7 @@ public:
 		m_oBorderTop.SetDefault();
 		m_oBorderLeft.SetDefault();
 		m_oBorderBottom.SetDefault();
-		m_oBorderRight.SetDefault();
+		m_oBorderRight.SetDefault(); 
 		m_oBorderBox.SetDefault();
 		m_oBorderBar.SetDefault();
 

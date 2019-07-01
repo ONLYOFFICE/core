@@ -968,7 +968,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 
 	XmlUtils::replace_all(odfFormula, L"EXTERNALREF", L"file://");//снятие экранирования
 
-	if (std::wstring::npos != odfFormula.find(L"["))
+	if ((false == table_parts_.empty()) && (std::wstring::npos != odfFormula.find(L"[")))
 	{
 		for (size_t i = 0; i < table_parts_.size(); i++)
 		{
@@ -1049,12 +1049,12 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 		int moving_type = 0;
 		
 		std::vector<std::wstring> distance;
-		boost::algorithm::split(distance, ref,boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+		boost::algorithm::split(distance, ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 		if (distance.size() > 1)
 		{
             int col1, row1, col2, row2;
-			utils::parsing_ref(distance[0],col1,row1);
-			utils::parsing_ref(distance[1],col2,row2);
+			utils::parsing_ref(distance[0], col1, row1);
+			utils::parsing_ref(distance[1], col2, row2);
 
 			if (row2 - row1 > 0) moving_type = 2;
 			if (col2 - col1 > 0)moving_type = 1;
@@ -1067,7 +1067,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 	}
 	else
 	{
-		std::map<unsigned int, ods_shared_formula_state>::iterator pFind = shared_formulas_.find(ind);
+		std::unordered_map<unsigned int, ods_shared_formula_state>::iterator pFind = shared_formulas_.find(ind);
 		
 		if (pFind != shared_formulas_.end())
 		{

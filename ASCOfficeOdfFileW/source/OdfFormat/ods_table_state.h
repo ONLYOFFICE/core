@@ -33,6 +33,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -453,12 +454,12 @@ private:
 	std::vector<ods_cell_state>	cells_;
 	long						cells_size_;
 	
-	std::vector<ods_hyperlink_state>					hyperlinks_;
-	std::map<unsigned int, ods_shared_formula_state>	shared_formulas_;
+	std::vector<ods_hyperlink_state> hyperlinks_;
+	std::unordered_map<unsigned int, ods_shared_formula_state> shared_formulas_;
 
-	std::vector<table_part_state>			table_parts_;
+	std::vector<table_part_state> table_parts_;
 
-	std::vector<data_validation_state>		data_validations_;
+	std::vector<data_validation_state> data_validations_;
 
 	odf_drawing_context		drawing_context_;	
 	odf_controls_context	controls_context_;	

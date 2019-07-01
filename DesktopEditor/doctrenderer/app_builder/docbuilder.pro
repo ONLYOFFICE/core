@@ -45,7 +45,13 @@ core_windows {
 DESTDIR = $$CORE_ROOT_DIR/build/bin/$$CORE_BUILDS_PLATFORM_PREFIX
 ################################################
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer -lkernel -lgraphics -lUnicodeConverter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics -lUnicodeConverter
+
+build_xp {
+    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH/xp -ldoctrenderer
+} else {
+    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
+}
 
 core_linux {
     LIBS += -ldl

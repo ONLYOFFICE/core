@@ -4236,15 +4236,15 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 	}
 	else if ( c_oSerParType::OMathPara == type )
 	{
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMathPara>")));
+        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMathPara>")));
 		READ1_DEF(length, res, this->ReadMathOMathPara, poResult);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMathPara>")));
+        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMathPara>")));
 	}
 	else if ( c_oSerParType::OMath == type )
 	{
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMath>")));
+        GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 		READ1_DEF(length, res, this->ReadMathArg, poResult);
-        m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMath>")));
+        GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 	}
 	else if ( c_oSerParType::MRun == type )
 	{

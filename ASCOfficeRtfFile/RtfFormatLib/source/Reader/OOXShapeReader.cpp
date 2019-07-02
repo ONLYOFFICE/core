@@ -136,8 +136,8 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 				{
 				case SimpleTypes::Vml::cssmsoposhorrelMargin:	pShape->m_eXAnchor = RtfShape::ax_margin; break;
 				case SimpleTypes::Vml::cssmsoposhorrelPage:		pShape->m_eXAnchor = RtfShape::ax_page; break;
-				case SimpleTypes::Vml::cssmsoposhorrelText:
-				case SimpleTypes::Vml::cssmsoposhorrelChar:		break;//inline	
+				case SimpleTypes::Vml::cssmsoposhorrelText:		break; //???
+				case SimpleTypes::Vml::cssmsoposhorrelChar:		pShape->m_eAnchorTypeShape = RtfShape::st_inline; break;//inline	
 				}
 			}break;
 		case SimpleTypes::Vml::cssptMsoPositionVertical: 
@@ -194,7 +194,10 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			break;
 		case SimpleTypes::Vml::cssptZIndex : 
 			{
-				pShape->m_eAnchorTypeShape	= RtfShape::st_anchor;
+				if (pShape->m_eAnchorTypeShape == RtfShape::st_none)
+				{
+					pShape->m_eAnchorTypeShape = RtfShape::st_anchor;
+				}
 
 				int nValue = prop->get_Value().oZIndex.nOrder;
 				pShape->m_nZOrder = nValue;

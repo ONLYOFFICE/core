@@ -133,36 +133,202 @@ public:
 	}
 	static void oox_replace_tmp_back(std::wstring &expr)
 	{
-		XmlUtils::replace_all( expr, L"MINYS", L"-");
-		XmlUtils::replace_all( expr, L"ТОСHKA", L".");
-		XmlUtils::replace_all( expr, L"VOSKL", L"!");
+		std::wstring result;
 
-		XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
-		XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
+		size_t pos = 0, size = expr.length();
 
-		XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
-		XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
-		
-		XmlUtils::replace_all( expr, L"PROBEL", L" ");
-		XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
-		XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+		while(pos < size)
+		{
+			if (pos + 5 > size)
+			{
+				result += expr[pos++];
+				continue;
+			}
+			switch(expr[pos])
+			{
+				case 'M':
+				{
+					if ((pos + 5 < size) && (expr.substr(pos, 5) == L"MINYS"))
+					{
+						result += L"-"; pos += 5;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				case 'T':
+				{	
+					if ((pos + 6 < size) && (expr.substr(pos, 6) == L"ТОСHKA"))
+					{
+						result += L"."; pos += 6;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				case 'V':
+				{
+					if ((pos + 5 < size) && (expr.substr(pos, 5) == L"VOSKL"))
+					{
+						result += L"!"; pos += 5;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				case 'S':
+				{
+					if ((pos + 8 < size) && (expr.substr(pos, 8) == L"SCOBCAIN"))
+					{
+						result += L"("; pos += 8;
+					}
+					else if ((pos + 9 < size) && (expr.substr(pos, 9) == L"SCOBCAOUT"))
+					{
+						result += L")"; pos += 9;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				case 'K':
+				{
+					if ((pos + 9 < size) && (expr.substr(pos, 9) == L"KVADRATIN"))
+					{
+						result += L"["; pos += 9;
+					}
+					else if ((pos + 10 < size) && (expr.substr(pos, 10) == L"KVADRATOUT"))
+					{
+						result += L"]"; pos += 10;
+					}
+					else if ((pos + 8 < size) && (expr.substr(pos, 8) == L"KAVYCHKA"))
+					{
+						result += L"\""; pos += 8;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				case 'P':
+				{
+					if ((pos + 6 < size) && (expr.substr(pos, 6) == L"PROBEL"))
+					{
+						result += L" "; pos += 6;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				case 'A':
+				{
+					if ((pos + 8 < size) && (expr.substr(pos, 8) == L"APOSTROF"))
+					{
+						result += L"'"; pos += 8;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				default:
+				{
+					result += expr[pos++];
+				}break;
+			}
+		}
+		expr = result;
+		//XmlUtils::replace_all( expr, L"MINYS", L"-");
+		//XmlUtils::replace_all( expr, L"ТОСHKA", L".");
+		//XmlUtils::replace_all( expr, L"VOSKL", L"!");
+
+		//XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
+		//XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
+
+		//XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
+		//XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
+		//
+		//XmlUtils::replace_all( expr, L"PROBEL", L" ");
+		//XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
+		//XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
 	}
 
 	static void oox_replace_tmp(std::wstring &expr)
 	{
-		XmlUtils::replace_all( expr, L"-", L"MINYS");
-		XmlUtils::replace_all( expr, L".", L"ТОСHKA");
-		XmlUtils::replace_all( expr, L"!", L"VOSKL");
+		std::wstring result;
 
-		XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
-		XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
+		size_t pos = 0, size = expr.length();
 
-		XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
-		XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
-		
-		XmlUtils::replace_all( expr, L" ", L"PROBEL");
-		XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
-		XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+		while(pos < size)
+		{
+			switch(expr[pos])
+			{
+				case '-':
+				{
+					result += L"MINYS";
+				}break;
+				case '.':
+				{	
+					result += L"ТОСHKA";
+				}break;
+				case '!':
+				{
+					result += L"VOSKL";
+				}break;
+				case '(':
+				{
+					result += L"SCOBCAIN";
+				}break;
+				case ')':
+				{
+					result += L"SCOBCAOUT";
+				}break;
+				case '[':
+				{
+					result += L"KVADRATIN";
+				}break;
+				case ']':
+				{
+					result += L"KVADRATOUT";
+				}break;
+				case ' ':
+				{
+					result += L"PROBEL";
+				}break;
+				case '\'':
+				{
+					result += L"APOSTROF";
+				}break;
+				case '\"':
+				{
+					result += L"KAVYCHKA";
+				}break;
+				default:
+				{
+					result += expr[pos];
+				}break;
+			}
+			pos++;
+		}
+		expr = result;
+
+		//XmlUtils::replace_all( expr, L"-", L"MINYS");
+		//XmlUtils::replace_all( expr, L".", L"ТОСHKA");
+		//XmlUtils::replace_all( expr, L"!", L"VOSKL");
+
+		//XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
+		//XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
+
+		//XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
+		//XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
+		//
+		//XmlUtils::replace_all( expr, L" ", L"PROBEL");
+		//XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
+		//XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
 	}
 
 	static bool is_forbidden1(const std::wstring & formula)

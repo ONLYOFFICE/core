@@ -196,7 +196,7 @@ namespace NExtractTools
 
 namespace NExtractTools
 {
-    _UINT32 odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+    _UINT32 __odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
         std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
         NSDirectory::CreateDirectory(sTempUnpackedOdf);
@@ -210,12 +210,12 @@ namespace NExtractTools
         return nRes;
     }
     
-    _UINT32 odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+    _UINT32 __odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
     {
         std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
         NSDirectory::CreateDirectory(sTempUnpackedOox);
         
-        _UINT32 nRes = odf2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
+        _UINT32 nRes = __odf2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
         if(SUCCEEDED_X2T(nRes))
         {
             COfficeUtils oCOfficeUtils(NULL);
@@ -288,7 +288,7 @@ namespace NExtractTools
         oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
     }
     
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+    return NExtractTools::__odf2oox(from, to, temp, oInputParams);
 }
 
 - (int)odt2docx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
@@ -304,7 +304,7 @@ namespace NExtractTools
         oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
     }
     
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+    return NExtractTools::__odf2oox(from, to, temp, oInputParams);
 }
 
 - (int)ods2xlsx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
@@ -320,7 +320,7 @@ namespace NExtractTools
         oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
     }
     
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+    return NExtractTools::__odf2oox(from, to, temp, oInputParams);
 }
 
 - (int)odp2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
@@ -336,7 +336,7 @@ namespace NExtractTools
         oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
     }
     
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
+    return NExtractTools::__odf2oox(from, to, temp, oInputParams);
 }
 
 @end

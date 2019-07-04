@@ -830,6 +830,8 @@ namespace OOX
 		et_w15_person, // <w15:person>
 		et_w15_commentEx, // <w15:commentEx>
 
+		et_w16_commentId, // <w16cid:commentId>
+
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>
 		et_w_GroupShape,		//<wpg:wgp>

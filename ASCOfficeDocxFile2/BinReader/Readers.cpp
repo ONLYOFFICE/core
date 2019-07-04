@@ -3399,6 +3399,11 @@ int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void*
 		pComment->bSolved = true;
 		pComment->Solved = m_oBufferedStream.GetBool();
 	}
+	else if ( c_oSer_CommentsType::DurableId == type )
+	{
+		pComment->bDurableId = true;
+		pComment->DurableId = m_oBufferedStream.GetULong();
+	}
 	else if ( c_oSer_CommentsType::Replies == type )
 	{
 		READ1_DEF(length, res, this->ReadReplies, &pComment->replies);
@@ -9106,13 +9111,15 @@ int BinaryFileReader::ReadMainTable()
         
 		std::wstring sContent	= oComments.writeContent();
         std::wstring sContentEx = oComments.writeContentExt();	//важно чтобы writeContentExt вызывался после writeContent
+		std::wstring sContentsId = oComments.writeContentsIds();
         std::wstring sPeople	= oComments.writePeople();
 
 		std::wstring sDocumentContent	= oBinary_DocumentCommentsTableReader.m_oComments.writeContent();
 		std::wstring sDocumentContentEx = oBinary_DocumentCommentsTableReader.m_oComments.writeContentExt();	//важно чтобы writeContentExt вызывался после writeContent
+		std::wstring sDocumentContentsId = oBinary_DocumentCommentsTableReader.m_oComments.writeContentsIds();
 		std::wstring sDocumentPeople	= oBinary_DocumentCommentsTableReader.m_oComments.writePeople();
 
-		oCommentsWriter.setElements(sContent, sContentEx, sPeople, sDocumentContent, sDocumentContentEx, sDocumentPeople);
+		oCommentsWriter.setElements(sContent, sContentEx, sContentsId, sPeople, sDocumentContent, sDocumentContentEx, sDocumentContentsId, sDocumentPeople);
         
 		if(false == oCommentsWriter.m_sComment.empty())
 		{

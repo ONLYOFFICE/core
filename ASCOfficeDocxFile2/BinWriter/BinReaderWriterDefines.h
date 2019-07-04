@@ -803,7 +803,8 @@ extern int g_nCurFormatVersion;
 		QuoteText = 7,
 		Solved = 8,
 		Replies = 9,
-		OOData = 10
+		OOData = 10,
+		DurableId = 11
 	};}
 	namespace c_oSer_SettingsType{enum c_oSer_SettingsType
 	{

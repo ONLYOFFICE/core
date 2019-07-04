@@ -1906,6 +1906,7 @@ public:
     std::wstring Date;
 	std::wstring OOData;
 	bool Solved;
+	unsigned int DurableId;
     std::wstring Text;
     std::wstring m_sParaId;
     std::wstring m_sParaIdParent;
@@ -1914,12 +1915,14 @@ public:
 	bool bIdOpen;
 	bool bIdFormat;
 	bool bSolved;
+	bool bDurableId;
 public:
 	CComment(IdCounter& oParaIdCounter, IdCounter& oFormatIdCounter):m_oParaIdCounter(oParaIdCounter),m_oFormatIdCounter(oFormatIdCounter)
 	{
 		bIdOpen = false;
 		bIdFormat = false;
 		bSolved = false;
+		bDurableId = false;
 	}
 	~CComment()
 	{
@@ -1956,15 +1959,6 @@ public:
 		}
 		return sRes;
 	}
-	std::wstring writeTemplates(bool isExt)
-	{
-        std::wstring sRes;
-		sRes += isExt ? writeContentExt(this) : writeContent(this);
-		
-		for(size_t i = 0; i < replies.size(); ++i)
-			sRes += isExt ? writeContentExt(replies[i]) : writeContent(replies[i]);
-		return sRes;
-	}
     static std::wstring writeRef(CComment* pComment, const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter)
 	{
         std::wstring sRes;
@@ -1978,7 +1972,7 @@ public:
         sRes += (sAfter);
 		return sRes;
 	}
-    static bool writeContentWritePart(CComment* pComment, std::wstring& sText, int nPrevIndex, int nCurIndex, bool bFirst, std::wstring& sRes)
+	static void writeContentWritePart(CComment* pComment, std::wstring& sText, int nPrevIndex, int nCurIndex, std::wstring& sRes)
 	{
         std::wstring sPart;
 		if(nPrevIndex < nCurIndex)
@@ -1986,17 +1980,11 @@ public:
 
         int nId = pComment->m_oParaIdCounter.getNextId();
 
-        std::wstring sId = XmlUtils::IntToString(nId, L"%08X");
-		if(bFirst)
-		{
-			bFirst = false;
-			pComment->m_sParaId = sId;
-		}
-        sRes += L"<w:p w14:paraId=\"" + sId + L"\" w14:textId=\"" + sId + L"\">";
+		pComment->m_sParaId = XmlUtils::IntToString(nId, L"%08X");
+		sRes += L"<w:p w14:paraId=\"" + pComment->m_sParaId + L"\" w14:textId=\"" + pComment->m_sParaId + L"\">";
         sRes += L"<w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">";
         sRes += sPart;
         sRes += L"</w:t></w:r></w:p>";
-		return bFirst;
 	}
     static std::wstring writeContent(CComment* pComment)
 	{
@@ -2050,18 +2038,17 @@ public:
 
 		XmlUtils::replace_all(sText, L"\r", L"");
 
-		bool bFirst = true;
 		int nPrevIndex = 0;
 		for (int i = 0; i < (int)sText.length(); i++)
 		{
 			wchar_t cToken = sText[i];
 			if('\n' == cToken)
 			{
-				bFirst = writeContentWritePart(pComment, sText, nPrevIndex, i, bFirst, sRes);
+				writeContentWritePart(pComment, sText, nPrevIndex, i, sRes);
 				nPrevIndex = i + 1;
 			}
 		}
-		writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), bFirst, sRes);
+		writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
         sRes += L"</w:comment>";
 		return sRes;
 	}
@@ -2081,6 +2068,15 @@ w15:paraIdParent=\"" + pComment->m_sParaIdParent + L"\" w15:done=\"" + sDone + L
 			//расставляем paraIdParent
 			for(size_t i = 0; i < pComment->replies.size(); i++)
 				pComment->replies[i]->m_sParaIdParent = pComment->m_sParaId;
+		}
+		return sRes;
+	}
+	static std::wstring writeContentsIds(CComment* pComment)
+	{
+		std::wstring sRes;
+		if(!pComment->m_sParaId.empty() && pComment->bDurableId)
+		{
+			sRes += L"<w16cid:commentId w16cid:paraId=\"" + pComment->m_sParaId + L"\" w16cid:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\"/>";
 		}
 		return sRes;
 	}
@@ -2151,7 +2147,9 @@ public:
         std::wstring sRes;
         for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-			sRes += it->second->writeTemplates(false);
+			sRes += CComment::writeContent(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContent(it->second->replies[i]);
 		}
 		return sRes;
 	}
@@ -2160,7 +2158,20 @@ public:
         std::wstring sRes;
         for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-			sRes += it->second->writeTemplates(true);
+			sRes += CComment::writeContentExt(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentExt(it->second->replies[i]);
+		}
+		return sRes;
+	}
+	std::wstring writeContentsIds()
+	{
+		std::wstring sRes;
+		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sRes += CComment::writeContentsIds(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentsIds(it->second->replies[i]);
 		}
 		return sRes;
 	}

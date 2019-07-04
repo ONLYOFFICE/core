@@ -122,6 +122,14 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml",
 												L"http://schemas.onlyoffice.com/commentsExtendedDocument");
 
+		const FileType CommentsIds		(L"", L"commentsIds.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsIds+xml",
+												L"http://schemas.microsoft.com/office/2016/09/relationships/commentsIds");
+
+		const FileType DocumentCommentsIds		(L"", L"commentsIdsDocument.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsIds+xml",
+												L"http://schemas.onlyoffice.com/commentsIdsDocument");
+
 		const FileType People			(L"", L"people.xml", 
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/people");

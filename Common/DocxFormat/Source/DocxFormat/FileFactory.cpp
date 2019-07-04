@@ -103,6 +103,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsIds )
+			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsIds )
+			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentPeople )
@@ -232,6 +236,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsIds)
+			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsIds)
+			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentPeople )

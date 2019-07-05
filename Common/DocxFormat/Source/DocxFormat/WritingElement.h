@@ -1171,6 +1171,8 @@ namespace OOX
 		et_x_Comment,
 		et_x_ThreadedComments,
 		et_x_ThreadedComment,
+		et_x_ThreadedCommentMentions,
+		et_x_ThreadedCommentMention,
 		et_x_PersonList,
 		et_x_Person,
 		et_x_ConditionalFormatting,

@@ -67,6 +67,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
+#include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
+
 namespace BinXlsxRW 
 {
 	#define SEEK_TO_POS_START(type) \
@@ -3131,6 +3133,11 @@ int BinaryCommentReader::ReadComment(BYTE type, long length, void* poResult)
 		pNewComment->m_bMove = m_oBufferedStream.GetBool();
 	else if ( c_oSer_Comments::SizeWithCells == type )
 		pNewComment->m_bSize = m_oBufferedStream.GetBool();
+	else if ( c_oSer_Comments::ThreadedComment == type )
+	{
+		pNewComment->m_pThreadedComment = new OOX::Spreadsheet::CThreadedComment();
+		READ1_DEF(length, res, this->ReadThreadedComment, pNewComment->m_pThreadedComment);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -3203,6 +3210,77 @@ int BinaryCommentReader::ReadCommentReplies(BYTE type, long length, void* poResu
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryCommentReader::ReadThreadedComment(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CThreadedComment* pThreadedComment = static_cast<OOX::Spreadsheet::CThreadedComment*>(poResult);
+	if ( c_oSer_ThreadedComment::dT == type )
+	{
+		pThreadedComment->dT = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_ThreadedComment::personId == type )
+	{
+		pThreadedComment->personId = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_ThreadedComment::id == type )
+	{
+		pThreadedComment->id = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_ThreadedComment::done == type )
+	{
+		pThreadedComment->done = m_oBufferedStream.GetBool();
+	}
+	else if ( c_oSer_ThreadedComment::text == type )
+	{
+		pThreadedComment->m_oText.Init();
+		pThreadedComment->m_oText->m_sText = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_ThreadedComment::mention == type )
+	{
+		OOX::Spreadsheet::CThreadedCommentMention* pMention = new OOX::Spreadsheet::CThreadedCommentMention();
+		READ1_DEF(length, res, this->ReadThreadedCommentMention, pMention);
+		if(!pThreadedComment->m_oMentions.IsInit())
+		{
+			pThreadedComment->m_oMentions.Init();
+		}
+		pThreadedComment->m_oMentions->m_arrItems.push_back(pMention);
+	}
+	else if ( c_oSer_ThreadedComment::reply == type )
+	{
+		OOX::Spreadsheet::CThreadedComment* pReply = new OOX::Spreadsheet::CThreadedComment();
+		READ1_DEF(length, res, this->ReadThreadedComment, pReply);
+		pThreadedComment->m_arrReplies.push_back(pReply);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryCommentReader::ReadThreadedCommentMention(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CThreadedCommentMention* pMention = static_cast<OOX::Spreadsheet::CThreadedCommentMention*>(poResult);
+	if ( c_oSer_ThreadedComment::mentionpersonId == type )
+	{
+		pMention->mentionpersonId = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_ThreadedComment::mentionId == type )
+	{
+		pMention->mentionId = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_ThreadedComment::startIndex == type )
+	{
+		pMention->startIndex.Init();
+		pMention->startIndex->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if ( c_oSer_ThreadedComment::length == type )
+	{
+		pMention->length.Init();
+		pMention->length->SetValue(m_oBufferedStream.GetULong());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 void BinaryCommentReader::parseCommentData(SerializeCommon::CommentData* pCommentData, OOX::Spreadsheet::CSi& oSi)
 {
 	if(NULL != pCommentData && false == pCommentData->sText.empty())
@@ -3233,6 +3311,27 @@ void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::w
 
 	pRun->m_arrItems.push_back(pText);
 	oSi.m_arrItems.push_back(pRun);
+}
+void BinaryCommentReader::addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment)
+{
+	OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
+	pText->m_sText.append(L"[Threaded comment]\n\nYour version of Excel allows you to read this threaded comment; however, any edits to it will get removed if the file is opened in a newer version of Excel. Learn more: https://go.microsoft.com/fwlink/?linkid=870924\n\n");
+	if(pThreadedComment->m_oText.IsInit())
+	{
+		pText->m_sText.append(L"Comment:\n    ");
+		pText->m_sText.append(pThreadedComment->m_oText->ToString());
+		pText->m_sText.append(L"\n\n");
+	}
+	for(size_t i = 0; i < pThreadedComment->m_arrReplies.size(); ++i)
+	{
+		if(pThreadedComment->m_arrReplies[i]->m_oText.IsInit())
+		{
+			pText->m_sText.append(L"Reply:\n    ");
+			pText->m_sText.append(pThreadedComment->m_arrReplies[i]->m_oText->ToString());
+			pText->m_sText.append(L"\n\n");
+		}
+	}
+	oSi.m_arrItems.push_back(pText);
 }
 
 BinaryWorksheetsTableReader::BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
@@ -3517,61 +3616,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Comments);
 		BinaryCommentReader oBinaryCommentReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
 		oBinaryCommentReader.Read(length, poResult);
-
-		if(false == m_pCurWorksheet->m_mapComments.empty())
-		{
-			m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
-
-			boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
-			OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
-
-			pComments->m_oCommentList.Init();
-			std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
-
-			pComments->m_oAuthors.Init();
-
-			for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
-			{
-				if(it->second->IsValid())
-				{
-					OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
-					OOX::Spreadsheet::CComment* pNewComment = new OOX::Spreadsheet::CComment();
-					if(pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
-					{
-						pNewComment->m_oRef.Init();
-						pNewComment->m_oRef->SetValue(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get()));
-					}
-
-					if(pCommentItem->m_sAuthor.IsInit())
-					{
-						const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
-						boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
-
-						int nAuthorId;
-						if(pFind != mapByAuthors.end())
-							nAuthorId = (int)pFind->second;
-						else
-						{
-							nAuthorId = (int)mapByAuthors.size();
-
-							mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
-
-							pComments->m_oAuthors->m_arrItems.push_back( sAuthor );
-						}
-						pNewComment->m_oAuthorId.Init();
-						pNewComment->m_oAuthorId->SetValue(nAuthorId);
-					}
-
-					OOX::Spreadsheet::CSi* pSi = pCommentItem->m_oText.GetPointerEmptyNullable();
-					if(NULL != pSi)
-						pNewComment->m_oText.reset(pSi);
-					aComments.push_back(pNewComment);
-				}
-			}
-
-			NSCommon::smart_ptr<OOX::File> pCommentsFile(pComments);
-			m_pCurWorksheet->Add(pCommentsFile);
-		}
+		WriteComments();
 	SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------	
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Drawings);
@@ -3714,6 +3759,102 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	m_oBufferedStream.Seek(nOldPos);
 	m_pCurWorksheet->toXMLEnd(oStreamWriter);
 	return res;
+}
+void BinaryWorksheetsTableReader::WriteComments()
+{
+	if(false == m_pCurWorksheet->m_mapComments.empty())
+	{
+		m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
+
+		boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
+		OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
+
+		pComments->m_oCommentList.Init();
+		std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
+
+		pComments->m_oAuthors.Init();
+
+		OOX::Spreadsheet::CThreadedComments* pThreadedComments = new OOX::Spreadsheet::CThreadedComments(NULL);
+
+		for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
+		{
+			OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
+			if(pCommentItem->IsValid())
+			{
+				OOX::Spreadsheet::CComment* pNewComment = new OOX::Spreadsheet::CComment();
+				if(pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
+				{
+					pNewComment->m_oRef.Init();
+					pNewComment->m_oRef->SetValue(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get()));
+				}
+				if(NULL != pCommentItem->m_pThreadedComment)
+				{
+					OOX::Spreadsheet::CThreadedComment* pThreadedComment = pCommentItem->m_pThreadedComment;
+					if( pNewComment->m_oRef.IsInit())
+					{
+						pThreadedComment->ref = pNewComment->m_oRef->ToString();
+					}
+					if(!pThreadedComment->id.IsInit())
+					{
+						pThreadedComment->id = L"{" + XmlUtils::GenerateGuid() + L"}";
+					}
+					pNewComment->m_oUid = pThreadedComment->id->ToString();
+					pCommentItem->m_sAuthor = L"tc=" + pThreadedComment->id->ToString();
+
+					pCommentItem->m_oText.Init();
+					BinaryCommentReader::addThreadedComment(pCommentItem->m_oText.get2(), pThreadedComment);
+
+					pThreadedComments->m_arrItems.push_back(pThreadedComment);
+					for(size_t i = 0; i < pThreadedComment->m_arrReplies.size(); ++i)
+					{
+						pThreadedComment->m_arrReplies[i]->parentId = pThreadedComment->id->ToString();
+						pThreadedComment->m_arrReplies[i]->ref = pThreadedComment->ref.get();
+						if(!pThreadedComment->m_arrReplies[i]->id.IsInit())
+						{
+							pThreadedComment->m_arrReplies[i]->id = L"{" + XmlUtils::GenerateGuid() + L"}";
+						}
+						pThreadedComments->m_arrItems.push_back(pThreadedComment->m_arrReplies[i]);
+					}
+				}
+
+				if(pCommentItem->m_sAuthor.IsInit())
+				{
+					const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
+					boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+
+					int nAuthorId;
+					if(pFind != mapByAuthors.end())
+						nAuthorId = (int)pFind->second;
+					else
+					{
+						nAuthorId = (int)mapByAuthors.size();
+
+						mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
+
+						pComments->m_oAuthors->m_arrItems.push_back( sAuthor );
+					}
+					pNewComment->m_oAuthorId.Init();
+					pNewComment->m_oAuthorId->SetValue(nAuthorId);
+				}
+				pNewComment->m_oText.reset(pCommentItem->m_oText.GetPointerEmptyNullable());
+
+				aComments.push_back(pNewComment);
+			}
+			else if(NULL != pCommentItem->m_pThreadedComment)
+			{
+				RELEASEOBJECT(pCommentItem->m_pThreadedComment);
+				for(size_t i = 0; i < pCommentItem->m_pThreadedComment->m_arrReplies.size(); ++i)
+				{
+					RELEASEOBJECT(pCommentItem->m_pThreadedComment->m_arrReplies[i]);
+				}
+			}
+		}
+
+		NSCommon::smart_ptr<OOX::File> pCommentsFile(pComments);
+		m_pCurWorksheet->Add(pCommentsFile);
+		NSCommon::smart_ptr<OOX::File> pThreadedCommentsFile(pThreadedComments);
+		m_pCurWorksheet->Add(pThreadedCommentsFile);
+	}
 }
 int BinaryWorksheetsTableReader::ReadPivotTable(BYTE type, long length, void* poResult)
 {
@@ -6334,6 +6475,58 @@ void BinaryOtherTableReader::ReadMediaItemSaveFilePath(const std::wstring& sTemp
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
+BinaryPersonReader::BinaryPersonReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook):Binary_CommonReader(oBufferedStream),m_oWorkbook(oWorkbook)
+{
+}
+int BinaryPersonReader::Read()
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CPersonList* pPersonList = new OOX::Spreadsheet::CPersonList(NULL);
+	READ_TABLE_DEF(res, this->ReadPersonList, pPersonList);
+	smart_ptr<OOX::File> oFilePersonListFile(pPersonList);
+	m_oWorkbook.Add(oFilePersonListFile);
+	return res;
+}
+int BinaryPersonReader::ReadPersonList(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CPersonList* pPersonList = static_cast<OOX::Spreadsheet::CPersonList*>(poResult);
+	if ( c_oSer_Person::person == type )
+	{
+		OOX::Spreadsheet::CPerson* pPerson = new OOX::Spreadsheet::CPerson();
+		READ1_DEF(length, res, this->ReadPerson, pPerson);
+		pPersonList->m_arrItems.push_back(pPerson);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryPersonReader::ReadPerson(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CPerson* pPerson = static_cast<OOX::Spreadsheet::CPerson*>(poResult);
+	if ( c_oSer_Person::id == type )
+	{
+		pPerson->id = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_Person::providerId == type )
+	{
+		pPerson->providerId = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_Person::userId == type )
+	{
+		pPerson->userId = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSer_Person::displayName == type )
+	{
+		pPerson->displayName = m_oBufferedStream.GetString3(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------
 BinaryFileReader::BinaryFileReader()
 {
 }
@@ -6578,6 +6771,11 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 				oXlsx.m_pCore = pCore;
 				smart_ptr<OOX::File> oCurFile(pCore);
 				oXlsx.Add(oCurFile);
+			}
+			break;
+		case c_oSerTableTypes::PersonList:
+			{
+				res = BinaryPersonReader(oBufferedStream, *oXlsx.m_pWorkbook).Read();
 			}
 			break;
 		case c_oSerTableTypes::Styles:

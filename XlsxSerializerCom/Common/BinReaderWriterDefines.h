@@ -81,7 +81,8 @@ namespace BinXlsxRW
 		Worksheets = 4,
 		CalcChain = 5,
 		App = 6,
-		Core = 7
+		Core = 7,
+		PersonList = 8
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes
@@ -930,7 +931,8 @@ namespace BinXlsxRW
 		WidthMM = 14,
 		HeightMM = 15,
 		MoveWithCells = 16,
-		SizeWithCells = 17
+		SizeWithCells = 17,
+		ThreadedComment = 18
 	};}
 	namespace c_oSer_CommentData{enum c_oSer_CommentData
 	{
@@ -944,6 +946,28 @@ namespace BinXlsxRW
 		Replies = 7,
 		Reply = 8,
 		OOTime = 9
+	};}
+	namespace c_oSer_ThreadedComment{enum c_oSer_ThreadedComment
+	{
+		dT = 0,
+		personId = 1,
+		id = 2,
+		done = 3,
+		text = 4,
+		mention = 5,
+		reply = 6,
+		mentionpersonId = 7,
+		mentionId = 8,
+		startIndex = 9,
+		length = 10
+	};}
+	namespace c_oSer_Person{enum c_oSer_Person
+	{
+		person = 0,
+		id = 1,
+		providerId = 2,
+		userId = 3,
+		displayName = 4
 	};}
 	namespace c_oSer_ConditionalFormatting{enum c_oSer_ConditionalFormatting
 	{

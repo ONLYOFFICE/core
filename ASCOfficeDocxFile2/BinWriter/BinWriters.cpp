@@ -7384,7 +7384,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 			OOX::CCommentExt* pCommentExt = pCommentsExt->m_arrComments[i];
 			if(pCommentExt->m_oParaId.IsInit())
 			{
-				std::map<int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentExt->m_oParaId->GetValue());
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentExt->m_oParaId->GetValue());
 				if(mapParaIdToComment.end() != pPair)
 				{
 					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
@@ -7394,7 +7394,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 					if(pCommentExt->m_oParaIdParent.IsInit())
 					{
 						unsigned int nParaIdParent = pCommentExt->m_oParaIdParent->GetValue();
-						std::map<int, CCommentWriteTemp*>::const_iterator pPairParent = mapParaIdToComment.find(nParaIdParent);
+						std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPairParent = mapParaIdToComment.find(nParaIdParent);
 						if(mapParaIdToComment.end() != pPairParent)
 						{
 							CCommentWriteTemp* pCommentWriteTempParent = pPairParent->second;
@@ -7414,7 +7414,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 			OOX::CCommentId* pCommentId = pCommentsIds->m_arrComments[i];
 			if(pCommentId->m_oParaId.IsInit() && pCommentId->m_oDurableId.IsInit())
 			{
-				std::map<int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentId->m_oParaId->GetValue());
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentId->m_oParaId->GetValue());
 				if(mapParaIdToComment.end() != pPair)
 				{
 					CCommentWriteTemp* pCommentWriteTemp = pPair->second;

@@ -111,7 +111,7 @@ namespace OOX
 
 			void PrepareDataValidations();
 			void PrepareConditionalFormatting();
-			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
+			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
 			void PrepareToWrite();
 
 			CPath	m_oReadPath;
@@ -151,7 +151,6 @@ namespace OOX
 
 //--------------------------------------------------------------------------------------------
 			CComments			*m_pComments;
-			CPersonList			*m_pPersonList;
 			CThreadedComments	*m_pThreadedComments;
 
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;

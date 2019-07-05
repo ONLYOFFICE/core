@@ -58,6 +58,17 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Table/Connections.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Table/QueryTable.h"
 
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CPerson;
+		class CPersonList;
+		class CThreadedComment;
+		class CThreadedCommentMention;
+	}
+}
+
 namespace BinXlsxRW 
 {
 	class BinaryTableWriter
@@ -175,6 +186,15 @@ namespace BinXlsxRW
 		void WriteDdeValue(const OOX::Spreadsheet::CDdeValue& ddeValue);
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
 	};
+	class BinaryPersonTableWriter
+	{
+		BinaryCommonWriter m_oBcw;
+	public:
+		BinaryPersonTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
+		void Write(OOX::Spreadsheet::CPersonList& oPersonList);
+		void WritePersonList(OOX::Spreadsheet::CPersonList& oPersonList);
+		void WritePerson(OOX::Spreadsheet::CPerson& oPerson);
+	};
 	class BinaryWorksheetTableWriter
 	{
 		BinaryCommonWriter						m_oBcw;
@@ -224,10 +244,12 @@ namespace BinXlsxRW
 		void WriteExt(const OOX::Spreadsheet::CExt& oExt);
         void WriteComments(boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments);
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas);
-		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText);
-		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText);
-		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, nullable<OOX::Spreadsheet::CSi>* pCommentText);
+		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
+		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
+		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData);
 		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies);
+		void WriteThreadedComment(OOX::Spreadsheet::CThreadedComment& oThreadedComment, bool bThreadedCommentCopy);
+		void WriteThreadedCommentMention(OOX::Spreadsheet::CThreadedCommentMention& oMention);
 		void WriteSheetPr(const OOX::Spreadsheet::CSheetPr& oSheetPr);
 		void WritemHeaderFooter(const OOX::Spreadsheet::CHeaderFooter& oHeaderFooter);
 		void WritemRowColBreaks(const OOX::Spreadsheet::CRowColBreaks& oRowColBreaks);		

@@ -48,6 +48,15 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
 
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CPersonList;
+		class CThreadedComment;
+	}
+}
+
 namespace BinXlsxRW 
 {
 	class ImageObject
@@ -232,8 +241,11 @@ namespace BinXlsxRW
 		int ReadCommentDatas(BYTE type, long length, void* poResult);
 		int ReadCommentData(BYTE type, long length, void* poResult);
 		int ReadCommentReplies(BYTE type, long length, void* poResult);
+		int ReadThreadedComment(BYTE type, long length, void* poResult);
+		int ReadThreadedCommentMention(BYTE type, long length, void* poResult);
 		void parseCommentData(SerializeCommon::CommentData* pCommentData, OOX::Spreadsheet::CSi& oSi);
 		void addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold);
+		static void addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment);
 	};
 	class BinaryWorksheetsTableReader : public Binary_CommonReader
 	{
@@ -324,6 +336,7 @@ namespace BinXlsxRW
 		int ReadDataValidationsContent(BYTE type, long length, void* poResult);
         int ReadDataValidation(BYTE type, long length, void* poResult);
 		
+		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
 		std::wstring GetControlVmlShape(void* pControl);
 	};
@@ -348,6 +361,15 @@ namespace BinXlsxRW
         std::wstring ReadMediaItemSaveFileGetNewPath(const std::wstring& sTempPath);
 		void ReadMediaItemSaveFileFILE(FILE* pFile);
         void ReadMediaItemSaveFilePath(const std::wstring& sTempPath);
+	};
+	class BinaryPersonReader : public Binary_CommonReader
+	{
+		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
+	public:
+		BinaryPersonReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook);
+		int Read();
+		int ReadPersonList(BYTE type, long length, void* poResult);
+		int ReadPerson(BYTE type, long length, void* poResult);
 	};
 	class BinaryFileReader
 	{

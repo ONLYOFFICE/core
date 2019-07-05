@@ -139,7 +139,7 @@ public:
 
 		while(pos < size)
 		{
-			if (pos + 5 > size)
+			if (pos + 5 >= size)
 			{
 				result += expr[pos++];
 				continue;

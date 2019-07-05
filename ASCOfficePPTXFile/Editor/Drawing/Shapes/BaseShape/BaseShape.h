@@ -70,7 +70,8 @@ namespace ODRAW
     class CBaseShape
     {
     public:
-        std::vector<long>					m_arAdjustments;
+		std::vector<long>					m_arAbsMaxAdjustments;
+		std::vector<long>					m_arAdjustments;
         std::vector<double>					m_arGuides;
         LONG								m_eJoin;
         bool								m_bConcentricFill;
@@ -139,6 +140,10 @@ namespace ODRAW
             m_strPath	= Shape->m_strPath;
             m_strRect	= Shape->m_strRect;
 
+			m_arAbsMaxAdjustments.clear();
+			for(size_t i = 0; i < Shape->m_arAbsMaxAdjustments.size(); i++)
+                m_arAbsMaxAdjustments.push_back(Shape->m_arAbsMaxAdjustments[i]);
+
             m_arAdjustments.clear();           
 			for(size_t i = 0; i < Shape->m_arAdjustments.size(); i++)
                 m_arAdjustments.push_back(Shape->m_arAdjustments[i]);
@@ -180,6 +185,10 @@ namespace ODRAW
             Shape->m_oPath		= m_oPath;
             Shape->m_strPath	= m_strPath;
             Shape->m_strRect	= m_strRect;
+
+            Shape->m_arAbsMaxAdjustments.clear();
+            for(size_t i = 0; i < m_arAbsMaxAdjustments.size(); i++)
+                Shape->m_arAbsMaxAdjustments.push_back(m_arAbsMaxAdjustments[i]);
 
             Shape->m_arAdjustments.clear();
             for(size_t i = 0; i < m_arAdjustments.size(); i++)

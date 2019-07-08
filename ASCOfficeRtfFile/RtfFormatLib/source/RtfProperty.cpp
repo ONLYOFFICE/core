@@ -584,7 +584,7 @@ std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		case bt_brdrs:			sResult += L" w:val=\"single\"";				break;
 		case bt_brdrth:			sResult += L" w:val=\"thick\"";					break;
-		case bt_brdrsh:			sResult += L" w:val=\"\"thin";					break;
+		case bt_brdrsh:			sResult += L" w:val=\"thin";					break;
 		case bt_brdrdb:			sResult += L" w:val=\"double\"";				break;
 		case bt_brdrdot:		sResult += L" w:val=\"dotted\"";				break;
 		case bt_brdrdash:		sResult += L" w:val=\"dashed\"";				break;
@@ -593,7 +593,7 @@ std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 		case bt_brdrdashd:		sResult += L" w:val=\"dotDash\"";				break;
 		case bt_brdrdashdd:		sResult += L" w:val=\"dotDotDash\"";			break;
 		case bt_brdrinset:		sResult += L" w:val=\"inset\"";					break;
-		case bt_brdrnone:		sResult += L" w:val=\"none\"";					break;
+		case bt_brdrnone:		sResult += L" w:val=\"nil\"";					break;
 		case bt_brdroutset:		sResult += L" w:val=\"outset\"";				break;
 		case bt_brdrtriple:		sResult += L" w:val=\"triple\"";				break;
 		case bt_brdrtnthsg:		sResult += L" w:val=\"thinThickSmallGap\"";		break;

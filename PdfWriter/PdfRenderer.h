@@ -441,14 +441,14 @@ private:
 							}
 							else if (lIndex + 1 < lSize)
 							{
-								int nPatternSize = vPattern.size();
+								size_t nPatternSize = vPattern.size();
 								vPattern.at(nPatternSize - 1) = vPattern.at(nPatternSize - 1) + pPattern[lIndex + 1];
 								lIndex++;
 							}
 						}
 						else
 						{
-							int nPatternSize = vPattern.size();
+							size_t nPatternSize = vPattern.size();
 							vPattern.at(nPatternSize - 2) = vPattern.at(nPatternSize - 2) + vPattern.at(nPatternSize - 1);
 							vPattern.pop_back();
 						}
@@ -459,8 +459,8 @@ private:
 					}
 				}
 
-				int nPatternSize = vPattern.size();
-				if (nPatternSize)
+				size_t nPatternSize = vPattern.size();
+				if (nPatternSize > 0)
 				{
 					m_pDashPattern = new double[nPatternSize];
 					if (m_pDashPattern)
@@ -879,8 +879,8 @@ private:
 					vResPoints.push_back(TColorAndPoint(lColor1, 1));
 				}
 
-				LONG lResCount = vResPoints.size();
-				if (!lResCount)
+				size_t lResCount = vResPoints.size();
+				if (lResCount == 0)
 					return;
 
 				m_pShadingColors      = new TColor[lResCount];
@@ -1416,7 +1416,7 @@ private:
 		}
 		void Clear()
 		{
-			for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
+			for (size_t nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
 			{
 				CPathCommandBase* pCommand = m_vCommands.at(nIndex);
 				delete pCommand;

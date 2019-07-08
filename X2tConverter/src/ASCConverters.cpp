@@ -3054,7 +3054,7 @@ namespace NExtractTools
 					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");break;
 					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTTo = _T("application/vnd.ms-word.template.macroEnabledTemplate.main+xml");break;
 					}
-					nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					nRes = replaceContentType(sFrom, sCTFrom, sCTTo);
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
@@ -3286,7 +3286,7 @@ namespace NExtractTools
 					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml");break;
 					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM: sCTTo = _T("application/vnd.ms-excel.template.macroEnabled.main+xml");break;
 					}
-					nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					nRes = replaceContentType(sFrom, sCTFrom, sCTTo);
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
@@ -3496,7 +3496,7 @@ namespace NExtractTools
 					case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM: sCTTo = _T("application/vnd.ms-powerpoint.template.macroEnabled.main+xml");break;
 					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM: sCTTo = _T("application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml");break;
 					}
-					nRes = replaceContentType(sFrom, sCTFrom, sCTTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					nRes = replaceContentType(sFrom, sCTFrom, sCTTo);
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{

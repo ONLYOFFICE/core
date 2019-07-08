@@ -98,9 +98,9 @@ namespace NExtractTools
 		}
 		return sExt;
 	}
-	bool replaceContentType(const std::wstring &sDir, const std::wstring &sCTFrom, const std::wstring &sCTTo)
+	_UINT32 replaceContentType(const std::wstring &sDir, const std::wstring &sCTFrom, const std::wstring &sCTTo)
 	{
-		bool res = false;
+        _UINT32 nRes = 0;
 		std::wstring sContentTypesPath = sDir + FILE_SEPARATOR_STR + _T("[Content_Types].xml");
 		if (NSFile::CFileBinary::Exists(sContentTypesPath))
 		{
@@ -108,10 +108,11 @@ namespace NExtractTools
 			if (NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
 			{
 				sData = string_replaceAll(sData, sCTFrom, sCTTo);
-				res = NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true);
+				if (false == NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
+					nRes = AVS_FILEUTILS_ERROR_CONVERT;
 			}
 		}
-		return res;
+		return nRes;
 	}
 	_UINT32 processEncryptionError(_UINT32 hRes, const std::wstring &sFrom, InputParams& params)
 	{
@@ -347,13 +348,13 @@ namespace NExtractTools
                std::wstring sData;
                if(NSFile::CFileBinary::ReadAllTextUtf8(sDocumentRelsPath, sData))
                {
-					int pos = sData.find(L"vbaProject.bin");
-					if (pos > 0)
+					size_t pos = sData.find(L"vbaProject.bin");
+					if (pos != std::wstring::npos)
 					{
-						int pos1 = sData.rfind(L"<", pos);
-						int pos2 = sData.find(L">", pos);
+						size_t pos1 = sData.rfind(L"<", pos);
+						size_t pos2 = sData.find(L">", pos);
 
-						if (pos1 > 0 && pos2 > 0)
+						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
 						{
 							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
 						}
@@ -426,13 +427,13 @@ namespace NExtractTools
                std::wstring sData;
                if(NSFile::CFileBinary::ReadAllTextUtf8(sDocumentRelsPath, sData))
                {
-					int pos = sData.find(L"vbaProject.bin");
-					if (pos > 0)
+					size_t pos = sData.find(L"vbaProject.bin");
+					if (pos != std::wstring::npos)
 					{
-						int pos1 = sData.rfind(L"<", pos);
-						int pos2 = sData.find(L">", pos);
+						size_t pos1 = sData.rfind(L"<", pos);
+						size_t pos2 = sData.find(L">", pos);
 
-						if (pos1 > 0 && pos2 > 0)
+						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
 						{
 							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
 						}
@@ -715,13 +716,13 @@ namespace NExtractTools
                std::wstring sData;
                if(NSFile::CFileBinary::ReadAllTextUtf8(sWorkbookRelsPath, sData))
                {
-					int pos = sData.find(L"vbaProject.bin");
-					if (pos > 0)
+					size_t pos = sData.find(L"vbaProject.bin");
+					if (pos != std::wstring::npos)
 					{
-						int pos1 = sData.rfind(L"<", pos);
-						int pos2 = sData.find(L">", pos);
+						size_t pos1 = sData.rfind(L"<", pos);
+						size_t pos2 = sData.find(L">", pos);
 
-						if (pos1 > 0 && pos2 > 0)
+						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
 						{
 							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
 						}
@@ -785,13 +786,13 @@ namespace NExtractTools
                std::wstring sData;
                if(NSFile::CFileBinary::ReadAllTextUtf8(sWorkbookRelsPath, sData))
                {
-					int pos = sData.find(L"vbaProject.bin");
-					if (pos > 0)
+					size_t pos = sData.find(L"vbaProject.bin");
+					if (pos != std::wstring::npos)
 					{
-						int pos1 = sData.rfind(L"<", pos);
-						int pos2 = sData.find(L">", pos);
+						size_t pos1 = (int)sData.rfind(L"<", pos);
+						size_t pos2 = (int)sData.find(L">", pos);
 
-						if (pos1 > 0 && pos2 > 0)
+						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
 						{
 							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
 						}
@@ -1447,13 +1448,13 @@ namespace NExtractTools
                std::wstring sData;
                if(NSFile::CFileBinary::ReadAllTextUtf8(sPresentationRelsPath, sData))
                {
-					int pos = sData.find(L"vbaProject.bin");
-					if (pos > 0)
+					size_t pos = sData.find(L"vbaProject.bin");
+					if (pos != std::wstring::npos)
 					{
-						int pos1 = sData.rfind(L"<", pos);
-						int pos2 = sData.find(L">", pos);
+						size_t pos1 = sData.rfind(L"<", pos);
+						size_t pos2 = sData.find(L">", pos);
 
-						if (pos1 > 0 && pos2 > 0)
+						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
 						{
 							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
 						}
@@ -1518,13 +1519,13 @@ namespace NExtractTools
                std::wstring sData;
                if(NSFile::CFileBinary::ReadAllTextUtf8(sPresentationRelsPath, sData))
                {
-					int pos = sData.find(L"vbaProject.bin");
-					if (pos > 0)
+					size_t pos = sData.find(L"vbaProject.bin");
+					if (pos != std::wstring::npos)
 					{
-						int pos1 = sData.rfind(L"<", pos);
-						int pos2 = sData.find(L">", pos);
+						size_t pos1 = sData.rfind(L"<", pos);
+						size_t pos2 = sData.find(L">", pos);
 
-						if (pos1 > 0 && pos2 > 0)
+						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
 						{
 							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
 						}
@@ -1589,13 +1590,13 @@ namespace NExtractTools
                std::wstring sData;
                if(NSFile::CFileBinary::ReadAllTextUtf8(sPresentationRelsPath, sData))
                {
-					int pos = sData.find(L"vbaProject.bin");
-					if (pos > 0)
+					size_t pos = sData.find(L"vbaProject.bin");
+					if (pos != std::wstring::npos)
 					{
-						int pos1 = sData.rfind(L"<", pos);
-						int pos2 = sData.find(L">", pos);
+						size_t pos1 = sData.rfind(L"<", pos);
+						size_t pos2 = sData.find(L">", pos);
 
-						if (pos1 > 0 && pos2 > 0)
+						if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
 						{
 							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
 						}

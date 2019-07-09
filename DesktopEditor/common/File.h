@@ -100,10 +100,16 @@ namespace NSFile
 
         static std::wstring GetUnicodeFromCharPtr(const char* pData, LONG lCount, INT bIsUtf8 = FALSE);
         static std::wstring GetUnicodeFromCharPtr(const std::string& sParam, INT bIsUtf8 = FALSE);
+
         static std::wstring GetUnicodeStringFromUTF8_4bytes( BYTE* pBuffer, LONG lCount );
         static std::wstring GetUnicodeStringFromUTF8_2bytes( BYTE* pBuffer, LONG lCount );
-
         static std::wstring GetUnicodeStringFromUTF8( BYTE* pBuffer, LONG lCount );
+
+        static void GetUnicodeStringFromUTF8WithHHHH_4bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
+        static void GetUnicodeStringFromUTF8WithHHHH_2bytes( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
+        static void GetUnicodeStringFromUTF8WithHHHH( const BYTE* pBuffer, LONG lCount, wchar_t*& pUnicodes, LONG& lOutputCount );
+
+        static inline LONG GetUnicodeStringFromUTF8BufferSize( LONG lCount );
 
         static void GetUtf8StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM = false);
         static void GetUtf8StringFromUnicode_2bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM = false);
@@ -118,6 +124,9 @@ namespace NSFile
 	
         static std::wstring GetWStringFromUTF16(const CStringUtf16& data);
         static std::wstring GetWStringFromUTF16(const unsigned short* pUtf16, LONG lCount);
+
+        static long CheckHHHHChar(const BYTE* pBuffer);
+        static long CheckHHHHChar(const wchar_t* pBuffer);
 	};
 
     class KERNEL_DECL CFileBinary

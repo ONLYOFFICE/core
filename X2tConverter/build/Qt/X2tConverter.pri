@@ -101,7 +101,11 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
 #doctrenderer
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
+build_xp {
+    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH/xp -ldoctrenderer
+} else {
+    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
+}
 #HtmlRenderer
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfReader

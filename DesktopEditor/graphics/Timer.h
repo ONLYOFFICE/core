@@ -64,7 +64,7 @@ namespace NSTimers
     
     inline static unsigned long getUptimeInMilliseconds()
     {
-#ifdef _IOS
+#if defined(_IOS) || defined(_MAC)
         const int64_t kOneMillion = 1000 * 1000;
         static mach_timebase_info_data_t s_timebase_info;
         

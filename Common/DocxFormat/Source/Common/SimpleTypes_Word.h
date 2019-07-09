@@ -3427,7 +3427,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// LongHexNumber 17.18.50 (Part 1)
 	//--------------------------------------------------------------------------------		
-	template<int nDefValue = 0>
+	template<unsigned int nDefValue = 0>
 	class CLongHexNumber : public CSimpleType<int, nDefValue>
 	{
 	public:
@@ -3448,7 +3448,7 @@ namespace SimpleTypes
             return XmlUtils::IntToString(this->m_eValue, L"%08X");
 		}
 
-		SimpleType_FromString     (int)
+		SimpleType_FromString     (unsigned int)
 		SimpleType_Operator_Equal (CLongHexNumber)
 	private:
 

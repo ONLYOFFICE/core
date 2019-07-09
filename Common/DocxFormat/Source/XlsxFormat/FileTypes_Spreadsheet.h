@@ -75,7 +75,7 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2017/10/relationships/threadedComment", 
 												L"threadedComments/threadedComment", true, true);
 
-			const FileType Persons			(L"../persons", L"person.xml", 
+			const FileType Persons			(L"persons", L"person.xml",
 												L"application/vnd.ms-excel.person+xml",
 												L"http://schemas.microsoft.com/office/2017/10/relationships/person");
 

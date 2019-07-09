@@ -830,6 +830,8 @@ namespace OOX
 		et_w15_person, // <w15:person>
 		et_w15_commentEx, // <w15:commentEx>
 
+		et_w16_commentId, // <w16cid:commentId>
+
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>
 		et_w_GroupShape,		//<wpg:wgp>
@@ -1169,6 +1171,8 @@ namespace OOX
 		et_x_Comment,
 		et_x_ThreadedComments,
 		et_x_ThreadedComment,
+		et_x_ThreadedCommentMentions,
+		et_x_ThreadedCommentMention,
 		et_x_PersonList,
 		et_x_Person,
 		et_x_ConditionalFormatting,

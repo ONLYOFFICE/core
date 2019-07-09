@@ -7330,17 +7330,16 @@ void BinaryDocumentTableWriter::WriteDropDownList(const OOX::Logic::CSdtDropDown
 BinaryCommentsTableWriter::BinaryCommentsTableWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter)
 {
 };
-void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, std::map<int, bool>& mapIgnoreComments)
+void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments)
 {
 	int nStart = m_oBcw.WriteItemWithLengthStart();
-	WriteCommentsContent(oComments, pCommentsExt, pPeople, mapIgnoreComments);
+	WriteCommentsContent(oComments, pCommentsExt, pPeople, pCommentsIds, mapIgnoreComments);
 	m_oBcw.WriteItemWithLengthEnd(nStart);
 }
-void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, std::map<int, bool>& mapIgnoreComments)
+void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments)
 {
 	std::map<std::wstring, std::wstring> mapAuthorToUserId;
-	std::map<int, CCommentWriteTemp*> mapParaIdToComment;
-	std::map<int, bool> mapCommentsIgnore;
+	std::map<unsigned int, CCommentWriteTemp*> mapParaIdToComment;
 	std::vector<CCommentWriteTemp*> aCommentsToWrite;
 	//map author -> userId
 	if(NULL != pPeople)
@@ -7385,7 +7384,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 			OOX::CCommentExt* pCommentExt = pCommentsExt->m_arrComments[i];
 			if(pCommentExt->m_oParaId.IsInit())
 			{
-				std::map<int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentExt->m_oParaId->GetValue());
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentExt->m_oParaId->GetValue());
 				if(mapParaIdToComment.end() != pPair)
 				{
 					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
@@ -7394,8 +7393,8 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 						pCommentWriteTemp->bDone = pCommentExt->m_oDone->ToBool();
 					if(pCommentExt->m_oParaIdParent.IsInit())
 					{
-						int nParaIdParent = pCommentExt->m_oParaIdParent->GetValue();
-						std::map<int, CCommentWriteTemp*>::const_iterator pPairParent = mapParaIdToComment.find(nParaIdParent);
+						unsigned int nParaIdParent = pCommentExt->m_oParaIdParent->GetValue();
+						std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPairParent = mapParaIdToComment.find(nParaIdParent);
 						if(mapParaIdToComment.end() != pPairParent)
 						{
 							CCommentWriteTemp* pCommentWriteTempParent = pPairParent->second;
@@ -7408,7 +7407,22 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 			}
 		}
 	}
-	int nCurPos = 0;
+	if(NULL != pCommentsIds)
+	{
+		for(size_t i = 0, length = pCommentsIds->m_arrComments.size(); i < length; i++)
+		{
+			OOX::CCommentId* pCommentId = pCommentsIds->m_arrComments[i];
+			if(pCommentId->m_oParaId.IsInit() && pCommentId->m_oDurableId.IsInit())
+			{
+				std::map<unsigned int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentId->m_oParaId->GetValue());
+				if(mapParaIdToComment.end() != pPair)
+				{
+					CCommentWriteTemp* pCommentWriteTemp = pPair->second;
+					pCommentWriteTemp->nDurableId = pCommentId->m_oDurableId;
+				}
+			}
+		}
+	}
 
 	for(size_t i = 0, length = aCommentsToWrite.size(); i < length; ++i)
 	{
@@ -7468,6 +7482,12 @@ void BinaryCommentsTableWriter::WriteComment(CCommentWriteTemp& oComment)
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Solved);
 			m_oBcw.m_oStream.WriteBOOL(oComment.bDone.get2());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if(oComment.nDurableId.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::DurableId);
+			m_oBcw.m_oStream.WriteULONG(oComment.nDurableId->GetValue());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(oComment.aReplies.size() > 0)
@@ -8123,14 +8143,14 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
-		oBinaryCommentsTableWriter.Write(*oDocx.m_pComments, oDocx.m_pCommentsExt, oDocx.m_pPeople, m_oParamsWriter.m_mapIgnoreComments);
+		oBinaryCommentsTableWriter.Write(*oDocx.m_pComments, oDocx.m_pCommentsExt, oDocx.m_pPeople, oDocx.m_pCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
 		this->WriteTableEnd(nCurPos);
 	}
 	if(NULL != oDocx.m_pDocumentComments)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::DocumentComments);
-		oBinaryCommentsTableWriter.Write(*oDocx.m_pDocumentComments, oDocx.m_pDocumentCommentsExt, oDocx.m_pDocumentPeople, m_oParamsWriter.m_mapIgnoreComments);
+		oBinaryCommentsTableWriter.Write(*oDocx.m_pDocumentComments, oDocx.m_pDocumentCommentsExt, oDocx.m_pDocumentPeople, oDocx.m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
 		this->WriteTableEnd(nCurPos);
 	}
 

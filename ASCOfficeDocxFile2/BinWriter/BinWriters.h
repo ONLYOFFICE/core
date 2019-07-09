@@ -481,13 +481,14 @@ namespace BinDocxRW
 			OOX::CComment* pComment;
 			nullable<bool> bDone;
 			nullable<std::wstring> sUserId;
+			nullable<SimpleTypes::CLongHexNumber<> > nDurableId;
 			std::vector<CCommentWriteTemp*> aReplies;
 		};
 		BinaryCommonWriter m_oBcw;
 	public:
 		BinaryCommentsTableWriter(ParamsWriter& oParamsWriter);
-		void Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, std::map<int, bool>& mapIgnoreComments);
-		void WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, std::map<int, bool>& mapIgnoreComments);
+		void Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments);
+		void WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments);
 		void WriteComment(CCommentWriteTemp& oComment);
 		void WriteReplies(std::vector<CCommentWriteTemp*>& aCommentWriteTemp);
 	};

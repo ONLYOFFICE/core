@@ -296,10 +296,14 @@ namespace XmlUtils
 //
 //		CoTaskMemFree(guidString);
 //#else
-		srand((unsigned int) time(NULL));
+		static unsigned calls = 0;   /* ensure different random header each time */
+		if (++calls == 1)
+		{
+			srand((unsigned int) time(NULL));
+		}
 
         std::wstringstream sstream;
-		sstream << boost::wformat(L"%X%X-%X-%X-%X-%X%X%X") % std::rand() % std::rand() % std::rand() % ((std::rand() & 0x0fff) | 0x4000) % ((rand() % 0x3fff) + 0x8000) %  rand() % rand() % rand();
+		sstream << boost::wformat(L"%04X%04X-%04X-%04X-%04X-%04X%04X%04X") % std::rand() % std::rand() % std::rand() % ((std::rand() & 0x0fff) | 0x4000) % ((rand() % 0x3fff) + 0x8000) %  rand() % rand() % rand();
         result = sstream.str();
 //#endif	
 		return result;

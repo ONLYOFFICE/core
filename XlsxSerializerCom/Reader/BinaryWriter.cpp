@@ -50,6 +50,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
 
 namespace BinXlsxRW 
 {
@@ -2908,6 +2909,54 @@ void BinaryWorkbookTableWriter::WriteDefinedName(const OOX::Spreadsheet::CDefine
 	}
 }
 
+BinaryPersonTableWriter::BinaryPersonTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream):m_oBcw(oCBufferedStream)
+{
+}
+void BinaryPersonTableWriter::Write(OOX::Spreadsheet::CPersonList& oPersonList)
+{
+	int nStart = m_oBcw.WriteItemWithLengthStart();
+	WritePersonList(oPersonList);
+	m_oBcw.WriteItemWithLengthEnd(nStart);
+}
+void BinaryPersonTableWriter::WritePersonList(OOX::Spreadsheet::CPersonList& oPersonList)
+{
+	int nCurPos = 0;
+	for(size_t i = 0; i < oPersonList.m_arrItems.size(); ++i)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_Person::person);
+		WritePerson(*oPersonList.m_arrItems[i]);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryPersonTableWriter::WritePerson(OOX::Spreadsheet::CPerson& oPerson)
+{
+	int nCurPos = 0;
+	if(oPerson.id.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_Person::id);
+		m_oBcw.m_oStream.WriteStringW3(oPerson.id.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oPerson.providerId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_Person::providerId);
+		m_oBcw.m_oStream.WriteStringW3(oPerson.providerId.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oPerson.userId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_Person::userId);
+		m_oBcw.m_oStream.WriteStringW3(oPerson.userId.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oPerson.displayName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_Person::displayName);
+		m_oBcw.m_oStream.WriteStringW3(oPerson.displayName.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+
 BinaryWorksheetTableWriter::BinaryWorksheetTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme, DocWrapper::FontProcessor& oFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):
   m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pIndexedColors(pIndexedColors),m_pTheme(pTheme),m_oFontProcessor(oFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 {
@@ -5048,7 +5097,7 @@ void BinaryWorksheetTableWriter::WriteComments(boost::unordered_map<std::wstring
 			//записываем тот обьект, который был в бинарнике, подменяем только текст, который мог быть отредактирован в Excel
 			
 			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Comment);
-				WriteComment(oComment, aCommentDatas, oComment.m_oText);
+				WriteComment(oComment, aCommentDatas);
 			m_oBcw.WriteItemEnd(nCurPos);
 
 			for(size_t i = 0, length = aCommentDatas.size(); i < length; ++i)
@@ -5099,7 +5148,7 @@ void BinaryWorksheetTableWriter::getSavedComment(OOX::Spreadsheet::CCommentItem&
 		}
 	}
 }
-void BinaryWorksheetTableWriter::WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
+void BinaryWorksheetTableWriter::WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas)
 {
 	int nCurPos = 0;
 	int nRow = 0;
@@ -5121,7 +5170,7 @@ void BinaryWorksheetTableWriter::WriteComment(OOX::Spreadsheet::CCommentItem& oC
 	m_oBcw.m_oStream.WriteBYTE(c_oSer_Comments::CommentDatas);
 	m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 	nCurPos = m_oBcw.WriteItemWithLengthStart();
-	WriteCommentData(oComment, aCommentDatas, oCommentText);
+	WriteCommentData(oComment, aCommentDatas);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
 	if(oComment.m_nLeft.IsInit())
@@ -5208,8 +5257,16 @@ void BinaryWorksheetTableWriter::WriteComment(OOX::Spreadsheet::CCommentItem& oC
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(oComment.m_bSize.get());
 	}
+	if(NULL != oComment.m_pThreadedComment)
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_Comments::ThreadedComment);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		nCurPos = m_oBcw.WriteItemWithLengthStart();
+		WriteThreadedComment(*oComment.m_pThreadedComment, oComment.m_bThreadedCommentCopy);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
-void BinaryWorksheetTableWriter::WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
+void BinaryWorksheetTableWriter::WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas)
 {
 	int nCurPos = 0;
 	if(aCommentDatas.size() > 0)
@@ -5218,20 +5275,20 @@ void BinaryWorksheetTableWriter::WriteCommentData(OOX::Spreadsheet::CCommentItem
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
 			if(0 == i)
-				WriteCommentDataContent(&oComment, aCommentDatas[i], &oCommentText);
+				WriteCommentDataContent(&oComment, aCommentDatas[i]);
 			else
-				WriteCommentDataContent(NULL, aCommentDatas[i], NULL);
+				WriteCommentDataContent(NULL, aCommentDatas[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
 	else
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
-		WriteCommentDataContent(&oComment, NULL, &oCommentText);
+		WriteCommentDataContent(&oComment, NULL);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
-void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, nullable<OOX::Spreadsheet::CSi>* pCommentText)
+void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData)
 {
 	int nCurPos = 0;
 	if(NULL != pCommentData && !pCommentData->sText.empty())
@@ -5239,10 +5296,10 @@ void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CComm
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
 		m_oBcw.m_oStream.WriteStringW(pCommentData->sText);
 	}
-	else if(NULL != pCommentText && pCommentText->IsInit())
+	else if(NULL != pComment && pComment->m_oText.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
-		m_oBcw.m_oStream.WriteStringW((*pCommentText)->ToString());
+		m_oBcw.m_oStream.WriteStringW(pComment->m_oText->ToString());
 	}
 	if(NULL != pCommentData)
 	{
@@ -5260,11 +5317,6 @@ void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CComm
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserId);
 			m_oBcw.m_oStream.WriteStringW(pCommentData->sUserId);
-		}
-		if (!pCommentData->sUserName.empty())
-		{
-			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserName);
-			m_oBcw.m_oStream.WriteStringW(pCommentData->sUserName);
 		}
 		if (!pCommentData->sUserName.empty())
 		{
@@ -5311,8 +5363,92 @@ void BinaryWorksheetTableWriter::WriteCommentReplies(std::vector<SerializeCommon
 	{
 		SerializeCommon::CommentData* pReply = aReplies[i];
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentData::Reply);
-		WriteCommentDataContent(NULL, pReply, NULL);
+		WriteCommentDataContent(NULL, pReply);
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryWorksheetTableWriter::WriteThreadedComment(OOX::Spreadsheet::CThreadedComment& oThreadedComment, bool bThreadedCommentCopy)
+{
+	int nCurPos = 0;
+
+	if(oThreadedComment.dT.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::dT);
+		m_oBcw.m_oStream.WriteStringW3(oThreadedComment.dT->ToString());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oThreadedComment.personId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::personId);
+		m_oBcw.m_oStream.WriteStringW3(oThreadedComment.personId->ToString());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(bThreadedCommentCopy)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::id);
+		m_oBcw.m_oStream.WriteStringW3(L"{" + XmlUtils::GenerateGuid() + L"}");
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	else if(oThreadedComment.id.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::id);
+		m_oBcw.m_oStream.WriteStringW3(oThreadedComment.id->ToString());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oThreadedComment.done.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::done);
+		m_oBcw.m_oStream.WriteBOOL(oThreadedComment.done.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oThreadedComment.m_oText.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::text);
+		m_oBcw.m_oStream.WriteStringW3(oThreadedComment.m_oText->ToString());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oThreadedComment.m_oMentions.IsInit())
+	{
+		for(size_t i = 0; i < oThreadedComment.m_oMentions->m_arrItems.size(); ++i)
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::mention);
+			WriteThreadedCommentMention(*oThreadedComment.m_oMentions->m_arrItems[i]);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+	}
+	for(size_t i = 0; i < oThreadedComment.m_arrReplies.size(); ++i)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::reply);
+		WriteThreadedComment(*oThreadedComment.m_arrReplies[i], bThreadedCommentCopy);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorksheetTableWriter::WriteThreadedCommentMention(OOX::Spreadsheet::CThreadedCommentMention& oMention)
+{
+	int nCurPos = 0;
+	if(oMention.mentionpersonId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::mentionpersonId);
+		m_oBcw.m_oStream.WriteStringW3(oMention.mentionpersonId->ToString());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oMention.mentionId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::mentionId);
+		m_oBcw.m_oStream.WriteStringW3(oMention.mentionId->ToString());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oMention.startIndex.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::startIndex);
+		m_oBcw.m_oStream.WriteULONG(oMention.startIndex->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if(oMention.length.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::length);
+		m_oBcw.m_oStream.WriteULONG(oMention.length->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
 void BinaryWorksheetTableWriter::WriteSheetPr(const OOX::Spreadsheet::CSheetPr& oSheetPr)
@@ -6483,6 +6619,14 @@ void BinaryFileWriter::intoBindoc(OOX::Spreadsheet::CXlsx &oXlsx, NSBinPptxRW::C
 		nCurPos = WriteTableStart(c_oSerTableTypes::SharedStrings);
 		BinarySharedStringTableWriter oBinarySharedStringTableWriter(oBufferedStream, pEmbeddedFontsManager);
 		oBinarySharedStringTableWriter.Write(*oXlsx.m_pSharedStrings, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
+		WriteTableEnd(nCurPos);
+	}
+
+	if(oXlsx.m_pWorkbook && oXlsx.m_pWorkbook->m_pPersonList)
+	{
+		nCurPos = WriteTableStart(c_oSerTableTypes::PersonList);
+		BinaryPersonTableWriter oBinaryPersonTableWriter(oBufferedStream);
+		oBinaryPersonTableWriter.Write(*oXlsx.m_pWorkbook->m_pPersonList);
 		WriteTableEnd(nCurPos);
 	}
 //Styles

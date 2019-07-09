@@ -195,6 +195,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Chart/ChartSerialize.h \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.h \
     ../Source/XlsxFormat/Comments/Comments.h \
+	../Source/XlsxFormat/Comments/ThreadedComments.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \
     ../Source/XlsxFormat/Drawing/FromTo.h \

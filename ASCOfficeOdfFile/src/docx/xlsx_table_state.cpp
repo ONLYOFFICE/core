@@ -485,6 +485,10 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 						CP_XML_ATTR(L"rightToLeft", 1); 
 
 					std::wstring s_col, s_row;
+
+					bool bXSplit = false, bYSplit = false;
+					int nXSplit = 0, nYSplit = 0;
+
 					for (int i = 0; i < odfContext.Settings().get_table_view_count(0, tableName_); i++)
 					{
 						std::pair<std::wstring, std::wstring> value = odfContext.Settings().get_table_view(0, tableName_, i);
@@ -494,9 +498,14 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 							CP_XML_ATTR(L"zoomScale",		value.second);
 							CP_XML_ATTR(L"zoomScaleNormal", value.second);
 						}
-						if (value.first == L"ShowGrid")			CP_XML_ATTR(L"showGridLines",	value.second);
-						if (value.first == L"CursorPositionX")	s_col = value.second;
-						if (value.first == L"CursorPositionY")	s_row = value.second;
+							 if (value.first == L"ShowGrid")			CP_XML_ATTR(L"showGridLines",	value.second);
+						else if (value.first == L"CursorPositionX")		s_col = value.second;
+						else if (value.first == L"CursorPositionY")		s_row = value.second;
+						
+						else if (value.first == L"HorizontalSplitMode")		bXSplit = (value.second == L"2");
+						else if (value.first == L"VerticalSplitMode")		bYSplit = (value.second == L"2");
+						else if (value.first == L"HorizontalSplitPosition")	nXSplit =  boost::lexical_cast<int>(value.second);
+						else if (value.first == L"VerticalSplitPosition")	nYSplit =  boost::lexical_cast<int>(value.second);
 					}
 
 					int col = -1, row = -1;
@@ -507,16 +516,26 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 					}
 					catch(...){}
 
+					if (bXSplit || bYSplit)
+					{
+						CP_XML_NODE(L"pane")
+						{	
+							CP_XML_ATTR(L"xSplit", bXSplit ? nXSplit : 0);			
+							CP_XML_ATTR(L"ySplit", bYSplit ? nYSplit : 0);			
+							CP_XML_ATTR(L"topLeftCell", getCellAddress(nXSplit, nYSplit));
+							CP_XML_ATTR(L"activePane", L"bottomLeft");
+							CP_XML_ATTR(L"state", L"frozen");			
+						}	
+					}
 					if (col >= 0 && row >= 0)
 					{
 						CP_XML_NODE(L"selection")
 						{	
 							CP_XML_ATTR(L"activeCell",		getCellAddress(col, row));			
 							CP_XML_ATTR(L"activeCellId",	0);			
-							CP_XML_ATTR(L"pane",			L"topLeft");			
+							CP_XML_ATTR(L"pane",			((bXSplit || bYSplit) ? L"bottomLeft" : L"topLeft"));			
 							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
-						}
-						
+						}						
 					}
 				}
 			}

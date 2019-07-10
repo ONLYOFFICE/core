@@ -187,7 +187,7 @@ namespace BinXlsxRW{
 		{
 			OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 			pText->m_sText = aSharedStrings[i];
-			if(std::wstring::npos == pText->m_sText.find(_T(" ")))
+			if(std::wstring::npos != pText->m_sText.find(_T(" ")))
 			{
 				pText->m_oSpace.Init();
 				pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);

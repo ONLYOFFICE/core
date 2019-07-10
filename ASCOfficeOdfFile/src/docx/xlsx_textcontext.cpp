@@ -423,7 +423,10 @@ std::wstring xlsx_text_context::Impl::dump_run()
 				
 				CP_XML_NODE(prefix_draw + L"t")
 				{
-					if (!in_draw)CP_XML_ATTR(L"xml:space", L"preserve");
+					if (false == in_draw && std::wstring::npos != content.find(L" "))
+					{
+						CP_XML_ATTR(L"xml:space", L"preserve");
+					}
 					
 					CP_XML_STREAM() << content;
                 }

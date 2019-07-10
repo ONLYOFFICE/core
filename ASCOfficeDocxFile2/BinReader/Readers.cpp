@@ -3374,10 +3374,19 @@ int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void*
         std::wstring UserName(m_oBufferedStream.GetString3(length));
 		pComment->UserName = UserName;
 	}
+	else if ( c_oSer_CommentsType::Initials == type )
+	{
+		pComment->Initials = m_oBufferedStream.GetString3(length);
+	}
 	else if ( c_oSer_CommentsType::UserId == type )
 	{
         std::wstring UserId(m_oBufferedStream.GetString3(length));
 		pComment->UserId = UserId;
+	}
+	else if ( c_oSer_CommentsType::ProviderId == type )
+	{
+		std::wstring ProviderId(m_oBufferedStream.GetString3(length));
+		pComment->ProviderId = ProviderId;
 	}
 	else if ( c_oSer_CommentsType::Date == type )
 	{

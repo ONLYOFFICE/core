@@ -1902,7 +1902,9 @@ public:
 	int IdOpen;
 	int IdFormat;
     std::wstring UserName;
+	std::wstring Initials;
     std::wstring UserId;
+	std::wstring ProviderId;
     std::wstring Date;
 	std::wstring OOData;
 	bool Solved;
@@ -1995,22 +1997,12 @@ public:
 			pComment->IdFormat = pComment->m_oFormatIdCounter.getNextId();
 		}
         sRes += L"<w:comment w:id=\"" + std::to_wstring(pComment->IdFormat) + L"\"";
-        std::wstring sInitials;
         if(false == pComment->UserName.empty())
 		{
             std::wstring sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
             sRes += L" w:author=\"";
             sRes += (sUserName);
-            sRes += L"\"";
-    //делаем initials
-            std::vector<std::wstring> arSplit;
-            boost::algorithm::split(arSplit, pComment->UserName, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-
-            for (size_t i = 0; i < arSplit.size(); i++)
-            {
-                sInitials += arSplit[i][0];
-            }
-
+			sRes += L"\"";
 		}
         if(false == pComment->Date.empty())
 		{
@@ -2026,11 +2018,10 @@ public:
 			sRes += sData;
 			sRes += L"\"";
 		}
-        if(false == sInitials.empty())
+		if(false == pComment->Initials.empty())
 		{
-			sInitials = XmlUtils::EncodeXmlString(sInitials);
             sRes += L" w:initials=\"";
-            sRes += sInitials;
+			sRes += XmlUtils::EncodeXmlString(pComment->Initials);
             sRes += L"\"";
 		}
         sRes += L">";
@@ -2083,15 +2074,20 @@ w15:paraIdParent=\"" + pComment->m_sParaIdParent + L"\" w15:done=\"" + sDone + L
     static std::wstring writePeople(CComment* pComment)
 	{
         std::wstring sRes;
-        if(false == pComment->UserName.empty() && false == pComment->UserId.empty())
+		if(false == pComment->UserName.empty())
 		{
-            std::wstring sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
-            std::wstring sUserId = XmlUtils::EncodeXmlString(pComment->UserId);
             sRes += L"<w15:person w15:author=\"";
-            sRes += sUserName;
-            sRes += L"\"><w15:presenceInfo w15:providerId=\"Teamlab\" w15:userId=\"";
-            sRes += sUserId;
-            sRes += L"\"/></w15:person>";
+			sRes += XmlUtils::EncodeXmlString(pComment->UserName);
+			sRes += L"\">";
+			if(!pComment->ProviderId.empty() && !pComment->UserId.empty())
+			{
+				sRes += L"<w15:presenceInfo w15:providerId=\"";
+				sRes += XmlUtils::EncodeXmlString(pComment->ProviderId);
+				sRes += L"\" w15:userId=\"";
+				sRes += XmlUtils::EncodeXmlString(pComment->UserId);
+				sRes += L"\"/>";
+			}
+			sRes += L"</w15:person>";
 		}
 		return sRes;
 	}

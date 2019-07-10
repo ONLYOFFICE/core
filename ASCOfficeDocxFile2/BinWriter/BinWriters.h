@@ -481,6 +481,7 @@ namespace BinDocxRW
 			OOX::CComment* pComment;
 			nullable<bool> bDone;
 			nullable<std::wstring> sUserId;
+			nullable<std::wstring> sProviderId;
 			nullable<SimpleTypes::CLongHexNumber<> > nDurableId;
 			std::vector<CCommentWriteTemp*> aReplies;
 		};

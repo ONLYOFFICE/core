@@ -7338,7 +7338,7 @@ void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsE
 }
 void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, OOX::CCommentsIds* pCommentsIds, std::map<int, bool>& mapIgnoreComments)
 {
-	std::map<std::wstring, std::wstring> mapAuthorToUserId;
+	std::map<std::wstring, OOX::CPerson*> mapAuthorToUserId;
 	std::map<unsigned int, CCommentWriteTemp*> mapParaIdToComment;
 	std::vector<CCommentWriteTemp*> aCommentsToWrite;
 	//map author -> userId
@@ -7347,8 +7347,8 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 		for(size_t i = 0, length = pPeople->m_arrPeoples.size(); i < length; i++)
 		{
 			OOX::CPerson* pPerson = pPeople->m_arrPeoples[i];
-			if(NULL != pPerson && pPerson->m_oAuthor.IsInit() && pPerson->m_oPresenceInfo.IsInit() && pPerson->m_oPresenceInfo->m_oProviderId.IsInit() && _T("Teamlab") == pPerson->m_oPresenceInfo->m_oProviderId.get2() && pPerson->m_oPresenceInfo->m_oUserId.IsInit())
-				mapAuthorToUserId[pPerson->m_oAuthor.get2()] = pPerson->m_oPresenceInfo->m_oUserId.get2();
+			if(NULL != pPerson && pPerson->m_oAuthor.IsInit())
+				mapAuthorToUserId[pPerson->m_oAuthor.get2()] = pPerson;
 		}
 	}
 	//map paraId -> CCommentWriteTemp
@@ -7359,9 +7359,22 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 		pNewCommentWriteTemp->pComment = pComment;
 		if(pComment->m_oAuthor.IsInit())
 		{
-			std::map<std::wstring, std::wstring>::const_iterator pPair = mapAuthorToUserId.find(pComment->m_oAuthor.get2());
+			std::map<std::wstring, OOX::CPerson*>::const_iterator pPair = mapAuthorToUserId.find(pComment->m_oAuthor.get2());
 			if(mapAuthorToUserId.end() != pPair)
-				pNewCommentWriteTemp->sUserId = pPair->second;
+			{
+				OOX::CPerson* pPerson = pPair->second;
+				if(pPerson->m_oPresenceInfo.IsInit())
+				{
+					if(pPerson->m_oPresenceInfo->m_oUserId.IsInit())
+					{
+						pNewCommentWriteTemp->sUserId = pPerson->m_oPresenceInfo->m_oUserId.get();
+					}
+					if(pPerson->m_oPresenceInfo->m_oProviderId.IsInit())
+					{
+						pNewCommentWriteTemp->sProviderId = pPerson->m_oPresenceInfo->m_oProviderId.get();
+					}
+				}
+			}
 		}
 		for(std::vector<OOX::WritingElement*>::iterator jt = pComment->m_arrItems.begin(); jt != pComment->m_arrItems.end(); jt++)
 		{
@@ -7478,18 +7491,30 @@ void BinaryCommentsTableWriter::WriteComment(CCommentWriteTemp& oComment)
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::UserId);
 			m_oBcw.m_oStream.WriteStringW(oComment.sUserId.get2());
 		}
+		if(oComment.sProviderId.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::ProviderId);
+			m_oBcw.m_oStream.WriteStringW(oComment.sProviderId.get2());
+		}
 		if(oComment.bDone.IsInit())
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Solved);
 			m_oBcw.m_oStream.WriteBOOL(oComment.bDone.get2());
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
+		_UINT32 nDurableId;
 		if(oComment.nDurableId.IsInit())
 		{
-			nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::DurableId);
-			m_oBcw.m_oStream.WriteULONG(oComment.nDurableId->GetValue());
-			m_oBcw.WriteItemEnd(nCurPos);
+			nDurableId = oComment.nDurableId->GetValue();
 		}
+		else
+		{
+			nDurableId = XmlUtils::GenerateInt();
+		}
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::DurableId);
+		m_oBcw.m_oStream.WriteULONG(nDurableId);
+		m_oBcw.WriteItemEnd(nCurPos);
+
 		if(oComment.aReplies.size() > 0)
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Replies);

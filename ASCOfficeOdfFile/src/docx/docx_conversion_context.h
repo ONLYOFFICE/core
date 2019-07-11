@@ -919,9 +919,6 @@ public:
 	double get_current_fontSize()	{return current_fontSize.empty() ? 0 : current_fontSize.back();}
 	void pop_current_fontSize()		{if (!current_fontSize.empty()) current_fontSize.pop_back();}
 	
-	void set_margin_left(int val)	{current_margin_left_ = val;}
-	int get_margin_left()			{return current_margin_left_;}
-
 	void set_outline_level(int val)	{current_outline_level_ = val;}
 	int get_outline_level()			{return current_outline_level_;}
 

@@ -450,12 +450,8 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 
 	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оО
 		
-	int tab_pos = (int)( 20.0 * style_position_.get_value_unit(length::pt) ) ;
-	int min_tab_pos = (int)( 20.0 * def_tab.get_value_unit(length::pt) ) ;
-
-	int margin_left_pos = Context.get_margin_left();
-
-	tab_pos += margin_left_pos;
+	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt) + margin_left ;
+	double min_tab_pos = 20.0 * def_tab.get_value_unit(length::pt) ;
 
 	if (tab_pos < min_tab_pos)
 		tab_pos = min_tab_pos;
@@ -467,12 +463,13 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 		{
 			case style_type::Left:	val = L"left";		break;
 			case style_type::Center:val = L"center";	break;
-			case style_type::Right:	val = L"right";		break;
 			case style_type::Char:	val = L"decimal";	break;
+			case style_type::Right:	val = L"right";		break;
 		}
 	}
+
 	_pPr << L" w:val=\"" << val << "\"";
-    _pPr << L" w:pos=\"" << tab_pos << "\"";
+    _pPr << L" w:pos=\"" << (int)tab_pos << "\"";
 	
 	std::wstring leader;
 

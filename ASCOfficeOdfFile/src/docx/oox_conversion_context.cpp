@@ -99,17 +99,23 @@ void tabs_context::reset()
 		odf_reader::style_tab_stop *tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(tabs[i].get());
 		if (tab_stop)
 		{
-			clear_tabs.insert(std::make_pair(tab_stop->style_position_.get_value(), tabs[i]));
+			double pos = tab_stop->margin_left + tab_stop->style_position_.get_value_unit(odf_types::length::pt);
+			
+			clear_tabs.insert(std::make_pair((int)pos, tabs[i]));
 		}
 	}
 	tabs.clear();
 }
-void tabs_context::add(const odf_reader::office_element_ptr & element)
+void tabs_context::add(const odf_reader::office_element_ptr & element, double margin_left)
 {
 	odf_reader::style_tab_stop *tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(element.get());
 	if (tab_stop)
 	{
-		std::map<double, odf_reader::office_element_ptr>::iterator pFind = clear_tabs.find(tab_stop->style_position_.get_value());
+		tab_stop->margin_left = margin_left;
+		
+		double pos = margin_left + tab_stop->style_position_.get_value_unit(odf_types::length::pt);
+
+		std::map<int, odf_reader::office_element_ptr>::iterator pFind = clear_tabs.find((int)pos);
 
 		if (pFind != clear_tabs.end())
 		{
@@ -126,7 +132,7 @@ void tabs_context::docx_convert(oox::docx_conversion_context & Context)
  
     _pPr << L"<w:tabs>";
 
-		for (std::map<double, odf_reader::office_element_ptr>::iterator it = clear_tabs.begin(); it != clear_tabs.end(); ++it)
+		for (std::map<int, odf_reader::office_element_ptr>::iterator it = clear_tabs.begin(); it != clear_tabs.end(); ++it)
 		{
 			odf_reader::style_tab_stop * tab_stop = dynamic_cast<odf_reader::style_tab_stop*>(it->second.get());
 			tab_stop->docx_convert(Context, true);				

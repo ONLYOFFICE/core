@@ -110,7 +110,7 @@ class tabs_context : boost::noncopyable
 public:
 
 	std::vector<odf_reader::office_element_ptr> tabs;
-	std::map<double, odf_reader::office_element_ptr> clear_tabs;
+	std::map<int, odf_reader::office_element_ptr> clear_tabs;
 
 	void clear()
 	{
@@ -120,7 +120,7 @@ public:
 
 	void reset();
 
-	void add(const odf_reader::office_element_ptr & element);
+	void add(const odf_reader::office_element_ptr & element, double margin_left);
 	void docx_convert(oox::docx_conversion_context & Context);
 };
 class styles_context : boost::noncopyable

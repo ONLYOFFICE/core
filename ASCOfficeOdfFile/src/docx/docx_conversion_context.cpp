@@ -1600,7 +1600,6 @@ int docx_conversion_context::process_paragraph_style(const std::wstring & style_
 						set_rtl(false);
 					}
 				}
-				set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
 
 				styleContent->docx_convert(*this);                
                
@@ -1701,7 +1700,6 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 							set_rtl(false);
 						}
 					}
-					set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt) : 0); 
 					if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
 					{
 						set_outline_level(*Attr->outline_level_ - 1);

@@ -3179,6 +3179,8 @@ int BinaryCommentReader::ReadCommentData(BYTE type, long length, void* poResult)
 		pComments->sUserName = m_oBufferedStream.GetString4(length);
 	else if ( c_oSer_CommentData::QuoteText == type )
 		pComments->sQuoteText = m_oBufferedStream.GetString4(length);
+	else if ( c_oSer_CommentData::Guid == type )
+		pComments->sGuid = m_oBufferedStream.GetString4(length);
 	else if ( c_oSer_CommentData::Solved == type )
 	{
 		pComments->bSolved = true;
@@ -3774,7 +3776,7 @@ void BinaryWorksheetsTableReader::WriteComments()
 
 		pComments->m_oAuthors.Init();
 
-		OOX::Spreadsheet::CThreadedComments* pThreadedComments = new OOX::Spreadsheet::CThreadedComments(NULL);
+		OOX::Spreadsheet::CThreadedComments* pThreadedComments = NULL;
 
 		for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 		{
@@ -3789,6 +3791,12 @@ void BinaryWorksheetsTableReader::WriteComments()
 				}
 				if(NULL != pCommentItem->m_pThreadedComment)
 				{
+					if(NULL == pThreadedComments)
+					{
+						pThreadedComments = new OOX::Spreadsheet::CThreadedComments(NULL);
+						NSCommon::smart_ptr<OOX::File> pThreadedCommentsFile(pThreadedComments);
+						m_pCurWorksheet->Add(pThreadedCommentsFile);
+					}
 					OOX::Spreadsheet::CThreadedComment* pThreadedComment = pCommentItem->m_pThreadedComment;
 					if( pNewComment->m_oRef.IsInit())
 					{
@@ -3852,8 +3860,6 @@ void BinaryWorksheetsTableReader::WriteComments()
 
 		NSCommon::smart_ptr<OOX::File> pCommentsFile(pComments);
 		m_pCurWorksheet->Add(pCommentsFile);
-		NSCommon::smart_ptr<OOX::File> pThreadedCommentsFile(pThreadedComments);
-		m_pCurWorksheet->Add(pThreadedCommentsFile);
 	}
 }
 int BinaryWorksheetsTableReader::ReadPivotTable(BYTE type, long length, void* poResult)

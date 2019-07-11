@@ -5268,6 +5268,7 @@ void BinaryWorksheetTableWriter::WriteComment(OOX::Spreadsheet::CCommentItem& oC
 }
 void BinaryWorksheetTableWriter::WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas)
 {
+	bool isThreadedComment = NULL != oComment.m_pThreadedComment;
 	int nCurPos = 0;
 	if(aCommentDatas.size() > 0)
 	{
@@ -5275,20 +5276,20 @@ void BinaryWorksheetTableWriter::WriteCommentData(OOX::Spreadsheet::CCommentItem
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
 			if(0 == i)
-				WriteCommentDataContent(&oComment, aCommentDatas[i]);
+				WriteCommentDataContent(&oComment, aCommentDatas[i], isThreadedComment);
 			else
-				WriteCommentDataContent(NULL, aCommentDatas[i]);
+				WriteCommentDataContent(NULL, aCommentDatas[i], isThreadedComment);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
 	else
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
-		WriteCommentDataContent(&oComment, NULL);
+		WriteCommentDataContent(&oComment, NULL, isThreadedComment);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
-void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData)
+void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, bool isThreadedComment)
 {
 	int nCurPos = 0;
 	if(NULL != pCommentData && !pCommentData->sText.empty())
@@ -5343,7 +5344,7 @@ void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CComm
 		if(pCommentData->aReplies.size() > 0)
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentData::Replies);
-			WriteCommentReplies(pCommentData->aReplies);
+			WriteCommentReplies(pCommentData->aReplies, isThreadedComment);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -5355,15 +5356,28 @@ void BinaryWorksheetTableWriter::WriteCommentDataContent(OOX::Spreadsheet::CComm
 			m_oBcw.m_oStream.WriteStringW(*pComment->m_sAuthor);
 		}
 	}
+	if(!isThreadedComment)
+	{
+		if(pCommentData && !pCommentData->sGuid.empty())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Guid);
+			m_oBcw.m_oStream.WriteStringW(pCommentData->sGuid);
+		}
+		else
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Guid);
+			m_oBcw.m_oStream.WriteStringW(L"{" + XmlUtils::GenerateGuid() + L"}");
+		}
+	}
 }
-void BinaryWorksheetTableWriter::WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies)
+void BinaryWorksheetTableWriter::WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies, bool isThreadedComment)
 {
 	int nCurPos = 0;
 	for(size_t i = 0, length = aReplies.size(); i < length; i++)
 	{
 		SerializeCommon::CommentData* pReply = aReplies[i];
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentData::Reply);
-		WriteCommentDataContent(NULL, pReply);
+		WriteCommentDataContent(NULL, pReply, isThreadedComment);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
@@ -5383,13 +5397,13 @@ void BinaryWorksheetTableWriter::WriteThreadedComment(OOX::Spreadsheet::CThreade
 		m_oBcw.m_oStream.WriteStringW3(oThreadedComment.personId->ToString());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	if(bThreadedCommentCopy)
+	if(bThreadedCommentCopy || !oThreadedComment.id.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::id);
 		m_oBcw.m_oStream.WriteStringW3(L"{" + XmlUtils::GenerateGuid() + L"}");
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	else if(oThreadedComment.id.IsInit())
+	else
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_ThreadedComment::id);
 		m_oBcw.m_oStream.WriteStringW3(oThreadedComment.id->ToString());

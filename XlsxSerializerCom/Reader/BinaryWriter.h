@@ -246,8 +246,8 @@ namespace BinXlsxRW
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas);
 		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
 		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
-		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData);
-		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies);
+		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, bool isThreadedComment);
+		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies, bool isThreadedComment);
 		void WriteThreadedComment(OOX::Spreadsheet::CThreadedComment& oThreadedComment, bool bThreadedCommentCopy);
 		void WriteThreadedCommentMention(OOX::Spreadsheet::CThreadedCommentMention& oMention);
 		void WriteSheetPr(const OOX::Spreadsheet::CSheetPr& oSheetPr);

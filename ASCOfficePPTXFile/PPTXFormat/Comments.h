@@ -35,6 +35,7 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace PPTX
 {
@@ -57,8 +58,7 @@ namespace PPTX
 			nullable_int	parentAuthorId;
 			nullable_int	parentCommentId;
 
-			nullable_string userId;
-			nullable_string providerId;
+			nullable_string additional_data; // teamlab editor information!!!
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -112,16 +112,27 @@ namespace PPTX
 								if (oNodeAU.IsValid())
 								{
 									std::wstring strData = oNodeAU.GetAttribute(_T("userId"));
+
                                     if (!strData.empty())
-										userId = strData;
-									strData = oNodeAU.GetAttribute(_T("providerId"));
-									if (!strData.empty())
-										providerId = strData;
+                                        additional_data = XmlUtils::EncodeXmlString(strData);
 
 									bIsFound2 = true;
 								}
 							}
 						}
+					}
+					//check comment guid
+					if(!(additional_data.IsInit() && 0 == additional_data->compare(0, 13, L"teamlab_data:") && std::wstring::npos != additional_data->find(L"4;38;")))
+					{
+						if(!additional_data.IsInit())
+						{
+							additional_data = L"teamlab_data:";
+						}
+						if(':' != additional_data->back() && ';' != additional_data->back())
+						{
+							additional_data->append(L";");
+						}
+						additional_data->append(L"4;38;{" + XmlUtils::GenerateGuid() + L"}");
 					}
 					
 					XmlUtils::CXmlNode oNodeExt = oNodeExtLst.ReadNode(_T("p:ext"));
@@ -167,7 +178,7 @@ namespace PPTX
 				}
 
 				bool bIsExtLst = false;
-				if ((parentAuthorId.is_init() && parentCommentId.is_init()) || (userId.is_init() && providerId.is_init()))
+				if ((parentAuthorId.is_init() && parentCommentId.is_init()) || additional_data.is_init())
 					bIsExtLst = true;
 
 				if (bIsExtLst)
@@ -184,14 +195,16 @@ namespace PPTX
 					pWriter->WriteString(_T("</p15:threadingInfo></p:ext>"));
 				}
 
-				if (userId.is_init() && providerId.is_init())
+				if (additional_data.is_init())
 				{
 					pWriter->WriteString(_T("<p:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\">\
 <p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\""));
-					pWriter->WriteString(XmlUtils::EncodeXmlString(userId.get()));
-					pWriter->WriteString(_T("\" providerId=\""));
-					pWriter->WriteString(XmlUtils::EncodeXmlString(providerId.get()));
-					pWriter->WriteString(_T("\"/></p:ext>"));
+
+                    std::wstring strData = XmlUtils::EncodeXmlString(additional_data.get());
+
+					pWriter->WriteString(strData);
+
+					pWriter->WriteString(_T("\" providerId=\"AD\"/></p:ext>"));
 				}
 
 				if (bIsExtLst)
@@ -215,15 +228,9 @@ namespace PPTX
 				pWriter->WriteInt2(6, parentAuthorId);
 				pWriter->WriteInt2(7, parentCommentId);
 
-				pWriter->WriteString2(8, userId);
+				pWriter->WriteString2(8, additional_data);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);	
-
-				pWriter->StartRecord(0);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(9, providerId);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-				pWriter->EndRecord();
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -264,44 +271,9 @@ namespace PPTX
 						parentCommentId = pReader->GetLong();
 						break;
 					case 8:
-						userId = pReader->GetString2();
+						additional_data = pReader->GetString2();
 					default:
 						break;
-					}
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-					case 0:
-					{
-						LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
-
-						pReader->Skip(1); // start attributes
-
-						while (true)
-						{
-							BYTE _at = pReader->GetUChar_TypeNode();
-							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-								break;
-
-							switch (_at)
-							{
-							case 9: providerId = pReader->GetString2(); break;
-							default: break;
-							}
-						}
-
-						pReader->Seek(_end_rec2);
-					}
-						break;
-					default:
-					{
-						pReader->SkipRecord();
-						break;
-					}
 					}
 				}
 

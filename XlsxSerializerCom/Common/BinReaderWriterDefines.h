@@ -945,7 +945,8 @@ namespace BinXlsxRW
 		Document = 6,
 		Replies = 7,
 		Reply = 8,
-		OOTime = 9
+		OOTime = 9,
+		Guid = 10
 	};}
 	namespace c_oSer_ThreadedComment{enum c_oSer_ThreadedComment
 	{

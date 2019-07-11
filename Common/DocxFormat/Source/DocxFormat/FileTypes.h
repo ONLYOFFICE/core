@@ -236,6 +236,10 @@ namespace OOX
 												L"",
 												L"http://schemas.onlyoffice.com/jsaProject");
 
+		const FileType ImportedExternalContent(L"embeddings", L"",
+												L"",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/aFChunk");
+
 		const FileType MicrosoftOfficeUnknown(L"embeddings", L"",
 												L"",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");

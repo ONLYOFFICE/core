@@ -716,6 +716,8 @@ namespace OOX
 		et_w_hdrShapeDefaults, // <w:hdrShapeDefaults>
 		et_w_headers, // <w:headers>
 		et_w_hyperlink, // <w:hyperlink>
+		et_w_altChunk, // <w:altChunk>
+		et_w_altChunkPr, // <w:altChunkPr>
 		et_w_ins, // <w:ins>
 		et_w_instrText, // <w:instrText>
 		et_w_latentStyles, // <w:latentStyles>

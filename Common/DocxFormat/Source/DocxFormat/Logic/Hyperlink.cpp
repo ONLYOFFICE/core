@@ -55,11 +55,7 @@ namespace OOX
 {
 	namespace Logic
 	{
-		//--------------------------------------------------------------------------------
-		// CHyperlink
-		//--------------------------------------------------------------------------------	
-
-		void    CHyperlink::fromXML(XmlUtils::CXmlNode& oNode)
+		void CHyperlink::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:anchor"),      m_sAnchor );
             XmlMacroReadAttributeBase( oNode, _T("w:docLocation"), m_sDocLocation );
@@ -69,7 +65,7 @@ namespace OOX
             XmlMacroReadAttributeBase( oNode, _T("w:tooltip"),     m_sTooltip );
 
 			XmlUtils::CXmlNodes oChilds;
-			if ( oNode.GetNodes( _T("*"), oChilds ) )
+			if ( oNode.GetNodes( L"*", oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
 				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
@@ -156,7 +152,7 @@ namespace OOX
 		}
 
 
-		void    CHyperlink::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CHyperlink::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
@@ -304,6 +300,117 @@ namespace OOX
 
 				return sResult;
 		}
+
+
+		void CAltChunkPr::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oChilds;
+			if ( oNode.GetNodes( L"*", oChilds ) )
+			{
+				XmlUtils::CXmlNode oItem;
+				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				{
+					if ( oChilds.GetAt( nIndex, oItem ) )
+					{
+						std::wstring sName = oItem.GetName();
+						WritingElement *pItem = NULL;
+
+						if ( L"w:matchSrc" == sName )
+							m_oMatchSrc = new ComplexTypes::Word::CMatchSrc( oItem );
+					}
+				}
+			}
+		}
+		void CAltChunkPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				WritingElement *pItem = NULL;
+
+				if ( L"w:matchSrc" == sName )
+					m_oMatchSrc = oReader ;
+
+			}
+		}
+		std::wstring CAltChunkPr::toXML() const
+		{
+				std::wstring sResult = L"<w:altChunkPr>";
+				
+				if (m_oMatchSrc.IsInit())
+				{
+					sResult += L"<w:matchSrc ";
+					sResult += m_oMatchSrc->ToString();
+					sResult += L"/>";
+				}
+
+				sResult += L"</w:altChunkPr>";
+				return sResult;
+		}
+
+		void CAltChunk::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+            XmlMacroReadAttributeBase( oNode, L"r:id", m_oId );
+
+			XmlUtils::CXmlNodes oChilds;
+			if ( oNode.GetNodes( L"*", oChilds ) )
+			{
+				XmlUtils::CXmlNode oItem;
+				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				{
+					if ( oChilds.GetAt( nIndex, oItem ) )
+					{
+						std::wstring sName = oItem.GetName();
+						WritingElement *pItem = NULL;
+
+						if ( L"w:altChunkPr" == sName )
+							m_oAltChunkPr = new CAltChunkPr( oItem );
+					}
+				}
+			}
+		}
+		void CAltChunk::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				WritingElement *pItem = NULL;
+
+				if ( L"w:altChunkPr" == sName )
+					m_oAltChunkPr = oReader ;
+
+			}
+		}
+		std::wstring CAltChunk::toXML() const
+		{
+				std::wstring sResult = L"<w:altChunk ";
+
+				if ( m_oId.IsInit() )
+				{
+					sResult += L"r:id=\"";
+					sResult += m_oId->ToString();
+					sResult += L"\" ";
+				}
+				sResult += L">";
+
+				if (m_oAltChunkPr.IsInit())
+					sResult += m_oAltChunkPr->toXML();
+
+				sResult += L"</w:altChunk>";
+
+				return sResult;
+		}
+
 
 	} // namespace Logic
 } // namespace OOX

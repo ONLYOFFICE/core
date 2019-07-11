@@ -54,9 +54,9 @@ void CComment::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		std::wstring sName = oReader.GetName();
 		WritingElement *pItem = NULL;
 
-		/*if ( L"w:altChunk" ==sName )
-		pItem = new Logic::AltChunk( oItem );
-		else */if ( L"w:bookmarkEnd" ==sName )
+		if ( L"w:altChunk" ==sName )
+			pItem = new Logic::CAltChunk( oReader );
+		else if ( L"w:bookmarkEnd" ==sName )
 			pItem = new Logic::CBookmarkEnd( oReader );
 		else if ( L"w:bookmarkStart" ==sName )
 			pItem = new Logic::CBookmarkStart( oReader );

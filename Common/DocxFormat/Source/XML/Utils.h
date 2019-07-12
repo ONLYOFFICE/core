@@ -281,14 +281,20 @@ namespace XmlUtils
         sstream << boost::format(format) % value;
         return sstream.str();
     }
-	static int GenerateInt()
+	static int Rand()
 	{
+		//rand returns integral value range between 0 and RAND_MAX.(RAND_MAX at least 32767.)
 		static unsigned calls = 0;   /* ensure different random header each time */
 		if (++calls == 1)
 		{
 			srand((unsigned int) time(NULL));
 		}
 		return std::rand();
+	}
+	static int GenerateInt()
+	{
+		//todo c++11 <random>
+		return ((Rand() & 0x7FFF) | ((Rand() & 0x7FFF) << 15) | ((Rand() & 0x3) << 30));
 	}
 	static std::wstring GenerateGuid()
 	{
@@ -305,7 +311,7 @@ namespace XmlUtils
 //		CoTaskMemFree(guidString);
 //#else
         std::wstringstream sstream;
-		sstream << boost::wformat(L"%04X%04X-%04X-%04X-%04X-%04X%04X%04X") % GenerateInt() % GenerateInt() % GenerateInt() % ((GenerateInt() & 0x0fff) | 0x4000) % ((GenerateInt() % 0x3fff) + 0x8000) %  GenerateInt() % GenerateInt() % GenerateInt();
+		sstream << boost::wformat(L"%04X%04X-%04X-%04X-%04X-%04X%04X%04X") % Rand() % Rand() % Rand() % ((Rand() & 0x0fff) | 0x4000) % ((Rand() % 0x3fff) + 0x8000) %  Rand() % Rand() % Rand();
         result = sstream.str();
 //#endif	
 		return result;

@@ -507,7 +507,8 @@ extern int g_nCurFormatVersion;
 		JsaProject = 22,
 		BookmarkStart = 23,
 		BookmarkEnd = 24,
-		MRun = 25
+		MRun = 25,
+		AltChunk = 26
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{

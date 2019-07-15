@@ -42,7 +42,6 @@
 #include "../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
 #include "../../ASCOfficePPTXFile/ASCOfficePPTXFile.h"
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
-#include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 #include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
 #include "../../ASCOfficeTxtFile/TxtXmlFormatLib/Source/TxtXmlFile.h"
 #include "../../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"

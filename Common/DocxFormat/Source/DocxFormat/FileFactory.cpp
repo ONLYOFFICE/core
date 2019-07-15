@@ -111,6 +111,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentPeople )
 			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::ImportedExternalContent )
+			return smart_ptr<OOX::File>(new Media( pMain, oFileName, oRelation.IsExternal() ));
 //common		
 		else if ( oRelation.Type() == FileTypes::Setting)
 			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
@@ -274,6 +276,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == FileTypes::CustomXmlProps)
 			return smart_ptr<OOX::File>(new OOX::CCustomXMLProps(pMain, oFileName));
+		else if ( pRelation->Type() == FileTypes::ImportedExternalContent )
+			return smart_ptr<OOX::File>(new Media( pMain, oFileName, pRelation->IsExternal() ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 	}

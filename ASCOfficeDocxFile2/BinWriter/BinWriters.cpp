@@ -33,6 +33,8 @@
 
 #include "../DocWrapper/FontProcessor.h"
 #include "../../Common/Base64.h"
+#include "../../Common/OfficeFileFormatChecker.h"
+
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
@@ -40,6 +42,8 @@
 #include "BinEquationWriter.h"
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
+#include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 
 namespace BinDocxRW
 {
@@ -3041,10 +3045,25 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 
 		switch(item->getType())
 		{
+			case OOX::et_w_altChunk:
+			{
+				OOX::Logic::CAltChunk* pAltChunk = static_cast<OOX::Logic::CAltChunk*>(item);
+				if (pAltChunk->m_oId.IsInit())
+				{
+					OOX::Rels::CRelationShip* oRels = NULL;
+					smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pAltChunk->m_oId.get().GetValue()));
+					if (pFile.IsInit() && OOX::FileTypes::Media == pFile->type())
+					{
+						OOX::Media* pAltChunkFile = static_cast<OOX::Media*>(pFile.operator ->());
+						
+						WriteAltChunk(*pAltChunkFile);
+					}
+				}
+			}break;
 			case OOX::et_w_p:
 			{
-				OOX::Logic::CParagraph*			pParagraph	= static_cast<OOX::Logic::CParagraph*>(item);
-				OOX::Logic::CParagraphProperty* pPr			= pParagraph->m_oParagraphProperty;
+				OOX::Logic::CParagraph* pParagraph = static_cast<OOX::Logic::CParagraph*>(item);
+				OOX::Logic::CParagraphProperty* pPr = pParagraph->m_oParagraphProperty;
 
 				m_oBcw.m_oStream.WriteBYTE(c_oSerParType::Par);
 					nCurPos = m_oBcw.WriteItemWithLengthStart();
@@ -3191,6 +3210,84 @@ void BinaryDocumentTableWriter::WriteBackground (OOX::Logic::CBackground* pBackg
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
+						
+void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
+{
+	if (false == oAltChunkFile.IsExist()) return;
+
+
+	std::wstring file_name_inp = oAltChunkFile.filename().GetPath();
+	
+	std::wstring sTempDir = NSDirectory::CreateDirectoryWithUniqueName(oAltChunkFile.filename().GetDirectory()); 
+	std::wstring sResultDocxDir = NSDirectory::CreateDirectoryWithUniqueName(oAltChunkFile.filename().GetDirectory()); 
+
+	bool result = false;
+	
+	COfficeFileFormatChecker OfficeFileFormatChecker;
+	if (OfficeFileFormatChecker.isOfficeFile(file_name_inp))
+    {
+		switch(OfficeFileFormatChecker.nFileType)
+		{
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
+			{
+				COfficeDocFile docFile;
+				docFile.m_sTempFolder = sTempDir;
+				
+				bool bMacros = false;
+
+				result = (S_OK == docFile.LoadFromFile( file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
+			}break;		
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
+			{
+				RtfConvertationManager rtfConvert;
+				rtfConvert.m_sTempFolder = sTempDir;
+				
+				result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
+			}break;
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+			{
+				COfficeUtils oCOfficeUtils(NULL);
+				result = (S_OK == oCOfficeUtils.ExtractToDirectory(file_name_inp, sResultDocxDir, NULL, 0));
+			}break;
+		}
+	}
+
+	NSDirectory::DeleteDirectory(sTempDir);
+
+	if (result)
+	{
+		OOX::CDocx oDocx = OOX::CDocx(OOX::CPath(sResultDocxDir));
+
+		if (oDocx.m_pDocument)
+		{
+			ParamsDocumentWriter oParamsDocumentWriterEmb(oDocx.m_pDocument);
+			
+			ParamsWriter oParamsWriterEmb(	m_oParamsWriter.m_pCBufferedStream, 
+											m_oParamsWriter.m_pFontProcessor, 
+											m_oParamsWriter.m_pOfficeDrawingConverter, 
+											m_oParamsWriter.m_pEmbeddedFontsManager);
+			
+			oParamsWriterEmb.m_poTheme	= oDocx.m_pTheme;
+			oParamsWriterEmb.m_oSettings = oDocx.m_pSettings;
+			oParamsWriterEmb.m_pCurRels = oParamsDocumentWriterEmb.m_pRels;
+
+			BinaryDocumentTableWriter oBinaryDocumentEmbTableWriter(oParamsWriterEmb, oParamsDocumentWriterEmb, &oParamsWriterEmb.m_mapIgnoreComments, NULL);
+
+			//*oBufferedStream.m_pTheme = smart_ptr<PPTX::Theme>(oDocx.m_pTheme);
+			//oBufferedStream.m_pTheme->AddRef();
+
+			//if(NULL != oDocx.m_pFontTable)
+			//	m_oParamsWriter.m_pFontProcessor->setFontTable(oDocx.m_pFontTable);
+			oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocx.m_pDocument->m_arrItems);
+		}
+	}
+	NSDirectory::DeleteDirectory(sResultDocxDir);
+}
+
 void BinaryDocumentTableWriter::WriteParapraph(OOX::Logic::CParagraph& par, OOX::Logic::CParagraphProperty* pPr)
 {
 	int nCurPos = 0;

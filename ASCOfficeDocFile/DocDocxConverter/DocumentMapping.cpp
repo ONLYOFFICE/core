@@ -1419,7 +1419,7 @@ namespace DocFileFormat
 					}
 				}
 			}
-			if (nestingLevel > 1 && fEndNestingLevel && !boundaries.empty())
+			if (nestingLevel != iTap_current && fEndNestingLevel && !boundaries.empty())
 				break;
 			//get the next papx
 			papx = findValidPapx( fcRowEnd );

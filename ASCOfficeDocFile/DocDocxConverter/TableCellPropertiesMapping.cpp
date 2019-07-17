@@ -75,7 +75,7 @@ namespace DocFileFormat
 	void TableCellPropertiesMapping::Apply (IVisitable* visited)
 	{
 		TablePropertyExceptions* tapx	=	static_cast<TablePropertyExceptions*>(visited);
-		int nComputedCellWidth			=	0;
+		int nComputedCellWidth = 0, nComputedCellWidths = 0;
 
 		_gridSpan = 0;
 		_bCoverCell = false;
@@ -164,7 +164,11 @@ namespace DocFileFormat
 					else
 					{
 						_gridSpan = 1;
-						nComputedCellWidth += tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ] ;
+
+						nComputedCellWidths +=  (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ 0 ]);
+						nComputedCellWidth	+= tdef.rgTc80[ _cellIndex].wWidth > 1 ? tdef.rgTc80[ _cellIndex].wWidth : (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ]);
+						//Технические_Требования_1_287_ДИТ.DOC
+
 					}
 
 					if (!IsTableBordersDefined(tapx->grpprl))
@@ -348,19 +352,22 @@ namespace DocFileFormat
 		tcW.AppendAttribute( tcWVal );
 		_tcPr->AppendChild( tcW );
 
+		int nComputedCellWidthsGrid = 0;
 
-		if ( _gridSpan == 1 && ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidth > _grid->at( _gridIndex ) ) )
+		for (size_t ccc = 0; ccc <= _gridIndex; ccc++)
+		{
+			nComputedCellWidthsGrid += _grid->at(ccc);
+		}
+		if ( _gridSpan == 1 && ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidths > nComputedCellWidthsGrid ) )
 		{
 			//check the number of merged cells
-			int w = _grid->at( _gridIndex );
-
 			for ( size_t i = _gridIndex + 1; i < _grid->size(); i++ )
 			{
 				_gridSpan++;
 
-				w += _grid->at( i );
+				nComputedCellWidthsGrid += _grid->at( i );
 
-				if ( w >= nComputedCellWidth )
+				if ( nComputedCellWidthsGrid >= nComputedCellWidths )
 				{
 					break;
 				}

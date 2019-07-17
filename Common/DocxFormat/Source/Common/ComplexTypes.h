@@ -593,7 +593,34 @@ namespace ComplexTypes
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:type"), m_oType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:w"),    m_oW )
+				else if ( _T("w:w") == wsName )
+				{
+					//bug 42023 w:w="460.60pt" (EP_C2crapportd_aptitudeprofessionnelle.docx)
+					SimpleTypes::CUniversalMeasureOrPercent oUniversalMeasure;
+					oUniversalMeasure.FromString(oReader.GetText());
+					m_oW.Init();
+					if(oUniversalMeasure.IsUnits())
+					{
+						m_oType.Init();
+						m_oType->SetValue(SimpleTypes::tblwidthDxa);
+						m_oW->SetValue(oUniversalMeasure.ToTwips());
+						//ignore type attribute
+						break;
+					}
+					else if(oUniversalMeasure.IsPercent())
+					{
+						m_oType.Init();
+						m_oType->SetValue(SimpleTypes::tblwidthPct);
+						m_oW->SetPercent(true);
+						m_oW->SetValue(oUniversalMeasure.GetValue());
+						//ignore type attribute
+						break;
+					}
+					else
+					{
+						m_oW->SetValue(oUniversalMeasure.GetValue());
+					}
+				}
 				WritingElement_ReadAttributes_End( oReader )
 			}
 

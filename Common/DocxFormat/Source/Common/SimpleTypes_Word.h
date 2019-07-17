@@ -1224,7 +1224,7 @@ namespace SimpleTypes
 			}
 		}
 
-		void   SetValue(double &dValue)
+		void   SetValue(double dValue)
 		{
 			m_dValue = dValue;
 		}

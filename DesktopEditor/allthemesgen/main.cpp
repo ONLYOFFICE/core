@@ -41,6 +41,7 @@
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 
 #ifdef CreateDirectory
 #undef CreateDirectory
@@ -226,6 +227,7 @@ int main(int argc, char** argv)
 {
     std::wstring sSrcThemesDir = L"";
     std::wstring sX2tPath = L"";
+    std::wstring sOutputThumbnails = L"";
 
     for (int i = 0; i < argc; ++i)
     {
@@ -260,6 +262,10 @@ int main(int argc, char** argv)
             {
                 sSrcThemesDir = CorrectDir(sValue);
             }
+            else if (sKey == L"--output")
+            {
+                sOutputThumbnails = CorrectDir(sValue);
+            }
         }
     }
 
@@ -282,6 +288,9 @@ int main(int argc, char** argv)
     pApplicationFonts->InitializeFromFolder(sX2tPath);
 
     NSDoctRenderer::CDocBuilder::Initialize();
+
+    int nRasterW = 85;
+    int nRasterH = 38;
 
     int nThemeIndex = 0;
     for (std::vector<std::wstring>::iterator iter = arThemes.begin(); iter != arThemes.end(); iter++)
@@ -372,13 +381,13 @@ int main(int argc, char** argv)
             imageWriter.SetSaveType(0);
             imageWriter.SetIsOnlyFirst(true);
 
-            imageWriter.SetRasterW(85);
-            imageWriter.SetRasterH(38);
+            imageWriter.SetRasterW(nRasterW);
+            imageWriter.SetRasterH(nRasterH);
             imageWriter.SetFileName(sOut + L"/thumbnail.png");
             imageWriter.ConvertBuffer(pData, nBytesCount);
 
-            imageWriter.SetRasterW(85 * 2);
-            imageWriter.SetRasterH(38 * 2);
+            imageWriter.SetRasterW(nRasterW * 2);
+            imageWriter.SetRasterH(nRasterH * 2);
             imageWriter.SetFileName(sOut + L"/thumbnail@2x.png");
             imageWriter.ConvertBuffer(pData, nBytesCount);
 
@@ -386,6 +395,69 @@ int main(int argc, char** argv)
         }
 
         NSFile::CFileBinary::Remove(sOut + L"/theme.bin.pdf");
+    }
+
+    if (nThemeIndex > 0)
+    {
+        int nRasterW1 = nRasterW;
+        int nRasterH1 = nRasterH;
+
+        for (int nScale = 1; nScale <= 2; nScale++)
+        {
+            nRasterW = nScale * nRasterW;
+            nRasterH = nScale * nRasterH;
+
+            int nRow = 4 * nRasterW;
+            int nSize = nRow * nRasterH;
+            BYTE* pData = new BYTE[nSize * nThemeIndex];
+            BYTE* pDataCur = pData;
+
+            for (int nIndex = 1; nIndex <= nThemeIndex; ++nIndex)
+            {
+                CBgraFrame oFrame;
+
+                if (1 == nScale)
+                {
+                    oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail.png");
+                }
+                else
+                {
+                    oFrame.OpenFile(sSrcThemesDir + L"/theme" + std::to_wstring(nIndex) + L"/thumbnail@" + std::to_wstring(nScale) + L"x.png");
+                }
+
+                if (false)
+                {
+                    // flip
+                    memcpy(pDataCur, oFrame.get_Data(), nSize);
+                    pDataCur += nSize;
+                }
+                else
+                {
+                    BYTE* pTmp = oFrame.get_Data() + nRow * (nRasterH - 1);
+                    for (int nH = 0; nH < nRasterH; ++nH)
+                    {
+                        memcpy(pDataCur, pTmp, nRow);
+                        pDataCur += nRow;
+                        pTmp -= nRow;
+                    }
+                }
+            }
+
+            CBgraFrame oFrame;
+            oFrame.put_Data(pData);
+            oFrame.put_Width(nRasterW);
+            oFrame.put_Height(nRasterH * nThemeIndex);
+            oFrame.put_Stride(nRow);
+
+            if (1 == nScale)
+            {
+                oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail.png", 4);
+            }
+            else
+            {
+                oFrame.SaveFile(sOutputThumbnails + L"/themes_thumbnail@" + std::to_wstring(nScale) + L"x.png", 4);
+            }
+        }
     }
 
     NSDoctRenderer::CDocBuilder::Dispose();

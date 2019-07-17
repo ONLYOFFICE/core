@@ -261,7 +261,15 @@ namespace NSDoctRenderer
     public:
         CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"")
         {
-            m_strConfigDir = NSFile::GetProcessDirectory() + L"/";
+            LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
+        }
+        ~CDoctRenderer_Private()
+        {
+
+        }
+        void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
+        {
+            m_strConfigDir = sConfigDir + L"/";
             m_strConfigPath = m_strConfigDir + L"DoctRenderer.config";
 
             XmlUtils::CXmlNode oNode;
@@ -323,10 +331,6 @@ namespace NSDoctRenderer
                 if (!NSFile::CFileBinary::Exists(m_sErrorsLogFile))
                     m_sErrorsLogFile = m_strConfigDir + m_sErrorsLogFile;
             }
-        }
-        ~CDoctRenderer_Private()
-        {
-
         }
 
         void LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& _files)
@@ -1054,6 +1058,11 @@ namespace NSDoctRenderer
         m_pInternal = new CDoctRenderer_Private(sAllFontsPath);
     }
 
+    void CDoctrenderer::LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath)
+    {
+        m_pInternal->LoadConfig(sConfigDir, sAllFontsPath);
+    }
+
     CDoctrenderer::~CDoctrenderer()
     {
         RELEASEOBJECT(m_pInternal);
@@ -1122,7 +1131,22 @@ namespace NSDoctRenderer
         }
 
         std::wstring strFileName = m_pInternal->m_oParams.m_strSrcFilePath;
-        strFileName += L"/Editor.bin";
+        size_t nFileNameLen = strFileName.length();
+        if (4 < nFileNameLen)
+        {
+            const wchar_t* bufFileName = strFileName.c_str();
+            if (bufFileName[nFileNameLen - 4] != '.' ||
+                bufFileName[nFileNameLen - 3] != 'b' ||
+                bufFileName[nFileNameLen - 2] != 'i' ||
+                bufFileName[nFileNameLen - 1] != 'n')
+            {
+                strFileName += L"/Editor.bin";
+            }
+        }
+        else
+        {
+            strFileName += L"/Editor.bin";
+        }
 
         strFileName = string_replaceAll(strFileName, L"\\\\", L"\\");
         strFileName = string_replaceAll(strFileName, L"//", L"/");

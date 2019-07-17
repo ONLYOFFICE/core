@@ -60,6 +60,7 @@ namespace NSDoctRenderer
     {
     public:
         CDoctrenderer(const std::wstring& sAllFontsPath = L"");
+        void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"");
         ~CDoctrenderer();
 
     public:

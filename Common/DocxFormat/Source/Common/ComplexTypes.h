@@ -597,7 +597,8 @@ namespace ComplexTypes
 				{
 					//bug 42023 w:w="460.60pt" (EP_C2crapportd_aptitudeprofessionnelle.docx)
 					SimpleTypes::CUniversalMeasureOrPercent oUniversalMeasure;
-					oUniversalMeasure.FromString(oReader.GetText());
+                    std::wstring sValue = oReader.GetText();
+					oUniversalMeasure.FromString(sValue);
 					m_oW.Init();
 					if(oUniversalMeasure.IsUnits())
 					{

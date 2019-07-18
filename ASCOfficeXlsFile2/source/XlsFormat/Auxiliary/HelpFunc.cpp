@@ -351,7 +351,8 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 
     while(true)
 	{
-#if defined(__linux__) || defined(_MAC)
+        
+#if defined(__linux__) || defined(_MAC) || defined(_IOS)
 		const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
         x_pos_next = boost::algorithm::find_first(it_range, L"_x").begin();
 #else

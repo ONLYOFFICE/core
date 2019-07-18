@@ -42,7 +42,9 @@
 #include "BinEquationWriter.h"
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#ifndef _IOS
 #include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
+#endif
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 
 namespace BinDocxRW
@@ -3227,17 +3229,21 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 	if (OfficeFileFormatChecker.isOfficeFile(file_name_inp))
     {
 		switch(OfficeFileFormatChecker.nFileType)
-		{
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
-			{
-				COfficeDocFile docFile;
-				docFile.m_sTempFolder = sTempDir;
-				
-				bool bMacros = false;
-
-				result = (S_OK == docFile.LoadFromFile( file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
-			}break;		
+        {
+            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
+            {
+#ifndef _IOS
+                COfficeDocFile docFile;
+                docFile.m_sTempFolder = sTempDir;
+                
+                bool bMacros = false;
+                
+                result = (S_OK == docFile.LoadFromFile( file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
+#else
+                result = S_FALSE;
+#endif
+            }break;
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
 			{
 				RtfConvertationManager rtfConvert;

@@ -542,6 +542,34 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_time);
+
+//  form:image-frame
+class form_image_frame : public form_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormImageFrame;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+public:
+	_CP_OPT(std::wstring)	image_data_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_image_frame);
+
 //  form:item
 class form_item : public office_element_impl<form_item>
 {

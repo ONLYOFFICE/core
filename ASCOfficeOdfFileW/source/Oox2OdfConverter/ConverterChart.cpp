@@ -124,11 +124,29 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 		convert(oox_chart->m_chart->m_plotArea); 
 			
 		bool chart3D = (oox_chart->m_chart->m_view3D) ? true : false;
-		convert(oox_chart->m_chart->m_floor,	1, chart3D);
-		if (chart3D) convert(oox_chart->m_chart->m_backWall, 2, chart3D);
+		
+		convert(oox_chart->m_chart->m_floor, 1, chart3D);
+		if (chart3D)
+		{
+			convert(oox_chart->m_chart->m_backWall, 2, chart3D);
+			convert(oox_chart->m_chart->m_view3D);
+		}
 		//convert(oox_chart->m_chart->m_sizeWall, 3, chart3D);		
 	}
 	odf_context()->chart_context()->end_plot_area();
+}
+void OoxConverter::convert(OOX::Spreadsheet::CT_View3D *oox_view3D)
+{
+	if (oox_view3D == NULL)return;
+
+	int rotX = ((oox_view3D->m_rotX) && (oox_view3D->m_rotX->m_val)) ? *oox_view3D->m_rotX->m_val : 0;
+	int rotY = ((oox_view3D->m_rotY) && (oox_view3D->m_rotY->m_val)) ? *oox_view3D->m_rotY->m_val : 0;
+	int depthPercent = ((oox_view3D->m_depthPercent) && (oox_view3D->m_depthPercent->m_val)) ? XmlUtils::GetInteger(*oox_view3D->m_depthPercent->m_val) : 100;
+	bool angAx = ((oox_view3D->m_rAngAx) && (oox_view3D->m_rAngAx->m_val)) ? *oox_view3D->m_rAngAx->m_val : false;
+	int perspective = ((oox_view3D->m_perspective) && (oox_view3D->m_perspective->m_val)) ? *oox_view3D->m_perspective->m_val : 30;
+	int hPercent = ((oox_view3D->m_hPercent) && (oox_view3D->m_hPercent->m_val)) ? XmlUtils::GetInteger(*oox_view3D->m_hPercent->m_val) : 100;
+
+	odf_context()->chart_context()->set_view3D(rotX, rotY, depthPercent, perspective, hPercent, angAx);
 }
 
 //void OoxConverter::convert(OOX::Spreadsheet::CRichText* rich)

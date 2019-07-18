@@ -52,7 +52,6 @@ public:
         emu
     };
 
-public:
     length(double v = 0.0, unit u = none) : value_(v), unit_(u)
     {}
 
@@ -87,11 +86,39 @@ length operator* (length _Length1, double val);
 bool operator== (length & _Length1, length & _Length2);
 bool operator== (const length & _Length1, const length & _Length2);
 
-typedef length coordinate;
+//-------------------------------------------------------------
+
+class vector3D
+{
+public:
+
+    vector3D(double x = 0.0, double y = 0.0, double z = 0.0) : x_(x), y_(y), z_(z)
+    {}
+
+    double get_x() const 
+    { 
+        return x_; 
+    }
+	double get_y() const 
+    { 
+        return y_; 
+    }
+    double get_z() const 
+    { 
+        return z_; 
+    }
+    static vector3D parse(const std::wstring & Str);
+
+private:
+    double x_;
+    double y_;
+    double z_;
+};
+
+std::wostream & operator<< (std::wostream & _Wostream, const vector3D & _vector3D);
 
 }
-
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::length);
-
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::vector3D);
 }
 

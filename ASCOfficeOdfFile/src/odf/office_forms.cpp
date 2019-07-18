@@ -830,7 +830,7 @@ const wchar_t * form_date::name = L"date";
 
 void form_date::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	object_type_ = 15;
+	object_type_ = 0x0015;
 	form_element::add_attributes(Attributes);
 }
 void form_date::docx_convert(oox::docx_conversion_context & Context)
@@ -905,7 +905,7 @@ const wchar_t * form_time::name = L"time";
 
 void form_time::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	object_type_ = 16;
+	object_type_ = 0x0016;
 	form_element::add_attributes(Attributes);
 }
 void form_time::docx_convert(oox::docx_conversion_context & Context)
@@ -972,6 +972,38 @@ void form_time::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 			Context.output_stream() << L"</w:t>";
 		Context.finish_run();
 	}
+}
+// form:image-frame
+//----------------------------------------------------------------------------------
+const wchar_t * form_image_frame::ns = L"form";
+const wchar_t * form_image_frame::name = L"image-frame";
+
+void form_image_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	object_type_ = OBJ_Picture;
+	form_element::add_attributes(Attributes);
+
+	CP_APPLY_ATTR(L"form:image-data", image_data_);
+}
+void form_image_frame::docx_convert(oox::docx_conversion_context & Context)
+{
+	//Context.get_forms_context().start_element(xxx);
+	//Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	//form_element::docx_convert(Context);
+}
+void form_image_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	//Context.get_forms_context().start_element(xxx);
+	//Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	//form_element::xlsx_convert(Context);
+}
+void form_image_frame::serialize_control_props(std::wostream & strm)
+{
+}
+void form_image_frame::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
+{
 }
 // form:listbox
 //----------------------------------------------------------------------------------

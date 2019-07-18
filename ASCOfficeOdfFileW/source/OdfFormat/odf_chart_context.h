@@ -79,6 +79,8 @@ public:
 		void start_plot_area();
 		void end_plot_area();
 
+		void set_view3D(int rotX, int rotY, int depthPercent, int perspective, int hPercent, bool angAx);
+
 		void start_group_series();
 			void add_axis_group_series(unsigned int id);
 				void start_series (const std::wstring & type);

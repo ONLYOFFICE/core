@@ -460,6 +460,20 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 			Context.get_drawing_context().set_property(_property(L"orientation", value_range->orientation_.get()));
 		}
 	}
+	form_combobox* combobox = dynamic_cast<form_combobox*>(control);
+
+	if (combobox)
+	{
+		//items_;
+		if (combobox->source_cell_range_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"cell_range", combobox->source_cell_range_.get()));
+		}
+		if (combobox->list_source_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"list_source", combobox->list_source_.get()));
+		}
+	}
 	//_CP_OPT(std::wstring)		label_;
 	//_CP_OPT(std::wstring)		title_;
 	//_CP_OPT(odf_types::Bool)	dropdown_;

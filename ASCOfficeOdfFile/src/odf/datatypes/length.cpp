@@ -35,10 +35,11 @@
 
 #include <iostream>
 #include <sstream>
+#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore { namespace odf_types { 
 
-std::wostream & operator << (std::wostream & _Wostream, const length::unit _Unit)
+std::wostream & operator<< (std::wostream & _Wostream, const length::unit _Unit)
 {
     switch(_Unit)
     {
@@ -259,6 +260,26 @@ double length::get_value_unit(unit Unit) const
         return 0.0;
     }
 }
+//--------------------------------------------------------------------
+std::wostream & operator<< (std::wostream & _Wostream, const vector3D & _vector3D)
+{
+	_Wostream  << L"(" << _vector3D.get_x() << L" " << _vector3D.get_y() << L" " << _vector3D.get_z() << L")";
+    return _Wostream;
+}
+vector3D vector3D::parse(const std::wstring & Str)
+{
+	if (Str.length() < 8) return vector3D();
+
+	std::wstring vsp = Str.substr(1, Str.length() - 2);
+	
+	std::vector<std::wstring> coord;
+	boost::algorithm::split(coord, vsp, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+	if (coord.size() != 3) return vector3D();
+ 
+    return vector3D(std::stod(coord[0]), std::stod(coord[1]), std::stod(coord[2]));
+}
+
 
 } }
 

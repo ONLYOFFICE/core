@@ -100,7 +100,7 @@ private:
 };
 
 xlsx_drawing_context_handle::xlsx_drawing_context_handle(mediaitems_ptr & items) :
-	next_rId_(1), impl_(new xlsx_drawing_context_handle::Impl(items))
+	next_rId_(1024), impl_(new xlsx_drawing_context_handle::Impl(items))
 {
 }
 

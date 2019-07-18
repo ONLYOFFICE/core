@@ -552,7 +552,17 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 					{
 						CP_XML_STREAM() << fmla;
 					}
-				}				
+				}
+				GetProperty(additional, L"cell_range", sVal);
+				if (sVal)
+				{
+					formulasconvert::odf2oox_converter converter;
+					std::wstring fmla = converter.convert_named_ref(*sVal);
+					CP_XML_NODE(L"x:FmlaRange")
+					{
+						CP_XML_STREAM() << fmla;
+					}
+				}	
 				_CP_OPT(bool) visible;
 				GetProperty(additional, L"visible", visible);
 				if (visible)

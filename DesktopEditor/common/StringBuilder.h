@@ -146,6 +146,8 @@ namespace NSStringUtils
         void WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b);
         void WriteHexColor3(const unsigned int& value);
 
+        void Skip(int nSkip);
+
 	protected:
         inline void WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount);
         inline void WriteEncodeXmlString_2bytes(const wchar_t* pString, int nCount);

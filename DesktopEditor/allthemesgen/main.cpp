@@ -42,6 +42,7 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 #ifdef CreateDirectory
 #undef CreateDirectory
@@ -292,6 +293,9 @@ int main(int argc, char** argv)
     int nRasterW = 85;
     int nRasterH = 38;
 
+    NSStringUtils::CStringBuilder oBuilderJS;
+    oBuilderJS.WriteString(L"[");
+
     int nThemeIndex = 0;
     for (std::vector<std::wstring>::iterator iter = arThemes.begin(); iter != arThemes.end(); iter++)
     {
@@ -334,11 +338,11 @@ int main(int argc, char** argv)
         oBuilder.WriteString(L"<Settings><SrcFileType>");
         oBuilder.AddInt(NSDoctRenderer::DoctRendererFormat::PPTT);
         oBuilder.WriteString(L"</SrcFileType><DstFileType>");
-        oBuilder.AddInt(NSDoctRenderer::DoctRendererFormat::PDF);
+        oBuilder.AddInt(NSDoctRenderer::DoctRendererFormat::PPTX_THEME_THUMBNAIL);
         oBuilder.WriteString(L"</DstFileType><SrcFilePath>");
         oBuilder.WriteEncodeXmlString(sOut + L"/theme.bin");
         oBuilder.WriteString(L"</SrcFilePath><DstFilePath>");
-        oBuilder.WriteEncodeXmlString(sOut + L"/theme.bin.pdf");
+        oBuilder.WriteEncodeXmlString(sOut);
         oBuilder.WriteString(L"</DstFilePath><FontsDirectory>");
         oBuilder.WriteEncodeXmlString(sX2tPath);
         oBuilder.WriteString(L"</FontsDirectory><ImagesDirectory>");
@@ -368,9 +372,21 @@ int main(int argc, char** argv)
             continue;
         }
 
+        std::vector<std::wstring> arOutFiles = NSDirectory::GetFiles(sOut, false);
+        std::wstring sThemeFile = L"";
+        for (std::vector<std::wstring>::iterator iter = arOutFiles.begin(); iter != arOutFiles.end(); iter++)
+        {
+            std::wstring sTmpFile = *iter;
+            if (L"theme" == NSFile::GetFileExtention(sTmpFile))
+            {
+                sThemeFile = sTmpFile;
+                break;
+            }
+        }
+
         BYTE* pData = NULL;
         DWORD nBytesCount = 0;
-        if (NSFile::CFileBinary::ReadAllBytes(sOut + L"/theme.bin.pdf", &pData, nBytesCount))
+        if (NSFile::CFileBinary::ReadAllBytes(sThemeFile, &pData, nBytesCount))
         {
             NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
             imageWriter.SetHtmlPlace(sOut);
@@ -394,7 +410,68 @@ int main(int argc, char** argv)
             RELEASEARRAYOBJECTS(pData);
         }
 
-        NSFile::CFileBinary::Remove(sOut + L"/theme.bin.pdf");
+        oBuilderJS.WriteString(L"\"");
+        std::wstring sThemeName = NSFile::GetFileName(sThemeFile);
+        oBuilderJS.WriteString(sThemeName.substr(0, sThemeName.length() - 6)); // '.theme'
+        oBuilderJS.WriteString(L"\",");
+
+        NSFile::CFileBinary::Remove(sThemeFile);
+    }
+
+    if (nThemeIndex > 0)
+    {
+        // remove ','
+        oBuilderJS.Skip(-1);
+        oBuilderJS.WriteString(L"]");
+    }
+
+    NSFile::CFileBinary::SaveToFile(sSrcThemesDir + L"/themes.js", L"AscCommon.g_defaultThemes = " + oBuilderJS.GetData() + L";");
+
+    // теперь нужно пропатчить sdk-all.js
+    std::wstring sPathDoctRendererConfig = sX2tPath + L"/DoctRenderer.config";
+    XmlUtils::CXmlNode oNode;
+    if (oNode.FromXmlFile(sPathDoctRendererConfig))
+    {
+        XmlUtils::CXmlNodes oNodesFile = oNode.GetNode(L"PpttSdk").GetNodes(L"file");
+        for (int i = 0; i < oNodesFile.GetCount(); ++i)
+        {
+            XmlUtils::CXmlNode oNodeFile;
+            oNodesFile.GetAt(i, oNodeFile);
+
+            std::wstring sFileSdk = oNodeFile.GetText();
+
+            if (!NSFile::CFileBinary::Exists(sFileSdk) || NSFile::CFileBinary::Exists(sX2tPath + L"/" + sFileSdk))
+                sFileSdk = sX2tPath + L"/" + sFileSdk;
+
+            std::wstring sSdkContent;
+            if (NSFile::CFileBinary::ReadAllTextUtf8(sFileSdk, sSdkContent))
+            {
+                std::wstring sStart = L"(function(){AscCommon.g_defaultThemes=";
+                std::wstring sEnd = L";})();";
+
+                std::wstring sNewContent = L"";
+
+                std::wstring::size_type posStart = sSdkContent.find(sStart);
+                if (posStart != std::wstring::npos)
+                {
+                    std::wstring::size_type posEnd = sSdkContent.find(sEnd, posStart);
+
+                    sNewContent = sSdkContent.substr(0, posStart);
+                    sNewContent += (sStart + oBuilderJS.GetData() + sEnd);
+                    sNewContent += sSdkContent.substr(posEnd + sEnd.length());
+                }
+                else
+                {
+                    sNewContent = sSdkContent + L"\n" + sStart + oBuilderJS.GetData() + sEnd;
+
+                    NSFile::CFileBinary::Remove(sFileSdk);
+                    NSFile::CFileBinary::SaveToFile(sFileSdk, sSdkContent);
+                }
+
+                NSFile::CFileBinary::Remove(sFileSdk);
+                NSFile::CFileBinary::SaveToFile(sFileSdk, sNewContent);
+            }
+        }
     }
 
     if (nThemeIndex > 0)

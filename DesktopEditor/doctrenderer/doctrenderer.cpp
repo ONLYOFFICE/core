@@ -486,10 +486,10 @@ namespace NSDoctRenderer
                 break;
             }
             case DoctRendererFormat::PDF:
+            case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
             {
                 v8::Handle<v8::Value> js_func_calculate = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeCalculateFile"));
-                v8::Handle<v8::Value> js_func_pages_count = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));
-                v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeFileDataPDF"));
+                v8::Handle<v8::Value> js_func_pages_count = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));                
 
                 // CALCULATE
                 if (js_func_calculate->IsFunction())
@@ -541,8 +541,9 @@ namespace NSDoctRenderer
                 }
 
                 // RENDER
-                if (!bIsBreak)
+                if (!bIsBreak && DoctRendererFormat::PDF == pParams->m_eDstFormat)
                 {
+                    v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeFileDataPDF"));
                     if (js_func_get_file_s->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
@@ -588,6 +589,48 @@ namespace NSDoctRenderer
 
                                 }
                                 oFile.CloseFile();
+                            }
+                        }
+                    }
+                }
+                if (!bIsBreak && DoctRendererFormat::PPTX_THEME_THUMBNAIL == pParams->m_eDstFormat)
+                {
+                    v8::Local<v8::Object> js_objectEditor = global_js->Get(v8::String::NewFromUtf8(isolate, "editor"))->ToObject();
+                    v8::Handle<v8::Value> js_func_get_file_thumbnail = js_objectEditor->Get(v8::String::NewFromUtf8(isolate, "asc_nativeGetThemeThumbnail"));
+                    if (js_func_get_file_thumbnail->IsFunction())
+                    {
+                        v8::Handle<v8::Function> func_get_file_thumbnail = v8::Handle<v8::Function>::Cast(js_func_get_file_thumbnail);
+                        v8::Local<v8::Value> js_result2 = func_get_file_thumbnail->Call(js_objectEditor, 1, args);
+
+                        if (try_catch.HasCaught())
+                        {
+                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                            _LOGGING_ERROR_(L"save_code", strCode);
+                            _LOGGING_ERROR_(L"save", strException);
+
+                            strError = L"code=\"save\"";
+                            bIsBreak = true;
+                        }
+                        else
+                        {
+                            if (!js_result2->IsNull())
+                            {
+                                v8::Local<v8::Object> objNative = js_result2->ToObject();
+                                v8::Local<v8::Uint8Array> pArray = v8::Local<v8::Uint8Array>::Cast(objNative->Get(v8::String::NewFromUtf8(isolate, "data")));
+                                std::wstring sThemeName = to_cstring(objNative->Get(v8::String::NewFromUtf8(isolate, "name")));
+                                int nDataLen = objNative->Get(v8::String::NewFromUtf8(isolate, "dataLen"))->ToInt32()->Value();
+                                if (sThemeName.empty())
+                                    sThemeName = L"Default";
+
+                                BYTE* pData = (BYTE*)pArray->Buffer()->Externalize().Data();
+                                NSFile::CFileBinary oFile;
+                                if (true == oFile.CreateFileW(pParams->m_strDstFilePath + L"/" + sThemeName + L".theme"))
+                                {
+                                    oFile.WriteFile(pData, (DWORD)nDataLen);
+                                    oFile.CloseFile();
+                                }
                             }
                         }
                     }
@@ -1100,6 +1143,7 @@ namespace NSDoctRenderer
                 {
                 case DoctRendererFormat::PPTT:
                 case DoctRendererFormat::PDF:
+                case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
                     {
                         arSdkFiles = &m_pInternal->m_arPpttSDK;
                         m_pInternal->m_strEditorType = L"presentation";

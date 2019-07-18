@@ -46,7 +46,8 @@ namespace NSDoctRenderer
             XLST	= 1,
             PPTT	= 2,
             PDF		= 3,
-            HTML        = 4,
+            HTML    = 4,
+            PPTX_THEME_THUMBNAIL = 5,
 
             INVALID = 255
         };

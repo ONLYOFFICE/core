@@ -229,6 +229,7 @@ int main(int argc, char** argv)
     std::wstring sSrcThemesDir = L"";
     std::wstring sX2tPath = L"";
     std::wstring sOutputThumbnails = L"";
+    bool bIsNeedCorrectSdkAll = false;
 
     for (int i = 0; i < argc; ++i)
     {
@@ -266,6 +267,13 @@ int main(int argc, char** argv)
             else if (sKey == L"--output")
             {
                 sOutputThumbnails = CorrectDir(sValue);
+            }
+            else if (sKey == L"--change-sdk")
+            {
+                if (L"1" == sValue || L"true" == sValue)
+                {
+                    bIsNeedCorrectSdkAll = true;
+                }
             }
         }
     }
@@ -430,7 +438,7 @@ int main(int argc, char** argv)
     // теперь нужно пропатчить sdk-all.js
     std::wstring sPathDoctRendererConfig = sX2tPath + L"/DoctRenderer.config";
     XmlUtils::CXmlNode oNode;
-    if (oNode.FromXmlFile(sPathDoctRendererConfig))
+    if (bIsNeedCorrectSdkAll && oNode.FromXmlFile(sPathDoctRendererConfig))
     {
         XmlUtils::CXmlNodes oNodesFile = oNode.GetNode(L"PpttSdk").GetNodes(L"file");
         for (int i = 0; i < oNodesFile.GetCount(); ++i)

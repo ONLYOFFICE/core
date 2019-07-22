@@ -2550,12 +2550,12 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 	
 	start_frame();
 
-	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
-	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
-	if (style_)
-	{
-		style_->style_parent_style_name_ = L"Frame";
-	}
+	////добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
+	//style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
+	//if (style_)
+	//{
+	//	style_->style_parent_style_name_ = L"Frame";
+	//}
 ///////////////////////////////////////////////////////////////////////////////////////////////
 	office_element_ptr image_elm;
 	create_element(L"draw", L"image", image_elm, impl_->odf_context_);

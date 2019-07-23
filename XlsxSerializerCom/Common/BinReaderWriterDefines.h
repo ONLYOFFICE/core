@@ -1125,7 +1125,10 @@ namespace BinXlsxRW
 		TransitionEntry = 7,
 		TransitionEvaluation = 8,
 
-		TabColor = 9
+		TabColor = 9,
+		PageSetUpPr = 10,
+		AutoPageBreaks = 11,
+		FitToPage = 12
 	};}
 
     namespace c_oSer_Sparkline{enum c_oSer_Sparkline

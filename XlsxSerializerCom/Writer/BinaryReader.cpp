@@ -4217,6 +4217,29 @@ int BinaryWorksheetsTableReader::ReadSheetPr(BYTE type, long length, void* poRes
 		pSheetPr->m_oTabColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSheetPr->m_oTabColor.GetPointer());
 	}
+	else if(c_oSer_SheetPr::PageSetUpPr == type)
+	{
+		pSheetPr->m_oPageSetUpPr.Init();
+		READ1_DEF(length, res, this->ReadPageSetUpPr, pSheetPr->m_oPageSetUpPr.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadPageSetUpPr(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CPageSetUpPr* pPageSetUpPr = static_cast<OOX::Spreadsheet::CPageSetUpPr*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if(c_oSer_SheetPr::AutoPageBreaks == type)
+	{
+		pPageSetUpPr->m_oAutoPageBreaks.Init();
+		pPageSetUpPr->m_oAutoPageBreaks->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_SheetPr::FitToPage == type)
+	{
+		pPageSetUpPr->m_oFitToPage.Init();
+		pPageSetUpPr->m_oFitToPage->FromBool(m_oBufferedStream.GetBool());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

@@ -700,6 +700,56 @@ namespace OOX
 		public:
 		};
 
+		class CPageSetUpPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CPageSetUpPr)
+			CPageSetUpPr()
+			{
+			}
+			virtual ~CPageSetUpPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(_T("<pageSetUpPr"));
+				WritingStringNullableAttrBool(L"autoPageBreaks", m_oAutoPageBreaks);
+				WritingStringNullableAttrBool(L"fitToPage", m_oFitToPage);
+				writer.WriteString(_T("/>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_PageSetUpPr;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("autoPageBreaks"), m_oAutoPageBreaks )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fitToPage"),	m_oFitToPage )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::COnOff<>>		m_oAutoPageBreaks;
+			nullable<SimpleTypes::COnOff<>>		m_oFitToPage;
+		};
 		class CSheetPr : public WritingElement
 		{
 		public:
@@ -719,12 +769,27 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				writer.WriteString(_T("<sheetPr"));
+				WritingStringNullableAttrEncodeXmlString(L"codeName", m_oCodeName, m_oCodeName.get());
+				WritingStringNullableAttrBool(L"enableFormatConditionsCalculation", m_oEnableFormatConditionsCalculation);
+				WritingStringNullableAttrBool(L"filterMode", m_oFilterMode);
+				WritingStringNullableAttrBool(L"published", m_oPublished);
+				WritingStringNullableAttrBool(L"syncHorizontal", m_oSyncHorizontal);
+				WritingStringNullableAttrEncodeXmlString(L"syncRef", m_oSyncRef, m_oSyncRef.get());
+				WritingStringNullableAttrBool(L"syncVertical", m_oSyncVertical);
+				WritingStringNullableAttrBool(L"transitionEntry", m_oTransitionEntry);
+				WritingStringNullableAttrBool(L"transitionEvaluation", m_oTransitionEvaluation);
+				writer.WriteString(_T(">"));
 				if (m_oTabColor.IsInit())
 				{
-					writer.WriteString(_T("<sheetPr>"));
 					m_oTabColor->toXML2(writer, _T("tabColor"));
-					writer.WriteString(_T("</sheetPr>"));
 				}
+				if (m_oPageSetUpPr.IsInit())
+				{
+					m_oPageSetUpPr->toXML(writer);
+				}
+				writer.WriteString(_T("</sheetPr>"));
+
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -740,9 +805,10 @@ namespace OOX
 
 					if ( _T("tabColor") == sName )
 						m_oTabColor = oReader;
+					if ( _T("pageSetUpPr") == sName )
+						m_oPageSetUpPr = oReader;
 					//необработано:
 					//<outlinePr>
-					//<pageSetUpPr>
 				}
 			}
 			virtual EElementType getType () const
@@ -769,6 +835,7 @@ namespace OOX
 
 		public:
 			nullable<CColor>					m_oTabColor;
+			nullable<CPageSetUpPr>				m_oPageSetUpPr;
 
 			nullable<std::wstring>				m_oCodeName;
 			nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;

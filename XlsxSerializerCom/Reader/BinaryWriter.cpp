@@ -5529,6 +5529,28 @@ void BinaryWorksheetTableWriter::WriteSheetPr(const OOX::Spreadsheet::CSheetPr& 
 		m_oBcw.WriteColor(oSheetPr.m_oTabColor.get(), m_pIndexedColors);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSheetPr.m_oPageSetUpPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::PageSetUpPr);
+		WritePageSetUpPr(oSheetPr.m_oPageSetUpPr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryWorksheetTableWriter::WritePageSetUpPr(const OOX::Spreadsheet::CPageSetUpPr& oPageSetUpPr)
+{
+	int nCurPos = 0;
+	if (oPageSetUpPr.m_oAutoPageBreaks.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::AutoPageBreaks);
+		m_oBcw.m_oStream.WriteBOOL(oPageSetUpPr.m_oAutoPageBreaks->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oPageSetUpPr.m_oFitToPage.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::FitToPage);
+		m_oBcw.m_oStream.WriteBOOL(oPageSetUpPr.m_oFitToPage->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryWorksheetTableWriter::WritemHeaderFooter(const OOX::Spreadsheet::CHeaderFooter& oHeaderFooter)
 {

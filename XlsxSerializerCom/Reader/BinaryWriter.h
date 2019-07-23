@@ -251,6 +251,7 @@ namespace BinXlsxRW
 		void WriteThreadedComment(OOX::Spreadsheet::CThreadedComment& oThreadedComment, bool bThreadedCommentCopy);
 		void WriteThreadedCommentMention(OOX::Spreadsheet::CThreadedCommentMention& oMention);
 		void WriteSheetPr(const OOX::Spreadsheet::CSheetPr& oSheetPr);
+		void WritePageSetUpPr(const OOX::Spreadsheet::CPageSetUpPr& oPageSetUpPr);
 		void WritemHeaderFooter(const OOX::Spreadsheet::CHeaderFooter& oHeaderFooter);
 		void WritemRowColBreaks(const OOX::Spreadsheet::CRowColBreaks& oRowColBreaks);		
 		void WritemBreak(const OOX::Spreadsheet::CBreak& oBreak);

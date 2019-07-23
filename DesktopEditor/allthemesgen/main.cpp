@@ -48,6 +48,12 @@
 #undef CreateDirectory
 #endif
 
+#ifdef LINUX
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#endif
+
 std::wstring CorrectDir(const std::wstring& sDir)
 {
     if (sDir.empty())

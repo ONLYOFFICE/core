@@ -893,12 +893,16 @@ namespace DocFileFormat
 			}
 			else if ((TextMark::Symbol == code) && fSpec)
 			{
+				writeNotesReferences(cp);//for word95 & non-automatic notes
+
 				Symbol s = getSymbol( chpx );
 
-                //m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
-                //m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
-                //m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
-                //m_pXmlWriter->WriteNodeEnd(L"", true);
+				//<w:sym w:font="Symbol" w:char="F062"/>
+
+                m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
+                m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
+                m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
+                m_pXmlWriter->WriteNodeEnd(L"", true);
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
@@ -1036,39 +1040,7 @@ namespace DocFileFormat
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
 			{
-				if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:footnoteReference", true );
-					FootnoteDescriptor* desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
-					if (desc && desc->aFtnIdx == 0)
-					{
-						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-					}
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
-				else if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:footnoteRef", true );
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
-				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
-					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_endnoteNr]);
-					if (desc && desc->aEndIdx == 0)
-					{
-						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-					}
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_endnoteNr++ ));
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
-				else if ((m_document->IndividualEndnotesPlex != NULL) && 
-					(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:endnoteRef", true );
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
+				writeNotesReferences(cp);
 			}
 			else if (TextMark::AnnotationReference == code)
 			{
@@ -1094,6 +1066,8 @@ namespace DocFileFormat
 			}
 			else if (!FormatUtils::IsControlSymbol(c) && ((int)c != 0xFFFF))
 			{
+
+				writeNotesReferences(cp);//for word95 & non-automatic notes
                 text += FormatUtils::GetXMLSymbol(c);
 			}
 
@@ -1765,7 +1739,51 @@ namespace DocFileFormat
 
 		return cpCellEnd;
 	}
-
+	bool DocumentMapping::writeNotesReferences(int cp)
+	{
+		if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
+		{
+			FootnoteDescriptor* desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+			if ((desc) && (false == desc->bUsed))
+			{
+				desc->bUsed = true;
+				m_pXmlWriter->WriteNodeBegin( L"w:footnoteReference", true );
+				if (desc->aFtnIdx == 0)
+				{
+					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				}
+				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
+				m_pXmlWriter->WriteNodeEnd( L"", true );
+			}
+		}
+		else if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
+		{
+            m_pXmlWriter->WriteNodeBegin( L"w:footnoteRef", true );
+            m_pXmlWriter->WriteNodeEnd( L"", true );
+		}
+		else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
+		{
+			EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_endnoteNr]);
+			if ((desc) && (false == desc->bUsed))
+			{
+				desc->bUsed = true;
+				m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
+				if (desc->aEndIdx == 0)
+				{
+					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				}
+				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_endnoteNr++ ));
+				m_pXmlWriter->WriteNodeEnd( L"", true );
+			}
+		}
+		else if ((m_document->IndividualEndnotesPlex != NULL) && 
+			(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
+		{
+            m_pXmlWriter->WriteNodeBegin( L"w:endnoteRef", true );
+            m_pXmlWriter->WriteNodeEnd( L"", true );
+		}
+		return true;
+	}
 	bool DocumentMapping::writeBookmarks(int cp)
 	{
 		bool result =	true;
@@ -1908,7 +1926,7 @@ namespace DocFileFormat
 				FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( fontIndex ) );
 
 				ret.FontName = ffn->xszFtn;
-                ret.HexValue = FormatUtils::IntToFormattedWideString( code, L"%04x" );
+                ret.HexValue = FormatUtils::IntToFormattedWideString( code, L"%04X" );
 
 				break;
 			}

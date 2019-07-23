@@ -40,7 +40,7 @@ namespace DocFileFormat
     public:
       static const int STRUCTURE_SIZE = 2;
 
-	  EndnoteDescriptor(): aEndIdx(0) {}
+	  EndnoteDescriptor(): aEndIdx(0), bUsed(false) {}
 
 	  virtual ~EndnoteDescriptor()
 	  {
@@ -54,6 +54,7 @@ namespace DocFileFormat
 		return static_cast<ByteStructure*>( newObject );
       }
 
+	  bool bUsed;
 	  short aEndIdx;
   };
 }

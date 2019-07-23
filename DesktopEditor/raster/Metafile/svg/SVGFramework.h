@@ -5587,6 +5587,8 @@ namespace SVG
                 return false;
 #endif
 
+            bool bRet = false;
+
 			if (model)
 			{
 				m_model = model;
@@ -5594,10 +5596,12 @@ namespace SVG
 				std::wstring sXml;
 				NSFile::CFileBinary::ReadAllTextUtf8(strFile, sXml);
 
-                return LoadFromString(sXml, model);
+                XmlUtils::IXmlDOMDocument::DisableOutput();
+                bRet = LoadFromString(sXml, model);
+                XmlUtils::IXmlDOMDocument::EnableOutput();
 			}
 
-			return false;
+            return bRet;
 		}
 		inline bool	LoadFromString (const std::wstring& strXml, Storage* model)
 		{

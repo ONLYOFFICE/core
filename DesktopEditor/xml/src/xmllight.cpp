@@ -34,6 +34,11 @@
 
 namespace XmlUtils
 {
+    static void libxml2_err_no(void * ctx, const char * msg, ...)
+    {
+        // none
+    }
+
     IXmlDOMDocument::IXmlDOMDocument()
     {
         m_lRef = 1;
@@ -53,6 +58,16 @@ namespace XmlUtils
         if (0 == m_lRef)
             delete this;
         return lReturn;
+    }
+
+    void IXmlDOMDocument::DisableOutput()
+    {
+        xmlSetGenericErrorFunc(NULL, (xmlGenericErrorFunc)libxml2_err_no);
+    }
+
+    void IXmlDOMDocument::EnableOutput()
+    {
+        xmlSetGenericErrorFunc(NULL, NULL);
     }
 }
 

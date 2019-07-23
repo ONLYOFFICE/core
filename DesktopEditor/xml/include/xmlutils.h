@@ -143,6 +143,9 @@ namespace XmlUtils
 
 		virtual unsigned int AddRef();
 		virtual unsigned int Release();
+
+		static void DisableOutput();
+		static void EnableOutput();
 	};
 
 	class CXmlNodeBase;

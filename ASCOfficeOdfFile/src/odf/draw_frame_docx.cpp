@@ -858,7 +858,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_.get();
 		docx_convert_transforms(transformStr, drawing->additional);
 	} 
-	if (!drawing->isInline)
+	if (false == drawing->isInline)
     {
 		drawing->relativeHeight	= L"2";
         drawing->behindDoc		= L"0";
@@ -969,11 +969,24 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->x += new_x;
 		drawing->y += new_y;
 	}	
+
+	if (Context.process_headers_footers_ && drawing->posOffsetH < 0)
+	{//p7офис_Альт.odt
+		const _CP_OPT(length) pageMarginLeft = CalcResultLength(pageProperties.common_horizontal_margin_attlist_.fo_margin_left_, pageProperties.fo_page_width_);
+
+		if (pageMarginLeft)
+		{
+			double val = pageMarginLeft->get_value_unit(length::emu);
+
+			if (drawing->posOffsetH < - val)
+				drawing->posOffsetH = -val;
+		}
+	}
 	
-	GetProperty(drawing->additional, L"svg:scale_x",dVal);
+	GetProperty(drawing->additional, L"svg:scale_x", dVal);
 	if (dVal)drawing->cx = (int)(0.5 + drawing->cx * dVal.get());
 	
-	GetProperty(drawing->additional, L"svg:scale_y",dVal);
+	GetProperty(drawing->additional, L"svg:scale_y", dVal);
 	if (dVal)drawing->cy = (int)(0.5 + drawing->cy * dVal.get());
 
 	GetProperty(drawing->additional, L"svg:translate_x", dVal);

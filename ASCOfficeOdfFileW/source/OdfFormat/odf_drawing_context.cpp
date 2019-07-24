@@ -1828,7 +1828,7 @@ void odf_drawing_context::set_vertical_rel(int from)
 		case 0:	type = vertical_rel::Baseline;		break;//	relfromvBottomMargin ???
 		case 1:	type = vertical_rel::PageContent;	break;//	relfromvInsideMargin ???
 		case 2:	type = vertical_rel::Baseline;		break;//	relfromvLine          
-		case 3:	type = vertical_rel::Paragraph; 	break;//	relfromvMargin     
+		case 3:	type = vertical_rel::PageContent; 	break;//	relfromvMargin     //Paragraph
 		case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
 		case 5:	type = vertical_rel::Page;			break;//	relfromvPage          
 		case 6:	type = vertical_rel::Paragraph;		break;//	relfromvParagraph    
@@ -1868,7 +1868,7 @@ void odf_drawing_context::set_horizontal_rel(int from)
 		case 1:	type = horizontal_rel::Paragraph;			break;	//	relfromhColumn        = 1,
 		case 2:	type = horizontal_rel::Paragraph;			break;	//	relfromhInsideMargin  = 2, ???
 		case 3:	type = horizontal_rel::PageStartMargin;		break;	//	relfromhLeftMargin    = 3,
-		case 4:	type = horizontal_rel::ParagraphStartMargin;break;	//	relfromhMargin        = 4, ???
+		case 4:	type = horizontal_rel::PageContent;			break;	//	relfromhMargin        = 4, ??? //ParagraphStartMargin
 		case 5:	type = horizontal_rel::ParagraphEndMargin;	break;	//	relfromhOutsideMargin = 5,
 		case 6:	type = horizontal_rel::Page;				break;	//	relfromhPage          = 6, ???
 		case 7:	type = horizontal_rel::PageEndMargin;		break;	//	relfromhRightMargin   = 7

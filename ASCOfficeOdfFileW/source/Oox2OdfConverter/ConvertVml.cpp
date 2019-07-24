@@ -887,7 +887,7 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 		switch(vml_wrap->m_oAnchorY->GetValue())
 		{
 		case SimpleTypes::verticalanchorMargin: 		
-			odf_context()->drawing_context()->set_vertical_rel(0); break;
+			odf_context()->drawing_context()->set_vertical_rel(3); break;
 		case SimpleTypes::verticalanchorPage:  
 		{
 			if (anchor_page_x)

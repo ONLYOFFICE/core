@@ -710,79 +710,212 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if ( _T("w:adjustLineHeightInTable") == sName )
+					if ( _T("w:useSingleBorderforContiguousCells") == sName )
+						m_oUseSingleBorderforContiguousCells = oReader;
+					else if ( _T("w:wpJustification") == sName )
+						m_oWpJustification = oReader;
+					else if ( _T("w:noTabHangInd") == sName )
+						m_oNoTabHangInd = oReader;
+					else if ( _T("w:noLeading") == sName )
+						m_oNoLeading = oReader;
+					else if ( _T("w:spaceForUL") == sName )
+						m_oSpaceForUL = oReader;
+					else if ( _T("w:noColumnBalance") == sName )
+						m_oNoColumnBalance = oReader;
+					else if ( _T("w:balanceSingleByteDoubleByteWidth") == sName )
+						m_oBalanceSingleByteDoubleByteWidth = oReader;
+					else if ( _T("w:noExtraLineSpacing") == sName )
+						m_oNoExtraLineSpacing = oReader;
+					else if ( _T("w:doNotLeaveBackslashAlone") == sName )
+						m_oDoNotLeaveBackslashAlone = oReader;
+					else if ( _T("w:ulTrailSpace") == sName )
+						m_oUlTrailSpace = oReader;
+					else if ( _T("w:doNotExpandShiftReturn") == sName )
+						m_oDoNotExpandShiftReturn = oReader;
+					else if ( _T("w:spacingInWholePoints") == sName )
+						m_oSpacingInWholePoints = oReader;
+					else if ( _T("w:lineWrapLikeWord6") == sName )
+						m_oLineWrapLikeWord6 = oReader;
+					else if ( _T("w:printBodyTextBeforeHeader") == sName )
+						m_oPrintBodyTextBeforeHeader = oReader;
+					else if ( _T("w:printColBlack") == sName )
+						m_oPrintColBlack = oReader;
+					else if ( _T("w:wpSpaceWidth") == sName )
+						m_oWpSpaceWidth = oReader;
+					else if ( _T("w:showBreaksInFrames") == sName )
+						m_oShowBreaksInFrames = oReader;
+					else if ( _T("w:subFontBySize") == sName )
+						m_oSubFontBySize = oReader;
+					else if ( _T("w:suppressBottomSpacing") == sName )
+						m_oSuppressBottomSpacing = oReader;
+					else if ( _T("w:suppressTopSpacing") == sName )
+						m_oSuppressTopSpacing = oReader;
+					else if ( _T("w:suppressSpacingAtTopOfPage") == sName )
+						m_oSuppressSpacingAtTopOfPage = oReader;
+					else if ( _T("w:suppressTopSpacingWP") == sName )
+						m_oSuppressTopSpacingWP = oReader;
+					else if ( _T("w:suppressSpBfAfterPgBrk") == sName )
+						m_oSuppressSpBfAfterPgBrk = oReader;
+					else if ( _T("w:swapBordersFacingPages") == sName )
+						m_oSwapBordersFacingPages = oReader;
+					else if ( _T("w:convMailMergeEsc") == sName )
+						m_oConvMailMergeEsc = oReader;
+					else if ( _T("w:truncateFontHeightsLikeWP6") == sName )
+						m_oTruncateFontHeightsLikeWP6 = oReader;
+					else if ( _T("w:mwSmallCaps") == sName )
+						m_oMwSmallCaps = oReader;
+					else if ( _T("w:usePrinterMetrics") == sName )
+						m_oUsePrinterMetrics = oReader;
+					else if ( _T("w:doNotSuppressParagraphBorders") == sName )
+						m_oDoNotSuppressParagraphBorders = oReader;
+					else if ( _T("w:wrapTrailSpaces") == sName )
+						m_oWrapTrailSpaces = oReader;
+					else if ( _T("w:footnoteLayoutLikeWW8") == sName )
+						m_oFootnoteLayoutLikeWW8 = oReader;
+					else if ( _T("w:shapeLayoutLikeWW8") == sName )
+						m_oShapeLayoutLikeWW8 = oReader;
+					else if ( _T("w:alignTablesRowByRow") == sName )
+						m_oAlignTablesRowByRow = oReader;
+					else if ( _T("w:forgetLastTabAlignment") == sName )
+						m_oForgetLastTabAlignment = oReader;
+					else if ( _T("w:adjustLineHeightInTable") == sName )
 						m_oAdjustLineHeightInTable = oReader;
+					else if ( _T("w:autoSpaceLikeWord95") == sName )
+						m_oAutoSpaceLikeWord95 = oReader;
+					else if ( _T("w:noSpaceRaiseLower") == sName )
+						m_oNoSpaceRaiseLower = oReader;
+					else if ( _T("w:doNotUseHTMLParagraphAutoSpacing") == sName )
+						m_oDoNotUseHTMLParagraphAutoSpacing = oReader;
+					else if ( _T("w:layoutRawTableWidth") == sName )
+						m_oLayoutRawTableWidth = oReader;
+					else if ( _T("w:layoutTableRowsApart") == sName )
+						m_oLayoutTableRowsApart = oReader;
+					else if ( _T("w:useWord97LineBreakRules") == sName )
+						m_oUseWord97LineBreakRules = oReader;
+					else if ( _T("w:doNotBreakWrappedTables") == sName )
+						m_oDoNotBreakWrappedTables = oReader;
+					else if ( _T("w:doNotSnapToGridInCell") == sName )
+						m_oDoNotSnapToGridInCell = oReader;
+					else if ( _T("w:selectFldWithFirstOrLastChar") == sName )
+						m_oSelectFldWithFirstOrLastChar = oReader;
 					else if ( _T("w:applyBreakingRules") == sName )
 						m_oApplyBreakingRules = oReader;
-					else if ( _T("w:balanceSingleByteDoubleByteWidth") == sName )
-						m_oBalanceSingleByDoubleWidth = oReader;
+					else if ( _T("w:doNotWrapTextWithPunct") == sName )
+						m_oDoNotWrapTextWithPunct = oReader;
+					else if ( _T("w:doNotUseEastAsianBreakRules") == sName )
+						m_oDoNotUseEastAsianBreakRules = oReader;
+					else if ( _T("w:useWord2002TableStyleRules") == sName )
+						m_oUseWord2002TableStyleRules = oReader;
+					else if ( _T("w:growAutofit") == sName )
+						m_oGrowAutofit = oReader;
+					else if ( _T("w:useFELayout") == sName )
+						m_oUseFELayout = oReader;
+					else if ( _T("w:useNormalStyleForList") == sName )
+						m_oUseNormalStyleForList = oReader;
+					else if ( _T("w:doNotUseIndentAsNumberingTabStop") == sName )
+						m_oDoNotUseIndentAsNumberingTabStop = oReader;
+					else if ( _T("w:useAltKinsokuLineBreakRules") == sName )
+						m_oUseAltKinsokuLineBreakRules = oReader;
+					else if ( _T("w:allowSpaceOfSameStyleInTable") == sName )
+						m_oAllowSpaceOfSameStyleInTable = oReader;
+					else if ( _T("w:doNotSuppressIndentation") == sName )
+						m_oDoNotSuppressIndentation = oReader;
+					else if ( _T("w:doNotAutofitConstrainedTables") == sName )
+						m_oDoNotAutofitConstrainedTables = oReader;
+					else if ( _T("w:autofitToFirstFixedWidthCell") == sName )
+						m_oAutofitToFirstFixedWidthCell = oReader;
+					else if ( _T("w:underlineTabInNumList") == sName )
+						m_oUnderlineTabInNumList = oReader;
+					else if ( _T("w:displayHangulFixedWidth") == sName )
+						m_oDisplayHangulFixedWidth = oReader;
+					else if ( _T("w:splitPgBreakAndParaMark") == sName )
+						m_oSplitPgBreakAndParaMark = oReader;
+					else if ( _T("w:doNotVertAlignCellWithSp") == sName )
+						m_oDoNotVertAlignCellWithSp = oReader;
+					else if ( _T("w:doNotBreakConstrainedForcedTable") == sName )
+						m_oDoNotBreakConstrainedForcedTable = oReader;
+					else if ( _T("w:doNotVertAlignInTxbx") == sName )
+						m_oDoNotVertAlignInTxbx = oReader;
+					else if ( _T("w:useAnsiKerningPairs") == sName )
+						m_oUseAnsiKerningPairs = oReader;
+					else if ( _T("w:cachedColBalance") == sName )
+						m_oCachedColBalance = oReader;
 					else if ( _T("w:compatSetting") == sName )
 					{
 						OOX::Settings::CCompatSetting *oCS = new OOX::Settings::CCompatSetting(oReader);
 						if (oCS)m_arrCompatSettings.push_back( oCS );
 					}
-					else if ( _T("w:doNotExpandShiftReturn") == sName )
-						m_oDoNotExpandShiftReturn = oReader;
-					else if ( _T("w:doNotLeaveBackslashAlone") == sName )
-						m_oDoNotLeaveBackslaskAlone = oReader;
-					else if ( _T("w:spaceForUL") == sName )
-						m_oSpaceForUL = oReader;
-					else if ( _T("w:ulTrailSpace") == sName )
-						m_oUlTrailSpace = oReader;
 				}
 			}
             virtual std::wstring      toXML() const
 			{
                 std::wstring sResult = _T("<w:compat>");
 
-				if ( m_oSpaceForUL.IsInit() )
-				{
-					sResult += _T("<w:spaceForUL ");
-					sResult += m_oSpaceForUL->ToString();
-					sResult += _T("/>");
-				}
-
-				if ( m_oBalanceSingleByDoubleWidth.IsInit() )
-				{
-					sResult += _T("<w:balanceSingleByteDoubleByteWidth ");
-					sResult += m_oBalanceSingleByDoubleWidth->ToString();
-					sResult += _T("/>");
-				}
-
-				if ( m_oDoNotLeaveBackslaskAlone.IsInit() )
-				{
-					sResult += _T("<w:doNotLeaveBackslashAlone ");
-					sResult += m_oDoNotLeaveBackslaskAlone->ToString();
-					sResult += _T("/>");
-				}
-
-				if ( m_oUlTrailSpace.IsInit() )
-				{
-					sResult += _T("<w:ulTrailSpace ");
-					sResult += m_oUlTrailSpace->ToString();
-					sResult += _T("/>");
-				}
-
-				if ( m_oDoNotExpandShiftReturn.IsInit() )
-				{
-					sResult += _T("<w:doNotExpandShiftReturn ");
-					sResult += m_oDoNotExpandShiftReturn->ToString();
-					sResult += _T("/>");
-				}
-
-				if ( m_oAdjustLineHeightInTable.IsInit() )
-				{
-					sResult += _T("<w:adjustLineHeightInTable ");
-					sResult += m_oAdjustLineHeightInTable->ToString();
-					sResult += _T("/>");
-				}
-
-				if ( m_oApplyBreakingRules.IsInit() )
-				{
-					sResult += _T("<w:applyBreakingRules ");
-					sResult += m_oApplyBreakingRules->ToString();
-					sResult += _T("/>");
-				}
+				WritingElement_WriteNode_1( _T("<w:useSingleBorderforContiguousCells "),      m_oUseSingleBorderforContiguousCells );
+				WritingElement_WriteNode_1( _T("<w:wpJustification "),      m_oWpJustification );
+				WritingElement_WriteNode_1( _T("<w:noTabHangInd "),      m_oNoTabHangInd );
+				WritingElement_WriteNode_1( _T("<w:noLeading "),      m_oNoLeading );
+				WritingElement_WriteNode_1( _T("<w:spaceForUL "),      m_oSpaceForUL );
+				WritingElement_WriteNode_1( _T("<w:noColumnBalance "),      m_oNoColumnBalance );
+				WritingElement_WriteNode_1( _T("<w:balanceSingleByteDoubleByteWidth "),      m_oBalanceSingleByteDoubleByteWidth );
+				WritingElement_WriteNode_1( _T("<w:noExtraLineSpacing "),      m_oNoExtraLineSpacing );
+				WritingElement_WriteNode_1( _T("<w:doNotLeaveBackslashAlone "),      m_oDoNotLeaveBackslashAlone );
+				WritingElement_WriteNode_1( _T("<w:ulTrailSpace "),      m_oUlTrailSpace );
+				WritingElement_WriteNode_1( _T("<w:doNotExpandShiftReturn "),      m_oDoNotExpandShiftReturn );
+				WritingElement_WriteNode_1( _T("<w:spacingInWholePoints "),      m_oSpacingInWholePoints );
+				WritingElement_WriteNode_1( _T("<w:lineWrapLikeWord6 "),      m_oLineWrapLikeWord6 );
+				WritingElement_WriteNode_1( _T("<w:printBodyTextBeforeHeader "),      m_oPrintBodyTextBeforeHeader );
+				WritingElement_WriteNode_1( _T("<w:printColBlack "),      m_oPrintColBlack );
+				WritingElement_WriteNode_1( _T("<w:wpSpaceWidth "),      m_oWpSpaceWidth );
+				WritingElement_WriteNode_1( _T("<w:showBreaksInFrames "),      m_oShowBreaksInFrames );
+				WritingElement_WriteNode_1( _T("<w:subFontBySize "),      m_oSubFontBySize );
+				WritingElement_WriteNode_1( _T("<w:suppressBottomSpacing "),      m_oSuppressBottomSpacing );
+				WritingElement_WriteNode_1( _T("<w:suppressTopSpacing "),      m_oSuppressTopSpacing );
+				WritingElement_WriteNode_1( _T("<w:suppressSpacingAtTopOfPage "),      m_oSuppressSpacingAtTopOfPage );
+				WritingElement_WriteNode_1( _T("<w:suppressTopSpacingWP "),      m_oSuppressTopSpacingWP );
+				WritingElement_WriteNode_1( _T("<w:suppressSpBfAfterPgBrk "),      m_oSuppressSpBfAfterPgBrk );
+				WritingElement_WriteNode_1( _T("<w:swapBordersFacingPages "),      m_oSwapBordersFacingPages );
+				WritingElement_WriteNode_1( _T("<w:convMailMergeEsc "),      m_oConvMailMergeEsc );
+				WritingElement_WriteNode_1( _T("<w:truncateFontHeightsLikeWP6 "),      m_oTruncateFontHeightsLikeWP6 );
+				WritingElement_WriteNode_1( _T("<w:mwSmallCaps "),      m_oMwSmallCaps );
+				WritingElement_WriteNode_1( _T("<w:usePrinterMetrics "),      m_oUsePrinterMetrics );
+				WritingElement_WriteNode_1( _T("<w:doNotSuppressParagraphBorders "),      m_oDoNotSuppressParagraphBorders );
+				WritingElement_WriteNode_1( _T("<w:wrapTrailSpaces "),      m_oWrapTrailSpaces );
+				WritingElement_WriteNode_1( _T("<w:footnoteLayoutLikeWW8 "),      m_oFootnoteLayoutLikeWW8 );
+				WritingElement_WriteNode_1( _T("<w:shapeLayoutLikeWW8 "),      m_oShapeLayoutLikeWW8 );
+				WritingElement_WriteNode_1( _T("<w:alignTablesRowByRow "),      m_oAlignTablesRowByRow );
+				WritingElement_WriteNode_1( _T("<w:forgetLastTabAlignment "),      m_oForgetLastTabAlignment );
+				WritingElement_WriteNode_1( _T("<w:adjustLineHeightInTable "),      m_oAdjustLineHeightInTable );
+				WritingElement_WriteNode_1( _T("<w:autoSpaceLikeWord95 "),      m_oAutoSpaceLikeWord95 );
+				WritingElement_WriteNode_1( _T("<w:noSpaceRaiseLower "),      m_oNoSpaceRaiseLower );
+				WritingElement_WriteNode_1( _T("<w:doNotUseHTMLParagraphAutoSpacing "),      m_oDoNotUseHTMLParagraphAutoSpacing );
+				WritingElement_WriteNode_1( _T("<w:layoutRawTableWidth "),      m_oLayoutRawTableWidth );
+				WritingElement_WriteNode_1( _T("<w:layoutTableRowsApart "),      m_oLayoutTableRowsApart );
+				WritingElement_WriteNode_1( _T("<w:useWord97LineBreakRules "),      m_oUseWord97LineBreakRules );
+				WritingElement_WriteNode_1( _T("<w:doNotBreakWrappedTables "),      m_oDoNotBreakWrappedTables );
+				WritingElement_WriteNode_1( _T("<w:doNotSnapToGridInCell "),      m_oDoNotSnapToGridInCell );
+				WritingElement_WriteNode_1( _T("<w:selectFldWithFirstOrLastChar "),      m_oSelectFldWithFirstOrLastChar );
+				WritingElement_WriteNode_1( _T("<w:applyBreakingRules "),      m_oApplyBreakingRules );
+				WritingElement_WriteNode_1( _T("<w:doNotWrapTextWithPunct "),      m_oDoNotWrapTextWithPunct );
+				WritingElement_WriteNode_1( _T("<w:doNotUseEastAsianBreakRules "),      m_oDoNotUseEastAsianBreakRules );
+				WritingElement_WriteNode_1( _T("<w:useWord2002TableStyleRules "),      m_oUseWord2002TableStyleRules );
+				WritingElement_WriteNode_1( _T("<w:growAutofit "),      m_oGrowAutofit );
+				WritingElement_WriteNode_1( _T("<w:useFELayout "),      m_oUseFELayout );
+				WritingElement_WriteNode_1( _T("<w:useNormalStyleForList "),      m_oUseNormalStyleForList );
+				WritingElement_WriteNode_1( _T("<w:doNotUseIndentAsNumberingTabStop "),      m_oDoNotUseIndentAsNumberingTabStop );
+				WritingElement_WriteNode_1( _T("<w:useAltKinsokuLineBreakRules "),      m_oUseAltKinsokuLineBreakRules );
+				WritingElement_WriteNode_1( _T("<w:allowSpaceOfSameStyleInTable "),      m_oAllowSpaceOfSameStyleInTable );
+				WritingElement_WriteNode_1( _T("<w:doNotSuppressIndentation "),      m_oDoNotSuppressIndentation );
+				WritingElement_WriteNode_1( _T("<w:doNotAutofitConstrainedTables "),      m_oDoNotAutofitConstrainedTables );
+				WritingElement_WriteNode_1( _T("<w:autofitToFirstFixedWidthCell "),      m_oAutofitToFirstFixedWidthCell );
+				WritingElement_WriteNode_1( _T("<w:underlineTabInNumList "),      m_oUnderlineTabInNumList );
+				WritingElement_WriteNode_1( _T("<w:displayHangulFixedWidth "),      m_oDisplayHangulFixedWidth );
+				WritingElement_WriteNode_1( _T("<w:splitPgBreakAndParaMark "),      m_oSplitPgBreakAndParaMark );
+				WritingElement_WriteNode_1( _T("<w:doNotVertAlignCellWithSp "),      m_oDoNotVertAlignCellWithSp );
+				WritingElement_WriteNode_1( _T("<w:doNotBreakConstrainedForcedTable "),      m_oDoNotBreakConstrainedForcedTable );
+				WritingElement_WriteNode_1( _T("<w:doNotVertAlignInTxbx "),      m_oDoNotVertAlignInTxbx );
+				WritingElement_WriteNode_1( _T("<w:useAnsiKerningPairs "),      m_oUseAnsiKerningPairs );
+				WritingElement_WriteNode_1( _T("<w:cachedColBalance "),      m_oCachedColBalance );
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrCompatSettings.size(); nIndex++ )
 				{
@@ -805,15 +938,73 @@ namespace OOX
 			// TO DO: Добавить аттрибуты из 9.7.3 Part4
 
 			// Childs
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAdjustLineHeightInTable;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oApplyBreakingRules;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oBalanceSingleByDoubleWidth;
-			std::vector<OOX::Settings::CCompatSetting*>                   m_arrCompatSettings;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotExpandShiftReturn;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotLeaveBackslaskAlone;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUseSingleBorderforContiguousCells;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oWpJustification;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oNoTabHangInd;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oNoLeading;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSpaceForUL;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oNoColumnBalance;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oBalanceSingleByteDoubleByteWidth;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oNoExtraLineSpacing;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotLeaveBackslashAlone;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUlTrailSpace;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotExpandShiftReturn;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSpacingInWholePoints;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oLineWrapLikeWord6;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPrintBodyTextBeforeHeader;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPrintColBlack;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oWpSpaceWidth;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oShowBreaksInFrames;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSubFontBySize;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSuppressBottomSpacing;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSuppressTopSpacing;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSuppressSpacingAtTopOfPage;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSuppressTopSpacingWP;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSuppressSpBfAfterPgBrk;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSwapBordersFacingPages;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oConvMailMergeEsc;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oTruncateFontHeightsLikeWP6;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oMwSmallCaps;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUsePrinterMetrics;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotSuppressParagraphBorders;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oWrapTrailSpaces;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oFootnoteLayoutLikeWW8;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oShapeLayoutLikeWW8;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAlignTablesRowByRow;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oForgetLastTabAlignment;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAdjustLineHeightInTable;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAutoSpaceLikeWord95;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oNoSpaceRaiseLower;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotUseHTMLParagraphAutoSpacing;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oLayoutRawTableWidth;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oLayoutTableRowsApart;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUseWord97LineBreakRules;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotBreakWrappedTables;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotSnapToGridInCell;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSelectFldWithFirstOrLastChar;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oApplyBreakingRules;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotWrapTextWithPunct;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotUseEastAsianBreakRules;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUseWord2002TableStyleRules;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oGrowAutofit;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUseFELayout;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUseNormalStyleForList;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotUseIndentAsNumberingTabStop;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUseAltKinsokuLineBreakRules;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAllowSpaceOfSameStyleInTable;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotSuppressIndentation;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotAutofitConstrainedTables;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAutofitToFirstFixedWidthCell;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUnderlineTabInNumList;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDisplayHangulFixedWidth;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSplitPgBreakAndParaMark;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotVertAlignCellWithSp;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotBreakConstrainedForcedTable;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotVertAlignInTxbx;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oUseAnsiKerningPairs;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oCachedColBalance;
 
+			std::vector<OOX::Settings::CCompatSetting*>                   m_arrCompatSettings;
 		};
 		//--------------------------------------------------------------------------------
 		// CDocProtect 17.15.1.29 (Part 1) 

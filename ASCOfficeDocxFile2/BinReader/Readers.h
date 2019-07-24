@@ -247,6 +247,8 @@ public:
 	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom& oSettingsCustom);
 	int Read();
 	int ReadSettings(BYTE type, long length, void* poResult);
+	int ReadCompat(BYTE type, long length, void* poResult);
+	int ReadCompatSetting(BYTE type, long length, void* poResult);
 	int ReadFootnotePr(BYTE type, long length, void* poResult);
 	int ReadEndnotePr(BYTE type, long length, void* poResult);
 	int ReadMathPr(BYTE type, long length, void* poResult);

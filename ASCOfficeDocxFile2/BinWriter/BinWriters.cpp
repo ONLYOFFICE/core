@@ -47,6 +47,12 @@
 #endif
 #include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
 
+
+#define COMPLEX_BOOL_TO_UINT(offset, val) \
+	if(val.IsInit()) { \
+		nFlags |= (val->m_oVal.ToBool() ? 1 : 0) << offset; \
+	}
+
 namespace BinDocxRW
 {
 BinaryCommonWriter::BinaryCommonWriter(ParamsWriter& oParamsWriter) :	m_oStream(*oParamsWriter.m_pCBufferedStream),
@@ -3230,27 +3236,7 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
     {
 		switch(OfficeFileFormatChecker.nFileType)
         {
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
-            {
-#ifndef _IOS
-                COfficeDocFile docFile;
-                docFile.m_sTempFolder = sTempDir;
-                
-                bool bMacros = false;
-                
-                result = (S_OK == docFile.LoadFromFile( file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
-#else
-                result = S_FALSE;
-#endif
-            }break;
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
-			{
-				RtfConvertationManager rtfConvert;
-				rtfConvert.m_sTempFolder = sTempDir;
-				
-				result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
-			}break;
+
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
@@ -8074,6 +8060,85 @@ void BinarySettingsTableWriter::WriteColorSchemeMapping(const PPTX::Logic::ClrMa
 void BinarySettingsTableWriter::WriteCompat(const OOX::Settings::CCompat& oCompat)
 {
 	int nCurPos = 0;
+	_UINT32 nFlags;
+	nFlags = 0;
+	COMPLEX_BOOL_TO_UINT(0, oCompat.m_oUseSingleBorderforContiguousCells);
+	COMPLEX_BOOL_TO_UINT(1, oCompat.m_oWpJustification);
+	COMPLEX_BOOL_TO_UINT(2, oCompat.m_oNoTabHangInd);
+	COMPLEX_BOOL_TO_UINT(3, oCompat.m_oNoLeading);
+	COMPLEX_BOOL_TO_UINT(4, oCompat.m_oSpaceForUL);
+	COMPLEX_BOOL_TO_UINT(5, oCompat.m_oNoColumnBalance);
+	COMPLEX_BOOL_TO_UINT(6, oCompat.m_oBalanceSingleByteDoubleByteWidth);
+	COMPLEX_BOOL_TO_UINT(7, oCompat.m_oNoExtraLineSpacing);
+	COMPLEX_BOOL_TO_UINT(8, oCompat.m_oDoNotLeaveBackslashAlone);
+	COMPLEX_BOOL_TO_UINT(9, oCompat.m_oUlTrailSpace);
+	COMPLEX_BOOL_TO_UINT(10, oCompat.m_oDoNotExpandShiftReturn);
+	COMPLEX_BOOL_TO_UINT(11, oCompat.m_oSpacingInWholePoints);
+	COMPLEX_BOOL_TO_UINT(12, oCompat.m_oLineWrapLikeWord6);
+	COMPLEX_BOOL_TO_UINT(13, oCompat.m_oPrintBodyTextBeforeHeader);
+	COMPLEX_BOOL_TO_UINT(14, oCompat.m_oPrintColBlack);
+	COMPLEX_BOOL_TO_UINT(15, oCompat.m_oWpSpaceWidth);
+	COMPLEX_BOOL_TO_UINT(16, oCompat.m_oShowBreaksInFrames);
+	COMPLEX_BOOL_TO_UINT(17, oCompat.m_oSubFontBySize);
+	COMPLEX_BOOL_TO_UINT(18, oCompat.m_oSuppressBottomSpacing);
+	COMPLEX_BOOL_TO_UINT(19, oCompat.m_oSuppressTopSpacing);
+	COMPLEX_BOOL_TO_UINT(20, oCompat.m_oSuppressSpacingAtTopOfPage);
+	COMPLEX_BOOL_TO_UINT(21, oCompat.m_oSuppressTopSpacingWP);
+	COMPLEX_BOOL_TO_UINT(22, oCompat.m_oSuppressSpBfAfterPgBrk);
+	COMPLEX_BOOL_TO_UINT(23, oCompat.m_oSwapBordersFacingPages);
+	COMPLEX_BOOL_TO_UINT(24, oCompat.m_oConvMailMergeEsc);
+	COMPLEX_BOOL_TO_UINT(25, oCompat.m_oTruncateFontHeightsLikeWP6);
+	COMPLEX_BOOL_TO_UINT(26, oCompat.m_oMwSmallCaps);
+	COMPLEX_BOOL_TO_UINT(27, oCompat.m_oUsePrinterMetrics);
+	COMPLEX_BOOL_TO_UINT(28, oCompat.m_oDoNotSuppressParagraphBorders);
+	COMPLEX_BOOL_TO_UINT(29, oCompat.m_oWrapTrailSpaces);
+	COMPLEX_BOOL_TO_UINT(30, oCompat.m_oFootnoteLayoutLikeWW8);
+	COMPLEX_BOOL_TO_UINT(31, oCompat.m_oShapeLayoutLikeWW8);
+	nCurPos = m_oBcw.WriteItemStart(c_oSerCompat::Flags1);
+	m_oBcw.m_oStream.WriteULONG(nFlags);
+	m_oBcw.WriteItemEnd(nCurPos);
+	nFlags = 0;
+	COMPLEX_BOOL_TO_UINT(0, oCompat.m_oAlignTablesRowByRow);
+	COMPLEX_BOOL_TO_UINT(1, oCompat.m_oForgetLastTabAlignment);
+	COMPLEX_BOOL_TO_UINT(2, oCompat.m_oAdjustLineHeightInTable);
+	COMPLEX_BOOL_TO_UINT(3, oCompat.m_oAutoSpaceLikeWord95);
+	COMPLEX_BOOL_TO_UINT(4, oCompat.m_oNoSpaceRaiseLower);
+	COMPLEX_BOOL_TO_UINT(5, oCompat.m_oDoNotUseHTMLParagraphAutoSpacing);
+	COMPLEX_BOOL_TO_UINT(6, oCompat.m_oLayoutRawTableWidth);
+	COMPLEX_BOOL_TO_UINT(7, oCompat.m_oLayoutTableRowsApart);
+	COMPLEX_BOOL_TO_UINT(8, oCompat.m_oUseWord97LineBreakRules);
+	COMPLEX_BOOL_TO_UINT(9, oCompat.m_oDoNotBreakWrappedTables);
+	COMPLEX_BOOL_TO_UINT(10, oCompat.m_oDoNotSnapToGridInCell);
+	COMPLEX_BOOL_TO_UINT(11, oCompat.m_oSelectFldWithFirstOrLastChar);
+	COMPLEX_BOOL_TO_UINT(12, oCompat.m_oApplyBreakingRules);
+	COMPLEX_BOOL_TO_UINT(13, oCompat.m_oDoNotWrapTextWithPunct);
+	COMPLEX_BOOL_TO_UINT(14, oCompat.m_oDoNotUseEastAsianBreakRules);
+	COMPLEX_BOOL_TO_UINT(15, oCompat.m_oUseWord2002TableStyleRules);
+	COMPLEX_BOOL_TO_UINT(16, oCompat.m_oGrowAutofit);
+	COMPLEX_BOOL_TO_UINT(17, oCompat.m_oUseFELayout);
+	COMPLEX_BOOL_TO_UINT(18, oCompat.m_oUseNormalStyleForList);
+	COMPLEX_BOOL_TO_UINT(19, oCompat.m_oDoNotUseIndentAsNumberingTabStop);
+	COMPLEX_BOOL_TO_UINT(20, oCompat.m_oUseAltKinsokuLineBreakRules);
+	COMPLEX_BOOL_TO_UINT(21, oCompat.m_oAllowSpaceOfSameStyleInTable);
+	COMPLEX_BOOL_TO_UINT(22, oCompat.m_oDoNotSuppressIndentation);
+	COMPLEX_BOOL_TO_UINT(23, oCompat.m_oDoNotAutofitConstrainedTables);
+	COMPLEX_BOOL_TO_UINT(24, oCompat.m_oAutofitToFirstFixedWidthCell);
+	COMPLEX_BOOL_TO_UINT(25, oCompat.m_oUnderlineTabInNumList);
+	COMPLEX_BOOL_TO_UINT(26, oCompat.m_oDisplayHangulFixedWidth);
+	COMPLEX_BOOL_TO_UINT(27, oCompat.m_oSplitPgBreakAndParaMark);
+	COMPLEX_BOOL_TO_UINT(28, oCompat.m_oDoNotVertAlignCellWithSp);
+	COMPLEX_BOOL_TO_UINT(29, oCompat.m_oDoNotBreakConstrainedForcedTable);
+	COMPLEX_BOOL_TO_UINT(30, oCompat.m_oDoNotVertAlignInTxbx);
+	COMPLEX_BOOL_TO_UINT(31, oCompat.m_oUseAnsiKerningPairs);
+	nCurPos = m_oBcw.WriteItemStart(c_oSerCompat::Flags2);
+	m_oBcw.m_oStream.WriteULONG(nFlags);
+	m_oBcw.WriteItemEnd(nCurPos);
+	nFlags = 0;
+	COMPLEX_BOOL_TO_UINT(0, oCompat.m_oCachedColBalance);
+	nCurPos = m_oBcw.WriteItemStart(c_oSerCompat::Flags3);
+	m_oBcw.m_oStream.WriteULONG(nFlags);
+	m_oBcw.WriteItemEnd(nCurPos);
+
 	for(size_t i = 0; i < oCompat.m_arrCompatSettings.size(); ++i)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCompat::CompatSetting);

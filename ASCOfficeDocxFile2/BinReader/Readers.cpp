@@ -58,6 +58,11 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 
+#define UINT_TO_COMPLEX_BOOL(offset, val) \
+	if (0 != ((nFlags >> offset) & 1)) { \
+		val.Init(); \
+	}
+
 namespace BinDocxRW {
 
 enum ETblStyleOverrideType
@@ -3598,10 +3603,127 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 		m_oSettingsCustom.m_oSdtGlobalShowHighlight.Init();
 		m_oSettingsCustom.m_oSdtGlobalShowHighlight->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}
+	else if( c_oSer_SettingsType::Compat == type )
+	{
+		OOX::Settings::CCompat oCompat;
+		READ1_DEF(length, res, this->ReadCompat, &oCompat);
+		m_oFileWriter.m_oSettingWriter.AddSetting(oCompat.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
-};	
+};
+int Binary_SettingsTableReader::ReadCompat(BYTE type, long length, void* poResult)
+{
+	OOX::Settings::CCompat* pCompat = static_cast<OOX::Settings::CCompat*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if( c_oSerCompat::CompatSetting == type )
+	{
+		OOX::Settings::CCompatSetting* pCCompatSetting = new OOX::Settings::CCompatSetting();
+		READ1_DEF(length, res, this->ReadCompatSetting, pCCompatSetting);
+		pCompat->m_arrCompatSettings.push_back(pCCompatSetting);
+	}
+	else if( c_oSerCompat::Flags1 == type )
+	{
+		_UINT32 nFlags = m_oBufferedStream.GetULong();
+		UINT_TO_COMPLEX_BOOL(0, pCompat->m_oUseSingleBorderforContiguousCells);
+		UINT_TO_COMPLEX_BOOL(1, pCompat->m_oWpJustification);
+		UINT_TO_COMPLEX_BOOL(2, pCompat->m_oNoTabHangInd);
+		UINT_TO_COMPLEX_BOOL(3, pCompat->m_oNoLeading);
+		UINT_TO_COMPLEX_BOOL(4, pCompat->m_oSpaceForUL);
+		UINT_TO_COMPLEX_BOOL(5, pCompat->m_oNoColumnBalance);
+		UINT_TO_COMPLEX_BOOL(6, pCompat->m_oBalanceSingleByteDoubleByteWidth);
+		UINT_TO_COMPLEX_BOOL(7, pCompat->m_oNoExtraLineSpacing);
+		UINT_TO_COMPLEX_BOOL(8, pCompat->m_oDoNotLeaveBackslashAlone);
+		UINT_TO_COMPLEX_BOOL(9, pCompat->m_oUlTrailSpace);
+		UINT_TO_COMPLEX_BOOL(10, pCompat->m_oDoNotExpandShiftReturn);
+		UINT_TO_COMPLEX_BOOL(11, pCompat->m_oSpacingInWholePoints);
+		UINT_TO_COMPLEX_BOOL(12, pCompat->m_oLineWrapLikeWord6);
+		UINT_TO_COMPLEX_BOOL(13, pCompat->m_oPrintBodyTextBeforeHeader);
+		UINT_TO_COMPLEX_BOOL(14, pCompat->m_oPrintColBlack);
+		UINT_TO_COMPLEX_BOOL(15, pCompat->m_oWpSpaceWidth);
+		UINT_TO_COMPLEX_BOOL(16, pCompat->m_oShowBreaksInFrames);
+		UINT_TO_COMPLEX_BOOL(17, pCompat->m_oSubFontBySize);
+		UINT_TO_COMPLEX_BOOL(18, pCompat->m_oSuppressBottomSpacing);
+		UINT_TO_COMPLEX_BOOL(19, pCompat->m_oSuppressTopSpacing);
+		UINT_TO_COMPLEX_BOOL(20, pCompat->m_oSuppressSpacingAtTopOfPage);
+		UINT_TO_COMPLEX_BOOL(21, pCompat->m_oSuppressTopSpacingWP);
+		UINT_TO_COMPLEX_BOOL(22, pCompat->m_oSuppressSpBfAfterPgBrk);
+		UINT_TO_COMPLEX_BOOL(23, pCompat->m_oSwapBordersFacingPages);
+		UINT_TO_COMPLEX_BOOL(24, pCompat->m_oConvMailMergeEsc);
+		UINT_TO_COMPLEX_BOOL(25, pCompat->m_oTruncateFontHeightsLikeWP6);
+		UINT_TO_COMPLEX_BOOL(26, pCompat->m_oMwSmallCaps);
+		UINT_TO_COMPLEX_BOOL(27, pCompat->m_oUsePrinterMetrics);
+		UINT_TO_COMPLEX_BOOL(28, pCompat->m_oDoNotSuppressParagraphBorders);
+		UINT_TO_COMPLEX_BOOL(29, pCompat->m_oWrapTrailSpaces);
+		UINT_TO_COMPLEX_BOOL(30, pCompat->m_oFootnoteLayoutLikeWW8);
+		UINT_TO_COMPLEX_BOOL(31, pCompat->m_oShapeLayoutLikeWW8);
+	}
+	else if( c_oSerCompat::Flags2 == type )
+	{
+		_UINT32 nFlags = m_oBufferedStream.GetULong();
+		UINT_TO_COMPLEX_BOOL(0, pCompat->m_oAlignTablesRowByRow);
+		UINT_TO_COMPLEX_BOOL(1, pCompat->m_oForgetLastTabAlignment);
+		UINT_TO_COMPLEX_BOOL(2, pCompat->m_oAdjustLineHeightInTable);
+		UINT_TO_COMPLEX_BOOL(3, pCompat->m_oAutoSpaceLikeWord95);
+		UINT_TO_COMPLEX_BOOL(4, pCompat->m_oNoSpaceRaiseLower);
+		UINT_TO_COMPLEX_BOOL(5, pCompat->m_oDoNotUseHTMLParagraphAutoSpacing);
+		UINT_TO_COMPLEX_BOOL(6, pCompat->m_oLayoutRawTableWidth);
+		UINT_TO_COMPLEX_BOOL(7, pCompat->m_oLayoutTableRowsApart);
+		UINT_TO_COMPLEX_BOOL(8, pCompat->m_oUseWord97LineBreakRules);
+		UINT_TO_COMPLEX_BOOL(9, pCompat->m_oDoNotBreakWrappedTables);
+		UINT_TO_COMPLEX_BOOL(10, pCompat->m_oDoNotSnapToGridInCell);
+		UINT_TO_COMPLEX_BOOL(11, pCompat->m_oSelectFldWithFirstOrLastChar);
+		UINT_TO_COMPLEX_BOOL(12, pCompat->m_oApplyBreakingRules);
+		UINT_TO_COMPLEX_BOOL(13, pCompat->m_oDoNotWrapTextWithPunct);
+		UINT_TO_COMPLEX_BOOL(14, pCompat->m_oDoNotUseEastAsianBreakRules);
+		UINT_TO_COMPLEX_BOOL(15, pCompat->m_oUseWord2002TableStyleRules);
+		UINT_TO_COMPLEX_BOOL(16, pCompat->m_oGrowAutofit);
+		UINT_TO_COMPLEX_BOOL(17, pCompat->m_oUseFELayout);
+		UINT_TO_COMPLEX_BOOL(18, pCompat->m_oUseNormalStyleForList);
+		UINT_TO_COMPLEX_BOOL(19, pCompat->m_oDoNotUseIndentAsNumberingTabStop);
+		UINT_TO_COMPLEX_BOOL(20, pCompat->m_oUseAltKinsokuLineBreakRules);
+		UINT_TO_COMPLEX_BOOL(21, pCompat->m_oAllowSpaceOfSameStyleInTable);
+		UINT_TO_COMPLEX_BOOL(22, pCompat->m_oDoNotSuppressIndentation);
+		UINT_TO_COMPLEX_BOOL(23, pCompat->m_oDoNotAutofitConstrainedTables);
+		UINT_TO_COMPLEX_BOOL(24, pCompat->m_oAutofitToFirstFixedWidthCell);
+		UINT_TO_COMPLEX_BOOL(25, pCompat->m_oUnderlineTabInNumList);
+		UINT_TO_COMPLEX_BOOL(26, pCompat->m_oDisplayHangulFixedWidth);
+		UINT_TO_COMPLEX_BOOL(27, pCompat->m_oSplitPgBreakAndParaMark);
+		UINT_TO_COMPLEX_BOOL(28, pCompat->m_oDoNotVertAlignCellWithSp);
+		UINT_TO_COMPLEX_BOOL(29, pCompat->m_oDoNotBreakConstrainedForcedTable);
+		UINT_TO_COMPLEX_BOOL(30, pCompat->m_oDoNotVertAlignInTxbx);
+		UINT_TO_COMPLEX_BOOL(31, pCompat->m_oUseAnsiKerningPairs);
+	}
+	else if( c_oSerCompat::Flags3 == type )
+	{
+		_UINT32 nFlags = m_oBufferedStream.GetULong();
+		UINT_TO_COMPLEX_BOOL(0, pCompat->m_oCachedColBalance);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_SettingsTableReader::ReadCompatSetting(BYTE type, long length, void* poResult)
+{
+	OOX::Settings::CCompatSetting* pCompatSetting = static_cast<OOX::Settings::CCompatSetting*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if( c_oSerCompat::CompatName == type )
+	{
+		pCompatSetting->m_sName = m_oBufferedStream.GetString3(length);
+	}
+	else if( c_oSerCompat::CompatUri == type )
+	{
+		pCompatSetting->m_sUri = m_oBufferedStream.GetString3(length);
+	}
+	else if( c_oSerCompat::CompatValue == type )
+	{
+		pCompatSetting->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int Binary_SettingsTableReader::ReadFootnotePr(BYTE type, long length, void* poResult)
 {
 	OOX::Settings::CFtnDocProps* pFtnProps = static_cast<OOX::Settings::CFtnDocProps*>(poResult);

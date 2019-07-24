@@ -1223,7 +1223,10 @@ extern int g_nCurFormatVersion;
 		CompatSetting = 0,
 		CompatName = 1,
 		CompatUri = 2,
-		CompatValue = 3
+		CompatValue = 3,
+		Flags1 = 4,
+		Flags2 = 5,
+		Flags3 = 6
 	};}
 }
 

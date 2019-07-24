@@ -906,8 +906,10 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sResult += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
 	}
 
-	if( 0 == m_bFilled) sResult += L" filled=\"f\"";
-	else				sResult += L" filled=\"t\"";
+	if( 0 == m_bFilled || (	m_nFillColor == PROP_DEF && m_nFillColor2 == PROP_DEF && m_nFillType == PROP_DEF)) 
+		sResult += L" filled=\"f\""; //сф_850000158725_R7_M194_МО_Q194.rtf
+	else				
+		sResult += L" filled=\"t\"";
 
 	if( PROP_DEF == m_bLine)
 	{

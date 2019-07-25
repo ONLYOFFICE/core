@@ -269,6 +269,11 @@ namespace NSDoctRenderer
         }
         void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
         {
+            m_arrFiles.RemoveAll();
+            m_arDoctSDK.clear();
+            m_arPpttSDK.clear();
+            m_arXlstSDK.clear();
+
             m_strConfigDir = sConfigDir + L"/";
             m_strConfigPath = m_strConfigDir + L"DoctRenderer.config";
 

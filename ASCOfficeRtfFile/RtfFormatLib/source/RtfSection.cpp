@@ -263,7 +263,8 @@ std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
     if( !sEndnoteProp.empty() && !m_aSpecialEndnotes.empty())
         sResult += L"<w:endnotePr>" + sEndnoteProp + L"</w:endnotePr>";
 
-    std::wstring sCompat;
+    std::wstring sCompat = L"<w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"11\"/>";
+	
 	if( 1 != m_bHtmlAutoSpace )
 		sCompat += L"<w:doNotUseHTMLParagraphAutoSpacing/>";
 	if( 0 == m_bUseTabAlignment )

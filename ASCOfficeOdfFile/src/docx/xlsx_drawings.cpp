@@ -44,12 +44,20 @@ namespace oox {
 class xlsx_drawings::Impl
 {
 public:
-    void add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel )//объект
+    void add(_xlsx_drawing & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel )//объект
     {
-		if (type == typeControl || type == typeControlProps || type == typeComment)
+		if ( type == typeControlProps || type == typeComment)
 		{
 			vml_drawings_.push_back(d);
 			add (isInternal, rid, ref, type, sheet_rel, true);
+		}
+		else if (type == typeControl)
+		{
+			vml_drawings_.push_back(d);
+			add (isInternal, rid, ref, type, sheet_rel, true);
+
+			d.hidden = true;
+			drawings_.push_back(d);
 		}
 		else
 		{
@@ -129,6 +137,7 @@ public:
 					}
 					CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
 					CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+					CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
 
 					for (size_t i = 0 ; i < drawings_.size(); i++)
 					{
@@ -295,7 +304,7 @@ xlsx_drawings::~xlsx_drawings()
 {
 }
 
-void xlsx_drawings::add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid,
+void xlsx_drawings::add(_xlsx_drawing & d, bool isInternal, std::wstring const & rid,
 															std::wstring const & ref, RelsType type, bool sheet_rel)
 {
     impl_->add(d, isInternal, rid, ref, type, sheet_rel);

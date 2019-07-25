@@ -65,8 +65,8 @@ public:
     ~xlsx_drawings	();
     static xlsx_drawings_ptr create(bool inGroup);
 
-    void add ( _xlsx_drawing const & d,	bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel = false );
-    void add (							bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel, bool vml_rel);
+    void add ( _xlsx_drawing & d,	bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel = false );
+    void add (						bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel, bool vml_rel);
     
 	bool empty() const;
 	bool vml_empty() const;

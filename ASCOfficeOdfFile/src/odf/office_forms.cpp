@@ -813,7 +813,7 @@ void form_listbox::serialize_control_props(std::wostream & strm)
 			}
 			if (source_cell_range_)
 			{
-				std::wstring fmla = converter.convert_named_expr(*source_cell_range_);
+				std::wstring fmla = converter./*convert_named_expr*/convert_named_ref(*source_cell_range_);
 				CP_XML_ATTR(L"fmlaRange", fmla);
 			}
 			//CP_XML_ATTR(L"sel", L"3");

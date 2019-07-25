@@ -341,7 +341,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(form_checkbox);
 //--------------------------------------------------------------------------------------------
 //  form:radio
-class form_radio : public form_text
+class form_radio : public form_checkbox
 {
 public:
     static const wchar_t * ns;

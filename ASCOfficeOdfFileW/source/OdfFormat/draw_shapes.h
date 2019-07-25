@@ -434,5 +434,124 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_control);
 //----------------------------------------------------------------------------------------------
+class dr3d_scene : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dScene;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
+
+ 	odf_types::dr3d_attlist dr3d_attlist_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_scene);
+//------------------------------------------------------------------------------------------------------------
+
+class dr3d_extrude : public draw_path
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dExtrude;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+	virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_extrude);
+//------------------------------------------------------------------------------------------------------------
+
+class dr3d_rotate : public draw_path
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dRotate;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+	virtual void serialize(std::wostream & _Wostream);
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_rotate);
+
+//------------------------------------------------------------------------------------------------------------
+class dr3d_light : public office_element_impl<dr3d_light>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeDr3dLight;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+	virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)		dr3d_diffuse_color_;
+	_CP_OPT(std::wstring)		dr3d_direction_;
+	_CP_OPT(odf_types::Bool)	dr3d_specular_;
+	_CP_OPT(odf_types::Bool)	dr3d_enabled_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_light);
+
+//------------------------------------------------------------------------------------------------------------
+class dr3d_cube : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dCube;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+	virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(std::wstring)	dr3d_max_edge_;
+	_CP_OPT(std::wstring)	dr3d_min_edge_;
+	_CP_OPT(std::wstring)	dr3d_transform_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_cube);
+
+//------------------------------------------------------------------------------------------------------------
+class dr3d_sphere : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDr3dSphere;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+	virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(odf_types::vector3D)	dr3d_size_; 
+	_CP_OPT(odf_types::vector3D)	dr3d_center_;
+	_CP_OPT(std::wstring)			dr3d_transform_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(dr3d_sphere);
 }
 }

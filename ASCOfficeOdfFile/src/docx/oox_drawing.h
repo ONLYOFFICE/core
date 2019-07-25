@@ -83,7 +83,7 @@ namespace oox {
 	class _oox_drawing
     {
 	public:
-        _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), lined(false), connector(false), name(L"object"), extExternal(false)
+        _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), hidden(false), inGroup(false), lined(false), connector(false), name(L"object"), extExternal(false)
         {
         }
         RelsType		type;
@@ -92,6 +92,7 @@ namespace oox {
 		size_t			id;
 		bool			lined;
 		bool			connector;
+		bool			hidden;
 
         std::wstring	name;
         int				sub_type; //odf

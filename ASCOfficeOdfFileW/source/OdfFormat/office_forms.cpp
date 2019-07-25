@@ -367,6 +367,8 @@ void form_radio::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			CP_XML_ATTR(L"form:selected", current_state_ ? L"true" : L"false");			
+			
 			form_element::serialize_attlist(CP_GET_XML_NODE());
 			
 			if (properties_) properties_->serialize(CP_XML_STREAM());

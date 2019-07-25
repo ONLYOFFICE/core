@@ -143,6 +143,8 @@ void xml_serialize_image(std::wostream & strm, _xlsx_drawing & val, const std::w
                     CP_XML_ATTR(L"id", val.id);
                     CP_XML_ATTR(L"name", val.name);
 
+					if (val.hidden) CP_XML_ATTR(L"hidden", 1);
+
 					oox_serialize_action(CP_XML_STREAM(), val.action);
 
 				}
@@ -185,9 +187,10 @@ void xml_serialize_shape(std::wostream & strm, _xlsx_drawing & val, const std::w
                 CP_XML_NODE(ns + L":cNvPr")
                 {
                     CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
-
                     CP_XML_ATTR(L"name", val.name);
 
+					if (val.hidden) CP_XML_ATTR(L"hidden", 1);
+						
 					oox_serialize_action(CP_XML_STREAM(), val.action);
                 }
 				CP_XML_NODE(ns + L":cNvSpPr")//non visual properies (собственно тока 1 там)
@@ -220,7 +223,24 @@ void xml_serialize_object(std::wostream & strm, _xlsx_drawing & val)
                 {
                     CP_XML_ATTR(L"id",		val.id);	//числовое значение val.rId
                     CP_XML_ATTR(L"name",	val.name);
-                }
+ 					
+					if (val.hidden) CP_XML_ATTR(L"hidden", 1);
+					
+					if (false == val.objectId.empty())
+					{
+						CP_XML_NODE(L"a:extLst")
+						{
+							CP_XML_NODE(L"a:ext")
+							{
+								CP_XML_ATTR(L"uri", L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}");
+								CP_XML_NODE(L"a14:compatExt")
+								{
+									CP_XML_ATTR(L"spid", L"_x0000_s" + std::to_wstring(val.id));
+								}
+							}
+						}
+					}
+               }
 				CP_XML_NODE(L"xdr:cNvSpPr");
 
             } 
@@ -248,7 +268,9 @@ void xml_serialize_group(std::wostream & strm, _xlsx_drawing & val, const std::w
                 {
                     CP_XML_ATTR(L"id",		val.id);
                     CP_XML_ATTR(L"name",	val.name);
-                }
+ 				
+					if (val.hidden) CP_XML_ATTR(L"hidden", 1);
+               }
 				CP_XML_NODE(ns + L":cNvGrpSpPr");
             }
 			CP_XML_NODE(ns + L":grpSpPr")
@@ -273,7 +295,9 @@ void xml_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
                 {
                     CP_XML_ATTR(L"id",		val.id);
                     CP_XML_ATTR(L"name",	val.name);
-                }
+ 					
+					if (val.hidden) CP_XML_ATTR(L"hidden", 1);
+               }
 
                 CP_XML_NODE(L"xdr:cNvGraphicFramePr");
             } 

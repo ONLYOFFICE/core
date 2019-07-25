@@ -297,7 +297,9 @@ void odf_controls_context::set_check_state(int val)
 	if (impl_->controls_.empty()) return;
 	
 	odf_writer::form_checkbox *checkbox = dynamic_cast<odf_writer::form_checkbox*>(impl_->controls_.back().form_elm);
-	checkbox->current_state_ = (val == 1);
+	
+	if (checkbox)
+		checkbox->current_state_ = (val == 1);
 }
 void odf_controls_context::set_value(const std::wstring & val)
 {

@@ -280,8 +280,8 @@ public:
 
 	//form:image-align
 	//form:image-position
-	//form:button-type 19.255,
-	//form:default-button 19.265,
+	//form:button-type
+	//form:default-button
 	//form:delayfor-repeat
 	//form:focus-on-click
 	//form:image-data
@@ -316,7 +316,6 @@ private:
 
 public:
 	//form:convert-empty-to-null
-	//form:current-value
 	//form:readonly
 	//form:max-length
 
@@ -386,7 +385,6 @@ public:
 	bool current_state_;
 	//form:image-align
 	//form:image-position
-	//form:current-state
 	//form:is-tristate
 	//form:visual-effect
 };

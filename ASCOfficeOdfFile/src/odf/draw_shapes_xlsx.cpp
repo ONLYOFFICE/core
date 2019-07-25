@@ -416,7 +416,6 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	
 	if (control->linked_cell_)
 	{
-
 		Context.get_drawing_context().set_property(_property(L"linked_cell", control->linked_cell_.get()));
 	}
 	if (control->disabled_)
@@ -430,6 +429,10 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	else if (control->current_value_)
 	{
 		Context.get_drawing_context().set_property(_property(L"value", control->current_value_.get()));
+	}
+	if (control->label_)
+	{
+		Context.get_drawing_context().set_property(_property(L"label", control->label_.get()));
 	}
 	//if (control->name_)
 	//{
@@ -474,6 +477,24 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 			Context.get_drawing_context().set_property(_property(L"list_source", combobox->list_source_.get()));
 		}
 	}
+	form_listbox* listbox = dynamic_cast<form_listbox*>(control);
+	if (listbox)
+	{
+		if (listbox->source_cell_range_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"cell_range", listbox->source_cell_range_.get()));
+		}
+		if (listbox->list_source_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"list_source", listbox->list_source_.get()));
+		}
+	}
+	form_checkbox* checkbox = dynamic_cast<form_checkbox*>(control);
+	if (checkbox)
+	{
+		Context.get_drawing_context().set_property(_property(L"checkbox_state", checkbox->current_state_));
+	}
+
 	//_CP_OPT(std::wstring)		label_;
 	//_CP_OPT(std::wstring)		title_;
 	//_CP_OPT(odf_types::Bool)	dropdown_;

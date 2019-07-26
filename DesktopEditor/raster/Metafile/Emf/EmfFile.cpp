@@ -825,7 +825,10 @@ static const struct ActionNamesEmf
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
 
-		if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfBitBlt) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
+		// sizeof использовать нельзя, т.к. мы используем double в структуре TEmfBitBlt, а читаем его 4-байтовым
+		unsigned int unEmfBitBltRecordSize = 100; // sizeof(TEmfBitBlt) + 8
+
+		if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, unEmfBitBltRecordSize, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
 		}

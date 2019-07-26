@@ -275,7 +275,7 @@ public:
             if(sResult.length() > 0)
 			{
                 std::string str;
-                ExecuteTextInternalSkipChars (sResult, oReader, str, nSkipChars);
+               // ExecuteTextInternalSkipChars (sResult, oReader, str, nSkipChars); //vedomost.rtf
 				ExecuteText					 ( oDocument, oReader, sResult);
 			}
 		}

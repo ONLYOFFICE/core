@@ -232,12 +232,12 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 	else
 	{
 		RtfFont oCurFont;
-		if( true == poRtfDocument->m_oFontTable.GetFont(m_nID,oCurFont) )
+		if( true == poRtfDocument->m_oFontTable.GetFont(m_nID, oCurFont) )
 		{
             std::wstring sHint;
-			switch(m_nCharset)
+			switch(oCurFont.m_nCharset)
 			{
-				case 128://Japanese
+				//case 128://Japanese //vedomost.rtf ????
 				case 129://Korean
 				case 130://Korean
 				case 134://China

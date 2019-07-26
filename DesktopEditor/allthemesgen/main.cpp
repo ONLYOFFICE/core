@@ -235,6 +235,7 @@ int main(int argc, char** argv)
     std::wstring sSrcThemesDir = L"";
     std::wstring sX2tPath = L"";
     std::wstring sOutputThumbnails = L"";
+    std::wstring sAllFonts = L"";
     bool bIsNeedCorrectSdkAll = false;
 
     for (int i = 0; i < argc; ++i)
@@ -280,6 +281,10 @@ int main(int argc, char** argv)
                 {
                     bIsNeedCorrectSdkAll = true;
                 }
+            }
+            else if (sKey == L"--allfonts")
+            {
+                sAllFonts = sValue;
             }
         }
     }
@@ -328,8 +333,13 @@ int main(int argc, char** argv)
         oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
         oBuilder.WriteEncodeXmlString(sOut + L"/theme.bin");
         oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>8192</m_nFormatTo><m_sThemeDir>./</m_sThemeDir>");
-        oBuilder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");
-        oBuilder.WriteString(L"AllFonts.js</m_sAllFontsPath>");
+        oBuilder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+        if (!sAllFonts.empty())
+        {
+            oBuilder.WriteString(L"<m_sAllFontsPath>");
+            oBuilder.WriteString(sAllFonts);
+            oBuilder.WriteString(L"</m_sAllFontsPath>");
+        }
         oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
         std::wstring sXmlConvert = oBuilder.GetData();
@@ -373,7 +383,7 @@ int main(int argc, char** argv)
         std::wstring sXmlDoctRenderer = oBuilder.GetData();
 
         NSDoctRenderer::CDoctrenderer oRenderer;
-        oRenderer.LoadConfig(sX2tPath);
+        oRenderer.LoadConfig(sX2tPath, sAllFonts);
 
         std::wstring sError;
         bool bIsSuccess = oRenderer.Execute(sXmlDoctRenderer, sError);

@@ -37,9 +37,9 @@
 #include "docbuilder.h"
 
 // The module attribute causes DllMain, DllRegisterServer and DllUnregisterServer to be automatically implemented for you
-[ module(dll, uuid = "{B43F4AFD-2278-4175-992C-D7AE390507D8}", 
-		 name = "ascdocbuilder", 
-		 helpstring = "ascdocbuilder 1.0 Type Library",
-		 resource_name = "IDR_ASCDOCBUILDER") ];
+[ module(dll, uuid = "{7368AB25-7082-4815-8AE5-A30C2ABDD2A0}", 
+		 name = "onlyofficedocbuilder", 
+		 helpstring = "onlyofficedocbuilder 1.0 Type Library",
+		 resource_name = "IDR_ONLYOFFICEDOCBUILDER") ];
 
 		 

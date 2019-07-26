@@ -6229,26 +6229,27 @@ void BinaryWorksheetTableWriter::WriteSparklineGroup(const OOX::Spreadsheet::CSp
 }
 void BinaryWorksheetTableWriter::WriteDataValidations(const OOX::Spreadsheet::CDataValidations& oDataValidations)
 {
+	int nCurPos = 0;
     if (oDataValidations.m_oDisablePrompts.IsInit())
     {
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::DisablePrompts);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::DisablePrompts);
 		m_oBcw.m_oStream.WriteBOOL(oDataValidations.m_oDisablePrompts->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
     }
     if (oDataValidations.m_oXWindow.IsInit())
     {
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::XWindow);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::XWindow);
 		m_oBcw.m_oStream.WriteLONG(oDataValidations.m_oXWindow->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
     }
     if (oDataValidations.m_oYWindow.IsInit())
     {
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_DataValidation::YWindow);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::YWindow);
 		m_oBcw.m_oStream.WriteLONG(oDataValidations.m_oYWindow->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
     }
 
-	int nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::DataValidations);
+	nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::DataValidations);
 	WriteDataValidationsContent(oDataValidations);
 	m_oBcw.WriteItemEnd(nCurPos);
 }

@@ -96,7 +96,7 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 		if (m_oFormula2.IsInit())
 		{
 			writer.WriteString(L"<x14:formula2>");
-				m_oFormula1->toXML2(writer, true);
+				m_oFormula2->toXML2(writer, true);
 			writer.WriteString(L"</x14:formula2>");
 		}
 		if (m_oSqRef.IsInit())

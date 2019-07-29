@@ -176,6 +176,7 @@ struct odf_drawing_state
 	void clear()
 	{
 		elements_.clear();
+		index_base = -1;
 		
 		svg_x_				= boost::none;
 		svg_y_				= boost::none;
@@ -248,6 +249,7 @@ struct odf_drawing_state
 	int oox_shape_preset_;
 	bool in_group_;
 	bool text_box_tableframe_;
+	int index_base;
 
 };
 
@@ -480,7 +482,7 @@ void odf_drawing_context::clear()
 
 void odf_drawing_context::start_drawing()
 {
-	//if (impl_->current_level_.size() < 1)
+	//if (impl_->current_level_.empty())
 	{
 		impl_->current_drawing_state_.svg_x_ = impl_->anchor_settings_.svg_x_;
 		impl_->current_drawing_state_.svg_y_ = impl_->anchor_settings_.svg_y_;
@@ -500,7 +502,7 @@ void odf_drawing_context::start_drawing()
 		impl_->current_drawing_state_.svg_height_ = impl_->anchor_settings_.svg_height_;
 	}
 	//else 
-	if (false == impl_->current_level_.empty())
+	if (false == impl_->current_level_.empty() && impl_->current_group_)
 	{
 		impl_->current_drawing_state_.in_group_ = true;
 	}
@@ -522,7 +524,9 @@ void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_att
 }
 void odf_drawing_context::end_drawing()
 {
-	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	int index = impl_->current_drawing_state_.index_base < 0 ? 0 : impl_->current_drawing_state_.index_base;
+
+	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[index].elm.get());
 	if (draw)
 	{
 		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_)
@@ -557,7 +561,7 @@ void odf_drawing_context::end_drawing()
 
 		_CP_OPT(double) rotate = impl_->current_drawing_state_.rotateAngle_;
 		
-		if (impl_->current_drawing_state_.in_group_)
+		if (impl_->current_drawing_state_.in_group_ && impl_->current_group_)
 		{
 			odf_group_state_ptr gr = impl_->current_group_;
 
@@ -618,7 +622,7 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////////
-	presentation_placeholder * placeholder = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	presentation_placeholder * placeholder = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[index].elm.get());
 	if (placeholder)
 	{
 		placeholder->presentation_object_	= impl_->current_drawing_state_.presentation_class_;
@@ -672,7 +676,7 @@ void odf_drawing_context::end_drawing()
 	
 	if (	impl_->current_drawing_state_.elements_.empty() == false 
 		&&	impl_->current_drawing_state_.elements_[0].level == 0 
-		&&	impl_->current_drawing_state_.elements_[0].elm )
+		&&	impl_->current_drawing_state_.elements_[0].elm ) // не base_index -> см draw_a
 	{
 		impl_->tops_elements_.push_back(impl_->current_drawing_state_.elements_[0].elm);
 	}
@@ -772,6 +776,10 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 	odf_element_state state={draw_elm, style_name, style_shape_elm, level};
 
+	if (current_drawing_state_.index_base < 0)
+	{
+		current_drawing_state_.index_base = (int)current_drawing_state_.elements_.size();
+	}
 	current_drawing_state_.elements_.push_back(state);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1825,14 +1833,14 @@ void odf_drawing_context::set_vertical_rel(int from)
 
 	switch(from)
 	{
-		case 0:	type = vertical_rel::Baseline;		break;//	relfromvBottomMargin ???
-		case 1:	type = vertical_rel::PageContent;	break;//	relfromvInsideMargin ???
-		case 2:	type = vertical_rel::Baseline;		break;//	relfromvLine          
-		case 3:	type = vertical_rel::PageContent; 	break;//	relfromvMargin     //Paragraph
-		case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
-		case 5:	type = vertical_rel::Page;			break;//	relfromvPage          
-		case 6:	type = vertical_rel::Paragraph;		break;//	relfromvParagraph    
-		case 7:	type = vertical_rel::Baseline;		break;//	relfromvTopMargin   ???  
+		case 0:	type = vertical_rel::Baseline;			break;//	relfromvBottomMargin ???
+		case 1:	type = vertical_rel::ParagraphContent;	break;//	relfromvInsideMargin ???
+		case 2:	type = vertical_rel::Baseline;			break;//	relfromvLine          
+		case 3:	type = vertical_rel::PageContent; 		break;//	relfromvMargin     //Paragraph
+		case 4:	type = vertical_rel::Baseline;			break;//	relfromvOutsideMargin ???
+		case 5:	type = vertical_rel::Page;				break;//	relfromvPage          
+		case 6:	type = vertical_rel::Paragraph;			break;//	relfromvParagraph    
+		case 7:	type = vertical_rel::Baseline;			break;//	relfromvTopMargin   ???  
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
@@ -2550,12 +2558,9 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 	
 	start_frame();
 
-	////добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
-	//style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
-	//if (style_)
-	//{
-	//	style_->style_parent_style_name_ = L"Frame";
-	//}
+	//добавить в стиль ссыль на базовый стиль Graphics - зачемто нужно :(
+	set_parent_style(L"Graphics");
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 	office_element_ptr image_elm;
 	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
@@ -2672,13 +2677,13 @@ void odf_drawing_context::start_text_box()
 
 	start_frame();
 
+	//if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
+	//	set_parent_style(L"Frame");	
+	
 	office_element_ptr text_box_elm;
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
 
 	start_element(text_box_elm);
-
-	//if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
-	//	set_text_box_parent_style(L"Frame");
 }
 void odf_drawing_context::set_text_box_min_size(bool val)
 {
@@ -2763,12 +2768,47 @@ void odf_drawing_context::start_action(std::wstring value)
 		}
 	}
 }
+void odf_drawing_context::start_link_object(std::wstring href)
+{
+	if (href.empty()) return;
+	
+	office_element_ptr element, style;
+	create_element(L"draw", L"a", element, impl_->odf_context_);
 
+	size_t level = impl_->current_level_.size();
+	
+	if (false == impl_->current_level_.empty())
+		impl_->current_level_.back()->add_child_element(element);
+
+	impl_->current_level_.push_back(element);
+
+	odf_element_state state={element, L"", style, level};
+	impl_->current_drawing_state_.elements_.push_back(state);
+
+	if (impl_->root_element_ == NULL)
+	{
+		impl_->root_element_ = element;
+		impl_->anchor_settings_.anchor_type_ = anchor_type::Paragraph;
+	}
+
+	draw_a* draw_a_ = dynamic_cast<draw_a*>(impl_->current_level_.back().get());
+	if (draw_a_)
+	{
+		draw_a_->xlink_attlist_.href_		= href;
+		draw_a_->xlink_attlist_.type_		= xlink_type::Simple;
+		draw_a_->xlink_attlist_.show_		= xlink_show::Embed;
+		draw_a_->xlink_attlist_.actuate_	= xlink_actuate::OnRequest;
+	}
+}
+void odf_drawing_context::end_link_object()
+{
+	end_element();
+}
 void odf_drawing_context::add_link(std::wstring href)
 {
 	if (href.empty()) return;
 
-	presentation_event_listener * event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
+	presentation_event_listener* event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
 
 	if (event_)
 	{
@@ -2831,7 +2871,7 @@ void odf_drawing_context::set_text_box_tableframe(bool val)
 	impl_->current_drawing_state_.text_box_tableframe_ = val;
 
 }
-void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
+void odf_drawing_context::set_parent_style(std::wstring style_name)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
@@ -2978,7 +3018,10 @@ bool odf_drawing_context::is_exist_content()
 {
 	return (impl_->drawing_list_.empty() ? false : true);
 }
-
+bool odf_drawing_context::is_current_empty()
+{
+	return impl_->current_drawing_state_.elements_.empty();
+}
 void odf_drawing_context::finalize(office_element_ptr & root_elm)//для привязки 
 {
 	for (size_t i = 0; i < impl_->tops_elements_.size(); i++)
@@ -3624,12 +3667,17 @@ void odf_drawing_context::set_image_client_rect_inch(double l, double t, double 
 	
 	//<top>, <right>, <bottom>, <left> 
 	std::wstringstream str_stream;
-	str_stream	<< std::wstring(L"rect(") 
-				<< t << std::wstring(L"in, ")
-				<< r << std::wstring(L"in, ")
-				<< b << std::wstring(L"in, ")
-				<< l << std::wstring(L"in)");
+	//str_stream	<< std::wstring(L"rect(") 
+	//			<< t << std::wstring(L"in, ")
+	//			<< r << std::wstring(L"in, ")
+	//			<< b << std::wstring(L"in, ")
+	//			<< l << std::wstring(L"in)");
 
+	str_stream	<< std::wstring(L"rect(") 
+				<< (t * 2.54) << std::wstring(L"cm, ")
+				<< (r * 2.54) << std::wstring(L"cm, ")
+				<< (b * 2.54) << std::wstring(L"cm, ")
+				<< (l * 2.54) << std::wstring(L"cm)");
 	impl_->current_graphic_properties->fo_clip_ = str_stream.str();
 
 }
@@ -3660,7 +3708,7 @@ void odf_drawing_context::set_bitmap_tile_scale_x(double scale_x)
 	if (!impl_->current_graphic_properties)return;
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_width_ = 
-				length(length(scale_x,length::pt).get_value_unit(length::cm),length::cm);
+				length(length(scale_x,length::pt).get_value_unit(length::inch), length::inch);
 
 }
 void odf_drawing_context::set_bitmap_tile_scale_y(double scale_y)
@@ -3668,7 +3716,7 @@ void odf_drawing_context::set_bitmap_tile_scale_y(double scale_y)
 	if (!impl_->current_graphic_properties)return;
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_height_ = 
-				length(length(scale_y,length::pt).get_value_unit(length::cm),length::cm);
+				length(length(scale_y,length::pt).get_value_unit(length::inch), length::inch);
 
 }
 void odf_drawing_context::set_bitmap_tile_translate_y(double y)

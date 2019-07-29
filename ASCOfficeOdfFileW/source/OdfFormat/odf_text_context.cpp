@@ -104,7 +104,7 @@ void odf_text_context::set_single_object(bool bSingle, style_paragraph_propertie
 
 void odf_text_context::add_text_content(const std::wstring & text)
 {
-	if (current_level_.size() < 1) return;
+	if (current_level_.empty()) return;
 
 	//boost::wregex re(L"?:([ ]{2,})|(.+)");//(L"(\\w+)");
 	//std::list<std::wstring> result;
@@ -361,7 +361,7 @@ void odf_text_context::start_span(bool styled)
 
 	text_elements_list_.push_back(state);
 	
-	if (current_level_.size()>0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(span_elm);
 
 	current_level_.push_back(state);
@@ -371,7 +371,7 @@ void odf_text_context::end_span()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
 	
-	if (false == current_level_.empty())	
+	if (false == current_level_.empty() && dynamic_cast<text_span*>(current_level_.back().elm.get()))	
 		current_level_.pop_back();
 
 	text_properties_ = NULL;
@@ -380,7 +380,7 @@ void odf_text_context::end_span()
 void odf_text_context::start_list_item()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
-	if (list_state_.levels.size() < 1) return;
+	if (list_state_.levels.empty()) return;
 	
 	if (list_state_.levels.back()) end_list_item();	
 	
@@ -406,7 +406,7 @@ void odf_text_context::start_list_item()
 void odf_text_context::end_list_item()
 {
 	if (styles_context_ == NULL || single_paragraph_) return;
-	if (list_state_.levels.size() < 1) return;
+	if (list_state_.levels.empty()) return;
 
 	if (list_state_.levels.back() == false) return;
 
@@ -456,7 +456,7 @@ bool odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 void odf_text_context::end_list()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
-	if (list_state_.levels.size() < 1) return;
+	if (list_state_.levels.empty()) return;
 
 	if (list_state_.levels.back()) end_list_item();	
 	
@@ -541,9 +541,9 @@ void odf_text_context::set_outline_level(int level)
 
 void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstring style_name)
 {
-	if (style_name.size() < 1 || !style_elm)return;
+	if (style_name.empty() || !style_elm)return;
 
-	if (current_level_.size() < 1 )return;
+	if (current_level_.empty() )return;
 	
 	if (text_span* span = dynamic_cast<text_span*>(current_level_.back().elm.get()))
 	{

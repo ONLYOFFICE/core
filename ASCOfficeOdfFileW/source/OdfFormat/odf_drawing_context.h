@@ -67,6 +67,8 @@ public:
 	void clear				();
 	void set_styles_context	(odf_style_context*  styles_context);//для embedded 
 
+	void set_parent_style	(std::wstring style_name);
+
 	void set_header_state		(bool Val);
 	void set_footer_state		(bool Val);
 	void set_background_state	(bool Val);
@@ -139,7 +141,6 @@ public:
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
 		void set_text_box_min_size		(double w_pt, double h_pt);
-		void set_text_box_parent_style	(std::wstring style_name);
 		void set_text_box_tableframe	(bool val);		
 	void end_text_box					();
 
@@ -154,6 +155,9 @@ public:
 
 	void start_media(std::wstring ref);
 	void end_media();
+
+	void start_link_object(std::wstring href);
+	void end_link_object();
 
 	void add_image_replacement();
 	void set_image_replacement(std::wstring ref);
@@ -171,6 +175,7 @@ public:
     void end_element	();
 
 	bool is_exist_content();
+	bool is_current_empty();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_path			(std::wstring path_string);
 	void add_path_element	(std::wstring command, std::wstring elm);

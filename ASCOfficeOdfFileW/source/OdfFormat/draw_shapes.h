@@ -34,6 +34,7 @@
 #include "draw_base.h"
 
 #include "common_attlists.h"
+#include "targetframename.h"
 
 namespace cpdoccore {
 namespace odf_writer {
@@ -553,5 +554,37 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_sphere);
+//----------------------------------------------------------------------------------
+// draw:a
+//----------------------------------------------------------------------------------
+class draw_a : public office_element_impl<draw_a>
+{  
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+   
+	static const ElementType type = typeDrawA;
+	static const xml::NodeType xml_type = xml::typeElement;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( const office_element_ptr & child_element);
+
+	virtual void serialize(std::wostream & _Wostream);
+  
+	office_element_ptr_array content_;
+
+	friend class odf_document;
+
+	odf_types::common_xlink_attlist xlink_attlist_;
+
+    _CP_OPT(std::wstring)					office_name_;
+    _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
+
+    _CP_OPT(std::wstring)					text_style_name_;
+    _CP_OPT(std::wstring)					text_visited_style_name_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_a);
 }
 }

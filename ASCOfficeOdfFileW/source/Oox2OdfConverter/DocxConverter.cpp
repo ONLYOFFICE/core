@@ -1186,25 +1186,39 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	if (oox_paragraph_pr->m_oPStyle.IsInit() && oox_paragraph_pr->m_oPStyle->m_sVal.IsInit())
 	{
 		std::wstring style_name = *oox_paragraph_pr->m_oPStyle->m_sVal;
-		odt_context->styles_context()->last_state()->set_parent_style_name(style_name);
-		/////////////////////////find parent properties 
 
+		/////////////////////////find parent properties 
 		odf_writer::style_paragraph_properties  parent_paragraph_properties;
 		odt_context->styles_context()->calc_paragraph_properties(style_name, odf_types::style_family::Paragraph, &parent_paragraph_properties.content_);
+		
+		odf_writer::style_text_properties  parent_text_properties;
+		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Paragraph, &parent_text_properties.content_);
+
+		odf_writer::odf_style_state_ptr style_state;
+		style_state = odt_context->styles_context()->last_state();
+
+		odf_writer::odf_drawing_context* drawing_context = odt_context->drawing_context();
+		if ((drawing_context) && (false == drawing_context->is_current_empty()))
+		{
+			paragraph_properties->apply_from(&parent_paragraph_properties);
+			
+			odf_writer::style_text_properties* text_props = style_state->get_text_properties();
+			text_props->apply_from(&parent_text_properties);
+		}
+		else
+		{
+			style_state->set_parent_style_name(style_name);
+		}
 		
 		if (parent_paragraph_properties.content_.outline_level_)
 		{
 			outline_level = *parent_paragraph_properties.content_.outline_level_;
 		}
 		//список тож явно ??? угу :( - выше + велосипед для хранения
-		odf_writer::style_text_properties  parent_text_properties;
-		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Paragraph, &parent_text_properties.content_);
-
 		if (parent_text_properties.content_.fo_font_size_)
 		{
 			current_font_size.push_back(parent_text_properties.content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
 		}
-
 	}
 
 	if (oox_paragraph_pr->m_oSpacing.IsInit())
@@ -2236,22 +2250,24 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	{
 		std::wstring style_name = *oox_run_pr->m_oRStyle->m_sVal;
 
-		odf_writer::odf_style_state_ptr style_state;
-		//if (is_list_styles)
-		//{
-		//	style_state = odt_context->styles_context()->lists_styles()->last_state();
-		//}
-		//else
-		{
-			style_state = odt_context->styles_context()->last_state();
-		}
-		if (style_state)
-		{
-			style_state->set_parent_style_name(style_name);
-		}
-		
 		odf_writer::style_text_properties  parent_text_properties;
 		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Text, &parent_text_properties.content_);
+		
+		odf_writer::odf_style_state_ptr style_state;
+		style_state = odt_context->styles_context()->last_state();
+
+		if (style_state)
+		{
+			odf_writer::odf_drawing_context* drawing_context = odt_context->drawing_context();
+			if ((drawing_context) && (false == drawing_context->is_current_empty()))
+			{
+				text_properties->apply_from(&parent_text_properties);
+			}
+			else
+			{
+				style_state->set_parent_style_name(style_name);
+			}
+		}		
 
 		if (parent_text_properties.content_.fo_font_size_)
 		{
@@ -3027,6 +3043,16 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 			odt_context->drawing_context()->set_object_foreground(true);
 		}
 	}
+
+	if ((oox_anchor->m_oLayoutInCell.IsInit()) && (oox_anchor->m_oLayoutInCell->ToBool()))
+	{
+		if (odt_context->table_context()->empty() == false)
+		{//VillageofSchaumburg.docx
+			odt_context->drawing_context()->set_anchor(3); 
+			odt_context->drawing_context()->set_vertical_rel(1); //paragraph content
+			odt_context->drawing_context()->set_horizontal_rel(1); //paragraph
+		}
+	}
 	if (oox_anchor->m_oRelativeHeight.IsInit())
 	{
 		int id = oox_anchor->m_oRelativeHeight->GetValue();
@@ -3372,8 +3398,13 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 	//зачемто ?! для OpenOffice для врезок/фреймов нужен базовый стиль - без него другой тип геометрии oO !!!
-	odt_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic,false, true);		
-	odf_writer::graphic_format_properties	* graphic_properties	= odt_context->styles_context()->last_state()->get_graphic_properties();
+	
+	odt_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic, false, true);		
+	odf_writer::graphic_format_properties* graphic_properties = odt_context->styles_context()->last_state()->get_graphic_properties();
+
+	//для image ?!
+	odt_context->styles_context()->create_style(L"Graphics", odf_types::style_family::Graphic, false, true);		
+	graphic_properties = odt_context->styles_context()->last_state()->get_graphic_properties();
 	//if (graphic_properties)graphic_properties->content_.common_background_color_attlist_.fo_background_color_ = odf_types::background_color(odf_types::background_color::Transparent);
 
 }
@@ -4053,7 +4084,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 					odt_context->drawing_context()->set_text_box_tableframe(true);
 					odt_context->drawing_context()->set_text_box_min_size(0, 1.);
 					odt_context->drawing_context()->set_z_order(0x7fffffff - 1024/* + id_tables*/);
-					odt_context->drawing_context()->set_text_box_parent_style(L"Frame");
+					odt_context->drawing_context()->set_parent_style(L"Frame");
 					odt_context->drawing_context()->set_name(L"TableFrame");
 				odt_context->start_text_context();
 	}

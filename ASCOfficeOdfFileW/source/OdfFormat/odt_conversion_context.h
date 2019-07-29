@@ -198,6 +198,8 @@ private:
 	bool			is_header_;
 	bool			is_footer_;
 	bool			is_background_;
+
+	std::wstring	current_master_page_;
 	
 	std::vector<odf_drawing_context_ptr>	drawing_context_;	
 	std::vector<odf_text_context_ptr>		text_context_;		//for embedded 

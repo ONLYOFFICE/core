@@ -53,7 +53,7 @@
 
 namespace _graphics_utils_
 {
-	bool GetResolution(const wchar_t* fileName, double & Width, double &Height) //pt
+	bool GetResolution(const wchar_t* fileName, double & Width, double &Height) //px
 	{
 		NSFile::CFileBinary file;
 		if (false == file.OpenFile(fileName)) return false;
@@ -62,7 +62,7 @@ namespace _graphics_utils_
 		file.CloseFile();
 
 		if (file_size < 1) return false;
-        bool result =false;
+        bool result = false;
 
         CBgraFrame image;
         if (result = image.OpenFile(fileName, 0 ))

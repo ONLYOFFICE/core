@@ -820,6 +820,16 @@ std::wstring  docx_conversion_context::dump_settings_document()
 			{
 				CP_XML_NODE(L"w:mirrorMargins");
 			}
+			
+			CP_XML_NODE(L"w:compat")
+			{
+				CP_XML_NODE(L"w:compatSetting", TRUE)
+				{
+					CP_XML_ATTR(L"w:name",  L"compatibilityMode" );
+					CP_XML_ATTR(L"w:uri",  L"http://schemas.microsoft.com/office/word" );
+					CP_XML_ATTR(L"w:val",  L"15" );
+				}
+			}
 		}
 	}
 	return output.str();

@@ -360,7 +360,10 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	{
 		double Width = 0, Height = 0;
         _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
-		
+	//inch	
+		Width /= 96;
+		Height /= 96;
+
 		if (oox_picture->blipFill.tile.IsInit()) 
 		{
 			odf_context()->drawing_context()->set_image_style_repeat(2);
@@ -371,11 +374,12 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 		if (oox_picture->blipFill.srcRect.IsInit() && Width > 0 && Height >0 )
 		{
-			odf_context()->drawing_context()->set_image_client_rect_inch(
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->l.get_value_or(L"0")) * Width	/100.	/ 96.,
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->t.get_value_or(L"0")) * Height	/100.	/ 96.,
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->r.get_value_or(L"0")) * Width	/100.	/ 96., 
-				XmlUtils::GetInteger(oox_picture->blipFill.srcRect->b.get_value_or(L"0")) * Height	/100.	/ 96.);
+			double l = XmlUtils::GetInteger( oox_picture->blipFill.srcRect->l.get_value_or(L"0")) /100000.;
+			double t = XmlUtils::GetInteger( oox_picture->blipFill.srcRect->t.get_value_or(L"0")) /100000.;
+			double r = XmlUtils::GetInteger( oox_picture->blipFill.srcRect->r.get_value_or(L"0")) /100000.;
+			double b = XmlUtils::GetInteger( oox_picture->blipFill.srcRect->b.get_value_or(L"0")) /100000.;
+
+			odf_context()->drawing_context()->set_image_client_rect_inch( l * Width, t * Height, r * Width, b * Height );
 		}
 		if (oox_picture->blipFill.blip.IsInit())
 		{
@@ -1150,6 +1154,9 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
                 {
                     odf_context()->drawing_context()->set_bitmap_link(pathImage);
                     _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
+
+					Width /= 96; //to inch (current dpi file)
+					Height /= 96;
                 }
             }
             else if (oox_bitmap_fill->blip->link.IsInit())
@@ -1167,10 +1174,10 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 		if (oox_bitmap_fill->srcRect.IsInit() && Width > 0  && Height > 0)//часть изображения
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
-				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 ) /100. * Width / 96.,
-                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 ) /100. * Height/ 96.,
-                (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) /100. * Width / 96.,
-                (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) /100. * Height/ 96.);
+				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 ) / 100000. * Width,
+                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 ) / 100000. * Height,
+                (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) / 100000. * Width,
+                (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) / 100000. * Height);
 		}
 		if (oox_bitmap_fill->tile.IsInit())
 		{
@@ -1515,22 +1522,34 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 	}
 	if (oox_cnvPr->hlinkClick.IsInit())
 	{
-		odf_context()->drawing_context()->start_action(oox_cnvPr->hlinkClick->action.get_value_or(L""));
-
-			if (oox_cnvPr->hlinkClick->snd.IsInit())
-			{
-				std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3);
-
-				std::wstring href = odf_context()->add_media(sound);				
-				odf_context()->drawing_context()->add_sound(href);	
-			}
+		if (odf_context()->drawing_context()->is_current_empty())
+		{
 			if (oox_cnvPr->hlinkClick->id.IsInit())
 			{
 				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2);
 				
-				odf_context()->drawing_context()->add_link(hlink);	
+				odf_context()->drawing_context()->start_link_object(hlink);	
 			}
-		odf_context()->drawing_context()->end_action();
+		}
+		else
+		{
+			odf_context()->drawing_context()->start_action(oox_cnvPr->hlinkClick->action.get_value_or(L""));
+
+				if (oox_cnvPr->hlinkClick->snd.IsInit())
+				{
+					std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3);
+
+					std::wstring href = odf_context()->add_media(sound);				
+					odf_context()->drawing_context()->add_sound(href);	
+				}
+				if (oox_cnvPr->hlinkClick->id.IsInit())
+				{
+					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2);
+					
+					odf_context()->drawing_context()->add_link(hlink);	
+				}
+			odf_context()->drawing_context()->end_action();
+		}
 	}
 	//nullable_string		title;
 	//nullable<Hyperlink>	hlinkHover;

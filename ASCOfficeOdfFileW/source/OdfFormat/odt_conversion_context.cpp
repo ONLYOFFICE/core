@@ -284,7 +284,14 @@ void odt_conversion_context::end_drawings()
 				}
 			}
 		}
-		if (!bSet) text_context()->current_level_.back().elm->add_child_element(elm);
+		if (!bSet)
+		{
+			if (text_context()->current_level_.size() > 1 && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))
+			{
+				text_context()->end_span();
+			}
+			text_context()->current_level_.back().elm->add_child_element(elm);
+		}
 		
 		drawing_context()->clear();
 		drawing_context_.pop_back();
@@ -845,11 +852,13 @@ void odt_conversion_context::separate_field()
 }
 void odt_conversion_context::set_master_page_name(std::wstring master_name)
 {
-	if (current_root_elements_.size() < 1)// return; - эффект_штурмовика.docx - 1 страница !! (и ваще - 
+	if (current_root_elements_.empty())// return; - эффект_штурмовика.docx - 1 страница !! (и ваще - 
 	{
 		is_paragraph_in_current_section_ = true;
 		return;
 	}
+
+	if (current_master_page_ == master_name) return; // Newslette.docx
 
 	style *style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());
 
@@ -863,6 +872,7 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 		if (text_context()->set_master_page_name(master_name))
 			is_paragraph_in_current_section_ = false;		
 	}
+	current_master_page_ = master_name;
 }
 int odt_conversion_context::get_current_section_columns()
 {
@@ -930,7 +940,7 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 }
 void odt_conversion_context::add_section_column(std::vector<std::pair<double, double>> width_space)
 {
-	if (sections_.size() < 1 || width_space.size() < 1) return;
+	if (sections_.empty() || width_space.empty()) return;
 
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
@@ -1044,7 +1054,7 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 		text_context()->end_list();
 	}
 
-	if (text_context()->list_state_.levels.size() < 1)
+	if (text_context()->list_state_.levels.empty())
 	{
 		text_context()->list_state_.started_list = false;
 		text_context()->list_state_.style_name = L"";

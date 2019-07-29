@@ -661,6 +661,10 @@ void dr3d_scene::serialize(std::wostream & _Wostream)
 			
 			draw_shape::serialize(CP_XML_STREAM());
 
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -768,6 +772,40 @@ void dr3d_sphere::serialize(std::wostream & _Wostream)
 			CP_XML_ATTR_OPT(L"dr3d:transform",	dr3d_transform_);
 
 			draw_shape::serialize(CP_XML_STREAM());
+		}
+	}
+}
+//-------------------------------------------------------------------------------------------
+const wchar_t * draw_a::ns = L"draw";
+const wchar_t * draw_a::name = L"a";
+//-------------------------------------------------------------------------------------------
+void draw_a::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void draw_a::add_child_element( const office_element_ptr & child_element)
+{
+ 	if (!child_element) return;
+	
+	content_.push_back(child_element);
+}
+void draw_a::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			xlink_attlist_.serialize(CP_GET_XML_NODE());
+
+			CP_XML_ATTR_OPT(L"office:name",				office_name_);
+			CP_XML_ATTR_OPT(L"text:style-name",			text_style_name_);
+			CP_XML_ATTR_OPT(L"text:visited-style-name", text_visited_style_name_);
+			CP_XML_ATTR_OPT(L"office:target-frame-name",office_target_frame_name_);
+
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }

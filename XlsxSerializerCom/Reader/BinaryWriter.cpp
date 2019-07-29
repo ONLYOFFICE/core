@@ -6527,7 +6527,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		case BinXlsxRW::c_oFileTypes::XLSX:
 		default:
 		{
-			if (bIsNoBase64)
+			if (bIsNoBase64 && BinXlsxRW::c_oFileTypes::JSON != saveFileType)
 			{
 				pXlsx = new OOX::Spreadsheet::CXlsx();
 				pXlsx->m_bNeedCalcChain = false;

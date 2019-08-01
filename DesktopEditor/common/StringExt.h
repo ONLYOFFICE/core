@@ -267,7 +267,8 @@ namespace NSStringExt
 	}
 	static inline long FindLastNotOf(const wchar_t* str, unsigned int unLen, const wchar_t* chars)
 	{
-		long res = unLen - 1;
+		long res = unLen;
+		res--;
 		while(res >= 0)
 		{
 			long index = 0;

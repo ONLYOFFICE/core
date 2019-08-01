@@ -52,6 +52,19 @@ using namespace ATL;
 #include "../../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../../Common/OfficeFileFormats.h"
 
+// IONLYOFFICEDocBuilderValue
+[object, uuid("2637FDFA-8473-4CB8-B90B-C23CB949D009"), dual, pointer_default(unique)]
+__interface IONLYOFFICEDocBuilderValue : IDispatch
+{
+	[id(100)] HRESULT IsEmpty([out, retval] VARIANT_BOOL* result);
+	[id(102)] HRESULT IsNull([out, retval] VARIANT_BOOL* result);
+	[id(103)] HRESULT IsUndefined([out, retval] VARIANT_BOOL* result);
+	[id(104)] HRESULT ToInt([out, retval] long* result);
+	[id(105)] HRESULT ToDouble([out, retval] double* result);
+	[id(106)] HRESULT ToString([out, retval] BSTR* result);
+	[id(107)] HRESULT GetProperty([in] BSTR name, [out, retval] IONLYOFFICEDocBuilderValue** result);
+};
+
 // IONLYOFFICEDocBuilder
 [object, uuid("0C07B7E7-86A4-42E1-8E42-2FA961992E0F"), dual, pointer_default(unique)]
 __interface IONLYOFFICEDocBuilder : IDispatch
@@ -66,6 +79,7 @@ __interface IONLYOFFICEDocBuilder : IDispatch
 	[id(106)] HRESULT Run([in] BSTR path, [out, retval] VARIANT_BOOL* result);
 	[id(107)] HRESULT RunText([in] BSTR commands, [out, retval] VARIANT_BOOL* result);
 	[id(108)] HRESULT SetProperty([in] BSTR key, [in] BSTR value);
+	[id(109)] HRESULT Execute([in] BSTR command, [out, retval] IONLYOFFICEDocBuilderValue** result);
 
 	[id(201)] HRESULT Initialize(void);
 	[id(202)] HRESULT Dispose(void);
@@ -92,6 +106,81 @@ static CStringW GetCurrentDllDirPath()
 	}	
 	return thisPath;
 }
+
+// CONLYOFFICEDocBuilderValue
+[coclass, uuid("85C41585-25D7-40F1-9CC6-FA17052650F4"), threading(apartment), vi_progid("ONLYOFFICE.BuilderValue"), progid("ONLYOFFICE.BuilderValue.1"), version(1.0)]
+class ATL_NO_VTABLE CONLYOFFICEDocBuilderValue : public IONLYOFFICEDocBuilderValue
+{
+protected:
+	NSDoctRenderer::CDocBuilderValue m_oValue;
+
+public:
+	CONLYOFFICEDocBuilderValue()
+	{
+	}
+	~CONLYOFFICEDocBuilderValue()
+	{
+	}
+	STDMETHOD(IsEmpty)(VARIANT_BOOL* result)
+	{
+		if (result)
+			*result = m_oValue.IsEmpty() ? VARIANT_TRUE : VARIANT_FALSE;
+		return S_OK;
+	}
+	STDMETHOD(IsNull)(VARIANT_BOOL* result)
+	{
+		if (result)
+			*result = m_oValue.IsNull() ? VARIANT_TRUE : VARIANT_FALSE;
+		return S_OK;
+	}
+	STDMETHOD(IsUndefined)(VARIANT_BOOL* result)
+	{
+		if (result)
+			*result = m_oValue.IsUndefined() ? VARIANT_TRUE : VARIANT_FALSE;
+		return S_OK;
+	}
+	STDMETHOD(ToInt)(long* result)
+	{
+		if (result)
+			*result = m_oValue.ToInt();
+		return S_OK;
+	}
+	STDMETHOD(ToDouble)(double* result)
+	{
+		if (result)
+			*result = m_oValue.ToDouble();
+		return S_OK;
+	}
+	STDMETHOD(ToString)(BSTR* result)
+	{
+		wchar_t* val = m_oValue.ToString();
+		if (result)
+		{
+			*result = NULL;
+			if (val)
+			{
+				CString sValue(val);
+				*result = sValue.AllocSysString();
+			}
+		}
+		if (val)
+			m_oValue.FreeString(val);
+		return S_OK;
+	}
+	STDMETHOD(GetProperty)(BSTR name, IONLYOFFICEDocBuilderValue** result)
+	{
+		if (result)
+		{
+			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
+			((CONLYOFFICEDocBuilderValue*)(*result))->m_oValue = m_oValue.GetProperty(name);
+		}
+		return S_OK;
+	}
+	void* GetPrivate()
+	{
+		return &m_oValue;
+	}
+};
 
 // CONLYOFFICEDocBuilder
 [coclass, uuid("9BF69F3C-1506-41B9-B8EE-2839948C02E9"), threading(apartment), vi_progid("ONLYOFFICE.Builder"), progid("ONLYOFFICE.Builder.1"), version(1.0)]
@@ -240,6 +329,18 @@ public:
 			return S_FALSE;
 		
 		m_pBuilder->SetPropertyW(key, value);
+		return S_OK;
+	}
+	STDMETHOD(Execute)(BSTR command, IONLYOFFICEDocBuilderValue** result)
+	{
+		if (NULL == m_pBuilder)
+			return S_FALSE;
+
+		if (result)
+		{
+			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
+			m_pBuilder->ExecuteCommand(command, (NSDoctRenderer::CDocBuilderValue*)(((CONLYOFFICEDocBuilderValue*)(*result))->GetPrivate()));
+		}
 		return S_OK;
 	}
 

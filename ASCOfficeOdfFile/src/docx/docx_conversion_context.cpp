@@ -823,7 +823,7 @@ std::wstring  docx_conversion_context::dump_settings_document()
 			
 			CP_XML_NODE(L"w:compat")
 			{
-				CP_XML_NODE(L"w:compatSetting", TRUE)
+				CP_XML_NODE(L"w:compatSetting")
 				{
 					CP_XML_ATTR(L"w:name",  L"compatibilityMode" );
 					CP_XML_ATTR(L"w:uri",  L"http://schemas.microsoft.com/office/word" );

@@ -5535,6 +5535,40 @@ void BinaryWorksheetTableWriter::WriteSheetPr(const OOX::Spreadsheet::CSheetPr& 
 		WritePageSetUpPr(oSheetPr.m_oPageSetUpPr.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSheetPr.m_oOutlinePr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::OutlinePr);
+		WriteOutlinePr(oSheetPr.m_oOutlinePr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryWorksheetTableWriter::WriteOutlinePr(const OOX::Spreadsheet::COutlinePr& oOutlinePr)
+{
+	int nCurPos = 0;
+	if (oOutlinePr.m_oApplyStyles.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::ApplyStyles);
+		m_oBcw.m_oStream.WriteBOOL(oOutlinePr.m_oApplyStyles->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oOutlinePr.m_oShowOutlineSymbols.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::ShowOutlineSymbols);
+		m_oBcw.m_oStream.WriteBOOL(oOutlinePr.m_oShowOutlineSymbols->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oOutlinePr.m_oSummaryBelow.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::SummaryBelow);
+		m_oBcw.m_oStream.WriteBOOL(oOutlinePr.m_oSummaryBelow->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oOutlinePr.m_oSummaryRight.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::SummaryRight);
+		m_oBcw.m_oStream.WriteBOOL(oOutlinePr.m_oSummaryRight->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryWorksheetTableWriter::WritePageSetUpPr(const OOX::Spreadsheet::CPageSetUpPr& oPageSetUpPr)
 {

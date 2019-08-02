@@ -1128,7 +1128,12 @@ namespace BinXlsxRW
 		TabColor = 9,
 		PageSetUpPr = 10,
 		AutoPageBreaks = 11,
-		FitToPage = 12
+		FitToPage = 12,
+		OutlinePr = 13,
+		ApplyStyles = 14,
+		ShowOutlineSymbols = 15,
+		SummaryBelow = 16,
+		SummaryRight = 17
 	};}
 
     namespace c_oSer_Sparkline{enum c_oSer_Sparkline

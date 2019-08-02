@@ -750,6 +750,62 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>		m_oAutoPageBreaks;
 			nullable<SimpleTypes::COnOff<>>		m_oFitToPage;
 		};
+		class COutlinePr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(COutlinePr)
+			COutlinePr()
+			{
+			}
+			virtual ~COutlinePr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(_T("<outlinePr"));
+				WritingStringNullableAttrBool(L"applyStyles", m_oApplyStyles);
+				WritingStringNullableAttrBool(L"showOutlineSymbols", m_oShowOutlineSymbols);
+				WritingStringNullableAttrBool(L"summaryBelow", m_oSummaryBelow);
+				WritingStringNullableAttrBool(L"summaryRight", m_oSummaryRight);
+				writer.WriteString(_T("/>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_OutlinePr;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("applyStyles"), m_oApplyStyles )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showOutlineSymbols"), m_oShowOutlineSymbols )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("summaryBelow"), m_oSummaryBelow )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("summaryRight"), m_oSummaryRight )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::COnOff<>>		m_oApplyStyles;
+			nullable<SimpleTypes::COnOff<>>		m_oShowOutlineSymbols;
+			nullable<SimpleTypes::COnOff<>>		m_oSummaryBelow;
+			nullable<SimpleTypes::COnOff<>>		m_oSummaryRight;
+		};
 		class CSheetPr : public WritingElement
 		{
 		public:
@@ -788,6 +844,10 @@ namespace OOX
 				{
 					m_oPageSetUpPr->toXML(writer);
 				}
+				if (m_oOutlinePr.IsInit())
+				{
+					m_oOutlinePr->toXML(writer);
+				}
 				writer.WriteString(_T("</sheetPr>"));
 
 			}
@@ -805,10 +865,10 @@ namespace OOX
 
 					if ( _T("tabColor") == sName )
 						m_oTabColor = oReader;
-					if ( _T("pageSetUpPr") == sName )
+					else if ( _T("pageSetUpPr") == sName )
 						m_oPageSetUpPr = oReader;
-					//необработано:
-					//<outlinePr>
+					else if ( _T("outlinePr") == sName )
+						m_oOutlinePr = oReader;
 				}
 			}
 			virtual EElementType getType () const
@@ -836,6 +896,7 @@ namespace OOX
 		public:
 			nullable<CColor>					m_oTabColor;
 			nullable<CPageSetUpPr>				m_oPageSetUpPr;
+			nullable<COutlinePr>				m_oOutlinePr;
 
 			nullable<std::wstring>				m_oCodeName;
 			nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;

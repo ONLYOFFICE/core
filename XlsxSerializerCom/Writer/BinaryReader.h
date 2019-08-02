@@ -293,6 +293,7 @@ namespace BinXlsxRW
 		int ReadPane(BYTE type, long length, void* poResult);
 		int ReadSelection(BYTE type, long length, void* poResult);
 		int ReadSheetPr(BYTE type, long length, void* poResult);
+		int ReadOutlinePr(BYTE type, long length, void* poResult);
 		int ReadPageSetUpPr(BYTE type, long length, void* poResult);
 		int ReadColor(BYTE type, long length, void* poResult);
 		int ReadSheetFormatPr(BYTE type, long length, void* poResult);

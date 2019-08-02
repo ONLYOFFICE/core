@@ -4222,6 +4222,39 @@ int BinaryWorksheetsTableReader::ReadSheetPr(BYTE type, long length, void* poRes
 		pSheetPr->m_oPageSetUpPr.Init();
 		READ1_DEF(length, res, this->ReadPageSetUpPr, pSheetPr->m_oPageSetUpPr.GetPointer());
 	}
+	else if(c_oSer_SheetPr::OutlinePr == type)
+	{
+		pSheetPr->m_oOutlinePr.Init();
+		READ1_DEF(length, res, this->ReadOutlinePr, pSheetPr->m_oOutlinePr.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadOutlinePr(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::COutlinePr* pOutlinePr = static_cast<OOX::Spreadsheet::COutlinePr*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if(c_oSer_SheetPr::ApplyStyles == type)
+	{
+		pOutlinePr->m_oApplyStyles.Init();
+		pOutlinePr->m_oApplyStyles->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_SheetPr::ShowOutlineSymbols == type)
+	{
+		pOutlinePr->m_oShowOutlineSymbols.Init();
+		pOutlinePr->m_oShowOutlineSymbols->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_SheetPr::SummaryBelow == type)
+	{
+		pOutlinePr->m_oSummaryBelow.Init();
+		pOutlinePr->m_oSummaryBelow->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_SheetPr::SummaryRight == type)
+	{
+		pOutlinePr->m_oSummaryRight.Init();
+		pOutlinePr->m_oSummaryRight->FromBool(m_oBufferedStream.GetBool());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

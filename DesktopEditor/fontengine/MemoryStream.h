@@ -189,7 +189,12 @@ namespace NSMemoryStream
 		inline void WriteStringA(const char* pData, int nLen)
 		{
 			CheckBufferSize(nLen + sizeof(USHORT));
+
+#ifdef __ANDROID__
+			memcpy(m_pBufferMem, &nLen, sizeof(USHORT));
+#else
 			*((USHORT*)(m_pBufferMem)) = (USHORT)nLen;
+#endif
 			m_pBufferMem += sizeof(USHORT);
 
 			memcpy(m_pBufferMem, pData, nLen);
@@ -198,7 +203,12 @@ namespace NSMemoryStream
 		inline void WriteStringA2(const char* pData, int nLen)
 		{
             CheckBufferSize(nLen + sizeof(INT));
-            *((INT*)(m_pBufferMem)) = (INT)nLen;
+
+#ifdef __ANDROID__
+			memcpy(m_pBufferMem, &nLen, sizeof(INT));
+#else
+			*((INT*)(m_pBufferMem)) = (INT)nLen;
+#endif
             m_pBufferMem += sizeof(INT);
 
 			memcpy(m_pBufferMem, pData, nLen);

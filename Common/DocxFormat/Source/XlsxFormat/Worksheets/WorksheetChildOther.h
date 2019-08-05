@@ -840,13 +840,13 @@ namespace OOX
 				{
 					m_oTabColor->toXML2(writer, _T("tabColor"));
 				}
-				if (m_oPageSetUpPr.IsInit())
-				{
-					m_oPageSetUpPr->toXML(writer);
-				}
 				if (m_oOutlinePr.IsInit())
 				{
 					m_oOutlinePr->toXML(writer);
+				}
+				if (m_oPageSetUpPr.IsInit())
+				{
+					m_oPageSetUpPr->toXML(writer);
 				}
 				writer.WriteString(_T("</sheetPr>"));
 

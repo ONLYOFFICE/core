@@ -131,14 +131,6 @@ namespace PPTX
 			BYTE _type = pReader->GetUChar(); 
 			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
-			pReader->Skip(1);
-
-			while (true)
-			{
-				BYTE _at = pReader->GetUChar_TypeNode();
-				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-					break;
-			}
 			while (pReader->GetPos() < _end_rec)
 			{
 				BYTE _at = pReader->GetUChar();

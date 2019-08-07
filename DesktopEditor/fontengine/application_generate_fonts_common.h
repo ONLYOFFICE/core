@@ -101,6 +101,28 @@ namespace NSCommon
                 pStr[i] = pStr[i] + 'A' - 'a';
         }
     }
+    static void makeLower(std::string& url)
+    {
+        int nLen = (int)url.length();
+        char* pStr = (char*)url.c_str();
+
+        for (int i = 0; i < nLen; ++i)
+        {
+            if (pStr[i] >= 'A' && pStr[i] <= 'Z')
+                pStr[i] = pStr[i] + 'a' - 'A';
+        }
+    }
+    static void makeLowerW(std::wstring& url)
+    {
+        int nLen = (int)url.length();
+        wchar_t* pStr = (wchar_t*)url.c_str();
+
+        for (int i = 0; i < nLen; ++i)
+        {
+            if (pStr[i] >= 'A' && pStr[i] <= 'Z')
+                pStr[i] = pStr[i] + 'a' - 'A';
+        }
+    }
     
     static void WriteLog(const std::string& sLogFile, const std::wstring& sData)
     {

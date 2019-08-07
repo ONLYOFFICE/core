@@ -1000,7 +1000,7 @@ namespace NExtractTools
 			}
 			else
 			{
-				nRes = dir2zip(sFrom, sTo);
+				nRes = dir2zip(sResultPptxDir, sTo);
 			}
 		}
         return nRes;

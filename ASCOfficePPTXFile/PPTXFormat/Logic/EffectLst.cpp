@@ -81,7 +81,7 @@ namespace PPTX
 		}
 		std::wstring EffectLst::toXML() const
 		{
-			std::wstring str = _T("<a:effectLst>");
+			std::wstring str;
 			if (blur.IsInit())			str += blur->toXML();
 			if (fillOverlay.IsInit())	str += fillOverlay->toXML();
 			if (glow.IsInit())			str += glow->toXML();
@@ -91,11 +91,20 @@ namespace PPTX
 			if (reflection.IsInit())	str += reflection->toXML();
 			if (softEdge.IsInit())		str += softEdge->toXML();
 
-			str += _T("</a:effectLst>");
+			if (false == str.empty())
+			{
+				str += L"<a:effectLst>" + str + L"</a:effectLst>";
+			}
 			return str;
 		}
 		void EffectLst::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
+			if (!blur.IsInit() && !fillOverlay.IsInit() && !glow.IsInit() && !innerShdw.IsInit() && 
+				!outerShdw.IsInit() && !prstShdw.IsInit() && !reflection.IsInit() && !softEdge.IsInit())
+			{
+				return;
+			}
+			
 			pWriter->StartNode(L"a:effectLst");
 			pWriter->EndAttributes();
 			

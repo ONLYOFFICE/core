@@ -122,7 +122,20 @@ namespace PPTX
 				pWriter->WriteAttribute(L"prst", prst.get());
 				pWriter->EndAttributes();
 				
-				Color.toXmlWriter(pWriter);
+				if (Color.is_init())
+				{
+					Color.toXmlWriter(pWriter);
+				}
+				else
+				{
+					pWriter->StartNode(L"a:scrgbClr");
+					pWriter->StartAttributes();
+					pWriter->WriteAttribute(L"r", 0);
+					pWriter->WriteAttribute(L"g", 0);
+					pWriter->WriteAttribute(L"b", 0);
+					pWriter->EndAttributes();
+					pWriter->EndNode(L"a:scrgbClr");
+				}
 
 				pWriter->EndNode(L"a:prstShdw");
 			}

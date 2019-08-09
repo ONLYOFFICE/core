@@ -702,6 +702,9 @@ INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wst
     NSFonts::CLibrary library;
     library.m_internal->m_library = m_pLibrary;
     m_pFont = (CFontFile*)pCache->LockFont(library, sPath, lFaceIndex, dSize);
+	if (NULL == m_pFont)
+		return FALSE;
+
 	m_pFont->m_pFontManager = this;
 	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
 

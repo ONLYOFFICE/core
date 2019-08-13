@@ -354,7 +354,7 @@ namespace DocFileFormat
 
 		int nComputedCellWidthsGrid = 0;
 
-		for (size_t ccc = 0; ccc <= _gridIndex; ccc++)
+		for (size_t ccc = 0; ccc < _grid->size() && ccc <= _gridIndex; ccc++)
 		{
 			nComputedCellWidthsGrid += _grid->at(ccc);
 		}

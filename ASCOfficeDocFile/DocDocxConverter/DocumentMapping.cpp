@@ -1353,6 +1353,7 @@ namespace DocFileFormat
 						fEndNestingLevel = ( iter->Arguments[0] == 1 ) ? (true) : (false);
 					}break;
 
+					case sprmOldPFInTable:
 					case sprmPItap:
 					{
 						iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );

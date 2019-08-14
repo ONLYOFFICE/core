@@ -913,9 +913,9 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	{
 		drawing->posOffsetV = (int)(length(0.01, length::cm).get_value_unit(length::emu));
 	}
-//////////////////////////////////////////////
+//----------------------------------------------------
 	graphicProperties.apply_to(drawing->additional);
-//////////////////////////////////////////
+//----------------------------------------------------
 	bool bTxbx = (drawing->sub_type == 1);
 
 	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles(),drawing->fill, bTxbx);	
@@ -926,7 +926,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	}
 
-////////////////////////////////////////////////////
+//----------------------------------------------------
 	drawing->additional.push_back(odf_reader::_property(L"border_width_left",		Compute_BorderWidth(graphicProperties, sideLeft)));
 	drawing->additional.push_back(odf_reader::_property(L"border_width_top",		Compute_BorderWidth(graphicProperties, sideTop)));
 	drawing->additional.push_back(odf_reader::_property(L"border_width_right",		Compute_BorderWidth(graphicProperties, sideRight)));
@@ -941,7 +941,8 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 
 		}
 	}
-///////////////////////////
+//----------------------------------------------------
+//----------------------------------------------------
 	if (attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
 	{
 		double w_shape = attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value_unit(length::pt);

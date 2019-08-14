@@ -141,6 +141,67 @@ static const std::wstring _vmlDashStyle[]=
 	L"dashdot",
 	L"shortdashdotdot"
 };
+
+void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+{
+	_CP_OPT(bool)			bShadow;
+	_CP_OPT(std::wstring)	strShadowColor; 
+	_CP_OPT(double)			dShadowOpacity; 
+	_CP_OPT(double)			dShadowOffsetX; 
+	_CP_OPT(double)			dShadowOffsetY; 
+
+	odf_reader::GetProperty(prop, L"shadow", bShadow);	
+	odf_reader::GetProperty(prop, L"shadow-color", strShadowColor);	
+	odf_reader::GetProperty(prop, L"shadow-opacity", dShadowOpacity);
+	odf_reader::GetProperty(prop, L"shadow-offset-x",	dShadowOffsetX);	
+	odf_reader::GetProperty(prop, L"shadow-offset-y", dShadowOffsetY);
+
+	CP_XML_WRITER(strm)
+    {
+        CP_XML_NODE(L"a:effectLst")
+        { 
+			if ((bShadow) && (*bShadow))
+			{
+				CP_XML_NODE(L"a:outerShdw")
+				{ 			
+					//CP_XML_ATTR(L"blurRad", 0); 
+
+					double offsetX = dShadowOffsetX.get_value_or(0);
+					double offsetY = dShadowOffsetY.get_value_or(0);
+
+					double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
+					double dir = (offsetX > 0 ? atan(offsetY / offsetX) : 0) * 180. / 3.1415926;
+
+					CP_XML_ATTR(L"dist", (int)(dist)); 
+					CP_XML_ATTR(L"dir", (int)(dir * 60000)); 
+					
+					CP_XML_ATTR(L"rotWithShape", L"0"); 
+					CP_XML_ATTR(L"algn", L"tl"); 
+
+					CP_XML_NODE(L"a:srgbClr")
+					{
+						if (strShadowColor)
+						{
+							CP_XML_ATTR(L"val", *strShadowColor); 
+						}
+						else
+						{
+							CP_XML_ATTR(L"val", L"000000"); 
+						}
+						if (dShadowOpacity)
+						{
+							CP_XML_NODE(L"a:alpha")
+							{
+								CP_XML_ATTR(L"val", *dShadowOpacity * 1000); 
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop, bool always_draw, const std::wstring &ns)
 {
 	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
@@ -199,7 +260,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 					
 					CP_XML_NODE(ns + L":srgbClr")
 					{
-						CP_XML_ATTR2(ns_att + L"val",color);
+						CP_XML_ATTR2(ns_att + L"val", color);
 						
 						if (dStrokeOpacity)	
 						{

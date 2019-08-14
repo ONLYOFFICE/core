@@ -214,8 +214,13 @@ public:
     void apply_from(const common_shadow_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(shadow_type) style_shadow_;
+	_CP_OPT(shadow_type)				style_shadow_;
 
+	_CP_OPT(odf_types::shadow_type1)	draw_shadow_;
+	_CP_OPT(odf_types::percent)			draw_shadow_opacity_;
+	_CP_OPT(odf_types::color)			draw_shadow_color_;
+	_CP_OPT(odf_types::length)			draw_shadow_offset_y_;
+	_CP_OPT(odf_types::length)			draw_shadow_offset_x_;
 };
 
 // common-keep-with-next-attlist

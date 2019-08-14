@@ -1343,17 +1343,17 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 	if (std::wstring::npos == res) 
 		hexColor = std::wstring(L"#") + hexColor;
 
-	impl_->current_graphic_properties->draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
 	
 	if (dist_pt_y > 0)
-		impl_->current_graphic_properties->draw_shadow_offset_y_ = length(length(dist_pt_y,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
 	else
-		impl_->current_graphic_properties->draw_shadow_offset_y_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
 	
-	impl_->current_graphic_properties->draw_shadow_ = shadow_type1(shadow_type1::Visible);
-	if (opacity) impl_->current_graphic_properties->draw_shadow_opacity_ = *opacity;
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_ = shadow_type1(shadow_type1::Visible);
+	if (opacity) impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_opacity_ = *opacity;
 
-	impl_->current_graphic_properties->draw_shadow_color_ = hexColor;
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_ = hexColor;
 }
 
 void odf_drawing_context::set_placeholder_id (std::wstring val)
@@ -2936,25 +2936,25 @@ void odf_drawing_context::end_text_box()
 		impl_->current_graphic_properties->common_border_attlist_.fo_border_ = ss.str();
 	}
 	
-	if (impl_->current_graphic_properties->draw_shadow_)
+	if (impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_)
 	{
 		std::wstringstream shadow_style;
 		
-		if (impl_->current_graphic_properties->draw_shadow_color_)
-			shadow_style << *impl_->current_graphic_properties->draw_shadow_color_;
+		if (impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_)
+			shadow_style << *impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_;
 		else shadow_style << L"#000000";
 
 		shadow_style << L" ";	
-		shadow_style << *impl_->current_graphic_properties->draw_shadow_offset_x_;
+		shadow_style << *impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_;
 		shadow_style << L" ";
-		shadow_style << *impl_->current_graphic_properties->draw_shadow_offset_y_;
+		shadow_style << *impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_;
 
 		impl_->current_graphic_properties->common_shadow_attlist_.style_shadow_ = shadow_style.str();
 
-		impl_->current_graphic_properties->draw_shadow_offset_x_	= boost::none;
-		impl_->current_graphic_properties->draw_shadow_offset_y_	= boost::none;
-		impl_->current_graphic_properties->draw_shadow_color_		= boost::none;
-		impl_->current_graphic_properties->draw_shadow_				= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_	= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_	= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_	= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_			= boost::none;
 
 		if (!impl_->current_graphic_properties->common_border_attlist_.fo_border_)
 			impl_->current_graphic_properties->common_border_attlist_.fo_border_ = std::wstring(L"#000000 solid 0.06pt");

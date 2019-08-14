@@ -1026,7 +1026,13 @@ void OoxConverter::convert(PPTX::Logic::InnerShdw *oox_shadow, DWORD ARGB)
 
 	convert(&oox_shadow->Color, hexColor, opacity, ARGB);
 
-	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
+	double dist = oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0;
+	double dir = oox_shadow->dir.IsInit() ? oox_shadow->dir.get() / 60000. : 0;
+
+	double offset_x = dist * cos(dir * M_PI / 180); 
+	double offset_y = dist * sin(dir * M_PI / 180);
+
+	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, offset_x, offset_y);
 }
 void OoxConverter::convert(PPTX::Logic::OuterShdw *oox_shadow, DWORD ARGB)
 {
@@ -1037,8 +1043,13 @@ void OoxConverter::convert(PPTX::Logic::OuterShdw *oox_shadow, DWORD ARGB)
 
 	convert(&oox_shadow->Color, hexColor, opacity, ARGB);
 
-	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0);
+	double dist = oox_shadow->dist.IsInit() ? oox_shadow->dist.get() / 12700. : 0;
+	double dir = oox_shadow->dir.IsInit() ? oox_shadow->dir.get() / 60000. : 0;
 
+	double offset_x = dist * cos(dir * M_PI / 180); 
+	double offset_y = dist * sin(dir * M_PI / 180);
+
+	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, offset_x, offset_y);
 }
 void OoxConverter::convert(PPTX::Logic::PrstShdw *oox_shadow, DWORD ARGB)
 {

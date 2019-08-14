@@ -301,14 +301,32 @@ void common_background_color_attlist::serialize(CP_ATTR_NODE)
 void common_shadow_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"style:shadow", style_shadow_);
+
+    CP_APPLY_ATTR(L"draw:shadow",			draw_shadow_);
+    CP_APPLY_ATTR(L"draw:shadow-opacity",	draw_shadow_opacity_);
+    CP_APPLY_ATTR(L"draw:shadow-color",		draw_shadow_color_);
+    CP_APPLY_ATTR(L"draw:shadow-offset-y",	draw_shadow_offset_y_);
+    CP_APPLY_ATTR(L"draw:shadow-offset-x",	draw_shadow_offset_x_);
 }
 void common_shadow_attlist::apply_from(const common_shadow_attlist & Other)
 {
-    _CP_APPLY_PROP(style_shadow_, Other.style_shadow_);
+    _CP_APPLY_PROP(style_shadow_,			Other.style_shadow_);
+
+    _CP_APPLY_PROP(draw_shadow_,			Other.draw_shadow_);
+    _CP_APPLY_PROP(draw_shadow_opacity_,	Other.draw_shadow_opacity_);
+    _CP_APPLY_PROP(draw_shadow_color_,		Other.draw_shadow_color_);
+    _CP_APPLY_PROP(draw_shadow_offset_y_,	Other.draw_shadow_offset_y_);
+    _CP_APPLY_PROP(draw_shadow_offset_x_,	Other.draw_shadow_offset_x_);
 }
 void common_shadow_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"style:shadow", style_shadow_);
+
+	CP_XML_ATTR_OPT(L"draw:shadow",				draw_shadow_);
+	CP_XML_ATTR_OPT(L"draw:shadow-opacity",		draw_shadow_opacity_);
+	CP_XML_ATTR_OPT(L"draw:shadow-color",		draw_shadow_color_);
+	CP_XML_ATTR_OPT(L"draw:shadow-offset-y",	draw_shadow_offset_y_);
+	CP_XML_ATTR_OPT(L"draw:shadow-offset-x",	draw_shadow_offset_x_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

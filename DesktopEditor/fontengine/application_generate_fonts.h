@@ -40,6 +40,7 @@
 #include "../common/Directory.h"
 #include "../common/Array.h"
 #include "../common/StringBuilder.h"
+#include "../common/ByteBuilder.h"
 
 #ifndef ASC_APPLICATION_FONTS_NO_THUMBNAILS
 #include "../graphics/pro/Graphics.h"
@@ -632,6 +633,14 @@ namespace NSCommon
             RELEASEOBJECT(pManager);
         }
 #endif
+
+        NSMemoryUtils::CByteBuilder* pRangeBuilder = NULL;
+        int nRangeBuilderCount = 0;
+        if (0 != strFontSelectionBin.length())
+        {
+            pRangeBuilder = new NSMemoryUtils::CByteBuilder();
+            pRangeBuilder->WriteInt(0);
+        }
         
         // и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
         // все объекты, которые позволят не знать о существующих фонтах
@@ -939,12 +948,20 @@ namespace NSCommon
 
                     if (nFontPriority != 0)
                     {
+                        ++nRangeBuilderCount;
                         oWriterJS.AddInt(nFontPriorityStart);
                         oWriterJS.AddCharSafe(',');
                         oWriterJS.AddInt(i - 1);
                         oWriterJS.AddCharSafe(',');
                         oWriterJS.AddInt(mapFontIndexes.find(arrFontsPriority[nFontPriority - 1].name)->second);
                         oWriterJS.AddCharSafe(',');
+
+                        if (pRangeBuilder)
+                        {
+                            pRangeBuilder->WriteStringUTF8(arrFontsPriority[nFontPriority - 1].name);
+                            pRangeBuilder->WriteInt(nFontPriorityStart);
+                            pRangeBuilder->WriteInt(i - 1);
+                        }
                     }
                     nFontPriority = nFontPriorityTest;
                     nFontPriorityStart = i;
@@ -952,12 +969,20 @@ namespace NSCommon
 
                 if (nFontPriority != 0)
                 {
+                    ++nRangeBuilderCount;
                     oWriterJS.AddInt(nFontPriorityStart);
                     oWriterJS.AddCharSafe(',');
                     oWriterJS.AddInt(nMaxSymbol - 1);
                     oWriterJS.AddCharSafe(',');
                     oWriterJS.AddInt(mapFontIndexes.find(arrFontsPriority[nFontPriority - 1].name)->second);
                     oWriterJS.AddCharSafe(',');
+
+                    if (pRangeBuilder)
+                    {
+                        pRangeBuilder->WriteStringUTF8(arrFontsPriority[nFontPriority - 1].name);
+                        pRangeBuilder->WriteInt(nFontPriorityStart);
+                        pRangeBuilder->WriteInt(nMaxSymbol - 1);
+                    }
                 }
 
                 oWriterJS.SetCurSize(oWriterJS.GetCurSize() - 1);
@@ -1002,10 +1027,20 @@ namespace NSCommon
             NSFile::CFileBinary oFile;
             oFile.CreateFileW(strFontSelectionBin);
             oFile.WriteFile(pData, (DWORD)lLen);
+
+            if (pRangeBuilder)
+            {
+                pRangeBuilder->SetCurSize(0);
+                pRangeBuilder->WriteInt(nRangeBuilderCount);
+                oFile.WriteFile(pRangeBuilder->GetData(), (DWORD)pRangeBuilder->GetSize());
+            }
+
             oFile.CloseFile();
             
             RELEASEARRAYOBJECTS(pData);
         }
+
+        RELEASEOBJECT(pRangeBuilder);
     }
     
 #ifdef _GENERATE_FONT_MAP_

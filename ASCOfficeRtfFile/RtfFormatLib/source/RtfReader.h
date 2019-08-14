@@ -47,7 +47,7 @@ public:
 	class ReaderState
 	{
 		public: 
-            int                     m_nUD; // количество символов игнорируемых за юникодом
+            int                     m_nUnicodeClean; // количество символов игнорируемых за юникодом
             RtfCharProperty         m_oCharProp;
             RtfParagraphProperty    m_oParagraphProp;
             RtfRowProperty          m_oRowProperty;
@@ -61,7 +61,7 @@ public:
 			ReaderState()
 			{
 				m_bControlPresent = false;
-				m_nUD = 1;
+				m_nUnicodeClean = 1;
 				m_oCharProp.SetDefaultRtf();
 				m_oParagraphProp.SetDefaultRtf();
 				m_oRowProperty.SetDefaultRtf();
@@ -129,14 +129,18 @@ public:
 			switch (m_oTok.Type)
 			{
 				case RtfToken::GroupStart:
-						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-						PushState(oReader);
-						break;
+				{
+					ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
+					PushState(oReader);
+				}break;
 				case RtfToken::GroupEnd:
-						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-						PopState(oDocument, oReader);
-						break;
+				{
+					ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
+
+					PopState(oDocument, oReader);
+				}break;
 				case RtfToken::Keyword:
+				{
 						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
                         if( m_oTok.Key == "u")
 						{
@@ -156,8 +160,9 @@ public:
 						}
 						if( true == m_bCanStartNewReader )
 							m_bCanStartNewReader = false;
-						break;
+				}break;
 				case RtfToken::Control:
+				{
                         if( m_oTok.Key == "42" )
 							m_bSkip = true;
                         if( m_oTok.Key == "39" && true == m_oTok.HasParameter )
@@ -165,10 +170,12 @@ public:
                             oReader.m_oState->m_sCurText += m_oTok.Parameter ;
 							oReader.m_oState->m_bControlPresent = true;
 						}
-						break;
+				}break;
 				case RtfToken::Text:
-                        oReader.m_oState->m_sCurText += m_oTok.Key;
-						break;
+				{
+					oReader.m_oState->m_sCurText += m_oTok.Key;
+				}break;
+						
 			}
 			if( false == m_bStopReader)
 				m_oTok = oReader.m_oLex.NextToken();
@@ -272,10 +279,10 @@ public:
             std::wstring sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
             oReader.m_oState->m_sCurText.erase();
 			oReader.m_oState->m_bControlPresent = false;
-            if(sResult.length() > 0)
+            if(false == sResult.empty())
 			{
                 std::string str;
-               // ExecuteTextInternalSkipChars (sResult, oReader, str, nSkipChars); //vedomost.rtf
+				ExecuteTextInternalSkipChars (sResult, oReader, str, nSkipChars);
 				ExecuteText					 ( oDocument, oReader, sResult);
 			}
 		}
@@ -288,8 +295,9 @@ public:
             int nLength = (int)sResult.length();
 			if( nSkipChars >= nLength )
 			{
-				nSkipChars -= nLength;
-                sResult.clear();
+				nSkipChars = 0;				//vedomost.rtf
+				//nSkipChars -= nLength;
+				sResult.clear();
 			}
 			else
 			{
@@ -300,7 +308,7 @@ public:
         if( "u" == sKey )
 		{
 			//надо правильно установить m_nSkipChars по значению \ucN
-			nSkipChars = oReader.m_oState->m_nUD;
+			nSkipChars = oReader.m_oState->m_nUnicodeClean;
 		}
 	}
     /*static */std::wstring ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);

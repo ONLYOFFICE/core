@@ -51,7 +51,7 @@ bool RtfReader::Load()
 void RtfReader::PushState()
 {
 	ReaderStatePtr psaveNew = ReaderStatePtr(new ReaderState());
-	psaveNew -> m_nUD				= m_oState->m_nUD;
+	psaveNew -> m_nUnicodeClean		= m_oState->m_nUnicodeClean;
 	psaveNew -> m_oCharProp			= m_oState->m_oCharProp;
 	psaveNew -> m_oParagraphProp	= m_oState->m_oParagraphProp;
 	psaveNew -> m_oRowProperty		= m_oState->m_oRowProperty;

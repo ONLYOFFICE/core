@@ -2615,7 +2615,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		}
 	}
 
-    COMMAND_RTF_INT	( "uc",	oReader.m_oState->m_nUD, sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT	( "uc",	oReader.m_oState->m_nUnicodeClean, sCommand, hasParameter, parameter)
 //Tab todoooo перенести в ParagrProps (trackchanges)	
     COMMAND_RTF_INT ( "tldot",		m_oCurTab.m_eLeader,	sCommand, true, RtfTab::tl_dot )
     COMMAND_RTF_INT ( "tlmdot",		m_oCurTab.m_eLeader,	sCommand, true, RtfTab::tl_mdot )

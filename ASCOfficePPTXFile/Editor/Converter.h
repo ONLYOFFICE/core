@@ -49,8 +49,11 @@ namespace PPTX2EditorAdvanced
 		std::vector<smart_ptr<PPTX::NotesMaster>>		_notesMasters;
 
 		smart_ptr<PPTX::Presentation> presentation = oFolder.Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+
+#ifndef __ANDROID__
 		int cx = presentation->sldSz->cx;
 		int cy = presentation->sldSz->cy;
+#endif
 
 		// записываем все темы
 		size_t nCountMasters = presentation->sldMasterIdLst.size();

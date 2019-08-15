@@ -62,7 +62,7 @@ namespace OOX
 			void Clean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			_UINT32 getXLSBSize() const;
-			_UINT16 toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream);
+			_UINT16 toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream, bool bIsBlankFormula);
 			void toXLSBExt(NSBinPptxRW::CXlsbBinaryWriter& oStream);
 		public:
 			bool m_bIsInit;

@@ -212,7 +212,7 @@ namespace OOX
 			}
 			return nLen;
 		}
-		_UINT16 CFormulaXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream)
+		_UINT16 CFormulaXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream, bool bIsBlankFormula)
 		{
 			_UINT16 nFlags = 0;
 			if(m_oCa.ToBool())
@@ -265,6 +265,10 @@ namespace OOX
 			if(m_nSi >= 0)
 			{
 				nFlagsExt |= 0x1000;
+			}
+			if(bIsBlankFormula)
+			{
+				nFlagsExt |= 0x4000;
 			}
 			return nFlagsExt;
 		}
@@ -369,9 +373,11 @@ namespace OOX
 					case SimpleTypes::Spreadsheet::celltypeStr: nType = XLSB::rt_CELL_ST; break;
 				}
 			}
+			bool bIsBlankFormula = false;
 			if(XLSB::rt_CELL_BLANK == nType && bWriteFormula)
 			{
 				nType = XLSB::rt_CELL_ST;
+				bIsBlankFormula = true;
 			}
 
 			_UINT32 nLen = 4+4+2;
@@ -446,7 +452,7 @@ namespace OOX
 			_UINT16 nFlags = 0;
 			if(bWriteFormula)
 			{
-				nFlags = m_oFormula.toXLSB(oStream);
+				nFlags = m_oFormula.toXLSB(oStream, bIsBlankFormula);
 			}
 
 			if(m_oRichText.IsInit())
@@ -990,6 +996,11 @@ namespace OOX
 					m_oFormula.Init();
 				}
 				m_oFormula->fromXLSBExt(oStream, nFlags);
+				if(0 != (nFlags & 0x4000))
+				{
+					m_oType.reset(NULL);
+					m_oValue.reset(NULL);
+				}
 			}
 			if(0 != (nFlags & 0x2000))
 			{

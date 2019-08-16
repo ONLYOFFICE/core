@@ -185,6 +185,8 @@ public:
 
 	bool is_paragraph_in_current_section_;
 
+	bool empty() {return current_root_elements_.empty();}
+
 private:
 	office_text*				root_text_;
 	office_element_ptr			root_document_;

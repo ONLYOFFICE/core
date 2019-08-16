@@ -611,7 +611,8 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			}
 			else
 			{
-				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
+				//Thesis.docx
+				//convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
 			}
 		}
 	}
@@ -708,8 +709,8 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 
 		id_change_properties = convert(oox_run->m_oRunProperty->m_oRPrChange.GetPointer());
 		
-		odt_context->styles_context()->create_style(L"",odf_types::style_family::Text, true, false, -1);					
-		odf_writer::style_text_properties	* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
+		odt_context->styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);					
+		odf_writer::style_text_properties *text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 
 		convert(oox_run->m_oRunProperty, text_properties);
 	}
@@ -1316,11 +1317,14 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	convert(oox_paragraph_pr->m_oPBdr.GetPointer(), paragraph_properties);
 
-	if (oox_paragraph_pr->m_oRPr.IsInit())
-	{
-		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
-		if (text_properties) 
-			convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties);
+	if (odt_context->empty())
+	{//Thesis.docx
+		if (oox_paragraph_pr->m_oRPr.IsInit())
+		{
+			odf_writer::style_text_properties *text_properties = odf_context()->text_context()->get_text_properties();
+			if (text_properties) 
+				convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties);
+		}
 	}
 	if (oox_paragraph_pr->m_oShd.IsInit())
 	{
@@ -2923,7 +2927,9 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 
 	_CP_OPT(int) anchor_type_x, anchor_type_y;
 
-	bool bThrough = oox_anchor->m_oBehindDoc.IsInit() ? oox_anchor->m_oBehindDoc->ToBool(): false;
+	bool bBackground = oox_anchor->m_oBehindDoc.IsInit() ? oox_anchor->m_oBehindDoc->ToBool(): false;
+
+	bool bThrough = oox_anchor->m_oAllowOverlap.IsInit() ? oox_anchor->m_oAllowOverlap->ToBool(): false;
 
 	if (oox_anchor->m_oPositionV.IsInit() && oox_anchor->m_oPositionV->m_oRelativeFrom.IsInit())
 	{
@@ -2985,7 +2991,6 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	else if (oox_anchor->m_oWrapThrough.IsInit())//style:wrap="run-through" draw:wrap-influence-on-position style:wrap-contour
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::RunThrough);
-
 	}
 	else if (oox_anchor->m_oWrapTight.IsInit())
 	{
@@ -2998,10 +3003,13 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 			{
 			case SimpleTypes::wraptextBothSides:
 			{
-				odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Dynamic);
 				if (bPolygon)
 				{
 					odt_context->drawing_context()->set_wrap_contour();					
+				}
+				else
+				{
+					odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Dynamic);
 				}
 			}break;
 			case SimpleTypes::wraptextLargest:	odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Biggest); break;
@@ -3009,6 +3017,11 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 			case SimpleTypes::wraptextRight:	odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Right); break;
 			}
 		}
+		else
+		{
+			odt_context->drawing_context()->set_wrap_contour();
+		}
+		wrap_set = true;
 	}
 	else if (oox_anchor->m_oWrapTopAndBottom.IsInit())
 	{
@@ -3020,9 +3033,12 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::None);
 		wrap_set = true;
 
-		if (bThrough)
-		{//эффект_штурмовика.docx
+		if (bThrough)//Silhouette_Project 11-11.docx
+		{
 			odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::RunThrough);
+		}
+		if(bBackground)//эффект_штурмовика.docx
+		{
 			odt_context->drawing_context()->set_object_background(true);
 		}
 	}

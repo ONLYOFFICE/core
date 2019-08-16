@@ -133,7 +133,10 @@ struct anchor_settings
 	_CP_OPT(anchor_type)	anchor_type_;
 	_CP_OPT(run_through)	run_through_;
 
-	_CP_OPT(style_wrap)		style_wrap_;
+	_CP_OPT(style_wrap)						style_wrap_;
+    _CP_OPT(odf_types::integer_or_nolimit)	style_number_wrapped_paragraphs_;
+    _CP_OPT(odf_types::Bool)				style_wrap_contour_;
+    _CP_OPT(odf_types::wrap_contour_mode)	style_wrap_contour_mode_;
 
 	void clear()
 	{
@@ -159,6 +162,9 @@ struct anchor_settings
 		fo_margin_bottom_			= boost::none;
 
 		style_wrap_					= boost::none;
+		style_wrap_contour_			= boost::none;
+		style_wrap_contour_mode_	= boost::none;
+		style_number_wrapped_paragraphs_ = boost::none;
 	}
 };	
 
@@ -434,6 +440,9 @@ void odf_drawing_context::start_group()
 
 	impl_->current_graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
 	impl_->current_graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;	
+	impl_->current_graphic_properties->style_wrap_contour_ = impl_->anchor_settings_.style_wrap_contour_;	
+	impl_->current_graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;	
+	impl_->current_graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;	
 
 	impl_->current_graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
 	impl_->current_graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
@@ -664,7 +673,10 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 
 		impl_->current_graphic_properties->style_wrap_			= impl_->anchor_settings_.style_wrap_;
-		impl_->current_graphic_properties->style_run_through_	= impl_->anchor_settings_.run_through_;
+		impl_->current_graphic_properties->style_run_through_	= impl_->anchor_settings_.run_through_;	
+		impl_->current_graphic_properties->style_wrap_contour_	= impl_->anchor_settings_.style_wrap_contour_;	
+		impl_->current_graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;	
+		impl_->current_graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;	
 	}
 	//if (impl_->anchor_settings_.anchor_type_ && impl_->anchor_settings_.anchor_type_->get_type()== anchor_type::AsChar)
 	//{
@@ -1922,10 +1934,10 @@ void odf_drawing_context::set_wrap_style(style_wrap::type type)
 }
 void odf_drawing_context::set_wrap_contour()
 {
-	if (!impl_->current_graphic_properties)return;
+	impl_->anchor_settings_.style_wrap_contour_ = true;
+	impl_->anchor_settings_.style_wrap_contour_mode_ = wrap_contour_mode(wrap_contour_mode::Full);
+	impl_->anchor_settings_.style_number_wrapped_paragraphs_ = integer_or_nolimit(integer_or_nolimit::NoLimit);
 
-	impl_->current_graphic_properties->style_wrap_contour_ = true;
-	impl_->current_graphic_properties->style_wrap_contour_mode_ = wrap_contour_mode(wrap_contour_mode::Full);
 }
 void odf_drawing_context::set_overlap (bool val)
 {

@@ -257,7 +257,27 @@ public:
 
 	int object_type_;
 };
+//-----------------------------------------------------------------------------------------
+//  form:frame
+class form_frame : public form_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormFrame;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
+	virtual void serialize_control_props(std::wostream & strm);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_frame);
+//-----------------------------------------------------------------------------------------
 //  form:button
 class form_button : public form_element
 {
@@ -318,10 +338,9 @@ public:
 	//form:convert-empty-to-null
 	//form:readonly
 	//form:max-length
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_text);
-
+//--------------------------------------------------------------------------------------------
 //  form:fixed-text 
 class form_fixed_text : public form_element
 {
@@ -346,7 +365,7 @@ private:
 public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_fixed_text);
-
+//--------------------------------------------------------------------------------------------
 //  form:textarea 
 class form_textarea : public form_text
 {
@@ -358,7 +377,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_textarea);
-
+//--------------------------------------------------------------------------------------------
 //  form:checkbox
 class form_checkbox : public form_text
 {
@@ -389,7 +408,30 @@ public:
 	//form:visual-effect
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_checkbox);
+//--------------------------------------------------------------------------------------------
+//  form:radio
+class form_radio : public form_checkbox
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeFormRadio;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	
+	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control *draw);
+	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
+	
+	virtual void serialize_control_props(std::wostream & strm);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+};
+CP_REGISTER_OFFICE_ELEMENT2(form_radio);
+//--------------------------------------------------------------------------------------------
 //  form:value-range
 class form_value_range : public form_element
 {

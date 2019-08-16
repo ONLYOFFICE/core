@@ -481,7 +481,6 @@ void _xlsx_drawing::serialize_control (std::wostream & strm)
 			}
 		}
 	}
-
 }
 void _xlsx_drawing::serialize_vml(std::wostream & strm)
 {
@@ -520,6 +519,8 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 
 			vml_serialize_ln(CP_XML_STREAM(), additional);
 
+			vml_serialize_text(CP_XML_STREAM(), additional);
+			
 			CP_XML_NODE(L"x:ClientData")
 			{
 				switch(sub_type)

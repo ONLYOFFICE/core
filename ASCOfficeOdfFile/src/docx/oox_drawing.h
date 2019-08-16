@@ -127,6 +127,7 @@ namespace oox {
 	void oox_serialize_effects	(std::wostream & strm, const std::vector<odf_reader::_property> & val);
     
 	void vml_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
+	void vml_serialize_text		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
 }
 }
 

@@ -294,6 +294,39 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 		}
     }
 }
+void vml_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+{
+	_CP_OPT(std::wstring) strTextContent;
+	odf_reader::GetProperty(prop, L"text-content", strTextContent);
+
+	CP_XML_WRITER(strm)
+	{			
+		if (strTextContent)
+		{
+			CP_XML_NODE(L"v:textbox")
+			{  
+				CP_XML_ATTR(L"style", L"mso-direction-alt:auto");
+				CP_XML_ATTR(L"o:singleclick", L"f");
+				
+				CP_XML_NODE(L"div")
+				{
+					CP_XML_ATTR(L"style", L"text-align:left");
+
+					CP_XML_NODE(L"font")
+					{
+						CP_XML_ATTR(L"face", L"Segoe UI");
+						CP_XML_ATTR(L"size", L"160");
+						CP_XML_ATTR(L"color", L"#000000");
+
+						const std::wstring & test_string = strTextContent.get();
+						CP_XML_STREAM() << test_string;
+					}
+				}
+			}
+		}
+	}	
+
+}
 void vml_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
 {
 	_CP_OPT(std::wstring)	strStrokeColor; 

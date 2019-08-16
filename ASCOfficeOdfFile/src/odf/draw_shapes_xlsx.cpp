@@ -433,6 +433,7 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (control->label_)
 	{
 		Context.get_drawing_context().set_property(_property(L"label", control->label_.get()));
+		Context.get_drawing_context().set_property(_property(L"text-content", control->label_.get()));
 	}
 	//if (control->name_)
 	//{

@@ -290,6 +290,45 @@ void form_element::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	Context.get_forms_context().end_element();
 }
+// form:frame
+//----------------------------------------------------------------------------------
+const wchar_t * form_frame::ns = L"form";
+const wchar_t * form_frame::name = L"frame";
+
+void form_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	object_type_ = OBJ_GroupBox;
+	form_element::add_attributes(Attributes);
+}
+void form_frame::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(1);
+
+	form_element::docx_convert(Context);
+}
+void form_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(1);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_frame::serialize_control_props(std::wostream & strm)
+{
+	formulasconvert::odf2oox_converter converter;
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", L"GBox");
+
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");			
+		}
+	}
+}
 // form:button
 //----------------------------------------------------------------------------------
 const wchar_t * form_button::ns = L"form";
@@ -638,7 +677,68 @@ void form_checkbox::docx_convert_field(oox::docx_conversion_context & Context, d
 		Context.output_stream() << L"</w:t>";
 	Context.finish_run();	
 }
+// form:checkbox
+//----------------------------------------------------------------------------------
+const wchar_t * form_radio::ns = L"form";
+const wchar_t * form_radio::name = L"radio";
 
+void form_radio::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	object_type_ = OBJ_RadioButton;
+
+	_CP_OPT(std::wstring) strVal;
+	CP_APPLY_ATTR(L"form:current-selected", strVal);
+	
+	if ((strVal) && (*strVal == L"true"))
+	{
+		current_state_ = true;
+	}
+	else
+	{
+		current_state_ = false;
+	}
+
+	form_element::add_attributes(Attributes);
+}
+void form_radio::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::docx_convert(Context);
+
+	//only to activeX object
+}
+void form_radio::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+
+	form_element::xlsx_convert(Context);
+}
+void form_radio::serialize_control_props(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"formControlPr")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+			CP_XML_ATTR(L"objectType", L"Radio");
+			if (current_state_)
+				CP_XML_ATTR(L"checked", L"Checked");
+
+			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"noThreeD", L"1");			
+		}
+	}
+}
+void form_radio::docx_convert_sdt(oox::docx_conversion_context & Context, draw_control *draw)
+{
+}
+void form_radio::docx_convert_field(oox::docx_conversion_context & Context, draw_control *draw)
+{
+}
 // form:combobox
 //----------------------------------------------------------------------------------
 const wchar_t * form_combobox::ns = L"form";

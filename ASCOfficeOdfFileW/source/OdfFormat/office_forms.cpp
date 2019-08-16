@@ -367,10 +367,18 @@ void form_radio::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR(L"form:selected", current_state_ ? L"true" : L"false");			
-			
 			form_element::serialize_attlist(CP_GET_XML_NODE());
 			
+			if (current_state_)
+			{
+				CP_XML_ATTR(L"form:selected", current_state_ ? L"true" : L"false");			
+				CP_XML_ATTR(L"form:current-selected", current_state_ ? L"true" : L"false");			
+			}
+			
+			CP_XML_ATTR(L"form:visual-effect", L"flat");			
+			CP_XML_ATTR(L"form:input-required", L"false");			
+			CP_XML_ATTR(L"form:group-name", L"autoGroup_formControl");			
+
 			if (properties_) properties_->serialize(CP_XML_STREAM());
 			if (office_event_listeners_) office_event_listeners_->serialize(CP_XML_STREAM());
 		}
@@ -391,7 +399,9 @@ void form_checkbox::serialize(std::wostream & _Wostream)
 			form_element::serialize_attlist(CP_GET_XML_NODE());
 			
 			if (current_state_)
+			{
 				CP_XML_ATTR(L"form:current-state", L"checked" );			
+			}
 			
 			if (properties_) properties_->serialize(CP_XML_STREAM());
 			if (office_event_listeners_) office_event_listeners_->serialize(CP_XML_STREAM());

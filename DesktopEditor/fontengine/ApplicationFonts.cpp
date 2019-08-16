@@ -1640,7 +1640,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
         GetUserNameW(sUserName, &nUserNameLen);
         std::wstring strUserName(sUserName, nUserNameLen - 1);
 
-        NSDirectory::GetFiles2(L"C:\\Users\\" + strUserName + L"\\AppData\\Local\\Microsoft\\Windows\\Fonts", oArray2, true);
+        NSDirectory::GetFiles2(L"C:\\Users\\" + strUserName + L"\\AppData\\Local\\Microsoft\\Windows\\Fonts", oArray2, false);
 
         for (std::vector<std::wstring>::iterator i = oArray2.begin(); i != oArray2.end(); i++)
         {

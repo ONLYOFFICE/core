@@ -500,7 +500,7 @@ INT CFontManager::GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY)
 	if (!m_oString.GetNext(pGlyph))
 		return FALSE;
 
-	if (glyphstateNormal == pGlyph->eState || (glyphstateDeafault == pGlyph->eState && NULL != m_pFont->m_pDefaultFont))
+    if (glyphstateNormal == pGlyph->eState || (glyphstateDefault == pGlyph->eState && NULL != m_pFont->m_pDefaultFont))
 	{
 		fX = m_oString.m_fX + pGlyph->fX + pGlyph->oBitmap.nX;
 		fY = m_oString.m_fY + pGlyph->fY - pGlyph->oBitmap.nY;
@@ -585,15 +585,15 @@ INT CFontManager::GetStringPath(NSFonts::ISimpleGraphicsPath* pInterface)
 	{
 		TGlyph* pCurGlyph = m_oString.GetAt(nIndex);
 		CFontPath* pPath = NULL;
-		if (glyphstateNormal == pCurGlyph->eState || (glyphstateDeafault == pCurGlyph->eState && NULL != m_pFont->m_pDefaultFont))
+		if (glyphstateNormal == pCurGlyph->eState || (glyphstateDefault == pCurGlyph->eState && NULL != m_pFont->m_pDefaultFont))
 		{
 			if (glyphstateNormal == pCurGlyph->eState)
 			{
-                pPath = (CFontPath*)m_pFont->GetGlyphPath(pCurGlyph->lUnicode);
+				pPath = (CFontPath*)m_pFont->GetGlyphPath(pCurGlyph->lUnicode);
 			}
 			else
 			{
-                pPath = (CFontPath*)m_pFont->m_pDefaultFont->GetGlyphPath(pCurGlyph->lUnicode);
+				pPath = (CFontPath*)m_pFont->m_pDefaultFont->GetGlyphPath(pCurGlyph->lUnicode);
 			}
 		}
 
@@ -777,4 +777,38 @@ void CFontManager::GetFace(double& d0, double& d1, double& d2)
             }
         }
     }
+}
+
+CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)
+{
+    std::wstring sName = m_pApplication->GetFontBySymbol(code);
+    if (sName.empty())
+        return NULL;
+
+    CFontFile* pFontOld = m_pFont;
+    m_pFont = NULL;
+    std::wstring sOldName = m_sName;
+
+    int nStyle = 0;
+    if (pFile->m_bNeedDoBold || pFile->IsBold())
+        nStyle |= 1;
+    if (pFile->m_bNeedDoItalic || pFile->IsItalic())
+        nStyle |= 2;
+
+    LoadFontByName(sName, pFile->m_dSize, nStyle, pFile->m_unHorDpi, pFile->m_unVerDpi);
+
+    if (!m_pFont)
+    {
+        m_pFont = pFontOld;
+        return NULL;
+    }
+
+    CFontFile* pFontNew = m_pFont;
+    m_pFont = pFontOld;
+    m_sName = sOldName;
+
+    memcpy(pFontNew->m_arrdTextMatrix, pFile->m_arrdTextMatrix, 6 * sizeof(double));
+    pFontNew->UpdateMatrix2();
+
+    return pFontNew;
 }

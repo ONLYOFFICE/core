@@ -61,7 +61,7 @@ public:
 enum EGlyphState
 {
     glyphstateNormal = 0,  // символ отрисовался в нужном шрифте
-    glyphstateDeafault,    // символ отрисовался в дефолтовом шрифте
+    glyphstateDefault,     // символ отрисовался в дефолтовом шрифте
     glyphstateMiss         // символ не отрисовался
 };
 

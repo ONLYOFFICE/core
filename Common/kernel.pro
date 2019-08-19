@@ -95,6 +95,10 @@ SOURCES += ./../DesktopEditor/common/StringBuilder.cpp
 HEADERS += ./../DesktopEditor/common/StringExt.h
 SOURCES += ./../DesktopEditor/common/StringExt.cpp
 
+# BYTE BUILDER
+HEADERS += ./../DesktopEditor/common/ByteBuilder.h
+SOURCES += ./../DesktopEditor/common/ByteBuilder.cpp
+
 # BASE64
 HEADERS += ./../DesktopEditor/common/Base64.h
 SOURCES += ./../DesktopEditor/common/Base64.cpp

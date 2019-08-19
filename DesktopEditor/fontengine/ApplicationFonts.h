@@ -36,6 +36,7 @@
                           // на самом деле charset не учитывается
 
 #include <vector>
+#include <list>
 #include "FontManager.h"
 
 namespace NSFonts
@@ -47,6 +48,14 @@ namespace NSFonts
     };
 }
 
+class CFontRange
+{
+public:
+    std::wstring Name;
+    int Start;
+    int End;
+};
+
 class CFontList : public NSFonts::IFontList
 {
 private:
@@ -55,6 +64,11 @@ private:
     // вспомогогательные данные для подбора "похожих шрифтов"
     std::map<std::wstring, int> m_mapNamesToIndex;
     std::vector<std::vector<std::wstring> > m_listLikes;
+
+    CFontRange*             m_pRanges;
+    int                     m_nRangesCount;
+
+    std::list<CFontRange>   m_listRanges; // последние использованные (найденные)
 
 public:
 	CFontList()
@@ -77,6 +91,9 @@ public:
         std::vector<std::wstring> ar1;
         ar1.push_back(L"OpenSymbol");
         m_listLikes.push_back(ar1);
+
+        m_pRanges = NULL;
+        m_nRangesCount = 0;
 	}
 	~CFontList()
 	{
@@ -86,6 +103,8 @@ public:
 			RELEASEOBJECT(pTemp);
 		}
         m_pList.clear();
+
+        RELEASEARRAYOBJECTS(m_pRanges);
 	}
 
     virtual std::vector<NSFonts::CFontInfo*>* GetFonts() { return &m_pList; }
@@ -121,6 +140,8 @@ public:
     void Add (NSFonts::CFontInfo* pInfo);
     NSFonts::CFontInfo* GetByParams (NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
     std::vector<NSFonts::CFontInfo*> GetAllByName (const std::wstring& strFontName);
+
+    std::wstring GetFontBySymbol(int symbol);
 };
 
 class CApplicationFonts : public NSFonts::IApplicationFonts
@@ -128,7 +149,7 @@ class CApplicationFonts : public NSFonts::IApplicationFonts
 private:
 	CApplicationFontStreams	m_oStreams;
 	CFontsCache				m_oCache;
-	CFontList				m_oList;
+    CFontList				m_oList;
 
 public:
 	CApplicationFonts();
@@ -154,6 +175,8 @@ public:
 #endif
 
     NSFonts::IFontManager* GenerateFontManager();
+
+    std::wstring GetFontBySymbol(int symbol);
 };
 
 #endif

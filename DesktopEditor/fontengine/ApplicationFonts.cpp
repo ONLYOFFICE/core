@@ -34,6 +34,7 @@
 #include "../common/Directory.h"
 #include FT_SFNT_NAMES_H
 #include "fontdictionaryworker.h"
+#include "../common/ByteBuilder.h"
 
 #ifndef min
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
@@ -642,6 +643,53 @@ void ReadNames(NSFonts::CFontInfo* pInfo, FT_Face pFace)
     }
 }
 #endif
+
+std::wstring CFontList::GetFontBySymbol(int symbol)
+{
+    for (std::list<CFontRange>::iterator iter = m_listRanges.begin(); iter != m_listRanges.end(); iter++)
+    {
+        CFontRange& range = *iter;
+        if (symbol <= range.Start && symbol >= range.End)
+        {
+            return range.Name;
+        }
+    }
+
+    // search range by symbol
+    int _start = 0;
+    int _end = m_nRangesCount - 1;
+
+    int _center = 0;
+
+    if (_start > _end)
+        return L"";
+
+    while (_start < _end)
+    {
+        _center = (_start + _end) >> 1;
+        CFontRange& _range = m_pRanges[_center];
+
+        if (_range.Start > symbol)
+            _end = _center - 1;
+        else if (_range.End < symbol)
+            _start = _center + 1;
+        else
+        {
+            m_listRanges.push_front(_range);
+            return m_pRanges[_center].Name;
+        }
+    }
+
+    if (_start > _end)
+        return L"";
+
+    CFontRange& _range = m_pRanges[_start];
+    if (_range.Start > symbol || _range.End < symbol)
+        return L"";
+
+    m_listRanges.push_front(_range);
+    return m_pRanges[_start].Name;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////
 int CFontList::GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset)
@@ -1424,6 +1472,22 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 		Add(pFontInfo);
 	}
 
+    if ((_pBuffer - pBuffer) < dwLen1)
+    {
+        NSMemoryUtils::CByteReader oReader(_pBuffer);
+        m_nRangesCount = oReader.GetInt();
+
+        if (m_nRangesCount > 0)
+            m_pRanges = new CFontRange[m_nRangesCount];
+
+        for (int nIndex = 0; nIndex < m_nRangesCount; ++nIndex)
+        {
+            m_pRanges[nIndex].Name = oReader.GetStringUTF8();
+            m_pRanges[nIndex].Start = oReader.GetInt();
+            m_pRanges[nIndex].End = oReader.GetInt();
+        }
+    }
+
 	RELEASEARRAYOBJECTS(pBuffer);
 
 	return true;
@@ -1513,6 +1577,11 @@ NSFonts::IFontManager* CApplicationFonts::GenerateFontManager()
 	CFontManager* pManager = new CFontManager();
 	pManager->m_pApplication = this;
 	return pManager;
+}
+
+std::wstring CApplicationFonts::GetFontBySymbol(int symbol)
+{
+    return m_oList.GetFontBySymbol(symbol);
 }
 
 #if defined(_WIN32) || defined (_WIN64)

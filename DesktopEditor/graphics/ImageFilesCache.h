@@ -107,12 +107,18 @@ public:
 		m_lMaxCount = 10;
 
 		m_oCS.InitializeCriticalSection();
+
+        if (m_pApplicationFonts)
+            m_pApplicationFonts->AddRef();
 	}
 
     virtual ~CImageFilesCache()
 	{
 		Clear();
 		m_oCS.DeleteCriticalSection();
+
+        if (m_pApplicationFonts)
+            m_pApplicationFonts->Release();
 	}
 
     virtual void Clear()
@@ -179,9 +185,13 @@ public:
 		return m_lRef;
 	}
     
-    virtual void SetApplicationFonts(CApplicationFonts* pApplicationFonts)
+    virtual void SetApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts)
     {
-        m_pApplicationFonts = pApplicationFonts;
+        if (m_pApplicationFonts)
+            m_pApplicationFonts->Release();
+        m_pApplicationFonts = (CApplicationFonts*)pApplicationFonts;
+        if (m_pApplicationFonts)
+            m_pApplicationFonts->AddRef();
     }
 };
 

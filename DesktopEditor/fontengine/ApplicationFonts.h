@@ -103,6 +103,8 @@ public:
 			RELEASEOBJECT(pTemp);
 		}
         m_pList.clear();
+
+        RELEASEARRAYOBJECTS(m_pRanges);
 	}
 
     virtual std::vector<NSFonts::CFontInfo*>* GetFonts() { return &m_pList; }

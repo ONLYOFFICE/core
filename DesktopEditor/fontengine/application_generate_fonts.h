@@ -1030,9 +1030,11 @@ namespace NSCommon
 
             if (pRangeBuilder)
             {
+                size_t nPosCur = pRangeBuilder->GetCurSize();
                 pRangeBuilder->SetCurSize(0);
                 pRangeBuilder->WriteInt(nRangeBuilderCount);
-                oFile.WriteFile(pRangeBuilder->GetData(), (DWORD)pRangeBuilder->GetSize());
+                pRangeBuilder->SetCurSize(nPosCur);
+                oFile.WriteFile(pRangeBuilder->GetData(), (DWORD)pRangeBuilder->GetCurSize());
             }
 
             oFile.CloseFile();

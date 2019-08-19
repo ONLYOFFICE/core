@@ -784,6 +784,7 @@ CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)
 
     CFontFile* pFontOld = m_pFont;
     m_pFont = NULL;
+    std::wstring sOldName = m_sName;
 
     int nStyle = 0;
     if (pFile->m_bNeedDoBold || pFile->IsBold())
@@ -801,7 +802,10 @@ CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)
 
     CFontFile* pFontNew = m_pFont;
     m_pFont = pFontOld;
+    m_sName = sOldName;
 
     memcpy(pFontNew->m_arrdTextMatrix, pFile->m_arrdTextMatrix, 6 * sizeof(double));
     pFontNew->UpdateMatrix2();
+
+    return pFontNew;
 }

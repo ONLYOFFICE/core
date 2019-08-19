@@ -100,15 +100,6 @@ namespace NSMemoryUtils
     }
     void CByteBuilder::WriteString(const std::wstring& sText)
     {
-        size_t nSize = (sText.length() + 1) * sizeof(wchar_t);
-        AddSize(nSize);
-        memcpy(m_pDataCur, sText.c_str(), nSize - sizeof(wchar_t));
-
-        m_pDataCur += nSize;
-        m_lSizeCur += nSize;
-    }
-    void CByteBuilder::WriteStringUTF8(const std::wstring& sText)
-    {
         int nSizeof = sizeof(wchar_t);
         size_t nSize = (sText.length() + 1) * nSizeof;
         AddSize(nSize);
@@ -118,6 +109,10 @@ namespace NSMemoryUtils
         (*((char*)m_pDataCur)) = 0;
         m_lSizeCur += nSize;
         m_pDataCur += nSizeof;
+    }
+    void CByteBuilder::WriteStringUTF8(const std::wstring& sText)
+    {
+        WriteString(U_TO_UTF8(sText));
     }
 
     void CByteBuilder::WriteInt(const int& value)
@@ -181,7 +176,7 @@ namespace NSMemoryUtils
     std::string CByteReader::GetString()
     {
         BYTE* pEnd = m_pDataCur;
-        while (pEnd != 0)
+        while (*pEnd != 0)
             pEnd++;
         std::string sRet((char*)m_pDataCur, pEnd - m_pDataCur);
         m_pDataCur = pEnd + 1;
@@ -191,7 +186,7 @@ namespace NSMemoryUtils
     {
         wchar_t* pStart = (wchar_t*)m_pDataCur;
         wchar_t* pEnd = pStart;
-        while (pEnd != 0)
+        while (*pEnd != 0)
             pEnd++;
         std::wstring sRet((wchar_t*)m_pDataCur, pEnd - pStart);
         m_pDataCur += (((pEnd - pStart) + 1) * sizeof(wchar_t));
@@ -200,7 +195,7 @@ namespace NSMemoryUtils
     std::wstring CByteReader::GetStringUTF8()
     {
         BYTE* pEnd = m_pDataCur;
-        while (pEnd != 0)
+        while (*pEnd != 0)
             pEnd++;
         std::string sRet((char*)m_pDataCur, pEnd - m_pDataCur);
         m_pDataCur = pEnd + 1;

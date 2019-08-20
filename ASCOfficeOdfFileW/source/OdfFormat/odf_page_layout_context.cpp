@@ -325,9 +325,9 @@ bool odf_page_layout_context::add_footer(int type)
 //настраить нужно 1 раз
 	if (!layout_state_list_.back().footer_size_) return true;
 
-	style_header_footer_properties * footer_props = get_footer_properties();
+	style_header_footer_properties *footer_props = get_footer_properties();
 	if (!footer_props)return true;
-	style_page_layout_properties * props = get_properties();
+	style_page_layout_properties *props = get_properties();
 	if (!props)return true;
 
 	length length_ = length(layout_state_list_.back().footer_size_->get_value_unit(length::cm),length::cm);
@@ -369,9 +369,13 @@ bool odf_page_layout_context::add_header(int type)
 			create_element(L"style", L"header-left", root_header_footer_, odf_context_);
 	}
 	else if (type == 2)
+	{
 		create_element(L"style", L"header-first", root_header_footer_, odf_context_);
+	}
 	else
+	{
 		create_element(L"style", L"header", root_header_footer_, odf_context_);
+	}
 	
 	if (!root_header_footer_) return false;
 
@@ -383,13 +387,13 @@ bool odf_page_layout_context::add_header(int type)
 //настроить нужно один раз
 	if (!layout_state_list_.back().header_size_) return true;
 	
-	style_header_footer_properties * header_props = get_header_properties();
+	style_header_footer_properties *header_props = get_header_properties();
 	if (!header_props)return true;
 	
-	style_page_layout_properties * props = get_properties();
+	style_page_layout_properties *props = get_properties();
 	if (!props)return true;
 
-	length length_ = length(layout_state_list_.back().header_size_->get_value_unit(length::cm),length::cm);
+	length length_ = length(layout_state_list_.back().header_size_->get_value_unit(length::cm), length::cm);
 
 	_CP_OPT(length) top_;
 
@@ -418,6 +422,16 @@ bool odf_page_layout_context::add_header(int type)
 	return true;
 }
 
+void odf_page_layout_context::set_header_footer_image(office_element_ptr image)
+{
+	style_header_footer_properties *header_footer_props = get_footer_properties();
+	if (!header_footer_props)return;
+
+	if (!header_footer_props->style_background_image_ )// картинка общая для всех четных,  нечетных, первых, так же нету центральных, левых, правых
+	{
+		header_footer_props->style_background_image_ = image;
+	}
+}
 void odf_page_layout_context::set_page_border_offset (int type)
 {
 	if (type < 1) return;

@@ -410,6 +410,8 @@ public:
 
 	std::wstring					office_table_name_;
 	std::vector<ods_comment_state>	comments_;
+
+	std::map<std::wstring, office_element_ptr> mapHeaderFooterImages;
 private:
 
 	struct _spanned_info

@@ -140,9 +140,13 @@ void ods_conversion_context::add_defined_expression( const std::wstring & name, 
 {
 	table_context_.add_defined_expression(name,value, sheet_id, printable);
 }
+void ods_conversion_context::add_header_footer_image(const std::wstring & name, office_element_ptr image)
+{
+	current_table().mapHeaderFooterImages.insert(std::make_pair(name, image));
+}
 void ods_conversion_context::start_sheet()
 {
-	create_element(L"table", L"table",root_spreadsheet_->getContent(),this);	
+	create_element(L"table", L"table", root_spreadsheet_->getContent(), this);	
 	table_context_.start_table(root_spreadsheet_->getContent().back());
 
 		drawing_context()->set_styles_context(styles_context());
@@ -589,6 +593,19 @@ void ods_conversion_context::add_text_content(const std::wstring & text)
 		current_text_context_->add_text_content(text);
 	}
 }
+
+void ods_conversion_context::add_text(const std::wstring &text)
+{
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p", paragr_elm, this);
+	
+	current_text_context_->start_paragraph(paragr_elm);
+
+	current_text_context_->add_text_content(text);
+
+	current_text_context_->end_paragraph();
+}
+
 void ods_conversion_context::start_cell_text()
 {
 	start_text_context();
@@ -663,7 +680,112 @@ void ods_conversion_context::end_table_view()
 	settings_context()->end_table();
 	settings_context()->set_current_view(-1);
 }
+bool ods_conversion_context::start_header(int type)// 0 - odd, 1 - first, 2 - even
+{
+    if (page_layout_context()->add_header(type) == false)   return false;
+    if (page_layout_context()->last_master() == NULL)       return false;
 
+	start_text_context();
+	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
+
+    text_context()->start_element(page_layout_context()->last_master()->get_last_element());
+
+	if (false == current_table().mapHeaderFooterImages.empty())
+	{
+		std::wstring mask = std::wstring(L"H") + (type == 1 ? L"FIRST" : (type == 2 ? L"EVEN" : L""));
+
+		std::map<std::wstring, office_element_ptr>::iterator pFind;
+
+		pFind = current_table().mapHeaderFooterImages.find(L"C" + mask);
+		if (pFind == current_table().mapHeaderFooterImages.end())
+		{
+			pFind = current_table().mapHeaderFooterImages.find(L"L" + mask);
+			if (pFind == current_table().mapHeaderFooterImages.end())
+			{
+				pFind = current_table().mapHeaderFooterImages.find(L"R" + mask);
+			}
+		}
+		
+		if (pFind != current_table().mapHeaderFooterImages.end())
+		{
+			page_layout_context()->set_header_footer_image(pFind->second);
+		}
+	}
+	return true;
+}
+bool ods_conversion_context::start_footer(int type)
+{
+    if (page_layout_context()->add_footer(type) == false)   return false;
+    if (page_layout_context()->last_master() == NULL)       return false;
+
+	start_text_context();
+	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
+	
+    text_context()->start_element(page_layout_context()->last_master()->get_last_element());
+
+	if (false == current_table().mapHeaderFooterImages.empty())
+	{
+		std::wstring mask = std::wstring(L"F") + (type == 1 ? L"FIRST" : (type == 2 ? L"EVEN" : L""));
+
+		std::map<std::wstring, office_element_ptr>::iterator pFind;
+
+		pFind = current_table().mapHeaderFooterImages.find(L"C" + mask);
+		if (pFind == current_table().mapHeaderFooterImages.end())
+		{
+			pFind = current_table().mapHeaderFooterImages.find(L"L" + mask);
+			if (pFind == current_table().mapHeaderFooterImages.end())
+			{
+				pFind = current_table().mapHeaderFooterImages.find(L"R" + mask);
+			}
+		}
+		
+		if (pFind != current_table().mapHeaderFooterImages.end())
+		{
+			page_layout_context()->set_header_footer_image(pFind->second);
+		}
+	}
+	return true;
+}
+void ods_conversion_context::end_header_footer()
+{
+	if (text_context()->current_level_.size() > 1)
+	{
+		text_context()->end_paragraph();
+		end_header_footer_region();
+	}
+	text_context()->end_element();
+	end_text_context();
+}
+void ods_conversion_context::start_header_footer_region(int type)
+{
+	if (text_context()->current_level_.size() > 1)
+	{
+		text_context()->end_paragraph();
+		end_header_footer_region();
+	}
+
+	office_element_ptr region_elm_;
+
+	if (type == 1)
+	{
+		create_element(L"style", L"region-left", region_elm_, this);
+	}
+	else if (type == 2)
+	{
+		create_element(L"style", L"region-center", region_elm_, this);
+	}
+	else if (type == 3)
+	{
+		create_element(L"style", L"region-right", region_elm_, this);
+	}
+	
+	text_context()->start_element(region_elm_);
+	text_context()->start_paragraph(false);
+}
+void ods_conversion_context::end_header_footer_region()
+{
+	text_context()->end_element();
+}
 
 }
 }

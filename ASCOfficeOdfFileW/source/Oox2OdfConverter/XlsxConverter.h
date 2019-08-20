@@ -98,6 +98,8 @@ namespace OOX
 		class CDataValidations;
 		class CSheetProtection;
 		class CDataValidation;
+		class CHeaderFooterElement;
+		class CLegacyDrawingHFWorksheet;
 	}
 }
 
@@ -163,6 +165,9 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CTableColumns		*oox_table_part_columns);
 		void convert(OOX::Spreadsheet::CPictureWorksheet	*oox_background);
 		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
+		void convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_background);
+		void convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_footer);
+		void convert();
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row, OOX::Spreadsheet::CRow *oox_row_prev);

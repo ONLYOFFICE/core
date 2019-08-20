@@ -161,7 +161,18 @@ void odf_text_context::add_text_date(const std::wstring & text)
 	text_date* s = dynamic_cast<text_date*>(s_elm.get());
 	if (s) s->add_text(text);
 
-	if (current_level_.size()>0)
+	if (false == current_level_.empty())
+		current_level_.back().elm->add_child_element(s_elm);
+}
+void odf_text_context::add_text_time(const std::wstring & text)
+{
+	office_element_ptr s_elm;
+	create_element(L"text", L"time", s_elm, odf_context_);
+	
+	text_time* s = dynamic_cast<text_time*>(s_elm.get());
+	if (s) s->add_text(text);
+
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(s_elm);
 }
 void odf_text_context::add_text_page_number(const std::wstring & text)
@@ -172,9 +183,43 @@ void odf_text_context::add_text_page_number(const std::wstring & text)
 	text_page_number* s = dynamic_cast<text_page_number*>(s_elm.get());
 	if (s) s->add_text(text);
 
-	if (current_level_.size()>0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(s_elm);
 }
+void odf_text_context::add_text_page_count(const std::wstring & text)
+{
+	office_element_ptr s_elm;
+	create_element(L"text", L"page-count", s_elm, odf_context_);
+	
+	text_page_count* s = dynamic_cast<text_page_count*>(s_elm.get());
+	if (s) s->add_text(text);
+
+	if (false == current_level_.empty())
+		current_level_.back().elm->add_child_element(s_elm);
+}
+void odf_text_context::add_text_file_name(const std::wstring &text)
+{
+	office_element_ptr s_elm;
+	create_element(L"text", L"file-name", s_elm, odf_context_);
+	
+	text_file_name* s = dynamic_cast<text_file_name*>(s_elm.get());
+	if (s) s->add_text(text);
+
+	if (false == current_level_.empty())
+		current_level_.back().elm->add_child_element(s_elm);
+}
+void odf_text_context::add_text_sheet_name(const std::wstring &text)
+{
+	office_element_ptr s_elm;
+	create_element(L"text", L"sheet-name", s_elm, odf_context_);
+	
+	text_sheet_name* s = dynamic_cast<text_sheet_name*>(s_elm.get());
+	if (s) s->add_text(text);
+
+	if (false == current_level_.empty())
+		current_level_.back().elm->add_child_element(s_elm);
+}
+
 void odf_text_context::add_text_space(int count)
 {
 	office_element_ptr s_elm;
@@ -188,7 +233,7 @@ void odf_text_context::add_text_space(int count)
 	//odf_element_state state={	s_elm, L"", office_element_ptr(), level};
 	//text_elements_list_.push_back(state);
 	
-	if (current_level_.size()>0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(s_elm);
 }
 void odf_text_context::set_symbol_font(const std::wstring & font)
@@ -262,7 +307,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 			paragraph_properties_ = style_->content_.get_style_paragraph_properties();
 		}
 	}
-	else if (parent_paragraph_style_.length() >0)
+	else if (false == parent_paragraph_style_.empty())
 	{
 		text_p* p = dynamic_cast<text_p*>(elm.get());
 		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = parent_paragraph_style_;	
@@ -287,7 +332,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 
 void odf_text_context::end_paragraph()
 {
-	if (single_paragraph_ == false && current_level_.size() > 0)
+	if (false == single_paragraph_ && false == current_level_.empty())
 	{
 		current_level_.pop_back();
 	}

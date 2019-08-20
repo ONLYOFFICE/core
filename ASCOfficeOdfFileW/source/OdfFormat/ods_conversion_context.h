@@ -120,6 +120,16 @@ public:
 	void start_drawings();
 	void end_drawings();
 
+	bool start_header(int type);
+	bool start_footer(int type);
+	void end_header_footer();
+	void start_header_footer_region(int type);
+	void end_header_footer_region();
+
+	void add_text(const std::wstring &text);
+
+	void add_header_footer_image(const std::wstring & name, office_element_ptr image);
+
 	double convert_symbol_width(double val);
 	
     void add_defined_range		(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable = false);

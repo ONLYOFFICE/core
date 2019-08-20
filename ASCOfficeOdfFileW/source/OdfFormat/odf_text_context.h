@@ -83,11 +83,15 @@ public:
 
 	void set_single_object	(bool bSingle, style_paragraph_properties *para_props, style_text_properties *text_props);
 	
-    void add_text_content	(const std::wstring & text);
+    void add_text_content	(const std::wstring &text);
 	void add_text_space		(int count);
-	void add_text_date		(const std::wstring & text);
-	void add_text_page_number(const std::wstring & text);
-    
+	void add_text_date		(const std::wstring &text);
+	void add_text_time		(const std::wstring &text);
+	void add_text_page_number(const std::wstring &text);
+	void add_text_page_count(const std::wstring &text);
+	void add_text_file_name	(const std::wstring &text);
+ 	void add_text_sheet_name(const std::wstring &text);
+   
 	void set_symbol_font	(const std::wstring & font);
  	void set_symbol_text	(int sym);
    

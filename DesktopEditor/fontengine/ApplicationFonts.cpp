@@ -1028,7 +1028,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     }
 
     *pDstData = pData;
-    *pLen = lDataSize;
+    *pLen = (LONG)(pDataMem - pData);
 }
 
 NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse)

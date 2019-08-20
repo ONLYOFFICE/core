@@ -34,19 +34,25 @@
 
 #include <string>
 #include <vector>
+#include "../graphics/pro/Fonts.h"
 
 class CApplicationFontsWorker
 {
 public:
-    std::vector<std::wstring> m_arAdditionalFolders;
+    bool                        m_bIsUseSystemFonts;
+    std::vector<std::wstring>   m_arAdditionalFolders;
+    std::wstring                m_sDirectory;
+    bool                        m_bIsNeedThumbnails;
+    bool                        m_bIsUseOpenType;
     
 public:
     CApplicationFontsWorker();
     ~CApplicationFontsWorker();
     
-    std::vector<std::wstring> CheckApplication(bool bIsNeedSystemFonts,
-                          unsigned char* pDataSrc, unsigned int nLenSrc,
-                          unsigned char*& pDataDst, unsigned int& nLenDst);
+    NSFonts::IApplicationFonts* Check();
+    std::string GetAllFonts();
+
+    static std::vector<std::wstring> GetFontNames(NSFonts::IApplicationFonts* pFonts);
 };
 
 #endif // _BUILD_APPLICATIONFONTSWORKER_H_

@@ -111,7 +111,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
     if (m_bIsUseSystemFonts)
         strFontsW_Cur = pApplicationF->GetSetupFontFiles();
 
-#if defined(_LINUX)
+#if defined(_LINUX) && !defined(__ANDROID__)
     std::wstring sHome = GetHomeDirectory();
     if (!sHome.empty())
     {

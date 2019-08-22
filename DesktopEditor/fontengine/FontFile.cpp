@@ -1019,6 +1019,20 @@ double CFontFile::GetCharWidth(int gid)
     return dRet;
 }
 
+int CFontFile::GetGIDByUnicode(int code)
+{
+    int nCMapIndex = 0;
+    int unGID = m_bStringGID ? code : SetCMapForCharCode(code, &nCMapIndex);
+
+    if (unGID <= 0 && !m_bStringGID)
+    {
+        if (-1 != m_nSymbolic && code < 0xF000)
+            unGID = SetCMapForCharCode(code, &nCMapIndex);
+    }
+
+    return unGID;
+}
+
 INT CFontFile::GetString(CGlyphString& oString)
 {
 	int nCountGlyph = oString.GetLength();

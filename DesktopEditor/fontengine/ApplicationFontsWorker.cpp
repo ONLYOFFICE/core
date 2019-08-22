@@ -111,19 +111,6 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
     if (m_bIsUseSystemFonts)
         strFontsW_Cur = pApplicationF->GetSetupFontFiles();
 
-#if defined(_LINUX) && !defined(__ANDROID__)
-    std::wstring sHome = GetHomeDirectory();
-    if (!sHome.empty())
-    {
-#ifdef _MAC
-        NSDirectory::GetFiles2(sHome + L"/Library/Fonts", strFontsW_Cur, true);
-#else
-        NSDirectory::GetFiles2(sHome + L"/.fonts", strFontsW_Cur, true);
-        NSDirectory::GetFiles2(sHome + L"/.local/share/fonts", strFontsW_Cur, true);
-#endif
-    }
-#endif
-
     for (std::vector<std::wstring>::iterator i = m_arAdditionalFolders.begin(); i != m_arAdditionalFolders.end(); i++)
     {
         NSDirectory::GetFiles2(*i, strFontsW_Cur, true);

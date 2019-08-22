@@ -688,7 +688,8 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
     m_sName = L"";
     if (m_pFont->m_pFace && m_pFont->m_pFace->family_name)
     {
-        m_sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pFont->m_pFace->family_name, strlen(m_pFont->m_pFace->family_name));
+        m_pFont->m_sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pFont->m_pFace->family_name, strlen(m_pFont->m_pFace->family_name));
+        m_sName = m_pFont->m_sName;
     }
 
 	return TRUE;

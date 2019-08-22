@@ -210,6 +210,8 @@ public:
 	CFontManager* m_pFontManager;
     INT m_bHintsSupport;
 
+    std::wstring m_sName;
+
 public:
 
 	CFontFile();
@@ -249,6 +251,8 @@ public:
 	int SetCMapForCharCode2(long lUnicode);
 
     double GetCharWidth(int gid);
+
+    int GetGIDByUnicode(int code);
 
     int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
     void SetStringGID(const INT& bGID);

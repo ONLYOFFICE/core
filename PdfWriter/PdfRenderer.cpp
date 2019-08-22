@@ -1954,14 +1954,14 @@ void CPdfRenderer::UpdateBrush()
 }
 HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
 {
-	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false))
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker))
 		return S_FALSE;
 
 	return S_OK;
 }
 HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
 {
-	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true))
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, bIsUsePicker))
 		return S_FALSE;
 
 	return S_OK;

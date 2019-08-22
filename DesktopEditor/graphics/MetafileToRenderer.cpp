@@ -58,6 +58,8 @@ public:
         NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
         pCache->SetStreams(m_pApplication->GetStreams());
         m_pManager->SetOwnerCache(pCache);
+
+        m_pRenderer = NULL;
     }
     CMetafileFontPicker(NSFonts::IApplicationFonts* pFonts)
     {
@@ -68,6 +70,8 @@ public:
         NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
         pCache->SetStreams(m_pApplication->GetStreams());
         m_pManager->SetOwnerCache(pCache);
+
+        m_pRenderer = NULL;
     }
     ~CMetafileFontPicker()
     {
@@ -128,6 +132,11 @@ public:
         m_pRenderer->CommandDrawText(bsText, x, y, w, h);
         m_pRenderer->put_FontName(sName);
         m_pRenderer->put_FontStyle(nStyle);
+    }
+
+    void SetRenderer(IRenderer* pRenderer)
+    {
+        m_pRenderer = pRenderer;
     }
 };
 
@@ -272,7 +281,10 @@ namespace NSOnlineOfficeBinToPdf
 		IRenderer* pRenderer = pCorrector->m_pRenderer;
         CMetafileFontPicker* pPicker = NULL;
         if (pCorrector->m_pPicker)
+        {
             pPicker = (CMetafileFontPicker*)pCorrector->m_pPicker;
+            pPicker->SetRenderer(pRenderer);
+        }
 
 		LONG lRendererType = 0;
 		pRenderer->get_Type(&lRendererType);

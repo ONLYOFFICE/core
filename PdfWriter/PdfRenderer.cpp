@@ -1515,6 +1515,11 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
+
+NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()
+{
+    return m_pAppFonts;
+}
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
@@ -1947,14 +1952,14 @@ void CPdfRenderer::UpdateBrush()
 		m_pPage->SetFillAlpha((unsigned char)m_oBrush.GetAlpha1());
 	}
 }
-HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile)
+HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
 {
 	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false))
 		return S_FALSE;
 
 	return S_OK;
 }
-HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile)
+HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
 {
 	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true))
 		return S_FALSE;

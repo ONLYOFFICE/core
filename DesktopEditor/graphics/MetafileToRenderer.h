@@ -56,6 +56,7 @@ public:
     virtual void SetLinearGradiant(const double& x0, const double& y0, const double& x1, const double& y1);
     virtual void SetRadialGradiant(const double& dX0, const double& dY0, const double& dR0, const double& dX1, const double& dY1, const double& dR1);
     virtual void InitPicker(const std::wstring& sFontsFolder);
+    virtual void InitPicker(NSFonts::IApplicationFonts* pFonts);
 };
 
 namespace NSOnlineOfficeBinToPdf

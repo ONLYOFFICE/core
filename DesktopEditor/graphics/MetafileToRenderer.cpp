@@ -59,6 +59,16 @@ public:
         pCache->SetStreams(m_pApplication->GetStreams());
         m_pManager->SetOwnerCache(pCache);
     }
+    CMetafileFontPicker(NSFonts::IApplicationFonts* pFonts)
+    {
+        m_pApplication = pFonts;
+        m_pApplication->AddRef();
+        m_pManager = m_pApplication->GenerateFontManager();
+
+        NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
+        pCache->SetStreams(m_pApplication->GetStreams());
+        m_pManager->SetOwnerCache(pCache);
+    }
     ~CMetafileFontPicker()
     {
         m_pManager->Release();
@@ -157,6 +167,11 @@ void IMetafileToRenderter::SetRadialGradiant(const double& dX0, const double& dY
 void IMetafileToRenderter::InitPicker(const std::wstring& sFontsFolder)
 {
     CMetafileFontPicker* pPicker = new CMetafileFontPicker(sFontsFolder);
+    m_pPicker = (void*)pPicker;
+}
+void IMetafileToRenderter::InitPicker(NSFonts::IApplicationFonts* pFonts)
+{
+    CMetafileFontPicker* pPicker = new CMetafileFontPicker(pFonts);
     m_pPicker = (void*)pPicker;
 }
 

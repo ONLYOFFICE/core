@@ -218,9 +218,11 @@ public:
 	HRESULT EnableBrushRect(const LONG& lEnable);
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
-	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
-	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
+    HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
+    HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+
+    NSFonts::IApplicationFonts* GetApplicationFonts();
 
 private:
 

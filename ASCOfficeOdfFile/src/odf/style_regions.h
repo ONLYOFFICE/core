@@ -40,80 +40,66 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
+class style_region_impl : public office_element_impl<style_region_impl>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleRegion;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
+
+    office_element_ptr_array content_;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+};
+//-----------------------------------------------------------------------------------------------------------------
 //  style:region-left
-class style_region_left : public office_element_impl<style_region_left>
+class style_region_left : public style_region_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleRegionLeft;
-    CPDOCCORE_DEFINE_VISITABLE();
-
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-
-private:
-    office_element_ptr_array content_;
-
+	
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_region_left);
 
 //  style:region-right
-class style_region_right : public office_element_impl<style_region_right>
+class style_region_right : public style_region_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleRegionRight;
-    CPDOCCORE_DEFINE_VISITABLE();
-
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-
-private:
-    office_element_ptr_array content_;
-
+	
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_region_right);
 
 
 //  style:region-center
-class style_region_center : public office_element_impl<style_region_center>
+class style_region_center : public style_region_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleRegionCenter;
-    CPDOCCORE_DEFINE_VISITABLE();
-
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-
-private:
-    office_element_ptr_array content_;
-
+	
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_region_center);
 
 }

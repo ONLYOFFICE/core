@@ -247,6 +247,7 @@ enum ElementType
     typeStyleTableColumnProperties,
     typeStyleTableRowProperties,
     typeStyleTableCellProperties,
+	typeStyleHeaderFooter,
     typeStyleHeader,
     typeStyleFooter,
     typeStyleHeaderFirst,
@@ -535,7 +536,10 @@ enum ElementType
 	typeOfficeAnnotation,
 	typeOfficeAnnotationStart,
 	typeOfficeAnnotationEnd,
+	typeStyleRegion,
 	typeStyleRegionLeft,
+	typeStyleRegionCenter,
+    typeStyleRegionRight,
 	typeOfficeScripts,
 	typeOfficeScript,
 	typeOfficePresentation,
@@ -591,8 +595,6 @@ enum ElementType
 	typeChartRegressionCurve,
 	typeChartEquation,
 
-	typeStyleRegionCenter,
-    typeStyleRegionRight,
 	typeStyleChartProperties,
 
 	typeCalcextColorScaleEntry,

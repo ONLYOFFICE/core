@@ -49,6 +49,7 @@
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"
 #include "style_presentation.h"
+#include "style_regions.h"
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
@@ -659,93 +660,6 @@ void office_styles::add_child_element( xml::sax * Reader, const std::wstring & N
         CP_NOT_APPLICABLE_ELM();
     }
 }
-
-
-// style:header
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_header::ns = L"style";
-const wchar_t * style_header::name = L"header";
-
-void style_header::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    header_footer_impl::add_attributes(Attributes);
-}
-
-void style_header::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    header_footer_impl::add_child_element(Reader, Ns, Name, getContext());
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_footer::ns = L"style";
-const wchar_t * style_footer::name = L"footer";
-
-void style_footer::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    header_footer_impl::add_attributes(Attributes);
-}
-
-void style_footer::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    header_footer_impl::add_child_element(Reader, Ns, Name, getContext());
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_header_first::ns = L"style";
-const wchar_t * style_header_first::name = L"header-first";
-
-void style_header_first::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    header_footer_impl::add_attributes(Attributes);
-}
-
-void style_header_first::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    header_footer_impl::add_child_element(Reader, Ns, Name, getContext());
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_footer_first::ns = L"style";
-const wchar_t * style_footer_first::name = L"footer-first";
-
-void style_footer_first::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    header_footer_impl::add_attributes(Attributes);
-}
-
-void style_footer_first::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    header_footer_impl::add_child_element(Reader, Ns, Name, getContext());
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_header_left::ns = L"style";
-const wchar_t * style_header_left::name = L"header-left";
-
-void style_header_left::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    header_footer_impl::add_attributes(Attributes);
-}
-
-void style_header_left::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	header_footer_impl::add_child_element(Reader, Ns, Name, getContext());
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_footer_left::ns = L"style";
-const wchar_t * style_footer_left::name = L"footer-left";
-
-void style_footer_left::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    header_footer_impl::add_attributes(Attributes);
-}
-
-void style_footer_left::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-    header_footer_impl::add_child_element(Reader, Ns, Name, getContext());
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_columns::ns = L"style";
 const wchar_t * style_columns::name = L"columns";
@@ -1618,7 +1532,6 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 
 }
-////////////////
 
 const wchar_t * hdrHeader = L"<w:hdr \
 xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
@@ -1659,6 +1572,10 @@ xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" 
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 mc:Ignorable=\"w14 wp14\">";
 
+//------------------------------------------------------------------------------------------------------
+const wchar_t * style_header::ns = L"style";
+const wchar_t * style_header::name = L"header";
+
 void style_header::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();
@@ -1679,6 +1596,10 @@ void style_header::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_con
 	}
 }
 
+//------------------------------------------------------------------------------------------------------
+const wchar_t * style_footer::ns = L"style";
+const wchar_t * style_footer::name = L"footer";
+
 void style_footer::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();
@@ -1697,6 +1618,9 @@ void style_footer::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_con
 		}
 	}
 }
+//------------------------------------------------------------------------------------------------------
+const wchar_t * style_header_first::ns = L"style";
+const wchar_t * style_header_first::name = L"header-first";
 
 void style_header_first::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1718,6 +1642,10 @@ void style_header_first::xlsx_serialize(std::wostream & strm, oox::xlsx_conversi
 	}
 }
 
+//------------------------------------------------------------------------------------------------------
+const wchar_t * style_footer_first::ns = L"style";
+const wchar_t * style_footer_first::name = L"footer-first";
+
 void style_footer_first::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();
@@ -1736,6 +1664,9 @@ void style_footer_first::xlsx_serialize(std::wostream & strm, oox::xlsx_conversi
 		}
 	}
 }
+//------------------------------------------------------------------------------------------------------
+const wchar_t * style_header_left::ns = L"style";
+const wchar_t * style_header_left::name = L"header-left";
 
 void style_header_left::docx_convert(oox::docx_conversion_context & Context) 
 {
@@ -1756,6 +1687,10 @@ void style_header_left::xlsx_serialize(std::wostream & strm, oox::xlsx_conversio
 	}
 }
 
+//------------------------------------------------------------------------------------------------------
+const wchar_t * style_footer_left::ns = L"style";
+const wchar_t * style_footer_left::name = L"footer-left";
+
 void style_footer_left::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();
@@ -1774,19 +1709,22 @@ void style_footer_left::xlsx_serialize(std::wostream & strm, oox::xlsx_conversio
 		}
 	}
 }
+const wchar_t * header_footer_impl::ns = L"style";
+const wchar_t * header_footer_impl::name = L"header-footer";
+
 void header_footer_impl::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	attlist_.add_attributes(Attributes);
 }
 
-void header_footer_impl::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context *Context)
+void header_footer_impl::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
  	if CP_CHECK_NAME(L"text", L"tracked-changes") 
 	{
-		CP_CREATE_ELEMENT_SIMPLE(tracked_changes_);
+		CP_CREATE_ELEMENT(tracked_changes_);
 	}
     else
-		CP_CREATE_ELEMENT_SIMPLE(content_);
+		CP_CREATE_ELEMENT(content_);
 }
 
 std::wostream & header_footer_impl::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
@@ -1794,6 +1732,7 @@ std::wostream & header_footer_impl::text_to_stream(std::wostream & _Wostream, bo
     serialize_elements_text(_Wostream, content_, bXmlEncode);
     return _Wostream;
 }
+
 void header_footer_impl::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (tracked_changes_)
@@ -1804,9 +1743,21 @@ void header_footer_impl::docx_convert(oox::docx_conversion_context & Context)
 		content_[i]->docx_convert(Context);
     }
 }
-void header_footer_impl::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
+void header_footer_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
 {
+    for (size_t i = 0; i < content_.size(); i++)
+    {
+		style_region_impl* region = dynamic_cast<style_region_impl*>(content_[i].get());
 
+		if (region)
+		{
+			region->xlsx_serialize(_Wostream, Context);
+		}
+		else
+		{
+			CP_SERIALIZE_TEXT(content_[i], true);
+		}
+    }
 }
 /// text:notes-configuration
 //////////////////////////////////////////////////////////////////////////////////////////////////

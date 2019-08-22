@@ -59,6 +59,7 @@ public:
 	std::wstringstream  dataValidations_;
 	std::wstringstream	ole_objects_;
 	std::wstringstream	page_props_;
+	std::wstringstream	header_footer_;
 	std::wstringstream	controls_;
 	std::wstringstream	protection_;
 
@@ -149,6 +150,10 @@ std::wostream & xlsx_xml_worksheet::page_properties()
 {
     return impl_->page_props_;
 }
+std::wostream & xlsx_xml_worksheet::header_footer()
+{
+    return impl_->header_footer_;
+}
 std::wostream & xlsx_xml_worksheet::picture_background()
 {
     return impl_->picture_background_;
@@ -212,10 +217,10 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                     CP_XML_STREAM() << impl_->hyperlinks_.str();
                 }
             }
-			if (false == impl_->page_props_.str().empty())
-            {
-				CP_XML_STREAM() << impl_->page_props_.str();
-			}//props выше legacyDrawing !!
+			CP_XML_STREAM() << impl_->page_props_.str();
+			//props выше legacyDrawing !!
+
+			CP_XML_STREAM() << impl_->header_footer_.str();
 			
 			if (false == impl_->drawingId_.empty())
 			{

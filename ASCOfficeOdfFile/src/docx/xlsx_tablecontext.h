@@ -96,6 +96,7 @@ public:
 	void serialize_background			(std::wostream & _Wostream);
 	void serialize_data_validation		(std::wostream & _Wostream);
 	void serialize_protection			(std::wostream & _Wostream);
+	void serialize_header_footer		(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   

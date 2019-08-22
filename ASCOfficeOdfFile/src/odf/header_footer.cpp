@@ -41,8 +41,6 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-// style-header-footer-properties-attlist
-
 void style_header_footer_properties_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"svg:height", svg_height_);
@@ -58,7 +56,7 @@ void style_header_footer_properties_attlist::add_attributes( const xml::attribut
     CP_APPLY_ATTR(L"style:dynamic-spacing", style_dynamic_spacing_);
 }
 
-/// style-header-footer-properties
+
 const wchar_t * style_header_footer_properties::ns = L"style";
 const wchar_t * style_header_footer_properties::name = L"header-footer-properties";
 
@@ -78,29 +76,9 @@ void style_header_footer_properties::add_child_element( xml::sax * Reader, const
         not_applicable_element(L"style-header-footer-properties", Reader, Ns, Name);
     }    
 }
-
-// common-style-header-footer-attlist
-
 void common_style_header_footer_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"style:display", style_display_, true);
-}
-
-// header-footer-content
-std::wostream & header_footer_content::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
-{
-    serialize_elements_text(_Wostream, content_, bXmlEncode);
-    return _Wostream;
-}
-
-void header_footer_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
-{
- 	if CP_CHECK_NAME(L"text", L"tracked-changes") 
-	{
-		CP_CREATE_ELEMENT_SIMPLE(tracked_changes_);
-	}
-    else
-		CP_CREATE_ELEMENT_SIMPLE(content_);
 }
 
 }

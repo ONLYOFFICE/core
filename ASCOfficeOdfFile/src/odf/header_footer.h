@@ -96,17 +96,6 @@ private:
     bool style_display_; // default true
     
 };
-// header-footer-content
-class header_footer_content
-{
-public:
-    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
-    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
-
-	office_element_ptr			tracked_changes_;
-    office_element_ptr_array	content_;
-    
-};
 
 }
 }

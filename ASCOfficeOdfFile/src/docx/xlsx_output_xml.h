@@ -67,6 +67,7 @@ public:
 	std::wostream & sort();
 	std::wostream & ole_objects();
 	std::wostream & page_properties();
+	std::wostream & header_footer();
 	std::wostream & controls();
 	std::wostream & protection();
 	

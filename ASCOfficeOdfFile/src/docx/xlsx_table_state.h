@@ -184,6 +184,7 @@ public:
 	void serialize_page_properties			(std::wostream & _Wostream);
 	void serialize_background				(std::wostream & _Wostream);
 	void serialize_protection				(std::wostream & _Wostream);
+	void serialize_header_footer			(std::wostream & _Wostream);
 
 	void dump_rels_hyperlinks				(rels & Rels);
 	void dump_rels_ole_objects				(rels & Rels);

@@ -124,6 +124,12 @@ public:
         }
 
         CFontFile* pFileNew = ((CFontManager*)m_pManager)->GetFontFileBySymbol((CFontFile*)m_pManager->GetFile(), code);
+        if (!pFileNew)
+        {
+            m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+            return;
+        }
+
         m_pRenderer->put_FontName(pFileNew->m_sName);
         int nNewStyle = 0;
         if (pFileNew->IsBold()) nNewStyle |= 0x01;

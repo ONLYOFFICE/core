@@ -776,54 +776,33 @@ int CFontList::GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed)
 
 	return nPenalty;
 }
-int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName, std::vector<std::wstring>* pArrayLikes)
+
+CFontListNamePicker CFontList::m_oPicker;
+int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName, bool bIsUseNamePicker)
 {
-	// На MSDN написано, что если имена не совпадают, то вес 10000.
-	// Мы будем сравнивать сколько совпало символов у запрашиваемого
-	// имени и с именем кандидата, без учета решистра, пробелов, запятых
-	// и тире.
-
-	/*
-	TODO:
-	sCandName.Remove(' '); sReqName.Remove(' ');
-	sCandName.Remove(','); sReqName.Remove(',');
-	sCandName.Remove('-'); sReqName.Remove('-');
-
-	sCandName.MakeLower(); sReqName.MakeLower();
-	*/
-
-	if ( 0 == sReqName.length() )
+    if ( 0 == sReqName.length() )
 		return 0;
 
-	if ( 0 == sCandName.length() )
+    if ( 0 == sCandName.length() )
 		return 10000;
 
 	if ( sReqName == sCandName )
 		return 0;
-	else if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
+
+    if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
+    {
+        if (m_oPicker.IsLikeFonts(sCandName, sReqName))
+            return 700;
 		return 1000;
+    }
 
-    if (NULL != pArrayLikes)
+    if (bIsUseNamePicker)
 	{
-		for (std::vector<std::wstring>::iterator iter = pArrayLikes->begin(); iter != pArrayLikes->end(); iter++)
-		{
-			if (sCandName == *iter)
-				return 2000;
-		}
-	}
+        if (m_oPicker.IsLikeFonts(sCandName, sReqName))
+            return 1000;
 
-    /*
-    NSFonts::makeLower(sCandName);
-    NSFonts::makeLower(sReqName);
-    if ( sReqName == sCandName )
-        return 1500;
-
-    sCandName = NSFonts::prepareFont3000(sCandName);
-    sReqName = NSFonts::prepareFont3000(sReqName);
-
-    if ( sReqName == sCandName )
-        return 3000;
-    */
+        return m_oPicker.CheckEqualsFonts(sReqName, sCandName);
+    }
 
 	return 10000;
 }
@@ -1048,16 +1027,6 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
 
 	int nDefPenalty = 2147483647;
 
-	std::vector<std::wstring>* pArrayLikes = NULL;
-	if (oSelect.wsName != NULL)
-	{
-		std::map<std::wstring, int>::iterator iterLikeIndex = m_mapNamesToIndex.find(*oSelect.wsName);
-		if (iterLikeIndex != m_mapNamesToIndex.end())
-		{
-			pArrayLikes = &m_listLikes[iterLikeIndex->second];
-		}
-	}
-
     NSFonts::CFontInfo* pInfoMin = NULL;
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
 	{
@@ -1094,13 +1063,13 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
 
 		if ( oSelect.wsName != NULL && oSelect.wsAltName != NULL )
 		{
-			nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, pArrayLikes ),
-								GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, pArrayLikes ) );
+            nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true ),
+                                GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true ) );
 		}
 		else if ( oSelect.wsName != NULL )
-			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, pArrayLikes );
+            nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true );
 		else if ( oSelect.wsAltName != NULL )
-			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, pArrayLikes );
+            nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true );
 
 		if ( NULL != oSelect.usWidth )
 			nCurPenalty += GetWidthPenalty( pInfo->m_usWidth, *oSelect.usWidth );

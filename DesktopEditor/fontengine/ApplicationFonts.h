@@ -249,8 +249,6 @@ private:
 public:
 	CFontList()
 	{
-
-
         m_pRanges = NULL;
         m_nRangesCount = 0;
 	}

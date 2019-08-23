@@ -192,7 +192,7 @@ public:
         wchar_t* pNameD = new wchar_t[lenName]; int nLenName = 0;
         wchar_t* pReqD = new wchar_t[lenReq]; int nLenReq = 0;
 
-        for (int i = 0; i < nLenName; ++i)
+        for (int i = 0; i < lenName; ++i)
         {
             wchar_t mem = *pName++;
             if (mem == '-' || mem == ' ' || mem == ',')
@@ -201,14 +201,14 @@ public:
                 mem += ('a' - 'A');
             pNameD[nLenName++] = mem;
         }
-        for (int i = 0; i < nLenReq; ++i)
+        for (int i = 0; i < lenReq; ++i)
         {
-            wchar_t mem = *pReqD++;
+            wchar_t mem = *pReq++;
             if (mem == '-' || mem == ' ' || mem == ',')
                 continue;
             if (mem >= 'A' && mem <= 'Z')
                 mem += ('a' - 'A');
-            pNameD[nLenReq++] = mem;
+            pReqD[nLenReq++] = mem;
         }
 
         bool bIsEq = false;

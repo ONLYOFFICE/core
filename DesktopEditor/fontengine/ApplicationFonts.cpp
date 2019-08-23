@@ -801,7 +801,7 @@ int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName,
         if (m_oPicker.IsLikeFonts(sCandName, sReqName))
             return 1000;
 
-        return m_oPicker.CheckEqualsFonts(sReqName, sCandName);
+        return m_oPicker.CheckEqualsFonts(sCandName, sReqName);
     }
 
 	return 10000;

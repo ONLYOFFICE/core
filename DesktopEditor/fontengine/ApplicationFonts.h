@@ -211,13 +211,16 @@ public:
             pReqD[nLenReq++] = mem;
         }
 
+        wchar_t* pNameDCur = pNameD;
+        wchar_t* pReqDCur = pReqD;
+
         bool bIsEq = false;
         if (nLenName == nLenReq)
         {
             int i = 0;
             while (i < nLenName)
             {
-                if (*pNameD++ != *pReqD++)
+                if (*pNameDCur++ != *pReqDCur++)
                     break;
                 ++i;
             }

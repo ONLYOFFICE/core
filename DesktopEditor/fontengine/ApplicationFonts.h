@@ -226,8 +226,8 @@ public:
                 bIsEq = true;
         }
 
-        delete [] pName;
-        delete [] pReq;
+        delete [] pNameD;
+        delete [] pReqD;
 
         return bIsEq ? 3000 : 10000;
     }

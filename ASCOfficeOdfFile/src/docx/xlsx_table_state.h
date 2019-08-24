@@ -218,6 +218,9 @@ private:
 	int									tableId_;
     std::wstring						tableBackground_;
 
+	_CP_OPT(double)						header_page;
+	_CP_OPT(double)						footer_page;
+
     std::wstring						table_style_;
     std::wstring						table_row_style_;
     std::wstring						cell_style_;

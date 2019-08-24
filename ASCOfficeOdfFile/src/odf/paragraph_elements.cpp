@@ -65,8 +65,11 @@ namespace odf_reader {
 
 namespace text {
 
-template <class ElementT>
-void paragraph_content_element<ElementT>::docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, 
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * paragraph_content_element::ns = L"";
+const wchar_t * paragraph_content_element::name = L"";
+
+void paragraph_content_element::docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, 
 															   oox::docx_conversion_context & Context, bool bLock )
 {
 	std::wostream & strm = Context.output_stream();
@@ -90,8 +93,7 @@ void paragraph_content_element<ElementT>::docx_serialize_field(const std::wstrin
 	   strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 	}
 }
-template <class ElementT>
-void paragraph_content_element<ElementT>::docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context)
+void paragraph_content_element::docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context)
 {
 	std::wostream & strm = Context.output_stream();
 	Context.finish_run();	
@@ -106,8 +108,7 @@ void paragraph_content_element<ElementT>::docx_serialize_sdt_placeholder(const s
 	strm << L"</w:sdtContent></w:sdt>";
 }
 
-template <class ElementT>
-void paragraph_content_element<ElementT>::docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context)
+void paragraph_content_element::docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context)
 {
 	Context.add_new_run();
 	if (text)
@@ -116,6 +117,7 @@ void paragraph_content_element<ElementT>::docx_serialize_run(office_element_ptr 
 	}
 	Context.finish_run();
 }
+
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * text::ns = L"";
 const wchar_t * text::name = L"";
@@ -570,6 +572,25 @@ void span::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
     Context.end_span();
 }
+void span::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+{
+    for (size_t i = 0; i < content_.size(); i++)
+    {
+		text *t = dynamic_cast<text*>(content_[i].get());
+		if (t)
+		{
+			t->text_to_stream(_Wostream, true);
+		}
+		else
+		{
+			text::paragraph_content_element *element = dynamic_cast<text::paragraph_content_element*>(content_[i].get());
+			if (element)
+			{
+				element->xlsx_serialize(_Wostream, Context);
+			}
+		}
+    }
+}
 void span::pptx_convert(oox::pptx_conversion_context & Context)
 {
     if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text,false))
@@ -1015,6 +1036,10 @@ void text_page_number::docx_convert(oox::docx_conversion_context & Context)
 {
 	docx_serialize_field(L"PAGE", text_, Context);
 }
+void text_page_number::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+{
+	_Wostream << L"&amp;P";
+}
 void text_page_number::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_text_context().start_field(oox::page_number, L"");
@@ -1053,6 +1078,10 @@ void text_page_count::docx_convert(oox::docx_conversion_context & Context)
 {
 	docx_serialize_field(L"NUMPAGES", text_, Context);
 }
+void text_page_count::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+{
+	_Wostream << L"&amp;N";
+}
 void text_page_count::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//поскольку такого поля в ms нет - конвертим как обычный текст
@@ -1090,7 +1119,10 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
 
 	docx_serialize_field(L"DATE", text_, Context, bLock);
 }
-
+void text_date::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+{
+	_Wostream << L"&amp;D";
+}
 void text_date::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_field(oox::date,style_data_style_name_.get_value_or(L""));
@@ -1151,6 +1183,10 @@ void text_time::docx_convert(oox::docx_conversion_context & Context)
 
 	docx_serialize_field(L"TIME", text_, Context, bLock);
 }
+void text_time::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+{
+	_Wostream << L"&amp;T";
+}
 void text_time::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_field(oox::time, style_data_style_name_.get_value_or(L""));
@@ -1203,6 +1239,10 @@ void text_file_name::add_text(const std::wstring & Text)
 void text_file_name::docx_convert(oox::docx_conversion_context & Context)
 {
 	docx_serialize_field(L"FILENAME", text_, Context);
+}
+void text_file_name::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+{
+	_Wostream << L"&amp;F";
 }
 void text_file_name::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1466,6 +1506,10 @@ void sheet_name::add_text(const std::wstring & Text)
 void sheet_name::docx_convert(oox::docx_conversion_context & Context)
 {
 	docx_serialize_sdt_placeholder(L"sheet name", text_, Context);
+}
+void sheet_name::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+{
+	_Wostream << L"&amp;A";
 }
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * author_name::ns = L"text";

@@ -420,7 +420,7 @@ void xlsx_table_state::serialize_header_footer (std::wostream & strm)
 
 	odf_reader::style_footer		*footer_odd		= dynamic_cast<odf_reader::style_footer*>		(master_style_->style_footer_.get());
 	odf_reader::style_footer_first	*footer_first	= dynamic_cast<odf_reader::style_footer_first*>	(master_style_->style_footer_first_.get());
-	odf_reader::style_footer_left	*footer_even	= dynamic_cast<odf_reader::style_footer_left*>	(master_style_->style_header_left_.get());
+	odf_reader::style_footer_left	*footer_even	= dynamic_cast<odf_reader::style_footer_left*>	(master_style_->style_footer_left_.get());
 
 	if (!header_odd && !header_first && !header_even && 
 		!footer_odd && !footer_first && !footer_even) return;

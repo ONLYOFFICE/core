@@ -1179,7 +1179,21 @@ void style_page_layout_properties::add_attributes( const xml::attributes_wc_ptr 
 
 void style_page_layout_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    elements_.add_child_element(Reader, Ns, Name, getContext());
+    if (L"style" == Ns && L"background-image" == Name)
+    {
+        CP_CREATE_ELEMENT(style_background_image_);            
+    }
+    else if (L"style" == Ns && L"columns" == Name)
+    {
+        CP_CREATE_ELEMENT(style_columns_);            
+    }
+    else if (L"style" == Ns && L"footnote-sep" == Name)
+    {
+        CP_CREATE_ELEMENT(style_footnote_sep_);            
+    }
+    else
+    {
+    }
 }
 
 bool style_page_layout_properties::docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id)
@@ -1217,10 +1231,10 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 		if (horizontal_margins.fo_margin_left_	|| horizontal_margins.fo_margin_right_	||
 			vertical_margins.fo_margin_top_		|| vertical_margins.fo_margin_bottom_ )
 		{
-			//_CP_OPT(odf_types::length)  margin_top, margin_bottom;
+			_CP_OPT(double)  header, footer;
 
-			//margin_top	= Context.get_header_footer_context().header();
-			//margin_bottom = Context.get_header_footer_context().footer();
+			header	= Context.get_table_context().get_header_page();
+			footer = Context.get_table_context().get_footer_page();
 
 			CP_XML_NODE(L"pageMargins")
 			{
@@ -1240,12 +1254,10 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 					CP_XML_ATTR(L"bottom"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
 				else CP_XML_ATTR(L"bottom", 1.025);
 				
-				if (vertical_margins.fo_margin_top_)
-					CP_XML_ATTR(L"header"	, vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch));
+				if (header) CP_XML_ATTR(L"header"	, *header / 72.0); // pt -> inch
 				else CP_XML_ATTR(L"header", 0.7875);
 
-				if (vertical_margins.fo_margin_bottom_)
-					CP_XML_ATTR(L"footer"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
+				if (footer) CP_XML_ATTR(L"footer"	, *footer / 72.0);
 				else CP_XML_ATTR(L"footer", 0.7875);
 			}
 		}
@@ -1272,11 +1284,11 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			}
 		}
 	}
-	if (elements_.style_background_image_)
+	if (style_background_image_)
 	{
 		oox::_oox_fill fill;
 			
-		Compute_GraphicFill(attlist_.common_draw_fill_attlist_, elements_.style_background_image_, Context.root()->odf_context().drawStyles(), fill);
+		Compute_GraphicFill(attlist_.common_draw_fill_attlist_, style_background_image_, Context.root()->odf_context().drawStyles(), fill);
 		if (fill.bitmap)
 		{
 			if ( fill.bitmap->rId.empty())
@@ -1294,7 +1306,7 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 
 void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
-	style_columns * columns = dynamic_cast<style_columns *>( elements_.style_columns_.get());
+	style_columns * columns = dynamic_cast<style_columns *>( style_columns_.get());
 
 	CP_XML_WRITER(strm)
 	{
@@ -1386,28 +1398,6 @@ void style_page_layout_properties::pptx_serialize(std::wostream & strm, oox::ppt
     }
 }
 
-// style-page-layout-properties-elements
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-void style_page_layout_properties_elements::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context )
-{
-    if (L"style" == Ns && L"background-image" == Name)
-    {
-        CP_CREATE_ELEMENT_SIMPLE(style_background_image_);            
-    }
-    else if (L"style" == Ns && L"columns" == Name)
-    {
-        CP_CREATE_ELEMENT_SIMPLE(style_columns_);            
-    }
-    else if (L"style" == Ns && L"footnote-sep" == Name)
-    {
-        CP_CREATE_ELEMENT_SIMPLE(style_footnote_sep_);            
-    }
-    else
-    {
-        not_applicable_element(L"style-page-layout-properties-elements", Reader, Ns, Name);
-    }
-}
 
 // style-master-page-attlist
 ////////////////////////////////////////////////////////////////////////////////////////////////// 

@@ -53,18 +53,32 @@ namespace odf_reader {
 
 namespace text {
 
-template <class ElementT>
-class paragraph_content_element :  public office_element_impl<ElementT>
+class paragraph_content_element :  public office_element_impl<paragraph_content_element>
 {
 public:
-	void docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context);
-	void docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, oox::docx_conversion_context & Context, bool bLock = false);
-	void docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context);
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextTextElement;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context){}
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+
+	virtual void docx_serialize_sdt_placeholder(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context);
+	virtual void docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, oox::docx_conversion_context & Context, bool bLock = false);
+	virtual void docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context);
+
+	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context){}
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 };
 //-------------------------------------------------------------------------------------------------------------------
 // simple text
 //-------------------------------------------------------------------------------------------------------------------
-class text : public paragraph_content_element<text>
+class text : public paragraph_content_element
 {
 public:
     static office_element_ptr create(const std::wstring & Text);
@@ -99,7 +113,7 @@ private:
 //-------------------------------------------------------------------------------------------------------------------
 // text:s
 //-------------------------------------------------------------------------------------------------------------------
-class s : public paragraph_content_element<s>
+class s : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -130,7 +144,7 @@ CP_REGISTER_OFFICE_ELEMENT2(s);
 //-------------------------------------------------------------------------------------------------------------------
 // text:tab
 //-------------------------------------------------------------------------------------------------------------------
-class tab : public paragraph_content_element<tab>
+class tab : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -161,7 +175,7 @@ CP_REGISTER_OFFICE_ELEMENT2(tab);
 //-------------------------------------------------------------------------------------------------------------------
 // text:line-break
 //-------------------------------------------------------------------------------------------------------------------
-class line_break : public paragraph_content_element<line_break>
+class line_break : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -187,7 +201,7 @@ CP_REGISTER_OFFICE_ELEMENT2(line_break);
 //-------------------------------------------------------------------------------------------------------------------
 // text:bookmark
 //-------------------------------------------------------------------------------------------------------------------
-class bookmark : public paragraph_content_element<bookmark>
+class bookmark : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -211,7 +225,7 @@ CP_REGISTER_OFFICE_ELEMENT2(bookmark);
 //-------------------------------------------------------------------------------------------------------------------
 // text:bookmark-start
 //-------------------------------------------------------------------------------------------------------------------
-class bookmark_start : public paragraph_content_element<bookmark_start>
+class bookmark_start : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -235,7 +249,7 @@ CP_REGISTER_OFFICE_ELEMENT2(bookmark_start);
 //-------------------------------------------------------------------------------------------------------------------
 // text:bookmark-end
 //-------------------------------------------------------------------------------------------------------------------
-class bookmark_end : public paragraph_content_element<bookmark_end>
+class bookmark_end : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -260,7 +274,7 @@ CP_REGISTER_OFFICE_ELEMENT2(bookmark_end);
 //-------------------------------------------------------------------------------------------------------------------
 // text:bookmark-ref
 //-------------------------------------------------------------------------------------------------------------------
-class bookmark_ref : public paragraph_content_element<bookmark_ref>
+class bookmark_ref : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -281,7 +295,7 @@ CP_REGISTER_OFFICE_ELEMENT2(bookmark_ref);
 //-------------------------------------------------------------------------------------------------------------------
 // text:reference-ref
 //-------------------------------------------------------------------------------------------------------------------
-class reference_ref : public paragraph_content_element<reference_ref>
+class reference_ref : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -303,7 +317,7 @@ CP_REGISTER_OFFICE_ELEMENT2(reference_ref);
 //-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark
 //-------------------------------------------------------------------------------------------------------------------
-class reference_mark : public paragraph_content_element<reference_mark>
+class reference_mark : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -324,7 +338,7 @@ CP_REGISTER_OFFICE_ELEMENT2(reference_mark);
 //-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark-start
 //-------------------------------------------------------------------------------------------------------------------
-class reference_mark_start : public paragraph_content_element<reference_mark_start>
+class reference_mark_start : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -345,7 +359,7 @@ CP_REGISTER_OFFICE_ELEMENT2(reference_mark_start);
 //-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark-end
 //-------------------------------------------------------------------------------------------------------------------
-class reference_mark_end : public paragraph_content_element<reference_mark_end>
+class reference_mark_end : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -367,7 +381,7 @@ CP_REGISTER_OFFICE_ELEMENT2(reference_mark_end);
 //-------------------------------------------------------------------------------------------------------------------
 // text:span
 //-------------------------------------------------------------------------------------------------------------------
-class span : public paragraph_content_element<span>
+class span : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -379,6 +393,8 @@ public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
+
+ 	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
@@ -400,7 +416,7 @@ CP_REGISTER_OFFICE_ELEMENT2(span);
 //-------------------------------------------------------------------------------------------------------------------
 // text:a
 //-------------------------------------------------------------------------------------------------------------------
-class a : public paragraph_content_element<a>
+class a : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -438,7 +454,7 @@ CP_REGISTER_OFFICE_ELEMENT2(a);
 //-------------------------------------------------------------------------------------------------------------------
 // text:note
 //-------------------------------------------------------------------------------------------------------------------
-class note : public paragraph_content_element<note>
+class note : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -467,7 +483,7 @@ CP_REGISTER_OFFICE_ELEMENT2(note);
 //-------------------------------------------------------------------------------------------------------------------
 // text:ruby
 //-------------------------------------------------------------------------------------------------------------------
-class ruby : public paragraph_content_element<ruby>
+class ruby : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -491,7 +507,7 @@ CP_REGISTER_OFFICE_ELEMENT2(ruby);
 //-------------------------------------------------------------------------------------------------------------------
 // text:title
 //-------------------------------------------------------------------------------------------------------------------
-class title : public paragraph_content_element<title>
+class title : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -519,7 +535,7 @@ CP_REGISTER_OFFICE_ELEMENT2(title);
 
 // text:chapter
 //////////////////////////////////////////////////////////////////////////////////////////////////
-class chapter : public paragraph_content_element<chapter>
+class chapter : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -545,7 +561,7 @@ CP_REGISTER_OFFICE_ELEMENT2(chapter);
 //-------------------------------------------------------------------------------------------------------------------
 //text:subject
 //-------------------------------------------------------------------------------------------------------------------
-class subject : public paragraph_content_element<subject>
+class subject : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -570,7 +586,7 @@ CP_REGISTER_OFFICE_ELEMENT2(subject);
 //-------------------------------------------------------------------------------------------------------------------
 // text:placeholder
 //-------------------------------------------------------------------------------------------------------------------
-class text_placeholder : public paragraph_content_element<text_placeholder>
+class text_placeholder : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -597,7 +613,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_placeholder);
 //-------------------------------------------------------------------------------------------------------------------
 // text:page-number
 //-------------------------------------------------------------------------------------------------------------------
-class text_page_number: public paragraph_content_element<text_page_number>
+class text_page_number: public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -608,6 +624,8 @@ public:
   
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
+
+ 	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
@@ -629,7 +647,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_page_number);
 //-------------------------------------------------------------------------------------------------------------------
 // text:page-count
 //-------------------------------------------------------------------------------------------------------------------
-class text_page_count : public paragraph_content_element<text_page_count>
+class text_page_count : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -640,6 +658,8 @@ public:
    
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
+
+ 	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
@@ -658,7 +678,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_page_count);
 //-------------------------------------------------------------------------------------------------------------------
 // text:date 
 //-------------------------------------------------------------------------------------------------------------------
-class text_date : public paragraph_content_element<text_date>
+class text_date : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -670,7 +690,8 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
+ 	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
+	std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 	
 	_CP_OPT(std::wstring)		style_data_style_name_;
 	_CP_OPT(odf_types::Bool)	text_fixed_;
@@ -713,7 +734,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_modification_date);
 //-------------------------------------------------------------------------------------------------------------------
 // text:time 
 //-------------------------------------------------------------------------------------------------------------------
-class text_time : public paragraph_content_element<text_time>
+class text_time : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -725,7 +746,9 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
+ 	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
+   
+	std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 	_CP_OPT(std::wstring)	style_data_style_name_;
 	_CP_OPT(odf_types::Bool)text_fixed_;
@@ -768,7 +791,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_modification_time);
 //-------------------------------------------------------------------------------------------------------------------
 // text:file-name 
 //-------------------------------------------------------------------------------------------------------------------
-class text_file_name : public paragraph_content_element<text_file_name>
+class text_file_name : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -780,7 +803,9 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
+ 	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
+
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -795,7 +820,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_file_name);
 //-------------------------------------------------------------------------------------------------------------------
 // text:hidden-paragraph
 //-------------------------------------------------------------------------------------------------------------------
-class hidden_paragraph : public paragraph_content_element<hidden_paragraph>
+class hidden_paragraph : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -819,7 +844,7 @@ CP_REGISTER_OFFICE_ELEMENT2(hidden_paragraph);
 //-------------------------------------------------------------------------------------------------------------------
 // text:hidden-text
 //-------------------------------------------------------------------------------------------------------------------
-class hidden_text : public paragraph_content_element<hidden_text>
+class hidden_text : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -844,7 +869,7 @@ CP_REGISTER_OFFICE_ELEMENT2(hidden_text);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sequence
 //-------------------------------------------------------------------------------------------------------------------
-class sequence : public paragraph_content_element<sequence>
+class sequence : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -875,7 +900,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sequence);
 //-------------------------------------------------------------------------------------------------------------------
 // text:expression
 //-------------------------------------------------------------------------------------------------------------------
-class expression: public paragraph_content_element<expression>
+class expression: public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -903,7 +928,7 @@ CP_REGISTER_OFFICE_ELEMENT2(expression);
 //-------------------------------------------------------------------------------------------------------------------
 // text:text-input
 //-------------------------------------------------------------------------------------------------------------------
-class text_input: public paragraph_content_element<text_input>
+class text_input: public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -927,7 +952,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_input);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sequence_ref
 //-------------------------------------------------------------------------------------------------------------------
-class sequence_ref : public paragraph_content_element<sequence_ref>
+class sequence_ref : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -952,7 +977,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sequence_ref);
 //-------------------------------------------------------------------------------------------------------------------
 //text:drop-down
 //-------------------------------------------------------------------------------------------------------------------
-class text_drop_down : public paragraph_content_element<text_drop_down>
+class text_drop_down : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -979,7 +1004,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_drop_down);
 //-------------------------------------------------------------------------------------------------------------------
 //text:label
 //-------------------------------------------------------------------------------------------------------------------
-class text_label : public paragraph_content_element<text_label>
+class text_label : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1000,7 +1025,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_label);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sheet-name
 //-------------------------------------------------------------------------------------------------------------------
-class sheet_name : public paragraph_content_element<sheet_name>
+class sheet_name : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1010,6 +1035,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+ 	
+	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
@@ -1022,7 +1049,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sheet_name);
 //-------------------------------------------------------------------------------------------------------------------
 // text:author-name
 //-------------------------------------------------------------------------------------------------------------------
-class author_name : public paragraph_content_element<author_name>
+class author_name : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1044,7 +1071,7 @@ CP_REGISTER_OFFICE_ELEMENT2(author_name);
 //-------------------------------------------------------------------------------------------------------------------
 // text:author-initials
 //-------------------------------------------------------------------------------------------------------------------
-class author_initials : public paragraph_content_element<author_initials>
+class author_initials : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1066,7 +1093,7 @@ CP_REGISTER_OFFICE_ELEMENT2(author_initials);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-city
 //-------------------------------------------------------------------------------------------------------------------
-class sender_city : public paragraph_content_element<sender_city>
+class sender_city : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1088,7 +1115,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_city);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-postal-code
 //-------------------------------------------------------------------------------------------------------------------
-class sender_postal_code : public paragraph_content_element<sender_postal_code>
+class sender_postal_code : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1112,7 +1139,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_postal_code);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-street
 //-------------------------------------------------------------------------------------------------------------------
-class sender_street : public paragraph_content_element<sender_street>
+class sender_street : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1134,7 +1161,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_street);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-state-or-province
 //-------------------------------------------------------------------------------------------------------------------
-class sender_state_or_province : public paragraph_content_element<sender_state_or_province>
+class sender_state_or_province : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1156,7 +1183,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_state_or_province);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-email
 //-------------------------------------------------------------------------------------------------------------------
-class sender_email : public paragraph_content_element<sender_email>
+class sender_email : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1178,7 +1205,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_email);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-firstname
 //-------------------------------------------------------------------------------------------------------------------
-class sender_firstname : public paragraph_content_element<sender_firstname>
+class sender_firstname : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1200,7 +1227,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_firstname);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-lastname
 //-------------------------------------------------------------------------------------------------------------------
-class sender_lastname : public paragraph_content_element<sender_lastname>
+class sender_lastname : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1222,7 +1249,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_lastname);
 //-------------------------------------------------------------------------------------------------------------------
 // text:sender-company
 //-------------------------------------------------------------------------------------------------------------------
-class sender_company : public paragraph_content_element<sender_company>
+class sender_company : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1245,7 +1272,7 @@ CP_REGISTER_OFFICE_ELEMENT2(sender_company);
 //-------------------------------------------------------------------------------------------------------------------
 //text:user-field-get
 //---------------------------------------------------------------------------------------------------
-class text_user_field_get : public paragraph_content_element<text_user_field_get>
+class text_user_field_get : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1271,7 +1298,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_user_field_get);
 //-------------------------------------------------------------------------------------------------------------------
 //text:user-defined
 //---------------------------------------------------------------------------------------------------
-class text_user_defined : public paragraph_content_element<text_user_defined>
+class text_user_defined : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1299,7 +1326,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_user_defined);
 //---------------------------------------------------------------------------------------------------
 //text:bibliography-mark
 //---------------------------------------------------------------------------------------------------
-class bibliography_mark : public paragraph_content_element<bibliography_mark>
+class bibliography_mark : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1356,7 +1383,7 @@ CP_REGISTER_OFFICE_ELEMENT2(bibliography_mark);
 //---------------------------------------------------------------------------------------------------
 //text:alphabetical-index-auto-mark-file
 //---------------------------------------------------------------------------------------------------
-class alphabetical_index_auto_mark_file : public paragraph_content_element<alphabetical_index_auto_mark_file>
+class alphabetical_index_auto_mark_file : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1377,7 +1404,7 @@ CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_auto_mark_file);
 //---------------------------------------------------------------------------------------------------
 //text:alphabetical-index-mark-start
 //---------------------------------------------------------------------------------------------------
-class alphabetical_index_mark_start : public paragraph_content_element<alphabetical_index_mark_start>
+class alphabetical_index_mark_start : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1403,7 +1430,7 @@ CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_mark_start);
 //---------------------------------------------------------------------------------------------------
 //text:alphabetical-index-mark-end
 //---------------------------------------------------------------------------------------------------
-class alphabetical_index_mark_end : public paragraph_content_element<alphabetical_index_mark_end>
+class alphabetical_index_mark_end : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1424,7 +1451,7 @@ CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_mark_end);
 //---------------------------------------------------------------------------------------------------
 //text:alphabetical-index-mark
 //---------------------------------------------------------------------------------------------------
-class alphabetical_index_mark : public paragraph_content_element<alphabetical_index_mark>
+class alphabetical_index_mark : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1450,7 +1477,7 @@ CP_REGISTER_OFFICE_ELEMENT2(alphabetical_index_mark);
 //---------------------------------------------------------------------------------------------------
 //text:user-index-mark-start
 //---------------------------------------------------------------------------------------------------
-class user_index_mark_start : public paragraph_content_element<user_index_mark_start>
+class user_index_mark_start : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1473,7 +1500,7 @@ CP_REGISTER_OFFICE_ELEMENT2(user_index_mark_start);
 //---------------------------------------------------------------------------------------------------
 //text:user-index-mark-end
 //---------------------------------------------------------------------------------------------------
-class user_index_mark_end : public paragraph_content_element<user_index_mark_end>
+class user_index_mark_end : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1494,7 +1521,7 @@ CP_REGISTER_OFFICE_ELEMENT2(user_index_mark_end);
 //---------------------------------------------------------------------------------------------------
 //text:user-index-mark
 //---------------------------------------------------------------------------------------------------
-class user_index_mark : public paragraph_content_element<user_index_mark>
+class user_index_mark : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1517,7 +1544,7 @@ CP_REGISTER_OFFICE_ELEMENT2(user_index_mark);
 //---------------------------------------------------------------------------------------------------
 //text:toc-mark-start
 //---------------------------------------------------------------------------------------------------
-class toc_mark_start : public paragraph_content_element<toc_mark_start>
+class toc_mark_start : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1539,7 +1566,7 @@ CP_REGISTER_OFFICE_ELEMENT2(toc_mark_start);
 //---------------------------------------------------------------------------------------------------
 //text:toc-mark-end
 //---------------------------------------------------------------------------------------------------
-class toc_mark_end : public paragraph_content_element<toc_mark_end>
+class toc_mark_end : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1560,7 +1587,7 @@ CP_REGISTER_OFFICE_ELEMENT2(toc_mark_end);
 //---------------------------------------------------------------------------------------------------
 //text:toc-mark
 //---------------------------------------------------------------------------------------------------
-class toc_mark : public paragraph_content_element<toc_mark>
+class toc_mark : public paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1584,7 +1611,7 @@ CP_REGISTER_OFFICE_ELEMENT2(toc_mark);
 //-------------------------------------------------------------------------------------------------------------------
 //presentation:footer
 //-------------------------------------------------------------------------------------------------------------------
-class presentation_footer : public text::paragraph_content_element<presentation_footer>
+class presentation_footer : public text::paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1606,7 +1633,7 @@ CP_REGISTER_OFFICE_ELEMENT2(presentation_footer);
 //-------------------------------------------------------------------------------------------------------------------
 //presentation:date-time
 //-------------------------------------------------------------------------------------------------------------------
-class presentation_date_time: public text::paragraph_content_element<presentation_date_time>
+class presentation_date_time: public text::paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1629,7 +1656,7 @@ CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time);
 //-------------------------------------------------------------------------------------------------------------------
 // field:fieldmark-start 
 //-------------------------------------------------------------------------------------------------------------------
-class field_fieldmark_start : public text::paragraph_content_element<field_fieldmark_start>
+class field_fieldmark_start : public text::paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1651,7 +1678,7 @@ CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark_start);
 //-------------------------------------------------------------------------------------------------------------------
 // field:fieldmark-end 
 //-------------------------------------------------------------------------------------------------------------------
-class field_fieldmark_end : public text::paragraph_content_element<field_fieldmark_end>
+class field_fieldmark_end : public text::paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1670,7 +1697,7 @@ CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark_end);
 //-------------------------------------------------------------------------------------------------------------------
 // field:fieldmark 
 //-------------------------------------------------------------------------------------------------------------------
-class field_fieldmark : public text::paragraph_content_element<field_fieldmark>
+class field_fieldmark : public text::paragraph_content_element
 {
 public:
     static const wchar_t * ns;
@@ -1694,7 +1721,7 @@ CP_REGISTER_OFFICE_ELEMENT2(field_fieldmark);
 //-------------------------------------------------------------------------------------------------------------------
 // field:param
 //-------------------------------------------------------------------------------------------------------------------
-class field_param : public text::paragraph_content_element<field_param>
+class field_param : public text::paragraph_content_element
 {
 public:
     static const wchar_t * ns;

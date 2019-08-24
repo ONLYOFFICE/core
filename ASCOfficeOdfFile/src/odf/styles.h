@@ -945,20 +945,6 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep);
 
-// style-page-layout-properties-elements
-class style_page_layout_properties_elements
-{
-public:
-    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
-
-    office_element_ptr	style_background_image_;
-    office_element_ptr	style_columns_;
-    
-    // 15.2.20
-    office_element_ptr  style_footnote_sep_;
-
-};
-
 // style:page-layout-properties
 class style_page_layout_properties : public office_element_impl<style_page_layout_properties>
 {
@@ -969,19 +955,21 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    void pptx_convert			(oox::pptx_conversion_context & Context);
-	void xlsx_convert			(oox::xlsx_conversion_context & Context){}
+    void pptx_convert(oox::pptx_conversion_context & Context);
     
 	bool docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id);
 	
-    void docx_serialize	(std::wostream & strm, oox::docx_conversion_context & Context);
+    void docx_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
 	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 	void pptx_serialize(std::wostream & strm, oox::pptx_conversion_context & Context);
 
     style_page_layout_properties() { }
 
-    style_page_layout_properties_attlist	attlist_;
-    style_page_layout_properties_elements	elements_;
+    style_page_layout_properties_attlist attlist_;
+
+    office_element_ptr	style_background_image_;
+    office_element_ptr	style_columns_;
+    office_element_ptr	style_footnote_sep_;
 
 private:
 

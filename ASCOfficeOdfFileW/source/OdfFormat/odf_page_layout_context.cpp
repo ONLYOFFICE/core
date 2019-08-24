@@ -330,31 +330,11 @@ bool odf_page_layout_context::add_footer(int type)
 	style_page_layout_properties *props = get_properties();
 	if (!props)return true;
 
-	length length_ = length(layout_state_list_.back().footer_size_->get_value_unit(length::cm),length::cm);
+	length length_ = length(layout_state_list_.back().footer_size_->get_value_unit(length::cm), length::cm);
 
-	_CP_OPT(length) bottom_;
-	
-	if (props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
-		bottom_= props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length();
+	footer_props->style_header_footer_properties_attlist_.svg_height_ = length_;
+	footer_props->style_header_footer_properties_attlist_.fo_min_height_ = length_;
 
-	if (bottom_)
-	{
-		double length_cm = bottom_->get_value_unit(length::cm) - length_.get_value_unit(length::cm);
-	
-		if (length_cm > 0.01)
-		{
-			props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
-			footer_props->style_header_footer_properties_attlist_.svg_height_ = length(fabs(length_cm),length::cm);//fo_min_height_
-			footer_props->style_header_footer_properties_attlist_.fo_min_height_ = length(fabs(length_cm),length::cm);
-		}
-		else if (-length_cm >0.01)
-		{
-			footer_props->style_header_footer_properties_attlist_.svg_height_ = length(-length_cm,length::cm);//fo_min_height_
-		}
-	}else
-	{
-		props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
-	}
 	layout_state_list_.back().footer_size_ = boost::none;
 
 	return true;
@@ -395,29 +375,9 @@ bool odf_page_layout_context::add_header(int type)
 
 	length length_ = length(layout_state_list_.back().header_size_->get_value_unit(length::cm), length::cm);
 
-	_CP_OPT(length) top_;
+	header_props->style_header_footer_properties_attlist_.svg_height_ = length_;
+	header_props->style_header_footer_properties_attlist_.fo_min_height_ = length_;
 
-	if (props->attlist_.common_vertical_margin_attlist_.fo_margin_top_)
-		top_ = props->attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length();;
-
-	if (top_)
-	{
-		double length_cm = top_->get_value_unit(length::cm) - length_.get_value_unit(length::cm);
-		if (length_cm > 0.01)
-		{
-			props->attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
-			header_props->style_header_footer_properties_attlist_.svg_height_ = length(fabs(length_cm),length::cm);
-			header_props->style_header_footer_properties_attlist_.fo_min_height_ = length(fabs(length_cm),length::cm);//fo_min_height_
-		}
-		else if (-length_cm >0.01)
-		{
-			header_props->style_header_footer_properties_attlist_.svg_height_ = length(-length_cm,length::cm);
-			header_props->style_header_footer_properties_attlist_.fo_min_height_ = length(-length_cm,length::cm);//fo_min_height_
-		}	
-	}
-	else
-		props->attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
-	
 	layout_state_list_.back().header_size_ = boost::none;
 	return true;
 }

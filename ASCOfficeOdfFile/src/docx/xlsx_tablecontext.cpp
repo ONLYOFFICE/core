@@ -290,6 +290,23 @@ unsigned int xlsx_table_context::columns_count()
     return state()->columns_count();    
 }
 
+void xlsx_table_context::set_header_page(_CP_OPT(double) val)
+{
+	state()->header_page = val;
+}
+_CP_OPT(double) xlsx_table_context::get_header_page()
+{
+	return state()->header_page;
+}
+void xlsx_table_context::set_footer_page(_CP_OPT(double) val)
+{
+	state()->footer_page = val;
+}
+_CP_OPT(double) xlsx_table_context::get_footer_page()
+{
+	return state()->footer_page;
+}
+
 std::wstring xlsx_table_context::default_row_cell_style()
 {
     return state()->default_row_cell_style();

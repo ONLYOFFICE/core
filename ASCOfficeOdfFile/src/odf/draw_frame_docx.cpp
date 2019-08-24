@@ -159,7 +159,7 @@ length ComputeContextWidth(const style_page_layout_properties			* pageProperties
             if (pagePropertiesNode)
             {
                 if (const style_columns * styleColumns 
-                    = dynamic_cast<const style_columns*>( pagePropertiesNode->elements_.style_columns_.get()))
+                    = dynamic_cast<const style_columns*>( pagePropertiesNode->style_columns_.get()))
                 {
                     columnsCount = styleColumns->fo_column_count_.get_value_or(1);
                     if (!columnsCount)

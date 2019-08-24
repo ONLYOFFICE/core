@@ -1591,37 +1591,59 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 	{
 		odt_context->page_layout_context()->add_master_page(master_name);
 	}
-	
-	bool present_header		= false;
-	bool present_footer		= false;
 
 	if (oox_section_pr->m_oPgMar.IsInit())
 	{
-		_CP_OPT(odf_types::length) top, left, right, bottom, other;
+		_CP_OPT(odf_types::length) top, left, right, bottom, header, footer, gutter;
 
 		convert(oox_section_pr->m_oPgMar->m_oBottom.GetPointer(),	bottom);
 		convert(oox_section_pr->m_oPgMar->m_oLeft.GetPointer(),		left);
 		convert(oox_section_pr->m_oPgMar->m_oRight.GetPointer(),	right);
 		convert(oox_section_pr->m_oPgMar->m_oTop.GetPointer(),		top);
+		convert(oox_section_pr->m_oPgMar->m_oHeader.GetPointer(),	header);
+		convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(),	footer);
+		convert(oox_section_pr->m_oPgMar->m_oGutter.GetPointer(),	gutter);
 		
+		if (bottom)
+		{
+			double length_cm = bottom->get_value_unit(length::cm) -( footer ? footer->get_value_unit(length::cm) : 0);
+		
+			if (length_cm > 0.01)
+			{
+				bottom = footer;
+				footer = length(fabs(length_cm), length::cm);
+			}
+			else if (-length_cm > 0.01)
+			{
+				footer = length(-length_cm, length::cm);//fo_min_height_
+			}
+		}
+		else
+		{
+			bottom = footer;
+		}
+		if (top)
+		{
+			double length_cm = top->get_value_unit(length::cm) - (header ? header->get_value_unit(length::cm) : 0);
+		
+			if (length_cm > 0.01)
+			{
+				top = header;
+				header = length(fabs(length_cm), length::cm);
+			}
+			else if (-length_cm > 0.01)
+			{
+				header = length(-length_cm, length::cm);//fo_min_height_
+			}
+		}
+		else
+		{
+			top = header;
+		}
 		odt_context->page_layout_context()->set_page_margin(top, left, bottom, right);
-		
-		convert(oox_section_pr->m_oPgMar->m_oGutter.GetPointer(), other);
-		odt_context->page_layout_context()->set_page_gutter(other);
-
-		if (oox_section_pr->m_oPgMar->m_oFooter.IsInit())
-		{
-			convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(), other);
-			odt_context->page_layout_context()->set_footer_size(other);
-			present_footer = true;
-		}
-		
-		if (oox_section_pr->m_oPgMar->m_oHeader.IsInit())
-		{
-			convert(oox_section_pr->m_oPgMar->m_oHeader.GetPointer(), other);
-			odt_context->page_layout_context()->set_header_size(other);
-			present_header =true;
-		}
+		odt_context->page_layout_context()->set_page_gutter(gutter);
+		odt_context->page_layout_context()->set_header_size(header);
+		odt_context->page_layout_context()->set_footer_size(footer);
 	}
 	if (oox_section_pr->m_oPgBorders.IsInit())
 	{

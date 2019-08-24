@@ -1057,8 +1057,8 @@ namespace DocFileFormat
 
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index - 1]);
 
-					if (atrdPre10->m_BookmarkId < 0)
-						index += m_document->AnnotationsReferencePlex->Elements.size() + 1024;
+					//if (atrdPre10->m_BookmarkId < 0)
+					//	index += m_document->AnnotationsReferencePlex->Elements.size() + 1024;
 					
 					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(index));
 					m_pXmlWriter->WriteNodeEnd( L"", true );

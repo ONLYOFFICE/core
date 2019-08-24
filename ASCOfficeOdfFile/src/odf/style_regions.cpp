@@ -31,12 +31,13 @@
  */
 
 #include "style_regions.h"
+#include "text_elements.h"
+#include "paragraph_elements.h"
 
 #include <xml/xmlchar.h>
 #include <xml/attributes.h>
 
 #include "serialize_elements.h"
-
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -61,11 +62,34 @@ void style_region_impl::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void style_region_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
 {
-	CP_SERIALIZE_TEXT(content_, true);
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		text::p* paragr = dynamic_cast<text::p*>(content_[i].get());
+		text::h* header = dynamic_cast<text::h*>(content_[i].get());
 
-	//for (size_t i = 0; i < content_.size(); i++)
-	//{
-	//}
+		if (paragr || header)
+		{
+			text::paragraph* p = paragr ? &paragr->paragraph_ : &header->paragraph_;
+			
+			for (size_t j = 0; j < p->content_.size(); j++)
+			{
+				text::paragraph_content_element *element = dynamic_cast<text::paragraph_content_element*>(p->content_[j].get());
+
+				if (element)
+				{
+					element->xlsx_serialize(_Wostream, Context);
+				}
+				else
+				{
+					CP_SERIALIZE_TEXT(p->content_[j], true);
+				}
+			}
+		}
+		else
+		{
+			CP_SERIALIZE_TEXT(content_[i], true);
+		}
+	}
 }
 void style_region_impl::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

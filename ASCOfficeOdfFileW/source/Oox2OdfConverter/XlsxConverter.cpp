@@ -1595,12 +1595,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 			height	= odf_types::length(11, odf_types::length::inch);
 			break;
 		case SimpleTypes::Spreadsheet::pagesizeA3Paper:
-			width	= odf_types::length(210, odf_types::length::mm);
-			height	= odf_types::length(297, odf_types::length::mm);
-			break;
-		case SimpleTypes::Spreadsheet::pagesizeA4Paper:
 			width	= odf_types::length(297, odf_types::length::mm);
 			height	= odf_types::length(420, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeA4Paper:
+			width	= odf_types::length(210, odf_types::length::mm);
+			height	= odf_types::length(297, odf_types::length::mm);
 			break;
 		default:
 			break;

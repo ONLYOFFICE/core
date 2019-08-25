@@ -70,6 +70,10 @@ void style_region_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conv
 		if (paragr || header)
 		{
 			text::paragraph* p = paragr ? &paragr->paragraph_ : &header->paragraph_;
+
+			if (false == p->attrs_.text_style_name_.empty())
+			{
+			}
 			
 			for (size_t j = 0; j < p->content_.size(); j++)
 			{
@@ -89,6 +93,8 @@ void style_region_impl::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conv
 		{
 			CP_SERIALIZE_TEXT(content_[i], true);
 		}
+		if (i < content_.size() - 1)
+			_Wostream << L"&#xA;";
 	}
 }
 void style_region_impl::add_attributes( const xml::attributes_wc_ptr & Attributes )

@@ -515,23 +515,93 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_f
 				case '&':	type_add = 8; pos++; break;
 				case 'G':	pos++; break;
 
-				case 'E':	current_text_props.content_.style_text_underline_type_ = odf_types::line_type::Double; pos++; break;
-				case 'X':	current_text_props.content_.style_text_position_ = odf_types::text_position(+33.); pos++; break;
-				case 'Y':	current_text_props.content_.style_text_position_ = odf_types::text_position(-33.); pos++; break;
-				case 'B':	current_text_props.content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold); pos++; break;
-				case 'I':	current_text_props.content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic); pos++; break;
-				case 'U':	current_text_props.content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single); pos++; break;
-				case 'S':	current_text_props.content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single); pos++; break;
+				case 'E':	
+				{
+					if (current_text_props.content_.style_text_underline_type_)
+						current_text_props.content_.style_text_underline_type_ = boost::none;
+					else
+						current_text_props.content_.style_text_underline_type_ = odf_types::line_type::Double; 
+					pos++; 
+				}break;
+				case 'X':
+				{
+					if (current_text_props.content_.style_text_position_ && current_text_props.content_.style_text_position_->get_position().get_value() > 0)
+						current_text_props.content_.style_text_position_ = boost::none;
+					else
+						current_text_props.content_.style_text_position_ = odf_types::text_position(+33.); 
+					pos++; 
+				}break;
+				case 'Y':
+				{
+					if (current_text_props.content_.style_text_position_ && current_text_props.content_.style_text_position_->get_position().get_value() < 0)
+						current_text_props.content_.style_text_position_ = boost::none;
+					else
+						current_text_props.content_.style_text_position_ = odf_types::text_position(-33.); 
+					pos++; 
+				}break;
+				case 'B':
+				{
+					if (current_text_props.content_.fo_font_weight_)
+						current_text_props.content_.fo_font_weight_ = boost::none;
+					else
+						current_text_props.content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold); 
+					pos++; 
+				}break;
+				case 'I':	
+				{
+					if (!current_text_props.content_.fo_font_style_)
+						current_text_props.content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+					else
+						current_text_props.content_.fo_font_style_ = boost::none;							
+					pos++; 
+				}break;
+				case 'U':
+				{
+					if (current_text_props.content_.style_text_underline_type_)
+						current_text_props.content_.style_text_underline_type_ = boost::none;
+					else
+						current_text_props.content_.style_text_underline_type_ = odf_types::line_type(odf_types::line_type::Single); 
+					pos++; 
+				}break;
+				case 'S':
+				{
+					if (current_text_props.content_.style_text_line_through_type_)
+						current_text_props.content_.style_text_line_through_type_ = boost::none;
+					else
+						current_text_props.content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single); 
+					pos++; 
+				}break;
 				case 'K':
 				{
 					pos++;
 					std::wstring color = oox_header_footer->m_sText.substr(pos, 6); pos += 6;
 
 					current_text_props.content_.fo_color_ = odf_types::color(L"#" + color); 
-				};break;
+				}break;
 				case '\"':
 				{
-					pos = oox_header_footer->m_sText.find(L'\"', pos + 1); pos++;
+					size_t pos1 = oox_header_footer->m_sText.find(L'\"', pos + 1); 
+					std::wstring font = oox_header_footer->m_sText.substr(pos + 1, pos1 - pos - 1); pos = pos1;
+
+					pos1 = font.find(L",");
+					if (pos1 != std::wstring::npos)
+					{
+						std::wstring format = font.substr(pos1 + 1);
+						font = font.substr(0, pos1);
+
+						if (std::wstring::npos != format.find(L"Bold"))
+							current_text_props.content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold); 
+						if (std::wstring::npos != format.find(L"Italic"))
+							current_text_props.content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+						if (std::wstring::npos != format.find(L"Regular"))
+						{
+							current_text_props.content_.fo_font_weight_ = boost::none;
+							current_text_props.content_.fo_font_style_ = boost::none;
+						}
+					}
+
+					current_text_props.content_.fo_font_family_ = font;
+					pos++;
 				}break;
 				default:
 				{
@@ -555,8 +625,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_f
 						current_text_props.content_.fo_font_size_ = odf_types::font_size(odf_types::length(font_size, odf_types::length::pt));
 					}
 				}break;
-
-//&nn	Prints the characters that follow in the specified font size. Use a two-digit number to specify a size in points.
 			}
 			size_t next = oox_header_footer->m_sText.find(L'&', pos);
 			if (next == std::wstring::npos) next = oox_header_footer->m_sText.length();
@@ -581,13 +649,31 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_f
 					case 8: ods_context->text_context()->add_text_content(L"&");		break;
 				}
 				type_add = 0;
-				std::wstring text;
 				if (next - pos > 0)
 				{
-					text = oox_header_footer->m_sText.substr(pos, next - pos);
+					std::wstring text = oox_header_footer->m_sText.substr(pos, next - pos);
+
+					size_t pos2 = text.find(10);
+					while(pos2 != std::wstring::npos)
+					{
+						std::wstring text1 = text.substr(0, pos2);
+						text = text.substr(pos2 + 1);
+						if (false == text1.empty())
+						{
+							ods_context->text_context()->add_text_content(text1);
+						}
+						ods_context->text_context()->end_span();
+						ods_context->text_context()->end_paragraph();
+						ods_context->text_context()->start_paragraph(false);
+						ods_context->text_context()->start_span(true);
+
+						pos2 = text.find(10);						
+					}
 					if (false == text.empty())
+					{
 						ods_context->text_context()->add_text_content(text);
-				}		
+					}	
+				}
 				ods_context->text_context()->end_span();
 			}
 			pos = next;

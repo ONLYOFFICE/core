@@ -89,7 +89,9 @@ public:
     
 	void docx_convert(oox::docx_conversion_context & Context, bool in_styles = false);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
-   
+ 	
+	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
+  
 	graphic_format_properties *		get_graphic_properties()			const;
   
 	style_text_properties *			get_style_text_properties()			const;

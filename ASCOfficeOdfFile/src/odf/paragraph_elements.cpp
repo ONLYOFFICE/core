@@ -574,6 +574,18 @@ void span::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void span::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
 {
+	if (content_.empty()) return;
+
+	if (false == text_style_name_.empty())
+	{
+	    if (style_instance *styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text, true))
+		{
+			if (style_content* style = styleInst->content())
+			{
+				style->xlsx_serialize(_Wostream, Context);
+			}
+		}
+	}
     for (size_t i = 0; i < content_.size(); i++)
     {
 		text *t = dynamic_cast<text*>(content_[i].get());
@@ -593,7 +605,7 @@ void span::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_contex
 }
 void span::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text,false))
+    if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text, false))
 		Context.get_text_context().get_styles_context().start_process_style(styleInst);
    
 	Context.get_text_context().start_span(text_style_name_);

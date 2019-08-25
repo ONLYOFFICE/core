@@ -205,7 +205,13 @@ style_drawing_page_properties * style_content::get_style_drawing_page_properties
 {
     return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
 }
-
+void style_content::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
+{
+    if (style_text_properties *text_props = get_style_text_properties())
+	{
+		text_props->content().xlsx_serialize(strm, Context);
+	}
+}
 void style_content::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     if (style_table_column_properties_)
@@ -216,7 +222,6 @@ void style_content::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     if (style_chart_properties_)
         style_chart_properties_->xlsx_convert(Context);
-
 }
 
 void style_content::docx_convert(oox::docx_conversion_context & Context, bool in_styles) 

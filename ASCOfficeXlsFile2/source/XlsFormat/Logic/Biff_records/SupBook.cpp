@@ -86,98 +86,89 @@ void SupBook::readFields(CFRecord& record)
 	if (!origin.empty())
 	{
 		std::wstring sTmp = origin;
+		std::wstring sResult;
+		size_t pos = 0;
 
-		while(true)
+		while(pos < sTmp.length())
 		{
-			int pos = sTmp.find(L"\x0001");
-			if (pos >= 0)
+			switch(sTmp[pos])
+			{
+			case 1:
 			{
 				if (bSimple)
 				{
 					bFilePathType = true;
 					bPath = true;	//xls_result.xls 
 				}
-				else			bSimple = true; //file name or file path
+				else bSimple = true; //file name or file path
 
-				virtPath.push_back(sTmp.substr(0, pos));
-				sTmp = sTmp.substr(pos + 1);
-				continue;
-			}
-			pos = sTmp.find(L"\x0002");
-			if (pos >= 0)
+				if (false == sResult.empty())
+					virtPath.push_back(sResult);
+				sResult.clear();
+			}break;
+			case 2:
 			{
 				if (bSimple)
 					bPath = true;
-				virtPath.push_back(sTmp.substr(0, pos));
-				sTmp = sTmp.substr(pos + 1);
-				continue;
-			}
-			pos = sTmp.find(L"\x0003");
-			if (pos >= 0)
+				
+				if (false == sResult.empty())
+					virtPath.push_back(sResult);
+				sResult.clear();
+			}break;
+			case 3:
 			{
-				if (bPath)
+				if (false == sResult.empty())
 				{
-					if (bFilePathType)
+					if (bPath)
 					{
-						virtPath.back() += L"file:///" + sTmp.substr(0, 1) + L":\\" + sTmp.substr(1, pos - 1);
-						bFilePathType = false;
+						if (bFilePathType)
+						{
+							virtPath.back() += L"file:///" + sResult.substr(0, 1) + L":\\" + sResult.substr(1, sResult.length() - 1);
+							bFilePathType = false;
+						}
+						else
+							virtPath.back() += L"/" + sResult;
 					}
 					else
-						virtPath.back() += L"/" + sTmp.substr(0, pos);
+					{
+						bOleLink = true;
+						virtPath.push_back(sResult);
+					}
+					sResult.clear();
 				}
-				else
-				{
-					bOleLink = true;
-					virtPath.push_back(sTmp.substr(0, pos));
-				}
-				sTmp = sTmp.substr(pos + 1);
-				continue;
-			}
-			pos = sTmp.find(L"\x0004");
-			if (pos >= 0)
+			}break;
+			case 5:
 			{
-				virtPath.push_back(sTmp.substr(0, pos));
-				sTmp = sTmp.substr(pos + 1);
-				continue;
-			}
-			pos = sTmp.find(L"\x0005");
-			if (pos >= 0)
+				if (false == sResult.empty())
+					virtPath.push_back(sResult);
+				sResult.clear();
+
+				pos++;//skip http size
+			}break;
+			case 4:
+			case 6:
+			case 7:
+			case 8:
 			{
-				virtPath.push_back(sTmp.substr(0, pos));
-				//skip http size
-				sTmp = sTmp.substr(pos + 2);
-				continue;
+				if (false == sResult.empty())
+					virtPath.push_back(sResult);
+				sResult.clear();
+			}break;
+			default:
+				sResult += sTmp[pos];
 			}
-			pos = sTmp.find(L"\x0006");
-			if (pos >= 0)
-			{
-				virtPath.push_back(sTmp.substr(0, pos));
-				sTmp = sTmp.substr(pos + 1);
-				continue;
-			}
-			pos = sTmp.find(L"\x0007");
-			if (pos >= 0)
-			{
-				virtPath.push_back(sTmp.substr(0, pos));
-				sTmp = sTmp.substr(pos + 1);
-				continue;
-			}
-			pos = sTmp.find(L"\x0008");
-			if (pos >= 0)
-			{
-				virtPath.push_back(sTmp.substr(0, pos));
-				sTmp = sTmp.substr(pos + 1);
-				continue;
-			}
-			break;
+			pos++;
 		}
-		if (bPath)
+		if (false == sResult.empty())
 		{
-			virtPath.back() += L"/" + sTmp;
-		}
-		else
-		{
-			virtPath.push_back(sTmp);
+			if (bPath)
+			{
+				virtPath.back() += L"/" + sResult;
+			}
+			else
+			{
+				virtPath.push_back(sResult);
+			}
 		}
 	}
 }

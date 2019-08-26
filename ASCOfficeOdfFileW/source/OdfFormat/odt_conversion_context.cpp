@@ -593,6 +593,9 @@ void odt_conversion_context::end_hyperlink()
 {
 	if (!is_hyperlink_) return;
 
+	if (false == text_context()->current_level_.empty() && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))	//CARA SETTING WARNET.docx
+		text_context()->end_element();
+
 	text_context()->end_element();
 
 	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span

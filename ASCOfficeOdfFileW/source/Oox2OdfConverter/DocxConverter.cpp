@@ -3136,6 +3136,7 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 	
 	odf_context()->drawing_context()->start_drawing();
 		OoxConverter::convert(&oox_inline->m_oGraphic);
+	odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar); 
 	odf_context()->drawing_context()->end_drawing();
 }
 

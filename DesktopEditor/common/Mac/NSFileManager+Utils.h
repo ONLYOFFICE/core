@@ -36,4 +36,5 @@
 - (BOOL)copyFolderAtPath:(NSString *)sourceFolder toDestinationFolderAtPath:(NSString*)destinationFolder;
 - (NSString*)createTemporaryDirectory;
 - (void)createDirectory:(NSString*)directory;
+- (NSString*)createCacheDirectory:(NSString*)prefix;
 @end

@@ -4270,7 +4270,8 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		if (!pControl) continue;
 		
 		nullable<OOX::Spreadsheet::CCellAnchor>		oCellAnchor;
-		nullable<OOX::Spreadsheet::CFormControlPr>	oFormControlPr;
+		OOX::Spreadsheet::CFormControlPr oFormControlPr;
+		OOX::Spreadsheet::CFormControlPr* pFormControlPr = &oFormControlPr;
         
 		smart_ptr<OOX::File> pFileControl;
 
@@ -4286,11 +4287,10 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		
 		if (pFileCtrlProp.IsInit())
 		{
-			oFormControlPr = pFileCtrlProp->m_oFormControlPr;
+			pFormControlPr = pFileCtrlProp->m_oFormControlPr.GetPointer();
 		}
 		else
 		{
-			oFormControlPr.Init();
 			smart_ptr<OOX::ActiveX_xml> pActiveX_xml = pFileControl.smart_dynamic_cast<OOX::ActiveX_xml>();
 
 			if ((pActiveX_xml.IsInit()) && (pActiveX_xml->m_oObject.IsInit()))
@@ -4306,7 +4306,7 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 					continue;
 				}
 
-				pActiveX_xml->m_oObject->toFormControlPr(oFormControlPr.GetPointer());
+				pActiveX_xml->m_oObject->toFormControlPr(pFormControlPr);
 			}
 		}
 		
@@ -4360,13 +4360,13 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 						pClientData->toCellAnchor(oCellAnchor.GetPointer());
 						bSetAnchor = true;
 					}
-					pClientData->toFormControlPr(oFormControlPr.GetPointer());
+					pClientData->toFormControlPr(pFormControlPr);
 				}
 				else if (OOX::et_v_textbox == pChildElemShape->getType())
 				{
 					OOX::Vml::CTextbox* pTextbox = static_cast<OOX::Vml::CTextbox*>(pChildElemShape);
 
-					oFormControlPr->m_oText = pTextbox->m_oText;
+					pFormControlPr->m_oText = pTextbox->m_oText;
 				}
 			}	
 		}
@@ -4386,7 +4386,7 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 				m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::Name);
 				m_oBcw.m_oStream.WriteStringW(*pControl->m_oName);
 			}
-			WriteControlPr(pControl->m_oControlPr.GetPointer(), oFormControlPr.GetPointer());		
+			WriteControlPr(pControl->m_oControlPr.GetPointer(), pFormControlPr);
 		m_oBcw.WriteItemEnd(nCurPos2);
 	}
 	m_oBcw.WriteItemEnd(nCurPos);

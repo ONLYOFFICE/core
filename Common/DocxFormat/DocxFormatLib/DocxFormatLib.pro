@@ -233,6 +233,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Worksheets/SheetData.h \
     ../Source/XlsxFormat/Worksheets/Worksheet.h \
     ../Source/XlsxFormat/Worksheets/WorksheetChildOther.h \
+	../Source/XlsxFormat/Controls/Controls.h \
     ../Source/XlsxFormat/Common.h \
     ../Source/XlsxFormat/CommonInclude.h \
     ../Source/XlsxFormat/ComplexTypes_Spreadsheet.h \

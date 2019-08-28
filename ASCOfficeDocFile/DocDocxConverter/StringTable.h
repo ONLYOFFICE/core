@@ -55,32 +55,45 @@ namespace DocFileFormat
 		
 		std::vector<ByteStructure*>	Data;
 
+		std::vector<unsigned char*>	DataExtra;
 		int							code_page;
 	public:
 		virtual ~StringTable()
 		{
-			for ( std::vector<ByteStructure*>::iterator iter = this->Data.begin(); iter != this->Data.end(); iter++ )
+			for ( size_t i = 0; i < this->Data.size(); ++i )
 			{
-				RELEASEOBJECT( *iter );
+				RELEASEOBJECT( this->Data[i] );
+
+				if (false == this->DataExtra.empty())
+				{
+					if (this->DataExtra[i])
+					{
+						delete []this->DataExtra[i];
+						this->DataExtra[i] = NULL;
+					}	
+				}
 			}
+
 		}
 
 		StringTable( VirtualStreamReader *reader, int code_page_ ): 
-                            code_page(code_page_), fExtend(false), cbData(0), cbExtra(0)
+                            code_page(code_page_), fExtend(false), cbData(0), cbExtra(0), DataExtra(NULL)
 		{
-            parse( reader, (unsigned int)reader->GetPosition() );
+            parse( reader, (unsigned int)reader->GetPosition(), 0, false );
 		}
 
-		StringTable( POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, int nWordVersion ) :
-												code_page(1250), fExtend(false), cbData(0), cbExtra(0)
+		StringTable( POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, int nWordVersion, bool bReadExta = false) :
+												code_page(1250), fExtend(false), cbData(0), cbExtra(0), DataExtra(NULL)
 		{
 			if ( lcb > 0 )
 			{
 				VirtualStreamReader reader( tableStream, fc, nWordVersion);
 
-				parse( &reader, fc, lcb ) ;
+				parse( &reader, fc, lcb, bReadExta ) ;
 			}
 		}
+		std::vector<unsigned char*> & getDataExtra() {return DataExtra;}
+		unsigned short getDataExtraSize() {return cbExtra;}
 
 		ByteStructure* operator [] ( size_t index ) const
 		{
@@ -96,7 +109,7 @@ namespace DocFileFormat
 
 	private:
 		
-		void parse( VirtualStreamReader *reader, unsigned int fc, unsigned int lcb = 0 )
+		void parse( VirtualStreamReader *reader, unsigned int fc, unsigned int lcb = 0, bool bReadExta = false )
 		{
 			if ( reader == NULL )		return;
 			if (fc > reader->GetSize()) return;
@@ -191,8 +204,15 @@ namespace DocFileFormat
 
 				reader->Seek( (int)( posBeforeType + cbData ), 0/*STREAM_SEEK_SET */);
 	        
-				
-				reader->ReadBytes( cbExtra, false );//skip the extra unsigned char
+				if (bReadExta)
+				{
+					unsigned char* pData = reader->ReadBytes( cbExtra, true );
+					DataExtra.push_back(pData);
+				}
+				else
+				{
+					reader->ReadBytes( cbExtra, false );
+				}
 			}
 		}
 	};

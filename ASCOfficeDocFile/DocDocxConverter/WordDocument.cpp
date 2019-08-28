@@ -297,10 +297,11 @@ namespace DocFileFormat
 		BookmarkNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfBkmk,			FIB->m_FibWord97.lcbSttbfBkmk,			nWordVersion);
 		AutoTextNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfGlsy,			FIB->m_FibWord97.lcbSttbfGlsy,			nWordVersion);
 		AssocNames			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAssoc,		FIB->m_FibWord97.lcbSttbfAssoc,			nWordVersion);
-		BookmarkAnnotNames	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAtnBkmk,		FIB->m_FibWord97.lcbSttbfAtnBkmk,		nWordVersion);
 		Captions			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfCaption,		FIB->m_FibWord97.lcbSttbfCaption,		nWordVersion);
 		AutoCaptions		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAutoCaption,	FIB->m_FibWord97.lcbSttbfAutoCaption,	nWordVersion);
 
+		BookmarkAnnotNames	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAtnBkmk,		FIB->m_FibWord97.lcbSttbfAtnBkmk,		nWordVersion, true);
+		
 		if (m_pCallFunc)
 		{
 			m_pCallFunc->OnProgress (m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 100000);
@@ -361,7 +362,7 @@ namespace DocFileFormat
 		TextboxBreakPlex					=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxBkd,	FIB->m_FibWord97.lcbPlcfTxbxBkd,	nWordVersion);
 		TextboxBreakPlexHeader				=	new Plex<Tbkd>				(Tbkd::STRUCTURE_SIZE,				TableStream, FIB->m_FibWord97.fcPlcfTxbxHdrBkd, FIB->m_FibWord97.lcbPlcfTxbxHdrBkd, nWordVersion);
 
-		AnnotStartPlex						=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfAtnBkf,		FIB->m_FibWord97.lcbPlcfAtnBkf,		nWordVersion);
+		AnnotStartPlex						=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfAtnBkf,		FIB->m_FibWord97.lcbPlcfAtnBkf,		nWordVersion);
 		AnnotEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfAtnBkl,		FIB->m_FibWord97.lcbPlcfAtnBkl,		nWordVersion);
 		
 
@@ -373,15 +374,26 @@ namespace DocFileFormat
 				BookmarkStartEndCPs.push_back(std::make_pair(BookmarkStartPlex->CharacterPositions[i], BookmarkEndPlex->CharacterPositions[pBookmark->GetIndex()]));
 			}
 		}
+		std::vector<unsigned char*> & bookmarks = BookmarkAnnotNames->getDataExtra();
+
 		for (size_t i = 0; AnnotStartPlex && i < AnnotStartPlex->Elements.size(); ++i)
 		{
 			BookmarkFirst* pBookmark = static_cast<BookmarkFirst*>(AnnotStartPlex->Elements[i]);
 			if (pBookmark)
 			{
 				short ind = pBookmark->GetIndex();
-				if (i < AnnotStartPlex->CharacterPositions.size() -1 )
+
+				short bmc = *((short*)bookmarks[i]); //0x0100 always тут
+				_UINT32 lTag = *((_UINT32*)(bookmarks[i] + 2));
+
+				if (i < AnnotStartPlex->CharacterPositions.size() - 1 )
 				{
-					AnnotStartEndCPs.push_back(std::make_pair(AnnotStartPlex->CharacterPositions[i], AnnotEndPlex->CharacterPositions[i + 1]));
+					_annotStartEnd ann;
+					ann.start = AnnotStartPlex->CharacterPositions[i];
+					ann.end = AnnotEndPlex->CharacterPositions[i/* + 1*/];
+					ann.bookmarkId = lTag;
+					
+					AnnotStartEndCPs.push_back(ann);
 				}
 			}
 		}

@@ -47,7 +47,7 @@ namespace DocFileFormat
 			return (nWordVersion > 0) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
 		}
 
-        AnnotationReferenceDescriptor() : m_AuthorIndex(0), m_BookmarkId(0)
+        AnnotationReferenceDescriptor() : m_AuthorIndex(0), m_BookmarkId(0), m_CommentId(-1)
 		{
 		}
 
@@ -60,6 +60,7 @@ namespace DocFileFormat
 		std::wstring	m_UserInitials;
 		unsigned short	m_AuthorIndex;
 		int				m_BookmarkId;
+		int				m_CommentId;
 	};
 
 	class AnnotationReferenceExDescriptor: public ByteStructure

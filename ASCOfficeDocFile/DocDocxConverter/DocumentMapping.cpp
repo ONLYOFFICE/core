@@ -61,7 +61,7 @@ namespace DocFileFormat
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), 
 		AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
-		_commentNr(0), _caller(caller)
+		_commentNr(1), _caller(caller)
 	{
 		m_document				=	NULL;
 		m_context				=	context;
@@ -1049,18 +1049,37 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeBegin( L"w:annotationRef", true );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}	
-				else if ((m_document->AnnotationsReferencePlex) && (_commentNr <= m_document->AnnotationsReferencePlex->Elements.size()))
+				else if (m_document->AnnotationsReferencePlex) 
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
 
-					int index = _commentNr++;
+					AnnotationReferenceDescriptor* atrdPre10 = dynamic_cast<AnnotationReferenceDescriptor*>( m_document->AnnotationsReferencePlex->GetStruct(cp));
 
-					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index - 1]);
-
-					//if (atrdPre10->m_BookmarkId < 0)
-					//	index += m_document->AnnotationsReferencePlex->Elements.size() + 1024;
+					if (atrdPre10)
+					{
+						if (atrdPre10->m_CommentId < 0)
+						{
+							if (atrdPre10->m_BookmarkId < 0)
+							{
+								atrdPre10->m_CommentId = _commentNr++;
+							}
+							else
+							{
+								std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(atrdPre10->m_BookmarkId);
+								if (pFind == m_document->mapCommentsBookmarks.end())
+								{
+									atrdPre10->m_CommentId = _commentNr++;
+									m_document->mapCommentsBookmarks.insert(std::make_pair(atrdPre10->m_BookmarkId, atrdPre10->m_CommentId));
+								}
+								else
+								{
+									atrdPre10->m_CommentId = pFind->second;
+								}
+							}
+						}
+						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(atrdPre10->m_CommentId));
+					}
 					
-					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(index));
 					m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 			}
@@ -1811,16 +1830,32 @@ namespace DocFileFormat
 
 		for (size_t i = 0; i < m_document->AnnotStartEndCPs.size(); i++)
 		{
-			if (m_document->AnnotStartEndCPs[i].first == cp)
+			if (m_document->AnnotStartEndCPs[i].start == cp)
 			{
-				result = writeAnnotationStart(i + 1);
-				_commentNr = i + 1;
+				int index = -1;
+				std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapCommentsBookmarks.end())
+				{
+					index = _commentNr++;
+					m_document->mapCommentsBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
+				}
+				else index = pFind->second;
+
+				result = writeAnnotationStart(index);
 			}
 
-			if (m_document->AnnotStartEndCPs[i].second == cp)
+			if (m_document->AnnotStartEndCPs[i].end == cp)
 			{
-				result = writeAnnotationEnd(i + 1);  
-				//_commentNr = i + 1;
+				int index = -1;
+				std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapCommentsBookmarks.end())
+				{
+					index = _commentNr++;
+					m_document->mapCommentsBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
+				}
+				else index = pFind->second;
+
+				result = writeAnnotationEnd(index);  
 			}
 		}
 

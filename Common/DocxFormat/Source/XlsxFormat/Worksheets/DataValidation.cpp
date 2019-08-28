@@ -71,18 +71,18 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 		{
 			WritingStringNullableAttrString(L"sqref", m_oSqRef, m_oSqRef.get());
 		}
-		WritingStringNullableAttrString	(L"type",			m_oType,			m_oType->ToString());
-		WritingStringNullableAttrInt	(L"allowBlank",		m_oAllowBlank,		m_oAllowBlank->GetValue());
-		WritingStringNullableAttrString	(L"error",			m_oError,			m_oError.get());
-		WritingStringNullableAttrString	(L"errorStyle",		m_oErrorStyle,		m_oErrorStyle->ToString());
-		WritingStringNullableAttrString	(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
-		WritingStringNullableAttrString	(L"imeMode",		m_oImeMode,			m_oImeMode->ToString());
-		WritingStringNullableAttrString	(L"operator",		m_oOperator,		m_oOperator->ToString());
-		WritingStringNullableAttrString	(L"promt",			m_oPrompt,			m_oPrompt.get());
-		WritingStringNullableAttrString	(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
-		WritingStringNullableAttrInt	(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
-		WritingStringNullableAttrInt	(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
-		WritingStringNullableAttrInt	(L"showInputMessage",m_oShowInputMessage,m_oShowInputMessage->GetValue());
+		WritingStringNullableAttrString				(L"type",			m_oType,			m_oType->ToString());
+		WritingStringNullableAttrInt				(L"allowBlank",		m_oAllowBlank,		m_oAllowBlank->GetValue());
+		WritingStringNullableAttrEncodeXmlString	(L"error",			m_oError,			m_oError.get());
+		WritingStringNullableAttrString				(L"errorStyle",		m_oErrorStyle,		m_oErrorStyle->ToString());
+		WritingStringNullableAttrEncodeXmlString	(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
+		WritingStringNullableAttrString				(L"imeMode",		m_oImeMode,			m_oImeMode->ToString());
+		WritingStringNullableAttrString				(L"operator",		m_oOperator,		m_oOperator->ToString());
+		WritingStringNullableAttrEncodeXmlString	(L"promt",			m_oPrompt,			m_oPrompt.get());
+		WritingStringNullableAttrEncodeXmlString	(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
+		WritingStringNullableAttrInt				(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
+		WritingStringNullableAttrInt				(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
+		WritingStringNullableAttrInt				(L"showInputMessage",m_oShowInputMessage,m_oShowInputMessage->GetValue());
 	writer.WriteString(L">");
 
 	if (bExtendedWrite)

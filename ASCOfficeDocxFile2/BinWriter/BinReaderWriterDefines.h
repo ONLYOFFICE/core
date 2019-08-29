@@ -173,7 +173,7 @@ extern int g_nCurFormatVersion;
 		AbstractNum_Lvls = 4,
 		Lvl = 5,
 		lvl_Format = 6,//deprecated (instead use lvl_NumFmt)
-		lvl_Jc = 7,
+		lvl_Jc_deprecated = 7,//deprecated
 		lvl_LvlText = 8,
 		lvl_LvlTextItem = 9,
 		lvl_LvlTextItemText = 10,
@@ -202,7 +202,8 @@ extern int g_nCurFormatVersion;
 		LvlLegacy = 33,
 		Legacy = 34,
 		LegacyIndent = 35,
-		LegacySpace = 36
+		LegacySpace = 36,
+		lvl_Jc = 37
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{

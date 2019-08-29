@@ -2824,10 +2824,23 @@ int Binary_NumberingTableReader::ReadLevel(BYTE type, long length, void* poResul
 		odocLvl->bFormat = true;
 		odocLvl->Format = m_oBufferedStream.GetLong();
 	}
-	else if ( c_oSerNumTypes::lvl_Jc == type )
+	else if ( c_oSerNumTypes::lvl_NumFmt == type )
+	{
+		ComplexTypes::Word::CNumFmt oNumFmt;
+		READ1_DEF(length, res, oBinary_pPrReader.ReadNumFmt, &oNumFmt);
+		odocLvl->sFormat = L"<w:numFmt " + oNumFmt.ToString() + L"/>";
+	}
+	else if ( c_oSerNumTypes::lvl_Jc_deprecated == type )
 	{
 		odocLvl->bJc = true;
 		odocLvl->Jc = m_oBufferedStream.GetUChar();
+	}
+	else if ( c_oSerNumTypes::lvl_Jc == type )
+	{
+		ComplexTypes::Word::CJc oJc;
+		oJc.m_oVal.Init();
+		oJc.m_oVal->SetValue((SimpleTypes::EJc)m_oBufferedStream.GetUChar());
+		odocLvl->sJc = L"<w:lvlJc " + oJc.ToString() + L"/>";
 	}
 	else if ( c_oSerNumTypes::lvl_LvlText == type )
 	{

@@ -65,6 +65,7 @@ namespace DocFileFormat
 		std::wstring EndnotesXML;
 		std::wstring NumberingXML;
 		std::wstring CommentsXML;
+		std::wstring CommentsExtendedXML;
 		std::wstring SettingsXML;
 		std::wstring CommandTableXML;
 

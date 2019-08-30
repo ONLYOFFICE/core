@@ -97,7 +97,7 @@ namespace DocFileFormat
 
 				//nsid
                 m_pXmlWriter->WriteNodeBegin( L"w:nsid", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( rglst->listData[i]->lsid, L"%08x" ));
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( rglst->listData[i]->lsid, L"%08X" ));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				//multiLevelType
@@ -120,7 +120,7 @@ namespace DocFileFormat
 
 				//template
                 m_pXmlWriter->WriteNodeBegin( L"w:tmpl", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( rglst->listData[i]->tplc, L"%08x"));
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( rglst->listData[i]->tplc, L"%08X"));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				// writes the levels

@@ -38,6 +38,7 @@
 #include "../fontengine/ApplicationFonts.h"
 #include "../raster/Metafile/MetaFile.h"
 #include "../common/File.h"
+#include "../common/Directory.h"
 
 #if defined (GetTempPath)
 #undef GetTempPath
@@ -71,7 +72,16 @@ public:
             }
             else
             {
-                std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
+                std::wstring sTempFile;
+
+                #ifdef __ANDROID__
+                    std::wstring sTempDir = NSFile::GetDirectoryName(strFile) + NSFile::CFileBinary::GetTempPath();
+					NSDirectory::CreateDirectory(sTempDir);
+                    sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTempDir, L"AscMetafile_");
+                #else
+                    sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
+                #endif
+
                 oMetafile.ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
                 m_oImage.Create(sTempFile);
 

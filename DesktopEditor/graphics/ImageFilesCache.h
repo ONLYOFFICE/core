@@ -38,7 +38,10 @@
 #include "../fontengine/ApplicationFonts.h"
 #include "../raster/Metafile/MetaFile.h"
 #include "../common/File.h"
-#include "../common/Directory.h"
+
+#ifdef __ANDROID__
+	#include "../common/Directory.h"
+#endif
 
 #if defined (GetTempPath)
 #undef GetTempPath

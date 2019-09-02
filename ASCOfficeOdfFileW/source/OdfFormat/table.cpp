@@ -61,8 +61,7 @@ void table_table_attlist::serialize(CP_ATTR_NODE)
 		CP_XML_ATTR_OPT( L"table:protection-digest-algorithm",	table_protection_key_digest_algorithm_); 
 	}	
 
-	if (table_print_)
-		CP_XML_ATTR_OPT( L"table:print-ranges", table_print_ranges_);
+	CP_XML_ATTR_OPT( L"table:print-ranges", table_print_ranges_);
 }
 void table_table_row_attlist::serialize(CP_ATTR_NODE)
 {

@@ -9,9 +9,9 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-DESTDIR = $$PWD/../../build/bin/AllFontsGen
+DESTDIR = $$PWD/../../build/bin/$$CORE_BUILDS_PLATFORM_PREFIX
 
-TARGET = $$CORE_BUILDS_PLATFORM_PREFIX
+TARGET = allfontsgen
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
@@ -35,6 +35,8 @@ core_windows {
 
 core_linux {
     LIBS += -lz -pthread
+
+    QMAKE_LFLAGS += -Wl,--rpath=./
 }
 
 SOURCES += main.cpp

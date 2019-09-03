@@ -848,7 +848,7 @@ public:
 		m_eType		= bt_brdrnone;
 		m_nWidth	= 0;
 		m_nSpace	= 0;
-		m_nColor	= PROP_DEF;
+		m_nColor	= -1; //auto
 	}
 	void Merge( RtfBorder& oBorPr )
 	{
@@ -987,6 +987,8 @@ typedef boost::shared_ptr<RtfCharProperty> RtfCharPropertyPtr;
 class RtfCharProperty: public IRenderableProperty
 {
 public: 
+	bool m_bListLevel;
+
 	enum _UnderlineStyle {uls_none, uls_Single, uls_Dotted,uls_Dashed ,uls_Dash_dotted,uls_Dash_dot_dotted,uls_Double,uls_Heavy_wave,uls_Long_dashe,uls_Stops_all,uls_Thick,uls_Thick_dotted,uls_Thick_dashed,uls_Thick_dash_dotted,uls_Thick_dash_dot_dotted,uls_Thick_long_dashed,uls_Double_wave,uls_Word,uls_Wave};
 
 	int m_nAnimated;		//animtextN	Animated text properties (note: Word 2007 ignores this control word):
@@ -1060,6 +1062,7 @@ public:
 
 	RtfCharProperty()
 	{
+		m_bListLevel = false;
 		SetDefault();
 	}
 	int GetType()
@@ -1073,7 +1076,8 @@ public:
 		m_poShading.SetDefaultRtf();
 		m_poBorder.SetDefaultRtf();
 		
-		m_nFontSize = 24;
+		if (false == m_bListLevel)
+			m_nFontSize = 24;
 	}
 	void SetDefaultOOX()
 	{
@@ -1082,7 +1086,8 @@ public:
 		m_poShading.SetDefaultOOX();
 		m_poBorder.SetDefaultOOX();
 		
-		m_nFontSize = 20;
+		if (false == m_bListLevel)
+			m_nFontSize = 20;
 	}
 	void SetDefault()
 	{
@@ -1214,11 +1219,14 @@ public:
 	int		m_nFirstIndent;
 	int		m_nIndent;
 	int		m_nIndentStart;
+	int		m_nSpace;
 	
 	RtfCharProperty m_oCharProp; //Char
 
 	RtfListLevelProperty()
 	{
+		m_oCharProp.m_bListLevel = true;
+
 		SetDefault();
 	}
 	bool IsValid()
@@ -1250,6 +1258,7 @@ public:
 	 }
 	void SetDefault()
 	{
+		DEFAULT_PROPERTY	( m_nSpace )
 		DEFAULT_PROPERTY	( m_nLevel )
 		DEFAULT_PROPERTY	( m_nNumberType )
 		DEFAULT_PROPERTY	( m_bTentative )
@@ -2416,18 +2425,18 @@ public:
 	void SetDefaultOOX()
 	{
 		SetDefault();
-	}
-	void SetDefault()
-	{
-		RtfTableProperty::SetDefault();
 //не SetEmpty() !!!		
 		m_oBorderLeft.SetDefault();
 		m_oBorderRight.SetDefault();
 		m_oBorderTop.SetDefault();
 		m_oBorderBottom.SetDefault();
 		m_oBorderVert.SetDefault();
-		m_oBorderHor.SetDefault();
-
+		m_oBorderHor.SetDefault();	
+	}
+	//5.5 Доверенность_MO_Q139.rtf
+	void SetDefault()
+	{
+		RtfTableProperty::SetDefault();
 		DEFAULT_PROPERTY( m_nIndex )
 		DEFAULT_PROPERTY( m_nBandIndex )
 		DEFAULT_PROPERTY( m_bLastRow )
@@ -2649,6 +2658,10 @@ public:
 	void SetDefaultRtf()
 	{
 		SetDefault();
+		
+		//4.1 Наряд_R7_M133.rtf
+		m_nSpaceAfter = 0;
+		m_nSpaceBetween = 240;
 	}
 	void SetDefaultOOX()
 	{
@@ -2701,7 +2714,7 @@ public:
 		m_oBorderTop.SetDefault();
 		m_oBorderLeft.SetDefault();
 		m_oBorderBottom.SetDefault();
-		m_oBorderRight.SetDefault();
+		m_oBorderRight.SetDefault(); 
 		m_oBorderBox.SetDefault();
 		m_oBorderBar.SetDefault();
 

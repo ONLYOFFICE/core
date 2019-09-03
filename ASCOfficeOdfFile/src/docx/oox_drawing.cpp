@@ -131,6 +131,76 @@ static const std::wstring _ooxDashStyle[]=
 	L"dashDot",
 	L"sysDashDotDot"
 };
+static const std::wstring _vmlDashStyle[]=
+{
+	L"none",
+	L"solid",
+	L"dot",
+	L"dash",
+	L"dash",
+	L"dashdot",
+	L"shortdashdotdot"
+};
+
+void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+{
+	_CP_OPT(bool)			bShadow;
+	_CP_OPT(std::wstring)	strShadowColor; 
+	_CP_OPT(double)			dShadowOpacity; 
+	_CP_OPT(double)			dShadowOffsetX; 
+	_CP_OPT(double)			dShadowOffsetY; 
+
+	odf_reader::GetProperty(prop, L"shadow", bShadow);	
+	odf_reader::GetProperty(prop, L"shadow-color", strShadowColor);	
+	odf_reader::GetProperty(prop, L"shadow-opacity", dShadowOpacity);
+	odf_reader::GetProperty(prop, L"shadow-offset-x",	dShadowOffsetX);	
+	odf_reader::GetProperty(prop, L"shadow-offset-y", dShadowOffsetY);
+
+	CP_XML_WRITER(strm)
+    {
+        CP_XML_NODE(L"a:effectLst")
+        { 
+			if ((bShadow) && (*bShadow))
+			{
+				CP_XML_NODE(L"a:outerShdw")
+				{ 			
+					//CP_XML_ATTR(L"blurRad", 0); 
+
+					double offsetX = dShadowOffsetX.get_value_or(0);
+					double offsetY = dShadowOffsetY.get_value_or(0);
+
+					double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
+					double dir = (offsetX > 0 ? atan(offsetY / offsetX) : 0) * 180. / 3.1415926;
+
+					CP_XML_ATTR(L"dist", (int)(dist)); 
+					CP_XML_ATTR(L"dir", (int)(dir * 60000)); 
+					
+					CP_XML_ATTR(L"rotWithShape", L"0"); 
+					CP_XML_ATTR(L"algn", L"tl"); 
+
+					CP_XML_NODE(L"a:srgbClr")
+					{
+						if (strShadowColor)
+						{
+							CP_XML_ATTR(L"val", *strShadowColor); 
+						}
+						else
+						{
+							CP_XML_ATTR(L"val", L"000000"); 
+						}
+						if (dShadowOpacity)
+						{
+							CP_XML_NODE(L"a:alpha")
+							{
+								CP_XML_ATTR(L"val", *dShadowOpacity * 1000); 
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop, bool always_draw, const std::wstring &ns)
 {
@@ -152,7 +222,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
 	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
 	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
-
+	
 	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
 
 	CP_XML_WRITER(strm)
@@ -190,7 +260,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 					
 					CP_XML_NODE(ns + L":srgbClr")
 					{
-						CP_XML_ATTR2(ns_att + L"val",color);
+						CP_XML_ATTR2(ns_att + L"val", color);
 						
 						if (dStrokeOpacity)	
 						{
@@ -221,6 +291,102 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 					CP_XML_NODE(ns + L":tailEnd"){CP_XML_ATTR2(ns_att + L"type",strVal.get());}
 				}
 			}
+		}
+    }
+}
+void vml_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+{
+	_CP_OPT(std::wstring) strTextContent;
+	odf_reader::GetProperty(prop, L"text-content", strTextContent);
+
+	CP_XML_WRITER(strm)
+	{			
+		if (strTextContent)
+		{
+			CP_XML_NODE(L"v:textbox")
+			{  
+				CP_XML_ATTR(L"style", L"mso-direction-alt:auto");
+				CP_XML_ATTR(L"o:singleclick", L"f");
+				
+				CP_XML_NODE(L"div")
+				{
+					CP_XML_ATTR(L"style", L"text-align:left");
+
+					CP_XML_NODE(L"font")
+					{
+						CP_XML_ATTR(L"face", L"Segoe UI");
+						CP_XML_ATTR(L"size", L"160");
+						CP_XML_ATTR(L"color", L"#000000");
+
+						const std::wstring & test_string = strTextContent.get();
+						CP_XML_STREAM() << test_string;
+					}
+				}
+			}
+		}
+	}	
+
+}
+void vml_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+{
+	_CP_OPT(std::wstring)	strStrokeColor; 
+	_CP_OPT(int)			iStroke;
+	_CP_OPT(double)			dStrokeWidth;
+	_CP_OPT(double)			dStrokeOpacity; 
+	_CP_OPT(bool)			bWordArt;
+	
+	odf_reader::GetProperty(prop, L"wordArt", bWordArt);
+	
+	odf_reader::GetProperty(prop, L"stroke-color"	, strStrokeColor);	
+	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
+	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
+	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
+
+	if (!strStrokeColor && !iStroke && !dStrokeWidth) return;
+
+	CP_XML_WRITER(strm)
+    {
+        CP_XML_NODE(L"v:stroke")
+        { 
+			std::wstring color, dash_style ;
+
+			if (strStrokeColor) color = *strStrokeColor;
+
+			if (iStroke)
+			{
+				if (iStroke.get() != 0 ) dash_style = _vmlDashStyle[iStroke.get()];	
+			}
+			
+			if ((dStrokeWidth) && (*dStrokeWidth >= 0))
+			{
+				int val = dStrokeWidth.get() * 12700;	//in emu (1 pt = 12700)
+				if (val < 10)	val = 12700;
+				
+				CP_XML_ATTR(L"weight", val);
+			}
+
+			if (false == color.empty())
+			{
+				CP_XML_ATTR(L"color", L"#" + color);
+			}
+			if (!dash_style.empty() && dash_style != L"solid")
+			{
+				CP_XML_ATTR(L"dashstyle", dash_style);
+			}
+			//odf_reader::GetProperty(prop,L"marker-start", strVal);	
+			//if (strVal)
+			//{
+			//}
+			//odf_reader::GetProperty(prop,L"marker-end",strVal);	
+			//if (strVal)
+			//{
+			//}
+
+			CP_XML_ATTR(L"startarrow", L"block"); 
+			CP_XML_ATTR(L"startarrowwidth", L"medium");  
+			CP_XML_ATTR(L"startarrowlength", L"medium"); 
+			CP_XML_ATTR(L"joinstyle", L"round");  
+			CP_XML_ATTR(L"endcap", L"flat"); 
 		}
     }
 }

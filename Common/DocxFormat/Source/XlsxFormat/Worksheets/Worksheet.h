@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_WORKSHEET_FILE_INCLUDE_H_
-#define OOX_WORKSHEET_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -41,6 +39,7 @@
 #include "MergeCells.h"
 #include "WorksheetChildOther.h"
 #include "ConditionalFormatting.h"
+#include "DataValidation.h"
 
 #include "../Drawing/Drawing.h"
 #include "../Chart/Chart.h"
@@ -84,6 +83,7 @@ namespace OOX
 				read(oRootPath, oPath);
 			}
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			void read(XmlUtils::CXmlLiteReader& oReader);
 			
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
@@ -104,16 +104,18 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-            const OOX::RId AddHyperlink (std::wstring& sHref);
 			void ClearItems();
-			CPath	m_oReadPath;
 
-			void read(XmlUtils::CXmlLiteReader& oReader);
+            const OOX::RId AddHyperlink (std::wstring& sHref);
+			smart_ptr<OOX::WritingElement> FindVmlObject(const std::wstring &spid);
 
+			void PrepareDataValidations();
 			void PrepareConditionalFormatting();
-			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing);
+			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
 			void PrepareToWrite();
 
+			CPath	m_oReadPath;
+			
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
 
@@ -149,7 +151,6 @@ namespace OOX
 
 //--------------------------------------------------------------------------------------------
 			CComments			*m_pComments;
-			CPersonList			*m_pPersonList;
 			CThreadedComments	*m_pThreadedComments;
 
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
@@ -157,4 +158,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_WORKSHEET_FILE_INCLUDE_H_

@@ -137,10 +137,11 @@ public:
     void set_numbering	(element_ptr Element);
     void set_settings	(element_ptr Element);
     bool has_numbering	();
-    void set_media			(mediaitems			& mediaitems_);
+    void set_media			(mediaitems_ptr		& mediaitems_);
     void set_headers_footers(headers_footers	& HeadersFooters);
     void set_notes			(notes_context		& notesContext);
     void set_comments		(comments_context	& commentsContext);
+    void set_drawings		(element_ptr Element);
 
 	void add_charts(chart_content_ptr chart);
 	void add_jsaProject(const std::string &content);
@@ -163,6 +164,7 @@ private:
     element_ptr settings_;
     element_ptr comments_;
     element_ptr jsaProject_;
+	element_ptr drawings_;
 
 };
 

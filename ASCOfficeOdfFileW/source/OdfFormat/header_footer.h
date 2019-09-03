@@ -45,7 +45,7 @@ namespace cpdoccore {
 namespace odf_writer {
 
 
-///         style:header-footer-properties-attlist
+// style:header-footer-properties-attlist
 class style_header_footer_properties_attlist
 {
 public:
@@ -53,11 +53,11 @@ public:
 
     _CP_OPT(odf_types::length)						svg_height_;
     _CP_OPT(odf_types::length)						fo_min_height_;
-    odf_types::common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
+    odf_types::common_horizontal_margin_attlist		common_horizontal_margin_attlist_;
     odf_types::common_vertical_margin_attlist		common_vertical_margin_attlist_;
     odf_types::common_margin_attlist				common_margin_attlist_;
     odf_types::common_border_attlist				common_border_attlist_;
-    odf_types::common_border_line_width_attlist	common_border_line_width_attlist_;
+    odf_types::common_border_line_width_attlist		common_border_line_width_attlist_;
     odf_types::common_padding_attlist				common_padding_attlist_;
     odf_types::common_background_color_attlist		common_background_color_attlist_;
     odf_types::common_shadow_attlist				common_shadow_attlist_;
@@ -65,7 +65,7 @@ public:
     
 };
 
-///         style:header-footer-properties
+// style:header-footer-properties
 class style_header_footer_properties : public office_element_impl<style_header_footer_properties>
 {
 public:
@@ -89,7 +89,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(style_header_footer_properties)
 
 
-///         common:style-header-footer-attlist
+// common:style-header-footer-attlist
 class common_style_header_footer_attlist
 {
 public:
@@ -98,7 +98,7 @@ public:
     
 };
 
-///         header:footer-content
+// header:footer-content
 class header_footer_content
 {
 public:

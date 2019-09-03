@@ -61,7 +61,7 @@ namespace DocFileFormat
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), 
 		AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
-		_commentNr(0), _caller(caller)
+		_commentNr(1), _caller(caller)
 	{
 		m_document				=	NULL;
 		m_context				=	context;
@@ -800,8 +800,9 @@ namespace DocFileFormat
 					}
 				}
 				XMLTools::XMLElement elem(L"w:br");
-                elem.AppendAttribute(L"w:type", L"textWrapping");
-                elem.AppendAttribute(L"w:clear", L"all");
+				//СЗ в МРФ Техноград о предоставлении ТП 1 квартал 2019_MO_Q31.doc
+                //elem.AppendAttribute(L"w:type", L"textWrapping");
+                //elem.AppendAttribute(L"w:clear", L"all");
 
 				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
@@ -892,12 +893,16 @@ namespace DocFileFormat
 			}
 			else if ((TextMark::Symbol == code) && fSpec)
 			{
+				writeNotesReferences(cp);//for word95 & non-automatic notes
+
 				Symbol s = getSymbol( chpx );
 
-                //m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
-                //m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
-                //m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
-                //m_pXmlWriter->WriteNodeEnd(L"", true);
+				//<w:sym w:font="Symbol" w:char="F062"/>
+
+                m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
+                m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
+                m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
+                m_pXmlWriter->WriteNodeEnd(L"", true);
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
@@ -1035,39 +1040,7 @@ namespace DocFileFormat
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
 			{
-				if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:footnoteReference", true );
-					FootnoteDescriptor* desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
-					if (desc && desc->aFtnIdx == 0)
-					{
-						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-					}
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
-				else if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:footnoteRef", true );
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
-				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
-					EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_endnoteNr]);
-					if (desc && desc->aEndIdx == 0)
-					{
-						m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-					}
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_endnoteNr++ ));
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
-				else if ((m_document->IndividualEndnotesPlex != NULL) && 
-					(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:endnoteRef", true );
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
+				writeNotesReferences(cp);
 			}
 			else if (TextMark::AnnotationReference == code)
 			{
@@ -1076,23 +1049,44 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeBegin( L"w:annotationRef", true );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}	
-				else if ((m_document->AnnotationsReferencePlex) && (_commentNr <= m_document->AnnotationsReferencePlex->Elements.size()))
+				else if (m_document->AnnotationsReferencePlex) 
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
 
-					int index = _commentNr++;
+					AnnotationReferenceDescriptor* atrdPre10 = dynamic_cast<AnnotationReferenceDescriptor*>( m_document->AnnotationsReferencePlex->GetStruct(cp));
 
-					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index - 1]);
-
-					if (atrdPre10->m_BookmarkId < 0)
-						index += m_document->AnnotationsReferencePlex->Elements.size() + 1024;
+					if (atrdPre10)
+					{
+						if (atrdPre10->m_CommentId < 0)
+						{
+							if (atrdPre10->m_BookmarkId < 0)
+							{
+								atrdPre10->m_CommentId = _commentNr++;
+							}
+							else
+							{
+								std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(atrdPre10->m_BookmarkId);
+								if (pFind == m_document->mapCommentsBookmarks.end())
+								{
+									atrdPre10->m_CommentId = _commentNr++;
+									m_document->mapCommentsBookmarks.insert(std::make_pair(atrdPre10->m_BookmarkId, atrdPre10->m_CommentId));
+								}
+								else
+								{
+									atrdPre10->m_CommentId = pFind->second;
+								}
+							}
+						}
+						m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(atrdPre10->m_CommentId));
+					}
 					
-					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(index));
 					m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 			}
 			else if (!FormatUtils::IsControlSymbol(c) && ((int)c != 0xFFFF))
 			{
+
+				writeNotesReferences(cp);//for word95 & non-automatic notes
                 text += FormatUtils::GetXMLSymbol(c);
 			}
 
@@ -1378,6 +1372,7 @@ namespace DocFileFormat
 						fEndNestingLevel = ( iter->Arguments[0] == 1 ) ? (true) : (false);
 					}break;
 
+					case sprmOldPFInTable:
 					case sprmPItap:
 					{
 						iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
@@ -1418,7 +1413,7 @@ namespace DocFileFormat
 					}
 				}
 			}
-			if (nestingLevel > 1 && fEndNestingLevel && !boundaries.empty())
+			if (nestingLevel != iTap_current && fEndNestingLevel && !boundaries.empty())
 				break;
 			//get the next papx
 			papx = findValidPapx( fcRowEnd );
@@ -1764,7 +1759,51 @@ namespace DocFileFormat
 
 		return cpCellEnd;
 	}
-
+	bool DocumentMapping::writeNotesReferences(int cp)
+	{
+		if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
+		{
+			FootnoteDescriptor* desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+			if ((desc) && (false == desc->bUsed))
+			{
+				desc->bUsed = true;
+				m_pXmlWriter->WriteNodeBegin( L"w:footnoteReference", true );
+				if (desc->aFtnIdx == 0)
+				{
+					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				}
+				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
+				m_pXmlWriter->WriteNodeEnd( L"", true );
+			}
+		}
+		else if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
+		{
+            m_pXmlWriter->WriteNodeBegin( L"w:footnoteRef", true );
+            m_pXmlWriter->WriteNodeEnd( L"", true );
+		}
+		else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
+		{
+			EndnoteDescriptor* desc = dynamic_cast<EndnoteDescriptor*>(m_document->EndnoteReferenceCharactersPlex->Elements[_endnoteNr]);
+			if ((desc) && (false == desc->bUsed))
+			{
+				desc->bUsed = true;
+				m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
+				if (desc->aEndIdx == 0)
+				{
+					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				}
+				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_endnoteNr++ ));
+				m_pXmlWriter->WriteNodeEnd( L"", true );
+			}
+		}
+		else if ((m_document->IndividualEndnotesPlex != NULL) && 
+			(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
+		{
+            m_pXmlWriter->WriteNodeBegin( L"w:endnoteRef", true );
+            m_pXmlWriter->WriteNodeEnd( L"", true );
+		}
+		return true;
+	}
 	bool DocumentMapping::writeBookmarks(int cp)
 	{
 		bool result =	true;
@@ -1791,16 +1830,32 @@ namespace DocFileFormat
 
 		for (size_t i = 0; i < m_document->AnnotStartEndCPs.size(); i++)
 		{
-			if (m_document->AnnotStartEndCPs[i].first == cp)
+			if (m_document->AnnotStartEndCPs[i].start == cp)
 			{
-				result = writeAnnotationStart(i + 1);
-				_commentNr = i + 1;
+				int index = -1;
+				std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapCommentsBookmarks.end())
+				{
+					index = _commentNr++;
+					m_document->mapCommentsBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
+				}
+				else index = pFind->second;
+
+				result = writeAnnotationStart(index);
 			}
 
-			if (m_document->AnnotStartEndCPs[i].second == cp)
+			if (m_document->AnnotStartEndCPs[i].end == cp)
 			{
-				result = writeAnnotationEnd(i + 1);  
-				//_commentNr = i + 1;
+				int index = -1;
+				std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapCommentsBookmarks.end())
+				{
+					index = _commentNr++;
+					m_document->mapCommentsBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
+				}
+				else index = pFind->second;
+
+				result = writeAnnotationEnd(index);  
 			}
 		}
 
@@ -1907,7 +1962,7 @@ namespace DocFileFormat
 				FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( fontIndex ) );
 
 				ret.FontName = ffn->xszFtn;
-                ret.HexValue = FormatUtils::IntToFormattedWideString( code, L"%04x" );
+                ret.HexValue = FormatUtils::IntToFormattedWideString( code, L"%04X" );
 
 				break;
 			}

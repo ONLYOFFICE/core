@@ -59,7 +59,8 @@ TARGET := $(PLATFORM)_$(ARCHITECTURE)
 LIBDIR := build/lib/$(TARGET)
 BINDIR := build/bin/$(TARGET)
 
-ALLFONTSGEN := build/bin/AllFontsGen/$(TARGET)$(EXEC_EXT)
+ALLFONTSGEN := build/bin/$(TARGET)/allfontsgen$(EXEC_EXT)
+ALLTHEMESGEN := build/bin/$(TARGET)/allthemesgen$(EXEC_EXT)
 X2T := $(BINDIR)/x2t$(EXEC_EXT)
 DOCBUILDER := $(BINDIR)/docbuilder$(EXEC_EXT)
 HTMLFILEINTERNAL := $(LIBDIR)/HtmlFileInternal$(EXEC_EXT)
@@ -81,6 +82,7 @@ CRYPTOPP := $(LIBDIR)/$(LIB_PREFIX)CryptoPPLib$(LIB_EXT)
 VIDEOPLAYERLIB := $(LIBDIR)/$(LIB_PREFIX)videoplayer$(SHARED_EXT)
 
 TARGETS += $(ALLFONTSGEN)
+TARGETS += $(ALLTHEMESGEN)
 TARGETS += $(X2T)
 TARGETS += $(DOCBUILDER)
 TARGETS += $(HTMLFILEINTERNAL)
@@ -104,6 +106,7 @@ TARGETS += $(VIDEOPLAYERLIB)
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
 ALLFONTSGEN_PRO := $(abspath DesktopEditor/AllFontsGen/AllFontsGen.pro)
+ALLTHEMESGEN_PRO := $(abspath DesktopEditor/allthemesgen/allthemesgen.pro)
 DOCBUILDER_PRO := $(abspath DesktopEditor/doctrenderer/app_builder/docbuilder.pro)
 PDFWRITER_PRO := $(abspath PdfWriter/PdfWriter.pro)
 GRAPHICS_PRO := $(abspath DesktopEditor/graphics/pro/graphics.pro)
@@ -138,6 +141,7 @@ VIDEOPLAYERLIB_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/videoplayerl
 QT_PROJ += X2T
 QT_PROJ += HTMLFILEINTERNAL
 QT_PROJ += ALLFONTSGEN
+QT_PROJ += ALLTHEMESGEN
 QT_PROJ += DOCBUILDER
 QT_PROJ += PDFWRITER
 QT_PROJ += GRAPHICS
@@ -178,6 +182,11 @@ XPSFILE_DEP += $(GRAPHICS)
 
 ALLFONTSGEN_DEP += $(GRAPHICS)
 ALLFONTSGEN_DEP += $(UNICODECONVERTER)
+
+ALLTHEMESGEN_DEP += $(DOCTRENDERER)
+ALLTHEMESGEN_DEP += $(GRAPHICS)
+ALLTHEMESGEN_DEP += $(KERNEL)
+ALLTHEMESGEN_DEP += $(UNICODECONVERTER)
 
 DOCTRENDERER_DEP += $(KERNEL)
 DOCTRENDERER_DEP += $(GRAPHICS)
@@ -236,6 +245,7 @@ ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/*.dat
 endif
 
 CORE_TARGET += $(ALLFONTSGEN)
+CORE_TARGET += $(ALLTHEMESGEN)
 CORE_TARGET += $(DOCTRENDERER)
 CORE_TARGET += $(DJVUFILE)
 CORE_TARGET += $(HTMLFILE)
@@ -284,6 +294,8 @@ $(HTMLFILEINTERNAL): $(HTMLFILEINTERNAL_DEP)
 $(XPSFILE): $(XPSFILE_DEP)
 
 $(ALLFONTSGEN): $(ALLFONTSGEN_DEP)
+
+$(ALLTHEMESGEN): $(ALLTHEMESGEN_DEP)
 
 $(DOCBUILDER): $(DOCBUILDER_DEP)
 

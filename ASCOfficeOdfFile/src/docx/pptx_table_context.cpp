@@ -390,7 +390,7 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				{
 					bool isMediaInternal = true;
 					std::wstring ref;
-					fill.bitmap->rId = Context.get_slide_context().get_mediaitems().add_or_find(fill.bitmap->xlink_href_, oox::typeImage, isMediaInternal, ref);
+					fill.bitmap->rId = Context.get_slide_context().get_mediaitems()->add_or_find(fill.bitmap->xlink_href_, oox::typeImage, isMediaInternal, ref);
 					Context.get_slide_context().add_rels(isMediaInternal, fill.bitmap->rId, ref, oox::typeImage);
 				}
 				oox::oox_serialize_fill(CP_XML_STREAM(), fill);				

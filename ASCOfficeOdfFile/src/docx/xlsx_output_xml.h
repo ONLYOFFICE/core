@@ -58,7 +58,6 @@ public:
     std::wostream & sheetData();
     std::wostream & hyperlinks();
     std::wostream & mergeCells();
-    std::wostream & drawing(); 
     std::wostream & comments();
 	std::wostream & autofilter();
 	std::wostream & tableParts();
@@ -68,6 +67,7 @@ public:
 	std::wostream & sort();
 	std::wostream & ole_objects();
 	std::wostream & page_properties();
+	std::wostream & header_footer();
 	std::wostream & controls();
 	std::wostream & protection();
 	

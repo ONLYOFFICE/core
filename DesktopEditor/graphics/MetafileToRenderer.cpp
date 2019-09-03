@@ -33,14 +33,132 @@
 
 #include "./MetafileToRendererCheck.h"
 #include "agg_math.h"
+#include "../fontengine/FontManager.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #include "../common/StringExt.h"
 #endif
 
+// этот класс нужно переписать. должно работать как и в js
+// а не просто на каждом символе переключаться, если нужно
+class CMetafileFontPicker
+{
+private:
+    NSFonts::IApplicationFonts* m_pApplication;
+    NSFonts::IFontManager* m_pManager;
+    IRenderer* m_pRenderer;
+
+public:
+    CMetafileFontPicker(std::wstring sFolder)
+    {
+        m_pApplication = NSFonts::NSApplication::Create();
+        m_pApplication->InitializeFromFolder(sFolder);
+        m_pManager = m_pApplication->GenerateFontManager();
+
+        NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
+        pCache->SetStreams(m_pApplication->GetStreams());
+        m_pManager->SetOwnerCache(pCache);
+
+        m_pRenderer = NULL;
+    }
+    CMetafileFontPicker(NSFonts::IApplicationFonts* pFonts)
+    {
+        m_pApplication = pFonts;
+        m_pApplication->AddRef();
+        m_pManager = m_pApplication->GenerateFontManager();
+
+        NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
+        pCache->SetStreams(m_pApplication->GetStreams());
+        m_pManager->SetOwnerCache(pCache);
+
+        m_pRenderer = NULL;
+    }
+    ~CMetafileFontPicker()
+    {
+        m_pManager->Release();
+        m_pApplication->Release();
+    }
+
+    void SetFont(const std::wstring& sName, const bool& bBold, const bool& bItalic)
+    {
+        int nStyle = 0;
+        if (bBold) nStyle |= 0x01;
+        if (bItalic) nStyle |= 0x02;
+        SetFont(sName, nStyle);
+    }
+    void SetFont(const std::wstring& sName, const int& nStyle)
+    {
+        m_pManager->LoadFontByName(sName, 10, nStyle, 72, 72);
+    }
+
+    void FillText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
+    {
+        int bGID = 0;
+        m_pRenderer->get_FontStringGID(&bGID);
+
+        CGlyphString oString(bsText, 0, 0);
+        if (bGID || oString.GetLength() != 1)
+        {
+            m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+            return;
+        }
+
+        std::wstring sName;
+        LONG nStyle = 0;
+        m_pRenderer->get_FontName(&sName);
+        m_pRenderer->get_FontStyle(&nStyle);
+        SetFont(sName, (int)nStyle);
+
+        NSFonts::IFontFile* pFont = m_pManager->GetFile();
+        if (!pFont)
+        {
+            m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+            return;
+        }
+
+        int code = oString.GetAt(0)->lUnicode;
+        if (pFont->GetGIDByUnicode(code))
+        {
+            m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+            return;
+        }
+
+        CFontFile* pFileNew = ((CFontManager*)m_pManager)->GetFontFileBySymbol((CFontFile*)m_pManager->GetFile(), code);
+        if (!pFileNew)
+        {
+            m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+            return;
+        }
+
+        m_pRenderer->put_FontName(pFileNew->m_sName);
+        int nNewStyle = 0;
+        if (pFileNew->IsBold()) nNewStyle |= 0x01;
+        if (pFileNew->IsItalic()) nNewStyle |= 0x02;
+        m_pRenderer->put_FontStyle(nNewStyle);
+        m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+        m_pRenderer->put_FontName(sName);
+        m_pRenderer->put_FontStyle(nStyle);
+    }
+
+    void SetRenderer(IRenderer* pRenderer)
+    {
+        m_pRenderer = pRenderer;
+    }
+};
+
 IMetafileToRenderter::IMetafileToRenderter(IRenderer* pRenderer)
 {
     m_pRenderer = pRenderer;
+    m_pPicker = NULL;
+}
+IMetafileToRenderter::~IMetafileToRenderter()
+{
+    if (!m_pPicker)
+        return;
+
+    CMetafileFontPicker* pPicker = (CMetafileFontPicker*)m_pPicker;
+    RELEASEOBJECT(pPicker);
+    m_pPicker = NULL;
 }
 void IMetafileToRenderter::EnableBrushRect(bool bValue)
 {
@@ -59,6 +177,17 @@ void IMetafileToRenderter::SetRadialGradiant(const double& dX0, const double& dY
 {
     // TODO:
     m_pRenderer->put_BrushType(/*c_BrushTypePathGradient2*/2007);
+}
+
+void IMetafileToRenderter::InitPicker(const std::wstring& sFontsFolder)
+{
+    CMetafileFontPicker* pPicker = new CMetafileFontPicker(sFontsFolder);
+    m_pPicker = (void*)pPicker;
+}
+void IMetafileToRenderter::InitPicker(NSFonts::IApplicationFonts* pFonts)
+{
+    CMetafileFontPicker* pPicker = new CMetafileFontPicker(pFonts);
+    m_pPicker = (void*)pPicker;
 }
 
 namespace NSOnlineOfficeBinToPdf
@@ -156,6 +285,12 @@ namespace NSOnlineOfficeBinToPdf
     bool ConvertBufferToRenderer(BYTE* pBuffer, LONG lBufferLen, IMetafileToRenderter* pCorrector)
 	{
 		IRenderer* pRenderer = pCorrector->m_pRenderer;
+        CMetafileFontPicker* pPicker = NULL;
+        if (pCorrector->m_pPicker)
+        {
+            pPicker = (CMetafileFontPicker*)pCorrector->m_pPicker;
+            pPicker->SetRenderer(pRenderer);
+        }
 
 		LONG lRendererType = 0;
 		pRenderer->get_Type(&lRendererType);
@@ -549,7 +684,10 @@ namespace NSOnlineOfficeBinToPdf
 				double m1 = ReadInt(current, curindex) / 100000.0;
 				double m2 = ReadInt(current, curindex) / 100000.0;
 
-				pRenderer->CommandDrawText(wsTempString, m1, m2, 0, 0);
+                if (!pPicker)
+                    pRenderer->CommandDrawText(wsTempString, m1, m2, 0, 0);
+                else
+                    pPicker->FillText(wsTempString, m1, m2, 0, 0);
 				break;
 			}
 			case ctBeginCommand:

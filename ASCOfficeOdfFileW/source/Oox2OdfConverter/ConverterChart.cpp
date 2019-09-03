@@ -124,11 +124,29 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 		convert(oox_chart->m_chart->m_plotArea); 
 			
 		bool chart3D = (oox_chart->m_chart->m_view3D) ? true : false;
-		convert(oox_chart->m_chart->m_floor,	1, chart3D);
-		if (chart3D) convert(oox_chart->m_chart->m_backWall, 2, chart3D);
+		
+		convert(oox_chart->m_chart->m_floor, 1, chart3D);
+		if (chart3D)
+		{
+			convert(oox_chart->m_chart->m_backWall, 2, chart3D);
+			convert(oox_chart->m_chart->m_view3D);
+		}
 		//convert(oox_chart->m_chart->m_sizeWall, 3, chart3D);		
 	}
 	odf_context()->chart_context()->end_plot_area();
+}
+void OoxConverter::convert(OOX::Spreadsheet::CT_View3D *oox_view3D)
+{
+	if (oox_view3D == NULL)return;
+
+	int rotX = ((oox_view3D->m_rotX) && (oox_view3D->m_rotX->m_val)) ? *oox_view3D->m_rotX->m_val : 0;
+	int rotY = ((oox_view3D->m_rotY) && (oox_view3D->m_rotY->m_val)) ? *oox_view3D->m_rotY->m_val : 0;
+	int depthPercent = ((oox_view3D->m_depthPercent) && (oox_view3D->m_depthPercent->m_val)) ? XmlUtils::GetInteger(*oox_view3D->m_depthPercent->m_val) : 100;
+	bool angAx = ((oox_view3D->m_rAngAx) && (oox_view3D->m_rAngAx->m_val)) ? *oox_view3D->m_rAngAx->m_val : false;
+	int perspective = ((oox_view3D->m_perspective) && (oox_view3D->m_perspective->m_val)) ? *oox_view3D->m_perspective->m_val : 30;
+	int hPercent = ((oox_view3D->m_hPercent) && (oox_view3D->m_hPercent->m_val)) ? XmlUtils::GetInteger(*oox_view3D->m_hPercent->m_val) : 100;
+
+	odf_context()->chart_context()->set_view3D(rotX, rotY, depthPercent, perspective, hPercent, angAx);
 }
 
 //void OoxConverter::convert(OOX::Spreadsheet::CRichText* rich)
@@ -161,7 +179,21 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Tx* ct_tx)
 {
 	if (ct_tx == NULL)return;
 
-	convert_chart_text(ct_tx->m_oRich.GetPointer());
+	if (ct_tx->m_oRich.IsInit())
+	{
+		convert_chart_text(ct_tx->m_oRich.GetPointer());
+	}
+	else if (ct_tx->m_strRef)
+	{
+		if (ct_tx->m_strRef->m_f)
+			odf_context()->chart_context()->set_label_formula(*ct_tx->m_strRef->m_f);
+		
+		if ((ct_tx->m_strRef->m_strCache) && (false == ct_tx->m_strRef->m_strCache->m_pt.empty()) 
+				&& (ct_tx->m_strRef->m_strCache->m_pt[0]) && (ct_tx->m_strRef->m_strCache->m_pt[0]->m_v))
+		{
+			odf_context()->chart_context()->add_text(*ct_tx->m_strRef->m_strCache->m_pt[0]->m_v);
+		}
+	}
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_Layout* ct_layout)
 {
@@ -282,7 +314,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 		odf_context()->chart_context()->end_element();
 	}
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 {
 	if (axis == NULL)return;
@@ -294,6 +325,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 		
 		convert(axis->m_oSpPr.GetPointer());
 		
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -337,6 +372,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DateAx* axis)
 		
 		convert(axis->m_oSpPr.GetPointer());
 		
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -378,6 +417,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerAx* axis)
 		
 		convert(axis->m_oSpPr.GetPointer());
 		
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -418,6 +461,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 			odf_context()->chart_context()->set_axis_id(*axis->m_axId->m_val);
 		
 		convert(axis->m_oSpPr.GetPointer());
+
+		if ((axis->m_delete) && (axis->m_delete->m_val))
+		{
+			odf_context()->chart_context()->set_axis_visible(*axis->m_delete->m_val == false);
+		}
 		
 		if (axis->m_scaling)
 		{
@@ -448,7 +496,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 		convert(axis->m_minorGridlines, 2);
 	odf_context()->chart_context()->end_element();
 }
-////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CT_ChartLines *line, int type)
 {
 	if (line == NULL)return;
@@ -1212,7 +1259,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val)
 	}
 	
 }
-///////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, bool chart3D)
 {
 	if (ct_surface == NULL && chart3D == false)return;
@@ -1293,4 +1339,59 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data, bool categori
 
 	odf_context()->chart_context()->set_cash(format, data, categories, label);
 }
+
+//---------------------------------------------------------------------------------------------------------------
+////chart ex ///////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------------
+void OoxConverter::convert(OOX::Spreadsheet::ChartEx::CPlotArea* oox_plotArea)
+{
+	if (oox_plotArea == NULL)return;
+
+	//convert(oox_plotArea->m_layout);
+///////////////////////
+
+	for (size_t i = 0; i < oox_plotArea->m_plotAreaRegion.m_arSeries.size(); i++)
+	{
+		convert(oox_plotArea->m_plotAreaRegion.m_arSeries[i]);
+	}
+	for (size_t i = 0; i < oox_plotArea->m_arAxis.size(); i++)
+	{
+		convert(oox_plotArea->m_arAxis[i]);
+	}
+
+	odf_context()->chart_context()->start_wall();
+	{
+		convert(oox_plotArea->m_oSpPr.GetPointer());
+	}	
+	odf_context()->chart_context()->end_element();
+}
+void OoxConverter::convert(OOX::Spreadsheet::ChartEx::CChartData *oox_chart_data)
+{
+	if (!oox_chart_data) return;
+
+	for (size_t i = 0; i < oox_chart_data->m_arData.size(); i++)
+	{
+	}
+
+}
+void OoxConverter::convert(OOX::Spreadsheet::ChartEx::CChartSpace *oox_chart)
+{
+	if (!oox_chart)return;
+
+	convert(oox_chart->m_oSpPr.GetPointer());	
+	convert_chart_text(oox_chart->m_oTxPr.GetPointer());
+
+	//convert(oox_chart->m_chart.m_title);
+	//convert(oox_chart->m_chart.m_legend);
+
+	convert(&oox_chart->m_chartData);
+
+	odf_context()->chart_context()->start_plot_area();
+	{
+		convert(&oox_chart->m_chart.m_plotArea); 
+	}
+	odf_context()->chart_context()->end_plot_area();
+}
+
+
 }

@@ -34,6 +34,7 @@
 #include "../../XlsxFormat/Table/Table.h"
 #include "../Diagram/DiagramData.h"
 #include "../../XlsxFormat/Worksheets/ConditionalFormatting.h"
+#include "../../XlsxFormat/Worksheets/DataValidation.h"
 
 namespace OOX
 {
@@ -49,9 +50,9 @@ namespace OOX
 			m_oAltTextTable.reset();
 			m_oDataModelExt.reset();
 			m_oCompatExt.reset();
+			m_oDataValidations.reset();
 
-			// delete Conditional Formatting
-			for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
 				delete m_arrConditionalFormatting[nIndex];
 			}
@@ -66,6 +67,7 @@ namespace OOX
 									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}"	|| 
 									  *m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}"	||
 									  *m_sUri == L"{B025F937-C7B1-47D3-B67F-A62EFF666E3E}"	||
+									  *m_sUri == L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -98,6 +100,10 @@ namespace OOX
 						{						
 							m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(oReader));
 						}
+					}
+					else if (sName == L"dataValidations")
+					{
+						m_oDataValidations = oReader;
 					}
 					else if (sName == L"id")
 					{
@@ -157,6 +163,12 @@ namespace OOX
 				}
 				sResult += writer.GetData().c_str();
 				sResult += L"</x14:conditionalFormattings>";
+			}
+			if(m_oDataValidations.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oDataValidations->toXML2(writer, true);
+				sResult += writer.GetData().c_str();
 			}
 			if (m_oId.IsInit())
 			{

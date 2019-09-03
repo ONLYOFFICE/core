@@ -65,8 +65,10 @@ public:
 		bool					onClick;
 	};
 
-	Impl(const std::wstring & odfPacket) : mediaitems_(odfPacket), odfPacket_(odfPacket)
+	Impl(const std::wstring & _odfPacket) : odfPacket_(_odfPacket)
     {
+		mediaitems_ = boost::make_shared<mediaitems>(odfPacket_);
+
 		clear();
 	}
 
@@ -88,7 +90,7 @@ public:
     {
         pptx_drawings_->add(isInternal, rid, ref, type);
     }
-	mediaitems & get_mediaitems() { return mediaitems_; }
+	mediaitems_ptr & get_mediaitems() { return mediaitems_; }
 
     bool empty() const
     {
@@ -138,7 +140,7 @@ private:
 	void process_media	(drawing_object_description& obj, _pptx_drawing & drawing);
 	
 	size_t				rId_;
-	mediaitems			mediaitems_;
+	mediaitems_ptr		mediaitems_;
     pptx_drawings_ptr	pptx_drawings_;
     pptx_drawings_ptr	pptx_notes_drawings_;
 };
@@ -357,7 +359,7 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 		bool isMediaInternal = false;
 		std::wstring ref;
 		
-		fill.bitmap->rId = get_mediaitems().add_or_find(fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		fill.bitmap->rId = get_mediaitems()->add_or_find(fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
 		add_rels(isMediaInternal, fill.bitmap->rId, ref, typeImage);
 	}	
 	impl_->background_fill_ = fill;
@@ -421,7 +423,7 @@ void pptx_slide_context::set_link(std::wstring link, RelsType typeRels)
 	{
 		bool isMediaInternal = true;
 		
-		impl_->object_description_.action_.hSoundId = get_mediaitems().add_or_find(link, typeAudio, isMediaInternal, impl_->object_description_.action_.hSoundRef);		
+		impl_->object_description_.action_.hSoundId = get_mediaitems()->add_or_find(link, typeAudio, isMediaInternal, impl_->object_description_.action_.hSoundRef);		
 		impl_->add_additional_rels(isMediaInternal, impl_->object_description_.action_.hSoundId, impl_->object_description_.action_.hSoundRef, typeAudio);
 	}
 	else
@@ -566,7 +568,7 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	}
 
 	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
-	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, get_mediaitems().applicationFonts());
+	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, get_mediaitems()->applicationFonts());
 	drawing.fill.bitmap->bStretch = true;
 	
 	if ((sColorMode) && (*sColorMode == L"greyscale"))
@@ -576,7 +578,7 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 	
-	drawing.fill.bitmap->rId		= get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);
+	drawing.fill.bitmap->rId		= get_mediaitems()->add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);
 	drawing.fill.bitmap->isInternal	= isMediaInternal;
 
 	if (drawing.type == typeShape)
@@ -584,7 +586,7 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
 	
 		isMediaInternal	= true;
-		std::wstring rId = get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
+		std::wstring rId = get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref);
 		
 		add_drawing(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
@@ -599,7 +601,7 @@ void pptx_slide_context::Impl::process_chart(drawing_object_description & obj, _
     std::wstring ref;
     bool isMediaInternal = true;
    
-	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);  
+	drawing.objectId = get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);  
 	
 	add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
 }
@@ -608,7 +610,7 @@ void pptx_slide_context::Impl::process_table(drawing_object_description & obj, _
 {
     std::wstring ref;
     bool isMediaInternal = true;
-	std::wstring rId = get_mediaitems().add_or_find(L"", obj.type_, isMediaInternal, ref);        
+	std::wstring rId = get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref);        
    
 	add_drawing(drawing, isMediaInternal, rId, ref, drawing.type);
 
@@ -623,12 +625,12 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 	
 	if (drawing.fill.bitmap)
 	{
-		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		drawing.fill.bitmap->rId = get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
 		
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
 	}
 		
-	std::wstring rId = get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
+	std::wstring rId = get_mediaitems()->add_or_find(L"", typeShape, isMediaInternal, ref);
    
 ////////////////////////////////////////////////////////////////
 	_CP_OPT(std::wstring) sPlaceHolderType;
@@ -651,7 +653,7 @@ void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _
     std::wstring ref, ref_image;
     bool isMediaInternal = true, isMediaInternal_image = true;
    
-	drawing.objectId		= get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);      
+	drawing.objectId		= get_mediaitems()->add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);      
 	drawing.objectProgId	= obj.descriptor_;
 
 	if (!drawing.fill.bitmap)
@@ -662,7 +664,7 @@ void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _
 		_image_file_::GenerateZeroImage(odfPacket_ + FILE_SEPARATOR_STR + L"zero.png");
 	}
 	
-	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal_image, ref_image);
+	drawing.fill.bitmap->rId = get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal_image, ref_image);
 	add_additional_rels(isMediaInternal_image, drawing.fill.bitmap->rId, ref_image, typeImage);
 
 	add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);	
@@ -674,7 +676,7 @@ void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _p
 
 	drawing.type = mediaitems::detectMediaType(obj.xlink_href_); //reset from Media to Audio, Video, ... QuickTime? AudioCD? ...   
 	
-	drawing.objectId	= get_mediaitems().add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
+	drawing.objectId	= get_mediaitems()->add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
 	drawing.extId		= L"ext" + drawing.objectId;
 	drawing.extExternal	= !isMediaInternal;
 	
@@ -685,7 +687,7 @@ void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _p
 		
 		_image_file_::GenerateZeroImage(odfPacket_ + FILE_SEPARATOR_STR + L"zero.png");
 	}
-	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal_image, ref_image);		
+	drawing.fill.bitmap->rId = get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal_image, ref_image);		
 	add_additional_rels(isMediaInternal_image, drawing.fill.bitmap->rId, ref_image, typeImage);
 	
 	add_drawing(drawing, false, drawing.objectId, L"NULL", drawing.type);
@@ -718,7 +720,7 @@ void pptx_slide_context::dump_rels(rels & Rels)
 	impl_->get_drawings()->dump_rels(Rels);
 }
 
-mediaitems & pptx_slide_context::get_mediaitems()
+mediaitems_ptr & pptx_slide_context::get_mediaitems()
 {
 	return impl_->get_mediaitems(); 
 }

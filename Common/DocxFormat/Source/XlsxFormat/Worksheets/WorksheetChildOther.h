@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_WORKSHEETCHILDSOTHER_FILE_INCLUDE_H_
-#define OOX_WORKSHEETCHILDSOTHER_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -127,18 +125,26 @@ namespace OOX
 				if(m_oPaperSize.IsInit() || m_oOrientation.IsInit())
 				{
 					writer.WriteString(L"<pageSetup");
+					WritingStringNullableAttrBool(L"blackAndWhite", m_oBlackAndWhite);
+					WritingStringNullableAttrString(L"cellComments", m_oCellComments, m_oCellComments->ToString());
+					WritingStringNullableAttrInt(L"copies", m_oCopies, m_oCopies->GetValue());
+					WritingStringNullableAttrBool(L"draft", m_oDraft);
+					WritingStringNullableAttrString(L"errors", m_oErrors, m_oErrors->ToString());
+					WritingStringNullableAttrInt(L"firstPageNumber", m_oFirstPageNumber, m_oFirstPageNumber->GetValue());
+					WritingStringNullableAttrInt(L"fitToHeight", m_oFitToHeight, m_oFitToHeight->GetValue());
+					WritingStringNullableAttrInt(L"fitToWidth", m_oFitToWidth, m_oFitToWidth->GetValue());
+					WritingStringNullableAttrInt(L"horizontalDpi", m_oHorizontalDpi, m_oHorizontalDpi->GetValue());
+					WritingStringNullableAttrString(L"r:id", m_oRId, m_oRId->ToString());
+					WritingStringNullableAttrString(L"orientation", m_oOrientation, m_oOrientation->ToString());
+					WritingStringNullableAttrString(L"pageOrder", m_oPageOrder, m_oPageOrder->ToString());
+					WritingStringNullableAttrDouble(L"paperHeight", m_oPaperHeight, m_oPaperHeight->GetValue());
 					WritingStringNullableAttrString(L"paperSize", m_oPaperSize, m_oPaperSize->ToString());
-					if (m_oOrientation.IsInit())
-					{
-                        std::wstring sOrientation = m_oOrientation->ToString();
-						writer.WriteString(L" orientation=\"");
-                        writer.WriteString(sOrientation.c_str());
-						writer.WriteString(L"\"");
-					}
-					if (m_oRId.IsInit())
-					{
-						WritingStringAttrString(L"r:id", m_oRId->ToString());
-					}
+					WritingStringNullableAttrDouble(L"paperWidth", m_oPaperWidth, m_oPaperWidth->GetValue());
+					WritingStringNullableAttrString(L"paperUnits", m_oPaperUnits, m_oPaperUnits->ToString());
+					WritingStringNullableAttrInt(L"scale", m_oScale, m_oScale->GetValue());
+					WritingStringNullableAttrBool(L"useFirstPageNumber", m_oUseFirstPageNumber);
+					WritingStringNullableAttrBool(L"usePrinterDefaults", m_oUsePrinterDefaults);
+					WritingStringNullableAttrInt(L"verticalDpi", m_oVerticalDpi, m_oVerticalDpi->GetValue());
 					writer.WriteString(L"/>");
 				}
 			}
@@ -157,20 +163,48 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("orientation"),	m_oOrientation)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperSize"),	m_oPaperSize)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperUnits"),	m_oPaperUnits)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperWidth"),	m_oPaperWidth)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperHeight"),	m_oPaperHeight)
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("blackAndWhite"),	m_oBlackAndWhite)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cellComments"),	m_oCellComments)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("copies"),	m_oCopies)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("draft"),	m_oDraft)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errors"),	m_oErrors)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("firstPageNumber"),	m_oFirstPageNumber)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fitToHeight"),	m_oFitToHeight)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fitToWidth"),	m_oFitToWidth)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("horizontalDpi"),	m_oHorizontalDpi)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:id"),		m_oRId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("orientation"),	m_oOrientation)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("pageOrder"),	m_oPageOrder)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperHeight"),	m_oPaperHeight)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperSize"),	m_oPaperSize)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperWidth"),	m_oPaperWidth)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("paperUnits"),	m_oPaperUnits)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("scale"),	m_oScale)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("useFirstPageNumber"),	m_oUseFirstPageNumber)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("usePrinterDefaults"),	m_oUsePrinterDefaults)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("verticalDpi"),	m_oVerticalDpi)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable<SimpleTypes::CRelationshipId>				m_oRId;
-			nullable<SimpleTypes::CPageOrientation<>>			m_oOrientation;
-			nullable<SimpleTypes::Spreadsheet::CPageSize<>>		m_oPaperSize;
-			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>	m_oPaperUnits;
-			nullable<SimpleTypes::CDouble>						m_oPaperWidth;
-			nullable<SimpleTypes::CDouble>						m_oPaperHeight;
+			nullable<SimpleTypes::COnOff<>>							m_oBlackAndWhite;
+			nullable<SimpleTypes::Spreadsheet::CCellComments<>>		m_oCellComments;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oCopies;
+			nullable<SimpleTypes::COnOff<>>							m_oDraft;
+			nullable<SimpleTypes::Spreadsheet::CPrintError<>>		m_oErrors;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFirstPageNumber;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFitToHeight;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFitToWidth;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oHorizontalDpi;
+			nullable<SimpleTypes::CRelationshipId>					m_oRId;
+			nullable<SimpleTypes::CPageOrientation<>>				m_oOrientation;
+			nullable<SimpleTypes::Spreadsheet::CPageOrder<>>		m_oPageOrder;
+			nullable<SimpleTypes::CDouble>							m_oPaperHeight;
+			nullable<SimpleTypes::Spreadsheet::CPageSize<>>			m_oPaperSize;
+			nullable<SimpleTypes::CDouble>							m_oPaperWidth;
+			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>		m_oPaperUnits;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oScale;
+			nullable<SimpleTypes::COnOff<>>							m_oUseFirstPageNumber;
+			nullable<SimpleTypes::COnOff<>>							m_oUsePrinterDefaults;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oVerticalDpi;
 		};
 		class CPrintOptions : public WritingElement
 		{
@@ -666,6 +700,112 @@ namespace OOX
 		public:
 		};
 
+		class CPageSetUpPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CPageSetUpPr)
+			CPageSetUpPr()
+			{
+			}
+			virtual ~CPageSetUpPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(_T("<pageSetUpPr"));
+				WritingStringNullableAttrBool(L"autoPageBreaks", m_oAutoPageBreaks);
+				WritingStringNullableAttrBool(L"fitToPage", m_oFitToPage);
+				writer.WriteString(_T("/>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_PageSetUpPr;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("autoPageBreaks"), m_oAutoPageBreaks )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fitToPage"),	m_oFitToPage )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::COnOff<>>		m_oAutoPageBreaks;
+			nullable<SimpleTypes::COnOff<>>		m_oFitToPage;
+		};
+		class COutlinePr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(COutlinePr)
+			COutlinePr()
+			{
+			}
+			virtual ~COutlinePr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(_T("<outlinePr"));
+				WritingStringNullableAttrBool(L"applyStyles", m_oApplyStyles);
+				WritingStringNullableAttrBool(L"showOutlineSymbols", m_oShowOutlineSymbols);
+				WritingStringNullableAttrBool(L"summaryBelow", m_oSummaryBelow);
+				WritingStringNullableAttrBool(L"summaryRight", m_oSummaryRight);
+				writer.WriteString(_T("/>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_OutlinePr;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("applyStyles"), m_oApplyStyles )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showOutlineSymbols"), m_oShowOutlineSymbols )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("summaryBelow"), m_oSummaryBelow )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("summaryRight"), m_oSummaryRight )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<SimpleTypes::COnOff<>>		m_oApplyStyles;
+			nullable<SimpleTypes::COnOff<>>		m_oShowOutlineSymbols;
+			nullable<SimpleTypes::COnOff<>>		m_oSummaryBelow;
+			nullable<SimpleTypes::COnOff<>>		m_oSummaryRight;
+		};
 		class CSheetPr : public WritingElement
 		{
 		public:
@@ -685,12 +825,31 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				writer.WriteString(_T("<sheetPr"));
+				WritingStringNullableAttrEncodeXmlString(L"codeName", m_oCodeName, m_oCodeName.get());
+				WritingStringNullableAttrBool(L"enableFormatConditionsCalculation", m_oEnableFormatConditionsCalculation);
+				WritingStringNullableAttrBool(L"filterMode", m_oFilterMode);
+				WritingStringNullableAttrBool(L"published", m_oPublished);
+				WritingStringNullableAttrBool(L"syncHorizontal", m_oSyncHorizontal);
+				WritingStringNullableAttrEncodeXmlString(L"syncRef", m_oSyncRef, m_oSyncRef.get());
+				WritingStringNullableAttrBool(L"syncVertical", m_oSyncVertical);
+				WritingStringNullableAttrBool(L"transitionEntry", m_oTransitionEntry);
+				WritingStringNullableAttrBool(L"transitionEvaluation", m_oTransitionEvaluation);
+				writer.WriteString(_T(">"));
 				if (m_oTabColor.IsInit())
 				{
-					writer.WriteString(_T("<sheetPr>"));
 					m_oTabColor->toXML2(writer, _T("tabColor"));
-					writer.WriteString(_T("</sheetPr>"));
 				}
+				if (m_oOutlinePr.IsInit())
+				{
+					m_oOutlinePr->toXML(writer);
+				}
+				if (m_oPageSetUpPr.IsInit())
+				{
+					m_oPageSetUpPr->toXML(writer);
+				}
+				writer.WriteString(_T("</sheetPr>"));
+
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -706,9 +865,10 @@ namespace OOX
 
 					if ( _T("tabColor") == sName )
 						m_oTabColor = oReader;
-					//необработано:
-					//<outlinePr>
-					//<pageSetUpPr>
+					else if ( _T("pageSetUpPr") == sName )
+						m_oPageSetUpPr = oReader;
+					else if ( _T("outlinePr") == sName )
+						m_oOutlinePr = oReader;
 				}
 			}
 			virtual EElementType getType () const
@@ -735,6 +895,8 @@ namespace OOX
 
 		public:
 			nullable<CColor>					m_oTabColor;
+			nullable<CPageSetUpPr>				m_oPageSetUpPr;
+			nullable<COutlinePr>				m_oOutlinePr;
 
 			nullable<std::wstring>				m_oCodeName;
 			nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;
@@ -1489,160 +1651,5 @@ namespace OOX
 			nullable<CDataRefs>					m_oDataRefs;
 
 		};
-		class CDataValidation : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CDataValidation)
-			CDataValidation()
-			{
-			}
-			virtual ~CDataValidation()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<dataValidation");
-					WritingStringNullableAttrInt	(L"allowBlank",		m_oAllowBlank,		m_oAllowBlank->GetValue());
-					WritingStringNullableAttrString	(L"error",			m_oError,			m_oError.get());
-					WritingStringNullableAttrString	(L"errorStyle",		m_oErrorStyle,		m_oErrorStyle.get());
-					WritingStringNullableAttrString	(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
-					WritingStringNullableAttrString	(L"imeMode",		m_oImeMode,			m_oImeMode.get());
-					WritingStringNullableAttrString	(L"operator",		m_oOperator,		m_oOperator.get());
-					WritingStringNullableAttrString	(L"promt",			m_oPromt,			m_oPromt.get());
-					WritingStringNullableAttrString	(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
-					WritingStringNullableAttrInt	(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
-					WritingStringNullableAttrInt	(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
-					WritingStringNullableAttrInt	(L"showInputMessage",m_oShowInputMessage,m_oShowInputMessage->GetValue());
-					WritingStringNullableAttrString	(L"sqref",			m_oSqref,			m_oSqref.get());
-					WritingStringNullableAttrString	(L"type",			m_oType,			m_oType.get());
-				writer.WriteString(L"/>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_x_DataValidation;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("allowBlank"),		m_oAllowBlank)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("error"),			m_oError)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errorStyle"),		m_oErrorStyle)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errorTitle"),		m_oErrorTitle)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("imeMode"),			m_oImeMode)				
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("operator"),		m_oOperator)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("promt"),			m_oPromt)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("promptTitle"),		m_oPromptTitle)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showDropDown"),	m_oShowDropDown)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showErrorMessage"),m_oShowErrorMessage)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showInputMessage"),m_oShowInputMessage)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sqref"),			m_oSqref)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),			m_oType)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
-
-			nullable<SimpleTypes::COnOff<>>		m_oAllowBlank;
-			nullable_string						m_oError;
-			nullable_string						m_oErrorStyle; //ST_DataValidationErrorStyle
-			nullable_string						m_oErrorTitle;
-			nullable_string						m_oImeMode; //ST_DataValidationImeMode
-			nullable_string						m_oOperator; //ST_DataValidationOperator
-			nullable_string						m_oPromt;
-			nullable_string						m_oPromptTitle;
-			nullable<SimpleTypes::COnOff<>>		m_oShowDropDown;
-			nullable<SimpleTypes::COnOff<>>		m_oShowErrorMessage;
-			nullable<SimpleTypes::COnOff<>>		m_oShowInputMessage;
-			nullable_string						m_oSqref; //ST_Sqref
-			nullable_string						m_oType; //ST_DataValidationType
-		};
-		class CDataValidations : public WritingElementWithChilds<CDataValidation>
-		{
-		public:
-			WritingElement_AdditionConstructors(CDataValidations)
-			CDataValidations()
-			{
-			}
-			virtual ~CDataValidations()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<dataValidations");
-				WritingStringNullableAttrInt(L"count",			m_oCount,			m_oCount->GetValue());
-				WritingStringNullableAttrInt(L"disablePrompts", m_oDisablePrompts,	m_oDisablePrompts->GetValue());
-				WritingStringNullableAttrInt(L"xWindow",		m_oXWindow,			m_oXWindow->GetValue());
-				WritingStringNullableAttrInt(L"yWindow",		m_oYWindow,			m_oYWindow->GetValue());
-				writer.WriteString(L">");
-				for ( size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					if ( m_arrItems[i] )
-					{
-						m_arrItems[i]->toXML(writer);
-					}
-				}
-				writer.WriteString(L"</dataValidations>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( L"dataValidation" == sName )
-						m_arrItems.push_back( new CDataValidation( oReader ));
-				}
-			}
-			virtual EElementType getType () const
-			{
-				return et_x_DataValidations;
-			}
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if		( oReader, L"count",		m_oCount)
-				WritingElement_ReadAttributes_Read_else_if	( oReader, L"disablePrompts",m_oDisablePrompts)
-				WritingElement_ReadAttributes_Read_else_if	( oReader, L"xWindow",	m_oXWindow)
-				WritingElement_ReadAttributes_Read_else_if	( oReader, L"yWindow",	m_oYWindow)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
-		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
-			nullable<SimpleTypes::COnOff<>>					m_oDisablePrompts;
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oXWindow;
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oYWindow;
-		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_WORKSHEETCHILDSOTHER_FILE_INCLUDE_H_

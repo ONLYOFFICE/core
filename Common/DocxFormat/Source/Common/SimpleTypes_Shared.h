@@ -37,6 +37,37 @@
 // Здесь представлены все простые типы SharedML из спецификации Office Open Xml (22.8)
 namespace SimpleTypes
 {
+	const static int shemeDefaultColor[] = 
+	{
+		0x00000000,	0x00FFFFFF,	0x00FF0000,	0x0000FF00,	0x000000FF,	0x00FFFF00,	0x00FF00FF,	0x0000FFFF,	
+		0x00000000,	0x00FFFFFF,	0x00FF0000,	0x0000FF00,	0x000000FF,	0x00FFFF00,	0x00FF00FF,	0x0000FFFF,	
+		0x00800000,	0x00008000,	0x00000080,	0x00808000,	0x00800080,	0x00008080,	0x00C0C0C0,	0x00808080,	
+		0x009999FF,	0x00993366,	0x00FFFFCC,	0x00CCFFFF,	0x00660066,	0x00FF8080,	0x000066CC,	0x00CCCCFF,	
+		0x00000080,	0x00FF00FF,	0x00FFFF00,	0x0000FFFF,	0x00800080,	0x00800000,	0x00008080,	0x000000FF,	
+		0x0000CCFF,	0x00CCFFFF,	0x00CCFFCC,	0x00FFFF99,	0x0099CCFF,	0x00FF99CC,	0x00CC99FF,	0x00FFCC99,	
+		0x003366FF,	0x0033CCCC,	0x0099CC00,	0x00FFCC00,	0x00FF9900,	0x00FF6600,	0x00666699,	0x00969696,	
+		0x00003366,	0x00339966,	0x00003300,	0x00333300,	0x00993300,	0x00993366,	0x00333399,	0x00333333
+	};
+	const static int controlPanelColors2[] = 
+	{
+		0x00000000,	0x00FFFFFF,	0x00000000,	0x00FFFFFF,
+		0x00000000,	0x00000000,	0x00000000,	0x00FFFFFF,	
+		0x00FFFFFF,	0x00000000,	0x00FFFFFF,	0x00FFFFFF,	
+		0x00000000,	0x00000000,	0x00000000,	0x00000000,	
+		0x00FFFFFF,	0x00FFFFFF,	0x00FFFFFF,	0x00000000,	
+		0x00FFFFFF,	0x00000000,	0x00000000,	0x00000000,	
+		0x00000000,	0x00000000,	0x00FFFFFF,	0x00FFFFFF
+	};
+	const static int controlPanelColors1[] = 
+	{
+		0x00FFFFFF,	0x00CCCCCC,	0x00FFFFFF,	0x006363CE,
+		0x00DDDDDD,	0x00DDDDDD,	0x00888888,	0x00000000,	
+		0x00000000,	0x00808080,	0x00B5D5FF,	0x00000000,	
+		0x00FFFFFF,	0x00FFFFFF,	0x007F7F7F,	0x00FBFCC5,	
+		0x00000000,	0x00F7F7F7,	0x00000000,	0x00FFFFFF,	
+		0x00666666,	0x00C0C0C0,	0x00DDDDDD,	0x00C0C0C0,	
+		0x00888888,	0x00FFFFFF,	0x00CCCCCC,	0x00000000
+	};
 	//--------------------------------------------------------------------------------
 	// RelationshipId 22.8.2.1 (Part 1)
 	//--------------------------------------------------------------------------------		
@@ -511,6 +542,11 @@ namespace SimpleTypes
 	{
 	public:
 		COnOff() {}
+		
+		COnOff(const bool & bVal)
+		{
+			this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
+		}
 
         virtual EOnOff  FromString(std::wstring &sValue)
 		{
@@ -527,6 +563,22 @@ namespace SimpleTypes
             else                              this->m_eValue = eDefValue;
 
             return this->m_eValue;
+		}
+		virtual EOnOff  FromStringA(const char* sValue)
+		{
+			if		(strcmp("1",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("0",		sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("true",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("True",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("t",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("on",		sValue) == 0) this->m_eValue = onoffTrue;
+			else if	(strcmp("f",		sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("false",	sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("False",	sValue) == 0) this->m_eValue = onoffFalse;
+			else if	(strcmp("off",		sValue) == 0) this->m_eValue = onoffFalse;
+			else                              this->m_eValue = eDefValue;
+
+			return this->m_eValue;
 		}
 
         virtual std::wstring ToString  () const
@@ -769,9 +821,15 @@ namespace SimpleTypes
         CUnsignedDecimalNumber(const CUnsignedDecimalNumber& obj)
         {
             this->m_eValue = obj.m_eValue;
-
         }
-
+        CUnsignedDecimalNumber(const unsigned int& val)
+        {
+            this->m_eValue = val;
+        }
+        CUnsignedDecimalNumber(const _INT32& val)
+        {
+            this->m_eValue = (unsigned int)val;
+        }
         virtual unsigned int FromString(std::wstring &sValue)
 		{
 
@@ -793,11 +851,10 @@ namespace SimpleTypes
                 this->m_eValue = 0;
             }
 
-
             return this->m_eValue;
 		}
 
-        virtual std::wstring      ToString  () const
+        virtual std::wstring ToString  () const
 		{
             return std::to_wstring( this->m_eValue);
 		}
@@ -1071,6 +1128,8 @@ namespace SimpleTypes
 		}
 		void SetRGB()
 		{
+			if (this->m_eValue == colortypeRGB) return;
+
             switch(this->m_eValue)
 			{
 				case  colortypeAqua:
@@ -1180,6 +1239,8 @@ namespace SimpleTypes
 		}
         void ByColorName(std::wstring& sValue)
 		{
+			this->m_eValue = colortypeNone;
+
 			if      (std::wstring::npos != sValue.find(L"aqua"))	this->m_eValue = colortypeAqua;
             else if (std::wstring::npos != sValue.find(L"black"))	this->m_eValue = colortypeBlack;
             else if (std::wstring::npos != sValue.find(L"blue"))	this->m_eValue = colortypeBlue;
@@ -1196,7 +1257,30 @@ namespace SimpleTypes
             else if (std::wstring::npos != sValue.find(L"teal"))	this->m_eValue = colortypeTeal;
             else if (std::wstring::npos != sValue.find(L"white"))	this->m_eValue = colortypeWhite;
             else if (std::wstring::npos != sValue.find(L"yellow"))	this->m_eValue = colortypeYellow;
-            else this->m_eValue = colortypeNone;
+			else if (std::wstring::npos != sValue.find(L"[") && std::wstring::npos != sValue.find(L"]"))
+			{				
+				size_t p1 = sValue.find(L"[");
+				size_t p2 = sValue.find(L"]");
+				std::wstring sIndex = p2 > p1 ? sValue.substr(p1 + 1, p2 - p1 - 1) : L"";
+
+				if (!sIndex.empty())
+				{
+					int index = XmlUtils::GetInteger(sIndex);
+					int nRGB = 0;
+					if (index < 64)
+					{
+						nRGB = shemeDefaultColor[index];
+					}
+					else if (index > 64 && index < 92)
+					{
+						nRGB = controlPanelColors1[index - 65];
+					}
+					m_unR = static_cast<unsigned char>((nRGB >> 16) & 0xff);
+					m_unG = static_cast<unsigned char>((nRGB >> 8) & 0xff);
+					m_unB = static_cast<unsigned char>(nRGB & 0xff);
+					this->m_eValue = colortypeRGB;
+				}
+			}
 
 			SetRGB();
 		}

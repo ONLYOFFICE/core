@@ -236,7 +236,7 @@ namespace PPTX
 						}
 						case 2:
 						{
-							pReader->SkipRecord();
+							EffectList.fromPPTY(pReader);
 							break;
 						}
 						case 3:

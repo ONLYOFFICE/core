@@ -41,6 +41,8 @@ namespace Writers
     static std::wstring g_string_comment_End = _T("</w:comments>");
     static std::wstring g_string_commentExt_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w15:commentsEx xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">");
     static std::wstring g_string_commentExt_End = _T("</w15:commentsEx>");
+	static std::wstring g_string_commentsIds_Start = _T("<w16cid:commentsIds mc:Ignorable=\"w16cid\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\">");
+	static std::wstring g_string_commentsIds_End = _T("</w16cid:commentsIds>");
     static std::wstring g_string_people_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w15:people xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">");
     static std::wstring g_string_people_End = _T("</w15:people>");
 
@@ -50,21 +52,25 @@ namespace Writers
 	public:
         std::wstring	m_sComment;
         std::wstring	m_sCommentExt;
+		std::wstring	m_sCommentsIds;
         std::wstring	m_sPeople;
 		std::wstring	m_sDocumentComment;
 		std::wstring	m_sDocumentCommentExt;
+		std::wstring	m_sDocumentCommentsIds;
 		std::wstring	m_sDocumentPeople;
 
 		CommentsWriter(std::wstring sDir) : m_sDir(sDir)
 		{
 		}
-		void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sPeople, std::wstring& sDocumentComment, std::wstring& sDocumentCommentExt, std::wstring& sDocumentPeople)
+		void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sCommentsIds, std::wstring& sPeople, std::wstring& sDocumentComment, std::wstring& sDocumentCommentExt, std::wstring& sDocumentCommentsIds, std::wstring& sDocumentPeople)
 		{
 			m_sComment		= sComment;
 			m_sCommentExt	= sCommentExt;
+			m_sCommentsIds	= sCommentsIds;
 			m_sPeople		= sPeople;
 			m_sDocumentComment		= sDocumentComment;
 			m_sDocumentCommentExt	= sDocumentCommentExt;
+			m_sDocumentCommentsIds	= sDocumentCommentsIds;
 			m_sDocumentPeople		= sDocumentPeople;
 		}
 		void Write()
@@ -88,6 +94,15 @@ namespace Writers
 				oFile.WriteStringUTF8(g_string_commentExt_Start);
 				oFile.WriteStringUTF8(m_sCommentExt);
 				oFile.WriteStringUTF8(g_string_commentExt_End);
+				oFile.CloseFile();
+			}
+			if(false == m_sCommentsIds.empty())
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsIds.DefaultFileName().GetPath());
+				oFile.WriteStringUTF8(g_string_commentsIds_Start);
+				oFile.WriteStringUTF8(m_sCommentsIds);
+				oFile.WriteStringUTF8(g_string_commentsIds_End);
 				oFile.CloseFile();
 			}
             if(false == m_sPeople.empty())
@@ -118,6 +133,15 @@ namespace Writers
 				oFile.WriteStringUTF8(g_string_commentExt_Start);
 				oFile.WriteStringUTF8(m_sDocumentCommentExt);
 				oFile.WriteStringUTF8(g_string_commentExt_End);
+				oFile.CloseFile();
+			}
+			if(false == m_sDocumentCommentsIds.empty())
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentCommentsIds.DefaultFileName().GetPath());
+				oFile.WriteStringUTF8(g_string_commentsIds_Start);
+				oFile.WriteStringUTF8(m_sDocumentCommentsIds);
+				oFile.WriteStringUTF8(g_string_commentsIds_End);
 				oFile.CloseFile();
 			}
 			if(false == m_sDocumentPeople.empty())

@@ -705,7 +705,6 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 
 // TO DO: Нехватающие классы:
-//        <w:altChunk>
 //        <w:customXml>
 //        <w:moveFrom>
 //        <w:moveTo>
@@ -725,9 +724,9 @@ namespace OOX
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
-/*						if ( _T("w:altChunk") == sName )
+						if ( _T("w:altChunk") == sName )
 							pItem = new CAltChunk( oItem );
-						else */if ( _T("w:bookmarkEnd") == sName )
+						else if ( _T("w:bookmarkEnd") == sName )
 							pItem = new CBookmarkEnd( oItem );
 						else if ( _T("w:bookmarkStart") == sName )
 							pItem = new CBookmarkStart( oItem );
@@ -811,9 +810,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
-				/*if ( _T("w:altChunk") == sName )
+				if ( _T("w:altChunk") == sName )
 					pItem = new CAltChunk( oReader );
-				else */if ( _T("w:bookmarkEnd") == sName )
+				else if ( _T("w:bookmarkEnd") == sName )
 					pItem = new CBookmarkEnd( oReader );
 				else if ( _T("w:bookmarkStart") == sName )
 					pItem = new CBookmarkStart( oReader );

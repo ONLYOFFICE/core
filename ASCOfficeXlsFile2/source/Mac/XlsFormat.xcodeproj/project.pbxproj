@@ -14,12 +14,6 @@
 		6967BAEA1E27C98100A129E2 /* CFStreamCacheReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5201E27C97B00A129E2 /* CFStreamCacheReader.cpp */; };
 		6967BAEB1E27C98100A129E2 /* CFStreamCacheWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5221E27C97B00A129E2 /* CFStreamCacheWriter.cpp */; };
 		6967BAEC1E27C98100A129E2 /* CompoundFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5241E27C97B00A129E2 /* CompoundFile.cpp */; };
-		6967BAED1E27C98100A129E2 /* BiffDecoder_RCF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5271E27C97B00A129E2 /* BiffDecoder_RCF.cpp */; };
-		6967BAEE1E27C98100A129E2 /* BinaryCodec_RCF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5291E27C97B00A129E2 /* BinaryCodec_RCF.cpp */; };
-		6967BAEF1E27C98100A129E2 /* Decryptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B52C1E27C97B00A129E2 /* Decryptor.cpp */; };
-		6967BAF01E27C98100A129E2 /* RC4Crypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B52E1E27C97B00A129E2 /* RC4Crypt.cpp */; };
-		6967BAF11E27C98100A129E2 /* cipher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5311E27C97B00A129E2 /* cipher.cpp */; };
-		6967BAF21E27C98100A129E2 /* digest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5331E27C97B00A129E2 /* digest.cpp */; };
 		6967BAF31E27C98100A129E2 /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5361E27C97B00A129E2 /* Log.cpp */; };
 		6967BAF41E27C98100A129E2 /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B5381E27C97B00A129E2 /* Logger.cpp */; };
 		6967BAF51E27C98100A129E2 /* AnyObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B53B1E27C97B00A129E2 /* AnyObject.cpp */; };
@@ -732,7 +726,6 @@
 		6967BDB81E27C98300A129E2 /* GlobalWorkbookInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BACF1E27C98000A129E2 /* GlobalWorkbookInfo.cpp */; };
 		6967BDB91E27C98300A129E2 /* MacroSheetSubstream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BAD11E27C98000A129E2 /* MacroSheetSubstream.cpp */; };
 		6967BDBA1E27C98300A129E2 /* CodePageOle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BAD51E27C98000A129E2 /* CodePageOle.cpp */; };
-		6967BDBB1E27C98300A129E2 /* Property_Structures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BAD81E27C98000A129E2 /* Property_Structures.cpp */; };
 		6967BDBC1E27C98300A129E2 /* PropertyFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BAD91E27C98000A129E2 /* PropertyFactory.cpp */; };
 		6967BDBD1E27C98300A129E2 /* PropertySet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BADB1E27C98000A129E2 /* PropertySet.cpp */; };
 		6967BDBE1E27C98300A129E2 /* PropertySetStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BADD1E27C98000A129E2 /* PropertySetStream.cpp */; };
@@ -762,6 +755,13 @@
 		6967BE9D1E27CA1500A129E2 /* xlsx_protection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BE831E27CA1500A129E2 /* xlsx_protection.cpp */; };
 		6967BE9E1E27CA1500A129E2 /* xlsx_tablecontext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BE851E27CA1500A129E2 /* xlsx_tablecontext.cpp */; };
 		6967BE9F1E27CA1500A129E2 /* xlsx_textcontext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BE871E27CA1500A129E2 /* xlsx_textcontext.cpp */; };
+		8A1BC16622DF3F7A0084799E /* digest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1BC15922DF3F780084799E /* digest.cpp */; };
+		8A1BC16722DF3F7A0084799E /* cipher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1BC15C22DF3F780084799E /* cipher.cpp */; };
+		8A1BC16822DF3F7A0084799E /* RC4Crypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1BC15D22DF3F780084799E /* RC4Crypt.cpp */; };
+		8A1BC16922DF3F7A0084799E /* XORCrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1BC15E22DF3F780084799E /* XORCrypt.cpp */; };
+		8A1BC16A22DF3F7A0084799E /* BiffDecoder_RCF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1BC16122DF3F790084799E /* BiffDecoder_RCF.cpp */; };
+		8A1BC16B22DF3F7A0084799E /* BinaryCodec_RCF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1BC16322DF3F790084799E /* BinaryCodec_RCF.cpp */; };
+		8A1BC16C22DF3F7A0084799E /* Decryptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1BC16522DF3F790084799E /* Decryptor.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -793,19 +793,6 @@
 		6967B5231E27C97B00A129E2 /* CFStreamCacheWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFStreamCacheWriter.h; sourceTree = "<group>"; };
 		6967B5241E27C97B00A129E2 /* CompoundFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompoundFile.cpp; sourceTree = "<group>"; };
 		6967B5251E27C97B00A129E2 /* CompoundFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompoundFile.h; sourceTree = "<group>"; };
-		6967B5271E27C97B00A129E2 /* BiffDecoder_RCF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiffDecoder_RCF.cpp; sourceTree = "<group>"; };
-		6967B5281E27C97B00A129E2 /* BiffDecoder_RCF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiffDecoder_RCF.h; sourceTree = "<group>"; };
-		6967B5291E27C97B00A129E2 /* BinaryCodec_RCF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryCodec_RCF.cpp; sourceTree = "<group>"; };
-		6967B52A1E27C97B00A129E2 /* BinaryCodec_RCF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryCodec_RCF.h; sourceTree = "<group>"; };
-		6967B52B1E27C97B00A129E2 /* Crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crypt.h; sourceTree = "<group>"; };
-		6967B52C1E27C97B00A129E2 /* Decryptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Decryptor.cpp; sourceTree = "<group>"; };
-		6967B52D1E27C97B00A129E2 /* Decryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decryptor.h; sourceTree = "<group>"; };
-		6967B52E1E27C97B00A129E2 /* RC4Crypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RC4Crypt.cpp; sourceTree = "<group>"; };
-		6967B52F1E27C97B00A129E2 /* RC4Crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RC4Crypt.h; sourceTree = "<group>"; };
-		6967B5311E27C97B00A129E2 /* cipher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cipher.cpp; sourceTree = "<group>"; };
-		6967B5321E27C97B00A129E2 /* cipher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cipher.h; sourceTree = "<group>"; };
-		6967B5331E27C97B00A129E2 /* digest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = digest.cpp; sourceTree = "<group>"; };
-		6967B5341E27C97B00A129E2 /* digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = digest.h; sourceTree = "<group>"; };
 		6967B5361E27C97B00A129E2 /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log.cpp; sourceTree = "<group>"; };
 		6967B5371E27C97B00A129E2 /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
 		6967B5381E27C97B00A129E2 /* Logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Logger.cpp; sourceTree = "<group>"; };
@@ -2241,7 +2228,6 @@
 		6967BAD51E27C98000A129E2 /* CodePageOle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CodePageOle.cpp; sourceTree = "<group>"; };
 		6967BAD61E27C98000A129E2 /* CodePageOle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CodePageOle.h; sourceTree = "<group>"; };
 		6967BAD71E27C98000A129E2 /* Property.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Property.h; sourceTree = "<group>"; };
-		6967BAD81E27C98000A129E2 /* Property_Structures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Property_Structures.cpp; sourceTree = "<group>"; };
 		6967BAD91E27C98000A129E2 /* PropertyFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyFactory.cpp; sourceTree = "<group>"; };
 		6967BADA1E27C98000A129E2 /* PropertyFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyFactory.h; sourceTree = "<group>"; };
 		6967BADB1E27C98000A129E2 /* PropertySet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertySet.cpp; sourceTree = "<group>"; };
@@ -2451,6 +2437,21 @@
 		6967BE861E27CA1500A129E2 /* xlsx_tablecontext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xlsx_tablecontext.h; sourceTree = "<group>"; };
 		6967BE871E27CA1500A129E2 /* xlsx_textcontext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xlsx_textcontext.cpp; sourceTree = "<group>"; };
 		6967BE881E27CA1500A129E2 /* xlsx_textcontext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xlsx_textcontext.h; sourceTree = "<group>"; };
+		8A1BC15622DF3F780084799E /* Decryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decryptor.h; sourceTree = "<group>"; };
+		8A1BC15722DF3F780084799E /* RC4Crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RC4Crypt.h; sourceTree = "<group>"; };
+		8A1BC15922DF3F780084799E /* digest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = digest.cpp; sourceTree = "<group>"; };
+		8A1BC15A22DF3F780084799E /* digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = digest.h; sourceTree = "<group>"; };
+		8A1BC15B22DF3F780084799E /* cipher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cipher.h; sourceTree = "<group>"; };
+		8A1BC15C22DF3F780084799E /* cipher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cipher.cpp; sourceTree = "<group>"; };
+		8A1BC15D22DF3F780084799E /* RC4Crypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RC4Crypt.cpp; sourceTree = "<group>"; };
+		8A1BC15E22DF3F780084799E /* XORCrypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XORCrypt.cpp; sourceTree = "<group>"; };
+		8A1BC15F22DF3F780084799E /* XORCrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XORCrypt.h; sourceTree = "<group>"; };
+		8A1BC16022DF3F790084799E /* BiffDecoder_RCF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiffDecoder_RCF.h; sourceTree = "<group>"; };
+		8A1BC16122DF3F790084799E /* BiffDecoder_RCF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiffDecoder_RCF.cpp; sourceTree = "<group>"; };
+		8A1BC16222DF3F790084799E /* BinaryCodec_RCF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryCodec_RCF.h; sourceTree = "<group>"; };
+		8A1BC16322DF3F790084799E /* BinaryCodec_RCF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryCodec_RCF.cpp; sourceTree = "<group>"; };
+		8A1BC16422DF3F790084799E /* Crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crypt.h; sourceTree = "<group>"; };
+		8A1BC16522DF3F790084799E /* Decryptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Decryptor.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2535,29 +2536,20 @@
 		6967B5261E27C97B00A129E2 /* Crypt */ = {
 			isa = PBXGroup;
 			children = (
-				6967B5271E27C97B00A129E2 /* BiffDecoder_RCF.cpp */,
-				6967B5281E27C97B00A129E2 /* BiffDecoder_RCF.h */,
-				6967B5291E27C97B00A129E2 /* BinaryCodec_RCF.cpp */,
-				6967B52A1E27C97B00A129E2 /* BinaryCodec_RCF.h */,
-				6967B52B1E27C97B00A129E2 /* Crypt.h */,
-				6967B52C1E27C97B00A129E2 /* Decryptor.cpp */,
-				6967B52D1E27C97B00A129E2 /* Decryptor.h */,
-				6967B52E1E27C97B00A129E2 /* RC4Crypt.cpp */,
-				6967B52F1E27C97B00A129E2 /* RC4Crypt.h */,
-				6967B5301E27C97B00A129E2 /* rtl */,
+				8A1BC16122DF3F790084799E /* BiffDecoder_RCF.cpp */,
+				8A1BC16022DF3F790084799E /* BiffDecoder_RCF.h */,
+				8A1BC16322DF3F790084799E /* BinaryCodec_RCF.cpp */,
+				8A1BC16222DF3F790084799E /* BinaryCodec_RCF.h */,
+				8A1BC16422DF3F790084799E /* Crypt.h */,
+				8A1BC16522DF3F790084799E /* Decryptor.cpp */,
+				8A1BC15622DF3F780084799E /* Decryptor.h */,
+				8A1BC15D22DF3F780084799E /* RC4Crypt.cpp */,
+				8A1BC15722DF3F780084799E /* RC4Crypt.h */,
+				8A1BC15822DF3F780084799E /* rtl */,
+				8A1BC15E22DF3F780084799E /* XORCrypt.cpp */,
+				8A1BC15F22DF3F780084799E /* XORCrypt.h */,
 			);
 			path = Crypt;
-			sourceTree = "<group>";
-		};
-		6967B5301E27C97B00A129E2 /* rtl */ = {
-			isa = PBXGroup;
-			children = (
-				6967B5311E27C97B00A129E2 /* cipher.cpp */,
-				6967B5321E27C97B00A129E2 /* cipher.h */,
-				6967B5331E27C97B00A129E2 /* digest.cpp */,
-				6967B5341E27C97B00A129E2 /* digest.h */,
-			);
-			path = rtl;
 			sourceTree = "<group>";
 		};
 		6967B5351E27C97B00A129E2 /* Logging */ = {
@@ -4060,7 +4052,6 @@
 				6967BAD51E27C98000A129E2 /* CodePageOle.cpp */,
 				6967BAD61E27C98000A129E2 /* CodePageOle.h */,
 				6967BAD71E27C98000A129E2 /* Property.h */,
-				6967BAD81E27C98000A129E2 /* Property_Structures.cpp */,
 				6967BAD91E27C98000A129E2 /* PropertyFactory.cpp */,
 				6967BADA1E27C98000A129E2 /* PropertyFactory.h */,
 				6967BADB1E27C98000A129E2 /* PropertySet.cpp */,
@@ -4298,6 +4289,17 @@
 			name = Common;
 			sourceTree = "<group>";
 		};
+		8A1BC15822DF3F780084799E /* rtl */ = {
+			isa = PBXGroup;
+			children = (
+				8A1BC15922DF3F780084799E /* digest.cpp */,
+				8A1BC15A22DF3F780084799E /* digest.h */,
+				8A1BC15B22DF3F780084799E /* cipher.h */,
+				8A1BC15C22DF3F780084799E /* cipher.cpp */,
+			);
+			path = rtl;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4339,6 +4341,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 6967B4FF1E27C80700A129E2;
@@ -4504,7 +4507,6 @@
 				6967BC131E27C98100A129E2 /* TextPropsStream.cpp in Sources */,
 				6967BB7D1E27C98100A129E2 /* HideObj.cpp in Sources */,
 				6967BD191E27C98200A129E2 /* SharedParsedFormula.cpp in Sources */,
-				6967BAEF1E27C98100A129E2 /* Decryptor.cpp in Sources */,
 				6967BB931E27C98100A129E2 /* MarkerFormat.cpp in Sources */,
 				6967BCB91E27C98200A129E2 /* OfficeArtFRITContainer.cpp in Sources */,
 				6967BD241E27C98200A129E2 /* TableFeatureType.cpp in Sources */,
@@ -4534,6 +4536,7 @@
 				6967BBA91E27C98100A129E2 /* ObjectLink.cpp in Sources */,
 				6967BCF61E27C98200A129E2 /* PtgName.cpp in Sources */,
 				6967BC201E27C98100A129E2 /* VCenter.cpp in Sources */,
+				8A1BC16622DF3F7A0084799E /* digest.cpp in Sources */,
 				6967BB621E27C98100A129E2 /* Feat.cpp in Sources */,
 				6967BDB71E27C98300A129E2 /* GlobalsSubstream.cpp in Sources */,
 				6967BBB31E27C98100A129E2 /* PicF.cpp in Sources */,
@@ -4544,9 +4547,7 @@
 				6967BB811E27C98100A129E2 /* IFmtRecord.cpp in Sources */,
 				6967BC341E27C98100A129E2 /* AFDOperStr.cpp in Sources */,
 				6967BCDE1E27C98200A129E2 /* PtgElfColSV.cpp in Sources */,
-				6967BDBB1E27C98300A129E2 /* Property_Structures.cpp in Sources */,
 				6967BC291E27C98100A129E2 /* WsBool.cpp in Sources */,
-				6967BAF01E27C98100A129E2 /* RC4Crypt.cpp in Sources */,
 				6967BB431E27C98100A129E2 /* DBCell.cpp in Sources */,
 				6967BB801E27C98100A129E2 /* HorizontalPageBreaks.cpp in Sources */,
 				6967BD231E27C98200A129E2 /* SyntaxPtg.cpp in Sources */,
@@ -4559,6 +4560,7 @@
 				6967BAF31E27C98100A129E2 /* Log.cpp in Sources */,
 				6967BB791E27C98100A129E2 /* HCenter.cpp in Sources */,
 				6967BBFA1E27C98100A129E2 /* SXPIEx.cpp in Sources */,
+				8A1BC16A22DF3F7A0084799E /* BiffDecoder_RCF.cpp in Sources */,
 				6967BE971E27CA1500A129E2 /* xlsx_conversion_context.cpp in Sources */,
 				6967BC7C1E27C98100A129E2 /* FixedPoint.cpp in Sources */,
 				6967BC0D1E27C98100A129E2 /* Table.cpp in Sources */,
@@ -4672,6 +4674,7 @@
 				6967BD8D1E27C98200A129E2 /* SHFMLA_SET.cpp in Sources */,
 				6967BB6C1E27C98100A129E2 /* Font.cpp in Sources */,
 				6967BCF91E27C98200A129E2 /* PtgParam.cpp in Sources */,
+				8A1BC16822DF3F7A0084799E /* RC4Crypt.cpp in Sources */,
 				6967BD1F1E27C98200A129E2 /* SqRefU.cpp in Sources */,
 				6967BBF21E27C98100A129E2 /* SxDXF.cpp in Sources */,
 				6967BCDB1E27C98200A129E2 /* PtgBool.cpp in Sources */,
@@ -4698,18 +4701,19 @@
 				6967BBC01E27C98100A129E2 /* Prot4RevPass.cpp in Sources */,
 				6967BCC01E27C98200A129E2 /* OfficeArtRGFOPTE.cpp in Sources */,
 				6967BE8E1E27CA1500A129E2 /* mediaitems_utils.cpp in Sources */,
+				8A1BC16C22DF3F7A0084799E /* Decryptor.cpp in Sources */,
 				6967BB2D1E27C98100A129E2 /* CompressPictures.cpp in Sources */,
 				6967BB231E27C98100A129E2 /* CFEx.cpp in Sources */,
 				6967BC881E27C98100A129E2 /* FtCmo.cpp in Sources */,
 				6967BB631E27C98100A129E2 /* FeatHdr.cpp in Sources */,
 				6967BB701E27C98100A129E2 /* Format.cpp in Sources */,
+				8A1BC16B22DF3F7A0084799E /* BinaryCodec_RCF.cpp in Sources */,
 				6967BB1A1E27C98100A129E2 /* CalcMode.cpp in Sources */,
 				6967BD7B1E27C98200A129E2 /* PIVOTTH.cpp in Sources */,
 				6967BB2E1E27C98100A129E2 /* CondFmt.cpp in Sources */,
 				6967BD0B1E27C98200A129E2 /* RgbExtra.cpp in Sources */,
 				6967BBAE1E27C98100A129E2 /* OleObjectSize.cpp in Sources */,
 				6967BBA51E27C98100A129E2 /* NamePublish.cpp in Sources */,
-				6967BAF21E27C98100A129E2 /* digest.cpp in Sources */,
 				6967BC751E27C98100A129E2 /* Feat11FieldDataItem.cpp in Sources */,
 				6967BB8B1E27C98100A129E2 /* Legend.cpp in Sources */,
 				6967BCA91E27C98200A129E2 /* MSOSHADECOLOR.cpp in Sources */,
@@ -4783,7 +4787,6 @@
 				6967BB8A1E27C98100A129E2 /* LeftMargin.cpp in Sources */,
 				6967BD9A1E27C98300A129E2 /* SXADDLCALCMEMBER.cpp in Sources */,
 				6967BDBF1E27C98300A129E2 /* SummaryInformation.cpp in Sources */,
-				6967BAED1E27C98100A129E2 /* BiffDecoder_RCF.cpp in Sources */,
 				6967BDB01E27C98300A129E2 /* THEME_bu.cpp in Sources */,
 				6967BC6C1E27C98100A129E2 /* ExtPtgArea3D.cpp in Sources */,
 				6967BC3E1E27C98100A129E2 /* BuiltInStyle.cpp in Sources */,
@@ -4863,6 +4866,7 @@
 				6967BC3D1E27C98100A129E2 /* BorderFillInfo.cpp in Sources */,
 				6967BAFB1E27C98100A129E2 /* AttachedLabel.cpp in Sources */,
 				6967BCA41E27C98200A129E2 /* NoteSh.cpp in Sources */,
+				8A1BC16922DF3F7A0084799E /* XORCrypt.cpp in Sources */,
 				6967BBBE1E27C98100A129E2 /* PrintSize.cpp in Sources */,
 				6967BDA31E27C98300A129E2 /* SXADDLQSI.cpp in Sources */,
 				6967BB871E27C98100A129E2 /* Label.cpp in Sources */,
@@ -4988,7 +4992,6 @@
 				6967BCDC1E27C98200A129E2 /* PtgElfCol.cpp in Sources */,
 				6967BB471E27C98100A129E2 /* DConBin.cpp in Sources */,
 				6967BB271E27C98100A129E2 /* ChartFormat.cpp in Sources */,
-				6967BAEE1E27C98100A129E2 /* BinaryCodec_RCF.cpp in Sources */,
 				6967BB371E27C98100A129E2 /* CRN.cpp in Sources */,
 				6967BBD11E27C98100A129E2 /* RRTabId.cpp in Sources */,
 				6967BD171E27C98200A129E2 /* SerNum.cpp in Sources */,
@@ -5013,6 +5016,7 @@
 				6967BB391E27C98100A129E2 /* CrtLayout12A.cpp in Sources */,
 				6967BC3A1E27C98100A129E2 /* BiffStructure.cpp in Sources */,
 				6967BCCE1E27C98200A129E2 /* PtgArea3d.cpp in Sources */,
+				8A1BC16722DF3F7A0084799E /* cipher.cpp in Sources */,
 				6967BB981E27C98100A129E2 /* MDXSet.cpp in Sources */,
 				6967BE911E27CA1500A129E2 /* oox_package.cpp in Sources */,
 				6967BD321E27C98200A129E2 /* XLUnicodeRichExtendedString.cpp in Sources */,
@@ -5063,7 +5067,6 @@
 				6967BB0A1E27C98100A129E2 /* BigName.cpp in Sources */,
 				6967BCF71E27C98200A129E2 /* PtgNameX.cpp in Sources */,
 				6967BD9B1E27C98300A129E2 /* SXADDLCONDFMT.cpp in Sources */,
-				6967BAF11E27C98100A129E2 /* cipher.cpp in Sources */,
 				6967BAE71E27C98100A129E2 /* CFRecord.cpp in Sources */,
 				6967BAFA1E27C98100A129E2 /* Array.cpp in Sources */,
 				6967BBC71E27C98100A129E2 /* RadarArea.cpp in Sources */,
@@ -5209,18 +5212,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					_USE_LIBXML2_READER_,
-					LINUX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					_ASC_USE_UNICODE_CONVERTER_,
-					UNICODECONVERTER_USE_DYNAMIC_LIBRARY,
-					_IOS,
-					_MAC,
-				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -5244,18 +5235,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					_USE_LIBXML2_READER_,
-					LINUX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					_ASC_USE_UNICODE_CONVERTER_,
-					UNICODECONVERTER_USE_DYNAMIC_LIBRARY,
-					_IOS,
-					_MAC,
-				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

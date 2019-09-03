@@ -122,10 +122,8 @@ namespace OOX
 				{
 					writer.WriteString(_T("<tableStyle"));
 					WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
-					if((m_oPivot.IsInit() && true == m_oPivot->ToBool()) || (m_oTable.IsInit() && false == m_oTable->ToBool()))
-						writer.WriteString(_T(" table=\"0\""));
-					else
-						writer.WriteString(_T(" pivot=\"0\""));
+					WritingStringNullableAttrBool(L"table", m_oTable);
+					WritingStringNullableAttrBool(L"pivot", m_oPivot);
 					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 					writer.WriteString(_T(">"));
 					

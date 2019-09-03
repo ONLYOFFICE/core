@@ -467,7 +467,8 @@ extern int g_nCurFormatVersion;
 		cols = 8,
 		pgBorders = 9,
 		footnotePr = 10,
-		endnotePr = 11
+		endnotePr = 11,
+		rtlGutter = 12
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -506,7 +507,8 @@ extern int g_nCurFormatVersion;
 		JsaProject = 22,
 		BookmarkStart = 23,
 		BookmarkEnd = 24,
-		MRun = 25
+		MRun = 25,
+		AltChunk = 26
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -782,7 +784,8 @@ extern int g_nCurFormatVersion;
 		RightTwips = 8,
 		BottomTwips = 9,
 		HeaderTwips = 10,
-		FooterTwips = 11
+		FooterTwips = 11,
+		GutterTwips = 12
 	};}
 	namespace c_oSer_ColorType{enum c_oSer_ColorType
 	{
@@ -801,7 +804,9 @@ extern int g_nCurFormatVersion;
 		QuoteText = 7,
 		Solved = 8,
 		Replies = 9,
-		OOData = 10
+		OOData = 10,
+		DurableId = 11,
+		ProviderId = 12
 	};}
 	namespace c_oSer_SettingsType{enum c_oSer_SettingsType
 	{
@@ -816,7 +821,13 @@ extern int g_nCurFormatVersion;
 		Compat = 8,
 		DefaultTabStopTwips = 9,
 		DecimalSymbol = 10,
-		ListSeparator = 11
+		ListSeparator = 11,
+		GutterAtTop = 12,
+		MirrorMargins = 13,
+		PrintTwoOnOne = 14,
+		BookFoldPrinting = 15,
+		BookFoldPrintingSheets = 16,
+		BookFoldRevPrinting = 17
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1212,7 +1223,10 @@ extern int g_nCurFormatVersion;
 		CompatSetting = 0,
 		CompatName = 1,
 		CompatUri = 2,
-		CompatValue = 3
+		CompatValue = 3,
+		Flags1 = 4,
+		Flags2 = 5,
+		Flags3 = 6
 	};}
 }
 

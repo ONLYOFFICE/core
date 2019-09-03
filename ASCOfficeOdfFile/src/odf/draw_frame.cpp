@@ -207,6 +207,11 @@ void draw_g::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
 		
 		if (position_child_x2 < x + cx || position_child_x2 == 0x7fffffff) position_child_x2 = x + cx;
 		if (position_child_y2 < y + cy || position_child_y2 == 0x7fffffff) position_child_y2 = y + cy;
+
+		if (frame->is_object_)
+		{
+			object_index = content_.size() - 1;
+		}
 	}
 	else if (shape)
 	{
@@ -256,16 +261,20 @@ void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_frame::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
-        CP_CHECK_NAME(L"draw", L"image") ||//копия объекта в виде картинки ну.. или просто картинка
-        CP_CHECK_NAME(L"draw", L"object") ||//месторасположение embedded объекта
-        CP_CHECK_NAME(L"draw", L"object-ole") ||
-        CP_CHECK_NAME(L"draw", L"applet") ||
-        CP_CHECK_NAME(L"draw", L"floating-frame") ||
-        CP_CHECK_NAME(L"draw", L"plugin") ||
-        CP_CHECK_NAME(L"table", L"table") 
-        )
+        CP_CHECK_NAME(L"draw", L"image")	||//копия объекта в виде картинки ну.. или просто картинка
+        CP_CHECK_NAME(L"table", L"table")	||
+        CP_CHECK_NAME(L"draw", L"object-ole")||
+        CP_CHECK_NAME(L"draw", L"applet")	||
+        CP_CHECK_NAME(L"draw", L"floating-frame")||
+        CP_CHECK_NAME(L"draw", L"plugin")
+		)	
     {
         CP_CREATE_ELEMENT(content_);
+    }
+	else if CP_CHECK_NAME(L"draw", L"object")	//embedded объект
+    {
+        CP_CREATE_ELEMENT(content_);
+		is_object_ = true;
     }
     else if CP_CHECK_NAME(L"office", L"event-listeners")
     {

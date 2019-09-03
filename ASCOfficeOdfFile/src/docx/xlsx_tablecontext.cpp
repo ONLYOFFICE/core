@@ -290,6 +290,23 @@ unsigned int xlsx_table_context::columns_count()
     return state()->columns_count();    
 }
 
+void xlsx_table_context::set_header_page(_CP_OPT(double) val)
+{
+	state()->header_page = val;
+}
+_CP_OPT(double) xlsx_table_context::get_header_page()
+{
+	return state()->header_page;
+}
+void xlsx_table_context::set_footer_page(_CP_OPT(double) val)
+{
+	state()->footer_page = val;
+}
+_CP_OPT(double) xlsx_table_context::get_footer_page()
+{
+	return state()->footer_page;
+}
+
 std::wstring xlsx_table_context::default_row_cell_style()
 {
     return state()->default_row_cell_style();
@@ -340,6 +357,12 @@ void xlsx_table_context::serialize_tableParts(std::wostream & _Wostream, rels & 
 
 // из за дебелизма мсофис которому ОБЯЗАТЕЛЬНО нужно прописывать имена колонок таблицы (и они должны быть еще 
 // прописаны и в самих данных таблицы !!
+
+		while (xlsx_data_ranges_[it->second]->header_values.size() > xlsx_data_ranges_[it->second]->cell_end.first - 
+											xlsx_data_ranges_[it->second]->cell_start.first + 1)
+		{
+			xlsx_data_ranges_[it->second]->header_values.pop_back();
+		}
 		int i = xlsx_data_ranges_[it->second]->header_values.size() - 1;
 		for (; i >= 0; i--)
 		{
@@ -504,6 +527,10 @@ void xlsx_table_context::serialize_table_format(std::wostream & _Wostream)
 void xlsx_table_context::serialize_page_properties(std::wostream & _Wostream)
 {
     return state()->serialize_page_properties(_Wostream);
+}
+void xlsx_table_context::serialize_header_footer(std::wostream & _Wostream)
+{
+    return state()->serialize_header_footer(_Wostream);
 }
 void xlsx_table_context::serialize_background(std::wostream & _Wostream)
 {

@@ -46,7 +46,6 @@
 #include "Math/OMath.h"
 
 // TO DO: Нехватающие классы:
-//        <w:altChunk>
 //        <w:customXml>
 //        <w:moveFrom>
 //        <w:moveTo>
@@ -114,9 +113,9 @@ namespace OOX
 					std::wstring sName = oReader.GetName();
 					WritingElement *pItem = NULL;
 
-					/*if ( _T("w:altChunk") == sName )
-					pItem = new Logic::AltChunk( oItem );
-					else */if ( _T("w:bookmarkEnd") == sName )
+					if ( _T("w:altChunk") == sName )
+						pItem = new Logic::CAltChunk( oReader );
+					else if ( _T("w:bookmarkEnd") == sName )
 						pItem = new Logic::CBookmarkEnd( oReader );
 					else if ( _T("w:bookmarkStart") == sName )
 						pItem = new Logic::CBookmarkStart( oReader );

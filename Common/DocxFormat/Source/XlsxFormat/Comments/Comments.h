@@ -41,6 +41,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CThreadedComment;
 		class CCommentItem
 		{
 		public:
@@ -52,19 +53,25 @@ namespace OOX
 			nullable<unsigned int> m_nTopOffset;
 			nullable<unsigned int> m_nRightOffset;
 			nullable<unsigned int> m_nBottomOffset;
-			nullable<double> m_dLeftMM;
-			nullable<double> m_dTopMM;
-			nullable<double> m_dWidthMM;
-			nullable<double> m_dHeightMM;
-			nullable<std::wstring> m_sAuthor;
+			nullable_double	m_dLeftMM;
+			nullable_double m_dTopMM;
+			nullable_double m_dWidthMM;
+			nullable_double m_dHeightMM;
+			nullable_string	m_sAuthor;
 			nullable<unsigned int> m_nRow;
 			nullable<unsigned int> m_nCol;
-			nullable<bool> m_bMove;
-			nullable<bool> m_bSize;
-			nullable<CSi> m_oText;
-            nullable<std::wstring> m_sGfxdata;
+			nullable_bool	m_bMove;
+			nullable_bool	m_bSize;
+			nullable<CSi>	m_oText;
+			CThreadedComment*	m_pThreadedComment;
+			bool m_bThreadedCommentCopy;
+			nullable_string m_sGfxdata;
+			nullable_bool	m_bVisible;
+			nullable_string m_sFillColorRgb;
 			CCommentItem()
 			{
+				m_pThreadedComment = NULL;
+				m_bThreadedCommentCopy = false;
 			}
 			bool IsValid()
 			{
@@ -84,12 +91,12 @@ namespace OOX
 			}
 			virtual void ClearItems()
 			{
-                m_arrItems.clear();
+				m_arrItems.clear();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return L"";
 			}
@@ -97,10 +104,10 @@ namespace OOX
 			{
 				writer.WriteString(L"<authors>");
 
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
+				for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				{
 					writer.WriteString(L"<author>");
-                        writer.WriteEncodeXmlString(m_arrItems[i]);
+						writer.WriteEncodeXmlString(m_arrItems[i]);
 					writer.WriteString(L"</author>");
 				}
 				writer.WriteString(L"</authors>");
@@ -119,7 +126,7 @@ namespace OOX
 
 					if ( L"author" == sName )
 					{
-                        m_arrItems.push_back(oReader.GetText3());
+						m_arrItems.push_back(oReader.GetText3());
 					}
 				}
 			}
@@ -134,7 +141,7 @@ namespace OOX
 			{
 			}
 		public:
-            std::vector<std::wstring>  m_arrItems;
+			std::vector<std::wstring>  m_arrItems;
 		};
 		class CComment : public WritingElement
 		{
@@ -149,7 +156,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return L"";
 			}
@@ -160,6 +167,7 @@ namespace OOX
 					writer.WriteString(L"<comment");
 					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					WritingStringNullableAttrInt(L"authorId", m_oAuthorId, m_oAuthorId->GetValue());
+					WritingStringNullableAttrString(L"xr:uid", m_oUid, m_oUid->ToString());
 					writer.WriteString(L">");
 					
 					writer.WriteString(L"<text>");
@@ -196,11 +204,13 @@ namespace OOX
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if ( oReader, L"ref",      m_oRef )
 					WritingElement_ReadAttributes_Read_if ( oReader, L"authorId", m_oAuthorId )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"xr:uid", m_oUid )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oAuthorId;
+			nullable<SimpleTypes::CGuid > m_oUid;
 
 			nullable<CSi> m_oText;
 		};
@@ -217,7 +227,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return L"";
 			}
@@ -225,13 +235,13 @@ namespace OOX
 			{
 				writer.WriteString(L"<commentList>");
 
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
+				for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (  m_arrItems[i] )
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
 
 				writer.WriteString(L"</commentList>");
 			}
@@ -331,15 +341,15 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" mc:Ignorable=\"xr\">");
 				if(m_oAuthors.IsInit())
 					m_oAuthors->toXML(sXml);
 				if(m_oCommentList.IsInit())
 					m_oCommentList->toXML(sXml);
 				sXml.WriteString(L"</comments>");
 
-                std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+				std::wstring sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
@@ -383,7 +393,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return L"";
 			}

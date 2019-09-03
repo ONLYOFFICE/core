@@ -63,25 +63,25 @@ namespace ComplexTypes
 #define ComplexTypes_WriteAttribute( sStartString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
-		sResult += sStartString;\
-		sResult += oValue->ToString();\
-		sResult += _T("\" ");\
+		sResult += sStartString + oValue->ToString() + L"\" ";\
 	}
 
 #define ComplexTypes_WriteAttribute2( sStartString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
-		sResult += sStartString;\
-        sResult += oValue.get2();\
-		sResult += _T("\" ");\
+		sResult += sStartString + oValue.get2() + L"\" ";\
 	}
-
+#define ComplexTypes_WriteAttribute3( sStartString, oValue ) \
+	if ( oValue.IsInit() )\
+	{\
+		sResult += sStartString + (*oValue) + L"\" ";\
+	}
 #define ComplexTypes_WriteAttribute2Encode( sStartString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
 		sResult += sStartString;\
 		sResult += XmlUtils::EncodeXmlString(oValue.get2());\
-		sResult += _T("\" ");\
+		sResult += L"\" ";\
 	}
 
 	class ComplexType
@@ -93,7 +93,55 @@ namespace ComplexTypes
 		virtual void    FromXML(XmlUtils::CXmlNode& oNode) = 0;
         virtual std::wstring ToString() const                   = 0;
 	};
+	//--------------------------------------------------------------------------------
+	// DecimalNumber 17.3.1.10 (Part 1)
+	//--------------------------------------------------------------------------------
+	class CDecimalNumber : public ComplexType
+	{
+	public:
+		ComplexTypes_AdditionConstructors(CDecimalNumber)
+		CDecimalNumber()
+		{
+		}
+		virtual ~CDecimalNumber()
+		{
+		}
 
+		virtual void FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"val", m_oVal );
+		}
+		virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+        virtual std::wstring ToString() const
+		{
+            std::wstring sResult;
+
+			if ( m_oVal.IsInit() )
+			{
+				sResult += L"val=\"" + m_oVal->ToString() + L"\"" ;
+			}
+
+			return sResult;
+		}
+	private:
+
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"val", m_oVal )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
+		}
+
+	public:
+
+		nullable<SimpleTypes::CDecimalNumber<> > m_oVal;
+	};
 
 	namespace Word
 	{
@@ -285,7 +333,6 @@ namespace ComplexTypes
 
 				return sResult;
 			}
-		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -546,7 +593,35 @@ namespace ComplexTypes
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:type"), m_oType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:w"),    m_oW )
+				else if ( _T("w:w") == wsName )
+				{
+					//bug 42023 w:w="460.60pt" (EP_C2crapportd_aptitudeprofessionnelle.docx)
+					SimpleTypes::CUniversalMeasureOrPercent oUniversalMeasure;
+                    std::wstring sValue = oReader.GetText();
+					oUniversalMeasure.FromString(sValue);
+					m_oW.Init();
+					if(oUniversalMeasure.IsUnits())
+					{
+						m_oType.Init();
+						m_oType->SetValue(SimpleTypes::tblwidthDxa);
+						m_oW->SetValue(oUniversalMeasure.ToTwips());
+						//ignore type attribute
+						break;
+					}
+					else if(oUniversalMeasure.IsPercent())
+					{
+						m_oType.Init();
+						m_oType->SetValue(SimpleTypes::tblwidthPct);
+						m_oW->SetPercent(true);
+						m_oW->SetValue(oUniversalMeasure.GetValue());
+						//ignore type attribute
+						break;
+					}
+					else
+					{
+						m_oW->SetValue(oUniversalMeasure.GetValue());
+					}
+				}
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -600,7 +675,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -645,11 +719,8 @@ namespace ComplexTypes
 
 				return sResult;
 			}
-		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1069,7 +1140,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1084,7 +1154,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// DecimalNumber 17.3.1.10 (Part 1)
 		//--------------------------------------------------------------------------------
-		class CDecimalNumber : public ComplexType
+		class CDecimalNumber : public ComplexTypes::CDecimalNumber
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CDecimalNumber)
@@ -1094,17 +1164,13 @@ namespace ComplexTypes
 			virtual ~CDecimalNumber()
 			{
 			}
-
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				XmlMacroReadAttributeBase( oNode,  _T("w:val"), m_oVal );
+				ComplexTypes::CDecimalNumber::FromXML(oReader);
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				ReadAttributes(oReader);
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
             virtual std::wstring ToString() const
 			{
@@ -1112,26 +1178,11 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"w:val=\"" + m_oVal->ToString() + L"\" ";
 				}
 
 				return sResult;
 			}
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
-		public:
-
-			nullable<SimpleTypes::CDecimalNumber<> > m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// DecimalNumberOrPrecent 17.3.1.10 (Part 1)
@@ -1175,7 +1226,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1227,7 +1277,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("r:id"), m_oId )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1280,7 +1329,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1334,7 +1382,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1484,7 +1531,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:evenHBand"),           m_oEvenHBand )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:evenVBand"),           m_oEvenVBand )
@@ -1562,7 +1608,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1638,7 +1683,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate  )
@@ -1649,10 +1693,10 @@ namespace ComplexTypes
 
 		public:
 
-            nullable<std::wstring                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-            nullable<std::wstring                       > m_sUserId;
+            nullable<std::wstring> m_sAuthor;
+			nullable<SimpleTypes::CDateTime> m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+            nullable<std::wstring> m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1692,7 +1736,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1745,7 +1788,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1798,7 +1840,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1834,7 +1875,57 @@ namespace ComplexTypes
 				return _T("");
 			}
 		};
+		//--------------------------------------------------------------------------------
+		// MatchSrc 17.17.2.3 (Part 1)
+		//--------------------------------------------------------------------------------
+		class CMatchSrc : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CMatchSrc)
+			CMatchSrc()
+			{
+			}
+			virtual ~CMatchSrc()
+			{
+			}
 
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
+			{
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+			}
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+            virtual std::wstring ToString() const
+			{
+                std::wstring sResult;
+
+				if ( m_oVal.IsInit() )
+				{
+					sResult += _T("w:val=\"");
+					sResult += m_oVal->ToString();
+					sResult += _T("\" ");
+				}
+
+				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			nullable<SimpleTypes::COnOff<>> m_oVal;
+		};
 		//--------------------------------------------------------------------------------
 		// EdnPos 17.11.22 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -1877,7 +1968,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1930,7 +2020,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1984,7 +2073,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("x"), m_oX )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("y"), m_oY )
@@ -1994,7 +2082,6 @@ namespace ComplexTypes
 		public:
 			SimpleTypes::CCoordinate m_oX;
 			SimpleTypes::CCoordinate m_oY;
-
 		};
         // -----------------------------------------------------------------------
         // Extent (PositiveSize2D) 20.4.2.7
@@ -2038,17 +2125,14 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("cx"), m_oCx )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cy"), m_oCy )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-		public:
-			
+		public:			
 			SimpleTypes::CPositiveCoordinate<> m_oCx;
 			SimpleTypes::CPositiveCoordinate<> m_oCy;
-
 		}; // Drawing
     }
 } // ComplexTypes

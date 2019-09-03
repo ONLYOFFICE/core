@@ -136,8 +136,8 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 				{
 				case SimpleTypes::Vml::cssmsoposhorrelMargin:	pShape->m_eXAnchor = RtfShape::ax_margin; break;
 				case SimpleTypes::Vml::cssmsoposhorrelPage:		pShape->m_eXAnchor = RtfShape::ax_page; break;
-				case SimpleTypes::Vml::cssmsoposhorrelText:
-				case SimpleTypes::Vml::cssmsoposhorrelChar:		break;//inline	
+				case SimpleTypes::Vml::cssmsoposhorrelText:		break; //???
+				case SimpleTypes::Vml::cssmsoposhorrelChar:		pShape->m_eAnchorTypeShape = RtfShape::st_inline; break;//inline	
 				}
 			}break;
 		case SimpleTypes::Vml::cssptMsoPositionVertical: 
@@ -194,7 +194,10 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			break;
 		case SimpleTypes::Vml::cssptZIndex : 
 			{
-				pShape->m_eAnchorTypeShape	= RtfShape::st_anchor;
+				if (pShape->m_eAnchorTypeShape == RtfShape::st_none)
+				{
+					pShape->m_eAnchorTypeShape = RtfShape::st_anchor;
+				}
 
 				int nValue = prop->get_Value().oZIndex.nOrder;
 				pShape->m_nZOrder = nValue;
@@ -313,7 +316,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
 				if (!fill) break;
 				
-				std::wstring srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
+				std::wstring srId = fill->m_sId.IsInit() ? *fill->m_sId : L"" ;
 
 				if (srId.empty() && fill->m_rId.IsInit())
                     srId =  fill->m_rId->GetValue();
@@ -327,7 +330,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				
 					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 					{
-						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+						OOX::Image* pImage = (OOX::Image*)oFile.GetPointer();
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
@@ -402,7 +405,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
 				if (!image_data) break;
 
-				std::wstring srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
+				std::wstring srId = image_data->m_oId.IsInit() ? *image_data->m_oId : L"" ;
 
 				if (srId.empty())
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : L"" ;
@@ -418,7 +421,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 					{
 						pOutput->m_oPicture	= RtfPicturePtr( new RtfPicture() );
 
-						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+						OOX::Image* pImage = (OOX::Image*)oFile.GetPointer();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
 						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam);
@@ -756,7 +759,7 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 			
 			if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+				OOX::Image* pImage = (OOX::Image*)oFile.GetPointer();
 
 				std::wstring sImagePath = pImage->filename().GetPath();
 
@@ -902,7 +905,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 			{
 				//oox_grad_fill->GsLst[i]->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 			}
-			Parse(oParam, oox_grad_fill->GsLst[i].color.Color.operator->(), hexColor, opacity);
+			Parse(oParam, oox_grad_fill->GsLst[i].color.Color.GetPointer(), hexColor, opacity);
 
 			if (i == 0)
 			{
@@ -958,7 +961,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 			unsigned int nColor = 0; //black
 			_CP_OPT(double) opacity;
 			
-			Parse(oParam, fill.operator->(), nColor, opacity);
+			Parse(oParam, fill.GetPointer(), nColor, opacity);
 			pOutput->m_nLineColor = nColor;
 		}
 		else
@@ -1529,7 +1532,7 @@ bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOut
 	
 		if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
 		{
-			OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
+			OOX::OleObject* pO = (OOX::OleObject*)oFile.GetPointer();
 			sOlePath = pO->filename().m_strFilename;
 		}
 	}
@@ -1934,7 +1937,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 
                 smart_ptr<PPTX::Logic::SpTree> e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 				
-				OOXShapeGroupReader oShapeReader(e.operator->());
+				OOXShapeGroupReader oShapeReader(e.GetPointer());
 				
 				pNewShape->m_bInGroup = true;
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )
@@ -1945,7 +1948,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 				RtfShapePtr pNewShape ( new RtfShape() );
 				
                 smart_ptr<OOX::WritingElement> e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<OOX::WritingElement>();
-				OOXShapeReader oShapeReader(e.operator->());
+				OOXShapeReader oShapeReader(e.GetPointer());
 				
 				pNewShape->m_bInGroup = true;
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )

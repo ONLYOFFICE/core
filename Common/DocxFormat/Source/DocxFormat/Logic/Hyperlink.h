@@ -38,13 +38,14 @@
 #include "../WritingElement.h"
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/ComplexTypes.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
 		//--------------------------------------------------------------------------------
-		// CHyperlink 17.16.22 (Part 1)
+		// Hyperlink 17.16.22 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CHyperlink : public WritingElementWithChilds<>
 		{
@@ -63,9 +64,6 @@ namespace OOX
 			virtual ~CHyperlink()
 			{
 			}
-
-		public:
-
 			const CHyperlink &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
@@ -91,11 +89,9 @@ namespace OOX
 				WritingElementWithChilds::ClearItems();
 			}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_hyperlink;
@@ -105,7 +101,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:anchor"),      m_sAnchor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:docLocation"), m_sDocLocation )
@@ -118,16 +113,70 @@ namespace OOX
 
 		public:
 
-			// Attributes
-			nullable<std::wstring                                      > m_sAnchor;
-			nullable<std::wstring                                      > m_sDocLocation;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oHistory;
-			nullable<SimpleTypes::CRelationshipId                 > m_oId;
-			nullable<std::wstring                                      > m_sTgtFrame;
-			nullable<std::wstring                                      > m_sTooltip;
-
-			// Childs
+			nullable<std::wstring>									m_sAnchor;
+			nullable<std::wstring>									m_sDocLocation;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oHistory;
+			nullable<SimpleTypes::CRelationshipId>					m_oId;
+			nullable<std::wstring>									m_sTgtFrame;
+			nullable<std::wstring>									m_sTooltip;
 		};
+		//--------------------------------------------------------------------------------
+		// AltChunkPr 17.17.2.2 (Part 1)
+		//--------------------------------------------------------------------------------	
+		class CAltChunkPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CAltChunkPr)
+			CAltChunkPr()
+			{
+			}
+			virtual ~CAltChunkPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const
+			{
+				return et_w_altChunkPr;
+			}
+			nullable<ComplexTypes::Word::CMatchSrc> m_oMatchSrc;
+		};
+		//--------------------------------------------------------------------------------
+		// AltChunk 17.17.2.1 (Part 1)
+		//--------------------------------------------------------------------------------	
+		class CAltChunk : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CAltChunk)
+			CAltChunk()
+			{
+			}
+			virtual ~CAltChunk()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const
+			{
+				return et_w_altChunk;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("r:id"), m_oId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<CAltChunkPr>					m_oAltChunkPr;
+			nullable<SimpleTypes::CRelationshipId>	m_oId;
+		};
+
 	} // namespace Logic
 } // namespace OOX
 

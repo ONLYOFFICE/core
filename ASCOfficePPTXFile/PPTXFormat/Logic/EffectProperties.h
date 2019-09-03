@@ -116,6 +116,7 @@ namespace PPTX
 				if (List.is_init())
 					List->toPPTY(pWriter);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				if (List.is_init())

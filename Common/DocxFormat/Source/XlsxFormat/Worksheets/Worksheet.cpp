@@ -48,7 +48,6 @@ namespace OOX
 			m_bSpreadsheets = true;
 			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
-			m_pPersonList = NULL;
 			m_pThreadedComments = NULL;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
@@ -67,7 +66,6 @@ namespace OOX
 			m_bSpreadsheets = true;
 			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
-			m_pPersonList = NULL;
 			m_pThreadedComments = NULL;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
@@ -105,22 +103,10 @@ namespace OOX
 			{
 				read(oReader);
 			}
-			
-			if(m_oLegacyDrawing.IsInit() && m_oLegacyDrawing->m_oId.IsInit())
-			{
-				OOX::RId oRId(m_oLegacyDrawing->m_oId->GetValue());
-				
-				smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
-				
-				if (m_pComments && oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
-				{
-					OOX::CVmlDrawing* pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.operator->());
-					
-					PrepareComments(m_pComments, pVmlDrawing);
-				}
-			}
 
+			PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
 			PrepareConditionalFormatting();
+			PrepareDataValidations();
 		}
 		void CWorksheet::read(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -177,10 +163,10 @@ namespace OOX
 					m_oHeaderFooter = oReader;
 				else if (_T("sheetPr") == sName)
 					m_oSheetPr = oReader;
-                else if (_T("extLst") == sName)
-                    m_oExtLst = oReader;
-                else if (_T("picture") == sName)
-                    m_oPicture = oReader;
+				else if (_T("extLst") == sName)
+					m_oExtLst = oReader;
+				else if (_T("picture") == sName)
+					m_oPicture = oReader;
 				else if (_T("rowBreaks") == sName)
 					m_oRowBreaks = oReader;
 				else if (_T("colBreaks") == sName)
@@ -207,6 +193,30 @@ namespace OOX
 		}
 
 
+		void CWorksheet::PrepareDataValidations()
+		{
+			if (m_oExtLst.IsInit() == false) return;
+
+			for (size_t i = 0; i < m_oExtLst->m_arrExt.size(); ++i)
+			{
+				if (false == m_oExtLst->m_arrExt[i]->m_oDataValidations.IsInit()) continue;
+
+				for (size_t j = 0; j < m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems.size(); ++j)
+				{
+					if (NULL == m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j]) continue;
+
+					if (false == m_oDataValidations.IsInit())
+					{
+						m_oDataValidations.Init();
+						m_oDataValidations->m_oDisablePrompts = m_oExtLst->m_arrExt[i]->m_oDataValidations->m_oDisablePrompts;
+						m_oDataValidations->m_oXWindow = m_oExtLst->m_arrExt[i]->m_oDataValidations->m_oXWindow;
+						m_oDataValidations->m_oYWindow = m_oExtLst->m_arrExt[i]->m_oDataValidations->m_oYWindow;
+					}
+					m_oDataValidations->m_arrItems.push_back(m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j]);
+					m_oExtLst->m_arrExt[i]->m_oDataValidations->m_arrItems[j] = NULL;
+				}
+			}
+		}
 
 		void CWorksheet::PrepareConditionalFormatting()
 		{
@@ -216,11 +226,11 @@ namespace OOX
 			{
 				for (size_t j = 0; j < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting.size(); ++j)
 				{
-					if (!m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]) continue;
+					if (NULL == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]) continue;
 
 					for (size_t k = 0; k < m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems.size(); ++k)
 					{
-						if (!m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]) continue;
+						if (NULL == m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]) continue;
 
 						if (m_oExtLst->m_arrExt[i]->m_arrConditionalFormatting[j]->m_arrItems[k]->m_oId.IsInit())
 						{
@@ -231,19 +241,77 @@ namespace OOX
 				}
 			}
 		}
-		void CWorksheet::PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing)
+		void CWorksheet::PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing)
 		{
-            std::vector<std::wstring> & arAuthors = pComments->m_oAuthors->m_arrItems;
+			OOX::CVmlDrawing* pVmlDrawing = NULL;
+			if(NULL != pLegacyDrawing && pLegacyDrawing->m_oId.IsInit())
+			{
+				OOX::RId oRId(pLegacyDrawing->m_oId->GetValue());
+
+				smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
+
+				if (oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
+				{
+					pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.GetPointer());
+				}
+			}
+			//2.3.7.3.1 Reconciliation
+			//if Corresponding placeholder is not found, Delete the entire comment thread.
+			if(!pComments || !pVmlDrawing)
+				return;
+			std::unordered_map<std::wstring, int> mapCheckCopyThreadedComments;
+			std::vector<std::wstring> & arAuthors = pComments->m_oAuthors->m_arrItems;
 			
 			if(pComments->m_oCommentList.IsInit())
 			{
                 std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
 				
-                for ( size_t i = 0; i < aComments.size(); ++i)
+				for ( size_t i = 0; i < aComments.size(); ++i)
 				{
-                    OOX::Spreadsheet::CComment* pComment = aComments[i];
+					OOX::Spreadsheet::CComment* pComment = aComments[i];
 
 					if (!pComment) continue;
+
+					bool bThreadedCommentCopy = false;
+					OOX::Spreadsheet::CThreadedComment* pThreadedComment = NULL;
+					if(pThreadedComments)
+					{
+						std::unordered_map<std::wstring, CThreadedComment*>::iterator pFind = pThreadedComments->m_mapTopLevelThreadedComments.end();
+
+						if(pComment->m_oUid.IsInit())
+						{
+							pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(pComment->m_oUid->ToString());
+						}
+						else if(pComment->m_oAuthorId.IsInit())
+						{
+							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
+
+							if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
+							{
+								const std::wstring& sAuthor = arAuthors[nAuthorId];
+								if(0 == sAuthor.compare(0, 3, L"tc="))
+								{
+									pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(sAuthor.substr(3));
+								}
+							}
+						}
+						if(pThreadedComments->m_mapTopLevelThreadedComments.end() != pFind)
+						{
+							pThreadedComment = pFind->second;
+							if(mapCheckCopyThreadedComments.end() != mapCheckCopyThreadedComments.find(pThreadedComment->id->ToString()))
+							{
+								bThreadedCommentCopy = true;
+							}
+							else
+							{
+								mapCheckCopyThreadedComments[pThreadedComment->id->ToString()] = 1;
+							}
+						}
+						else
+						{
+							continue;
+						}
+					}
 
 					if(pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
 					{
@@ -256,22 +324,26 @@ namespace OOX
 
 							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
 							
-                            if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
-                            {
-                                pCommentItem->m_sAuthor = arAuthors[nAuthorId];
+							if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
+							{
+								pCommentItem->m_sAuthor = arAuthors[nAuthorId];
 							}
 
 							OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 							if(NULL != pSi)
 								pCommentItem->m_oText.reset(pSi);
-                            std::wstring sNewId = std::to_wstring(pCommentItem->m_nRow.get()) + L"-" + std::to_wstring(pCommentItem->m_nCol.get());
+
+							pCommentItem->m_pThreadedComment = pThreadedComment;
+							pCommentItem->m_bThreadedCommentCopy = bThreadedCommentCopy;
+
+							std::wstring sNewId = std::to_wstring(pCommentItem->m_nRow.get()) + L"-" + std::to_wstring(pCommentItem->m_nCol.get());
 							m_mapComments [sNewId] = pCommentItem;
 						}
 					}
 				}
 			}
 
-            for ( size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
+			for ( size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
 			{
                 OOX::Vml::CShape* pShape =  dynamic_cast<OOX::Vml::CShape*>(pVmlDrawing->m_arrItems[i]);
 				
@@ -298,14 +370,14 @@ namespace OOX
 						{
 							int nRow = pClientData->m_oRow->GetValue();
 							int nCol = pClientData->m_oColumn->GetValue();
-                            std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
+							std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
 
-                            boost::unordered_map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+							boost::unordered_map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
 							if(pPair != m_mapComments.end())
 							{
 								CCommentItem* pCommentItem = pPair->second;
 								if(pShape->m_sGfxData.IsInit())
-									pCommentItem->m_sGfxdata = pShape->m_sGfxData.get2();
+									pCommentItem->m_sGfxdata = *pShape->m_sGfxData;
 								std::vector<int> m_aAnchor;
 								pClientData->getAnchorArray(m_aAnchor);
 								if(8 <= m_aAnchor.size())
@@ -319,13 +391,23 @@ namespace OOX
 									pCommentItem->m_nBottom = m_aAnchor[6];
 									pCommentItem->m_nBottomOffset = m_aAnchor[7];
 								}
+								pCommentItem->m_bMove = pClientData->m_oMoveWithCells;
+								pCommentItem->m_bSize = pClientData->m_oSizeWithCells;
+								pCommentItem->m_bVisible = pClientData->m_oVisible;
 
-								if(pClientData->m_oMoveWithCells.IsInit())
-									pCommentItem->m_bMove = pClientData->m_oMoveWithCells->ToBool();
-								if(pClientData->m_oSizeWithCells.IsInit())
-									pCommentItem->m_bSize = pClientData->m_oSizeWithCells->ToBool();
+								if (pShape->m_oFillColor.IsInit())
+								{
+									BYTE r = pShape->m_oFillColor->Get_R();
+									BYTE g = pShape->m_oFillColor->Get_G();
+									BYTE b = pShape->m_oFillColor->Get_B();
+									
+									std::wstringstream sstream;
+									sstream << boost::wformat( L"%02X%02X%02X" ) % r % g % b;
 
-								for(size_t k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
+									pCommentItem->m_sFillColorRgb = sstream.str();
+								}
+
+								for(size_t k = 0; k < pShape->m_oStyle->m_arrProperties.size(); ++k)
 								{
 									if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
 
@@ -476,17 +558,28 @@ namespace OOX
 		}
 		void CWorksheet::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" mc:Ignorable=\"x14ac\">"));
+			writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<worksheet \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" \
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" \
+xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" \
+xmlns:xr2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2\" \
+xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\" \
+mc:Ignorable=\"x14ac\">");
 		}
 		void CWorksheet::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("</worksheet>"));
+			writer.WriteString(L"</worksheet>");
 		}
 
 		const OOX::RId CWorksheet::AddHyperlink (std::wstring& sHref)
 		{
-            std::wstring sExistRId = IsExistHyperlink(sHref);
-            if(sExistRId.empty())
+			std::wstring sExistRId = IsExistHyperlink(sHref);
+			if(sExistRId.empty())
 			{
 				smart_ptr<OOX::File> oHyperlinkFile = smart_ptr<OOX::File>( new OOX::HyperLink( File::m_pMainDocument, OOX::CPath(sHref, false) ) );
 				const OOX::RId rId = Add( oHyperlinkFile );
@@ -500,7 +593,7 @@ namespace OOX
 		}
 		void CWorksheet::ClearItems()
 		{
-            for (boost::unordered_map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+			for (boost::unordered_map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 			{
 				delete it->second;
 			}
@@ -515,6 +608,24 @@ namespace OOX
 				delete m_arrConditionalFormatting[nIndex];
 			}
 			m_arrConditionalFormatting.clear();
+		}
+
+		smart_ptr<OOX::WritingElement> CWorksheet::FindVmlObject(const std::wstring &spid)
+		{
+			smart_ptr<OOX::WritingElement> oElement;
+
+			if (!m_oLegacyDrawing.IsInit()) return oElement;
+			if (!m_oLegacyDrawing->m_oId.IsInit()) return oElement;
+            
+			smart_ptr<OOX::File>		oFile		= this->Find(m_oLegacyDrawing->m_oId->GetValue());
+			smart_ptr<OOX::CVmlDrawing> oVmlDrawing = oFile.smart_dynamic_cast<OOX::CVmlDrawing>();
+
+			OOX::WritingElement* pShapeElem	= NULL;
+			if (oVmlDrawing.IsInit())
+			{
+				oElement = oVmlDrawing->FindVmlObject(spid);	
+			}
+			return oElement;
 		}
 	}
 }

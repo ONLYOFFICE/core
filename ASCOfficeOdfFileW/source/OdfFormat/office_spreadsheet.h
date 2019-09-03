@@ -42,8 +42,6 @@
 namespace cpdoccore { 
 namespace odf_writer {
 
-
-/// \brief  office:spreadsheet
 class office_spreadsheet : public office_element_impl<office_spreadsheet>
 {
 public:
@@ -55,26 +53,26 @@ public:
 
 	office_element_ptr_array & getContent(){return content_;}
 
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-private:    
-
-    //  TODO: office-text-content-prelude:
-    //  TODO: office-forms
-    //  TODO: text-tracked-changes
-    //  TODO: text-decls
-    //  TODO: table-decls
-
-    office_element_ptr_array content_;
-    // TODO: text-page-sequence
-    // TODO: office-text-content-epilogue:
-    //  TODO: table-functions
+	
+	office_element_ptr			named_expressions_;
+	office_element_ptr			database_ranges_; 
+	office_element_ptr			data_pilot_tables_;
+	office_element_ptr			content_validations_;
+	
+	office_element_ptr_array	content_;
+ 	office_element_ptr			forms_;
+	
+	// table:calculation-settings
+	// table:consolidation
+	// table:dde-links
+	// table:label-ranges
+	
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_spreadsheet);
 
 }

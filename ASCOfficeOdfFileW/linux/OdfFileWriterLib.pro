@@ -39,6 +39,7 @@ core_debug {
 SOURCES += \
     ../source/utils.cpp \
     ../source/OdfFormat/office_document.cpp \
+    ../source/OdfFormat/office_forms.cpp \
     ../source/OdfFormat/abstract_xml.cpp \
     ../source/OdfFormat/calcext_elements.cpp \
     ../source/OdfFormat/draw_base.cpp \
@@ -64,6 +65,7 @@ SOURCES += \
     ../source/OdfFormat/odf_table_context.cpp \
     ../source/OdfFormat/odf_table_styles_context.cpp \
     ../source/OdfFormat/odf_text_context.cpp \
+    ../source/OdfFormat/odf_controls_context.cpp \
     ../source/OdfFormat/ods_conversion_context.cpp \
     ../source/OdfFormat/ods_table_context.cpp \
     ../source/OdfFormat/ods_table_state.cpp \
@@ -142,6 +144,7 @@ HEADERS += \
     ../source/OdfFormat/odf_table_context.h \
     ../source/OdfFormat/odf_table_styles_context.h \
     ../source/OdfFormat/odf_text_context.h \
+    ../source/OdfFormat/odf_controls_context.h \
     ../source/OdfFormat/ods_conversion_context.h \
     ../source/OdfFormat/ods_table_context.h \
     ../source/OdfFormat/ods_table_state.h \
@@ -149,6 +152,7 @@ HEADERS += \
     ../source/OdfFormat/office_annotation.h \
     ../source/OdfFormat/office_body.h \
     ../source/OdfFormat/office_chart.h \
+    ../source/OdfFormat/office_forms.h \
     ../source/OdfFormat/office_elements.h \
     ../source/OdfFormat/office_elements_create.h \
     ../source/OdfFormat/office_elements_type.h \

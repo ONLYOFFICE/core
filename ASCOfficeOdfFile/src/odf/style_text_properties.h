@@ -70,7 +70,6 @@ namespace odf_reader {
 class style_instance;
 class fonts_container;
 
-// 15.4
 class text_format_properties_content : public oox::conversion_element
 {
 public:
@@ -84,7 +83,9 @@ public:
     void docx_serialize			(std::wostream & stream, fonts_container & fonts);
 	void drawing_serialize		(std::wostream & stream, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style = NULL, std::wstring hlink = L"");
 
-    void apply_from			(const text_format_properties_content & Other);
+	void xlsx_serialize			(std::wostream & strm, oox::xlsx_conversion_context & Context);
+
+	void apply_from			(const text_format_properties_content & Other);
 	void apply_to			(std::vector<_property> & properties);
     void set_r_style		(const std::wstring & rStyle) { r_style_ = rStyle; }
    
@@ -178,7 +179,7 @@ class style_text_properties;
 typedef shared_ptr<style_text_properties>::Type style_text_properties_ptr;
 
 
-///         style:text-properties
+// style:text-properties
 class style_text_properties : public office_element_impl<style_text_properties>
 {
 public:
@@ -192,17 +193,17 @@ public:
     void docx_convert	(oox::docx_conversion_context & Context);
 	void pptx_convert	(oox::pptx_conversion_context & Context);
 
-    const	text_format_properties_content & content() const	{ return text_format_properties_content_; } ;
-			text_format_properties_content & content()			{ return text_format_properties_content_; } ;
+    const	text_format_properties_content & content() const	{ return content_; } ;
+			text_format_properties_content & content()			{ return content_; } ;
 
     style_text_properties(){};
-    style_text_properties(const std::wstring & rStyle)			{ text_format_properties_content_.set_r_style(rStyle); };
+    style_text_properties(const std::wstring & rStyle)			{ content_.set_r_style(rStyle); };
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
-    text_format_properties_content		text_format_properties_content_;
+    text_format_properties_content	content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_text_properties);

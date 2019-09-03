@@ -214,8 +214,13 @@ public:
     void apply_from(const common_shadow_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(shadow_type) style_shadow_;
+	_CP_OPT(shadow_type)				style_shadow_;
 
+	_CP_OPT(odf_types::shadow_type1)	draw_shadow_;
+	_CP_OPT(odf_types::percent)			draw_shadow_opacity_;
+	_CP_OPT(odf_types::color)			draw_shadow_color_;
+	_CP_OPT(odf_types::length)			draw_shadow_offset_y_;
+	_CP_OPT(odf_types::length)			draw_shadow_offset_x_;
 };
 
 // common-keep-with-next-attlist
@@ -612,5 +617,25 @@ public:
     _CP_OPT(std::wstring)	condition_;
 
 };
+
+class dr3d_attlist
+{
+public:
+    void add_attributes	( const xml::attributes_wc_ptr & Attributes );
+	void serialize		(CP_ATTR_NODE);
+
+	_CP_OPT(vector3D)		vpn_;
+    _CP_OPT(vector3D)		vrp_;
+    _CP_OPT(vector3D)		vup_;
+    _CP_OPT(length)			focal_length_;
+    _CP_OPT(length)			distance_;
+    _CP_OPT(std::wstring)	projection_;
+    _CP_OPT(color)			ambient_color_;
+    _CP_OPT(std::wstring)	shade_mode_;
+    _CP_OPT(std::wstring)	lighting_mode_;
+	_CP_OPT(std::wstring)	transform_;
+
+};
+
 }
 }

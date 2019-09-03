@@ -20,9 +20,13 @@
 		6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967BEB21E27D5BE00A129E2 /* libiconv.tbd */; };
 		697CDFEA2049649800C2638C /* empty.docx in Resources */ = {isa = PBXBuildFile; fileRef = 697CDFE72049649800C2638C /* empty.docx */; };
 		697CDFEB2049649800C2638C /* empty.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = 697CDFE92049649800C2638C /* empty.xlsx */; };
-		69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69920A401E016F9700E7E6EE /* libX2tConverter.a */; };
 		699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 699690721E2F925200B620CD /* libc++abi.tbd */; };
 		69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = 69BE370B1F60129600CBA47B /* crypted.xlsx */; };
+		8A08CAA722DCAEB600B1CE11 /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A08CA6D22DCACCC00B1CE11 /* libX2tConverter.a */; };
+		8A08CAAC22DCBF7000B1CE11 /* OfficeCryptReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A08CAAB22DCBF7000B1CE11 /* OfficeCryptReader.framework */; };
+		8A08CAAE22DCBF7300B1CE11 /* RtfFormatLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A08CAAD22DCBF7300B1CE11 /* RtfFormatLib.framework */; };
+		8A08CAB022DCC8F800B1CE11 /* icu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A08CAAF22DCC8F800B1CE11 /* icu.framework */; };
+		8A08CAB222DCD88600B1CE11 /* ASCOfficeDocxFile2Lib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A08CAB122DCD88600B1CE11 /* ASCOfficeDocxFile2Lib.framework */; };
 		8A2851F8220B29A800779A38 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8A2851F6220B29A800779A38 /* test.txt */; };
 		8A94F3CB207CE7D600EC05D2 /* test.csv in Resources */ = {isa = PBXBuildFile; fileRef = 8A94F3C9207CE7D600EC05D2 /* test.csv */; };
 		8AC4E6EF22058B2A0044119A /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AC4E6EE22058B290044119A /* boost.framework */; };
@@ -30,19 +34,21 @@
 		8AC4E6F62205999B0044119A /* test.ods in Resources */ = {isa = PBXBuildFile; fileRef = 8AC4E6F32205999B0044119A /* test.ods */; };
 		8AC4E6F72205999B0044119A /* test.odp in Resources */ = {isa = PBXBuildFile; fileRef = 8AC4E6F42205999B0044119A /* test.odp */; };
 		8AC4E7282205A4D10044119A /* demo.pptx in Resources */ = {isa = PBXBuildFile; fileRef = 8AC4E7272205A4D10044119A /* demo.pptx */; };
+		8AFA661722DE15A000D70E48 /* DocxFormatLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AFA661522DE15A000D70E48 /* DocxFormatLib.framework */; };
+		8AFA661922DE15A900D70E48 /* PPTXFormatLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AFA661822DE15A900D70E48 /* PPTXFormatLib.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		69920A3F1E016F9700E7E6EE /* PBXContainerItemProxy */ = {
+		8A08CA6C22DCACCC00B1CE11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */;
+			containerPortal = 8A08CA4D22DCACCB00B1CE11 /* X2tConverter.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 17C8DED01ACD696100902C85;
 			remoteInfo = x2tconverter;
 		};
-		69920A411E016F9F00E7E6EE /* PBXContainerItemProxy */ = {
+		8A08CA6E22DCACD700B1CE11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */;
+			containerPortal = 8A08CA4D22DCACCB00B1CE11 /* X2tConverter.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 17C8DEC11ACD696100902C85;
 			remoteInfo = x2tconverter;
@@ -69,9 +75,13 @@
 		697CDFE72049649800C2638C /* empty.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty.docx; sourceTree = "<group>"; };
 		697CDFE92049649800C2638C /* empty.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty.xlsx; sourceTree = "<group>"; };
 		698810C41F4DA87A00E4C541 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../../../Common/3dParty/cryptopp/libcryptopp.a; sourceTree = "<group>"; };
-		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
 		699690721E2F925200B620CD /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
 		69BE370B1F60129600CBA47B /* crypted.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = crypted.xlsx; sourceTree = "<group>"; };
+		8A08CA4D22DCACCB00B1CE11 /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
+		8A08CAAB22DCBF7000B1CE11 /* OfficeCryptReader.framework */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = OfficeCryptReader.framework; path = "../../../../mobile-apps/ios/Vendor/ONLYOFFICE/SDK/lib/OfficeCryptReader.framework"; sourceTree = "<group>"; };
+		8A08CAAD22DCBF7300B1CE11 /* RtfFormatLib.framework */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = RtfFormatLib.framework; path = "../../../../mobile-apps/ios/Vendor/ONLYOFFICE/SDK/lib/RtfFormatLib.framework"; sourceTree = "<group>"; };
+		8A08CAAF22DCC8F800B1CE11 /* icu.framework */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = icu.framework; path = "../../../../mobile-apps/ios/Vendor/ONLYOFFICE/SDK/lib/icu.framework"; sourceTree = "<group>"; };
+		8A08CAB122DCD88600B1CE11 /* ASCOfficeDocxFile2Lib.framework */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ASCOfficeDocxFile2Lib.framework; path = "../../../../mobile-apps/ios/Vendor/ONLYOFFICE/SDK/lib/ASCOfficeDocxFile2Lib.framework"; sourceTree = "<group>"; };
 		8A1045C420F4B55E005A0F61 /* libicudata.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicudata.58.dylib; path = ../../../Common/3dParty/icu/mac_64/build/libicudata.58.dylib; sourceTree = "<group>"; };
 		8A1045C520F4B55F005A0F61 /* libicuuc.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicuuc.58.dylib; path = ../../../Common/3dParty/icu/mac_64/build/libicuuc.58.dylib; sourceTree = "<group>"; };
 		8A2851F6220B29A800779A38 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
@@ -86,6 +96,8 @@
 		8AED79AC20F50164008BB78E /* libicuio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuio.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicuio.a"; sourceTree = "<group>"; };
 		8AED79AD20F50164008BB78E /* libicutu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicutu.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicutu.a"; sourceTree = "<group>"; };
 		8AED79AE20F50164008BB78E /* libicuuc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuuc.a; path = "../../../../../Downloads/icu-ios-master/build-universal/libicuuc.a"; sourceTree = "<group>"; };
+		8AFA661522DE15A000D70E48 /* DocxFormatLib.framework */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DocxFormatLib.framework; path = "../../../../mobile-apps/ios/Vendor/ONLYOFFICE/SDK/lib/DocxFormatLib.framework"; sourceTree = "<group>"; };
+		8AFA661822DE15A900D70E48 /* PPTXFormatLib.framework */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = PPTXFormatLib.framework; path = "../../../../mobile-apps/ios/Vendor/ONLYOFFICE/SDK/lib/PPTXFormatLib.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +107,13 @@
 			files = (
 				699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */,
 				6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */,
-				69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */,
+				8A08CAA722DCAEB600B1CE11 /* libX2tConverter.a in Frameworks */,
+				8AFA661922DE15A900D70E48 /* PPTXFormatLib.framework in Frameworks */,
+				8AFA661722DE15A000D70E48 /* DocxFormatLib.framework in Frameworks */,
+				8A08CAB022DCC8F800B1CE11 /* icu.framework in Frameworks */,
+				8A08CAB222DCD88600B1CE11 /* ASCOfficeDocxFile2Lib.framework in Frameworks */,
+				8A08CAAE22DCBF7300B1CE11 /* RtfFormatLib.framework in Frameworks */,
+				8A08CAAC22DCBF7000B1CE11 /* OfficeCryptReader.framework in Frameworks */,
 				8AC4E6EF22058B2A0044119A /* boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -115,7 +133,7 @@
 		17DAB66F1ACC371E005AF479 = {
 			isa = PBXGroup;
 			children = (
-				69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */,
+				8A08CA4D22DCACCB00B1CE11 /* X2tConverter.xcodeproj */,
 				17DAB67A1ACC371E005AF479 /* iosTest */,
 				17DAB6791ACC371E005AF479 /* Products */,
 				6967BEB11E27D5BE00A129E2 /* Frameworks */,
@@ -180,6 +198,12 @@
 		6967BEB11E27D5BE00A129E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8AFA661822DE15A900D70E48 /* PPTXFormatLib.framework */,
+				8AFA661522DE15A000D70E48 /* DocxFormatLib.framework */,
+				8A08CAB122DCD88600B1CE11 /* ASCOfficeDocxFile2Lib.framework */,
+				8A08CAAF22DCC8F800B1CE11 /* icu.framework */,
+				8A08CAAD22DCBF7300B1CE11 /* RtfFormatLib.framework */,
+				8A08CAAB22DCBF7000B1CE11 /* OfficeCryptReader.framework */,
 				8AC4E6EE22058B290044119A /* boost.framework */,
 				8AED79AA20F50164008BB78E /* libicui18n.a */,
 				8AED79AC20F50164008BB78E /* libicuio.a */,
@@ -194,10 +218,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		69920A3B1E016F9700E7E6EE /* Products */ = {
+		8A08CA4E22DCACCB00B1CE11 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				69920A401E016F9700E7E6EE /* libX2tConverter.a */,
+				8A08CA6D22DCACCC00B1CE11 /* libX2tConverter.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -216,7 +240,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				69920A421E016F9F00E7E6EE /* PBXTargetDependency */,
+				8A08CA6F22DCACD700B1CE11 /* PBXTargetDependency */,
 			);
 			name = iosTest;
 			productName = TestIOSX2tConverter;
@@ -239,11 +263,12 @@
 					};
 				};
 			};
-			buildConfigurationList = 17DAB6731ACC371E005AF479 /* Build configuration list for PBXProject "iosTest" */;
+			buildConfigurationList = 17DAB6731ACC371E005AF479 /* Build configuration list for PBXProject "iosTest2" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -252,8 +277,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 69920A3B1E016F9700E7E6EE /* Products */;
-					ProjectRef = 69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */;
+					ProductGroup = 8A08CA4E22DCACCB00B1CE11 /* Products */;
+					ProjectRef = 8A08CA4D22DCACCB00B1CE11 /* X2tConverter.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -264,11 +289,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		69920A401E016F9700E7E6EE /* libX2tConverter.a */ = {
+		8A08CA6D22DCACCC00B1CE11 /* libX2tConverter.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libX2tConverter.a;
-			remoteRef = 69920A3F1E016F9700E7E6EE /* PBXContainerItemProxy */;
+			remoteRef = 8A08CA6C22DCACCC00B1CE11 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -313,10 +338,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		69920A421E016F9F00E7E6EE /* PBXTargetDependency */ = {
+		8A08CA6F22DCACD700B1CE11 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = x2tconverter;
-			targetProxy = 69920A411E016F9F00E7E6EE /* PBXContainerItemProxy */;
+			targetProxy = 8A08CA6E22DCACD700B1CE11 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -459,7 +484,7 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/ios/framework";
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -485,7 +510,7 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../../../Common/3dParty/boost/ios/framework";
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -506,7 +531,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17DAB6731ACC371E005AF479 /* Build configuration list for PBXProject "iosTest" */ = {
+		17DAB6731ACC371E005AF479 /* Build configuration list for PBXProject "iosTest2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17DAB6991ACC371F005AF479 /* Debug */,

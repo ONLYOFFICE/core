@@ -1186,6 +1186,10 @@
 			Name="Media"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Media\ActiveX.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Media\ActiveX.h"
 				>
 			</File>
@@ -1516,6 +1520,14 @@
 					RelativePath="..\Source\XlsxFormat\Chart\ChartSerialize.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Chart\ChartSerializeEx.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Chart\ChartSerializeEx.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Comments"
@@ -1541,6 +1553,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Controls\Controls.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Controls\Controls.h"
 					>
 				</File>
@@ -1550,6 +1566,10 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\FromTo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Ole\OleObjects.h"
 					>
 				</File>
 				<File
@@ -1577,7 +1597,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\SharedStrings\Si.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\SharedStrings\Si.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\SharedStrings\Text.cpp"
 					>
 				</File>
 				<File
@@ -1617,6 +1645,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Styles\rPr.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Styles\rPr.h"
 					>
 				</File>
@@ -1650,6 +1682,10 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Table\Table.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Table\Tables.cpp"
 					>
 				</File>
 			</Filter>
@@ -1694,6 +1730,14 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Worksheets\ConditionalFormatting.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\DataValidation.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\DataValidation.h"
 					>
 				</File>
 				<File
@@ -1907,6 +1951,10 @@
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\Logic\Vml.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\DocxFormat\VmlDrawing.cpp"
 				>
 			</File>
 			<File

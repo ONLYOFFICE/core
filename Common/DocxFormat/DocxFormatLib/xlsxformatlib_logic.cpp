@@ -31,9 +31,16 @@
  */
 
 #include "../Source/XlsxFormat/Chart/ChartSerialize.cpp"
+#include "../Source/XlsxFormat/Chart/ChartSerializeEx.cpp"
 #include "../Source/XlsxFormat/Common.cpp"
 #include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
 #include "../Source/XlsxFormat/Xlsx.cpp"
 #include "../Source/XlsxFormat/Worksheets/SheetData.cpp"
 #include "../Source/XlsxFormat/Worksheets/Worksheet.cpp"
 #include "../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp"
+#include "../Source/XlsxFormat/Worksheets/DataValidation.cpp"
+#include "../Source/XlsxFormat/Table/Tables.cpp"
+#include "../Source/XlsxFormat/Controls/Controls.cpp"
+#include "../Source/XlsxFormat/Styles/rPr.cpp"
+#include "../Source/XlsxFormat/SharedStrings/Si.cpp"
+#include "../Source/XlsxFormat/SharedStrings/Text.cpp"

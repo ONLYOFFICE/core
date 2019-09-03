@@ -428,6 +428,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\style_regions.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\style_regions.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\style_table_properties.cpp"
 				>
 			</File>
@@ -1665,14 +1673,6 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\skipelement.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\odf\style_regions.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\odf\style_regions.h"
 				>
 			</File>
 			<File

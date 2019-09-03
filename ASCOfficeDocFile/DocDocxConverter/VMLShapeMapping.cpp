@@ -1280,7 +1280,7 @@ namespace DocFileFormat
 
 		for (size_t i = 0; i < pWrapPolygonVertices->complex.data.size(); ++i)
 		{
-			coords += FormatUtils::IntToWideString(pWrapPolygonVertices->complex.data[i++].x);
+			coords += FormatUtils::IntToWideString(pWrapPolygonVertices->complex.data[i].x);
 			coords += L",";
 			coords += FormatUtils::IntToWideString(pWrapPolygonVertices->complex.data[i].y);
 			coords += L",";

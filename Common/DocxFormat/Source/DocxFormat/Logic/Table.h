@@ -168,8 +168,6 @@ namespace OOX
 				}
 				m_arrGridCol.clear();
 			}
-		public:
-
 			const CTblGrid& operator = (const XmlUtils::CXmlNode &oNode)
 			{
 				fromXML( (XmlUtils::CXmlNode&)oNode );
@@ -180,8 +178,6 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-		public:
-
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -245,7 +241,6 @@ namespace OOX
 				return et_w_tblGrid;
 			}
 
-		public:
 
 			bool                                           m_bTblGridChange;
 
@@ -267,7 +262,6 @@ namespace OOX
 			virtual ~CTblPrExChange();
 			const CTblPrExChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblPrExChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
-		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -317,8 +311,6 @@ namespace OOX
 			virtual ~CTblPrEx()
 			{
 			}
-		public:
-
 			const CTblPrEx& operator = (const XmlUtils::CXmlNode &oNode)
 			{
 				fromXML( (XmlUtils::CXmlNode&)oNode );
@@ -329,8 +321,6 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-		public:
-
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -398,7 +388,6 @@ namespace OOX
 				return et_w_tblPrEx;
 			}
 
-		public:
 
 			bool                                           m_bTblPrExChange;
 
@@ -441,8 +430,6 @@ namespace OOX
 			{
 			}
 
-		public:
-
 			const CTbl &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
@@ -466,8 +453,6 @@ namespace OOX
 				WritingElementWithChilds::ClearItems();
 			}
 
-		public:
-
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring      toXML() const;
@@ -476,7 +461,6 @@ namespace OOX
 				return et_w_tbl;
 			}
 
-		public:
 			int										m_nCountRow; 
 
 			// Childs
@@ -607,8 +591,6 @@ namespace OOX
 
 				WritingElementWithChilds::ClearItems();
 			}
-
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

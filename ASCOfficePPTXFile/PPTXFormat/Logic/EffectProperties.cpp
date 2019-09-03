@@ -35,7 +35,31 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		
+		void EffectProperties::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG pos = pReader->GetPos();
+			ULONG rec_len = pReader->GetULong();
+			if (0 == rec_len)
+				return;
+
+			BYTE rec = pReader->GetUChar();
+
+			switch(rec)
+			{
+			case EFFECTPROPERTIES_TYPE_LIST:	List = new PPTX::Logic::EffectLst(); break;
+			case EFFECT_TYPE_DAG:				List = new PPTX::Logic::EffectDag(); break;
+			}
+
+			pReader->Seek(pos);
+			if (List.is_init())
+			{
+				List->fromPPTY(pReader);
+			}
+			else
+			{
+				pReader->SkipRecord();
+			}
+		}
 
 	} // namespace Logic
 } // namespace PPTX

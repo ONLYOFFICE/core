@@ -1249,11 +1249,31 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 	{
 		if (content_[i]->get_type() == typeTableErrorMassage)
 		{
-			Context.get_dataValidations_context().add_error_msg(name, true);
+			table_error_message* error = dynamic_cast<table_error_message*>(content_[i].get());
+
+			Context.get_text_context().start_only_text();
+			for (size_t j = 0 ; j < error->content_.size(); j++)
+			{
+				error->content_[j]->xlsx_convert(Context);
+			}
+			std::wstring content = Context.get_text_context().end_only_text();
+
+			Context.get_dataValidations_context().add_error_msg(name, error->table_title_.get_value_or(L""), content, 
+																error->table_display_ ? error->table_display_->get() : true);
 		}
-		else if (content_[i]->get_type() == typeTableErrorMassage)
+		else if (content_[i]->get_type() == typeTableHelpMassage)
 		{
-			Context.get_dataValidations_context().add_help_msg(name, true);
+			table_help_message* help = dynamic_cast<table_help_message*>(content_[i].get());
+			
+			Context.get_text_context().start_only_text();
+			for (size_t j = 0 ; j < help->content_.size(); j++)
+			{
+				help->content_[j]->xlsx_convert(Context);
+			}
+			std::wstring content = Context.get_text_context().end_only_text();
+			
+			Context.get_dataValidations_context().add_help_msg(name, help->table_title_.get_value_or(L""), content, 
+																help->table_display_ ? help->table_display_->get() : true);
 		}
 		content_[i]->xlsx_convert(Context);
     }

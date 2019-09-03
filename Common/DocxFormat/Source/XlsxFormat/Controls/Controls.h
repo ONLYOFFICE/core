@@ -30,18 +30,134 @@
  *
  */
 #pragma once
-#ifndef OOX_CONTROLS_FILE_INCLUDE_H_
-#define OOX_CONTROLS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 #include "../Drawing/FromTo.h"
 #include "../Ole/OleObjects.h"
-#include "../../DocxFormat/Media/ActiveX.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+//------------------------------------------------------------------------------------------------------------------------------
+		class CListItem : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CListItem)
+			
+			CListItem(){}
+			virtual ~CListItem() {}
+			
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const
+			{
+				return et_x_ListItem;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			
+			nullable_string	m_oVal;
+		};
+//-----------------------------------------------------------------------------------------------------------------------------
+		class CListItems : public WritingElementWithChilds<CListItem>
+		{
+		public:
+			WritingElement_AdditionConstructors(CListItems)
+			
+			CListItems(){}
+			virtual ~CListItems() {}
+			
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const
+			{
+				return et_x_ListItems;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader){}
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+		};
+//-------------------------------------------------------------------------------------------------------------------------------
+		class CFormControlPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CFormControlPr)
+			CFormControlPr()
+			{
+			}
+			virtual ~CFormControlPr()
+			{
+			}
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const
+			{
+				return et_x_FormControlPr;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDropLines;
+			nullable<SimpleTypes::Spreadsheet::CObjectType<>>			m_oObjectType;
+			nullable<SimpleTypes::Spreadsheet::CChecked<>>				m_oChecked;
+			nullable<SimpleTypes::Spreadsheet::CDropStyle<>>			m_oDropStyle;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDx;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oInc;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oMin;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oMax;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oPage;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oSel;
+			nullable<SimpleTypes::Spreadsheet::CSelType<>>				m_oSelType;
+			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>	m_oTextHAlign;
+			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>	m_oTextVAlign;
+			nullable_int												m_oVal;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oWidthMin;
+			nullable<SimpleTypes::Spreadsheet::CEditValidation<>>		m_oEditVal;
+			nullable_string		m_oFmlaGroup;
+			nullable_string		m_oFmlaLink;
+			nullable_string		m_oFmlaRange;
+			nullable_string		m_oFmlaTxbx;		
+			nullable_bool		m_oColored;
+			nullable_bool		m_oFirstButton;
+			nullable_bool		m_oHoriz;
+			nullable_bool		m_oJustLastX;
+			nullable_bool		m_oLockText;
+			nullable_string		m_oMultiSel;
+			nullable_bool		m_oNoThreeD;
+			nullable_bool		m_oNoThreeD2;
+			nullable_bool		m_oMultiLine;
+			nullable_bool		m_oVerticalBar;
+			nullable_bool		m_oPasswordEdit;
+
+			nullable<CListItems>							m_oItemLst;
+			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+//---------------------
+			nullable_string									m_oText;
+			nullable<SimpleTypes::CColorType<>>				m_oFillColor;
+			nullable<SimpleTypes::CColorType<>>				m_oBorderColor;
+		};
+//------------------------------------------------------------------------------------
 		class CControlPr : public WritingElement
 		{
 		public:
@@ -57,48 +173,10 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<controlPr");
-				WritingStringNullableAttrEncodeXmlString(L"altText", m_oAltText, m_oAltText.get());
-				WritingStringNullableAttrBool(L"autoFill", m_oAutoFill);
-				WritingStringNullableAttrBool(L"autoLine", m_oAutoLine);
-				WritingStringNullableAttrBool(L"autoPict", m_oAutoPict);
-				WritingStringNullableAttrBool(L"dde", m_oDde);
-				WritingStringNullableAttrBool(L"defaultSize", m_oDefaultSize);
-				WritingStringNullableAttrBool(L"disabled", m_oDisabled);
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				WritingStringNullableAttrBool(L"locked", m_oLocked);
-				WritingStringNullableAttrEncodeXmlString(L"macro", m_oMacro, m_oMacro.get());
-				WritingStringNullableAttrBool(L"print", m_oPrint);
-				WritingStringNullableAttrBool(L"uiObject", m_oUiObject);
-				writer.WriteString(L">");
-				if (m_oAnchor.IsInit())
-				{
-					m_oAnchor->toXML(writer);
-				}
-				writer.WriteString(L"</controlPr>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("anchor") == sName )
-					{
-						m_oAnchor = oReader;
-					}
-				}
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual EElementType getType () const
 			{
@@ -106,40 +184,29 @@ namespace OOX
 			}
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("altText"),		m_oAltText )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoFill"),		m_oAutoFill )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoLine"),		m_oAutoLine )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoPict"),		m_oAutoPict )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dde"),			m_oDde )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("defaultSize"),	m_oDefaultSize )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("disabled"),		m_oDisabled )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:id"),			m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("locked"),		m_oLocked )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("macro"),			m_oMacro )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("print"),			m_oPrint )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("uiObject"),		m_oUiObject )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<std::wstring>				m_oAltText;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoFill;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoLine;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoPict;
-			nullable<SimpleTypes::COnOff<>>		m_oDde;
-			nullable<SimpleTypes::COnOff<>>		m_oDefaultSize;
-			nullable<SimpleTypes::COnOff<>>		m_oDisabled;
-			nullable<SimpleTypes::CRelationshipId> m_oRid;
-			nullable<SimpleTypes::COnOff<>>		m_oLocked;
-			nullable<std::wstring>				m_oMacro;
-			nullable<SimpleTypes::COnOff<>>		m_oPrint;
-			nullable<SimpleTypes::COnOff<>>		m_oUiObject;
+			nullable_string							m_oAltText;
+			nullable_bool							m_oAutoFill;
+			nullable_bool							m_oAutoLine;
+			nullable_bool							m_oAutoPict;
+			nullable_bool							m_oDde;
+			nullable_bool							m_oDefaultSize;
+			nullable_bool							m_oDisabled;
+			nullable_string							m_oCf;
+			nullable_string							m_oLinkedCell;
+			nullable_string							m_oListFillRange;
+			nullable<SimpleTypes::CRelationshipId>	m_oRid;
+			nullable_bool							m_oLocked;
+			nullable_string							m_oMacro;
+			nullable_bool							m_oPrint;
+			nullable_bool							m_oRecalcAlways;
+			nullable_bool							m_oUiObject;
 
-			nullable<CExtAnchor>				m_oAnchor;
+			nullable<CExtAnchor>					m_oAnchor;
 		};
 
+//------------------------------------------------------------------------------------
 		class CControl : public WritingElement
 		{
 		public:
@@ -157,97 +224,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				bool bAlternateContent = m_oControlPr.IsInit();
-				if (bAlternateContent)
-				{
-					writer.WriteString(L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice Requires=\"x14\">");
-					toXML2(writer, true);
-					writer.WriteString(L"</mc:Choice><mc:Fallback>");
-					toXML2(writer, false);
-					writer.WriteString(L"</mc:Fallback></mc:AlternateContent>");
-				}
-				else
-				{
-					toXML2(writer, true);
-				}
-			}
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const
-			{
-				writer.WriteString(L"<control");
-				WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, m_oProgId.get());
-				WritingStringNullableAttrString(L"dvAspect", m_oDvAspect, m_oDvAspect->ToString());
-				WritingStringNullableAttrEncodeXmlString(L"link", m_oLink, m_oLink.get());
-				WritingStringNullableAttrString(L"oleUpdate", m_oOleUpdate, m_oOleUpdate->ToString());
-				WritingStringNullableAttrBool(L"autoLoad", m_oAutoLoad);
-				WritingStringNullableAttrInt(L"shapeId", m_oShapeId, m_oShapeId->GetValue());
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				if (bControlPr && m_oControlPr.IsInit())
-				{
-					writer.WriteString(L">");
-					m_oControlPr->toXML(writer);
-					writer.WriteString(L"</control>");
-				}
-				else
-				{
-					writer.WriteString(L"/>");
-				}
-			}
-   //         void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq)
-			//{
-   //             std::wstring sRoot;
-			//	writer.WriteString(L"<o:OLEObject");
-			//	if(m_oDvAspect.IsInit())
-			//	{
-			//		writer.WriteString(L" DrawAspect=\"");
-			//		if(SimpleTypes::Spreadsheet::Content == m_oDvAspect->GetValue())
-			//			writer.WriteString(L"Content");
-			//		else
-			//			writer.WriteString(L"Icon");
-			//		writer.WriteString(L"\"");
-			//	}
-			//	WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-			//	WritingStringNullableAttrEncodeXmlString(L"ProgID", m_oProgId, m_oProgId.get());
-			//	WritingStringNullableAttrInt(L"ShapeID", m_oShapeId, m_oShapeId->GetValue());
-			//	writer.WriteString(L" Type=\"Embed\"");
-			//	if(m_oOleUpdate.IsInit())
-			//	{
-			//		writer.WriteString(L" UpdateMode=\"");
-			//		if(SimpleTypes::Spreadsheet::Always == m_oOleUpdate->GetValue())
-			//			writer.WriteString(L"Always");
-			//		else
-			//			writer.WriteString(L"OnCall");
-			//		writer.WriteString(L"\"");
-			//	}
-			//	if (m_OleObjectFile.IsInit())
-			//	{
-			//		if (m_OleObjectFile->isMsPackage())
-			//			WritingStringAttrString(L"mspackage", L"true");
-
-			//		WritingStringAttrEncodeXmlString(L"pathbin", m_OleObjectFile->filename().GetPath());
-			//		WritingStringAttrEncodeXmlString(L"pathimg", m_OleObjectFile->filename_cache().GetPath());
-			//	}
-			//	writer.WriteString(L"/>");
-			//}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("controlPr") == sName )
-					{
-						m_oControlPr = oReader;
-					}
-				}
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const;
+   
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual EElementType getType () const
 			{
@@ -255,32 +235,21 @@ namespace OOX
 			}
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("progId"),		m_oProgId )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dvAspect"),	m_oDvAspect )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("link"),		m_oLink )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("oleUpdate"),m_oOleUpdate )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoLoad"),	m_oAutoLoad )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("shapeId"),	m_oShapeId )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),		m_oRid )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<std::wstring >								m_oProgId;
+			nullable_string										m_oName;
+			nullable_string										m_oProgId;
 			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
-			nullable<std::wstring >								m_oLink;
+			nullable_string										m_oLink;
 			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
-			nullable<SimpleTypes::COnOff<>>						m_oAutoLoad;
+			nullable_bool										m_oAutoLoad;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;
 			nullable<CControlPr>								m_oControlPr;
-	//internal
-			smart_ptr<OOX::ActiveX_xml>							m_ControlFile;
-			nullable<SimpleTypes::CRelationshipId>				m_oRidImg;
+//--for-write-from-bin--------------
+			nullable<CFormControlPr>							m_oFormControlPr;
 		};
-
+//------------------------------------------------------------------------------------------------------------------------
 		class CControls : public WritingElement
 		{
 		public:
@@ -288,14 +257,7 @@ namespace OOX
 			CControls()
 			{
 			}
-			virtual ~CControls()
-			{
-				for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
-				{
-					delete it->second;
-				}
-				m_mapControls.clear();
-			}
+			virtual ~CControls();
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -303,92 +265,69 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_mapControls.empty()) return;
-				
-				writer.WriteString(L"<controls>");
-				for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
-				{
-					it->second->toXML(writer);
-				}
-				writer.WriteString(L"</controls>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("controls") == sName )
-					{
-						CControl* pControl = new CControl(oReader);
-						if(pControl->m_oShapeId.IsInit())
-						{
-							m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
-						}
-						else
-						{
-							delete pControl;
-						}
-					}
-					else if ( _T("AlternateContent") == sName )
-					{
-						int nSubDepth = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nSubDepth ) )
-						{
-							std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
-							if ( _T("Fallback") == sSubName || _T("Choice") == sSubName )
-							{
-								bool bFound = false;
-								int nSubSubDepth = oReader.GetDepth();
-								while( oReader.ReadNextSiblingNode( nSubSubDepth ) )
-								{
-									std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
-									if ( _T("control") == sSubSubName )
-									{
-										CControl* pControl = new CControl(oReader);
-										if(pControl->m_oShapeId.IsInit())
-										{
-											m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
-											bFound = true;
-											break;
-										}
-										else
-										{
-											delete pControl;
-										}
-									}
-								}
-								if (bFound)
-								{
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
+			void read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion = false);
+			
 			virtual EElementType getType () const
 			{
 				return et_x_Controls;
 			}
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		public:
-			std::map<int, CControl*> m_mapControls;
+			std::map<unsigned int, CControl*> m_mapControls;
+			std::map<unsigned int, CControl*> m_mapControlsAlternative;
 		};
+//------------------------------------------------------------------------------------------------------------------------
+		class CCtrlPropFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
+		{
+		public:
+			CCtrlPropFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			{
+				m_bSpreadsheets = true;
+			}
+			CCtrlPropFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			{
+				m_bSpreadsheets = true;
+				read( oRootPath, oPath );
+			}
+			virtual ~CCtrlPropFile()
+			{
+			}
+			virtual void read(const CPath& oPath)
+			{
+				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
+			}
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			virtual const OOX::FileType type() const
+			{
+				return OOX::Spreadsheet::FileTypes::CtrlProp;
+			}
+			virtual const CPath DefaultDirectory() const
+			{
+				return type().DefaultDirectory();
+			}
+			virtual const CPath DefaultFileName() const
+			{
+				return type().DefaultFileName();
+			}
+			const CPath& GetReadPath()
+			{
+				return m_oReadPath;
+			}
+
+			nullable<CFormControlPr> m_oFormControlPr;
+		private:
+			CPath m_oReadPath;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_CONTROLS_FILE_INCLUDE_H_

@@ -171,8 +171,15 @@ namespace DocFileFormat
 
 		std::map<int, int>						PictureBulletsCPsMap;
 
+		struct _annotStartEnd
+		{
+			int start;
+			int end;			
+			_UINT32 bookmarkId;
+		};
 		std::vector<std::pair<int, int>>		BookmarkStartEndCPs;
-		std::vector<std::pair<int, int>>		AnnotStartEndCPs;
+		std::vector<_annotStartEnd>				AnnotStartEndCPs;
+		std::map<int, int>						mapCommentsBookmarks;
 
 		FileInformationBlock				* FIB;
 		StyleSheet							* Styles;					// The style sheet of the document

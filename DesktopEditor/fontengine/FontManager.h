@@ -208,6 +208,8 @@ public:
     virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
     
     virtual void GetFace(double& d0, double& d1, double& d2);
+
+    CFontFile* GetFontFileBySymbol(CFontFile* pFile, int code);
 };
 
 #endif // _BUILD_FONT_ENGINE_FONTMANAGER_H_

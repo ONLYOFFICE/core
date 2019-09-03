@@ -167,6 +167,7 @@ namespace NSCommon
 			
 			return new_type;
 		}
+		inline Type* GetPointer() const { return  m_pData; }
 
 		inline Type& operator*()  { return *m_pData; }
 		inline Type* operator->() { return  m_pData; }

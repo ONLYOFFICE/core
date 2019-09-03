@@ -82,6 +82,7 @@ namespace DocFileFormat
 				int cp = m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn + m_document->FIB->m_RgLw97.ccpHdr;
 
 				size_t count = m_document->AnnotationsReferencePlex->Elements.size();
+
 				for (size_t index = 0; index < count; ++index)
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
@@ -92,14 +93,17 @@ namespace DocFileFormat
 					}
 
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
-					if (atrdPre10->m_BookmarkId < 0)//-1 - easy ref (not start/end comment ref)
-					{
-                        m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 + count + 1024 ));
-					}
-					else
-					{
-                        m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 ));
-					}
+
+					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString(atrdPre10->m_CommentId));
+					//if (atrdPre10->m_BookmarkId < 0)//-1 - easy ref (not start/end comment ref)
+					//{
+     //                   m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 + count + 1024 ));
+					//}
+					//else
+					//{
+                    //    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 ));
+					//}
+
 					if (atrdPost10)
 					{
 						m_pXmlWriter->WriteAttribute( L"w:date", atrdPost10->m_nDTTM.getString());

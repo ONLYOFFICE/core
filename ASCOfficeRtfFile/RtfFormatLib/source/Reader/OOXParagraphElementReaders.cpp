@@ -257,7 +257,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(pHyperlink->m_oId->GetValue());
 					if ((oFile.IsInit()) && (OOX::FileTypes::HyperLink == oFile->type()))
 					{
-						OOX::HyperLink* pH = (OOX::HyperLink*)oFile.operator->();
+						OOX::HyperLink* pH = (OOX::HyperLink*)oFile.GetPointer();
 						sTarget = pH->Uri().GetPath();
 					}
 				}
@@ -541,7 +541,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 									OOX::Logic::CParagraph *pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(oox_comment->m_arrItems[i]);
 									if ((pParagraph) && (pParagraph->m_oParaId.IsInit()))
 									{
-										std::map<int, int>::iterator pFindPara = oParam.oDocx->m_pCommentsExt->m_mapComments.find(pParagraph->m_oParaId->GetValue());
+										std::map<unsigned int, int>::iterator pFindPara = oParam.oDocx->m_pCommentsExt->m_mapComments.find(pParagraph->m_oParaId->GetValue());
 										if (pFindPara != oParam.oDocx->m_pCommentsExt->m_mapComments.end())
 										{
 											oParam.oReader->m_mapCommentsPara.insert(std::make_pair( pParagraph->m_oParaId->GetValue(), pFindRef->second.index));

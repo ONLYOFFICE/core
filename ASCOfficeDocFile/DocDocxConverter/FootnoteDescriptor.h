@@ -41,7 +41,7 @@ namespace DocFileFormat
     public:
 	  static const int STRUCTURE_SIZE = 2;
 
-	  FootnoteDescriptor() : aFtnIdx(0)  {}
+	  FootnoteDescriptor() : aFtnIdx(0), bUsed(false)  {}
 
 	  virtual ~FootnoteDescriptor()
 	  {
@@ -56,5 +56,6 @@ namespace DocFileFormat
       }
 
 	  short aFtnIdx;
+	  bool bUsed;
   };
 }

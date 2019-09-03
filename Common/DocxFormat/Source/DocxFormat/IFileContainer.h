@@ -110,6 +110,7 @@ namespace OOX
 		template<typename T> 
         T&                   Find();
 		smart_ptr<OOX::File> Find(const OOX::RId& type) const;
+		smart_ptr<OOX::File> Find(const FileType& oType) const;
 
 		smart_ptr<OOX::File> operator [](const OOX::RId rId);
 		smart_ptr<OOX::File> operator [](const FileType& oType);

@@ -142,6 +142,13 @@ private:
 #define FONT_CACHE_SIZES_INDEXES_SIZE   MAX_UNICODE_COUNT
 #define FONT_CACHE_SIZES_INDEXES_SIZE_2 MAX_UNICODE_COUNT2 // MAX_UNICODE_COUNT * sizeof(unsigned short)
 
+class CVectorWorker
+{
+public:
+    FT_Outline_Funcs*  func_interface;
+    void*              user;
+};
+
 class CFontStream;
 class CFontManager;
 class CFontFile : public NSFonts::IFontFile
@@ -203,6 +210,8 @@ public:
 	CFontManager* m_pFontManager;
     INT m_bHintsSupport;
 
+    std::wstring m_sName;
+
 public:
 
 	CFontFile();
@@ -229,6 +238,8 @@ public:
 	bool SetTextMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
     void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
     
+    TFontCacheSizes CacheGlyph(const int& code, const bool& isRaster, CVectorWorker* pWorker = NULL, const bool& isFromPicker = false);
+
 	INT GetString(CGlyphString& oString);
 	INT GetString2(CGlyphString& oString);
     INT GetString2C(CGlyphString& oString);
@@ -240,6 +251,8 @@ public:
 	int SetCMapForCharCode2(long lUnicode);
 
     double GetCharWidth(int gid);
+
+    int GetGIDByUnicode(int code);
 
     int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
     void SetStringGID(const INT& bGID);

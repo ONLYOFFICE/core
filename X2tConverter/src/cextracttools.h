@@ -63,6 +63,8 @@ namespace NExtractTools
 
         TCD_DOCX2DOCT,
         TCD_DOCT2DOCX,
+		TCD_DOCT2DOTX,
+		TCD_DOCT2DOCM,
         TCD_DOCX2DOCT_BIN,
         TCD_DOCT_BIN2DOCX,
         TCD_DOTX2DOCX,
@@ -72,6 +74,8 @@ namespace NExtractTools
 
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
+		TCD_XLST2XLSM,
+		TCD_XLST2XLTX,
         TCD_XLSX2XLST_BIN,
         TCD_XLST_BIN2XLSX,
         TCD_XLTX2XLSX,
@@ -81,6 +85,8 @@ namespace NExtractTools
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,
+		TCD_PPTT2POTX,
+		TCD_PPTT2PPTM,
         TCD_PPTX2PPTT_BIN,
         TCD_PPTT_BIN2PPTX,
         TCD_PPSX2PPTX,

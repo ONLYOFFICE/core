@@ -62,15 +62,15 @@ namespace utils
 
 double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, NSFonts::IApplicationFonts *appFonts)
 {
-    double appr_px = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
+    std::pair<float,float> appr = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
 	
-	if (appr_px <0.01)
+	if (appr.first < 0.01 || appr.second < 0.01)
 	{
-        appr_px = _graphics_utils_::calculate_size_symbol_win(font_name, font_size, false, false, str_test);
+        appr.first = _graphics_utils_::calculate_size_symbol_win(font_name, font_size, false, false, str_test);
 		//appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
 	}
 
-	return appr_px*0.55;
+	return appr.first * 0.55;
 }
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
@@ -284,7 +284,14 @@ void odt_conversion_context::end_drawings()
 				}
 			}
 		}
-		if (!bSet) text_context()->current_level_.back().elm->add_child_element(elm);
+		if (!bSet)
+		{
+			if (text_context()->current_level_.size() > 1 && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))
+			{
+				text_context()->end_span();
+			}
+			text_context()->current_level_.back().elm->add_child_element(elm);
+		}
 		
 		drawing_context()->clear();
 		drawing_context_.pop_back();
@@ -586,6 +593,9 @@ void odt_conversion_context::end_hyperlink()
 {
 	if (!is_hyperlink_) return;
 
+	if (false == text_context()->current_level_.empty() && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))	//CARA SETTING WARNET.docx
+		text_context()->end_element();
+
 	text_context()->end_element();
 
 	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
@@ -845,11 +855,13 @@ void odt_conversion_context::separate_field()
 }
 void odt_conversion_context::set_master_page_name(std::wstring master_name)
 {
-	if (current_root_elements_.size() < 1)// return; - эффект_штурмовика.docx - 1 страница !! (и ваще - 
+	if (current_root_elements_.empty())// return; - эффект_штурмовика.docx - 1 страница !! (и ваще - 
 	{
 		is_paragraph_in_current_section_ = true;
 		return;
 	}
+
+	if (current_master_page_ == master_name) return; // Newslette.docx
 
 	style *style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());
 
@@ -863,6 +875,7 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 		if (text_context()->set_master_page_name(master_name))
 			is_paragraph_in_current_section_ = false;		
 	}
+	current_master_page_ = master_name;
 }
 int odt_conversion_context::get_current_section_columns()
 {
@@ -930,7 +943,7 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 }
 void odt_conversion_context::add_section_column(std::vector<std::pair<double, double>> width_space)
 {
-	if (sections_.size() < 1 || width_space.size() < 1) return;
+	if (sections_.empty() || width_space.empty()) return;
 
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
@@ -1044,7 +1057,7 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 		text_context()->end_list();
 	}
 
-	if (text_context()->list_state_.levels.size() < 1)
+	if (text_context()->list_state_.levels.empty())
 	{
 		text_context()->list_state_.started_list = false;
 		text_context()->list_state_.style_name = L"";
@@ -1052,19 +1065,22 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 
 	if (text_context()->list_state_.started_list == false)
 	{
-		text_context()->start_list(style_name);
-		//text_context()->set_list_continue(true); //??? держать в памяти все списки????
-		add_to_root();
+		if (text_context()->start_list(style_name))
+		{
+			//text_context()->set_list_continue(true); //??? держать в памяти все списки????
+			add_to_root();
+		}
 		
 	}
-	text_context()->start_list_item();
+	text_context()->start_list_item(); 
 
 	if (text_context()->list_state_.style_name == style_name)
 		style_name = L"";
 
 	while (text_context()->list_state_.levels.size() < level)
 	{
-		text_context()->start_list(style_name);
+		if (false == text_context()->start_list(style_name))
+			break;
 		text_context()->start_list_item();
 	}	
 }
@@ -1076,7 +1092,7 @@ void odt_conversion_context::set_no_list()
 {
 	if (text_context()->list_state_.started_list == false) return;
 
-	while (text_context()->list_state_.levels.size()>0)
+	while (false == text_context()->list_state_.levels.empty())
 	{
 		text_context()->end_list_item();
 		text_context()->end_list();	
@@ -1205,16 +1221,16 @@ void odt_conversion_context::end_comment_content()
 }
 void odt_conversion_context::end_comment(int oox_comm_id)
 {
-	bool added = comment_context_.find_by_id(oox_comm_id);
+	int index_added = comment_context_.find_by_id(oox_comm_id);
 
-	if (added == true)
+	if (index_added > 0 )
 	{
 		office_element_ptr comm_elm;
 		create_element(L"office", L"annotation-end", comm_elm, this);
 
 		comment_context_.end_comment(comm_elm, oox_comm_id);
 		
-		if (text_context()->current_level_.size() > 0)
+		if (false == text_context()->current_level_.empty())
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 	}
 }

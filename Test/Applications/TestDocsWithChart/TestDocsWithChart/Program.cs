@@ -45,11 +45,21 @@ namespace TestDocsWithChart
     {
         static void Main(string[] args)
         {
-            getFilesConditional();
+            //getFilesConditional();
             //getFilesPivot();
             //getFilesAlternateContent();
+            //getFilesOverride();
             //getFiles();
+            //getFiles2();
+            //getFiles3();
+            //getSize();
             //convertFiles();
+            //getLegacyDrawingHF();
+            //getShapeType();
+            //getCustomXml();
+            //getKeywords();
+            //getMath();
+            getExternal2();
         }
         static void getFilesPivot()
         {
@@ -68,6 +78,196 @@ namespace TestDocsWithChart
                         {
                             System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
                             break;
+                        }
+                    }
+                }
+                catch { }
+
+            }
+        }
+        static void getCustomXml()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\docx";
+            string sDirOutput = @"D:\Files\CustomXml";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (-1 != entry.FullName.IndexOf("CustomXml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                            break;
+                        }
+                    }
+                }
+                catch { }
+
+            }
+        }
+        static void getKeywords()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\docx";
+            string sDirOutput = @"D:\Files\keywords";
+            string sFindText = "lastPrinted";
+            string sFindText2 = "lastPrinted";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            StringBuilder sb = new StringBuilder();
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith("core.xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                int index1 = sXml.IndexOf(sFindText);
+                                int index2 = sXml.IndexOf(sFindText2);
+                                if (-1 != index1 && -1 != index2)
+                                {
+                                    String sKeywords = sXml.Substring(index1 + sFindText.Length, index2 - index1 - sFindText.Length);
+                                    if (sKeywords.Length > 0)
+                                    {
+                                        sb.AppendLine(sKeywords);
+                                        System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                                    }
+                                    
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
+        static void getMath()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\docx";
+            string sDirOutput = @"D:\Files\Math";
+            string sFindText = "m:phant";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith("document.xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if (-1 != sXml.IndexOf(sFindText))
+                                {
+                                    //System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
+        static void getMove()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\docx";
+            string sDirOutput = @"D:\Files\Move";
+            string sFindText = "w:moveFrom";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith("document.xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if (-1 != sXml.IndexOf(sFindText))
+                                {
+                                    System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
+        static void getExternal()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput = @"D:\Files\ExternalReferences";
+            string sFindText = "externalBook";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.Contains("externalLink") && entry.FullName.EndsWith(".xml"))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if (-1 == sXml.IndexOf(sFindText))
+                                {
+                                    System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
+        static void getExternal2()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput = @"D:\Files\ExternalReferences";
+            string sFindText = "CUBEMEMBER";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.Contains("sheet"))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if (-1 != sXml.IndexOf(sFindText,StringComparison.OrdinalIgnoreCase))
+                                {
+                                    System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -162,6 +362,50 @@ namespace TestDocsWithChart
             }
 
         }
+        static void getFilesOverride()
+        {
+            string sAlternateContent = "lvlOverride";
+            string sDirInput = @"\\192.168.5.3\files\Files\docx";
+            string sDirOutput = @"D:\Files\override";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            SortedList<long, string> listUncompressed = new SortedList<long, string>();
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    string sOutputPath = Path.Combine(sDirOutput, Path.GetFileName(file));
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith("numbering.xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                int nIndex = -1;
+                                if (-1 != (nIndex = sXml.IndexOf(sAlternateContent, nIndex + 1)))
+                                {
+                                    listUncompressed.Add(entry.Length, file);
+                                    //System.IO.File.Copy(file, sOutputPath, true);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.Append("size(bytes)\tName\r\n");
+            foreach (KeyValuePair<long, string> kvp in listUncompressed.Reverse())
+            {
+                sb.AppendFormat("{0}\t{1}\r\n", kvp.Key, kvp.Value);
+            }
+        }
         static void getFiles()
         {
             string sDirInput = @"\\192.168.3.208\allusers\Files\PPTX";
@@ -183,6 +427,136 @@ namespace TestDocsWithChart
                 }
                 catch { }
 
+            }
+        }
+        static void getFiles2()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\docx";
+            string sDirOutput = @"D:\Files\embed";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (!entry.FullName.EndsWith("/", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".rels", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".docx", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".pptx", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".xls", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".ppt", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".tif", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".tiff", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".wdp", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".emf", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".emz", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".wmf", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".mov", StringComparison.OrdinalIgnoreCase) &&
+                            (!entry.FullName.EndsWith(".bin", StringComparison.OrdinalIgnoreCase) || (!entry.FullName.Contains("embeding") && !entry.FullName.Contains("oleObject") && !entry.FullName.Contains("printerSettings"))) &&
+                            !entry.FullName.EndsWith(".sigs", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".sldx", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".dat", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".vml", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".fntdata", StringComparison.OrdinalIgnoreCase) &&
+                            !entry.FullName.EndsWith(".odttf", StringComparison.OrdinalIgnoreCase))
+                        {
+                            System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                            break;
+                        }
+                    }
+                }
+                catch { }
+
+            }
+        }
+        static void getFiles3()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput = @"D:\Files\height";
+            string sHeight = " ht=\"";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    bool bCopy = false;
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.Contains("sheet"))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                int nIndex = -1;
+                                while (-1 != (nIndex = sXml.IndexOf(sHeight, nIndex + 1)))
+                                {
+                                    int endIndex = sXml.IndexOf("\"", nIndex + sHeight.Length + 1);
+                                    string height = sXml.Substring(nIndex + sHeight.Length, endIndex - (nIndex + sHeight.Length));
+                                    int dotIndex;
+                                    if (-1 != (dotIndex = height.IndexOf('.')) && height.Length - dotIndex > 3)
+                                    {
+                                        bCopy = true;
+                                        //System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (bCopy)
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch { }
+
+            }
+        }
+        static void getSize()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\pptx";
+            SortedList<long, string> listUncompressed = new SortedList<long,string>();
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    long uncommressed = 0;
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith(".xml"))
+                        {
+                            uncommressed += entry.Length;
+                        }
+                    }
+                    listUncompressed.Add(uncommressed, file);
+                }
+                catch { }
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.Append("uncommressed(bytes)\tfilesize(bytes)\tName\r\n");
+            foreach (KeyValuePair<long, string> kvp in listUncompressed.Reverse())
+            {
+                sb.AppendFormat("{0}\t{1}\t{2}\r\n", kvp.Key, new System.IO.FileInfo(kvp.Value).Length, kvp.Value);
             }
         }
         static void convertFiles()
@@ -224,6 +598,80 @@ namespace TestDocsWithChart
                 {
                 }
                 Directory.Delete(sDirTemp, true);
+            }
+        }
+        static void getLegacyDrawingHF()
+        {
+            string sAlternateContent = "<legacyDrawingHF ";
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput = @"D:\Files\legacyDrawingHF";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    string sOutputPath = Path.Combine(sDirOutput, Path.GetFileName(file));
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.StartsWith("xl/worksheets/sheet", StringComparison.OrdinalIgnoreCase) && entry.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if(-1 != sXml.IndexOf(sAlternateContent))
+                                {
+                                    System.IO.File.Copy(file, sOutputPath, true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+        }
+        static void getShapeType()
+        {
+            string sAlternateContent = "v:shapetype ";
+            string sAlternateContent2 = "<w:pict";
+            string sAlternateContent3 = "<w:object";
+            string sDirInput = @"\\192.168.5.3\files\Files\docx";
+            string sDirOutput = @"D:\Files\shapetype\docx";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    string sOutputPath = Path.Combine(sDirOutput, Path.GetFileName(file));
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if (-1 != sXml.IndexOf(sAlternateContent) && -1 == sXml.IndexOf(sAlternateContent2) && -1 == sXml.IndexOf(sAlternateContent3))
+                                {
+                                    System.IO.File.Copy(file, sOutputPath, true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
             }
         }
     }

@@ -154,5 +154,6 @@ namespace oox {
 	void oox_serialize_bitmap_fill	(std::wostream & strm, const _oox_fill & val, const std::wstring &ns = L"a");
 	
     void oox_serialize_fill			(std::wostream & strm, const _oox_fill & val, const std::wstring &ns = L"a");
+    void vml_serialize_fill			(std::wostream & strm, const _oox_fill & val);
 }
 }

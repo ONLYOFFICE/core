@@ -790,131 +790,213 @@ bool CFontFile::AddToSizesCache(const TFontCacheSizes& oSizes)
     return true;
 }
 
-TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
+TFontCacheSizes CFontFile::CacheGlyph(const int& code, const bool& isRaster, CVectorWorker* pWorker, const bool& isFromPicker)
 {
-	FT_Face pFace				= m_pFace;
-	FT_GlyphSlot pCurentGliph	= pFace->glyph;
-    
     TFontCacheSizes oSizes;
-    LONG ushUnicode = lUnicode;
+    oSizes.ushUnicode = code;
+    oSizes.ushGID = -1;
+    oSizes.eState = glyphstateMiss;
 
-    // Сначала мы все рассчитываем исходя только из матрицы шрифта FontMatrix
-    if (m_bIsNeedUpdateMatrix12)
+    int nCMapIndex = 0;
+    int unGID = m_bStringGID ? code : SetCMapForCharCode(code, &nCMapIndex);
+
+    if (unGID <= 0 && !m_bStringGID)
     {
-        if (m_pDefaultFont)
-            m_pDefaultFont->UpdateMatrix1();
-        UpdateMatrix1();
+        if (-1 != m_nSymbolic && code < 0xF000)
+            unGID = SetCMapForCharCode(code, &nCMapIndex);
     }
 
-    LONG unGID = 0;
-
-    USHORT charSymbolObj = 0xFFFF;
-
-    if (ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
+    if (unGID <= 0)
     {
-        charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
-    }
-    if (0xFFFF == charSymbolObj)
-    {
-        int nCMapIndex = 0;
-        unGID = SetCMapForCharCode(ushUnicode, &nCMapIndex);
+        if (isFromPicker)
+            return oSizes;
 
-        oSizes.ushUnicode = ushUnicode;
-        if (!((unGID > 0) || (-1 != m_nSymbolic && (ushUnicode < 0xF000)  && 0 < (unGID = SetCMapForCharCode(ushUnicode + 0xF000, &nCMapIndex)))))
+        if (!m_bStringGID)
         {
-            // Пробуем загрузить через стандартный шрифт
-            if ((FALSE == m_bUseDefaultFont) || (NULL == m_pDefaultFont) || (0 >= (unGID = m_pDefaultFont->SetCMapForCharCode(ushUnicode, &nCMapIndex))))
-			{
-                if (m_nDefaultChar < 0)
-                {
-                    oSizes.ushGID		= -1;
-                    oSizes.eState		= glyphstateMiss;
-                    oSizes.fAdvanceX	= (pFace->size->metrics.max_advance >> 6) / 2.0f;
-					oSizes.fAdvanceY    = oSizes.fAdvanceX;
+            // пробуем подобрать нужный шрифт
+            CFontFile* pPickFile = m_pFontManager->GetFontFileBySymbol(this, code);
+            if (!pPickFile)
+                return oSizes;
 
-                    return oSizes;
-                }
-                else
-                {
-                    unGID			= m_nDefaultChar;
-                    oSizes.eState	= glyphstateNormal;
+            TFontCacheSizes oSizesCheck = pPickFile->CacheGlyph(code, isRaster, pWorker, true);
+            if (oSizesCheck.eState == glyphstateNormal)
+                return oSizesCheck;
+        }
 
-                    pFace			= m_pFace;
-					pCurentGliph	= pFace->glyph;
-                }
-            }
-            else
+        if (m_nDefaultChar >= 0)
+        {
+            unGID = m_nDefaultChar;
+            oSizes.eState = glyphstateDefault;
+        }
+        else
+        {
+            oSizes.ushGID = -1;
+            oSizes.fAdvanceX = (m_pFace->size->metrics.max_advance >> 6) / 2.0f;
+            oSizes.fAdvanceY = oSizes.fAdvanceX;
+            return oSizes;
+        }
+    }
+    else
+    {
+        oSizes.eState = glyphstateNormal;
+    }
+
+    oSizes.ushGID     = unGID;
+    oSizes.nCMapIndex = nCMapIndex;
+
+    if (m_bIsNeedUpdateMatrix12)
+        UpdateMatrix2();
+
+    FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
+    if (0 != FT_Load_Glyph_Wrapper(m_pFace, unGID, _LOAD_MODE, m_bHintsSupport))
+        return oSizes;
+
+    FT_Glyph pGlyph = NULL;
+    if ( FT_Get_Glyph( m_pFace->glyph, &pGlyph ) )
+        return oSizes;
+
+    if (pWorker)
+    {
+        FT_Outline_Decompose( &((FT_OutlineGlyph)pGlyph)->outline, pWorker->func_interface, pWorker->user );
+        return oSizes;
+    }
+
+    FT_BBox oBBox;
+
+    FT_Glyph_Get_CBox(pGlyph, 1, &oBBox);
+    FT_Done_Glyph(pGlyph);
+
+    TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+
+    bool bIsNeedBold = (m_bNeedDoBold == TRUE) ? true : false;
+    if (bIsNeedBold && pOS2 && pOS2->version != 0xFFFF && pOS2->usWeightClass >= 800)
+        bIsNeedBold = false;
+
+    FT_GlyphSlot pGlyphSlot = m_pFace->glyph;
+
+    oSizes.fAdvanceX = (float)(pGlyphSlot->linearHoriAdvance * m_dUnitsKoef / m_pFace->units_per_EM);
+    if (bIsNeedBold)
+        oSizes.fAdvanceX += 1;
+
+    oSizes.oBBox.fMinX = (float)(oBBox.xMin >> 6);
+    oSizes.oBBox.fMaxX = (float)(oBBox.xMax >> 6);
+    oSizes.oBBox.fMinY = (float)(oBBox.yMin >> 6);
+    oSizes.oBBox.fMaxY = (float)(oBBox.yMax >> 6);
+
+    oSizes.oMetrics.fWidth        = (float)(pGlyphSlot->metrics.width        >> 6);
+    oSizes.oMetrics.fHeight       = (float)(pGlyphSlot->metrics.height       >> 6);
+    oSizes.oMetrics.fHoriAdvance  = (float)(pGlyphSlot->metrics.horiAdvance  >> 6);
+    oSizes.oMetrics.fHoriBearingX = (float)(pGlyphSlot->metrics.horiBearingX >> 6);
+    oSizes.oMetrics.fHoriBearingY = (float)(pGlyphSlot->metrics.horiBearingY >> 6);
+    oSizes.oMetrics.fVertAdvance  = (float)(pGlyphSlot->metrics.vertAdvance  >> 6);
+    oSizes.oMetrics.fVertBearingX = (float)(pGlyphSlot->metrics.vertBearingX >> 6);
+    oSizes.oMetrics.fVertBearingY = (float)(pGlyphSlot->metrics.vertBearingY >> 6);
+
+    if (isFromPicker && (0 == oSizes.oMetrics.fHoriAdvance && 0 == oSizes.oMetrics.fWidth))
+    {
+        oSizes.eState = glyphstateMiss;
+        return oSizes;
+    }
+
+    if (!isRaster)
+        return oSizes;
+
+    oSizes.bBitmap = true;
+    if (FT_Render_Glyph(pGlyphSlot, (FT_Render_Mode)m_pFontManager->m_nRENDER_MODE))
+        return oSizes;
+
+    TGlyphBitmap* pBitmap = &(oSizes.oBitmap);
+
+    pBitmap->nX       = pGlyphSlot->bitmap_left;
+    pBitmap->nY       = pGlyphSlot->bitmap_top;
+    pBitmap->nWidth   = pGlyphSlot->bitmap.width;
+    pBitmap->nHeight  = pGlyphSlot->bitmap.rows;
+    pBitmap->bAA      = m_bAntiAliasing;
+
+    int nRowSize = 0;
+    if (m_bAntiAliasing)
+    {
+        if (bIsNeedBold)
+            pBitmap->nWidth++;
+
+        nRowSize = pBitmap->nWidth;
+    }
+    else
+    {
+        nRowSize = (pBitmap->nWidth + 7) >> 3;
+    }
+
+    if (0 != (nRowSize * pBitmap->nHeight))
+        pBitmap->pData = (unsigned char *)malloc( nRowSize * pBitmap->nHeight );
+    else
+        pBitmap->pData = NULL;
+
+    // Все удаляется в кэше (во время очистки или замены)
+    pBitmap->bFreeData = FALSE;
+
+    int nIndex2;
+    unsigned char *pDstBuffer, *pSrcBuffer;
+
+    if (NULL != pBitmap->pData)
+    {
+        if ( !bIsNeedBold || !m_bAntiAliasing )
+        {
+            for ( nIndex2 = 0, pDstBuffer = pBitmap->pData, pSrcBuffer = pGlyphSlot->bitmap.buffer; nIndex2 < pBitmap->nHeight; ++nIndex2, pDstBuffer += nRowSize, pSrcBuffer += pGlyphSlot->bitmap.pitch )
             {
-                oSizes.eState = glyphstateDeafault;
-
-                pFace = m_pDefaultFont->m_pFace;
-				pCurentGliph = pFace->glyph;
+                memcpy( pDstBuffer, pSrcBuffer, nRowSize );
             }
         }
         else
         {
-            oSizes.eState = glyphstateNormal;
+            int nY, nX;
+            for ( nY = 0, pDstBuffer = pBitmap->pData, pSrcBuffer = pGlyphSlot->bitmap.buffer; nY < pBitmap->nHeight; ++nY, pDstBuffer += nRowSize, pSrcBuffer += pGlyphSlot->bitmap.pitch )
+            {
+                for ( nX = pBitmap->nWidth - 1; nX >= 0; nX-- )
+                {
+                    if ( 0 != nX )
+                    {
+                        int nFirstByte, nSecondByte;
+
+                        if ( pBitmap->nWidth - 1 == nX )
+                            nFirstByte = 0;
+                        else
+                            nFirstByte = pSrcBuffer[nX];
+
+                        nSecondByte = pSrcBuffer[nX - 1];
+
+                        pDstBuffer[nX] = min( 255, nFirstByte + nSecondByte);
+
+                    }
+                    else
+                    {
+                        pDstBuffer[nX] = pSrcBuffer[nX];
+                    }
+                }
+            }
+
         }
+    }
 
-        oSizes.ushGID     = (USHORT)unGID;
-        oSizes.nCMapIndex = nCMapIndex;
+    return oSizes;
+}
 
-        FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-        if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
-            return oSizes;
-
-		FT_Glyph pGlyph = NULL;
-		if ( FT_Get_Glyph( pFace->glyph, &pGlyph ) )
-		{
-			return oSizes;
-		}
-
-		FT_BBox oBBox;
-		FT_Glyph_Get_CBox( pGlyph, ft_glyph_bbox_gridfit, &oBBox );
-		FT_Done_Glyph( pGlyph );
-
-		oSizes.fAdvanceX = (float)(pFace->glyph->linearHoriAdvance * m_dUnitsKoef / pFace->units_per_EM);
-		oSizes.fAdvanceY = (float)(pFace->glyph->linearVertAdvance * m_dUnitsKoef / pFace->units_per_EM);
-		oSizes.oBBox.fMinX = (float)(oBBox.xMin >> 6);
-		oSizes.oBBox.fMaxX = (float)(oBBox.xMax >> 6);
-		oSizes.oBBox.fMinY = (float)(oBBox.yMin >> 6);
-		oSizes.oBBox.fMaxY = (float)(oBBox.yMax >> 6);
-
-		oSizes.oMetrics.fHeight       = (float)(pFace->glyph->metrics.height       >> 6);
-		oSizes.oMetrics.fHoriAdvance  = (float)(pFace->glyph->metrics.horiAdvance  >> 6);
-		oSizes.oMetrics.fHoriBearingX = (float)(pFace->glyph->metrics.horiBearingX >> 6);
-		oSizes.oMetrics.fHoriBearingY = (float)(pFace->glyph->metrics.horiBearingY >> 6);
-		oSizes.oMetrics.fVertAdvance  = (float)(pFace->glyph->metrics.vertAdvance  >> 6);
-		oSizes.oMetrics.fVertBearingX = (float)(pFace->glyph->metrics.vertBearingX >> 6);
-		oSizes.oMetrics.fVertBearingY = (float)(pFace->glyph->metrics.vertBearingY >> 6);
-		oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
-
-		oSizes.bBitmap = false;
-		oSizes.oBitmap.nX        = 0;
-		oSizes.oBitmap.nY        = 0;
-		oSizes.oBitmap.nHeight   = 0;
-		oSizes.oBitmap.nWidth    = 0;
-		oSizes.oBitmap.bFreeData = FALSE;
-		oSizes.oBitmap.pData     = NULL;
-		oSizes.oBitmap.bAA       = FALSE;
-
-		if (m_bNeedDoBold)
-            oSizes.fAdvanceX += 1;
-
+TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
+{
+    TFontCacheSizes oSizes;
+    USHORT charSymbolObj = 0xFFFF;
+    if (lUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
+    {
+        charSymbolObj = m_arrCacheSizesIndexs[lUnicode];
+    }
+    if (0xFFFF == charSymbolObj)
+    {
+        oSizes = CacheGlyph(lUnicode, false);
         AddToSizesCache( oSizes );
     }
     else
     {
         oSizes = m_oCacheSizes[charSymbolObj];
     }
-
-    if (m_bIsNeedUpdateMatrix12)
-    {
-        if (m_pDefaultFont)
-            m_pDefaultFont->UpdateMatrix2();
-       UpdateMatrix2();
-    }
-
     return oSizes;
 }
 
@@ -937,6 +1019,20 @@ double CFontFile::GetCharWidth(int gid)
     return dRet;
 }
 
+int CFontFile::GetGIDByUnicode(int code)
+{
+    int nCMapIndex = 0;
+    int unGID = m_bStringGID ? code : SetCMapForCharCode(code, &nCMapIndex);
+
+    if (unGID <= 0 && !m_bStringGID)
+    {
+        if (-1 != m_nSymbolic && code < 0xF000)
+            unGID = SetCMapForCharCode(code, &nCMapIndex);
+    }
+
+    return unGID;
+}
+
 INT CFontFile::GetString(CGlyphString& oString)
 {
 	int nCountGlyph = oString.GetLength();
@@ -948,122 +1044,18 @@ INT CFontFile::GetString(CGlyphString& oString)
 
 	for (int nIndex = 0; nIndex < nCountGlyph; ++nIndex)
 	{
-        // Сначала мы все рассчитываем исходя только из матрицы шрифта FontMatrix
-        if (m_bIsNeedUpdateMatrix12)
-        {
-            if (m_pDefaultFont)
-                m_pDefaultFont->UpdateMatrix1();
-            UpdateMatrix1();
-        }
-
-        FT_Face pFace = m_pFace;
-		FT_GlyphSlot pCurentGliph = pFace->glyph;
-        
 		TGlyph* pCurGlyph = oString.GetAt(nIndex);
 
+        int unGID = 0;
 		int ushUnicode = pCurGlyph->lUnicode;
-		
-		int unGID = 0;
         USHORT charSymbolObj = 0xFFFF;
-
         if (ushUnicode >= 0 && ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
         {
             charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
         }
 		if (0xFFFF == charSymbolObj)
 		{
-            int nCMapIndex = 0;
-            unGID = SetCMapForCharCode(ushUnicode, &nCMapIndex);
-
-            TFontCacheSizes oSizes;
-            oSizes.ushUnicode = ushUnicode;
-
-            if (!((unGID > 0) || (-1 != m_nSymbolic && (ushUnicode < 0xF000)  && 0 < (unGID = SetCMapForCharCode(ushUnicode + 0xF000, &nCMapIndex)))))
-            {
-                // Пробуем загрузить через стандартный шрифт
-                if (FALSE == m_bUseDefaultFont || NULL == m_pDefaultFont || 0 >= (unGID = m_pDefaultFont->SetCMapForCharCode(ushUnicode, &nCMapIndex)))
-                {
-                    if (m_nDefaultChar < 0)
-                    {
-                        oSizes.ushGID    = -1;
-                        oSizes.eState    = glyphstateMiss;
-                        oSizes.fAdvanceX = (m_pFace->size->metrics.max_advance >> 6) / 2.0f;
-
-                        return FALSE;
-                    }
-                    else
-                    {
-                        unGID = m_nDefaultChar;
-                        oSizes.eState = glyphstateNormal;
-
-                        pFace = m_pFace;
-                        pCurentGliph = pFace->glyph;
-                    }
-                }
-                else
-                {
-                    oSizes.eState = glyphstateDeafault;
-
-                    pFace = m_pDefaultFont->m_pFace;
-                    pCurentGliph = pFace->glyph;
-                }
-            }
-            else
-            {
-                oSizes.eState = glyphstateNormal;
-            }
-
-            oSizes.ushGID     = unGID;
-            oSizes.nCMapIndex = nCMapIndex;
-
-            if (m_bIsNeedUpdateMatrix12)
-            {
-                if (m_pDefaultFont)
-                    m_pDefaultFont->UpdateMatrix2();
-                UpdateMatrix2();
-            }
-
-			FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-            if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
-                return FALSE;
-
-			FT_Glyph pGlyph = NULL;
-			if ( FT_Get_Glyph( pFace->glyph, &pGlyph ) )
-                return FALSE;
-
-            FT_BBox oBBox;
-
-            FT_Glyph_Get_CBox(pGlyph, 1, &oBBox);
-            FT_Done_Glyph(pGlyph);
-
-            pCurentGliph = pFace->glyph;
-
-            oSizes.fAdvanceX = (float)(pFace->glyph->linearHoriAdvance * m_dUnitsKoef / pFace->units_per_EM);
-			oSizes.oBBox.fMinX = (float)(oBBox.xMin >> 6);
-			oSizes.oBBox.fMaxX = (float)(oBBox.xMax >> 6);
-			oSizes.oBBox.fMinY = (float)(oBBox.yMin >> 6);
-			oSizes.oBBox.fMaxY = (float)(oBBox.yMax >> 6);
-
-			oSizes.oMetrics.fHeight       = (float)(pFace->glyph->metrics.height       >> 6);
-			oSizes.oMetrics.fHoriAdvance  = (float)(pFace->glyph->metrics.horiAdvance  >> 6);
-			oSizes.oMetrics.fHoriBearingX = (float)(pFace->glyph->metrics.horiBearingX >> 6);
-			oSizes.oMetrics.fHoriBearingY = (float)(pFace->glyph->metrics.horiBearingY >> 6);
-			oSizes.oMetrics.fVertAdvance  = (float)(pFace->glyph->metrics.vertAdvance  >> 6);
-			oSizes.oMetrics.fVertBearingX = (float)(pFace->glyph->metrics.vertBearingX >> 6);
-			oSizes.oMetrics.fVertBearingY = (float)(pFace->glyph->metrics.vertBearingY >> 6);
-			oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
-
-            oSizes.bBitmap = false;
-			oSizes.oBitmap.nX        = 0;
-			oSizes.oBitmap.nY        = 0;
-			oSizes.oBitmap.nHeight   = 0;
-			oSizes.oBitmap.nWidth    = 0;
-			oSizes.oBitmap.bFreeData = FALSE;
-			oSizes.oBitmap.pData     = NULL;
-			oSizes.oBitmap.bAA       = FALSE;
-
-			if (m_bNeedDoBold)
-				oSizes.fAdvanceX += 1;
+            TFontCacheSizes oSizes = CacheGlyph(ushUnicode, false);
 
             if ( AddToSizesCache( oSizes ) == true)
             {
@@ -1073,7 +1065,7 @@ INT CFontFile::GetString(CGlyphString& oString)
 		if (0xFFFF != charSymbolObj)
 		{
 			TFontCacheSizes& oSizes = m_oCacheSizes[charSymbolObj];
-			int nCMapIndex = oSizes.nCMapIndex;
+            unGID = oSizes.ushGID;
 
 			if (glyphstateMiss == oSizes.eState)
             {
@@ -1088,24 +1080,14 @@ INT CFontFile::GetString(CGlyphString& oString)
 
                 continue;
             }
-            else if (glyphstateDeafault == oSizes.eState)
+            else if (glyphstateDefault == oSizes.eState)
             {
-                oString.SetState(nIndex, glyphstateDeafault);
+                oString.SetState(nIndex, glyphstateDefault);
             }
             else
             {
                 oString.SetState(nIndex, glyphstateNormal);
             }
-
-            if ( 0 != pFace->num_charmaps )
-			{
-				int nCurCMapIndex = FT_Get_Charmap_Index( pFace->charmap );
-				if ( nCurCMapIndex != nCMapIndex )
-				{
-					nCMapIndex = max( 0, nCMapIndex );
-					FT_Set_Charmap( pFace, pFace->charmaps[nCMapIndex] );
-				}
-			}
 
             if (m_bUseKerning && unPrevGID && (nIndex >= 0 && oString.GetAt(nIndex)->eState == oString.GetAt(nIndex - 1)->eState))
             {
@@ -1126,12 +1108,6 @@ INT CFontFile::GetString(CGlyphString& oString)
             double dAdvanceW = m_arrdFontMatrix[0] * oSizes.fAdvanceX;
             fPenX += (float)(dAdvanceW + m_dCharSpacing);
 
-            if (m_bNeedDoBold)
-            {
-                // Когда текст делаем жирным сами, то мы увеличиваем расстояние на 1 пиксель в ширину (независимо от DPI и размера текста всегда 1 пиксель)
-                fPenX += 1;
-            }
-
             pCurGlyph->bBitmap = oSizes.bBitmap;
 			pCurGlyph->oBitmap = oSizes.oBitmap;
 		}
@@ -1140,13 +1116,6 @@ INT CFontFile::GetString(CGlyphString& oString)
 	
 	oString.m_fEndX = fPenX + oString.m_fX;
 	oString.m_fEndY = fPenY + oString.m_fY;
-
-    if (m_bIsNeedUpdateMatrix12)
-    {
-        if (m_pDefaultFont)
-            m_pDefaultFont->UpdateMatrix2();
-        UpdateMatrix2();
-    }
 
 	return TRUE;
 }
@@ -1164,24 +1133,11 @@ INT CFontFile::GetString2(CGlyphString& oString)
 	float fPenX = 0, fPenY = 0;
 
 	for (int nIndex = 0; nIndex < nCountGlyph; ++nIndex)
-	{
-        // Сначала мы все рассчитываем исходя только из матрицы шрифта FontMatrix
-        if (m_bIsNeedUpdateMatrix12)
-        {
-            if (m_pDefaultFont)
-                m_pDefaultFont->UpdateMatrix1();
-            UpdateMatrix1();
-        }
-
-        FT_Face pFace = m_pFace;
-		FT_GlyphSlot pCurentGliph = pFace->glyph;
-        
+    {
 		TGlyph* pCurGlyph = oString.GetAt(nIndex);
 
-		int ushUnicode = pCurGlyph->lUnicode;
-		
+		int ushUnicode = pCurGlyph->lUnicode;		
 		int unGID = 0;
-
         USHORT charSymbolObj = 0xFFFF;
 
         if ( ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE) //linux !!!!
@@ -1190,171 +1146,7 @@ INT CFontFile::GetString2(CGlyphString& oString)
         }
 		if (0xFFFF == charSymbolObj || m_oCacheSizes[charSymbolObj].bBitmap == false)
 		{
-            int nCMapIndex = 0;
-            unGID = SetCMapForCharCode(ushUnicode, &nCMapIndex);
-
-            TFontCacheSizes oSizes;
-            oSizes.ushUnicode = ushUnicode;
-
-            if (!((unGID > 0) || (-1 != m_nSymbolic && (ushUnicode < 0xF000)  && 0 < (unGID = SetCMapForCharCode(ushUnicode + 0xF000, &nCMapIndex)))))
-            {
-                // Пробуем загрузить через стандартный шрифт
-                if (FALSE == m_bUseDefaultFont || NULL == m_pDefaultFont || 0 >= (unGID = m_pDefaultFont->SetCMapForCharCode(ushUnicode, &nCMapIndex)))
-                {
-                    if (m_nDefaultChar < 0)
-                    {
-                        oSizes.ushGID    = -1;
-                        oSizes.eState    = glyphstateMiss;
-                        oSizes.fAdvanceX = (m_pFace->size->metrics.max_advance >> 6) / 2.0f;
-
-                        return FALSE;
-                    }
-                    else
-                    {
-                        unGID = m_nDefaultChar;
-                        oSizes.eState = glyphstateNormal;
-
-                        pFace = m_pFace;
-                        pCurentGliph = pFace->glyph;
-                    }
-                }
-                else
-                {
-                    oSizes.eState = glyphstateDeafault;
-
-                    pFace = m_pDefaultFont->m_pFace;
-                    pCurentGliph = pFace->glyph;
-                }
-            }
-            else
-            {
-                oSizes.eState = glyphstateNormal;
-            }
-
-            oSizes.ushGID     = unGID;
-            oSizes.nCMapIndex = nCMapIndex;
-
-            if (m_bIsNeedUpdateMatrix12)
-            {
-                if (m_pDefaultFont)
-                    m_pDefaultFont->UpdateMatrix2();
-                UpdateMatrix2();
-            }
-
-			FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-            if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
-                return FALSE;
-
-			FT_Glyph pGlyph = NULL;
-			if ( FT_Get_Glyph( pFace->glyph, &pGlyph ) )
-                return FALSE;
-
-            FT_BBox oBBox;
-
-            FT_Glyph_Get_CBox(pGlyph, 1, &oBBox);
-            FT_Done_Glyph(pGlyph);
-
-            pCurentGliph = pFace->glyph;
-
-            oSizes.fAdvanceX = (float)(pFace->glyph->linearHoriAdvance * m_dUnitsKoef / pFace->units_per_EM);
-			oSizes.oBBox.fMinX = (float)(oBBox.xMin >> 6);
-			oSizes.oBBox.fMaxX = (float)(oBBox.xMax >> 6);
-			oSizes.oBBox.fMinY = (float)(oBBox.yMin >> 6);
-			oSizes.oBBox.fMaxY = (float)(oBBox.yMax >> 6);
-
-			oSizes.oMetrics.fHeight       = (float)(pFace->glyph->metrics.height       >> 6);
-			oSizes.oMetrics.fHoriAdvance  = (float)(pFace->glyph->metrics.horiAdvance  >> 6);
-			oSizes.oMetrics.fHoriBearingX = (float)(pFace->glyph->metrics.horiBearingX >> 6);
-			oSizes.oMetrics.fHoriBearingY = (float)(pFace->glyph->metrics.horiBearingY >> 6);
-			oSizes.oMetrics.fVertAdvance  = (float)(pFace->glyph->metrics.vertAdvance  >> 6);
-			oSizes.oMetrics.fVertBearingX = (float)(pFace->glyph->metrics.vertBearingX >> 6);
-			oSizes.oMetrics.fVertBearingY = (float)(pFace->glyph->metrics.vertBearingY >> 6);
-			oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
-
-            pCurGlyph->bBitmap  = true;
-            if (FT_Render_Glyph(pCurentGliph, (FT_Render_Mode)m_pFontManager->m_nRENDER_MODE))
-                return FALSE;
-
-			TGlyphBitmap *pBitmap = &(pCurGlyph->oBitmap);
-			pBitmap->nX      = pCurentGliph->bitmap_left;
-			pBitmap->nY      = pCurentGliph->bitmap_top;
-			pBitmap->nWidth  = pCurentGliph->bitmap.width;
-			pBitmap->nHeight = pCurentGliph->bitmap.rows;
-			pBitmap->bAA     = m_bAntiAliasing;
-
-			int nRowSize = 0;
-			if ( m_bAntiAliasing ) 
-			{
-				if ( m_bNeedDoBold )
-					pBitmap->nWidth++;
-
-				nRowSize = pBitmap->nWidth;
-			} 
-			else 
-			{
-				nRowSize = (pBitmap->nWidth + 7) >> 3;
-			}
-
-			if (0 != (nRowSize * pBitmap->nHeight))
-				pBitmap->pData = (unsigned char *)malloc( nRowSize * pBitmap->nHeight );
-			else
-				pBitmap->pData = NULL;
-
-			pBitmap->bFreeData = FALSE; // Все удаляется в кэше (во время очистки или замены)
-
-			int nIndex2;
-			unsigned char *pDstBuffer, *pSrcBuffer;
-
-			if (NULL != pBitmap->pData)
-			{
-				//double dKoef = ( 255 + 10 ) / (double)255;
-				if ( !m_bNeedDoBold || !m_bAntiAliasing )
-				{
-					for ( nIndex2 = 0, pDstBuffer = pBitmap->pData, pSrcBuffer = pCurentGliph->bitmap.buffer; nIndex2 < pBitmap->nHeight; ++nIndex2, pDstBuffer += nRowSize, pSrcBuffer += pCurentGliph->bitmap.pitch ) 
-					{
-						memcpy( pDstBuffer, pSrcBuffer, nRowSize );
-					}
-				}
-				else
-				{
-					int nY, nX;
-					for ( nY = 0, pDstBuffer = pBitmap->pData, pSrcBuffer = pCurentGliph->bitmap.buffer; nY < pBitmap->nHeight; ++nY, pDstBuffer += nRowSize, pSrcBuffer += pCurentGliph->bitmap.pitch ) 
-					{
-						for ( nX = pBitmap->nWidth - 1; nX >= 0; nX-- )
-						{
-							if ( 0 != nX )
-							{
-								int nFirstByte, nSecondByte;
-
-								if ( pBitmap->nWidth - 1 == nX )
-									nFirstByte = 0;
-								else
-									nFirstByte = pSrcBuffer[nX];
-
-								nSecondByte = pSrcBuffer[nX - 1];
-
-								pDstBuffer[nX] = min( 255, nFirstByte + nSecondByte);
-
-							}
-							else
-							{
-								pDstBuffer[nX] = pSrcBuffer[nX];
-							}
-						}
-					}
-
-				}
-			}
-
-			oSizes.bBitmap			 = pCurGlyph->bBitmap;
-			oSizes.oBitmap.bAA       = pBitmap->bAA;
-			oSizes.oBitmap.bFreeData = pBitmap->bFreeData;
-			oSizes.oBitmap.nX        = pBitmap->nX;
-			oSizes.oBitmap.nY        = pBitmap->nY;
-			oSizes.oBitmap.nWidth    = pBitmap->nWidth;
-			oSizes.oBitmap.nHeight   = pBitmap->nHeight;
-			oSizes.oBitmap.pData     = pBitmap->pData;
-
+            TFontCacheSizes oSizes = CacheGlyph(ushUnicode, true);
             if ( AddToSizesCache( oSizes ) == true)
             {
                 charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
@@ -1363,7 +1155,7 @@ INT CFontFile::GetString2(CGlyphString& oString)
 		if (0xFFFF != charSymbolObj)
 		{
 			TFontCacheSizes& oSizes = m_oCacheSizes[charSymbolObj];
-			int nCMapIndex = oSizes.nCMapIndex;
+            unGID = oSizes.ushGID;
 
 			if (glyphstateMiss == oSizes.eState)
             {
@@ -1378,24 +1170,14 @@ INT CFontFile::GetString2(CGlyphString& oString)
 
                 continue;
             }
-            else if (glyphstateDeafault == oSizes.eState)
+            else if (glyphstateDefault == oSizes.eState)
             {
-                oString.SetState(nIndex, glyphstateDeafault);
+                oString.SetState(nIndex, glyphstateDefault);
             }
             else
             {
                 oString.SetState(nIndex, glyphstateNormal);
             }
-
-            if ( 0 != pFace->num_charmaps )
-			{
-				int nCurCMapIndex = FT_Get_Charmap_Index( pFace->charmap );
-				if ( nCurCMapIndex != nCMapIndex )
-				{
-					nCMapIndex = max( 0, nCMapIndex );
-					FT_Set_Charmap( pFace, pFace->charmaps[nCMapIndex] );
-				}
-			}
 
             if (m_bUseKerning && unPrevGID && (nIndex >= 0 && oString.GetAt(nIndex)->eState == oString.GetAt(nIndex - 1)->eState))
             {
@@ -1415,12 +1197,6 @@ INT CFontFile::GetString2(CGlyphString& oString)
 			
 			double dAdvanceW = m_arrdFontMatrix[0] * oSizes.fAdvanceX;
             fPenX += (float)(dAdvanceW + m_dCharSpacing);
-            
-            if (m_bNeedDoBold)
-            {
-                // Когда текст делаем жирным сами, то мы увеличиваем расстояние на 1 пиксель в ширину (независимо от DPI и размера текста всегда 1 пиксель)
-                fPenX += 1;
-            }
 
             pCurGlyph->bBitmap = oSizes.bBitmap;
 			pCurGlyph->oBitmap = oSizes.oBitmap;
@@ -1430,14 +1206,6 @@ INT CFontFile::GetString2(CGlyphString& oString)
 	
 	oString.m_fEndX = fPenX + oString.m_fX;
 	oString.m_fEndY = fPenY + oString.m_fY;
-
-    if (m_bIsNeedUpdateMatrix12)
-    {
-        if (m_pDefaultFont)
-            m_pDefaultFont->UpdateMatrix2();
-        UpdateMatrix2();
-    }
-
 	return TRUE;
 }
 
@@ -1446,195 +1214,17 @@ INT CFontFile::GetString2C(CGlyphString& oString)
     unsigned int unPrevGID = 0;
 	float fPenX = 0, fPenY = 0;
 
-    // Сначала мы все рассчитываем исходя только из матрицы шрифта FontMatrix
-    if (m_bIsNeedUpdateMatrix12)
-    {
-        if (m_pDefaultFont)
-            m_pDefaultFont->UpdateMatrix1();
-        UpdateMatrix1();
-    }
-
-	FT_Face pFace = m_pFace;
-	FT_GlyphSlot pCurentGliph = pFace->glyph;
-
-	TGlyph* pCurGlyph = oString.GetAt(0);
+    TGlyph* pCurGlyph = oString.GetAt(0);
     int ushUnicode = pCurGlyph->lUnicode;
 
-    int unGID = 0;
-
     USHORT charSymbolObj = 0xFFFF;
-
     if (ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
     {
         charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
     }
     if (0xFFFF == charSymbolObj || m_oCacheSizes[charSymbolObj].bBitmap == false)
     {
-        int nCMapIndex = 0;
-        unGID = SetCMapForCharCode(ushUnicode, &nCMapIndex);
-
-        TFontCacheSizes oSizes;
-        oSizes.ushUnicode = ushUnicode;
-
-        if (!((unGID > 0) || (-1 != m_nSymbolic && (ushUnicode < 0xF000)  && 0 < (unGID = SetCMapForCharCode(ushUnicode + 0xF000, &nCMapIndex)))))
-        {
-            // Пробуем загрузить через стандартный шрифт
-            if (FALSE == m_bUseDefaultFont || NULL == m_pDefaultFont || 0 >= (unGID = m_pDefaultFont->SetCMapForCharCode(ushUnicode, &nCMapIndex)))
-            {
-                if (m_nDefaultChar < 0)
-                {
-                    oSizes.ushGID    = -1;
-                    oSizes.eState    = glyphstateMiss;
-                    oSizes.fAdvanceX = (m_pFace->size->metrics.max_advance >> 6) / 2.0f;
-
-                    return FALSE;
-                }
-                else
-                {
-                    unGID = m_nDefaultChar;
-                    oSizes.eState = glyphstateNormal;
-
-                    pFace = m_pFace;
-                    pCurentGliph = pFace->glyph;
-                }
-            }
-            else
-            {
-                oSizes.eState = glyphstateDeafault;
-
-                pFace = m_pDefaultFont->m_pFace;
-                pCurentGliph = pFace->glyph;
-            }
-        }
-        else
-        {
-            oSizes.eState = glyphstateNormal;
-        }
-
-        oSizes.ushGID     = unGID;
-        oSizes.nCMapIndex = nCMapIndex;
-
-        if (m_bIsNeedUpdateMatrix12)
-        {
-            if (m_pDefaultFont)
-                m_pDefaultFont->UpdateMatrix2();
-            UpdateMatrix2();
-        }
-
-		FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-        if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
-            return FALSE;
-
-		FT_Glyph pGlyph = NULL;
-		if ( FT_Get_Glyph( pFace->glyph, &pGlyph ) )
-            return FALSE;
-
-        FT_BBox oBBox;
-
-        FT_Glyph_Get_CBox(pGlyph, 1, &oBBox);
-        FT_Done_Glyph(pGlyph);
-
-        pCurentGliph = pFace->glyph;
-
-        oSizes.fAdvanceX = (float)(pFace->glyph->linearHoriAdvance * m_dUnitsKoef / pFace->units_per_EM);
-		oSizes.oBBox.fMinX = (float)(oBBox.xMin >> 6);
-		oSizes.oBBox.fMaxX = (float)(oBBox.xMax >> 6);
-		oSizes.oBBox.fMinY = (float)(oBBox.yMin >> 6);
-		oSizes.oBBox.fMaxY = (float)(oBBox.yMax >> 6);
-
-		oSizes.oMetrics.fHeight       = (float)(pFace->glyph->metrics.height       >> 6);
-		oSizes.oMetrics.fHoriAdvance  = (float)(pFace->glyph->metrics.horiAdvance  >> 6);
-		oSizes.oMetrics.fHoriBearingX = (float)(pFace->glyph->metrics.horiBearingX >> 6);
-		oSizes.oMetrics.fHoriBearingY = (float)(pFace->glyph->metrics.horiBearingY >> 6);
-		oSizes.oMetrics.fVertAdvance  = (float)(pFace->glyph->metrics.vertAdvance  >> 6);
-		oSizes.oMetrics.fVertBearingX = (float)(pFace->glyph->metrics.vertBearingX >> 6);
-		oSizes.oMetrics.fVertBearingY = (float)(pFace->glyph->metrics.vertBearingY >> 6);
-		oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
-
-        pCurGlyph->bBitmap  = true;
-        if (FT_Render_Glyph(pCurentGliph, (FT_Render_Mode)m_pFontManager->m_nRENDER_MODE))
-            return FALSE;
-
-		TGlyphBitmap *pBitmap = &(pCurGlyph->oBitmap);
-		pBitmap->nX      = pCurentGliph->bitmap_left;
-		pBitmap->nY      = pCurentGliph->bitmap_top;
-		pBitmap->nWidth  = pCurentGliph->bitmap.width;
-		pBitmap->nHeight = pCurentGliph->bitmap.rows;
-		pBitmap->bAA     = m_bAntiAliasing;
-
-		int nRowSize = 0;
-		if ( m_bAntiAliasing ) 
-		{
-			if ( m_bNeedDoBold )
-				pBitmap->nWidth++;
-
-			nRowSize = pBitmap->nWidth;
-		} 
-		else 
-		{
-			nRowSize = (pBitmap->nWidth + 7) >> 3;
-		}
-
-		if (0 != (nRowSize * pBitmap->nHeight))
-			pBitmap->pData = (unsigned char *)malloc( nRowSize * pBitmap->nHeight );
-		else
-			pBitmap->pData = NULL;
-
-		pBitmap->bFreeData = FALSE; // Все удаляется в кэше (во время очистки или замены)
-
-		int nIndex2;
-		unsigned char *pDstBuffer, *pSrcBuffer;
-
-		if (NULL != pBitmap->pData)
-		{
-			//double dKoef = ( 255 + 10 ) / (double)255;
-			if ( !m_bNeedDoBold || !m_bAntiAliasing )
-			{
-				for ( nIndex2 = 0, pDstBuffer = pBitmap->pData, pSrcBuffer = pCurentGliph->bitmap.buffer; nIndex2 < pBitmap->nHeight; ++nIndex2, pDstBuffer += nRowSize, pSrcBuffer += pCurentGliph->bitmap.pitch ) 
-				{
-					memcpy( pDstBuffer, pSrcBuffer, nRowSize );
-				}
-			}
-			else
-			{
-				int nY, nX;
-				for ( nY = 0, pDstBuffer = pBitmap->pData, pSrcBuffer = pCurentGliph->bitmap.buffer; nY < pBitmap->nHeight; ++nY, pDstBuffer += nRowSize, pSrcBuffer += pCurentGliph->bitmap.pitch ) 
-				{
-					for ( nX = pBitmap->nWidth - 1; nX >= 0; nX-- )
-					{
-						if ( 0 != nX )
-						{
-							int nFirstByte, nSecondByte;
-
-							if ( pBitmap->nWidth - 1 == nX )
-								nFirstByte = 0;
-							else
-								nFirstByte = pSrcBuffer[nX];
-
-							nSecondByte = pSrcBuffer[nX - 1];
-
-							pDstBuffer[nX] = min( 255, nFirstByte + nSecondByte);
-
-						}
-						else
-						{
-							pDstBuffer[nX] = pSrcBuffer[nX];
-						}
-					}
-				}
-
-			}
-		}
-
-		oSizes.bBitmap			 = pCurGlyph->bBitmap;
-		oSizes.oBitmap.bAA       = pBitmap->bAA;
-		oSizes.oBitmap.bFreeData = pBitmap->bFreeData;
-		oSizes.oBitmap.nX        = pBitmap->nX;
-		oSizes.oBitmap.nY        = pBitmap->nY;
-		oSizes.oBitmap.nWidth    = pBitmap->nWidth;
-		oSizes.oBitmap.nHeight   = pBitmap->nHeight;
-		oSizes.oBitmap.pData     = pBitmap->pData;
-
+        TFontCacheSizes oSizes = CacheGlyph(ushUnicode, true);
         if (AddToSizesCache( oSizes ) == true)
         {
             charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
@@ -1649,9 +1239,9 @@ INT CFontFile::GetString2C(CGlyphString& oString)
         {
             return TRUE;
         }
-        else if (glyphstateDeafault == oSizes.eState)
+        else if (glyphstateDefault == oSizes.eState)
         {
-			pCurGlyph->eState = glyphstateDeafault;
+            pCurGlyph->eState = glyphstateDefault;
         }
         else
         {
@@ -1664,32 +1254,20 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 		pCurGlyph->oBitmap = oSizes.oBitmap;
     }
     
-        if (true)
-        {
-            float fX = oString.m_fX + fPenX;
-            float fY = oString.m_fY + fPenY;
+    if (true)
+    {
+        float fX = oString.m_fX + fPenX;
+        float fY = oString.m_fY + fPenY;
 
-            pCurGlyph->fX = (float)(oString.m_arrCTM[4] + fX * oString.m_arrCTM[0] + fY * oString.m_arrCTM[2] - oString.m_fX);
-            pCurGlyph->fY = (float)(oString.m_arrCTM[5] + fX * oString.m_arrCTM[1] + fY * oString.m_arrCTM[3] - oString.m_fY);
-        }
+        pCurGlyph->fX = (float)(oString.m_arrCTM[4] + fX * oString.m_arrCTM[0] + fY * oString.m_arrCTM[2] - oString.m_fX);
+        pCurGlyph->fY = (float)(oString.m_arrCTM[5] + fX * oString.m_arrCTM[1] + fY * oString.m_arrCTM[3] - oString.m_fY);
+    }
 
 	double dAdvanceW = m_arrdFontMatrix[0] * m_oCacheSizes[charSymbolObj].fAdvanceX;
 	fPenX += (float)(dAdvanceW + m_dCharSpacing);
-    if (m_bNeedDoBold)
-    {
-        // Когда текст делаем жирным сами, то мы увеличиваем расстояние на 1 пиксель в ширину (независимо от DPI и размера текста всегда 1 пиксель)
-        fPenX += m_unHorDpi/72.f;
-    }
 
     oString.m_fEndX = fPenX + oString.m_fX;
 	oString.m_fEndY = fPenY + oString.m_fY;
-
-    if (m_bIsNeedUpdateMatrix12)
-    {
-        if (m_pDefaultFont)
-            m_pDefaultFont->UpdateMatrix2();
-        UpdateMatrix2();
-    }
 
 	return TRUE;
 }
@@ -1797,10 +1375,6 @@ static int GlyphPathCubicTo(const FT_Vector *pFirstControlPoint, const FT_Vector
 
 NSFonts::IFontPath* CFontFile::GetGlyphPath(int nCode)
 { 
-	FT_UInt unGID = SetCMapForCharCode2( nCode );
-	if (unGID <= 0)
-		return NULL;
-
 	static FT_Outline_Funcs pOutlineFuncs = 
 	{
 		&GlyphPathMoveTo,
@@ -1809,32 +1383,17 @@ NSFonts::IFontPath* CFontFile::GetGlyphPath(int nCode)
 		&GlyphPathCubicTo,
 		0, 0
 	};
+    TFreeTypeFontPath oGlyphPath;
+    oGlyphPath.pPath      = new CFontPath();
+    oGlyphPath.bNeedClose = FALSE;
 
-	FT_GlyphSlot oSlot = m_pFace->glyph;
+    CVectorWorker oWorker;
+    oWorker.func_interface = &pOutlineFuncs;
+    oWorker.user = &oGlyphPath;
 
-	// TO DO: Пропустить нулевой (".notdef") символ в TrueType
-	if ( FT_Load_Glyph( m_pFace, unGID, FT_LOAD_NO_BITMAP ) )
-		return NULL;
+    CacheGlyph(nCode, false, &oWorker);
 
-	FT_Glyph oGlyph;
-	if ( FT_Get_Glyph( oSlot, &oGlyph ) ) 
-	{
-		return NULL;
-	}
-
-	TFreeTypeFontPath oGlyphPath;
-	oGlyphPath.pPath      = new CFontPath();
-	oGlyphPath.bNeedClose = FALSE;
-
-	FT_Outline_Decompose( &((FT_OutlineGlyph)oGlyph)->outline, &pOutlineFuncs, &oGlyphPath );
-
-	if ( oGlyphPath.bNeedClose ) 
-	{
-		oGlyphPath.pPath->Close();
-	}
-
-	FT_Done_Glyph( oGlyph );
-	return oGlyphPath.pPath;
+    return oGlyphPath.pPath;
 }
 
 bool CFontFile::IsItalic()

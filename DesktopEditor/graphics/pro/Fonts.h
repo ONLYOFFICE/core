@@ -489,6 +489,8 @@ namespace NSFonts
 
         virtual int SetCMapForCharCode(long lUnicode, int *pnCMapIndex) = 0;
         virtual double GetCharWidth(int gid) = 0;
+
+        virtual int GetGIDByUnicode(int code) = 0;
     };
 
     namespace NSFontFile

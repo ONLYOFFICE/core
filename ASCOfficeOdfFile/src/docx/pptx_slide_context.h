@@ -116,7 +116,7 @@ public:
 
 	void process_drawings();
 
-	mediaitems & get_mediaitems();
+	mediaitems_ptr & get_mediaitems();
 
 	void add_background			(_oox_fill & fill);
 

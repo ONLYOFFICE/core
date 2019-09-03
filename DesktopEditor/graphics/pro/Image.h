@@ -63,7 +63,7 @@ namespace NSImages
 
         virtual ICacheImage* Lock(const std::wstring& strFile) = 0;
 
-        void SetApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts);
+        virtual void SetApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts) = 0;
     };
 
     namespace NSFilesCache

@@ -34,6 +34,11 @@
 
 namespace XmlUtils
 {
+    static void libxml2_err_no(void * ctx, const char * msg, ...)
+    {
+        // none
+    }
+
     IXmlDOMDocument::IXmlDOMDocument()
     {
         m_lRef = 1;
@@ -53,6 +58,16 @@ namespace XmlUtils
         if (0 == m_lRef)
             delete this;
         return lReturn;
+    }
+
+    void IXmlDOMDocument::DisableOutput()
+    {
+        xmlSetGenericErrorFunc(NULL, (xmlGenericErrorFunc)libxml2_err_no);
+    }
+
+    void IXmlDOMDocument::EnableOutput()
+    {
+        xmlSetGenericErrorFunc(NULL, NULL);
     }
 }
 
@@ -126,6 +141,10 @@ namespace XmlUtils
 	{
 		return m_pInternal->GetNameA();
 	}
+	const char* CXmlLiteReader::GetNameChar()
+	{
+		return m_pInternal->GetNameChar();
+	}
 	int CXmlLiteReader::GetDepth()
 	{
 		return m_pInternal->GetDepth();
@@ -143,6 +162,10 @@ namespace XmlUtils
 	{
 		return m_pInternal->GetTextA();
 	}
+	const char* CXmlLiteReader::GetTextChar()
+	{
+		return m_pInternal->GetTextChar();
+	}
 
 	std::wstring CXmlLiteReader::GetText2()
 	{
@@ -155,6 +178,10 @@ namespace XmlUtils
     std::wstring CXmlLiteReader::GetText3()
 	{
 		return m_pInternal->GetText3();
+	}
+	void CXmlLiteReader::GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen)
+	{
+		return m_pInternal->GetTextWithHHHH(bPreserve, sBuffer, nSize,nLen);
 	}
 
 	std::wstring CXmlLiteReader::GetOuterXml()

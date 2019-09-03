@@ -133,7 +133,10 @@ struct anchor_settings
 	_CP_OPT(anchor_type)	anchor_type_;
 	_CP_OPT(run_through)	run_through_;
 
-	_CP_OPT(style_wrap)		style_wrap_;
+	_CP_OPT(style_wrap)						style_wrap_;
+    _CP_OPT(odf_types::integer_or_nolimit)	style_number_wrapped_paragraphs_;
+    _CP_OPT(odf_types::Bool)				style_wrap_contour_;
+    _CP_OPT(odf_types::wrap_contour_mode)	style_wrap_contour_mode_;
 
 	void clear()
 	{
@@ -159,6 +162,9 @@ struct anchor_settings
 		fo_margin_bottom_			= boost::none;
 
 		style_wrap_					= boost::none;
+		style_wrap_contour_			= boost::none;
+		style_wrap_contour_mode_	= boost::none;
+		style_number_wrapped_paragraphs_ = boost::none;
 	}
 };	
 
@@ -167,13 +173,16 @@ enum _drawing_part
 	Unknown	= 0,
 	Area	= 1,
 	Line	= 2,
-	Shadow	= 3
+	Shadow	= 3,
+	Background = 4,
+	Border = 5
 };
 struct odf_drawing_state
 {
 	void clear()
 	{
 		elements_.clear();
+		index_base = -1;
 		
 		svg_x_				= boost::none;
 		svg_y_				= boost::none;
@@ -246,6 +255,7 @@ struct odf_drawing_state
 	int oox_shape_preset_;
 	bool in_group_;
 	bool text_box_tableframe_;
+	int index_base;
 
 };
 
@@ -430,6 +440,9 @@ void odf_drawing_context::start_group()
 
 	impl_->current_graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
 	impl_->current_graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;	
+	impl_->current_graphic_properties->style_wrap_contour_ = impl_->anchor_settings_.style_wrap_contour_;	
+	impl_->current_graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;	
+	impl_->current_graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;	
 
 	impl_->current_graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
 	impl_->current_graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
@@ -478,7 +491,7 @@ void odf_drawing_context::clear()
 
 void odf_drawing_context::start_drawing()
 {
-	//if (impl_->current_level_.size() < 1)
+	//if (impl_->current_level_.empty())
 	{
 		impl_->current_drawing_state_.svg_x_ = impl_->anchor_settings_.svg_x_;
 		impl_->current_drawing_state_.svg_y_ = impl_->anchor_settings_.svg_y_;
@@ -498,7 +511,7 @@ void odf_drawing_context::start_drawing()
 		impl_->current_drawing_state_.svg_height_ = impl_->anchor_settings_.svg_height_;
 	}
 	//else 
-	if (false == impl_->current_level_.empty())
+	if (false == impl_->current_level_.empty() && impl_->current_group_)
 	{
 		impl_->current_drawing_state_.in_group_ = true;
 	}
@@ -520,7 +533,9 @@ void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_att
 }
 void odf_drawing_context::end_drawing()
 {
-	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	int index = impl_->current_drawing_state_.index_base < 0 ? 0 : impl_->current_drawing_state_.index_base;
+
+	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[index].elm.get());
 	if (draw)
 	{
 		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_)
@@ -555,7 +570,7 @@ void odf_drawing_context::end_drawing()
 
 		_CP_OPT(double) rotate = impl_->current_drawing_state_.rotateAngle_;
 		
-		if (impl_->current_drawing_state_.in_group_)
+		if (impl_->current_drawing_state_.in_group_ && impl_->current_group_)
 		{
 			odf_group_state_ptr gr = impl_->current_group_;
 
@@ -616,7 +631,7 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////////
-	presentation_placeholder * placeholder = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	presentation_placeholder * placeholder = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[index].elm.get());
 	if (placeholder)
 	{
 		placeholder->presentation_object_	= impl_->current_drawing_state_.presentation_class_;
@@ -658,7 +673,10 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 
 		impl_->current_graphic_properties->style_wrap_			= impl_->anchor_settings_.style_wrap_;
-		impl_->current_graphic_properties->style_run_through_	= impl_->anchor_settings_.run_through_;
+		impl_->current_graphic_properties->style_run_through_	= impl_->anchor_settings_.run_through_;	
+		impl_->current_graphic_properties->style_wrap_contour_	= impl_->anchor_settings_.style_wrap_contour_;	
+		impl_->current_graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;	
+		impl_->current_graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;	
 	}
 	//if (impl_->anchor_settings_.anchor_type_ && impl_->anchor_settings_.anchor_type_->get_type()== anchor_type::AsChar)
 	//{
@@ -670,7 +688,7 @@ void odf_drawing_context::end_drawing()
 	
 	if (	impl_->current_drawing_state_.elements_.empty() == false 
 		&&	impl_->current_drawing_state_.elements_[0].level == 0 
-		&&	impl_->current_drawing_state_.elements_[0].elm )
+		&&	impl_->current_drawing_state_.elements_[0].elm ) // не base_index -> см draw_a
 	{
 		impl_->tops_elements_.push_back(impl_->current_drawing_state_.elements_[0].elm);
 	}
@@ -770,6 +788,10 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 	odf_element_state state={draw_elm, style_name, style_shape_elm, level};
 
+	if (current_drawing_state_.index_base < 0)
+	{
+		current_drawing_state_.index_base = (int)current_drawing_state_.elements_.size();
+	}
 	current_drawing_state_.elements_.push_back(state);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1253,9 +1275,9 @@ void odf_drawing_context::end_element()
 	impl_->current_level_.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::start_area_properties(bool reset)
+void odf_drawing_context::start_area_properties(bool bBackground)
 {
-	impl_->current_drawing_part_ = Area;
+	impl_->current_drawing_part_ = bBackground ? Background : Area;
 }
 void odf_drawing_context::end_area_properties()
 {
@@ -1333,17 +1355,17 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 	if (std::wstring::npos == res) 
 		hexColor = std::wstring(L"#") + hexColor;
 
-	impl_->current_graphic_properties->draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
 	
 	if (dist_pt_y > 0)
-		impl_->current_graphic_properties->draw_shadow_offset_y_ = length(length(dist_pt_y,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt_y, length::pt).get_value_unit(length::cm), length::cm);
 	else
-		impl_->current_graphic_properties->draw_shadow_offset_y_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_ = length(length(dist_pt, length::pt).get_value_unit(length::cm), length::cm);
 	
-	impl_->current_graphic_properties->draw_shadow_ = shadow_type1(shadow_type1::Visible);
-	if (opacity) impl_->current_graphic_properties->draw_shadow_opacity_ = *opacity;
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_ = shadow_type1(shadow_type1::Visible);
+	if (opacity) impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_opacity_ = *opacity;
 
-	impl_->current_graphic_properties->draw_shadow_color_ = hexColor;
+	impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_ = hexColor;
 }
 
 void odf_drawing_context::set_placeholder_id (std::wstring val)
@@ -1441,6 +1463,17 @@ _CP_OPT(odf_types::color) odf_drawing_context::get_line_color()
 {
 	return impl_->current_graphic_properties->svg_stroke_color_ ;
 }
+void odf_drawing_context::set_line_color(std::wstring hexColor)
+{
+	if (!impl_->current_graphic_properties)	return;
+	if (hexColor.empty()) return;
+	
+	size_t res = hexColor.find(L"#");
+	if (std::wstring::npos == res)
+		hexColor = std::wstring(L"#") + hexColor;
+
+	impl_->current_graphic_properties->svg_stroke_color_ = hexColor;
+}
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)	return;
@@ -1452,7 +1485,12 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 
 	switch(impl_->current_drawing_part_)
 	{
+		case Background:
+		{
+			impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_ = color(hexColor); 
+		}break;
 		case Area:
+		{
 			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = hexColor;
 			//impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor); - default transparent
 			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
@@ -1464,14 +1502,15 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 			}
 			else
 				impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
-			break;
+		}break;
 		case Line:
+		{
 			impl_->current_graphic_properties->svg_stroke_color_ =  hexColor;
 			if (!impl_->current_graphic_properties->draw_stroke_)
 				impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::Solid);//default
 			if (!impl_->current_graphic_properties->svg_stroke_width_)
 				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
-			break;
+		}break;
 	}
 }
 	
@@ -1806,14 +1845,14 @@ void odf_drawing_context::set_vertical_rel(int from)
 
 	switch(from)
 	{
-		case 0:	type = vertical_rel::Baseline;		break;//	relfromvBottomMargin ???
-		case 1:	type = vertical_rel::PageContent;	break;//	relfromvInsideMargin ???
-		case 2:	type = vertical_rel::Baseline;		break;//	relfromvLine          
-		case 3:	type = vertical_rel::Paragraph; 	break;//	relfromvMargin     
-		case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
-		case 5:	type = vertical_rel::Page;			break;//	relfromvPage          
-		case 6:	type = vertical_rel::Paragraph;		break;//	relfromvParagraph    
-		case 7:	type = vertical_rel::Baseline;		break;//	relfromvTopMargin   ???  
+		case 0:	type = vertical_rel::Baseline;			break;//	relfromvBottomMargin ???
+		case 1:	type = vertical_rel::ParagraphContent;	break;//	relfromvInsideMargin ???
+		case 2:	type = vertical_rel::Baseline;			break;//	relfromvLine          
+		case 3:	type = vertical_rel::PageContent; 		break;//	relfromvMargin     //Paragraph
+		case 4:	type = vertical_rel::Baseline;			break;//	relfromvOutsideMargin ???
+		case 5:	type = vertical_rel::Page;				break;//	relfromvPage          
+		case 6:	type = vertical_rel::Paragraph;			break;//	relfromvParagraph    
+		case 7:	type = vertical_rel::Baseline;			break;//	relfromvTopMargin   ???  
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
@@ -1849,7 +1888,7 @@ void odf_drawing_context::set_horizontal_rel(int from)
 		case 1:	type = horizontal_rel::Paragraph;			break;	//	relfromhColumn        = 1,
 		case 2:	type = horizontal_rel::Paragraph;			break;	//	relfromhInsideMargin  = 2, ???
 		case 3:	type = horizontal_rel::PageStartMargin;		break;	//	relfromhLeftMargin    = 3,
-		case 4:	type = horizontal_rel::ParagraphStartMargin;break;	//	relfromhMargin        = 4, ???
+		case 4:	type = horizontal_rel::PageContent;			break;	//	relfromhMargin        = 4, ??? //ParagraphStartMargin
 		case 5:	type = horizontal_rel::ParagraphEndMargin;	break;	//	relfromhOutsideMargin = 5,
 		case 6:	type = horizontal_rel::Page;				break;	//	relfromhPage          = 6, ???
 		case 7:	type = horizontal_rel::PageEndMargin;		break;	//	relfromhRightMargin   = 7
@@ -1895,10 +1934,10 @@ void odf_drawing_context::set_wrap_style(style_wrap::type type)
 }
 void odf_drawing_context::set_wrap_contour()
 {
-	if (!impl_->current_graphic_properties)return;
+	impl_->anchor_settings_.style_wrap_contour_ = true;
+	impl_->anchor_settings_.style_wrap_contour_mode_ = wrap_contour_mode(wrap_contour_mode::Full);
+	impl_->anchor_settings_.style_number_wrapped_paragraphs_ = integer_or_nolimit(integer_or_nolimit::NoLimit);
 
-	impl_->current_graphic_properties->style_wrap_contour_ = true;
-	impl_->current_graphic_properties->style_wrap_contour_mode_ = wrap_contour_mode(wrap_contour_mode::Full);
 }
 void odf_drawing_context::set_overlap (bool val)
 {
@@ -2531,12 +2570,9 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 	
 	start_frame();
 
-	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
-	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
-	if (style_)
-	{
-		style_->style_parent_style_name_ = L"Frame";
-	}
+	//добавить в стиль ссыль на базовый стиль Graphics - зачемто нужно :(
+	set_parent_style(L"Graphics");
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 	office_element_ptr image_elm;
 	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
@@ -2570,6 +2606,35 @@ void odf_drawing_context::start_object(std::wstring name)
 	object->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 
 	start_element(object_elm);
+}
+void odf_drawing_context::start_control(const std::wstring& id)
+{
+	office_element_ptr control_elm;
+	create_element(L"draw", L"control", control_elm, impl_->odf_context_);
+
+	draw_control* control = dynamic_cast<draw_control*>(control_elm.get());
+	if (control == NULL)return;
+
+	control->control_id_ = id;
+//--------------------	
+	impl_->styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
+	office_element_ptr & style_control_elm = impl_->styles_context_->last_state()->get_office_element();
+	
+	std::wstring style_name;
+
+	style* style_ = dynamic_cast<style*>(style_control_elm.get());
+	if (style_)
+	{
+        style_name = style_->style_name_;
+		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+	}
+	control->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
+//--------------------	
+	start_element(control_elm);
+}
+void odf_drawing_context::end_control()
+{
+	end_shape();
 }
 void odf_drawing_context::start_media(std::wstring name)
 {
@@ -2617,19 +2682,20 @@ void odf_drawing_context::end_media()
 
 	end_frame();
 }
+
 void odf_drawing_context::start_text_box()
 {	
 	impl_->current_drawing_state_.oox_shape_preset_ = 2000;
 
 	start_frame();
 
+	//if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
+	//	set_parent_style(L"Frame");	
+	
 	office_element_ptr text_box_elm;
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
 
 	start_element(text_box_elm);
-
-	//if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
-	//	set_text_box_parent_style(L"Frame");
 }
 void odf_drawing_context::set_text_box_min_size(bool val)
 {
@@ -2714,12 +2780,47 @@ void odf_drawing_context::start_action(std::wstring value)
 		}
 	}
 }
+void odf_drawing_context::start_link_object(std::wstring href)
+{
+	if (href.empty()) return;
+	
+	office_element_ptr element, style;
+	create_element(L"draw", L"a", element, impl_->odf_context_);
 
+	size_t level = impl_->current_level_.size();
+	
+	if (false == impl_->current_level_.empty())
+		impl_->current_level_.back()->add_child_element(element);
+
+	impl_->current_level_.push_back(element);
+
+	odf_element_state state={element, L"", style, level};
+	impl_->current_drawing_state_.elements_.push_back(state);
+
+	if (impl_->root_element_ == NULL)
+	{
+		impl_->root_element_ = element;
+		impl_->anchor_settings_.anchor_type_ = anchor_type::Paragraph;
+	}
+
+	draw_a* draw_a_ = dynamic_cast<draw_a*>(impl_->current_level_.back().get());
+	if (draw_a_)
+	{
+		draw_a_->xlink_attlist_.href_		= href;
+		draw_a_->xlink_attlist_.type_		= xlink_type::Simple;
+		draw_a_->xlink_attlist_.show_		= xlink_show::Embed;
+		draw_a_->xlink_attlist_.actuate_	= xlink_actuate::OnRequest;
+	}
+}
+void odf_drawing_context::end_link_object()
+{
+	end_element();
+}
 void odf_drawing_context::add_link(std::wstring href)
 {
 	if (href.empty()) return;
 
-	presentation_event_listener * event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
+	presentation_event_listener* event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
 
 	if (event_)
 	{
@@ -2782,7 +2883,7 @@ void odf_drawing_context::set_text_box_tableframe(bool val)
 	impl_->current_drawing_state_.text_box_tableframe_ = val;
 
 }
-void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
+void odf_drawing_context::set_parent_style(std::wstring style_name)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
@@ -2847,25 +2948,25 @@ void odf_drawing_context::end_text_box()
 		impl_->current_graphic_properties->common_border_attlist_.fo_border_ = ss.str();
 	}
 	
-	if (impl_->current_graphic_properties->draw_shadow_)
+	if (impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_)
 	{
 		std::wstringstream shadow_style;
 		
-		if (impl_->current_graphic_properties->draw_shadow_color_)
-			shadow_style << *impl_->current_graphic_properties->draw_shadow_color_;
+		if (impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_)
+			shadow_style << *impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_;
 		else shadow_style << L"#000000";
 
 		shadow_style << L" ";	
-		shadow_style << *impl_->current_graphic_properties->draw_shadow_offset_x_;
+		shadow_style << *impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_;
 		shadow_style << L" ";
-		shadow_style << *impl_->current_graphic_properties->draw_shadow_offset_y_;
+		shadow_style << *impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_;
 
 		impl_->current_graphic_properties->common_shadow_attlist_.style_shadow_ = shadow_style.str();
 
-		impl_->current_graphic_properties->draw_shadow_offset_x_	= boost::none;
-		impl_->current_graphic_properties->draw_shadow_offset_y_	= boost::none;
-		impl_->current_graphic_properties->draw_shadow_color_		= boost::none;
-		impl_->current_graphic_properties->draw_shadow_				= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_x_	= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_offset_y_	= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_color_	= boost::none;
+		impl_->current_graphic_properties->common_shadow_attlist_.draw_shadow_			= boost::none;
 
 		if (!impl_->current_graphic_properties->common_border_attlist_.fo_border_)
 			impl_->current_graphic_properties->common_border_attlist_.fo_border_ = std::wstring(L"#000000 solid 0.06pt");
@@ -2929,7 +3030,10 @@ bool odf_drawing_context::is_exist_content()
 {
 	return (impl_->drawing_list_.empty() ? false : true);
 }
-
+bool odf_drawing_context::is_current_empty()
+{
+	return impl_->current_drawing_state_.elements_.empty();
+}
 void odf_drawing_context::finalize(office_element_ptr & root_elm)//для привязки 
 {
 	for (size_t i = 0; i < impl_->tops_elements_.size(); i++)
@@ -3575,12 +3679,17 @@ void odf_drawing_context::set_image_client_rect_inch(double l, double t, double 
 	
 	//<top>, <right>, <bottom>, <left> 
 	std::wstringstream str_stream;
-	str_stream	<< std::wstring(L"rect(") 
-				<< t << std::wstring(L"in, ")
-				<< r << std::wstring(L"in, ")
-				<< b << std::wstring(L"in, ")
-				<< l << std::wstring(L"in)");
+	//str_stream	<< std::wstring(L"rect(") 
+	//			<< t << std::wstring(L"in, ")
+	//			<< r << std::wstring(L"in, ")
+	//			<< b << std::wstring(L"in, ")
+	//			<< l << std::wstring(L"in)");
 
+	str_stream	<< std::wstring(L"rect(") 
+				<< (t * 2.54) << std::wstring(L"cm, ")
+				<< (r * 2.54) << std::wstring(L"cm, ")
+				<< (b * 2.54) << std::wstring(L"cm, ")
+				<< (l * 2.54) << std::wstring(L"cm)");
 	impl_->current_graphic_properties->fo_clip_ = str_stream.str();
 
 }
@@ -3611,7 +3720,7 @@ void odf_drawing_context::set_bitmap_tile_scale_x(double scale_x)
 	if (!impl_->current_graphic_properties)return;
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_width_ = 
-				length(length(scale_x,length::pt).get_value_unit(length::cm),length::cm);
+				length(length(scale_x,length::pt).get_value_unit(length::inch), length::inch);
 
 }
 void odf_drawing_context::set_bitmap_tile_scale_y(double scale_y)
@@ -3619,7 +3728,7 @@ void odf_drawing_context::set_bitmap_tile_scale_y(double scale_y)
 	if (!impl_->current_graphic_properties)return;
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_height_ = 
-				length(length(scale_y,length::pt).get_value_unit(length::cm),length::cm);
+				length(length(scale_y,length::pt).get_value_unit(length::inch), length::inch);
 
 }
 void odf_drawing_context::set_bitmap_tile_translate_y(double y)

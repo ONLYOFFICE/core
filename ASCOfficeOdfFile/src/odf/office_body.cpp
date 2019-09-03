@@ -113,7 +113,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 			oox::_oox_fill fill;
 			
 			Compute_GraphicFill(layout_properties->attlist_.common_draw_fill_attlist_, 
-								layout_properties->elements_.style_background_image_, 
+								layout_properties->style_background_image_, 
 								Context.root()->odf_context().drawStyles(), fill);
 
 			if (layout_properties->attlist_.common_background_color_attlist_.fo_background_color_ || fill.type != 0)
@@ -121,7 +121,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 				if ((fill.bitmap) && (fill.bitmap->rId.empty()))
 				{
 					std::wstring href = fill.bitmap->xlink_href_;
-					fill.bitmap->rId = Context.get_mediaitems().add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
+					fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
 				}		
 				int id = Context.get_drawing_context().get_current_shape_id();
 				if (layout_properties->docx_background_serialize(Context.output_stream(), Context, fill, id))

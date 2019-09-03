@@ -48,12 +48,57 @@ const wchar_t * office_spreadsheet::name = L"spreadsheet";
 
 void office_spreadsheet::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(content_);
-}
+ 	if CP_CHECK_NAME(L"office", L"forms") 
+	{
+		CP_CREATE_ELEMENT(forms_);
+	}
+	else if CP_CHECK_NAME(L"table", L"database-ranges")
+	{
+		CP_CREATE_ELEMENT(database_ranges_);
+	}
+	else if CP_CHECK_NAME(L"table", L"named-expressions")
+    {
+        CP_CREATE_ELEMENT(named_expressions_);    
+    }
+	else if CP_CHECK_NAME(L"table", L"data-pilot-tables")
+	{
+		CP_CREATE_ELEMENT(data_pilot_tables_);
+	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+		CP_CREATE_ELEMENT(content_validations_);
+	}
+	else
+		CP_CREATE_ELEMENT(content_);}
 
 void office_spreadsheet::add_child_element( const office_element_ptr & child_element)
 {
-    content_.push_back(child_element);
+	ElementType type = child_element->get_type();
+
+	if ( type == typeOfficeForms)
+    {
+		forms_ = child_element;
+    }
+	else if ( type == typeTableContentValidations)
+    {
+		content_validations_ = child_element;
+    }
+	else if ( type == typeTableDataPilotTables)
+    {
+		data_pilot_tables_ = child_element;
+    }
+	else if ( type == typeTableDatabaseRanges)
+    {
+		database_ranges_ = child_element;
+    }
+	else if ( type == typeTableNamedExpressions)
+    {
+		named_expressions_ = child_element;
+    }
+	else
+	{
+		content_.push_back(child_element);
+	}
 }
 void office_spreadsheet::serialize(std::wostream & _Wostream)
 {
@@ -61,10 +106,25 @@ void office_spreadsheet::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			if (forms_)
+				forms_->serialize(CP_XML_STREAM());
+
+			if (content_validations_)
+				content_validations_->serialize(CP_XML_STREAM());
+
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}
+
+			if (data_pilot_tables_)
+				data_pilot_tables_->serialize(CP_XML_STREAM());
+
+			if (named_expressions_)
+				named_expressions_->serialize(CP_XML_STREAM());
+
+			if (database_ranges_)
+				database_ranges_->serialize(CP_XML_STREAM());			
 		}
 	}
 }

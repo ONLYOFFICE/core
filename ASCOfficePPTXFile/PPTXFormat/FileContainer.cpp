@@ -180,7 +180,7 @@ namespace PPTX
 
 				if (pRelation->Type() == OOX::Presentation::FileTypes::Slide)
 				{
-					OOX::HyperLink *link = dynamic_cast<OOX::HyperLink*>(file.operator->());
+					OOX::HyperLink *link = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
 					if (link)
 						link->bHyperlink = false;
 				}

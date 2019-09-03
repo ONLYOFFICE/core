@@ -29,10 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//Generated code
 #pragma once
-#ifndef OOX_CHARTGEN_FILE_INCLUDE_H_
-#define OOX_CHARTGEN_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -310,6 +307,7 @@ namespace OOX{
 			itemschoicetype6SERAX = 2,
 			itemschoicetype6VALAX = 3
 		};
+
 		class CT_extLst;
 		class CT_ChartSpace;
 		class CT_Boolean;
@@ -463,7 +461,7 @@ namespace OOX{
 			CT_extLst();
 			~CT_extLst();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_ChartSpace
@@ -503,7 +501,7 @@ namespace OOX{
 			CT_Boolean();
 			~CT_Boolean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -515,7 +513,7 @@ namespace OOX{
 			CT_RelId();
 			~CT_RelId();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -547,7 +545,7 @@ namespace OOX{
 			CT_PageSetup();
 			~CT_PageSetup();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -569,7 +567,7 @@ namespace OOX{
 			CT_PageMargins();
 			~CT_PageMargins();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -597,7 +595,7 @@ namespace OOX{
 			CT_HeaderFooter();
 			~CT_HeaderFooter();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -613,7 +611,7 @@ namespace OOX{
 			CT_PrintSettings();
 			~CT_PrintSettings();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_ExternalData
@@ -626,7 +624,7 @@ namespace OOX{
 			CT_ExternalData();
 			~CT_ExternalData();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -638,7 +636,7 @@ namespace OOX{
 			CT_DispBlanksAs();
 			~CT_DispBlanksAs();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -653,7 +651,7 @@ namespace OOX{
 			CT_LegendEntry();
 			~CT_LegendEntry();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_UnsignedInt
@@ -664,7 +662,7 @@ namespace OOX{
 			CT_UnsignedInt();
 			~CT_UnsignedInt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -678,7 +676,7 @@ namespace OOX{
 			CT_Extension();
 			~CT_Extension();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -690,7 +688,7 @@ namespace OOX{
 			CT_LegendPos();
 			~CT_LegendPos();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -708,7 +706,7 @@ namespace OOX{
 			CT_Legend();
 			~CT_Legend();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Layout
@@ -721,7 +719,7 @@ namespace OOX{
 			CT_Layout();
 			~CT_Layout();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_ManualLayout
@@ -750,7 +748,7 @@ namespace OOX{
 			CT_ManualLayout();
 			~CT_ManualLayout();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_LayoutTarget
@@ -761,7 +759,7 @@ namespace OOX{
 			CT_LayoutTarget();
 			~CT_LayoutTarget();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -773,19 +771,18 @@ namespace OOX{
 			CT_LayoutMode();
 			~CT_LayoutMode();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Double
 		{
 		public:
-			//Attribute
 			double* m_val;
 			CT_Double();
 			~CT_Double();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -803,7 +800,7 @@ namespace OOX{
 			CT_DTable();
 			~CT_DTable();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_SerAx
@@ -832,7 +829,7 @@ namespace OOX{
 			CT_SerAx();
 			~CT_SerAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Scaling
@@ -851,7 +848,7 @@ namespace OOX{
 			CT_Scaling();
 			~CT_Scaling();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_LogBase
@@ -862,7 +859,7 @@ namespace OOX{
 			CT_LogBase();
 			~CT_LogBase();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -874,7 +871,7 @@ namespace OOX{
 			CT_Orientation();
 			~CT_Orientation();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -886,7 +883,7 @@ namespace OOX{
 			CT_AxPos();
 			~CT_AxPos();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -898,7 +895,7 @@ namespace OOX{
 			CT_ChartLines();
 			~CT_ChartLines();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Title
@@ -914,7 +911,7 @@ namespace OOX{
 			CT_Title();
 			~CT_Title();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		//--------------------------------------------------------------------------------
@@ -929,7 +926,7 @@ namespace OOX{
 			CT_Tx();
 			~CT_Tx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_StrRef
@@ -942,7 +939,7 @@ namespace OOX{
 			CT_StrRef();
 			~CT_StrRef();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_StrData
@@ -957,7 +954,7 @@ namespace OOX{
 			CT_StrData();
 			~CT_StrData();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_StrVal
@@ -970,7 +967,7 @@ namespace OOX{
 			CT_StrVal();
 			~CT_StrVal();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -984,7 +981,7 @@ namespace OOX{
 			CT_NumFmt();
 			~CT_NumFmt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -996,7 +993,7 @@ namespace OOX{
 			CT_TickMark();
 			~CT_TickMark();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1008,7 +1005,7 @@ namespace OOX{
 			CT_TickLblPos();
 			~CT_TickLblPos();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1020,7 +1017,7 @@ namespace OOX{
 			CT_Crosses();
 			~CT_Crosses();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1032,7 +1029,7 @@ namespace OOX{
 			CT_Skip();
 			~CT_Skip();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1044,7 +1041,7 @@ namespace OOX{
 			CT_TimeUnit();
 			~CT_TimeUnit();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1079,7 +1076,7 @@ namespace OOX{
 			CT_DateAx();
 			~CT_DateAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_LblOffset
@@ -1090,19 +1087,18 @@ namespace OOX{
 			CT_LblOffset();
 			~CT_LblOffset();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_AxisUnit
 		{
 		public:
-			//Attribute
 			double* m_val;
 			CT_AxisUnit();
 			~CT_AxisUnit();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1114,7 +1110,7 @@ namespace OOX{
 			CT_LblAlgn();
 			~CT_LblAlgn();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1167,7 +1163,7 @@ namespace OOX{
 			CT_CatAx();
 			~CT_CatAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_DispUnitsLbl
@@ -1182,7 +1178,7 @@ namespace OOX{
 			~CT_DispUnitsLbl();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_BuiltInUnit
@@ -1193,7 +1189,7 @@ namespace OOX{
 			CT_BuiltInUnit();
 			~CT_BuiltInUnit();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1211,7 +1207,7 @@ namespace OOX{
 			CT_DispUnits();
 			~CT_DispUnits();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_CrossBetween
@@ -1222,7 +1218,7 @@ namespace OOX{
 			CT_CrossBetween();
 			~CT_CrossBetween();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1255,7 +1251,7 @@ namespace OOX{
 			~CT_ValAx();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_SizeRepresents
@@ -1266,7 +1262,7 @@ namespace OOX{
 			CT_SizeRepresents();
 			~CT_SizeRepresents();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1278,7 +1274,7 @@ namespace OOX{
 			CT_BubbleScale();
 			~CT_BubbleScale();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1312,7 +1308,7 @@ namespace OOX{
 			CT_BubbleSer();
 			~CT_BubbleSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_SerTx
@@ -1325,7 +1321,7 @@ namespace OOX{
 			CT_SerTx();
 			~CT_SerTx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_DPt
@@ -1343,7 +1339,7 @@ namespace OOX{
 			CT_DPt();
 			~CT_DPt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Marker
@@ -1357,7 +1353,7 @@ namespace OOX{
 			CT_Marker();
 			~CT_Marker();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_MarkerStyle
@@ -1368,7 +1364,7 @@ namespace OOX{
 			CT_MarkerStyle();
 			~CT_MarkerStyle();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1380,7 +1376,7 @@ namespace OOX{
 			CT_MarkerSize();
 			~CT_MarkerSize();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1400,7 +1396,7 @@ namespace OOX{
 			CT_PictureOptions();
 			~CT_PictureOptions();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_PictureFormat
@@ -1411,7 +1407,7 @@ namespace OOX{
 			CT_PictureFormat();
 			~CT_PictureFormat();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1423,7 +1419,7 @@ namespace OOX{
 			CT_PictureStackUnit();
 			~CT_PictureStackUnit();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1438,7 +1434,7 @@ namespace OOX{
 			CT_DLbls();
 			~CT_DLbls();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType3 eType, void* pVal) const;
 		private: void toDelete(ItemsChoiceType3 eType, void* pVal);
@@ -1457,7 +1453,7 @@ namespace OOX{
 			CT_DLbl();
 			~CT_DLbl();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType4 eType, void* pVal) const;
 		private: void toDelete(ItemsChoiceType4 eType, void* pVal);
@@ -1470,7 +1466,7 @@ namespace OOX{
 			CT_DLblPos();
 			~CT_DLblPos();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1501,7 +1497,7 @@ namespace OOX{
 			CT_Trendline();
 			~CT_Trendline();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_TrendlineType
@@ -1512,7 +1508,7 @@ namespace OOX{
 			CT_TrendlineType();
 			~CT_TrendlineType();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1524,7 +1520,7 @@ namespace OOX{
 			CT_Order();
 			~CT_Order();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1536,7 +1532,7 @@ namespace OOX{
 			CT_Period();
 			~CT_Period();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1554,7 +1550,7 @@ namespace OOX{
 			~CT_TrendlineLbl();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_ErrBars
@@ -1580,7 +1576,7 @@ namespace OOX{
 			CT_ErrBars();
 			~CT_ErrBars();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_ErrDir
@@ -1591,7 +1587,7 @@ namespace OOX{
 			CT_ErrDir();
 			~CT_ErrDir();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1603,7 +1599,7 @@ namespace OOX{
 			CT_ErrBarType();
 			~CT_ErrBarType();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1615,7 +1611,7 @@ namespace OOX{
 			CT_ErrValType();
 			~CT_ErrValType();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1629,7 +1625,7 @@ namespace OOX{
 			CT_NumDataSource();
 			~CT_NumDataSource();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_NumData
@@ -1646,7 +1642,7 @@ namespace OOX{
 			CT_NumData();
 			~CT_NumData();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_NumVal
@@ -1661,7 +1657,7 @@ namespace OOX{
 			CT_NumVal();
 			~CT_NumVal();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1677,7 +1673,7 @@ namespace OOX{
 			CT_NumRef();
 			~CT_NumRef();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_AxDataSource
@@ -1696,7 +1692,7 @@ namespace OOX{
 			CT_AxDataSource();
 			~CT_AxDataSource();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_MultiLvlStrRef
@@ -1711,7 +1707,7 @@ namespace OOX{
 			CT_MultiLvlStrRef();
 			~CT_MultiLvlStrRef();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_lvl
@@ -1722,7 +1718,7 @@ namespace OOX{
 			CT_lvl();
 			~CT_lvl();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_MultiLvlStrData
@@ -1737,7 +1733,7 @@ namespace OOX{
 			CT_MultiLvlStrData();
 			~CT_MultiLvlStrData();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_BubbleChart
@@ -1764,7 +1760,7 @@ namespace OOX{
 			CT_BubbleChart();
 			~CT_BubbleChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_bandFmts
@@ -1775,7 +1771,7 @@ namespace OOX{
 			CT_bandFmts();
 			~CT_bandFmts();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Surface3DChart
@@ -1794,7 +1790,7 @@ namespace OOX{
 			CT_Surface3DChart();
 			~CT_Surface3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_SurfaceSer
@@ -1811,7 +1807,7 @@ namespace OOX{
 			CT_SurfaceSer();
 			~CT_SurfaceSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_BandFmt
@@ -1823,7 +1819,7 @@ namespace OOX{
 			CT_BandFmt();
 			~CT_BandFmt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_SurfaceChart
@@ -1842,7 +1838,7 @@ namespace OOX{
 			CT_SurfaceChart();
 			~CT_SurfaceChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_SecondPieSize
@@ -1853,7 +1849,7 @@ namespace OOX{
 			CT_SecondPieSize();
 			~CT_SecondPieSize();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1865,7 +1861,7 @@ namespace OOX{
 			CT_SplitType();
 			~CT_SplitType();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1877,7 +1873,7 @@ namespace OOX{
 			CT_OfPieType();
 			~CT_OfPieType();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1889,7 +1885,7 @@ namespace OOX{
 			CT_custSplit();
 			~CT_custSplit();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_OfPieChart
@@ -1920,7 +1916,7 @@ namespace OOX{
 			CT_OfPieChart();
 			~CT_OfPieChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_PieSer
@@ -1944,7 +1940,7 @@ namespace OOX{
 			CT_PieSer();
 			~CT_PieSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_GapAmount
@@ -1955,7 +1951,7 @@ namespace OOX{
 			CT_GapAmount();
 			~CT_GapAmount();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -1985,7 +1981,7 @@ namespace OOX{
 			CT_Bar3DChart();
 			~CT_Bar3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_BarDir
@@ -1996,7 +1992,7 @@ namespace OOX{
 			CT_BarDir();
 			~CT_BarDir();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2008,7 +2004,7 @@ namespace OOX{
 			CT_BarGrouping();
 			~CT_BarGrouping();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2045,7 +2041,7 @@ namespace OOX{
 			CT_BarSer();
 			~CT_BarSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Shape
@@ -2056,7 +2052,7 @@ namespace OOX{
 			CT_Shape();
 			~CT_Shape();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2068,7 +2064,7 @@ namespace OOX{
 			CT_Overlap();
 			~CT_Overlap();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2098,7 +2094,7 @@ namespace OOX{
 			CT_BarChart();
 			~CT_BarChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_HoleSize
@@ -2109,7 +2105,7 @@ namespace OOX{
 			CT_HoleSize();
 			~CT_HoleSize();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2131,7 +2127,7 @@ namespace OOX{
 			CT_DoughnutChart();
 			~CT_DoughnutChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_FirstSliceAng
@@ -2142,7 +2138,7 @@ namespace OOX{
 			CT_FirstSliceAng();
 			~CT_FirstSliceAng();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2160,7 +2156,7 @@ namespace OOX{
 			CT_Pie3DChart();
 			~CT_Pie3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_PieChart
@@ -2179,7 +2175,7 @@ namespace OOX{
 			CT_PieChart();
 			~CT_PieChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_ScatterSer
@@ -2213,7 +2209,7 @@ namespace OOX{
 			CT_ScatterSer();
 			~CT_ScatterSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_ScatterStyle
@@ -2224,7 +2220,7 @@ namespace OOX{
 			CT_ScatterStyle();
 			~CT_ScatterStyle();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2246,7 +2242,7 @@ namespace OOX{
 			CT_ScatterChart();
 			~CT_ScatterChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_RadarSer
@@ -2274,7 +2270,7 @@ namespace OOX{
 			CT_RadarSer();
 			~CT_RadarSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_RadarStyle
@@ -2285,7 +2281,7 @@ namespace OOX{
 			CT_RadarStyle();
 			~CT_RadarStyle();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2307,7 +2303,7 @@ namespace OOX{
 			CT_RadarChart();
 			~CT_RadarChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_StockChart
@@ -2330,7 +2326,7 @@ namespace OOX{
 			CT_StockChart();
 			~CT_StockChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_LineSer
@@ -2364,7 +2360,7 @@ namespace OOX{
 			CT_LineSer();
 			~CT_LineSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_UpDownBars
@@ -2378,7 +2374,7 @@ namespace OOX{
 			CT_UpDownBars();
 			~CT_UpDownBars();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_UpDownBar
@@ -2389,7 +2385,7 @@ namespace OOX{
 			CT_UpDownBar();
 			~CT_UpDownBar();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Line3DChart
@@ -2414,7 +2410,7 @@ namespace OOX{
 			CT_Line3DChart();
 			~CT_Line3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Grouping
@@ -2425,7 +2421,7 @@ namespace OOX{
 			CT_Grouping();
 			~CT_Grouping();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2457,7 +2453,7 @@ namespace OOX{
 			CT_LineChart();
 			~CT_LineChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Area3DChart
@@ -2482,7 +2478,7 @@ namespace OOX{
 			CT_Area3DChart();
 			~CT_Area3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_AreaSer
@@ -2514,7 +2510,7 @@ namespace OOX{
 			CT_AreaSer();
 			~CT_AreaSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_AreaChart
@@ -2537,7 +2533,7 @@ namespace OOX{
 			CT_AreaChart();
 			~CT_AreaChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_PlotArea
@@ -2561,7 +2557,7 @@ namespace OOX{
 			CT_PlotArea();
 			~CT_PlotArea();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType5 eType, void* pVal) const;
 		private: void toDelete(ItemsChoiceType5 eType, void* pVal);
@@ -2576,7 +2572,7 @@ namespace OOX{
 			CT_Thickness();
 			~CT_Thickness();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2591,7 +2587,7 @@ namespace OOX{
 			CT_Surface();
 			~CT_Surface();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Perspective
@@ -2602,7 +2598,7 @@ namespace OOX{
 			CT_Perspective();
 			~CT_Perspective();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2614,7 +2610,7 @@ namespace OOX{
 			CT_DepthPercent();
 			~CT_DepthPercent();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2626,7 +2622,7 @@ namespace OOX{
 			CT_RotY();
 			~CT_RotY();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2638,7 +2634,7 @@ namespace OOX{
 			CT_HPercent();
 			~CT_HPercent();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2650,7 +2646,7 @@ namespace OOX{
 			CT_RotX();
 			~CT_RotX();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2674,7 +2670,7 @@ namespace OOX{
 			CT_View3D();
 			~CT_View3D();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_PivotFmt
@@ -2691,7 +2687,7 @@ namespace OOX{
 			~CT_PivotFmt();
 			
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_pivotFmts
@@ -2702,7 +2698,7 @@ namespace OOX{
 			CT_pivotFmts();
 			~CT_pivotFmts();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Chart
@@ -2737,7 +2733,7 @@ namespace OOX{
 			CT_Chart();
 			~CT_Chart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Protection
@@ -2756,7 +2752,7 @@ namespace OOX{
 			CT_Protection();
 			~CT_Protection();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_PivotSource
@@ -2771,7 +2767,7 @@ namespace OOX{
 			CT_PivotSource();
 			~CT_PivotSource();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Style1
@@ -2782,7 +2778,7 @@ namespace OOX{
 			CT_Style1();
 			~CT_Style1();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2794,7 +2790,7 @@ namespace OOX{
 			CT_Style();
 			~CT_Style();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2806,7 +2802,7 @@ namespace OOX{
 			CT_TextLanguageID();
 			~CT_TextLanguageID();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2820,7 +2816,7 @@ namespace OOX{
 			AlternateContent();
 			~AlternateContent();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class AlternateContentChoice
@@ -2833,7 +2829,7 @@ namespace OOX{
 			AlternateContentChoice();
 			~AlternateContentChoice();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -2845,9 +2841,9 @@ namespace OOX{
 			AlternateContentFallback();
 			~AlternateContentFallback();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 	}
 }
-#endif
+

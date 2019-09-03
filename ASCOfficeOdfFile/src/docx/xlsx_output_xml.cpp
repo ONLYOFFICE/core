@@ -49,7 +49,6 @@ public:
     std::wstringstream  sheetFormat_;
     std::wstringstream  sheetData_;
     std::wstringstream  mergeCells_;
-    std::wstringstream  drawing_;
     std::wstringstream  hyperlinks_;
     std::wstringstream  comments_;
     std::wstringstream	sort_;
@@ -60,6 +59,7 @@ public:
 	std::wstringstream  dataValidations_;
 	std::wstringstream	ole_objects_;
 	std::wstringstream	page_props_;
+	std::wstringstream	header_footer_;
 	std::wstringstream	controls_;
 	std::wstringstream	protection_;
 
@@ -130,10 +130,6 @@ std::wostream & xlsx_xml_worksheet::autofilter()
 {
     return impl_->autofilter_;
 }
-std::wostream & xlsx_xml_worksheet::drawing()
-{
-    return impl_->drawing_;
-}
 std::wostream & xlsx_xml_worksheet::comments()
 {
     return impl_->comments_;
@@ -153,6 +149,10 @@ std::wostream & xlsx_xml_worksheet::controls()
 std::wostream & xlsx_xml_worksheet::page_properties()
 {
     return impl_->page_props_;
+}
+std::wostream & xlsx_xml_worksheet::header_footer()
+{
+    return impl_->header_footer_;
 }
 std::wostream & xlsx_xml_worksheet::picture_background()
 {
@@ -217,35 +217,40 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                     CP_XML_STREAM() << impl_->hyperlinks_.str();
                 }
             }
-			if (!impl_->page_props_.str().empty())
-            {
-				CP_XML_STREAM() << impl_->page_props_.str();
-			}//props выше legacyDrawing !!
+			CP_XML_STREAM() << impl_->page_props_.str();
+			//props выше legacyDrawing !!
+
+			CP_XML_STREAM() << impl_->header_footer_.str();
 			
-			CP_XML_STREAM() << impl_->drawing_.str();
-			
-			if (!impl_->commentsId_.empty())
+			if (false == impl_->drawingId_.empty())
+			{
+				CP_XML_NODE(L"drawing")
+				{
+					CP_XML_ATTR(L"r:id", impl_->drawingId_);
+				}
+			} 			
+			if (false == impl_->vml_drawingId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawing")
 				{
-					CP_XML_ATTR(L"r:id",impl_->vml_drawingId_);
+					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_);
 				}
 			}
-			if (!impl_->ole_objects_.str().empty())
+			if (false == impl_->ole_objects_.str().empty())
             {
                 CP_XML_NODE(L"oleObjects")
                 {
 					CP_XML_STREAM() << impl_->ole_objects_.str();
                 }
             }
-			if (!impl_->controls_.str().empty())
+			if (false == impl_->controls_.str().empty())
             {
                 CP_XML_NODE(L"controls")
                 {
 					CP_XML_STREAM() << impl_->controls_.str();
                 }
             }
-			if (!impl_->tableParts_.str().empty())
+			if (false == impl_->tableParts_.str().empty())
             {
                 CP_XML_NODE(L"tableParts")
                 {

@@ -702,6 +702,7 @@ namespace OOX
 {
 	namespace Logic
 	{
+		class CRun;
 		class CRunProperty;
 
 		//--------------------------------------------------------------------------------
@@ -770,6 +771,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void fromXML(XmlUtils::CXmlLiteReader& oReader, CRun* pRun);
             virtual std::wstring      toXML() const
 			{
                 std::wstring sResult = _T("<w:rPr>");

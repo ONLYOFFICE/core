@@ -41,27 +41,27 @@ namespace NExtractTools
 	{
 		TConversionDirection res = TCD_ERROR;
 
-		int nExt1Pos = sFile1.rfind(_T('.'));
-		int nExt2Pos = sFile2.rfind(_T('.'));
+		size_t nExt1Pos = sFile1.rfind(_T('.'));
+		size_t nExt2Pos = sFile2.rfind(_T('.'));
 
 		// check for directory (zip task)
-		int nSeparator1Pos = sFile1.rfind(_T('/'));
-		if (-1 == nSeparator1Pos)
+		size_t nSeparator1Pos = sFile1.rfind(_T('/'));
+		if (std::wstring::npos == nSeparator1Pos)
 		{
 			nSeparator1Pos = sFile1.rfind(_T('\\'));
 		}
 
 		// check for directory (unzip task)
 		int nSeparator2Pos = sFile2.rfind(_T('/'));
-		if (-1 == nSeparator2Pos)
+		if (std::wstring::npos == nSeparator2Pos)
 		{
 			nSeparator2Pos = sFile2.rfind(_T('\\'));
 		}
 
 
 		// check for directory in name
-		bool bIsFile1Directory = ((-1 != nSeparator1Pos) && (nExt1Pos < nSeparator1Pos));   // i.e: /root1/child1.lalala/folder
-		bool bIsFile2Directory = ((-1 != nSeparator2Pos) && (nExt2Pos < nSeparator2Pos));
+		bool bIsFile1Directory = ((std::wstring::npos != nSeparator1Pos) && (nExt1Pos < nSeparator1Pos));   // i.e: /root1/child1.lalala/folder
+		bool bIsFile2Directory = ((std::wstring::npos != nSeparator2Pos) && (nExt2Pos < nSeparator2Pos));
 
 		// automatic zip/unzip task detection
 		if (bIsFile1Directory)
@@ -184,27 +184,31 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT2DOCX;
-						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT2DOCM;
+						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT2DOTX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCT2RTF;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY:
 					{
 							 if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLST2XLSX;
-						else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLST2XLSX;
+						else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLST2XLSM;
+						else if (0 == sExt2.compare(_T(".xltx")))		res = TCD_XLST2XLTX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
 						else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLST2CSV;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY:
 					{
 							 if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPTT2PPTX;	
-						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPTT2PPTX;
+						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPTT2PPTM;
+						else if (0 == sExt2.compare(_T(".potx")))		res = TCD_PPTT2POTX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT_BIN2DOCX;
+						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_BIN2T;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCT_BIN2RTF;
 					}break;
@@ -212,6 +216,7 @@ namespace NExtractTools
 					{
 							 if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLST_BIN2XLSX;
 						else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLST_BIN2XLSX;
+						else if (0 == sExt2.compare(_T(".xltx")))		res = TCD_XLST_BIN2XLSX;
 						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_BIN2T;
 						else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLST_BIN2CSV;
 					}break;
@@ -219,6 +224,7 @@ namespace NExtractTools
 					{
 							 if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPTT_BIN2PPTX;
 						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPTT_BIN2PPTX;
+						else if (0 == sExt2.compare(_T(".potx")))		res = TCD_PPTT_BIN2PPTX;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_BIN2T;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_CANVAS_PDF:

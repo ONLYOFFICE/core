@@ -92,8 +92,9 @@ public:
 	std::wstring convert_conditional_formula(std::wstring const & expr);
   
     // Лист1!$A$1 -> $Лист1.$A$1 
-    std::wstring convert_named_ref	(std::wstring const & expr);
+    std::wstring convert_named_ref(std::wstring const & expr);
 	std::wstring convert_named_formula(std::wstring const & expr);
+	bool is_simple_ref(std::wstring const & expr);
 
 	std::wstring get_table_name();
 

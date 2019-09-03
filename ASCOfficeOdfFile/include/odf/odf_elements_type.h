@@ -39,7 +39,8 @@ enum ElementType
     typeNone = 0,
     type_AbstractXml,
 
-    typeTextText = 1000,
+	typeTextTextElement = 1000, 
+    typeTextText,
     typeTextS,
     typeTextTab,
     typeTextLineBreak,
@@ -247,6 +248,7 @@ enum ElementType
     typeStyleTableColumnProperties,
     typeStyleTableRowProperties,
     typeStyleTableCellProperties,
+	typeStyleHeaderFooter,
     typeStyleHeader,
     typeStyleFooter,
     typeStyleHeaderFirst,
@@ -468,6 +470,7 @@ enum ElementType
 	typeDrawHandle,
 	typeDrawEquation,
 	typeDrawEnhancedGeometry,
+	typeDrawGluePoint,
 
 	typeDr3dScene,
 	typeDr3dLight,
@@ -506,6 +509,7 @@ enum ElementType
 	typeFormTime,
 	typeFormValueRange,
 	typeFormItem,
+	typeFormOption,
 
 	typeDrawPage,    
 	typePresentationFooterDecl,
@@ -533,7 +537,10 @@ enum ElementType
 	typeOfficeAnnotation,
 	typeOfficeAnnotationStart,
 	typeOfficeAnnotationEnd,
+	typeStyleRegion,
 	typeStyleRegionLeft,
+	typeStyleRegionCenter,
+    typeStyleRegionRight,
 	typeOfficeScripts,
 	typeOfficeScript,
 	typeOfficePresentation,
@@ -589,8 +596,6 @@ enum ElementType
 	typeChartRegressionCurve,
 	typeChartEquation,
 
-	typeStyleRegionCenter,
-    typeStyleRegionRight,
 	typeStyleChartProperties,
 
 	typeCalcextColorScaleEntry,

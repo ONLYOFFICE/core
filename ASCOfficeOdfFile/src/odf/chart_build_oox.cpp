@@ -221,6 +221,11 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 			chart_context.set_cache_only(true);
 		}
 
+		if (false == userShapes.first.empty())
+		{
+			chart_context.set_userShapes(userShapes);
+		}
+
 		Context.end_chart();
 	}
 	else if (object_type_ == 2 && office_text_)

@@ -552,7 +552,71 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 		}
 	}
 }
+void text_format_properties_content::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
+{
+	double font_size = process_font_size_impl(fo_font_size_, NULL);
 
+	bool bBold = false, bItalic = false;
+	if (font_size > 0)
+	{
+		strm << L"&amp;" << font_size;
+	}
+	if (fo_font_style_ && fo_font_style_->get_type() == font_style::Italic)
+	{
+		bItalic = true;
+		//strm << L"&amp;I";
+	}
+	if (fo_font_weight_ && fo_font_weight_->get_type() == font_weight::WNormal)
+	{
+		bBold = true;
+		//strm << L"&amp;B";
+	}
+	std::wstring font_name;
+	if (fo_font_family_)
+	{
+		font_name = *fo_font_family_;
+	}
+	else if (style_font_name_)
+	{
+        odf_read_context & context =  Context.root()->odf_context();
+        fonts_container & fonts = context.fontContainer();
+
+		font_instance * font = fonts.font_by_style_name(*style_font_name_);
+		if (font)
+			font_name = font->name();
+	}
+	//if (font_name.empty())
+	{
+		font_name = L"-";
+	}
+	font_name += L",";
+	
+	if (!bBold && !bItalic)		font_name += L"Regular";
+	else if (bBold && bItalic)	font_name += L"Bold Italic";
+	else if (bBold)				font_name += L"Bold";
+	else if (bItalic)			font_name += L"Italic";
+	
+	strm << L"&amp;&quot;" << font_name << L"&quot;";
+
+	if (style_text_underline_type_)
+	{
+		if (style_text_underline_type_->get_type() == line_type::Single) strm << L"&amp;U";
+		if (style_text_underline_type_->get_type() == line_type::Double) strm << L"&amp;E";
+	}
+	if (style_text_line_through_type_ && style_text_line_through_type_->get_type() != line_type::None)
+	{
+		strm << L"&amp;S";
+	}
+	if (style_text_position_)
+	{
+		if (style_text_position_->get_position().get_value() < 0) strm << L"&amp;Y";
+		if (style_text_position_->get_position().get_value() > 0) strm << L"&amp;X";
+	}
+	if (fo_color_)
+	{
+		strm << L"&amp;K" << fo_color_->get_hex_value();
+	}
+}
 void text_format_properties_content::docx_serialize(std::wostream & _rPr, fonts_container & fonts)
 {//упрощенный вариант
 	
@@ -1603,7 +1667,7 @@ const wchar_t * style_text_properties::name = L"text-properties";
 
 void style_text_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	text_format_properties_content_.add_attributes(Attributes);
+	content_.add_attributes(Attributes);
 }
 
 void style_text_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -1613,12 +1677,12 @@ void style_text_properties::add_child_element( xml::sax * Reader, const std::wst
 
 void style_text_properties::docx_convert(oox::docx_conversion_context & Context)
 {
-    text_format_properties_content_.docx_convert(Context);
+    content_.docx_convert(Context);
 }
 
 void style_text_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    text_format_properties_content_.pptx_convert(Context);
+    content_.pptx_convert(Context);
 }
 
 }

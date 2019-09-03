@@ -35,6 +35,7 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace PPTX
 {
@@ -58,6 +59,8 @@ namespace PPTX
 			nullable_int	parentCommentId;
 
 			nullable_string additional_data; // teamlab editor information!!!
+
+			nullable_int timeZoneBias;
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -97,6 +100,8 @@ namespace PPTX
 								XmlUtils::CXmlNode oNodeTI = oNodeExt.ReadNode(_T("p15:threadingInfo"));
 								if (oNodeTI.IsValid())
 								{
+									XmlMacroReadAttributeBase(oNodeTI, L"timeZoneBias", timeZoneBias);
+
 									XmlUtils::CXmlNode oNodeParent = oNodeTI.ReadNode(_T("p15:parentCm"));
 
 									XmlMacroReadAttributeBase(oNodeParent, L"authorId", parentAuthorId);
@@ -134,6 +139,19 @@ namespace PPTX
 						}
 					}
 				}
+				//check comment guid
+				if(!(additional_data.IsInit() && 0 == additional_data->compare(0, 13, L"teamlab_data:") && std::wstring::npos != additional_data->find(L"4;38;")))
+				{
+					if(!additional_data.IsInit())
+					{
+						additional_data = L"teamlab_data:";
+					}
+					if(':' != additional_data->back() && ';' != additional_data->back())
+					{
+						additional_data->append(L";");
+					}
+					additional_data->append(L"4;38;{" + XmlUtils::GenerateGuid() + L"}");
+				}
 			}
 
 			virtual std::wstring toXML() const
@@ -164,19 +182,28 @@ namespace PPTX
 				}
 
 				bool bIsExtLst = false;
-				if ((parentAuthorId.is_init() && parentCommentId.is_init()) || additional_data.is_init())
+				if ((parentAuthorId.is_init() && parentCommentId.is_init()) || timeZoneBias.is_init() || additional_data.is_init())
 					bIsExtLst = true;
 
 				if (bIsExtLst)
 					pWriter->WriteString(_T("<p:extLst>"));
 
-				if (parentAuthorId.is_init() && parentCommentId.is_init())
+				if ((parentAuthorId.is_init() && parentCommentId.is_init()) || timeZoneBias.is_init())
 				{
 					pWriter->WriteString(_T("<p:ext uri=\"{C676402C-5697-4E1C-873F-D02D1690AC5C}\">\
-<p15:threadingInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" timeZoneBias=\"-240\">"));
-
-                    std::wstring sPos = L"<p15:parentCm authorId=\"" + std::to_wstring(*parentAuthorId) + L"\" idx=\"" + std::to_wstring(*parentCommentId) + L"\"/>";
-					pWriter->WriteString(sPos);
+<p15:threadingInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\""));
+					if(timeZoneBias.is_init())
+					{
+						pWriter->WriteString(_T(" timeZoneBias=\""));
+						pWriter->WriteINT(timeZoneBias.get());
+						pWriter->WriteString(_T("\""));
+					}
+					pWriter->WriteString(_T(">"));
+					if(parentAuthorId.is_init() && parentCommentId.is_init())
+					{
+						std::wstring sPos = L"<p15:parentCm authorId=\"" + std::to_wstring(*parentAuthorId) + L"\" idx=\"" + std::to_wstring(*parentCommentId) + L"\"/>";
+						pWriter->WriteString(sPos);
+					}
 
 					pWriter->WriteString(_T("</p15:threadingInfo></p:ext>"));
 				}
@@ -216,7 +243,13 @@ namespace PPTX
 
 				pWriter->WriteString2(8, additional_data);
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);	
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->StartRecord(0);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteInt2(9, timeZoneBias);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+				pWriter->EndRecord();
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -260,6 +293,41 @@ namespace PPTX
 						additional_data = pReader->GetString2();
 					default:
 						break;
+					}
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+					case 0:
+					{
+						LONG _end_rec2 = pReader->GetPos() + pReader->GetLong() + 4;
+
+						pReader->Skip(1); // start attributes
+
+						while (true)
+						{
+							BYTE _at = pReader->GetUChar_TypeNode();
+							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+								break;
+
+							switch (_at)
+							{
+							case 9: timeZoneBias = pReader->GetLong(); break;
+							default: break;
+							}
+						}
+
+						pReader->Seek(_end_rec2);
+					}
+						break;
+					default:
+					{
+						pReader->SkipRecord();
+						break;
+					}
 					}
 				}
 

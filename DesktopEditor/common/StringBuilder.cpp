@@ -813,6 +813,12 @@ namespace NSStringUtils
 					WriteHexByteNoSafe((value >> 16) & 0xFF);
 	}
 
+    void CStringBuilder::Skip(int nSkip)
+    {
+        m_pDataCur += nSkip;
+        m_lSizeCur += nSkip;
+    }
+
 	unsigned char CStringBuilder::CheckXmlCode(unsigned int c)
 	{
 		if ('&' == c)

@@ -364,6 +364,34 @@ style_page_layout_properties * page_layout_instance::properties() const
 
 void page_layout_instance::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
 {
+    const style_header_style * headerStyle = dynamic_cast<style_header_style *>(style_page_layout_->style_header_style_.get());
+    const style_footer_style * footerStyle = dynamic_cast<style_footer_style *>(style_page_layout_->style_footer_style_.get());
+
+	style_header_footer_properties * headerProp = headerStyle ? dynamic_cast<style_header_footer_properties *>(headerStyle->style_header_footer_properties_.get()) : NULL;
+	style_header_footer_properties * footerProp = footerStyle ? dynamic_cast<style_header_footer_properties *>(footerStyle->style_header_footer_properties_.get()) : NULL;
+
+    if (headerProp)
+    {
+        const style_header_footer_properties_attlist & attr = headerProp->style_header_footer_properties_attlist_;
+        _CP_OPT(double) header;
+		
+		if (attr.fo_min_height_)	header = attr.fo_min_height_->get_value_unit(length::pt);
+		else if (attr.svg_height_)	header = attr.svg_height_->get_value_unit(length::pt);
+        
+		Context.get_table_context().set_header_page(header);
+    }
+
+    if (footerProp)
+    {
+        const style_header_footer_properties_attlist & attr = footerProp->style_header_footer_properties_attlist_;
+        _CP_OPT(double) footer;
+		
+		if (attr.fo_min_height_)	footer = attr.fo_min_height_->get_value_unit(length::pt);
+		else if (attr.svg_height_)	footer = attr.svg_height_->get_value_unit(length::pt);
+       
+		Context.get_table_context().set_footer_page(footer);
+    }
+
 	style_page_layout_properties * props = properties();
 	if (props)
 		props->xlsx_serialize(strm, Context);   

@@ -184,7 +184,7 @@ namespace OOX
 		}
 
 		std::vector<CCommentExt*>	m_arrComments;
-		std::map<int, int>			m_mapComments; //paraId, index
+		std::map<unsigned int, int>			m_mapComments; //paraId, index
 	};
 	class CDocumentCommentsExt : public CCommentsExt
 	{
@@ -194,6 +194,73 @@ namespace OOX
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::DocumentCommentsExt;
+		}
+	};
+
+	class CCommentId : public WritingElement
+	{
+	public:
+		WritingElement_AdditionConstructors(CCommentId)
+		CCommentId()
+		{
+		}
+		virtual ~CCommentId()
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+		virtual std::wstring toXML() const
+		{
+			return L"";
+		}
+
+		virtual EElementType getType() const
+		{
+			return et_w16_commentId;
+		}
+	private:
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+	public:
+		nullable<SimpleTypes::CLongHexNumber<> >	m_oParaId;
+		nullable<SimpleTypes::CLongHexNumber<> >	m_oDurableId;
+	};
+
+	class CCommentsIds : public OOX::File
+	{
+	public:
+		CCommentsIds(OOX::Document *pMain);
+		CCommentsIds(OOX::Document *pMain, const CPath& oPath);
+		virtual ~CCommentsIds();
+		virtual void read(const CPath& oFilePath);
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::CommentsIds;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+
+		std::vector<CCommentId*>	m_arrComments;
+	};
+	class CDocumentCommentsIds : public CCommentsIds
+	{
+	public:
+		CDocumentCommentsIds(OOX::Document *pMain);
+		CDocumentCommentsIds(OOX::Document *pMain, const CPath& oPath);
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::DocumentCommentsIds;
 		}
 	};
 

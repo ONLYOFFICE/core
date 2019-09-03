@@ -117,7 +117,11 @@ public:
 		////ASSERT(data_); // This throws if we use >> instead of <<
 		if (checkFitRead(sizeof(T)))
 		{
+#ifdef __ANDROID__
+			memcpy(&val, &data_[rdPtr], sizeof(T));
+#else
 			val = * getCurData<T>();
+#endif
 			rdPtr += sizeof(T);
 			return true;
 		}

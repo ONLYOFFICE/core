@@ -48,6 +48,7 @@
 #include "WorkbookComments.h"
 #include "Comments/ThreadedComments.h"
 #include "Comments/Comments.h"
+#include "Controls/Controls.h"
 
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
@@ -110,6 +111,12 @@ namespace OOX
 			
 			else if ( oRelation.Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
+				return smart_ptr<OOX::File>(new CChartSpaceEx( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ChartStyle )
+				return smart_ptr<OOX::File>(new CChartStyle( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ChartColorStyle )
+				return smart_ptr<OOX::File>(new CChartColorStyle( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::ExternalLinkPath || 
 					  oRelation.Type() == OOX::FileTypes::ExternalLinkPathMissing || 
 					  oRelation.Type() == OOX::FileTypes::ExternalLinkPathStartup || 
@@ -139,6 +146,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName ));
 			else if (	oRelation.Type() == OOX::FileTypes::ActiveX_bin)
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
+			else if (	oRelation.Type() == FileTypes::CtrlProp)
+				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -206,6 +215,12 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CPersonList( pMain, oRootPath, oFileName));			
 			else if ( pRelation->Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartEx )
+				return smart_ptr<OOX::File>(new CChartSpaceEx( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartStyle )
+				return smart_ptr<OOX::File>(new CChartStyle( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartColorStyle )
+				return smart_ptr<OOX::File>(new CChartColorStyle( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::ExternalLinks )
 				return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName ));
 			else if (  pRelation->Type() == OOX::FileTypes::ExternalLinkPath || 
@@ -239,6 +254,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName ));
 			else if (	pRelation->Type() == OOX::FileTypes::ActiveX_bin)
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
+			else if (	pRelation->Type() == FileTypes::CtrlProp)
+				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::WorkbookComments)
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
 

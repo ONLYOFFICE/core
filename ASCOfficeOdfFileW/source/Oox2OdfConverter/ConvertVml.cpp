@@ -443,7 +443,7 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		 
 	if (vml_fill->m_rId.IsInit())			sID = vml_fill->m_rId->GetValue();
 	else if (vml_fill->m_oRelId.IsInit())	sID = vml_fill->m_oRelId->GetValue();
-	else if (vml_fill->m_sId.IsInit())		sID = vml_fill->m_sId.get2();
+	else if (vml_fill->m_sId.IsInit())		sID = *vml_fill->m_sId;
 	
 	if (!sID.empty())
 	{
@@ -722,11 +722,13 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	{
 		_CP_OPT(double) lIns, tIns, rIns, bIns;
 		
-		lIns = odf_types::length(vml_textbox->m_oInset.GetLeft(0),odf_types::length::pt).get_value_unit(odf_types::length::cm);
-		tIns = odf_types::length(vml_textbox->m_oInset.GetTop(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
-		rIns = odf_types::length(vml_textbox->m_oInset.GetRight(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
-		bIns = odf_types::length(vml_textbox->m_oInset.GetBottom(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
-		
+		if (vml_textbox->m_oInset.IsInit())
+		{
+			lIns = odf_types::length(vml_textbox->m_oInset->GetLeft(0),odf_types::length::pt).get_value_unit(odf_types::length::cm);
+			tIns = odf_types::length(vml_textbox->m_oInset->GetTop(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
+			rIns = odf_types::length(vml_textbox->m_oInset->GetRight(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
+			bIns = odf_types::length(vml_textbox->m_oInset->GetBottom(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
+		}	
 		odf_context()->drawing_context()->set_textarea_padding (lIns, tIns, rIns, bIns);
 	}
 
@@ -885,7 +887,7 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 		switch(vml_wrap->m_oAnchorY->GetValue())
 		{
 		case SimpleTypes::verticalanchorMargin: 		
-			odf_context()->drawing_context()->set_vertical_rel(0); break;
+			odf_context()->drawing_context()->set_vertical_rel(3); break;
 		case SimpleTypes::verticalanchorPage:  
 		{
 			if (anchor_page_x)

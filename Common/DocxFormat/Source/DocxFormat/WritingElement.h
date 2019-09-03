@@ -91,6 +91,15 @@ namespace OOX
     while( !wsName.empty() )\
 	{
 
+#define WritingElement_ReadAttributes_StartChar(Reader) \
+	if ( Reader.GetAttributesCount() <= 0 )\
+		return;\
+	if ( !Reader.MoveToFirstAttribute() )\
+		return;\
+	const char* wsName = Reader.GetNameChar();\
+	while( strlen(wsName) != 0 )\
+	{
+
 #define WritingElement_ReadAttributes_Start_No_NS(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
 		return;\
@@ -106,9 +115,19 @@ namespace OOX
             Value = Reader.GetText();\
         }
 
+#define WritingElement_ReadAttributes_Read_ifChar(Reader, AttrName, Value) \
+		if ( strcmp(AttrName, wsName) == 0 )\
+		{\
+			Value = Reader.GetText();\
+		}
+
 #define WritingElement_ReadAttributes_Read_else_if(Reader, AttrName, Value) \
 		else if ( AttrName == wsName )\
             Value = Reader.GetText();
+
+#define WritingElement_ReadAttributes_Read_else_ifChar(Reader, AttrName, Value) \
+		else if ( strcmp(AttrName, wsName) == 0 )\
+			Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \
 		if ( AttrName == wsName )\
@@ -121,6 +140,13 @@ namespace OOX
 		if ( !Reader.MoveToNextAttribute() ) \
 			break;\
 		wsName = Reader.GetName();\
+	}\
+	Reader.MoveToElement();
+
+#define WritingElement_ReadAttributes_EndChar(Reader) \
+		if ( !Reader.MoveToNextAttribute() ) \
+			break;\
+		wsName = Reader.GetNameChar();\
 	}\
 	Reader.MoveToElement();
 
@@ -690,6 +716,8 @@ namespace OOX
 		et_w_hdrShapeDefaults, // <w:hdrShapeDefaults>
 		et_w_headers, // <w:headers>
 		et_w_hyperlink, // <w:hyperlink>
+		et_w_altChunk, // <w:altChunk>
+		et_w_altChunkPr, // <w:altChunkPr>
 		et_w_ins, // <w:ins>
 		et_w_instrText, // <w:instrText>
 		et_w_latentStyles, // <w:latentStyles>
@@ -804,6 +832,8 @@ namespace OOX
 		et_w15_person, // <w15:person>
 		et_w15_commentEx, // <w15:commentEx>
 
+		et_w16_commentId, // <w16cid:commentId>
+
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>
 		et_w_GroupShape,		//<wpg:wgp>
@@ -817,7 +847,7 @@ namespace OOX
 		et_w_ShapeNonVisual,		//<wps:spPr>
 
 		et_ct_extlst,
-		et_ct_chartspace,
+		et_ct_ChartSpace,
 		et_ct_boolean,
 		et_ct_relid,
 		et_ct_pagesetup,
@@ -826,11 +856,8 @@ namespace OOX
 		et_ct_printsettings,
 		et_ct_externaldata,
 		et_ct_dispblanksas,
-		et_ct_legendentry,
 		et_ct_unsignedint,
 		et_ct_extension,
-		et_ct_legendpos,
-		et_ct_legend,
 		et_ct_layout,
 		et_ct_manuallayout,
 		et_ct_layouttarget,
@@ -936,7 +963,6 @@ namespace OOX
 		et_ct_area3dchart,
 		et_ct_areaser,
 		et_ct_areachart,
-		et_ct_plotarea,
 		et_ct_thickness,
 		et_ct_surface,
 		et_ct_perspective,
@@ -947,7 +973,6 @@ namespace OOX
 		et_ct_view3d,
 		et_ct_pivotfmt,
 		et_ct_pivotfmts,
-		et_ct_chart,
 		et_ct_protection,
 		et_ct_pivotsource,
 		et_ct_style1,
@@ -987,6 +1012,39 @@ namespace OOX
 		et_ct_alternatecontent,
 		et_ct_alternatecontentchoice,
 		et_ct_alternatecontentfallback,
+
+		et_ct_TickMarks,
+		et_ct_Gridlines,
+		et_ct_DataPoint,
+		et_ct_DataLabels,
+		et_ct_DataLabel,
+		et_ct_DataLabelHidden,
+		et_ct_NumberFormat,
+		et_ct_SeriesLayoutProperties,
+		et_ct_Subtotals,
+		et_ct_Statistics,
+		et_ct_Binning,
+		et_ct_DataLabelVisibilities,
+		et_ct_SeriesElementVisibilities,
+		et_ct_StringValue,
+		et_ct_StringLevel,
+		et_ct_NumericValue,
+		et_ct_NumericLevel,
+		et_ct_Text,
+		et_ct_TextData,
+		et_ct_Formula,
+		et_ct_CatScaling,
+		et_ct_ValScaling,
+		et_ct_AxisUnitsLabel,
+		et_ct_AxisUnit,
+		et_ct_Axis,
+		et_ct_PlotSurface,
+		et_ct_PlotAreaRegion,
+		et_ct_Data,
+		et_ct_StrDimension,
+		et_ct_NumDimension,
+		et_ct_ChartData,
+
 
 		et_cdr_FromTo,
 		et_cdr_Ext,
@@ -1115,6 +1173,8 @@ namespace OOX
 		et_x_Comment,
 		et_x_ThreadedComments,
 		et_x_ThreadedComment,
+		et_x_ThreadedCommentMentions,
+		et_x_ThreadedCommentMention,
 		et_x_PersonList,
 		et_x_Person,
 		et_x_ConditionalFormatting,
@@ -1125,6 +1185,8 @@ namespace OOX
 		et_x_IconSet,
 		et_x_ConditionalFormatValueObject,
 		et_x_ConditionalFormatIconSet,
+		et_x_PageSetUpPr,
+		et_x_OutlinePr,
 		et_x_SheetPr,
 		et_x_Pane,
 		et_x_ExternalBook,
@@ -1154,9 +1216,13 @@ namespace OOX
 		et_x_SheetProtection,
 		et_x_DataValidations,
 		et_x_DataValidation,
+		et_x_DataValidationFormula,
 		et_x_DataConsolidate,
 		et_x_DataRefs,
 		et_x_DataRef,
+		et_x_FormControlPr,
+		et_x_ListItems,
+		et_x_ListItem,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

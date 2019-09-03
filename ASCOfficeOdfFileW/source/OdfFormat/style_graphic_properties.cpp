@@ -157,13 +157,7 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"style:overflow-behavior", style_overflow_behavior_);
 			CP_XML_ATTR_OPT(L"style:mirror",			style_mirror_);
 			
-			//common_shadow_attlist_.serialize(CP_GET_XML_NODE());
-
-			CP_XML_ATTR_OPT(L"draw:shadow",				draw_shadow_);
-			CP_XML_ATTR_OPT(L"draw:shadow-opacity",		draw_shadow_opacity_);
-			CP_XML_ATTR_OPT(L"draw:shadow-color",		draw_shadow_color_);
-			CP_XML_ATTR_OPT(L"draw:shadow-offset-y",	draw_shadow_offset_y_);
-			CP_XML_ATTR_OPT(L"draw:shadow-offset-x",	draw_shadow_offset_x_);
+			common_shadow_attlist_.serialize(CP_GET_XML_NODE());
 	
 			common_draw_rel_size_attlist_.serialize(CP_GET_XML_NODE());
 			common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());
@@ -176,7 +170,6 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			common_text_anchor_attlist_.serialize(CP_GET_XML_NODE());
 			common_border_attlist_.serialize(CP_GET_XML_NODE());
 			common_border_line_width_attlist_.serialize(CP_GET_XML_NODE());
-			common_shadow_attlist_.serialize(CP_GET_XML_NODE());
 			common_padding_attlist_.serialize(CP_GET_XML_NODE());
 			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
 		}

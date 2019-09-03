@@ -30,16 +30,131 @@
  *
  */
 #pragma once
-#ifndef OOX_ACTIVEX_INCLUDE_H_
-#define OOX_ACTIVEX_INCLUDE_H_
 
 #include "Media.h"
 #include "../../XlsxFormat/FileTypes_Spreadsheet.h"
+#include "../../XlsxFormat/ComplexTypes_Spreadsheet.h"
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../IFileContainer.h"
 
+#include <boost/smart_ptr/shared_array.hpp>
+
+class MemoryStream;
+
 namespace OOX
-{
+{	
+	namespace Spreadsheet
+	{
+		class CFormControlPr;
+	}
+
+	class ActiveXObject
+	{
+	public:
+		ActiveXObject() {}
+		static ActiveXObject* Create(const std::wstring &class_id);
+		virtual void Parse(unsigned char* pData, DWORD size) = 0;
+
+		void toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr); 
+		std::wstring ReadString(MemoryStream *stream, size_t size, bool bCompressed);
+
+		nullable<SimpleTypes::Spreadsheet::CObjectType<>> m_oObjectType;
+
+		nullable_int	m_oForeColor;
+		nullable_int	m_oBackColor;
+		nullable_int	m_oBorderColor;
+		nullable_int	m_oBorderStyle;
+		nullable_string	m_oCaption;
+		nullable_int	m_oMin;
+		nullable_int	m_oMax;
+		nullable_int	m_oPosition;
+		nullable_int	m_oSmallChange;
+		nullable_int	m_oLargeChange;
+		nullable_int	m_oOrientation;
+		nullable_int	m_oDelay;
+		nullable_string	m_oValue;
+		nullable_bool	m_oPasswordEdit;
+		nullable<SimpleTypes::Spreadsheet::CSelType<>> m_oSelType;
+		nullable_bool	m_oLockText;
+
+		nullable_int	m_oWidth;
+		nullable_int	m_oHeight;
+	};
+
+	class ActiveXObjectScroll : public ActiveXObject
+	{
+	public:
+		ActiveXObjectScroll()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectScroll);
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+	};
+	class ActiveXObjectButton : public ActiveXObject
+	{
+	public:
+		ActiveXObjectButton()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectButton);
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+	};
+	class ActiveXObjectImage : public ActiveXObject
+	{
+	public:
+		ActiveXObjectImage() : bTile(false), nImageSize(0)
+		{
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+
+		size_t nImageSize;
+		boost::shared_array<unsigned char> pImageData;
+		bool bTile;
+	};
+	class ActiveXObjectLabel : public ActiveXObject
+	{
+	public:
+		ActiveXObjectLabel()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectLabel);
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+	};
+	class ActiveXObjectSpin : public ActiveXObject
+	{
+	public:
+		ActiveXObjectSpin()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectSpin);
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+	};
+	
+	class ActiveXObjectFormControl : public ActiveXObject
+	{
+	public:
+		ActiveXObjectFormControl()
+		{
+			m_oObjectType = SimpleTypes::Spreadsheet::objectDialog;
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+	};
+	class ActiveXObjectMorphData : public ActiveXObject
+	{
+	public:
+		ActiveXObjectMorphData(SimpleTypes::Spreadsheet::EObjectType type)
+		{
+			m_oObjectType = type;
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+	};
+	//TabStrip
+
+//-------------------------------------------------------------------------------------------------
 	class COcxPr : public WritingElement
 	{
 	public:
@@ -55,12 +170,12 @@ namespace OOX
 		}
         virtual std::wstring toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<ocxPr>"));
-			writer.WriteString(_T("</ocxPr>"));
+			writer.WriteString(L"<ocxPr>");
+			writer.WriteString(L"</ocxPr>");
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -79,8 +194,8 @@ namespace OOX
 		{
 			WritingElement_ReadAttributes_Start(oReader)
 
-			WritingElement_ReadAttributes_Read_if		(oReader, _T("ax:name")		, m_oName)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, _T("ax:value")	, m_oValue)
+			WritingElement_ReadAttributes_Read_if		(oReader, L"ax:name", m_oName)
+			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:value", m_oValue)
 
 			WritingElement_ReadAttributes_End(oReader)
 		}
@@ -119,51 +234,10 @@ namespace OOX
 			CPath oRootPath;
 			read(oRootPath, oPath);
 		}
-		virtual void read(const CPath& oRootPath, const CPath& oPath)
-		{
-			m_oReadPath = oPath;
-			IFileContainer::Read( oRootPath, oPath );
+		virtual void read(const CPath& oRootPath, const CPath& oPath);
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		void read_bin(const CPath& oPath);
 
-			XmlUtils::CXmlLiteReader oReader;
-
-			if ( !oReader.FromFile( oPath.GetPath() ) )
-				return;
-
-			if ( !oReader.ReadNextNode() )
-				return;
-
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if ( _T("ocx") == sName)
-			{
-				ReadAttributes(oReader);
-
-				if ( !oReader.IsEmptyNode() )
-				{
-					int nDocumentDepth = oReader.GetDepth();
-					while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
-					{
-						sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-						if ( _T("ocxPr") == sName )
-						{
-							COcxPr* pOcxPr = new COcxPr(oReader);
-							m_arrOcxPr.push_back(pOcxPr);
-						}
-					}
-				}
-			}
-		}
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start(oReader)
-
-			WritingElement_ReadAttributes_Read_if		(oReader, L"ax:classid"		, m_oClassId)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:persistence"	, m_oPersistence)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, L"r:id"			, m_oId)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:license"		, m_oLicense)
-
-			WritingElement_ReadAttributes_End(oReader)
-		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
 		{
 		}
@@ -182,14 +256,15 @@ namespace OOX
 		}
 
 		bool									m_bDocument;
-	protected:
 		CPath									m_oReadPath;
 		
-		nullable<std::wstring>					m_oClassId;
-		nullable<std::wstring>					m_oLicense;
-		nullable<std::wstring>					m_oPersistence;	//(§3.6.2.1, ST_Persistence).
+		nullable_string							m_oClassId;
+		nullable_string							m_oLicense;
+		nullable_string							m_oPersistence;	//(§3.6.2.1, ST_Persistence).
 		nullable<SimpleTypes::CRelationshipId >	m_oId;
 		std::vector<OOX::COcxPr*>				m_arrOcxPr;
+//---------bin
+		nullable<ActiveXObject>					m_oObject;
 	};
 
 	class ActiveX_bin : public Media
@@ -201,6 +276,10 @@ namespace OOX
 		ActiveX_bin(OOX::Document *pMain, const OOX::CPath& filename) : Media (pMain)
 		{
 			read(filename);
+		}
+		virtual void read(const CPath& filename)
+		{
+			Media::read(filename);
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
 		{
@@ -230,10 +309,8 @@ namespace OOX
 		{
 			return m_filenameCache;
 		}
-	protected:
-		CPath	m_filenameCache; //image
+
+		CPath m_filenameCache; //image
 	};
 
 } // namespace OOX
-
-#endif // OOX_ACTIVEX_INCLUDE_H_

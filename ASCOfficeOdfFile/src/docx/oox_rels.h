@@ -43,6 +43,7 @@ namespace oox {
 enum RelsType 
 {
 	typeUnknown = 0, 
+	typeDefault,
 	typeImage, 
 	typeChart, 
 	typeShape, 
@@ -59,7 +60,8 @@ enum RelsType
 	typeExternalLink, 
 	typeActiveX, 
 	typeControl,
-	typeControlProps
+	typeControlProps,
+	typeChartUserShapes
 };
 
 struct _rel
@@ -71,10 +73,10 @@ struct _rel
 			type(type_)
 		{}
 
-    bool				is_internal;
-    std::wstring		rid;
-    std::wstring		ref;
-    RelsType	type;
+    bool			is_internal;
+    std::wstring	rid;
+    std::wstring	ref;
+    RelsType		type;
 };
 
 class relationship : public xml::element_impl<relationship>

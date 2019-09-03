@@ -40,8 +40,10 @@
 #include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "odf_drawing_context.h"
+#include "odf_controls_context.h"
 
 #include "office_elements_create.h"
+#include "style_graphic_properties.h"
 
 #include "officevaluetype.h"
 
@@ -184,6 +186,8 @@ struct ods_cell_state : ods_element_state
 
     int hyperlink_idx = -1;
     int comment_idx = -1;
+
+	std::wstring data_validation_name;
 	
     bool empty = true;
 };
@@ -204,6 +208,8 @@ struct ods_comment_state
 	std::wstring author;
 
 	office_element_ptr elm;
+
+	graphic_format_properties *graphic_properties = NULL;
 
 	bool used = false;
 };
@@ -236,6 +242,38 @@ struct table_part_state
 	}
 
 	std::vector<std::pair<std::wstring, std::wstring>> columns; //name, odf_ref
+};
+struct data_validation_state 
+{
+	std::wstring name;
+	int type = 0;
+	int operator_ = -1;
+
+	office_element_ptr elm;
+
+	struct _ref
+	{
+		std::wstring ref;
+		int col_start = 0;
+		int row_start = 0;
+
+		int col_end = 0;
+		int row_end = 0;
+	};
+	std::vector<_ref> refs;
+
+	std::wstring condition;
+
+	bool in_ref(int col, int row)
+	{
+		for (size_t i = 0; i < refs.size(); i++)
+		{
+			if (col >= refs[i].col_start && col <= refs[i].col_end && row >= refs[i].row_start && row <= refs[i].row_end)
+				return true;
+		}
+		return false;
+	}
+
 };
 struct ods_array_formula_state
 {
@@ -334,6 +372,8 @@ public:
 
     void start_comment(int col, int row, std::wstring & author);
 		void set_comment_rect(double l, double t, double w, double h);
+		void set_comment_visible(bool val);
+		void set_comment_color(const std::wstring & color);
 	void end_comment(odf_text_context *text_context);
 	
     void set_merge_cells(int start_col, int start_row, int end_col, int end_row);
@@ -341,11 +381,14 @@ public:
 	office_element_ptr & current_row_element();
 	office_element_ptr & current_cell_element();
 
-	bool	is_cell_hyperlink	();
-    int		is_cell_hyperlink	(int col, int row);
-	bool	is_cell_comment		();
-    int		is_cell_comment		(int col, int row, unsigned int repeate_col = 1);
-	int		is_row_comment		(int row, int repeate_row = 1);
+	bool is_cell_data_validation();
+	bool is_cell_hyperlink();
+	bool is_cell_comment();
+
+    int is_cell_hyperlink(int col, int row);
+    int is_cell_comment(int col, int row, unsigned int repeate_col = 1);
+	int is_row_comment(int row, int repeate_row = 1);
+	std::wstring is_cell_data_validation(int col, int row);
 
 	unsigned int get_last_row_repeated ();
 
@@ -362,10 +405,13 @@ public:
 
 	void convert_position(oox_table_position & oox_pos, double & x, double & y);
 
-	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
+	odf_drawing_context*	drawing_context(){return  &drawing_context_;}
+	odf_controls_context*	controls_context(){return  &controls_context_;}
 
 	std::wstring					office_table_name_;
 	std::vector<ods_comment_state>	comments_;
+
+	std::map<std::wstring, office_element_ptr> mapHeaderFooterImages;
 private:
 
 	struct _spanned_info
@@ -384,7 +430,7 @@ private:
 	std::vector<_covered_info> current_covered_rows_;
 	int current_covered_cols_;
 
-    odf_conversion_context * context_;   
+    odf_conversion_context *context_;   
 	
 	office_element_ptr	office_table_;
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
@@ -401,6 +447,7 @@ private:
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
 
+//            row          column
 	std::map<int, std::map<int, _spanned_info>> map_merged_cells;
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
@@ -408,12 +455,15 @@ private:
 	std::vector<ods_cell_state>	cells_;
 	long						cells_size_;
 	
-	std::vector<ods_hyperlink_state>		hyperlinks_;
-	std::vector<ods_shared_formula_state>	shared_formulas_;
+	std::vector<ods_hyperlink_state> hyperlinks_;
+	std::map<unsigned int, ods_shared_formula_state> shared_formulas_;
 
-	std::vector<table_part_state>			table_parts_;
+	std::vector<table_part_state> table_parts_;
+
+	std::vector<data_validation_state> data_validations_;
 
 	odf_drawing_context		drawing_context_;	
+	odf_controls_context	controls_context_;	
 
 	friend class ods_table_context;
 

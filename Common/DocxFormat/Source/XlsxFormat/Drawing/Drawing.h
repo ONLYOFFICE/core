@@ -236,6 +236,11 @@ namespace OOX
 				return m_oReadPath;
 			}
 
+			bool IsEmpty()
+			{
+				return m_arrItems.empty();
+			}
+
 		private:
 			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

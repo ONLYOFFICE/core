@@ -967,7 +967,7 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_extLst::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_extLst::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -1210,7 +1210,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType CT_ChartSpace::getType(){return et_ct_chartspace;}
+		EElementType CT_ChartSpace::getType(){return et_ct_ChartSpace;}
 		CT_Boolean::CT_Boolean()
 		{
 			/*m_val = new bool;
@@ -1235,7 +1235,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Boolean::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Boolean::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -1282,7 +1282,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RelId::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_RelId::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_id)
@@ -1405,7 +1405,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PageSetup::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PageSetup::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_paperSize)
@@ -1604,7 +1604,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PageMargins::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PageMargins::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_l)
@@ -1794,7 +1794,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					}
 				}
 		}
-		void CT_HeaderFooter::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_HeaderFooter::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_alignWithMargins)
@@ -1967,7 +1967,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_PrintSettings::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PrintSettings::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -2020,7 +2020,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					}
 				}
 		}
-		void CT_ExternalData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ExternalData::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_id)
@@ -2068,7 +2068,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_DispBlanksAs::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DispBlanksAs::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -2142,7 +2142,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_LegendEntry::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LegendEntry::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -2170,7 +2170,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType CT_LegendEntry::getType(){return et_ct_legendentry;}
+		EElementType CT_LegendEntry::getType(){return et_ct_LegendEntry;}
 		CT_UnsignedInt::CT_UnsignedInt()
 		{
 			m_val = NULL;
@@ -2187,7 +2187,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-        void CT_UnsignedInt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+        void CT_UnsignedInt::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
@@ -2241,7 +2241,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					}
 				}
 		}
-		void CT_Extension::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Extension::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_uri)
@@ -2292,7 +2292,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LegendPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LegendPos::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -2305,7 +2305,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			}
 			writer.WriteString(L"/>");
 		}
-		EElementType CT_LegendPos::getType(){return et_ct_legendpos;}
+		EElementType CT_LegendPos::getType(){return et_ct_LegendPos;}
 		void CT_LegendPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -2389,7 +2389,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Legend::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		void CT_Legend::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
@@ -2436,7 +2436,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType CT_Legend::getType(){return et_ct_legend;}
+		EElementType CT_Legend::getType(){return et_ct_Legend;}
 		CT_Layout::CT_Layout()
 		{
 			m_manualLayout = NULL;
@@ -2471,7 +2471,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Layout::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		void CT_Layout::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
@@ -2596,7 +2596,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_ManualLayout::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ManualLayout::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -2672,7 +2672,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LayoutTarget::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LayoutTarget::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -2718,7 +2718,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LayoutMode::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LayoutMode::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -2763,7 +2763,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Double::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Double::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -2861,7 +2861,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DTable::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DTable::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3080,7 +3080,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_SerAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_SerAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3243,7 +3243,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Scaling::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Scaling::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3292,7 +3292,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LogBase::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LogBase::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -3331,7 +3331,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Orientation::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Orientation::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -3375,7 +3375,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_AxPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_AxPos::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -3423,7 +3423,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_ChartLines::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ChartLines::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3495,7 +3495,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Title::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Title::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3561,7 +3561,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Tx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Tx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3623,7 +3623,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_StrRef::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_StrRef::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3693,7 +3693,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_StrData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_StrData::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -3751,7 +3751,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					}
 				}
 		}
-		void CT_StrVal::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_StrVal::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_idx)
@@ -3803,7 +3803,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_NumFmt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_NumFmt::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_formatCode)
@@ -3863,7 +3863,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TickMark::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_TickMark::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -3909,7 +3909,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TickLblPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_TickLblPos::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -3953,7 +3953,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Crosses::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Crosses::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -3996,7 +3996,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Skip::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Skip::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -4035,7 +4035,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TimeUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_TimeUnit::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -4284,7 +4284,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DateAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DateAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -4432,7 +4432,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LblOffset::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LblOffset::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -4469,7 +4469,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_AxisUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_AxisUnit::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -4506,7 +4506,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LblAlgn::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LblAlgn::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -4747,7 +4747,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_CatAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_CatAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -4911,7 +4911,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DispUnitsLbl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DispUnitsLbl::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -4956,7 +4956,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BuiltInUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BuiltInUnit::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -4982,7 +4982,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End_No_NS( oReader )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DispUnits::CT_DispUnits()
 		{
@@ -5035,7 +5035,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DispUnits::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DispUnits::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -5079,7 +5079,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_CrossBetween::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_CrossBetween::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -5301,7 +5301,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_ValAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ValAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -5431,7 +5431,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_SizeRepresents::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_SizeRepresents::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -5480,7 +5480,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BubbleScale::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BubbleScale::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -5638,7 +5638,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_BubbleSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BubbleSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -5762,7 +5762,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_SerTx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_SerTx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -5867,7 +5867,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DPt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DPt::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -5961,7 +5961,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Marker::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Marker::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -6004,7 +6004,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_MarkerStyle::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_MarkerStyle::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -6053,7 +6053,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_MarkerSize::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_MarkerSize::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -6135,7 +6135,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_PictureOptions::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PictureOptions::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -6184,7 +6184,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PictureFormat::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PictureFormat::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -6227,7 +6227,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PictureStackUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PictureStackUnit::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -6417,7 +6417,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DLbls::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DLbls::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -6891,7 +6891,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DLbl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DLbl::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -7207,7 +7207,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_DLblPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DLblPos::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -7354,7 +7354,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Trendline::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Trendline::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -7443,7 +7443,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TrendlineType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_TrendlineType::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -7492,7 +7492,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Order::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Order::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -7534,7 +7534,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Period::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Period::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -7615,7 +7615,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_TrendlineLbl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_TrendlineLbl::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -7744,7 +7744,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_ErrBars::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ErrBars::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -7812,7 +7812,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ErrDir::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ErrDir::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -7857,7 +7857,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ErrBarType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ErrBarType::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -7902,7 +7902,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ErrValType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ErrValType::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -7963,7 +7963,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_NumDataSource::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_NumDataSource::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8034,7 +8034,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_NumData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_NumData::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8104,7 +8104,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					}
 				}
 		}
-		void CT_NumVal::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_NumVal::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_idx)
@@ -8192,7 +8192,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_NumRef::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_NumRef::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8280,7 +8280,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_AxDataSource::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_AxDataSource::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8357,7 +8357,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_MultiLvlStrRef::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_MultiLvlStrRef::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8409,7 +8409,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_lvl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_lvl::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8469,7 +8469,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_MultiLvlStrData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_MultiLvlStrData::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8593,7 +8593,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_BubbleChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BubbleChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8679,7 +8679,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_bandFmts::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_bandFmts::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8757,7 +8757,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Surface3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Surface3DChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8872,7 +8872,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_SurfaceSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_SurfaceSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -8943,7 +8943,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_BandFmt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BandFmt::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -9021,7 +9021,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_SurfaceChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_SurfaceChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -9083,7 +9083,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_SecondPieSize::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_SecondPieSize::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -9122,7 +9122,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_SplitType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_SplitType::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -9167,7 +9167,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_OfPieType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_OfPieType::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -9219,7 +9219,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_custSplit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_custSplit::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -9351,7 +9351,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_OfPieChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_OfPieChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -9523,7 +9523,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_PieSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PieSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -9605,7 +9605,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_GapAmount::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_GapAmount::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -9732,7 +9732,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Bar3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Bar3DChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -9816,7 +9816,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BarDir::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BarDir::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -9861,7 +9861,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BarGrouping::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BarGrouping::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -10025,7 +10025,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_BarSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BarSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -10128,7 +10128,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Shape::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Shape::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -10176,7 +10176,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Overlap::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Overlap::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -10303,7 +10303,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_BarChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_BarChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -10394,7 +10394,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_HoleSize::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_HoleSize::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -10485,7 +10485,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_DoughnutChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DoughnutChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -10548,7 +10548,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_FirstSliceAng::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_FirstSliceAng::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -10621,7 +10621,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Pie3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Pie3DChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -10714,7 +10714,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_PieChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PieChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -10879,7 +10879,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_ScatterSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ScatterSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -10981,7 +10981,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ScatterStyle::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ScatterStyle::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -11078,7 +11078,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_ScatterChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ScatterChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -11225,7 +11225,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_RadarSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_RadarSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -11304,7 +11304,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RadarStyle::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_RadarStyle::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -11401,7 +11401,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_RadarChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_RadarChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -11526,7 +11526,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_StockChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_StockChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -11705,7 +11705,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_LineSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LineSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -11837,7 +11837,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_UpDownBars::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_UpDownBars::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -11885,7 +11885,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_UpDownBar::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_UpDownBar::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -11985,7 +11985,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Line3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Line3DChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -12059,7 +12059,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Grouping::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Grouping::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -12202,7 +12202,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_LineChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_LineChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -12361,7 +12361,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Area3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Area3DChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -12536,7 +12536,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_AreaSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_AreaSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -12694,7 +12694,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_AreaChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_AreaChart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -12984,7 +12984,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_PlotArea::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PlotArea::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -13021,7 +13021,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType CT_PlotArea::getType(){return et_ct_plotarea;}
+		EElementType CT_PlotArea::getType(){return et_ct_PlotArea;}
 		void CT_PlotArea::toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType5 eType, void* pVal) const{
 			switch(eType)
 			{
@@ -13437,7 +13437,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Thickness::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Thickness::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -13505,7 +13505,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Surface::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Surface::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -13553,7 +13553,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Perspective::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Perspective::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -13595,7 +13595,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_DepthPercent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_DepthPercent::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -13637,7 +13637,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RotY::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_RotY::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -13679,7 +13679,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_HPercent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_HPercent::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -13721,7 +13721,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RotX::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_RotX::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -13821,7 +13821,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_View3D::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_View3D::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -13924,7 +13924,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_PivotFmt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PivotFmt::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -13986,7 +13986,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_pivotFmts::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_pivotFmts::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14136,7 +14136,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Chart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Chart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14209,7 +14209,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType CT_Chart::getType(){return et_ct_chart;}
+		EElementType CT_Chart::getType(){return et_ct_Chart;}
 		CT_Protection::CT_Protection()
 		{
 			m_chartObject = NULL;
@@ -14270,7 +14270,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Protection::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Protection::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14347,7 +14347,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_PivotSource::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_PivotSource::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14388,13 +14388,14 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			if(NULL != m_val)
 				delete m_val;
 		}
-		void CT_Style1::fromXML(XmlUtils::CXmlLiteReader& oReader){
-				ReadAttributes(oReader);
+		void CT_Style1::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
 
-				if(!oReader.IsEmptyNode())
-					oReader.ReadTillEnd();
+			if(!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
-		void CT_Style1::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Style1::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -14414,7 +14415,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End_No_NS( oReader )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Style::CT_Style()
 		{
@@ -14431,7 +14432,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Style::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Style::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -14468,7 +14469,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TextLanguageID::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		void CT_TextLanguageID::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
@@ -14525,7 +14526,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void AlternateContent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		void AlternateContent::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
@@ -14582,7 +14583,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					}
 				}
 		}
-		void AlternateContentChoice::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		void AlternateContentChoice::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
@@ -14641,7 +14642,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void AlternateContentFallback::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		void AlternateContentFallback::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);

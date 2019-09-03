@@ -153,7 +153,7 @@ public:
     static const ElementType	type		= typeDrawFrame;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	draw_frame() : oox_drawing_(), idx_in_owner(-1)  {}
+	draw_frame() : oox_drawing_(), idx_in_owner(-1), is_object_(false)  {}
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -185,10 +185,10 @@ public:
 
 	oox_drawing_ptr							oox_drawing_;
 
+	bool                                    is_object_;
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_frame);
@@ -209,7 +209,7 @@ public:
     static const ElementType type		= typeDrawG;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	draw_g() : position_child_x1(0x7fffffff), position_child_y1(0x7fffffff), position_child_x2(0x7fffffff), position_child_y2(0x7fffffff) {}
+	draw_g() : object_index(-1), position_child_x1(0x7fffffff), position_child_y1(0x7fffffff), position_child_x2(0x7fffffff), position_child_y2(0x7fffffff) {}
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
@@ -227,6 +227,8 @@ public:
 
 	int position_child_x2;
 	int position_child_y2;
+
+	int object_index ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -307,6 +309,7 @@ public:
 
 	odf_document_ptr					odf_document_;
 
+    office_element_ptr_array			content_; //for case group with object 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

@@ -720,6 +720,7 @@ const wchar_t * dr3d_scene::name = L"scene";
 
 void dr3d_scene::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	dr3d_attlist_.add_attributes(Attributes);
 	draw_shape::add_attributes(Attributes);
 
 	sub_type_ = 12; 
@@ -789,8 +790,8 @@ void dr3d_sphere::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	draw_shape::add_attributes(Attributes);
 
-	CP_APPLY_ATTR(L"dr3d:size",		dr3d_size_); //vector3D
-	CP_APPLY_ATTR(L"dr3d:center",	dr3d_center_); //vector3D
+	CP_APPLY_ATTR(L"dr3d:size",		dr3d_size_); 
+	CP_APPLY_ATTR(L"dr3d:center",	dr3d_center_); 
 	CP_APPLY_ATTR(L"dr3d:transform",dr3d_transform_);
 
 	sub_type_ = 16;

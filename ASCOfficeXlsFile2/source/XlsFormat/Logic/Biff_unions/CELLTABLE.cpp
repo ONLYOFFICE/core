@@ -217,7 +217,6 @@ int CELLTABLE::serialize(std::wostream & stream)
 
 	CP_XML_WRITER(stream)    
     {	
-	
 		for (std::map<int, GlobalWorkbookInfo::_row_info>::iterator it_row = sheet_info.mapRows.begin(); it_row != sheet_info.mapRows.end(); it_row++)
 		{
 			Row* row = dynamic_cast<Row*>(it_row->second.row_info.get());
@@ -275,7 +274,7 @@ int CELLTABLE::serialize(std::wostream & stream)
 					}
 					for ( std::map<int, BaseObjectPtr>::iterator it_cell = it_row->second.mapCells.begin(); it_cell != it_row->second.mapCells.end(); it_cell++)
 					{
-						if (isConcatinate_)
+						//if (isConcatinate_)
 						{
 							CELL* cell = dynamic_cast<CELL*>((it_cell->second).get());
 

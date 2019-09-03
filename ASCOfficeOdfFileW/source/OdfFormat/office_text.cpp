@@ -127,6 +127,10 @@ void office_text::add_child_element( const office_element_ptr & child_element)
 
 	switch(child_element->get_type())
 	{
+		case typeOfficeForms:
+		{
+			forms_ = child_element;	
+		}break;
 		case typeTextSequenceDecls:
 		{
 			sequences_ = child_element;	
@@ -156,6 +160,9 @@ void office_text::serialize(std::wostream & _Wostream)
 
 			if (sequences_)
 				sequences_->serialize(CP_XML_STREAM());
+
+			if (forms_)
+				forms_->serialize(CP_XML_STREAM());
 
 			if (tracked_changes_)
 				tracked_changes_->serialize(CP_XML_STREAM());

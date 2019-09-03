@@ -387,6 +387,9 @@ void Header::load( const unsigned char* buffer ) {
   num_sbat     = readU32( buffer + 0x40 ); // [40H,04] number of SECTs in the MiniFAT chain
   mbat_start   = readU32( buffer + 0x44 ); // [44H,04] first SECT in the DIFAT chain
   num_mbat     = readU32( buffer + 0x48 ); // [48H,04] number of SECTs in the DIFAT chain
+
+  if (threshold == 0) 
+	  threshold = 4096; //поле не задано ... файл xls от полльзователя
   
   for( unsigned int i = 0; i < 8; i++ )
     id[i] = buffer[i]; 

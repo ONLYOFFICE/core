@@ -46,7 +46,6 @@ class office_annotation_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
 	_CP_OPT(odf_types::length) svg_y_;
 	_CP_OPT(odf_types::length) svg_x_;
  	_CP_OPT(odf_types::length) svg_width_;
@@ -123,9 +122,8 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-private:
     office_element_ptr_array content_;
-	office_annotation_attr office_annotation_attr_;
+	office_annotation_attr attr_;
 
     office_element_ptr dc_date_;
     office_element_ptr dc_creator_;
@@ -150,9 +148,8 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-private:
     office_element_ptr_array		content_;
-	office_annotation_attr			office_annotation_attr_;
+	office_annotation_attr			attr_;
 
     office_element_ptr dc_date_;
     office_element_ptr dc_creator_;

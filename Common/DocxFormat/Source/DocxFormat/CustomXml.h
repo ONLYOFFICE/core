@@ -272,7 +272,7 @@ namespace OOX
 			{
 				if (OOX::FileTypes::CustomXmlProps == container[i]->type())
 				{
-					OOX::CCustomXMLProps* pCustomXmlProps = dynamic_cast<OOX::CCustomXMLProps*>(container[i].operator->());
+					OOX::CCustomXMLProps* pCustomXmlProps = dynamic_cast<OOX::CCustomXMLProps*>(container[i].GetPointer());
 					if(pCustomXmlProps->m_oShemaRefs.IsInit())
 					{
 						for (size_t j = 0; j < pCustomXmlProps->m_oShemaRefs->m_arrItems.size(); ++j)

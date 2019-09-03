@@ -101,6 +101,7 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
                     CP_XML_NODE(L"a:avLst");
                 }
 				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				oox_serialize_effects(CP_XML_STREAM(), val.additional);
             } 			
 			//_CP_OPT(std::wstring) strTextContent;
 			//odf::GetProperty(properties,L"text-content",strTextContent);
@@ -186,7 +187,8 @@ void pptx_serialize_media(std::wostream & strm, _pptx_drawing & val)
                 }
 				oox_serialize_fill	(CP_XML_STREAM(), val.fill);
 				oox_serialize_ln	(CP_XML_STREAM(), val.additional);
-            } 			
+ 				oox_serialize_effects(CP_XML_STREAM(), val.additional);
+           } 			
 			//_CP_OPT(std::wstring) strTextContent;
 			//odf::GetProperty(properties,L"text-content",strTextContent);
 			//pptx_serialize_text(CP_XML_STREAM(),val.additional);
@@ -248,6 +250,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 					val.serialize_shape(CP_XML_STREAM());
 
 					oox_serialize_ln(CP_XML_STREAM(), val.additional);
+					oox_serialize_effects(CP_XML_STREAM(), val.additional);
 				}
 			}
 			 pptx_serialize_text(CP_XML_STREAM(), val);
@@ -307,6 +310,7 @@ void pptx_serialize_connector(std::wostream & strm, _pptx_drawing & val)
 					val.serialize_shape(CP_XML_STREAM());
 
 					oox_serialize_ln(CP_XML_STREAM(), val.additional);
+					oox_serialize_effects(CP_XML_STREAM(), val.additional);
 				}
 			}
 			 pptx_serialize_text(CP_XML_STREAM(), val);

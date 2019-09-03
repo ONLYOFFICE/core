@@ -49,7 +49,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCellAnchor)
-            CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType<>& oAnchorType) : m_oAnchorType(oAnchorType), m_bShapeOle(false)
+           
+			CCellAnchor(const SimpleTypes::Spreadsheet::ECellAnchorType& oAnchorType) :	m_oAnchorType(oAnchorType),
+																							m_bShapeOle(false), m_bShapeControl(false)
+			{
+			}
+			CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType<>& oAnchorType) :	m_oAnchorType(oAnchorType),
+																							m_bShapeOle(false), m_bShapeControl(false)
 			{
 			}
 			virtual ~CCellAnchor()
@@ -58,6 +64,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_bShapeOle = false;
+				m_bShapeControl = false;
 			}
             virtual std::wstring toXML() const
 			{
@@ -125,6 +132,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_bShapeOle = false;
+				m_bShapeControl = false;
+
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )
@@ -207,6 +216,7 @@ namespace OOX
 			}
 		public:
 			bool											m_bShapeOle;
+			bool											m_bShapeControl;
 
 			SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;
 			nullable<OOX::Spreadsheet::CFromTo>				m_oFrom;

@@ -235,8 +235,7 @@ public:
 	_CP_OPT(std::wstring)			table_cell_range_address_;
     _CP_OPT(std::wstring)			chart_data_source_has_labels_;
 
-    // dr3d-scene-attlist
-    // common-dr3d-transform-attlist
+ 	odf_types::dr3d_attlist			dr3d_attlist_;
 };
 
 ///  chart:plot-area

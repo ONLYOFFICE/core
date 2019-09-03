@@ -78,13 +78,13 @@ public:
 
 	size_t drop_cap_docx_convert(oox::docx_conversion_context & Context);
 
+	paragraph_attrs				attrs_;
+
     office_element_ptr_array	content_;
 	office_element_ptr			sequence_;
 private:
 	void drop_cap_text_docx_convert(office_element_ptr first_text_paragraph,oox::docx_conversion_context & Context);
-   
-	paragraph_attrs			attrs_;
-   
+ 
 	bool					next_section_;
     bool					next_end_section_;
 	

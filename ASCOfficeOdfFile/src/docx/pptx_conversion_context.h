@@ -133,7 +133,7 @@ public:
 
 	pptx_table_context	& get_table_context()	{ return pptx_table_context_; }
 
-    mediaitems & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
+    mediaitems_ptr & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
     //void start_hyperlink(const std::wstring & styleName);
     //void end_hyperlink(std::wstring const & href);

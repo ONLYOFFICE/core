@@ -406,6 +406,49 @@ void xlsx_table_state::serialize_page_properties (std::wostream & strm)
 
 	page_layout->xlsx_serialize(strm, *context_);
 }
+void xlsx_table_state::serialize_header_footer (std::wostream & strm)
+{
+	_CP_OPT(std::wstring) masterPageName = context_->root()->odf_context().styleContainer().master_page_name_by_name(table_style_);
+	if (!masterPageName) return;
+
+	odf_reader::style_master_page* master_style_ = context_->root()->odf_context().pageLayoutContainer().master_page_by_name(*masterPageName);
+	if (!master_style_) return;
+
+	odf_reader::style_header		*header_odd		= dynamic_cast<odf_reader::style_header*>		(master_style_->style_header_.get());
+	odf_reader::style_header_first	*header_first	= dynamic_cast<odf_reader::style_header_first*>	(master_style_->style_header_first_.get());
+	odf_reader::style_header_left	*header_even	= dynamic_cast<odf_reader::style_header_left*>	(master_style_->style_header_left_.get());
+
+	odf_reader::style_footer		*footer_odd		= dynamic_cast<odf_reader::style_footer*>		(master_style_->style_footer_.get());
+	odf_reader::style_footer_first	*footer_first	= dynamic_cast<odf_reader::style_footer_first*>	(master_style_->style_footer_first_.get());
+	odf_reader::style_footer_left	*footer_even	= dynamic_cast<odf_reader::style_footer_left*>	(master_style_->style_footer_left_.get());
+
+	if (!header_odd && !header_first && !header_even && 
+		!footer_odd && !footer_first && !footer_even) return;
+
+	CP_XML_WRITER(strm)
+	{			
+		CP_XML_NODE(L"headerFooter")
+		{
+			if (master_style_->style_header_left_ || master_style_->style_footer_left_)
+			{
+				CP_XML_ATTR(L"differentOddEven",  1);
+			}
+			if (master_style_->style_header_first_ || master_style_->style_footer_first_)
+			{
+				CP_XML_ATTR(L"differentFirst",  1);
+			}
+
+			if (header_odd) header_odd->xlsx_serialize(CP_XML_STREAM(), *context_);
+			if (footer_odd) footer_odd->xlsx_serialize(CP_XML_STREAM(), *context_);
+		
+			if (header_even) header_even->xlsx_serialize(CP_XML_STREAM(), *context_);
+			if (footer_even) footer_even->xlsx_serialize(CP_XML_STREAM(), *context_);
+			
+			if (header_first) header_first->xlsx_serialize(CP_XML_STREAM(), *context_);
+			if (footer_first) footer_first->xlsx_serialize(CP_XML_STREAM(), *context_);
+		}
+	}
+}
 void xlsx_table_state::serialize_background (std::wostream & strm)
 {
 	if (tableBackground_.empty()) return;
@@ -485,6 +528,10 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 						CP_XML_ATTR(L"rightToLeft", 1); 
 
 					std::wstring s_col, s_row;
+
+					bool bXSplit = false, bYSplit = false;
+					int nXSplit = 0, nYSplit = 0;
+
 					for (int i = 0; i < odfContext.Settings().get_table_view_count(0, tableName_); i++)
 					{
 						std::pair<std::wstring, std::wstring> value = odfContext.Settings().get_table_view(0, tableName_, i);
@@ -494,9 +541,14 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 							CP_XML_ATTR(L"zoomScale",		value.second);
 							CP_XML_ATTR(L"zoomScaleNormal", value.second);
 						}
-						if (value.first == L"ShowGrid")			CP_XML_ATTR(L"showGridLines",	value.second);
-						if (value.first == L"CursorPositionX")	s_col = value.second;
-						if (value.first == L"CursorPositionY")	s_row = value.second;
+							 if (value.first == L"ShowGrid")			CP_XML_ATTR(L"showGridLines",	value.second);
+						else if (value.first == L"CursorPositionX")		s_col = value.second;
+						else if (value.first == L"CursorPositionY")		s_row = value.second;
+						
+						else if (value.first == L"HorizontalSplitMode")		bXSplit = (value.second == L"2");
+						else if (value.first == L"VerticalSplitMode")		bYSplit = (value.second == L"2");
+						else if (value.first == L"HorizontalSplitPosition")	nXSplit =  boost::lexical_cast<int>(value.second);
+						else if (value.first == L"VerticalSplitPosition")	nYSplit =  boost::lexical_cast<int>(value.second);
 					}
 
 					int col = -1, row = -1;
@@ -507,16 +559,26 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 					}
 					catch(...){}
 
+					if (bXSplit || bYSplit)
+					{
+						CP_XML_NODE(L"pane")
+						{	
+							CP_XML_ATTR(L"xSplit", bXSplit ? nXSplit : 0);			
+							CP_XML_ATTR(L"ySplit", bYSplit ? nYSplit : 0);			
+							CP_XML_ATTR(L"topLeftCell", getCellAddress(nXSplit, nYSplit));
+							CP_XML_ATTR(L"activePane", L"bottomLeft");
+							CP_XML_ATTR(L"state", L"frozen");			
+						}	
+					}
 					if (col >= 0 && row >= 0)
 					{
 						CP_XML_NODE(L"selection")
 						{	
 							CP_XML_ATTR(L"activeCell",		getCellAddress(col, row));			
 							CP_XML_ATTR(L"activeCellId",	0);			
-							CP_XML_ATTR(L"pane",			L"topLeft");			
+							CP_XML_ATTR(L"pane",			((bXSplit || bYSplit) ? L"bottomLeft" : L"topLeft"));			
 							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
-						}
-						
+						}						
 					}
 				}
 			}

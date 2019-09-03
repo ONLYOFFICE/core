@@ -122,12 +122,12 @@ namespace SimpleTypes
 			m_eValue = DefValue;
 		}
 
-		virtual E       GetValue  () const
+		virtual E GetValue () const
 		{
 			return m_eValue;
 		}
 
-		virtual void    SetValue  (E eValue)
+		virtual void SetValue (E eValue)
 		{
 			m_eValue = eValue;
 		}
@@ -149,6 +149,10 @@ namespace SimpleTypes
         virtual double  FromString(std::wstring &sValue)     = 0;
         virtual std::wstring ToString  () const              = 0;
 
+		double GetValue() const
+		{
+			return m_dValue;
+		}
 		double ToPoints() const
 		{
 			return m_dValue;
@@ -199,6 +203,10 @@ namespace SimpleTypes
 			return m_dValue;
 		}
 
+		bool IsUnits() const
+		{
+			return m_bUnit;
+		}
 	protected:
 
         void Parse(std::wstring &sValue, double dKoef)
@@ -272,6 +280,53 @@ namespace SimpleTypes
 
 		bool   m_bUnit;  
 		double m_dValue; // Значение в пунктах
+	};
+
+	class CUniversalMeasureOrPercent : public CUniversalMeasure
+	{
+	public:
+
+		CUniversalMeasureOrPercent() {}
+
+		virtual double  FromString(std::wstring &sValue)
+		{
+			m_bUnit = false;
+			m_bTrailingPercentSign = false;
+			if ( sValue.empty() )
+			{
+				m_dValue = 0;
+				return m_dValue;
+			}
+			if('%' == sValue[sValue.length() - 1])
+			{
+				m_bTrailingPercentSign = true;
+				m_dValue = _wtof( sValue.substr(0, sValue.length() - 1).c_str() );
+			}
+			else
+			{
+				Parse(sValue, 1);
+			}
+			return m_dValue;
+		}
+		virtual std::wstring ToString  () const
+		{
+			std::wstring sResult;
+
+			if ( m_bUnit )
+				sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
+			else if ( m_bTrailingPercentSign )
+				sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"%";
+			else
+				sResult = std::to_wstring( (int)(m_dValue) );
+
+			return sResult;
+		}
+		bool IsPercent() const
+		{
+			return m_bTrailingPercentSign;
+		}
+	protected:
+		bool   m_bTrailingPercentSign;
 	};
 
 	//--------------------------------------------------------------------------------

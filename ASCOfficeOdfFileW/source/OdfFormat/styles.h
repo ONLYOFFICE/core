@@ -952,5 +952,65 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_font_face_decls);
+
+//  style:region-left
+class style_region_left : public office_element_impl<style_region_left>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleRegionLeft;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void serialize(std::wostream & strm);
+    virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child);
+
+	office_element_ptr_array content_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(style_region_left);
+
+//  style:region-right
+class style_region_right : public office_element_impl<style_region_right>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleRegionRight;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void serialize(std::wostream & strm);
+    virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child);
+
+    office_element_ptr_array content_;
+
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(style_region_right);
+
+
+//  style:region-center
+class style_region_center : public office_element_impl<style_region_center>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleRegionCenter;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void serialize(std::wostream & strm);
+    virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child);
+
+    office_element_ptr_array content_;
+
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(style_region_center);
 }
 } 

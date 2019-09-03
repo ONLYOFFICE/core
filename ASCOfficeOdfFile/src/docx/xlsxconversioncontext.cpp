@@ -69,12 +69,12 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	xlsx_table_context_	(this, xlsx_text_context_),
 	math_context_		(odf_document_->odf_context().fontContainer(), true),
 	xlsx_style_			(this),
-	
+
 	maxDigitSize_	(std::make_pair(-1.f, -1.f) ),
-	default_style_	( (std::numeric_limits<size_t>::max)() ),
-	mediaitems_		(odf_document_->get_folder()),
-	xlsx_drawing_context_handle_(mediaitems_)
+	default_style_	( (std::numeric_limits<size_t>::max)() )
 {
+	mediaitems_ = boost::make_shared<mediaitems>(odf_document_->get_folder());
+	drawing_context_handle_ =  boost::make_shared<xlsx_drawing_context_handle>(mediaitems_);
 }
 
 std::unordered_map<std::wstring, int> xlsx_conversion_context::mapExternalLink_;
@@ -90,7 +90,16 @@ xlsx_conversion_context::~xlsx_conversion_context()
 
 void xlsx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-	mediaitems_.set_font_directory(pathFonts);
+	mediaitems_->set_font_directory(pathFonts);
+}
+void xlsx_conversion_context::set_drawing_context_handle(xlsx_drawing_context_handle_ptr &handle)
+{
+	drawing_context_handle_ = handle;
+}
+
+void xlsx_conversion_context::set_mediaitems(mediaitems_ptr &items)
+{
+	mediaitems_ = items;
 }
 
 void xlsx_conversion_context::start_chart(std::wstring name)
@@ -323,8 +332,8 @@ void xlsx_conversion_context::end_document()
 		output_document_->get_content_types_file().set_media(get_mediaitems());
         output_document_->get_xl_files().set_media(get_mediaitems());
 
-        package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());
-        output_document_->get_xl_files().set_drawings(drawings);
+		package::xl_drawings_ptr drawings = package::xl_drawings::create(drawing_context_handle_->content(), drawing_context_handle_->content_vml());
+		output_document_->get_xl_files().set_drawings(drawings);
 	
         package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
         output_document_->get_xl_files().set_comments(comments);        
@@ -466,6 +475,7 @@ void xlsx_conversion_context::end_table()
     
 	get_table_context().serialize_table_format			(current_sheet().sheetFormat());
 	get_table_context().serialize_page_properties		(current_sheet().page_properties());
+	get_table_context().serialize_header_footer			(current_sheet().header_footer());
 	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
     get_table_context().serialize_tableParts			(current_sheet().tableParts(), current_sheet().sheet_rels());
     get_table_context().serialize_autofilter			(current_sheet().autofilter());
@@ -496,42 +506,37 @@ void xlsx_conversion_context::end_table()
 			L"../pivotTables/pivotTable" + std::to_wstring(it->second) + L".xml"));
 	}
 
-	if (!get_drawing_context().empty())
+	if (false == get_drawing_context().empty())
     {
         std::wstringstream strm;
         get_drawing_context().serialize(strm);
         
         const std::pair<std::wstring, std::wstring> drawingName 
-            = xlsx_drawing_context_handle_.add_drawing_xml(strm.str(), get_drawing_context().get_drawings() );
+            = drawing_context_handle_->add_drawing_xml(strm.str(), get_drawing_context().get_drawings() );
 
         current_sheet().set_drawing_link(drawingName.first, drawingName.second);
-
-        CP_XML_WRITER(current_sheet().drawing())
-        {
-            CP_XML_NODE(L"drawing")
-            {
-                CP_XML_ATTR(L"r:id", drawingName.second);
-            }
-		}
 	}
-	get_table_context().serialize_background (current_sheet().drawing());
+	if (false == get_drawing_context().vml_empty())
+    {
+        std::wstringstream strm;
+        get_drawing_context().serialize_vml(strm);
+        
+        const std::pair<std::wstring, std::wstring> vml_drawingName 
+            = drawing_context_handle_->add_drawing_vml(strm.str(), get_drawing_context().get_drawings() );
 
-	if (!get_comments_context().empty())
+        current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
+	}
+	//get_table_context().serialize_background (current_sheet().picture());
+
+	if (false == get_comments_context().empty())
     {
         std::wstringstream strm;
         get_comments_context().serialize(strm);
-        
-        std::wstringstream vml_strm;
-        get_comments_context().serialize_vml(vml_strm);
-		
+	
 		const std::pair<std::wstring, std::wstring> commentsName 
-            = xlsx_comments_context_handle_.add_comments_xml(strm.str(), vml_strm.str(),get_comments_context().get_comments() );
-
-		const std::pair<std::wstring, std::wstring> vml_drawingName 
-								=xlsx_comments_context_handle_.get_vml_drawing_xml();
+            = xlsx_comments_context_handle_.add_comments_xml(strm.str(), get_comments_context().get_comments() );
 
         current_sheet().set_comments_link(commentsName.first, commentsName.second);
-        current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
     }    
     get_table_context().end_table();
 }
@@ -730,7 +735,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, 96., 0, mediaitems_.applicationFonts());
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, 96., 0, mediaitems_->applicationFonts());
     }    
     return maxDigitSize_;
 }
@@ -749,9 +754,9 @@ xlsx_drawing_context & xlsx_conversion_context::get_drawing_context()
     return get_table_context().get_drawing_context();
 }
 
-xlsx_drawing_context_handle & xlsx_conversion_context::get_drawing_context_handle()
+xlsx_drawing_context_handle_ptr & xlsx_conversion_context::get_drawing_context_handle()
 {
-    return xlsx_drawing_context_handle_;
+    return drawing_context_handle_;
 }
 xlsx_comments_context & xlsx_conversion_context::get_comments_context()
 {

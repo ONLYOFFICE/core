@@ -50,6 +50,7 @@
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
 #include "../PPTXFormat/FileContainer.h"
 
 #define BYTE_SIZEOF		sizeof(BYTE)
@@ -725,6 +726,17 @@ namespace NSBinPptxRW
 		m_lPosition += UINT16_SIZEOF;
 		m_pStreamCur += UINT16_SIZEOF;
 	}
+	void CBinaryFileWriter::WriteSHORT(const _INT16& lValue)
+	{
+		CheckBufferSize(INT16_SIZEOF);
+#if defined(_IOS) || defined(__ANDROID__)
+		memcpy(m_pStreamCur, &lValue, sizeof(_INT16));
+#else
+		*((_INT16*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
+#endif
+		m_lPosition += INT16_SIZEOF;
+		m_pStreamCur += INT16_SIZEOF;
+	}
 	void CBinaryFileWriter::WriteULONG(const _UINT32& lValue)
 	{
 		CheckBufferSize(UINT32_SIZEOF);
@@ -954,6 +966,11 @@ namespace NSBinPptxRW
         _WriteStringWithLength(s->c_str(), (_UINT32)s->length(), false);
 	}
 
+	void CBinaryFileWriter::WriteStringData(const WCHAR* pData, _UINT32 len)
+	{
+		_WriteStringWithLength(pData, len, false);
+	}
+
 	void CBinaryFileWriter::WriteString1Data(int type, const WCHAR* pData, _UINT32 len)
 	{
 		BYTE bType = (BYTE)type;
@@ -1117,7 +1134,16 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte)
 	{
-		CheckBufferSize(UINT32_SIZEOF);
+		if (sizeof(wchar_t) == 4)
+		{
+			_INT32 lSizeMemMax = 4 * lCount + 2;//2 - for null terminator
+			CheckBufferSize(UINT32_SIZEOF + lSizeMemMax);
+		}
+		else
+		{
+			_INT32 lSizeMem = 2 * lCount;
+			CheckBufferSize(UINT32_SIZEOF + lSizeMem);
+		}
 		//skip size
 		m_lPosition += UINT32_SIZEOF;
 		m_pStreamCur += UINT32_SIZEOF;
@@ -1143,6 +1169,84 @@ namespace NSBinPptxRW
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
+
+	CStreamBinaryWriter::CStreamBinaryWriter(size_t bufferSize)
+	{
+		m_lSize		= bufferSize;
+		m_pStreamData	= new BYTE[bufferSize];
+
+		m_lPosition = 0;
+		m_pStreamCur = m_pStreamData;
+
+		m_lPositionFlushed = 0;
+	}
+	void CStreamBinaryWriter::CheckBufferSize(_UINT32 lPlus)
+	{
+		if ((m_lPosition + lPlus) > m_lSize)
+		{
+			Flush();
+			if ((m_lPosition + lPlus) > m_lSize)
+			{
+				CBinaryFileWriter::CheckBufferSize(lPlus);
+			}
+		}
+	}
+	_UINT32 CStreamBinaryWriter::GetPositionAbsolute()
+	{
+		return m_lPosition + m_lPositionFlushed;
+	}
+	void CStreamBinaryWriter::CloseFile()
+	{
+		Flush();
+		CFileBinary::CloseFile();
+	}
+	void CStreamBinaryWriter::Flush()
+	{
+		if (m_lPosition > 0)
+		{
+			CFileBinary::WriteFile(m_pStreamData, m_lPosition);
+		}
+		m_lPositionFlushed += m_lPosition;
+		m_lPosition = 0;
+		m_pStreamCur = m_pStreamData;
+	}
+
+	CXlsbBinaryWriter::CXlsbBinaryWriter(size_t bufferSize) : CStreamBinaryWriter(bufferSize)
+	{
+	}
+	void CXlsbBinaryWriter::XlsbStartRecord(_INT16 lType, _INT32 nLen)
+	{
+		//Type
+		if (lType < 0x80)
+		{
+			WriteBYTE(lType);
+		}
+		else
+		{
+			WriteBYTE((lType & 0x7F) | 0x80);
+			WriteBYTE(lType >> 7);
+		}
+		//Len
+		for (int i = 0; i < 4; ++i)
+		{
+			BYTE nPart = nLen & 0x7F;
+			nLen = nLen >> 7;
+			if(nLen == 0)
+			{
+				WriteBYTE(nPart);
+				break;
+			}
+			else
+			{
+				WriteBYTE(nPart | 0x80);
+			}
+		}
+	}
+	void CXlsbBinaryWriter::XlsbEndRecord()
+	{
+	}
+
+
 	CRelsGenerator::CRelsGenerator(CImageManager2* pManager) : m_lNextRelsID(1), m_mapImages()
 	{
 		m_pManager = pManager;
@@ -1652,8 +1756,7 @@ namespace NSBinPptxRW
 
 	bool CBinaryFileReader::GetBool()
 	{
-		int res = GetUChar();
-		return (res == 1) ? true : false;
+		return (GetUChar() != 0) ? true : false;
 	}
 
 	// 2 byte
@@ -1670,6 +1773,20 @@ namespace NSBinPptxRW
 		m_lPos += 2;
 		m_pDataCur += 2;
 		return res;		
+	}
+	_INT16 CBinaryFileReader::GetShort()
+	{
+		if (m_lPos + 1 >= m_lSize)
+			return 0;
+#if defined(_IOS) || defined(__ANDROID__)
+		_INT16 res = 0;
+		memcpy(&res, m_pDataCur, sizeof(_INT16));
+#else
+		_INT16 res = *((_INT16*)m_pDataCur);   // EXC_ARM_DA_ALIGN on ios
+#endif
+		m_lPos += 2;
+		m_pDataCur += 2;
+		return res;
 	}
 
 	// 4 byte
@@ -1868,5 +1985,33 @@ namespace NSBinPptxRW
 		m_lPos += nSize;
 		m_pDataCur += nSize;
 		return res;
+	}
+	_UINT16 CBinaryFileReader::XlsbReadRecordType()
+	{
+		_UINT16 nValue = GetUChar();
+		if(0 != (nValue & 0x80))
+		{
+			BYTE nPart = GetUChar();
+			nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
+		}
+		return nValue;
+	}
+	void CBinaryFileReader::XlsbSkipRecord()
+	{
+		Skip(XlsbReadRecordLength());
+	}
+	_UINT32 CBinaryFileReader::XlsbReadRecordLength()
+	{
+		_UINT16 nValue = 0;
+		for (int i = 0; i < 4; ++i)
+		{
+			BYTE nPart = GetUChar();
+			nValue |= (nPart & 0x7F) << (7 * i);
+			if(0 == (nPart & 0x80))
+			{
+				break;
+			}
+		}
+		return nValue;
 	}
 }

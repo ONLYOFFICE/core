@@ -137,6 +137,7 @@ public:
 
 		return typeMedia;
 	}
+
 private:
 	std::wstring create_file_name			(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num);
 	std::wstring detectImageFileExtension	(const std::wstring &fileName);
@@ -147,6 +148,7 @@ private:
     NSFonts::IApplicationFonts	*applicationFonts_;
 };
 
+typedef _CP_PTR(mediaitems) mediaitems_ptr;
 }
 }
 

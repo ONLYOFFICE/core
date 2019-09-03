@@ -44,6 +44,7 @@
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 
 #include "../OdfFormat/ods_conversion_context.h"
 
@@ -89,7 +90,7 @@ odf_writer::odf_conversion_context* XlsxConverter::odf_context()
 PPTX::Theme* XlsxConverter::oox_theme()
 {
 	if (xlsx_document)
-		return xlsx_document->m_pTheme.operator->();
+		return xlsx_document->m_pTheme.GetPointer();
 	else
 		return NULL;
 }
@@ -179,7 +180,7 @@ void XlsxConverter::convert_sheets()
 				else
 				{
 					smart_ptr<OOX::Spreadsheet::CExternalLink> externalLink = file.smart_dynamic_cast<OOX::Spreadsheet::CExternalLink>();
-					convert(externalLink.operator->());
+					convert(externalLink.GetPointer());
 				}
 			}
 		}
@@ -242,14 +243,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 		bool printable = false;
 		if (name  == L"_xlnm.Print_Area")printable = true;
 
-		//todoooo !!!! сделать анализ на функцию, диапазон, константы .... !!!
-
-		if (false)//если простой - range, составной - выражение
-			ods_context->add_defined_range (name, oox_defined->m_oRef.get2(), sheet_id, printable);
-		else
-			ods_context->add_defined_expression (name, oox_defined->m_oRef.get2(), sheet_id, printable);
+		ods_context->add_defined_expression (name, oox_defined->m_oRef.get2(), sheet_id, printable);
 	}
-
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
@@ -293,7 +288,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_table_part->m_oRId->GetValue());
 			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Table == oFile->type())
 			{
-				OOX::Spreadsheet::CTableFile* pTableFile = (OOX::Spreadsheet::CTableFile*)oFile.operator->();
+				OOX::Spreadsheet::CTableFile* pTableFile = (OOX::Spreadsheet::CTableFile*)oFile.GetPointer();
 						
 				if ((pTableFile) && (pTableFile->m_oTable.IsInit()))
 				{				
@@ -304,6 +299,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			}
 		}
 	}
+	convert(oox_sheet->m_oDataValidations.GetPointer());
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//колонки
 		ods_context->start_columns();
@@ -327,9 +323,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			{
 				convert(oox_sheet->m_oSheetData->m_arrItems[row], row > 0 ? oox_sheet->m_oSheetData->m_arrItems[row - 1] : NULL);
 				
-				if ( oox_sheet->m_oSheetData->m_arrItems[row] )
-					delete oox_sheet->m_oSheetData->m_arrItems[row];
-				oox_sheet->m_oSheetData->m_arrItems[row] = NULL;
+				if ( (row > 0) && (oox_sheet->m_oSheetData->m_arrItems[row - 1] ))
+				{
+					delete oox_sheet->m_oSheetData->m_arrItems[row - 1];
+					oox_sheet->m_oSheetData->m_arrItems[row - 1] = NULL;
+				}
 			}
 		ods_context->end_rows();
 		oox_sheet->m_oSheetData.reset();
@@ -340,13 +338,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
 		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())
 		{
-			OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
+			OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.GetPointer();
 			
 			convert(pDrawing, oox_sheet);
 		}
 	}
 	
 	convert(oox_sheet->m_oOleObjects.GetPointer(), oox_sheet);
+	convert(oox_sheet->m_oControls.GetPointer(), oox_sheet);
 
 	//сортировки
 	//convert(oox_sheet->m_oSortState.GetPointer());
@@ -366,23 +365,323 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 
 /////////////////////////////////////////////////////////////////////////
-	convert(oox_sheet->m_oDataValidations.GetPointer());
 	convert(oox_sheet->m_oSheetViews.GetPointer());
-	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
 	convert(oox_sheet->m_oPicture.GetPointer());
 	convert(oox_sheet->m_oSheetProtection.GetPointer());
 	
+	convert(oox_sheet->m_oLegacyDrawingHF.GetPointer());
+	convert(oox_sheet->m_oHeaderFooter.GetPointer());
+	
 	OoxConverter::convert(oox_sheet->m_oExtLst.GetPointer());
 
 	xlsx_current_container = old_container;
 }
-void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter * oox_header_footer)
+void XlsxConverter::convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_background)
+{
+	if (!oox_background) return;
+	if (!oox_background->m_oId.IsInit()) return;
+
+	smart_ptr<OOX::File> file = find_file_by_id(oox_background->m_oId->GetValue());
+	smart_ptr<OOX::CVmlDrawing> vmlDrawing = file.smart_dynamic_cast<OOX::CVmlDrawing>();
+	
+	if (false == vmlDrawing.IsInit()) return;
+
+	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(vmlDrawing.GetPointer());					
+		
+	for (boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = vmlDrawing->m_mapShapes.begin(); it!= vmlDrawing->m_mapShapes.end(); ++it)
+	{
+		OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(it->second.pElement);
+
+		if ((pShape) && (pShape->m_sId.IsInit()))
+		{
+			for (size_t i = 0; i < pShape->m_arrItems.size(); ++i)
+			{
+				OOX::Vml::CImageData* pImage = dynamic_cast<OOX::Vml::CImageData*>(pShape->m_arrItems[i]);
+				if (pImage)
+				{
+					odf_writer::office_element_ptr fill_image_element;
+					
+					std::wstring pathImage, href, sID = pImage->m_oId.IsInit() ? pImage->m_rId->GetValue() : (pImage->m_oRelId.IsInit() ? pImage->m_oRelId->GetValue() : L"");
+
+					pathImage   = find_link_by_id(sID, 1);
+					href		= ods_context->add_image(pathImage);
+
+					if (false == href.empty())
+					{
+						odf_writer::create_element(L"style", L"background-image", fill_image_element, ods_context);
+
+						odf_writer::style_background_image * fill_image = dynamic_cast<odf_writer::style_background_image*>(fill_image_element.get());
+						if (!fill_image) return;
+
+						fill_image->xlink_attlist_				= odf_types::common_xlink_attlist();
+						fill_image->xlink_attlist_->type_		= odf_types::xlink_type::Simple;
+						fill_image->xlink_attlist_->actuate_	= odf_types::xlink_actuate::OnLoad;	
+						fill_image->xlink_attlist_->href_		= href;
+
+						ods_context->add_header_footer_image(*pShape->m_sId, fill_image_element);
+					}
+				}
+			}
+		}				
+	}
+	oox_current_child_document = NULL;
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter *oox_header_footer)
 {
 	if (!oox_header_footer) return;
 
+	bool bFirst = oox_header_footer->m_oDifferentFirst.IsInit() ? oox_header_footer->m_oDifferentFirst->ToBool() : false;
+	bool bEven = oox_header_footer->m_oDifferentOddEven.IsInit() ? oox_header_footer->m_oDifferentOddEven->ToBool() : false;
+
+	if (bEven || oox_header_footer->m_oOddHeader.IsInit())
+	{
+		if (true == ods_context->start_header(0))
+		{
+			convert(oox_header_footer->m_oOddHeader.GetPointer());
+		}
+		ods_context->end_header_footer();
+	}
+	if (bEven ||oox_header_footer->m_oOddFooter.IsInit())
+	{
+		if (true == ods_context->start_footer(0))
+		{
+			convert(oox_header_footer->m_oOddFooter.GetPointer());
+		}
+		ods_context->end_header_footer();
+	}
+	if (bEven ||oox_header_footer->m_oEvenHeader.IsInit())
+	{
+		if (true == ods_context->start_header(1))
+		{
+			convert(oox_header_footer->m_oEvenHeader.GetPointer());
+		}
+		ods_context->end_header_footer();
+	}
+	if (bEven ||oox_header_footer->m_oEvenFooter.IsInit())
+	{
+		if (true == ods_context->start_footer(1))
+		{
+			convert(oox_header_footer->m_oEvenFooter.GetPointer());
+		}
+		ods_context->end_header_footer();
+	}
+	if (bFirst || oox_header_footer->m_oFirstHeader.IsInit())
+	{
+		if (true == ods_context->start_header(2))
+		{
+			convert(oox_header_footer->m_oFirstHeader.GetPointer());
+		}
+		ods_context->end_header_footer();
+	}
+	if (bFirst || oox_header_footer->m_oFirstFooter.IsInit())
+	{
+		if (true == ods_context->start_footer(2))
+		{
+			convert(oox_header_footer->m_oFirstFooter.GetPointer());
+		}
+		ods_context->end_header_footer();
+	}
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_footer)
+{
+	if (!oox_header_footer) return;
+
+	size_t pos = 0;
+	odf_writer::style_text_properties current_text_props;
+	
+	int type_add = 0;
+	while(pos < oox_header_footer->m_sText.size())
+	{
+		if (oox_header_footer->m_sText[pos] == L'&')
+		{
+			pos++;
+			wchar_t comm = oox_header_footer->m_sText[pos];
+			
+			switch(comm)
+			{
+				case 'L':	ods_context->start_header_footer_region(1); pos++; break;
+				case 'C':	ods_context->start_header_footer_region(2); pos++; break;
+				case 'R':	ods_context->start_header_footer_region(3); pos++; break;
+
+				case 'A':	type_add = 1; pos++; break;
+				case 'P':	type_add = 2; pos++; break;
+				case 'N':	type_add = 3; pos++; break;
+				case 'D':	type_add = 4; pos++; break;
+				case 'T':	type_add = 5; pos++; break;
+				case 'F':	type_add = 6; pos++; break;
+				case 'Z':	type_add = 7; pos++; break;
+				case '&':	type_add = 8; pos++; break;
+				case 'G':	pos++; break;
+
+				case 'E':	
+				{
+					if (current_text_props.content_.style_text_underline_type_)
+						current_text_props.content_.style_text_underline_type_ = boost::none;
+					else
+						current_text_props.content_.style_text_underline_type_ = odf_types::line_type::Double; 
+					pos++; 
+				}break;
+				case 'X':
+				{
+					if (current_text_props.content_.style_text_position_ && current_text_props.content_.style_text_position_->get_position().get_value() > 0)
+						current_text_props.content_.style_text_position_ = boost::none;
+					else
+						current_text_props.content_.style_text_position_ = odf_types::text_position(+33.); 
+					pos++; 
+				}break;
+				case 'Y':
+				{
+					if (current_text_props.content_.style_text_position_ && current_text_props.content_.style_text_position_->get_position().get_value() < 0)
+						current_text_props.content_.style_text_position_ = boost::none;
+					else
+						current_text_props.content_.style_text_position_ = odf_types::text_position(-33.); 
+					pos++; 
+				}break;
+				case 'B':
+				{
+					if (current_text_props.content_.fo_font_weight_)
+						current_text_props.content_.fo_font_weight_ = boost::none;
+					else
+						current_text_props.content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold); 
+					pos++; 
+				}break;
+				case 'I':	
+				{
+					if (!current_text_props.content_.fo_font_style_)
+						current_text_props.content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+					else
+						current_text_props.content_.fo_font_style_ = boost::none;							
+					pos++; 
+				}break;
+				case 'U':
+				{
+					if (current_text_props.content_.style_text_underline_type_)
+						current_text_props.content_.style_text_underline_type_ = boost::none;
+					else
+						current_text_props.content_.style_text_underline_type_ = odf_types::line_type(odf_types::line_type::Single); 
+					pos++; 
+				}break;
+				case 'S':
+				{
+					if (current_text_props.content_.style_text_line_through_type_)
+						current_text_props.content_.style_text_line_through_type_ = boost::none;
+					else
+						current_text_props.content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single); 
+					pos++; 
+				}break;
+				case 'K':
+				{
+					pos++;
+					std::wstring color = oox_header_footer->m_sText.substr(pos, 6); pos += 6;
+
+					current_text_props.content_.fo_color_ = odf_types::color(L"#" + color); 
+				}break;
+				case '\"':
+				{
+					size_t pos1 = oox_header_footer->m_sText.find(L'\"', pos + 1); 
+					std::wstring font = oox_header_footer->m_sText.substr(pos + 1, pos1 - pos - 1); pos = pos1;
+
+					pos1 = font.find(L",");
+					if (pos1 != std::wstring::npos)
+					{
+						std::wstring format = font.substr(pos1 + 1);
+						font = font.substr(0, pos1);
+
+						if (std::wstring::npos != format.find(L"Bold"))
+							current_text_props.content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold); 
+						if (std::wstring::npos != format.find(L"Italic"))
+							current_text_props.content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+						if (std::wstring::npos != format.find(L"Regular"))
+						{
+							current_text_props.content_.fo_font_weight_ = boost::none;
+							current_text_props.content_.fo_font_style_ = boost::none;
+						}
+					}
+
+					current_text_props.content_.fo_font_family_ = font;
+					pos++;
+				}break;
+				default:
+				{
+					int font_size = 0;
+					pos++;
+					if (comm >= L'0' && comm <= L'9')
+					{
+						font_size = comm - L'0';
+						wchar_t comm1 = oox_header_footer->m_sText[pos];
+						if (comm1 >= L'0' && comm1 <= L'9')
+						{
+							pos++;
+							font_size = (font_size * 10) + (comm1 - L'0');
+						}
+						else
+						{
+						}
+					}
+					if (font_size > 0)
+					{
+						current_text_props.content_.fo_font_size_ = odf_types::font_size(odf_types::length(font_size, odf_types::length::pt));
+					}
+				}break;
+			}
+			size_t next = oox_header_footer->m_sText.find(L'&', pos);
+			if (next == std::wstring::npos) next = oox_header_footer->m_sText.length();
+
+			if (type_add > 0 || next - pos > 0)
+			{
+				ods_context->text_context()->get_styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);					
+				odf_writer::style_text_properties *text_properties = ods_context->text_context()->get_styles_context()->last_state()->get_text_properties();
+				text_properties->content_.apply_from(current_text_props.content_);
+
+				ods_context->text_context()->start_span(true);
+				
+				switch(type_add)
+				{
+					case 1:	ods_context->text_context()->add_text_sheet_name(L"???");	break;
+					case 2: ods_context->text_context()->add_text_page_number(L"1");	break;
+					case 3: ods_context->text_context()->add_text_page_count(L"99");	break;	
+					case 4: ods_context->text_context()->add_text_date(L"00.00.0000");	break;	
+					case 5: ods_context->text_context()->add_text_time(L"00:00");		break;	
+					case 6: ods_context->text_context()->add_text_file_name(L"???");	break;	
+					case 7: ods_context->text_context()->add_text_file_name(L"???");	break;
+					case 8: ods_context->text_context()->add_text_content(L"&");		break;
+				}
+				type_add = 0;
+				if (next - pos > 0)
+				{
+					std::wstring text = oox_header_footer->m_sText.substr(pos, next - pos);
+
+					size_t pos2 = text.find(10);
+					while(pos2 != std::wstring::npos)
+					{
+						std::wstring text1 = text.substr(0, pos2);
+						text = text.substr(pos2 + 1);
+						if (false == text1.empty())
+						{
+							ods_context->text_context()->add_text_content(text1);
+						}
+						ods_context->text_context()->end_span();
+						ods_context->text_context()->end_paragraph();
+						ods_context->text_context()->start_paragraph(false);
+						ods_context->text_context()->start_span(true);
+
+						pos2 = text.find(10);						
+					}
+					if (false == text.empty())
+					{
+						ods_context->text_context()->add_text_content(text);
+					}	
+				}
+				ods_context->text_context()->end_span();
+			}
+			pos = next;
+		}
+	}
+
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
 {
 	if (!oox_prot) return;
@@ -426,6 +725,33 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
 void XlsxConverter::convert(OOX::Spreadsheet::CDataValidation *oox_validation)
 {
 	if (!oox_validation) return;
+	if (!oox_validation->m_oSqRef.IsInit()) return;
+
+	if (false == ods_context->start_data_validation(*oox_validation->m_oSqRef, oox_validation->m_oType.IsInit() ? oox_validation->m_oType->GetValue() : 0)) return;
+
+	if (oox_validation->m_oOperator.IsInit())
+	{
+		ods_context->set_data_validation_operator(oox_validation->m_oOperator->GetValue());
+	}
+	if (oox_validation->m_oAllowBlank.IsInit())
+	{
+		ods_context->set_data_validation_allow_empty(oox_validation->m_oAllowBlank->ToBool());
+	}
+	std::wstring formula_1, formula_2;
+
+	if (oox_validation->m_oFormula1.IsInit()) formula_1 = oox_validation->m_oFormula1->m_sText;
+	if (oox_validation->m_oFormula2.IsInit()) formula_2 = oox_validation->m_oFormula2->m_sText;
+
+	ods_context->set_data_validation_content(formula_1, formula_2);
+	
+	ods_context->set_data_validation_error(oox_validation->m_oErrorTitle.IsInit() ? *oox_validation->m_oErrorTitle : L"", 
+											oox_validation->m_oError.IsInit() ? *oox_validation->m_oError : L"",
+											oox_validation->m_oShowErrorMessage.IsInit() ? oox_validation->m_oShowErrorMessage->ToBool() : true);
+
+	ods_context->set_data_validation_promt(oox_validation->m_oPromptTitle.IsInit() ? *oox_validation->m_oPromptTitle : L"", 
+											oox_validation->m_oPrompt.IsInit() ? *oox_validation->m_oPrompt : L"", 
+											oox_validation->m_oShowInputMessage.IsInit() ? oox_validation->m_oShowInputMessage->ToBool() : true);
+	ods_context->end_data_validation();
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
@@ -493,7 +819,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CTableColumns *oox_table_part_colu
 	{
 		std::wstring name;
 		if (oox_table_part_columns->m_arrItems[i]->m_oName.IsInit())
-			name = oox_table_part_columns->m_arrItems[i]->m_oName.get2();
+			name = *oox_table_part_columns->m_arrItems[i]->m_oName;
 		
 		ods_context->add_table_part_column(name);
 	}
@@ -514,7 +840,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	{
 		ods_context->set_comment_rect(oox_comment->m_dLeftMM.get(), oox_comment->m_dTopMM.get(), oox_comment->m_dWidthMM.get(), oox_comment->m_dHeightMM.get());
 	}
-
+	if (oox_comment->m_bVisible.IsInit())
+	{
+		ods_context->set_comment_visible(*oox_comment->m_bVisible);
+	}
+	if (oox_comment->m_sFillColorRgb.IsInit())
+	{
+		ods_context->set_comment_color(*oox_comment->m_sFillColorRgb);
+	}
+	else
+	{
+		ods_context->set_comment_color(L"CCFFFF"); //default ms
+	}
 	if (oox_comment->m_oText.IsInit())
 	{
 		for(size_t i = 0; i < oox_comment->m_oText->m_arrItems.size(); ++i)
@@ -663,7 +1000,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row, OOX::Spreadsheet::C
 
 			if (bEqual)
 			{
-				if (false == ods_context->current_table().is_row_comment(row_number, 1))
+				if ( ods_context->current_table().is_row_comment(row_number, 1) < 0)
 				{
 					ods_context->add_row_repeated();
 					return;
@@ -887,9 +1224,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 	bool automatic = true;
 	bool root = false;
 
-	ods_context->styles_context()->create_style(L"",odf_types::style_family::Text, automatic, root, -1);	
+	ods_context->styles_context()->create_style(L"", odf_types::style_family::Text, automatic, root, -1);	
 	
-	odf_writer::style_text_properties	* text_properties = ods_context->styles_context()->last_state()->get_text_properties();
+	odf_writer::style_text_properties *text_properties = ods_context->styles_context()->last_state()->get_text_properties();
 	if (text_properties == NULL)return;
 
 	if (oox_run_pr->m_oBold.IsInit())
@@ -1344,12 +1681,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 			height	= odf_types::length(11, odf_types::length::inch);
 			break;
 		case SimpleTypes::Spreadsheet::pagesizeA3Paper:
-			width	= odf_types::length(210, odf_types::length::mm);
-			height	= odf_types::length(297, odf_types::length::mm);
-			break;
-		case SimpleTypes::Spreadsheet::pagesizeA4Paper:
 			width	= odf_types::length(297, odf_types::length::mm);
 			height	= odf_types::length(420, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeA4Paper:
+			width	= odf_types::length(210, odf_types::length::mm);
+			height	= odf_types::length(297, odf_types::length::mm);
 			break;
 		default:
 			break;
@@ -1362,9 +1699,26 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins *oox_page)
 {
 	if (!oox_page) return;
-	_CP_OPT(double) top, left,right,header,footer,bottom;
+	_CP_OPT(odf_types::length) top, left, right, bottom, other;
 
-	ods_context->page_layout_context()->set_page_margin(top, left, bottom, right, header, footer);
+	if (oox_page->m_oTop.IsInit())		top		= odf_types::length(oox_page->m_oTop->GetValue(), odf_types::length::pt);
+	if (oox_page->m_oLeft.IsInit())		left	= odf_types::length(oox_page->m_oLeft->GetValue(), odf_types::length::pt);
+	if (oox_page->m_oRight.IsInit())	right	= odf_types::length(oox_page->m_oRight->GetValue(), odf_types::length::pt);
+	if (oox_page->m_oBottom.IsInit())	bottom	= odf_types::length(oox_page->m_oBottom->GetValue(), odf_types::length::pt);
+
+	ods_context->page_layout_context()->set_page_margin(top, left, bottom, right);
+	
+	if (oox_page->m_oFooter.IsInit())
+	{
+		other = odf_types::length(oox_page->m_oFooter->GetValue(), odf_types::length::pt);
+		ods_context->page_layout_context()->set_footer_size(other);
+	}
+	
+	if (oox_page->m_oHeader.IsInit())
+	{
+		other = odf_types::length(oox_page->m_oHeader->GetValue(), odf_types::length::pt);
+		ods_context->page_layout_context()->set_header_size(other);
+	}
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr)
@@ -2152,10 +2506,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 		OOX::Spreadsheet::CCellAnchor * oox_anchor = oox_drawing->m_arrItems[i];
 		
 		if (oox_anchor->m_bShapeOle) continue; 
+		if (oox_anchor->m_bShapeControl) continue; 
 
 		if (oox_sheet->m_oOleObjects.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-            boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
+            boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oOleObjects->m_mapOleObjects.end())
 			{
 				//??? перенести даные привязки 
@@ -2163,7 +2518,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 				continue;
 			}
 		}
-
+		if (oox_sheet->m_oControls.IsInit() && oox_anchor->m_nId.IsInit())
+		{
+            std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
+			if (pFind != oox_sheet->m_oControls->m_mapControls.end())
+			{
+				//??? перенести даные привязки 
+				oox_anchor->m_bShapeControl = true;
+				continue;
+			}
+		}
 		ods_context->start_drawings();
 			convert(oox_anchor);
 		ods_context->end_drawings();
@@ -2175,7 +2539,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 {
 	if (!oox_objects) return;
 
-    for (boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
+    for (boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
 	{
 		OOX::Spreadsheet::COleObject* object = it->second;
 		ods_context->start_drawings();
@@ -2216,31 +2580,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 			odf_ref_image = odf_context()->add_imageobject(pathImage);
 		}
 //--------------------------------------------------------------------------------------------------
-		if ((!bAnchor || odf_ref_image.empty()) && object->m_oShapeId.IsInit() && (oox_sheet->m_oLegacyDrawing.IsInit()) && (oox_sheet->m_oLegacyDrawing->m_oId.IsInit()))
+		if ((!bAnchor || odf_ref_image.empty()) && object->m_oShapeId.IsInit())
 		{
-			//todooo вынести отдельно если понадобится еще для чего
-			OOX::CVmlDrawing *pVmlDrawing = NULL;
-            smart_ptr<OOX::File> oFileV = oox_sheet->Find(oox_sheet->m_oLegacyDrawing->m_oId->GetValue());
-			if (oFileV.IsInit() && OOX::FileTypes::VmlDrawing == oFileV->type())
-			{
-				pVmlDrawing = (OOX::CVmlDrawing*)oFileV.operator->();
-			}
-			OOX::WritingElement* pShapeElem	= NULL;
 			std::wstring sShapeId = L"_x0000_s" + std::to_wstring(object->m_oShapeId->GetValue());
-			if (pVmlDrawing)
-			{
-                boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
-				
-				if (pFind != pVmlDrawing->m_mapShapes.end())
-				{
-					pShapeElem	= pFind->second.pElement;
-				}			
-			}
-			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
 
-			for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+			smart_ptr<OOX::WritingElement>	oElement	= oox_sheet->FindVmlObject(sShapeId);
+			smart_ptr<OOX::Vml::CShape> oShape		= oElement.smart_dynamic_cast<OOX::Vml::CShape>();
+			
+			for(size_t j = 0; (oShape.IsInit()) && (j < oShape->m_arrItems.size()); ++j)
 			{
-				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				OOX::WritingElement* pChildElemShape = oShape->m_arrItems[j];
+				
 				if(!bAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
@@ -2273,11 +2623,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 					if (!sIdImageFileCache.empty())
 					{
 						//ищем физический файл ( rId относительно vml_drawing)									
-						smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
+						smart_ptr<OOX::CVmlDrawing>	oVmlDrawing = oox_sheet->Find(oox_sheet->m_oLegacyDrawing->m_oId->GetValue()).smart_dynamic_cast<OOX::CVmlDrawing>();
+						smart_ptr<OOX::File> pFile = oVmlDrawing->Find(sIdImageFileCache);
 						
 						if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 						{
-							OOX::Image* pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+							OOX::Image* pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
 							
 							if (pImageFileCache && odf_ref_image.empty())
 							{
@@ -2304,6 +2655,285 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 		ods_context->drawing_context()->end_drawing();
 
 		ods_context->end_drawings();
+	}
+}
+
+
+void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spreadsheet::CWorksheet *oox_sheet)
+{
+	if (!oox_controls) return;
+
+    for (std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator it = oox_controls->m_mapControls.begin(); it != oox_controls->m_mapControls.end(); ++it)
+	{
+		OOX::Spreadsheet::CControl* pControl = it->second;
+		if (!pControl) continue;
+	
+		OOX::WritingElement* pShapeElem	= NULL;
+		
+		nullable<OOX::Spreadsheet::CCellAnchor>		oCellAnchor;
+		nullable<OOX::Spreadsheet::CFormControlPr>	oFormControlPr;
+        
+		smart_ptr<OOX::File> pFileControl;
+
+		if (pControl->m_oRid.IsInit())
+		{			
+			pFileControl = oox_sheet->Find(OOX::RId(pControl->m_oRid->GetValue()));// rId относительно sheet
+		}
+		if (false == pFileControl.IsInit()) continue;
+		
+		bool bSetAnchor = false;
+
+		smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pFileCtrlProp = pFileControl.smart_dynamic_cast<OOX::Spreadsheet::CCtrlPropFile>();
+		
+		if (pFileCtrlProp.IsInit())
+		{
+			oFormControlPr = pFileCtrlProp->m_oFormControlPr;
+		}
+		else
+		{
+			oFormControlPr.Init();
+			smart_ptr<OOX::ActiveX_xml> pActiveX_xml = pFileControl.smart_dynamic_cast<OOX::ActiveX_xml>();
+
+			if ((pActiveX_xml.IsInit()) && (pActiveX_xml->m_oObject.IsInit()))
+			{
+				if (pActiveX_xml->m_oObject->m_oObjectType.IsInit() == false)
+				{
+					OOX::ActiveXObjectImage* pImage = dynamic_cast<OOX::ActiveXObjectImage*>(pActiveX_xml->m_oObject.GetPointer());
+
+					if (pImage)
+					{
+						//todooo
+					}
+					continue;
+				}
+
+				pActiveX_xml->m_oObject->toFormControlPr(oFormControlPr.GetPointer());
+			}
+		}		
+		std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
+
+		smart_ptr<OOX::WritingElement> oObjectElement = oox_sheet->FindVmlObject(sShapeId);
+		smart_ptr<OOX::Vml::CShape> oShape = oObjectElement.smart_dynamic_cast<OOX::Vml::CShape>();
+
+		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+		
+		if (pControl->m_oControlPr.IsInit() && pControl->m_oControlPr->m_oAnchor.IsInit())
+		{						
+			const OOX::Spreadsheet::CExtAnchor& oAnchor = pControl->m_oControlPr->m_oAnchor.get();
+			
+			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
+			{
+				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
+				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+				else
+					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
+				
+				oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+
+				oCellAnchor->m_oFrom = oAnchor.m_oFrom.get();
+				oCellAnchor->m_oTo = oAnchor.m_oTo.get();
+				
+				bSetAnchor = true;
+			}
+		}
+		if (false == oCellAnchor.IsInit())
+		{
+			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+			oCellAnchor->m_bShapeControl = true;			
+		}
+		if ((oShape.IsInit()) && (OOX::et_v_shapetype != oShape->getType()))
+		{
+			for(size_t j = 0; j < oShape->m_arrItems.size(); ++j)
+			{
+				OOX::WritingElement* pChildElemShape = oShape->m_arrItems[j];
+				
+				if (OOX::et_v_ClientData == pChildElemShape->getType())
+				{
+					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
+
+					if (!bSetAnchor )
+					{
+						pClientData->toCellAnchor(oCellAnchor.GetPointer());
+						bSetAnchor = true;
+					}
+					pClientData->toFormControlPr(oFormControlPr.GetPointer());
+				}
+				else if (OOX::et_v_textbox == pChildElemShape->getType())
+				{
+					OOX::Vml::CTextbox* pTextbox = static_cast<OOX::Vml::CTextbox*>(pChildElemShape);
+
+					oFormControlPr->m_oText = pTextbox->m_oText;
+				}
+			}	
+		}
+		if (!oCellAnchor.IsInit() || !oFormControlPr.IsInit())
+		{
+			continue;
+		}
+		if (!oFormControlPr->m_oObjectType.IsInit() )
+		{
+			continue;
+		}
+//---------------------------------------------
+		std::wstring id = ods_context->current_table().controls_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue(), oFormControlPr->m_oItemLst.IsInit());
+
+		if (false == id.empty())
+		{
+			ods_context->start_drawings();
+
+			{
+				oox_table_position from = {}, to = {};
+				
+				convert(oCellAnchor->m_oFrom.GetPointer(), &from);	
+				convert(oCellAnchor->m_oTo.GetPointer(), &to);
+
+				double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+				ods_context->current_table().convert_position(from, x1, y1);
+				ods_context->current_table().convert_position(to,	x2, y2);
+				
+				ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
+			}		
+			ods_context->drawing_context()->start_drawing();
+			ods_context->drawing_context()->start_control(id);
+		
+			if (pControl->m_oName.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_name(*pControl->m_oName);
+				ods_context->drawing_context()->set_name(*pControl->m_oName);
+			}
+//----------------------
+			if (oFormControlPr->m_oText.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_label(*oFormControlPr->m_oText);
+			}
+			if (oFormControlPr->m_oFillColor.IsInit())
+			{
+				ods_context->drawing_context()->start_area_properties(true);
+					ods_context->drawing_context()->set_solid_fill(oFormControlPr->m_oFillColor->ToString());
+				ods_context->drawing_context()->end_area_properties();
+			}
+			if (oFormControlPr->m_oBorderColor.IsInit())
+			{
+				ods_context->drawing_context()->start_line_properties();
+					ods_context->drawing_context()->set_line_color(oFormControlPr->m_oBorderColor->ToString());
+				ods_context->drawing_context()->end_line_properties();
+			}
+			if (oFormControlPr->m_oTextHAlign.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_textHAlign(oFormControlPr->m_oTextHAlign->GetValue());
+			}
+			if (oFormControlPr->m_oTextVAlign.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_textVAlign(oFormControlPr->m_oTextVAlign->GetValue());
+			}
+			if (oFormControlPr->m_oMin.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_min_value(oFormControlPr->m_oMin->GetValue());
+			}
+			if (oFormControlPr->m_oMax.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_max_value(oFormControlPr->m_oMax->GetValue());
+			}
+			if (oFormControlPr->m_oPage.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_page_step(oFormControlPr->m_oPage->GetValue());
+			}
+			if (oFormControlPr->m_oInc.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_step(oFormControlPr->m_oInc->GetValue());
+			}
+			if (oFormControlPr->m_oVal.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_value(std::to_wstring(*oFormControlPr->m_oVal));
+			}
+			if (oFormControlPr->m_oHoriz.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_horiz(*oFormControlPr->m_oHoriz);
+			}
+			if (oFormControlPr->m_oVerticalBar.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_horiz(*oFormControlPr->m_oVerticalBar == false);
+			}
+			if (oFormControlPr->m_oFmlaLink.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_linkedCell(*oFormControlPr->m_oFmlaLink);
+			}
+			if (oFormControlPr->m_oFmlaRange.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_listFillRange(*oFormControlPr->m_oFmlaRange);
+			}
+			if (oFormControlPr->m_oChecked.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_check_state(oFormControlPr->m_oChecked->GetValue());
+			}
+			if (oFormControlPr->m_oDropStyle.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_drop_down(true);
+			}
+			if (oFormControlPr->m_oDropLines.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_drop_size(oFormControlPr->m_oDropLines->GetValue());
+			}
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDx;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSel;
+			//nullable<SimpleTypes::Spreadsheet::CSelType<>>			m_oSelType;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oWidthMin;
+			//nullable<SimpleTypes::Spreadsheet::CEditValidation<>>		m_oEditVal;
+			//nullable_string		m_oFmlaGroup;
+			//nullable_string		m_oFmlaTxbx;		
+			//nullable_bool		m_oColored;
+			//nullable_bool		m_oFirstButton;
+			//nullable_bool		m_oJustLastX;
+			//nullable_bool		m_oLockText;
+			//nullable_string		m_oMultiSel;
+			//nullable_bool		m_oNoThreeD;
+			//nullable_bool		m_oNoThreeD2;
+			//nullable_bool		m_oMultiLine;
+			//nullable_bool		m_oVerticalBar;
+			//nullable_bool		m_oPasswordEdit;
+			//nullable<CListItems>							m_oItemLst;
+//---------------------
+			if (pControl->m_oControlPr->m_oLinkedCell.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_linkedCell(*pControl->m_oControlPr->m_oLinkedCell);
+			}
+			if (pControl->m_oControlPr->m_oListFillRange.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_listFillRange(*pControl->m_oControlPr->m_oListFillRange);
+			}
+			if (pControl->m_oControlPr->m_oMacro.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_macro(*pControl->m_oControlPr->m_oMacro);
+			}
+			if (pControl->m_oControlPr->m_oDisabled.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_disabled(*pControl->m_oControlPr->m_oDisabled);
+			}
+			if (pControl->m_oControlPr->m_oPrint.IsInit())
+			{
+				ods_context->current_table().controls_context()->set_printable(*pControl->m_oControlPr->m_oPrint);
+			}
+			if (pControl->m_oControlPr->m_oLocked.IsInit())
+			{
+			}
+			//nullable_string						m_oAltText;
+			//nullable_bool							m_oAutoFill;
+			//nullable_bool							m_oAutoLine;
+			//nullable_bool							m_oAutoPict;
+			//nullable_bool							m_oDde;
+			//nullable_bool							m_oDefaultSize;
+			//nullable_string						m_oCf;
+			//nullable_bool							m_oRecalcAlways;
+//---------------------
+			ods_context->drawing_context()->end_control();
+			ods_context->drawing_context()->end_drawing();
+
+			ods_context->end_drawings();
+			ods_context->current_table().controls_context()->end_control();
+		}
 	}
 }
 

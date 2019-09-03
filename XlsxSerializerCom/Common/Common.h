@@ -55,6 +55,7 @@ namespace SerializeCommon
 		std::wstring sUserId;
 		std::wstring sUserName;
 		std::wstring sQuoteText;
+		std::wstring sGuid;
 		bool Solved;
 		bool Document;
 

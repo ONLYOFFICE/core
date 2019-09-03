@@ -68,7 +68,6 @@ public:
 
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
-public:    
 	_CP_OPT(odf_types::length_or_percent)			fo_min_width_;
     _CP_OPT(odf_types::length_or_percent)			fo_min_height_;    
     _CP_OPT(odf_types::length_or_percent)			fo_max_width_;
@@ -98,12 +97,6 @@ public:
 	_CP_OPT(odf_types::Bool)						draw_fit_to_contour_;
     _CP_OPT(std::wstring)							draw_wrap_influence_on_position_;
 
-    //odf_types::common_shadow_attlist				common_shadow_attlist_;
-	_CP_OPT(odf_types::shadow_type1)				draw_shadow_;
-	_CP_OPT(odf_types::percent)						draw_shadow_opacity_;
-	_CP_OPT(odf_types::color)						draw_shadow_color_;
-	_CP_OPT(odf_types::length)						draw_shadow_offset_y_;
-	_CP_OPT(odf_types::length)						draw_shadow_offset_x_;
 	_CP_OPT(unsigned int)							draw_ole_draw_aspect_;
 
 	odf_types::common_draw_fill_attlist				common_draw_fill_attlist_;

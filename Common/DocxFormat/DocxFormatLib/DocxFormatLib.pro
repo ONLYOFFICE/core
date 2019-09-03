@@ -46,18 +46,24 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Vml.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Media/JsaProject.cpp \
+    ../Source/DocxFormat/Media/ActiveX.cpp \
     ../Source/DocxFormat/Math/oMath.cpp \
     ../Source/DocxFormat/Math/oMathContent.cpp \
     ../Source/DocxFormat/Math/oMathPara.cpp \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/DocxFormat/Comments.cpp \
+    ../Source/DocxFormat/VmlDrawing.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
+    ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/Xlsx.cpp \
     ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
     ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp \
+    ../Source/XlsxFormat/Worksheets/DataValidation.cpp \
+    ../Source/XlsxFormat/Table/Tables.cpp \
+    ../Source/XlsxFormat/Controls/Controls.cpp \
     ../Source/DocxFormat/App.cpp \
     ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
@@ -72,7 +78,10 @@ SOURCES += \
     ../Source/Common/Wrap.cpp \
     ../Source/Common/ZIndex.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
-    ../Source/SystemUtility/SystemUtility.cpp
+    ../Source/SystemUtility/SystemUtility.cpp \
+    ../Source/XlsxFormat/Styles/rPr.cpp \
+    ../Source/XlsxFormat/SharedStrings/Si.cpp \
+    ../Source/XlsxFormat/SharedStrings/Text.cpp
 }
 
 
@@ -184,7 +193,9 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/CalcChain/CalcChain.h \
     ../Source/XlsxFormat/Chart/Chart.h \
     ../Source/XlsxFormat/Chart/ChartSerialize.h \
+    ../Source/XlsxFormat/Chart/ChartSerializeEx.h \
     ../Source/XlsxFormat/Comments/Comments.h \
+	../Source/XlsxFormat/Comments/ThreadedComments.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \
     ../Source/XlsxFormat/Drawing/FromTo.h \
@@ -216,11 +227,13 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Workbook/WorkbookPr.h \
     ../Source/XlsxFormat/Worksheets/Cols.h \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.h \
+    ../Source/XlsxFormat/Worksheets/DataValidation.h \
     ../Source/XlsxFormat/Worksheets/Hyperlinks.h \
     ../Source/XlsxFormat/Worksheets/MergeCells.h \
     ../Source/XlsxFormat/Worksheets/SheetData.h \
     ../Source/XlsxFormat/Worksheets/Worksheet.h \
     ../Source/XlsxFormat/Worksheets/WorksheetChildOther.h \
+	../Source/XlsxFormat/Controls/Controls.h \
     ../Source/XlsxFormat/Common.h \
     ../Source/XlsxFormat/CommonInclude.h \
     ../Source/XlsxFormat/ComplexTypes_Spreadsheet.h \

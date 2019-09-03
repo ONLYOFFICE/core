@@ -158,13 +158,22 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	{
 		properties.push_back(_property(L"contrast", common_draw_fill_attlist_.draw_contrast_->get_value()));
 	}
+	if (common_shadow_attlist_.draw_shadow_.get_value_or(shadow_type1::Hidden).get_type() == shadow_type1::Visible)
+	{
+		properties.push_back(_property(L"shadow", true));
+		if (common_shadow_attlist_.draw_shadow_color_)	properties.push_back(_property(L"shadow-color",		common_shadow_attlist_.draw_shadow_color_->get_hex_value()));
+		if (common_shadow_attlist_.draw_shadow_opacity_) properties.push_back(_property(L"shadow-opacity",	common_shadow_attlist_.draw_shadow_opacity_->get_value()));
+		if (common_shadow_attlist_.draw_shadow_offset_x_) properties.push_back(_property(L"shadow-offset-x",	common_shadow_attlist_.draw_shadow_offset_x_->get_value_unit(length::emu)));
+		if (common_shadow_attlist_.draw_shadow_offset_y_) properties.push_back(_property(L"shadow-offset-y",	common_shadow_attlist_.draw_shadow_offset_y_->get_value_unit(length::emu)));
+	}
 	if (common_padding_attlist_.fo_padding_)
 	{
 		properties.push_back(_property(L"text-padding-left",	common_padding_attlist_.fo_padding_->get_value_unit(length::emu)));
 		properties.push_back(_property(L"text-padding-right",	common_padding_attlist_.fo_padding_->get_value_unit(length::emu)));
 		properties.push_back(_property(L"text-padding-top",		common_padding_attlist_.fo_padding_->get_value_unit(length::emu)));
 		properties.push_back(_property(L"text-padding-bottom",	common_padding_attlist_.fo_padding_->get_value_unit(length::emu)));
-	}else
+	}
+	else
 	{
 		if (common_padding_attlist_.fo_padding_left_) 
 			properties.push_back(_property(L"text-padding-left",	common_padding_attlist_.fo_padding_left_->get_value_unit(length::emu)));

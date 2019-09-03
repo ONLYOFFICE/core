@@ -121,6 +121,8 @@ namespace DocFileFormat
 		bool writeBookmarkStart	( short id );
 		bool writeBookmarkEnd	( short id );
 
+		bool writeNotesReferences(int cp);
+
 		bool writeAnnotations	( int cp );
 		bool writeAnnotationStart( short id );
 		bool writeAnnotationEnd	( short id );

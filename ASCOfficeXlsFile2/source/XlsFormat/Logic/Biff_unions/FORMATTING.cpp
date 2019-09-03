@@ -72,6 +72,12 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 {
 	global_info = proc.getGlobalWorkbookInfo();
 
+	if (proc.optional<Palette>())
+	{
+		m_Palette = elements_.back();
+		elements_.pop_back();
+	}
+
 	int count = 0;
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
 	while(count > 0)

@@ -84,7 +84,7 @@ namespace OOX
 			
 			PPTX::Theme  *GetTheme () const
 			{
-				return (PPTX::Theme  *)(m_pTheme.operator->());
+				return (PPTX::Theme  *)(m_pTheme.GetPointer());
 			}
 			smart_ptr<PPTX::Theme>							m_pTheme;
 
@@ -99,6 +99,10 @@ namespace OOX
 			OOX::JsaProject*								m_pJsaProject;
             
 			WorkbookComments*								m_pWorkbookComments;
+			NSBinPptxRW::CXlsbBinaryWriter*					m_pXlsbWriter;
+			int												m_nLastReadRow;
+			int												m_nLastReadCol;
+			bool											m_bNeedCalcChain;// disable because it is useless but reading takes considerable time
 
 			std::vector<CWorksheet*>								m_arWorksheets;	//order as is
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>	m_mapWorksheets; //copy, for fast find - order by rId(name) 
@@ -118,6 +122,10 @@ namespace OOX
 				m_pVbaProject		= NULL;
 				m_pJsaProject		= NULL;
 				m_pWorkbookComments = NULL;
+				m_pXlsbWriter = NULL;
+				m_nLastReadRow = 0;
+				m_nLastReadCol = -1;
+				m_bNeedCalcChain = true;
 
 				bDeleteWorkbook			= false;
 				bDeleteSharedStrings	= false;

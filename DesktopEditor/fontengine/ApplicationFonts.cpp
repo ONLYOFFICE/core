@@ -34,6 +34,7 @@
 #include "../common/Directory.h"
 #include FT_SFNT_NAMES_H
 #include "fontdictionaryworker.h"
+#include "../common/ByteBuilder.h"
 
 #ifndef min
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
@@ -643,6 +644,53 @@ void ReadNames(NSFonts::CFontInfo* pInfo, FT_Face pFace)
 }
 #endif
 
+std::wstring CFontList::GetFontBySymbol(int symbol)
+{
+    for (std::list<CFontRange>::iterator iter = m_listRanges.begin(); iter != m_listRanges.end(); iter++)
+    {
+        CFontRange& range = *iter;
+        if (symbol <= range.Start && symbol >= range.End)
+        {
+            return range.Name;
+        }
+    }
+
+    // search range by symbol
+    int _start = 0;
+    int _end = m_nRangesCount - 1;
+
+    int _center = 0;
+
+    if (_start > _end)
+        return L"";
+
+    while (_start < _end)
+    {
+        _center = (_start + _end) >> 1;
+        CFontRange& _range = m_pRanges[_center];
+
+        if (_range.Start > symbol)
+            _end = _center - 1;
+        else if (_range.End < symbol)
+            _start = _center + 1;
+        else
+        {
+            m_listRanges.push_front(_range);
+            return m_pRanges[_center].Name;
+        }
+    }
+
+    if (_start > _end)
+        return L"";
+
+    CFontRange& _range = m_pRanges[_start];
+    if (_range.Start > symbol || _range.End < symbol)
+        return L"";
+
+    m_listRanges.push_front(_range);
+    return m_pRanges[_start].Name;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////
 int CFontList::GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset)
 {
@@ -728,54 +776,33 @@ int CFontList::GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed)
 
 	return nPenalty;
 }
-int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName, std::vector<std::wstring>* pArrayLikes)
+
+CFontListNamePicker CFontList::m_oPicker;
+int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName, bool bIsUseNamePicker)
 {
-	// На MSDN написано, что если имена не совпадают, то вес 10000.
-	// Мы будем сравнивать сколько совпало символов у запрашиваемого
-	// имени и с именем кандидата, без учета решистра, пробелов, запятых
-	// и тире.
-
-	/*
-	TODO:
-	sCandName.Remove(' '); sReqName.Remove(' ');
-	sCandName.Remove(','); sReqName.Remove(',');
-	sCandName.Remove('-'); sReqName.Remove('-');
-
-	sCandName.MakeLower(); sReqName.MakeLower();
-	*/
-
-	if ( 0 == sReqName.length() )
+    if ( 0 == sReqName.length() )
 		return 0;
 
-	if ( 0 == sCandName.length() )
+    if ( 0 == sCandName.length() )
 		return 10000;
 
 	if ( sReqName == sCandName )
 		return 0;
-	else if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
+
+    if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
+    {
+        if (m_oPicker.IsLikeFonts(sCandName, sReqName))
+            return 700;
 		return 1000;
+    }
 
-    if (NULL != pArrayLikes)
+    if (bIsUseNamePicker)
 	{
-		for (std::vector<std::wstring>::iterator iter = pArrayLikes->begin(); iter != pArrayLikes->end(); iter++)
-		{
-			if (sCandName == *iter)
-				return 2000;
-		}
-	}
+        if (m_oPicker.IsLikeFonts(sCandName, sReqName))
+            return 1000;
 
-    /*
-    NSFonts::makeLower(sCandName);
-    NSFonts::makeLower(sReqName);
-    if ( sReqName == sCandName )
-        return 1500;
-
-    sCandName = NSFonts::prepareFont3000(sCandName);
-    sReqName = NSFonts::prepareFont3000(sReqName);
-
-    if ( sReqName == sCandName )
-        return 3000;
-    */
+        return m_oPicker.CheckEqualsFonts(sCandName, sReqName);
+    }
 
 	return 10000;
 }
@@ -980,7 +1007,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     }
 
     *pDstData = pData;
-    *pLen = lDataSize;
+    *pLen = (LONG)(pDataMem - pData);
 }
 
 NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse)
@@ -999,16 +1026,6 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
     int nMinPenalty = -1; // Минимальный вес
 
 	int nDefPenalty = 2147483647;
-
-	std::vector<std::wstring>* pArrayLikes = NULL;
-	if (oSelect.wsName != NULL)
-	{
-		std::map<std::wstring, int>::iterator iterLikeIndex = m_mapNamesToIndex.find(*oSelect.wsName);
-		if (iterLikeIndex != m_mapNamesToIndex.end())
-		{
-			pArrayLikes = &m_listLikes[iterLikeIndex->second];
-		}
-	}
 
     NSFonts::CFontInfo* pInfoMin = NULL;
     for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
@@ -1046,13 +1063,13 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
 
 		if ( oSelect.wsName != NULL && oSelect.wsAltName != NULL )
 		{
-			nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, pArrayLikes ),
-								GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, pArrayLikes ) );
+            nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true ),
+                                GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true ) );
 		}
 		else if ( oSelect.wsName != NULL )
-			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, pArrayLikes );
+            nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, true );
 		else if ( oSelect.wsAltName != NULL )
-			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, pArrayLikes );
+            nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, true );
 
 		if ( NULL != oSelect.usWidth )
 			nCurPenalty += GetWidthPenalty( pInfo->m_usWidth, *oSelect.usWidth );
@@ -1424,6 +1441,22 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 		Add(pFontInfo);
 	}
 
+    if ((_pBuffer - pBuffer) < dwLen1)
+    {
+        NSMemoryUtils::CByteReader oReader(_pBuffer);
+        m_nRangesCount = oReader.GetInt();
+
+        if (m_nRangesCount > 0)
+            m_pRanges = new CFontRange[m_nRangesCount];
+
+        for (int nIndex = 0; nIndex < m_nRangesCount; ++nIndex)
+        {
+            m_pRanges[nIndex].Name = oReader.GetStringUTF8();
+            m_pRanges[nIndex].Start = oReader.GetInt();
+            m_pRanges[nIndex].End = oReader.GetInt();
+        }
+    }
+
 	RELEASEARRAYOBJECTS(pBuffer);
 
 	return true;
@@ -1493,12 +1526,16 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
 	InitFromReg();
 #endif
 
-#if defined(_LINUX) && !defined(_MAC)
+#if defined(_LINUX) && !defined(_MAC) && !defined(__ANDROID__)
 	m_oList.LoadFromFolder(L"/usr/share/fonts");
 #endif
 
 #if defined(_MAC) && !defined(_IOS)
 	m_oList.LoadFromFolder(L"/Library/Fonts/");
+#endif
+
+#ifdef __ANDROID__
+    m_oList.LoadFromFolder(L"/system/fonts");
 #endif
 
 	m_oCache.m_pApplicationFontStreams = &m_oStreams;
@@ -1509,6 +1546,11 @@ NSFonts::IFontManager* CApplicationFonts::GenerateFontManager()
 	CFontManager* pManager = new CFontManager();
 	pManager->m_pApplication = this;
 	return pManager;
+}
+
+std::wstring CApplicationFonts::GetFontBySymbol(int symbol)
+{
+    return m_oList.GetFontBySymbol(symbol);
 }
 
 #if defined(_WIN32) || defined (_WIN64)
@@ -1636,7 +1678,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
         GetUserNameW(sUserName, &nUserNameLen);
         std::wstring strUserName(sUserName, nUserNameLen - 1);
 
-        NSDirectory::GetFiles2(L"C:\\Users\\" + strUserName + L"\\AppData\\Local\\Microsoft\\Windows\\Fonts", oArray2, true);
+        NSDirectory::GetFiles2(L"C:\\Users\\" + strUserName + L"\\AppData\\Local\\Microsoft\\Windows\\Fonts", oArray2, false);
 
         for (std::vector<std::wstring>::iterator i = oArray2.begin(); i != oArray2.end(); i++)
         {
@@ -1648,7 +1690,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
     return oArray;
 #endif
 
-#if defined(__linux__) && !defined(_MAC)
+#if defined(__linux__) && !defined(_MAC) && !defined(__ANDROID__)
      std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/usr/share/fonts", true);
      NSDirectory::GetFiles2(L"/usr/share/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
@@ -1665,6 +1707,11 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #ifdef _IOS
     // own realization (objective c code)
     return GetSetupFontFiles_ios();
+#endif
+
+#ifdef __ANDROID__
+    std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/system/fonts", true);
+    return _array;
 #endif
 
 	std::vector<std::wstring> ret;

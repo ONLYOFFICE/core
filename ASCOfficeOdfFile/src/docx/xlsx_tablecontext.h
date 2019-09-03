@@ -83,6 +83,12 @@ public:
 
 	unsigned int columns_count();
 
+	void set_header_page(_CP_OPT(double) val);
+	_CP_OPT(double) get_header_page();
+	
+	void set_footer_page(_CP_OPT(double) val);
+	_CP_OPT(double) get_footer_page();
+
 	void serialize_tableParts			(std::wostream & _Wostream, rels & Rels);
 	void serialize_sort					(std::wostream & _Wostream);
 	void serialize_autofilter			(std::wostream & _Wostream);
@@ -96,6 +102,7 @@ public:
 	void serialize_background			(std::wostream & _Wostream);
 	void serialize_data_validation		(std::wostream & _Wostream);
 	void serialize_protection			(std::wostream & _Wostream);
+	void serialize_header_footer		(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   

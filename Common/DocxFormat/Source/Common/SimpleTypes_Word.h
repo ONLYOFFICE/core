@@ -1224,7 +1224,7 @@ namespace SimpleTypes
 			}
 		}
 
-		void   SetValue(double &dValue)
+		void   SetValue(double dValue)
 		{
 			m_dValue = dValue;
 		}
@@ -3427,7 +3427,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// LongHexNumber 17.18.50 (Part 1)
 	//--------------------------------------------------------------------------------		
-	template<int nDefValue = 0>
+	template<unsigned int nDefValue = 0>
 	class CLongHexNumber : public CSimpleType<int, nDefValue>
 	{
 	public:
@@ -3448,7 +3448,7 @@ namespace SimpleTypes
             return XmlUtils::IntToString(this->m_eValue, L"%08X");
 		}
 
-		SimpleType_FromString     (int)
+		SimpleType_FromString     (unsigned int)
 		SimpleType_Operator_Equal (CLongHexNumber)
 	private:
 
@@ -6735,6 +6735,14 @@ namespace SimpleTypes
             else                                  this->m_eValue = eDefValue;
 
             return this->m_eValue;
+		}
+		EXmlSpace FromStringA(const char* pValue)
+		{
+			if       ( strcmp("default", pValue)  == 0 ) this->m_eValue = xmlspaceDefault;
+			else if  ( strcmp("preserve", pValue) == 0 ) this->m_eValue = xmlspacePreserve;
+			else                                  this->m_eValue = eDefValue;
+
+			return this->m_eValue;
 		}
 
         virtual std::wstring   ToString  () const

@@ -49,7 +49,6 @@
 #include "style_table_properties.h"
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
-#include "style_graphic_properties.h"
 
 namespace cpdoccore {
 
@@ -140,7 +139,8 @@ std::wstring convert_time(const std::wstring & oox_time)
 ///////////////////////////////////////////////////////////////
 static formulasconvert::oox2odf_converter formulas_converter_table;
 
-ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm): context_(Context),drawing_context_(Context)
+ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm) : 
+		context_(Context), drawing_context_(Context), controls_context_(Context)
 {     
 	office_table_ = elm; 
 
@@ -495,15 +495,19 @@ void ods_table_state::set_row_height(double height)
 
 bool ods_table_state::is_cell_hyperlink()
 {
-	if (cells_size_ <1)return false;
-	return cells_.back().hyperlink_idx >=0 ? true : false;
+	if ( cells_size_ < 1 )return false;
+	return cells_.back().hyperlink_idx >= 0 ? true : false;
 }
 bool ods_table_state::is_cell_comment()
 {
-	if (cells_size_ <1)return false;
+	if ( cells_size_ < 1 )return false;
 	return cells_.back().comment_idx >= 0 ? true : false;
 }
-
+bool ods_table_state::is_cell_data_validation()
+{
+	if ( cells_size_ < 1 )return false;
+	return cells_.back().data_validation_name.empty() ? true : false;
+}
 int ods_table_state::is_cell_hyperlink(int col, int row)
 {
     for (size_t i = 0; i < hyperlinks_.size(); i++)
@@ -514,6 +518,17 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 		}
 	}
 	return -1;
+}
+std::wstring ods_table_state::is_cell_data_validation(int col, int row)
+{
+    for (size_t i = 0; i < data_validations_.size(); i++)
+	{
+		if (data_validations_[i].in_ref(col, row))
+		{
+            return data_validations_[i].name;
+		}
+	}
+	return L"";
 }
 int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
@@ -532,7 +547,7 @@ int ods_table_state::is_row_comment(int row, int repeate_row)
 	{
 		if (comments_[i].row < row + repeate_row && comments_[i].row >= row && comments_[i].used == false)
 		{
-			return  i;
+			return  (int)i;
 		}
 	}
 	return -1;
@@ -615,8 +630,9 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
     state.row = current_table_row_;  state.col = current_table_column_ + 1;
 
-	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
-	state.comment_idx	= is_cell_comment(state.col, state.row);
+	state.hyperlink_idx			= is_cell_hyperlink(state.col, state.row);
+	state.comment_idx			= is_cell_comment(state.col, state.row);
+	state.data_validation_name	= is_cell_data_validation(state.col, state.row);
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
@@ -705,20 +721,51 @@ void ods_table_state::start_comment(int col, int row, std::wstring & author)
 	state.row = row;  state.col = col; state.author = author;	
 	create_element(L"office", L"annotation", state.elm, context_);
 
+	office_annotation * annotation = dynamic_cast<office_annotation*>(state.elm.get());
+	if (!annotation)return;	
+
+	context_->styles_context()->create_style(L"", style_family::Graphic, true, false, -1);		
+	
+	office_element_ptr & style_elm = context_->styles_context()->last_state()->get_office_element();
+	state.graphic_properties = context_->styles_context()->last_state()->get_graphic_properties();
+	
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_)
+	{
+		annotation->attr_.draw_style_name_ = style_->style_name_;
+	}
+
 	comments_.push_back(state);
 }
+void ods_table_state::set_comment_color(const std::wstring & color)
+{
+	if (color.empty()) return;
+	if (comments_.empty()) return;
+	if (!comments_.back().graphic_properties) return;
 
+	comments_.back().graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = L"#" + color;
+	comments_.back().graphic_properties->common_draw_fill_attlist_.draw_fill_ = odf_types::draw_fill::solid;
+}
+void ods_table_state::set_comment_visible(bool val)
+{
+	if (comments_.empty()) return;
+
+	office_annotation * annotation = dynamic_cast<office_annotation*>(comments_.back().elm.get());
+	if (!annotation)return;	
+
+	annotation->attr_.display_ = val;
+}
 void ods_table_state::set_comment_rect(double l, double t, double w, double h)
 {
-	if (comments_.size() < 1)return;
+	if (comments_.empty())return;
 
 	office_annotation * annotation = dynamic_cast<office_annotation*>(comments_.back().elm.get());
 	if (!annotation)return;		
 
-	annotation->office_annotation_attr_.svg_y_		= length(t/10.,length::cm);
-	annotation->office_annotation_attr_.svg_x_		= length(l/10.,length::cm);
-	annotation->office_annotation_attr_.svg_width_	= length(w/10.,length::cm);
-	annotation->office_annotation_attr_.svg_height_	= length(h/10.,length::cm);
+	annotation->attr_.svg_y_		= length(t/10.,length::cm);
+	annotation->attr_.svg_x_		= length(l/10.,length::cm);
+	annotation->attr_.svg_width_	= length(w/10.,length::cm);
+	annotation->attr_.svg_height_	= length(h/10.,length::cm);
 }
 void ods_table_state::end_comment(odf_text_context *text_context)
 {
@@ -755,7 +802,7 @@ void ods_table_state::check_spanned_cells()
 			int start_col = jt->first;
 			int end_col = jt->first + jt->second.spanned_cols;
 
-			for (size_t i = 0; i < cells_.size(); ++i)
+			for (size_t i = 0; i < cells_.size(); ++i) //todooo cells_ vector -> map by row
 			{
 				if (cells_[i].row > end_row) break;
 
@@ -878,7 +925,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	
 	//test external link
 	bool bExternal = !ods_context->externals_.empty();
-	boost::wregex re(L"([\[]\\d+[\]])+");
+	boost::wregex re(L"([\\[]\\d+[\\]])+");
 
 	while(bExternal)
 	{
@@ -921,7 +968,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 
 	XmlUtils::replace_all(odfFormula, L"EXTERNALREF", L"file://");//снятие экранирования
 
-	if (std::wstring::npos != odfFormula.find(L"["))
+	if ((false == table_parts_.empty()) && (std::wstring::npos != odfFormula.find(L"[")))
 	{
 		for (size_t i = 0; i < table_parts_.size(); i++)
 		{
@@ -995,65 +1042,64 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 
 	std::wstring odf_formula;
 	
-	if (formula.size() > 0)
+	if (false == formula.empty())
 	{
 		odf_formula = formulas_converter_table.convert_formula(formula);
 
 		int moving_type = 0;
 		
 		std::vector<std::wstring> distance;
-		boost::algorithm::split(distance, ref,boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
-		if (distance.size() >1)
+		boost::algorithm::split(distance, ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+		if (distance.size() > 1)
 		{
             int col1, row1, col2, row2;
-			utils::parsing_ref(distance[0],col1,row1);
-			utils::parsing_ref(distance[1],col2,row2);
+			utils::parsing_ref(distance[0], col1, row1);
+			utils::parsing_ref(distance[1], col2, row2);
 
-			if (row2-row1 >0)moving_type = 2;
-			if (col2-col1 >0)moving_type = 1;
+			if (row2 - row1 > 0) moving_type = 2;
+			if (col2 - col1 > 0)moving_type = 1;
 		}
 		ods_shared_formula_state state = {(unsigned int)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
-		shared_formulas_.push_back(state);
+		shared_formulas_.insert(std::make_pair((unsigned int)ind, state));
 		
 		cell->attlist_.table_formula_ = odf_formula;
 		cells_.back().empty = false;
 	}
 	else
 	{
-        for (size_t i = 0; i < shared_formulas_.size() ;i++)
+		std::map<unsigned int, ods_shared_formula_state>::iterator pFind = shared_formulas_.find(ind);
+		
+		if (pFind != shared_formulas_.end())
 		{
-			if (shared_formulas_[i].index == ind)
-			{
-				odf_formula = shared_formulas_[i].formula;
+			odf_formula = pFind->second.formula;
 
-				//поменять по ref формулу !!!
-				if (shared_formulas_[i].moving_type == 1)
-				{
-					tmp_column_ = shared_formulas_[i].base_column;
-					tmp_row_	= shared_formulas_[i].base_row;
-					
-					const std::wstring res = boost::regex_replace(
-						odf_formula,
-						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
-						&ods_table_state::replace_cell_column,
-						boost::match_default | boost::format_all);
-					odf_formula = res;
-				}
-				if (shared_formulas_[i].moving_type == 2)
-				{
-					tmp_column_ = shared_formulas_[i].base_column;
-					tmp_row_	= shared_formulas_[i].base_row;
-					
-					const std::wstring res = boost::regex_replace(
-						odf_formula,
-						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
-						&ods_table_state::replace_cell_row,
-						boost::match_default | boost::format_all);
-					odf_formula = res;
-				}
-				cell->attlist_.table_formula_ = odf_formula;				
-				cells_.back().empty = false;
+			//поменять по ref формулу !!!
+			if (pFind->second.moving_type == 1)
+			{
+				tmp_column_ = pFind->second.base_column;
+				tmp_row_	= pFind->second.base_row;
+				
+				const std::wstring res = boost::regex_replace(
+					odf_formula,
+					boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
+					&ods_table_state::replace_cell_column,
+					boost::match_default | boost::format_all);
+				odf_formula = res;
 			}
+			else if (pFind->second.moving_type == 2)
+			{
+				tmp_column_ = pFind->second.base_column;
+				tmp_row_	= pFind->second.base_row;
+				
+				const std::wstring res = boost::regex_replace(
+					odf_formula,
+					boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
+					&ods_table_state::replace_cell_row,
+					boost::match_default | boost::format_all);
+				odf_formula = res;
+			}
+			cell->attlist_.table_formula_ = odf_formula;				
+			cells_.back().empty = false;
 		}
 	}
 }
@@ -1289,6 +1335,11 @@ void ods_table_state::end_cell()
 		cells_.back().elm->add_child_element(comm_elm);
 		comments_[cells_.back().comment_idx].used = true;
 	}
+    if (false == cells_.back().data_validation_name.empty())
+	{
+		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+		if (cell)cell->attlist_.table_content_validation_name_ = cells_.back().data_validation_name;
+	}
 	if (cells_.back().empty)
 	{
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
@@ -1404,8 +1455,9 @@ void ods_table_state::add_default_cell( unsigned int repeated)
     state.row = current_table_row_;  
 	state.col = current_table_column_ + 1;
 
-	state.hyperlink_idx = is_cell_hyperlink(state.col, current_table_row_);
-	state.comment_idx = comment_idx;
+	state.hyperlink_idx			= is_cell_hyperlink(state.col, current_table_row_);
+	state.data_validation_name	= is_cell_data_validation(state.col, current_table_row_);
+	state.comment_idx			= comment_idx;
 	
 	cells_.push_back(state);
 	cells_size_++;

@@ -218,9 +218,11 @@ public:
 	HRESULT EnableBrushRect(const LONG& lEnable);
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
-	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
-	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
+    HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
+    HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+
+    NSFonts::IApplicationFonts* GetApplicationFonts();
 
 private:
 
@@ -441,14 +443,14 @@ private:
 							}
 							else if (lIndex + 1 < lSize)
 							{
-								int nPatternSize = vPattern.size();
+								size_t nPatternSize = vPattern.size();
 								vPattern.at(nPatternSize - 1) = vPattern.at(nPatternSize - 1) + pPattern[lIndex + 1];
 								lIndex++;
 							}
 						}
 						else
 						{
-							int nPatternSize = vPattern.size();
+							size_t nPatternSize = vPattern.size();
 							vPattern.at(nPatternSize - 2) = vPattern.at(nPatternSize - 2) + vPattern.at(nPatternSize - 1);
 							vPattern.pop_back();
 						}
@@ -459,8 +461,8 @@ private:
 					}
 				}
 
-				int nPatternSize = vPattern.size();
-				if (nPatternSize)
+				size_t nPatternSize = vPattern.size();
+				if (nPatternSize > 0)
 				{
 					m_pDashPattern = new double[nPatternSize];
 					if (m_pDashPattern)
@@ -879,8 +881,8 @@ private:
 					vResPoints.push_back(TColorAndPoint(lColor1, 1));
 				}
 
-				LONG lResCount = vResPoints.size();
-				if (!lResCount)
+				size_t lResCount = vResPoints.size();
+				if (lResCount == 0)
 					return;
 
 				m_pShadingColors      = new TColor[lResCount];
@@ -1416,7 +1418,7 @@ private:
 		}
 		void Clear()
 		{
-			for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
+			for (size_t nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
 			{
 				CPathCommandBase* pCommand = m_vCommands.at(nIndex);
 				delete pCommand;

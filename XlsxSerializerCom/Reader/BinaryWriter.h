@@ -55,6 +55,19 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinks.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/CalcChain/CalcChain.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Table/Connections.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Table/QueryTable.h"
+
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CPerson;
+		class CPersonList;
+		class CThreadedComment;
+		class CThreadedCommentMention;
+	}
+}
 
 namespace BinXlsxRW 
 {
@@ -65,7 +78,7 @@ namespace BinXlsxRW
 		BinaryTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
 		void Write(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTableParts& oTableParts);
 		void WriteTablePart(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTablePart& oTablePart);
-		void WriteTable(OOX::Spreadsheet::CTable& oTable);
+		void WriteTable(OOX::Spreadsheet::CTableFile* pTableFile);
 		void WriteAltTextTable(const OOX::Spreadsheet::CAltTextTable& oAltTextTable);
 		void WriteAutoFilter(const OOX::Spreadsheet::CAutofilter& oAutofilter);
 		void WriteFilterColumns(const std::vector<OOX::Spreadsheet::CFilterColumn *>& aFilterColumn);
@@ -84,6 +97,12 @@ namespace BinXlsxRW
 		void WriteTableColumn(const OOX::Spreadsheet::CTableColumn& oTableColumn);
 		void WriteTableColumns(const OOX::Spreadsheet::CTableColumns& oTableColumns);
 		void WriteTableStyleInfo(const OOX::Spreadsheet::CTableStyleInfo& oTableStyleInfo);
+		void WriteQueryTable(const OOX::Spreadsheet::CQueryTable& oQueryTable);
+		void WriteQueryTableRefresh(const OOX::Spreadsheet::CQueryTableRefresh& oQueryTableRefresh);
+		void WriteQueryTableFields(const OOX::Spreadsheet::CQueryTableFields& oQueryTableFields);
+		void WriteQueryTableField(const OOX::Spreadsheet::CQueryTableField& oQueryTableField);
+		void WriteQueryTableDeletedFields(const OOX::Spreadsheet::CQueryTableDeletedFields& oQueryTableDeletedFields);
+		void WriteQueryTableDeletedField(const OOX::Spreadsheet::CQueryTableDeletedField& oQueryTableDeletedField);
 	};
 	class BinaryStyleTableWriter
 	{
@@ -144,6 +163,12 @@ namespace BinXlsxRW
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView);
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames);
         void WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCalcPr);
+		void WriteConnections(const OOX::Spreadsheet::CConnections& connections);
+		void WriteConnection(const OOX::Spreadsheet::CConnection& connection);
+		void WriteConnectionDbPr(const OOX::Spreadsheet::CDbPr& dbPr);
+		void WriteConnectionOlapPr(const OOX::Spreadsheet::COlapPr& olapPr);
+		void WriteConnectionTextPr(const OOX::Spreadsheet::CTextPr& textPr);
+		void WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr);
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, const std::wstring& sLink);
 		void WriteExternalSheetNames(const OOX::Spreadsheet::CExternalSheetNames& sheetNames);
@@ -160,6 +185,15 @@ namespace BinXlsxRW
 		void WriteDdeValues(const OOX::Spreadsheet::CDdeValues& ddeValues);
 		void WriteDdeValue(const OOX::Spreadsheet::CDdeValue& ddeValue);
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
+	};
+	class BinaryPersonTableWriter
+	{
+		BinaryCommonWriter m_oBcw;
+	public:
+		BinaryPersonTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
+		void Write(OOX::Spreadsheet::CPersonList& oPersonList);
+		void WritePersonList(OOX::Spreadsheet::CPersonList& oPersonList);
+		void WritePerson(OOX::Spreadsheet::CPerson& oPerson);
 	};
 	class BinaryWorksheetTableWriter
 	{
@@ -193,21 +227,32 @@ namespace BinXlsxRW
 		void WriteCells(const OOX::Spreadsheet::CRow& oRows);
 		void WriteCell(const OOX::Spreadsheet::CCell& oCell);
 		void WriteFormula(OOX::Spreadsheet::CFormula& oFormula);
-        void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing = NULL);
+        
+		void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing = NULL);
         void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor* pCellAnchor, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL);
+		void WriteCellAnchor(OOX::Spreadsheet::CCellAnchor* pCellAnchor);
+		void WriteOleObjects(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing = NULL);
+		void WriteControls(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::CVmlDrawing *pVmlDrawing = NULL);
+		void WriteControlPr(OOX::Spreadsheet::CControlPr* pControlPr, OOX::Spreadsheet::CFormControlPr* pFormControlPr);
+
 		void WriteLegacyDrawingHF(const OOX::Spreadsheet::CWorksheet& oWorksheet);
 		void WriteLegacyDrawingHFDrawings(OOX::CVmlDrawing* pVmlDrawing);
 		void WriteLegacyDrawingHFDrawing(const OOX::CVmlDrawing::_vml_shape& oVmlShape);
+		
 		void WriteFromTo(const OOX::Spreadsheet::CFromTo& oFromTo);
 		void WritePos(const OOX::Spreadsheet::CPos& oPos);
 		void WriteExt(const OOX::Spreadsheet::CExt& oExt);
         void WriteComments(boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments);
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas);
-		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText);
-		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText);
-		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, nullable<OOX::Spreadsheet::CSi>* pCommentText);
-		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies);
+		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
+		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
+		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, bool isThreadedComment);
+		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies, bool isThreadedComment);
+		void WriteThreadedComment(OOX::Spreadsheet::CThreadedComment& oThreadedComment, bool bThreadedCommentCopy);
+		void WriteThreadedCommentMention(OOX::Spreadsheet::CThreadedCommentMention& oMention);
 		void WriteSheetPr(const OOX::Spreadsheet::CSheetPr& oSheetPr);
+		void WritePageSetUpPr(const OOX::Spreadsheet::CPageSetUpPr& oPageSetUpPr);
+		void WriteOutlinePr(const OOX::Spreadsheet::COutlinePr& oOutlinePr);
 		void WritemHeaderFooter(const OOX::Spreadsheet::CHeaderFooter& oHeaderFooter);
 		void WritemRowColBreaks(const OOX::Spreadsheet::CRowColBreaks& oRowColBreaks);		
 		void WritemBreak(const OOX::Spreadsheet::CBreak& oBreak);
@@ -226,6 +271,9 @@ namespace BinXlsxRW
         void WriteSparklineGroup(const OOX::Spreadsheet::CSparklineGroup& oSparklineGroup);
         void WriteSparklines(const OOX::Spreadsheet::CSparklines& oSparklines);
         void WriteSparkline(const OOX::Spreadsheet::CSparkline& oSparkline);
+		void WriteDataValidations(const OOX::Spreadsheet::CDataValidations& oDataValidations);
+		void WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations);
+		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
 	};
 	class BinaryCalcChainTableWriter
 	{
@@ -270,6 +318,7 @@ namespace BinXlsxRW
 	private:
 		BinaryCommonWriter* m_oBcw;
 		int m_nLastFilePos;
+		int m_nLastFilePosOffset;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 		DocWrapper::FontProcessor& m_oFontProcessor;
@@ -283,6 +332,7 @@ namespace BinXlsxRW
        std::wstring WriteFileHeader(int nDataSize, int version);
 		void WriteMainTableStart();
 		void WriteMainTableEnd();
+		int GetMainTableSize();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 	};

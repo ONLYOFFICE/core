@@ -59,9 +59,6 @@ namespace OOX
 			{
 
 			}
-
-		public:
-
 			const CTxbxContent &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				fromXML( (XmlUtils::CXmlNode&)oNode );
@@ -73,10 +70,6 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
-
-		public:
-
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
@@ -84,9 +77,6 @@ namespace OOX
 			{
 				return et_w_txbxContent;
 			}
-
-		public:
-
 			// Childs
 		};
 

@@ -122,6 +122,14 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml",
 												L"http://schemas.onlyoffice.com/commentsExtendedDocument");
 
+		const FileType CommentsIds		(L"", L"commentsIds.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsIds+xml",
+												L"http://schemas.microsoft.com/office/2016/09/relationships/commentsIds");
+
+		const FileType DocumentCommentsIds		(L"", L"commentsIdsDocument.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsIds+xml",
+												L"http://schemas.onlyoffice.com/commentsIdsDocument");
+
 		const FileType People			(L"", L"people.xml", 
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/people");
@@ -193,6 +201,21 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart", 
 												L"charts/chart", true, true);
 		
+		const FileType ChartEx				(L"charts", L"chartEx.xml",
+												L"application/vnd.ms-office.chartex+xml",
+												L"http://schemas.microsoft.com/office/2014/relationships/chartEx", 
+												L"charts/chartEx", true, true);
+
+		const FileType ChartStyle			(L"charts", L"style.xml",
+												L"application/vnd.ms-office.chartstyle+xml",
+												L"http://schemas.microsoft.com/office/2011/relationships/chartStyle", 
+												L"charts/style", true, true);
+
+		const FileType ChartColorStyle		(L"charts", L"colors.xml",
+												L"application/vnd.ms-office.chartcolorstyle+xml",
+												L"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle", 
+												L"charts/colors", true, true);
+
 		const FileType ActiveX_xml			(L"activeX", L"activeX.xml",
 												L"application/vnd.ms-office.activeX+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control");
@@ -212,6 +235,10 @@ namespace OOX
 		const FileType JsaProject			(L"", L"jsaProject.bin",
 												L"",
 												L"http://schemas.onlyoffice.com/jsaProject");
+
+		const FileType ImportedExternalContent(L"embeddings", L"",
+												L"",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/aFChunk");
 
 		const FileType MicrosoftOfficeUnknown(L"embeddings", L"",
 												L"",

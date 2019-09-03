@@ -509,15 +509,15 @@ void ppt_files::add_notesMaster(slide_content_ptr slide)
 {
     notesMaster_files_.add_slide(slide);
 }
-void ppt_files::set_media(mediaitems & _Mediaitems)
+void ppt_files::set_media(mediaitems_ptr & _mediaitems)
 {
-	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
+	if (_mediaitems->count_image + _mediaitems->count_media > 0)
 	{
-		media_ = element_ptr( new media(_Mediaitems, _Mediaitems.applicationFonts()) );
+		media_ = element_ptr( new media(_mediaitems, _mediaitems->applicationFonts()) );
 	}
-	if (_Mediaitems.count_object > 0)
+	if (_mediaitems->count_object > 0)
 	{
-		embeddings_ = element_ptr( new embeddings(_Mediaitems) );
+		embeddings_ = element_ptr( new embeddings(_mediaitems) );
 	}
 }
 void ppt_files::set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments)

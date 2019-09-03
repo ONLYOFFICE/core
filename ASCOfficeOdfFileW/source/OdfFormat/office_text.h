@@ -80,7 +80,6 @@ private:
 	office_element_ptr_array	content_;
 	
 	// TODO: office-text-content-prelude:
-    // TODO: office-forms
     // TODO: text-decls
     // TODO: table-decls
 	// TODO: text-page-sequence

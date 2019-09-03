@@ -102,7 +102,11 @@ void word_files::write(const std::wstring & RootPath)
     {
         embeddings_->write( path );
     }
-
+	if (drawings_)
+    {
+        drawings_->set_main_document(get_main_document());
+        drawings_->write( path );
+    }
 	if (headers_footers_)
     {
         headers_footers_->write( path );
@@ -140,22 +144,22 @@ void word_files::write(const std::wstring & RootPath)
 
 void word_files::update_rels(docx_conversion_context & Context)
 {
-    Context.get_mediaitems().dump_rels(rels_files_.get_rel_file()->get_rels());
+    Context.get_mediaitems()->dump_rels(rels_files_.get_rel_file()->get_rels());
 	
 	Context.dump_hyperlinks		(rels_files_.get_rel_file()->get_rels(), hyperlinks::document_place);
     Context.dump_headers_footers(rels_files_.get_rel_file()->get_rels());
     Context.dump_notes			(rels_files_.get_rel_file()->get_rels());
 }
 
-void word_files::set_media(mediaitems & _Mediaitems)
+void word_files::set_media(mediaitems_ptr & _mediaitems)
 {
-	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
+	if (_mediaitems->count_image + _mediaitems->count_media > 0)
 	{
-		media_ = element_ptr( new media(_Mediaitems, _Mediaitems.applicationFonts()) );
+		media_ = element_ptr( new media(_mediaitems, _mediaitems->applicationFonts()) );
 	}
-	if (_Mediaitems.count_object > 0)
+	if (_mediaitems->count_object > 0)
 	{
-		embeddings_ = element_ptr( new embeddings(_Mediaitems) );
+		embeddings_ = element_ptr( new embeddings(_mediaitems) );
 		embeddings_->set_main_document( get_main_document() );
 	}
 }
@@ -194,6 +198,10 @@ bool word_files::has_numbering()
 void word_files::add_jsaProject(const std::string &content)
 {
 	jsaProject_ = package::simple_element::create(L"jsaProject.bin", content);
+}
+void word_files::set_drawings(element_ptr Element)
+{
+    drawings_ = Element;
 }
 void word_files::set_headers_footers(headers_footers & HeadersFooters)
 {

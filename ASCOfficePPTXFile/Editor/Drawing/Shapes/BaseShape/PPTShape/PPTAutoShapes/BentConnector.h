@@ -49,6 +49,8 @@ public:
 		AddGuide(_T("val #0"));
 		m_arAdjustments.push_back(10800);
 
+		m_arAbsMaxAdjustments.push_back(82000);
+
 		LoadConnectorsList(_T("0,0;21600,21600"));
     }
 };

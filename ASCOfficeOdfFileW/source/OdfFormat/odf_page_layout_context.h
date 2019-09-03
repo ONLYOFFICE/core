@@ -98,12 +98,14 @@ public:
 	bool add_footer(int type);
 		void set_footer_size(_CP_OPT(odf_types::length) length_);
 	
-		bool add_header(int type);
+	bool add_header(int type);
 		void set_header_size(_CP_OPT(odf_types::length) length_);
 
-	void set_background					(_CP_OPT(odf_types::color) & color, int type);
+	void set_header_footer_image	(office_element_ptr image);
+	void set_background				(_CP_OPT(odf_types::color) & color, int type);
 
-	void set_page_number_format			(_CP_OPT(int) & type, _CP_OPT(int) & start);
+
+	void set_page_number_format		(_CP_OPT(int) & type, _CP_OPT(int) & start);
 
 	office_element_ptr	root_header_footer_; //для топовых элементов в style:footer
 	

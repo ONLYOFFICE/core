@@ -103,16 +103,19 @@ namespace XmlUtils
 		
 		std::wstring	GetName();
                 std::string     GetNameA();
+                const char*     GetNameChar();
                 int             GetDepth();
                 bool            IsEmptyNode();
 
 		std::wstring	GetText();
                 std::string     GetTextA();
+                const char*		GetTextChar();
 
 		std::wstring	GetText2();
                 std::string     GetText2A();
 		
 		std::wstring	GetText3();
+		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen);
 
 		std::wstring	GetOuterXml();
 		std::wstring	GetInnerXml();
@@ -140,6 +143,9 @@ namespace XmlUtils
 
 		virtual unsigned int AddRef();
 		virtual unsigned int Release();
+
+		static void DisableOutput();
+		static void EnableOutput();
 	};
 
 	class CXmlNodeBase;

@@ -70,6 +70,7 @@ namespace OOX
 		class CCellStyle;
 		class CNumFmt;
 		class COleObjects;
+		class CControls;
 		class CDrawing;
 		class CCellAnchor;
 		class CFromTo;
@@ -97,6 +98,8 @@ namespace OOX
 		class CDataValidations;
 		class CSheetProtection;
 		class CDataValidation;
+		class CHeaderFooterElement;
+		class CLegacyDrawingHFWorksheet;
 	}
 }
 
@@ -162,6 +165,9 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CTableColumns		*oox_table_part_columns);
 		void convert(OOX::Spreadsheet::CPictureWorksheet	*oox_background);
 		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
+		void convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_background);
+		void convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_footer);
+		void convert();
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row, OOX::Spreadsheet::CRow *oox_row_prev);
@@ -201,6 +207,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CCellAnchor					*oox_anchor);
 		void convert(OOX::Spreadsheet::CDrawing						*oox_drawing, OOX::Spreadsheet::CWorksheet *oox_sheet);
 		void convert(OOX::Spreadsheet::COleObjects					*oox_objects, OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::CControls					*oox_control, OOX::Spreadsheet::CWorksheet *oox_sheet);
 
 		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position *pos);
 

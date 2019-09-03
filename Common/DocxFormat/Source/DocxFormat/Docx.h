@@ -60,10 +60,12 @@ namespace OOX
 	class CSettings;
 	class CComments;
 	class CCommentsExt;
+	class CCommentsIds;
 	class CPeople;
 	class CDocumentComments;
 	class CDocumentCommentsExt;
 	class CDocumentPeople;
+	class CDocumentCommentsIds;
 	class VbaProject;
 	class JsaProject;
 	class CHdrFtr;
@@ -118,10 +120,12 @@ namespace OOX
 		OOX::CSettings		*m_pSettings;   // Настройки         word/settings.xml
 		OOX::CComments		*m_pComments;   //			         word/comments.xml
 		OOX::CCommentsExt	*m_pCommentsExt;//					word/commentsExtended.xml
+		OOX::CCommentsIds	*m_pCommentsIds;//					word/commentsIds.xml
 		OOX::CPeople		*m_pPeople;		//					word/people.xml
 		OOX::CDocumentComments		*m_pDocumentComments;   //			         word/documentComments.xml
 		OOX::CDocumentCommentsExt	*m_pDocumentCommentsExt;//					word/documentCommentsExtended.xml
 		OOX::CDocumentPeople		*m_pDocumentPeople;		//					word/documentPeople.xml
+		OOX::CDocumentCommentsIds	*m_pDocumentCommentsIds;//					word/documentCommentsIds.xml
 		
 		OOX::VbaProject		*m_pVbaProject;
 		OOX::JsaProject		*m_pJsaProject;
@@ -143,10 +147,12 @@ private:
 			m_pTheme     = NULL;
 			m_pComments  = NULL;
 			m_pCommentsExt	= NULL;
+			m_pCommentsIds = NULL;
 			m_pPeople		= NULL;
 			m_pDocumentComments  = NULL;
 			m_pDocumentCommentsExt	= NULL;
 			m_pDocumentPeople		= NULL;
+			m_pDocumentCommentsIds = NULL;
 			m_pVbaProject	= NULL;
 			m_pJsaProject	= NULL;
 		}

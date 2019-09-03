@@ -232,6 +232,7 @@ void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 				}
 
 				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				oox_serialize_effects(CP_XML_STREAM(), val.additional);
 			}
 		}
 	}
@@ -267,6 +268,7 @@ void docx_serialize_shape_child(std::wostream & strm, _docx_drawing & val)
 				val.serialize_shape	(CP_XML_STREAM());
 
 				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				oox_serialize_effects(CP_XML_STREAM(), val.additional);
 			} 
 			val.serialize_text(CP_XML_STREAM());
 		}

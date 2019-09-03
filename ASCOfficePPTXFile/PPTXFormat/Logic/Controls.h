@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_ACTIVEX_CONTROL_INCLUDE_H_
-#define PPTX_LOGIC_ACTIVEX_CONTROL_INCLUDE_H_
 
 #include "SpTreeElem.h"
 
@@ -194,4 +192,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_ACTIVEX_CONTROLS_INCLUDE_H_

@@ -54,9 +54,9 @@ void CComment::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		std::wstring sName = oReader.GetName();
 		WritingElement *pItem = NULL;
 
-		/*if ( L"w:altChunk" ==sName )
-		pItem = new Logic::AltChunk( oItem );
-		else */if ( L"w:bookmarkEnd" ==sName )
+		if ( L"w:altChunk" ==sName )
+			pItem = new Logic::CAltChunk( oReader );
+		else if ( L"w:bookmarkEnd" ==sName )
 			pItem = new Logic::CBookmarkEnd( oReader );
 		else if ( L"w:bookmarkStart" ==sName )
 			pItem = new Logic::CBookmarkStart( oReader );
@@ -390,6 +390,83 @@ CDocumentCommentsExt::CDocumentCommentsExt(OOX::Document *pMain, const CPath& oP
 	File::m_pMainDocument = pMain;
 	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
 	if (docx) docx->m_pDocumentCommentsExt = this;
+}
+void CCommentId::fromXML(XmlUtils::CXmlLiteReader& oReader)
+{
+	ReadAttributes( oReader );
+
+	if ( !oReader.IsEmptyNode() )
+		oReader.ReadTillEnd();
+}
+
+void CCommentId::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+{
+	WritingElement_ReadAttributes_Start( oReader )
+		WritingElement_ReadAttributes_Read_if     ( oReader, L"w16cid:paraId",		m_oParaId )
+		WritingElement_ReadAttributes_Read_else_if( oReader, L"w16cid:durableId",	m_oDurableId )
+	WritingElement_ReadAttributes_End( oReader )
+}
+
+CCommentsIds::CCommentsIds(OOX::Document *pMain) : OOX::File(pMain)
+{
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsIds = this;
+}
+CCommentsIds::CCommentsIds(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
+{
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pCommentsIds = this;
+
+	read( oPath );
+}
+CCommentsIds::~CCommentsIds()
+{
+	for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
+	{
+		if (m_arrComments[i]) delete m_arrComments[i];
+		m_arrComments[i] = NULL;
+	}
+	m_arrComments.clear();
+}
+void CCommentsIds::read(const CPath& oFilePath)
+{
+	XmlUtils::CXmlLiteReader oReader;
+
+	if ( !oReader.FromFile( oFilePath.GetPath() ) )
+		return;
+
+	if ( !oReader.ReadNextNode() )
+		return;
+
+	std::wstring sName = oReader.GetName();
+	if ( L"w16cid:commentsIds" == sName && !oReader.IsEmptyNode() )
+	{
+		int nNumberingDepth = oReader.GetDepth();
+		while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
+		{
+			sName = oReader.GetName();
+			if ( L"w16cid:commentId" == sName )
+			{
+				CCommentId* pCommentExt = new CCommentId(oReader);
+				if (pCommentExt->m_oParaId.IsInit() && pCommentExt->m_oDurableId.IsInit())
+				{
+					m_arrComments.push_back( pCommentExt );
+				}
+			}
+		}
+	}
+}
+CDocumentCommentsIds::CDocumentCommentsIds(OOX::Document *pMain) : CCommentsIds(NULL)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pDocumentCommentsIds = this;
+}
+CDocumentCommentsIds::CDocumentCommentsIds(OOX::Document *pMain, const CPath& oPath) : CCommentsIds(NULL, oPath)
+{
+	File::m_pMainDocument = pMain;
+	CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+	if (docx) docx->m_pDocumentCommentsIds = this;
 }
 void CPresenceInfo::fromXML(XmlUtils::CXmlLiteReader& oReader) 
 {

@@ -585,6 +585,7 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
+ 	odf_types::dr3d_attlist dr3d_attlist_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_scene);
@@ -692,9 +693,9 @@ public:
 	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-	_CP_OPT(std::wstring)	dr3d_size_; //vector3D
-	_CP_OPT(std::wstring)	dr3d_center_; //vector3D
-	_CP_OPT(std::wstring)	dr3d_transform_;
+	_CP_OPT(odf_types::vector3D)	dr3d_size_;
+	_CP_OPT(odf_types::vector3D)	dr3d_center_; 
+	_CP_OPT(std::wstring)			dr3d_transform_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dr3d_sphere);
@@ -712,11 +713,11 @@ public:
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context){}
 
-	_CP_OPT(std::wstring)					xml_id_;
-	_CP_OPT(std::wstring)					caption_id_;
-	_CP_OPT(std::wstring)					control_id_;
+	_CP_OPT(std::wstring)	xml_id_;
+	_CP_OPT(std::wstring)	caption_id_;
+	_CP_OPT(std::wstring)	control_id_;
 
-	office_element_ptr						draw_glue_point_;
+	office_element_ptr		draw_glue_point_;
 //<svg:desc>
 //<svg:title>
 private:

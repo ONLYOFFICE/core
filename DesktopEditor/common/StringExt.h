@@ -239,6 +239,51 @@ namespace NSStringExt
 			wsString.replace(nPos, nFromLen, wsTo);
 		}
 	}
+	static inline void LTrim(std::wstring &str, const wchar_t* chars)
+	{
+		str.erase(0, str.find_first_not_of(chars));
+	}
+	static inline void RTrim(std::wstring &str, const wchar_t* chars)
+	{
+		str.erase(str.find_last_not_of(chars) + 1);
+	}
+	static inline long FindFirstNotOfA(const char* str, const char* chars)
+	{
+		long res = 0;
+		while('\0' != str[res])
+		{
+			long index = 0;
+			while('\0' != chars[index] && chars[index] != str[res])
+			{
+				index++;
+			}
+			if('\0' == chars[index])
+			{
+				break;
+			}
+			res++;
+		}
+		return res;
+	}
+	static inline long FindLastNotOf(const wchar_t* str, unsigned int unLen, const wchar_t* chars)
+	{
+		long res = unLen;
+		res--;
+		while(res >= 0)
+		{
+			long index = 0;
+			while('\0' != chars[index] && chars[index] != str[res])
+			{
+				index++;
+			}
+			if('\0' == chars[index])
+			{
+				break;
+			}
+			res--;
+		}
+		return res;
+	}
 }
 
 #endif // _BUILD_STRING_CROSSPLATFORM_H_

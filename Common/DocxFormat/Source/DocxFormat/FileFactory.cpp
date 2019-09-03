@@ -103,10 +103,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsIds )
+			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsIds )
+			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentPeople )
 			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::ImportedExternalContent )
+			return smart_ptr<OOX::File>(new Media( pMain, oFileName, oRelation.IsExternal() ));
 //common		
 		else if ( oRelation.Type() == FileTypes::Setting)
 			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
@@ -140,6 +146,12 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartColorStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_bin)
@@ -226,6 +238,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsIds)
+			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsIds)
+			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentPeople )
@@ -240,6 +256,12 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartEx )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartColorStyle )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new ActiveX_xml( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_bin)
@@ -254,6 +276,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == FileTypes::CustomXmlProps)
 			return smart_ptr<OOX::File>(new OOX::CCustomXMLProps(pMain, oFileName));
+		else if ( pRelation->Type() == FileTypes::ImportedExternalContent )
+			return smart_ptr<OOX::File>(new Media( pMain, oFileName, pRelation->IsExternal() ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 	}

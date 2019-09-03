@@ -85,6 +85,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTabStop;
 
+	style_tab_stop() : margin_left(0) {}
+
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
@@ -108,7 +110,10 @@ public:
     _CP_OPT(odf_types::style_leader_color)	style_leader_color_;
 
     _CP_OPT( std::wstring )					style_leader_text_;
-    _CP_OPT( std::wstring )					style_leader_text_style_;            
+    _CP_OPT( std::wstring )					style_leader_text_style_;      
+
+//-----------------------------
+	double margin_left;
 
 };
 

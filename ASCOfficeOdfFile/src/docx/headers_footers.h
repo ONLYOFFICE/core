@@ -38,8 +38,9 @@
 #include "oox_rels.h"
 namespace cpdoccore { 
 
-namespace odf_reader {
-class header_footer_impl;
+namespace odf_reader 
+{
+	class header_footer_impl;
 }
 
 namespace oox {

@@ -34,10 +34,7 @@
 #include <string>
 #include "ods_table_state.h"
 
-
 namespace cpdoccore {
-
-
 namespace odf_writer {
 
 class ods_conversion_context;
@@ -57,7 +54,6 @@ class ods_table_context
 public:
     ods_table_context(ods_conversion_context & Context/*, ods_text_context & textCotnext*/);
 
-public:
     void start_table(office_element_ptr & elm);
     void end_table();
 
@@ -77,6 +73,13 @@ public:
 		void add_table_part_column(std::wstring name);
 	void end_table_part();
 
+	bool start_data_validation(const std::wstring &ref, int type);
+		void set_data_validation_operator(int val);
+		void set_data_validation_content(std::wstring val1, std::wstring val2);
+		void set_data_validation_allow_empty(bool val);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display);
+		void set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display);
+	void end_data_validation();
 private:
 
     ods_conversion_context & context_;
@@ -85,6 +88,9 @@ private:
 	
 	table_additional_elements_state	table_defined_expressions_;
 	table_additional_elements_state	table_database_ranges_;
+	table_additional_elements_state	table_content_validations_;
+
+	size_t count_validations_;
 
 	friend class ods_conversion_context;
 

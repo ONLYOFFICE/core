@@ -51,6 +51,7 @@ namespace cpdoccore {
 namespace oox {
 
 class mediaitems;
+typedef _CP_PTR(mediaitems) mediaitems_ptr;
 
 namespace package {
 
@@ -81,16 +82,17 @@ inline element::~element()
 class content_types_file : public element
 {
 public:
-							content_types_file	();
-	void					write				(const std::wstring & RootPath);
-	bool					add_or_find_default	(const std::wstring & extension);
-	bool					add_or_find_override(const std::wstring & fileName);
-	void					set_media			(mediaitems & _Mediaitems);
-    content_type *	content				();
+					content_types_file	();
+	void			write				(const std::wstring & RootPath);
+	bool			add_or_find_default	(const std::wstring & extension);
+	bool			add_or_find_override(const std::wstring & fileName);
+	void			set_media			(mediaitems & _Mediaitems);
+	void			set_media			(mediaitems_ptr & _Mediaitems);
+    content_type*	content				();
 
 private:
     content_type	content_type_content_;
-    std::wstring			filename_;
+    std::wstring	filename_;
 };
 
 class simple_element;
@@ -189,8 +191,8 @@ public:
     std::wstring str() { return content_.str(); }
     static _CP_PTR(chart_content) create();
 private:
-    std::wstringstream content_;
-    rels_file_ptr rels_;
+    std::wstringstream	content_;
+    rels_file_ptr		rels_;
 };
 //------------------------------------------------------------------------
 class document : public element
@@ -228,39 +230,39 @@ private:
 class media : public element
 {
 public:
-    media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
+    media(mediaitems_ptr & _mediaItems, NSFonts::IApplicationFonts *pAppFonts);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
-    mediaitems			& mediaitems_;
-    NSFonts::IApplicationFonts	* appFonts_;
+    mediaitems_ptr				mediaItems_;
+    NSFonts::IApplicationFonts* appFonts_;
         
 };
 
 class charts : public element
 {
 public:
-    charts(mediaitems & _ChartsItems);
+    charts(mediaitems_ptr & _chartsItems);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
-    mediaitems & chartsitems_;
+    mediaitems_ptr chartsItems_;
         
 };
 class embeddings : public element
 {
 public:
-    embeddings(mediaitems & _EmbeddingsItems);
+    embeddings(mediaitems_ptr & _embeddingsItems);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
-    mediaitems & embeddingsitems_;
+    mediaitems_ptr  embeddingsItems_;
         
 };
 } // namespace package

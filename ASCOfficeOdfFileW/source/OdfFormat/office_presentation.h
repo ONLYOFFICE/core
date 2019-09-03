@@ -41,7 +41,6 @@
 namespace cpdoccore { 
 namespace odf_writer {
 
-//  office:presentation
 class office_presentation : public office_element_impl<office_presentation>
 {
 public:
@@ -62,7 +61,6 @@ public:
 	office_element_ptr_array	pages_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_presentation);
 
 }

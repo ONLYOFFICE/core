@@ -159,15 +159,15 @@ namespace PPTX
 
 						if ((type == lType) && (idx == lIdx) && !idx.empty())
 						{
-							if (pShape)	pShape->SetLevelUpElement(pLayoutShape.operator->());
-							if (pPic)	pPic->SetLevelUpElement(pLayoutShape.operator->());
+							if (pShape)	pShape->SetLevelUpElement(pLayoutShape.GetPointer());
+							if (pPic)	pPic->SetLevelUpElement(pLayoutShape.GetPointer());
 							
 							return;
 						}
 						else if ((type == lType) && idx.empty() && lIdx.empty())
 						{
-							if (pShape)	pShape->SetLevelUpElement(pLayoutShape.operator->());
-							if (pPic)	pPic->SetLevelUpElement(pLayoutShape.operator->());
+							if (pShape)	pShape->SetLevelUpElement(pLayoutShape.GetPointer());
+							if (pPic)	pPic->SetLevelUpElement(pLayoutShape.GetPointer());
 							
 							return;
 						}

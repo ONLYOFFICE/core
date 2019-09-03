@@ -104,7 +104,7 @@ void odf_comment_context::start_comment(office_element_ptr &elm, int oox_id)
 	office_annotation* comm = dynamic_cast<office_annotation*>(elm.get());
 	if (!comm)return;
 
-	comm->office_annotation_attr_.name_ = impl_->comments_.back().odf_name;
+	comm->attr_.name_ = impl_->comments_.back().odf_name;
 
 
 }
@@ -117,7 +117,7 @@ void odf_comment_context::end_comment(office_element_ptr &elm, int oox_id)
 			office_annotation_end* comm = dynamic_cast<office_annotation_end*>(elm.get());
 			if (!comm)return;
 
-			comm->office_annotation_attr_.name_ = impl_->comments_[i].odf_name;
+			comm->attr_.name_ = impl_->comments_[i].odf_name;
 
 			impl_->comments_[i].state = 2;//stoped
 
@@ -206,8 +206,8 @@ void odf_comment_context::set_position (double x, double y)
 
 	if (comm)
 	{
-		comm->office_annotation_attr_.svg_x_ = odf_types::length(x, odf_types::length::pt);
-		comm->office_annotation_attr_.svg_y_ = odf_types::length(y, odf_types::length::pt);
+		comm->attr_.svg_x_ = odf_types::length(x, odf_types::length::pt);
+		comm->attr_.svg_y_ = odf_types::length(y, odf_types::length::pt);
 	}
 }
 

@@ -261,7 +261,20 @@ namespace NSDoctRenderer
     public:
         CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"")
         {
-            m_strConfigDir = NSFile::GetProcessDirectory() + L"/";
+            LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
+        }
+        ~CDoctRenderer_Private()
+        {
+
+        }
+        void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
+        {
+            m_arrFiles.RemoveAll();
+            m_arDoctSDK.clear();
+            m_arPpttSDK.clear();
+            m_arXlstSDK.clear();
+
+            m_strConfigDir = sConfigDir + L"/";
             m_strConfigPath = m_strConfigDir + L"DoctRenderer.config";
 
             XmlUtils::CXmlNode oNode;
@@ -323,10 +336,6 @@ namespace NSDoctRenderer
                 if (!NSFile::CFileBinary::Exists(m_sErrorsLogFile))
                     m_sErrorsLogFile = m_strConfigDir + m_sErrorsLogFile;
             }
-        }
-        ~CDoctRenderer_Private()
-        {
-
         }
 
         void LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& _files)
@@ -482,10 +491,10 @@ namespace NSDoctRenderer
                 break;
             }
             case DoctRendererFormat::PDF:
+            case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
             {
                 v8::Handle<v8::Value> js_func_calculate = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeCalculateFile"));
-                v8::Handle<v8::Value> js_func_pages_count = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));
-                v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeFileDataPDF"));
+                v8::Handle<v8::Value> js_func_pages_count = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));                
 
                 // CALCULATE
                 if (js_func_calculate->IsFunction())
@@ -537,8 +546,9 @@ namespace NSDoctRenderer
                 }
 
                 // RENDER
-                if (!bIsBreak)
+                if (!bIsBreak && DoctRendererFormat::PDF == pParams->m_eDstFormat)
                 {
+                    v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeFileDataPDF"));
                     if (js_func_get_file_s->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
@@ -584,6 +594,48 @@ namespace NSDoctRenderer
 
                                 }
                                 oFile.CloseFile();
+                            }
+                        }
+                    }
+                }
+                if (!bIsBreak && DoctRendererFormat::PPTX_THEME_THUMBNAIL == pParams->m_eDstFormat)
+                {
+                    v8::Local<v8::Object> js_objectEditor = global_js->Get(v8::String::NewFromUtf8(isolate, "editor"))->ToObject();
+                    v8::Handle<v8::Value> js_func_get_file_thumbnail = js_objectEditor->Get(v8::String::NewFromUtf8(isolate, "asc_nativeGetThemeThumbnail"));
+                    if (js_func_get_file_thumbnail->IsFunction())
+                    {
+                        v8::Handle<v8::Function> func_get_file_thumbnail = v8::Handle<v8::Function>::Cast(js_func_get_file_thumbnail);
+                        v8::Local<v8::Value> js_result2 = func_get_file_thumbnail->Call(js_objectEditor, 1, args);
+
+                        if (try_catch.HasCaught())
+                        {
+                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                            _LOGGING_ERROR_(L"save_code", strCode);
+                            _LOGGING_ERROR_(L"save", strException);
+
+                            strError = L"code=\"save\"";
+                            bIsBreak = true;
+                        }
+                        else
+                        {
+                            if (!js_result2->IsNull())
+                            {
+                                v8::Local<v8::Object> objNative = js_result2->ToObject();
+                                v8::Local<v8::Uint8Array> pArray = v8::Local<v8::Uint8Array>::Cast(objNative->Get(v8::String::NewFromUtf8(isolate, "data")));
+                                std::wstring sThemeName = to_cstring(objNative->Get(v8::String::NewFromUtf8(isolate, "name")));
+                                int nDataLen = objNative->Get(v8::String::NewFromUtf8(isolate, "dataLen"))->ToInt32()->Value();
+                                if (sThemeName.empty())
+                                    sThemeName = L"Default";
+
+                                BYTE* pData = (BYTE*)pArray->Buffer()->Externalize().Data();
+                                NSFile::CFileBinary oFile;
+                                if (true == oFile.CreateFileW(pParams->m_strDstFilePath + L"/" + sThemeName + L".theme"))
+                                {
+                                    oFile.WriteFile(pData, (DWORD)nDataLen);
+                                    oFile.CloseFile();
+                                }
                             }
                         }
                     }
@@ -1054,6 +1106,11 @@ namespace NSDoctRenderer
         m_pInternal = new CDoctRenderer_Private(sAllFontsPath);
     }
 
+    void CDoctrenderer::LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath)
+    {
+        m_pInternal->LoadConfig(sConfigDir, sAllFontsPath);
+    }
+
     CDoctrenderer::~CDoctrenderer()
     {
         RELEASEOBJECT(m_pInternal);
@@ -1091,6 +1148,7 @@ namespace NSDoctRenderer
                 {
                 case DoctRendererFormat::PPTT:
                 case DoctRendererFormat::PDF:
+                case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
                     {
                         arSdkFiles = &m_pInternal->m_arPpttSDK;
                         m_pInternal->m_strEditorType = L"presentation";
@@ -1122,7 +1180,22 @@ namespace NSDoctRenderer
         }
 
         std::wstring strFileName = m_pInternal->m_oParams.m_strSrcFilePath;
-        strFileName += L"/Editor.bin";
+        size_t nFileNameLen = strFileName.length();
+        if (4 < nFileNameLen)
+        {
+            const wchar_t* bufFileName = strFileName.c_str();
+            if (bufFileName[nFileNameLen - 4] != '.' ||
+                bufFileName[nFileNameLen - 3] != 'b' ||
+                bufFileName[nFileNameLen - 2] != 'i' ||
+                bufFileName[nFileNameLen - 1] != 'n')
+            {
+                strFileName += L"/Editor.bin";
+            }
+        }
+        else
+        {
+            strFileName += L"/Editor.bin";
+        }
 
         strFileName = string_replaceAll(strFileName, L"\\\\", L"\\");
         strFileName = string_replaceAll(strFileName, L"//", L"/");

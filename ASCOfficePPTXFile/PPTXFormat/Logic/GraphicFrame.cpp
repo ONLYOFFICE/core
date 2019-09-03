@@ -508,7 +508,14 @@ namespace PPTX
 			}
 			else if (chartRec.is_init())
 			{
-				pWriter->WriteRecord2(3, chartRec);
+				if (chartRec->m_bChartEx)
+				{
+					pWriter->WriteRecord2(4, chartRec);
+				}
+				else
+				{
+					pWriter->WriteRecord2(3, chartRec);
+				}
 			}
 			else if (element.is_init())
 			{
@@ -554,27 +561,30 @@ namespace PPTX
 				{
 					case 0:
 					{
-						nvGraphicFramePr.fromPPTY(pReader);							
-						break;
-					}
+						nvGraphicFramePr.fromPPTY(pReader);	
+					}break;
 					case 1:
 					{
 						xfrm = new Logic::Xfrm();
 						xfrm->fromPPTY(pReader);
-						xfrm->m_ns = L"p";
-						break;
-					}
+						xfrm->m_ns = L"p";						
+					}break;
 					case 2:
 					{
                         table = new Logic::Table();
-                        table->fromPPTY(pReader);
-						break;
-					}
+                        table->fromPPTY(pReader);						
+					}break;
 					case 3:
 					{
 						chartRec = new Logic::ChartRec();
 						chartRec->fromPPTY(pReader);
-					}					
+					}break;					
+					case 4:
+					{
+						chartRec = new Logic::ChartRec();
+						chartRec->m_bChartEx = true;
+						chartRec->fromPPTY(pReader);
+					}break;			
 					default:
 						break;
 				}

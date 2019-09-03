@@ -89,7 +89,9 @@ public:
     
 	void docx_convert(oox::docx_conversion_context & Context, bool in_styles = false);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
-   
+ 	
+	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
+  
 	graphic_format_properties *		get_graphic_properties()			const;
   
 	style_text_properties *			get_style_text_properties()			const;
@@ -570,28 +572,38 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_styles);
 
-class header_footer_content_impl
+//----------------------------------------------------------------------------------------------
+class header_footer_impl : public office_element_impl<header_footer_impl>
 {
 public:
-    common_style_header_footer_attlist	common_style_header_footer_attlist_;
-    header_footer_content				header_footer_content_;
-};
+    static const wchar_t * ns;
+    static const wchar_t * name;
+   
+	static const ElementType type = typeStyleHeaderFooter;
+	static const xml::NodeType xml_type = xml::typeElement;
 
-class header_footer_impl
-{
-public:
-    header_footer_content_impl & content()				{ return content_; }
-    const header_footer_content_impl & content() const	{ return content_; }
-    virtual ~header_footer_impl() {}
+	CPDOCCORE_DEFINE_VISITABLE();
+	friend class odf_document;
+
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) {}
+	virtual void pptx_convert(oox::pptx_conversion_context & Context) {}
     
-	void docx_convert(oox::docx_conversion_context & Context);
-
-	header_footer_content_impl content_;
-
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
+   
+	std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
+	
+    common_style_header_footer_attlist	attlist_;
+	
+	office_element_ptr					tracked_changes_;
+    office_element_ptr_array			content_;
 };
 
-//         style:header
-class style_header : public office_element_impl<style_header>, public header_footer_impl
+// style:header
+class style_header : public header_footer_impl
 {
 public:
     static const wchar_t * ns;
@@ -600,133 +612,86 @@ public:
     static const ElementType type = typeStyleHeader;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-    //header_footer_content_impl content_;
-
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header);
 
-///         style:footer
-class style_footer : public office_element_impl<style_footer>, public header_footer_impl
+// style:footer
+class style_footer : public header_footer_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFooter;
-    CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-   // header_footer_content_impl content_;
-
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer);
 
-///         style:header-first
-class style_header_first : public office_element_impl<style_header_first>, public header_footer_impl
+// style:header-first
+class style_header_first :  public header_footer_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleHeaderFirst;
-    CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-    //header_footer_content_impl content_;
-
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_first);
 
-///         style:footer_first
-class style_footer_first : public office_element_impl<style_footer_first>, public header_footer_impl
+// style:footer_first
+class style_footer_first : public header_footer_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFooterFirst;
-    CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-   // header_footer_content_impl content_;
-
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
 
-///         style:header-left
-class style_header_left : public office_element_impl<style_header_left>, public header_footer_impl
+// style:header-left
+class style_header_left : public header_footer_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleHeaderLeft;
-    CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-   // header_footer_content_impl content_;
-
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_left);
 
-///         style:footer-left
-class style_footer_left : public office_element_impl<style_footer_left>, public header_footer_impl
+// style:footer-left
+class style_footer_left :  public header_footer_impl
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFooterLeft;
-    CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-   // header_footer_content_impl content_;
-
+	virtual void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_left);
-
+//-----------------------------------------------------------------------------------------------------------------------------
 class style_columns : public office_element_impl<style_columns>
 {
 public:
@@ -982,20 +947,6 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep);
 
-// style-page-layout-properties-elements
-class style_page_layout_properties_elements
-{
-public:
-    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
-
-    office_element_ptr	style_background_image_;
-    office_element_ptr	style_columns_;
-    
-    // 15.2.20
-    office_element_ptr  style_footnote_sep_;
-
-};
-
 // style:page-layout-properties
 class style_page_layout_properties : public office_element_impl<style_page_layout_properties>
 {
@@ -1006,19 +957,21 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    void pptx_convert			(oox::pptx_conversion_context & Context);
-    void xlsx_convert			(oox::xlsx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
     
 	bool docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id);
 	
-    void docx_serialize	(std::wostream & strm, oox::docx_conversion_context & Context);
+    void docx_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
 	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 	void pptx_serialize(std::wostream & strm, oox::pptx_conversion_context & Context);
 
     style_page_layout_properties() { }
 
-    style_page_layout_properties_attlist	attlist_;
-    style_page_layout_properties_elements	elements_;
+    style_page_layout_properties_attlist attlist_;
+
+    office_element_ptr	style_background_image_;
+    office_element_ptr	style_columns_;
+    office_element_ptr	style_footnote_sep_;
 
 private:
 

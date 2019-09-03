@@ -112,7 +112,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	std::vector<const odf_reader::style_instance *> instances;
 
 	odf_reader::style_instance* styleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,false/*Context.process_headers_footers_*/);
+		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic, false/*Context.process_headers_footers_*/);
 	if (styleInst)
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
@@ -396,28 +396,111 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
 
+	form_element* control = dynamic_cast<form_element*>(state.element);
+	if (!control) return;
+	
 	if (state.ctrlPropId.empty())
 	{
 		std::wstring target;
-		state.ctrlPropId = Context.get_mediaitems().add_control_props(target);
+		state.ctrlPropId = Context.get_mediaitems()->add_control_props(target);
 		
 		std::wstringstream strm;		
-		
-		form_element* control = dynamic_cast<form_element*>(state.element);
-		if (control)
-		{
-			control->serialize_control_props(strm);
-		}
+		control->serialize_control_props(strm);
 
 		Context.add_control_props(state.ctrlPropId, target, strm.str());
 	}
 
-	Context.get_drawing_context().start_frame();
-	Context.get_drawing_context().set_control(state.ctrlPropId);
+	Context.get_drawing_context().start_control(state.ctrlPropId, control->object_type_);
 	
 	common_xlsx_convert(Context);
+	
+	if (control->linked_cell_)
+	{
+		Context.get_drawing_context().set_property(_property(L"linked_cell", control->linked_cell_.get()));
+	}
+	if (control->disabled_)
+	{
+		Context.get_drawing_context().set_property(_property(L"disabled", control->disabled_->get()));
+	}
+	if (control->value_)
+	{
+		Context.get_drawing_context().set_property(_property(L"value", control->value_.get()));
+	}
+	else if (control->current_value_)
+	{
+		Context.get_drawing_context().set_property(_property(L"value", control->current_value_.get()));
+	}
+	if (control->label_)
+	{
+		Context.get_drawing_context().set_property(_property(L"label", control->label_.get()));
+		Context.get_drawing_context().set_property(_property(L"text-content", control->label_.get()));
+	}
+	//if (control->name_)
+	//{
+	//	Context.get_drawing_context().set_name(control->name_.get());
+	//}
+	form_value_range* value_range = dynamic_cast<form_value_range*>(control);
 
-	Context.get_drawing_context().end_frame();
+	if (value_range)
+	{
+		if (value_range->min_value_)
+		{
+			Context.get_drawing_context().set_property(_property(L"min_value", value_range->min_value_.get()));
+		}
+		if (value_range->max_value_)
+		{
+			Context.get_drawing_context().set_property(_property(L"max_value", value_range->max_value_.get()));
+		}
+		if (value_range->step_size_)
+		{
+			Context.get_drawing_context().set_property(_property(L"step", value_range->step_size_.get()));
+		}
+		if (value_range->page_step_size_)
+		{
+			Context.get_drawing_context().set_property(_property(L"page_step", value_range->page_step_size_.get()));
+		}
+		if (value_range->orientation_)
+		{
+			Context.get_drawing_context().set_property(_property(L"orientation", value_range->orientation_.get()));
+		}
+	}
+	form_combobox* combobox = dynamic_cast<form_combobox*>(control);
+
+	if (combobox)
+	{
+		//items_;
+		if (combobox->source_cell_range_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"cell_range", combobox->source_cell_range_.get()));
+		}
+		if (combobox->list_source_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"list_source", combobox->list_source_.get()));
+		}
+	}
+	form_listbox* listbox = dynamic_cast<form_listbox*>(control);
+	if (listbox)
+	{
+		if (listbox->source_cell_range_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"cell_range", listbox->source_cell_range_.get()));
+		}
+		if (listbox->list_source_)
+		{	
+			Context.get_drawing_context().set_property(_property(L"list_source", listbox->list_source_.get()));
+		}
+	}
+	form_checkbox* checkbox = dynamic_cast<form_checkbox*>(control);
+	if (checkbox)
+	{
+		Context.get_drawing_context().set_property(_property(L"checkbox_state", checkbox->current_state_));
+	}
+
+	//_CP_OPT(std::wstring)		label_;
+	//_CP_OPT(std::wstring)		title_;
+	//_CP_OPT(odf_types::Bool)	dropdown_;
+
+	Context.get_drawing_context().end_control();
 	Context.get_drawing_context().clear();
 
 }

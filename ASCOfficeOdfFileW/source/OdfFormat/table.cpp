@@ -198,7 +198,11 @@ void table_table::create_child_element(const std::wstring & Ns, const std::wstri
     {
   	    CP_CREATE_ELEMENT(table_shapes_);
     }
-     else if CP_CHECK_NAME(L"table", L"named-expressions")
+    else if CP_CHECK_NAME(L"office", L"forms")
+    {
+  	    CP_CREATE_ELEMENT(office_forms_);
+    }
+	else if CP_CHECK_NAME(L"table", L"named-expressions")
     {
   	    CP_CREATE_ELEMENT(table_named_expressions_);
     }
@@ -235,6 +239,10 @@ void table_table::add_child_element( const office_element_ptr & child_element)
     {
   	    table_shapes_ = child_element;
     }
+	else if (type == typeOfficeForms)
+	{
+		office_forms_ = child_element;
+	}
     else if (type == typeTableNamedExpressions)
     {
   	    table_named_expressions_ = child_element;
@@ -255,6 +263,8 @@ void table_table::serialize(std::wostream & _Wostream)
 			
 			if (table_protection_)table_protection_->serialize(CP_XML_STREAM());
 		
+			if (office_forms_)office_forms_->serialize(CP_XML_STREAM());
+
 			if (table_shapes_)table_shapes_->serialize(CP_XML_STREAM());
    
 			table_columns_and_groups_.serialize(CP_XML_STREAM());
@@ -946,5 +956,119 @@ void table_shapes::serialize(std::wostream & _Wostream)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * table_content_validations::ns = L"table";
+const wchar_t * table_content_validations::name = L"content-validations";
+
+void table_content_validations::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+void table_content_validations::add_child_element( const office_element_ptr & child_element)
+{
+    content_.push_back(child_element);
+}
+void table_content_validations::serialize(std::wostream & _Wostream)
+{
+ 	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+        {
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * table_content_validation::ns = L"table";
+const wchar_t * table_content_validation::name = L"content-validation";
+
+void table_content_validation::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+void table_content_validation::add_child_element( const office_element_ptr & child_element)
+{
+    content_.push_back(child_element);
+}
+void table_content_validation::serialize(std::wostream & _Wostream)
+{
+ 	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"table:name",				table_name_);
+			CP_XML_ATTR_OPT(L"table:condition",			table_condition_);
+			CP_XML_ATTR_OPT(L"table:display-list",		table_display_list_);
+			CP_XML_ATTR_OPT(L"table:allow-empty-cell",	table_allowempty_cell_);
+			CP_XML_ATTR_OPT(L"table:base-cell-address",	table_base_cell_address_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * table_error_message::ns = L"table";
+const wchar_t * table_error_message::name = L"error-message";
+
+void table_error_message::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+void table_error_message::add_child_element( const office_element_ptr & child_element)
+{
+    content_.push_back(child_element);
+}
+void table_error_message::serialize(std::wostream & _Wostream)
+{
+ 	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"table:title",			table_title_);
+			CP_XML_ATTR_OPT(L"table:message-type",	table_message_type_);
+			CP_XML_ATTR_OPT(L"table:display",		table_display_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * table_help_message::ns = L"table";
+const wchar_t * table_help_message::name = L"help-message";
+
+void table_help_message::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+void table_help_message::add_child_element( const office_element_ptr & child_element)
+{
+    content_.push_back(child_element);
+}
+void table_help_message::serialize(std::wostream & _Wostream)
+{
+ 	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"table:title",			table_title_);
+			CP_XML_ATTR_OPT(L"table:message-type",	table_message_type_);
+			CP_XML_ATTR_OPT(L"table:display",		table_display_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 }
 }

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_WORKBOOK_FILE_INCLUDE_H_
-#define OOX_WORKBOOK_FILE_INCLUDE_H_
 
 #include "../Xlsx.h"
 #include "../CommonInclude.h"
@@ -47,6 +45,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CPersonList;
 		//необработанные child:
 		//<customWorkbookViews>
 		//<extLst>
@@ -69,6 +68,7 @@ namespace OOX
 			{
 				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;
+				m_pPersonList = NULL;
 
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 				if ((xlsx) && (!xlsx->m_pWorkbook))
@@ -79,7 +79,8 @@ namespace OOX
 			CWorkbook(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bMacroEnabled	= false;
-				m_bSpreadsheets = true;				
+				m_bSpreadsheets = true;
+				m_pPersonList = NULL;
 				
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
 				if ((xlsx) && (!xlsx->m_pWorkbook))
@@ -257,9 +258,9 @@ namespace OOX
 			nullable<std::wstring>							m_oPivotCachesXml;
             nullable<OOX::Spreadsheet::CCalcPr>				m_oCalcPr;
 			
+			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;
 		};
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_WORKBOOK_FILE_INCLUDE_H_

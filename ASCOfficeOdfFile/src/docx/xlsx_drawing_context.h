@@ -53,18 +53,29 @@ namespace oox {
 	class xlsx_drawings;
 	struct _oox_fill;
 
-	typedef _CP_PTR(xlsx_drawings) xlsx_drawings_ptr;
+	typedef _CP_PTR(mediaitems)		mediaitems_ptr;
+	typedef _CP_PTR(xlsx_drawings)	xlsx_drawings_ptr;
 
 class xlsx_drawing_context_handle
 {
 public:
-    xlsx_drawing_context_handle(mediaitems & items);
+    xlsx_drawing_context_handle(mediaitems_ptr & items);
     ~xlsx_drawing_context_handle();
     
-    std::pair<std::wstring, std::wstring>	add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings);
-    const std::vector<drawing_elm>			& content() const;
+    std::pair<std::wstring, std::wstring>	add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings, RelsType const & type_ = typeDefault);
+ 	std::pair<std::wstring, std::wstring>	add_drawing_vml(std::wstring const & content, xlsx_drawings_ptr drawings);
+   
+	const std::vector<drawing_elm> & content()		const;
+	const std::vector<drawing_elm> & content_vml()	const;
 
     friend class xlsx_drawing_context;
+
+    size_t next_rId()
+    {
+        return next_rId_++;
+    }
+private:
+	size_t	next_rId_;
 
 	class Impl;
     _CP_PTR(Impl) impl_;
@@ -72,10 +83,12 @@ public:
 
 
 
+typedef _CP_PTR(xlsx_drawing_context_handle) xlsx_drawing_context_handle_ptr;
+
 class xlsx_drawing_context
 {
 public:
-    xlsx_drawing_context(xlsx_drawing_context_handle & h);
+    xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h);
     ~xlsx_drawing_context();
 
 	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//для анализа картинок
@@ -87,7 +100,6 @@ public:
     void end_group	();
 
 	void start_shape(int type);
-	//...пока тока общие свойства ... частные для каждого объекта пооозже
     void end_shape();
 
 	void start_frame();
@@ -95,9 +107,14 @@ public:
 		void set_chart		(const std::wstring & path);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
 		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
-		void set_control	(const std::wstring & ctrlPropId);
 		void set_text_box	();
 	void end_frame();
+
+	void start_control(const std::wstring & ctrlPropId, int type);
+	void end_control();
+
+	void start_comment(int base_col, int base_row);
+	void end_comment();
 
 	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
 
@@ -105,14 +122,15 @@ public:
 	void set_scale		(double cx_pt, double cy_pt);
 	void set_rotate		(double angle, bool translate = false);
 
+	void set_rel_anchor	(_INT32 owner_cx, _INT32 owner_cy);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt, bool group = false);
-	void set_property	(odf_reader::_property p);
     void set_clipping	(const std::wstring & str );
 	void set_fill		(_oox_fill & fill);
 
 	void set_is_line_shape(bool val);
 	void set_is_connector_shape(bool val);
 
+	void set_property	(odf_reader::_property p);
 	std::vector<odf_reader::_property> & get_properties();
 
 	std::wstring add_hyperlink(std::wstring const & ref);
@@ -120,9 +138,13 @@ public:
 	void set_use_image_replacement();
 	
 	bool empty() const;
+	bool vml_empty() const;
+	
 	void clear();
 
-    void serialize(std::wostream & strm);
+	void serialize(std::wostream & strm, const std::wstring& ns = L"xdr");
+	void serialize_vml(std::wostream & strm);
+
 	std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
 
     xlsx_drawings_ptr get_drawings();

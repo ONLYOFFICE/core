@@ -35,7 +35,7 @@
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_ASCDOCBUILDER				101
+#define IDR_ONLYOFFICEDOCBUILDER		101
 
 // Next default values for new objects
 // 

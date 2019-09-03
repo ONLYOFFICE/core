@@ -105,7 +105,7 @@ void draw_rect::serialize(std::wostream & _Wostream)
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 /// draw-ellipse-attlist
 
 void draw_ellipse_attlist::serialize(CP_ATTR_NODE)
@@ -113,7 +113,9 @@ void draw_ellipse_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"draw:filter-name", draw_filter_name_);
 }
 
+//-------------------------------------------------------------------------------------------
 /// draw:ellipse
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_ellipse::ns = L"draw";
 const wchar_t * draw_ellipse::name = L"ellipse";
 
@@ -134,8 +136,9 @@ void draw_ellipse::serialize(std::wostream & _Wostream)
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 // draw:circle
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_circle::ns = L"draw";
 const wchar_t * draw_circle::name = L"circle";
 
@@ -153,7 +156,7 @@ void draw_circle::serialize(std::wostream & _Wostream)
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 /// draw-line-attlist
 void draw_line_attlist::serialize(CP_ATTR_NODE)
 {
@@ -181,8 +184,9 @@ void draw_line::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 // draw:custom_shape
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_custom_shape::ns = L"draw";
 const wchar_t * draw_custom_shape::name = L"custom-shape";
 
@@ -219,7 +223,9 @@ void draw_path_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"svg:viewBox", svg_viewbox_);
 
 }
+//-------------------------------------------------------------------------------------------
 // draw:path
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_path::ns = L"draw";
 const wchar_t * draw_path::name = L"path";
 
@@ -280,7 +286,9 @@ void draw_polygon_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"svg:viewBox", svg_viewbox_);
 
 }
+//-------------------------------------------------------------------------------------------
 // draw:polygon
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_polygon::ns = L"draw";
 const wchar_t * draw_polygon::name = L"polygon";
 
@@ -334,7 +342,7 @@ void draw_polygon::reset_polygon_path()
 	//	}
 	//}
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 void draw_equation_attlist::serialize(CP_ATTR_NODE)
 {	
 	CP_XML_ATTR_OPT(L"draw:name", draw_name_);
@@ -355,7 +363,9 @@ void draw_handle_attlist::serialize(CP_ATTR_NODE)
 	
 	CP_XML_ATTR_OPT(L"draw:handle-polar", draw_handle_polar_);
 }
+//-------------------------------------------------------------------------------------------
 // draw:path
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_handle::ns = L"draw";
 const wchar_t * draw_handle::name = L"handle";
 
@@ -401,6 +411,7 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 }
 
 
+//-------------------------------------------------------------------------------------------
 /// draw-enhanced_geometry_attlist
 void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 {
@@ -424,7 +435,9 @@ void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"draw:text-path-scale",				draw_text_path_scale_);
 	CP_XML_ATTR_OPT(L"draw:text-path-same-letter-heights",	draw_text_path_same_letter_heights_);
 }
+//-------------------------------------------------------------------------------------------
 // draw:enhanced_geometry
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_enhanced_geometry::ns = L"draw";
 const wchar_t * draw_enhanced_geometry::name = L"enhanced-geometry";
 
@@ -488,9 +501,9 @@ void draw_enhanced_geometry::add_child_element( const office_element_ptr & child
     }
 
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 // draw:caption
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_caption::ns = L"draw";
 const wchar_t * draw_caption::name = L"caption";
 
@@ -508,7 +521,7 @@ void draw_caption::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
 /// draw-connector-attlist
 void draw_connector_attlist::serialize(CP_ATTR_NODE)
 {
@@ -517,7 +530,9 @@ void draw_connector_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"draw:type",draw_type_);
 
 }
+//-------------------------------------------------------------------------------------------
 // draw:connector
+//-------------------------------------------------------------------------------------------
 const wchar_t * draw_connector::ns = L"draw";
 const wchar_t * draw_connector::name = L"connector";
 
@@ -577,7 +592,222 @@ void draw_connector::reset_svg_path()
 	//	}
 	//}
 }
-///////////////////////////////////////
+//-------------------------------------------------------------------------------------------
+// draw:control
+//-------------------------------------------------------------------------------------------
+const wchar_t * draw_control::ns = L"draw";
+const wchar_t * draw_control::name = L"control";
 
+void draw_control::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"xml:id", xml_id_);
+			CP_XML_ATTR_OPT(L"draw:caption-id", caption_id_);
+			CP_XML_ATTR_OPT(L"draw:control", control_id_);
+
+			draw_shape::serialize_attlist(CP_GET_XML_NODE());
+	
+			draw_shape::serialize(CP_XML_STREAM());
+			if (draw_glue_point_)
+				draw_glue_point_->serialize(CP_XML_STREAM());
+		}
+	}
+}
+void draw_control::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"draw", L"glue-point")
+    {
+        CP_CREATE_ELEMENT(draw_glue_point_);
+	}
+    else
+    {
+        //not_applicable_element(L"draw_enhanced_geometry", Reader, Ns, Name);
+    }
+
+}
+void draw_control::add_child_element( const office_element_ptr & child_element)
+{
+ 	if (!child_element) return;
+
+	ElementType type = child_element->get_type();
+
+    if (type == typeDrawGluePoint)
+	{
+		draw_glue_point_ = child_element;
+	}
+    else
+    {
+        //not_applicable_element(L"draw_enhanced_geometry", Reader, Ns, Name);
+    }
+
+}
+//-------------------------------------------------------------------------------------------
+// dr3d:scene
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_scene::ns = L"dr3d";
+const wchar_t * dr3d_scene::name = L"scene";
+
+void dr3d_scene::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			draw_shape::serialize_attlist(CP_GET_XML_NODE());
+			dr3d_attlist_.serialize(CP_GET_XML_NODE());
+			
+			draw_shape::serialize(CP_XML_STREAM());
+
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+void dr3d_scene::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void dr3d_scene::add_child_element( const office_element_ptr & child_element)
+{
+ 	if (!child_element) return;
+	
+	content_.push_back(child_element);
+}
+
+//-------------------------------------------------------------------------------------------
+// dr3d:extrude
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_extrude::ns = L"dr3d";
+const wchar_t * dr3d_extrude::name = L"extrude";
+
+void dr3d_extrude::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {	
+			draw_path::serialize(CP_XML_STREAM());
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+// dr3d:rotate
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_rotate::ns = L"dr3d";
+const wchar_t * dr3d_rotate::name = L"rotate";
+
+void dr3d_rotate::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {	
+			draw_path::serialize(CP_XML_STREAM());
+		}
+	}
+}
+//-------------------------------------------------------------------------------------------
+// dr3d:light
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_light::ns = L"dr3d";
+const wchar_t * dr3d_light::name = L"light";
+
+void dr3d_light::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {	
+			CP_XML_ATTR_OPT(L"dr3d:diffuse_color",	dr3d_diffuse_color_);
+			CP_XML_ATTR_OPT(L"dr3d:direction",		dr3d_direction_);
+			CP_XML_ATTR_OPT(L"dr3d:specular",		dr3d_specular_);
+			CP_XML_ATTR_OPT(L"dr3d:enabled",		dr3d_enabled_);
+		}
+	}
+}
+//-------------------------------------------------------------------------------------------
+// dr3d:cube
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_cube::ns = L"dr3d";
+const wchar_t * dr3d_cube::name = L"cube";
+
+void dr3d_cube::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {	
+			draw_shape::serialize_attlist(CP_GET_XML_NODE());			
+
+			CP_XML_ATTR_OPT(L"dr3d:max-edge",	dr3d_max_edge_);
+			CP_XML_ATTR_OPT(L"dr3d:min-edge",	dr3d_min_edge_);
+			CP_XML_ATTR_OPT(L"dr3d:transform",	dr3d_transform_);
+			
+			draw_shape::serialize(CP_XML_STREAM());
+		}
+	}
+}
+//-------------------------------------------------------------------------------------------
+// dr3d:sphere
+//-------------------------------------------------------------------------------------------
+const wchar_t * dr3d_sphere::ns = L"dr3d";
+const wchar_t * dr3d_sphere::name = L"sphere";
+
+void dr3d_sphere::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {	
+			draw_shape::serialize_attlist(CP_GET_XML_NODE());			
+
+			CP_XML_ATTR_OPT(L"dr3d:max-edge",	dr3d_size_);
+			CP_XML_ATTR_OPT(L"dr3d:min-edge",	dr3d_center_);
+			CP_XML_ATTR_OPT(L"dr3d:transform",	dr3d_transform_);
+
+			draw_shape::serialize(CP_XML_STREAM());
+		}
+	}
+}
+//-------------------------------------------------------------------------------------------
+const wchar_t * draw_a::ns = L"draw";
+const wchar_t * draw_a::name = L"a";
+//-------------------------------------------------------------------------------------------
+void draw_a::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void draw_a::add_child_element( const office_element_ptr & child_element)
+{
+ 	if (!child_element) return;
+	
+	content_.push_back(child_element);
+}
+void draw_a::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			xlink_attlist_.serialize(CP_GET_XML_NODE());
+
+			CP_XML_ATTR_OPT(L"office:name",				office_name_);
+			CP_XML_ATTR_OPT(L"text:style-name",			text_style_name_);
+			CP_XML_ATTR_OPT(L"text:visited-style-name", text_visited_style_name_);
+			CP_XML_ATTR_OPT(L"office:target-frame-name",office_target_frame_name_);
+
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 }
 }

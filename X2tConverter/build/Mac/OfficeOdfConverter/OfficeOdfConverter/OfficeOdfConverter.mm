@@ -35,7 +35,7 @@
 #include "../../../../src/cextracttools.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../ASCOfficeOdfFileW/source/Oox2OdfConverter/Oox2OdfConverter.h"
-#include "../../ASCOfficeOdfFile/src/ConvertOO2OOX.h"
+//#include "../../ASCOfficeOdfFile/src/ConvertOO2OOX.h"
 
 #include <string>
 #include <fstream>
@@ -43,23 +43,6 @@
 
 namespace NExtractTools
 {
-    _UINT32 processEncryptionError(_UINT32 hRes, const std::wstring &sFrom, InputParams& params)
-    {
-        if (AVS_ERROR_DRM == hRes)
-        {
-            if(!params.getDontSaveAdditional())
-            {
-                copyOrigin(sFrom, *params.m_sFileTo);
-            }
-            return AVS_FILEUTILS_ERROR_CONVERT_DRM;
-        }
-        else if (AVS_ERROR_PASSWORD == hRes)
-        {
-            return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
-        }
-        return hRes;
-    }
-    
     static std::wstring nsstring_to_wstring(NSString* nsstring)
     {
         NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
@@ -194,37 +177,6 @@ namespace NExtractTools
     }
 }
 
-namespace NExtractTools
-{
-    _UINT32 odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
-    {
-        std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
-        NSDirectory::CreateDirectory(sTempUnpackedOdf);
-        
-        COfficeUtils oCOfficeUtils(NULL);
-        if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
-            return AVS_FILEUTILS_ERROR_CONVERT;;
-        
-        _UINT32 nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
-        nRes = processEncryptionError(nRes, sFrom, params);
-        return nRes;
-    }
-    
-    _UINT32 odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
-    {
-        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
-        NSDirectory::CreateDirectory(sTempUnpackedOox);
-        
-        _UINT32 nRes = odf2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
-        if(SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOox, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
-        return nRes;
-    }
-}
-
 @implementation OfficeOdfConverter
 
 - (int)docx2odt:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath isTemplate:(bool)isTemplate {
@@ -273,70 +225,6 @@ namespace NExtractTools
     }
     
     return NExtractTools::__pptx2odp(from, to, temp, oInputParams, isTemplate);
-}
-
-- (int)odf2oox:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
-    std::wstring from = NExtractTools::nsstring_to_wstring(nsFrom);
-    std::wstring to = NExtractTools::nsstring_to_wstring(nsTo);
-    std::wstring temp = NExtractTools::nsstring_to_wstring(nsTemp);
-    
-    NExtractTools::InputParams oInputParams;
-    oInputParams.m_sFontDir = new std::wstring(NExtractTools::nsstring_to_wstring(nsFontPath));
-    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
-    
-    if (self.password) {
-        oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
-    }
-    
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
-}
-
-- (int)odt2docx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
-    std::wstring from = NExtractTools::nsstring_to_wstring(nsFrom);
-    std::wstring to = NExtractTools::nsstring_to_wstring(nsTo);
-    std::wstring temp = NExtractTools::nsstring_to_wstring(nsTemp);
-    
-    NExtractTools::InputParams oInputParams;
-    oInputParams.m_sFontDir = new std::wstring(NExtractTools::nsstring_to_wstring(nsFontPath));
-    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
-    
-    if (self.password) {
-        oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
-    }
-    
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
-}
-
-- (int)ods2xlsx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
-    std::wstring from = NExtractTools::nsstring_to_wstring(nsFrom);
-    std::wstring to = NExtractTools::nsstring_to_wstring(nsTo);
-    std::wstring temp = NExtractTools::nsstring_to_wstring(nsTemp);
-    
-    NExtractTools::InputParams oInputParams;
-    oInputParams.m_sFontDir = new std::wstring(NExtractTools::nsstring_to_wstring(nsFontPath));
-    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
-    
-    if (self.password) {
-        oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
-    }
-    
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
-}
-
-- (int)odp2pptx:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
-    std::wstring from = NExtractTools::nsstring_to_wstring(nsFrom);
-    std::wstring to = NExtractTools::nsstring_to_wstring(nsTo);
-    std::wstring temp = NExtractTools::nsstring_to_wstring(nsTemp);
-    
-    NExtractTools::InputParams oInputParams;
-    oInputParams.m_sFontDir = new std::wstring(NExtractTools::nsstring_to_wstring(nsFontPath));
-    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
-    
-    if (self.password) {
-        oInputParams.m_sPassword = new std::wstring(NExtractTools::nsstring_to_wstring(self.password));
-    }
-    
-    return NExtractTools::odf2oox(from, to, temp, oInputParams);
 }
 
 @end

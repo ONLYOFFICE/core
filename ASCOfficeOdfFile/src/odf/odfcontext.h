@@ -80,7 +80,7 @@ public:
     const std::wstring				& parent_name()	const;
     style_instance					* next()		const;
     const std::wstring				& next_name()	const;
-     const styles_container			* container()	const { return container_; }
+	const styles_container			* container()	const { return container_; }
     const std::wstring				& data_style_name() const;
     const std::wstring				& style_class() const;
  

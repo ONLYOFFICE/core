@@ -60,6 +60,29 @@
 #include "../../Common/FileDownloader/FileDownloader.h"
 #endif
 
+namespace NSDoctRenderer
+{
+    class CDocBuilderValue_Private
+    {
+    public:
+        v8::Isolate* m_isolate;
+        v8::Local<v8::Value> m_value;
+
+    public:
+        CDocBuilderValue_Private()
+        {
+            m_isolate = NULL;
+        }
+        ~CDocBuilderValue_Private()
+        {
+        }
+        void Clear()
+        {
+            m_value.Clear();
+        }
+    };
+}
+
 template <typename T>
 class CScopeWrapper
 {
@@ -131,9 +154,12 @@ public:
         std::cerr << sT << ": " << sE << std::endl;
     }
 
-    bool ExecuteCommand(const std::wstring& command)
+    bool ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue = NULL)
     {
         LOGGER_SPEED_START
+
+        if (retValue)
+            retValue->Clear();
 
         std::string commandA = U_TO_UTF8(command);
         //commandA = "_api." + commandA;
@@ -159,7 +185,7 @@ public:
         }
         else
         {
-            script->Run();
+            v8::Local<v8::Value> retNativeVal = script->Run();
 
             if (try_catch.HasCaught())
             {
@@ -170,6 +196,13 @@ public:
                 _LOGGING_ERROR_(L"execute_run", strException);
 
                 return false;
+            }
+
+            if (retValue)
+            {
+                NSDoctRenderer::CDocBuilderValue_Private* privateRet = (NSDoctRenderer::CDocBuilderValue_Private*)retValue->private_get_internal();
+                privateRet->m_isolate = m_isolate;
+                privateRet->m_value = retNativeVal;
             }
         }
 
@@ -577,6 +610,92 @@ namespace NSDoctRenderer
         bool m_bSaveWithDoctrendererMode;
         std::string m_sArgumentJSON;
     };
+
+    CDocBuilderValue::CDocBuilderValue()
+    {
+        m_internal = new CDocBuilderValue_Private();
+    }
+    CDocBuilderValue::CDocBuilderValue(const CDocBuilderValue& src)
+    {
+        m_internal->m_value = src.m_internal->m_value;
+    }
+    CDocBuilderValue& CDocBuilderValue::operator=(const CDocBuilderValue& src)
+    {
+        m_internal->m_value = src.m_internal->m_value;
+        return *this;
+    }
+    CDocBuilderValue::~CDocBuilderValue()
+    {
+        delete m_internal;
+    }
+    void* CDocBuilderValue::private_get_internal()
+    {
+        return (void*)m_internal;
+    }
+
+    bool CDocBuilderValue::IsEmpty()
+    {
+        return m_internal->m_value.IsEmpty();
+    }
+    void CDocBuilderValue::Clear()
+    {
+        m_internal->Clear();
+    }
+    bool CDocBuilderValue::IsNull()
+    {
+        if (m_internal->m_value.IsEmpty())
+            return false;
+        return m_internal->m_value->IsNull();
+    }
+    bool CDocBuilderValue::IsUndefined()
+    {
+        if (m_internal->m_value.IsEmpty())
+            return false;
+        return m_internal->m_value->IsUndefined();
+    }
+    int CDocBuilderValue::ToInt()
+    {
+        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsInt32())
+            return 0;
+        return m_internal->m_value->ToInt32()->Value();
+    }
+    double CDocBuilderValue::ToDouble()
+    {
+        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsNumber())
+            return 0;
+        return m_internal->m_value->ToNumber()->Value();
+    }
+    wchar_t* CDocBuilderValue::ToString()
+    {
+        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsString())
+            return NULL;
+        std::wstring sValue = to_cstring(m_internal->m_value);
+        if (sValue.empty())
+            return NULL;
+        size_t len = sValue.length();
+        wchar_t* buffer = new wchar_t[len + 1];
+        memcpy(buffer, sValue.c_str(), len * sizeof(wchar_t));
+        buffer[len] = '\0';
+        return buffer;
+    }
+    void CDocBuilderValue::FreeString(wchar_t* data)
+    {
+        delete [] data;
+    }
+    CDocBuilderValue CDocBuilderValue::GetProperty(const wchar_t* name)
+    {
+        CDocBuilderValue ret;
+        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        ret.m_internal->m_isolate = m_internal->m_isolate;
+        ret.m_internal->m_value = m_internal->m_value->ToObject()->Get(v8::String::NewFromUtf8(m_internal->m_isolate, sPropA.c_str()));
+
+        return ret;
+    }
 
     class CDocBuilder_Private
     {
@@ -1413,9 +1532,9 @@ namespace NSDoctRenderer
             return nReturnCode;
         }
 
-        bool ExecuteCommand(const std::wstring& command)
+        bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
         {
-            if (command.length() < 7) // minimum command (!!!)
+            if (command.length() < 7 && !retValue) // minimum command (!!!)
                 return true;
 
             Init();
@@ -1442,7 +1561,7 @@ namespace NSDoctRenderer
                     return false;
             }
 
-            return m_pWorker->ExecuteCommand(command);
+            return m_pWorker->ExecuteCommand(command, retValue);
         }
 
         std::string GetScript()

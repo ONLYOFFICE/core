@@ -418,6 +418,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\OdfFormat\office_forms.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_forms.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\office_presentation.cpp"
 				>
 			</File>
@@ -795,6 +803,14 @@
 			</File>
 			<File
 				RelativePath="..\OdfFormat\odf_comment_context.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odf_controls_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odf_controls_context.h"
 				>
 			</File>
 			<File

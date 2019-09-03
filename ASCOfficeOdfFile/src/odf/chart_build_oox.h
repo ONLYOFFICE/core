@@ -206,6 +206,7 @@ public:
 	std::map<std::wstring, _cell>cash_pivot;
 
 	std::wstring				embeddedData;
+	std::pair<std::wstring, std::wstring> userShapes;
 //---------------------------------------
 	std::wstring				target_table_;
 	std::wstring				table_name_;

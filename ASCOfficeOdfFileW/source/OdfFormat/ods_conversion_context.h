@@ -97,10 +97,20 @@ public:
 
 	void start_comment		(int col, int row, std::wstring & author);
 	void set_comment_rect	(double l, double t, double w, double h);
+	void set_comment_visible(bool val);
+	void set_comment_color	(const std::wstring & color);
 	void end_comment		();
-///////////////////////////////////////////////////////
-	ods_table_state &		current_table() { return table_context_.state();}
-/////////////////////////////////////////////////////
+
+	bool start_data_validation(const std::wstring & ref, int type);
+		void set_data_validation_operator(int val);
+		void set_data_validation_content(const std::wstring &val1, const std::wstring &val2);
+		void set_data_validation_allow_empty(bool val);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display);
+		void set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display);
+	void end_data_validation();
+//-----------------------------------------------------------------------
+	ods_table_state & current_table() { return table_context_.state();}
+//-----------------------------------------------------------------------
 	virtual void start_text_context();
 	virtual void end_text_context();
 
@@ -109,6 +119,16 @@ public:
 	
 	void start_drawings();
 	void end_drawings();
+
+	bool start_header(int type);
+	bool start_footer(int type);
+	void end_header_footer();
+	void start_header_footer_region(int type);
+	void end_header_footer_region();
+
+	void add_text(const std::wstring &text);
+
+	void add_header_footer_image(const std::wstring & name, office_element_ptr image);
 
 	double convert_symbol_width(double val);
 	

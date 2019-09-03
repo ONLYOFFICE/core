@@ -192,7 +192,13 @@ public:
             }
             else
             {
-                m_arAdjustments.push_back((LONG)XmlUtils::GetInteger(arAdj[nIndex]));
+				long val = (long)XmlUtils::GetInteger(arAdj[nIndex]);
+				if (nIndex < m_arAbsMaxAdjustments.size())
+				{
+					if (abs(val) > m_arAbsMaxAdjustments[nIndex])
+						val = 0;
+				}
+                m_arAdjustments.push_back(val);
             }
         }
 

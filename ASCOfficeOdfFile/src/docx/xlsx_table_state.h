@@ -184,6 +184,7 @@ public:
 	void serialize_page_properties			(std::wostream & _Wostream);
 	void serialize_background				(std::wostream & _Wostream);
 	void serialize_protection				(std::wostream & _Wostream);
+	void serialize_header_footer			(std::wostream & _Wostream);
 
 	void dump_rels_hyperlinks				(rels & Rels);
 	void dump_rels_ole_objects				(rels & Rels);
@@ -216,6 +217,9 @@ private:
     std::wstring						tableName_;
 	int									tableId_;
     std::wstring						tableBackground_;
+
+	_CP_OPT(double)						header_page;
+	_CP_OPT(double)						footer_page;
 
     std::wstring						table_style_;
     std::wstring						table_row_style_;

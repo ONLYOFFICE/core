@@ -2246,7 +2246,9 @@ public:
                     COMMAND_RTF_INT( "levelnorestart", m_oListLevelProp.m_nNoRestart, sCommand, hasParameter, parameter )
                     COMMAND_RTF_INT( "levellegal", m_oListLevelProp.m_nLegal, sCommand, hasParameter, parameter )
                     COMMAND_RTF_INT( "levelpicture", m_oListLevelProp.m_nPictureIndex, sCommand, hasParameter, parameter )
-                    COMMAND_RTF_INT( "li", m_oListLevelProp.m_nIndent, sCommand, hasParameter, parameter )
+					COMMAND_RTF_INT( "levelspace", m_oListLevelProp.m_nSpace, sCommand, hasParameter, parameter )
+					COMMAND_RTF_INT( "levelindent", m_oListLevelProp.m_nIndent, sCommand, hasParameter, parameter )
+					COMMAND_RTF_INT( "li", m_oListLevelProp.m_nIndent, sCommand, hasParameter, parameter )
                     COMMAND_RTF_INT( "lin", m_oListLevelProp.m_nIndentStart, sCommand, hasParameter, parameter )
                     COMMAND_RTF_INT( "fi", m_oListLevelProp.m_nFirstIndent, sCommand, hasParameter, parameter )
                     else if( "tx" == sCommand  )
@@ -2305,7 +2307,13 @@ public:
 			{
 				RtfListLevelProperty oListLevelProp;
 				ListLevelReader oListLevelReader( oListLevelProp );
+
+				oReader.m_oState->m_oCharProp.m_bListLevel = true;
+				oReader.m_oState->m_oCharProp.SetDefaultRtf();
+				
 				bool bResult = StartSubReader( oListLevelReader, oDocument, oReader );
+				
+				oReader.m_oState->m_oCharProp.m_bListLevel = false;
 				if( true == bResult )
 				{
 					oListLevelProp.m_nLevel = m_oListProp.GetCount();
@@ -2356,8 +2364,15 @@ public:
         else if( "list" == sCommand )
 		{
 			RtfListProperty oListProp;
+			
 			ListReader oListReader(oListProp);
+
+			oReader.m_oState->m_oCharProp.m_bListLevel = true;
+			
 			bool bResult = StartSubReader( oListReader, oDocument, oReader );
+			
+			oReader.m_oState->m_oCharProp.m_bListLevel = false;
+			
 			if( true == bResult )
 			{
 				oDocument.m_oListTable.AddItem( oListProp );

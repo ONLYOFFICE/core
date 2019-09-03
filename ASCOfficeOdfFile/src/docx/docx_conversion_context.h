@@ -42,6 +42,7 @@
 #include "docx_table_context.h"
 #include "oox_conversion_context.h"
 #include "oox_chart_context.h"
+#include "xlsx_drawing_context.h"
 
 #include "headers_footers.h"
 #include "hyperlinks.h"
@@ -734,7 +735,7 @@ class docx_conversion_context : boost::noncopyable
 public:
 	enum NoteType { noNote, footNote, footNoteRefSet, endNote, endNoteRefSet };
 	
-	docx_conversion_context(odf_reader::odf_document * OdfDocument);
+	docx_conversion_context(odf_reader::odf_document * _odf_document);
 	~docx_conversion_context();
 
 	void set_output_document	(package::docx_document * document);
@@ -888,7 +889,7 @@ public:
 
     styles_map			* get_style_map()			{ return &styles_map_; }
 
-	mediaitems			& get_mediaitems()			{return mediaitems_;}
+	mediaitems_ptr		& get_mediaitems()			{return mediaitems_;}
     styles_context		& get_styles_context()		{ return styles_context_; }
     drawing_context		& get_drawing_context()		{ return drawing_context_; } 	
 	comments_context	& get_comments_context()	{ return comments_context_; }
@@ -898,8 +899,9 @@ public:
 	text_tracked_context& get_text_tracked_context(){ return text_tracked_context_; }
 	forms_context		& get_forms_context()		{ return forms_context_; }
 	tabs_context		& get_tabs_context()		{ return tabs_context_;}
+	table_content_context & get_table_content_context()	{ return table_content_context_;}
 	
-	table_content_context	& get_table_content_context()	{ return table_content_context_;}
+	xlsx_drawing_context_handle_ptr & get_chart_drawing_handle() { return chart_drawing_handle_;} 
 
 	void set_drawing_text_props (const std::wstring &props);
 
@@ -917,9 +919,6 @@ public:
 	double get_current_fontSize()	{return current_fontSize.empty() ? 0 : current_fontSize.back();}
 	void pop_current_fontSize()		{if (!current_fontSize.empty()) current_fontSize.pop_back();}
 	
-	void set_margin_left(int val)	{current_margin_left_ = val;}
-	int get_margin_left()			{return current_margin_left_;}
-
 	void set_outline_level(int val)	{current_outline_level_ = val;}
 	int get_outline_level()			{return current_outline_level_;}
 
@@ -993,6 +992,8 @@ private:
     std::wstringstream		settings_xml_;
     std::wstringstream		meta_xml_;
 
+	xlsx_drawing_context_handle_ptr chart_drawing_handle_; 
+
 	styles_context			styles_context_;
 	math_context			math_context_;
     drawing_context			drawing_context_;
@@ -1015,7 +1016,7 @@ private:
 	std::vector<odf_reader::_property>		settings_properties_;
 
 	hyperlinks								hyperlinks_;
-    mediaitems								mediaitems_;     
+    mediaitems_ptr							mediaitems_;     
 	std::vector<oox_chart_context_ptr>		charts_;
     headers_footers							headers_footers_;
 

@@ -230,6 +230,26 @@ namespace OOX
 		class CT_Style;
 		class CT_TextLanguageID;
 		class CTextProperties;
+
+		namespace ChartEx
+		{
+			class CChartSpace;
+			class CChart;
+			class CChartData;
+			class CData;
+			class CDimension;
+			class CPlotArea;
+			class CLegend;
+			class CAxis;
+			class CTickMarks;
+			class CGridlines;
+			class CValScaling;
+			class CCatScaling;
+			class CSeries;
+			class CDataLabels;
+			class CTitle;
+
+		}
 	}
 	class CSizeAnchor;
 	namespace Vml
@@ -470,6 +490,7 @@ public:
 		void convert(PPTX::Logic::Duotone						*oox_effect, DWORD ARGB = 0);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
+		void convert(OOX::Spreadsheet::CT_View3D				*oox_view3D);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
 		void convert(OOX::Spreadsheet::CT_Legend				*ct_legend);
 		void convert(OOX::Spreadsheet::CT_LegendEntry			*ct_legend);
@@ -522,7 +543,12 @@ public:
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool categories, bool label);
 		
 		void convert(OOX::CSizeAnchor *sz_anchor, double x0, double y0, double width, double height);
-
+//.chart.ex...........................................................................................................................
+		void convert(OOX::Spreadsheet::ChartEx::CChartSpace		*oox_chart);
+		void convert(OOX::Spreadsheet::ChartEx::CTitle			*ct_title);
+		void convert(OOX::Spreadsheet::ChartEx::CChart			*oox_chart);
+		void convert(OOX::Spreadsheet::ChartEx::CChartData		*oox_chart_data);
+		void convert(OOX::Spreadsheet::ChartEx::CPlotArea		*oox_plot_area);
 //.vml............................................................................................................................
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);
 		void convert(OOX::Vml::CShape					*vml_shape);

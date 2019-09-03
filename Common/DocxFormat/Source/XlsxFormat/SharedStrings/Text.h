@@ -40,6 +40,36 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CStringXLSB
+		{
+		public:
+			CStringXLSB(_UINT32 nSize);
+			~CStringXLSB();
+			void Clean();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader, bool bPreserve);
+			void fromStringA(const char* sVal);
+		public:
+			WCHAR* m_sBuffer;
+			LONG m_nSize;
+			LONG m_nLen;
+		protected:
+			void checkBufferSize(_UINT32 nRequired);
+		};
+		class CTextXLSB
+		{
+		public:
+			CTextXLSB(_UINT32 nSize);
+			void Clean();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			bool m_bIsInit;
+			SimpleTypes::CXmlSpace<> m_oSpace;
+
+			double m_dValue;
+			_UINT32 m_nValue;
+			CStringXLSB m_oValue;
+		};
 		//необработано:
 		class CText : public WritingElement
 		{
@@ -98,43 +128,14 @@ namespace OOX
 					}
 				}
 
-				NSStringExt::Replace(m_sText, L"\t", L"");
-				if(!(m_oSpace.IsInit() && SimpleTypes::xmlspacePreserve == m_oSpace->GetValue()))
-				{
-					//trim ' ', '\r', '\n'
-					int nLength		= (int)m_sText.length();
-					int nStartIndex = 0;
-					int nEndIndex	= nLength - 1;
-					
-					for(int i = nStartIndex; i < nLength; ++i)
-					{
-                        wchar_t cElem = m_sText[i];
-						if(' ' == cElem || '\n' == cElem || '\r' == cElem)
-							nStartIndex++;
-						else
-							break;
-					}
-					for(int i = nEndIndex; i > nStartIndex; --i)
-					{
-                        wchar_t cElem = m_sText[i];
-						if(' ' == cElem || '\n' == cElem || '\r' == cElem)
-							nEndIndex--;
-						else
-							break;
-					}
-					if(0 != nStartIndex || nLength - 1 != nEndIndex)
-					{
-						if (nStartIndex <= nEndIndex)
-							m_sText = m_sText.substr(nStartIndex, nEndIndex - nStartIndex + 1);
-						else
-							m_sText.clear();
-					}
-				}
+				trimString(m_sText, GetSpace());
 			}
+			static void trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace);
 			std::wstring ToString() const
 			{
 				return m_sText;
 			}
+			SimpleTypes::EXmlSpace GetSpace() const;
 			virtual EElementType getType() const
 			{
 				return et_x_t;

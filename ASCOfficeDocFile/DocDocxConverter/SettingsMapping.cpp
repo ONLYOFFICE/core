@@ -259,6 +259,12 @@ namespace DocFileFormat
 		//compatibility settings
 		m_oXmlWriter.WriteNodeBegin( L"w:compat" );
 
+		m_oXmlWriter.WriteNodeBegin( L"w:compatSetting", TRUE);
+			m_oXmlWriter.WriteAttribute( L"w:name",  L"compatibilityMode" );
+			m_oXmlWriter.WriteAttribute( L"w:uri",  L"http://schemas.microsoft.com/office/word" );
+			m_oXmlWriter.WriteAttribute( L"w:val",  L"11" );
+		m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
+
 		//some settings must always be written
 
 		if ( dop->fUseNormalStyleForList )

@@ -35,7 +35,33 @@
 #include "./common.h"
 
 namespace NSDoctRenderer
-{
+{    
+    class CDocBuilderValue_Private;
+    class Q_DECL_EXPORT CDocBuilderValue
+    {
+    public:
+        CDocBuilderValue();
+        CDocBuilderValue(const CDocBuilderValue& src);
+        CDocBuilderValue& operator=(const CDocBuilderValue& src);
+        ~CDocBuilderValue();
+        void* private_get_internal();
+
+    public:
+        bool IsEmpty();
+        void Clear();
+        void FreeString(wchar_t* data);
+
+        bool IsNull();
+        bool IsUndefined();
+        int ToInt();
+        double ToDouble();
+        wchar_t* ToString();
+        CDocBuilderValue GetProperty(const wchar_t* name);
+
+    private:
+        CDocBuilderValue_Private* m_internal;
+    };
+
     class CDocBuilder_Private;
     class Q_DECL_EXPORT CDocBuilder
     {
@@ -49,7 +75,7 @@ namespace NSDoctRenderer
         void SetTmpFolder(const wchar_t* folder);
         int SaveFile(const int& type, const wchar_t* path, const wchar_t* params = 0);
         void CloseFile();
-        bool ExecuteCommand(const wchar_t* command);
+        bool ExecuteCommand(const wchar_t* command, CDocBuilderValue* retValue = 0);
 
         bool Run(const wchar_t* path);
 

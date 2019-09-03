@@ -122,27 +122,64 @@ namespace formulasconvert {
 			XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
 			XmlUtils::replace_all( expr, L"SCOBCAOUT", L")");
 
-			XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
-			XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
+			//XmlUtils::replace_all( expr, L"KVADRATIN", L"[");
+			//XmlUtils::replace_all( expr, L"KVADRATOUT", L"]");
 			
 			XmlUtils::replace_all( expr, L"PROBEL", L" ");
-			XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
-			XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+			//XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
+			//XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
 		}
 		static void replace_tmp(std::wstring &expr)
 		{
-			XmlUtils::replace_all( expr, L".", L"ТОСHKA");
-			XmlUtils::replace_all( expr, L"!", L"VOSKL");
+		//	XmlUtils::replace_all( expr, L".", L"ТОСHKA");
+		//	XmlUtils::replace_all( expr, L"!", L"VOSKL");
 
-			XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
-			XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
+		//	XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
+		//	XmlUtils::replace_all( expr, L")", L"SCOBCAOUT");
 
-			//XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
-			//XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
-			
-			XmlUtils::replace_all( expr, L" ", L"PROBEL");
-		//	XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
-		//	XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+		//	//XmlUtils::replace_all( expr, L"[", L"KVADRATIN");
+		//	//XmlUtils::replace_all( expr, L"]", L"KVADRATOUT");
+		//	
+		//	XmlUtils::replace_all( expr, L" ", L"PROBEL");
+		////	XmlUtils::replace_all( expr, L"'", L"APOSTROF");	
+		////	XmlUtils::replace_all( expr, L"\"", L"KAVYCHKA");
+
+			std::wstring result;
+
+			size_t pos = 0, size = expr.length();
+
+			while(pos < size)
+			{
+				switch(expr[pos])
+				{
+					case '.':
+					{	
+						result += L"ТОСHKA";
+					}break;
+					case '!':
+					{
+						result += L"VOSKL";
+					}break;
+					case '(':
+					{
+						result += L"SCOBCAIN";
+					}break;
+					case ')':
+					{
+						result += L"SCOBCAOUT";
+					}break;
+					case ' ':
+					{
+						result += L"PROBEL";
+					}break;
+					default:
+					{
+						result += expr[pos];
+					}break;
+				}
+				pos++;
+			}
+		expr = result;
 		}
 		static std::wstring convert_scobci(boost::wsmatch const & what)
 		{

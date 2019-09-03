@@ -185,6 +185,8 @@ public:
 
 	bool is_paragraph_in_current_section_;
 
+	bool empty() {return current_root_elements_.empty();}
+
 private:
 	office_text*				root_text_;
 	office_element_ptr			root_document_;
@@ -198,6 +200,8 @@ private:
 	bool			is_header_;
 	bool			is_footer_;
 	bool			is_background_;
+
+	std::wstring	current_master_page_;
 	
 	std::vector<odf_drawing_context_ptr>	drawing_context_;	
 	std::vector<odf_text_context_ptr>		text_context_;		//for embedded 

@@ -1450,6 +1450,84 @@ void style_font_face::serialize(std::wostream & strm)
 		}
 	}
 }
+// style:region-left
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * style_region_left::ns = L"style";
+const wchar_t * style_region_left::name = L"region-left";
+
+void style_region_left::add_child_element( const office_element_ptr & child)
+{
+	content_.push_back(child);
+}
+void style_region_left::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void style_region_left::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+// style:region-right
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * style_region_right::ns = L"style";
+const wchar_t * style_region_right::name = L"region-right";
+
+void style_region_right::add_child_element( const office_element_ptr & child)
+{
+	content_.push_back(child);
+}
+void style_region_right::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void style_region_right::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+// style:region-center
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * style_region_center::ns = L"style";
+const wchar_t * style_region_center::name = L"region-center";
+
+void style_region_center::add_child_element( const office_element_ptr & child)
+{
+	content_.push_back(child);
+}
+void style_region_center::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void style_region_center::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 
 }
 }

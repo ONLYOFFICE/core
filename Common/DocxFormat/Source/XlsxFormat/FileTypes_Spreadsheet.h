@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XSLXFILE_TYPES_SPREADSHEET_INCLUDE_H_
-#define OOX_XSLXFILE_TYPES_SPREADSHEET_INCLUDE_H_
 
 #include "../DocxFormat/FileType.h"
 
@@ -77,7 +75,7 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2017/10/relationships/threadedComment", 
 												L"threadedComments/threadedComment", true, true);
 
-			const FileType Persons			(L"../persons", L"person.xml", 
+			const FileType Persons			(L"persons", L"person.xml",
 												L"application/vnd.ms-excel.person+xml",
 												L"http://schemas.microsoft.com/office/2017/10/relationships/person");
 
@@ -99,6 +97,11 @@ namespace OOX
 			const FileType Connections		(L"", L"connections.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections");
+
+			const FileType CtrlProp			(L"../ctrlProps", L"ctrlProp.xml",
+												L"application/vnd.ms-excel.controlproperties+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/ctrlProp", 
+												L"ctrlProps/ctrlProp", true, true);
 
 			const FileType Drawings			(L"../drawings", L"drawing.xml",
 												L"application/vnd.openxmlformats-officedocument.drawing+xml",
@@ -134,5 +137,3 @@ namespace OOX
 		} // namespace FileTypes
 	}
 } // namespace OOX
-
-#endif // OOX_XSLXFILE_TYPES_SPREADSHEET_INCLUDE_H_

@@ -754,10 +754,22 @@ public:
 			NSUnicodeConverter::CUnicodeConverter oConverter;
 			return oConverter.toUnicodeExact(inptr, insize, sCodePage.c_str());
 		}
-		else
+		else if (nCodepage != 0)
 		{
 			NSUnicodeConverter::CUnicodeConverter oConverter;
 			return oConverter.toUnicodeExact(inptr, insize, nCodepage);
+		}
+		else //сф_850000158725_R7_M194_МО_Q194.rtf
+		{//текущая локаль
+	
+			std::locale loc("");
+			std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
+
+			std::wstring result;
+			result.resize(insize);
+		    
+			facet.widen(inptr, inptr + insize, &result[0]);
+			return result;
 		}
     }
     static std::string convert_string(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)

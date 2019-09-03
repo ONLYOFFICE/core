@@ -166,6 +166,10 @@ namespace XmlUtils
 	{
 		return m_pInternal->GetTextChar();
 	}
+	std::wstring CXmlLiteReader::GetAttributeTextWithHHHH()
+	{
+		return m_pInternal->GetAttributeTextWithHHHH();
+	}
 
 	std::wstring CXmlLiteReader::GetText2()
 	{
@@ -182,6 +186,10 @@ namespace XmlUtils
 	void CXmlLiteReader::GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen)
 	{
 		return m_pInternal->GetTextWithHHHH(bPreserve, sBuffer, nSize,nLen);
+	}
+	std::wstring CXmlLiteReader::GetTextWithHHHH(bool bPreserve)
+	{
+		return m_pInternal->GetTextWithHHHH(bPreserve);
 	}
 
 	std::wstring CXmlLiteReader::GetOuterXml()

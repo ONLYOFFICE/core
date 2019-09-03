@@ -73,13 +73,13 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 		}
 		WritingStringNullableAttrString				(L"type",			m_oType,			m_oType->ToString());
 		WritingStringNullableAttrInt				(L"allowBlank",		m_oAllowBlank,		m_oAllowBlank->GetValue());
-		WritingStringNullableAttrEncodeXmlString	(L"error",			m_oError,			m_oError.get());
+		WritingStringNullableAttrEncodeXmlStringHHHH(L"error",			m_oError,			m_oError.get());
 		WritingStringNullableAttrString				(L"errorStyle",		m_oErrorStyle,		m_oErrorStyle->ToString());
-		WritingStringNullableAttrEncodeXmlString	(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
+		WritingStringNullableAttrEncodeXmlStringHHHH(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
 		WritingStringNullableAttrString				(L"imeMode",		m_oImeMode,			m_oImeMode->ToString());
 		WritingStringNullableAttrString				(L"operator",		m_oOperator,		m_oOperator->ToString());
-		WritingStringNullableAttrEncodeXmlString	(L"promt",			m_oPrompt,			m_oPrompt.get());
-		WritingStringNullableAttrEncodeXmlString	(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
+		WritingStringNullableAttrEncodeXmlStringHHHH(L"promt",			m_oPrompt,			m_oPrompt.get());
+		WritingStringNullableAttrEncodeXmlStringHHHH(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
 		WritingStringNullableAttrInt				(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
 		WritingStringNullableAttrInt				(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());
 		WritingStringNullableAttrInt				(L"showInputMessage",m_oShowInputMessage,m_oShowInputMessage->GetValue());
@@ -164,21 +164,34 @@ bool CDataValidation::IsExtended()
 }
 void CDataValidation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
-	WritingElement_ReadAttributes_Start( oReader )
-		WritingElement_ReadAttributes_Read_if		( oReader, _T("allowBlank"),	m_oAllowBlank)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("error"),			m_oError)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errorStyle"),	m_oErrorStyle)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("errorTitle"),	m_oErrorTitle)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("imeMode"),		m_oImeMode)				
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("operator"),		m_oOperator)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prompt"),		m_oPrompt)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("promptTitle"),	m_oPromptTitle)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showDropDown"),	m_oShowDropDown)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showErrorMessage"),m_oShowErrorMessage)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("showInputMessage"),m_oShowInputMessage)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sqref"),			m_oSqRef)
-		WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),			m_oType)
-	WritingElement_ReadAttributes_End( oReader )
+
+	WritingElement_ReadAttributes_StartChar( oReader )
+		WritingElement_ReadAttributes_Read_ifChar		( oReader, "allowBlank",	m_oAllowBlank)
+		else if ( strcmp("error", wsName) == 0 )
+		{
+			m_oError = oReader.GetAttributeTextWithHHHH();
+		}
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "errorStyle",	m_oErrorStyle)
+		else if ( strcmp("errorTitle", wsName) == 0 )
+		{
+			m_oErrorTitle = oReader.GetAttributeTextWithHHHH();
+		}
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "imeMode",		m_oImeMode)
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "operator",		m_oOperator)
+		else if ( strcmp("prompt", wsName) == 0 )
+		{
+			m_oPrompt = oReader.GetAttributeTextWithHHHH();
+		}
+		else if ( strcmp("promptTitle", wsName) == 0 )
+		{
+			m_oPromptTitle = oReader.GetAttributeTextWithHHHH();
+		}
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "showDropDown",	m_oShowDropDown)
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "showErrorMessage",m_oShowErrorMessage)
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "showInputMessage",m_oShowInputMessage)
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "sqref",			m_oSqRef)
+		WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "type",			m_oType)
+	WritingElement_ReadAttributes_EndChar( oReader )
 }
 void CDataValidations::toXML(NSStringUtils::CStringBuilder& writer) const
 {

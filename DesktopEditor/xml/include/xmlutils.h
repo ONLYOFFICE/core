@@ -110,12 +110,14 @@ namespace XmlUtils
 		std::wstring	GetText();
                 std::string     GetTextA();
                 const char*		GetTextChar();
+		std::wstring	GetAttributeTextWithHHHH();
 
 		std::wstring	GetText2();
                 std::string     GetText2A();
 		
 		std::wstring	GetText3();
 		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen);
+		std::wstring GetTextWithHHHH(bool bPreserve);
 
 		std::wstring	GetOuterXml();
 		std::wstring	GetInnerXml();

@@ -97,6 +97,8 @@ namespace Spreadsheet
 		WritingStringNullableAttr(name, WriteString, elem, val)
 #define WritingStringNullableAttrEncodeXmlString(name, elem, val) \
 		WritingStringNullableAttr(name, WriteEncodeXmlString, elem, val)
+#define WritingStringNullableAttrEncodeXmlStringHHHH(name, elem, val) \
+		WritingStringNullableAttr(name, WriteEncodeXmlStringHHHH, elem, val)
 #define WritingStringNullableAttrInt(name, elem, val) \
 		WritingStringNullableAttr(name, AddInt, elem, val)
 #define WritingStringNullableAttrInt64(name, elem, val) \

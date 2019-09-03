@@ -126,7 +126,7 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 			break;
 			case sprmCRsidText:
 			{
-				rsid = FormatUtils::IntToFormattedWideString(FormatUtils::BytesToInt32(iter->Arguments, 0, iter->argumentsSize), L"%08x");
+				rsid = FormatUtils::IntToFormattedWideString(FormatUtils::BytesToInt32(iter->Arguments, 0, iter->argumentsSize), L"%08X");
 			}
 			break;
 			case sprmCFData:

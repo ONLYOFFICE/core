@@ -60,7 +60,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTextElement;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	virtual void docx_convert(oox::docx_conversion_context & Context){}
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
@@ -87,7 +89,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeText;
     static const ElementType type = typeTextText;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -120,7 +124,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextS;
-    CPDOCCORE_DEFINE_VISITABLE();
+
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -151,7 +157,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTab;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     tab(unsigned int ab_ref) : text_tab_ref_(ab_ref) {};
     tab() {};
@@ -182,7 +190,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextLineBreak;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -208,7 +218,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextBookmark;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
@@ -232,7 +244,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextBookmarkStart;
-    CPDOCCORE_DEFINE_VISITABLE();
+  
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -256,7 +270,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextBookmarkEnd;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -281,7 +297,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextBookmarkRef;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     std::wstring			ref_name_;
     _CP_OPT(std::wstring)	reference_format_;
@@ -302,7 +320,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextReferenceRef;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     std::wstring			ref_name_;
     _CP_OPT(std::wstring)	reference_format_;
@@ -324,7 +344,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextReferenceMark;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     std::wstring text_name_;
 
@@ -345,7 +367,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextReferenceMarkStart;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     std::wstring text_name_;
 
@@ -366,7 +390,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextReferenceMarkEnd;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     std::wstring text_name_;
 
@@ -388,7 +414,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSpan;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -423,7 +451,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextA;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -461,7 +491,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextNote;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
@@ -490,7 +522,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextRuby;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
@@ -514,7 +548,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTitle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
@@ -542,7 +578,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextChapter;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -568,7 +606,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSubject;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -593,8 +633,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextPlaceholder;
-    CPDOCCORE_DEFINE_VISITABLE();
-   
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -620,7 +662,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextPageNumber;
-    CPDOCCORE_DEFINE_VISITABLE();
+   
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
   
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
@@ -654,8 +698,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextPageCount;
-    CPDOCCORE_DEFINE_VISITABLE();
-   
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -685,8 +731,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextDate;
-    CPDOCCORE_DEFINE_VISITABLE();
     
+	CPDOCCORE_DEFINE_VISITABLE();
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -717,7 +765,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextModificationDate;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
@@ -741,7 +791,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTime;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
    
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
@@ -774,7 +826,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextModificationTime;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
@@ -798,7 +852,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextFileName;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
    
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
@@ -827,8 +883,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextHiddenParagraph;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 
 	_CP_OPT(odf_types::Bool)	is_hidden_;
@@ -851,8 +909,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextHiddenText;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 
 	_CP_OPT(odf_types::Bool)	is_hidden_;
@@ -876,8 +936,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSequence;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
@@ -907,8 +969,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextExpression;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
@@ -935,8 +999,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTextInput;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
@@ -959,8 +1025,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSequenceRef;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 
 	_CP_OPT(std::wstring)	reference_format_;//caption, category-and-value, value, chapter, direction, page, text, number, number-all-superior, number-no-superior
@@ -984,8 +1052,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextDropDown;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
@@ -1011,8 +1081,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextLabel;
-    CPDOCCORE_DEFINE_VISITABLE();
- 
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	void docx_convert(oox::docx_conversion_context & Context);
 
 private:
@@ -1032,7 +1104,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSheetName;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();    
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
  	
@@ -1056,7 +1130,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextAuthorName;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1078,7 +1154,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextAuthorInitials;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1100,7 +1178,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderCity;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1122,7 +1202,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderPostalCode;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 	
@@ -1146,7 +1228,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderStreet;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1168,7 +1252,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderStateOrProvince;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1190,7 +1276,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderEmail;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1212,7 +1300,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderFirstname;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();    
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1234,7 +1324,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderLastname;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1256,7 +1348,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSenderCompany;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1279,8 +1373,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type		= typeTextUserFieldGet;
-    CPDOCCORE_DEFINE_VISITABLE()
     
+	CPDOCCORE_DEFINE_VISITABLE()
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
     virtual void docx_convert(oox::docx_conversion_context & Context);
 
 private:
@@ -1305,8 +1401,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type		= typeTextUserDefined;
-    CPDOCCORE_DEFINE_VISITABLE()
     
+	CPDOCCORE_DEFINE_VISITABLE()
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
     virtual void docx_convert(oox::docx_conversion_context & Context);
 
 private:
@@ -1335,6 +1433,7 @@ public:
     static const ElementType	type		= typeTextBibliographyMark;
     
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
@@ -1390,7 +1489,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextAlphabeticalIndexAutoMarkFile;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1411,7 +1512,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextAlphabeticalIndexMarkStart;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1437,7 +1540,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextAlphabeticalIndexMarkEnd;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1458,7 +1563,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextAlphabeticalIndexMark;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1484,7 +1591,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextUserIndexMarkStart;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1507,7 +1616,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextUserIndexMarkEnd;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1528,7 +1639,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextUserIndexMark;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1551,7 +1664,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextTocMarkStart;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1573,7 +1688,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextTocMarkEnd;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1594,7 +1711,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType	xml_type	= xml::typeElement;
     static const ElementType	type		= typeTextTocMark;    
+	
 	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -1618,8 +1737,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typePresentationFooter;
-    CPDOCCORE_DEFINE_VISITABLE();
     
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	//void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -1640,8 +1761,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typePresentationDateTime;
-    CPDOCCORE_DEFINE_VISITABLE();
     
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
 	//void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -1663,7 +1786,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeFieldFieldmarkStart;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     _CP_OPT(std::wstring)	text_name_;
 	_CP_OPT(std::wstring)	field_type_;
@@ -1685,7 +1810,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeFieldFieldmarkStart;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
 	void docx_convert(oox::docx_conversion_context & Context);
 private:
@@ -1704,7 +1831,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeFieldFieldmark;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     _CP_OPT(std::wstring)	text_name_;
 	_CP_OPT(std::wstring)	field_type_;
@@ -1728,7 +1857,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeFieldParam;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
     _CP_OPT(std::wstring)	field_name_;
 	_CP_OPT(std::wstring)	field_value_;

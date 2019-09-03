@@ -218,7 +218,7 @@ namespace DocFileFormat
 		Plex<Spa>							*OfficeDrawingPlex;
 		Plex<Spa>							*OfficeDrawingPlexHeader;
 		
-		Plex<SectionDescriptor>				*SectionPlex;						// A Plex containing all section descriptors
+		Plex<SectionDescriptor>				*SectionPlex;	
 	
 		Plex<BookmarkFirst>					*BookmarkStartPlex;
 		Plex<EmptyStructure>				*BookmarkEndPlex;
@@ -233,9 +233,9 @@ namespace DocFileFormat
 		Plex<FieldCharacter>				*HeadersAndFootersDocumentFieldsPlex;
 		Plex<FieldCharacter>				*AnnotationsFieldsPlex;
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
-		Plex<AnnotationReferenceExDescriptor> *AnnotationsReferenceExPlex;
 		Plex<EmptyStructure>				*AutoTextPlex;		
-		// Each character position specifies the beginning of a range of text that constitutes the contents of an AutoText item
+		
+		AnnotationReferenceExDescriptors	*AnnotationsReferencesEx;
 		
 	};
 }

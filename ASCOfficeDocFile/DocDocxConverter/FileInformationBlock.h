@@ -492,9 +492,12 @@ namespace DocFileFormat
 
 	struct FibNew
 	{
-		FibNew() : nFibNew(Fib1997), cQuickSavesNew(0) {}
+		FibNew() : nFibNew(Fib1997), cQuickSavesNew(0), lidThemeOther(0), lidThemeFE(0), lidThemeCS(0)  {}
 		FibVersion nFibNew;
 		WORD cQuickSavesNew;
+		WORD lidThemeOther;
+		WORD lidThemeFE;
+		WORD lidThemeCS;
 	};
 
 
@@ -545,11 +548,11 @@ namespace DocFileFormat
 				}
 				else
 				{
-					/*ccpSpare0	= */			reader.ReadInt32();	
-					/*ccpSpare1	= */			reader.ReadInt32();
-					/*ccpSpare2	= */			reader.ReadInt32();	
+					int	ccpSpare0				= reader.ReadInt32();	
+					int	ccpSpare1				= reader.ReadInt32();
+					int	ccpSpare2				= reader.ReadInt32();	
 				}
-				/*ccpSpare3	= */			reader.ReadInt32();	
+				int	ccpSpare3					= reader.ReadInt32();	
 
 				if (m_FibBase.nFib > Fib1985)
 				{
@@ -872,23 +875,43 @@ namespace DocFileFormat
 			}
             if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)
 			{				
-				reader.ReadBytes(8, false); //68
+				int reserv1			=	reader.ReadInt32();
+				int reserv2			=	reader.ReadInt32();
 				
 				m_RgLw97.ccpText	=	reader.ReadInt32(); //76
 				m_RgLw97.ccpFtn		=	reader.ReadInt32(); //80
 				m_RgLw97.ccpHdr		=	reader.ReadInt32(); //84
 				
-				reader.ReadBytes( 4, false ); //88
+				int reserv3			=	reader.ReadInt32();
 				
 				m_RgLw97.ccpAtn		=	reader.ReadInt32(); //92
 				m_RgLw97.ccpEdn		=	reader.ReadInt32(); //96
 				m_RgLw97.ccpTxbx	=	reader.ReadInt32(); //100
 				m_RgLw97.ccpHdrTxbx	=	reader.ReadInt32(); //104
 				
-				reader.ReadBytes(44, false); //108
+				int reserv4			=	reader.ReadInt32();
+				int reserv5			=	reader.ReadInt32();
+				int reserv6			=	reader.ReadInt32();
+				int reserv7			=	reader.ReadInt32();
+				int reserv8			=	reader.ReadInt32();
+				int reserv9			=	reader.ReadInt32();
+				int reserv10		=	reader.ReadInt32();
+				int reserv11		=	reader.ReadInt32();
+				int reserv12		=	reader.ReadInt32();
+				int reserv13		=	reader.ReadInt32();
+				int reserv14		=	reader.ReadInt32();
 
 				cbRgFcLcb			=	reader.ReadUInt16(); //152
-				
+
+				switch(cbRgFcLcb)
+				{
+					case 0x005D:	m_FibBase.nFib = Fib1997; break;
+					case 0x006C:	m_FibBase.nFib = Fib2000; break;
+					case 0x0088:	m_FibBase.nFib = Fib2002; break;
+					case 0x00A4:	m_FibBase.nFib = Fib2003; break;
+					case 0x00B7:	m_FibBase.nFib = Fib2007; break;
+				}
+
 				m_FibWord97.fcStshfOrig		= reader.ReadUInt32(); //154
 				m_FibWord97.lcbStshfOrig	= reader.ReadUInt32(); //158
 				m_FibWord97.fcStshf			= reader.ReadUInt32(); //162
@@ -922,7 +945,7 @@ namespace DocFileFormat
 				m_FibWord97.fcSttbfFfn		= reader.ReadUInt32(); //274
 				m_FibWord97.lcbSttbfFfn		= reader.ReadUInt32(); //278
 				m_FibWord97.fcPlcfFldMom	= reader.ReadUInt32(); //282
-				m_FibWord97.lcbPlcfFldMom			= reader.ReadUInt32(); //286
+				m_FibWord97.lcbPlcfFldMom	= reader.ReadUInt32(); //286
 				m_FibWord97.fcPlcfFldHdr	= reader.ReadUInt32(); //290
 				m_FibWord97.lcbPlcfFldHdr	= reader.ReadUInt32(); //294
 				m_FibWord97.fcPlcfFldFtn	= reader.ReadUInt32(); //298
@@ -1286,11 +1309,24 @@ namespace DocFileFormat
 
 			if (cswNew != 0)
 			{
-				//Read the FibRgCswNew
+	//Read the FibRgCswNew
 				m_FibNew.nFibNew = (FibVersion)reader.ReadUInt16();
 				
 				if (m_FibNew.nFibNew == 0) m_FibNew.nFibNew = Fib1997;
+
 				m_FibNew.cQuickSavesNew = reader.ReadUInt16();
+			
+				if (m_FibNew.nFibNew == 0x00D9 ||
+					m_FibNew.nFibNew == 0x0101 ||
+					m_FibNew.nFibNew == 0x010C )
+				{
+				}
+				else if (m_FibNew.nFibNew == 0x0112)
+				{
+					m_FibNew.lidThemeOther	= reader.ReadUInt16();
+					m_FibNew.lidThemeFE		= reader.ReadUInt16();
+					m_FibNew.lidThemeCS		= reader.ReadUInt16();
+				}
 			}
 		}
 		FileInformationBlock( VirtualStreamReader reader )
@@ -1363,13 +1399,26 @@ namespace DocFileFormat
 			}
 			else if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)
 			{					
-				//read the RgW97
-				reader.ReadBytes( 26, false ); //34 
+			//read the RgW97
+				int reserv1		= reader.ReadUInt16();
+				int reserv2		= reader.ReadUInt16();
+				int reserv3		= reader.ReadUInt16();
+				int reserv4		= reader.ReadUInt16();
+				int reserv5		= reader.ReadUInt16();
+				int reserv6		= reader.ReadUInt16();
+				int reserv7		= reader.ReadUInt16();
+				int reserv8		= reader.ReadUInt16();
+				int reserv9		= reader.ReadUInt16();
+				int reserv10	= reader.ReadUInt16();
+				int reserv11	= reader.ReadUInt16();
+				int reserv12	= reader.ReadUInt16();
+				int reserv13	= reader.ReadUInt16();
+				
 				m_RgW97.lidFE = reader.ReadUInt16(); //60
 
 				cslw = reader.ReadUInt16(); //62
 
-				//read the RgLW97
+			//read the RgLW97
 
 				m_RgLw97.cbMac =	reader.ReadInt32(); //64
 			}

@@ -124,12 +124,12 @@ namespace DocFileFormat
 
 			//font signature
             m_pXmlWriter->WriteNodeBegin( L"w:sig", TRUE );
-            m_pXmlWriter->WriteAttribute( L"w:usb0", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield0, L"%08x" ));
-            m_pXmlWriter->WriteAttribute( L"w:usb1", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield1, L"%08x" ));
-            m_pXmlWriter->WriteAttribute( L"w:usb2", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield2, L"%08x" ));
-            m_pXmlWriter->WriteAttribute( L"w:usb3", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield3, L"%08x" ));
-            m_pXmlWriter->WriteAttribute( L"w:csb0", FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield0, L"%08x" ));
-            m_pXmlWriter->WriteAttribute( L"w:csb1", FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield1, L"%08x" ));
+            m_pXmlWriter->WriteAttribute( L"w:usb0", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield0, L"%08X" ));
+            m_pXmlWriter->WriteAttribute( L"w:usb1", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield1, L"%08X" ));
+            m_pXmlWriter->WriteAttribute( L"w:usb2", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield2, L"%08X" ));
+            m_pXmlWriter->WriteAttribute( L"w:usb3", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield3, L"%08X" ));
+            m_pXmlWriter->WriteAttribute( L"w:csb0", FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield0, L"%08X" ));
+            m_pXmlWriter->WriteAttribute( L"w:csb1", FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield1, L"%08X" ));
             m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
             m_pXmlWriter->WriteNodeEnd( L"w:sig" );
 

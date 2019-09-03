@@ -88,7 +88,10 @@ namespace OOX
 			ReadAttributes( oReader );
 
 			if ( oReader.IsEmptyNode() )
+			{
+				m_bIsInit = SimpleTypes::Spreadsheet::celltypeStr == eType || SimpleTypes::Spreadsheet::celltypeInlineStr == eType;
 				return;
+			}
 
 			if(SimpleTypes::Spreadsheet::celltypeStr == eType || SimpleTypes::Spreadsheet::celltypeInlineStr == eType)
 			{

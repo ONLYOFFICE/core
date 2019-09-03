@@ -85,7 +85,7 @@ namespace DocFileFormat
 		IndividualFootnotesPlex(NULL), FootnoteReferenceCharactersPlex(NULL), IndividualEndnotesPlex(NULL),
 		EndnoteReferenceCharactersPlex(NULL), FieldsPlex(NULL), FootnoteDocumentFieldsPlex(NULL),
 		EndnoteDocumentFieldsPlex(NULL), HeadersAndFootersDocumentFieldsPlex(NULL), HeaderStoriesPlex(NULL), AnnotationsFieldsPlex(NULL),
-		AnnotationsReferencePlex(NULL), AnnotationsReferenceExPlex(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
+		AnnotationsReferencePlex(NULL), AnnotationsReferencesEx(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
 		TextboxIndividualPlex(NULL),AssocNames(NULL), BookmarkAnnotNames(NULL), Captions(NULL), AutoCaptions(NULL), ListPlex(NULL),
 		OfficeDrawingPlex(NULL), OfficeDrawingPlexHeader(NULL), SectionPlex(NULL), BookmarkStartPlex(NULL), BookmarkEndPlex(NULL),
 		AutoTextPlex(NULL), AllPapxFkps(NULL), AllChpxFkps(NULL), AllPapx(NULL), AllPapxVector(NULL), AllSepx(NULL), Styles(NULL), listTable(NULL),
@@ -345,9 +345,10 @@ namespace DocFileFormat
 			IndividualCommentsPlex			=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfandTxt,		FIB->m_FibWord97.lcbPlcfandTxt,		nWordVersion);
 		}
 
-		if (FIB->m_FibWord2002.lcbAtrdExtra > 0)
+		if (FIB->m_FibWord2002.lcbAtrdExtra > 0 && AnnotationsReferencePlex)
 		{
-			AnnotationsReferenceExPlex	=	new Plex<AnnotationReferenceExDescriptor>(AnnotationReferenceExDescriptor::GetSize(nWordVersion), TableStream, FIB->m_FibWord2002.fcAtrdExtra, FIB->m_FibWord2002.lcbAtrdExtra, nWordVersion);
+			size_t count = AnnotationsReferencePlex->Elements.size();
+			AnnotationsReferencesEx = new AnnotationReferenceExDescriptors(count, TableStream, FIB->m_FibWord2002.fcAtrdExtra, FIB->m_FibWord2002.lcbAtrdExtra);
 		}
 		OfficeDrawingPlex					=	new Plex<Spa>				(Spa::GetSize(nWordVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaMom,		FIB->m_FibWord97.lcbPlcSpaMom,		nWordVersion);
 		OfficeDrawingPlexHeader				=	new Plex<Spa>				(Spa::GetSize(nWordVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaHdr,		FIB->m_FibWord97.lcbPlcSpaHdr,		nWordVersion);
@@ -368,7 +369,7 @@ namespace DocFileFormat
 
 		for (size_t i = 0; i < BookmarkStartPlex->Elements.size(); ++i)
 		{
-			BookmarkFirst* pBookmark		=	static_cast<BookmarkFirst*>(BookmarkStartPlex->Elements[i]);
+			BookmarkFirst* pBookmark = static_cast<BookmarkFirst*>(BookmarkStartPlex->Elements[i]);
 			if (pBookmark)
 			{
 				BookmarkStartEndCPs.push_back(std::make_pair(BookmarkStartPlex->CharacterPositions[i], BookmarkEndPlex->CharacterPositions[pBookmark->GetIndex()]));
@@ -865,7 +866,6 @@ namespace DocFileFormat
 
 			RELEASEOBJECT(AllSepx);
 		}
-
 		RELEASEOBJECT(Text);
 		RELEASEOBJECT(m_PieceTable);
 
@@ -891,7 +891,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(HeaderStoriesPlex);
 		RELEASEOBJECT(IndividualCommentsPlex);
 		RELEASEOBJECT(AnnotationsReferencePlex);
-		RELEASEOBJECT(AnnotationsReferenceExPlex);
+		RELEASEOBJECT(AnnotationsReferencesEx);
 		RELEASEOBJECT(TextboxBreakPlex);
 		RELEASEOBJECT(TextboxBreakPlexHeader);
 		RELEASEOBJECT(OfficeDrawingPlex);

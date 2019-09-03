@@ -74,8 +74,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	style_content * styleContent = styleInst->content();
     if (!styleContent)return;
 
-	style_paragraph_properties * paragraph_properties = styleContent->get_style_paragraph_properties();
-	
+	style_paragraph_properties * paragraph_properties = styleContent->get_style_paragraph_properties();	
 	if (!paragraph_properties)return;
 
 	const office_element_ptr & elm_style_drop_cap = paragraph_properties->content_.style_drop_cap_;
@@ -96,11 +95,18 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) + 5)+ 0.5);//формула ачуметь !! - подбор вручную
 
 	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
-	style_text_properties * text_properties = styleContent->get_style_text_properties();
-	if ((text_properties) && (text_properties->content().fo_font_size_))
+	
+	text_format_properties_content text_properties = calc_text_properties_content (styleInst);
+
+	if (!text_properties.fo_font_size_)
+	{		//default
+		styleInst = Context.root()->odf_context().styleContainer().style_default_by_type(style_family::Paragraph);
+		text_properties = calc_text_properties_content (styleInst);
+	}
+	if (text_properties.fo_font_size_)
 	{
-		Context.get_drop_cap_context().FontSize = styleContent->get_style_text_properties()->content().process_font_size(
-				text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
+		Context.get_drop_cap_context().FontSize = text_properties.process_font_size(
+				text_properties.fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
 		7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
 	}
 }
@@ -180,14 +186,15 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 	std::wstring & str = first_text_paragraph->text_;
 	std::wstring store_str = str;
 
-	if (Context.get_drop_cap_context().Length == -1)Context.get_drop_cap_context().Length = store_str.find(L" ");//find length word
+	if (Context.get_drop_cap_context().Length == -1)
+		Context.get_drop_cap_context().Length = store_str.find(L" ");//find length word
 
 	str = store_str.substr(0,Context.get_drop_cap_context().Length);
 	
 	int textStyle = Context.process_paragraph_attr(&attrs_);
 	first_text_paragraph->docx_convert(Context); 
 
-	size_t str_start	= Context.get_drop_cap_context().Length;
+	size_t str_start = Context.get_drop_cap_context().Length;
 	size_t str_size	= store_str.length() - Context.get_drop_cap_context().Length;
 
 	if (str_size < 0) str_size = 0;										// это если на буквы в буквице разные стили
@@ -195,7 +202,7 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 
 	str = store_str.substr(str_start, str_size);
 
-	if (textStyle==1) Context.pop_text_properties();
+	if (textStyle == 1) Context.pop_text_properties();
 }
 
 size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
@@ -212,7 +219,8 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 		content_[index++]->docx_convert(Context); 
 	}
 
-	//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!- todooo сделать возможным множественным span
+	if (index >= content_.size()) return index;
+
 	if ( content_[index]->get_type() == typeTextText)
 	{
 		drop_cap_text_docx_convert(content_[index], Context);
@@ -220,22 +228,30 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 	else if (content_[index]->get_type() == typeTextSpan)
 	{
 		span* first_span_in_paragraph = dynamic_cast<span*>(content_[index].get());
+		
 		if (Context.get_drop_cap_context().FontSize < 1)
 		{
-			style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(first_span_in_paragraph->text_style_name_, style_family::Text,Context.process_headers_footers_);
-			if ((styleInst) && (styleInst->is_automatic()))
+			style_instance * styleInst = NULL;
+			if (first_span_in_paragraph)
 			{
-				style_content * styleContent = styleInst->content();
-				if (styleContent)
-				{
-					style_text_properties * text_properties = styleContent->get_style_text_properties();
-					if ((text_properties) && (text_properties->content().fo_font_size_))
-					{
-						Context.get_drop_cap_context().FontSize = styleContent->get_style_text_properties()->content().process_font_size(
-							text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(),  false, //1);
-									 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));
-					}
-				}
+				styleInst = Context.root()->odf_context().styleContainer().style_by_name(first_span_in_paragraph->text_style_name_, style_family::Text, Context.process_headers_footers_);
+			}		
+			else
+			{
+				styleInst = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
+			}
+			text_format_properties_content text_properties = calc_text_properties_content (styleInst);
+
+			if (!text_properties.fo_font_size_)
+			{		//default
+				styleInst = Context.root()->odf_context().styleContainer().style_default_by_type(style_family::Text);
+				text_properties = calc_text_properties_content (styleInst);
+			}
+			if (text_properties.fo_font_size_)
+			{
+				Context.get_drop_cap_context().FontSize = text_properties.process_font_size(
+					text_properties.fo_font_size_, Context.get_styles_context().get_current_processed_style(),  false, //1);
+							 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));
 			}
 		}
 		//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!

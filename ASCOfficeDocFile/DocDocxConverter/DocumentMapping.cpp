@@ -217,6 +217,11 @@ namespace DocFileFormat
 		// start paragraph
 		
         m_pXmlWriter->WriteNodeBegin(L"w:p", true);
+
+		if (false == _paraId.empty())
+		{
+			m_pXmlWriter->WriteAttribute(L"w14:paraId", _paraId);
+		}
 		writeParagraphRsid(papx);
 
 // ----------- check for section properties
@@ -369,7 +374,7 @@ namespace DocFileFormat
 				
 				if (DocFileFormat::sprmPRsid == iter->OpCode)
 				{
-                    std::wstring id = FormatUtils::IntToFormattedWideString(FormatUtils::BytesToInt32(iter->Arguments, 0, iter->argumentsSize), L"%08x");
+                    std::wstring id = FormatUtils::IntToFormattedWideString(FormatUtils::BytesToInt32(iter->Arguments, 0, iter->argumentsSize), L"%08X");
 					m_context->AddRsid(id);
                     m_pXmlWriter->WriteAttribute(L"w:rsidP", id);
 
@@ -416,21 +421,21 @@ namespace DocFileFormat
 			//append rsids
 			if (0 != rev.Rsid)
 			{
-                std::wstring rsid = FormatUtils::IntToFormattedWideString(rev.Rsid, L"%08x");
+                std::wstring rsid = FormatUtils::IntToFormattedWideString(rev.Rsid, L"%08X");
                 m_pXmlWriter->WriteAttribute(L"w:rsidR", rsid);
 				m_context->AddRsid(rsid);
 			}
 
 			if (0 != rev.RsidDel)
 			{
-                std::wstring rsidDel = FormatUtils::IntToFormattedWideString(rev.RsidDel, L"%08x");
+                std::wstring rsidDel = FormatUtils::IntToFormattedWideString(rev.RsidDel, L"%08X");
                 m_pXmlWriter->WriteAttribute(L"w:rsidDel", rsidDel);
 				m_context->AddRsid(rsidDel);
 			}
 
 			if (0 != rev.RsidProp)
 			{
-                std::wstring rsidProp = FormatUtils::IntToFormattedWideString(rev.RsidProp, L"%08x");
+                std::wstring rsidProp = FormatUtils::IntToFormattedWideString(rev.RsidProp, L"%08X");
                 m_pXmlWriter->WriteAttribute(L"w:rsidRPr", rsidProp);
 				m_context->AddRsid(rsidProp);
 			}

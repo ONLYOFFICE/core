@@ -434,11 +434,20 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 
 	named_range->table_name_ = name;
 	named_range->table_cell_range_address_ = odf_range;
+	
 	if (printable)
+	{
 		named_range->table_range_usable_as_ = L"print-range";
+
+		XmlUtils::replace_all( odf_range, L"[", L"");
+		XmlUtils::replace_all( odf_range, L"]", L"");
+		XmlUtils::replace_all( odf_range, L";", L" ");
+
+		table_state_list_[sheet_id].set_table_print_ranges(odf_range);
+	}
 	
 	if (false == odf_base_cell.empty())
-		named_range->table_base_cell_address_ =  odf_base_cell;
+		named_range->table_base_cell_address_ = odf_base_cell;
 
 	table_defined_expressions_.elements.push_back(elm);
 	
@@ -494,12 +503,12 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 			XmlUtils::replace_all( odf_value, L"]", L"");
 			XmlUtils::replace_all( odf_value, L";", L" ");
 
-			table_state_list_[sheet_id].set_print_range(odf_value);
+			table_state_list_[sheet_id].set_table_print_ranges(odf_value);
 		}
 	}
 	else
 	{
-		if (!table_defined_expressions_.root)create_element(L"table", L"named-expressions", table_defined_expressions_.root,&context_);
+		if (!table_defined_expressions_.root)create_element(L"table", L"named-expressions", table_defined_expressions_.root, &context_);
 		table_defined_expressions_.root->add_child_element(elm);
 	}
 

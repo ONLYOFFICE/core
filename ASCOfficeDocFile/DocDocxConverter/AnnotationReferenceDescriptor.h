@@ -63,30 +63,25 @@ namespace DocFileFormat
 		int				m_CommentId;
 	};
 
-	class AnnotationReferenceExDescriptor: public ByteStructure
+	class AnnotationReferenceExDescriptors
 	{
 	public:
-		static const int STRUCTURE_SIZE = 18;
-		static const int STRUCTURE_SIZE_OLD = 0;
+        AnnotationReferenceExDescriptors(size_t count, POLE::Stream* stream, unsigned int fc, unsigned int lcb);
 
-		static const int GetSize(int nWordVersion)
-		{
-			return (nWordVersion > 0) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
-		}
-
-        AnnotationReferenceExDescriptor() : m_nDepth(0), m_nDiatrdParent(0), m_fInkAtn(false)
+		virtual ~AnnotationReferenceExDescriptors() 
 		{
 		}
 
-		virtual ~AnnotationReferenceExDescriptor() 
+        //virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+
+		struct _desc
 		{
-		}
+			DateAndTime		nDTTM;
+			unsigned int	nDepth = 0;
+			int				nDiatrdParent = 0;
+			bool			fInkAtn = false;
+		};
 
-        virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
-
-		DateAndTime		m_nDTTM;
-		unsigned int	m_nDepth;
-		unsigned int	m_nDiatrdParent;
-		bool			m_fInkAtn;
+		std::vector<_desc> m_ReferencesEx;
 	};
 }

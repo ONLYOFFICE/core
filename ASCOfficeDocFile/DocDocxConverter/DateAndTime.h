@@ -37,103 +37,80 @@ namespace DocFileFormat
 {
   class DateAndTime
   {
-    private:
-	  /// minutes (0-59)
-      short mint;
-      /// hours (0-23)
-      short hr;
-      /// day of month (1-31)
-      short dom;
-      /// month (1-12)
-      short mon;
-      /// year (1900-2411)-1900
-      short yr;
-      /// weekday<br/>
-      /// 0 Sunday
-      /// 1 Monday
-      /// 2 Tuesday
-      /// 3 Wednesday
-      /// 4 Thursday
-      /// 5 Friday
-      /// 6 Saturday
-      short wdy;
+    protected:
+		short minutes;
+		short hour;
+		short day;
+		short month;
+		short year;
+		/// 0 Sunday
+		/// 1 Monday
+		/// 2 Tuesday
+		/// 3 Wednesday
+		/// 4 Thursday
+		/// 5 Friday
+		/// 6 Saturday
+		short weekday;
 
     public:
 		DateAndTime()
 		{
 			setDefaultValues();
 		}
-		DateAndTime( unsigned int val )
+		DateAndTime( _UINT32 val )
 		{
-			DateAndTime((unsigned char*)&val, 4);
+			unsigned char* bytes = ((unsigned char*) &val);
+
+			minutes	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 0, 6 );
+			hour	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 6, 5 );
+			day		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 11, 5 );
+			month	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 16, 4 );
+			year	= (short)( 1900 + FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 20, 9 ) );
+			weekday	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 29, 3 );
 		}
 		DateAndTime( unsigned char* bytes, int size )
 		{
 			if ( size == 4 )
 			{
-			  this->mint    = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 0, 6 );
-			  this->hr      = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 6, 5 );
-			  this->dom     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 11, 5 );
-			  this->mon     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 16, 4 );
-			  this->yr      = (short)( 1900 + FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 20, 9 ) );
-			  this->wdy     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 29, 3 );
+			  minutes	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 0, 6 );
+			  hour		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 6, 5 );
+			  day		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 11, 5 );
+			  month		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 16, 4 );
+			  year		= (short)( 1900 + FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 20, 9 ) );
+			  weekday	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 29, 3 );
 			}
 			else
 			{
 			  //throw new ByteParseException("Cannot parse the struct DTTM, the length of the struct doesn't match");
 			}
 		}
+		DateAndTime& operator=(const DateAndTime& oSrc)
+		{
+			minutes = oSrc.minutes;
+ 			hour = oSrc.hour;
+			day = oSrc.day;
+			month = oSrc.month;
+			year = oSrc.year;
+ 			weekday = oSrc.weekday;
+			
+			return (*this);
+		}
 		std::wstring getString()
 		{
-			return std::to_wstring(yr) + L"-"	+	(mon < 9 ? L"0" : L"" )	+ std::to_wstring(mon)	+ L"-" + 
-													(dom < 9 ? L"0" : L"" )	+ std::to_wstring(dom)	+ L"T" +
-													(hr < 9 ? L"0" : L"" )	+ std::to_wstring(hr)	+ L":" +
-													(mint < 9 ? L"0" : L"" )+ std::to_wstring(mint)	+ L"Z";
-
+			return std::to_wstring(year) + L"-"	+	(month < 9 ? L"0" : L"" )	+ std::to_wstring(month)	+ L"-" + 
+													(day < 9 ? L"0" : L"" )		+ std::to_wstring(day)		+ L"T" +
+													(hour < 9 ? L"0" : L"" )	+ std::to_wstring(hour)		+ L":" +
+													(minutes < 9 ? L"0" : L"" )	+ std::to_wstring(minutes)	+ L":00Z";
 		}
-#if defined(_WIN32) || defined(_WIN64)
-	  SYSTEMTIME ToSYSTEMTIME()
-      {
-	    SYSTEMTIME st = { 0 };
-		
-		if ( ( this->yr == 1900 ) && ( this->mon == 0 ) && ( this->dom == 0 ) &&
-			 ( this->hr == 0 ) && ( this->mint == 0 ) )
-        {
-		  st.wYear = 1900;
-		  st.wMonth = 1;
-		  st.wDayOfWeek = 0;
-		  st.wDay = 1;
-		  st.wHour = 0;
-		  st.wMinute = 0;
-		  st.wSecond = 0;
-		  st.wMilliseconds = 0;
-
-		  return st;
-        }
-        else
-        {
-          st.wYear = this->yr;
-		  st.wMonth = this->mon;
-		  st.wDayOfWeek = 0;
-		  st.wDay = this->dom;
-		  st.wHour = this->hr;
-		  st.wMinute = this->mint;
-		  st.wSecond = 0;
-		  st.wMilliseconds = 0;
-
-		  return st;
-        } 
-      }
-#endif
       private:
 	    void setDefaultValues()
         {
-          this->dom = 0;
-          this->hr = 0;
-          this->mint = 0;
-          this->mon = 0;
-          this->wdy = 0;
-          this->yr = 0;
+          day = 0;
+          hour = 0;
+          minutes = 0;
+          month = 0;
+          weekday = 0;
+          year = 0;
         }
   };
 }

@@ -77,24 +77,28 @@ namespace DocFileFormat
 
 		return static_cast<ByteStructure*>(newObject);
 	}
-	ByteStructure* AnnotationReferenceExDescriptor::ConstructObject(VirtualStreamReader* reader, int length)
+	AnnotationReferenceExDescriptors::AnnotationReferenceExDescriptors(size_t count, POLE::Stream* stream, unsigned int fc, unsigned int lcb)
 	{
-		AnnotationReferenceExDescriptor *newObject = new AnnotationReferenceExDescriptor();
-
-		if (reader->nWordVersion > 0)
+		if ((lcb > 0) && (NULL != stream))
 		{
+			VirtualStreamReader reader(stream, (ULONG)fc, 0);
 
+			if (fc > reader.GetSize()) return;
+
+			for (size_t i = 0; i < (std::min)((unsigned int)count, lcb / 18); i++)
+			{
+				_desc desc;
+				
+				desc.nDTTM = DateAndTime(reader.ReadUInt32());
+				reader.ReadUInt16(); //padding1
+				desc.nDepth	= reader.ReadUInt32(); 
+				desc.nDiatrdParent = reader.ReadUInt32(); 
+				unsigned int flag = reader.ReadUInt32(); 
+				
+				desc.fInkAtn = GETBIT(flag, 1);
+				
+				m_ReferencesEx.push_back(desc);
+			}
 		}
-		else
-		{
-			m_nDTTM					= DateAndTime(reader->ReadUInt32()); 
-			reader->ReadUInt16(); //padding1
-			m_nDepth				= reader->ReadUInt32(); 
-			m_nDiatrdParent			= reader->ReadUInt32(); 
-			unsigned int flag		= reader->ReadUInt32(); 
-			
-			m_fInkAtn = GETBIT(flag, 1);
-		}
-		return static_cast<ByteStructure*>(newObject);
 	}
 }

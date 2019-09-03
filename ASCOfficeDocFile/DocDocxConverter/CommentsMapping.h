@@ -48,6 +48,9 @@ namespace DocFileFormat
 		{
 			m_document = static_cast<WordDocument*>( visited );
 
+			_UINT64 x = 0x10000001;
+			std::vector<std::wstring> arrParaId;
+
 			if ( ( m_document != NULL ) && ( m_document->FIB->m_RgLw97.ccpAtn > 0 ) )
 			{
 				m_context->_docx->RegisterComments();
@@ -55,7 +58,6 @@ namespace DocFileFormat
                 m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
                 m_pXmlWriter->WriteNodeBegin( L"w:comments", TRUE );
 
-				//write namespaces
                 m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
                 m_pXmlWriter->WriteAttribute( L"xmlns:v", OpenXmlNamespaces::VectorML );
                 m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
@@ -84,38 +86,26 @@ namespace DocFileFormat
 				size_t count = m_document->AnnotationsReferencePlex->Elements.size();
 
 				for (size_t index = 0; index < count; ++index)
-				{   
+				{  
+					_paraId.clear();
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
-					AnnotationReferenceExDescriptor* atrdPost10 = NULL;
-					if ((m_document->AnnotationsReferenceExPlex) && (index < m_document->AnnotationsReferenceExPlex->Elements.size()))
-					{
-						atrdPost10 = static_cast<AnnotationReferenceExDescriptor*>(m_document->AnnotationsReferenceExPlex->Elements[index]);
-					}
-
+					
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
 
 					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString(atrdPre10->m_CommentId));
-					//if (atrdPre10->m_BookmarkId < 0)//-1 - easy ref (not start/end comment ref)
-					//{
-     //                   m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 + count + 1024 ));
-					//}
-					//else
-					//{
-                    //    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::SizeTToWideString( index + 1 ));
-					//}
 
-					if (atrdPost10)
-					{
-						m_pXmlWriter->WriteAttribute( L"w:date", atrdPost10->m_nDTTM.getString());
-					}
 					if (atrdPre10->m_AuthorIndex < m_document->AnnotationOwners->size())	//conv_253l2H1CehgKwsxCtNk__docx.doc
 					{
 						m_pXmlWriter->WriteAttribute( L"w:author",
 							FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->m_AuthorIndex ) ));
 					}
+
+					if ((m_document->AnnotationsReferencesEx) && (index < m_document->AnnotationsReferencesEx->m_ReferencesEx.size()))
+					{
+						m_pXmlWriter->WriteAttribute( L"w:date", m_document->AnnotationsReferencesEx->m_ReferencesEx[index].nDTTM.getString());
+					}
+
                     m_pXmlWriter->WriteAttribute( L"w:initials", FormatUtils::XmlEncode(atrdPre10->m_UserInitials));
-
-
 
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
@@ -136,16 +126,70 @@ namespace DocFileFormat
 						}
 						else
 						{
-							//this PAPX is for a normal paragraph
+							if ((m_document->AnnotationsReferencesEx) && (index < m_document->AnnotationsReferencesEx->m_ReferencesEx.size()))
+							{
+								_paraId = XmlUtils::IntToString(x++, L"%08X");
+							}
 							cp = writeParagraph(cp, 0x7fffffff);
 						}
 					}
 
+					if (false == _paraId.empty())
+						arrParaId.push_back(_paraId);
+
                     m_pXmlWriter->WriteNodeEnd(L"w:comment" );
 				}
-
                 m_pXmlWriter->WriteNodeEnd( L"w:comments" );
 				m_context->_docx->CommentsXML = std::wstring(m_pXmlWriter->GetXmlString()); 
+
+				m_pXmlWriter->Clear();
+
+				if (false == arrParaId.empty() && (m_document->AnnotationsReferencesEx) && (false == m_document->AnnotationsReferencesEx->m_ReferencesEx.empty()))
+				{
+					m_context->_docx->RegisterCommentsExtended();
+
+					m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
+					m_pXmlWriter->WriteNodeBegin( L"w15:commentsEx", TRUE );
+
+					m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
+					m_pXmlWriter->WriteAttribute( L"xmlns:v", OpenXmlNamespaces::VectorML );
+					m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
+					m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
+					m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
+					m_pXmlWriter->WriteAttribute( L"xmlns:wpc", L"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" ); 
+					m_pXmlWriter->WriteAttribute( L"xmlns:cx", L"http://schemas.microsoft.com/office/drawing/2014/chartex"  );
+					m_pXmlWriter->WriteAttribute( L"xmlns:cx1", L"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex"  );
+					m_pXmlWriter->WriteAttribute( L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:m", L"http://schemas.openxmlformats.org/officeDocument/2006/math" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:wp14", L"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:w14", L"http://schemas.microsoft.com/office/word/2010/wordml" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:w15", L"http://schemas.microsoft.com/office/word/2012/wordml" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:w16se", L"http://schemas.microsoft.com/office/word/2015/wordml/symex" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:wpg", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:wpi", L"http://schemas.microsoft.com/office/word/2010/wordprocessingInk" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:wne", L"http://schemas.microsoft.com/office/word/2006/wordml" );
+					m_pXmlWriter->WriteAttribute( L"xmlns:wps", L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape" );
+					m_pXmlWriter->WriteAttribute( L"mc:Ignorable", L"w14 w15 w16se wp14");
+					m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+
+					for (size_t index = 0; index < m_document->AnnotationsReferencesEx->m_ReferencesEx.size(); ++index)
+					{  
+						m_pXmlWriter->WriteNodeBegin( L"w15:commentEx", TRUE );
+						
+						m_pXmlWriter->WriteAttribute( L"w15:paraId", arrParaId[index]);
+						if (m_document->AnnotationsReferencesEx->m_ReferencesEx[index].nDepth > 0)
+						{
+							m_pXmlWriter->WriteAttribute( L"w15:paraIdParent", arrParaId[index + m_document->AnnotationsReferencesEx->m_ReferencesEx[index].nDiatrdParent]);
+						}
+						m_pXmlWriter->WriteAttribute( L"w15:done", L"0");
+						m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+
+						m_pXmlWriter->WriteNodeEnd(L"w15:commentEx" );
+					}
+					m_pXmlWriter->WriteNodeEnd( L"w15:commentsEx" );
+					m_context->_docx->CommentsExtendedXML = std::wstring(m_pXmlWriter->GetXmlString()); 
+				}
 			}
 		}
 	};

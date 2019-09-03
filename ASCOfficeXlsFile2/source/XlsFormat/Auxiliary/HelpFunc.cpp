@@ -601,8 +601,8 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	
 	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
 	{	
-		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name))
-		{	
+		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name) || (!prefix.empty() && prefix[0] == L'[')) // 5558608.xls
+		{
 			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
 			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
 		}

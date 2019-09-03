@@ -383,6 +383,10 @@ namespace XMLTools
 		{
 			m_str = strValue;
 		}
+		void Clear()
+		{
+			m_str.clear();
+		}
 		bool SaveToFile(const std::wstring& strFilePath, bool bEncodingToUTF8 = false)
 		{
 			NSFile::CFileBinary file;

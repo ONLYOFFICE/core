@@ -292,7 +292,7 @@ public:
 		void set_table_rtl(bool Val);
 		void set_table_tab_color(_CP_OPT(odf_types::color) & _color);
         void set_table_dimension(int col, int row);
-		void set_print_range(std::wstring range);
+		void set_table_print_ranges(const std::wstring &ranges);
 		
 		void set_table_protection(bool Val);
 		void set_table_protection_insert_columns(bool Val);

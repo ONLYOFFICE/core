@@ -158,6 +158,8 @@ namespace DocFileFormat
 		std::wstring					_writeAfterRun;
 		std::wstring					_lastOLEObject;
 		int								_cacheListNum;
+
+		std::wstring					_paraId;
 		
 		struct fieldLevels
 		{

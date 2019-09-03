@@ -121,6 +121,9 @@ void SupBook::readFields(CFRecord& record)
 				{
 					if (bPath)
 					{
+						if (virtPath.empty())
+							virtPath.push_back(L"");
+						
 						if (bFilePathType)
 						{
 							virtPath.back() += L"file:///" + sResult.substr(0, 1) + L":\\" + sResult.substr(1, sResult.length() - 1);

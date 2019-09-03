@@ -165,16 +165,17 @@ int GLOBALS::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"defaultRowHeight", 14.4);
 			}
+			if (m_DefColWidth)
+			{
+				DefColWidth* def_col = dynamic_cast<DefColWidth*>(m_DefColWidth.get());
+				CP_XML_ATTR(L"baseColWidth", def_col->cchdefColWidth);
+			}		
 			if (m_DxGCol)
 			{
 				DxGCol* def_col = dynamic_cast<DxGCol*>(m_DxGCol.get());
 				CP_XML_ATTR(L"defaultColWidth", def_col->dxgCol / 256.);
 			}
-			else if (m_DefColWidth)
-			{
-				DefColWidth* def_col = dynamic_cast<DefColWidth*>(m_DefColWidth.get());
-				CP_XML_ATTR(L"defaultColWidth", def_col->cchdefColWidth);
-			}
+
 			if (m_Guts)
 			{
 				Guts * guts= dynamic_cast<Guts*>(m_Guts.get());

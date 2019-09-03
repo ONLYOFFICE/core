@@ -420,6 +420,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\svg_parser.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
 			</File>

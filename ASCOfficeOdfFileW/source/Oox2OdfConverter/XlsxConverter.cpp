@@ -626,56 +626,57 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_f
 					}
 				}break;
 			}
-			size_t next = oox_header_footer->m_sText.find(L'&', pos);
-			if (next == std::wstring::npos) next = oox_header_footer->m_sText.length();
+		}
+		size_t next = oox_header_footer->m_sText.find(L'&', pos);
+		if (next == std::wstring::npos) next = oox_header_footer->m_sText.length();
 
-			if (type_add > 0 || next - pos > 0)
+		if (type_add > 0 || next - pos > 0)
+		{
+			ods_context->text_context()->get_styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);					
+			odf_writer::style_text_properties *text_properties = ods_context->text_context()->get_styles_context()->last_state()->get_text_properties();
+			text_properties->content_.apply_from(current_text_props.content_);
+
+			ods_context->text_context()->start_span(true);
+			
+			switch(type_add)
 			{
-				ods_context->text_context()->get_styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);					
-				odf_writer::style_text_properties *text_properties = ods_context->text_context()->get_styles_context()->last_state()->get_text_properties();
-				text_properties->content_.apply_from(current_text_props.content_);
-
-				ods_context->text_context()->start_span(true);
-				
-				switch(type_add)
-				{
-					case 1:	ods_context->text_context()->add_text_sheet_name(L"???");	break;
-					case 2: ods_context->text_context()->add_text_page_number(L"1");	break;
-					case 3: ods_context->text_context()->add_text_page_count(L"99");	break;	
-					case 4: ods_context->text_context()->add_text_date(L"00.00.0000");	break;	
-					case 5: ods_context->text_context()->add_text_time(L"00:00");		break;	
-					case 6: ods_context->text_context()->add_text_file_name(L"???");	break;	
-					case 7: ods_context->text_context()->add_text_file_name(L"???");	break;
-					case 8: ods_context->text_context()->add_text_content(L"&");		break;
-				}
-				type_add = 0;
-				if (next - pos > 0)
-				{
-					std::wstring text = oox_header_footer->m_sText.substr(pos, next - pos);
-
-					size_t pos2 = text.find(10);
-					while(pos2 != std::wstring::npos)
-					{
-						std::wstring text1 = text.substr(0, pos2);
-						text = text.substr(pos2 + 1);
-						if (false == text1.empty())
-						{
-							ods_context->text_context()->add_text_content(text1);
-						}
-						ods_context->text_context()->end_span();
-						ods_context->text_context()->end_paragraph();
-						ods_context->text_context()->start_paragraph(false);
-						ods_context->text_context()->start_span(true);
-
-						pos2 = text.find(10);						
-					}
-					if (false == text.empty())
-					{
-						ods_context->text_context()->add_text_content(text);
-					}	
-				}
-				ods_context->text_context()->end_span();
+				case 1:	ods_context->text_context()->add_text_sheet_name(L"???");	break;
+				case 2: ods_context->text_context()->add_text_page_number(L"1");	break;
+				case 3: ods_context->text_context()->add_text_page_count(L"99");	break;	
+				case 4: ods_context->text_context()->add_text_date(L"00.00.0000");	break;	
+				case 5: ods_context->text_context()->add_text_time(L"00:00");		break;	
+				case 6: ods_context->text_context()->add_text_file_name(L"???");	break;	
+				case 7: ods_context->text_context()->add_text_file_name(L"???");	break;
+				case 8: ods_context->text_context()->add_text_content(L"&");		break;
 			}
+			type_add = 0;
+			if (next - pos > 0)
+			{
+				std::wstring text = oox_header_footer->m_sText.substr(pos, next - pos);
+
+				size_t pos2 = text.find(10);
+				while(pos2 != std::wstring::npos)
+				{
+					std::wstring text1 = text.substr(0, pos2);
+					text = text.substr(pos2 + 1);
+					if (false == text1.empty())
+					{
+						ods_context->text_context()->add_text_content(text1);
+					}
+					ods_context->text_context()->end_span();
+					ods_context->text_context()->end_paragraph();
+					ods_context->text_context()->start_paragraph(false);
+					ods_context->text_context()->start_span(true);
+
+					pos2 = text.find(10);						
+				}
+				if (false == text.empty())
+				{
+					ods_context->text_context()->add_text_content(text);
+				}	
+			}
+			ods_context->text_context()->end_span();
+
 			pos = next;
 		}
 	}

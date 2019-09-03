@@ -121,8 +121,7 @@ public:
 
 		m_oCS.InitializeCriticalSection();
 
-        if (m_pApplicationFonts)
-            m_pApplicationFonts->AddRef();
+        ADDREFINTERFACE(m_pApplicationFonts);
 	}
 
     virtual ~CImageFilesCache()
@@ -130,8 +129,7 @@ public:
 		Clear();
 		m_oCS.DeleteCriticalSection();
 
-        if (m_pApplicationFonts)
-            m_pApplicationFonts->Release();
+        RELEASEINTERFACE(m_pApplicationFonts);
 	}
 
     virtual void Clear()

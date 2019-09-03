@@ -85,7 +85,7 @@ namespace DocFileFormat
 
 			if (fc > reader.GetSize()) return;
 
-			for (size_t i = 0; i < min(count, lcb / 18); i++)
+			for (size_t i = 0; i < (std::min)((unsigned int)count, lcb / 18); i++)
 			{
 				_desc desc;
 				

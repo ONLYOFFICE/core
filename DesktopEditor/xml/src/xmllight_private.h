@@ -366,7 +366,9 @@ namespace XmlUtils
 			wchar_t* sBuffer = new wchar_t[nRequired];
 			LONG lOutputCount = 0;
 			NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((const BYTE*)pValueA, nLenA, sBuffer, lOutputCount);
-			return std::wstring(sBuffer, lOutputCount);
+			std::wstring sRes(sBuffer, lOutputCount);
+			delete[] sBuffer;
+			return sRes;
 		}
 
         std::wstring GetText2()

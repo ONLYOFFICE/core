@@ -3236,7 +3236,8 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
     {
 		switch(OfficeFileFormatChecker.nFileType)
         {
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+#ifndef DONT_USED_EXTRA_LIBRARY
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
             case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
             {
 #ifndef _IOS
@@ -3257,6 +3258,7 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
                 
                 result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
             }break;
+#endif
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:

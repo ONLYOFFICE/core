@@ -150,11 +150,6 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 				views_elm->add_child_element(views_entry_elm);
 			}
 
-			for (size_t i = 0; i < views_[v].content.size(); i++)
-			{
-				views_entry_elm->add_child_element(views_[v].content[i]);
-			}
-
 			if (!views_[v].tables.empty())
 			{
 				office_element_ptr tables_elm;
@@ -178,6 +173,11 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 						table_elm->add_child_element(views_[v].tables[t].content[j]);
 					}
 				}
+			}
+
+			for (size_t i = 0; i < views_[v].content.size(); i++)
+			{
+				views_entry_elm->add_child_element(views_[v].content[i]);
 			}
 		}
 	}

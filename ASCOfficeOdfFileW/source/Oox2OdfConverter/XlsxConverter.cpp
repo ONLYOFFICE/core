@@ -1532,9 +1532,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		{
             ods_context->settings_context()->add_property(L"GridColor", L"int", sheet_view->m_oColorId->ToString());
 		}
+
 		bool bPaneX			= false;
 		bool bPaneY			= false;
 		int ActiveCellX = -1, ActiveCellY = -1;
+		int topLeftCellX = -1, topLeftCellY = -1;
+
+		if (sheet_view->m_oTopLeftCell.IsInit())
+		{
+			std::wstring ref(sheet_view->m_oTopLeftCell.get());
+			odf_writer::utils::parsing_ref (ref, topLeftCellX, topLeftCellY);
+		}
+		if (topLeftCellX > 0 && topLeftCellY > 0)
+		{
+			ods_context->settings_context()->add_property(L"PositionLeft", L"int", std::to_wstring(topLeftCellX - 1));
+			ods_context->settings_context()->add_property(L"PositionTop", L"int", std::to_wstring(topLeftCellY - 1));
+		}
+		else
+		{
+			ods_context->settings_context()->add_property(L"PositionLeft", L"int", std::to_wstring(0));
+			ods_context->settings_context()->add_property(L"PositionTop", L"int", std::to_wstring(0));
+		}
 
 		for (size_t j = 0; j < sheet_view->m_arrItems.size(); j++)
 		{
@@ -1548,10 +1566,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 				if (ActiveCellX > 0 && ActiveCellY > 0)
 				{
 					ods_context->settings_context()->add_property(L"CursorPositionX",	L"int", std::to_wstring(ActiveCellX - 1));
-					ods_context->settings_context()->add_property(L"CursorPositionY",	L"int", std::to_wstring(ActiveCellY - 1));
-					ods_context->settings_context()->add_property(L"PositionLeft",		L"int", std::to_wstring(0));
+					ods_context->settings_context()->add_property(L"CursorPositionY",	L"int", std::to_wstring(ActiveCellY - 1));					
 					ods_context->settings_context()->add_property(L"PositionRight",		L"int", std::to_wstring(0));
-					ods_context->settings_context()->add_property(L"PositionTop",		L"int", std::to_wstring(0));
 					ods_context->settings_context()->add_property(L"PositionBottom",	L"int", std::to_wstring(ActiveCellY > 30 ? ActiveCellY - 2 : 0));
 				}
 			}
@@ -1563,8 +1579,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 			break; // в OpenOffice нет множественного селекта 
 		}
 		if (sheet_view->m_oPane.IsInit())
-		{
-			
+		{			
 			if (sheet_view->m_oPane->m_oXSplit.IsInit())
 			{
 				std::wstring sVal = std::to_wstring((int)sheet_view->m_oPane->m_oXSplit->GetValue());
@@ -1626,7 +1641,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		//nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
-        //nullable<std::wstring>								m_oTopLeftCell;
 		//nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>	m_oView;
 		//nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
 		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
@@ -1725,7 +1739,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins *oox_page)
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr)
 {
 	if (!oox_sheet_format_pr)return;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBaseColWidth;
 				//nullable<SimpleTypes::COnOff<>>					m_oCustomHeight;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelCol;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelRow;
@@ -1759,8 +1772,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				if (oox_sheet_format_pr->m_oDefaultColWidth.IsInit())
 				{			
 					width =  oox_sheet_format_pr->m_oDefaultColWidth->GetValue();
+					width = ods_context->convert_symbol_width(width) + 5 * 3 / 4.;
+					//defaultColWidth = baseColumnWidth + {margin padding (2 pixels on each side, totalling 4 pixels)} + {gridline (1pixel)}
 				}
-				width = ods_context->convert_symbol_width(width);
+				else if (oox_sheet_format_pr->m_oBaseColWidth.IsInit())
+				{
+					width =  oox_sheet_format_pr->m_oBaseColWidth->GetValue();
+					width = ods_context->convert_symbol_width(width);
+				}
 				ods_context->current_table().defaut_column_width_ = width;//pt
 				column_properties->style_table_column_properties_attlist_.style_column_width_ = odf_types::length(odf_types::length(width,odf_types::length::pt).get_value_unit(odf_types::length::cm),odf_types::length::cm);
 			}

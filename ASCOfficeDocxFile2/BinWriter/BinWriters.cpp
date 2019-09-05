@@ -2771,20 +2771,50 @@ void BinaryNumberingTableWriter::WriteLevel(const OOX::Numbering::CLvl& lvl)
 {
 	int nCurPos = 0;
 	//Format
-	if(lvl.m_oNumFmt.IsInit())
+	if(false != lvl.m_oNumFmt.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_NumFmt);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		nCurPos = m_oBcw.WriteItemWithLengthStart();
-		bpPrs.WriteNumFmt(lvl.m_oNumFmt.get());
-		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		const ComplexTypes::Word::CNumFmt& oNumFmt = lvl.m_oNumFmt.get();
+		if(false != oNumFmt.m_oVal.IsInit())
+		{
+			const SimpleTypes::CNumberFormat<>& oNumberFormat = oNumFmt.m_oVal.get();
+			m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Format);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+			switch(oNumberFormat.GetValue())
+			{
+			case SimpleTypes::numberformatNone:			m_oBcw.m_oStream.WriteLONG(numbering_numfmt_None);break;
+			case SimpleTypes::numberformatBullet:		m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Bullet);break;
+			case SimpleTypes::numberformatDecimal:		m_oBcw.m_oStream.WriteLONG(numbering_numfmt_Decimal);break;
+			case SimpleTypes::numberformatLowerRoman:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerRoman);break;
+			case SimpleTypes::numberformatUpperRoman:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperRoman);break;
+			case SimpleTypes::numberformatLowerLetter:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_LowerLetter);break;
+			case SimpleTypes::numberformatUpperLetter:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_UpperLetter);break;
+			case SimpleTypes::numberformatDecimalZero:	m_oBcw.m_oStream.WriteLONG(numbering_numfmt_DecimalZero);break;
+			default: 
+				m_oBcw.m_oStream.WriteLONG(oNumberFormat.GetValue() + 0x2008);break; //max our numbering
+			}
+		}
 	}
 	//Jc
-	if(lvl.m_oLvlJc.IsInit() && lvl.m_oLvlJc->m_oVal.IsInit())
+	if(false != lvl.m_oLvlJc.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Jc);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(lvl.m_oLvlJc->m_oVal->GetValue());
+		const ComplexTypes::Word::CJc& oJc = lvl.m_oLvlJc.get();
+		if(false != oJc.m_oVal.IsInit())
+		{
+			m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_Jc);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+			switch(oJc.m_oVal.get().GetValue())
+			{
+			case SimpleTypes::jcCenter: m_oBcw.m_oStream.WriteBYTE(align_Center);break;
+			case SimpleTypes::jcStart:
+			case SimpleTypes::jcLeft: m_oBcw.m_oStream.WriteBYTE(align_Left);break;
+			case SimpleTypes::jcEnd:
+			case SimpleTypes::jcRight: m_oBcw.m_oStream.WriteBYTE(align_Right);break;
+			case SimpleTypes::jcBoth:
+			case SimpleTypes::jcThaiDistribute:
+			case SimpleTypes::jcDistribute: m_oBcw.m_oStream.WriteBYTE(align_Justify);break;
+			default: m_oBcw.m_oStream.WriteBYTE(align_Left);break;
+			}
+		}
 	}
 	//LvlText
 	if(false != lvl.m_oLvlText.IsInit())
@@ -3206,7 +3236,8 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
     {
 		switch(OfficeFileFormatChecker.nFileType)
         {
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+#ifndef DONT_USED_EXTRA_LIBRARY
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
             case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
             {
 #ifndef _IOS
@@ -3227,6 +3258,7 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
                 
                 result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
             }break;
+#endif
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:

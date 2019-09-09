@@ -803,7 +803,7 @@ TFontCacheSizes CFontFile::CacheGlyph(const int& code, const bool& isRaster, CVe
     if (unGID <= 0 && !m_bStringGID)
     {
         if (-1 != m_nSymbolic && code < 0xF000)
-            unGID = SetCMapForCharCode(code, &nCMapIndex);
+            unGID = SetCMapForCharCode(code + 0xF000, &nCMapIndex);
     }
 
     if (unGID <= 0)

@@ -649,7 +649,7 @@ std::wstring CFontList::GetFontBySymbol(int symbol)
     for (std::list<CFontRange>::iterator iter = m_listRanges.begin(); iter != m_listRanges.end() && !m_listRanges.empty(); iter++)
     {
         CFontRange& range = *iter;
-        if (symbol <= range.Start && symbol >= range.End)
+        if (symbol >= range.Start && symbol <= range.End)
         {
             return range.Name;
         }

@@ -114,7 +114,7 @@ void ods_conversion_context::add_autofilter(std::wstring ref)
 }
 void ods_conversion_context::start_conditional_formats()
 {
-	current_table().start_conditional_formats();
+	current_table()->start_conditional_formats();
 }
 void ods_conversion_context::start_table_part(std::wstring name, std::wstring ref)
 {
@@ -142,7 +142,7 @@ void ods_conversion_context::add_defined_expression( const std::wstring & name, 
 }
 void ods_conversion_context::add_header_footer_image(const std::wstring & name, office_element_ptr image)
 {
-	current_table().mapHeaderFooterImages.insert(std::make_pair(name, image));
+	current_table()->mapHeaderFooterImages.insert(std::make_pair(name, image));
 }
 void ods_conversion_context::start_sheet()
 {
@@ -154,7 +154,7 @@ void ods_conversion_context::start_sheet()
 		
 	page_layout_context()->add_master_page(L"");
 
-    current_table().set_table_master_page(page_layout_context()->last_master() ?
+    current_table()->set_table_master_page(page_layout_context()->last_master() ?
                                               page_layout_context()->last_master()->get_name() : L"");
 }
 
@@ -172,28 +172,28 @@ void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 		if (col > max_col) max_col = col;
 		if (col > max_row) max_row = row;
 	}
-	current_table().set_table_dimension(max_col, max_row);
+	current_table()->set_table_dimension(max_col, max_row);
 }
 
 void ods_conversion_context::end_sheet()
 {
-	if (current_table().controls_context()->is_exist_content())
+	if (current_table()->controls_context()->is_exist_content())
 	{
 		office_element_ptr forms_root_elm;
 		create_element(L"office", L"forms", forms_root_elm, this);
 
-		current_table().controls_context()->finalize(forms_root_elm);
+		current_table()->controls_context()->finalize(forms_root_elm);
 		
-		current_table().add_child_element(forms_root_elm);
+		current_table()->add_child_element(forms_root_elm);
 	}
-	if (current_table().drawing_context()->is_exist_content())
+	if (current_table()->drawing_context()->is_exist_content())
 	{
 		office_element_ptr shapes_root_elm;
 		create_element(L"table", L"shapes", shapes_root_elm, this);
 
-		current_table().drawing_context()->finalize(shapes_root_elm);
+		current_table()->drawing_context()->finalize(shapes_root_elm);
 		
-		current_table().add_child_element(shapes_root_elm);
+		current_table()->add_child_element(shapes_root_elm);
 	}
 
 	table_context_.end_table();
@@ -202,26 +202,26 @@ void ods_conversion_context::end_sheet()
 }
 void ods_conversion_context::add_row_repeated()
 {
-	current_table().add_row_repeated();
+	current_table()->add_row_repeated();
 }
 void ods_conversion_context::start_row(int _start_row, int repeated, int level, bool _default)
 {
-	if (_start_row > current_table().current_row() + 1)
+	if (_start_row > current_table()->current_row() + 1)
 	{
-		int repeated_default = _start_row - current_table().current_row() - 1;
+		int repeated_default = _start_row - current_table()->current_row() - 1;
 
 		while(true)
 		{
 			//делим на 3 - до, с комметом, после;
-			int comment_idx = current_table().is_row_comment(current_table().current_row() + 1, repeated_default);
+			int comment_idx = current_table()->is_row_comment(current_table()->current_row() + 1, repeated_default);
 			
 			if (comment_idx < 0) break;
-			int rows = current_table().comments_[comment_idx].row - current_table().current_row() - 1;
+			int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
 
-			start_row(current_table().current_row() + 1, rows, 0, true);
+			start_row(current_table()->current_row() + 1, rows, 0, true);
 			end_row();
 			
-			start_row(current_table().current_row() + 1, 1, 0, true);
+			start_row(current_table()->current_row() + 1, 1, 0, true);
 			end_row();
 
 			repeated_default -= (1 + rows);
@@ -233,21 +233,50 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 			end_row();
 		}
 	}
-/////////////////////////////////////////////////////////////////
-	while (level < current_table().current_level())
+//-------------------------------------------------------------------------------------------
+	while (level < current_table()->current_level())
 	{
-		current_table().end_group();
+		current_table()->end_group();
 	}
-	while (level > current_table().current_level())
+	while (level > current_table()->current_level())
 	{
 		office_element_ptr row_group_elm;
 		create_element(L"table", L"table-row-group",row_group_elm,this);
-		current_table().start_group(row_group_elm);
+		current_table()->start_group(row_group_elm);
 	}
-/////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------
+	bool bBreak = false;
 
+	for (size_t i = 0; i < current_table()->row_breaks_.size(); i++)
+	{
+		if (_start_row == current_table()->row_breaks_[i])
+		{
+			if (repeated > 1)
+			{
+				start_row(_start_row, 1, level, _default);
+				end_row();
+				
+				start_row(_start_row + 1, repeated - 1, level, _default);
+				return;
+			}
+			else bBreak = true;
+			break;
+		}
+		else if (_start_row < current_table()->row_breaks_[i] && current_table()->row_breaks_[i] < _start_row + repeated)
+		{
+			start_row(_start_row, current_table()->row_breaks_[i] - _start_row, level, _default); 
+			end_row();
+			
+			start_row(current_table()->row_breaks_[i], 1, level, _default); 
+			end_row();
+			
+			start_row(current_table()->row_breaks_[i] + 1, _start_row + repeated - current_table()->row_breaks_[i] - 1, level, _default); 
+			return;
+		}
+	}
+//-------------------------------------------------------------------------------------------
 	office_element_ptr	style_elm;
-	if ( _default)
+	if ( _default && !bBreak)
 	{
 		style_elm = styles_context()->find_odf_style_default(style_family::TableRow);
 	}
@@ -262,18 +291,21 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 		style_table_row_properties * row_properties = _style->content_.get_style_table_row_properties();
  		if (row_properties == NULL)return; //error ????
 
-		row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
+		if (bBreak)
+			row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Page);
+		else
+			row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
 
 	office_element_ptr row_elm;
 	create_element(L"table", L"table-row",row_elm,this);
 	
-	current_table().add_row(row_elm, repeated, style_elm);
+	current_table()->add_row(row_elm, repeated, style_elm);
 
 	if ( _default)
 	{
 		//std::wstring style_cell_name= styles_context()->find_odf_style_name_default(odf_types::style_family::TableCell);
-		//current_table().set_row_default_cell_style(style_cell_name);
+		//current_table()->set_row_default_cell_style(style_cell_name);
 	}
 }
 void ods_conversion_context::end_row()
@@ -281,13 +313,13 @@ void ods_conversion_context::end_row()
 	//add default last cells
 	int repeated = 1024;// max dimension columns???
 	
-	current_table().add_default_cell(repeated);
+	current_table()->add_default_cell(repeated);
 
 }
 //////////////////////
 void ods_conversion_context::start_comment(int col, int row, std::wstring & author)
 {
-	current_table().start_comment(col, row, author);
+	current_table()->start_comment(col, row, author);
 	start_text_context();
 ////////////////
 	office_element_ptr paragr_elm;
@@ -299,20 +331,20 @@ void ods_conversion_context::end_comment()
 {
 	if (current_text_context_)current_text_context_->end_paragraph();
 
-	current_table().end_comment(current_text_context_);
+	current_table()->end_comment(current_text_context_);
 	end_text_context();
 }
 void ods_conversion_context::set_comment_color(const std::wstring & color)
 {
-	current_table().set_comment_color(color);
+	current_table()->set_comment_color(color);
 }
 void ods_conversion_context::set_comment_visible(bool val)
 {
-	current_table().set_comment_visible(val);
+	current_table()->set_comment_visible(val);
 }
 void ods_conversion_context::set_comment_rect(double l, double t, double w, double h)//in mm
 {
-	current_table().set_comment_rect(l,t,w,h);
+	current_table()->set_comment_rect(l,t,w,h);
 }
 /////////////////////////////
 void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, bool bLocation)
@@ -333,7 +365,7 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		{ 
 			for (long row = start_row; row <= end_row; row++)
 			{
-				current_table().add_hyperlink(ref, col, row, link, bLocation);
+				current_table()->add_hyperlink(ref, col, row, link, bLocation);
 				//ссылка одна, а вот отображаемый текст - разный
 			}
 		}
@@ -342,7 +374,7 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 	{
 		int col = -1, row = -1;
 		utils::parsing_ref (ref_cells[0], col, row);
-		current_table().add_hyperlink(ref, col, row, link, bLocation);
+		current_table()->add_hyperlink(ref, col, row, link, bLocation);
 	}
 }
 bool ods_conversion_context::start_data_validation(const std::wstring & ref, int type)
@@ -386,7 +418,7 @@ void ods_conversion_context::add_merge_cells(const std::wstring & ref)
 	utils::parsing_ref (ref_cells[0], start_col, start_row);
 	utils::parsing_ref (ref_cells[1], end_col, end_row);
 
-	current_table().set_merge_cells(start_col, start_row, end_col, end_row);
+	current_table()->set_merge_cells(start_col, start_row, end_col, end_row);
 
 }
 
@@ -396,18 +428,18 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	utils::parsing_ref ( ref, col, row);
 
 	bool bCovered = false;
-	bool bSpanned = current_table().isSpannedCell(col, row, spanned_cols, spanned_rows);
+	bool bSpanned = current_table()->isSpannedCell(col, row, spanned_cols, spanned_rows);
 
 	if (!bSpanned)
 	{
-		bCovered = current_table().isCoveredCell(col, row);
+		bCovered = current_table()->isCoveredCell(col, row);
 	}
 
-	if (col > current_table().current_column() + 1)
+	if (col > current_table()->current_column() + 1)
 	{
-		int repeated = col - current_table().current_column() - 1;
+		int repeated = col - current_table()->current_column() - 1;
 		
-		current_table().add_default_cell(repeated);//, bCovered);
+		current_table()->add_default_cell(repeated);//, bCovered);
 	}
 
 	office_element_ptr style_elm;
@@ -444,21 +476,21 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 		create_element(L"table", L"table-cell", cell_elm, this);
 	}
 	
-	current_table().start_cell(cell_elm, style_elm);
+	current_table()->start_cell(cell_elm, style_elm);
 
 	if (bSpanned)
 	{
-		current_table().set_cell_spanned(spanned_cols, spanned_rows);
+		current_table()->set_cell_spanned(spanned_cols, spanned_rows);
 	}
 	if (!bCovered)
 	{
-		current_table().set_cell_format_value(format_value_type);
+		current_table()->set_cell_format_value(format_value_type);
 	}
 }
 
 void ods_conversion_context::end_cell()
 {
-	current_table().end_cell();
+	current_table()->end_cell();
 	end_text_context();
 }
 void ods_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
@@ -484,13 +516,13 @@ void ods_conversion_context::end_columns()
 {
 	//add default last column  - ЕСЛИ они не прописаны в исходном (1024 - от  балды)
 	//вопрос - если и добавлять то  с каким стилем???
-	//if (current_table().current_column() < 1 )
-	//	add_column(current_table().current_column() + 1,1024, 0, true);
+	//if (current_table()->current_column() < 1 )
+	//	add_column(current_table()->current_column() + 1,1024, 0, true);
 	//else
-    int repeat = (std::max)(current_table().dimension_columns, 1024) - current_table().current_column();
+    int repeat = (std::max)(current_table()->dimension_columns, 1024) - current_table()->current_column();
 	if (repeat < 0) repeat = 1;
 	
-	add_column(current_table().current_column() + 1, repeat, 0, true);
+	add_column(current_table()->current_column() + 1, repeat, 0, true);
 }
 void ods_conversion_context::start_rows()
 {
@@ -498,54 +530,77 @@ void ods_conversion_context::start_rows()
 void ods_conversion_context::end_rows()
 {
 	//add default last row
-    int repeated = (std::max)(current_table().dimension_row, 64) - current_table().current_row();
+    int repeated = (std::max)(current_table()->dimension_row, 64) - current_table()->current_row();
 	if (repeated < 0) repeated = 1;
 
 	while(true)
 	{
 		//делим на 3 - до, с комметом, после;
-		int comment_idx = current_table().is_row_comment(current_table().current_row() + 1, repeated);
+		int comment_idx = current_table()->is_row_comment(current_table()->current_row() + 1, repeated);
 		
 		if (comment_idx < 0) break;
-		int rows = current_table().comments_[comment_idx].row - current_table().current_row() - 1;
+		int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
 
-		start_row(current_table().current_row() + 1, rows, 0, true);
+		start_row(current_table()->current_row() + 1, rows, 0, true);
 		end_row();
 		
-		start_row(current_table().current_row() + 1, 1, 0, true);
+		start_row(current_table()->current_row() + 1, 1, 0, true);
 		end_row();
 
 		repeated -= (1 + rows);
 	}
 
-	if (repeated > 0 && current_table().get_last_row_repeated() < 1024)
+	if (repeated > 0 && current_table()->get_last_row_repeated() < 1024)
 	{
-		start_row(current_table().current_row() + 1, repeated, 0, true);
+		start_row(current_table()->current_row() + 1, repeated, 0, true);
 		end_row();
 	}
 }
-
 void ods_conversion_context::add_column(int start_column, int repeated, int level, bool _default)
 {
-	if (start_column > current_table().current_column()+1)
+	if (start_column > current_table()->current_column() + 1)
 	{
-		int repeated_default = start_column - current_table().current_column()-1;
-		add_column(start_column-repeated_default,repeated_default,0,true);
+		int repeated_default = start_column - current_table()->current_column() - 1;
+		add_column(start_column - repeated_default, repeated_default, 0, true);
 	}
-/////////////////////////////////////////////////////////////////
-	while (level < current_table().current_level())
+//-------------------------------------------------------------------------------------------
+	while (level < current_table()->current_level())
 	{
-		current_table().end_group();
+		current_table()->end_group();
 	}
-	while (level > current_table().current_level())
+	while (level > current_table()->current_level())
 	{
 		office_element_ptr column_group_elm;
-		create_element(L"table", L"table-column-group",column_group_elm,this);
-		current_table().start_group(column_group_elm);
+		create_element(L"table", L"table-column-group", column_group_elm, this);
+		current_table()->start_group(column_group_elm);
 	}
+//-------------------------------------------------------------------------------------------
+	bool bBreak = false;
 
+	for (size_t i = 0; i < current_table()->column_breaks_.size(); i++)
+	{
+		if (start_column == current_table()->column_breaks_[i])
+		{
+			if (repeated > 1)
+			{
+				add_column(start_column, 1, level, _default);
+				add_column(start_column + 1, repeated - 1, level, _default);
+				return;
+			}
+			else bBreak = true;
+			break;
+		}
+		else if (start_column < current_table()->column_breaks_[i] && current_table()->column_breaks_[i] < start_column + repeated)
+		{
+			add_column(start_column, current_table()->column_breaks_[i] - start_column, level, _default);
+			add_column(current_table()->column_breaks_[i], 1, level, _default);
+			add_column(current_table()->column_breaks_[i] + 1, start_column + repeated - current_table()->column_breaks_[i] - 1, level, _default);
+			return;
+		}
+	}
+//-------------------------------------------------------------------------------------------
 	office_element_ptr	style_elm;
-	if ( _default)
+	if ( _default && !bBreak)
 	{
 		style_elm = styles_context()->find_odf_style_default(style_family::TableColumn);
 	}
@@ -553,7 +608,7 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 	{
 		//по сути в этом стиле раличные опции ширины колонок тока .. а если свойства совпадают - можно сгенерить один, хотя выше и указано что стили разные.
 		//то есть в оо разделяют оох стиль на 2 (для колонки собственно, и описалово ячеек в колонки)
-		styles_context()->create_style(L"",style_family::TableColumn, true, false, -1);
+		styles_context()->create_style(L"", style_family::TableColumn, true, false, -1);
 		style_elm = styles_context()->last_state()->get_office_element();
 		
 		style* _style = dynamic_cast<style*>(style_elm.get());
@@ -562,18 +617,21 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 		style_table_column_properties * column_properties = _style->content_.get_style_table_column_properties();
  		if (column_properties == NULL)return; //error ????
 
-		column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
+		if (bBreak)
+			column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Page);
+		else
+			column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
 
 	office_element_ptr column_elm;
-	create_element(L"table", L"table-column",column_elm,this);
+	create_element(L"table", L"table-column", column_elm, this);
 	
-	current_table().add_column(column_elm, repeated, style_elm);
+	current_table()->add_column(column_elm, repeated, style_elm);
 
 	if (_default)
 	{
 		std::wstring style_cell_name= styles_context()->find_odf_style_name_default(odf_types::style_family::TableCell);
-		current_table().set_column_default_cell_style(style_cell_name);
+		current_table()->set_column_default_cell_style(style_cell_name);
 	}
 }
 void ods_conversion_context::start_text_context()
@@ -615,9 +673,9 @@ void ods_conversion_context::start_cell_text()
 	
 	current_text_context_->start_paragraph(paragr_elm);
 
-	if (current_table().is_cell_hyperlink())
+	if (current_table()->is_cell_hyperlink())
 	{
-		ods_hyperlink_state & state = current_table().current_hyperlink();
+		ods_hyperlink_state & state = current_table()->current_hyperlink();
 		
 		office_element_ptr text_a_elm;
 		create_element(L"text", L"a", text_a_elm, this);
@@ -636,7 +694,7 @@ void ods_conversion_context::end_cell_text()
 {
 	if (current_text_context_)
 	{
-		if (current_table().is_cell_hyperlink())	current_text_context_->end_element();
+		if (current_table()->is_cell_hyperlink())	current_text_context_->end_element();
 		
 		current_text_context_->end_paragraph();
 	}
@@ -646,7 +704,7 @@ void ods_conversion_context::start_drawings()
 }
 void ods_conversion_context::end_drawings()
 {
-	current_table().drawing_context()->clear();
+	current_table()->drawing_context()->clear();
 }
 void ods_conversion_context::add_external_reference(const std::wstring & ref)
 {
@@ -672,7 +730,7 @@ double ods_conversion_context::convert_symbol_width(double val)
 void ods_conversion_context::start_table_view( int view_id )
 {
 	settings_context()->set_current_view(view_id);
-	settings_context()->start_table(current_table().office_table_name_);
+	settings_context()->start_table(current_table()->office_table_name_);
 }
 
 void ods_conversion_context::end_table_view()
@@ -690,23 +748,23 @@ bool ods_conversion_context::start_header(int type)// 0 - odd, 1 - first, 2 - ev
 
     text_context()->start_element(page_layout_context()->last_master()->get_last_element());
 
-	if (false == current_table().mapHeaderFooterImages.empty())
+	if (false == current_table()->mapHeaderFooterImages.empty())
 	{
 		std::wstring mask = std::wstring(L"H") + (type == 1 ? L"FIRST" : (type == 2 ? L"EVEN" : L""));
 
 		std::map<std::wstring, office_element_ptr>::iterator pFind;
 
-		pFind = current_table().mapHeaderFooterImages.find(L"C" + mask);
-		if (pFind == current_table().mapHeaderFooterImages.end())
+		pFind = current_table()->mapHeaderFooterImages.find(L"C" + mask);
+		if (pFind == current_table()->mapHeaderFooterImages.end())
 		{
-			pFind = current_table().mapHeaderFooterImages.find(L"L" + mask);
-			if (pFind == current_table().mapHeaderFooterImages.end())
+			pFind = current_table()->mapHeaderFooterImages.find(L"L" + mask);
+			if (pFind == current_table()->mapHeaderFooterImages.end())
 			{
-				pFind = current_table().mapHeaderFooterImages.find(L"R" + mask);
+				pFind = current_table()->mapHeaderFooterImages.find(L"R" + mask);
 			}
 		}
 		
-		if (pFind != current_table().mapHeaderFooterImages.end())
+		if (pFind != current_table()->mapHeaderFooterImages.end())
 		{
 			page_layout_context()->set_header_footer_image(pFind->second);
 		}
@@ -723,23 +781,23 @@ bool ods_conversion_context::start_footer(int type)
 	
     text_context()->start_element(page_layout_context()->last_master()->get_last_element());
 
-	if (false == current_table().mapHeaderFooterImages.empty())
+	if (false == current_table()->mapHeaderFooterImages.empty())
 	{
 		std::wstring mask = std::wstring(L"F") + (type == 1 ? L"FIRST" : (type == 2 ? L"EVEN" : L""));
 
 		std::map<std::wstring, office_element_ptr>::iterator pFind;
 
-		pFind = current_table().mapHeaderFooterImages.find(L"C" + mask);
-		if (pFind == current_table().mapHeaderFooterImages.end())
+		pFind = current_table()->mapHeaderFooterImages.find(L"C" + mask);
+		if (pFind == current_table()->mapHeaderFooterImages.end())
 		{
-			pFind = current_table().mapHeaderFooterImages.find(L"L" + mask);
-			if (pFind == current_table().mapHeaderFooterImages.end())
+			pFind = current_table()->mapHeaderFooterImages.find(L"L" + mask);
+			if (pFind == current_table()->mapHeaderFooterImages.end())
 			{
-				pFind = current_table().mapHeaderFooterImages.find(L"R" + mask);
+				pFind = current_table()->mapHeaderFooterImages.find(L"R" + mask);
 			}
 		}
 		
-		if (pFind != current_table().mapHeaderFooterImages.end())
+		if (pFind != current_table()->mapHeaderFooterImages.end())
 		{
 			page_layout_context()->set_header_footer_image(pFind->second);
 		}

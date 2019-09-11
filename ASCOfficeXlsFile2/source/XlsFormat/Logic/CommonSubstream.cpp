@@ -100,6 +100,29 @@ int CommonSubstream::serialize_format(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"codeName", code_name->value);
 			}
+			if ((sheet_ext) && (sheet_ext->sheetExtOptional.bEnabled))
+			{
+				if (!sheet_ext->sheetExtOptional.fCondFmtCalc)	
+					CP_XML_ATTR(L"enableFormatConditionsCalculation", false);
+				if (!sheet_ext->sheetExtOptional.fNotPublished)	
+					CP_XML_ATTR(L"published", false);
+				
+				if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB ||
+					sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRINDEXED)
+				{
+					CP_XML_NODE(L"tabColor")
+					{
+						if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB)
+						{			
+							CP_XML_ATTR(L"rgb", sheet_ext->sheetExtOptional.color.rgb.strARGB);
+						}
+						else if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRINDEXED)
+						{
+							CP_XML_ATTR(L"indexed", sheet_ext->sheetExtOptional.color.icv);
+						}
+					}
+				}
+			}
 			if (wsBool)
 			{
 				if (wsBool->fApplyStyles || !wsBool->fDspGuts || !wsBool->fRowSumsBelow || !wsBool->fColSumsRight)
@@ -120,30 +143,6 @@ int CommonSubstream::serialize_format(std::wostream & strm)
 						if (wsBool->fFitToPage)			CP_XML_ATTR(L"fitToPage", wsBool->fFitToPage);
 					}
 				}
-			}
-			if ((sheet_ext) && (sheet_ext->sheetExtOptional.bEnabled))
-			{
-				if (!sheet_ext->sheetExtOptional.fCondFmtCalc)	
-					CP_XML_ATTR(L"enableFormatConditionsCalculation", false);
-				if (!sheet_ext->sheetExtOptional.fNotPublished)	
-					CP_XML_ATTR(L"published" ,false);
-
-				if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB ||
-					sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRINDEXED)
-				{
-					CP_XML_NODE(L"tabColor")
-					{
-						if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB)
-						{			
-							CP_XML_ATTR(L"rgb", sheet_ext->sheetExtOptional.color.rgb.strARGB);
-						}
-						else if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRINDEXED)
-						{
-							CP_XML_ATTR(L"indexed", sheet_ext->sheetExtOptional.color.icv);
-						}
-					}
-				}
-
 			}
 		}
 	}

@@ -111,14 +111,7 @@ public:
     double	table_column_last_width	();
     void	end_table_column		();
 
-	void set_table_row_group	(int count, bool collapsed, int level);
-    void start_table_row		(const std::wstring & styleName, const std::wstring & defaultCellStyleName);
-    void non_empty_row			();
-    void end_table_row			();
-    bool is_empty_row			();
-    void set_current_row_height	(size_t height_pt);    
-
-	bool in_table_cell			();
+	bool in_table_cell();
 
     void start_table_cell			(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
     void end_table_cell				();

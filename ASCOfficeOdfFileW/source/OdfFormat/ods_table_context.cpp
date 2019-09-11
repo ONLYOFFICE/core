@@ -41,6 +41,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/make_shared.hpp>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
@@ -80,7 +81,7 @@ ods_table_context::ods_table_context(ods_conversion_context & Context): context_
 {        
 }
 
-ods_table_state & ods_table_context::state()
+ods_table_state_ptr & ods_table_context::state()
 {
     return table_state_list_.back();
 }
@@ -99,7 +100,7 @@ void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
 
 	if (std::wstring::npos == ref.find(L"!") )
 	{
-		ref = table_state_list_.back().office_table_name_ + L"!" + ref;
+		ref = table_state_list_.back()->office_table_name_ + L"!" + ref;
 	}
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
 
@@ -120,24 +121,24 @@ void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
 	utils::parsing_ref (ref.substr(0, r), part_state.col_start, part_state.row_start);
 	utils::parsing_ref (ref.substr(r + 1, ref.size() - r), part_state.col_end, part_state.row_end);
 
-	state().table_parts_.push_back(part_state);
+	state()->table_parts_.push_back(part_state);
 }
 
 void ods_table_context::add_table_part_column(std::wstring name)
 {
-	if (state().table_parts_.empty()) return;
+	if (state()->table_parts_.empty()) return;
 
-	size_t column = state().table_parts_.back().columns.size();
+	size_t column = state()->table_parts_.back().columns.size();
 
-	std::wstring sCol = utils::getColAddress(state().table_parts_.back().col_start + column - 1);
+	std::wstring sCol = utils::getColAddress(state()->table_parts_.back().col_start + column - 1);
 
 	std::wstring ref;//table name ????
 
-	ref += sCol + std::to_wstring(state().table_parts_.back().row_start);
+	ref += sCol + std::to_wstring(state()->table_parts_.back().row_start);
 	ref += L":";
-	ref += sCol + std::to_wstring(state().table_parts_.back().row_end);
+	ref += sCol + std::to_wstring(state()->table_parts_.back().row_end);
 
-	state().table_parts_.back().columns.push_back(std::make_pair(name, ref));
+	state()->table_parts_.back().columns.push_back(std::make_pair(name, ref));
 }
 void ods_table_context::set_table_part_autofilter(bool val)
 {
@@ -216,32 +217,32 @@ bool ods_table_context::start_data_validation( const std::wstring &strRef, int t
 
 	if (validation_state.refs.empty()) return false;
 
-	validation->table_base_cell_address_	= state().office_table_name_ + L"." + getCellAddress(validation_state.refs[0].col_start - 1, validation_state.refs[0].row_start - 1);
+	validation->table_base_cell_address_	= state()->office_table_name_ + L"." + getCellAddress(validation_state.refs[0].col_start - 1, validation_state.refs[0].row_start - 1);
 	validation->table_name_					= validation_state.name;
 
 	table_content_validations_.root->add_child_element(elm);
 	table_content_validations_.elements.push_back(elm);
 
-	state().data_validations_.push_back(validation_state);
+	state()->data_validations_.push_back(validation_state);
 
 	return true;
 }
 void ods_table_context::set_data_validation_allow_empty(bool val)
 {
-	if (state().data_validations_.empty()) return;
+	if (state()->data_validations_.empty()) return;
 	
-	table_content_validation *validation = dynamic_cast<table_content_validation*>(state().data_validations_.back().elm.get());
+	table_content_validation *validation = dynamic_cast<table_content_validation*>(state()->data_validations_.back().elm.get());
 	validation->table_allowempty_cell_ = val;
 }
 void ods_table_context::set_data_validation_operator(int val)
 {
-	if (state().data_validations_.empty()) return;
+	if (state()->data_validations_.empty()) return;
 
-	state().data_validations_.back().operator_ = val;
+	state()->data_validations_.back().operator_ = val;
 }
 void ods_table_context::set_data_validation_content( std::wstring oox_formula1, std::wstring oox_formula2)
 {
-	if (state().data_validations_.empty()) return;
+	if (state()->data_validations_.empty()) return;
 	if (oox_formula1.empty() && oox_formula2.empty()) return;
 	
 	std::wstring odf_formula1, odf_formula2;
@@ -294,10 +295,10 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 			odf_formula2 = odf_formula2.substr(4);
 		}
 	}
-	table_content_validation *validation = dynamic_cast<table_content_validation*>(state().data_validations_.back().elm.get());
+	table_content_validation *validation = dynamic_cast<table_content_validation*>(state()->data_validations_.back().elm.get());
 	
 	std::wstring odf_condition;
-	switch(state().data_validations_.back().operator_)
+	switch(state()->data_validations_.back().operator_)
 	{
 		case 1: // SimpleTypes::spreadsheet::operatorNotBetween
 			odf_condition = L" and cell-content-is-not-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
@@ -317,7 +318,7 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 		default:
 			odf_condition = L" and cell-content-is-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
 	}
-	switch (state().data_validations_.back().type)
+	switch (state()->data_validations_.back().type)
 	{
 	case 0://SimpleTypes::spreadsheet::validationTypeNone:
 		odf_condition.clear();
@@ -348,13 +349,13 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 			odf_condition = L"of:cell-content-is-whole-number()" + odf_condition;
 		}break;
 	}
-	state().data_validations_.back().condition = odf_condition;
+	state()->data_validations_.back().condition = odf_condition;
 	
 	validation->table_condition_ = odf_condition;
 }
 void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display)
 {
-	if (state().data_validations_.empty()) return;
+	if (state()->data_validations_.empty()) return;
 
 	office_element_ptr elm;
 	create_element(L"table", L"error-message", elm, &context_);
@@ -383,7 +384,7 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 }
 void ods_table_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display)
 {
-	if (state().data_validations_.empty()) return;
+	if (state()->data_validations_.empty()) return;
 
 	office_element_ptr elm;
 	create_element(L"table", L"help-message", elm, &context_);
@@ -443,7 +444,7 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 		XmlUtils::replace_all( odf_range, L"]", L"");
 		XmlUtils::replace_all( odf_range, L";", L" ");
 
-		table_state_list_[sheet_id].set_table_print_ranges(odf_range);
+		table_state_list_[sheet_id]->set_table_print_ranges(odf_range);
 	}
 	
 	if (false == odf_base_cell.empty())
@@ -457,7 +458,7 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 		{
 			if (i == sheet_id)
 			{
-				table_state_list_[i].add_definded_expression(elm);
+				table_state_list_[i]->add_definded_expression(elm);
 				break;
 			}
 		}
@@ -494,8 +495,8 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 	
 	if (sheet_id >=0 && sheet_id < table_state_list_.size())
 	{
-		odf_base_cell = L"$" + table_state_list_[sheet_id].office_table_name_ + L".$A$1";
-		table_state_list_[sheet_id].add_definded_expression(elm);
+		odf_base_cell = L"$" + table_state_list_[sheet_id]->office_table_name_ + L".$A$1";
+		table_state_list_[sheet_id]->add_definded_expression(elm);
 		
 		if ( printable)
 		{
@@ -503,7 +504,7 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 			XmlUtils::replace_all( odf_value, L"]", L"");
 			XmlUtils::replace_all( odf_value, L";", L" ");
 
-			table_state_list_[sheet_id].set_table_print_ranges(odf_value);
+			table_state_list_[sheet_id]->set_table_print_ranges(odf_value);
 		}
 	}
 	else
@@ -520,15 +521,15 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 
 void ods_table_context::start_table(office_element_ptr & elm)
 {
-	table_state_list_.push_back( ods_table_state(&context_, elm) );
+	table_state_list_.push_back( boost::make_shared<ods_table_state>(&context_, elm) );
 	
 	std::wstring style_name_new = L"ta" + boost::lexical_cast<std::wstring>(table_state_list_.size());
 
 	office_element_ptr & style = context_.styles_context()->add_or_find(style_name_new, style_family::Table, true);
 	style->create_child_element(L"style", L"table-properties");
 	
-	state().set_table_style(style);
-	state().set_table_hidden(false);
+	state()->set_table_style(style);
+	state()->set_table_hidden(false);
 
 	//для свойств страницы, а не таблицы - нужно создать master-page c page layout и связать по имени со стилем таблицы
 	//причем здесь, т.к. с другой стороны это ВСЕ еще свойства листа. то есть совйства листа разделить на свйства страницы и таблицы ..
@@ -538,7 +539,7 @@ void ods_table_context::start_table(office_element_ptr & elm)
 
 void ods_table_context::end_table()
 {
-	state().check_spanned_cells();
+	state()->check_spanned_cells();
 }
 
 }

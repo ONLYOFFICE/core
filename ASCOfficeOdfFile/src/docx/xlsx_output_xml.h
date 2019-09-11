@@ -70,6 +70,7 @@ public:
 	std::wostream & header_footer();
 	std::wostream & controls();
 	std::wostream & protection();
+	std::wostream & breaks();
 	
 	rels & sheet_rels();			//hyperlink, background image, external, media ...
 	

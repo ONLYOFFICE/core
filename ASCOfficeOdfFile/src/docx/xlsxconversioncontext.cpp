@@ -483,6 +483,7 @@ void xlsx_conversion_context::end_table()
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
 	get_table_context().serialize_data_validation		(current_sheet().dataValidations());
  	get_table_context().serialize_protection			(current_sheet().protection());
+    get_table_context().serialize_breaks				(current_sheet().breaks());
    
 	get_drawing_context().set_odf_packet_path			(root()->get_folder());
     get_drawing_context().process_objects				(get_table_metrics());
@@ -577,30 +578,6 @@ void xlsx_conversion_context::end_table_column()
 {
 }
 
-void xlsx_conversion_context::set_table_row_group(int count, bool collapsed, int level)
-{
-	get_table_context().set_table_row_group(count, collapsed, level);
-}
-
-void xlsx_conversion_context::start_table_row(const std::wstring & styleName, const std::wstring & defaultCellStyleName)
-{
-    get_table_context().start_row(styleName, defaultCellStyleName);
-}
-
-void xlsx_conversion_context::non_empty_row()
-{
-    return get_table_context().non_empty_row();
-}
-
-bool xlsx_conversion_context::is_empty_row() 
-{
-    return get_table_context().is_empty_row();
-}
-
-void xlsx_conversion_context::end_table_row()
-{
-    get_table_context().end_row();
-}
 
 int xlsx_conversion_context::current_table_column()
 {

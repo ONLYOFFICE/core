@@ -140,8 +140,9 @@ std::wstring convert_time(const std::wstring & oox_time)
 static formulasconvert::oox2odf_converter formulas_converter_table;
 
 ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm) : 
-		context_(Context), drawing_context_(Context), controls_context_(Context)
+		context_(Context), controls_context_(Context)
 {     
+	drawing_context_ = boost::make_shared<odf_drawing_context>(context_);
 	office_table_ = elm; 
 
 	current_table_row_ = 0;
@@ -312,7 +313,14 @@ void ods_table_state::end_headers()
 {
 	current_level_.pop_back();
 }
-
+void ods_table_state::add_column_break(int val)
+{
+	column_breaks_.push_back(val + 1);
+}
+void ods_table_state::add_row_break(int val)
+{
+	row_breaks_.push_back(val + 1);
+}
 void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated,office_element_ptr & style_elm)
 {
 	current_level_.back()->add_child_element(elm);

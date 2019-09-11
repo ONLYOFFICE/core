@@ -100,7 +100,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring defaultCellStyleName = attlist_.table_default_cell_style_name_.get_value_or( L"");
 
 	style_instance * instStyle_CellDefault = 
-				Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyleName, style_family::TableCell,false/*false*/);
+				Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyleName, style_family::TableCell, false/*false*/);
 	
 	style_table_cell_properties * prop_CellDefault = NULL;
 	
@@ -110,7 +110,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (prop_CellDefault) //проверим что есть вообще кастом для роу- а потом уже посчитаем стиль
 	{
-		odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instStyle_CellDefault);
+		odf_reader::style_table_cell_properties_attlist	cellFormatProperties = calc_table_cell_properties(instStyle_CellDefault);
 		Default_Cell_style_in_row_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", true);	
 	}
 	else //стиля ячеек для строки нет глянем что там внутри строки в последней ячейке
@@ -127,6 +127,8 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     std::wstring ht		= L"";
     double row_height	= 0.0;
+
+	bool bBreakAfter = false, bBreakBefore = false;
 
     odf_read_context & odfContext = Context.root()->odf_context();
 
@@ -151,6 +153,16 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 			ht_s << std::fixed << row_height;
 			ht = ht_s.str();    
 		}
+		if ((prop->attlist_.common_break_attlist_.fo_break_before_) && 
+			(prop->attlist_.common_break_attlist_.fo_break_before_->get_type() == odf_types::fo_break::Page))
+		{
+			bBreakBefore = true;
+		}
+		else if ((prop) && ((prop->attlist_.common_break_attlist_.fo_break_after_) && 
+			(prop->attlist_.common_break_attlist_.fo_break_after_->get_type() == odf_types::fo_break::Page)))
+		{
+			bBreakAfter = true;
+		}
 	}
 	int row_current = Context.current_table_row() + 1;
 
@@ -158,8 +170,11 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
-        Context.start_table_row(rowStyleName, defaultCellStyleName);
-        
+        Context.get_table_context().state()->start_row(rowStyleName, defaultCellStyleName);
+		
+		if (bBreakBefore)	Context.get_table_context().state()->set_row_break_before();
+		if (bBreakAfter)	Context.get_table_context().state()->set_row_break_after();
+
         if (!skip_next_row)
         {
            CP_XML_WRITER(strm)
@@ -223,9 +238,9 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
                 }
             }
         }
-        Context.end_table_row();        
+        Context.get_table_context().state()->end_row();        
 
-		if (Context.is_empty_row())
+		if (Context.get_table_context().state()->is_empty_row())
 		{
             skip_next_row = true;  
 			if (attlist_.table_number_rows_repeated_ > 0xf000)
@@ -313,7 +328,7 @@ void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	int level = 1;
 	
-	Context.set_table_row_group( (int)count, table_table_row_group_attlist_.table_display_, level);
+	Context.get_table_context().state()->set_table_row_group( (int)count, table_table_row_group_attlist_.table_display_, level);
 	table_rows_and_groups_.xlsx_convert(Context);
 }
 
@@ -497,13 +512,13 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
             {
 
 				if (style_instance * inst = 
-					Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyleName, style_family::TableCell,false/*false*/))
+					Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyleName, style_family::TableCell, false/*false*/))
 				{
                     if (inst->content())
                     {
 						if (const style_table_cell_properties * prop = inst->content()->get_style_table_cell_properties())
 						{//сделать проверку чтоб сюда не попал дефолтный, то  сть пустой стиль
-							odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(inst);
+							odf_reader::style_table_cell_properties_attlist	cellFormatProperties = calc_table_cell_properties(inst);
 							
 							bool set_default = false;
 							if (columnsRepeated > 100) set_default = true;
@@ -517,7 +532,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 				}
 				_CP_OPT(double) width;
                 const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get_value_or(L"");
-                if (style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(colStyleName, style_family::TableColumn,false))
+                if (style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(colStyleName, style_family::TableColumn, false))
                 {
                     if (inst->content())
                     {
@@ -546,6 +561,16 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                 CP_XML_ATTR(L"customWidth", true);
                                 Context.table_column_last_width(*width);
                             }
+							if ((prop->attlist_.common_break_attlist_.fo_break_before_) && 
+								(prop->attlist_.common_break_attlist_.fo_break_before_->get_type() == odf_types::fo_break::Page))
+							{
+								Context.get_table_context().state()->set_column_break_before();
+							}
+							else if ((prop->attlist_.common_break_attlist_.fo_break_after_) && 
+								(prop->attlist_.common_break_attlist_.fo_break_after_->get_type() == odf_types::fo_break::Page))
+							{
+								Context.get_table_context().state()->set_column_break_after();
+							}
                         }
                     }                
                 }
@@ -938,7 +963,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                 }
 				if ( is_data_visible || (cellStyle && is_style_visible && !last_cell_))
 				{
-					Context.non_empty_row();
+					Context.get_table_context().state()->non_empty_row();
 					empty_cell_count = 0 ;					
 				} 
 				else
@@ -1207,7 +1232,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
                 }
 				if ( is_data_visible || (cellStyle && is_style_visible && !last_cell_))
 				{
-					Context.non_empty_row();
+					Context.get_table_context().state()->non_empty_row();
 					empty_cell_count = 0 ;					
 				} 
 				else

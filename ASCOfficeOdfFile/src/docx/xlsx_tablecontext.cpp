@@ -256,29 +256,6 @@ void xlsx_table_context::end_covered_cell()
 {
     return state()->end_covered_cell();
 }
-void xlsx_table_context::set_table_row_group(int count, bool collapsed, int level)
-{
-	return state()->set_table_row_group(count, collapsed, level);
-}
-void xlsx_table_context::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
-{
-    return state()->start_row(StyleName, defaultCellStyleName);
-}
-
-void xlsx_table_context::non_empty_row()
-{
-    return state()->non_empty_row();
-}
-
-bool xlsx_table_context::is_empty_row()
-{
-    return state()->is_empty_row();
-}
-
-void xlsx_table_context::end_row()
-{
-    return state()->end_row();
-}
 
 void xlsx_table_context::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
 {
@@ -552,6 +529,10 @@ void xlsx_table_context::serialize_controls(std::wostream & _Wostream)
 {
     return state()->serialize_controls(_Wostream);
 }
+void xlsx_table_context::serialize_breaks(std::wostream & _Wostream)
+{
+    return state()->serialize_breaks(_Wostream);
+}
 void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
 {
 	return state()->dump_rels_hyperlinks(Rels);
@@ -560,7 +541,6 @@ void xlsx_table_context::dump_rels_ole_objects(rels & Rels)
 {
 	return state()->dump_rels_ole_objects(Rels);
 }
-
 xlsx_table_metrics & xlsx_table_context::get_table_metrics()
 {
     return state()->get_table_metrics();

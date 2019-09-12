@@ -432,40 +432,40 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 {
     //v8::HandleScope handle_scope(isolate);
 
-    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
     result->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
     // прописываем функции - методы объекта
-    result->Set(v8::String::NewFromUtf8(current, "SetFilePath"), v8::FunctionTemplate::New(current, _SetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "GetFilePath"), v8::FunctionTemplate::New(current, _GetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "SetFileId"), v8::FunctionTemplate::New(current, _SetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileId"), v8::FunctionTemplate::New(current, _GetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileBinary"), v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontBinary"), v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontsDirectory"), v8::FunctionTemplate::New(current, _GetFontsDirectory));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileString"), v8::FunctionTemplate::New(current, _GetFileString));
+    result->Set(current, "SetFilePath", v8::FunctionTemplate::New(current, _SetFilePath));
+    result->Set(current, "GetFilePath", v8::FunctionTemplate::New(current, _GetFilePath));
+    result->Set(current, "SetFileId", v8::FunctionTemplate::New(current, _SetFileId));
+    result->Set(current, "GetFileId", v8::FunctionTemplate::New(current, _GetFileId));
+    result->Set(current, "GetFileBinary", v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
+    result->Set(current, "GetFontBinary", v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
+    result->Set(current, "GetFontsDirectory", v8::FunctionTemplate::New(current, _GetFontsDirectory));
+    result->Set(current, "GetFileString", v8::FunctionTemplate::New(current, _GetFileString));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetEditorType"), v8::FunctionTemplate::New(current, _GetEditorType));
-    result->Set(v8::String::NewFromUtf8(current, "CheckNextChange"), v8::FunctionTemplate::New(current, _CheckNextChange));
+    result->Set(current, "GetEditorType", v8::FunctionTemplate::New(current, _GetEditorType));
+    result->Set(current, "CheckNextChange", v8::FunctionTemplate::New(current, _CheckNextChange));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetCountChanges"), v8::FunctionTemplate::New(current, _GetChangesCount));
-    result->Set(v8::String::NewFromUtf8(current, "GetChangesFile"), v8::FunctionTemplate::New(current, _GetChangesFile));
+    result->Set(current, "GetCountChanges", v8::FunctionTemplate::New(current, _GetChangesCount));
+    result->Set(current, "GetChangesFile", v8::FunctionTemplate::New(current, _GetChangesFile));
 
-    result->Set(v8::String::NewFromUtf8(current, "Save_AllocNative"), v8::FunctionTemplate::New(current, _Save_AllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_ReAllocNative"), v8::FunctionTemplate::New(current, _Save_ReAllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_End"), v8::FunctionTemplate::New(current, _Save_End));
+    result->Set(current, "Save_AllocNative", v8::FunctionTemplate::New(current, _Save_AllocNative));
+    result->Set(current, "Save_ReAllocNative", v8::FunctionTemplate::New(current, _Save_ReAllocNative));
+    result->Set(current, "Save_End", v8::FunctionTemplate::New(current, _Save_End));
 
-    result->Set(v8::String::NewFromUtf8(current, "AddImageInChanges"), v8::FunctionTemplate::New(current, _AddImageInChanges));
+    result->Set(current, "AddImageInChanges", v8::FunctionTemplate::New(current, _AddImageInChanges));
 
-    result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
+    result->Set(current, "ConsoleLog", v8::FunctionTemplate::New(current, _ConsoleLog));
 
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpen"),            v8::FunctionTemplate::New(current, _zipOpenFile));
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpenBase64"),      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsString"),    v8::FunctionTemplate::New(current, _zipGetFileAsString));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsBinary"),    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
-    result->Set(v8::String::NewFromUtf8(current, "ZipClose"),           v8::FunctionTemplate::New(current, _zipCloseFile));
+    result->Set(current, "ZipOpen",            v8::FunctionTemplate::New(current, _zipOpenFile));
+    result->Set(current, "ZipOpenBase64",      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
+    result->Set(current, "ZipFileAsString",    v8::FunctionTemplate::New(current, _zipGetFileAsString));
+    result->Set(current, "ZipFileAsBinary",    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
+    result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope
@@ -478,42 +478,42 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* i
 {
     //v8::HandleScope handle_scope(isolate);
 
-    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
     result->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
     v8::Isolate* current = v8::Isolate::GetCurrent();
 
     // прописываем функции - методы объекта
-    result->Set(v8::String::NewFromUtf8(current, "SetFilePath"), v8::FunctionTemplate::New(current, _SetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "GetFilePath"), v8::FunctionTemplate::New(current, _GetFilePath));
-    result->Set(v8::String::NewFromUtf8(current, "SetFileId"), v8::FunctionTemplate::New(current, _SetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileId"), v8::FunctionTemplate::New(current, _GetFileId));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileBinary"), v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontBinary"), v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
-    result->Set(v8::String::NewFromUtf8(current, "GetFontsDirectory"), v8::FunctionTemplate::New(current, _GetFontsDirectory));
-    result->Set(v8::String::NewFromUtf8(current, "GetFileString"), v8::FunctionTemplate::New(current, _GetFileString));
+    result->Set(current, "SetFilePath", v8::FunctionTemplate::New(current, _SetFilePath));
+    result->Set(current, "GetFilePath", v8::FunctionTemplate::New(current, _GetFilePath));
+    result->Set(current, "SetFileId", v8::FunctionTemplate::New(current, _SetFileId));
+    result->Set(current, "GetFileId", v8::FunctionTemplate::New(current, _GetFileId));
+    result->Set(current, "GetFileBinary", v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
+    result->Set(current, "GetFontBinary", v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
+    result->Set(current, "GetFontsDirectory", v8::FunctionTemplate::New(current, _GetFontsDirectory));
+    result->Set(current, "GetFileString", v8::FunctionTemplate::New(current, _GetFileString));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetEditorType"), v8::FunctionTemplate::New(current, _GetEditorType));
-    result->Set(v8::String::NewFromUtf8(current, "CheckNextChange"), v8::FunctionTemplate::New(current, _CheckNextChange));
+    result->Set(current, "GetEditorType", v8::FunctionTemplate::New(current, _GetEditorType));
+    result->Set(current, "CheckNextChange", v8::FunctionTemplate::New(current, _CheckNextChange));
 
-    result->Set(v8::String::NewFromUtf8(current, "GetCountChanges"), v8::FunctionTemplate::New(current, _GetChangesCount));
-    result->Set(v8::String::NewFromUtf8(current, "GetChangesFile"), v8::FunctionTemplate::New(current, _GetChangesFile));
+    result->Set(current, "GetCountChanges", v8::FunctionTemplate::New(current, _GetChangesCount));
+    result->Set(current, "GetChangesFile", v8::FunctionTemplate::New(current, _GetChangesFile));
 
-    result->Set(v8::String::NewFromUtf8(current, "Save_AllocNative"), v8::FunctionTemplate::New(current, _Save_AllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_ReAllocNative"), v8::FunctionTemplate::New(current, _Save_ReAllocNative));
-    result->Set(v8::String::NewFromUtf8(current, "Save_End"), v8::FunctionTemplate::New(current, _Save_End));
+    result->Set(current, "Save_AllocNative", v8::FunctionTemplate::New(current, _Save_AllocNative));
+    result->Set(current, "Save_ReAllocNative", v8::FunctionTemplate::New(current, _Save_ReAllocNative));
+    result->Set(current, "Save_End", v8::FunctionTemplate::New(current, _Save_End));
 
-    result->Set(v8::String::NewFromUtf8(current, "AddImageInChanges"), v8::FunctionTemplate::New(current, _AddImageInChanges));
+    result->Set(current, "AddImageInChanges", v8::FunctionTemplate::New(current, _AddImageInChanges));
 
-    result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
+    result->Set(current, "ConsoleLog", v8::FunctionTemplate::New(current, _ConsoleLog));
 
-    result->Set(v8::String::NewFromUtf8(current, "SaveChanges"), v8::FunctionTemplate::New(current, _SaveChanges));
+    result->Set(current, "SaveChanges", v8::FunctionTemplate::New(current, _SaveChanges));
 
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpen"),            v8::FunctionTemplate::New(current, _zipOpenFile));
-    result->Set(v8::String::NewFromUtf8(current, "ZipOpenBase64"),      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsString"),    v8::FunctionTemplate::New(current, _zipGetFileAsString));
-    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsBinary"),    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
-    result->Set(v8::String::NewFromUtf8(current, "ZipClose"),           v8::FunctionTemplate::New(current, _zipCloseFile));
+    result->Set(current, "ZipOpen",            v8::FunctionTemplate::New(current, _zipOpenFile));
+    result->Set(current, "ZipOpenBase64",      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
+    result->Set(current, "ZipFileAsString",    v8::FunctionTemplate::New(current, _zipGetFileAsString));
+    result->Set(current, "ZipFileAsBinary",    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
+    result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope

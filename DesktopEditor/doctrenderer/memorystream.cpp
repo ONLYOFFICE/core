@@ -120,7 +120,7 @@ v8::Handle<v8::ObjectTemplate> CreateMemoryStreamTemplate(v8::Isolate* isolate)
 {
     //v8::HandleScope handle_scope(isolate);
 
-    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+    v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
     result->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
     v8::Isolate* current = v8::Isolate::GetCurrent();
@@ -129,14 +129,14 @@ v8::Handle<v8::ObjectTemplate> CreateMemoryStreamTemplate(v8::Isolate* isolate)
     result->SetAccessor(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), "pos"), _ms_pos); // получить код ошибки
 
     // прописываем функции - методы объекта
-    result->Set(v8::String::NewFromUtf8(current, "Copy"),			v8::FunctionTemplate::New(current, _ms_copy));
-    result->Set(v8::String::NewFromUtf8(current, "ClearNoAttack"),	v8::FunctionTemplate::New(current, _ms_clearnoattack));
-    result->Set(v8::String::NewFromUtf8(current, "WriteByte"),		v8::FunctionTemplate::New(current, _ms_write_byte));
-    result->Set(v8::String::NewFromUtf8(current, "WriteBool"),		v8::FunctionTemplate::New(current, _ms_write_bool));
-    result->Set(v8::String::NewFromUtf8(current, "WriteLong"),		v8::FunctionTemplate::New(current, _ms_write_long));
-    result->Set(v8::String::NewFromUtf8(current, "WriteDouble"),	v8::FunctionTemplate::New(current, _ms_write_double));
-    result->Set(v8::String::NewFromUtf8(current, "WriteString"),	v8::FunctionTemplate::New(current, _ms_writestring1));
-    result->Set(v8::String::NewFromUtf8(current, "WriteString2"),	v8::FunctionTemplate::New(current, _ms_writestring2));
+    result->Set(current, "Copy",			v8::FunctionTemplate::New(current, _ms_copy));
+    result->Set(current, "ClearNoAttack",	v8::FunctionTemplate::New(current, _ms_clearnoattack));
+    result->Set(current, "WriteByte",		v8::FunctionTemplate::New(current, _ms_write_byte));
+    result->Set(current, "WriteBool",		v8::FunctionTemplate::New(current, _ms_write_bool));
+    result->Set(current, "WriteLong",		v8::FunctionTemplate::New(current, _ms_write_long));
+    result->Set(current, "WriteDouble",     v8::FunctionTemplate::New(current, _ms_write_double));
+    result->Set(current, "WriteString",     v8::FunctionTemplate::New(current, _ms_writestring1));
+    result->Set(current, "WriteString2",	v8::FunctionTemplate::New(current, _ms_writestring2));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope

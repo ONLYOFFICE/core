@@ -720,9 +720,9 @@ namespace NSDoctRenderer
 
                 v8::HandleScope handle_scope(isolate);
 
-                v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-                global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(isolate, CreateNativeObject));
-                global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
+                v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
+                global->Set(isolate, "CreateNativeEngine", v8::FunctionTemplate::New(isolate, CreateNativeObject));
+                global->Set(isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
 
                 v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
 

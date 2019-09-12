@@ -126,9 +126,9 @@ public:
         m_isolate_locker = new v8::Locker(m_isolate);
         m_handle_scope = new CScopeWrapper<v8::HandleScope>(m_isolate);
 
-        v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-        global->Set(v8::String::NewFromUtf8(m_isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(m_isolate, CreateNativeObjectBuilder));
-        global->Set(v8::String::NewFromUtf8(m_isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(m_isolate, CreateNativeMemoryStream));
+        v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(m_isolate);
+        global->Set(m_isolate, "CreateNativeEngine", v8::FunctionTemplate::New(m_isolate, CreateNativeObjectBuilder));
+        global->Set(m_isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(m_isolate, CreateNativeMemoryStream));
 
         m_context = v8::Context::New(m_isolate, NULL, global);
     }

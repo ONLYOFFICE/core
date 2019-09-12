@@ -1935,7 +1935,6 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		Shd oShd;
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 		pWiterTblPr->Shd = oShd.ToString();
-		m_sCurTableShd = pWiterTblPr->Shd;
 	}
 	else if( c_oSerProp_tblPrType::tblpPr == type )
 	{
@@ -2402,7 +2401,6 @@ int Binary_tblPrReader::Read_CellPr(BYTE type, long length, void* poResult)
 	}
 	else if( c_oSerProp_cellPrType::Shd == type )
 	{
-		bCellShd = true;
 		Shd oShd;
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
 		pCStringWriter->WriteString(oShd.ToString());
@@ -4244,13 +4242,9 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 	else if(c_oSerParType::Table == type)
 	{
 		m_byteLastElemType = c_oSerParType::Table;
-    //сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
 		READ1_DEF(length, res, this->ReadDocTable, &m_oDocumentWriter.m_oContent);
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:tbl>")));
-	//сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
 	}
 	else if(c_oSerParType::Sdt == type)
 	{
@@ -7369,8 +7363,6 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	}
 	else if(c_oSerRunType::table == type)
 	{
-		//сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
 		//todo
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
@@ -7384,8 +7376,6 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 			m_oDocumentWriter.m_oContent.Write(m_oCur_pPr);
             m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:pPr>")));
 		}
-		//сбрасываем Shd
-        oBinary_tblPrReader.m_sCurTableShd.clear();
 	}
 	else if(c_oSerRunType::fldstart_deprecated == type)
 	{
@@ -7766,13 +7756,7 @@ int Binary_DocumentTableReader::ReadCell(BYTE type, long length, void* poResult)
 	if( c_oSerDocTableType::Cell_Pr == type )
 	{
         pCStringWriter->WriteString(std::wstring(_T("<w:tcPr>")));
-		oBinary_tblPrReader.bCellShd = false;
 		READ2_DEF(length, res, oBinary_tblPrReader.Read_CellPr, pCStringWriter);
-        if(false == oBinary_tblPrReader.bCellShd && !oBinary_tblPrReader.m_sCurTableShd.empty())
-		{
-			pCStringWriter->WriteString(oBinary_tblPrReader.m_sCurTableShd);
-		}
-		oBinary_tblPrReader.bCellShd = false;
         pCStringWriter->WriteString(std::wstring(_T("</w:tcPr>")));
 	}
 	else if( c_oSerDocTableType::Cell_Content == type )

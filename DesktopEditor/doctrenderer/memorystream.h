@@ -39,6 +39,57 @@
 #include "v8.h"
 #include "libplatform/libplatform.h"
 
+#if V8_MAJOR_VERSION < 7
+#define ISOLATE_IF_7
+#else
+#define ISOLATE_IF_7 v8::Isolate::GetCurrent(),
+#endif
+
+class CV8Convert
+{
+public:
+	static int ToInt(const v8::Local<v8::Value>& v)
+	{
+		return v->ToInt32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Int32>())->Value();
+	}
+	static unsigned int ToUint(const v8::Local<v8::Value>& v)
+	{
+		return v->ToUint32(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Uint32>())->Value();
+	}
+	static double ToDouble(const v8::Local<v8::Value>& v)
+	{
+		return v->ToNumber(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Number>())->Value();
+	}
+	static bool ToBool(const v8::Local<v8::Value>& v)
+	{
+		return v->ToBoolean(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::Boolean>())->Value();
+	}
+	static std::wstring ToString(v8::Local<v8::Value> v)
+	{
+	    v8::String::Utf8Value data(ISOLATE_IF_7 v);
+	    if (NULL == *data)
+		return L"";
+
+	    return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)(*data), data.length());
+	}
+	static std::string ToStringA(v8::Local<v8::Value> v)
+	{
+	    v8::String::Utf8Value data(ISOLATE_IF_7 v);
+	    const char* p = (char*)*data;
+	    if (NULL == p)
+		return "";
+	    return std::string(p);
+	}
+	static std::wstring GetSourceLine(const v8::Local<v8::Message>& m)
+	{
+		return ToString(m->GetSourceLine(v8::Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
+	}
+	static std::wstring GetMessage(const v8::Local<v8::Message>& m)
+	{
+		return ToString(m->Get());
+	}
+};
+
 class CMemoryStream
 {
 private:

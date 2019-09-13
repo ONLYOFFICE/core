@@ -179,10 +179,6 @@ private:
     }
 };
 
-// string convert
-std::wstring to_cstring(v8::Local<v8::Value> v);
-std::string to_cstringA(v8::Local<v8::Value> v);
-
 class CNativeControl
 {
 private:

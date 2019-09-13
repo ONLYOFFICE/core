@@ -42,7 +42,7 @@ void _ms_write_byte(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
-    BYTE arg = (BYTE)args[0]->ToInt32()->Value();
+    BYTE arg = (BYTE)CV8Convert::ToInt(args[0]);
     pNative->WriteBYTE(arg);
 
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -51,7 +51,7 @@ void _ms_write_bool(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
-    BYTE arg = (BYTE)args[0]->BooleanValue();
+    BYTE arg = (BYTE)CV8Convert::ToBool(args[0]);
     pNative->WriteBYTE(arg ? 1 : 0);
 
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -60,7 +60,7 @@ void _ms_write_long(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
-    LONG arg = (LONG)args[0]->ToInt32()->Value();
+    LONG arg = (LONG)CV8Convert::ToInt(args[0]);
     pNative->WriteLONG(arg);
 
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -69,7 +69,7 @@ void _ms_write_double(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
-    double arg = args[0]->ToNumber()->Value();
+    double arg = CV8Convert::ToDouble(args[0]);
     pNative->WriteLONG((LONG)(arg * 100000));
 
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -78,14 +78,14 @@ void _ms_write_double(const v8::FunctionCallbackInfo<v8::Value>& args)
 void _ms_writestring1(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
-    v8::String::Value data(args[0]);
+    v8::String::Value data(ISOLATE_IF_7 args[0]);
     pNative->WriteString((wchar_t*)*data, data.length());
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
 void _ms_writestring2(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
-    v8::String::Value data(args[0]);
+    v8::String::Value data(ISOLATE_IF_7 args[0]);
     pNative->WriteString2((wchar_t*)*data, data.length());
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 }
@@ -95,8 +95,8 @@ void _ms_copy(const v8::FunctionCallbackInfo<v8::Value>& args)
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
     CMemoryStream* pNative2 = unwrap_memorystream(args[0]->ToObject());
-    size_t pos = (size_t)args[1]->ToUint32()->Value();
-    size_t len = (size_t)args[2]->ToUint32()->Value();
+    size_t pos = (size_t)CV8Convert::ToUint(args[1]);
+    size_t len = (size_t)CV8Convert::ToUint(args[2]);
 
     pNative->Copy(pNative2, pos, len);
 
@@ -134,8 +134,8 @@ v8::Handle<v8::ObjectTemplate> CreateMemoryStreamTemplate(v8::Isolate* isolate)
     result->Set(current, "WriteByte",		v8::FunctionTemplate::New(current, _ms_write_byte));
     result->Set(current, "WriteBool",		v8::FunctionTemplate::New(current, _ms_write_bool));
     result->Set(current, "WriteLong",		v8::FunctionTemplate::New(current, _ms_write_long));
-    result->Set(current, "WriteDouble",     v8::FunctionTemplate::New(current, _ms_write_double));
-    result->Set(current, "WriteString",     v8::FunctionTemplate::New(current, _ms_writestring1));
+    result->Set(current, "WriteDouble",	v8::FunctionTemplate::New(current, _ms_write_double));
+    result->Set(current, "WriteString",	v8::FunctionTemplate::New(current, _ms_writestring1));
     result->Set(current, "WriteString2",	v8::FunctionTemplate::New(current, _ms_writestring2));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему

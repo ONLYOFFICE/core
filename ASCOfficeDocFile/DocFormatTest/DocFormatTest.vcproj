@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../DesktopEditor/xml/build/vs2005;../../DesktopEditor/xml/libxml2/include;../../DesktopEditor/freetype-2.5.2/include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;DONT_WRITE_EMBEDDED_FONTS;DONT_USED_EXTRA_LIBRARY"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

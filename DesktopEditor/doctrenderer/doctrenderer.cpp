@@ -460,8 +460,8 @@ namespace NSDoctRenderer
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"save_code", strCode);
                         _LOGGING_ERROR_(L"save", strException);
@@ -509,8 +509,8 @@ namespace NSDoctRenderer
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"save_code", strCode);
                         _LOGGING_ERROR_(L"save", strException);
@@ -520,7 +520,7 @@ namespace NSDoctRenderer
                     }
                     else
                     {
-                        std::string sHTML_Utf8 = to_cstringA(js_result2);
+                        std::string sHTML_Utf8 = CV8Convert::ToStringA(js_result2);
 
                         NSFile::CFileBinary oFile;
                         if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
@@ -546,8 +546,8 @@ namespace NSDoctRenderer
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"calculate_code", strCode);
                         _LOGGING_ERROR_(L"calculate", strException);
@@ -570,8 +570,8 @@ namespace NSDoctRenderer
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"calculate_code", strCode);
                             _LOGGING_ERROR_(L"calculate", strException);
@@ -581,8 +581,7 @@ namespace NSDoctRenderer
                         }
                         else
                         {
-                            v8::Local<v8::Int32> intValue = js_result1->ToInt32();
-                            lPagesCount = (LONG)intValue->Value();
+                            lPagesCount = (LONG)CV8Convert::ToInt(js_result1);
                         }
                     }
                 }
@@ -603,8 +602,8 @@ namespace NSDoctRenderer
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"save_code", strCode);
                             _LOGGING_ERROR_(L"save", strException);
@@ -667,8 +666,8 @@ namespace NSDoctRenderer
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"save_code", strCode);
                             _LOGGING_ERROR_(L"save", strException);
@@ -682,8 +681,8 @@ namespace NSDoctRenderer
                             {
                                 v8::Local<v8::Object> objNative = js_result2->ToObject();
                                 v8::Local<v8::Uint8Array> pArray = v8::Local<v8::Uint8Array>::Cast(objNative->Get(v8::String::NewFromUtf8(isolate, "data")));
-                                std::wstring sThemeName = to_cstring(objNative->Get(v8::String::NewFromUtf8(isolate, "name")));
-                                int nDataLen = objNative->Get(v8::String::NewFromUtf8(isolate, "dataLen"))->ToInt32()->Value();
+                                std::wstring sThemeName = CV8Convert::ToString(objNative->Get(v8::String::NewFromUtf8(isolate, "name")));
+                                int nDataLen = CV8Convert::ToInt(objNative->Get(v8::String::NewFromUtf8(isolate, "dataLen")));
                                 if (sThemeName.empty())
                                     sThemeName = L"Default";
 
@@ -720,14 +719,14 @@ namespace NSDoctRenderer
 
                 v8::HandleScope handle_scope(isolate);
 
-                v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-                global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(isolate, CreateNativeObject));
-                global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
+                v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
+                global->Set(isolate, "CreateNativeEngine", v8::FunctionTemplate::New(isolate, CreateNativeObject));
+                global->Set(isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
 
                 v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
 
                 v8::Context::Scope context_scope(context);
-                v8::TryCatch try_catch;
+                v8::TryCatch try_catch(isolate);
                 v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, strScript.c_str());
                 v8::Local<v8::Script> script;
 
@@ -735,7 +734,7 @@ namespace NSDoctRenderer
 
                 CCacheDataScript oCachedScript(sCachePath);
                 if (sCachePath.empty())
-                    script = v8::Script::Compile(source);
+                    script = v8::Script::Compile(context, source).FromMaybe(v8::Local<v8::Script>());
                 else
                 {
                     script = oCachedScript.Compile(context, source);
@@ -746,8 +745,8 @@ namespace NSDoctRenderer
                 // COMPILE
                 if (try_catch.HasCaught())
                 {
-                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                     _LOGGING_ERROR_(L"compile_code", strCode);
                     _LOGGING_ERROR_(L"compile", strException);
@@ -759,12 +758,12 @@ namespace NSDoctRenderer
                 // RUN
                 if (!bIsBreak)
                 {
-                    v8::Local<v8::Value> result = script->Run();
+                    v8::Local<v8::Value> result = script->Run(context).FromMaybe(v8::Local<v8::Value>());
 
                     if (try_catch.HasCaught())
                     {
-                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                         _LOGGING_ERROR_(L"run_code", strCode);
                         _LOGGING_ERROR_(L"run", strException);
@@ -780,8 +779,8 @@ namespace NSDoctRenderer
                 {
                     v8::Local<v8::String> sourceParams = v8::String::NewFromUtf8(isolate,
                         "(function(){ if (window && window.SetDoctRendererParams) {window.SetDoctRendererParams({retina:true});} })();");
-                    v8::Local<v8::Script> scriptParams = v8::Script::Compile(sourceParams);
-                    scriptParams->Run();
+                    v8::Local<v8::Script> scriptParams = v8::Script::Compile(context, sourceParams).FromMaybe(v8::Local<v8::Script>());
+                    scriptParams->Run(context);
                 }
 
                 //---------------------------------------------------------------
@@ -803,8 +802,8 @@ namespace NSDoctRenderer
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"run_code", strCode);
                             _LOGGING_ERROR_(L"run", strException);
@@ -867,8 +866,8 @@ namespace NSDoctRenderer
 
                         if (try_catch.HasCaught())
                         {
-                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                             _LOGGING_ERROR_(L"open_code", strCode);
                             _LOGGING_ERROR_(L"open", strException);
@@ -913,8 +912,8 @@ namespace NSDoctRenderer
 
                                 if (try_catch.HasCaught())
                                 {
-                                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                     _LOGGING_ERROR_(L"change_code", strCode);
                                     _LOGGING_ERROR_(L"change", strException);
@@ -993,12 +992,12 @@ namespace NSDoctRenderer
                                     v8::Handle<v8::Function> func_mm_start = v8::Handle<v8::Function>::Cast(js_func_mm_start);
                                     v8::Handle<v8::Value> args_changes[1];
 
-                                    args_changes[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart)));
+                                    args_changes[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart))).FromMaybe(v8::Local<v8::Value>());
 
                                     if (try_catch.HasCaught())
                                     {
-                                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                         _LOGGING_ERROR_(L"change_code", strCode);
                                         _LOGGING_ERROR_(L"change", strException);
@@ -1013,8 +1012,8 @@ namespace NSDoctRenderer
 
                                     if (try_catch.HasCaught())
                                     {
-                                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                         _LOGGING_ERROR_(L"change_code", strCode);
                                         _LOGGING_ERROR_(L"change", strException);
@@ -1051,8 +1050,8 @@ namespace NSDoctRenderer
 
                                     if (try_catch.HasCaught())
                                     {
-                                        std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                        std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                         _LOGGING_ERROR_(L"change_code", strCode);
                                         _LOGGING_ERROR_(L"change", strException);
@@ -1091,8 +1090,8 @@ namespace NSDoctRenderer
 
                                         if (try_catch.HasCaught())
                                         {
-                                            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                                            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                                            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                                            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                                             _LOGGING_ERROR_(L"change_code", strCode);
                                             _LOGGING_ERROR_(L"change", strException);
@@ -1101,7 +1100,7 @@ namespace NSDoctRenderer
                                             bIsBreak = true;
                                         }
 
-                                        std::wstring sField = to_cstring(js_result2);
+                                        std::wstring sField = CV8Convert::ToString(js_result2);
                                         NSDoctRenderer::replace_for_xml(sField);
                                         NSDoctRenderer::replace_for_xml(sSaveFile);
 

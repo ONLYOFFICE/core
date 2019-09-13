@@ -126,9 +126,9 @@ public:
         m_isolate_locker = new v8::Locker(m_isolate);
         m_handle_scope = new CScopeWrapper<v8::HandleScope>(m_isolate);
 
-        v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-        global->Set(v8::String::NewFromUtf8(m_isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(m_isolate, CreateNativeObjectBuilder));
-        global->Set(v8::String::NewFromUtf8(m_isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(m_isolate, CreateNativeMemoryStream));
+        v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(m_isolate);
+        global->Set(m_isolate, "CreateNativeEngine", v8::FunctionTemplate::New(m_isolate, CreateNativeObjectBuilder));
+        global->Set(m_isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(m_isolate, CreateNativeMemoryStream));
 
         m_context = v8::Context::New(m_isolate, NULL, global);
     }
@@ -166,17 +166,17 @@ public:
 
         v8::Context::Scope context_scope(m_context);
 
-        v8::TryCatch try_catch;
+        v8::TryCatch try_catch(m_isolate);
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
-        v8::Local<v8::Script> script = v8::Script::Compile(source);
+        v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
 
         LOGGER_SPEED_LAP("compile_command")
 
         if (try_catch.HasCaught())
         {
-            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
             _LOGGING_ERROR_(L"execute_compile_code", strCode);
             _LOGGING_ERROR_(L"execute_compile", strException);
@@ -185,12 +185,12 @@ public:
         }
         else
         {
-            v8::Local<v8::Value> retNativeVal = script->Run();
+            v8::Local<v8::Value> retNativeVal = script->Run(m_context).FromMaybe(v8::Local<v8::Value>());
 
             if (try_catch.HasCaught())
             {
-                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                 _LOGGING_ERROR_(L"execute_run_code", strCode);
                 _LOGGING_ERROR_(L"execute_run", strException);
@@ -217,17 +217,17 @@ public:
 
         v8::Context::Scope context_scope(m_context);
 
-        v8::TryCatch try_catch;
+        v8::TryCatch try_catch(m_isolate);
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
-        v8::Local<v8::Script> script = v8::Script::Compile(source);
+        v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
 
         std::string sReturn = "{}";
 
         if (try_catch.HasCaught())
         {
-            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
             _LOGGING_ERROR_(L"execute_compile_code", strCode);
             _LOGGING_ERROR_(L"execute_compile", strException);
@@ -236,12 +236,12 @@ public:
         }
         else
         {
-            v8::Local<v8::Value> _value = script->Run();
+            v8::Local<v8::Value> _value = script->Run(m_context).FromMaybe(v8::Local<v8::Value>());
 
             if (try_catch.HasCaught())
             {
-                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                 _LOGGING_ERROR_(L"execute_run_code", strCode);
                 _LOGGING_ERROR_(L"execute_run", strException);
@@ -250,7 +250,7 @@ public:
             }
 
             if (_value->IsString())
-                sReturn = to_cstringA(_value);
+                sReturn = CV8Convert::ToStringA(_value);
         }
 
         return sReturn;
@@ -264,15 +264,15 @@ public:
 
         v8::Context::Scope context_scope(m_context);
 
-        v8::TryCatch try_catch;
+        v8::TryCatch try_catch(m_isolate);
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
-        v8::Local<v8::Script> script = v8::Script::Compile(source);
+        v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
 
         if (try_catch.HasCaught())
         {
-            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
             _LOGGING_ERROR_(L"execute_compile_code", strCode);
             _LOGGING_ERROR_(L"execute_compile", strException);
@@ -281,12 +281,12 @@ public:
         }
         else
         {
-            v8::Local<v8::Value> _value = script->Run();
+            v8::Local<v8::Value> _value = script->Run(m_context).FromMaybe(v8::Local<v8::Value>());
 
             if (try_catch.HasCaught())
             {
-                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                 _LOGGING_ERROR_(L"execute_run_code", strCode);
                 _LOGGING_ERROR_(L"execute_run", strException);
@@ -295,7 +295,7 @@ public:
             }
 
             if (_value->IsString())
-                return to_cstring(_value);
+                return CV8Convert::ToString(_value);
         }
 
         return L"jsValue(" + sParam + L")";
@@ -307,14 +307,14 @@ public:
 
         v8::Context::Scope context_scope(m_context);
 
-        v8::TryCatch try_catch;
+        v8::TryCatch try_catch(m_isolate);
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, sString.c_str());
         v8::Local<v8::Script> script;
 
         CCacheDataScript oCachedScript(sCachePath);
         if (sCachePath.empty())
-            script = v8::Script::Compile(source);
+            script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
         else
         {
             script = oCachedScript.Compile(m_context, source);
@@ -324,8 +324,8 @@ public:
 
         if (try_catch.HasCaught())
         {
-            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
             _LOGGING_ERROR_(L"sdk_compile_code", strCode);
             _LOGGING_ERROR_(L"sdk_compile", strException);
@@ -334,12 +334,12 @@ public:
         }
         else
         {
-            script->Run();
+            script->Run(m_context);
 
             if (try_catch.HasCaught())
             {
-                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                 _LOGGING_ERROR_(L"sdk_run_code", strCode);
                 _LOGGING_ERROR_(L"sdk_run", strException);
@@ -359,13 +359,13 @@ public:
             std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
 
             v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sArgument.c_str());
-            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(_sourceArg);
-            _scriptArg->Run();
+            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(m_context, _sourceArg).FromMaybe(v8::Local<v8::Script>());
+            _scriptArg->Run(m_context);
 
             if (try_catch.HasCaught())
             {
-                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                 _LOGGING_ERROR_(L"sdk_argument_code", strCode);
                 _LOGGING_ERROR_(L"sdk_argument", strException);
@@ -385,13 +385,13 @@ public:
             std::string sScriptVar = "var GlobalVariable = JSON.parse(\"" + sArg + "\");";
 
             v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sScriptVar.c_str());
-            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(_sourceArg);
-            _scriptArg->Run();
+            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(m_context, _sourceArg).FromMaybe(v8::Local<v8::Script>());
+            _scriptArg->Run(m_context);
 
             if (try_catch.HasCaught())
             {
-                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                 _LOGGING_ERROR_(L"sdk_global_var_code", strCode);
                 _LOGGING_ERROR_(L"sdk_global_var", strException);
@@ -419,8 +419,8 @@ public:
 
                 if (try_catch.HasCaught())
                 {
-                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                     _LOGGING_ERROR_(L"run_code", strCode);
                     _LOGGING_ERROR_(L"run", strException);
@@ -488,8 +488,8 @@ public:
 
                 if (try_catch.HasCaught())
                 {
-                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                     _LOGGING_ERROR_(L"open_code", strCode);
                     _LOGGING_ERROR_(L"open", strException);
@@ -520,7 +520,7 @@ public:
             _formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
 
         v8::Context::Scope context_scope(m_context);
-        v8::TryCatch try_catch;
+        v8::TryCatch try_catch(m_isolate);
 
         CNativeControl* pNative = NULL;
 
@@ -540,8 +540,8 @@ public:
 
                 if (try_catch.HasCaught())
                 {
-                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
-                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+                    std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
+                    std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
 
                     _LOGGING_ERROR_(L"run_code", strCode);
                     _LOGGING_ERROR_(L"run", strException);
@@ -657,19 +657,19 @@ namespace NSDoctRenderer
     {
         if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsInt32())
             return 0;
-        return m_internal->m_value->ToInt32()->Value();
+        return CV8Convert::ToInt(m_internal->m_value);
     }
     double CDocBuilderValue::ToDouble()
     {
         if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsNumber())
             return 0;
-        return m_internal->m_value->ToNumber()->Value();
+        return CV8Convert::ToDouble(m_internal->m_value);
     }
     wchar_t* CDocBuilderValue::ToString()
     {
         if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsString())
             return NULL;
-        std::wstring sValue = to_cstring(m_internal->m_value);
+        std::wstring sValue = CV8Convert::ToString(m_internal->m_value);
         if (sValue.empty())
             return NULL;
         size_t len = sValue.length();

@@ -78,7 +78,7 @@ void CDataValidation::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtend
 		WritingStringNullableAttrEncodeXmlStringHHHH(L"errorTitle",		m_oErrorTitle,		m_oErrorTitle.get());
 		WritingStringNullableAttrString				(L"imeMode",		m_oImeMode,			m_oImeMode->ToString());
 		WritingStringNullableAttrString				(L"operator",		m_oOperator,		m_oOperator->ToString());
-		WritingStringNullableAttrEncodeXmlStringHHHH(L"promt",			m_oPrompt,			m_oPrompt.get());
+		WritingStringNullableAttrEncodeXmlStringHHHH(L"prompt",			m_oPrompt,			m_oPrompt.get());
 		WritingStringNullableAttrEncodeXmlStringHHHH(L"promptTitle",	m_oPromptTitle,		m_oPromptTitle.get());
 		WritingStringNullableAttrInt				(L"showDropDown",	m_oShowDropDown,	m_oShowDropDown->GetValue());
 		WritingStringNullableAttrInt				(L"showErrorMessage",m_oShowErrorMessage,m_oShowErrorMessage->GetValue());

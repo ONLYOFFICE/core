@@ -262,8 +262,8 @@ void _Save_ReAllocNative(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    int _pos = args[0]->Int32Value();
-    int _len = args[1]->Int32Value();
+    int _pos = args[0]->ToInt32()->Value();
+    int _len = args[1]->ToInt32()->Value();
 
     pNative->Save_ReAlloc(_pos, _len);
 
@@ -280,7 +280,7 @@ void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
     std::string sHeader = to_cstringA(args[0]);
-    int _len = args[1]->Int32Value();
+    int _len = args[1]->ToInt32()->Value();
 
     pNative->Save_End(sHeader, _len);
 }
@@ -302,7 +302,7 @@ void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
 
     CNativeControl* pNative = unwrap_nativeobject(args.This());
-    pNative->DumpChanges(to_cstringA(args[0]), args[1]->Int32Value(), args[2]->Int32Value());
+    pNative->DumpChanges(to_cstringA(args[0]), args[1]->ToInt32()->Value(), args[2]->ToInt32()->Value());
 }
 
 /// ZIP -----

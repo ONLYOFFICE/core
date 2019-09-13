@@ -75,7 +75,8 @@ namespace OOX
 				m_mTable.insert( std::make_pair(  _T("mov"),  _T("video/unknown"))); 
 				m_mTable.insert( std::make_pair(  _T("m4v"),  _T("video/unknown"))); 
 				m_mTable.insert( std::make_pair(  _T("mkv"),  _T("video/unknown"))); 
-				m_mTable.insert( std::make_pair(  _T("avi"),  _T("video/avi"))); 
+                m_mTable.insert( std::make_pair(  _T("avi"),  _T("video/avi")));
+                m_mTable.insert( std::make_pair(  _T("flv"),  _T("video/x-flv")));
 				m_mTable.insert( std::make_pair(  _T("wmv"),  _T("video/x-wmv"))); 
 				m_mTable.insert( std::make_pair(  _T("webm"), _T("video/webm"))); 
 				m_mTable.insert( std::make_pair(  _T("xls"),  _T("application/vnd.ms-excel")));

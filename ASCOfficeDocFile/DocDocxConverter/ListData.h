@@ -129,6 +129,7 @@ namespace DocFileFormat
 		std::wstring	xst; //32 chars ansi
 
 	public:
+		std::wstring rPr;
 
 		bool operator == (const NumberingDescriptor & val) const;
 		bool operator == (const NumberingDescriptorPtr & val) const;

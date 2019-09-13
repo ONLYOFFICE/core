@@ -104,32 +104,33 @@ namespace DocFileFormat
 		}
 
 		//append formatting of paragraph end mark
+
+        XMLTools::XMLElementPtr rPr = XMLTools::XMLElementPtr(XMLTools::XMLElementPtr(new XMLTools::XMLElement( L"w:rPr" )));
+
 		if ( _paraEndChpx != NULL )
 		{
-            XMLTools::XMLElement* rPr = new XMLTools::XMLElement( L"w:rPr" );
-
-			//append properties
 			RevisionData* rev = new RevisionData( _paraEndChpx );
-			CharacterPropertiesMapping* ccMapping = new CharacterPropertiesMapping( rPr, m_document, rev, papx, false );
+			CharacterPropertiesMapping* ccMapping = new CharacterPropertiesMapping( rPr.get(), m_document, rev, papx, false );
+
 			_paraEndChpx->Convert( ccMapping );
 
-			//append delete infos
 			if ( rev->Type == Deleted )
 			{
-                XMLTools::XMLElement del( L"w:del" );
+				XMLTools::XMLElement del( L"w:del" );
 				rPr->AppendChild( del );
 			}
 
-			if( rPr->GetChildCount() >0 )
+			if( rPr->GetChildCount() > 0 )
 			{
-				_pPr->AppendChild( *rPr );
+				_pPr->AppendChild( rPr );
 			}
 
 			RELEASEOBJECT( ccMapping );
 			RELEASEOBJECT( rev );
-			RELEASEOBJECT( rPr );
 		}
 		
+		bool bNumPr = false;
+
 		std::list<SinglePropertyModifier>::iterator end = papx->grpprl->end();
 		for (std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != end; ++iter)
 		{
@@ -426,7 +427,10 @@ namespace DocFileFormat
 
 					if (m_document->listTable)
 					{
-						unsigned short numId = m_document->listTable->appendNumbering(  desc );
+						std::wstring sRPr;
+						if (rPr->GetChildCount() > 0) sRPr = rPr->GetXMLString();
+
+						unsigned short numId = m_document->listTable->appendNumbering( desc, sRPr );
                         appendValueElement( &numPr, L"numId", numId, true );
 					}
 				}break;
@@ -439,8 +443,10 @@ namespace DocFileFormat
 				case sprmOldPNLvlAnm:
 				{					
 					short level = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize) - 1;
-					if (level > 0 && level < 10) 					
-                        appendValueElement( _pPr, L"outlineLvl", level, false );
+					
+					level = 0;
+                    appendValueElement( &numPr, L"ilvl", level, true );
+					bNumPr = true;
 				}break;				
 				
 				case sprmOldPFNoLineNumb:
@@ -456,25 +462,11 @@ namespace DocFileFormat
 				case sprmPIlfo:
 				{
 					//Если numbering.xml пустой, то не пищем свойство
-					//Todo разобраться с закоментированным кодом
 					if (NULL != m_document->listTable && false == m_document->listTable->listData.empty())
 					{
 						unsigned short numId = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 						appendValueElement( &numPr, L"numId", numId, true );
 					}
-
-					//check if there is a ilvl reference, if not, check the count of LVLs.
-					//if only one LVL exists in the referenced list, create a hard reference to that LVL
-					//if (containsLvlReference(papx.grpprl) == false)
-					//{
-					//    ListFormatOverride lfo = m_context.Doc.ListFormatOverrideTable[val];
-					//    int index = NumberingMapping.FindIndexbyId(m_context.Doc.ListTable, lfo.lsid);
-					//    ListData lst = m_context.Doc.ListTable[index];
-					//    if (lst.rglvl.Length == 1)
-					//    {
-					//        appendValueElement(numPr, "ilvl", "0", true);
-					//    }
-					//}
 				}
 				break;
 
@@ -645,15 +637,18 @@ namespace DocFileFormat
 				}break;
 			}
 		}
-
-		//append frame properties
+		
+		if ( numPr.GetChildCount() > 0 && ((bNumPr && m_document->nWordVersion > 0) || m_document->nWordVersion == 0))//append numPr
+		{//23.doc
+			_pPr->AppendChild( numPr );
+		}
+		
 		if ( _framePr->GetAttributeCount() > 0 )
 		{
 			_pPr->AppendChild( *_framePr );
 		}
 
 		_isSectionPageBreak = 0;
-		//append section properties
 		if ( _sepx != NULL )
 		{
             XMLTools::XMLElement sectPr( L"w:sectPr" );
@@ -672,34 +667,27 @@ namespace DocFileFormat
 			_pPr->AppendChild( sectPr );
 		}
 
-		//append indent
 		if ( ind.GetAttributeCount() > 0 )
 		{
 			_pPr->AppendChild( ind );
 		}
 		
-		if ( spacing.GetAttributeCount() > 0 )//append spacing
+		if ( spacing.GetAttributeCount() > 0 )
 		{
 			_pPr->AppendChild( spacing );
 		}
 		
-		if ( jc )	//append justification
+		if ( jc )
 		{
 			_pPr->AppendChild( *jc );
 			RELEASEOBJECT( jc );
 		}
-		
-		if ( numPr.GetChildCount() > 0 )//append numPr
-		{
-			_pPr->AppendChild( numPr );
-		}
-		
-		if ( pBdr.GetChildCount() > 0 )	//append borders
+
+		if ( pBdr.GetChildCount() > 0 )
 		{
 			_pPr->AppendChild( pBdr );
 		}
 
-		//write Properties
 		if ( ( _pPr->GetChildCount() > 0 ) || ( _pPr->GetAttributeCount() > 0 ) )
 		{
 			m_pXmlWriter->WriteString( _pPr->GetXMLString() );

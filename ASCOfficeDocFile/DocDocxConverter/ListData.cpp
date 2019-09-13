@@ -122,7 +122,8 @@ namespace DocFileFormat
 		fNumber1		== val.fNumber1 &&
 		fNumberAcross	== val.fNumberAcross &&
 		fRestartHdn		== val.fRestartHdn &&
-		fSpareX			== val.fSpareX;
+		fSpareX			== val.fSpareX &&
+		xst				== val.xst;
 
 		return res;
 	}
@@ -158,7 +159,8 @@ namespace DocFileFormat
 		fNumber1		== val->fNumber1 &&
 		fNumberAcross	== val->fNumberAcross &&
 		fRestartHdn		== val->fRestartHdn &&
-		fSpareX			== val->fSpareX;
+		fSpareX			== val->fSpareX &&
+		xst				== val->xst;
 
 		return res;
 

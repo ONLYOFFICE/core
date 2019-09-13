@@ -72,16 +72,17 @@ namespace DocFileFormat
 		}
 	}
 
-	size_t ListTable::appendNumbering( NumberingDescriptorPtr &desc )
+	size_t ListTable::appendNumbering( NumberingDescriptorPtr &desc, const std::wstring & rPr )
 	{
 		for (size_t i = 0; i < listNumbering.size(); ++i)
 		{
-			if (listNumbering[i]->operator==(desc))
+			if (listNumbering[i]->operator == (desc))
 			{
 				return listNumbering[i]->id;
 			}
 		}
-		desc->id = listData.size() + listNumbering.size()/* + 1*/;
+		desc->rPr = rPr;
+		desc->id = listData.size() + listNumbering.size() + 1; // 23.doc
 		listNumbering.push_back(desc);
 		return desc->id;
 	}

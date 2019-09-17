@@ -162,6 +162,6 @@ namespace ImageHelper
         _UINT16     bcBitCount;
     };
 
-	Global::_BlipType SaveImageToFileFromDIB(unsigned char* data, int size, const std::wstring& file_name);
+	Global::_BlipType SaveImageToFileFromDIB(unsigned char* data, int size, std::wstring& file_name);
 }
 

@@ -327,6 +327,9 @@ void CBgraFrame::Destroy()
     if (NULL != m_pData)
         delete []m_pData;
 
+    if (NULL != m_pPalette)
+        delete []m_pPalette;
+
     Clear();
 }
 void CBgraFrame::Clear()
@@ -336,6 +339,8 @@ void CBgraFrame::Clear()
     m_lHeight	= 0;
     m_lStride	= 0;
     m_pData		= NULL;
+    m_pPalette  = NULL;
+    m_lPaletteColors = 0;
     m_bIsGrayScale  = false;
     m_dJpegSaveQuality = -1;
 }
@@ -385,6 +390,19 @@ bool CBgraFrame::IsGrayScale()
 void CBgraFrame::SetJpegQuality(const double& value)
 {
     m_dJpegSaveQuality = value;
+}
+
+void CBgraFrame::put_Palette(BYTE* pDataColors, const int& colors)
+{
+    if (!pDataColors || colors < 1) return;
+
+    if (m_pPalette)
+        delete []m_pPalette;
+
+    m_lPaletteColors = colors;
+    m_pPalette = new BYTE[colors * 4];
+
+    memcpy(m_pPalette, pDataColors, colors * 4);
 }
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
@@ -442,8 +460,14 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 			return false;
 		
 		CxImage img;
+
         if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
-			return false;
+            return false;
+
+        if (m_pPalette)
+        {
+            img.SetPalette((RGBQUAD*)m_pPalette, m_lPaletteColors);
+        }
 
 		if (!img.Encode(oFile.GetFileNative(), nFileType))
 			return false;

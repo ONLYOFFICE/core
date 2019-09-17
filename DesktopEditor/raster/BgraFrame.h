@@ -49,6 +49,9 @@ private:
 
 	BYTE* m_pData;
 
+    BYTE* m_pPalette;
+    int m_lPaletteColors;
+
     bool m_bIsGrayScale;
     double m_dJpegSaveQuality;
 
@@ -56,25 +59,29 @@ public:
     CBgraFrame();
     ~CBgraFrame();
 
-public:
     void Destroy();
     void Clear();
 
-public:
     void ClearNoAttack();
+
     int get_Width();
-    int get_Height();
     void put_Width(const int& lWidth);
+
+    int get_Height();
     void put_Height(const int& lHeight);
+
     int get_Stride();
     void put_Stride(const int& lStride);
+
     BYTE* get_Data();
     void put_Data(BYTE* pData);
+
+    void put_Palette(BYTE* pDataColors, const int& colors);
 
     bool IsGrayScale();
 
     void SetJpegQuality(const double& value);
-public:
+
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
 	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
     bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
@@ -83,7 +90,6 @@ public:
 
 	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
 
-public:
     void FromImage(IGrObject* pGraphics, bool bIsCopy = true);
 };
 

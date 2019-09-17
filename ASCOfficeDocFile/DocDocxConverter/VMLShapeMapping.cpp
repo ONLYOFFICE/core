@@ -1326,8 +1326,7 @@ namespace DocFileFormat
 
 						RELEASEOBJECT(metaBlip);
 					}
-				}
-				break;
+				}break;				
 				case Global::msoblipJPEG:
 				case Global::msoblipCMYKJPEG:
 				case Global::msoblipPNG:
@@ -1341,25 +1340,22 @@ namespace DocFileFormat
 						{
 							std::wstring file_name = m_context->_doc->m_sTempFolder + L"tmp_image";
 
-							if (Global::msoblipPNG == ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name))
+							oBlip->btWin32 = ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name);
+							
+							unsigned char* pData = NULL;
+							DWORD nData = 0;
+							if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
 							{
-								oBlip->btWin32 = Global::msoblipPNG;
-
-								unsigned char* pData = NULL;
-								DWORD nData = 0;
-								if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
-								{
-									m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipPNG), 
-										boost::shared_array<unsigned char>(pData), nData, Global::msoblipPNG));
-									break;
-								}
+								m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
+									boost::shared_array<unsigned char>(pData), nData, oBlip->btWin32));
+								break;
 							}//в случае ошибки конвертации -храним оригинальный dib
 						}
 						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
 							bitBlip->m_pvBits, bitBlip->pvBitsSize, oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
 					}
-				}break;				
+				}			
 				default:
 				{
 					result = false;
@@ -1368,9 +1364,8 @@ namespace DocFileFormat
 				break;
 			}
 
-			m_nImageId	=	m_context->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
-
-			result		=	true;
+			m_nImageId = m_context->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
+			result = true;
 		}
 
 		return result;

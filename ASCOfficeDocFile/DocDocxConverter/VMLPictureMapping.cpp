@@ -589,22 +589,20 @@ namespace DocFileFormat
   					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
 					if (bitBlip)
 					{
-						std::wstring file_name = m_context->_doc->m_sTempFolder + L"tmp_image";
+						std::wstring file_name = m_context->_doc->m_sTempFolder + FILE_SEPARATOR_STR + L"tmp_image";
 						oBlipEntry->btWin32 = ImageHelper::SaveImageToFileFromDIB(bitBlip->m_pvBits, bitBlip->pvBitsSize, file_name);
 
-						if (oBlipEntry->btWin32 == Global::msoblipPNG)
+						unsigned char* pData = NULL;
+						DWORD nData = 0;
+						if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
 						{
-							unsigned char* pData = NULL;
-							DWORD nData = 0;
-							if (NSFile::CFileBinary::ReadAllBytes(file_name, &pData, nData))
-							{
-								m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipPNG), 
-									boost::shared_array<unsigned char>(pData), nData, Global::msoblipPNG));
-								break;
-							}
+							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
+								boost::shared_array<unsigned char>(pData), nData, oBlipEntry->btWin32));
+							
+							break;
 						}
 					}				
-				}//в случае ошибки конвертации -храним оригинальный dib
+				}
 				case Global::msoblipJPEG:
 				case Global::msoblipCMYKJPEG:
 				case Global::msoblipPNG:

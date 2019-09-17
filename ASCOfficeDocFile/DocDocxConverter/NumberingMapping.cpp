@@ -540,17 +540,24 @@ namespace DocFileFormat
         m_pXmlWriter->WriteNodeEnd(L"w:pPr");
 
 //  rPr
-        m_pXmlWriter->WriteNodeBegin( L"w:rPr", FALSE );
-
-		if (!fontFamily.empty())
+		if (false == lvl->rPr.empty())
 		{
-            m_pXmlWriter->WriteNodeBegin( L"w:rFonts", TRUE );
-				// w:hint="default"
-                m_pXmlWriter->WriteAttribute(L"w:hAnsi",fontFamily);
-                m_pXmlWriter->WriteAttribute(L"w:ascii",fontFamily);
-            m_pXmlWriter->WriteNodeEnd( L"", TRUE );
+			m_pXmlWriter->WriteString( lvl->rPr );
 		}
-        m_pXmlWriter->WriteNodeEnd(L"w:rPr");
+		else
+		{
+			m_pXmlWriter->WriteNodeBegin( L"w:rPr", FALSE );
+
+			if (!fontFamily.empty())
+			{
+				m_pXmlWriter->WriteNodeBegin( L"w:rFonts", TRUE );
+					// w:hint="default"
+					m_pXmlWriter->WriteAttribute(L"w:hAnsi", fontFamily);
+					m_pXmlWriter->WriteAttribute(L"w:ascii", fontFamily);
+				m_pXmlWriter->WriteNodeEnd( L"", TRUE );
+			}
+			m_pXmlWriter->WriteNodeEnd(L"w:rPr");
+		}
 		
         m_pXmlWriter->WriteNodeEnd(L"w:lvl");
 	}
@@ -702,7 +709,7 @@ namespace DocFileFormat
 				}
 			}
 
-			if (isPictureBullet)
+			if (isPictureBullet && false == m_document->PictureBulletsCPsMap.empty())
 			{
                 m_pXmlWriter->WriteNodeBegin(L"w:lvlPicBulletId",TRUE);
                 m_pXmlWriter->WriteAttribute(L"w:val",FormatUtils::IntToWideString(index));

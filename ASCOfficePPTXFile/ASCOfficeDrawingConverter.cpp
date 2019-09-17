@@ -1953,6 +1953,12 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 				pPPTShape->m_eType = ppt_shape_type->m_eType;
 			}
+			else if (std::wstring::npos != strType.find(L"t75"))
+			{
+				pPPTShape = new CPPTShape();
+				pPPTShape->SetShapeType((PPTShapes::ShapeType)75);
+				pPPTShape->m_eType = PPTShapes::sptCFrame;
+			}
 		}
 		
 		if (NULL == pPPTShape)

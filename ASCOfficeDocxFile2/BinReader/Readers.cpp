@@ -904,15 +904,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 				for(size_t i = 0; i < nLen; ++i)
 				{
 					Tab& oTab = oTabs.m_aTabs[i];
-                    std::wstring sVal;
-					switch(oTab.Val)
-					{
-                        case g_tabtype_right:   sVal = L"right";   break;
-                        case g_tabtype_center:  sVal = L"center";  break;
-                        case g_tabtype_clear:   sVal = L"clear";   break;
-                        default:                sVal = L"left";    break;
-					}
-					pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(oTab.Pos) + L"\"");
+					pCStringWriter->WriteString(L"<w:tab w:val=\"" + oTab.Val.ToString() + L"\" w:pos=\"" + std::to_wstring(oTab.Pos) + L"\"");
 					if (oTab.bLeader)
 					{
 						std::wstring sLeader;
@@ -1138,7 +1130,17 @@ int Binary_pPrReader::ReadTabItem(BYTE type, long length, void* poResult)
 	int res = c_oSerConstants::ReadOk;
 	Tab* poTabItem = static_cast<Tab*>(poResult);
 	if(c_oSerProp_pPrType::Tab_Item_Val == type)
-		poTabItem->Val = m_oBufferedStream.GetUChar();
+		poTabItem->Val.SetValue((SimpleTypes::ETabJc)m_oBufferedStream.GetUChar());
+	else if(c_oSerProp_pPrType::Tab_Item_Val_deprecated == type)
+	{
+		switch(m_oBufferedStream.GetUChar())
+		{
+		case 1:	poTabItem->Val.SetValue(SimpleTypes::tabjcRight);break;
+		case 2:	poTabItem->Val.SetValue(SimpleTypes::tabjcCenter);break;
+		case 3:	poTabItem->Val.SetValue(SimpleTypes::tabjcClear);break;
+		default:poTabItem->Val.SetValue(SimpleTypes::tabjcLeft);break;
+		}
+	}
 	else if(c_oSerProp_pPrType::Tab_Item_Pos == type)
 		poTabItem->Pos = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
 	else if(c_oSerProp_pPrType::Tab_Item_PosTwips == type)

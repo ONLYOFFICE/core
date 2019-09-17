@@ -1105,21 +1105,7 @@ void Binary_pPrWriter::WriteTabItem(const ComplexTypes::Word::CTabStop& TabItem,
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Tab_Item_Val);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		switch(TabItem.m_oVal.get().GetValue())
-		{
-		case SimpleTypes::tabjcEnd:
-		case SimpleTypes::tabjcRight:
-			m_oBcw.m_oStream.WriteBYTE(g_tabtype_right);
-			bRight = true;
-			break;
-		case SimpleTypes::tabjcCenter:
-			m_oBcw.m_oStream.WriteBYTE(g_tabtype_center);
-			break;
-		case SimpleTypes::tabjcClear:
-			m_oBcw.m_oStream.WriteBYTE(g_tabtype_clear);
-			break;
-		default: m_oBcw.m_oStream.WriteBYTE(g_tabtype_left);break;
-		}
+		m_oBcw.m_oStream.WriteBYTE(TabItem.m_oVal->GetValue());
 	}
 //pos
 	if(false != TabItem.m_oPos.IsInit())

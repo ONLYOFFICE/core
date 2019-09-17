@@ -36,9 +36,6 @@ namespace BinDocxRW
 {
 const double eps     = 0.001;
 
-const int shd_Clear = 0;
-const int shd_Nil   = 1;
-
 const int g_tabtype_left = 0;
 const int g_tabtype_right = 1;
 const int g_tabtype_center = 2;
@@ -346,7 +343,7 @@ extern int g_nCurFormatVersion;
 		Tab = 17,
 		Tab_Item = 18,
 		Tab_Item_Pos = 19,
-		Tab_Item_Val = 20,
+		Tab_Item_Val_deprecated = 20,
 		ParaStyle = 21,
 		numPr =  22,
 		numPr_lvl =  23,
@@ -368,7 +365,8 @@ extern int g_nCurFormatVersion;
 		Spacing_LineTwips = 39,
 		Spacing_BeforeTwips = 40,
 		Spacing_AfterTwips = 41,
-		Tab_Item_PosTwips = 42
+		Tab_Item_PosTwips = 42,
+		Tab_Item_Val = 43
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{

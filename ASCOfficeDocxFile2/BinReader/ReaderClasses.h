@@ -35,6 +35,7 @@
 #define READER_CLASSES
 
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -439,13 +440,12 @@ public:
 class Tab
 {
 public:
-	BYTE Val;
+	SimpleTypes::CTabJc<> Val;
 	long Pos;
 	BYTE Leader;
 	bool bLeader;
 	Tab()
 	{
-		Val = shd_Nil;
 		Pos = 0;
 		bLeader = false;
 	}

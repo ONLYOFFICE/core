@@ -1142,13 +1142,12 @@ public:
 
 		m_pOldCharProp = RtfCharPropertyPtr();
 	}
-	void Merge( RtfCharProperty& oCharPr )
+	void Merge( RtfCharProperty& oCharPr, bool bAll = true )
 	{
 		MERGE_PROPERTY( m_nAnimated,	oCharPr )
 		MERGE_PROPERTY( m_bBold,		oCharPr )
 		MERGE_PROPERTY( m_bCaps,		oCharPr )
 		MERGE_PROPERTY( m_nScalex,		oCharPr )
-		MERGE_PROPERTY( m_nCharStyle,	oCharPr )
 		MERGE_PROPERTY( m_nDown,		oCharPr )
 		MERGE_PROPERTY( m_bEmbo,		oCharPr )
 		MERGE_PROPERTY( m_nCharacterSpacing, oCharPr )
@@ -1166,12 +1165,9 @@ public:
 		MERGE_PROPERTY( m_bOutline,		oCharPr )
 		MERGE_PROPERTY( m_bScaps,		oCharPr )
 		MERGE_PROPERTY( m_bShadow,		oCharPr )
-		MERGE_PROPERTY( m_bStrike,		oCharPr )
-		MERGE_PROPERTY( m_nStriked,		oCharPr )
 		MERGE_PROPERTY( m_bSub,			oCharPr )
 		MERGE_PROPERTY( m_bSuper,		oCharPr )
 		MERGE_PROPERTY( m_bHidden,		oCharPr )
-		MERGE_PROPERTY( m_nHightlited,	oCharPr )
 		MERGE_PROPERTY( m_nForeColor,	oCharPr )
 		MERGE_PROPERTY( m_nCrAuth,		oCharPr )
 		MERGE_PROPERTY( m_nCrDate,		oCharPr )
@@ -1183,11 +1179,18 @@ public:
 		MERGE_PROPERTY( m_nRevdttmDel,	oCharPr )
 		MERGE_PROPERTY( m_nInsrsid,		oCharPr )
 
-		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-		if ( uls_none != oCharPr.m_eUnderStyle || PROP_DEF != oCharPr.m_nUnderlineColor )
+		if (bAll)
 		{
-			m_eUnderStyle = oCharPr.m_eUnderStyle;
-			m_nUnderlineColor = oCharPr.m_nUnderlineColor;
+			MERGE_PROPERTY( m_nCharStyle,	oCharPr )
+			MERGE_PROPERTY( m_bStrike,		oCharPr )
+			MERGE_PROPERTY( m_nStriked,		oCharPr )			 
+			MERGE_PROPERTY( m_nHightlited,	oCharPr )
+			//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
+			if ( uls_none != oCharPr.m_eUnderStyle || PROP_DEF != oCharPr.m_nUnderlineColor )
+			{
+				m_eUnderStyle = oCharPr.m_eUnderStyle;
+				m_nUnderlineColor = oCharPr.m_nUnderlineColor;
+			}
 		}
 		MERGE_PROPERTY_DEF	( m_bSub, oCharPr, uls_none )
 		MERGE_PROPERTY		( m_nUp, oCharPr )

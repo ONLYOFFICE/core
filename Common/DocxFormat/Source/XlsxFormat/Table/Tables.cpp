@@ -431,7 +431,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	void CQueryTableField::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<queryTableField");
-			WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
 			WritingStringNullableAttrInt(L"id", m_oId, m_oId->GetValue());
 			WritingStringNullableAttrInt(L"tableColumnId", m_oTableColumnId, m_oTableColumnId->GetValue());
 
@@ -439,8 +439,6 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingStringNullableAttrBool2(L"fillFormulas", m_oFillFormulas);
 			WritingStringNullableAttrBool2(L"dataBound",	m_oDataBound);
 			WritingStringNullableAttrBool2(L"clipped",		m_oClipped);
-
-
 		writer.WriteString(L"/>");
 	}
 	void CQueryTableField::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -463,7 +461,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	{
 		WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if		( oReader, _T("id"),			m_oId )
-			WritingElement_ReadAttributes_Read_if		( oReader, _T("tableColumnId"),	m_oTableColumnId )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("tableColumnId"),	m_oTableColumnId )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("name"),			m_oName )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rowNumbers"),	m_oRowNumbers )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fillFormulas"),	m_oFillFormulas )
@@ -471,7 +469,6 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingElement_ReadAttributes_Read_else_if	( oReader, _T("clipped"),		m_oClipped )
 		WritingElement_ReadAttributes_End( oReader )
 	}
-
 
 	void CQueryTableFields::toXML(NSStringUtils::CStringBuilder& writer) const
 	{

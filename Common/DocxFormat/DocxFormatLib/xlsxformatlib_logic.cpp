@@ -44,3 +44,4 @@
 #include "../Source/XlsxFormat/Styles/rPr.cpp"
 #include "../Source/XlsxFormat/SharedStrings/Si.cpp"
 #include "../Source/XlsxFormat/SharedStrings/Text.cpp"
+#include "../Source/XlsxFormat/Pivot/Pivots.cpp"

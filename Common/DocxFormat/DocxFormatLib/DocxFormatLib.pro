@@ -81,7 +81,8 @@ SOURCES += \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/XlsxFormat/Styles/rPr.cpp \
     ../Source/XlsxFormat/SharedStrings/Si.cpp \
-    ../Source/XlsxFormat/SharedStrings/Text.cpp
+    ../Source/XlsxFormat/SharedStrings/Text.cpp \
+    ../Source/XlsxFormat/Pivot/Pivots.cpp
 }
 
 

@@ -3229,6 +3229,15 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet& oSheet
             }
         }
     }
+	//pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::PivotTable);
+	//OOX::Spreadsheet::CPivotTableFile *pPivotTableFile = dynamic_cast<OOX::Spreadsheet::CPivotTableFile*>(pFile.GetPointer());
+	//if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTable.IsInit()))
+	//{
+	//	BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
+	//	nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
+	//	oBinaryTableWriter.WriteQueryTable(pPivotTableFile->m_oPivotTable.get());
+	//	m_oBcw.WriteItemWithLengthEnd(nCurPos);		
+	//}
 }
 void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet)
 {

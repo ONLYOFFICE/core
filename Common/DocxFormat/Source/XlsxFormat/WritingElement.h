@@ -114,6 +114,12 @@ namespace Spreadsheet
 #define WritingStringNullableAttrBool2(name, elem) \
 		WritingStringNullableAttrString(name, elem, *elem ? L"1": L"0")
 
+#define WritingStringNullableAttrInt2(name, elem) \
+		WritingStringNullableAttrInt(name, elem, *elem)
+
+#define WritingStringNullableAttrEncodeXmlString2(name, elem) \
+		WritingStringNullableAttrEncodeXmlString(name, elem, *elem)
+
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;
 

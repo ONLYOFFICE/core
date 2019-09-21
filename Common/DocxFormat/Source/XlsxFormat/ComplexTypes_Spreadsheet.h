@@ -96,22 +96,22 @@ namespace ComplexTypes
 
 		};
 
-		class CDecimalNumber : public ComplexType
+		class CSharedItemsIndex : public ComplexType
 		{
 		public:
-			ComplexTypes_AdditionConstructors(CDecimalNumber)
-			CDecimalNumber()
+			ComplexTypes_AdditionConstructors(CSharedItemsIndex)
+			CSharedItemsIndex()
 			{
 			}
-			virtual ~CDecimalNumber()
+			virtual ~CSharedItemsIndex()
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"v", m_oV );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -122,27 +122,25 @@ namespace ComplexTypes
 			{
 				std::wstring sResult;
 
-				if ( m_oVal.IsInit() )
+				if ( m_oV.IsInit() )
 				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"v=\"";
+					sResult += m_oV->ToString();
+					sResult += L"\" ";
 				}
-
 				return sResult;
 			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v", m_oV )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oVal;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oV;
 		};
         class String : public ComplexType
 		{
@@ -398,7 +396,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartAxPos)
-				CChartAxPos()
+			CChartAxPos()
 			{
 			}
 			virtual ~CChartAxPos()
@@ -446,7 +444,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartBarGrouping)
-				CChartBarGrouping()
+			CChartBarGrouping()
 			{
 			}
 			virtual ~CChartBarGrouping()
@@ -495,7 +493,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartBarDerection)
-				CChartBarDerection()
+			CChartBarDerection()
 			{
 			}
 			virtual ~CChartBarDerection()

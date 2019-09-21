@@ -1777,6 +1777,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Pivots"
+				>
+				<File
+					RelativePath="..\Source\XlsxFormat\Pivot\PivotCacheDefinition.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Pivot\PivotCacheRecords.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Pivot\Pivots.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Pivot\PivotTable.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Math"

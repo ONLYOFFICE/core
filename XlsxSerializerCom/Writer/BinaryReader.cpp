@@ -3872,7 +3872,7 @@ int BinaryWorksheetsTableReader::ReadPivotTable(BYTE type, long length, void* po
 	}
 	else if(c_oSer_PivotTypes::table == type)
 	{
-		OOX::Spreadsheet::CPivotTable* pPivotTable = new OOX::Spreadsheet::CPivotTable(NULL);
+		OOX::Spreadsheet::CPivotTableFile* pPivotTable = new OOX::Spreadsheet::CPivotTableFile(NULL);
 		pPivotTable->setData(m_oBufferedStream.GetPointer(length), length);
 		pPivotCachesTemp->pTable = pPivotTable;
 	}

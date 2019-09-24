@@ -2411,7 +2411,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	odf_writer::style_text_properties		* text_properties		= ods_context->styles_context()->last_state()->get_text_properties();
 	odf_writer::style_table_cell_properties	* table_cell_properties = ods_context->styles_context()->last_state()->get_table_cell_properties();
 
-	if (xlsx_styles->m_oFonts.IsInit() && font_id >=0 && (id_parent < 0 || xfc_style->m_oApplyFont.IsInit()))	
+	bool bApplyFont = xfc_style->m_oApplyFont.IsInit() ? xfc_style->m_oApplyFont->ToBool() : true;
+	if (xlsx_styles->m_oFonts.IsInit() && font_id >=0 && (id_parent < 0 || bApplyFont))	
 	{
 		std::map<int, OOX::Spreadsheet::CFont*>::iterator pFind = xlsx_styles->m_oFonts->m_mapFonts.find(font_id);
 		if (pFind != xlsx_styles->m_oFonts->m_mapFonts.end())
@@ -2419,7 +2420,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 			convert(pFind->second, text_properties); 
 		}
 	}
-	if (xlsx_styles->m_oFills.IsInit() && fill_id >= 0 && (id_parent < 0 || xfc_style->m_oApplyFill.IsInit()))
+	bool bApplyFill = xfc_style->m_oApplyFill.IsInit() ? xfc_style->m_oApplyFill->ToBool() : true;
+	if (xlsx_styles->m_oFills.IsInit() && fill_id >= 0 && (id_parent < 0 || bApplyFill))
 	{
 		std::map<int, OOX::Spreadsheet::CFill*>::iterator pFind = xlsx_styles->m_oFills->m_mapFills.find(fill_id);
 		if (pFind != xlsx_styles->m_oFills->m_mapFills.end())
@@ -2427,12 +2429,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 			convert(pFind->second, table_cell_properties); 
 		}
 	}
-	if (numFmt_id >= 0/* && (id_parent < 0 || xfc_style->m_oApplyNumberFormat.IsInit())*/)	
+	bool bApplyNumberFormat = xfc_style->m_oApplyNumberFormat.IsInit() ? xfc_style->m_oApplyNumberFormat->ToBool() : true;
+	if (numFmt_id >= 0 && (id_parent < 0 || bApplyNumberFormat))	
 	{
 		ods_context->styles_context()->last_state()->set_data_style_name(ods_context->numbers_styles_context()->add_or_find(numFmt_id).style_name);
 		ods_context->styles_context()->last_state()->set_number_format(numFmt_id);
 	}
-	if (xlsx_styles->m_oBorders.IsInit() && border_id >=0 && (id_parent < 0 || xfc_style->m_oApplyBorder.IsInit()))	
+	bool bApplyBorder = xfc_style->m_oApplyBorder.IsInit() ? xfc_style->m_oApplyBorder->ToBool() : true;
+	if (xlsx_styles->m_oBorders.IsInit() && border_id >=0 && (id_parent < 0 || bApplyBorder))	
 	{
 		std::map<int, OOX::Spreadsheet::CBorder*>::iterator pFind = xlsx_styles->m_oBorders->m_mapBorders.find(border_id);
 		if (pFind != xlsx_styles->m_oBorders->m_mapBorders.end())

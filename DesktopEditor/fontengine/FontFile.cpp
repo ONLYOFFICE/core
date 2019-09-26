@@ -682,9 +682,9 @@ void CFontFile::CheckHintsSupport()
         return;
     }
 
-	std::string sFamilyName((NULL != m_pFace->family_name) ? m_pFace->family_name : "");
+    std::wstring sFamilyName = GetCorrectSfntName(m_pFace->family_name);
 
-    if (sFamilyName == "MS Mincho" || sFamilyName == "Castellar")
+    if (m_sName == L"MS Mincho" || m_sName == L"Castellar")
         m_bHintsSupport = FALSE;
 }
 

@@ -561,35 +561,28 @@ namespace NSCommon
                     }
                     else if (pFile)
                     {
+                        // у нас режим "без квадратов"
+                        // но есть шрифты, в которых символы есть, но нулевой ширины.
+                        // только из-за таких шрифтов делаем заглушку
                         int nFontNameLen = (int)sFontName.length();
-                        bool bIsPresentAll = true;
+                        bool bIsExistEmpty = false;
                         
                         for (int nC = 0; nC < nFontNameLen; nC++)
                         {
                             int nCMapIndex = 0;
                             int nGid = pFile->SetCMapForCharCode(sFontName.at(nC), &nCMapIndex);
-                            if (0 >= nGid)
+                            if (0 < nGid && 0.0001 > pFile->GetCharWidth(nGid))
                             {
-                                bIsPresentAll = false;
+                                bIsExistEmpty = true;
                                 break;
-                            }
-                            else
-                            {
-                                double offsetG = pFile->GetCharWidth(nGid);
-                                if (offsetG < 0.0001)
-                                {
-                                    bIsPresentAll = false;
-                                    break;
-                                }
                             }
                         }
                         
-                        if (!bIsPresentAll)
+                        if (bIsExistEmpty)
                         {
                             NSFonts::CFontSelectFormat oSelectFormat;
                             oSelectFormat.wsName = new std::wstring(L"Arial");
-                            NSFonts::CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);
-                            
+                            NSFonts::CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);                            
                             if (NULL != pInfoCur)
                             {
                                 pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);

@@ -44,6 +44,35 @@
 
 #include "FontPath.h"
 #include "GlyphString.h"
+#include "../common/File.h"
+
+static std::wstring GetCorrectSfntName(const char* name)
+{
+    if (NULL == name)
+        return L"";
+    const char* name_cur = name;
+    int name_len = 0;
+    while (*name_cur++)
+        ++name_len;
+
+    bool isUtf8 = false;
+    if (6 < name_len)
+    {
+        if ('<' == name[0] || 'u' == name[1] || 't' == name[2] ||
+            'f' == name[3] || '8' == name[4] || '>' == name[5])
+        {
+            name_cur = name + 6;
+            name_len -= 6;
+            isUtf8 = true;
+        }
+    }
+
+    if (isUtf8)
+    {
+        return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)name_cur, (LONG)name_len);
+    }
+    return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(name_cur, (LONG)name_len);
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------
 // TODO: RasterHeep

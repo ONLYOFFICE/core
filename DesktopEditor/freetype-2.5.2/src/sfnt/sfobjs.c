@@ -44,8 +44,138 @@
 #undef  FT_COMPONENT
 #define FT_COMPONENT  trace_sfobjs
 
+#ifdef FT_SUPPORT_UTF8_IN_NAMES
+  // common funcs
+  static void tt_name_entry_unicode_from_utf16(FT_Byte* string, FT_UShort len, FT_Int** out, FT_UShort* out_len, FT_Memory memory)
+  {
+    FT_Int* unicode = NULL;
+    FT_UShort alloc_len = len / 2;
+    FT_UShort n = 0;
+    FT_UShort cur = 0, cur2 = 0;
+    FT_UShort out_len_cur = 0;
+    FT_Error error;
 
+    *out = NULL;
+    *out_len = 0;
+    if ( FT_NEW_ARRAY( unicode, alloc_len ) )
+      return;
 
+    for ( n = 0; n < alloc_len; n++ )
+    {
+      cur = FT_NEXT_USHORT( string );
+
+      if ( cur == 0 )
+        break;
+
+      if (cur < 0xD800 || cur > 0xDBFF)
+      {
+          unicode[out_len_cur++] = cur;
+      }
+      else
+      {
+          cur2 = FT_NEXT_USHORT( string );
+          ++n;
+          unicode[out_len_cur++] = ((((cur - 0xD800) & 0x03FF) << 10) | ((cur2 - 0xDC00) & 0x03FF)) + 0x10000;
+      }
+    }
+
+    *out = unicode;
+    *out_len = out_len_cur;
+  }
+
+  static FT_String* tt_name_entry_utf8_from_unicode(FT_Int* unicode, FT_UShort len, FT_Memory memory)
+  {
+    FT_String* ret = NULL;
+    FT_String* retCur = NULL;
+    FT_UShort index = 0;
+    FT_UInt alloc_len = 6 * len + 6 + 1;
+    FT_Int code;
+    FT_Error error;
+
+    if (0 == len)
+      return ret;
+
+    if ( FT_NEW_ARRAY( ret, alloc_len ) )
+      return ret;
+
+    retCur = ret;
+
+    *retCur++ = '<';
+    *retCur++ = 'u';
+    *retCur++ = 't';
+    *retCur++ = 'f';
+    *retCur++ = '8';
+    *retCur++ = '>';
+
+    for ( index = 0; index < len; index++ )
+    {
+      code = unicode[index];
+
+      if (code < 0x80)
+      {
+        *retCur++ = (FT_String)code;
+      }
+      else if (code < 0x0800)
+      {
+        *retCur++ = (0xC0 | (code >> 6));
+        *retCur++ = (0x80 | (code & 0x3F));
+      }
+      else if (code < 0x10000)
+      {
+        *retCur++ = (0xE0 | (code >> 12));
+        *retCur++ = (0x80 | (code >> 6 & 0x3F));
+        *retCur++ = (0x80 | (code & 0x3F));
+      }
+      else if (code < 0x1FFFFF)
+      {
+        *retCur++ = (0xF0 | (code >> 18));
+        *retCur++ = (0x80 | (code >> 12 & 0x3F));
+        *retCur++ = (0x80 | (code >> 6 & 0x3F));
+        *retCur++ = (0x80 | (code & 0x3F));
+      }
+      else if (code < 0x3FFFFFF)
+      {
+        *retCur++ = (0xF8 | (code >> 24));
+        *retCur++ = (0x80 | (code >> 18 & 0x3F));
+        *retCur++ = (0x80 | (code >> 12 & 0x3F));
+        *retCur++ = (0x80 | (code >> 6 & 0x3F));
+        *retCur++ = (0x80 | (code & 0x3F));
+      }
+      else if (code < 0x7FFFFFFF)
+      {
+        *retCur++ = (0xFC | (code >> 30));
+        *retCur++ = (0x80 | (code >> 24 & 0x3F));
+        *retCur++ = (0x80 | (code >> 18 & 0x3F));
+        *retCur++ = (0x80 | (code >> 12 & 0x3F));
+        *retCur++ = (0x80 | (code >> 6 & 0x3F));
+        *retCur++ = (0x80 | (code & 0x3F));
+      }
+    }
+
+    *retCur = 0;
+    return ret;
+  }
+
+  // ft interface
+  static FT_String* tt_name_entry_utf8_from_utf16(TT_NameEntry  entry,
+                                                  FT_Memory     memory)
+  {
+    FT_Int* unicode = NULL;
+    FT_UShort unicode_len = 0;
+    FT_String* retValue = NULL;
+    tt_name_entry_unicode_from_utf16(entry->string, entry->stringLength, &unicode, &unicode_len, memory);
+    retValue = tt_name_entry_utf8_from_unicode(unicode, unicode_len, memory);
+    FT_FREE(unicode);
+    return retValue;
+  }
+  /* convert a UTF-16 name entry to ASCII */
+  static FT_String*
+  tt_name_entry_ascii_from_utf16( TT_NameEntry  entry,
+                                  FT_Memory     memory )
+  {
+    return tt_name_entry_utf8_from_utf16(entry, memory);
+  }
+#else
   /* convert a UTF-16 name entry to ASCII */
   static FT_String*
   tt_name_entry_ascii_from_utf16( TT_NameEntry  entry,
@@ -79,7 +209,7 @@
 
     return string;
   }
-
+#endif
 
   /* convert an Apple Roman or symbol name entry to ASCII */
   static FT_String*

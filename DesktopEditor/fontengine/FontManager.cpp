@@ -686,9 +686,9 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
 	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
 
     m_sName = L"";
-    if (m_pFont->m_pFace && m_pFont->m_pFace->family_name)
+    if (m_pFont->m_pFace)
     {
-        m_pFont->m_sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pFont->m_pFace->family_name, strlen(m_pFont->m_pFace->family_name));
+        m_pFont->m_sName = GetCorrectSfntName(m_pFont->m_pFace->family_name);
         m_sName = m_pFont->m_sName;
     }
 
@@ -710,9 +710,10 @@ INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wst
 	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
 
     m_sName = L"";
-    if (m_pFont->m_pFace && m_pFont->m_pFace->family_name)
+    if (m_pFont->m_pFace)
     {
-        m_sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pFont->m_pFace->family_name, strlen(m_pFont->m_pFace->family_name));
+        m_pFont->m_sName = GetCorrectSfntName(m_pFont->m_pFace->family_name);
+        m_sName = m_pFont->m_sName;
     }
 
 	return TRUE;

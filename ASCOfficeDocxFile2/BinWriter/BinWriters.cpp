@@ -1313,9 +1313,9 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 	}
 	if(pSectPr->m_oRtlGutter.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_secPrType::rtlGutter);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oRtlGutter->m_oVal.ToBool());
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::rtlGutter);
+			m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oRtlGutter->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void Binary_pPrWriter::WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)

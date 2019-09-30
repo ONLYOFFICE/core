@@ -38,6 +38,7 @@ namespace OOX
 		namespace SpreadsheetCommon
 		{
             std::wstring WriteDouble(double dVal);
+			const int MAX_STRING_LEN = 0x7FFF;
 		}
 	}
 }

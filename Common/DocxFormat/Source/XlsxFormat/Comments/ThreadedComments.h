@@ -463,6 +463,12 @@ namespace OOX
 
 
 				WritingElement_ReadAttributes_End( oReader )
+
+				//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
+				if(id.IsInit() && id->IsZero())
+				{
+					id = L"{" + XmlUtils::GenerateGuid() + L"}";
+				}
 			}
 		public:
 			nullable_string						ref;
@@ -580,16 +586,38 @@ namespace OOX
 						m_mapTopLevelThreadedComments[pThreadedComment->id->ToString()] = pThreadedComment;
 					}
 				}
+				//to remove reply duplicates
+				std::unordered_map<std::wstring, bool> mapUniqueue;
 				//add Replies
 				for(size_t i = 0; i < m_arrItems.size(); ++i)
 				{
 					CThreadedComment* pThreadedComment = m_arrItems[i];
 					if(pThreadedComment->parentId.IsInit())
 					{
-						std::unordered_map<std::wstring, CThreadedComment*>::const_iterator oFind = m_mapTopLevelThreadedComments.find(pThreadedComment->parentId->ToString());
-						if(m_mapTopLevelThreadedComments.end() != oFind)
+						//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
+						if(pThreadedComment->parentId->IsZero() && pThreadedComment->ref.IsInit())
 						{
-							oFind->second->m_arrReplies.push_back(pThreadedComment);
+							if (pThreadedComment->dT.IsInit() && mapUniqueue.find(pThreadedComment->dT->ToString()) == mapUniqueue.end())
+							{
+								mapUniqueue[pThreadedComment->dT->ToString()] = true;
+								//find parents by ref
+								for (std::unordered_map<std::wstring, CThreadedComment*>::const_iterator it = m_mapTopLevelThreadedComments.begin(); it != m_mapTopLevelThreadedComments.end(); ++it)
+								{
+									if (it->second->ref.IsInit() && pThreadedComment->ref.get() == it->second->ref.get())
+									{
+										it->second->m_arrReplies.push_back(pThreadedComment);
+										break;
+									}
+								}
+							}
+						}
+						else
+						{
+							std::unordered_map<std::wstring, CThreadedComment*>::const_iterator oFind = m_mapTopLevelThreadedComments.find(pThreadedComment->parentId->ToString());
+							if(m_mapTopLevelThreadedComments.end() != oFind)
+							{
+								oFind->second->m_arrReplies.push_back(pThreadedComment);
+							}
 						}
 					}
 				}

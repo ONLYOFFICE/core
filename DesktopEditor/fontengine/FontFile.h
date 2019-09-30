@@ -55,6 +55,7 @@ static std::wstring GetCorrectSfntName(const char* name)
     while (*name_cur++)
         ++name_len;
 
+    name_cur = name;
     bool isUtf8 = false;
     if (6 < name_len)
     {

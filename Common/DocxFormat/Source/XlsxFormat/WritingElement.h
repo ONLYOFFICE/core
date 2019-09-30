@@ -117,6 +117,9 @@ namespace Spreadsheet
 #define WritingStringNullableAttrInt2(name, elem) \
 		WritingStringNullableAttrInt(name, elem, *elem)
 
+#define WritingStringNullableAttrDouble2(name, elem) \
+		WritingStringNullableAttrDouble(name, elem, *elem)
+
 #define WritingStringNullableAttrEncodeXmlString2(name, elem) \
 		WritingStringNullableAttrEncodeXmlString(name, elem, *elem)
 

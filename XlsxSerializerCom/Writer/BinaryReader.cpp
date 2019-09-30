@@ -2955,23 +2955,25 @@ int BinaryWorkbookTableReader::ReadPivotCaches(BYTE type, long length, void* poR
 		READ1_DEF(length, res, this->ReadPivotCache, &oPivotCachesTemp);
 		if(-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefinitionData)
 		{
-			OOX::Spreadsheet::CPivotCacheDefinition* pDefinition = new OOX::Spreadsheet::CPivotCacheDefinition(NULL);
+			OOX::Spreadsheet::CPivotCacheDefinitionFile* pDefinitionFile = new OOX::Spreadsheet::CPivotCacheDefinitionFile(NULL);
 			std::wstring srIdRecords;
 			if(NULL != oPivotCachesTemp.pRecords)
 			{
 				NSCommon::smart_ptr<OOX::File> pFileRecords(oPivotCachesTemp.pRecords);
-				srIdRecords = pDefinition->Add(pFileRecords).ToString();
+				srIdRecords = pDefinitionFile->Add(pFileRecords).ToString();
 			}
-			pDefinition->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, srIdRecords);
-			NSCommon::smart_ptr<OOX::File> pFileDefinition(pDefinition);
-			OOX::RId rIdDefinition = m_oWorkbook.Add(pFileDefinition);
+			pDefinitionFile->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, srIdRecords);
+			
+			NSCommon::smart_ptr<OOX::File> pFile(pDefinitionFile);
+			OOX::RId rIdDefinition = m_oWorkbook.Add(pFile);
+
 			m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCache cacheId=\"");
 			m_oWorkbook.m_oPivotCachesXml->append(std::to_wstring(oPivotCachesTemp.nId));
 			m_oWorkbook.m_oPivotCachesXml->append(L"\" r:id=\"");
 			m_oWorkbook.m_oPivotCachesXml->append(rIdDefinition.ToString());
 			m_oWorkbook.m_oPivotCachesXml->append(L"\"/>");
 
-			m_mapPivotCacheDefinitions[oPivotCachesTemp.nId] = pFileDefinition;
+			m_mapPivotCacheDefinitions[oPivotCachesTemp.nId] = pFile;
 		}
 		else
 		{

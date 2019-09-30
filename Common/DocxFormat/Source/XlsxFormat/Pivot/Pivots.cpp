@@ -30,6 +30,7 @@
  *
  */
 #include "PivotTable.h"
+#include "PivotCacheDefinition.h"
 
 namespace OOX
 {
@@ -716,7 +717,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CPivotField::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<pivotField>");
+		writer.WriteString(L"<pivotField");
 			WritingStringNullableAttrBool2(L"allDrilled",		m_oAllDrilled);
 			WritingStringNullableAttrBool2(L"autoShow",			m_oAutoShow);
 			WritingStringNullableAttrBool2(L"avgSubtotal",		m_oAvgSubtotal);
@@ -890,7 +891,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CReference::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<reference>");
+		writer.WriteString(L"<reference");
 			WritingStringNullableAttrString(L"field", m_oField, m_oField->ToString());
 			WritingStringNullableAttrString(L"count", m_oCount, m_oCount->ToString());
 			WritingStringNullableAttrBool2(L"avgSubtotal",		m_oAvgSubtotal);
@@ -952,8 +953,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"field", m_oField )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"count", m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
-	}		
-
+	}
 //------------------------------------
 	void CPivotTableFormats::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -998,9 +998,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CPivotTableFormat::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<pivotTableFormat>");
+		writer.WriteString(L"<pivotTableFormat");
 			WritingStringNullableAttrString(L"action", m_oAction, m_oAction->ToString());
-			WritingStringNullableAttrString(L"count", m_oDxfId, m_oDxfId->ToString());
+			WritingStringNullableAttrString(L"dxfId", m_oDxfId, m_oDxfId->ToString());
 		writer.WriteString(L">");
 	
 		if(m_oPivotArea.IsInit())
@@ -1158,13 +1158,1107 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CPivotTableStyleInfo::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if		( oReader, L"m_oName", m_oName )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oShowColHeaders", m_oShowColHeaders )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oShowLastColumn", m_oShowLastColumn )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oShowLastColumn", m_oShowLastColumn )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oShowRowHeaders", m_oShowRowHeaders )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oShowRowStripes", m_oShowRowStripes )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"name", m_oName )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"showColHeaders", m_oShowColHeaders )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"showLastColumn", m_oShowLastColumn )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"showLastColumn", m_oShowLastColumn )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"showRowHeaders", m_oShowRowHeaders )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"showRowStripes", m_oShowRowStripes )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+//------------------------------------
+	void CPivotCacheDefinitionFile::read(const CPath& oRootPath, const CPath& oPath)
+	{
+		m_oReadPath = oPath;
+		IFileContainer::Read( oRootPath, oPath );
+
+		XmlUtils::CXmlLiteReader oReader;
+
+		if ( !oReader.FromFile( oPath.GetPath() ) )
+			return;
+
+		if ( !oReader.ReadNextNode() )
+			return;
+
+		m_oPivotCashDefinition = oReader;
+	}
+	void CPivotCacheDefinitionFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		if(m_oPivotCashDefinition.IsInit())
+		{
+			NSStringUtils::CStringBuilder sXml;
+
+			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+			m_oPivotCashDefinition->toXML(sXml);
+
+			std::wstring sPath = oPath.GetPath();
+			NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
+			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+			IFileContainer::Write( oPath, oDirectory, oContent );
+		}
+		else if(m_nDataLength > 0 && m_pData)
+		{
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(oPath.GetPath());
+			oFile.WriteFile(m_pData, m_nDataLength);
+			oFile.CloseFile();
+
+			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+			IFileContainer::Write( oPath, oDirectory, oContent );
+		}
+	}
+//------------------------------------
+	void CPivotCacheDefinition::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<pivotCacheDefinition \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"xr16\" \
+xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
+		WritingStringNullableAttrString(L"r:id",			m_oRid, m_oRid->ToString());
+		WritingStringNullableAttrBool2(L"backgroundQuery",	m_oBackgroundQuery);
+		WritingStringNullableAttrBool2(L"enableRefresh",	m_oEnableRefresh);
+		WritingStringNullableAttrBool2(L"invalid",			m_oInvalid);
+		WritingStringNullableAttrInt(L"createdVersion",		m_oCreatedVersion, m_oCreatedVersion->GetValue());
+		WritingStringNullableAttrInt(L"minRefreshableVersion", m_oMinRefreshableVersion, m_oMinRefreshableVersion->GetValue());
+		WritingStringNullableAttrInt(L"missingItemsLimit",	m_oMissingItemsLimit, m_oMissingItemsLimit->GetValue());
+		WritingStringNullableAttrBool2(L"optimizeMemory",	m_oOptimizeMemory);
+		WritingStringNullableAttrInt(L"refreshedVersion",	m_oRefreshedVersion, m_oRefreshedVersion->GetValue());
+		WritingStringNullableAttrInt(L"recordCount",		m_oRecordCount, m_oRecordCount->GetValue());
+		WritingStringNullableAttrString(L"refreshedDateIso", m_oRefreshedDateIso, m_oRefreshedDateIso->ToString());
+		WritingStringNullableAttrBool2(L"refreshOnLoad",	m_oRefreshOnLoad);
+		WritingStringNullableAttrBool2(L"saveData",			m_oSaveData);
+		WritingStringNullableAttrBool2(L"supportAdvancedDrill",m_oSupportAdvancedDrill);
+		WritingStringNullableAttrEncodeXmlString2(L"refreshedBy",m_oRefreshedBy);
+		WritingStringNullableAttrBool2(L"supportAdvancedDrill",	m_oSupportAdvancedDrill);
+		WritingStringNullableAttrBool2(L"supportSubquery",	m_oSupportSubquery);
+		WritingStringNullableAttrBool2(L"tupleCache",		m_oTupleCache);
+		WritingStringNullableAttrBool2(L"upgradeOnRefresh",	m_oUpgradeOnRefresh);
+		writer.WriteString(L">");
+
+		if(m_oCacheSource.IsInit())
+			m_oCacheSource->toXML(writer);
+		if(m_oCacheFields.IsInit())
+			m_oCacheFields->toXML(writer);		
+			
+		if(m_oExtLst.IsInit())
+		{
+			writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+		}
+
+		writer.WriteString(L"</pivotCacheDefinition>");
+	}
+	void CPivotCacheDefinition::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				 if (L"cacheFields" == sName)	m_oCacheFields = oReader;
+			else if (L"cacheSource" == sName)	m_oCacheSource = oReader;
+			else if (L"extLst" == sName)		m_oExtLst = oReader;
+		}
+	}
+	void CPivotCacheDefinition::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"backgroundQuery",	m_oBackgroundQuery )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"enableRefresh",	m_oEnableRefresh )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"id",				m_oRid )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"invalid",			m_oEnableRefresh )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"createdVersion",	m_oCreatedVersion )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"refreshableVersion",m_oMinRefreshableVersion )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"missingItemsLimit",m_oMissingItemsLimit )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"optimizeMemory",	m_oOptimizeMemory )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"recordCount",		m_oRecordCount )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"refreshedBy",		m_oRefreshedBy )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"refreshedDateIso",	m_oRefreshedDateIso )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"refreshedVersion",	m_oRefreshedVersion )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"refreshOnLoad",	m_oRefreshOnLoad )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"saveData",			m_oSaveData )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"supportAdvancedDrill",	m_oSupportAdvancedDrill )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"supportSubquery",	m_oSupportSubquery )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"tupleCache",		m_oTupleCache )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"upgradeOnRefresh",	m_oUpgradeOnRefresh )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
+	}
+//------------------------------------
+	void CPivotCacheFields::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		if(m_arrItems.empty()) return;
+
+		writer.WriteString(L"<cacheFields");
+		WritingStringAttrInt(L"count", (int)m_arrItems.size());
+		writer.WriteString(L">");
+		
+        for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+		
+		writer.WriteString(L"</cacheFields>");
+	}
+	void CPivotCacheFields::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"cacheFields" == sName )
+				m_arrItems.push_back(new CPivotCacheField(oReader));
+		}
+	}
+	void CPivotCacheFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotCacheField::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<cacheField");
+			WritingStringNullableAttrEncodeXmlString2(L"name",	m_oName);
+			WritingStringNullableAttrEncodeXmlString2(L"caption",m_oCaption);
+			WritingStringNullableAttrBool2(L"databaseField",	m_oDatabaseField);
+			WritingStringNullableAttrBool2(L"serverField",	m_oServerField);
+			WritingStringNullableAttrEncodeXmlString2(L"pPropertyName",m_oPropertyName);
+			WritingStringNullableAttrEncodeXmlString2(L"formula",m_oFormula);
+			WritingStringNullableAttrInt2(L"hierarchy",	m_oHierarchy);
+			WritingStringNullableAttrInt2(L"sqlType",	m_oSqlType);
+			WritingStringNullableAttrBool2(L"memberPropertyField",	m_oMemberPropertyField);
+			WritingStringNullableAttrBool2(L"uniqueList",	m_oUniqueList);
+			WritingStringNullableAttrInt(L"level", m_oLevel, m_oLevel->GetValue());
+			WritingStringNullableAttrInt(L"mappingCount", m_oMappingCount, m_oMappingCount->GetValue());
+			WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
+		writer.WriteString(L">");
+		
+		if(m_oSharedItems.IsInit())
+		{
+			m_oSharedItems->toXML(writer);
+		}
+		if(m_oFieldGroup.IsInit())
+		{
+			m_oFieldGroup->toXML(writer);
+		}
+		//if(m_oMpMap.IsInit())
+		//{
+		//	m_oMpMap->toXML(writer);
+		//}
+		writer.WriteString(L"</cacheField>");
+	}
+	void CPivotCacheField::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"sharedItems" == sName )
+				m_oSharedItems = oReader;
+			else if ( L"fieldGroup" == sName )
+				m_oFieldGroup = oReader;
+			//else if ( L"mpMap" == sName )
+			//	m_oMpMap = oReader;
+			else if ( L"extLst" == sName )
+				m_oExtLst = oReader;
+		}
+	}
+	void CPivotCacheField::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"name", m_oName )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"caption", m_oCaption )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"databaseField", m_oDatabaseField )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"serverField", m_oServerField )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"formula", m_oFormula )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"hierarchy", m_oHierarchy )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"memberPropertyField", m_oMemberPropertyField )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"propertyName", m_oPropertyName )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"sqlType", m_oSqlType )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"uniqueList", m_oUniqueList )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"level", m_oLevel )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"mappingCount", m_oMappingCount )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"uniqueList", m_oNumFmtId )
+		WritingElement_ReadAttributes_End( oReader )
+	}		
+//------------------------------------
+	void CSharedItems::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<sharedItems");
+			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+			WritingStringNullableAttrBool2(L"containsBlank",	m_oContainsBlank);
+			WritingStringNullableAttrBool2(L"containsDate",	m_oContainsDate);
+			WritingStringNullableAttrBool2(L"containsInteger",	m_oContainsInteger);
+			WritingStringNullableAttrBool2(L"containsMixedTypes",	m_oContainsMixedTypes);
+			WritingStringNullableAttrBool2(L"containsNonDate",	m_oContainsNonDate);
+			WritingStringNullableAttrBool2(L"containsNumber",	m_oContainsNumber);
+			WritingStringNullableAttrBool2(L"containsSemiMixedTypes",	m_oContainsSemiMixedTypes);
+			WritingStringNullableAttrBool2(L"containsString",	m_oContainsString);
+			WritingStringNullableAttrBool2(L"longText",	m_oLongText);
+			WritingStringNullableAttrDouble2(L"minValue",	m_oMinValue);
+			WritingStringNullableAttrDouble2(L"maxValue",	m_oMaxValue);
+			WritingStringNullableAttrString(L"minDate", m_oMinDate, m_oMinDate->ToString());
+			WritingStringNullableAttrString(L"maxDate", m_oMaxDate, m_oMaxDate->ToString());
+		writer.WriteString(L">");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+		
+		writer.WriteString(L"</sharedItems>");
+	}
+	void CSharedItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"b" == sName )
+				m_arrItems.push_back(new CPivotBooleanValue(oReader));
+			else if ( L"d" == sName )
+				m_arrItems.push_back(new CPivotDateTimeValue(oReader));
+			else if ( L"e" == sName )
+				m_arrItems.push_back(new CPivotErrorValue(oReader));
+			else if ( L"m" == sName )
+				m_arrItems.push_back(new CPivotNoValue(oReader));
+			else if ( L"n" == sName )
+				m_arrItems.push_back(new CPivotNumericValue(oReader));
+			else if ( L"s" == sName )
+				m_arrItems.push_back(new CPivotCharacterValue(oReader));
+		}
+	}
+	void CSharedItems::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"containsBlank", m_oContainsBlank )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"containsDate", m_oContainsDate )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"containsInteger", m_oContainsInteger )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"containsMixedTypes", m_oContainsMixedTypes )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"containsNonDate", m_oContainsNonDate )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"containsNumber", m_oContainsNumber )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"containsSemiMixedTypes", m_oContainsSemiMixedTypes )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"containsString", m_oContainsString )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"longText", m_oLongText )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"minValue", m_oMinValue )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"maxValue", m_oMaxValue )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"minDate", m_oMinDate )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"maxDate", m_oMaxDate )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CDiscreteGroupingProperties::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<discretePr");
+			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+		writer.WriteString(L">");
+        
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+				writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+            }
+        }
+		writer.WriteString(L"</discretePr>");
+	}
+	void CDiscreteGroupingProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"x" == sName)
+				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CSharedItemsIndex(oReader));
+		}
+	}
+	void CDiscreteGroupingProperties::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void COLAPGroupItems::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<groupItems");
+			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+		writer.WriteString(L">");
+        
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+		writer.WriteString(L"</groupItems>");
+	}
+	void COLAPGroupItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"b" == sName )
+				m_arrItems.push_back(new CPivotBooleanValue(oReader));
+			else if ( L"d" == sName )
+				m_arrItems.push_back(new CPivotDateTimeValue(oReader));
+			else if ( L"e" == sName )
+				m_arrItems.push_back(new CPivotErrorValue(oReader));
+			else if ( L"m" == sName )
+				m_arrItems.push_back(new CPivotNoValue(oReader));
+			else if ( L"n" == sName )
+				m_arrItems.push_back(new CPivotNumericValue(oReader));
+			else if ( L"s" == sName )
+				m_arrItems.push_back(new CPivotCharacterValue(oReader));
+		}
+	}
+	void COLAPGroupItems::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+
+//------------------------------------
+	void CRangeGroupingProperties::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<reference");
+			WritingStringNullableAttrString(L"groupBy",		m_oGroupBy, m_oGroupBy->ToString());
+			WritingStringNullableAttrBool2(L"autoStart",	m_oAutoStart);
+			WritingStringNullableAttrBool2(L"autoEnd",		m_oAutoEnd);
+			WritingStringNullableAttrDouble2(L"startNum",	m_oStartNum);
+			WritingStringNullableAttrDouble2(L"endNum",		m_oEndNum);
+			WritingStringNullableAttrDouble2(L"groupInterval",	m_oGroupInterval);
+			WritingStringNullableAttrString(L"startDate",	m_oStartDate, m_oStartDate->ToString());
+			WritingStringNullableAttrString(L"endDate",		m_oEndDate, m_oEndDate->ToString());
+		writer.WriteString(L"/>");
+
+	}
+	void CRangeGroupingProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+	}
+	void CRangeGroupingProperties::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"m_oGroupBy", m_oGroupBy )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oAutoStart", m_oAutoStart )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oAutoEnd", m_oAutoEnd )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oStartDate", m_oStartDate )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oEndDate", m_oEndDate )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oStartNum", m_oStartNum )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oEndNum", m_oEndNum )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m_oGroupInterval", m_oGroupInterval )
+		WritingElement_ReadAttributes_End( oReader )
+	}					
+//------------------------------------
+	void CPivotCharacterValue::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<s");
+			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
+			WritingStringNullableAttrEncodeXmlString2(L"v",	m_oValue);
+			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
+			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+			WritingStringNullableAttrBool2(L"b",	m_oBold);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrBool2(L"st",	m_oStrike);
+			WritingStringNullableAttrBool2(L"un",	m_oUnderline);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrInt(L"bc", m_oBackColor, m_oBackColor->GetValue());
+			WritingStringNullableAttrInt(L"fc", m_oForeColor, m_oForeColor->GetValue());
+			WritingStringNullableAttrInt(L"in", m_oFormatIndex, m_oFormatIndex->GetValue());
+		writer.WriteString(L">");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+            }
+        }
+		writer.WriteString(L"</s>");
+	}
+	void CPivotCharacterValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"x" == sName )
+				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+		}
+	}
+	void CPivotCharacterValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"v", m_oValue )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCaption )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"b", m_oBold )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i", m_oItalic )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"st", m_oStrike )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"un", m_oUnderline )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"bc", m_oBackColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"fc", m_oForeColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotErrorValue::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<e");
+			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
+			WritingStringNullableAttrEncodeXmlString2(L"v",	m_oValue);
+			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
+			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+			WritingStringNullableAttrBool2(L"b",	m_oBold);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrBool2(L"st",	m_oStrike);
+			WritingStringNullableAttrBool2(L"un",	m_oUnderline);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrInt(L"bc", m_oBackColor, m_oBackColor->GetValue());
+			WritingStringNullableAttrInt(L"fc", m_oForeColor, m_oForeColor->GetValue());
+			WritingStringNullableAttrInt(L"in", m_oFormatIndex, m_oFormatIndex->GetValue());
+		writer.WriteString(L">");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+            }
+        }
+		writer.WriteString(L"</s>");
+	}
+	void CPivotErrorValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"x" == sName )
+				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+		}
+	}
+	void CPivotErrorValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"v", m_oValue )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCaption )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"b", m_oBold )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i", m_oItalic )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"st", m_oStrike )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"un", m_oUnderline )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"bc", m_oBackColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"fc", m_oForeColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotNumericValue::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<n");
+			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
+			WritingStringNullableAttrDouble2(L"v",	m_oValue);
+			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
+			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+			WritingStringNullableAttrBool2(L"b",	m_oBold);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrBool2(L"st",	m_oStrike);
+			WritingStringNullableAttrBool2(L"un",	m_oUnderline);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrInt(L"bc", m_oBackColor, m_oBackColor->GetValue());
+			WritingStringNullableAttrInt(L"fc", m_oForeColor, m_oForeColor->GetValue());
+			WritingStringNullableAttrInt(L"in", m_oFormatIndex, m_oFormatIndex->GetValue());
+		writer.WriteString(L">");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+            }
+        }
+		writer.WriteString(L"</n>");
+	}
+	void CPivotNumericValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"x" == sName )
+				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+		}
+	}
+	void CPivotNumericValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"v", m_oValue )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCaption )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"b", m_oBold )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i", m_oItalic )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"st", m_oStrike )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"un", m_oUnderline )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"bc", m_oBackColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"fc", m_oForeColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotDateTimeValue::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<d");
+			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
+			WritingStringNullableAttrString(L"v",	m_oValue, m_oValue->ToString());
+			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
+			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+		writer.WriteString(L">");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+            }
+        }
+		writer.WriteString(L"</d>");
+	}
+	void CPivotDateTimeValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"x" == sName )
+				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+		}
+	}
+	void CPivotDateTimeValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"v", m_oValue )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCaption )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotBooleanValue::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<b");
+			WritingStringNullableAttrBool2(L"v",	m_oValue);
+			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
+			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
+			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+		writer.WriteString(L">");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+            }
+        }
+		writer.WriteString(L"</b>");
+	}
+	void CPivotBooleanValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"x" == sName )
+				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+		}
+	}
+	void CPivotBooleanValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"v", m_oValue )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCaption )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotNoValue::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<m");
+			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
+			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
+			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+			WritingStringNullableAttrBool2(L"b",	m_oBold);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrBool2(L"st",	m_oStrike);
+			WritingStringNullableAttrBool2(L"un",	m_oUnderline);
+			WritingStringNullableAttrBool2(L"i",	m_oItalic);
+			WritingStringNullableAttrInt(L"bc", m_oBackColor, m_oBackColor->GetValue());
+			WritingStringNullableAttrInt(L"fc", m_oForeColor, m_oForeColor->GetValue());
+			WritingStringNullableAttrInt(L"in", m_oFormatIndex, m_oFormatIndex->GetValue());
+		writer.WriteString(L">");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+            }
+        }
+		writer.WriteString(L"</m>");
+	}
+	void CPivotNoValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"x" == sName )
+				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+		}
+	}
+	void CPivotNoValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if	( oReader, L"c", m_oCaption )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"b", m_oBold )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i", m_oItalic )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"st", m_oStrike )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"un", m_oUnderline )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"bc", m_oBackColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"fc", m_oForeColor )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotCacheSource::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<cacheSource");
+			WritingStringNullableAttrInt(L"connectionId", m_oConnectionId, m_oConnectionId->GetValue());
+			WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
+		writer.WriteString(L">");
+		
+		if(m_oWorksheetSource.IsInit())
+		{
+			m_oWorksheetSource->toXML(writer);
+		}
+		if(m_oConsolidation.IsInit())
+		{
+			m_oConsolidation->toXML(writer);
+		}
+		writer.WriteString(L"</cacheSource>");
+	}
+	void CPivotCacheSource::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"consolidation" == sName )
+				m_oConsolidation = oReader;
+			else if ( L"worksheetSource" == sName )
+				m_oWorksheetSource = oReader;
+			else if ( L"extLst" == sName )
+				m_oExtLst = oReader;
+		}
+	}
+	void CPivotCacheSource::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"connectionId", m_oConnectionId )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"type", m_oType )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CWorksheetSource::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<worksheetSource");
+			WritingStringNullableAttrEncodeXmlString2(L"sheet", m_oSheet);
+			WritingStringNullableAttrEncodeXmlString2(L"ref", m_oRef);
+			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
+			WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+		writer.WriteString(L"/>");
+	}
+	void CWorksheetSource::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+	}
+	void CWorksheetSource::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"sheet", m_oSheet )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"ref", m_oRef )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"name", m_oName )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"id", m_oRid )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
+	}
+//------------------------------------
+	void CPageItemValues::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<pages");
+			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+		writer.WriteString(L">");
+        
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+				m_arrItems[i]->toXML(writer);
+            }
+        }
+		writer.WriteString(L"</pages>");
+	}
+	void CPageItemValues::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"page" == sName)
+				m_arrItems.push_back(new CPageItems(oReader));
+		}
+	}
+	void CPageItemValues::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPageItems::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<page");
+			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+		writer.WriteString(L">");
+        
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+				m_arrItems[i]->toXML(writer);
+            }
+        }
+		writer.WriteString(L"</page>");
+	}
+	void CPageItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"pageItem" == sName)
+				m_arrItems.push_back(new CPageItem(oReader));
+		}
+	}
+	void CPageItems::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPageItem::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<pageItem");
+			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
+		writer.WriteString(L"/>");
+	}
+	void CPageItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+	}
+	void CPageItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"name", m_oName )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CRangeSets::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<rangeSets");
+			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+		writer.WriteString(L">");
+        
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+				m_arrItems[i]->toXML(writer);
+            }
+        }
+		writer.WriteString(L"</rangeSets>");
+	}
+	void CRangeSets::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"rangeSet" == sName)
+				m_arrItems.push_back(new CRangeSet(oReader));
+		}
+	}
+	void CRangeSets::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CRangeSet::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<rangeSet");
+			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
+			WritingStringNullableAttrEncodeXmlString2(L"sheet", m_oSheet);
+			WritingStringNullableAttrString(L"ref", m_oRef, *m_oRef);
+			WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+			WritingStringNullableAttrInt(L"i1", m_oI1, m_oI1->GetValue());
+			WritingStringNullableAttrInt(L"i2", m_oI2, m_oI2->GetValue());
+			WritingStringNullableAttrInt(L"i3", m_oI3, m_oI3->GetValue());
+			WritingStringNullableAttrInt(L"i4", m_oI4, m_oI4->GetValue());
+		writer.WriteString(L"/>");
+	}
+	void CRangeSet::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+	}
+	void CRangeSet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"sheet", m_oSheet )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"name", m_oName )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"ref", m_oRef )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"id", m_oRid )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i1", m_oI1 )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i2", m_oI2 )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i3", m_oI3 )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"i4", m_oI4 )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
+	}
+//------------------------------------
+	void CConsolidationSource::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<consolidation");
+			WritingStringNullableAttrBool2(L"autoPage", m_oAutoPage);
+		writer.WriteString(L">");
+		
+		if(m_oPages.IsInit())
+		{
+			m_oPages->toXML(writer);
+		}
+		if(m_oRangeSets.IsInit())
+		{
+			m_oRangeSets->toXML(writer);
+		}
+		writer.WriteString(L"</consolidation>");
+	}
+	void CConsolidationSource::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"pages" == sName )
+				m_oPages = oReader;
+			else if ( L"rangeSets" == sName )
+				m_oRangeSets = oReader;
+		}
+	}
+	void CConsolidationSource::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"autoPage", m_oAutoPage )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CFieldGroupProperties::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<fieldGroup");
+			WritingStringNullableAttrInt(L"base", m_oBase, m_oBase->GetValue());
+			WritingStringNullableAttrInt(L"par", m_oPar, m_oPar->GetValue());
+		writer.WriteString(L">");
+		
+		if(m_oDiscretePr.IsInit())
+		{
+			m_oDiscretePr->toXML(writer);
+		}
+		if(m_oRangePr.IsInit())
+		{
+			m_oRangePr->toXML(writer);
+		}
+		if(m_oGroupItems.IsInit())
+		{
+			m_oGroupItems->toXML(writer);
+		}
+		writer.WriteString(L"</fieldGroup>");
+	}
+	void CFieldGroupProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"discretePr" == sName )
+				m_oDiscretePr = oReader;
+			else if ( L"rangePr" == sName )
+				m_oRangePr = oReader;
+			else if ( L"groupItems" == sName )
+				m_oGroupItems = oReader;
+		}
+	}
+	void CFieldGroupProperties::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"base", m_oBase )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"par", m_oPar )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+
 } //Spreadsheet
 } // namespace OOX

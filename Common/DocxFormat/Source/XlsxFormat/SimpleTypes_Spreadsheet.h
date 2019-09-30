@@ -3901,6 +3901,92 @@ namespace SimpleTypes
 			SimpleType_FromString     (ETickMarksType)
 			SimpleType_Operator_Equal (CTickMarksType)
 		};
+		enum ESourceCacheType
+		{
+			typeSourceConsolidation	=  0,
+			typeSourceExternal		=  1,
+			typeSourceScenario		=  2,
+			typeSourceWorksheet		=  3,
+		};
+		template<ESourceCacheType eDefValue = typeSourceWorksheet>
+		class CSourceCacheType : public CSimpleType<ESourceCacheType, eDefValue>
+		{
+		public:
+			CSourceCacheType() {}
+			CSourceCacheType(const ESourceCacheType & val)	{ this->m_eValue = val; }
+
+			virtual ESourceCacheType FromString(std::wstring &sValue)
+			{
+				if      ( _T("consolidation")	== sValue )	this->m_eValue = typeSourceConsolidation;
+				else if ( _T("external")		== sValue ) this->m_eValue = typeSourceExternal;
+				else if ( _T("scenario")		== sValue ) this->m_eValue = typeSourceScenario;
+				else if ( _T("worksheet")		== sValue ) this->m_eValue = typeSourceWorksheet;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case typeSourceConsolidation:	return _T("consolidation");
+					case typeSourceExternal:		return _T("external");
+					case typeSourceScenario:		return _T("scenario");
+					case typeSourceWorksheet:		return _T("worksheet");
+					default :						return _T("worksheet");
+				}
+			}
+			SimpleType_FromString     (ESourceCacheType)
+			SimpleType_Operator_Equal (CSourceCacheType)
+		};		
+		enum EValuesGroupBy
+		{
+			groupByDays				=  0,
+			groupByHours			=  1,
+			groupByMinutes			=  2,
+			groupByMonths			=  3,
+			groupByQuarters			=  4,
+			groupByNumericRanges	=  5,
+			groupBySeconds			=  6,
+			groupByYears			=  7
+		};
+		template<EValuesGroupBy eDefValue = groupByMonths>
+		class CValuesGroupBy : public CSimpleType<EValuesGroupBy, eDefValue>
+		{
+		public:
+			CValuesGroupBy() {}
+			CValuesGroupBy(const EValuesGroupBy & val)	{ this->m_eValue = val; }
+
+			virtual EValuesGroupBy FromString(std::wstring &sValue)
+			{
+				if      ( _T("days")	== sValue )	this->m_eValue = groupByDays;
+				else if ( _T("hours")	== sValue ) this->m_eValue = groupByHours;
+				else if ( _T("minutes")	== sValue ) this->m_eValue = groupByMinutes;
+				else if ( _T("months")	== sValue ) this->m_eValue = groupByMonths;
+				else if ( _T("quarters")== sValue ) this->m_eValue = groupByQuarters;
+				else if ( _T("range")	== sValue ) this->m_eValue = groupByNumericRanges;
+				else if ( _T("seconds")	== sValue ) this->m_eValue = groupBySeconds;
+				else if ( _T("years")	== sValue ) this->m_eValue = groupByYears;
+
+				return this->m_eValue;
+			}
+			virtual std::wstring ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case groupByDays:			return _T("days");
+					case groupByHours:			return _T("hours");
+					case groupByMinutes:		return _T("minutes");
+					case groupByMonths:			return _T("months");
+					case groupByQuarters:		return _T("quarters");
+					case groupByNumericRanges:	return _T("range");
+					case groupBySeconds:		return _T("seconds");
+					case groupByYears:			return _T("years");
+					default :					return _T("");
+				}
+			}
+			SimpleType_FromString     (EValuesGroupBy)
+			SimpleType_Operator_Equal (CValuesGroupBy)
+		};
 		enum EPivotItemType
 		{
 			typeAverage	=  0,

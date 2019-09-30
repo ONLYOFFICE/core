@@ -101,7 +101,7 @@ namespace OOX
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
 		};
-		class CDiscreteGroupingProperties : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CSharedItemsIndex>
+		class CDiscreteGroupingProperties : public WritingElementWithChilds<CSharedItemsIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CDiscreteGroupingProperties)
@@ -627,7 +627,7 @@ namespace OOX
 			mutable bool bIsWritten;
 		};
 
-		class CPivotCharacterValue : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CMemberPropertyIndex>
+		class CPivotCharacterValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotCharacterValue)
@@ -666,7 +666,7 @@ namespace OOX
 
 			//tpls
 		};	
-		class CPivotBooleanValue : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CMemberPropertyIndex>
+		class CPivotBooleanValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotBooleanValue)
@@ -695,7 +695,7 @@ namespace OOX
 			nullable_bool		m_oUnused;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 		};		
-		class CPivotNumericValue : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CMemberPropertyIndex>
+		class CPivotNumericValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotNumericValue)
@@ -734,7 +734,7 @@ namespace OOX
 
 			//tpls
 		};		
-		class CPivotDateTimeValue : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CMemberPropertyIndex>
+		class CPivotDateTimeValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotDateTimeValue)
@@ -763,7 +763,7 @@ namespace OOX
 			nullable_bool						m_oUnused;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 		};
-		class CPivotErrorValue : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CMemberPropertyIndex>
+		class CPivotErrorValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotErrorValue)
@@ -802,7 +802,7 @@ namespace OOX
 
 			//tpls
 		};	
-		class CPivotNoValue : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CMemberPropertyIndex>
+		class CPivotNoValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotNoValue)

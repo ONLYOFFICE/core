@@ -31,6 +31,7 @@
  */
 #include "PivotTable.h"
 #include "PivotCacheDefinition.h"
+#include "PivotCacheRecords.h"
 
 namespace OOX
 {
@@ -402,7 +403,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-				writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</i>");
@@ -420,7 +421,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"x" == sName)
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CSharedItemsIndex(oReader));
+				m_arrItems.push_back(new CSharedItemsIndex(oReader));
 		}
 	}
 	void CColumnRowItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -912,7 +913,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	
 		if(m_oX.IsInit())
 		{
-			writer.WriteString(L"<x " + m_oX->ToString() + L"/>");
+			m_oX->toXML(writer);
 		}
 
 		writer.WriteString(L"</reference>");
@@ -1213,6 +1214,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	{
 		writer.WriteString(L"<pivotCacheDefinition \
 xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 mc:Ignorable=\"xr16\" \
 xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
@@ -1488,7 +1490,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-				writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</discretePr>");
@@ -1506,7 +1508,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"x" == sName)
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CSharedItemsIndex(oReader));
+				m_arrItems.push_back(new CSharedItemsIndex(oReader));
 		}
 	}
 	void CDiscreteGroupingProperties::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1622,7 +1624,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</s>");
@@ -1640,7 +1642,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
 	void CPivotCharacterValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1683,7 +1685,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</s>");
@@ -1701,7 +1703,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
 	void CPivotErrorValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1744,7 +1746,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</n>");
@@ -1762,7 +1764,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
 	void CPivotNumericValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1797,7 +1799,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</d>");
@@ -1815,7 +1817,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
 	void CPivotDateTimeValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1843,7 +1845,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</b>");
@@ -1861,7 +1863,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
 	void CPivotBooleanValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1896,7 +1898,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             if (  m_arrItems[i] )
             {
-                writer.WriteString(L"<x " + m_arrItems[i]->ToString() + L"/>");
+				m_arrItems[i]->toXML(writer);
             }
         }
 		writer.WriteString(L"</m>");
@@ -1914,7 +1916,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
 	void CPivotNoValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -2259,6 +2261,135 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"par", m_oPar )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+//------------------------------------
+	void CPivotCacheRecordsFile::read(const CPath& oRootPath, const CPath& oPath)
+	{
+		m_oReadPath = oPath;
+		IFileContainer::Read( oRootPath, oPath );
 
+		XmlUtils::CXmlLiteReader oReader;
+
+		if ( !oReader.FromFile( oPath.GetPath() ) )
+			return;
+
+		if ( !oReader.ReadNextNode() )
+			return;
+
+		m_oPivotCacheRecords = oReader;
+	}
+	void CPivotCacheRecordsFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		if(m_oPivotCacheRecords.IsInit())
+		{
+			NSStringUtils::CStringBuilder sXml;
+
+			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+			m_oPivotCacheRecords->toXML(sXml);
+
+			std::wstring sPath = oPath.GetPath();
+			NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
+			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+			IFileContainer::Write( oPath, oDirectory, oContent );
+		}
+		else if(m_nDataLength > 0 && m_pData)
+		{
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(oPath.GetPath());
+			oFile.WriteFile(m_pData, m_nDataLength);
+			oFile.CloseFile();
+
+			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+			IFileContainer::Write( oPath, oDirectory, oContent );
+		}
+	}
+//------------------------------------
+	void CPivotCacheRecords::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<pivotCacheRecords \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"xr16\" \
+xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");			
+			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+		writer.WriteString(L">");
+        
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+				m_arrItems[i]->toXML(writer);
+            }
+        }
+		writer.WriteString(L"</pivotCacheRecords>");
+	}
+	void CPivotCacheRecords::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"r" == sName)
+				m_arrItems.push_back(new CPivotCacheRecord(oReader));
+			else if (L"extLst" == sName)
+				m_oExtLst = oReader;
+		}
+	}
+	void CPivotCacheRecords::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle ( oReader, L"count", m_oCount )
+		WritingElement_ReadAttributes_End( oReader )
+	}
+//------------------------------------
+	void CPivotCacheRecord::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<r>");
+
+		for ( size_t i = 0; i < m_arrItems.size(); ++i)
+        {
+            if (  m_arrItems[i] )
+            {
+                m_arrItems[i]->toXML(writer);
+            }
+        }
+		
+		writer.WriteString(L"</r>");
+	}
+	void CPivotCacheRecord::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes( oReader );
+
+		if ( oReader.IsEmptyNode() )
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while( oReader.ReadNextSiblingNode( nCurDepth ) )
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if ( L"b" == sName )
+				m_arrItems.push_back(new CPivotBooleanValue(oReader));
+			else if ( L"d" == sName )
+				m_arrItems.push_back(new CPivotDateTimeValue(oReader));
+			else if ( L"e" == sName )
+				m_arrItems.push_back(new CPivotErrorValue(oReader));
+			else if ( L"m" == sName )
+				m_arrItems.push_back(new CPivotNoValue(oReader));
+			else if ( L"n" == sName )
+				m_arrItems.push_back(new CPivotNumericValue(oReader));
+			else if ( L"s" == sName )
+				m_arrItems.push_back(new CPivotCharacterValue(oReader));
+			else if ( L"x" == sName )
+				m_arrItems.push_back(new CSharedItemsIndex(oReader));
+		}
+	}
 } //Spreadsheet
 } // namespace OOX

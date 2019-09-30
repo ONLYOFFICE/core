@@ -2999,7 +2999,7 @@ int BinaryWorkbookTableReader::ReadPivotCache(BYTE type, long length, void* poRe
 	}
 	else if(c_oSer_PivotTypes::record == type)
 	{
-		pPivotCachesTemp->pRecords = new OOX::Spreadsheet::CPivotCacheRecords(NULL);
+		pPivotCachesTemp->pRecords = new OOX::Spreadsheet::CPivotCacheRecordsFile(NULL);
 		pPivotCachesTemp->pRecords->setData(m_oBufferedStream.GetPointer(length), length);
 	}
 	else

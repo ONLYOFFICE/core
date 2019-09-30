@@ -37,7 +37,107 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CSharedItemsIndex : public WritingElement
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CSharedItemsIndex)
+			CSharedItemsIndex()
+			{
+			}
+			virtual ~CSharedItemsIndex()
+			{
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_SharedItemsIndex;
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
+			{
+				XmlMacroReadAttributeBase( oNode, L"v", m_oV );
+			}
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
 
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<x");
+					WritingStringNullableAttrInt(L"v", m_oV, m_oV->GetValue());
+				writer.WriteString(L"/>");
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v", m_oV )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oV;
+		};
+
+		class CMemberPropertyIndex : public WritingElement
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CMemberPropertyIndex)
+			CMemberPropertyIndex()
+			{
+			}
+			virtual ~CMemberPropertyIndex()
+			{
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_MemberPropertyIndex;
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
+			{
+				XmlMacroReadAttributeBase( oNode, L"v", m_oV );
+			}
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<x");
+					WritingStringNullableAttrInt2(L"v", m_oV);
+				writer.WriteString(L"/>");
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v", m_oV )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+
+			nullable_int m_oV;
+		};
 		class CField : public WritingElement
 		{
 		public:
@@ -318,7 +418,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oField;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 
-			nullable<ComplexTypes::Spreadsheet::CSharedItemsIndex>	m_oX;
+			nullable<CSharedItemsIndex>	m_oX;
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 		};
 		class CReferences : public WritingElementWithChilds<CReference>
@@ -511,7 +611,7 @@ namespace OOX
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
 		};
-		class CColumnRowItem : public WritingElementWithChilds<ComplexTypes::Spreadsheet::CSharedItemsIndex>
+		class CColumnRowItem : public WritingElementWithChilds<CSharedItemsIndex>
 		{
 		public:
 			WritingElement_AdditionConstructors(CColumnRowItem)

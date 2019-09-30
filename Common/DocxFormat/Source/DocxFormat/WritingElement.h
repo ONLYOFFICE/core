@@ -1270,6 +1270,9 @@ namespace OOX
 		et_x_PivotDateTimeValue,
 		et_x_PivotNoValue,
 		et_x_PivotNumericValue,
+		et_x_PivotCacheRecord,
+		et_x_SharedItemsIndex,
+		et_x_MemberPropertyIndex,
 
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,

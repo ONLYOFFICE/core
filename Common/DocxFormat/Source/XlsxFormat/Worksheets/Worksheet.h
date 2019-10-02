@@ -67,7 +67,6 @@ namespace OOX
 		//<scenarios>
 		//<sheetCalcPr>
 		//<smartTags>
-		//<sortState>
 		//<webPublishItems>
 
 		class CWorksheet : public OOX::File, public OOX::IFileContainer
@@ -146,6 +145,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CSheetProtection>			m_oSheetProtection;
 			nullable<OOX::Spreadsheet::CDataValidations>			m_oDataValidations;
 			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
+			nullable<OOX::Spreadsheet::CSortState>					m_oSortState;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

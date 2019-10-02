@@ -3496,6 +3496,12 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, oBinaryTableReader.ReadAutoFilter, &oAutofilter);
 	SEEK_TO_POS_END(oAutofilter);
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SortState);
+		OOX::Spreadsheet::CSortState oSortState;
+		BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+		READ1_DEF(length, res, oBinaryTableReader.ReadSortState, &oSortState);
+	SEEK_TO_POS_END(oSortState);
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::MergeCells);
 		OOX::Spreadsheet::CMergeCells oMergeCells;
 		READ1_DEF(length, res, this->ReadMergeCells, &oMergeCells);

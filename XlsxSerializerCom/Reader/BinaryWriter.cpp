@@ -3216,6 +3216,13 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet& oSheet
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
+	if (oWorksheet.m_oSortState.IsInit())
+	{
+		BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SortState);
+		oBinaryTableWriter.WriteSortState(oWorksheet.m_oSortState.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
     if (oWorksheet.m_oExtLst.IsInit())
     {
         for(size_t i = 0; i < oWorksheet.m_oExtLst->m_arrExt.size(); ++i)

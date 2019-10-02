@@ -105,6 +105,9 @@ void ods_conversion_context::end_document()
 	if (table_context_.table_content_validations_.root)
 		root_spreadsheet_->add_child_element(table_context_.table_content_validations_.root);
 	
+	if (table_context_.table_pivots_.root)
+		root_spreadsheet_->add_child_element(table_context_.table_pivots_.root);
+
 	odf_conversion_context::end_document();
 }
 

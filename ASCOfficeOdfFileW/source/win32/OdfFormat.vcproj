@@ -482,6 +482,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\OdfFormat\table_data_pilot_tables.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\table_data_pilot_tables.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\table_database_ranges.cpp"
 				>
 			</File>

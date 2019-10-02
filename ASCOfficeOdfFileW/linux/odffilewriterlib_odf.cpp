@@ -90,6 +90,7 @@
 #include "../source/OdfFormat/svg_creator.cpp"
 #include "../source/OdfFormat/table.cpp"
 #include "../source/OdfFormat/table_database_ranges.cpp"
+#include "../source/OdfFormat/table_data_pilot_tables.cpp"
 #include "../source/OdfFormat/table_named_expressions.cpp"
 #include "../source/OdfFormat/text_elements.cpp"
 #include "../source/OdfFormat/odf_settings_context.cpp"

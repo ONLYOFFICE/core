@@ -89,6 +89,7 @@ private:
 	table_additional_elements_state	table_defined_expressions_;
 	table_additional_elements_state	table_database_ranges_;
 	table_additional_elements_state	table_content_validations_;
+	table_additional_elements_state	table_pivots_;
 
 	size_t count_validations_;
 

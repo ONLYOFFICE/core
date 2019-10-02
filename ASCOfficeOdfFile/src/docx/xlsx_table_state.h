@@ -130,7 +130,13 @@ public:
  
 	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName);
     void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+
+	void set_column_break_before();
+	void set_column_break_after();
     
+	void set_row_break_before();
+	void set_row_break_after();
+
 	void non_empty_row	();
     bool is_empty_row	() const;
     void end_row		();
@@ -185,6 +191,7 @@ public:
 	void serialize_background				(std::wostream & _Wostream);
 	void serialize_protection				(std::wostream & _Wostream);
 	void serialize_header_footer			(std::wostream & _Wostream);
+	void serialize_breaks					(std::wostream & _Wostream);
 
 	void dump_rels_hyperlinks				(rels & Rels);
 	void dump_rels_ole_objects				(rels & Rels);
@@ -240,7 +247,10 @@ private:
     unsigned int						columns_count_;
     double								table_column_last_width_;
     
-    xlsx_drawing_context				xlsx_drawing_context_;
+    std::vector<unsigned int>			column_breaks_;
+    std::vector<unsigned int>			row_breaks_;
+
+	xlsx_drawing_context				xlsx_drawing_context_;
     xlsx_comments_context				xlsx_comments_context_;
 	xlsx_conditionalFormatting_context	xlsx_conditionalFormatting_context_; 
 	

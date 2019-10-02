@@ -559,8 +559,8 @@ namespace DocFileFormat
 				pict->embeddedData = newData;
 			}
 
-			m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipDIB), 
-				pict->embeddedData, pict->embeddedDataSize, Global::msoblipDIB));
+			m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(btWin32), 
+				pict->embeddedData, pict->embeddedDataSize, btWin32));
 			
 			m_nImageId	=	m_context->_docx->RegisterImage(m_caller, btWin32);
 			result	=	true;

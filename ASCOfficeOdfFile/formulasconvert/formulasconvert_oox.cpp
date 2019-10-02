@@ -385,6 +385,78 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr, bool bSele
 
 	return;
 }
+
+size_t getColAddressInv(const std::wstring & a_)
+{
+    std::wstring a = a_;
+    ::boost::algorithm::to_upper(a);
+    static const size_t r = (L'Z' - L'A' + 1);
+    size_t mul = 1;
+    bool f = true;
+    size_t res = 0;
+
+	for (int i = a.length() - 1; i >= 0; i--)
+    {
+        size_t v = a[i] - L'A';
+        if (f)
+            f = false;
+        else
+            v += 1;
+        res += v * mul;
+        mul *= r;
+    }
+    return res;
+}
+
+size_t getRowAdderssInv(const std::wstring & a_)
+{
+	int sz = a_.length();
+	if (a_.length()>0)
+	{
+	   return boost::lexical_cast<size_t>(a_)-1;
+	}
+	else
+		return 0;
+}
+void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring & row)
+{   
+	std::wstring a = a_;
+
+	std::reverse(a.begin(), a.end());
+    ::XmlUtils::replace_all( a, L"$", L"");
+    //::XmlUtils::replace_all( a, L"'", L"");
+	::boost::algorithm::to_upper(a);
+
+	for (size_t i = 0; i < a.length(); i++)
+    {
+		if (a[i] >= L'0' && a[i] <= L'9')
+			row += a[i];
+		else
+			col += a[i];
+    }
+	std::reverse(col.begin(), col.end());
+	std::reverse(row.begin(), row.end());
+}
+
+void getCellAddressInv(const std::wstring & a_, int & col, int & row)
+{
+    std::wstring colStr=L"", rowStr=L"";
+    splitCellAddress(a_, colStr, rowStr);
+    
+    col = getColAddressInv(colStr);
+	row = getRowAdderssInv(rowStr);
+
+	if (col > 16384) col= -1;
+}
+
+bool IsRefPresent(const std::wstring& ref_test)
+{
+	int col = -1, row = -1;
+	getCellAddressInv(ref_test, col, row);
+
+	if (col >= 0 && row >=0) return true;
+	return false;
+}
 std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmatch const & what)
 {
     const size_t sz = what.size();
@@ -413,8 +485,21 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 			if (!c2.empty() && c2.substr(0, 1) == L":") 
 				c2 = c2.substr(1);
 
-
-			s =  L"["  + sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"]");
+			bool bRefPresent = true;
+			
+			if (sheet.empty() && c2.empty())
+			{
+				bRefPresent = IsRefPresent(c1);
+			}
+			
+			if (bRefPresent)
+			{
+				s =  L"["  + sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"]");
+			}
+			else
+			{
+				s = c1;
+			}
 		}
         return s;
 	}
@@ -856,67 +941,6 @@ std::wstring oox2odf_converter::convert_spacechar(std::wstring expr)
 	}
 	return expr; 
 }
-size_t getColAddressInv(const std::wstring & a_)
-{
-    std::wstring a = a_;
-    ::boost::algorithm::to_upper(a);
-    static const size_t r = (L'Z' - L'A' + 1);
-    size_t mul = 1;
-    bool f = true;
-    size_t res = 0;
-
-	for (int i = a.length() - 1; i >= 0; i--)
-    {
-        size_t v = a[i] - L'A';
-        if (f)
-            f = false;
-        else
-            v += 1;
-        res += v * mul;
-        mul *= r;
-    }
-    return res;
-}
-
-size_t getRowAdderssInv(const std::wstring & a_)
-{
-	int sz = a_.length();
-	if (a_.length()>0)
-	{
-	   return boost::lexical_cast<size_t>(a_)-1;
-	}
-	else
-		return 0;
-}
-void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring & row)
-{   
-	std::wstring a = a_;
-
-	std::reverse(a.begin(), a.end());
-    ::XmlUtils::replace_all( a, L"$", L"");
-    //::XmlUtils::replace_all( a, L"'", L"");
-	::boost::algorithm::to_upper(a);
-
-	for (size_t i = 0; i < a.length(); i++)
-    {
-		if (a[i] >= L'0' && a[i] <= L'9')
-			row += a[i];
-		else
-			col += a[i];
-    }
-	std::reverse(col.begin(), col.end());
-	std::reverse(row.begin(), row.end());
-}
-
-void getCellAddressInv(const std::wstring & a_, int & col, int & row)
-{
-    std::wstring colStr=L"", rowStr=L"";
-    splitCellAddress(a_, colStr, rowStr);
-    
-    col = getColAddressInv(colStr);
-    row = getRowAdderssInv(rowStr);
-}
-
 int oox2odf_converter::get_count_value_points(std::wstring expr)
 {
 	int count =0;

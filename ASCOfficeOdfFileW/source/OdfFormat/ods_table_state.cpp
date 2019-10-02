@@ -140,8 +140,9 @@ std::wstring convert_time(const std::wstring & oox_time)
 static formulasconvert::oox2odf_converter formulas_converter_table;
 
 ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm) : 
-		context_(Context), drawing_context_(Context), controls_context_(Context)
+		context_(Context), controls_context_(Context)
 {     
+	drawing_context_ = boost::make_shared<odf_drawing_context>(context_);
 	office_table_ = elm; 
 
 	current_table_row_ = 0;
@@ -265,15 +266,13 @@ void ods_table_state::set_table_rtl(bool Val)
 	table_properties->table_format_properties_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
 
 }
-
-void ods_table_state::set_print_range(std::wstring range)
+void ods_table_state::set_table_print_ranges(const std::wstring &ranges)
 {
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
-	table->attlist_.table_print_ranges_ = range;
+	table->attlist_.table_print_ranges_ = ranges;
 }
-
 void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 {
 	if (!office_table_style_)return;
@@ -283,7 +282,6 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 
 	table_properties->table_format_properties_.tableooo_tab_color_ = _color;
 }
-
 void ods_table_state::set_table_style(office_element_ptr & elm)
 {	
 	office_table_style_ = dynamic_cast<style*>(elm.get());
@@ -295,8 +293,6 @@ void ods_table_state::set_table_style(office_element_ptr & elm)
 	
 	table->attlist_.table_style_name_ = office_table_style_->style_name_;
 	//потом в принципе и по имени можно будет связать(найти)
-
-
 }
 void ods_table_state::start_group(office_element_ptr & elm)
 {
@@ -308,18 +304,23 @@ void ods_table_state::end_group()
 {
 	current_level_.pop_back();
 }
-
 void ods_table_state::start_headers(office_element_ptr & elm)
 {
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
 }
-
 void ods_table_state::end_headers()
 {
 	current_level_.pop_back();
 }
-
+void ods_table_state::add_column_break(int val)
+{
+	column_breaks_.push_back(val + 1);
+}
+void ods_table_state::add_row_break(int val)
+{
+	row_breaks_.push_back(val + 1);
+}
 void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated,office_element_ptr & style_elm)
 {
 	current_level_.back()->add_child_element(elm);
@@ -339,7 +340,7 @@ void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	if (style_name.length()>0) column->attlist_.table_style_name_ = style_name;
+	if (false == style_name.empty()) column->attlist_.table_style_name_ = style_name;
 	column->attlist_.table_number_columns_repeated_ = repeated;
 	
 }
@@ -436,7 +437,7 @@ void ods_table_state::add_row(office_element_ptr & elm, unsigned int repeated, o
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	if (row == NULL)return;
 
-	if (style_name.length()>0) row->attlist_.table_style_name_ = style_name;
+	if (false == style_name.empty()) row->attlist_.table_style_name_ = style_name;
 	row->attlist_.table_number_rows_repeated_ = repeated;
 
 	row_default_cell_style_name_ = L"";

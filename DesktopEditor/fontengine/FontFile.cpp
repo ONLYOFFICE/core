@@ -682,9 +682,9 @@ void CFontFile::CheckHintsSupport()
         return;
     }
 
-	std::string sFamilyName((NULL != m_pFace->family_name) ? m_pFace->family_name : "");
+    std::wstring sFamilyName = GetCorrectSfntName(m_pFace->family_name);
 
-    if (sFamilyName == "MS Mincho" || sFamilyName == "Castellar")
+    if (m_sName == L"MS Mincho" || m_sName == L"Castellar")
         m_bHintsSupport = FALSE;
 }
 
@@ -803,7 +803,7 @@ TFontCacheSizes CFontFile::CacheGlyph(const int& code, const bool& isRaster, CVe
     if (unGID <= 0 && !m_bStringGID)
     {
         if (-1 != m_nSymbolic && code < 0xF000)
-            unGID = SetCMapForCharCode(code, &nCMapIndex);
+            unGID = SetCMapForCharCode(code + 0xF000, &nCMapIndex);
     }
 
     if (unGID <= 0)

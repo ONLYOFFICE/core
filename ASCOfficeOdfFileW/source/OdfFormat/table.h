@@ -54,7 +54,6 @@ class table_table_attlist
 public:
 	table_table_attlist()
 	{
-		table_print_						= true;
 		table_use_first_row_styles_			= false;
 		table_use_banding_rows_styles_		= false;
 		table_use_first_column_styles_		= false;
@@ -72,8 +71,6 @@ public:
     _CP_OPT(std::wstring)		table_protection_key_; 
 	_CP_OPT(std::wstring)		table_protection_key_digest_algorithm_;
     
-   bool table_print_;						// default true
-	
 	bool table_use_first_row_styles_;		// default false;
 	bool table_use_banding_rows_styles_;	// defualt false;
 	bool table_use_first_column_styles_;	// defualt false;

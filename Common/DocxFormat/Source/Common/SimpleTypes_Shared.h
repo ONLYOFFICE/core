@@ -338,6 +338,10 @@ namespace SimpleTypes
 
 		SimpleType_Operator_Equal (CGuid)
 
+		bool IsZero()
+		{
+			return 0 == m_oGUID.a && 0 == m_oGUID.b && 0 == m_oGUID.c && 0 == m_oGUID.d && 0 == m_oGUID.e && 0 == m_oGUID.f && 0 == m_oGUID.g && 0 == m_oGUID.h && 0 == m_oGUID.i && 0 == m_oGUID.j && 0 == m_oGUID.k;
+		}
 	private:
 
         bool HexToInt(std::wstring& sValue, T_ULONG64& unResult)

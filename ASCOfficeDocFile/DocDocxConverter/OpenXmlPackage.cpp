@@ -359,24 +359,24 @@ namespace DocFileFormat
 
 		return FootnotesRelationshipsFile.RelID;
 	}
-
 	int OpenXmlPackage::RegisterEndnotes()
 	{
         return AddPart( L"word", L"endnotes.xml", WordprocessingMLContentTypes::Endnotes, OpenXmlRelationshipTypes::Endnotes );
 	}
-
 	int OpenXmlPackage::AddEndnotesPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
         EndnotesRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( ++EndnotesRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
 
 		return EndnotesRelationshipsFile.RelID;
 	}
-
 	int OpenXmlPackage::RegisterComments()
 	{
         return AddPart( L"word", L"comments.xml", WordprocessingMLContentTypes::Comments, OpenXmlRelationshipTypes::Comments );
 	}
-
+	int OpenXmlPackage::RegisterCommentsExtended()
+	{
+        return AddPart( L"word", L"commentsExtended.xml", WordprocessingMLContentTypes::CommentsExtended, OpenXmlRelationshipTypes::CommentsExtended );
+	}
 	int OpenXmlPackage::AddCommentsPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
         CommentsRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( ++CommentsRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );

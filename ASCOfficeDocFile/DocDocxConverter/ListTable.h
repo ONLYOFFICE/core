@@ -47,6 +47,6 @@ namespace DocFileFormat
 		virtual ~ListTable();
 		ListTable( FileInformationBlock* fib, POLE::Stream* tableStream );
 
-		size_t appendNumbering( NumberingDescriptorPtr &desc );
+		size_t appendNumbering( NumberingDescriptorPtr &desc, const std::wstring & rPr );
   };
 }

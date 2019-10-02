@@ -35,6 +35,7 @@
 #include <map>
 #include <list>
 
+#include <boost/shared_ptr.hpp>
 
 #include "../../DesktopEditor/common/File.h"
 
@@ -112,7 +113,10 @@ namespace XMLTools
 	class XMLElement
     ========================================================================================================*/
 
-    class XMLElement
+	class XMLElement;
+	typedef class boost::shared_ptr<XMLElement> XMLElementPtr;
+
+	class XMLElement
 	{
         typedef std::pair< std::wstring, std::wstring> AttributeValuePair;
 
@@ -180,7 +184,20 @@ namespace XMLTools
 			}
 			m_Elements.push_back( element );
 		}
+        void AppendChild( XMLElementPtr element, bool uniq = false)
+		{
+			if (!element) return;
 
+			if (m_ChildMap.find(element->GetName()) != m_ChildMap.end())
+			{
+				if (uniq) return; 		
+			}
+			else
+			{
+                m_ChildMap.insert(m_ChildMap.end(), std::pair<std::wstring, int>(element->GetName(), 0));
+			}
+			m_Elements.push_back( *element.get() );
+		}
         void RemoveChild( const XMLElement& element )
 		{
 			m_Elements.remove( element );
@@ -368,7 +385,6 @@ namespace XMLTools
 		}
 	};
 
-
 	class CStringXmlWriter
 	{
 		std::wstring m_str;
@@ -382,6 +398,10 @@ namespace XMLTools
 		void SetXmlString(const std::wstring& strValue)
 		{
 			m_str = strValue;
+		}
+		void Clear()
+		{
+			m_str.clear();
 		}
 		bool SaveToFile(const std::wstring& strFilePath, bool bEncodingToUTF8 = false)
 		{

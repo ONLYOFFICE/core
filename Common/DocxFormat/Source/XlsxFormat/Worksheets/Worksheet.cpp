@@ -280,7 +280,22 @@ namespace OOX
 
 						if(pComment->m_oUid.IsInit())
 						{
-							pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(pComment->m_oUid->ToString());
+							//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
+							if(pComment->m_oUid->IsZero() && pComment->m_oRef.IsInit())
+							{
+								for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
+								{
+									if (it->second->ref.IsInit() && pComment->m_oRef->GetValue() == it->second->ref.get())
+									{
+										pFind = it;
+										break;
+									}
+								}
+							}
+							else
+							{
+								pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(pComment->m_oUid->ToString());
+							}
 						}
 						else if(pComment->m_oAuthorId.IsInit())
 						{

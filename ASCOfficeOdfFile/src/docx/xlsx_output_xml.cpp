@@ -62,6 +62,7 @@ public:
 	std::wstringstream	header_footer_;
 	std::wstringstream	controls_;
 	std::wstringstream	protection_;
+	std::wstringstream	breaks_;
 
 	rels sheet_rels_;
 
@@ -166,6 +167,10 @@ std::wostream & xlsx_xml_worksheet::protection()
 {
     return impl_->protection_;
 }
+std::wostream & xlsx_xml_worksheet::breaks()
+{
+    return impl_->breaks_;
+}
 //---------------------------------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -259,11 +264,9 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			}
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
-			//CP_XML_NODE(L"headerFooter){}
+			//или тут ??? headerFooter
 
-			//CP_XML_NODE(L"rowBreaks){}
-
-			//CP_XML_NODE(L"colBreaks){}
+			CP_XML_STREAM() << impl_->breaks_.str();
 		}
     }
 }

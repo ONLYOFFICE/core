@@ -649,7 +649,7 @@ std::wstring CFontList::GetFontBySymbol(int symbol)
     for (std::list<CFontRange>::iterator iter = m_listRanges.begin(); iter != m_listRanges.end(); iter++)
     {
         CFontRange& range = *iter;
-        if (symbol <= range.Start && symbol >= range.End)
+        if (symbol >= range.Start && symbol <= range.End)
         {
             return range.Name;
         }
@@ -1352,17 +1352,9 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
                 continue;
             }
 
-			std::string sFamilyName = "";
-			if (NULL != pFace->family_name)
-				sFamilyName = pFace->family_name;
+            std::wstring wsFamilyName = GetCorrectSfntName(pFace->family_name);
+            std::wstring wsStyleName = GetCorrectSfntName(pFace->style_name);
 
-			std::string sStyleName = "";
-			if (NULL != pFace->style_name)
-				sStyleName = pFace->style_name;
-
-			std::wstring wsFamilyName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFamilyName);
-			std::wstring wsStyleName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sStyleName);
-            
 #ifdef _MAC
             if (wsFamilyName.find(L".") == 0)
             {

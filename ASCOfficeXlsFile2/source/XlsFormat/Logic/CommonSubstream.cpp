@@ -35,6 +35,9 @@
 #include "Biff_records/HFPicture.h"
 #include "Biff_records/SheetExt.h"
 #include "Biff_records/CodeName.h"
+#include "Biff_records/WsBool.h"
+
+#include "Biff_unions/GLOBALS.h"
 
 #include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
@@ -84,8 +87,10 @@ void CommonSubstream::LoadHFPicture()
 
 int CommonSubstream::serialize_format(std::wostream & strm)
 {
+	GLOBALS *globals  = dynamic_cast<GLOBALS*>(m_GLOBALS.get());
 	SheetExt *sheet_ext = dynamic_cast<SheetExt*>(m_SheetExt.get());
 	CodeName *code_name = dynamic_cast<CodeName*>(m_CodeName.get());
+	WsBool *wsBool = globals ? dynamic_cast<WsBool*>(globals->m_WsBool.get()) : NULL;
 
 	CP_XML_WRITER(strm)    
     {
@@ -100,8 +105,8 @@ int CommonSubstream::serialize_format(std::wostream & strm)
 				if (!sheet_ext->sheetExtOptional.fCondFmtCalc)	
 					CP_XML_ATTR(L"enableFormatConditionsCalculation", false);
 				if (!sheet_ext->sheetExtOptional.fNotPublished)	
-					CP_XML_ATTR(L"published" ,false);
-
+					CP_XML_ATTR(L"published", false);
+				
 				if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB ||
 					sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRINDEXED)
 				{
@@ -117,7 +122,27 @@ int CommonSubstream::serialize_format(std::wostream & strm)
 						}
 					}
 				}
-
+			}
+			if (wsBool)
+			{
+				if (wsBool->fApplyStyles || !wsBool->fDspGuts || !wsBool->fRowSumsBelow || !wsBool->fColSumsRight)
+				{
+					CP_XML_NODE(L"outlinePr")
+					{
+						if (wsBool->fApplyStyles)	CP_XML_ATTR(L"applyStyles", wsBool->fApplyStyles);
+						if (!wsBool->fDspGuts)		CP_XML_ATTR(L"showOutlineSymbols", wsBool->fDspGuts);
+						if (!wsBool->fRowSumsBelow)	CP_XML_ATTR(L"summaryBelow", wsBool->fRowSumsBelow);
+						if (!wsBool->fColSumsRight)	CP_XML_ATTR(L"summaryRight", wsBool->fColSumsRight);
+					}
+				}
+				if (!wsBool->fShowAutoBreaks || wsBool->fFitToPage)
+				{
+					CP_XML_NODE(L"pageSetUpPr")
+					{
+						if (!wsBool->fShowAutoBreaks)	CP_XML_ATTR(L"autoPageBreaks", wsBool->fShowAutoBreaks);
+						if (wsBool->fFitToPage)			CP_XML_ATTR(L"fitToPage", wsBool->fFitToPage);
+					}
+				}
 			}
 		}
 	}

@@ -42,7 +42,7 @@ void _ms_write_byte(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
-    BYTE arg = (BYTE)args[0]->Int32Value();
+    BYTE arg = (BYTE)args[0]->ToInt32()->Value();
     pNative->WriteBYTE(arg);
 
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -60,7 +60,7 @@ void _ms_write_long(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
-    LONG arg = (LONG)args[0]->Int32Value();
+    LONG arg = (LONG)args[0]->ToInt32()->Value();
     pNative->WriteLONG(arg);
 
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -69,7 +69,7 @@ void _ms_write_double(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
-    double arg = (double)args[0]->NumberValue();
+    double arg = args[0]->ToNumber()->Value();
     pNative->WriteLONG((LONG)(arg * 100000));
 
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -95,8 +95,8 @@ void _ms_copy(const v8::FunctionCallbackInfo<v8::Value>& args)
     CMemoryStream* pNative = unwrap_memorystream(args.This());
 
     CMemoryStream* pNative2 = unwrap_memorystream(args[0]->ToObject());
-    size_t pos = (size_t)args[1]->Uint32Value();
-    size_t len = (size_t)args[2]->Uint32Value();
+    size_t pos = (size_t)args[1]->ToUint32()->Value();
+    size_t len = (size_t)args[2]->ToUint32()->Value();
 
     pNative->Copy(pNative2, pos, len);
 

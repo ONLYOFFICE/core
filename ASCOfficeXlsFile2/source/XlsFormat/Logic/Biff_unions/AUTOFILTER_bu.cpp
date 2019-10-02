@@ -185,47 +185,58 @@ int AUTOFILTER::serialize(std::wostream & stream)
 		CP_XML_NODE(L"autoFilter")
 		{	
 			CP_XML_ATTR(L"ref", ref);
-				
-			for (size_t i = 0 ; i < m_arFilters.size(); i++)//todooo сделать на оставшиеся - count_columns (hidden)
+
+			if (m_arFilters.empty())
 			{
-				AutoFilter * filter = dynamic_cast<AutoFilter*>(m_arFilters[i].get());
 				CP_XML_NODE(L"filterColumn")
 				{
-					CP_XML_ATTR(L"colId", filter->iEntry);
-					
-					CP_XML_NODE(L"filters")
+					CP_XML_ATTR(L"colId", 0);
+					CP_XML_ATTR(L"showButton", 0);
+				}
+			}
+			else
+			{				
+				for (size_t i = 0 ; i < m_arFilters.size(); i++)//todooo сделать на оставшиеся - count_columns (hidden)
+				{
+					AutoFilter * filter = dynamic_cast<AutoFilter*>(m_arFilters[i].get());
+					CP_XML_NODE(L"filterColumn")
 					{
-						if (filter->fSimple1 && !filter->str1.empty())
+						CP_XML_ATTR(L"colId", filter->iEntry);
+						
+						CP_XML_NODE(L"filters")
 						{
-							CP_XML_NODE(L"filter")
+							if (filter->fSimple1 && !filter->str1.empty())
 							{
-								CP_XML_ATTR(L"val", filter->str1);
-							}
-						}
-						if (filter->fSimple2 && !filter->str2.empty())
-						{
-							CP_XML_NODE(L"filter")
-							{
-								CP_XML_ATTR(L"val", filter->str2);
-							}
-						}
-
-						std::map<int, std::vector<BaseObjectPtr>>::iterator itF = m_mapFilters12.find(filter->iEntry);
-						if (itF != m_mapFilters12.end())
-						{
-							for (size_t j = 0 ; j < itF->second.size(); j++)
-							{
-								AutoFilter12* af12 = dynamic_cast<AutoFilter12*>(itF->second[j].get());
-								if (af12 == NULL) continue;
-
-								for (size_t k = 0 ; k < af12->arAF12Criteries.size(); k++)
+								CP_XML_NODE(L"filter")
 								{
-									AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(af12->arAF12Criteries[k].get());
-									if (af12Criteria == NULL) continue;
+									CP_XML_ATTR(L"val", filter->str1);
+								}
+							}
+							if (filter->fSimple2 && !filter->str2.empty())
+							{
+								CP_XML_NODE(L"filter")
+								{
+									CP_XML_ATTR(L"val", filter->str2);
+								}
+							}
 
-									CP_XML_NODE(L"filter")
-									{									
-										CP_XML_ATTR(L"val", af12Criteria->_str);
+							std::map<int, std::vector<BaseObjectPtr>>::iterator itF = m_mapFilters12.find(filter->iEntry);
+							if (itF != m_mapFilters12.end())
+							{
+								for (size_t j = 0 ; j < itF->second.size(); j++)
+								{
+									AutoFilter12* af12 = dynamic_cast<AutoFilter12*>(itF->second[j].get());
+									if (af12 == NULL) continue;
+
+									for (size_t k = 0 ; k < af12->arAF12Criteries.size(); k++)
+									{
+										AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(af12->arAF12Criteries[k].get());
+										if (af12Criteria == NULL) continue;
+
+										CP_XML_NODE(L"filter")
+										{									
+											CP_XML_ATTR(L"val", af12Criteria->_str);
+										}
 									}
 								}
 							}

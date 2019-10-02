@@ -4457,13 +4457,13 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 	{
 		OOX::Logic::CBookmarkStart oBookmarkStart;
 		READ1_DEF(length, res, this->ReadBookmarkStart, &oBookmarkStart);
-		m_oDocumentWriter.m_oContent.WriteString(oBookmarkStart.toXML());
+		GetRunStringWriter().WriteString(oBookmarkStart.toXML());
 	}
 	else if ( c_oSerParType::BookmarkEnd == type )
 	{
 		OOX::Logic::CBookmarkEnd oBookmarkEnd;
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
-		m_oDocumentWriter.m_oContent.WriteString(oBookmarkEnd.toXML());
+		GetRunStringWriter().WriteString(oBookmarkEnd.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

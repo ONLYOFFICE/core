@@ -91,6 +91,7 @@ namespace WordprocessingMLContentTypes
     static const wchar_t* Settings				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml";
 
     static const wchar_t* Comments				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml";
+	static const wchar_t* CommentsExtended		=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml";
 
     static const wchar_t* Footnotes				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml";
     static const wchar_t* Endnotes				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml";
@@ -154,6 +155,7 @@ namespace OpenXmlRelationshipTypes
     static const wchar_t* CustomXml				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml";
     static const wchar_t* CustomXmlProperties	=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps";
     static const wchar_t* Comments				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+	static const wchar_t* CommentsExtended		=	L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended";
     static const wchar_t* Footnotes				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes";
     static const wchar_t* Endnotes				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes";
     static const wchar_t* Header				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header";

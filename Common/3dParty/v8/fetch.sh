@@ -11,11 +11,23 @@ fi
 export PATH=`pwd`/depot_tools:"$PATH"
 gclient
 
+#detect gcc version
+currentver="$(gcc -dumpversion)"
+requiredver="6.0.0"
+v8_version="6.0"
+
+if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]
+then
+v8_version="7.0"
+fi
+
+echo "v8 version: $v8_version"
+
 if [ ! -d "./v8" ]
 then
 fetch v8
 cd v8
-git checkout -b 6.0 -t branch-heads/6.0
+git checkout -b $v8_version -t branch-heads/$v8_version
 else
 cd v8
 fi

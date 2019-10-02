@@ -59,7 +59,7 @@ public:
 
     unsigned int columns_count();
 
-    ods_table_state & state();
+    ods_table_state_ptr & state();
 	
 	void start_defined_expressions(office_element_ptr & root_elm);
 
@@ -84,7 +84,7 @@ private:
 
     ods_conversion_context & context_;
 
-	std::vector<ods_table_state>	table_state_list_;
+	std::vector<ods_table_state_ptr> table_state_list_;
 	
 	table_additional_elements_state	table_defined_expressions_;
 	table_additional_elements_state	table_database_ranges_;

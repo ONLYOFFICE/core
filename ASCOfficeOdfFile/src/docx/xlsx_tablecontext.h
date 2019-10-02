@@ -73,12 +73,6 @@ public:
     int current_column();
     int current_row();
 
-	void set_table_row_group(int count, bool collapsed, int level);
-    void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
-    void non_empty_row();
-    bool is_empty_row();
-    void end_row();
-
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
 
 	unsigned int columns_count();
@@ -103,6 +97,7 @@ public:
 	void serialize_data_validation		(std::wostream & _Wostream);
 	void serialize_protection			(std::wostream & _Wostream);
 	void serialize_header_footer		(std::wostream & _Wostream);
+	void serialize_breaks				(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   

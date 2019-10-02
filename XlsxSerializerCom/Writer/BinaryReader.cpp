@@ -3333,6 +3333,11 @@ void BinaryCommentReader::addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Sp
 			pText->m_sText.append(L"\n\n");
 		}
 	}
+	//Fix Excel recovery error
+	if (pText->m_sText.length() > OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN)
+	{
+		pText->m_sText.erase(OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN);
+	}
 	oSi.m_arrItems.push_back(pText);
 }
 

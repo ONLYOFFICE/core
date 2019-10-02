@@ -44,6 +44,36 @@
 
 namespace NSDoctRenderer
 {
+    void ParseStringAsInts(const std::string& s, std::vector<int>& arr)
+    {
+        const char* data = s.c_str();
+        int curOld = 0;
+        int cur = 0;
+        int valCur = 0;
+        int len = (int)s.length();
+
+        while (cur < len)
+        {
+            if (data[cur] == ',')
+            {
+                if (cur > curOld)
+                    arr.push_back(valCur);
+
+                valCur = 0;
+                curOld = cur + 1;
+            }
+            else
+            {
+                valCur *= 10;
+                valCur += (data[cur] - '0');
+            }
+            ++cur;
+        }
+
+        if (cur > curOld)
+            arr.push_back(valCur);
+    }
+
     class CExecuteParams
     {
     public:
@@ -71,6 +101,8 @@ namespace NSDoctRenderer
         bool m_bIsOnlyOnePage;
 
         bool m_bIsCachedScripts;
+
+        std::vector<int> m_arThemesThumbnailsParams;
 
     public:
         CExecuteParams() : m_arChanges()
@@ -158,6 +190,16 @@ namespace NSDoctRenderer
                 m_bIsCachedScripts = false;
 
             m_bIsOnlyOnePage = (oNode.ReadValueInt(L"OnlyOnePage", 0) == 1) ? true : false;
+
+            m_arThemesThumbnailsParams.clear();
+            std::wstring sThemesThumbnailsParams = oNode.ReadValueString(L"ThemesThumbnailsParams");
+            if (!sThemesThumbnailsParams.empty())
+            {
+                std::string sThemesThumbnailsParamsA = U_TO_UTF8(sThemesThumbnailsParams);
+
+                if (!sThemesThumbnailsParamsA.empty())
+                    ParseStringAsInts(sThemesThumbnailsParamsA, m_arThemesThumbnailsParams);
+            }
 
             return true;
         }
@@ -605,7 +647,23 @@ namespace NSDoctRenderer
                     if (js_func_get_file_thumbnail->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_thumbnail = v8::Handle<v8::Function>::Cast(js_func_get_file_thumbnail);
-                        v8::Local<v8::Value> js_result2 = func_get_file_thumbnail->Call(js_objectEditor, 1, args);
+                        v8::Local<v8::Value> js_result2;
+
+                        int nSizeArgs = (int)pParams->m_arThemesThumbnailsParams.size();
+                        if (0 == nSizeArgs)
+                        {
+                            js_result2 = func_get_file_thumbnail->Call(js_objectEditor, 1, args);
+                        }
+                        else
+                        {
+                            v8::Local<v8::Array> arrArgs = v8::Array::New(isolate, nSizeArgs);
+                            int nCurArg = 0;
+                            for (std::vector<int>::iterator iter = pParams->m_arThemesThumbnailsParams.begin(); iter != pParams->m_arThemesThumbnailsParams.end(); iter++)
+                                arrArgs->Set(nCurArg++, v8::Int32::New(isolate, *iter));
+
+                            args[0] = arrArgs;
+                            js_result2 = func_get_file_thumbnail->Call(js_objectEditor, 1, args);
+                        }
 
                         if (try_catch.HasCaught())
                         {

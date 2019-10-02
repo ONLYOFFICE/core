@@ -226,6 +226,36 @@ namespace NSX2T
     }
 }
 
+void ParseStringAsInts(const std::string& s, std::vector<int>& arr)
+{
+    const char* data = s.c_str();
+    int curOld = 0;
+    int cur = 0;
+    int valCur = 0;
+    int len = (int)s.length();
+
+    while (cur < len)
+    {
+        if (data[cur] == ',')
+        {
+            if (cur > curOld)
+                arr.push_back(valCur);
+
+            valCur = 0;
+            curOld = cur + 1;
+        }
+        else
+        {
+            valCur *= 10;
+            valCur += (data[cur] - '0');
+        }
+        ++cur;
+    }
+
+    if (cur > curOld)
+        arr.push_back(valCur);
+}
+
 #ifdef WIN32
 int wmain(int argc, wchar_t** argv)
 #else
@@ -237,6 +267,7 @@ int main(int argc, char** argv)
     std::wstring sOutputThumbnails = L"";
     std::wstring sAllFonts = L"";
     bool bIsNeedCorrectSdkAll = false;
+    std::wstring sThemesParams = L"";
 
     for (int i = 0; i < argc; ++i)
     {
@@ -286,8 +317,35 @@ int main(int argc, char** argv)
             {
                 sAllFonts = sValue;
             }
+            else if (sKey == L"--params")
+            {
+                sThemesParams = sValue;
+            }
         }
     }
+
+    std::vector<int> arParams;
+    if (!sThemesParams.empty())
+    {
+        std::string sThemesParamsA = U_TO_UTF8(sThemesParams);
+        ParseStringAsInts(sThemesParamsA, arParams);
+
+        if (2 == arParams.size())
+        {
+            double dKoef1 = arParams[0] / 85.0;
+            double dKoef2 = arParams[1] / 38.0;
+
+            sThemesParams += (L"," + std::to_wstring((int)(6 * dKoef2/*dKoef1*/)));
+            sThemesParams += (L"," + std::to_wstring((int)(3 * dKoef2)));
+            sThemesParams += (L"," + std::to_wstring((int)(4 * dKoef1)));
+            sThemesParams += (L"," + std::to_wstring((int)(31 * dKoef2)));
+            sThemesParams += (L"," + std::to_wstring((int)(1 * dKoef1)));
+            sThemesParams += (L"," + std::to_wstring((int)(8 * dKoef1)));
+            sThemesParams += (L"," + std::to_wstring((int)(11 * dKoef2)));
+            sThemesParams += (L"," + std::to_wstring((int)(18 * dKoef2)));
+        }
+    }
+    int nParamsCount = (int)arParams.size();
 
     std::vector<std::wstring> arThemesTmp = NSDirectory::GetFiles(sSrcThemesDir, true);
     std::vector<std::wstring> arThemes;
@@ -311,6 +369,11 @@ int main(int argc, char** argv)
 
     int nRasterW = 85;
     int nRasterH = 38;
+    if (nParamsCount >= 2)
+    {
+        nRasterW = arParams[0];
+        nRasterH = arParams[1];
+    }
 
     NSStringUtils::CStringBuilder oBuilderJS;
     oBuilderJS.WriteString(L"[");
@@ -374,6 +437,13 @@ int main(int argc, char** argv)
         oBuilder.WriteString(L"</ImagesDirectory><ThemesDirectory>");
         oBuilder.WriteEncodeXmlString(sOut);
         oBuilder.WriteString(L"</ThemesDirectory>");
+
+        if (!sThemesParams.empty())
+        {
+            oBuilder.WriteString(L"<ThemesThumbnailsParams>");
+            oBuilder.WriteEncodeXmlString(sThemesParams);
+            oBuilder.WriteString(L"</ThemesThumbnailsParams>");
+        }
 #if 0
             oBuilder.WriteString(_T("<DoctParams>"));
             oBuilder.AddInt(0);

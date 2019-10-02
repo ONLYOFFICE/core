@@ -42,10 +42,7 @@
 namespace DocFileFormat
 {
 	WordprocessingDocument::WordprocessingDocument(const std::wstring & _pathOutput, const WordDocument* _docFile) : 
-		OpenXmlPackage( _docFile ), 
-        FontTableXML( L"" ),	DocumentXML( L"" ),
-        StyleSheetXML( L"" ),	FootnotesXML ( L"" ),	NumberingXML( L"" ),
-        CommentsXML( L"" ),     SettingsXML( L"" ),     CommandTableXML ( L"" )
+		OpenXmlPackage( _docFile )
 	{
 		m_strOutputPath = _pathOutput;
 	}
@@ -131,6 +128,7 @@ namespace DocFileFormat
         SaveToFile(pathWord, std::wstring( L"endnotes.xml" ),		EndnotesXML );
         SaveToFile(pathWord, std::wstring( L"numbering.xml" ),      NumberingXML );
         SaveToFile(pathWord, std::wstring( L"comments.xml" ),		CommentsXML );
+		SaveToFile(pathWord, std::wstring( L"commentsExtended.xml"),CommentsExtendedXML );
         SaveToFile(pathWord, std::wstring( L"settings.xml" ),		SettingsXML );
         SaveToFile(pathWord, std::wstring( L"customizations.xml" ), CommandTableXML );
 

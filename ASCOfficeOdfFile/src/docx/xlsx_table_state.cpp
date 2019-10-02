@@ -162,7 +162,7 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
     
 void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
 {
-    for (unsigned int i = 0; i <repeated; ++i)
+    for (unsigned int i = 0; i < repeated; ++i)
         column_default_cell_style_name_.push_back(defaultCellStyleName);
 
     columns_count_ += repeated;
@@ -222,7 +222,22 @@ void xlsx_table_state::start_row(const std::wstring & StyleName, const std::wstr
     // set row style name
     table_row_style_ = StyleName;
 }
-
+void xlsx_table_state::set_column_break_before()
+{
+	column_breaks_.push_back(columns_count_ - columns_.back());
+}
+void xlsx_table_state::set_column_break_after()
+{
+	column_breaks_.push_back(columns_count_ + 1 - columns_.back());
+}
+void xlsx_table_state::set_row_break_before()
+{
+	row_breaks_.push_back(current_table_row_);
+}
+void xlsx_table_state::set_row_break_after()
+{
+	row_breaks_.push_back(current_table_row_ + 1);
+}
 void xlsx_table_state::non_empty_row()
 {
     empty_row_= false;
@@ -607,6 +622,50 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 		}  
 	}
 
+}
+void xlsx_table_state::serialize_breaks(std::wostream & strm)
+{
+	if (column_breaks_.empty() && row_breaks_.empty()) return;
+
+	CP_XML_WRITER(strm)
+	{
+		if (false == row_breaks_.empty())
+		{
+			CP_XML_NODE(L"rowBreaks")
+			{
+				CP_XML_ATTR(L"count", row_breaks_.size());	
+				CP_XML_ATTR(L"manualBreakCount", row_breaks_.size());
+
+				for (size_t i = 0; i < row_breaks_.size(); i++)
+				{
+					CP_XML_NODE(L"brk")
+					{
+						CP_XML_ATTR(L"id", row_breaks_[i]);	
+						CP_XML_ATTR(L"max", 16383);	
+						CP_XML_ATTR(L"man", 1);	
+					}
+				}
+			}
+		}
+		if (false == column_breaks_.empty())
+		{
+			CP_XML_NODE(L"colBreaks")
+			{
+				CP_XML_ATTR(L"count", column_breaks_.size());	
+				CP_XML_ATTR(L"manualBreakCount", column_breaks_.size());	
+				
+				for (size_t i = 0; i < column_breaks_.size(); i++)
+				{
+					CP_XML_NODE(L"brk")
+					{
+						CP_XML_ATTR(L"id", column_breaks_[i]);	
+						CP_XML_ATTR(L"max", 1048575);	
+						CP_XML_ATTR(L"man", 1);	
+					}
+				}			
+			}
+		}
+	}
 }
 void xlsx_table_state::serialize_merge_cells(std::wostream & strm)
 {

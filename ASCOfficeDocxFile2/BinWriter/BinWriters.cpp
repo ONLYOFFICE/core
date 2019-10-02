@@ -3236,7 +3236,29 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
     {
 		switch(OfficeFileFormatChecker.nFileType)
         {
-
+#ifndef DONT_USED_EXTRA_LIBRARY
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
+            {
+#ifndef _IOS
+                COfficeDocFile docFile;
+                docFile.m_sTempFolder = sTempDir;
+                
+                bool bMacros = false;
+                
+                result = (S_OK == docFile.LoadFromFile( file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
+#else
+                result = S_FALSE;
+#endif
+            }break;
+            case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
+            {
+                RtfConvertationManager rtfConvert;
+                rtfConvert.m_sTempFolder = sTempDir;
+                
+                result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
+            }break;
+#endif
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:

@@ -57,7 +57,7 @@ for %%a in (%BUILD_PLATFORMS%) do (
 	if exist "icu" (
 		echo "icu already exported"
 	) else (
-		svn export http://source.icu-project.org/repos/icu/tags/release-%ICU_MAJOR_VER%-%ICU_MINOR_VER%/icu4c ./icu
+		svn export https://github.com/unicode-org/icu/tags/release-%ICU_MAJOR_VER%-%ICU_MINOR_VER%/icu4c ./icu
 	)
 	
 	if "%%a" == "win_64" (

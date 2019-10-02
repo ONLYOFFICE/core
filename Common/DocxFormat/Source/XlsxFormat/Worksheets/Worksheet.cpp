@@ -177,6 +177,8 @@ namespace OOX
 					m_oDataValidations = oReader;
 				else if (_T("dataConsolidate") == sName)
 					m_oDataConsolidate = oReader;
+				else if (_T("sortState") == sName)
+					m_oSortState = oReader;
 				else if (L"AlternateContent" == sName)
 				{
 					int nSubDepth = oReader.GetDepth();
@@ -513,18 +515,22 @@ namespace OOX
 					m_oCols->toXML(sXml);
 				if(m_oSheetData.IsInit())
 					m_oSheetData->toXML(sXml);
+				if(m_oSheetProtection.IsInit())
+					m_oSheetProtection->toXML(sXml);
 				if(m_oAutofilter.IsInit())
 					m_oAutofilter->toXML(sXml);
+				if(m_oSortState.IsInit())
+					m_oSortState->toXML(sXml);
+				if(m_oDataConsolidate.IsInit())
+					m_oDataConsolidate->toXML(sXml);
 				if(m_oMergeCells.IsInit())
 					m_oMergeCells->toXML(sXml);
 				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
 					m_arrConditionalFormatting[nIndex]->toXML(sXml);
+				if(m_oDataValidations.IsInit())
+					m_oDataValidations->toXML(sXml);
 				if(m_oHyperlinks.IsInit())
 					m_oHyperlinks->toXML(sXml);
-				if(m_oRowBreaks.IsInit())
-					m_oRowBreaks->toXML(sXml);
-				if(m_oColBreaks.IsInit())
-					m_oColBreaks->toXML(sXml);
 				if(m_oPrintOptions.IsInit())
 					m_oPrintOptions->toXML(sXml);
 				if(m_oPageMargins.IsInit())
@@ -533,6 +539,10 @@ namespace OOX
 					m_oPageSetup->toXML(sXml);
 				if(m_oHeaderFooter.IsInit())
 					m_oHeaderFooter->toXML(sXml);
+				if(m_oRowBreaks.IsInit())
+					m_oRowBreaks->toXML(sXml);
+				if(m_oColBreaks.IsInit())
+					m_oColBreaks->toXML(sXml);
 				if(m_oDrawing.IsInit())
 					m_oDrawing->toXML(sXml);
 				if(m_oLegacyDrawing.IsInit())
@@ -545,14 +555,8 @@ namespace OOX
 					m_oOleObjects->toXML(sXml);
 				if(m_oControls.IsInit())
 					m_oControls->toXML(sXml);
-				if(m_oSheetProtection.IsInit())
-					m_oSheetProtection->toXML(sXml);
-				if(m_oDataValidations.IsInit())
-					m_oDataValidations->toXML(sXml);
 				if(m_oTableParts.IsInit())
 					m_oTableParts->toXML(sXml);
-				if(m_oDataConsolidate.IsInit())
-					m_oDataConsolidate->toXML(sXml);
 				if(m_oExtLst.IsInit())
 				{
 					sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));

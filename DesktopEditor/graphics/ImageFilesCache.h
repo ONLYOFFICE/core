@@ -39,10 +39,6 @@
 #include "../raster/Metafile/MetaFile.h"
 #include "../common/File.h"
 
-#ifdef __ANDROID__
-	#include "../common/Directory.h"
-#endif
-
 #if defined (GetTempPath)
 #undef GetTempPath
 #endif
@@ -75,16 +71,7 @@ public:
             }
             else
             {
-                std::wstring sTempFile;
-
-                #ifdef __ANDROID__
-                    std::wstring sTempDir = NSFile::GetDirectoryName(strFile) + NSFile::CFileBinary::GetTempPath();
-					NSDirectory::CreateDirectory(sTempDir);
-                    sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTempDir, L"AscMetafile_");
-                #else
-                    sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
-                #endif
-
+                std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
                 oMetafile.ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
                 m_oImage.Create(sTempFile);
 

@@ -866,6 +866,18 @@ void BinaryTableWriter::WriteSortState(const OOX::Spreadsheet::CSortState& oSort
 		m_oBcw.m_oStream.WriteBOOL(oSortState.m_oCaseSensitive->ToBool());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(oSortState.m_oColumnSort.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SortState::ColumnSort);
+		m_oBcw.m_oStream.WriteBOOL(oSortState.m_oColumnSort->ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSortState.m_oSortMethod.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SortState::SortMethod);
+		m_oBcw.m_oStream.WriteBYTE(oSortState.m_oSortMethod->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_SortState::SortConditions);
 	for(size_t i = 0, length = oSortState.m_arrItems.size(); i < length; ++i)
 	{

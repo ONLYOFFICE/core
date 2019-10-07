@@ -126,6 +126,8 @@ namespace OOX
 					writer.WriteString(L"<sortState");
 					WritingStringAttrEncodeXmlString(L"ref", m_oRef->ToString());
 					WritingStringNullableAttrBool(L"caseSensitive", m_oCaseSensitive);
+					WritingStringNullableAttrBool(L"columnSort", m_oColumnSort);
+					WritingStringNullableAttrString(L"sortMethod", m_oSortMethod, m_oSortMethod->ToString());
 					writer.WriteString(L">");
 
                     for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -168,13 +170,17 @@ namespace OOX
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("caseSensitive"),      m_oCaseSensitive )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("caseSensitive"),	m_oCaseSensitive )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("columnSort"),		m_oColumnSort )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sortMethod"),		m_oSortMethod )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
 			nullable<SimpleTypes::COnOff<> > m_oCaseSensitive;
+			nullable<SimpleTypes::COnOff<> > m_oColumnSort;
+			nullable<SimpleTypes::Spreadsheet::CSortMethod<> > m_oSortMethod;
 		};
 
 		//Filters

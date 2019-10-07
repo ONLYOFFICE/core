@@ -2459,6 +2459,47 @@ namespace SimpleTypes
 			SimpleType_FromString     (EDateTimeGroup)
             SimpleType_Operator_Equal (CDateTimeGroup)
 		};
+		enum ESortMethod
+		{
+			sortmethodNone = 1,
+			sortmethodPinYin = 2,
+			sortmethodStroke = 3,
+		};
+		template<ESortMethod eDefValue = sortmethodNone>
+		class CSortMethod : public CSimpleType<ESortMethod, eDefValue>
+		{
+		public:
+			CSortMethod() {}
+			CSortMethod(const ESortMethod & val)	{ this->m_eValue = val; }
+
+			virtual ESortMethod FromString(std::wstring &sValue)
+			{
+				if(_T("none") == sValue)
+					this->m_eValue = sortmethodNone;
+				else if(_T("pinYin") == sValue)
+					this->m_eValue = sortmethodPinYin;
+				else if(_T("stroke") == sValue)
+					this->m_eValue = sortmethodStroke;
+				else
+					this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring     ToString  () const
+			{
+				std::wstring sResult;
+				switch(this->m_eValue)
+				{
+				case sortmethodNone: sResult = L"none";break;
+				case sortmethodPinYin: sResult = L"pinYin";break;
+				case sortmethodStroke: sResult = L"stroke";break;
+				}
+				return sResult;
+			}
+
+			SimpleType_FromString     (ESortMethod)
+			SimpleType_Operator_Equal (CSortMethod)
+		};
 		enum EDynamicFilterType
 		{
 			dynamicfiltertypeAboveAverage = 1,

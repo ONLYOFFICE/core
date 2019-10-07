@@ -878,6 +878,16 @@ int BinaryTableReader::ReadSortState(BYTE type, long length, void* poResult)
 		pSortState->m_oCaseSensitive.Init();
 		pSortState->m_oCaseSensitive->FromBool(m_oBufferedStream.GetBool());
 	}
+	else if(c_oSer_SortState::ColumnSort == type)
+	{
+		pSortState->m_oColumnSort.Init();
+		pSortState->m_oColumnSort->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if(c_oSer_SortState::SortMethod == type)
+	{
+		pSortState->m_oSortMethod.Init();
+		pSortState->m_oSortMethod->SetValue((SimpleTypes::Spreadsheet::ESortMethod)m_oBufferedStream.GetUChar());
+	}
 	else if(c_oSer_SortState::SortConditions == type)
 	{
 		READ1_DEF(length, res, this->ReadSortConditions, pSortState);

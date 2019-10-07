@@ -236,6 +236,10 @@ int CELLTABLE::serialize(std::wostream & stream)
 						bool xf_set = true;
 						if (row->fGhostDirty == false) xf_set = false;
 						
+						if (row->colMic >= 0 && row->colMac > row->colMic)
+						{
+							CP_XML_ATTR(L"spans", std::to_wstring(row->colMic + 1) + L":" + std::to_wstring(row->colMac));  //zero based & one based
+						}
 						if (xf_set)
 						{
 							int xf = row->ixfe_val >= global_info_->cellStyleXfs_count ? row->ixfe_val - global_info_->cellStyleXfs_count : -1/*row->ixfe_val*/;
@@ -246,7 +250,7 @@ int CELLTABLE::serialize(std::wostream & stream)
 								CP_XML_ATTR(L"customFormat", true);
 							}
 						}
-						if (row->miyRw > 0 && row->miyRw < 0x8000) //v8_14A_1b13.xls
+						if (row->miyRw > 0 && row->miyRw < 0x8000 && row->fUnsynced) //v8_14A_1b13.xls //Department_Sales_and_Stock_Monthly_Recap_Store_778_2019-09-03.xls
 						{
 							CP_XML_ATTR(L"ht", row->miyRw / 20.);
 							CP_XML_ATTR(L"customHeight", true);

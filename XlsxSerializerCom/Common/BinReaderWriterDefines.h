@@ -820,7 +820,9 @@ namespace BinXlsxRW
 		ConditionRef = 4,
 		ConditionSortBy = 5,
 		ConditionDescending = 6,
-		ConditionDxfId = 7
+		ConditionDxfId = 7,
+		ColumnSort = 8,
+		SortMethod = 9
 	};}
 	namespace c_oSer_AutoFilter{enum c_oSer_AutoFilter
 	{

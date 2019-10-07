@@ -140,6 +140,11 @@ namespace NSFile
 
 		long m_lFilePosition;
 		long m_lFileSize;
+    public:
+
+#ifdef __ANDROID__
+        static std::string s_sAndroidCahcePath;
+#endif
 
 	public:
         CFileBinary();
@@ -175,9 +180,6 @@ namespace NSFile
         static std::wstring CreateTempFileWithUniqueName(const std::wstring& strFolderPathRoot, const std::wstring& Prefix);
         static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL);
         static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);
-#ifndef __ANDROID_
-		static std::string androidCahcePath;
-#endif
 
 	};
 

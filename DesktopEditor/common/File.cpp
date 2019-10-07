@@ -100,8 +100,8 @@
 	}
 #endif
 
-#ifndef __ANDROID_
-std::string NSFile::CFileBinary::androidCahcePath = "";
+#ifdef __ANDROID__
+std::string NSFile::CFileBinary::s_sAndroidCahcePath = "";
 #endif
 namespace NSFile
 {
@@ -1309,7 +1309,7 @@ namespace NSFile
             folder = "/tmp";
 
 #if defined (__ANDROID__)
-        folder = &androidCahcePath[0];   //we need extra char for NUL
+        folder = &s_sAndroidCahcePath[0];   //we need extra char for NUL
 #endif
 
         return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)folder, strlen(folder));

@@ -93,6 +93,7 @@ namespace OOX
                 m_mTable.insert( std::make_pair(  _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document")));
                 m_mTable.insert( std::make_pair(  _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing")));
                 m_mTable.insert( std::make_pair(  _T("vsd"),  _T("application/vnd.visio")));
+				m_mTable.insert( std::make_pair(  _T("vsdx"), _T("application/vnd.ms-visio.drawing")));
 			}
             const std::wstring operator[] (const std::wstring& sExtension) const
 			{

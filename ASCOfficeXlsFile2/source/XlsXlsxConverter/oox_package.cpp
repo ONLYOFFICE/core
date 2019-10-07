@@ -50,21 +50,23 @@ namespace package {
 
 static std::wstring get_mime_type(const std::wstring & extension)
 {
-	if (L"eps" == extension)	return  L"image/x-eps";
-	if (L"wmf" == extension)	return  L"image/x-wmf";
-	if (L"emf" == extension)	return  L"image/x-emf";
-  	if (L"gif" == extension)	return  L"image/x-gif";
-   	if (L"png" == extension)	return  L"image/x-png";
- 	if (L"jpg" == extension)	return  L"image/x-jpeg";
-  	if (L"jpeg" == extension)	return  L"image/x-jpeg";
-  	if (L"tiff" == extension)	return  L"image/x-tiff";
-	if (L"bmp" == extension)	return  L"image/bmp";
-	if (L"pdf" == extension)	return  L"application/pdf";
-	if (L"wav" == extension)	return  L"audio/wav";
-	if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
-	if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-	if (L"xls" == extension)	return  L"application/vnd.ms-excel";
-	if (L"doc" == extension)	return  L"application/vnd.ms-word";
+		 if (L"eps" == extension)	return  L"image/x-eps";
+	else if (L"wmf" == extension)	return  L"image/x-wmf";
+	else if (L"emf" == extension)	return  L"image/x-emf";
+  	else if (L"gif" == extension)	return  L"image/x-gif";
+   	else if (L"png" == extension)	return  L"image/x-png";
+ 	else if (L"jpg" == extension)	return  L"image/x-jpeg";
+  	else if (L"jpeg" == extension)	return  L"image/x-jpeg";
+  	else if (L"tiff" == extension)	return  L"image/x-tiff";
+	else if (L"bmp" == extension)	return  L"image/bmp";
+	else if (L"pdf" == extension)	return  L"application/pdf";
+	else if (L"wav" == extension)	return  L"audio/wav";
+	else if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
+	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	else if (L"xls" == extension)	return  L"application/vnd.ms-excel";
+	else if (L"doc" == extension)	return  L"application/vnd.ms-word";
+	else if (L"vsd" == extension)	return  L"application/vnd.visio";
+	else if (L"vsdx" == extension)	return  L"application/vnd.ms-visio.drawing";
 
 	return L"";
 }

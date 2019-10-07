@@ -59,15 +59,15 @@ void HyperlinkObject::load(XLS::CFRecord& record)
 
 	if(hlstmfHasDisplayName)
 	{
-		record >> displayName;
+		displayName = loadHyperlinkString(record);
 	}
 	if(hlstmfHasFrameName)
 	{
-		record >> targetFrameName;
+		targetFrameName = loadHyperlinkString(record);
 	}
 	if(hlstmfHasMoniker && hlstmfMonikerSavedAsStr)
 	{
-		record >> moniker;
+		moniker = loadHyperlinkString(record);
 	}
 	if(hlstmfHasMoniker && !hlstmfMonikerSavedAsStr)
 	{
@@ -75,7 +75,7 @@ void HyperlinkObject::load(XLS::CFRecord& record)
 	}
 	if(hlstmfHasLocationStr)
 	{
-		record >> location;
+		location = loadHyperlinkString(record);
 	}
 	if(hlstmfHasGUID)
 	{
@@ -89,7 +89,43 @@ void HyperlinkObject::load(XLS::CFRecord& record)
 	}
 }
 
+std::wstring HyperlinkObject::loadHyperlinkString(XLS::CFRecord& record)
+{
+	std::wstring result;
 
+	_INT32 size = 0;
+	record >> size;
+
+	if (size < 1) return L"";
+
+#if defined(_WIN32) || defined(_WIN64)
+		result = std::wstring(record.getCurData<wchar_t>(), size);
+#else
+		result= convertUtf16ToWString(record.getCurData<UTF16>(), size);
+#endif
+	record.skipNunBytes(size * 2);
+
+	return result;
+}
+std::wstring HyperlinkObject::loadHyperlinkString(IBinaryReader* reader)
+{
+	std::wstring result;
+	
+	_INT32 size = reader->ReadUInt32();
+
+	if (size < 1) return L"";
+
+	unsigned char* pData = reader->ReadBytes(size * 2, true);
+	
+#if defined(_WIN32) || defined(_WIN64)
+		result = std::wstring((wchar_t*)pData, size);
+#else
+		result = convertUtf16ToWString((UTF16*)pData, size);
+#endif
+
+	delete []pData;
+	return result;
+}
 
 void HyperlinkObject::load(IBinaryReader* reader)
 {
@@ -109,15 +145,15 @@ void HyperlinkObject::load(IBinaryReader* reader)
 
 	if(hlstmfHasDisplayName)
 	{
-		displayName.load(reader);
+		displayName= loadHyperlinkString(reader);
 	}
 	if(hlstmfHasFrameName)
 	{
-		targetFrameName.load(reader);
+		targetFrameName= loadHyperlinkString(reader);
 	}
 	if(hlstmfHasMoniker && hlstmfMonikerSavedAsStr)
 	{
-		moniker.load(reader);
+		moniker= loadHyperlinkString(reader);
 	}
 	if(hlstmfHasMoniker && !hlstmfMonikerSavedAsStr)
 	{
@@ -125,7 +161,7 @@ void HyperlinkObject::load(IBinaryReader* reader)
 	}
 	if(hlstmfHasLocationStr)
 	{
-		location.load(reader);
+		location= loadHyperlinkString(reader);
 	}
 	if(hlstmfHasGUID)
 	{

@@ -47,7 +47,6 @@
 namespace OSHARED
 {
 
-class CFRecord;
 
 class HyperlinkObject : public XLS::BiffStructure
 {
@@ -57,6 +56,9 @@ public:
 
 	virtual void load(XLS::CFRecord& record);
 	void load(IBinaryReader* reader);
+
+	std::wstring loadHyperlinkString(XLS::CFRecord& record);
+	std::wstring loadHyperlinkString(IBinaryReader* reader);
 
 	_UINT32 streamVersion;
 
@@ -73,13 +75,13 @@ public:
 	bool hlstmfMonikerSavedAsStr;
 	bool hlstmfAbsFromGetdataRel;
 
-	HyperlinkString displayName;
-	HyperlinkString targetFrameName;
-	HyperlinkString moniker;
-	HyperlinkMoniker oleMoniker;
-	HyperlinkString location;
-	std::wstring  guid;
-	FILETIME fileTime;
+	std::wstring		displayName;
+	std::wstring		targetFrameName;
+	std::wstring		moniker;
+	HyperlinkMoniker	oleMoniker;	
+	std::wstring		location;
+	std::wstring		guid;
+	FILETIME			fileTime;
 
 };
 

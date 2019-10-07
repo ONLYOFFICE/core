@@ -37,18 +37,24 @@
 namespace XLS
 {
 
-
-PtgAreaN::PtgAreaN(const CellRef cell_base_ref_init)
-:	cell_base_ref(cell_base_ref_init)
+PtgAreaN::PtgAreaN(const CellRef cell_base_ref_init) :	cell_base_ref(cell_base_ref_init)
 {
 }
-
 
 PtgAreaN::PtgAreaN(const std::wstring& word, const PtgDataType data_type, const CellRef cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	area(word),
 	cell_base_ref(cell_base_ref_init)
 {
+	area -= cell_base_ref;
+}
+
+void PtgAreaN::set_base_ref(const CellRef& cell_base_ref_new)
+{
+	area += cell_base_ref;
+	
+	cell_base_ref = cell_base_ref_new;
+	
 	area -= cell_base_ref;
 }
 

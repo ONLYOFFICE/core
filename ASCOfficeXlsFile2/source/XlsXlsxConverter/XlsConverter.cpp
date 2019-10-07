@@ -1040,7 +1040,7 @@ void XlsConverter::convert(XLS::HLINK * HLINK_)
 	}
 	else if (hLink->hyperlink.hlstmfHasLocationStr)
 	{
-		target = hLink->hyperlink.location.value();
+		target = hLink->hyperlink.location;
 	}
 
 	std::wstring display = hLink->hyperlink.displayName;
@@ -2028,7 +2028,7 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 					}
 					else if (pihlShape->complex.hyperlink.hlstmfHasLocationStr)
 					{
-						sTarget = pihlShape->complex.hyperlink.location.value();
+						sTarget = pihlShape->complex.hyperlink.location;
 					}
 
 					std::wstring sDisplay = pihlShape->complex.hyperlink.displayName;

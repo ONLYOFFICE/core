@@ -44,8 +44,10 @@ class PtgRefN: public OperandPtg
 public:
 	PtgRefN(const CellRef& cell_base_ref_init);
 	PtgRefN(const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref);
-	BiffStructurePtr clone();
+	
+	void set_base_ref(const CellRef& cell_base_ref);
 
+	BiffStructurePtr clone();
 	
 	virtual void loadFields(CFRecord& record);
 	
@@ -57,6 +59,7 @@ public:
 private:
 	CellRef cell_base_ref;
 	RgceLocRel loc;
+	bool bUseLocInit;
 };
 
 } // namespace XLS

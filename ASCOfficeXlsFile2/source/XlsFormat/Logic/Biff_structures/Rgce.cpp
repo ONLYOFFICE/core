@@ -33,26 +33,65 @@
 #include "Rgce.h"
 #include "PtgFactory.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/StructureSizeNotSet.h>
+
 #include "PtgExp.h"
 #include "PtgTbl.h"
+
+#include "PtgRefN.h"
+#include "PtgAreaN.h"
+#include "PtgRef3d.h"
+#include "PtgArea3d.h"
 
 namespace XLS
 {
 
 
-Rgce::Rgce(const CellRef& cell_base_ref_init)
-:	cell_base_ref(cell_base_ref_init)
+Rgce::Rgce(const CellRef& cell_base_ref_init) :	cell_base_ref(cell_base_ref_init)
 {
 }
 
+void Rgce::set_base_ref(const CellRef& cell_base_ref_new)
+{
+	cell_base_ref = cell_base_ref_new;
+
+	for (size_t i = 0; i < sequence.size(); ++i)
+	{
+		PtgArea3d* area3d = dynamic_cast<PtgArea3d*>(sequence[i].get());
+		if (area3d)
+		{
+			area3d->set_base_ref(cell_base_ref_new);
+		}
+		else
+		{
+			PtgRef3d* ref3d = dynamic_cast<PtgRef3d*>(sequence[i].get());
+			if (ref3d)
+			{
+				ref3d->set_base_ref(cell_base_ref_new);
+			}
+			else 
+			{
+				PtgRefN* refN = dynamic_cast<PtgRefN*>(sequence[i].get());
+				if (refN)
+				{
+					refN->set_base_ref(cell_base_ref_new);
+				}
+				else 
+				{
+					PtgAreaN* areaN = dynamic_cast<PtgAreaN*>(sequence[i].get());
+					if (areaN)
+					{
+						areaN->set_base_ref(cell_base_ref_new);
+					}
+				}
+			}
+		}
+	}
+}
 
 BiffStructurePtr Rgce::clone()
 {
 	return BiffStructurePtr(new Rgce(*this));
 }
-
-
 
 void Rgce::load(CFRecord& record, const size_t cce_val)
 {

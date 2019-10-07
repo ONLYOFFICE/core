@@ -45,6 +45,9 @@ class PtgAreaN: public OperandPtg
 public:
 	PtgAreaN(const CellRef cell_base_ref_init);
 	PtgAreaN(const std::wstring& word, const PtgDataType data_type, const CellRef cell_base_ref_init);
+	
+	void set_base_ref(const CellRef& cell_base_ref);
+
 	BiffStructurePtr clone();
 
 	virtual void loadFields(CFRecord& record);

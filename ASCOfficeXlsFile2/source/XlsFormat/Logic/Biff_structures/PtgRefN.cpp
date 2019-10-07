@@ -37,12 +37,10 @@
 namespace XLS
 {
 
-
-PtgRefN::PtgRefN(const CellRef& cell_base_ref_init)
-:	cell_base_ref(cell_base_ref_init)
+PtgRefN::PtgRefN(const CellRef& cell_base_ref_init) : cell_base_ref(cell_base_ref_init)
 {
+	bUseLocInit = false;
 }
-
 
 PtgRefN::PtgRefN(const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
@@ -50,8 +48,17 @@ PtgRefN::PtgRefN(const std::wstring& word, const PtgDataType data_type, const Ce
 	cell_base_ref(cell_base_ref_init)
 {
 	loc -= cell_base_ref;
+	bUseLocInit = true;
 }
 
+void PtgRefN::set_base_ref(const CellRef& cell_base_ref_new)
+{
+	if (bUseLocInit) loc += cell_base_ref;
+	
+	cell_base_ref = cell_base_ref_new;
+	
+	if (bUseLocInit) loc -= cell_base_ref;
+}
 
 BiffStructurePtr PtgRefN::clone()
 {

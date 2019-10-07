@@ -46,11 +46,13 @@ class PtgArea3d: public OperandPtg
 public:
 	PtgArea3d(const CellRef& cell_base_ref_init);
 	PtgArea3d(const unsigned short ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);
+	
+	void set_base_ref(const CellRef& cell_base_ref);
+	
 	BiffStructurePtr clone();
 
 	virtual void loadFields(CFRecord& record);
 	
-
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 	static const unsigned short fixed_id = 0x1B;
 
@@ -60,7 +62,7 @@ public:
 	unsigned short			ixti;
 	RgceAreaRel				area_rel;
 	RgceArea				area;
-	const CellRef&			cell_base_ref;
+	CellRef					cell_base_ref;
 //biff5
 	unsigned short			ixals;
 	unsigned short			itabFirst;

@@ -64,38 +64,19 @@ const bool CONDFMT::loadContent(BinProcessor& proc)
 	}
 	m_CondFmt = elements_.back();
 	elements_.pop_back();
-	/*  The above is equal to:
 
-	if(!proc.mandatory<CondFmt>())
+	while(true)
 	{
-		return false;
-	}
-	*/
-	{
-		CF cf1(cond_fmt.getLocation());
-		if (proc.optional(cf1))
+		CF cf(cond_fmt.getLocation());
+		if (proc.optional(cf))
 		{
 			m_arCF.push_back( elements_.back());
 			elements_.pop_back();
 		}
-
-		CF cf2(cond_fmt.getLocation());
-		if(proc.optional(cf2))
-		{
-			m_arCF.push_back( elements_.back());
-			elements_.pop_back();
-
-			CF cf3(cond_fmt.getLocation());
-			if (proc.optional(cf3))
-			{
-				m_arCF.push_back( elements_.back());
-				elements_.pop_back();
-			}
-		}
+		else
+			break;
 	}
-	/*  The above is equal to:
-		proc.repeated<CF>(1, 3);
-	*/
+
 	return true;
 }
 int CONDFMT::serialize(std::wostream & stream)

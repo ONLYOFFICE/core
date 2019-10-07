@@ -34,7 +34,6 @@
 #include <Binary/CFRecord.h>
 #include "StringPtgParser.h"
 
-//#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {
@@ -46,6 +45,10 @@ ParsedFormula::ParsedFormula(const CellRef& cell_base_ref)
 {
 }
 
+void ParsedFormula::set_base_ref(const CellRef& cell_base_ref)
+{
+	rgce.set_base_ref(cell_base_ref);
+}
 void ParsedFormula::setCCE(const size_t cce_val)
 {
 	rgce.setCCE(cce_val);

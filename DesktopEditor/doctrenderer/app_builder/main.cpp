@@ -30,7 +30,7 @@
  *
  */
 
-#include "./common.h"
+#include "./../common_deploy.h"
 #include "../docbuilder.h"
 #include "../../common/File.h"
 

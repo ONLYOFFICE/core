@@ -135,16 +135,17 @@ namespace NSFile
 
     class KERNEL_DECL CFileBinary
 	{
+
 	protected:
+
+		static std::wstring s_sTempPath;
+
+	protected:
+
 		FILE* m_pFile;
 
 		long m_lFilePosition;
 		long m_lFileSize;
-    public:
-
-#ifdef __ANDROID__
-        static std::string s_sAndroidCahcePath;
-#endif
 
 	public:
         CFileBinary();
@@ -181,6 +182,7 @@ namespace NSFile
         static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL);
         static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);
 
+        static void SetTempPath(const std::wstring& strTempPath);
 	};
 
     class KERNEL_DECL CBase64Converter

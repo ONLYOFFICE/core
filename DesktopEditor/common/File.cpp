@@ -100,9 +100,6 @@
 	}
 #endif
 
-#ifdef __ANDROID__
-std::string NSFile::CFileBinary::s_sAndroidCahcePath = "";
-#endif
 namespace NSFile
 {
     std::wstring CUtf8Converter::GetUnicodeFromCharPtr(const char* pData, LONG lCount, INT bIsUtf8)
@@ -842,6 +839,8 @@ namespace NSFile
 
 namespace NSFile
 {
+    std::wstring CFileBinary::s_sTempPath = L"";
+
     CFileBinary::CFileBinary()
     {
         m_pFile = NULL;
@@ -1304,13 +1303,11 @@ namespace NSFile
             folder = getenv("TMP");
         if (NULL == folder)
             folder = getenv("TMPDIR");
-
         if (NULL == folder)
             folder = "/tmp";
 
-#if defined (__ANDROID__)
-        folder = &s_sAndroidCahcePath[0];   //we need extra char for NUL
-#endif
+        if (!s_sTempPath.empty())
+            folder = &NSFile::CUtf8Converter::GetUtf8StringFromUnicode(s_sTempPath)[0];
 
         return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)folder, strlen(folder));
 #endif
@@ -1428,6 +1425,10 @@ namespace NSFile
 
         return pFile;
 #endif
+    }
+
+    void CFileBinary::SetTempPath(const std::wstring& strTempPath) {
+        s_sTempPath = strTempPath;
     }
 }
 

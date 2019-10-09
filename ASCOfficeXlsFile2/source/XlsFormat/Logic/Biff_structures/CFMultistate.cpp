@@ -31,11 +31,10 @@
  */
 
 #include "CFMultistate.h"
-#include <Binary/CFRecord.h>
+#include <simple_xml_writer.h>
 
 namespace XLS
 {
-
 
 BiffStructurePtr CFMultistate::clone()
 {
@@ -47,6 +46,7 @@ void CFMultistate::load(CFRecord& record)
 	record.skipNunBytes(2); // unused
 	record.skipNunBytes(1); // reserved
 	record >> cStates >> iIconSet;
+	
 	unsigned char flags;
 	record >> flags;
 	fIconOnly = GETBIT(flags, 0);
@@ -59,7 +59,64 @@ void CFMultistate::load(CFRecord& record)
 		rgStates.push_back(item);
 	}
 }
+int CFMultistate::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"iconSet")
+		{
+			switch(iIconSet)
+			{
+				case 0:		CP_XML_ATTR(L"iconSet", L"3Symbols");		break;
+				case 1:		CP_XML_ATTR(L"iconSet", L"3ArrowsGray");	break;
+				case 2:		CP_XML_ATTR(L"iconSet", L"3Flags");			break;
+				case 3:		CP_XML_ATTR(L"iconSet", L"3TrafficLights1");break;
+				case 4:		CP_XML_ATTR(L"iconSet", L"3Signs");			break;
+				case 5:		CP_XML_ATTR(L"iconSet", L"3TrafficLights2");break;
+				case 6:		CP_XML_ATTR(L"iconSet", L"3Symbols");		break;
+				case 7:		CP_XML_ATTR(L"iconSet", L"3Symbols2");		break;
+				case 8:		CP_XML_ATTR(L"iconSet", L"4Arrows");		break;
+				case 9:		CP_XML_ATTR(L"iconSet", L"4ArrowsGray");	break;
+				case 10:	CP_XML_ATTR(L"iconSet", L"4RedToBlack");	break;
+				case 11:	CP_XML_ATTR(L"iconSet", L"4Rating");		break;
+				case 12:	CP_XML_ATTR(L"iconSet", L"4TrafficLights");	break;
+				case 13:	CP_XML_ATTR(L"iconSet", L"5Arrows");		break;
+				case 14:	CP_XML_ATTR(L"iconSet", L"5ArrowsGray");	break;
+				case 15:	CP_XML_ATTR(L"iconSet", L"5Rating");		break;
+				case 16:	CP_XML_ATTR(L"iconSet", L"5Quarters");		break;
+				default:
+					CP_XML_ATTR(L"iconSet", L"3Symbols");				break;
+			}
+			CP_XML_ATTR(L"showValue", false == fIconOnly);	
+			
+			if (fReverse)
+				CP_XML_ATTR(L"reverse", 1);	
 
+			for (size_t i = 0; i < rgStates.size(); i ++)
+			{
+				CP_XML_NODE(L"cfvo")
+				{
+					CFVO & cfvo = rgStates[i]->cfvo;							
+					switch(cfvo.cfvoType)
+					{
+						case 2:	CP_XML_ATTR(L"type", L"min");			break;
+						case 3:	CP_XML_ATTR(L"type", L"max");			break;
+						case 7:	CP_XML_ATTR(L"type", L"formule");		break;
+						case 4:	CP_XML_ATTR(L"type", L"percent");		break;
+						case 5:	CP_XML_ATTR(L"type", L"percentile");	break;
+						default:
+							CP_XML_ATTR(L"type", L"num");				break;
+					}	
+					if (cfvo.cfvoType == 7)
+						CP_XML_ATTR(L"val", cfvo.fmla.getAssembledFormula()); 
+					else
+						CP_XML_ATTR(L"val", cfvo.numValue);
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 } // namespace XLS
 

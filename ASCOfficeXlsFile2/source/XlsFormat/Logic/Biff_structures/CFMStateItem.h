@@ -48,9 +48,7 @@ public:
 
 	static const ElementType	type = typeCFMStateItem;
 
-	
 	virtual void load(CFRecord& record);
-
 
 	CFVO cfvo;
 	Boolean<unsigned char> fEqual;

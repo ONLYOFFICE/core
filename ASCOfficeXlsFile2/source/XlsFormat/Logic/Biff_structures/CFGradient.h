@@ -38,9 +38,6 @@
 
 namespace XLS
 {
-
-class CFRecord;
-
 struct CFGradientInterpItem : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFGradientInterpItem)
@@ -83,6 +80,7 @@ public:
 	
 	virtual void load(CFRecord& record);
 
+	virtual int serialize(std::wostream & stream);
 
 	unsigned char						cInterpCurve;		//MUST be 0x2 or 0x3.
 	unsigned char						cGradientCurve;		// == cInterpCurve

@@ -37,7 +37,8 @@ namespace XLS
 
 Row::Row()
 {
-	iOutLevel = ixfe_val = 0;
+	iOutLevel = 0;
+	ixfe_val = 0;
 }
 
 
@@ -86,6 +87,10 @@ int Row::serialize(std::wostream &stream)
 			bool xf_set = true;
 			if (fGhostDirty == false) xf_set = false;
 			
+			if (colMic >= 0 && colMac > colMic)
+			{
+				CP_XML_ATTR(L"spans", std::to_wstring(colMic + 1) + L":" + std::to_wstring(colMac));
+			}
 			if (xf_set)
 			{
 				int xf = ixfe_val >= global_info_->cellStyleXfs_count ? ixfe_val - global_info_->cellStyleXfs_count : -1/*ixfe_val*/;
@@ -96,7 +101,7 @@ int Row::serialize(std::wostream &stream)
 					CP_XML_ATTR(L"customFormat", true);
 				}
 			}
-			if (miyRw > 0/* && std::abs(miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
+			if (miyRw > 0 && miyRw < 0x8000 && fUnsynced/* && std::abs(miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
 			{
 				CP_XML_ATTR(L"ht", miyRw / 20.);
 				CP_XML_ATTR(L"customHeight", true);

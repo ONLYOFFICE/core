@@ -265,7 +265,10 @@ int FORMATTING::serialize2(std::wostream & stream)
 					m_arDXF[i]->serialize(CP_XML_STREAM());
 				}
 
-				CP_XML_STREAM() << global_info->users_Dxfs_stream.str();
+				for (size_t i = 0; i < global_info->arrUserDxfs.size(); i++)
+				{
+					CP_XML_STREAM() << global_info->arrUserDxfs[i];
+				}
 			}
 		}
 		if (m_TABLESTYLES)

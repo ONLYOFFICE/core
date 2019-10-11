@@ -143,12 +143,25 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 
 	if(is_wide)
 	{
+		//5804543.xls - font name in dx for table - c a l i 0 0 0 0 b r i - !!!!
+		UTF16 *buf_read = new UTF16[cch];
+
+		for (size_t i = 0; i < cch; i++)
+		{
+			unsigned short val;
+			do
+			{
+				record >> val;
+			}while(val == 0);
+			buf_read[i] = val;
+		}
 #if defined(_WIN32) || defined(_WIN64)
-		std::wstring inp_str(record.getCurData<wchar_t>(), cch);
+		std::wstring inp_str((wchar_t*)buf_read, cch);
 		str_ = inp_str.c_str();
 #else
-		str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
+		str_= convertUtf16ToWString(buf_read, cch);
 #endif
+		delete []buf_read;
 	}
 	else
 	{
@@ -177,9 +190,8 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 		{
 			str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
 		}
-
+		record.skipNunBytes(raw_length);
 	}
-	record.skipNunBytes(raw_length);
 }
 
 const size_t BiffString::getSize() const

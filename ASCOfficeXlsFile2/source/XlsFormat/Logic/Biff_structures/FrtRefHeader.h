@@ -51,9 +51,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
-//private
-public:
 	CFRecordType::TypeId rt;
 	FrtFlags grbitFrt;
 	Ref8U ref8;

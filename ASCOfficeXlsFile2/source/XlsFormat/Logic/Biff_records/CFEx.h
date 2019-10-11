@@ -38,8 +38,6 @@
 namespace XLS
 {
 
-
-// Logical representation of CFEx record in BIFF8
 class CFEx: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CFEx)

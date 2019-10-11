@@ -48,7 +48,6 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	static const ElementType	type = typeExtProp;
 
 	unsigned short extType;

@@ -65,6 +65,8 @@ public:
 	AFDOperXNum		vtValueNum;	//64-bit binary floating-point number
 
 	bool m_bAutoFilter;
+
+	int serialize(std::wostream & strm, const std::wstring &node_name, const std::wstring &val);
 };
 
 } // namespace XLS

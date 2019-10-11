@@ -46,10 +46,9 @@ class DXFN12 : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeDXFN12;
+	static const ElementType type = typeDXFN12;
 	
 	virtual void load(CFRecord& record);
-
 
 	int serialize(std::wostream & stream);
 

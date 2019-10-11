@@ -71,6 +71,11 @@ void XFExtNoFRT::load(CFRecord& record)
 	}
 }
 
+int XFExtNoFRT::serialize(std::wostream & stream)
+{
+	//todooo
 
+	return 0;
+}
 } // namespace XLS
 

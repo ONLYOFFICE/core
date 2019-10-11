@@ -46,7 +46,7 @@ CF12::CF12(const CellRef& cell_base_ref)
 	rgce2(cell_base_ref),
 	fmlaActive(cell_base_ref)
 {
-	dxfId_ = 0;
+	dxfId_ = -1;
 	ipriority_ = 0;
 }
 
@@ -112,10 +112,10 @@ void CF12::readFields(CFRecord& record)
 	
 	ipriority_	= ++record.getGlobalWorkbookInfo()->cmt_rules;
 	
-	if  ( 0 == dxf.serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream))
-		dxfId_ = global_info->cellStyleDxfs_count++;
-	else 
-		dxfId_ = -1;
+	std::wstringstream strm;
+	dxf.serialize(strm);
+	
+	dxfId_ = global_info->RegistrDxfn(strm.str());
 }
 int CF12::serialize(std::wostream & stream)
 {

@@ -84,11 +84,14 @@ public:
 	const size_t	RegisterBorderId	(const BorderInfo& border);
 	const size_t	RegisterFillId		(const FillInfo& fill);	
 	const size_t	RegisterFontId		(const FontInfo& font);
+	const int		RegistrDxfn			(const std::wstring& dx_style);
 
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
     
 	void			GetDigitFontSizePixels();
 	void			CalculateAnchor(int colL, int colR, int rowT, int rowB, _UINT32 & x, _UINT32 &y, _UINT32 &cx, _UINT32 & cy);
+
+
 //-----------------------------------------------------------------------------
 	bool									bVbaProjectExist;
 	bool									bMacrosExist;
@@ -185,8 +188,10 @@ public:
 	int								cellXfs_count;
 	int								cellStyleXfs_count;
 	int								cellStyleDxfs_count;
+	
+	std::map<std::wstring, int>		mapUserDxfs;
+	std::vector<std::wstring>		arrUserDxfs;
 
-	std::wstringstream				users_Dxfs_stream;
 	std::wstringstream				connections_stream;
 	
 	int								connectionId;

@@ -93,6 +93,60 @@ void AFDOper::load(CFRecord& record)
 	}
 }
 
+int AFDOper::serialize(std::wostream & strm, const std::wstring &node_name, const std::wstring &val)
+{
+	if (grbitSign < 1 || grbitSign > 6) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(node_name)
+		{
+			switch(grbitSign)
+			{
+				case 0x0001: CP_XML_ATTR(L"operator", L"lessThan");			break;
+				case 0x0002: CP_XML_ATTR(L"operator", L"equal");			break;
+				case 0x0003: CP_XML_ATTR(L"operator", L"lessThanOrEqual");	break;
+				case 0x0004: CP_XML_ATTR(L"operator", L"greaterThan");		break;
+				case 0x0005: CP_XML_ATTR(L"operator", L"notEqual");			break;
+				case 0x0006: CP_XML_ATTR(L"operator", L"greaterThanOrEqual");break;
+			}
+			if (false == val.empty())
+			{
+				CP_XML_ATTR(L"val", val);
+			}
+			else
+			{
+				switch(vt)
+				{
+					case  0x02:	CP_XML_ATTR(L"val", vtValueRk.rk);		break;
+					case  0x04:	CP_XML_ATTR(L"val", vtValueNum.val);	break;
+					case  0x06: //??
+					{
+						std::wstring val;
+						for (unsigned char i = 0; i < vtValueStr.cch; i++) 
+							if (vtValueStr.fCompare == 0) val += L"?"; else val += L"*";
+
+						CP_XML_ATTR(L"val", val);	
+					}break;
+					case  0x08:	
+					{
+							CP_XML_ATTR(L"val", vtValueBool.bes == 1 ? L"1" : L"0"); 
+					}break;	
+					case 0x0C:	//All blanks are matched.
+					case 0x0E:	//All non-blanks are matched.
+					{
+						CP_XML_ATTR(L"val", L" ");
+					}break;
+					case 0x00:
+					default:
+					{
+					}break;
+				}
+			}
+		}
+	}
+	return 1;
+}
 
 } // namespace XLS
 

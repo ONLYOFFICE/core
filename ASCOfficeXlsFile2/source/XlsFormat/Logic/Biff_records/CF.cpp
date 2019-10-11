@@ -74,9 +74,10 @@ void CF::readFields(CFRecord& record)
 	
 	ipriority_	= ++global_info_->cmt_rules;
 	
-	rgbdxf.serialize(global_info_->users_Dxfs_stream);
+	std::wstringstream strm;
+	rgbdxf.serialize(strm);
 	
-	dxfId_ = global_info_->cellStyleDxfs_count++;
+	dxfId_ = global_info_->RegistrDxfn(strm.str());
 }
 
 int CF::serialize(std::wostream & stream)

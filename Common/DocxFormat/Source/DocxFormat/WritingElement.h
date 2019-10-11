@@ -765,6 +765,8 @@ namespace OOX
 		et_w_dir, // <w:dir>
 		et_w_sdtEndPr, // <w:sdtEndPr>
 		et_w_sdtPr, // <w:sdtPr>
+		et_w_sdtCheckbox, // <w:checkbox>
+		et_w_sdtCheckboxSymbol, // <w:checkedState>
 		et_w_sectPr, // <w:sectPr>
 		et_w_sectPrChange, // <w:sectPrChange>
 		et_w_separator, // <w:separator>

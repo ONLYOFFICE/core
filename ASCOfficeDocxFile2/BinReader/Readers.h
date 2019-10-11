@@ -454,6 +454,7 @@ public:
 	int Read_SecPr(BYTE type, long length, void* poResult);
 	int ReadSdt(BYTE type, long length, void* poResult);
 	int ReadSdtPr(BYTE type, long length, void* poResult);
+	int ReadSdtCheckBox(BYTE type, long length, void* poResult);
 	int ReadSdtComboBox(BYTE type, long length, void* poResult);
 	int ReadSdtListItem(BYTE type, long length, void* poResult);
 	int ReadSdtPrDataBinding(BYTE type, long length, void* poResult);

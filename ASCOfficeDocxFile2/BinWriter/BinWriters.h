@@ -469,6 +469,7 @@ namespace BinDocxRW
 		void WriteCell(OOX::Logic::CTc& tc, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nCurColIndex, int nRows, int nCols);
 		void WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols);
 		void WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr);
+		void WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox);
 		void WriteSdtComboBox(const OOX::Logic::CSdtComboBox& oSdtComboBox);
 		void WriteSdtListItem(const ComplexTypes::Word::CSdtListItem& oSdtListItem);
 		void WriteSdtPrDataBinding(const ComplexTypes::Word::CDataBinding& oDataBinding);

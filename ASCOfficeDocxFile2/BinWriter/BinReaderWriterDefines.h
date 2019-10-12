@@ -1168,7 +1168,13 @@ extern int g_nCurFormatVersion;
 		Temporary = 34,
 		MultiLine = 35,
 		Appearance = 36,
-		Color = 37
+		Color = 37,
+		Checkbox = 38,
+		CheckboxChecked = 39,
+		CheckboxCheckedFont = 40,
+		CheckboxCheckedVal = 41,
+		CheckboxUncheckedFont = 42,
+		CheckboxUncheckedVal = 43
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

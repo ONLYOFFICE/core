@@ -8716,6 +8716,52 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oText->m_oMultiLine.Init();
 		pSdtPr->m_oText->m_oMultiLine->FromBool(m_oBufferedStream.GetBool());
 	}
+	else if (c_oSerSdt::Checkbox == type)
+	{
+		pSdtPr->m_oCheckbox.Init();
+		READ1_DEF(length, res, this->ReadSdtCheckBox, pSdtPr->m_oCheckbox.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtCheckBox(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	OOX::Logic::CSdtCheckBox* pSdtCheckBox = static_cast<OOX::Logic::CSdtCheckBox*>(poResult);
+	if (c_oSerSdt::CheckboxChecked == type)
+	{
+		pSdtCheckBox->m_oChecked.Init();
+		pSdtCheckBox->m_oChecked->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerSdt::CheckboxCheckedFont == type)
+	{
+		if(!pSdtCheckBox->m_oCheckedState.IsInit())
+			pSdtCheckBox->m_oCheckedState.Init();
+		pSdtCheckBox->m_oCheckedState->m_oFont.Init();
+		pSdtCheckBox->m_oCheckedState->m_oFont->append(m_oBufferedStream.GetString3(length));
+	}
+	else if (c_oSerSdt::CheckboxCheckedVal == type)
+	{
+		if(!pSdtCheckBox->m_oCheckedState.IsInit())
+			pSdtCheckBox->m_oCheckedState.Init();
+		pSdtCheckBox->m_oCheckedState->m_oVal.Init();
+		pSdtCheckBox->m_oCheckedState->m_oVal->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerSdt::CheckboxUncheckedFont == type)
+	{
+		if(!pSdtCheckBox->m_oUncheckedState.IsInit())
+			pSdtCheckBox->m_oUncheckedState.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oFont.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oFont->append(m_oBufferedStream.GetString3(length));
+	}
+	else if (c_oSerSdt::CheckboxUncheckedVal == type)
+	{
+		if(!pSdtCheckBox->m_oUncheckedState.IsInit())
+			pSdtCheckBox->m_oUncheckedState.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oVal.Init();
+		pSdtCheckBox->m_oUncheckedState->m_oVal->SetValue(m_oBufferedStream.GetLong());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

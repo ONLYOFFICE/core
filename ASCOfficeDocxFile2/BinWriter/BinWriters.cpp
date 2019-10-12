@@ -7265,6 +7265,52 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		m_oBcw.m_oStream.WriteBOOL(oStdPr.m_oText->m_oMultiLine->ToBool());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if(oStdPr.m_oCheckbox.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Checkbox);
+		WriteSdtCheckBox(oStdPr.m_oCheckbox.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox)
+{
+	int nCurPos = 0;
+	if(oSdtCheckBox.m_oChecked.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxChecked);
+		m_oBcw.m_oStream.WriteBOOL(oSdtCheckBox.m_oChecked->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if(oSdtCheckBox.m_oCheckedState.IsInit())
+	{
+		if(oSdtCheckBox.m_oCheckedState->m_oFont.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxCheckedFont);
+			m_oBcw.m_oStream.WriteStringW3(oSdtCheckBox.m_oCheckedState->m_oFont.get());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if(oSdtCheckBox.m_oCheckedState->m_oVal.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxCheckedVal);
+			m_oBcw.m_oStream.WriteLONG(oSdtCheckBox.m_oCheckedState->m_oVal->GetValue());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
+	if(oSdtCheckBox.m_oUncheckedState.IsInit())
+	{
+		if(oSdtCheckBox.m_oUncheckedState->m_oFont.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxUncheckedFont);
+			m_oBcw.m_oStream.WriteStringW3(oSdtCheckBox.m_oUncheckedState->m_oFont.get());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if(oSdtCheckBox.m_oUncheckedState->m_oVal.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::CheckboxUncheckedVal);
+			m_oBcw.m_oStream.WriteLONG(oSdtCheckBox.m_oUncheckedState->m_oVal->GetValue());
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox& oSdtComboBox)
 {

@@ -162,7 +162,7 @@ public:
             retValue->Clear();
 
         std::string commandA = U_TO_UTF8(command);
-        //commandA = "_api." + commandA;
+        //commandA = "Api." + commandA;
 
         v8::Context::Scope context_scope(m_context);
 
@@ -500,9 +500,9 @@ public:
         }
 
         if (!bIsBreak)
-            bIsBreak = !this->ExecuteCommand(L"_api.asc_nativeInitBuilder();");
+            bIsBreak = !this->ExecuteCommand(L"Api.asc_nativeInitBuilder();");
         if (!bIsBreak)
-            bIsBreak = !this->ExecuteCommand(L"_api.asc_SetSilentMode(true);");
+            bIsBreak = !this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
 
         LOGGER_SPEED_LAP("open")
 
@@ -560,7 +560,7 @@ public:
             return false;
 
         if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
-            this->ExecuteCommand(L"_api.asc_SetSilentMode(false);");
+            this->ExecuteCommand(L"Api.asc_SetSilentMode(false);");
 
         std::wstring strError;
         bool bIsError = Doct_renderer_SaveFile_ForBuilder(_formatDst,
@@ -573,7 +573,7 @@ public:
                                                           strError);
 
         if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
-            this->ExecuteCommand(L"_api.asc_SetSilentMode(true);");
+            this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
 
         return bIsError;
     }
@@ -1956,7 +1956,7 @@ namespace NSDoctRenderer
                     if (m_pInternal->m_oParams.m_bSaveWithDoctrendererMode)
                     {
                         // перед сохранением в такой схеме нужно скинуть изменения
-                        this->ExecuteCommand(L"_api.asc_Save();");
+                        this->ExecuteCommand(L"Api.asc_Save();");
                     }
 
                     const wchar_t* sParams = NULL;

@@ -156,6 +156,7 @@ public:
 	std::wstring			xmlAlternative;
 	std::wstring			xmlGeomAlternative;
 	std::wstring			xmlTxBodyAlternative;
+	std::wstring			xmlFillAlternative;
 
 	std::wstring			objectId;
 	std::wstring			objectProgId;

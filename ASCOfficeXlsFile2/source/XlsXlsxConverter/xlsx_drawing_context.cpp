@@ -554,9 +554,6 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 
 	std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-	if (L"anchor" == sName)
-		oReader.ReadNextNode();
-
 	nullable<PPTX::Logic::SpTreeElem> oElement;
 
 	int nCurDepth = oReader.GetDepth();
@@ -564,8 +561,12 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 	{
 		sName = XmlUtils::GetNameNoNS(oReader.GetName());
 		
-		if ( L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName
-			|| L"spTree" )
+		if (L"AlternateContent" == sName || L"Choice" == sName || L"twoCellAnchor" == sName)
+		{
+			nCurDepth++;
+			continue;
+		}
+		else if ( L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"spTree" == sName)
 		{
 			oElement = oReader;
 		}
@@ -593,14 +594,33 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 				shape->txBody->toXmlWriter(&writer);
 				current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
 			}
+			if (shape->spPr.Fill.is_init())
+			{
+				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
+				shape->spPr.Fill.toXmlWriter(&writerFill);
+
+				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+			}
 		}
 		smart_ptr<PPTX::Logic::SpTree> groupShape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 		if (groupShape.IsInit())
-		{//smartArt			
-			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
-			groupShape->toXmlWriter(&writer);
+		{//smartArt	or group	
 
-			current_drawing_states->back()->xmlAlternative = writer.GetXmlString();
+			if (groupShape->grpSpPr.Fill.is_init())
+			{
+				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
+				groupShape->grpSpPr.Fill.toXmlWriter(&writerFill);
+
+				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+			}
+
+			if (false == groupShape->SpTreeElems.empty()) // smartArt
+			{
+				NSBinPptxRW::CXmlWriter writerObject(XMLWRITER_DOC_TYPE_XLSX);
+				groupShape->toXmlWriter(&writerObject);
+
+				current_drawing_states->back()->xmlAlternative = writerObject.GetXmlString();
+			}
 		}
 	}
 
@@ -914,8 +934,14 @@ void xlsx_drawing_context::serialize_group()
 			
 			CP_XML_NODE(L"xdr:grpSpPr")
 			{
+				CP_XML_ATTR(L"bwMode", L"auto");
 				serialize_xfrm(CP_XML_STREAM(), drawing_state);
-				//serialize_fill(CP_XML_STREAM(), drawing_state);
+				
+				if (false == drawing_state->xmlFillAlternative.empty()) //Family budget (monthly)1.xls
+				{
+					CP_XML_STREAM() << drawing_state->xmlFillAlternative;
+				}
+				//serialize_fill(CP_XML_STREAM(), drawing_state); ???? белый //Family budget (monthly)1.xls
 				//serialize_line(CP_XML_STREAM(), drawing_state);		
 			}
 
@@ -1549,7 +1575,14 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				}
 				if (!is_lined_shape(drawing_state))
 				{
-					serialize_fill(CP_XML_STREAM(), drawing_state);
+					if (false == drawing_state->xmlFillAlternative.empty()) //Family budget (monthly)1.xls
+					{
+						CP_XML_STREAM() << drawing_state->xmlFillAlternative;
+					}
+					else
+					{
+						serialize_fill(CP_XML_STREAM(), drawing_state);
+					}
 				}
 				serialize_line(CP_XML_STREAM(), drawing_state);		
 			}

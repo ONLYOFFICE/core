@@ -88,15 +88,26 @@ int BopPop::serialize(std::wostream & _stream)
 						CP_XML_ATTR (L"val" , L"auto");		break;
 				}
 			}
-			CP_XML_NODE(L"c:splitPos")
+			if (split < 3)
 			{
-				CP_XML_ATTR (L"val", iSplitPos);
-			}	
+				CP_XML_NODE(L"c:splitPos")
+				{
+					if (split == 0)
+						CP_XML_ATTR (L"val", iSplitPos);
+					else if (split == 1)
+						CP_XML_ATTR (L"val", numSplitValue.data.value);
+					else if (split == 2)
+						CP_XML_ATTR (L"val", pcSplitPercent);
+				}
+			}
 		}
-		//if (split == 2)
-		//	CP_XML_ATTR (L"val", pcSplitPercent);
-		//else
-		//	CP_XML_ATTR (L"val", numSplitValue);
+		else
+		{
+			CP_XML_NODE(L"c:splitType")
+			{
+				CP_XML_ATTR (L"val" , L"auto");	
+			}
+		}
 		
 		BopPopCustom * custom = dynamic_cast<BopPopCustom *>(m_Custom.get());
 		if (split == (_UINT16)3 && custom)

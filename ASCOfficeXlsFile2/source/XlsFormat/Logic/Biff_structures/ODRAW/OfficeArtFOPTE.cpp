@@ -979,7 +979,13 @@ void MetroBlob::ReadComplexData(XLS::CFRecord& record)
 	ULONG utf8DataSize = 0;
 	if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/shapexml.xml", &utf8Data, utf8DataSize))
 	{
-		officeUtils.LoadFileFromArchive(tempFileName, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize);
+		if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize))
+		{
+			if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/connectorxml.xml", &utf8Data, utf8DataSize))
+			{
+				officeUtils.LoadFileFromArchive(tempFileName, L"drs/groupshapexml.xml", &utf8Data, utf8DataSize);
+			}
+		}
 	}
 
 	if (utf8Data && utf8DataSize > 0)

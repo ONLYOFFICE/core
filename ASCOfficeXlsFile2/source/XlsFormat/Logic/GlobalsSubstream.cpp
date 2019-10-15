@@ -48,6 +48,7 @@
 #include "Biff_unions/SHAREDSTRINGS.h"
 #include "Biff_unions/THEME.h"
 #include "Biff_unions/STYLES.h"
+#include "Biff_unions/XFS.h"
 
 #include "Biff_records/BOF.h"
 #include "Biff_records/WriteProtect.h"
@@ -335,6 +336,16 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.mandatory<FORMATTING>())
 				{
+					if (m_Formating ) //Zakaz_detalizatcii(08_fevralia_2014-21_fevralia_2014).XLS
+					{//check previus
+						FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+						XFS *xfs = fmts ? dynamic_cast<XFS*>(fmts->m_XFS.get()) : NULL;
+						
+						if (!xfs || (xfs->m_arCellXFs.empty()))
+						{
+							m_Formating = NULL;
+						}
+					}
 					if (!m_Formating )
 					{
 						m_Formating = elements_.back();
@@ -342,24 +353,10 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 						FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
 
 						if (fmts)
-						{		
-							global_info_->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
+						{	
+							global_info_->cellStyleDxfs_count = fmts->m_arDXF.size(); 
 						}
 					}
-					//else
-					//{
-					//	FORMATTING* fmts		= dynamic_cast<FORMATTING*>(m_Formating.get());
-					//	FORMATTING* fmts_add	= dynamic_cast<FORMATTING*>(elements_.back().get());
-
-					//	if (fmts && fmts_add)
-					//	{
-					//		fmts->concatinate(fmts_add);
-					//		elements_.pop_back();
-
-					//		global_info_->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
-					//		global_info_->m_arFonts				= &fmts->m_arFonts;
-					//	}
-					//}
 				}		
 			}break;
 			case rt_SXStreamID:			

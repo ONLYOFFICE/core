@@ -151,7 +151,7 @@ namespace NSGuidesVML
             for (int i = 0; i < nAdjCount; ++i)
             {
                 std::wstring strMem = _T("");
-                strMem.Format(_T("<a:gd name=\"adj%d\" fmla=\"val %d\" />"), i , m_arAdj[i]);
+                strMem.Format(_T("<a:gd name=\"adj%d\" fmla=\"val %d\"/>"), i , m_arAdj[i]);
                 strAdjRes += strMem;
             }
         }
@@ -1337,7 +1337,7 @@ namespace NSGuidesVML
         std::wstring GetXML (std::wstring strFmlaNum, std::wstring strSign, std::wstring strFrmla)
         {
 
-            return _T("<a:gd name=") + strFmlaNum + _T("fmla=\"") + strSign + strFrmla + _T("\" />");
+            return _T("<a:gd name=") + strFmlaNum + _T("fmla=\"") + strSign + strFrmla + _T("\"/>");
         }
 
         std::wstring ConvertVal (LONG lparam1, ParamType eType1, bool bExtShape1)
@@ -1651,7 +1651,7 @@ namespace NSGuidesVML
             m_lIndexSrc++;
             m_arIndexDst.push_back(m_lIndexDst);
             strIndex.Format( _T("%d"), m_lIndexDst);
-            strGuidsRes += _T("<a:gd name=\"gd") + strIndex + _T("\" fmla=\"*/ ") + strBase + _T(" ") + strFrmla + _T("\" />");
+            strGuidsRes += _T("<a:gd name=\"gd") + strIndex + _T("\" fmla=\"*/ ") + strBase + _T(" ") + strFrmla + _T("\"/>");
             m_lIndexDst++;
 
             return m_lIndexDst-1;
@@ -1765,7 +1765,7 @@ namespace NSGuidesVML
     static wchar_t*	g_guide_string1			= L"<a:gd name=\"gd";
     static int		g_guide_string1_len		= __wstrlen(g_guide_string1);
 
-    static wchar_t*	g_guide_string2			= L"\" />";
+    static wchar_t*	g_guide_string2			= L"\"/>";
     static int		g_guide_string2_len		= __wstrlen(g_guide_string2);
 
     static wchar_t*	g_guide_string_val		= L"\" fmla=\"val ";
@@ -1992,7 +1992,7 @@ namespace NSGuidesVML
                 m_oAdjRes.WriteINT(i);
                 m_oAdjRes.WriteString(_T("\" fmla=\"val "));
                 m_oAdjRes.WriteINT(arAdj[i]);
-                m_oAdjRes.WriteString(_T("\" />"));
+                m_oAdjRes.WriteString(_T("\"/>"));
             }
             for (int i = (int)arAdj.size(); i <= m_lMaxAdjUse; ++i)
             {
@@ -2000,7 +2000,7 @@ namespace NSGuidesVML
                 m_oAdjRes.WriteINT(i);
                 m_oAdjRes.WriteString(_T("\" fmla=\"val "));
                 m_oAdjRes.WriteINT(0);
-                m_oAdjRes.WriteString(_T("\" />"));
+                m_oAdjRes.WriteString(_T("\"/>"));
             }
         }
         void ConvertFormula(const std::vector<CFormula>& arFormulas)
@@ -2851,7 +2851,7 @@ namespace NSGuidesVML
             m_oGuidsRes.WriteString(strBase);
             m_oGuidsRes.WriteString(_T(" "));
             m_oGuidsRes.WriteString(strFrmla);
-            m_oGuidsRes.WriteString(_T("\" />"));
+            m_oGuidsRes.WriteString(_T("\"/>"));
 
             m_lIndexDst++;
 

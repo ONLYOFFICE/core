@@ -667,14 +667,17 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 			}
 			if (chart3D->fPerspective == false)
 			{
-				CP_XML_NODE(L"c:rAngAx") {  CP_XML_ATTR (L"val" , L"true"); }
+				CP_XML_NODE(L"c:rAngAx") {  CP_XML_ATTR (L"val" , L"1"); }
 			}
 			else
 			{
+				CP_XML_NODE(L"c:rAngAx") 
+				{  
+					CP_XML_ATTR (L"val" , L"0"); 
+				}
 				CP_XML_NODE(L"c:perspective") 
 				{
 					CP_XML_ATTR (L"val" , chart3D->pcDist); 
-					CP_XML_NODE(L"c:rAngAx") {  CP_XML_ATTR (L"val" , L"false"); }
 				}
 			}
 		}
@@ -1076,7 +1079,7 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 						present_idx.insert(std::make_pair(series_data_format->xi, true));
 				}
 				series_ss->serialize	(CP_XML_STREAM(), crt->m_iChartType, series_data_format->xi);
-				series_ss->serialize2	(CP_XML_STREAM(), crt->m_iChartType);
+				//series_ss->serialize2	(CP_XML_STREAM(), crt->m_iChartType); // 3d shape box не нужен - Book 78 3D.xls
 			}
 		}
 

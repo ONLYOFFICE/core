@@ -191,6 +191,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(unsigned int) style_page_number_;
+    _CP_OPT(unsigned int) style_first_page_number_;
 
 };
 

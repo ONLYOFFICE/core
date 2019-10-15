@@ -852,11 +852,11 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
 	common_draw_fill_attlist_.add_attributes(Attributes);
+	common_page_number_attlist_.add_attributes(Attributes);
 
 	CP_APPLY_ATTR(L"style:register-truth-ref-style-name", style_register_truth_ref_style_name_);
     CP_APPLY_ATTR(L"style:print",					style_print_);
     CP_APPLY_ATTR(L"style:print-page-order",		style_print_page_order_);
-    CP_APPLY_ATTR(L"style:first-page-number",		style_first_page_number_);
     CP_APPLY_ATTR(L"style:scale-to",				style_scale_to_);
     CP_APPLY_ATTR(L"style:scale-to_pages",			style_scale_to_pages_);
     CP_APPLY_ATTR(L"style:table-centering",			style_table_centering_);
@@ -872,6 +872,8 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     CP_APPLY_ATTR(L"style:layout-grid-ruby-below",	style_layout_grid_ruby_below_);  
     CP_APPLY_ATTR(L"style:layout-grid-print",		style_layout_grid_print_);
     CP_APPLY_ATTR(L"style:layout-grid-display",		style_layout_grid_display_);
+	CP_APPLY_ATTR(L"loext:scale-to-X",				loext_scale_to_X_);
+	CP_APPLY_ATTR(L"loext:scale-to-Y",				loext_scale_to_Y_);
 }
 
 bool style_page_layout_properties_attlist::compare( const style_page_layout_properties_attlist & attlst )
@@ -1266,7 +1268,9 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				else CP_XML_ATTR(L"footer", 0.7875);
 			}
 		}
-		if (attlist_.fo_page_width_ || attlist_.fo_page_height_ || attlist_.style_print_orientation_)
+		if (attlist_.fo_page_width_ || attlist_.fo_page_height_ || attlist_.style_print_orientation_ || 
+			attlist_.style_scale_to_ || attlist_.loext_scale_to_X_ || attlist_.loext_scale_to_Y_ || 
+			attlist_.common_page_number_attlist_.style_first_page_number_)
 		{
 			CP_XML_NODE(L"pageSetup")
 			{
@@ -1285,6 +1289,23 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				if (attlist_.style_print_orientation_)
 				{
 					CP_XML_ATTR(L"orientation", *attlist_.style_print_orientation_);
+				}
+				if (attlist_.loext_scale_to_X_)
+				{
+					CP_XML_ATTR(L"fitToWidth", *attlist_.loext_scale_to_X_);
+				}
+				if (attlist_.loext_scale_to_Y_)
+				{
+					CP_XML_ATTR(L"fitToHeight", *attlist_.loext_scale_to_Y_);
+				}
+				if (attlist_.style_scale_to_)
+				{
+					CP_XML_ATTR(L"scale", (int)attlist_.style_scale_to_->get_value());
+				}
+				if (attlist_.common_page_number_attlist_.style_first_page_number_)
+				{
+					CP_XML_ATTR(L"useFirstPageNumber", 1);
+					CP_XML_ATTR(L"firstPageNumber", *attlist_.common_page_number_attlist_.style_first_page_number_);
 				}
 			}
 		}

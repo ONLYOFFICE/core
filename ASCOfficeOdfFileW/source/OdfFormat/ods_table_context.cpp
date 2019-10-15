@@ -34,6 +34,7 @@
 #include "ods_table_context.h"
 #include "table.h"
 #include "text_elements.h"
+#include "table_data_pilot_tables.h"
 
 #include "ods_conversion_context.h"
 #include "logging.h"
@@ -175,6 +176,26 @@ void ods_table_context::add_autofilter(std::wstring ref)
 	table_database_ranges_.root->add_child_element(elm);
 	table_database_ranges_.elements.push_back(elm);
 
+}
+void ods_table_context::start_pivot_table(const std::wstring &name)
+{
+	if (!table_pivots_.root) create_element(L"table", L"data-pilot-tables", table_pivots_.root, &context_);
+
+	office_element_ptr elm;
+	create_element(L"table", L"data-pilot-table", elm, &context_);
+	table_data_pilot_table *pilot_table = dynamic_cast<table_data_pilot_table*>(elm.get());
+
+	if (!pilot_table) return;
+
+	pilot_table->table_name_ = name;
+
+	table_pivots_.root->add_child_element(elm);
+
+	state()->start_pilot_table(elm);
+}
+void ods_table_context::end_pivot_table()
+{
+	state()->end_pilot_table();
 }
 bool ods_table_context::start_data_validation( const std::wstring &strRef, int type)
 {

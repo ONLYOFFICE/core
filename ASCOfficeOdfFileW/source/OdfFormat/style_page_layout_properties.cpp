@@ -139,16 +139,18 @@ void style_page_layout_properties_attlist::serialize(CP_ATTR_NODE)
     common_shadow_attlist_.serialize			(CP_GET_XML_NODE());
     common_background_color_attlist_.serialize	(CP_GET_XML_NODE());
 	common_draw_fill_attlist_.serialize			(CP_GET_XML_NODE());
+	common_page_number_attlist_.serialize		(CP_GET_XML_NODE());
     
 	CP_XML_ATTR_OPT	(L"style:register-truth-ref-style-name",	style_register_truth_ref_style_name_);
     CP_XML_ATTR_OPT	(L"style:print",							style_print_);
     CP_XML_ATTR_OPT	(L"style:print-page-order",					style_print_page_order_);
-    CP_XML_ATTR_OPT	(L"style:first-page-number",				style_first_page_number_);
     CP_XML_ATTR_OPT	(L"style:scale-to",							style_scale_to_);
     CP_XML_ATTR_OPT	(L"style:scale-to_pages",					style_scale_to_pages_);
     CP_XML_ATTR_OPT	(L"style:table-centering",					style_table_centering_);
     CP_XML_ATTR_OPT	(L"style:footnote-max-height",				style_footnote_max_height_);
-    
+	CP_XML_ATTR_OPT	(L"loext:scale-to-X",						loext_scale_to_X_);
+	CP_XML_ATTR_OPT	(L"loext:scale-to-Y",						loext_scale_to_Y_);
+
 	common_writing_mode_attlist_.serialize(CP_GET_XML_NODE());
     
 	CP_XML_ATTR_OPT	(L"style:layout-grid-mode",			style_layout_grid_mode_);

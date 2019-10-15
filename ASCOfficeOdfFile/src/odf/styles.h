@@ -891,11 +891,12 @@ public:
     
     odf_types::common_background_color_attlist	common_background_color_attlist_;
  	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
+
+	odf_types::common_page_number_attlist		common_page_number_attlist_;
   
 	_CP_OPT(std::wstring)					style_register_truth_ref_style_name_;
     _CP_OPT(std::wstring)					style_print_;
     _CP_OPT(odf_types::direction)			style_print_page_order_;
-    _CP_OPT(std::wstring)					style_first_page_number_;
     _CP_OPT(odf_types::percent)				style_scale_to_;
     _CP_OPT(unsigned int)					style_scale_to_pages_;
     _CP_OPT(odf_types::table_centering)		style_table_centering_;
@@ -909,6 +910,8 @@ public:
     _CP_OPT(bool)							style_layout_grid_ruby_below_;  
 	_CP_OPT(bool)							style_layout_grid_print_;
     _CP_OPT(bool)							style_layout_grid_display_;
+	_CP_OPT(unsigned int)					loext_scale_to_X_;
+	_CP_OPT(unsigned int)					loext_scale_to_Y_;
 
 };
 

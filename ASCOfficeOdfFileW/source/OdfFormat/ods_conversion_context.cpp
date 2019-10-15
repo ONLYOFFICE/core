@@ -380,6 +380,14 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		current_table()->add_hyperlink(ref, col, row, link, bLocation);
 	}
 }
+void ods_conversion_context::start_pivot_table(const std::wstring &name)
+{
+	return table_context_.start_pivot_table(name);
+}
+void ods_conversion_context::end_pivot_table()
+{
+	table_context_.end_pivot_table();
+}
 bool ods_conversion_context::start_data_validation(const std::wstring & ref, int type)
 {
 	return table_context_.start_data_validation(ref, type);

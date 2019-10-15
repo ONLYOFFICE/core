@@ -265,21 +265,30 @@ void common_break_attlist::serialize(CP_ATTR_NODE)
 
 void common_page_number_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	_CP_OPT(std::wstring) str;
-    CP_APPLY_ATTR(L"style:page-number", str);
+	_CP_OPT(std::wstring) str1;
+    CP_APPLY_ATTR(L"style:page-number", str1);
 
-	if ((str) && (*str != L"auto"))
+	if ((str1) && (*str1 != L"auto"))
 	{
-		style_page_number_ = XmlUtils::GetInteger(*str);
+		style_page_number_ = XmlUtils::GetInteger(*str1);
+	}
+	
+	_CP_OPT(std::wstring) str2;
+    CP_APPLY_ATTR(L"style:first-page-number", str2);
+	if ((str2) && (*str2 != L"continue"))
+	{
+		style_first_page_number_ = XmlUtils::GetInteger(*str1);
 	}
 }
 void common_page_number_attlist::apply_from(const common_page_number_attlist & Other)
 {
     _CP_APPLY_PROP(style_page_number_, Other.style_page_number_);
+    _CP_APPLY_PROP(style_first_page_number_, Other.style_first_page_number_);
 }
 void common_page_number_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"style:page-number", style_page_number_);
+    CP_XML_ATTR_OPT(L"style:first-page-number", style_first_page_number_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

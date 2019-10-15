@@ -623,6 +623,34 @@ void odf_page_layout_context::set_page_orientation(int type)
 		props->attlist_.style_print_orientation_ = L"portrait";
 
 }
+void odf_page_layout_context::set_page_scale(double val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.style_scale_to_ = val;
+}
+void odf_page_layout_context::set_page_scaleToX(int val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.loext_scale_to_X_ = val;
+}
+void odf_page_layout_context::set_page_scaleToY(int val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.loext_scale_to_Y_ = val;
+}
+void odf_page_layout_context::set_page_first_page(int val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->attlist_.common_page_number_attlist_.style_first_page_number_ = val;
+}
 
 }
 }

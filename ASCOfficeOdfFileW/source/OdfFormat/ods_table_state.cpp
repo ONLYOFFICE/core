@@ -44,6 +44,7 @@
 #include "table.h"
 #include "office_annotation.h"
 #include "calcext_elements.h"
+#include "table_data_pilot_tables.h"
 #include "styles.h"
 
 #include "style_table_properties.h"
@@ -1484,10 +1485,17 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 	end_cell();
 }
 ///////////////////////////////////////////////////
+void ods_table_state::start_pilot_table(office_element_ptr & elm)
+{
+	pilot_table_state_.elm = elm;
+}
+void ods_table_state::end_pilot_table()
+{
+}
 void ods_table_state::start_conditional_formats()
 {
 	office_element_ptr elm;
-	create_element(L"calcext", L"conditional-formats",elm,context_);
+	create_element(L"calcext", L"conditional-formats", elm, context_);
 
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);

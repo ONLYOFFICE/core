@@ -15,7 +15,7 @@ if [[ -f "$SCRIPTPATH/boost_1_58_0.7z" ]]
 then
 echo "boost already downloaded"
 else
-wget $BOOST_URL || curl -O $BOOST_URL
+wget $BOOST_URL || curl -O -L $BOOST_URL
 fi
 
 if [ -d "$SCRIPTPATH/boost_1_58_0" ]; then

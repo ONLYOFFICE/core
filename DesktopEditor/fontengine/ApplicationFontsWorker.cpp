@@ -32,6 +32,8 @@
 #include "ApplicationFontsWorker.h"
 #include "application_generate_fonts.h"
 
+#define ONLYOFFICE_FONTS_VERSION_ 3
+
 CApplicationFontsWorker::CApplicationFontsWorker()
 {
     m_bIsUseSystemFonts = true;

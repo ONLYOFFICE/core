@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -59,8 +59,8 @@ static std::wstring GetCorrectSfntName(const char* name)
     bool isUtf8 = false;
     if (6 < name_len)
     {
-        if ('<' == name[0] || 'u' == name[1] || 't' == name[2] ||
-            'f' == name[3] || '8' == name[4] || '>' == name[5])
+        if ('<' == name[0] && 'u' == name[1] && 't' == name[2] &&
+            'f' == name[3] && '8' == name[4] && '>' == name[5])
         {
             name_cur = name + 6;
             name_len -= 6;

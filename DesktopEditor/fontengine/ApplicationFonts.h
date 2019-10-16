@@ -302,6 +302,7 @@ public:
     std::vector<NSFonts::CFontInfo*> GetAllByName (const std::wstring& strFontName);
 
     std::wstring GetFontBySymbol(int symbol);
+    void InitializeRanges(unsigned char* data);
 };
 
 class CApplicationFonts : public NSFonts::IApplicationFonts
@@ -322,6 +323,7 @@ public:
 
     void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
     void Initialize(bool bIsCheckSelection = true);
+    void InitializeRanges(unsigned char* data);
       
 	std::vector<std::wstring> GetSetupFontFiles();
 	void InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag = 0);

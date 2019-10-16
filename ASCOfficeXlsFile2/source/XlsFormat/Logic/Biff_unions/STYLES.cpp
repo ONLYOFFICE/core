@@ -130,9 +130,9 @@ int STYLES::serialize(std::wostream & stream)
 							{
 								name = L"Style " + std::to_wstring( i + 1);
 							}
-							CP_XML_ATTR(L"name", styleExt->stName.value());
+							CP_XML_ATTR(L"name", name);
 						
-							if (styleExt->fBuiltIn)
+							if (styleExt->fBuiltIn && styleExt->builtInData.istyBuiltIn < 255)
 							{
 								CP_XML_ATTR(L"builtinId", styleExt->builtInData.istyBuiltIn);
 								
@@ -141,10 +141,6 @@ int STYLES::serialize(std::wostream & stream)
 									CP_XML_ATTR(L"iLevel", styleExt->builtInData.iLevel);
 								}
 							}
-
-    //                        for (size_t i = 0; i < styleExt->xfProps.xfPropArray.size(); i++)
-							//{
-							//}
 						}
 						else if (style)
 						{

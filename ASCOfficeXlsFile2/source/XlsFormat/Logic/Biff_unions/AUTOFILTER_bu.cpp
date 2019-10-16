@@ -231,7 +231,9 @@ int AUTOFILTER::serialize(std::wostream & stream)
 									for (size_t k = 0 ; k < af12->arAF12Criteries.size(); k++)
 									{
 										AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(af12->arAF12Criteries[k].get());
+										
 										if (af12Criteria == NULL) continue;
+										if (af12Criteria->_str.empty()) continue;
 
 										CP_XML_NODE(L"filter")
 										{									

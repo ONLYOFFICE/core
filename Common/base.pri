@@ -111,6 +111,7 @@ core_linux {
 
 core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
+	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 }
 
 # PREFIXES

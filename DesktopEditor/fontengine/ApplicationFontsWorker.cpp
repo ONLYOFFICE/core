@@ -52,11 +52,12 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
     std::wstring strFontsSelectionBin   = m_sDirectory + L"/font_selection.bin";
 
     std::vector<std::string> strFonts;
+    std::wstring strFontsCheckPath = m_sDirectory + L"/fonts.log";
 
     if (true)
     {
         NSFile::CFileBinary oFile;
-        if (oFile.OpenFile(m_sDirectory + L"/fonts.log"))
+        if (oFile.OpenFile(strFontsCheckPath))
         {
             int nSize = oFile.GetFileSize();
             char* pBuffer = new char[nSize];
@@ -141,28 +142,16 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 
     if (!bIsEqual)
     {
+        if (NSFile::CFileBinary::Exists(strFontsCheckPath))
+            NSFile::CFileBinary::Remove(strFontsCheckPath);
         if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
             NSFile::CFileBinary::Remove(strAllFontsJSPath);
         if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
             NSFile::CFileBinary::Remove(strFontsSelectionBin);
-
-        if (strFonts.size() != 0)
-            NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts.log");
-
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(m_sDirectory + L"/fonts.log");
-#ifdef ONLYOFFICE_FONTS_VERSION_
-        oFile.WriteStringUTF8(L"ONLYOFFICE_FONTS_VERSION_");
-        oFile.WriteStringUTF8(std::to_wstring(ONLYOFFICE_FONTS_VERSION_));
-        oFile.WriteFile((BYTE*)"\n", 1);
-#endif
-        int nCount = (int)strFontsW_Cur.size();
-        for (int i = 0; i < nCount; ++i)
-        {
-            oFile.WriteStringUTF8(strFontsW_Cur[i]);
-            oFile.WriteFile((BYTE*)"\n", 1);
-        }
-        oFile.CloseFile();
+        if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail.png"))
+            NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail.png");
+        if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail@2x.png"))
+            NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail@2x.png");
 
         int nFlag = 3;
         if (!m_bIsUseOpenType)
@@ -172,6 +161,21 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 
         NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath, m_bIsNeedThumbnails ? m_sDirectory : L"", strFontsSelectionBin);
     }
+
+    NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strFontsCheckPath);
+#ifdef ONLYOFFICE_FONTS_VERSION_
+    oFile.WriteStringUTF8(L"ONLYOFFICE_FONTS_VERSION_");
+    oFile.WriteStringUTF8(std::to_wstring(ONLYOFFICE_FONTS_VERSION_));
+    oFile.WriteFile((BYTE*)"\n", 1);
+#endif
+    int nCount = (int)strFontsW_Cur.size();
+    for (int i = 0; i < nCount; ++i)
+    {
+        oFile.WriteStringUTF8(strFontsW_Cur[i]);
+        oFile.WriteFile((BYTE*)"\n", 1);
+    }
+    oFile.CloseFile();
 
     pApplicationF->Release();
     pApplicationF = NSFonts::NSApplication::Create();

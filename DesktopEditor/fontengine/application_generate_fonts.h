@@ -52,7 +52,7 @@
 //#define _GENERATE_FONT_MAP_
 
 #ifdef _GENERATE_FONT_MAP_
-#include "../../freetype_names/FontMaps/FontDictionary.h"
+#include "./../freetype_names/FontMaps/FontDictionary.h"
 #endif
 
 namespace NSCommon

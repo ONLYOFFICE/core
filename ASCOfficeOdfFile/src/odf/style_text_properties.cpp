@@ -943,10 +943,10 @@ void text_format_properties_content::docx_serialize(std::wostream & _rPr, fonts_
 		}
 
 		_rPr << L"<w:rFonts";
-			if (!w_ascii.empty())		_rPr << L" w:ascii=\""		<< w_ascii		<<"\"";
-			if (!w_hAnsi.empty())		_rPr << L" w:hAnsi=\""		<< w_hAnsi		<<"\"";
-			if (!w_eastAsia.empty())	_rPr << L" w:eastAsia=\""	<< w_eastAsia	<<"\"";
-			if (!w_cs.empty())			_rPr << L" w:cs=\""			<< w_cs			<<"\"";
+		if (!w_ascii.empty())	{XmlUtils::replace_all(w_ascii, L"\"", L"");	_rPr << L" w:ascii=\""		<< w_ascii		<<"\"";}
+		if (!w_hAnsi.empty())	{XmlUtils::replace_all(w_hAnsi, L"\"", L"");	_rPr << L" w:hAnsi=\""		<< w_hAnsi		<<"\"";}
+		if (!w_eastAsia.empty()){XmlUtils::replace_all(w_eastAsia, L"\"", L"");	_rPr << L" w:eastAsia=\""	<< w_eastAsia	<<"\"";}
+		if (!w_cs.empty())		{XmlUtils::replace_all(w_cs, L"\"", L"");		_rPr << L" w:cs=\""			<< w_cs			<<"\"";}
 		_rPr << L"/>";
 	}
 
@@ -1412,10 +1412,10 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 		}
 
 		_rPr << L"<w:rFonts";
-			if (!w_ascii.empty())		_rPr << L" w:ascii=\""		<< w_ascii		<<"\"";
-			if (!w_hAnsi.empty())		_rPr << L" w:hAnsi=\""		<< w_hAnsi		<<"\"";
-			if (!w_eastAsia.empty())	_rPr << L" w:eastAsia=\""	<< w_eastAsia	<<"\"";
-			if (!w_cs.empty())			_rPr << L" w:cs=\""			<< w_cs			<<"\"";
+		if (!w_ascii.empty())	{XmlUtils::replace_all(w_ascii, L"\"", L"");	_rPr << L" w:ascii=\""		<< w_ascii		<<"\"";}
+		if (!w_hAnsi.empty())	{XmlUtils::replace_all(w_hAnsi, L"\"", L"");	_rPr << L" w:hAnsi=\""		<< w_hAnsi		<<"\"";}
+		if (!w_eastAsia.empty()){XmlUtils::replace_all(w_eastAsia, L"\"", L"");	_rPr << L" w:eastAsia=\""	<< w_eastAsia	<<"\"";}
+		if (!w_cs.empty())		{XmlUtils::replace_all(w_cs, L"\"", L"");		_rPr << L" w:cs=\""			<< w_cs			<<"\"";}
         _rPr << L"/>";
     }
 

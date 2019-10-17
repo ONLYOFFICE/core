@@ -25,10 +25,6 @@ include(../OfficeUtils/OfficeUtils.pri)
 CONFIG += core_static_link_xml_full
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
-core_ios {
-    DEFINES += HAVE_UNISTD_H
-}
-
 # DOWNLOADER
 HEADERS += \
     ./FileDownloader/FileDownloader.h \

@@ -154,6 +154,10 @@ core_ios {
         message("iphonesimulator")
         CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
     }
+
+    !core_ios_no_unistd {
+        DEFINES += HAVE_UNISTD_H
+    }
 }
 
 core_debug {

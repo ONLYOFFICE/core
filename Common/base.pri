@@ -55,6 +55,11 @@ isEqual(QT_MAJOR_VERSION, 5) {
     }
 }
 
+ios {
+    CONFIG += core_ios
+    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE
+}
+
 win32:contains(QMAKE_TARGET.arch, x86_64): {
     CONFIG += core_win_64
 }
@@ -92,8 +97,10 @@ linux-g++-32 {
 
 
 mac {
-    CONFIG += core_mac
-    CONFIG += core_mac_64
+    !core_ios {
+        CONFIG += core_mac
+        CONFIG += core_mac_64
+    }
 }
 
 # DEFINES
@@ -139,6 +146,14 @@ core_mac_64 {
 }
 core_linux_arm {
     CORE_BUILDS_PLATFORM_PREFIX = arm
+}
+core_ios {
+    CORE_BUILDS_PLATFORM_PREFIX = ios
+
+    CONFIG(iphonesimulator, iphoneos|iphonesimulator): {
+        message("iphonesimulator")
+        CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
+    }
 }
 
 core_debug {

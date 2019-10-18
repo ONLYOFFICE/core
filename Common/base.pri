@@ -153,6 +153,37 @@ core_ios {
     CONFIG(iphonesimulator, iphoneos|iphonesimulator): {
         message("iphonesimulator")
         CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
+    } else {
+
+        QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
+        !plugin {
+            CONFIG += core_ios_main_arch
+            CONFIG += core_ios_nomain_arch
+        } else {
+            CONFIG += core_ios_nomain_arch
+        }
+
+        core_ios_main_arch {
+            QMAKE_APPLE_DEVICE_ARCHS = arm64
+            core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=
+
+            !core_ios_no_32 {
+                QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
+            }
+        } else {
+            plugin : TARGET = $$join(TARGET, TARGET, "", "_addition")
+            QMAKE_APPLE_DEVICE_ARCHS=
+            QMAKE_APPLE_SIMULATOR_ARCHS=
+        }
+
+        core_ios_nomain_arch {
+            QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS arm64e
+            !core_ios_no_32 {
+                QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
+            }
+        }
+
+        # plugin (all archs): lipo -create ./target.dylib ./target_addition.dylib -output ./target.dylib
     }
 
     !core_ios_no_unistd {

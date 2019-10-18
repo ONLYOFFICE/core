@@ -45,6 +45,17 @@ core_mac {
     HAVE_STDINCLUDES
 }
 
+core_ios {
+    DEFINES += \
+    HAVE_UNISTD_H \
+    HAVE_MBSTATE_T \
+    GCONTAINER_NO_MEMBER_TEMPLATES="1" \
+    HAS_WCHAR \
+    HAVE_WCHAR_H \
+    UNIX \
+    HAVE_STDINCLUDES
+}
+
 core_windows {
 LIBS += -lgdi32 \
         -ladvapi32 \

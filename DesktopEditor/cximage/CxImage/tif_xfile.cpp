@@ -119,7 +119,6 @@ extern	char* realloc();
 #define DbgMsgBox MessageBoxA
 #endif
 
-#ifndef _IOS
 tdata_t
 _TIFFmalloc(tsize_t s)
 {
@@ -156,6 +155,7 @@ _TIFFmemcmp(const tdata_t p1, const tdata_t p2, tsize_t c)
 	return (memcmp(p1, p2, (size_t) c));
 }
 
+#ifndef _IOS
 static void
 Win32WarningHandler(const char* module, const char* fmt, va_list ap)
 {
@@ -214,7 +214,11 @@ Win32ErrorHandler(const char* module, const char* fmt, va_list ap)
 #endif
 }
 TIFFErrorHandler _TIFFerrorHandler = Win32ErrorHandler;
-
+#else
+static void Win32WarningHandler(const char* module, const char* fmt, va_list ap) {}
+static void Win32ErrorHandler(const char* module, const char* fmt, va_list ap) {}
+TIFFErrorHandler _TIFFwarningHandler = Win32WarningHandler;
+TIFFErrorHandler _TIFFerrorHandler = Win32ErrorHandler;
 #endif
 
 #endif

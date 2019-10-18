@@ -31,10 +31,12 @@
  */
 #include "./UnicodeConverter.h"
 
+#ifndef DISABLE_ICU
 #include "unicode/utypes.h"
 #include "unicode/ustring.h"
 #include "unicode/ucnv.h"     /* C   Converter API    */
 #include "unicode/usprep.h"
+#endif
 
 #include "../DesktopEditor/common/File.h"
 
@@ -82,6 +84,7 @@ namespace NSUnicodeConverter
 
         std::string SASLprepToUtf8(const wchar_t* sInput, const unsigned int& nInputLen)
         {
+#ifndef DISABLE_ICU
             std::string sRes;
             UErrorCode status = U_ZERO_ERROR;
 
@@ -135,10 +138,16 @@ namespace NSUnicodeConverter
                 delete []pUChar;
             }
             return sRes;
+#else
+            std::wstring strInput(sInput, nInputLen);
+            std::string sRes(strInput.begin(), strInput.end());
+            return sRes;
+#endif
         }
 
         std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName)
         {
+#ifndef DISABLE_ICU
             std::string sRes = "";
             UErrorCode status = U_ZERO_ERROR;
             UConverter* conv = ucnv_open(converterName, &status);
@@ -183,6 +192,11 @@ namespace NSUnicodeConverter
                 sRes = std::string(ws.begin(), ws.end());
             }
             return sRes;
+#else
+            std::wstring strInput(sInput, nInputLen);
+            std::string sRes(strInput.begin(), strInput.end());
+            return sRes;
+#endif
         }
 
         std::string fromUnicode(const std::wstring& sInput, const char* converterName)
@@ -192,6 +206,7 @@ namespace NSUnicodeConverter
 
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage)
         {
+#ifndef DISABLE_ICU
             std::wstring sRes = L"";
             UErrorCode status = U_ZERO_ERROR;
             UConverter* conv = ucnv_openCCSID(nCodePage, UCNV_UNKNOWN, &status);
@@ -243,9 +258,15 @@ namespace NSUnicodeConverter
                 sRes = std::wstring(ws.begin(), ws.end());
             }
             return sRes;
+#else
+            std::string strInput(sInput, nInputLen);
+            std::wstring sRes(strInput.begin(), strInput.end());
+            return sRes;
+#endif
         }
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName)
         {
+#ifndef DISABLE_ICU
             std::wstring sRes = L"";
             UErrorCode status = U_ZERO_ERROR;
             UConverter* conv = ucnv_open(converterName, &status);
@@ -297,10 +318,16 @@ namespace NSUnicodeConverter
                 sRes = std::wstring(ws.begin(), ws.end());
             }
             return sRes;
+#else
+            std::string strInput(sInput, nInputLen);
+            std::wstring sRes(strInput.begin(), strInput.end());
+            return sRes;
+#endif
         }
 
         std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, const char* converterName)
         {
+#ifndef DISABLE_ICU
             std::wstring sRes = L"";
             UErrorCode status = U_ZERO_ERROR;
             UConverter* conv = ucnv_open(converterName, &status);
@@ -347,9 +374,15 @@ namespace NSUnicodeConverter
             }
 
             return sRes;
+#else
+            std::string strInput(sInput, nInputLen);
+            std::wstring sRes(strInput.begin(), strInput.end());
+            return sRes;
+#endif
         }
         std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, int nCodePage)
         {
+#ifndef DISABLE_ICU
             std::wstring sRes = L"";
             UErrorCode status = U_ZERO_ERROR;
             UConverter* conv = ucnv_openCCSID(nCodePage, UCNV_UNKNOWN, &status);
@@ -396,6 +429,11 @@ namespace NSUnicodeConverter
             }
 
             return sRes;
+#else
+            std::string strInput(sInput, nInputLen);
+            std::wstring sRes(strInput.begin(), strInput.end());
+            return sRes;
+#endif
         }
         inline std::wstring toUnicode(const std::string& sInput, const char* converterName)
         {

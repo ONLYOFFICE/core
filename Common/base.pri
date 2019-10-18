@@ -57,7 +57,7 @@ isEqual(QT_MAJOR_VERSION, 5) {
 
 ios {
     CONFIG += core_ios
-    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE
+    DEFINES += _IOS IOS LINUX _LINUX _MAC _XCODE
 }
 
 win32:contains(QMAKE_TARGET.arch, x86_64): {
@@ -118,7 +118,7 @@ core_linux {
 
 core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
-	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 }
 
 # PREFIXES
@@ -160,7 +160,7 @@ core_ios {
             CONFIG += core_ios_main_arch
             CONFIG += core_ios_nomain_arch
         } else {
-            CONFIG += core_ios_nomain_arch
+            CONFIG += core_ios_main_arch
         }
 
         core_ios_main_arch {

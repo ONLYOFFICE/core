@@ -52,16 +52,13 @@ namespace NSUnicodeConverter
         ~CUnicodeConverter();
 
         std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName);
-        std::string fromUnicode(const std::wstring& sSrc, const char* sCodePage);
+        std::string fromUnicode(const std::wstring& sSrc, const char* converterName);
 
-        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName);
-        std::wstring toUnicode(const std::string& sSrc, const char* sCodePage);
+        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName, bool isExact = false);
+        std::wstring toUnicode(const std::string& sSrc, const char* converterName, bool isExact = false);
 
-        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage);
-        std::wstring toUnicode(const std::string& sSrc, int nCodePage);
-
-        std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, const char* converterName);
-        std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, int nCodePage);
+        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage, bool isExact = false);
+        std::wstring toUnicode(const std::string& sSrc, int nCodePage, bool isExact = false);
 
         std::string SASLprepToUtf8(const std::wstring &sSrc);
     private:

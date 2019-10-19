@@ -31,12 +31,10 @@
  */
 #include "./UnicodeConverter.h"
 
-#ifndef DISABLE_ICU
 #include "unicode/utypes.h"
 #include "unicode/ustring.h"
 #include "unicode/ucnv.h"     /* C   Converter API    */
 #include "unicode/usprep.h"
-#endif
 
 #include "../DesktopEditor/common/File.h"
 

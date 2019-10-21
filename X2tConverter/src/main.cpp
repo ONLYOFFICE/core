@@ -76,10 +76,19 @@ static std::wstring utf8_to_unicode(const char *src)
 }
 #endif
 
+#ifdef BUILD_X2T_AS_LIBRARY_DYLIB
+#if !defined(_WIN32) && !defined (_WIN64)
+    int main_lib(int argc, char *argv[])
+#else
+    int wmain_lib(int argc, wchar_t *argv[])
+#endif
+#endif
+#ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 #if !defined(_WIN32) && !defined (_WIN64)
 	int main(int argc, char *argv[])
 #else
 	int wmain(int argc, wchar_t *argv[])
+#endif
 #endif
 {
    // check arguments

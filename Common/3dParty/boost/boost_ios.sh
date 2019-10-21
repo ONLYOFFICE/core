@@ -18,7 +18,8 @@
 #
 #===============================================================================
 
-BOOST_LIBS="date_time filesystem system regex"
+#BOOST_LIBS="date_time filesystem system regex"
+BOOST_LIBS="regex"
 
 BUILD_IOS=
 CLEAN=

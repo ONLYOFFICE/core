@@ -20,6 +20,8 @@ ios {
     CONFIG += plugin
 
     CONFIG += core_static_link_libstd
+
+    QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
 }
 
 include(X2tConverter.pri)
@@ -29,5 +31,6 @@ include(X2tConverter.pri)
 
     DESTDIR = "$$PWD/../../../build/bin/$$CORE_BUILDS_PLATFORM_PREFIX"
 } else {
+    HEADERS += ../../src/dylib/x2t.h
     SOURCES += ../../src/dylib/x2t.cpp
 }

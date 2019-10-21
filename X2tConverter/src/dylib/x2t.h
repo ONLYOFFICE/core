@@ -56,9 +56,10 @@
     #define x2tchar wchar_t
 #endif
 
-namespace NSX2T
-{
-    X2T_DECL int Convert(int argc, x2tchar *argv[]);
+extern "C" {
+
+X2T_DECL int X2T_Convert(int argc, x2tchar *argv[]);
+
 }
 
 #endif //_BUILD_FILE_X2T_DYLIB_

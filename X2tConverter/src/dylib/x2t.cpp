@@ -33,7 +33,7 @@
 #include "./x2t.h"
 #include "./../main.cpp"
 
-int NSX2T::Convert(int argc, x2tchar *argv[])
+int X2T_Convert(int argc, x2tchar *argv[])
 {
     return main_lib(argc, argv);
 }

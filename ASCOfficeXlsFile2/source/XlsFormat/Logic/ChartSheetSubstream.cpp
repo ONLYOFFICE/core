@@ -419,12 +419,6 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 			parent0->m_mapCRTIndex.insert(std::make_pair(crt->m_indexCrt, i));
 		}
 	}
-	if (charts->m_arSERIESFORMAT.empty() && !parent0->m_arCRT.empty())
-	{
-		std::vector<int> ser;
-		m_mapTypeChart.insert(std::make_pair(0, ser));
-		return;
-	}
 
 	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
@@ -472,8 +466,16 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 		{
 			it->second.push_back(i);
 		}
-
-	}	
+	}
+	for (size_t i = 0; i < parent0->m_arCRT.size(); i++)
+	{
+		std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(i);
+		if (it == m_mapTypeChart.end())
+		{
+			std::vector<int> ser;
+			m_mapTypeChart.insert(std::make_pair(i, ser));
+		}
+	}
 }
 
 void ChartSheetSubstream::recalc(SERIESDATA* data)

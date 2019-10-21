@@ -32,6 +32,7 @@
 
 #include "DataLabExtContents.h"
 #include "../Biff_structures/FrtHeader.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
@@ -88,14 +89,14 @@ int DataLabExtContents::serialize(std::wostream & _stream)
 		{
 			CP_XML_NODE(L"c:separator")
 			{
-				CP_XML_STREAM() << rgchSep.value();
+				CP_XML_STREAM() << XmlUtils::EncodeXmlString(rgchSep.value());
 			}
 		}
 		if (is_area == false)
 		{
 			CP_XML_NODE(L"c:showCatName")
 			{
-				CP_XML_ATTR (L"val" , fCatName); 
+				CP_XML_ATTR (L"val", fCatName); 
 			}		
 			CP_XML_NODE(L"c:showSerName") {	CP_XML_ATTR (L"val" , 0); }	
 		}

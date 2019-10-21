@@ -56,10 +56,14 @@
     #define x2tchar wchar_t
 #endif
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 X2T_DECL int X2T_Convert(int argc, x2tchar *argv[]);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif //_BUILD_FILE_X2T_DYLIB_

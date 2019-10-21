@@ -156,12 +156,7 @@ core_ios {
     } else {
 
         QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
-        !plugin {
-            CONFIG += core_ios_main_arch
-            CONFIG += core_ios_nomain_arch
-        } else {
-            CONFIG += core_ios_main_arch
-        }
+        CONFIG += core_ios_main_arch
 
         core_ios_main_arch {
             QMAKE_APPLE_DEVICE_ARCHS = arm64
@@ -182,8 +177,6 @@ core_ios {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
             }
         }
-
-        # plugin (all archs): lipo -create ./target.dylib ./target_addition.dylib -output ./target.dylib
     }
 
     !core_ios_no_unistd {

@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BE3FF581235F2D8B00FC270F /* libDjVuFile.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6E235E3819004F09A4 /* libDjVuFile.dylib */; };
+		BE3FF583235F2D8D00FC270F /* libdoctrenderer.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA66235E3819004F09A4 /* libdoctrenderer.dylib */; };
+		BE3FF584235F2D8F00FC270F /* libgraphics.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA65235E3819004F09A4 /* libgraphics.dylib */; };
+		BE3FF585235F2D9100FC270F /* libHtmlFile.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6C235E3819004F09A4 /* libHtmlFile.dylib */; };
+		BE3FF586235F2DC800FC270F /* libHtmlRenderer.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA67235E3819004F09A4 /* libHtmlRenderer.dylib */; };
+		BE3FF587235F2DCA00FC270F /* libkernel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA68235E3819004F09A4 /* libkernel.dylib */; };
+		BE3FF588235F2DCC00FC270F /* libPdfReader.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6F235E3819004F09A4 /* libPdfReader.dylib */; };
+		BE3FF589235F2DCE00FC270F /* libPdfWriter.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA69235E3819004F09A4 /* libPdfWriter.dylib */; };
+		BE3FF58A235F2DD000FC270F /* libUnicodeConverter.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6A235E3819004F09A4 /* libUnicodeConverter.dylib */; };
+		BE3FF58B235F2DD200FC270F /* libx2t.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6D235E3819004F09A4 /* libx2t.dylib */; };
+		BE3FF58C235F2DD400FC270F /* libXpsFile.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6B235E3819004F09A4 /* libXpsFile.dylib */; };
 		BE53FA4B235E37C2004F09A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53FA4A235E37C2004F09A4 /* AppDelegate.m */; };
 		BE53FA4E235E37C2004F09A4 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53FA4D235E37C2004F09A4 /* SceneDelegate.m */; };
 		BE53FA51235E37C2004F09A4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53FA50235E37C2004F09A4 /* ViewController.m */; };
@@ -26,18 +37,31 @@
 		BE53FA78235E3819004F09A4 /* libx2t.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6D235E3819004F09A4 /* libx2t.dylib */; };
 		BE53FA79235E3819004F09A4 /* libDjVuFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6E235E3819004F09A4 /* libDjVuFile.dylib */; };
 		BE53FA7A235E3819004F09A4 /* libPdfReader.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6F235E3819004F09A4 /* libPdfReader.dylib */; };
-		BE53FA7B235E3D63004F09A4 /* libDjVuFile.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA6E235E3819004F09A4 /* libDjVuFile.dylib */; };
-		BE53FA7C235E3D63004F09A4 /* libdoctrenderer.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA66235E3819004F09A4 /* libdoctrenderer.dylib */; };
-		BE53FA7D235E3D63004F09A4 /* libgraphics.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA65235E3819004F09A4 /* libgraphics.dylib */; };
-		BE53FA7E235E3D63004F09A4 /* libHtmlFile.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA6C235E3819004F09A4 /* libHtmlFile.dylib */; };
-		BE53FA7F235E3D63004F09A4 /* libHtmlRenderer.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA67235E3819004F09A4 /* libHtmlRenderer.dylib */; };
-		BE53FA80235E3D63004F09A4 /* libkernel.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA68235E3819004F09A4 /* libkernel.dylib */; };
-		BE53FA81235E3D63004F09A4 /* libPdfReader.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA6F235E3819004F09A4 /* libPdfReader.dylib */; };
-		BE53FA82235E3D63004F09A4 /* libPdfWriter.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA69235E3819004F09A4 /* libPdfWriter.dylib */; };
-		BE53FA83235E3D63004F09A4 /* libUnicodeConverter.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA6A235E3819004F09A4 /* libUnicodeConverter.dylib */; };
-		BE53FA84235E3D63004F09A4 /* libx2t.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA6D235E3819004F09A4 /* libx2t.dylib */; };
-		BE53FA85235E3D63004F09A4 /* libXpsFile.dylib in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA6B235E3819004F09A4 /* libXpsFile.dylib */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BE3FF582235F2D8B00FC270F /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BE3FF58A235F2DD000FC270F /* libUnicodeConverter.dylib in Embed Libraries */,
+				BE3FF58C235F2DD400FC270F /* libXpsFile.dylib in Embed Libraries */,
+				BE3FF58B235F2DD200FC270F /* libx2t.dylib in Embed Libraries */,
+				BE3FF584235F2D8F00FC270F /* libgraphics.dylib in Embed Libraries */,
+				BE3FF581235F2D8B00FC270F /* libDjVuFile.dylib in Embed Libraries */,
+				BE3FF589235F2DCE00FC270F /* libPdfWriter.dylib in Embed Libraries */,
+				BE3FF588235F2DCC00FC270F /* libPdfReader.dylib in Embed Libraries */,
+				BE3FF583235F2D8D00FC270F /* libdoctrenderer.dylib in Embed Libraries */,
+				BE3FF586235F2DC800FC270F /* libHtmlRenderer.dylib in Embed Libraries */,
+				BE3FF585235F2D9100FC270F /* libHtmlFile.dylib in Embed Libraries */,
+				BE3FF587235F2DCA00FC270F /* libkernel.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		BE53FA46235E37C2004F09A4 /* DocumentConverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DocumentConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -153,7 +177,8 @@
 				BE53FA42235E37C2004F09A4 /* Sources */,
 				BE53FA43235E37C2004F09A4 /* Frameworks */,
 				BE53FA44235E37C2004F09A4 /* Resources */,
-				BE53FA86235E3E25004F09A4 /* ShellScript */,
+				BE3FF582235F2D8B00FC270F /* Embed Libraries */,
+				BE53FA86235E3E25004F09A4 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -201,17 +226,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE53FA7B235E3D63004F09A4 /* libDjVuFile.dylib in Resources */,
-				BE53FA7C235E3D63004F09A4 /* libdoctrenderer.dylib in Resources */,
-				BE53FA7D235E3D63004F09A4 /* libgraphics.dylib in Resources */,
-				BE53FA7E235E3D63004F09A4 /* libHtmlFile.dylib in Resources */,
-				BE53FA7F235E3D63004F09A4 /* libHtmlRenderer.dylib in Resources */,
-				BE53FA80235E3D63004F09A4 /* libkernel.dylib in Resources */,
-				BE53FA81235E3D63004F09A4 /* libPdfReader.dylib in Resources */,
-				BE53FA82235E3D63004F09A4 /* libPdfWriter.dylib in Resources */,
-				BE53FA83235E3D63004F09A4 /* libUnicodeConverter.dylib in Resources */,
-				BE53FA84235E3D63004F09A4 /* libx2t.dylib in Resources */,
-				BE53FA85235E3D63004F09A4 /* libXpsFile.dylib in Resources */,
 				BE53FA59235E37C7004F09A4 /* LaunchScreen.storyboard in Resources */,
 				BE53FA56235E37C7004F09A4 /* Assets.xcassets in Resources */,
 				BE53FA54235E37C2004F09A4 /* Main.storyboard in Resources */,
@@ -221,7 +235,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		BE53FA86235E3E25004F09A4 /* ShellScript */ = {
+		BE53FA86235E3E25004F09A4 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -230,13 +244,14 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n\ndst=\"${CONFIGURATION_BUILD_DIR}\"\n\n# app\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibDjVuFile.dylib \\\n@executable_path/libDjVuFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibdoctrenderer.dylib \\\n@executable_path/libdoctrenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibHtmlFile.dylib \\\n@executable_path/libHtmlFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibPdfReader.dylib \\\n@executable_path/libPdfReader.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibXpsFile.dylib \\\n@executable_path/libXpsFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibx2t.dylib \\\n@executable_path/libx2t.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\n# graphics\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libgraphics.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libgraphics.dylib\n\n# html\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libHtmlFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libHtmlFile.dylib\n\n# doctrenderer\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libdoctrenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libdoctrenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libdoctrenderer.dylib\n\n# htmlrenderer\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libHtmlRenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libHtmlRenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libHtmlRenderer.dylib\n\n# pdfwriter\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libPdfWriter.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libPdfWriter.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libPdfWriter.dylib\n\n# djvu\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libDjVuFile.dylib\n\n# xps\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libXpsFile.dylib\n\n# pdfreader\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libPdfReader.dylib\n\n# x2t\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibDjVuFile.dylib \\\n@executable_path/libDjVuFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibdoctrenderer.dylib \\\n@executable_path/libdoctrenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlFile.dylib \\\n@executable_path/libHtmlFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfReader.dylib \\\n@executable_path/libPdfReader.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibXpsFile.dylib \\\n@executable_path/libXpsFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/libx2t.dylib\n\n\n";
+			shellScript = "#!/bin/sh\n\ndst=\"${CONFIGURATION_BUILD_DIR}\"\n\n# app\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibDjVuFile.dylib \\\n@executable_path/Frameworks/libDjVuFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibdoctrenderer.dylib \\\n@executable_path/Frameworks/libdoctrenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibHtmlFile.dylib \\\n@executable_path/Frameworks/libHtmlFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/Frameworks/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibPdfReader.dylib \\\n@executable_path/Frameworks/libPdfReader.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibXpsFile.dylib \\\n@executable_path/Frameworks/libXpsFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibx2t.dylib \\\n@executable_path/Frameworks/libx2t.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\n# graphics\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libgraphics.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libgraphics.dylib\n\n# html\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlFile.dylib\n\n# doctrenderer\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\n\n# htmlrenderer\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\n\n# pdfwriter\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\n\n# djvu\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\n# xps\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\n# pdfreader\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/Frameworks/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\n# x2t\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibDjVuFile.dylib \\\n@executable_path/Frameworks/libDjVuFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibdoctrenderer.dylib \\\n@executable_path/Frameworks/libdoctrenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlFile.dylib \\\n@executable_path/Frameworks/libHtmlFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/Frameworks/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfReader.dylib \\\n@executable_path/Frameworks/libPdfReader.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibXpsFile.dylib \\\n@executable_path/Frameworks/libXpsFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libkernel.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libgraphics.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libUnicodeConverter.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlFile.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -397,7 +412,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = asc.onlyoffice.DocumentConverter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onlyoffice.DocumentConverter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -414,7 +429,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = asc.onlyoffice.DocumentConverter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onlyoffice.DocumentConverter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

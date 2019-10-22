@@ -1406,10 +1406,10 @@ void xlsx_drawing_context::serialize_control(_drawing_state_ptr & drawing_state)
 						CP_XML_NODE(L"a:ext")
 						{
 							CP_XML_ATTR(L"uri", L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}");
-							CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
 
 							CP_XML_NODE(L"a14:compatExt")
 							{
+								CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
 								CP_XML_ATTR(L"spid", L"_x0000_s" + std::to_wstring(drawing_state->id));
 							}
 						}
@@ -2447,7 +2447,7 @@ void xlsx_drawing_context::serialize_control_props(std::wostream & strm, _drawin
 				case 0x0007: CP_XML_ATTR(L"objectType", L"Button");		break;
 				case 0x0008: CP_XML_ATTR(L"objectType", L"Pict");		break;
 				case 0x0009: CP_XML_ATTR(L"objectType", L"Shape");		break; // Polygon:			
-				case 0x000B: CP_XML_ATTR(L"objectType", L"Checkbox");	break;
+				case 0x000B: CP_XML_ATTR(L"objectType", L"CheckBox");	break;
 				case 0x000C: CP_XML_ATTR(L"objectType", L"Radio");		break;
 				case 0x000D: CP_XML_ATTR(L"objectType", L"Edit");		break;
 				case 0x000E: CP_XML_ATTR(L"objectType", L"Label");		break;

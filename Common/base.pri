@@ -59,6 +59,10 @@ ios {
     CONFIG += core_ios
     DEFINES += _IOS IOS LINUX _LINUX _MAC _XCODE
 }
+android {
+    CONFIG += core_android
+    DEFINES += __ANDROID__ LINUX _LINUX
+}
 
 win32:contains(QMAKE_TARGET.arch, x86_64): {
     CONFIG += core_win_64
@@ -182,6 +186,10 @@ core_ios {
     !core_ios_no_unistd {
         DEFINES += HAVE_UNISTD_H
     }
+}
+core_android {
+    equals(QT_ARCH, arm): CORE_BUILDS_PLATFORM_PREFIX = android_arm
+    equals(QT_ARCH, i386): CORE_BUILDS_PLATFORM_PREFIX = android_x86
 }
 
 core_debug {

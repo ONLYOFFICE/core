@@ -3793,12 +3793,12 @@ void BinaryWorksheetTableWriter::WritePageSetup(const OOX::Spreadsheet::CPageSet
 void BinaryWorksheetTableWriter::WritePrintOptions(const OOX::Spreadsheet::CPrintOptions& oPrintOptions)
 {
 	//GridLines
-	bool bGridLines = false;
-	if((oPrintOptions.m_oGridLines.IsInit() && oPrintOptions.m_oGridLines->ToBool()) || (oPrintOptions.m_oGridLinesSet.IsInit() && oPrintOptions.m_oGridLinesSet->ToBool()))
-		bGridLines = true;
-	m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::GridLines);
-	m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-	m_oBcw.m_oStream.WriteBOOL(bGridLines);
+	if(oPrintOptions.m_oGridLines.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::GridLines);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oGridLines->ToBool());
+	}
 	//Headings
 	if(oPrintOptions.m_oHeadings.IsInit())
 	{

@@ -4606,11 +4606,8 @@ int BinaryWorksheetsTableReader::ReadPrintOptions(BYTE type, long length, void* 
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_PrintOptions::GridLines == type)
 	{
-		bool bGridLines = m_oBufferedStream.GetBool();
 		pPrintOptions->m_oGridLines.Init();
-		pPrintOptions->m_oGridLines->FromBool(bGridLines);
-		pPrintOptions->m_oGridLinesSet.Init();
-		pPrintOptions->m_oGridLinesSet->FromBool(bGridLines);
+		pPrintOptions->m_oGridLines->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if(c_oSer_PrintOptions::Headings == type)
 	{

@@ -36,7 +36,9 @@ SOURCES += \
     memorystream.cpp \
     nativecontrol.cpp \
     doctrenderer.cpp \
-    docbuilder.cpp
+    docbuilder.cpp \
+    docbuilder_p.cpp \
+    nativebuilder.cpp
 
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \
@@ -47,7 +49,8 @@ HEADERS += doctrenderer.h \
     docbuilder.h \
     docbuilder_p.h \
     memorystream.h \
-    nativecontrol.h
+    nativecontrol.h \
+    nativebuilder.h
 
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED

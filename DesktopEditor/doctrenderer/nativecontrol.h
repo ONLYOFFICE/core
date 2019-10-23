@@ -135,7 +135,7 @@ public:
         std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sTmpFolder, true);
 
         url_correct2(m_sTmpFolder);
-        int nStart = m_sTmpFolder.length();
+        int nStart = (int)m_sTmpFolder.length();
         for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
         {
             std::wstring sTmp = *i;

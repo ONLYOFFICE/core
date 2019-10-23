@@ -1322,8 +1322,8 @@ namespace DocFileFormat
 						{
 							boost::shared_array<unsigned char> arDecompressed(decompressed);
 							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), arDecompressed, decompressedSize));
+							result = true;	
 						}
-
 						RELEASEOBJECT(metaBlip);
 					}
 				}break;				
@@ -1348,26 +1348,27 @@ namespace DocFileFormat
 							{
 								m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
 									boost::shared_array<unsigned char>(pData), nData, oBlip->btWin32));
+								result = true;	
 								break;
 							}//в случае ошибки конвертации -храним оригинальный dib
 						}
 						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
 							bitBlip->m_pvBits, bitBlip->pvBitsSize, oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
-					}
+						result = true;
+					}break;
 				}			
 				default:
 				{
 					result = false;
-					return result;
 				}
 				break;
 			}
-
-			m_nImageId = m_context->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
-			result = true;
 		}
-
+		if (result)
+		{
+			m_nImageId = m_context->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
+		}
 		return result;
 	}
 

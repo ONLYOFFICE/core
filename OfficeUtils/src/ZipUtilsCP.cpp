@@ -45,7 +45,7 @@
 namespace ZLibZipUtils
 {
 #ifndef _IOS
-  static zipFile zipOpenHelp(const wchar_t* filename)
+  zipFile zipOpenHelp(const wchar_t* filename)
   {   
 #if defined(_WIN32) || defined (_WIN64)
 	  zlib_filefunc64_def ffunc;
@@ -60,7 +60,7 @@ namespace ZLibZipUtils
 #endif
 	  return zf;
   }
-  static unzFile unzOpenHelp(const wchar_t* filename)
+  unzFile unzOpenHelp(const wchar_t* filename)
   {   
 #if defined(_WIN32) || defined (_WIN64)
 	  zlib_filefunc64_def ffunc;

@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2018
+/*
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,8 +12,8 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
- * EU, LV-1021.
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
@@ -29,32 +29,21 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "doctrenderer.h"
-#include "docbuilder.h"
 
-#ifdef BOOL
-#undef BOOL
+#ifdef __OBJC__
+    #import <CoreFoundation/CoreFoundation.h>
+#else
+    #include <objc/objc.h>
 #endif
 
-#include <iostream>
+#include "./File.h"
+#import <Foundation/Foundation.h>
 
-namespace NSDoctRenderer
+const char* fileSystemRepresentation(const std::wstring& sFileName)
 {
- 
-    CDoctrenderer::CDoctrenderer(const std::wstring& sAllFontsPath) {}
+    NSString *path = [[NSString alloc] initWithBytes:(char*)sFileName.data()
+                                              length:sFileName.size()* sizeof(wchar_t)
+                                            encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE)];
 
-    CDoctrenderer::~CDoctrenderer() {}    
-
-    bool CDoctrenderer::Execute(const std::wstring& strXml, std::wstring& strError)
-    {
-        return false;
-    }
-
-    std::vector<std::wstring> CDoctrenderer::GetImagesInChanges()
-    {
-    	std::vector<std::wstring> stub;
-        return stub;
-    }
-
-    void CDocBuilder::Dispose() {}
+    return (const char*)[path fileSystemRepresentation];
 }

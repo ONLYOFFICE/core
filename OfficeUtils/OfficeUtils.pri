@@ -55,3 +55,7 @@ HEADERS +=  \
     $$PWD/src/zlib-1.2.11/contrib/minizip/mztools.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/unzip.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/zip.h
+
+core_ios {
+OBJECTIVE_SOURCES += $$PWD/src/ZipUtilsCP_ios.mm
+}

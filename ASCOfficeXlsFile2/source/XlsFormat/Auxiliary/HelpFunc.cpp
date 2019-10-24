@@ -530,12 +530,12 @@ std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
 	if (!sCodePage.empty())
 	{
 		NSUnicodeConverter::CUnicodeConverter oConverter;
-		return oConverter.toUnicode(ansi, size, sCodePage.c_str());
+        return oConverter.toUnicode(ansi, (unsigned int)size, sCodePage.c_str());
 	}
 	else
 	{
 		NSUnicodeConverter::CUnicodeConverter oConverter;
-		return oConverter.toUnicode(ansi, size, code_page);
+        return oConverter.toUnicode(ansi, (unsigned int)size, code_page);
 	}
 }
 std::string toStdString(std::wstring wide_string, const unsigned int code_page)

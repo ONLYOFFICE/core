@@ -49,3 +49,11 @@ if [ ! -d $folder ]; then
   ./bjam link=shared
   cp stage/lib/* "$folder/shared/"
 fi
+
+if [[ "$OO_PLATFORM" == "*ios*" ]]
+then 
+  cd "$SCRIPTPATH"
+  ./boost_ios.sh
+fi
+
+

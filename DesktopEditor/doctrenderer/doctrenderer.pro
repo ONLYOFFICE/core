@@ -32,22 +32,36 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
     include(../../Common/3dParty/v8/v8_xp/v8.pri)
 }
 
+core_ios {
+    CONFIG += doct_renderer_empty
+}
+
+doct_renderer_empty {
+SOURCES += doctrenderer_empty.cpp
+} else {
+HEADERS += \
+    doctrenderer.h \
+    docbuilder.h
+
 SOURCES += \
     memorystream.cpp \
     nativecontrol.cpp \
     doctrenderer.cpp \
-    docbuilder.cpp
+    docbuilder.cpp \
+    docbuilder_p.cpp \
+    nativebuilder.cpp
 
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \
     ../../Common/3dParty/pole/pole.cpp \
     ../../Common/DocxFormat/Source/Base/unicode_util.cpp
 
-HEADERS += doctrenderer.h \
-    docbuilder.h \
+HEADERS += \
     docbuilder_p.h \
     memorystream.h \
-    nativecontrol.h
+    nativecontrol.h \
+    nativebuilder.h
+}
 
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED

@@ -35,7 +35,9 @@
 #include "./common.h"
 
 namespace NSDoctRenderer
-{    
+{
+    class CDocBuilderJS;
+
     class CDocBuilderValue_Private;
     class Q_DECL_EXPORT CDocBuilderValue
     {
@@ -96,6 +98,8 @@ namespace NSDoctRenderer
 
     private:
         CDocBuilder_Private* m_pInternal;
+
+        friend class CDocBuilderJS;
     };
 }
 

@@ -46,15 +46,7 @@
 
 #ifdef _IOS
     #include <unistd.h>
-
-    #ifdef __OBJC__
-        #import <CoreFoundation/CoreFoundation.h>
-    #else
-        #include <objc/objc.h>
-    #endif
-
-    #import <Foundation/Foundation.h>
-
+    const char* fileSystemRepresentation(const std::wstring& sFileName);
 #endif
 
 #ifdef _MAC
@@ -64,6 +56,9 @@
 #ifndef MAX_PATH
     #define MAX_PATH 1024
 #endif
+
+// реализация возможности подмены определения GetTempPath
+std::wstring g_overrideTmpPath = L"";
 
 #include "File.h"
 
@@ -839,8 +834,6 @@ namespace NSFile
 
 namespace NSFile
 {
-    std::wstring CFileBinary::s_sTempPath = L"";
-
     CFileBinary::CFileBinary()
     {
         m_pFile = NULL;
@@ -878,15 +871,6 @@ namespace NSFile
     }
 
 #ifdef _IOS
-    
-    static const char* fileSystemRepresentation(const std::wstring& sFileName)
-    {
-        NSString *path = [[NSString alloc] initWithBytes:(char*)sFileName.data()
-                                                  length:sFileName.size()* sizeof(wchar_t)
-                                                encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE)];
-        
-        return (const char*)[path fileSystemRepresentation];
-    }
     
     bool CFileBinary::OpenFile(const std::wstring& sFileName, bool bRewrite)
     {
@@ -1279,6 +1263,9 @@ namespace NSFile
 
     std::wstring CFileBinary::GetTempPath()
     {
+        if (!g_overrideTmpPath.empty())
+            return g_overrideTmpPath;
+
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
         wchar_t pBuffer[MAX_PATH + 1];
         memset(pBuffer, 0, sizeof(wchar_t) * (MAX_PATH + 1));
@@ -1305,9 +1292,6 @@ namespace NSFile
             folder = getenv("TMPDIR");
         if (NULL == folder)
             folder = "/tmp";
-
-        if (!s_sTempPath.empty())
-            folder = &NSFile::CUtf8Converter::GetUtf8StringFromUnicode(s_sTempPath)[0];
 
         return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)folder, strlen(folder));
 #endif
@@ -1427,8 +1411,9 @@ namespace NSFile
 #endif
     }
 
-    void CFileBinary::SetTempPath(const std::wstring& strTempPath) {
-        s_sTempPath = strTempPath;
+    void CFileBinary::SetTempPath(const std::wstring& strTempPath)
+    {
+        g_overrideTmpPath = strTempPath;
     }
 }
 

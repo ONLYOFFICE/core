@@ -469,3 +469,8 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/sel1.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/sel2.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
+
+core_ios {
+OBJECTIVE_SOURCES += ./../../fontengine/ApplicationFonts_ios.mm
+LIBS += -framework Foundation
+}

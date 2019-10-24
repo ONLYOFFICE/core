@@ -1572,6 +1572,7 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
                             L"line"      == strNameP ||
                             L"background"== strNameP ||
                             L"roundrect" == strNameP ||
+                            L"image"	 == strNameP ||
                             L"polyline"  == strNameP)
 						{
 							if(NULL == pElem)
@@ -1809,7 +1810,13 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		pPPTShape->SetShapeType((PPTShapes::ShapeType)3);
 		pPPTShape->ReCalculate();
 	}
-    else if (L"v:line" == strNameNode)
+    else if (L"v:image" == strNameNode)
+	{
+		pPPTShape = new CPPTShape();
+		pPPTShape->SetShapeType((PPTShapes::ShapeType)75);
+		pPPTShape->ReCalculate();
+	}
+	else if (L"v:line" == strNameNode)
 	{
 		pPPTShape = new CPPTShape();
 		pPPTShape->SetShapeType((PPTShapes::ShapeType)20);

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,41 +29,23 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _SERVER_COMPONENTS_UNICODE_CONVERTER_H
-#define _SERVER_COMPONENTS_UNICODE_CONVERTER_H
+#include "ZipUtilsCP.h"
+#import <Foundation/Foundation.h>
 
-#ifndef UNICODECONVERTER_USE_DYNAMIC_LIBRARY
-#define UNICODECONVERTER_DECL_EXPORT
-#else
-#include "../DesktopEditor/common/base_export.h"
-#define UNICODECONVERTER_DECL_EXPORT Q_DECL_EXPORT
-#endif
-
-#include <string>
-#include "UnicodeConverter_Encodings.h"
-
-namespace NSUnicodeConverter
+namespace ZLibZipUtils
 {
-    class CUnicodeConverter_Private;
-    class UNICODECONVERTER_DECL_EXPORT CUnicodeConverter
-	{
-	public:
-        CUnicodeConverter();
-        ~CUnicodeConverter();
-
-        std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName);
-        std::string fromUnicode(const std::wstring& sSrc, const char* converterName);
-
-        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName, bool isExact = false);
-        std::wstring toUnicode(const std::string& sSrc, const char* converterName, bool isExact = false);
-
-        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage, bool isExact = false);
-        std::wstring toUnicode(const std::string& sSrc, int nCodePage, bool isExact = false);
-
-        std::string SASLprepToUtf8(const std::wstring &sSrc);
-    private:
-        CUnicodeConverter_Private* m_pInternal;
-	};
+  zipFile zipOpenHelp(const wchar_t* filename)
+  {
+      NSString *path =[[NSString alloc] initWithBytes:filename
+                                               length:wcslen(filename)*sizeof(*filename)
+                                             encoding:NSUTF32LittleEndianStringEncoding];
+      return zipOpen( (const char*)[path fileSystemRepresentation], APPEND_STATUS_CREATE );
+  }
+  unzFile unzOpenHelp(const wchar_t* filename)
+  {
+      NSString *path =[[NSString alloc] initWithBytes:filename
+                                               length:wcslen(filename)*sizeof(*filename)
+                                             encoding:NSUTF32LittleEndianStringEncoding];
+      return unzOpen ((const char*)[path fileSystemRepresentation]);
+  }
 }
-
-#endif // _SERVER_COMPONENTS_UNICODE_CONVERTER_H

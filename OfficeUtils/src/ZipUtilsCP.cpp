@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,10 +35,6 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
 
-#if _IOS
-    #import <Foundation/Foundation.h>
-#endif
-
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <unistd.h>
 #endif
@@ -48,15 +44,9 @@
 
 namespace ZLibZipUtils
 {
+#ifndef _IOS
   static zipFile zipOpenHelp(const wchar_t* filename)
-  {
-#ifdef _IOS
-      NSString *path =[[NSString alloc] initWithBytes:filename
-                                               length:wcslen(filename)*sizeof(*filename)
-                                             encoding:NSUTF32LittleEndianStringEncoding];
-      return zipOpen( (const char*)[path fileSystemRepresentation], APPEND_STATUS_CREATE );
-#endif
-      
+  {   
 #if defined(_WIN32) || defined (_WIN64)
 	  zlib_filefunc64_def ffunc;
 	  fill_win32_filefunc64W(&ffunc);
@@ -71,14 +61,7 @@ namespace ZLibZipUtils
 	  return zf;
   }
   static unzFile unzOpenHelp(const wchar_t* filename)
-  {
-#ifdef _IOS
-      NSString *path =[[NSString alloc] initWithBytes:filename
-                                               length:wcslen(filename)*sizeof(*filename)
-                                             encoding:NSUTF32LittleEndianStringEncoding];
-      return unzOpen ((const char*)[path fileSystemRepresentation]);
-#endif
-      
+  {   
 #if defined(_WIN32) || defined (_WIN64)
 	  zlib_filefunc64_def ffunc;
 	  fill_win32_filefunc64W(&ffunc);
@@ -92,6 +75,7 @@ namespace ZLibZipUtils
 #endif
 	  return uf;
   }
+#endif
   static std::wstring ascii_to_unicode(const char *src)
   {
       std::string sAnsi(src);

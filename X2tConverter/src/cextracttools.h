@@ -1171,12 +1171,10 @@ namespace NExtractTools
 		}
         return true;
 	}
-#ifndef _IOS
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
                             const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
     _UINT32 apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
-#endif
 }
 #endif // CEXTRACTTOOLS_H

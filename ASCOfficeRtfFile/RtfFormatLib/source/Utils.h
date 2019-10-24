@@ -752,12 +752,12 @@ public:
 		if (!sCodePage.empty())
 		{			
 			NSUnicodeConverter::CUnicodeConverter oConverter;
-			return oConverter.toUnicodeExact(inptr, insize, sCodePage.c_str());
+			return oConverter.toUnicode(inptr, insize, sCodePage.c_str(), true);
 		}
 		else if (nCodepage != 0)
 		{
 			NSUnicodeConverter::CUnicodeConverter oConverter;
-			return oConverter.toUnicodeExact(inptr, insize, nCodepage);
+			return oConverter.toUnicode(inptr, insize, nCodepage, true);
 		}
 		else //сф_850000158725_R7_M194_МО_Q194.rtf
 		{//текущая локаль

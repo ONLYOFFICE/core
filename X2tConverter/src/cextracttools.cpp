@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -350,7 +350,6 @@ namespace NExtractTools
 
 		return res;
     }
-#ifndef _IOS
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField)
     {
         NSStringUtils::CStringBuilder oBuilder;
@@ -494,7 +493,6 @@ namespace NExtractTools
 			sBinTo = sBinFrom;
 		return 0;
     }
-#endif
 	bool InputParams::checkInputLimits()
 	{
 		std::wstring& sFrom = *this->m_sFileFrom;

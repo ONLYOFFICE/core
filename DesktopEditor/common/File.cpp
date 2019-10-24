@@ -46,15 +46,7 @@
 
 #ifdef _IOS
     #include <unistd.h>
-
-    #ifdef __OBJC__
-        #import <CoreFoundation/CoreFoundation.h>
-    #else
-        #include <objc/objc.h>
-    #endif
-
-    #import <Foundation/Foundation.h>
-
+    const char* fileSystemRepresentation(const std::wstring& sFileName);
 #endif
 
 #ifdef _MAC
@@ -879,15 +871,6 @@ namespace NSFile
     }
 
 #ifdef _IOS
-    
-    static const char* fileSystemRepresentation(const std::wstring& sFileName)
-    {
-        NSString *path = [[NSString alloc] initWithBytes:(char*)sFileName.data()
-                                                  length:sFileName.size()* sizeof(wchar_t)
-                                                encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE)];
-        
-        return (const char*)[path fileSystemRepresentation];
-    }
     
     bool CFileBinary::OpenFile(const std::wstring& sFileName, bool bRewrite)
     {

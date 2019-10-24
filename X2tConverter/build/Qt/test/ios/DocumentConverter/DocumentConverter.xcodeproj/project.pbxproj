@@ -1,0 +1,462 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BE3FF581235F2D8B00FC270F /* libDjVuFile.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6E235E3819004F09A4 /* libDjVuFile.dylib */; };
+		BE3FF583235F2D8D00FC270F /* libdoctrenderer.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA66235E3819004F09A4 /* libdoctrenderer.dylib */; };
+		BE3FF584235F2D8F00FC270F /* libgraphics.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA65235E3819004F09A4 /* libgraphics.dylib */; };
+		BE3FF585235F2D9100FC270F /* libHtmlFile.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6C235E3819004F09A4 /* libHtmlFile.dylib */; };
+		BE3FF586235F2DC800FC270F /* libHtmlRenderer.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA67235E3819004F09A4 /* libHtmlRenderer.dylib */; };
+		BE3FF587235F2DCA00FC270F /* libkernel.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA68235E3819004F09A4 /* libkernel.dylib */; };
+		BE3FF588235F2DCC00FC270F /* libPdfReader.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6F235E3819004F09A4 /* libPdfReader.dylib */; };
+		BE3FF589235F2DCE00FC270F /* libPdfWriter.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA69235E3819004F09A4 /* libPdfWriter.dylib */; };
+		BE3FF58A235F2DD000FC270F /* libUnicodeConverter.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6A235E3819004F09A4 /* libUnicodeConverter.dylib */; };
+		BE3FF58B235F2DD200FC270F /* libx2t.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6D235E3819004F09A4 /* libx2t.dylib */; };
+		BE3FF58C235F2DD400FC270F /* libXpsFile.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = BE53FA6B235E3819004F09A4 /* libXpsFile.dylib */; };
+		BE53FA4B235E37C2004F09A4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53FA4A235E37C2004F09A4 /* AppDelegate.m */; };
+		BE53FA4E235E37C2004F09A4 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53FA4D235E37C2004F09A4 /* SceneDelegate.m */; };
+		BE53FA51235E37C2004F09A4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53FA50235E37C2004F09A4 /* ViewController.m */; };
+		BE53FA54235E37C2004F09A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA52235E37C2004F09A4 /* Main.storyboard */; };
+		BE53FA56235E37C7004F09A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA55235E37C7004F09A4 /* Assets.xcassets */; };
+		BE53FA59235E37C7004F09A4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE53FA57235E37C7004F09A4 /* LaunchScreen.storyboard */; };
+		BE53FA5C235E37C7004F09A4 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = BE53FA5B235E37C7004F09A4 /* main.mm */; };
+		BE53FA64235E37E6004F09A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA63235E37E6004F09A4 /* Foundation.framework */; };
+		BE53FA70235E3819004F09A4 /* libgraphics.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA65235E3819004F09A4 /* libgraphics.dylib */; };
+		BE53FA71235E3819004F09A4 /* libdoctrenderer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA66235E3819004F09A4 /* libdoctrenderer.dylib */; };
+		BE53FA72235E3819004F09A4 /* libHtmlRenderer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA67235E3819004F09A4 /* libHtmlRenderer.dylib */; };
+		BE53FA73235E3819004F09A4 /* libkernel.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA68235E3819004F09A4 /* libkernel.dylib */; };
+		BE53FA74235E3819004F09A4 /* libPdfWriter.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA69235E3819004F09A4 /* libPdfWriter.dylib */; };
+		BE53FA75235E3819004F09A4 /* libUnicodeConverter.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6A235E3819004F09A4 /* libUnicodeConverter.dylib */; };
+		BE53FA76235E3819004F09A4 /* libXpsFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6B235E3819004F09A4 /* libXpsFile.dylib */; };
+		BE53FA77235E3819004F09A4 /* libHtmlFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6C235E3819004F09A4 /* libHtmlFile.dylib */; };
+		BE53FA78235E3819004F09A4 /* libx2t.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6D235E3819004F09A4 /* libx2t.dylib */; };
+		BE53FA79235E3819004F09A4 /* libDjVuFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6E235E3819004F09A4 /* libDjVuFile.dylib */; };
+		BE53FA7A235E3819004F09A4 /* libPdfReader.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BE53FA6F235E3819004F09A4 /* libPdfReader.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BE3FF582235F2D8B00FC270F /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BE3FF58A235F2DD000FC270F /* libUnicodeConverter.dylib in Embed Libraries */,
+				BE3FF58C235F2DD400FC270F /* libXpsFile.dylib in Embed Libraries */,
+				BE3FF58B235F2DD200FC270F /* libx2t.dylib in Embed Libraries */,
+				BE3FF584235F2D8F00FC270F /* libgraphics.dylib in Embed Libraries */,
+				BE3FF581235F2D8B00FC270F /* libDjVuFile.dylib in Embed Libraries */,
+				BE3FF589235F2DCE00FC270F /* libPdfWriter.dylib in Embed Libraries */,
+				BE3FF588235F2DCC00FC270F /* libPdfReader.dylib in Embed Libraries */,
+				BE3FF583235F2D8D00FC270F /* libdoctrenderer.dylib in Embed Libraries */,
+				BE3FF586235F2DC800FC270F /* libHtmlRenderer.dylib in Embed Libraries */,
+				BE3FF585235F2D9100FC270F /* libHtmlFile.dylib in Embed Libraries */,
+				BE3FF587235F2DCA00FC270F /* libkernel.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BE53FA46235E37C2004F09A4 /* DocumentConverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DocumentConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE53FA49235E37C2004F09A4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		BE53FA4A235E37C2004F09A4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		BE53FA4C235E37C2004F09A4 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		BE53FA4D235E37C2004F09A4 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		BE53FA4F235E37C2004F09A4 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		BE53FA50235E37C2004F09A4 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		BE53FA53235E37C2004F09A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BE53FA55235E37C7004F09A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BE53FA58235E37C7004F09A4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BE53FA5A235E37C7004F09A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BE53FA5B235E37C7004F09A4 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.mm; sourceTree = "<group>"; };
+		BE53FA63235E37E6004F09A4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BE53FA65235E3819004F09A4 /* libgraphics.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgraphics.dylib; path = ../../../../../../build/lib/ios/libgraphics.dylib; sourceTree = "<group>"; };
+		BE53FA66235E3819004F09A4 /* libdoctrenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libdoctrenderer.dylib; path = ../../../../../../build/lib/ios/libdoctrenderer.dylib; sourceTree = "<group>"; };
+		BE53FA67235E3819004F09A4 /* libHtmlRenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHtmlRenderer.dylib; path = ../../../../../../build/lib/ios/libHtmlRenderer.dylib; sourceTree = "<group>"; };
+		BE53FA68235E3819004F09A4 /* libkernel.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libkernel.dylib; path = ../../../../../../build/lib/ios/libkernel.dylib; sourceTree = "<group>"; };
+		BE53FA69235E3819004F09A4 /* libPdfWriter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPdfWriter.dylib; path = ../../../../../../build/lib/ios/libPdfWriter.dylib; sourceTree = "<group>"; };
+		BE53FA6A235E3819004F09A4 /* libUnicodeConverter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libUnicodeConverter.dylib; path = ../../../../../../build/lib/ios/libUnicodeConverter.dylib; sourceTree = "<group>"; };
+		BE53FA6B235E3819004F09A4 /* libXpsFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libXpsFile.dylib; path = ../../../../../../build/lib/ios/libXpsFile.dylib; sourceTree = "<group>"; };
+		BE53FA6C235E3819004F09A4 /* libHtmlFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHtmlFile.dylib; path = ../../../../../../build/lib/ios/libHtmlFile.dylib; sourceTree = "<group>"; };
+		BE53FA6D235E3819004F09A4 /* libx2t.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libx2t.dylib; path = ../../../../../../build/lib/ios/libx2t.dylib; sourceTree = "<group>"; };
+		BE53FA6E235E3819004F09A4 /* libDjVuFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libDjVuFile.dylib; path = ../../../../../../build/lib/ios/libDjVuFile.dylib; sourceTree = "<group>"; };
+		BE53FA6F235E3819004F09A4 /* libPdfReader.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPdfReader.dylib; path = ../../../../../../build/lib/ios/libPdfReader.dylib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BE53FA43235E37C2004F09A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE53FA70235E3819004F09A4 /* libgraphics.dylib in Frameworks */,
+				BE53FA71235E3819004F09A4 /* libdoctrenderer.dylib in Frameworks */,
+				BE53FA72235E3819004F09A4 /* libHtmlRenderer.dylib in Frameworks */,
+				BE53FA73235E3819004F09A4 /* libkernel.dylib in Frameworks */,
+				BE53FA74235E3819004F09A4 /* libPdfWriter.dylib in Frameworks */,
+				BE53FA75235E3819004F09A4 /* libUnicodeConverter.dylib in Frameworks */,
+				BE53FA76235E3819004F09A4 /* libXpsFile.dylib in Frameworks */,
+				BE53FA77235E3819004F09A4 /* libHtmlFile.dylib in Frameworks */,
+				BE53FA78235E3819004F09A4 /* libx2t.dylib in Frameworks */,
+				BE53FA79235E3819004F09A4 /* libDjVuFile.dylib in Frameworks */,
+				BE53FA7A235E3819004F09A4 /* libPdfReader.dylib in Frameworks */,
+				BE53FA64235E37E6004F09A4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BE53FA3D235E37C2004F09A4 = {
+			isa = PBXGroup;
+			children = (
+				BE53FA48235E37C2004F09A4 /* DocumentConverter */,
+				BE53FA47235E37C2004F09A4 /* Products */,
+				BE53FA62235E37E6004F09A4 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		BE53FA47235E37C2004F09A4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BE53FA46235E37C2004F09A4 /* DocumentConverter.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BE53FA48235E37C2004F09A4 /* DocumentConverter */ = {
+			isa = PBXGroup;
+			children = (
+				BE53FA49235E37C2004F09A4 /* AppDelegate.h */,
+				BE53FA4A235E37C2004F09A4 /* AppDelegate.m */,
+				BE53FA4C235E37C2004F09A4 /* SceneDelegate.h */,
+				BE53FA4D235E37C2004F09A4 /* SceneDelegate.m */,
+				BE53FA4F235E37C2004F09A4 /* ViewController.h */,
+				BE53FA50235E37C2004F09A4 /* ViewController.m */,
+				BE53FA52235E37C2004F09A4 /* Main.storyboard */,
+				BE53FA55235E37C7004F09A4 /* Assets.xcassets */,
+				BE53FA57235E37C7004F09A4 /* LaunchScreen.storyboard */,
+				BE53FA5A235E37C7004F09A4 /* Info.plist */,
+				BE53FA5B235E37C7004F09A4 /* main.mm */,
+			);
+			path = DocumentConverter;
+			sourceTree = "<group>";
+		};
+		BE53FA62235E37E6004F09A4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BE53FA6E235E3819004F09A4 /* libDjVuFile.dylib */,
+				BE53FA66235E3819004F09A4 /* libdoctrenderer.dylib */,
+				BE53FA65235E3819004F09A4 /* libgraphics.dylib */,
+				BE53FA6C235E3819004F09A4 /* libHtmlFile.dylib */,
+				BE53FA67235E3819004F09A4 /* libHtmlRenderer.dylib */,
+				BE53FA68235E3819004F09A4 /* libkernel.dylib */,
+				BE53FA6F235E3819004F09A4 /* libPdfReader.dylib */,
+				BE53FA69235E3819004F09A4 /* libPdfWriter.dylib */,
+				BE53FA6A235E3819004F09A4 /* libUnicodeConverter.dylib */,
+				BE53FA6D235E3819004F09A4 /* libx2t.dylib */,
+				BE53FA6B235E3819004F09A4 /* libXpsFile.dylib */,
+				BE53FA63235E37E6004F09A4 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BE53FA45235E37C2004F09A4 /* DocumentConverter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BE53FA5F235E37C7004F09A4 /* Build configuration list for PBXNativeTarget "DocumentConverter" */;
+			buildPhases = (
+				BE53FA42235E37C2004F09A4 /* Sources */,
+				BE53FA43235E37C2004F09A4 /* Frameworks */,
+				BE53FA44235E37C2004F09A4 /* Resources */,
+				BE3FF582235F2D8B00FC270F /* Embed Libraries */,
+				BE53FA86235E3E25004F09A4 /* Run Script */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DocumentConverter;
+			productName = DocumentConverter;
+			productReference = BE53FA46235E37C2004F09A4 /* DocumentConverter.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BE53FA3E235E37C2004F09A4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1110;
+				ORGANIZATIONNAME = "Nct Devices";
+				TargetAttributes = {
+					BE53FA45235E37C2004F09A4 = {
+						CreatedOnToolsVersion = 11.1;
+					};
+				};
+			};
+			buildConfigurationList = BE53FA41235E37C2004F09A4 /* Build configuration list for PBXProject "DocumentConverter" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BE53FA3D235E37C2004F09A4;
+			productRefGroup = BE53FA47235E37C2004F09A4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BE53FA45235E37C2004F09A4 /* DocumentConverter */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BE53FA44235E37C2004F09A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE53FA59235E37C7004F09A4 /* LaunchScreen.storyboard in Resources */,
+				BE53FA56235E37C7004F09A4 /* Assets.xcassets in Resources */,
+				BE53FA54235E37C2004F09A4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BE53FA86235E3E25004F09A4 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\ndst=\"${CONFIGURATION_BUILD_DIR}\"\n\n# app\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibDjVuFile.dylib \\\n@executable_path/Frameworks/libDjVuFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibdoctrenderer.dylib \\\n@executable_path/Frameworks/libdoctrenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibHtmlFile.dylib \\\n@executable_path/Frameworks/libHtmlFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/Frameworks/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibPdfReader.dylib \\\n@executable_path/Frameworks/libPdfReader.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibXpsFile.dylib \\\n@executable_path/Frameworks/libXpsFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\ninstall_name_tool \\\n-change \\\nlibx2t.dylib \\\n@executable_path/Frameworks/libx2t.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/${TARGET_NAME}\n\n# graphics\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libgraphics.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libgraphics.dylib\n\n# html\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlFile.dylib\n\n# doctrenderer\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\n\n# htmlrenderer\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\n\n# pdfwriter\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\n\n# djvu\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\n\n# xps\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\n\n# pdfreader\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/Frameworks/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\n\n# x2t\ninstall_name_tool \\\n-change \\\nlibkernel.dylib \\\n@executable_path/Frameworks/libkernel.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibgraphics.dylib \\\n@executable_path/Frameworks/libgraphics.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibUnicodeConverter.dylib \\\n@executable_path/Frameworks/libUnicodeConverter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibDjVuFile.dylib \\\n@executable_path/Frameworks/libDjVuFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibdoctrenderer.dylib \\\n@executable_path/Frameworks/libdoctrenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlFile.dylib \\\n@executable_path/Frameworks/libHtmlFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibHtmlRenderer.dylib \\\n@executable_path/Frameworks/libHtmlRenderer.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfReader.dylib \\\n@executable_path/Frameworks/libPdfReader.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibPdfWriter.dylib \\\n@executable_path/Frameworks/libPdfWriter.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ninstall_name_tool \\\n-change \\\nlibXpsFile.dylib \\\n@executable_path/Frameworks/libXpsFile.dylib \\\n\"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libkernel.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libgraphics.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libUnicodeConverter.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlFile.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libHtmlRenderer.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfReader.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libPdfWriter.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libXpsFile.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libDjVuFile.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libdoctrenderer.dylib\ncodesign --verbose=4 --force -s \"${CODE_SIGN_IDENTITY}\" \"${dst}\"/${TARGET_NAME}.app/Frameworks/libx2t.dylib\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BE53FA42235E37C2004F09A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE53FA51235E37C2004F09A4 /* ViewController.m in Sources */,
+				BE53FA4B235E37C2004F09A4 /* AppDelegate.m in Sources */,
+				BE53FA5C235E37C7004F09A4 /* main.mm in Sources */,
+				BE53FA4E235E37C2004F09A4 /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		BE53FA52235E37C2004F09A4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BE53FA53235E37C2004F09A4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BE53FA57235E37C7004F09A4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BE53FA58235E37C7004F09A4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BE53FA5D235E37C7004F09A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				LIBRARY_SEARCH_PATHS = ../../../../../../build/lib/ios;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		BE53FA5E235E37C7004F09A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				LIBRARY_SEARCH_PATHS = ../../../../../../build/lib/ios;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BE53FA60235E37C7004F09A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				INFOPLIST_FILE = DocumentConverter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.onlyoffice.DocumentConverter;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BE53FA61235E37C7004F09A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				INFOPLIST_FILE = DocumentConverter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.onlyoffice.DocumentConverter;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BE53FA41235E37C2004F09A4 /* Build configuration list for PBXProject "DocumentConverter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE53FA5D235E37C7004F09A4 /* Debug */,
+				BE53FA5E235E37C7004F09A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE53FA5F235E37C7004F09A4 /* Build configuration list for PBXNativeTarget "DocumentConverter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE53FA60235E37C7004F09A4 /* Debug */,
+				BE53FA61235E37C7004F09A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BE53FA3E235E37C2004F09A4 /* Project object */;
+}

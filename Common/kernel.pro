@@ -60,6 +60,14 @@ core_mac {
     LIBS += -framework AppKit
 }
 
+core_ios {
+    OBJECTIVE_SOURCES += \
+        ./FileDownloader/FileDownloader_mac.mm \
+        ./../DesktopEditor/common/File_ios.mm
+
+    LIBS += -framework Foundation
+}
+
 # CONFIG
 HEADERS += ./kernel_config.h
 

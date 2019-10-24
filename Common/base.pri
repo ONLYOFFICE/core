@@ -55,6 +55,15 @@ isEqual(QT_MAJOR_VERSION, 5) {
     }
 }
 
+ios {
+    CONFIG += core_ios
+    DEFINES += _IOS IOS LINUX _LINUX _MAC _XCODE
+}
+android {
+    CONFIG += core_android
+    DEFINES += __ANDROID__ LINUX _LINUX
+}
+
 win32:contains(QMAKE_TARGET.arch, x86_64): {
     CONFIG += core_win_64
 }
@@ -92,8 +101,10 @@ linux-g++-32 {
 
 
 mac {
-    CONFIG += core_mac
-    CONFIG += core_mac_64
+    !core_ios {
+        CONFIG += core_mac
+        CONFIG += core_mac_64
+    }
 }
 
 # DEFINES
@@ -111,7 +122,7 @@ core_linux {
 
 core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
-	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 }
 
 # PREFIXES
@@ -139,6 +150,46 @@ core_mac_64 {
 }
 core_linux_arm {
     CORE_BUILDS_PLATFORM_PREFIX = arm
+}
+core_ios {
+    CORE_BUILDS_PLATFORM_PREFIX = ios
+
+    CONFIG(iphonesimulator, iphoneos|iphonesimulator): {
+        message("iphonesimulator")
+        CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
+    } else {
+
+        QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
+        CONFIG += core_ios_main_arch
+
+        core_ios_main_arch {
+            QMAKE_APPLE_DEVICE_ARCHS = arm64
+            core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=
+
+            !core_ios_no_32 {
+                QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
+            }
+        } else {
+            plugin : TARGET = $$join(TARGET, TARGET, "", "_addition")
+            QMAKE_APPLE_DEVICE_ARCHS=
+            QMAKE_APPLE_SIMULATOR_ARCHS=
+        }
+
+        core_ios_nomain_arch {
+            QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS arm64e
+            !core_ios_no_32 {
+                QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
+            }
+        }
+    }
+
+    !core_ios_no_unistd {
+        DEFINES += HAVE_UNISTD_H
+    }
+}
+core_android {
+    equals(QT_ARCH, arm): CORE_BUILDS_PLATFORM_PREFIX = android_arm
+    equals(QT_ARCH, i386): CORE_BUILDS_PLATFORM_PREFIX = android_x86
 }
 
 core_debug {

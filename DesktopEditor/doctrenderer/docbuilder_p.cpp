@@ -67,9 +67,12 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
     v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(m_isolate);
     global->Set(m_isolate, "CreateNativeEngine", v8::FunctionTemplate::New(m_isolate, CreateNativeObjectBuilder));
     global->Set(m_isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(m_isolate, CreateNativeMemoryStream));
-    global->Set(m_isolate, "builderJS", _builder_CreateNative(m_isolate, pBuilder));
-
     m_context = v8::Context::New(m_isolate, NULL, global);
+
+    v8::Context::Scope context_scope(m_context);
+    v8::TryCatch try_catch(m_isolate);
+
+    m_context->Global()->Set(m_context, v8::String::NewFromUtf8(m_isolate, "builderJS"), _builder_CreateNative(m_isolate, pBuilder));
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {

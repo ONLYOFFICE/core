@@ -3780,7 +3780,7 @@ namespace NExtractTools
        initApplicationFonts(pApplicationFonts, params);
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
-           if(nFormatFrom == nFormatTo)
+           if(nFormatFrom == nFormatTo && !params.getIsPDFA())
            {
                 NSFile::CFileBinary::Copy(sFrom, sTo);
            }

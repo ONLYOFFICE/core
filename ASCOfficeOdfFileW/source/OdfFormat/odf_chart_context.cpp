@@ -560,7 +560,7 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
     double sx, sy, sz, cx, cy, cz, theta;
 
     // rotation angle about X-axis (pitch)
-    theta = rotX * DEG2RAD;
+    theta = -rotX * DEG2RAD;
     sx = sin(theta);
     cx = cos(theta);
 

@@ -130,3 +130,4 @@
 #include "../src/odf/datatypes/commandtype.cpp"
 #include "../src/odf/datatypes/stylenumformat.cpp"
 #include "../src/odf/datatypes/bibliography.cpp"
+#include "../src/odf/datatypes/styleprint.cpp"

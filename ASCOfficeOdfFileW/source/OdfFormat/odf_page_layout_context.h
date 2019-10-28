@@ -95,6 +95,9 @@ public:
 	void set_page_scaleToX				(int val);
 	void set_page_scaleToY				(int val);
 	void set_page_first_page			(int val);
+	void set_page_centered				(bool bHorizontal, bool bVertical);
+	void set_page_print_gridLines		(bool val);
+	void set_page_print_headings		(bool val);
 
 	void set_title_page_enable			(bool val);
 	void set_pages_mirrored				(bool val);

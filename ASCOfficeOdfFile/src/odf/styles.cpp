@@ -1232,6 +1232,31 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 {
 	CP_XML_WRITER(strm)
 	{
+		if (attlist_.style_table_centering_ || attlist_.style_print_)
+		{
+			CP_XML_NODE(L"printOptions")
+			{
+				if (attlist_.style_print_)
+				{
+					CP_XML_ATTR(L"headings", attlist_.style_print_->bHeaders ? 1 : 0);
+					CP_XML_ATTR(L"gridLines", attlist_.style_print_->bGrid ? 1 : 0);
+				}
+				if (attlist_.style_table_centering_)
+				{
+					if (attlist_.style_table_centering_->get_type() == table_centering::Both || 
+						attlist_.style_table_centering_->get_type() == table_centering::Horizontal)
+					{
+						CP_XML_ATTR(L"horizontalCentered", 1);
+					}
+					if (attlist_.style_table_centering_->get_type() == table_centering::Both || 
+						attlist_.style_table_centering_->get_type() == table_centering::Vertical)
+					{
+						CP_XML_ATTR(L"verticalCentered", 1);
+					}
+				}
+			}
+		}
+
 		odf_types::common_horizontal_margin_attlist		horizontal_margins	= attlist_.common_horizontal_margin_attlist_;
 		odf_types::common_vertical_margin_attlist		vertical_margins	= attlist_.common_vertical_margin_attlist_;
 		

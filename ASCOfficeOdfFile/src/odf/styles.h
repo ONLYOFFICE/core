@@ -61,6 +61,7 @@
 #include "datatypes/noteclass.h"
 #include "datatypes/gradientstyle.h"
 #include "datatypes/hatchstyle.h"
+#include "datatypes/styleprint.h"
 
 #include "header_footer.h"
 
@@ -895,7 +896,7 @@ public:
 	odf_types::common_page_number_attlist		common_page_number_attlist_;
   
 	_CP_OPT(std::wstring)					style_register_truth_ref_style_name_;
-    _CP_OPT(std::wstring)					style_print_;
+    _CP_OPT(odf_types::style_print)			style_print_;
     _CP_OPT(odf_types::direction)			style_print_page_order_;
     _CP_OPT(odf_types::percent)				style_scale_to_;
     _CP_OPT(unsigned int)					style_scale_to_pages_;

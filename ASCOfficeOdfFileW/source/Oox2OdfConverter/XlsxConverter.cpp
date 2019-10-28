@@ -408,6 +408,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
+	convert(oox_sheet->m_oPrintOptions.GetPointer());
 	convert(oox_sheet->m_oPicture.GetPointer());
 	convert(oox_sheet->m_oSheetProtection.GetPointer());
 	
@@ -1744,7 +1745,34 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		ods_context->end_table_view();
 	}
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CPrintOptions *oox_print_options)
+{
+	if (!oox_print_options) return;
 
+	if (oox_print_options->m_oGridLines.IsInit())
+	{
+		ods_context->page_layout_context()->set_page_print_gridLines(oox_print_options->m_oGridLines->ToBool());
+	}
+	//if (oox_print_options->m_oGridLinesSet.IsInit()) дублирование
+	//{
+	//	ods_context->page_layout_context()->set_page_print_gridLinesSet(oox_print_options->m_oGridLines->ToBool());
+	//}
+	if (oox_print_options->m_oHeadings.IsInit())
+	{
+		ods_context->page_layout_context()->set_page_print_headings(oox_print_options->m_oHeadings->ToBool());
+	}
+	bool bHorizontal = false, bVertical = false;
+
+	if (oox_print_options->m_oHorizontalCentered.IsInit())
+	{
+		bHorizontal = oox_print_options->m_oHorizontalCentered->ToBool();
+	}
+	if (oox_print_options->m_oVerticalCentered.IsInit())
+	{
+		bVertical = oox_print_options->m_oVerticalCentered->ToBool();
+	}
+	ods_context->page_layout_context()->set_page_centered(bHorizontal, bVertical);
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 {
 	if (!oox_page) return;

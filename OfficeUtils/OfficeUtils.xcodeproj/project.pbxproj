@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		69676DAA1CA58BBE00D7A1D1 /* OfficeUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */; };
 		69676DAB1CA58BBE00D7A1D1 /* ZipUtilsCP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */; };
+		8A08555B23670D99002B18F2 /* ZipUtilsCP_ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8A08555A23670D99002B18F2 /* ZipUtilsCP_ios.mm */; };
 		8A22E3A6216F71B0007A9BE4 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A22E301216F71AF007A9BE4 /* unzip.c */; };
 		8A22E3A7216F71B0007A9BE4 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A22E302216F71AF007A9BE4 /* zip.c */; };
 		8A22E3A9216F71B0007A9BE4 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A22E305216F71AF007A9BE4 /* ioapi.c */; };
@@ -36,6 +37,7 @@
 		69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficeUtilsCommon.h; sourceTree = "<group>"; };
 		69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 4; path = ZipUtilsCP.cpp; sourceTree = "<group>"; };
 		69676CBC1CA58BBD00D7A1D1 /* ZipUtilsCP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipUtilsCP.h; sourceTree = "<group>"; };
+		8A08555A23670D99002B18F2 /* ZipUtilsCP_ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZipUtilsCP_ios.mm; sourceTree = "<group>"; };
 		8A22E301216F71AF007A9BE4 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
 		8A22E302216F71AF007A9BE4 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		8A22E303216F71AF007A9BE4 /* iowin32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iowin32.h; sourceTree = "<group>"; };
@@ -81,11 +83,12 @@
 			isa = PBXGroup;
 			children = (
 				8A22E26A216F71AF007A9BE4 /* zlib-1.2.11 */,
-				69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */,
 				69676CB91CA58BBD00D7A1D1 /* OfficeUtils.h */,
-				69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */,
-				69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */,
+				69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */,
 				69676CBC1CA58BBD00D7A1D1 /* ZipUtilsCP.h */,
+				69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */,
+				8A08555A23670D99002B18F2 /* ZipUtilsCP_ios.mm */,
+				69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 69676CA01CA58B7400D7A1D1;
@@ -185,6 +189,7 @@
 				69676DAA1CA58BBE00D7A1D1 /* OfficeUtils.cpp in Sources */,
 				8A22E3AC216F71B0007A9BE4 /* minizip.c in Sources */,
 				8A22E3AD216F71B0007A9BE4 /* miniunz.c in Sources */,
+				8A08555B23670D99002B18F2 /* ZipUtilsCP_ios.mm in Sources */,
 				8A22E3A6216F71B0007A9BE4 /* unzip.c in Sources */,
 				8A22E3A9216F71B0007A9BE4 /* ioapi.c in Sources */,
 				8A22E3A7216F71B0007A9BE4 /* zip.c in Sources */,

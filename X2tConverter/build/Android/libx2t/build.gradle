@@ -83,16 +83,14 @@ dependencies {
 * otherwise the error is in the path
 * */
 def getProjectPath(String path, Boolean isRelativeCreate = false) {
-    def slashPath = path.replaceAll("\\\\", "/")
-    def absolutePath = file(slashPath)
-    def projectPath = "${project(':libx2t').projectDir}".replaceAll("\\\\", "/")
-//    def projectPath = "${rootProject.projectDir}".replaceAll("\\\\", "/") // For current project
-    def relativePath = file("$projectPath/$slashPath")
+    def absolutePath = file(path)
+    def relativePath = file("${project(':libx2t').projectDir}/$path")
+    //def relativePath = file("${rootProject.projectDir}/path")
 
     if (absolutePath.exists() && absolutePath.isDirectory()) {
-        return absolutePath.toString()
+        return absolutePath.toString().replaceAll("\\\\", "/")
     } else if ((relativePath.exists() && relativePath.isDirectory()) || (isRelativeCreate && relativePath.mkdirs())) {
-        return relativePath.toString()
+        return relativePath.toString().replaceAll("\\\\", "/")
     }
 
     new IllegalArgumentException("getProjectPath($path) - path doesn't exist...")

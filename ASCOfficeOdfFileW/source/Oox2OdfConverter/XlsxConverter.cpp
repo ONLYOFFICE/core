@@ -598,9 +598,21 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_f
 			
 			switch(comm)
 			{
-				case 'L':	ods_context->start_header_footer_region(1); pos++; break;
-				case 'C':	ods_context->start_header_footer_region(2); pos++; break;
-				case 'R':	ods_context->start_header_footer_region(3); pos++; break;
+				case 'L':	
+					{
+						current_text_props.content_.clear();
+						ods_context->start_header_footer_region(1); pos++;
+					}break;
+				case 'C':	
+					{
+						current_text_props.content_.clear();
+						ods_context->start_header_footer_region(2); pos++; 
+					}break;
+				case 'R':	
+					{
+						current_text_props.content_.clear();						
+						ods_context->start_header_footer_region(3); pos++; 
+					}break;
 
 				case 'A':	type_add = 1; pos++; break;
 				case 'P':	type_add = 2; pos++; break;

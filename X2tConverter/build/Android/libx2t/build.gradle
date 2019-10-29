@@ -14,7 +14,7 @@ android {
         versionCode 1
         versionName '1.0'
 
-        buildConfigField "String", "LIB_X2T", "\"$NAME_LIB_X2T\""
+        buildConfigField "String", "LIB_X2T", "\"$NAME_LIB\""
 
         externalNativeBuild {
             cmake {
@@ -22,9 +22,9 @@ android {
                           "-DANDROID_STL=c++_static",
                           "-DANDROID_ARM_NEON=TRUE",
                           "-DARG_PATH_LIB_SRC_3D_PARTY=${getProjectPath(PATH_LIB_SRC_3D_PARTY)}",
-                          "-DARG_PATH_LIB_DST_X2T=${getProjectPath(PATH_LIB_DST_X2T, true)}",
+                          "-DARG_PATH_LIB_DST=${getProjectPath(PATH_LIB_DST, true)}",
                           "-DARG_PATH_SRC_CORE=${getProjectPath(PATH_SRC_CORE)}",
-                          "-DARG_NAME_LIB_X2T=$NAME_LIB_X2T"
+                          "-DARG_NAME_LIB=$NAME_LIB"
             }
         }
 

@@ -48,10 +48,10 @@ elseif (NOT EXISTS ${ARG_PATH_LIB_SRC_3D_PARTY})
 endif()
 
 # X2t destination path
-if (NOT DEFINED ARG_PATH_LIB_DST_X2T)
-    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_DST_X2T\" with path to x2t.so destination...")
-elseif (NOT EXISTS ${ARG_PATH_LIB_DST_X2T})
-    file(MAKE_DIRECTORY ${ARG_PATH_LIB_DST_X2T})
+if (NOT DEFINED ARG_PATH_LIB_DST)
+    message(FATAL_ERROR "You must set argument \"ARG_PATH_LIB_DST\" with path to x2t.so destination...")
+elseif (NOT EXISTS ${ARG_PATH_LIB_DST})
+    file(MAKE_DIRECTORY ${ARG_PATH_LIB_DST})
     message(STATUS "Destination library path doesn't exist, created!")
 endif()
 
@@ -61,14 +61,14 @@ if (NOT DEFINED ARG_PATH_SRC_CORE)
 endif()
 
 # X2t library name
-if (NOT DEFINED ARG_NAME_LIB_X2T)
-    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB_X2T\" with x2t lib name...")
+if (NOT DEFINED ARG_NAME_LIB)
+    message(FATAL_ERROR "You must set argument \"ARG_NAME_LIB\" with x2t lib name...")
 endif()
 
 
 # ---------- Names ----------
 # x2t lib
-set(LIB_NAME_X2T ${ARG_NAME_LIB_X2T})
+set(LIB_NAME_X2T ${ARG_NAME_LIB})
 
 # 3d party libraries
 set(LIB_NAME_ICONV iconv)
@@ -83,7 +83,7 @@ set(LIB_NAME_ICU_UC icuuc)
 # Core src dir path
 set(CORE_DIR ${ARG_PATH_SRC_CORE})
 message(STATUS "Core source path: ${CORE_DIR}")
-set(X2T_DEST ${ARG_PATH_LIB_DST_X2T}/${ANDROID_ABI})
+set(X2T_DEST ${ARG_PATH_LIB_DST}/${ANDROID_ABI})
 message(STATUS "X2t destination path: ${X2T_DEST}")
 
 # Prebuild libraries path

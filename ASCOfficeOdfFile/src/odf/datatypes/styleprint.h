@@ -42,8 +42,8 @@ class style_print
 {
 public:
 
- 	style_print() : bAnnotations(false), bCharts(true), bDrawings(true), bFormulas(false), bHeaders(true), bGrid(true), bObjects(true), bZeroValues(true)
-    {}
+ 	style_print() : bAnnotations(false), bCharts(true), bDrawings(true), bFormulas(false), bHeaders(false), bGrid(false), bObjects(true), bZeroValues(true)
+    {}//default ms
 
 	style_print(bool def) : bAnnotations(def), bCharts(def), bDrawings(def), bFormulas(def), bHeaders(def), bGrid(def), bObjects(def), bZeroValues(def)
 	{}

@@ -169,6 +169,7 @@ void oox_chart_context::serialize(std::wostream & strm)
 			{
 				if (plot_area_.current_chart_->is3D_)
 				{
+					plot_area_.oox_serialize_view3D(CP_XML_STREAM());
 					//CP_XML_NODE(L"c:view3D");
 					CP_XML_NODE(L"c:floor");
 					CP_XML_NODE(L"c:backWall");

@@ -619,7 +619,7 @@ public:
 
 };
 
-class dr3d_attlist
+class common_dr3d_attlist
 {
 public:
     void add_attributes	( const xml::attributes_wc_ptr & Attributes );

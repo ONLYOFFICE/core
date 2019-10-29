@@ -235,16 +235,16 @@ class chart_plot_area_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
-    odf_types::common_draw_position_attlist common_draw_position_attlist_;
+   
+	odf_types::common_draw_position_attlist common_draw_position_attlist_;
     odf_types::common_draw_size_attlist		common_draw_size_attlist_;
-    common_chart_attlist					common_attlist_;
+ 	odf_types::common_dr3d_attlist			common_dr3d_attlist_;
     
+    common_chart_attlist					common_attlist_;
+	
 	_CP_OPT(std::wstring) table_cell_range_address_;
     _CP_OPT(std::wstring) chart_data_source_has_labels_;
-    // dr3d-scene-attlist
-    // common-dr3d-transform-attlist
+    
 };
 
 //  chart:plot-area

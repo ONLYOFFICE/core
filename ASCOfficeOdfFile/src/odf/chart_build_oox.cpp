@@ -371,8 +371,8 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_floor		(floor_);
 	chart_context.set_legend	(legend_);
 	
-	chart_context.set_plot_area_properties		(plot_area_.properties_		, plot_area_.fill_);
-	chart_context.set_chart_graphic_properties	(chart_graphic_properties_	, chart_fill_);
+	chart_context.set_plot_area_properties		(plot_area_.properties_, plot_area_.properties_3d_, plot_area_.fill_);
+	chart_context.set_chart_graphic_properties	(chart_graphic_properties_, chart_fill_);
 	
 	//chart_context.set_footer(footer_);
 	//chart_context.set_chart_properties(chart_graphic_properties_);
@@ -834,9 +834,15 @@ void process_build_object::visit(chart_plot_area& val)
 
 	object_odf_context_.plot_area_.cell_range_address_ = val.attlist_.table_cell_range_address_.get_value_or(L"");
 
-	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.properties_);
-	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.graphic_properties_, object_odf_context_.plot_area_.fill_);
-	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.text_properties_);
+	odf_types::common_dr3d_attlist attr_3d = val.attlist_.common_dr3d_attlist_;
+
+	if (attr_3d.transform_)		object_odf_context_.plot_area_.properties_3d_.push_back(_property(L"transform",	attr_3d.transform_.get()) );
+	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_3d_.push_back(_property(L"distance",		attr_3d.distance_->get_value_unit(length::pt)) );
+	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_3d_.push_back(_property(L"focal",		attr_3d.focal_length_->get_value_unit(length::pt)) );
+	
+	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.properties_);
+	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.graphic_properties_, object_odf_context_.plot_area_.fill_);
+	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.text_properties_);
 }
 
 

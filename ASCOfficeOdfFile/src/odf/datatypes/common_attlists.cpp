@@ -913,7 +913,7 @@ void section_attlists::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"text:display", display_);
     CP_XML_ATTR_OPT(L"text:condition", condition_);
 }
-void dr3d_attlist::serialize(CP_ATTR_NODE)
+void common_dr3d_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"dr3d:transform", transform_);
     CP_XML_ATTR_OPT(L"dr3d:vrp", vrp_);
@@ -926,7 +926,7 @@ void dr3d_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"dr3d:shade-mode", shade_mode_);
     CP_XML_ATTR_OPT(L"dr3d:lighting-mode", lighting_mode_);
 }
-void dr3d_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+void common_dr3d_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"dr3d:vpn", vpn_);
     CP_APPLY_ATTR(L"dr3d:vrp", vrp_);

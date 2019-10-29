@@ -54,11 +54,13 @@ public:
 	
 	std::vector<odf_reader::_property>	graphic_properties_;
 	std::vector<odf_reader::_property>	properties_;
+	std::vector<odf_reader::_property>	properties_3d_;
 	_oox_fill							fill_; 
 	
 	//std::vector<odf_reader::_property> wall_graphic_properties_;
 	
 	void oox_serialize(std::wostream & _Wostream);
+	void oox_serialize_view3D(std::wostream & _Wostream);
 
 	void add_chart	(int type);
 	void add_axis	(int type,	odf_reader::chart::axis & content);

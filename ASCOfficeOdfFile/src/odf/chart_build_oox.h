@@ -283,9 +283,9 @@ public:
 	process_build_object(object_odf_context & object_context, odf_read_context & context);
 
 private:
-	void ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut);
-	void ApplyTextProperties(std::wstring style,std::vector<_property> & propertiesOut);
-	void ApplyGraphicProperties(std::wstring style,std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
+	void ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut);
+	void ApplyTextProperties(std::wstring style, std::vector<_property> & propertiesOut);
+	void ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
 
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);

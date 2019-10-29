@@ -77,6 +77,8 @@ style_print style_print::parse(const std::wstring & Str)
 		else if (values[i] == L"objects")		result.bObjects = true;
 		else if (values[i] == L"zero-values")	result.bZeroValues = true;
 	}
+
+	return result;
 }
 
 } }

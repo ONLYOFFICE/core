@@ -118,10 +118,11 @@ public:
 		graphic_properties_= prop;
 		fill_ = fill;
 	}
-	void set_plot_area_properties(std::vector<odf_reader::_property> & prop, _oox_fill &fill)
+	void set_plot_area_properties(std::vector<odf_reader::_property> & prop, std::vector<odf_reader::_property> & prop_3d, _oox_fill &fill)
 	{
 		reset_fill(fill);
 		plot_area_.properties_		= prop; 
+		plot_area_.properties_3d_	= prop_3d; 
 		plot_area_.fill_			= fill; 
 	}
 

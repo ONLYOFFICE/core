@@ -85,7 +85,8 @@ dependencies {
 def getProjectPath(String path, Boolean isRelativeCreate = false) {
     def slashPath = path.replaceAll("\\\\", "/")
     def absolutePath = file(slashPath)
-    def relativePath = file("$rootProject.projectDir/$slashPath")
+    def relativePath = file("${project(':libx2t').projectDir}/$slashPath")
+//    def relativePath = file("$rootProject.projectDir/$slashPath") // For current project
 
     if (absolutePath.exists() && absolutePath.isDirectory()) {
         return absolutePath.toString()

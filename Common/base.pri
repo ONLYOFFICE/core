@@ -188,8 +188,7 @@ core_ios {
     }
 }
 core_android {
-    equals(QT_ARCH, arm): CORE_BUILDS_PLATFORM_PREFIX = android_arm
-    equals(QT_ARCH, i386): CORE_BUILDS_PLATFORM_PREFIX = android_x86
+    CORE_BUILDS_PLATFORM_PREFIX = $$join(ANDROID_TARGET_ARCH, ANDROID_TARGET_ARCH, "android_", "")
 }
 
 core_debug {

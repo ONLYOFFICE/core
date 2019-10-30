@@ -68,6 +68,21 @@ core_ios {
     LIBS += -framework Foundation
 }
 
+core_android {
+    DEFINES += USE_FILE32API
+    SOURCES += ./FileDownloader/FileDownloader_curl.cpp
+
+    CONFIG += use_external_download
+
+    use_external_download {
+        DEFINES += USE_EXTERNAL_DOWNLOAD
+    } else {
+        include(../Common/3dParty/curl/curl.pri)
+    }
+
+    DEFINES += NOT_USE_PTHREAD_CANCEL
+}
+
 # CONFIG
 HEADERS += ./kernel_config.h
 

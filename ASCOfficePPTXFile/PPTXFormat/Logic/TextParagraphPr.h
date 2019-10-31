@@ -106,7 +106,7 @@ namespace PPTX
 				{
 					std::wstring sName = oReader.GetName();
 
-						if ( _T("a:lnSpc") == sName )
+					if ( _T("a:lnSpc") == sName )
 						lnSpc = oReader;
 					else if ( _T("a:defRPr") == sName )
 						defRPr = oReader;
@@ -114,6 +114,20 @@ namespace PPTX
 						spcAft = oReader;
 					else if ( _T("a:spcBef") == sName )
 						spcBef = oReader;
+					else if ( _T("a:tabLst") == sName )
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							if ( _T("a:tab") == sName1 )
+							{
+								Tab tab(oReader);
+								tabLst.push_back(tab);
+							}
+						}
+
+					}
 					//else if ( _T("a:extLst") == sName )
 					//	extLst = oReader;
 

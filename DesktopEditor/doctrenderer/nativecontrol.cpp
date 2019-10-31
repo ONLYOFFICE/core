@@ -30,6 +30,97 @@
  *
  */
 #include "nativecontrol.h"
+#include "../../../core/DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../core/DesktopEditor/raster/BgraFrame.h"
+#include "../../../core/Common/FileDownloader/FileDownloader.h"
+
+CImagesWorker::CImagesWorker(const std::wstring& sFolder)
+{
+    m_sFolder = sFolder;
+    std::vector<std::wstring> files = NSDirectory::GetFiles(sFolder);
+    m_nIndex = (int)files.size() + 1;
+}
+std::wstring CImagesWorker::GetImageLocal(const std::wstring& sUrl)
+{
+    std::wstring sExt = NSFile::GetFileExtention(sUrl);
+    std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L"." + sExt;
+    m_mapImages.insert(std::make_pair(sUrl, sRet));
+    NSFile::CFileBinary::Copy(sUrl, m_sFolder + L"/media/" + sRet);
+    return sRet;
+}
+std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
+{
+    std::wstring sUrlFile = sUrl;
+    if (sUrlFile.find(L"file://") == 0)
+    {
+        sUrlFile = sUrlFile.substr(7);
+
+        // MS Word copy image with url "file://localhost/..." on mac
+        if (sUrlFile.find(L"localhost") == 0)
+            sUrlFile = sUrlFile.substr(9);
+
+        NSCommon::string_replace(sUrlFile, L"%20", L" ");
+
+        if (!NSFile::CFileBinary::Exists(sUrlFile))
+            sUrlFile = sUrlFile.substr(1);
+    }
+
+    std::map<std::wstring, std::wstring>::iterator find = m_mapImages.find(sUrlFile);
+    if (find != m_mapImages.end())
+        return find->second;
+
+    if (NSFile::CFileBinary::Exists(sUrlFile))
+        return GetImageLocal(sUrlFile);
+
+    bool bIsNeedDownload = false;
+    if (true)
+    {
+        if (sUrlFile.find(L"www.") != std::wstring::npos)
+            bIsNeedDownload = true;
+        else if (sUrlFile.find(L"http://") != std::wstring::npos)
+            bIsNeedDownload = true;
+        else if (sUrlFile.find(L"ftp://") != std::wstring::npos)
+            bIsNeedDownload = true;
+        else if (sUrlFile.find(L"https://") != std::wstring::npos)
+            bIsNeedDownload = true;
+    }
+
+    if (bIsNeedDownload)
+    {
+        CFileDownloader oDownloader(sUrl, false);
+
+        std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"IMG");
+        if (NSFile::CFileBinary::Exists(sTmpFile))
+            NSFile::CFileBinary::Remove(sTmpFile);
+        sTmpFile = sTmpFile + L".png";
+
+        oDownloader.SetFilePath(sTmpFile);
+        oDownloader.Start(0);
+        while ( oDownloader.IsRunned() )
+        {
+            NSThreads::Sleep( 10 );
+        }
+        bool bIsDownloaded = oDownloader.IsFileDownloaded();
+
+        if (bIsDownloaded)
+        {
+            CBgraFrame oFrame;
+            oFrame.OpenFile(sTmpFile);
+
+            std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L".png";
+            m_mapImages.insert(std::make_pair(sUrlFile, sRet));
+
+            oFrame.SaveFile(m_sFolder + L"/media/" + sRet, 4);
+
+            NSFile::CFileBinary::Remove(sTmpFile);
+            return sRet;
+        }
+    }
+
+    if (sUrlFile.find(L"image") == 0 || sUrlFile.find(L"display") == 0)
+        return sUrlFile;
+    return L"error";
+}
 
 // wrap_methods -------------
 CNativeControl* unwrap_nativeobject(v8::Handle<v8::Object> obj)
@@ -408,6 +499,21 @@ void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
         pNative->m_mapImagesInChanges.insert(std::pair<std::wstring, bool>(sImage, true));
 }
 
+// GetImageUrl
+void _GetImageUrl(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+    std::wstring sUrl = CV8Convert::ToString(args[0]);
+
+    if (!pNative->m_pWorker)
+        pNative->m_pWorker = new CImagesWorker(pNative->m_strImagesDirectory);
+
+    std::wstring sRet = pNative->m_pWorker->GetImage(sUrl);
+    std::string sRetA = U_TO_UTF8(sRet);
+
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), (char*)sRetA.c_str(), v8::String::kNormalString, (int)sRetA.length()));
+}
+
 v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 {
     //v8::HandleScope handle_scope(isolate);
@@ -446,6 +552,8 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
     result->Set(current, "ZipFileAsString",    v8::FunctionTemplate::New(current, _zipGetFileAsString));
     result->Set(current, "ZipFileAsBinary",    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
     result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
+
+    result->Set(current, "getImageUrl", v8::FunctionTemplate::New(current, _GetImageUrl));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope

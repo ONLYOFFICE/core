@@ -179,6 +179,20 @@ private:
     }
 };
 
+class CImagesWorker
+{
+private:
+    std::wstring m_sFolder;
+
+    int m_nIndex;
+    std::map<std::wstring, std::wstring> m_mapImages;
+
+public:
+    CImagesWorker(const std::wstring& sFolder);
+    std::wstring GetImageLocal(const std::wstring& sUrl);
+    std::wstring GetImage(const std::wstring& sUrl);
+};
+
 class CNativeControl
 {
 private:
@@ -215,6 +229,9 @@ public:
 
     CZipWorker m_oZipWorker;
 
+    // для добавления картинок -------------------------------------
+    CImagesWorker* m_pWorker;
+
 public:
     CMemoryStream* m_pStream;
 
@@ -233,6 +250,8 @@ public:
         m_sConsoleLogFile = L"";
 
         m_nCurrentChangesBuilderIndex = 0;
+
+        m_pWorker = NULL;
     }
     ~CNativeControl()
     {
@@ -241,6 +260,8 @@ public:
 
         RELEASEARRAYOBJECTS(m_pSaveBinary);
         m_nSaveLen = 0;
+
+        RELEASEOBJECT(m_pWorker);
     }
 
 public:
@@ -467,6 +488,8 @@ void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+void _GetImageUrl(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 /// ZIP -----
 void _zipOpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);

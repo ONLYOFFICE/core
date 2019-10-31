@@ -319,7 +319,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("v", sName) == 0 )
 				{
@@ -509,7 +509,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("c", sName) == 0 )
 				{
@@ -818,7 +818,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("v", sName) == 0 )
 					m_oValue = oReader;
@@ -1069,7 +1069,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				const char* sName = oReader.GetNameChar();
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 				if ( strcmp("c", sName) == 0 )
 				{
@@ -1255,7 +1255,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					const char* sName = oReader.GetNameChar();
+					const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 					if ( strcmp("row", sName) == 0 )
 					{
@@ -1274,7 +1274,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					const char* sName = oReader.GetNameChar();
+					const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 
 					if ( strcmp("row", sName) == 0 )
 					{

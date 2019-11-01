@@ -45,7 +45,7 @@ std::wstring CImagesWorker::GetImageLocal(const std::wstring& sUrl)
     std::wstring sExt = NSFile::GetFileExtention(sUrl);
     std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L"." + sExt;
     m_mapImages.insert(std::make_pair(sUrl, sRet));
-    NSFile::CFileBinary::Copy(sUrl, m_sFolder + L"/media/" + sRet);
+    NSFile::CFileBinary::Copy(sUrl, m_sFolder + L"/" + sRet);
     return sRet;
 }
 std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
@@ -602,6 +602,8 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* i
     result->Set(current, "ZipFileAsString",    v8::FunctionTemplate::New(current, _zipGetFileAsString));
     result->Set(current, "ZipFileAsBinary",    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
     result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
+
+    result->Set(current, "getImageUrl", v8::FunctionTemplate::New(current, _GetImageUrl));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope

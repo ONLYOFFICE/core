@@ -160,6 +160,28 @@ void _builder_doc_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args)
     CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
     doc->CloseFile();
 }
+void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    CBuilderDocumentEmbed* doc = unwrap_builder_doc_embed(args.This());
+    std::vector<std::wstring> files = NSDirectory::GetFiles(doc->m_sFolder + L"/media");
+
+    v8::Local<v8::Object> obj = v8::Object::New(v8::Isolate::GetCurrent());
+    for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
+    {
+        std::wstring sFile = *i; NSCommon::string_replace(sFile, L"\\", L"/");
+        std::wstring sName = L"media/" + NSFile::GetFileName(sFile);
+
+        std::string sFileA = U_TO_UTF8(sFile);
+        std::string sNameA = U_TO_UTF8(sName);
+
+        v8::Local<v8::String> _k = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sNameA.c_str(), v8::String::kNormalString, -1);
+        v8::Local<v8::String> _v = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFileA.c_str(), v8::String::kNormalString, -1);
+
+        obj->Set(_k, _v);
+    }
+
+    args.GetReturnValue().Set(obj);
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* pBuilder, const std::wstring& sFile, const std::wstring& sParams)
@@ -171,6 +193,7 @@ v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRen
     _template->Set(isolate, "GetBinary", v8::FunctionTemplate::New(isolate, _builder_doc_GetBinary));
     _template->Set(isolate, "GetFolder", v8::FunctionTemplate::New(isolate, _builder_doc_GetFolder));
     _template->Set(isolate, "Close", v8::FunctionTemplate::New(isolate, _builder_doc_CloseFile));
+    _template->Set(isolate, "GetImageMap", v8::FunctionTemplate::New(isolate, _builder_doc_GetImageMap));
 
     CBuilderDocumentEmbed* _embed = new CBuilderDocumentEmbed();
     _embed->m_pBuilder = pBuilder;

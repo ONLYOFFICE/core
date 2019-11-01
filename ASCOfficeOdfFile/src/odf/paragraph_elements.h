@@ -102,7 +102,7 @@ public:
 	bool preserve_;
     
 	text(const std::wstring & Text);
-    text() {preserve_ = true;};
+	text() : preserve_(true) {}
 
     std::wstring text_;
 

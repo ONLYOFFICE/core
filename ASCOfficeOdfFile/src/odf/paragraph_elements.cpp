@@ -146,7 +146,7 @@ void text::add_text(const std::wstring & Text)
 		text_ += Text[i];
 	}
 }
-text::text(const std::wstring & Text)
+text::text(const std::wstring & Text) : preserve_(true)
 {
     add_text(Text);
 }

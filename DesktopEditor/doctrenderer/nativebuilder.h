@@ -87,6 +87,7 @@ void _builder_doc_IsValid(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _builder_doc_GetBinary(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _builder_doc_GetFolder(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _builder_doc_CloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _builder_doc_GetImageMap(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* pBuilder, const std::wstring& sFile, const std::wstring& sParams);
 v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* builder);

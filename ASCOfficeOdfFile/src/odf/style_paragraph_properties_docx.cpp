@@ -30,7 +30,8 @@
  *
  */
 
-#include <iostream>
+#include <odf/odf_document.h>
+#include "odfcontext.h"
 
 #include "style_paragraph_properties.h"
 
@@ -137,6 +138,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 		drawing = true;
 	}
 
+	const odf_reader::style_instance *style_inst = Context.get_styles_context().get_current_processed_style();
+
 	std::wstringstream & _pPr = Context.get_styles_context().paragraph_nodes();
  
 	CP_XML_WRITER(_pPr)
@@ -159,11 +162,43 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 		{
 			_pPr << L"<w:bidi/>";
 		}
+		
+		odf_reader::list_style_container & list_styles = Context.root()->odf_context().listStyleContainer();
+		
 		int level = Context.get_outline_level();
+		bool bOutlineList = (list_styles.outline_style() != NULL);
 
+		if (style_inst)
+		{
+			if (level < 0 && style_inst->outline_level())
+			{
+				level = style_inst->outline_level().get();
+			}
+
+			if ((style_inst->list_style_name()) && (style_inst->list_style_name()->empty()))
+			{
+				bOutlineList = false;
+			}
+		}
+	
 		if (level >= 0)
 		{
-			_pPr << L"<w:outlineLvl w:val=\"" <<  level << L"\"/>";
+			if (list_styles.outline_style())
+			{
+				_pPr << L"<w:numPr>";
+					if (level < 9 && bOutlineList)
+					{
+						_pPr << L"<w:ilvl w:val=\"" << level - 1  << L"\"/>";
+						_pPr << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>";
+					}
+					else
+					{
+						_pPr << L"<w:ilvl w:val=\"" << 0 << L"\"/>";
+						_pPr << L"<w:numId w:val=\"" << 0 << L"\"/>";
+					}
+				_pPr << L"</w:numPr>";
+			}
+			_pPr << L"<w:outlineLvl w:val=\"" << level << L"\"/>";
 		}
 	    
 		if (fo_text_align_)

@@ -69,7 +69,10 @@ public:
         const std::wstring				& ParentStyleName,
         const std::wstring				& NextStyleName,
         const std::wstring				& DataStyleName,
-		const std::wstring				& StyleClass
+		const std::wstring				& StyleClass,
+        _CP_OPT(std::wstring)			ListStyleName,
+		_CP_OPT(int)					ListLevel,
+		_CP_OPT(int)					OutlineLevel
         );
 
 	const std::wstring				& display_name()const;
@@ -83,10 +86,13 @@ public:
 	const styles_container			* container()	const { return container_; }
     const std::wstring				& data_style_name() const;
     const std::wstring				& style_class() const;
+    _CP_OPT(std::wstring)			list_style_name() const;
  
 	bool							is_automatic()	const;
     bool							is_default()	const;
 
+	_CP_OPT(int)					list_level()	const;
+	_CP_OPT(int)					outline_level()	const;
 private:
     styles_container				* container_;
 
@@ -105,6 +111,9 @@ private:
     mutable style_instance			* parent_;
     mutable style_instance			* next_;   
     std::wstring					data_style_name_;
+    _CP_OPT(std::wstring)			list_style_name_;
+	_CP_OPT(int)					list_level_;
+	_CP_OPT(int)					outline_level_;
 };
 
 class presentation_layouts_instance
@@ -156,7 +165,10 @@ public:
 					const std::wstring				& ParentStyleName,
 					const std::wstring				& NextStyleName,
 					const std::wstring				& DataStyleName,
-					const std::wstring				& StyleClass);
+					const std::wstring				& StyleClass,
+					_CP_OPT(std::wstring)			ListStyleName = boost::none,
+					_CP_OPT(int)					ListLevel = boost::none,
+					_CP_OPT(int)					OutlineLevel = boost::none);
 
     void add_master_page_name(const std::wstring & StyleName, const std::wstring & MasterPageName);
 
@@ -313,20 +325,21 @@ class list_style_instance
 public:
     list_style_instance(text_list_style * textListStyle) : text_list_style_(textListStyle) {}
     list_style_instance(text_list_style * textListStyle, const std::wstring & Name) : text_list_style_(textListStyle), name_(Name) {}
-    text_list_style * get_text_list_style() { return text_list_style_; }
+    
+	text_list_style * get_text_list_style() { return text_list_style_; }
     std::wstring get_style_name() 
     { 
         if (!name_.empty())
             return name_;
         else if (text_list_style_)
-            return text_list_style_->get_style_name();
+            return text_list_style_->attr_.style_name_;
         else
             return L"";
     }
     
 private:
-    text_list_style * text_list_style_;
-    std::wstring name_;
+    text_list_style		*text_list_style_;
+    std::wstring		name_;
 };
 
 class list_style_container
@@ -337,18 +350,27 @@ public:
 	void add_list_style(text_list_style * textListStyle);
     void add_list_style(text_list_style * textListStyle, const std::wstring & NewName);
 
-    /// получить экземпляр по имени стиля
     text_list_style * list_style_by_name(const std::wstring & Name);
 
-    /// получить Id, которое будет использоваться в numId и abstractNumId
+	text_outline_style * outline_style();
+	int id_outline();
+ 
+	 /// получить Id, которое будет использоваться в numId и abstractNumId
     int id_by_name(const std::wstring & Name);
-    instances_array & instances() { return instances_; }
-    bool empty() const { return instances_.empty(); };
+    
+	instances_array & instances() { return instances_; }
+   
+	bool empty() const { return instances_.empty() && !outline_; };
+
+	void add_outline_style(text_outline_style *textOutlineStyle);
 
 private:
     // ассоциации имени стиля и порядкового номера в массиве instances_
     boost::unordered_map<std::wstring, int> list_style_names_;
-    instances_array instances_;
+    instances_array							instances_;
+
+	text_outline_style						*outline_ = NULL;
+	int										outline_id_ = 0;
 };
 
 class notes_configuration

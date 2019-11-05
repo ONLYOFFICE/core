@@ -1137,7 +1137,7 @@ void text_date::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_c
 }
 void text_date::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_field(oox::date,style_data_style_name_.get_value_or(L""));
+    Context.get_text_context().start_field(oox::date, style_data_style_name_.get_value_or(L""));
     if (text_)
     {
         text_->pptx_convert(Context);

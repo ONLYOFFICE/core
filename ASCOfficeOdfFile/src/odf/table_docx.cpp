@@ -208,7 +208,7 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_table_context().start_table(tableStyleName);
 
     style_instance * inst = 
-        Context.root()->odf_context().styleContainer().style_by_name( tableStyleName , style_family::Table, Context.process_headers_footers_);
+        Context.root()->odf_context().styleContainer().style_by_name(tableStyleName, style_family::Table, Context.process_headers_footers_);
     
     Context.get_styles_context().start();
 

@@ -159,7 +159,8 @@ void oox_plot_area::oox_serialize_view3D(std::wostream & _Wostream)
     double sx, sy, sz, cx, cy, cz, theta_x, theta_y, theta_z = 0;
 
 	sy = forward_x;
-	theta_y = asin(sy);
+	
+	theta_y = (sy == 0 ? 0 : asin(sy));
 	cy = cos(theta_y);
 
 	theta_y /= DEG2RAD;
@@ -167,8 +168,8 @@ void oox_plot_area::oox_serialize_view3D(std::wostream & _Wostream)
 	sx = - forward_y / cy;
 	cx = forward_z / cy;
 
-	theta_x = acos(cx);
-	double theta_x_test = asin(sx);
+	theta_x = (sx == 0 ? 0 : asin(sx));
+	double theta_x_test = (sx == 0 ? 0 : acos(cx));
 
 	theta_x /= DEG2RAD;
 

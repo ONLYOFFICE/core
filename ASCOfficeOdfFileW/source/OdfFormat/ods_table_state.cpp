@@ -254,7 +254,7 @@ void ods_table_state::set_table_hidden(bool Val)
 	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->table_format_properties_.table_display_ = !Val;
+	table_properties->content_.table_display_ = !Val;
 
 }
 void ods_table_state::set_table_rtl(bool Val)
@@ -264,7 +264,7 @@ void ods_table_state::set_table_rtl(bool Val)
 	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->table_format_properties_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
+	table_properties->content_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
 
 }
 void ods_table_state::set_table_print_ranges(const std::wstring &ranges)
@@ -281,7 +281,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->table_format_properties_.tableooo_tab_color_ = _color;
+	table_properties->content_.tableooo_tab_color_ = _color;
 }
 void ods_table_state::set_table_style(office_element_ptr & elm)
 {	

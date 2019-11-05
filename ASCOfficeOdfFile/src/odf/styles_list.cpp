@@ -64,17 +64,17 @@ const wchar_t * text_list_style::name = L"list-style";
 
 void text_list_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    text_list_style_attr_.add_attributes(Attributes);
+    attr_.add_attributes(Attributes);
 }
 
 void text_list_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if		(L"text" == Ns && L"list-level-style-number" == Name)
-        CP_CREATE_ELEMENT(text_list_style_content_);
+        CP_CREATE_ELEMENT(content_);
     else if (L"text" == Ns && L"list-level-style-bullet" == Name)
-        CP_CREATE_ELEMENT(text_list_style_content_);    
+        CP_CREATE_ELEMENT(content_);    
      else if (L"text" == Ns && L"list-level-style-image" == Name)
-        CP_CREATE_ELEMENT(text_list_style_content_);    
+        CP_CREATE_ELEMENT(content_);    
    else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -135,7 +135,7 @@ void text_list_level_style_number::add_attributes( const xml::attributes_wc_ptr 
 void text_list_level_style_number::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if		(L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(style_list_level_properties_);    
+        CP_CREATE_ELEMENT(list_level_properties_);    
 	else if (L"style" == Ns && L"text-properties" == Name)
         CP_CREATE_ELEMENT(style_text_properties_); 
 	else
@@ -158,7 +158,7 @@ void text_list_level_style_image::add_attributes( const xml::attributes_wc_ptr &
 void text_list_level_style_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if		(L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(style_list_level_properties_);    
+        CP_CREATE_ELEMENT(list_level_properties_);    
 	else if (L"style" == Ns && L"text-properties" == Name)
         CP_CREATE_ELEMENT(style_text_properties_); 
 	else
@@ -231,7 +231,7 @@ void text_list_level_style_bullet::add_attributes( const xml::attributes_wc_ptr 
 void text_list_level_style_bullet::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(style_list_level_properties_);
+        CP_CREATE_ELEMENT(list_level_properties_);
     else if (L"style" == Ns && L"text-properties" == Name)
         CP_CREATE_ELEMENT(style_text_properties_);    
     else
@@ -323,7 +323,7 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
         return;
 
     std::wostream & strm = Context.output_stream();
-    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
   
     style_list_level_label_alignment * labelAlignment = listLevelProperties ?
         dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
@@ -464,7 +464,7 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 
 	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();
 
-   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
     
 	style_list_level_label_alignment * labelAlignment = listLevelProperties ?
         dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
@@ -555,7 +555,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
         return;
 
     std::wostream & strm = Context.output_stream();
-    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
     
 	style_list_level_label_alignment * labelAlignment = listLevelProperties ?
         dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
@@ -574,7 +574,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 					CP_XML_ATTR(L"w:val",labelAlignment->text_label_followed_by_.get() );
 				}
 				else 
-					CP_XML_ATTR(L"w:val",L"tab");
+					CP_XML_ATTR(L"w:val", L"tab");
 			}
 
 			const wchar_t bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L'\x2022');
@@ -655,7 +655,7 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 
 	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();
 
- //   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+ //   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
  //   
 	//style_list_level_label_alignment * labelAlignment = listLevelProperties ?
  //       dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
@@ -693,7 +693,7 @@ void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Co
         return;
 
     std::wostream & strm = Context.output_stream();
-    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
     
 	style_list_level_label_alignment * labelAlignment = listLevelProperties ?
         dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
@@ -712,7 +712,7 @@ void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Co
 					CP_XML_ATTR(L"w:val",labelAlignment->text_label_followed_by_.get() );
 				}
 				else 
-					CP_XML_ATTR(L"w:val",L"tab");
+					CP_XML_ATTR(L"w:val", L"tab");
 			}
 
 			const wchar_t bullet = L'\x2022';
@@ -793,7 +793,7 @@ void text_list_level_style_image::pptx_convert(oox::pptx_conversion_context & Co
 
 	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();
 
- //   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+ //   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
  //   
 	//style_list_level_label_alignment * labelAlignment = listLevelProperties ?
  //       dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
@@ -822,6 +822,188 @@ void text_list_level_style_image::pptx_convert(oox::pptx_conversion_context & Co
 		}
 	}
 }
+// text:outline-style
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_outline_style::ns = L"text";
+const wchar_t * text_outline_style::name = L"outline-style";
+
+void text_outline_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"style:name", style_name_, std::wstring(L""));
+}
+
+void text_outline_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    if (L"text" == Ns && L"outline-level-style" == Name)
+        CP_CREATE_ELEMENT(content_);
+   else
+    {
+         CP_NOT_APPLICABLE_ELM();
+    }
+}
+// text:outline-level-style
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_outline_level_style::ns = L"text";
+const wchar_t * text_outline_level_style::name = L"outline-level-style";
+
+void text_outline_level_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    common_num_format_attlist_.add_attributes(Attributes);
+    common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
+   
+	CP_APPLY_ATTR(L"text:style-name", text_style_name_, std::wstring(L""));  
+    CP_APPLY_ATTR(L"text:display-levels", text_display_levels_, (unsigned int)1);    
+    CP_APPLY_ATTR(L"text:start-value", text_start_value_, (unsigned int)1);    
+    CP_APPLY_ATTR(L"text:level", text_level_, (unsigned int)1);    
+}
+
+void text_outline_level_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    if (L"style" == Ns && L"list-level-properties" == Name)
+        CP_CREATE_ELEMENT(list_level_properties_);    
+    else if (L"style" == Ns && L"text-properties" == Name)
+        CP_CREATE_ELEMENT(text_properties_);    
+	else
+    {
+         CP_NOT_APPLICABLE_ELM();
+    }
+}
+void text_outline_level_style::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (text_level_ - 1 > 10)
+        return;
+
+    std::wostream & strm = Context.output_stream();
+    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( list_level_properties_.get() );
+  
+    style_list_level_label_alignment * labelAlignment = listLevelProperties ?
+        dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"w:lvl")
+		{
+			CP_XML_ATTR(L"w:ilvl",  text_level_ - 1);
+		    
+			CP_XML_NODE(L"w:start")
+			{
+				CP_XML_ATTR(L"w:val", text_start_value_);
+			}
+			CP_XML_NODE(L"w:numFmt")
+			{
+				std::wstring num_format = L"arabic";
+				if (common_num_format_attlist_.style_num_format_)
+				{
+					switch(common_num_format_attlist_.style_num_format_->get_type())
+					{
+						case odf_types::style_numformat::romanUc:	num_format= L"upperRoman"; break;
+						case odf_types::style_numformat::romanLc:	num_format= L"lowerRoman"; break;
+						case odf_types::style_numformat::alphaUc:	num_format= L"upperLetter"; break;
+						case odf_types::style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
+						case odf_types::style_numformat::arabic:
+						default:
+																	num_format= L"decimal"; break;
+					}
+				}
+				CP_XML_ATTR(L"w:val", num_format);
+			}
+			if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+			{	
+				CP_XML_NODE(L"w:suff")
+				{
+					CP_XML_ATTR(L"w:val", labelAlignment->text_label_followed_by_.get());
+				}
+			}
+
+			std::wstring w_lvlText;
+			w_lvlText += common_num_format_prefix_suffix_attlist_.style_num_prefix_.get_value_or(L"");
+
+//////////////////////////////////////////////////// 
+   
+			w_lvlText += GetLevelText(text_display_levels_, text_level_, Context);
+
+			w_lvlText += common_num_format_prefix_suffix_attlist_.style_num_suffix_.get_value_or(L"");
+
+			if (!w_lvlText.empty())
+			{
+				CP_XML_NODE(L"w:lvlText")
+				{
+					CP_XML_ATTR(L"w:val", w_lvlText);
+				}
+			}
+/////////////////////////////////////////////////    
+			docx_serialize_level_justification(CP_XML_STREAM(), listLevelProperties);
+
+			double spaceBeforeTwip = 0.0;
+			if (listLevelProperties && listLevelProperties->text_space_before_)
+			{
+				spaceBeforeTwip = 20.0 * listLevelProperties->text_space_before_->get_value_unit(length::pt);
+			}
+		    
+			double minLabelWidthTwip = 0.0;
+			if (listLevelProperties && listLevelProperties->text_min_label_width_)
+			{
+				minLabelWidthTwip = 20.0 * listLevelProperties->text_min_label_width_->get_value_unit(length::pt);
+			}
+
+			double minLabelDistanceTwip = 0.0;
+			if (listLevelProperties && 
+				common_num_format_attlist_.style_num_format_ &&
+				listLevelProperties->text_min_label_distance_)
+			{
+				minLabelDistanceTwip = 20.0 * listLevelProperties->text_min_label_distance_->get_value_unit(length::pt);
+			}
+			CP_XML_NODE(L"w:pPr")
+			{        
+				if (Context.get_rtl())	CP_XML_NODE(L"w:bidi");
+	
+				if (labelAlignment)
+				{
+					docx_serialize_label_alignment_props(CP_XML_STREAM(), labelAlignment);                                 
+				}
+				else
+				{    
+					CP_XML_NODE(L"w:ind")
+					{
+						CP_XML_ATTR(L"w:left",((int)(minLabelWidthTwip + spaceBeforeTwip + 0.5)));
+			            
+						if (spaceBeforeTwip < 0.0)
+						{
+							CP_XML_ATTR(L"w:firstLine", ((int)(minLabelWidthTwip + 0.5)));
+						}
+						else
+						{
+							double hanging = 0.0;
+							if ( (int)minLabelWidthTwip == 0)
+							{
+								if (spaceBeforeTwip < 0)
+									hanging = spaceBeforeTwip;
+								else
+									hanging = -spaceBeforeTwip;
+							}
+							else
+							{
+								hanging = minLabelWidthTwip;
+							}
+
+							CP_XML_ATTR(L"w:hanging",((int)( hanging  + 0.5)));
+						}
+					}
+				}
+			}
+
+			if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(text_properties_.get()))
+			{
+				Context.get_styles_context().start();
+		//to style_context
+				textProperties->content().docx_convert(Context);
+		//serialize style_context
+				Context.get_styles_context().docx_serialize_text_style( CP_XML_STREAM(), L"", Context.get_text_tracked_context().dumpRPr_);
+			}		
+		}
+	}
+}
+
 
 }
 }

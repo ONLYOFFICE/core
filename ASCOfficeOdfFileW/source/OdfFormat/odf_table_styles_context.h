@@ -130,8 +130,14 @@ public:
 		void set_current_dimension(int col, int row);
 		void set_flags(int val);
 
-		void get_table_properties		(					style_table_properties		*props);
-		void get_table_cell_properties	(					style_table_cell_properties *props);
+		bool is_paragraph_properties();
+		bool is_text_properties();
+
+		void get_table_properties		(style_table_properties		*props);
+		void get_table_cell_properties	(style_table_cell_properties *props);
+		void get_paragraph_properties	(style_paragraph_properties	*props);
+		void get_text_properties		(style_text_properties		*props);
+		
 		void get_table_cell_properties	(int col, int row,	style_table_cell_properties *props);
 		void get_text_properties		(int col, int row,	style_text_properties		*props);
 		void get_paragraph_properties	(int col, int row,	style_paragraph_properties	*props);

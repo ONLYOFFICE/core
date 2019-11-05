@@ -228,7 +228,7 @@ void PptxConverter::convert_styles()
 	odp_context->styles_context()->create_default_style(odf_types::style_family::Table);					
 	odf_writer::style_table_properties	* table_properties	= odp_context->styles_context()->last_state()->get_table_properties();
 	//для красивой отрисовки в редакторах - разрешим объеденить стили пересекающихся обрамлений 
-	table_properties->table_format_properties_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
+	table_properties->content_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
 
 	odp_context->styles_context()->create_default_style(odf_types::style_family::TableRow);					
 	odf_writer::style_table_row_properties	* row_properties	= odp_context->styles_context()->last_state()->get_table_row_properties();

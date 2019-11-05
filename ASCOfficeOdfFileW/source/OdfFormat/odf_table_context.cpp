@@ -208,7 +208,7 @@ void odf_table_context::end_table()
 			style_table_properties * table_props = style_->content_.get_style_table_properties();
 			if (table_props)
 			{
-				table_props->table_format_properties_.style_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
+				table_props->content_.style_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
 			}
 		}
 	}

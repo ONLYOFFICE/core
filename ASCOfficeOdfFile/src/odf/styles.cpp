@@ -449,6 +449,8 @@ std::wostream & style::text_to_stream(std::wostream & _Wostream, bool bXmlEncode
 
 void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	_CP_OPT(std::wstring) sTest;
+
     CP_APPLY_ATTR(L"style:name"					, style_name_, std::wstring(L""));
     CP_APPLY_ATTR(L"style:display-name"			, style_display_name_);
     CP_APPLY_ATTR(L"style:family"				, style_family_, style_family());
@@ -459,7 +461,28 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"style:auto-update"			, style_auto_update_, false);
     CP_APPLY_ATTR(L"style:data-style-name"		, style_data_style_name_);
     CP_APPLY_ATTR(L"style:class"				, style_class_);
-    CP_APPLY_ATTR(L"style:default-outline-level", style_default_outline_level_);//было int .. error
+	CP_APPLY_ATTR(L"style:percentage-data-style-name", style_percentage_data_style_name_);
+   
+	CP_APPLY_ATTR(L"style:list-level", sTest);
+	if (sTest)
+	{
+		if (sTest->empty())
+		{
+			style_list_level_ = 0;
+		}
+		else
+			style_list_level_= XmlUtils::GetInteger(*sTest);
+	}
+	CP_APPLY_ATTR(L"style:default-outline-level", sTest);
+	if (sTest)
+	{
+		if (sTest->empty())
+		{
+			style_default_outline_level_ = 9;
+		}
+		else
+			style_default_outline_level_= XmlUtils::GetInteger(*sTest);
+	}
 
 	if (style_master_page_name_)
 	{
@@ -648,11 +671,11 @@ void office_styles::add_child_element( xml::sax * Reader, const std::wstring & N
 	{
         draw_styles_.add_child_element(Reader, Ns, Name, getContext());
 	}
-     else if(CP_CHECK_NAME(L"table",	L"table-template"))
+	else if(CP_CHECK_NAME(L"table",	L"table-template"))
 	{
         templates_.add_child_element(Reader, Ns, Name, getContext());
 	}
-	 else if (L"text" == Ns && L"outline-style" == Name)
+	else if (L"text" == Ns && L"outline-style" == Name)
         CP_CREATE_ELEMENT(text_outline_style_);
     else if (L"text" == Ns && L"notes-configuration" == Name)
         CP_CREATE_ELEMENT(text_notes_configuration_);
@@ -1551,7 +1574,7 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 	if (attlist_.draw_style_name_)
 	{
 		std::wstring style_name = attlist_.draw_style_name_.get();
-		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name,style_family::DrawingPage,true);
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::DrawingPage, true);
 		
 		if ((style_inst) && (style_inst->content()))
 		{

@@ -701,7 +701,9 @@ void odf_document::Impl::parse_meta(office_element *element)
 
 void odf_document::Impl::parse_styles(office_element *element)
 {
-    do
+	text_outline_style *outlineStyle = NULL;
+    
+	do
     {
         office_document_base * document = dynamic_cast<office_document_base *>( element );
         if (!document)
@@ -757,7 +759,10 @@ void odf_document::Impl::parse_styles(office_element *element)
 						styleInst->style_parent_style_name_.get_value_or(L""),
 						styleInst->style_next_style_name_.get_value_or(L""),
 						styleInst->style_data_style_name_.get_value_or(L""),
-						styleInst->style_class_.get_value_or(L"")
+						styleInst->style_class_.get_value_or(L""),
+						styleInst->style_list_style_name_,
+						styleInst->style_list_level_,
+						styleInst->style_default_outline_level_
                     );
             }
             // list styles
@@ -815,7 +820,6 @@ void odf_document::Impl::parse_styles(office_element *element)
                 _CP_LOG << L"[warning] error reading styles\n";
                 break;
             }
-
             // default styles
 			for (size_t i = 0; i < docStyles->style_default_style_.size(); i++)
 			{	
@@ -875,7 +879,10 @@ void odf_document::Impl::parse_styles(office_element *element)
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
                     styleInst->style_data_style_name_.get_value_or(L""),
-					styleInst->style_class_.get_value_or(L"")
+					styleInst->style_class_.get_value_or(L""),
+					styleInst->style_list_style_name_,
+					styleInst->style_list_level_,
+					styleInst->style_default_outline_level_
                     );
             }
 
@@ -885,14 +892,13 @@ void odf_document::Impl::parse_styles(office_element *element)
 				office_element_ptr & elm = docStyles->styles_.text_list_style_[i];
 
                 text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
-                if (!listStyle)
-                {
-                    _CP_LOG << L"[warning] error list style\n";
-                    continue;
-                }
-
                 context_->listStyleContainer().add_list_style(listStyle);
             }
+
+			if (docStyles->text_outline_style_)
+			{
+                outlineStyle = dynamic_cast<text_outline_style *>(docStyles->text_outline_style_.get());                
+			}
 
 			for (size_t i = 0; i < docStyles->text_notes_configuration_.size(); i++)
 			{	
@@ -1048,7 +1054,10 @@ void odf_document::Impl::parse_styles(office_element *element)
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
                     styleInst->style_data_style_name_.get_value_or(L""),
-					styleInst->style_class_.get_value_or(L"")
+					styleInst->style_class_.get_value_or(L""),
+					styleInst->style_list_style_name_,
+					styleInst->style_list_level_,
+					styleInst->style_default_outline_level_
                     );
             }
 
@@ -1081,6 +1090,9 @@ void odf_document::Impl::parse_styles(office_element *element)
         while (0); // end parse automatic styles
     }
     while (false);
+
+	context_->listStyleContainer().add_outline_style(outlineStyle);
+
 }
 
 bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)

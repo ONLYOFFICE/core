@@ -126,12 +126,12 @@ const wchar_t * style_table_properties::name = L"table-properties";
 
 void style_table_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-    table_format_properties_.create_child_element(Ns, Name, getContext());
+    content_.create_child_element(Ns, Name, getContext());
 }
 
 void style_table_properties::serialize(std::wostream & _Wostream)
 {
-	table_format_properties_.serialize(_Wostream,ns,name);
+	content_.serialize(_Wostream,ns,name);
 
 }
    
@@ -139,7 +139,7 @@ void style_table_properties::apply_from(const style_table_properties * Other)
 {
 	if (Other == NULL) return;
 
-	table_format_properties_.apply_from(Other->table_format_properties_);
+	content_.apply_from(Other->content_);
 }
 
 

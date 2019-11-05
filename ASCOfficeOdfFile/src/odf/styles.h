@@ -342,7 +342,7 @@ typedef weak_ptr<style>::Type style_weak_ptr;
 typedef std::vector< style_weak_ptr > style_weak_ptr_array;
 typedef std::vector< style_ptr > style_ptr_array;
 
-///         style:style
+// style:style
 class style : public office_element_impl<style>
 {
 public:
@@ -370,18 +370,18 @@ public:
     _CP_OPT( std::wstring ) style_parent_style_name_; 
     _CP_OPT( std::wstring ) style_next_style_name_;	 
     _CP_OPT( std::wstring ) style_list_style_name_;	
+	_CP_OPT( int )			style_list_level_;
     _CP_OPT( std::wstring ) style_master_page_name_;
     _CP_OPT( std::wstring ) style_data_style_name_;	
-    _CP_OPT( std::wstring ) style_class_;
-    _CP_OPT( std::wstring ) style_default_outline_level_; 
+	_CP_OPT( std::wstring ) style_percentage_data_style_name_;
+	_CP_OPT( std::wstring ) style_class_;
+    _CP_OPT( int )			style_default_outline_level_; 
 
     style_content				content_;
     office_element_ptr_array	style_map_;
 
     friend class odf_document;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style);
 
 //  styles
@@ -561,7 +561,7 @@ public:
 	office_element_ptr_array	style_default_style_;
 	office_element_ptr_array	style_presentation_page_layout_;
     
-	office_element_ptr			text_outline_style_; // < TODO
+	office_element_ptr			text_outline_style_;
     office_element_ptr_array	text_notes_configuration_; // < TODO
     office_element_ptr			text_bibliography_configuration_; // < TODO
     office_element_ptr			text_linenumbering_configuration_; // < TODO
@@ -1045,5 +1045,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);
+
 } // namespace odf_reader
 } // namespace cpdoccore

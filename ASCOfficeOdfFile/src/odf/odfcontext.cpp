@@ -62,11 +62,14 @@ style_instance::style_instance(
 		style_content      *Content,
 		bool IsAutomatic,
 		bool IsDefault,
-		const std::wstring & ParentStyleName,
-		const std::wstring & NextStyleName,
-		const std::wstring & DataStyleName,
-		const std::wstring & StyleClass
-		) :
+		const std::wstring		& ParentStyleName,
+		const std::wstring		& NextStyleName,
+		const std::wstring		& DataStyleName,
+		const std::wstring		& StyleClass,
+		_CP_OPT(std::wstring)	ListStyleName,
+		_CP_OPT(int)			ListLevel,
+		_CP_OPT(int)			OutlineLevel
+	) :
 	container_		(Container),
     name_			(Name),
 	display_name_	(DisplayName),
@@ -77,7 +80,10 @@ style_instance::style_instance(
     next_name_		(NextStyleName),
 	style_class_	(StyleClass),
     next_			(Container->style_by_name(NextStyleName, style_type_, false)),
-    data_style_name_(DataStyleName)
+    data_style_name_(DataStyleName),
+	list_style_name_(ListStyleName),
+	list_level_		(ListLevel),
+	outline_level_	(OutlineLevel)
 {
 	parent_name_ = ParentStyleName;
 	if (parent_name_ == L"Textformatvorlage")//http://ask.libreoffice.org/en/question/35136/textformatvorlage-style/
@@ -101,10 +107,13 @@ void styles_container::add_style(	const std::wstring & Name,
 									style_content * Content,
 									bool IsAutomatic,
 									bool IsDefault,
-									const std::wstring & ParentStyleName_,
-									const std::wstring & NextStyleName,
-									const std::wstring & DataStyleName,
-									const std::wstring & StyleClass)
+									const std::wstring		& ParentStyleName_,
+									const std::wstring		& NextStyleName,
+									const std::wstring		& DataStyleName,
+									const std::wstring		& StyleClass,
+									_CP_OPT(std::wstring)	ListStyleName,
+									_CP_OPT(int)			ListLevel,
+									_CP_OPT(int)			OutlineLevel)
 {
 	std::wstring ParentStyleName = ParentStyleName_;
 
@@ -113,7 +122,7 @@ void styles_container::add_style(	const std::wstring & Name,
 		ParentStyleName = L"";//иначе в коде возможно зацикливание.
 	}
     style_instance_ptr newStyle = style_instance_ptr( new style_instance(this, Name, DisplayName, Type, Content, IsAutomatic, IsDefault, 
-							ParentStyleName, NextStyleName, DataStyleName, StyleClass));
+							ParentStyleName, NextStyleName, DataStyleName, StyleClass, ListStyleName, ListLevel, OutlineLevel));
 
     instances_.push_back(newStyle);
     int pos = static_cast<int>(instances_.size() - 1);
@@ -164,7 +173,7 @@ style_instance * style_instance::parent() const
     if (parent_)
         return parent_;
     else if (container_)
-        parent_ = container_->style_by_name(parent_name_, type(),false);
+        parent_ = container_->style_by_name(parent_name_, type(), false);
     
     return parent_;
 }
@@ -179,7 +188,7 @@ style_instance * style_instance::next() const
     if (next_)
         return next_;
     else if (container_)
-        next_ = container_->style_by_name(next_name_, type(),false);
+        next_ = container_->style_by_name(next_name_, type(), false);
     
     return next_;
 }
@@ -203,9 +212,21 @@ const std::wstring & style_instance::data_style_name() const
 {
     return data_style_name_;
 }
+_CP_OPT(std::wstring) style_instance::list_style_name() const
+{
+    return list_style_name_;
+}
 const std::wstring & style_instance::style_class() const
 {
     return style_class_;
+}
+_CP_OPT(int) style_instance::list_level() const
+{
+    return list_level_;
+}
+_CP_OPT(int) style_instance::outline_level() const
+{
+    return outline_level_;
 }
 
 style_instance * styles_container::style_by_name(const std::wstring & Name, style_family::type Type, bool object_in_styles) const
@@ -600,28 +621,40 @@ void fonts_container::add_font( font_instance_ptr FontInstance )
 
 void list_style_container::add_list_style(text_list_style * textListStyle)
 {
-    if (textListStyle)
-    {
-        instances_.push_back( list_style_instance_ptr(new list_style_instance(textListStyle)) );
-        list_style_names_[ textListStyle->get_style_name() ] = static_cast<int>(instances_.size() - 1);
-    }
+    if (!textListStyle) return;
+ 
+	instances_.push_back( list_style_instance_ptr(new list_style_instance(textListStyle)) );
+	list_style_names_[ textListStyle->attr_.style_name_ ] = static_cast<int>(instances_.size() - 1);
 }
 
-void list_style_container::add_list_style(text_list_style * textListStyle, 
-                                          const std::wstring & NewName)
+void list_style_container::add_list_style(text_list_style * textListStyle, const std::wstring & NewName)
 {
-    if (textListStyle)
-    {
-        instances_.push_back( list_style_instance_ptr(new list_style_instance(textListStyle, NewName)) );
-        list_style_names_[NewName] = static_cast<int>(instances_.size() - 1);
-    }
-}
+    if (!textListStyle) return;
 
+	instances_.push_back( list_style_instance_ptr(new list_style_instance(textListStyle, NewName)) );
+	list_style_names_[NewName] = static_cast<int>(instances_.size() - 1);
+}
+void list_style_container::add_outline_style(text_outline_style *textOutlineStyle)
+{
+    if (!textOutlineStyle) return;
+
+	outline_ = textOutlineStyle;
+	outline_id_ = instances_.size();
+}
 text_list_style * list_style_container::list_style_by_name(const std::wstring & Name)
 {
     if (list_style_names_.count(Name) > 0)
         return instances_[list_style_names_.at(Name)]->get_text_list_style();
     return NULL;
+}
+
+text_outline_style * list_style_container::outline_style()
+{
+    return outline_;
+}
+int list_style_container::id_outline()
+{
+    return outline_id_ + 1;
 }
 
 int list_style_container::id_by_name(const std::wstring & Name)

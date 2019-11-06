@@ -131,9 +131,9 @@ void ods_table_context::add_table_part_column(std::wstring name)
 
 	size_t column = state()->table_parts_.back().columns.size();
 
-	std::wstring sCol = utils::getColAddress(state()->table_parts_.back().col_start + column - 1);
+	std::wstring sCol = L"$" + utils::getColAddress(state()->table_parts_.back().col_start + column - 1);
 
-	std::wstring ref;//table name ????
+	std::wstring ref = L"$" + state()->office_table_name_ + L"." ;
 
 	ref += sCol + std::to_wstring(state()->table_parts_.back().row_start);
 	ref += L":";

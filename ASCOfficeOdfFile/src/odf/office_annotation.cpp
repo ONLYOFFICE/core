@@ -70,8 +70,7 @@ void dc_creator::add_text(const std::wstring & Text)
 {
 	content_ = Text;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//-------------------------------------------------------------------------
 void office_annotation_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"draw:style-name",		draw_style_name_); 
@@ -88,11 +87,27 @@ void office_annotation_attr::add_attributes( const xml::attributes_wc_ptr & Attr
 	CP_APPLY_ATTR(L"office:display",display_);
 }
 
-// office:annotation
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------
+const wchar_t * office_annotation_end::ns = L"office";
+const wchar_t * office_annotation_end::name = L"annotation-end";
+
+void office_annotation_end::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"office:name", office_name_, std::wstring(L""));
+}
+void office_annotation_end::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_comments_context().end_comment(office_name_);
+}
+//-------------------------------------------------------------------------
 const wchar_t * office_annotation::ns = L"office";
 const wchar_t * office_annotation::name = L"annotation";
 
+void office_annotation::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"office:name", office_name_);
+	attr_.add_attributes(Attributes);
+}
 void office_annotation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if (Ns==L"dc" && Name == L"date")
@@ -108,12 +123,6 @@ void office_annotation::add_child_element( xml::sax * Reader, const std::wstring
 		CP_CREATE_ELEMENT(content_);
 	}
 }
-
-void office_annotation::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    attr_.add_attributes(Attributes);
-}
-
 void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 {
 	std::wstring date;
@@ -127,7 +136,6 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
 	////////////////////////////////////////
-	Context.start_comment();
 
  	oox::StreamsManPtr prev = Context.get_stream_man();
 	
@@ -140,21 +148,23 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	bool pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);		
 
- 	for (size_t i = 0; i < content_.size(); i++)
+ 	Context.start_comment_content();
+	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);
     }
+	Context.end_comment_content();
+
+	std::wstring content = temp_stream.str();
 
 	Context.set_run_state(runState);
 	Context.set_paragraph_state(pState);
-	
-	Context.get_comments_context().start_comment(temp_stream.str(), author, date, runState);//content, date, author
+
+	Context.set_stream_man(prev);	
 	
 	Context.dump_hyperlinks(Context.get_comments_context().get_rels(), oox::hyperlinks::comment_place);
-		
-	Context.set_stream_man(prev);
 	
-	Context.end_comment();
+	Context.get_comments_context().start_comment(content, author, date, office_name_);//content, date, author	
 }
 
 void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)

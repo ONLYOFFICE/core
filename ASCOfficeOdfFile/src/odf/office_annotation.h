@@ -104,7 +104,26 @@ private:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_creator);
+//-----------------------------------------------------------------------------------------------------------
+//  office:annotation-end 
+class office_annotation_end : public office_element_impl<office_annotation_end>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeOfficeAnnotationEnd;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+
+	std::wstring office_name_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(office_annotation_end);
+//-----------------------------------------------------------------------------------------------------------
 //  office:annotation 
 class office_annotation : public office_element_impl<office_annotation>
 {
@@ -122,16 +141,16 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array content_;
-	office_annotation_attr attr_;
+	_CP_OPT(std::wstring)		office_name_;
+	
+	office_element_ptr_array	content_;
+	office_annotation_attr		attr_;
 
     office_element_ptr dc_date_;
     office_element_ptr dc_creator_;
-
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_annotation);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------------------
 //officeooo:annotation
 class officeooo_annotation : public office_element_impl<officeooo_annotation>
 {

@@ -198,7 +198,30 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 }
 void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
-    if (!state_.in_run_)
+	if(false == current_process_comment_)
+	{
+		for (size_t i = 0; i < get_comments_context().ref_start_.size(); i++)
+		{
+			output_stream() << L"<w:commentRangeStart w:id=\"" << get_comments_context().ref_start_[i] << L"\"/>";
+		}
+		get_comments_context().ref_start_.clear();
+
+		if (false == get_comments_context().ref_end_.empty())
+		{
+			for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+			{
+				output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";
+			}
+			
+			for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+			{
+				output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
+			}
+		
+			get_comments_context().ref_end_.clear();		
+		}
+	}
+	if (!state_.in_run_)
     {
         state_.in_run_ = true;
 		output_stream() << L"<w:r>";
@@ -254,23 +277,17 @@ void docx_conversion_context::finish_run()
 {
     if (false == state_.in_run_) return;
 
-	if (get_comments_context().state() == 4)
+	if (false == current_process_comment_)
 	{
-		output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
-		get_comments_context().state(0);
+		for (size_t i = 0; i < get_comments_context().ref_.size(); i++)
+		{
+			output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_[i] << L"\"/>";			
+		}
+		get_comments_context().ref_.clear();
 	}
+	
 	output_stream() << L"</w:r>";
     state_.in_run_ = false;
-	
-	if (get_comments_context().state() == 2)
-	{
-		output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\"/>";
-		
-		add_element_to_run();
-			output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().current_id() << L"\"/>";			
-			get_comments_context().state(0);
-		finish_run();
-	}
 }
 void docx_conversion_context::start_math_formula()
 {
@@ -609,12 +626,7 @@ void docx_conversion_context::back_context_state()
 void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 {
 	finish_run();
-	if (get_comments_context().state() == 1 ||
-		get_comments_context().state() == 4)//??? comment in run
-	{
-		output_stream() << L"<w:commentRangeStart w:id=\"" << get_comments_context().current_id() << L"\" />";
-		get_comments_context().state(2);//active
-	}
+
     add_element_to_run(parentStyleId);
 }
 

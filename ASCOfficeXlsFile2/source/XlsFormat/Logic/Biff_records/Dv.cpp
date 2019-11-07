@@ -51,7 +51,7 @@ static std::wstring replace_zero (const std::wstring &str, const std::wstring &d
 		{
 			out += delimetr;
 		}
-		else
+		else if (str[pos] >= 0x20)
 		{
 			out += str[pos];
 		}
@@ -82,9 +82,10 @@ void Dv::readFields(CFRecord& record)
 	typOperator		= static_cast<_typOperatorDv>(GETBITS(flags, 20, 23));
 
 	record >> PromptTitle >> ErrorTitle >> Prompt >> Error;
-	
-	formula1.load(record);
-	formula2.load(record);
+
+	formula1.load(record, valType != typeDvCustom);
+
+	formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvWhole && typOperator < 2);
 	
 	record >> sqref;
 }
@@ -95,10 +96,22 @@ int Dv::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"dataValidation")
 		{
-			CP_XML_ATTR(L"sqref",				sqref.strValue);
+			switch(valType)
+			{
+				case typeDvCustom:		CP_XML_ATTR(L"type", L"custom");	break;
+				case typeDvDate:		CP_XML_ATTR(L"type", L"date");		break;
+				case typeDvDecimal:		CP_XML_ATTR(L"type", L"decimal");	break;
+				case typeDvList:		CP_XML_ATTR(L"type", L"list");		break;
+				case typeDvNone:		CP_XML_ATTR(L"type", L"none");		break;
+				case typeDvTextLength:	CP_XML_ATTR(L"type", L"textLength");break;
+				case typeDvTime:		CP_XML_ATTR(L"type", L"time");		break;
+				case typeDvWhole:		CP_XML_ATTR(L"type", L"whole");		break;
+			}
 			CP_XML_ATTR(L"showErrorMessage",	fShowErrorMsg);
 			CP_XML_ATTR(L"showInputMessage",	fShowInputMsg);
 			CP_XML_ATTR(L"allowBlank",			fAllowBlank);
+
+			CP_XML_ATTR(L"sqref",				sqref.strValue);
 
 			switch(typOperator)
 			{
@@ -110,17 +123,6 @@ int Dv::serialize(std::wostream & stream)
 				case operatorDvLessThan:			CP_XML_ATTR(L"operator", L"lessThan");			break;
 				case operatorDvGreaterThanOrEqual:	CP_XML_ATTR(L"operator", L"greaterThanOrEqual");break;
 				case operatorDvLessThanOrEqual:		CP_XML_ATTR(L"operator", L"lessThanOrEqual");	break;
-			}
-			switch(valType)
-			{
-				case typeDvCustom:		CP_XML_ATTR(L"type", L"custom");	break;
-				case typeDvDate:		CP_XML_ATTR(L"type", L"date");		break;
-				case typeDvDecimal:		CP_XML_ATTR(L"type", L"decimal");	break;
-				case typeDvList:		CP_XML_ATTR(L"type", L"list");		break;
-				case typeDvNone:		CP_XML_ATTR(L"type", L"none");		break;
-				case typeDvTextLength:	CP_XML_ATTR(L"type", L"textLength");break;
-				case typeDvTime:		CP_XML_ATTR(L"type", L"time");		break;
-				case typeDvWhole:		CP_XML_ATTR(L"type", L"whole");		break;
 			}
 			if (PromptTitle.value().size() > 1)
 			{
@@ -138,8 +140,14 @@ int Dv::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"error", Error.value());
 			}
-			std::wstring sFormula1 = replace_zero(formula1.getAssembledFormula(), L",");
-			std::wstring sFormula2 = replace_zero(formula2.getAssembledFormula(), L",");
+			std::wstring sFormula1 = formula1.getAssembledFormula();
+			std::wstring sFormula2 = formula2.getAssembledFormula();
+
+			if (valType == typeDvList)
+			{
+				sFormula1 = replace_zero(sFormula1, L",");
+				sFormula2 = replace_zero(sFormula2, L",");
+			}
 
 			if (!sFormula1.empty())
 			{

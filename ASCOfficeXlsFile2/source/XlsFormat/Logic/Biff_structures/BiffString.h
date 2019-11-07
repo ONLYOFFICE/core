@@ -61,6 +61,7 @@ public:
 	BiffString(const std::wstring & str);
 	~BiffString();
 
+	bool bDeleteZero;
 
 	operator std::wstring  () const;
 

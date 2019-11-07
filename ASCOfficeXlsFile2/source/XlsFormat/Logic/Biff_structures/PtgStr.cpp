@@ -59,7 +59,7 @@ BiffStructurePtr PtgStr::clone()
 
 void PtgStr::loadFields(CFRecord& record)
 {
-	ShortXLUnicodeString s;
+	ShortXLUnicodeString s;	
 	record >> s;
 
 	string_ = s;

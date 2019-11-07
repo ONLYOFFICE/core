@@ -49,6 +49,9 @@ void DXFFntD::load(CFRecord& record)
 	if(cchFont)
 	{
 		stFontName.setSize(cchFont);
+		stFontName.bDeleteZero = true;
+		//5804543.xls - font name in dx for table - c a l i 0 0 0 0 b r i - !!!!
+		
 		record >> stFontName;
 		record.skipNunBytes(63 - stFontName.getStructSize()); // unused1
 	}

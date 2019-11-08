@@ -17,7 +17,7 @@ message(STATUS "X2t converter source path: ${X2T_DIR}")
 # Library source .h .cpp
 file(GLOB X2T_CPP
     ${X2T_DIR}/src/cextracttools.cpp
-    ${X2T_DIR}/src/ASCConverters_ios.cpp
+    ${X2T_DIR}/src/ASCConverters.cpp
     ${X2T_DIR}/../Common/OfficeFileFormatChecker2.cpp
 )
 

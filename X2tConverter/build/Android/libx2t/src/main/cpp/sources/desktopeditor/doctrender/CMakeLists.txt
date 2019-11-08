@@ -16,10 +16,10 @@ message(STATUS "Doct draw source path: ${DOCT_RENDER_DIR}")
 
 # Library source .h .cpp
 file(GLOB DOCT_RENDER_CPP
-    ${DOCT_RENDER_DIR}/memorystream.cpp
-    ${DOCT_RENDER_DIR}/nativecontrol.cpp
-    ${DOCT_RENDER_DIR}/doctrenderer.cpp
-    ${DOCT_RENDER_DIR}/docbuilder.cpp
+#    ${DOCT_RENDER_DIR}/memorystream.cpp
+#    ${DOCT_RENDER_DIR}/nativecontrol.cpp
+    ${DOCT_RENDER_DIR}/doctrenderer_empty.cpp
+#    ${DOCT_RENDER_DIR}/docbuilder.cpp
 )
 
 # Set targer as static library

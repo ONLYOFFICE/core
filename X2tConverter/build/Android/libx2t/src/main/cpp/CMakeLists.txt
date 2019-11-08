@@ -239,6 +239,7 @@ add_subdirectory(sources/desktopeditor/cximage/cximage x2t/desktopeditor/cximage
 add_subdirectory(sources/desktopeditor/graphics x2t/desktopeditor/graphics)
 add_subdirectory(sources/desktopeditor/fontengine x2t/desktopeditor/fontengine)
 add_subdirectory(sources/desktopeditor/xml x2t/desktopeditor/xml)
+add_subdirectory(sources/desktopeditor/doctrender x2t/desktopeditor/doctrender)
 
 add_subdirectory(sources/formats/pdfwriter x2t/formats/pdfwriter)
 add_subdirectory(sources/formats/pdfreader x2t/formats/pdfreader)
@@ -299,6 +300,7 @@ target_link_libraries(${LIB_NAME_X2T}
 
         # Editors
         downloader
+        doct-render
         graphics
         font-engine
         editor-xml

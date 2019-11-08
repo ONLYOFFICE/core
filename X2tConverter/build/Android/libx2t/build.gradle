@@ -84,7 +84,7 @@ dependencies {
 * */
 def getProjectPath(String path, Boolean isRelativeCreate = false) {
     def absolutePath = file(path)
-    def relativePath = file("${project(':libx2t').projectDir}/$path")
+    def relativePath = file("${file('.').absolutePath}/$path")
     //def relativePath = file("${rootProject.projectDir}/path")
 
     if (absolutePath.exists() && absolutePath.isDirectory()) {
@@ -93,5 +93,5 @@ def getProjectPath(String path, Boolean isRelativeCreate = false) {
         return relativePath.toString().replaceAll("\\\\", "/")
     }
 
-    new IllegalArgumentException("getProjectPath($path) - path doesn't exist...")
+    throw new GradleException("getProjectPath($path) - path doesn't exist...")
 }

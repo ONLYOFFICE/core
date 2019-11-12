@@ -536,7 +536,27 @@ namespace NExtractTools
 			if (OfficeFileFormatChecker.isOfficeFile(sFrom))
 			{
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
-					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+				{
+					// test protect
+					bool isOldPassword = params.hasPassword();
+					const std::wstring sOldPassword = params.getPassword();
+					
+					if (isOldPassword) delete params.m_sPassword;
+					params.m_sPassword = new std::wstring(L"VelvetSweatshop");
+
+					_UINT32 nRes = mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+					if (SUCCEEDED_X2T(nRes))
+					{
+						return nRes;
+					}
+					else
+					{
+						delete params.m_sPassword;
+						if (isOldPassword)
+							params.m_sPassword = new std::wstring(sOldPassword);
+						return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+					}					
+				}
 				else
 				{
 					//вместо xlsx другой формат!!

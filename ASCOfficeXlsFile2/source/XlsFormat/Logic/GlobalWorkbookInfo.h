@@ -137,6 +137,7 @@ public:
 
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
+	std::map<std::wstring, int>							mapDefineNamesSerialized;
 	
 	std::vector<std::pair<boost::shared_array<unsigned char>, size_t> >	bin_data;
 	std::pair<boost::shared_array<unsigned char>, size_t>				listdata_data;

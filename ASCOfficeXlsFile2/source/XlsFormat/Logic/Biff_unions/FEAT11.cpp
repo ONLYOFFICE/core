@@ -202,9 +202,15 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 				CP_XML_ATTR(L"displayName",		display);
 				CP_XML_ATTR(L"ref",				feature11->sqref);
 
-				//CP_XML_ATTR(L"headerRowCount",	feature11->rgbFeat.crwHeader); //ZXC_5693030.xls
+				if (feature11->rgbFeat.crwHeader < 1 )
+				{//ZXC_5693030.xls marker_mc.xls
+					CP_XML_ATTR(L"headerRowCount",	0); 
+				}
+				if (!feature11->rgbFeat.fShownTotalRow)
+				{
+					CP_XML_ATTR(L"totalsRowShown",	0);
+				}
 				//CP_XML_ATTR(L"totalsRowCount",	feature11->rgbFeat.crwTotals);
-				//CP_XML_ATTR(L"totalsRowShown",	feature11->rgbFeat.fShownTotalRow);
 				
 				if (!comment.empty()) 
 					CP_XML_ATTR(L"comment", comment);

@@ -190,31 +190,30 @@ int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 		CP_XML_NODE(L"cacheField")
 		{ 
 			CP_XML_ATTR(L"name", fdb->stFieldName.value());
-
-			if (m_SXVDTEx)
-			{
-				SXVDTEx *olap_info = dynamic_cast<SXVDTEx*>(m_SXVDTEx.get());
-				if ((olap_info) && (olap_info->isxth >= 0))
-				{
-					CP_XML_ATTR(L"hierarchy", olap_info->isxth);	
-					CP_XML_ATTR(L"level", olap_info->isxtl);	
-					
-					PIVOTTH* ht = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[olap_info->isxth].get());
-					SXTH* sxTH = dynamic_cast<SXTH*>(ht->m_SXTH.get());
-					
-					CP_XML_ATTR(L"caption", sxTH->stDisplay.value());	
-				}
-			}
-
+			
 			if (bSql)
 			{
-				CP_XML_ATTR(L"numFmtId", 0);	
 				if (fdb_type->wTypeSql > 0)
 					CP_XML_ATTR(L"sqlType", fdb_type->wTypeSql);
+				CP_XML_ATTR(L"numFmtId", 0);	
 			}
 			else
 			{
 				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+			}
+			if (m_SXVDTEx)
+			{
+				SXVDTEx *olap_info = dynamic_cast<SXVDTEx*>(m_SXVDTEx.get());
+				if ((olap_info) && (olap_info->isxth >= 0))
+				{					
+					PIVOTTH* ht = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[olap_info->isxth].get());
+					SXTH* sxTH = dynamic_cast<SXTH*>(ht->m_SXTH.get());
+					
+					CP_XML_ATTR(L"caption", sxTH->stDisplay.value());	
+					
+					CP_XML_ATTR(L"hierarchy", olap_info->isxth);	
+					CP_XML_ATTR(L"level", olap_info->isxtl);	
+				}
 			}
 			if (m_arSRCSXOPER.empty() && m_arGRPSXOPER.empty() == false)
 			{

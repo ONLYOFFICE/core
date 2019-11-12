@@ -84,8 +84,6 @@ int BopPop::serialize(std::wostream & _stream)
 				case 1: CP_XML_ATTR (L"val" , L"val");		break;
 				case 2: CP_XML_ATTR (L"val" , L"percent");	break;
 				case 3: CP_XML_ATTR (L"val" , L"cust");		break;
-				default:
-						CP_XML_ATTR (L"val" , L"auto");		break;
 				}
 			}
 			if (split < 3)
@@ -103,10 +101,6 @@ int BopPop::serialize(std::wostream & _stream)
 		}
 		else
 		{
-			CP_XML_NODE(L"c:splitType")
-			{
-				CP_XML_ATTR (L"val" , L"auto");	
-			}
 		}
 		
 		BopPopCustom * custom = dynamic_cast<BopPopCustom *>(m_Custom.get());

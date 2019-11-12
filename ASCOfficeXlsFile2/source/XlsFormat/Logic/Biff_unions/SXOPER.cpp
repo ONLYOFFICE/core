@@ -145,6 +145,19 @@ int SXOPER::serialize(std::wostream & strm)
 			if (!value.empty() || bString)
 			{
 				CP_XML_ATTR(L"v", value);
+				
+				size_t pos_start = value.find(L"&[");
+				size_t pos_end = value.find(L"]", pos_start);
+
+				if (pos_end != std::wstring::npos && pos_start < pos_end)
+				{
+					std::wstring caption = value.substr(pos_start + 2, pos_end - pos_start - 2);
+				
+					if (false == caption.empty())
+					{
+						CP_XML_ATTR(L"c", caption);
+					}
+				}
 			}
 			if (bFormula)
 			{

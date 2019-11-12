@@ -200,19 +200,14 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 						}
 						if (sxTH->cisxvd > 0)
 							CP_XML_ATTR(L"oneField", sxTH->cisxvd);
+
+						CP_XML_ATTR(L"count", sxTH->cisxvd);
 					}
 					else
 					{
-						//if (!sxTH->stDimension.value().empty())
-						//{
-						//	CP_XML_ATTR(L"attribute",			sxTH->fKeyAttributeHierarchy); 
-						//	CP_XML_ATTR(L"keyAttribute",		sxTH->fKeyAttributeHierarchy); 
-						//}
-						//else
-						{
-							CP_XML_ATTR(L"attribute",			!sxTH->fKeyAttributeHierarchy); 
-						}
-						//keyAttribute
+						CP_XML_ATTR(L"attribute",			sxTH->fAttributeHierarchy); 
+						CP_XML_ATTR(L"keyAttribute",		sxTH->fKeyAttributeHierarchy); 
+
 						CP_XML_ATTR(L"defaultMemberUniqueName", sxTH->stDefault.value());
 						CP_XML_ATTR(L"allUniqueName",			sxTH->stAll.value());
 						CP_XML_ATTR(L"dimensionUniqueName",		sxTH->stDimension.value());
@@ -227,11 +222,11 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 						}
 					}
 
-					if (sxTH->cisxvd > 0)
+					if (false == sxTH->rgisxvd.empty())
 					{
 						CP_XML_NODE(L"fieldsUsage")
 						{
-							CP_XML_ATTR(L"count", sxTH->cisxvd);
+							CP_XML_ATTR(L"count", sxTH->rgisxvd.size());
 							for (size_t i = 0; i < sxTH->rgisxvd.size(); i++)
 							{
 								CP_XML_NODE(L"fieldUsage")
@@ -305,8 +300,11 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 			{
 				CP_XML_NODE(L"dimension")
 				{
-					CP_XML_ATTR(L"name",		it->first.substr(1, it->first.length() - 2));
+					std::wstring name = it->first.substr(1, it->first.length() - 2);
+
+					CP_XML_ATTR(L"name",		name);
 					CP_XML_ATTR(L"uniqueName",	it->first);
+					CP_XML_ATTR(L"caption",		name);
 					
 					//if (sxTH->fMeasure)
 					//	CP_XML_ATTR(L"measure",	true);

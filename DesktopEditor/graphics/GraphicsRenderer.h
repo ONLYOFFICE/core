@@ -106,7 +106,7 @@ public:
     virtual NSFonts::IFontManager* GetFontManager();
 	BYTE* GetPixels(LONG& lWidth, LONG& lHeight);
 
-	void ClearInstallFont();
+	virtual void ClearInstallFont();
 	void SetClipRect(double x, double y, double w, double h);
 
 protected:

@@ -3553,7 +3553,13 @@ namespace NExtractTools
 								{
 									sXlsxFile = sResultDecryptFile;
 								}
-							}		
+							}
+							else
+							{
+								delete params.m_sPassword;
+								if (isOldPassword)
+									params.m_sPassword = new std::wstring(sOldPassword);
+							}
 						}
 					}
 				}

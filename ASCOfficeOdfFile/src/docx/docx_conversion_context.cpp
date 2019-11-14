@@ -264,6 +264,20 @@ void docx_conversion_context::finish_paragraph()
 	{
 		end_changes();
 
+		if (false == current_process_comment_ && false == get_comments_context().ref_end_.empty())
+		{
+				for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+				{
+					output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";
+				}
+				
+				for (size_t i = 0; i < get_comments_context().ref_end_.size(); i++)
+				{
+					output_stream()<< L"<w:commentReference w:id=\"" << get_comments_context().ref_end_[i] << L"\"/>";			
+				}
+			
+				get_comments_context().ref_end_.clear();	
+		}	
 		output_stream() << L"</w:p>";
 	}
 	

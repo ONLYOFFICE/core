@@ -562,7 +562,8 @@ namespace NExtractTools
 					//вместо xlsx другой формат!!
 				}
 			}
-			else return AVS_FILEUTILS_ERROR_CONVERT;		}
+			else return AVS_FILEUTILS_ERROR_CONVERT;		
+		}
 
 		return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params, true, sFrom);
     }
@@ -3523,8 +3524,39 @@ namespace NExtractTools
            NSDirectory::CreateDirectory(sXlsxDir);
 		   if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom)
            {
-               nRes = zip2dir(sFrom, sXlsxDir);
-               sXlsxFile = sFrom;
+				nRes = zip2dir(sFrom, sXlsxDir);
+				if(SUCCEEDED_X2T(nRes))
+				{
+					sXlsxFile = sFrom;
+				}
+				else
+				{
+					//check crypt 
+					COfficeFileFormatChecker OfficeFileFormatChecker;
+					if (OfficeFileFormatChecker.isOfficeFile(sFrom))
+					{
+						if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
+						{
+							std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
+							// test protect
+							bool isOldPassword = params.hasPassword();
+							const std::wstring sOldPassword = params.getPassword();
+							
+							if (isOldPassword) delete params.m_sPassword;
+							params.m_sPassword = new std::wstring(L"VelvetSweatshop");
+
+							_UINT32 nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
+							if(SUCCEEDED_X2T(nRes))
+							{
+								nRes = zip2dir(sResultDecryptFile, sXlsxDir);
+								if(SUCCEEDED_X2T(nRes))
+								{
+									sXlsxFile = sResultDecryptFile;
+								}
+							}		
+						}
+					}
+				}
            }
 		   else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatFrom)
 		   {

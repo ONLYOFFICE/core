@@ -57,6 +57,7 @@
 #include "Biff_records/Country.h"
 #include "Biff_records/WsBool.h"
 #include "Biff_records/ExternSheet.h"
+#include "Biff_records/SXAddl.h"
 
 #include "Biff_unions/BACKGROUND.h"
 #include "Biff_unions/BIGNAME.h"
@@ -538,6 +539,18 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
+			//case rt_SXAddl:
+			//{
+			//	proc.optional<SXAddl>();
+			//	SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+			//	if (!addl) continue;
+			//	
+			//	if (false == addl->bEndElement)
+			//	{
+			//		m_arSXAddl.push_back(elements_.back()); 
+			//	}
+			//	elements_.pop_back();
+			//}break;
 			default://unknown .... skip					
 			{
 				proc.SkipRecord();	

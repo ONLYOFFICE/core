@@ -198,7 +198,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				XLS::CFStreamPtr pivot_cache_stream = xls_file->getNamedStream(L"_SX_DB_CUR/" + *it);
 				
 				if (!pivot_cache_stream) continue;
-				if (pivot_cache_stream->getStreamSize() < 1) continue;
+				//if (pivot_cache_stream->getStreamSize() < 1) continue;
 
 				XLS::CFStreamCacheReader pivot_cache_reader(pivot_cache_stream, xls_global_info);
 

@@ -706,6 +706,9 @@ enum ElementType
 	typeRC4EncryptionHeader,
 	typeURICreateFlags,
 	typeURLMoniker,
+	typeXlsFilter_Top10,
+	typeXlsFilter_Criteria,
+	typeSXEZDoper,
 
 	typeOfficeArtRecord = 3000,
 	typeOfficeArtBStoreContainerFileBlock,

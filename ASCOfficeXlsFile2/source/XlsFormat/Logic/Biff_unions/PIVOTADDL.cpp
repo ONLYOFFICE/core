@@ -97,7 +97,7 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 		if (level == 0 && addl->bEndElement)
 		{
 			elements_.pop_back(); //end элемент не нужен в дальнейшем
-			break;
+			continue;
 		}
 		else if (addl->bEndElement)
 		{ 			

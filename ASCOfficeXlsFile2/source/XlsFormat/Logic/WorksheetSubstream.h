@@ -69,6 +69,8 @@ public:
 	std::vector<BaseObjectPtr>		m_arLabel;
 	std::vector<BaseObjectPtr>		m_arBIGNAME;
 
+	std::vector<BaseObjectPtr>		m_arSXAddl;
+
 //-------------------------------------------------------------------
 	std::map<std::wstring, BaseObjectPtr>	mapPivotViews;
 

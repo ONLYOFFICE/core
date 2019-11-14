@@ -46,7 +46,9 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	
 	int serialize(std::wostream & strm);
+	int serialize_table_view(std::wostream & strm);
 
 	static const ElementType type = typePIVOTVIEWEX;
 

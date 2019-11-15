@@ -3545,7 +3545,7 @@ namespace NExtractTools
 							if (isOldPassword) delete params.m_sPassword;
 							params.m_sPassword = new std::wstring(L"VelvetSweatshop");
 
-							_UINT32 nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
+							nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
 							if(SUCCEEDED_X2T(nRes))
 							{
 								nRes = zip2dir(sResultDecryptFile, sXlsxDir);

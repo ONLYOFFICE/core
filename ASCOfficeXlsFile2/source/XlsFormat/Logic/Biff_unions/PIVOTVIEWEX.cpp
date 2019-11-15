@@ -331,6 +331,18 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 							}
 						}
 					}
+					else if (sxTH->isxvd >= 0)
+					{
+						CP_XML_ATTR(L"oneField", 1);
+						CP_XML_NODE(L"fieldsUsage")
+						{
+							CP_XML_ATTR(L"count", 1);
+							CP_XML_NODE(L"fieldUsage")
+							{
+								CP_XML_ATTR(L"x", sxTH->isxvd);
+							}
+						}
+					}
 				}
 
 			}

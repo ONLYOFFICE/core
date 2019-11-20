@@ -1063,7 +1063,8 @@ namespace OOX
 			sdttypeGroup        =  8,
 			sdttypePicture      =  9,
 			sdttypeRichText     = 10,
-			sdttypeText         = 11
+			sdttypeText         = 11,
+			sdttypeCheckBox     = 12
 		};
 
 		class CSdtPr : public WritingElement
@@ -1178,8 +1179,11 @@ namespace OOX
 					m_eType = sdttypeText;
 				}
 
-				if ( oNode.GetNode( _T("w14:checkbox"), oChild ) )
+				if ( sdttypeUnknown == m_eType && oNode.GetNode( _T("w14:checkbox"), oChild ) )
+				{
 					m_oCheckbox = oChild;
+					m_eType = sdttypeCheckBox;
+				}
 			}
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
@@ -1262,9 +1266,10 @@ namespace OOX
 						m_oText = oReader;
 						m_eType = sdttypeText;
 					}
-					else if ( _T("w14:checkbox") == sName )
+					else if ( sdttypeUnknown == m_eType && _T("w14:checkbox") == sName )
 					{
 						m_oCheckbox = oReader;
+						m_eType = sdttypeCheckBox;
 					}
 				}
 			}
@@ -1285,7 +1290,6 @@ namespace OOX
 				WritingElement_WriteNode_1( L"<w:dataBinding ",   m_oDataBinding );
 				WritingElement_WriteNode_1( L"<w:temporary ",     m_oTemporary );
 				WritingElement_WriteNode_1( L"<w:tag ",           m_oTag );
-				WritingElement_WriteNode_2( m_oCheckbox );
 
 				switch(m_eType)
 				{
@@ -1362,6 +1366,11 @@ namespace OOX
 							sResult += m_oText->ToString();
 						}
 						sResult += _T("/>");
+						break;
+					}
+				case sdttypeCheckBox:
+					{
+						WritingElement_WriteNode_2( m_oCheckbox );
 						break;
 					}
 				}

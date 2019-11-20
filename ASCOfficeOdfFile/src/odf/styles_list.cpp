@@ -261,7 +261,7 @@ std::wstring GetLevelText(unsigned int displayLevels,
 
 void docx_serialize_label_alignment_props(std::wostream & strm, style_list_level_label_alignment * labelAlignment)
 {
-	int position = labelAlignment->get_text_list_tab_stop_position() ? labelAlignment->get_text_list_tab_stop_position()->get_value_unit(length::pt) : 0;
+	double position = labelAlignment->get_text_list_tab_stop_position() ? labelAlignment->get_text_list_tab_stop_position()->get_value_unit(length::pt) : 0;
 	CP_XML_WRITER(strm)
 	{
 		if (position >0)
@@ -270,8 +270,8 @@ void docx_serialize_label_alignment_props(std::wostream & strm, style_list_level
 			{
 				CP_XML_NODE(L"w:tab")
 				{
-					CP_XML_ATTR(L"w:pos",(int)( 0.5 + 20.0 * position ));
-					CP_XML_ATTR(L"w:val",L"num");
+					CP_XML_ATTR(L"w:pos", (int)( 0.5 + 20.0 * position ));
+					CP_XML_ATTR(L"w:val", L"num");
 				}
 			}
 		}
@@ -338,23 +338,27 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 			{
 				CP_XML_ATTR(L"w:val",text_list_level_style_number_attr_.text_start_value_);
 			}
-			CP_XML_NODE(L"w:numFmt")
+			if ((text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_) && 
+				(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type() != style_numformat::none))
 			{
-				std::wstring num_format = L"arabic";
-				if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_)
+				CP_XML_NODE(L"w:numFmt")
 				{
-					switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
+					std::wstring num_format = L"arabic";
+					
 					{
-						case odf_types::style_numformat::romanUc:	num_format= L"upperRoman"; break;
-						case odf_types::style_numformat::romanLc:	num_format= L"lowerRoman"; break;
-						case odf_types::style_numformat::alphaUc:	num_format= L"upperLetter"; break;
-						case odf_types::style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
-						case odf_types::style_numformat::arabic:
-						default:
-																	num_format= L"decimal"; break;
+						switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
+						{
+							case style_numformat::romanUc:	num_format= L"upperRoman"; break;
+							case style_numformat::romanLc:	num_format= L"lowerRoman"; break;
+							case style_numformat::alphaUc:	num_format= L"upperLetter"; break;
+							case style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
+							case style_numformat::arabic:
+							default:
+																		num_format= L"decimal"; break;
+						}
 					}
+					CP_XML_ATTR(L"w:val", num_format);
 				}
-				CP_XML_ATTR(L"w:val", num_format);
 			}
 			CP_XML_NODE(L"w:suff")
 			{
@@ -473,37 +477,36 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 	
 	std::wstring num_format;
 
-	if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_)
+	if ((text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ ) && 
+		(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type() != style_numformat::none))
 	{
 		switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
 		{
-		case odf_types::style_numformat::romanUc:	num_format= L"romanUc"; break;
-		case odf_types::style_numformat::romanLc:	num_format= L"romanLc"; break;
-		case odf_types::style_numformat::alphaUc:	num_format= L"alphaUc"; break;
-		case odf_types::style_numformat::alphaLc:	num_format= L"alphaLc"; break;
-		case odf_types::style_numformat::arabic:
-		default:
-													num_format= L"arabic"; break;
+			case style_numformat::romanUc:	num_format= L"romanUc"; break;
+			case style_numformat::romanLc:	num_format= L"romanLc"; break;
+			case style_numformat::alphaUc:	num_format= L"alphaUc"; break;
+			case style_numformat::alphaLc:	num_format= L"alphaLc"; break;
+			case style_numformat::arabic:
+			default:
+														num_format= L"arabic"; break;
 		}
-	}
-
-	if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_prefix_)
-	{
-		num_format += L"ParenBoth";
-	}
-	else 
-	{
-		if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_suffix_)
+		if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_prefix_)
 		{
-			if (*text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_suffix_ == L".")
-				num_format += L"Period";
-			else
-				num_format += L"ParenR";
+			num_format += L"ParenBoth";
 		}
-		else
-			num_format += L"Period";
-	}
-		
+		else 
+		{
+			if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_suffix_)
+			{
+				if (*text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_suffix_ == L".")
+					num_format += L"Period";
+				else
+					num_format += L"ParenR";
+			}
+			else
+				num_format += L"Period";
+		}
+	}		
 	
 	CP_XML_WRITER(strm)
 	{ 	
@@ -513,10 +516,13 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 	        textProperties->content().pptx_convert_as_list(Context);
 			strm << Context.get_text_context().get_styles_context().text_style().str();
 	    }
-		CP_XML_NODE(L"a:buAutoNum")//ms козлы !! для них оказыается ВАЖЕН порядок .. если записать это поле первым, а потом свойства - нихера в мс2010 не отображается верно !!!
+		if (false == num_format.empty())
 		{
-			CP_XML_ATTR(L"startAt",text_list_level_style_number_attr_.text_start_value_);
-			CP_XML_ATTR(L"type", num_format);
+			CP_XML_NODE(L"a:buAutoNum")//ms козлы !! для них оказыается ВАЖЕН порядок .. если записать это поле первым, а потом свойства - нихера в мс2010 не отображается верно !!!
+			{
+				CP_XML_ATTR(L"startAt",text_list_level_style_number_attr_.text_start_value_);
+				CP_XML_ATTR(L"type", num_format);
+			}
 		}
 	} 
 }
@@ -889,46 +895,46 @@ void text_outline_level_style::docx_convert(oox::docx_conversion_context & Conte
 			{
 				CP_XML_ATTR(L"w:val", text_start_value_);
 			}
-			CP_XML_NODE(L"w:numFmt")
+			if ((common_num_format_attlist_.style_num_format_) && (common_num_format_attlist_.style_num_format_->get_type() != style_numformat::none))
 			{
-				std::wstring num_format = L"arabic";
-				if (common_num_format_attlist_.style_num_format_)
+				CP_XML_NODE(L"w:numFmt")
 				{
+					std::wstring num_format = L"arabic";
 					switch(common_num_format_attlist_.style_num_format_->get_type())
 					{
-						case odf_types::style_numformat::romanUc:	num_format= L"upperRoman"; break;
-						case odf_types::style_numformat::romanLc:	num_format= L"lowerRoman"; break;
-						case odf_types::style_numformat::alphaUc:	num_format= L"upperLetter"; break;
-						case odf_types::style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
-						case odf_types::style_numformat::arabic:
+						case style_numformat::romanUc:	num_format= L"upperRoman"; break;
+						case style_numformat::romanLc:	num_format= L"lowerRoman"; break;
+						case style_numformat::alphaUc:	num_format= L"upperLetter"; break;
+						case style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
+						case style_numformat::arabic:
 						default:
 																	num_format= L"decimal"; break;
 					}
+					CP_XML_ATTR(L"w:val", num_format);
 				}
-				CP_XML_ATTR(L"w:val", num_format);
-			}
-			if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
-			{	
-				CP_XML_NODE(L"w:suff")
-				{
-					CP_XML_ATTR(L"w:val", labelAlignment->text_label_followed_by_.get());
+				if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+				{	
+					CP_XML_NODE(L"w:suff")
+					{
+						CP_XML_ATTR(L"w:val", labelAlignment->text_label_followed_by_.get());
+					}
 				}
-			}
 
-			std::wstring w_lvlText;
-			w_lvlText += common_num_format_prefix_suffix_attlist_.style_num_prefix_.get_value_or(L"");
+				std::wstring w_lvlText;
+				w_lvlText += common_num_format_prefix_suffix_attlist_.style_num_prefix_.get_value_or(L"");
 
-//////////////////////////////////////////////////// 
-   
-			w_lvlText += GetLevelText(text_display_levels_, text_level_, Context);
+	//////////////////////////////////////////////////// 
+	   
+				w_lvlText += GetLevelText(text_display_levels_, text_level_, Context);
 
-			w_lvlText += common_num_format_prefix_suffix_attlist_.style_num_suffix_.get_value_or(L"");
+				w_lvlText += common_num_format_prefix_suffix_attlist_.style_num_suffix_.get_value_or(L"");
 
-			if (!w_lvlText.empty())
-			{
-				CP_XML_NODE(L"w:lvlText")
+				if (!w_lvlText.empty())
 				{
-					CP_XML_ATTR(L"w:val", w_lvlText);
+					CP_XML_NODE(L"w:lvlText")
+					{
+						CP_XML_ATTR(L"w:val", w_lvlText);
+					}
 				}
 			}
 /////////////////////////////////////////////////    

@@ -2702,7 +2702,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			XmlUtils::CXmlNode oNodeTextBox;
 			
 			std::wstring sTextboxStyle;
-			if (oNodeShape.GetNode(L"v:textbox", oNodeTextBox))
+
+			bool			res_text = oNodeShape.GetNode(L"v:textbox", oNodeTextBox);
+			if (!res_text)	res_text = oNodeShape.GetNode(L"w:textbox", oNodeTextBox); // libre 4.0 эту хрень делает
+			
+			if (res_text)
 			{
 				XmlUtils::CXmlNode oNodeContent;
 				if (oNodeTextBox.GetNode(L"w:txbxContent", oNodeContent))

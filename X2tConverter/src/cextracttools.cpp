@@ -390,6 +390,12 @@ namespace NExtractTools
             oBuilder.AddInt(*params.m_nDoctParams);
             oBuilder.WriteString(_T("</DoctParams>"));
         }
+		if(NULL != params.m_sJsonParams)
+		{
+			oBuilder.WriteString(_T("<JsonParams>"));
+			oBuilder.WriteEncodeXmlString(params.m_sJsonParams->c_str());
+			oBuilder.WriteString(_T("</JsonParams>"));
+		}
         oBuilder.WriteString(_T("<Changes TopItem=\""));
         oBuilder.AddInt(nTopIndex);
         oBuilder.WriteString(_T("\">"));

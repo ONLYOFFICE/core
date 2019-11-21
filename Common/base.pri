@@ -162,6 +162,9 @@ core_ios {
         QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
         CONFIG += core_ios_main_arch
 
+        QMAKE_CXXFLAGS += -fembed-bitcode
+        QMAKE_CFLAGS += -fembed-bitcode
+
         core_ios_main_arch {
             QMAKE_APPLE_DEVICE_ARCHS = arm64
             core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=

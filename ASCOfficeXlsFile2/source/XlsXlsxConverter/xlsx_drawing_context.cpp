@@ -2178,7 +2178,7 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 						}
 						CP_XML_NODE(L"a:t")
 						{		
-							CP_XML_STREAM() << xml::utils::replace_text_to_xml(drawing_state->wordart.text);
+							CP_XML_STREAM() << drawing_state->wordart.text;
 						}
 					}
 				}

@@ -575,7 +575,7 @@ namespace DocFileFormat
 					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
 					if ((str) && (!str->string_.empty()))
 					{
-						appendValueAttribute(&m_fill, L"o:title", FormatUtils::XmlEncode(str->string_));
+						appendValueAttribute(&m_fill, L"o:title", str->string_);
 					}
 				}break;
 			case fillOpacity:
@@ -658,7 +658,7 @@ namespace DocFileFormat
 					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
 					if ((str) && (!str->string_.empty()))
 					{
-						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(str->string_));
+						appendValueAttribute(&m_imagedata, L"o:title", str->string_);
 					}
 				}break;
 // 3D STYLE
@@ -770,31 +770,15 @@ namespace DocFileFormat
 					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
 					if ((str) && (!str->string_.empty()))
 					{
-						std::wstring text = FormatUtils::XmlEncode(str->string_);
-						if (std::wstring::npos != text.find(L"\n"))
-						{
-							m_textpath.AppendText(text);
-						}
-						text = ReplaceString(text, L"\n", L"&#xA;");						
-						appendValueAttribute(&m_textpath, L"string", text);	
+						appendValueAttribute(&m_textpath, L"string", str->string_);	
 					}
 				}break;
 			case gtextFont:
 				{
 					ODRAW::AnyString* str = dynamic_cast<ODRAW::AnyString*>(iter.get());
-					if ((str) && (!str->string_.empty()))
+					if (str)
 					{
-						std::wstring font = str->string_;
-						size_t i = font.size();
-						while (i > 0)
-						{
-							if (font[i-1] != 0) break;
-							i--;
-						}
-						if (i < font.size()) font.erase(font.begin() + i, font.end());
-
-						font = std::wstring(L"\"") + font + std::wstring(L"\"");
-						appendStyleProperty(m_textPathStyle, L"font-family", font);
+						appendStyleProperty(m_textPathStyle, L"font-family", str->string_);
 					}
 				}break;
 			case gtextSize:

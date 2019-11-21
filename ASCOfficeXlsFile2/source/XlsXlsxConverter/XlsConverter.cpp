@@ -1850,7 +1850,10 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 		case ODRAW::gtextFont:
 			{
 				ODRAW::AnyString *str = dynamic_cast<ODRAW::AnyString*>(props[i].get());
-				if (str) xlsx_context->get_drawing_context().set_wordart_font(str->string_);
+				if (str)
+				{
+					xlsx_context->get_drawing_context().set_wordart_font(str->string_);
+				}
 			}break;
 		case ODRAW::gtextSize:
 			{

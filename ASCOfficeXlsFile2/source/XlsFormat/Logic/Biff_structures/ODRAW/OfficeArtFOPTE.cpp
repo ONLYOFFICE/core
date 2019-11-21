@@ -38,7 +38,6 @@
 
 #include "../../../../../../OfficeUtils/src/OfficeUtils.h"
 
-
 namespace ODRAW
 {
 	static int GetCountPoints2(NSCustomShapesConvert::RulesType eRuler, int lRepeatCount)
@@ -697,42 +696,92 @@ void FillBlip::ReadComplexData(IBinaryReader* reader)
 }
 void AnyString::ReadComplexData(IBinaryReader* reader)
 {
+	std::wstring tmp;
 	unsigned char* pData = reader->ReadBytes(op, true);
 #if defined(_WIN32) || defined(_WIN64)
-		string_ = std::wstring((wchar_t*)pData, op);
+		tmp = std::wstring((wchar_t*)pData, op / 2);
 #else
-        string_ = convertUtf16ToWString((UTF16*)pData, op);
+        tmp = convertUtf16ToWString((UTF16*)pData, op / 2);
 #endif
-	if (!string_.empty())
+	delete []pData;
+
+	if (false == tmp.empty())
 	{
-        int i, length = (std::min)(op, (_INT32)string_.length());
+        _INT32 i, length = (std::min)(op / 2, (_INT32)tmp.length());
 
 		for (i = 0; i < length; i++)
 		{
-			if (string_.at(i) < 14 ) break;
+			wchar_t val = tmp.at(i);
+
+			if (val == 0) break;
+
+			if (val < 14 )
+			{
+				std::wstring hex = STR::int2hex_wstr(val);
+				if (false == hex.empty())
+				{
+					string_ += L"&#x" + hex.substr(hex.length() - 1) + L";";
+				}
+			}
+			else
+			{
+                switch(val)
+                {
+					case '&':  string_.append(L"&amp;");      break;
+                    case '\"': string_.append(L"&quot;");     break;
+                    case '\'': string_.append(L"&apos;");     break;
+                    case '<':  string_.append(L"&lt;");       break;
+                    case '>':  string_.append(L"&gt;");       break;
+                    default:
+						string_ += val;
+				}
+			}
 		}
-		string_ = string_.substr(0, i);
 	}
-	delete []pData;
 }
 void AnyString::ReadComplexData(XLS::CFRecord& record)
 {	
+	std::wstring tmp;
 #if defined(_WIN32) || defined(_WIN64)
-        string_ = std::wstring(record.getCurData<wchar_t>(), op);
+        tmp = std::wstring(record.getCurData<wchar_t>(), op / 2);
 #else
-        string_ = convertUtf16ToWString(record.getCurData<UTF16>(), op);
+        tmp = convertUtf16ToWString(record.getCurData<UTF16>(), op / 2);
 #endif
-	if (!string_.empty())
+	record.skipNunBytes(op);
+	
+	if (false == tmp.empty())
 	{
-        int i, length = (std::min)(op, (_INT32)string_.length());
+        _INT32 i, length = (std::min)(op / 2, (_INT32)tmp.length());
 
 		for (i = 0; i < length; i++)
 		{
-			if (string_.at(i) < 14 ) break;
+			wchar_t val = tmp.at(i);
+
+			if (val == 0) break;
+
+			if (val < 14 )
+			{
+				std::wstring hex = STR::int2hex_wstr(val);
+				if (false == hex.empty())
+				{
+					string_ += L"&#x" + hex.substr(hex.length() - 1) + L";";
+				}
+			}
+			else
+			{
+                switch(val)
+                {
+					case '&':  string_.append(L"&amp;");      break;
+                    case '\"': string_.append(L"&quot;");     break;
+                    case '\'': string_.append(L"&apos;");     break;
+                    case '<':  string_.append(L"&lt;");       break;
+                    case '>':  string_.append(L"&gt;");       break;
+                    default:
+						string_ += val;
+				}
+			}
 		}
-		string_ = string_.substr(0, i);
 	}
-	record.skipNunBytes(op);
 }
 
 void FillShadeColors::ReadComplexData(XLS::CFRecord& record)

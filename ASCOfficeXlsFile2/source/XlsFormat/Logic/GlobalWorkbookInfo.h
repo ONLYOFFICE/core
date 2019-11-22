@@ -132,6 +132,8 @@ public:
 
 	std::vector<_sx_name>					arPivotSxNames;
 	std::vector<std::wstring>				arPivotCacheSxNames;
+	std::map<std::wstring, BaseObjectPtr>	mapPivotTableViews;
+
 
 	std::unordered_map<std::wstring, std::wstring>		mapPivotCacheExternal;
 

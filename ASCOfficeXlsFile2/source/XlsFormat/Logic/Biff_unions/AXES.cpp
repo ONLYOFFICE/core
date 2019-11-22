@@ -31,16 +31,19 @@
  */
 
 #include "AXES.h"
-#include <Logic/Biff_records/PlotArea.h>
-#include <Logic/Biff_records/CatSerRange.h>
-#include <Logic/Biff_records/Axis.h>
+#include "IVAXIS.h"
+#include "DVAXIS.h"
+#include "SERIESAXIS.h"
+#include "ATTACHEDLABEL.h"
+#include "FRAME.h"
+#include "AXS.h"
 
-#include <Logic/Biff_unions/IVAXIS.h>
-#include <Logic/Biff_unions/DVAXIS.h>
-#include <Logic/Biff_unions/SERIESAXIS.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_unions/FRAME.h>
-#include <Logic/Biff_unions/AXS.h>
+#include "../Biff_records/PlotArea.h"
+#include "../Biff_records/CatSerRange.h"
+#include "../Biff_records/ValueRange.h"
+#include "../Biff_records/Axis.h"
+
+
 
 namespace XLS
 {
@@ -283,16 +286,16 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 						break;
 					}
 				}
+
+				int axes_type = m_arAxes[i]->serialize(CP_XML_STREAM());
+				
 				if (label)
 				{
 					CP_XML_NODE(L"c:title")
 					{
 						label->serialize(CP_XML_STREAM());
-
 					}
-				}
-				int axes_type = m_arAxes[i]->serialize(CP_XML_STREAM());
-				
+				}	
 				//CP_XML_NODE(L"c:axPos")
 				//{
 				//	if (axes_type == 1)
@@ -323,9 +326,12 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 				}
 				if (dv)
 				{
+					ValueRange *dv_ValRange = dynamic_cast<ValueRange*>(dv->m_ValueRange.get());
+					
 					CP_XML_NODE(L"c:crossBetween")
 					{
-						if ((iv_CatSerRange) && (iv_CatSerRange->fBetween == false))
+						if (((iv_CatSerRange) && (iv_CatSerRange->fBetween == false)) ||
+							((dv_ValRange) && (dv_ValRange->fAutoCross)))
 						{
 							CP_XML_ATTR(L"val", L"midCat"); 
 						}

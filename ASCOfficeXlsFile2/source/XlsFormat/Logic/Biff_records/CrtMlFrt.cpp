@@ -32,6 +32,22 @@
 
 #include "CrtMlFrt.h"
 
+//0x0001 chainRecords = [XmlTkMaxFrt] [XmlTkMinFrt] [XmlTkLogBaseFrt]
+//
+//0x0002 chainRecords = [XmlTkStyle] [XmlTkThemeOverride] [XmlTkColorMappingOverride]
+//
+//0x0004 chainRecords = [XmlTkNoMultiLvlLbl] [XmlTkTickLabelSkipFrt] [XmlTkTickMarkSkipFrt] 
+//[XmlTkMajorUnitFrt] [XmlTkMinorUnitFrt] [XmlTkTickLabelPositionFrt] [XmlTkBaseTimeUnitFrt] [XmlTkFormatCodeFrt] [XmlTkMinorUnitTypeFrt]
+//
+//0x0005 chainRecords = [XmlTkShowDLblsOverMax] [XmlTkBackWallThicknessFrt] [XmlTkFloorThicknessFrt] [XmlTkDispBlanksAsFrt] [SURFACE]
+//
+//SURFACE = XmlTkStartSurface [XmlTkFormatCodeFrt [XmlTkSpb]] [XmlTkTpb] XmlTkEndSurface
+//
+//0x000F chainRecords = [XmlTkOverlay]
+//0x0013 chainRecords = [XmlTkSymbolFrt]
+//0x0016 chainRecords = [XmlTkPieComboFrom12Frt]
+//0x0019 chainRecords = [XmlTkOverlay]
+//0x0037 chainRecords = [XmlTkRAngAxOffFrt] [XmlTkPerspectiveFrt] [XmlTkRotYFrt] [XmlTkRotXFrt] [XmlTkHeightPercent][XmlTkMajorUnitTypeFrt]
 namespace XLS
 {
 
@@ -56,7 +72,13 @@ void CrtMlFrt::readFields(CFRecord& record)
 
 	//xmltkChain.cb = cbXmltkChain;
 	//record >> xmltkChain;
-	record.skipNunBytes(cbXmltkChain);
+
+	unsigned char recordVersion, unused;
+	unsigned short xmltkParent;
+
+	record >> recordVersion >> unused >> xmltkParent;
+	
+	record.skipNunBytes(cbXmltkChain - 4);
 
 	record.skipNunBytes(4);
 }

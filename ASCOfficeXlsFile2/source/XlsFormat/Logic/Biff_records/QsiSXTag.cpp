@@ -64,6 +64,28 @@ void QsiSXTag::readFields(CFRecord& record)
 	record >> dwQsiFuture >> verSxLastUpdated >> verSxUpdatableMin >> obCchName >> reserved1;
 	record >> stName;
 
+	if (fSx)
+	{
+		//dwQsiFuture is SXView9Save
+		fNoStencil			= GETBIT(flags, 0);
+		fHideTotAnnotation	= GETBIT(flags, 1);
+		//reserved1			= GETBIT(flags, 2);
+		fIncludeEmptyRw		= GETBIT(flags, 3);
+		fIncludeEmptyCol	= GETBIT(flags, 4);
+	}
+	else
+	{
+		//dwQsiFuture is DwQsiFuture
+		fPreserveFmt	= GETBIT(flags, 0);
+		fAutoFit		= GETBIT(flags, 1);
+		//reserved1		= GETBIT(flags, 2);
+		//reserved2		= GETBIT(flags, 3);
+		fExtDataList	= GETBIT(flags, 4);
+		//reserved3		= GETBIT(flags, 5);
+		fCreateQTList	= GETBIT(flags, 6);
+		fDummyList		= GETBIT(flags, 7);
+	}
+
 	record >> reserved2;
 
 	int skip = record.getDataSize() - record.getRdPtr();

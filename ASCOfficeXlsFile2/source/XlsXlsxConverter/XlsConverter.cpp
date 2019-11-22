@@ -1395,13 +1395,15 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
         
 			ch->calculate();
+			ch->calculate_1();
+			
 			if (xlsx_context->get_drawing_context().getType()	== oox::external_items::typeGroup &&
 				xlsx_context->get_drawing_context().getLevel()	== 1)
 			{
-				ch->calculate_1();
 				xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 			}
-			xlsx_context->get_drawing_context().set_sheet_anchor(ch->colL, ch->_dxL, ch->rwT, ch->_dyT, ch->colR, ch->_dxR, ch->rwB, ch->_dyB);
+			xlsx_context->get_drawing_context().set_sheet_anchor(ch->colL, ch->_dxL, ch->rwT, ch->_dyT, ch->colR, ch->_dxR, ch->rwB, ch->_dyB,
+				ch->_x, ch->_y, ch->_cx, ch->_cy);
 		}break;
 	case XLS::typeOfficeArtBStoreContainer:
 		{

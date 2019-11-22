@@ -65,6 +65,16 @@ public:
 
 	unsigned char	obCchName;
 	XLUnicodeString	stName;
+
+	_CP_OPT(bool)	fNoStencil;
+	_CP_OPT(bool)	fHideTotAnnotation;
+	_CP_OPT(bool)	fIncludeEmptyRw;	
+	_CP_OPT(bool)	fIncludeEmptyCol;
+	_CP_OPT(bool)	fPreserveFmt;
+	_CP_OPT(bool)	fAutoFit;
+	_CP_OPT(bool)	fExtDataList;
+	_CP_OPT(bool)	fCreateQTList;
+	_CP_OPT(bool)	fDummyList;
 };
 
 } // namespace XLS

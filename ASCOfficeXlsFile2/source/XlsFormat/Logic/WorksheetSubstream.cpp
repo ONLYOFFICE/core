@@ -324,7 +324,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 
 					PIVOTVIEW *view = dynamic_cast<PIVOTVIEW*>(m_arPIVOTVIEW.back().get());
-					mapPivotViews.insert(std::make_pair(view->name, m_arPIVOTVIEW.back()));
+					global_info_->mapPivotTableViews.insert(std::make_pair(view->name, m_arPIVOTVIEW.back()));
 				}
 			}break;
 			case rt_DCon:

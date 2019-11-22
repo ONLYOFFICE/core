@@ -309,6 +309,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					}
 				}
 			}
+
 			if (ex)
 				ex->serialize_table_view(CP_XML_STREAM());
 			

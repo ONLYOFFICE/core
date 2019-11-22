@@ -53,6 +53,13 @@ const std::wstring standart_color[56] = {
 		L"3366FF",L"33CCCC",L"99CC00",L"FFCC00",L"FF9900",L"FF6600",L"666699",L"969696",
 		L"003366",L"339966",L"003300",L"333300",L"993300",L"993366",L"333399",L"333333"	};
 
+namespace PPTX
+{
+	namespace Logic
+	{
+		class Xfrm;
+	}
+}
 namespace oox {
 
 	class external_items;
@@ -173,7 +180,10 @@ public:
 		int					xTo = 0;
 		int					rwTo = 0;
 		int					yTo = 0;
+
+		_rect				absolute;
 	}						sheet_anchor;
+
 	_rect					child_anchor;
 	_rect					group_anchor;
 	_rect					absolute_anchor;
@@ -370,6 +380,8 @@ public:
 		void start_control(int type);
 
 		void set_alternative_drawing(const std::wstring & xml_data);
+		void set_xfrm_from_anchor(PPTX::Logic::Xfrm *xfrm, _drawing_state_ptr state);
+		void reset_alternative_drawing();
 
         void set_id			(int id);
 		void set_FlipH		();
@@ -430,7 +442,8 @@ public:
 		void set_absolute_anchor	(double x, double y, double cx, double cy);
         void set_child_anchor		(int x, int y, int cx, int cy);
 		void set_group_anchor		(int x, int y, int cx, int cy);
-        void set_sheet_anchor		(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo,int yTo);
+        void set_sheet_anchor		(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo, int yTo, 
+										double x, double y, double cx, double cy);
 
         void set_properties			(const std::wstring & str);
         void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);

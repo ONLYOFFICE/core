@@ -543,7 +543,16 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
 
-	//if (std::wstring::npos != xml_data.find(L"rId=\"")) return; // чужые ссылки на объекты 
+	current_drawing_states->back()->xmlAlternative = xml_data;
+}
+
+void xlsx_drawing_context::reset_alternative_drawing()
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	std::wstring xml_data = current_drawing_states->back()->xmlAlternative;
+	current_drawing_states->back()->xmlAlternative.clear();
 	
 	XmlUtils::CXmlLiteReader oReader;
 
@@ -616,6 +625,11 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 
 			if (false == groupShape->SpTreeElems.empty()) // smartArt
 			{
+				if (false == groupShape->grpSpPr.xfrm.IsInit())
+				{
+					groupShape->grpSpPr.xfrm.Init();
+					set_xfrm_from_anchor(groupShape->grpSpPr.xfrm.GetPointer(), current_drawing_states->back());
+				}
 				NSBinPptxRW::CXmlWriter writerObject(XMLWRITER_DOC_TYPE_XLSX);
 				groupShape->toXmlWriter(&writerObject);
 
@@ -630,6 +644,32 @@ void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data
 	//	current_drawing_states->back()->xmlAlternative = oReader.GetInnerXml();
 	//	//fill(color index???) ??? prst ???
 	//}
+}
+void xlsx_drawing_context::set_xfrm_from_anchor(PPTX::Logic::Xfrm *xfrm, _drawing_state_ptr state)
+{
+	if (!xfrm) return;
+	if (!state) return;
+
+	if (state->type_anchor == 1)
+	{
+		xfrm->offX = (int)(state->sheet_anchor.absolute.x);
+		xfrm->offY = (int)(state->sheet_anchor.absolute.y);
+		xfrm->extX = (int)(state->sheet_anchor.absolute.cx);
+		xfrm->extY = (int)(state->sheet_anchor.absolute.cy);
+		
+		xfrm->chExtX = (int)(state->sheet_anchor.absolute.cx);
+		xfrm->chExtY = (int)(state->sheet_anchor.absolute.cy);
+	}
+	if (state->type_anchor == 3)
+	{
+		xfrm->offX = (int)(state->absolute_anchor.x * 12700);
+		xfrm->offY = (int)(state->absolute_anchor.y * 12700);
+		xfrm->extX = (int)(state->absolute_anchor.cx * 12700);
+		xfrm->extY = (int)(state->absolute_anchor.cy * 12700); 
+		
+		xfrm->chExtX = (int)(state->absolute_anchor.cx * 12700);
+		xfrm->chExtY = (int)(state->absolute_anchor.cy * 12700); 
+	}
 }
 void xlsx_drawing_context::set_hidden(bool val)
 {
@@ -745,6 +785,8 @@ void xlsx_drawing_context::end_drawing()
 {
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
+
+	reset_alternative_drawing();
 
 	if (current_drawing_states->back()->type == external_items::typeGroup)  return;
 	
@@ -2614,7 +2656,8 @@ void xlsx_drawing_context::set_control_activeX(const std::wstring & rid)
 	current_drawing_states->back()->type = external_items::typeActiveX;
 	current_drawing_states->back()->objectId = rid;
 }
-void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo,int yTo)
+void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo, int yTo,
+											double x, double y, double cx, double cy)
 {
 	if (current_drawing_states == NULL) return;	
 	
@@ -2626,6 +2669,11 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 	current_drawing_states->back()->sheet_anchor.yFrom		= yFrom;
 	current_drawing_states->back()->sheet_anchor.xTo		= xTo;
 	current_drawing_states->back()->sheet_anchor.yTo		= yTo;
+
+	current_drawing_states->back()->sheet_anchor.absolute.x		= x;
+	current_drawing_states->back()->sheet_anchor.absolute.y		= y;
+	current_drawing_states->back()->sheet_anchor.absolute.cx	= cx;
+	current_drawing_states->back()->sheet_anchor.absolute.cy	= cy;
 
 	current_drawing_states->back()->type_anchor	= 1;
 }

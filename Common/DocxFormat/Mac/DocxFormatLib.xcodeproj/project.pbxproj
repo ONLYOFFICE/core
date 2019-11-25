@@ -1024,8 +1024,7 @@
 				8A9CF4DF238834E500DBCE6B /* PivotTable.h */,
 				8A9CF4E0238834E500DBCE6B /* PivotCacheDefinition.h */,
 			);
-			name = Pivot;
-			path = ../../../../../test/core/Common/DocxFormat/Source/XlsxFormat/Pivot;
+			path = Pivot;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

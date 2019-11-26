@@ -114,7 +114,7 @@ void serialize_wrap_extent(std::wostream & strm, _docx_drawing const & val)
 					if (odf_reader::GetProperty(val.additional,L"border_width_top",iVal))		CP_XML_ATTR(L"t",iVal.get());
 					if (odf_reader::GetProperty(val.additional,L"border_width_right",iVal))		CP_XML_ATTR(L"r",iVal.get());
 					if (odf_reader::GetProperty(val.additional,L"border_width_bottom",iVal))	CP_XML_ATTR(L"b",iVal.get());   
-				}				
+				}
 			}break;
 			default:
 				serialize_null_extent( strm);  
@@ -151,6 +151,7 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 				break;
 			case odf_types::style_wrap::Left:
 			case odf_types::style_wrap::Right:
+			case odf_types::style_wrap::Dynamic: //Présentation_de_tib.odt
 				serialize_wrap_square(strm, val);
 				break;
 			case odf_types::style_wrap::RunThrough:
@@ -159,7 +160,6 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 			case odf_types::style_wrap::None:
 				serialize_wrap_top_bottom(strm, val);
 				break;
-			case odf_types::style_wrap::Dynamic:
 			default:
 				CP_XML_NODE(L"wp:wrapTopAndBottom");
 				break;

@@ -29,7 +29,7 @@ include(X2tConverter.pri)
 !build_x2t_as_library {
     SOURCES += ../../src/main.cpp
 
-    DESTDIR = "$$PWD/../../../build/bin/$$CORE_BUILDS_PLATFORM_PREFIX"
+    DESTDIR = $$CORE_BUILDS_BINARY_PATH
 } else {
     HEADERS += ../../src/dylib/x2t.h
     SOURCES += ../../src/dylib/x2t.cpp

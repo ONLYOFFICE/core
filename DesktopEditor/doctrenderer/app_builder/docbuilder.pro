@@ -42,7 +42,7 @@ core_windows {
 }
 
 ############### destination path ###############
-DESTDIR = $$CORE_ROOT_DIR/build/bin/$$CORE_BUILDS_PLATFORM_PREFIX
+DESTDIR = $$CORE_BUILDS_BINARY_PATH
 ################################################
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics -lUnicodeConverter

@@ -4840,6 +4840,11 @@ int BinaryWorksheetsTableReader::ReadCellAnchor(BYTE type, long length, void* po
 	{
 		pCellAnchor->setAnchorType((SimpleTypes::Spreadsheet::ECellAnchorType)m_oBufferedStream.GetUChar());
 	}
+	else if(c_oSer_DrawingType::EditAs == type)
+	{
+		pCellAnchor->m_oEditAs.Init();
+		pCellAnchor->m_oEditAs->SetValue((SimpleTypes::Spreadsheet::ECellAnchorType)m_oBufferedStream.GetUChar());
+	}
 	else if(c_oSer_DrawingType::From == type)
 	{
 		pCellAnchor->m_oFrom.Init();

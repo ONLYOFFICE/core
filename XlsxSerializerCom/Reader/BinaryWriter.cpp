@@ -4774,6 +4774,13 @@ void BinaryWorksheetTableWriter::WriteCellAnchor(OOX::Spreadsheet::CCellAnchor* 
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Type);
 	m_oBcw.m_oStream.WriteBYTE(pCellAnchor->m_oAnchorType.GetValue());
 	m_oBcw.WriteItemEnd(nCurPos);
+
+	if(pCellAnchor->m_oEditAs.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::EditAs);
+		m_oBcw.m_oStream.WriteBYTE(pCellAnchor->m_oEditAs->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 //From
 	if(pCellAnchor->m_oFrom.IsInit())
 	{

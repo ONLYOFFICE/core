@@ -509,9 +509,10 @@ namespace BinXlsxRW
 		//GraphicFrame = 6,
 		//Chart = 7,
 		Ext = 8,
-		pptxDrawing = 9
+		pptxDrawing = 9,
 		//Chart2 = 10,
 		//ObjectName = 11
+		EditAs = 12
 	};}
 	namespace c_oSer_DrawingFromToType{enum c_oSer_DrawingFromToType
 	{

@@ -79,14 +79,14 @@ namespace OOX
 				{
 					writer.WriteString(L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" Requires=\"a14\">");
 				}
-				std::wstring sStart;
 				std::wstring sEnd;
 				if(m_oFrom.IsInit() && m_oTo.IsInit())
 				{
-					sStart	= L"<xdr:twoCellAnchor editAs=\"" + m_oAnchorType.ToString() + L"\">";
 					sEnd	= L"</xdr:twoCellAnchor>";
 					
-					writer.WriteString(sStart);
+					writer.WriteString(L"<xdr:twoCellAnchor");
+					WritingStringNullableAttrString(L"editAs", m_oEditAs, m_oEditAs->ToString());
+					writer.WriteString(L">");
 					if(m_oFrom.IsInit())
 						m_oFrom->toXML2(writer, L"xdr:from");
 					if(m_oTo.IsInit())
@@ -94,10 +94,9 @@ namespace OOX
 				}
 				else if(m_oFrom.IsInit() && m_oExt.IsInit())
 				{
-					sStart	= L"<xdr:oneCellAnchor>";
 					sEnd	= L"</xdr:oneCellAnchor>";
 					
-					writer.WriteString(sStart);
+					writer.WriteString(L"<xdr:oneCellAnchor>");
 					if(m_oFrom.IsInit())
 						m_oFrom->toXML2(writer, L"xdr:from");
 					if(m_oExt.IsInit())
@@ -105,10 +104,9 @@ namespace OOX
 				}
 				else
 				{
-					sStart	= L"<xdr:absoluteAnchor>";
 					sEnd	= L"</xdr:absoluteAnchor>";
 					
-					writer.WriteString(sStart);
+					writer.WriteString(L"<xdr:absoluteAnchor>");
 					if(m_oPos.IsInit())
 					m_oPos->toXML(writer);
 					if(m_oExt.IsInit())
@@ -207,6 +205,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("editAs"), m_oEditAs )
+				WritingElement_ReadAttributes_End( oReader )
 			}
             void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, std::wstring& sRequire)
 			{
@@ -219,6 +220,7 @@ namespace OOX
 			bool											m_bShapeControl;
 
 			SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;
+			nullable<SimpleTypes::Spreadsheet::CCellAnchorType<>> m_oEditAs;
 			nullable<OOX::Spreadsheet::CFromTo>				m_oFrom;
 			nullable<OOX::Spreadsheet::CFromTo>				m_oTo;
 			nullable<OOX::Spreadsheet::CPos>				m_oPos;

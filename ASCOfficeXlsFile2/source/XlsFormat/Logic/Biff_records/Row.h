@@ -56,8 +56,11 @@ public:
 
 //-----------------------------
 	Rw			rw;
-	BackwardOnlyParam<unsigned short> colMic;
-	BackwardOnlyParam<unsigned short> colMac;
+	//BackwardOnlyParam<unsigned short> colMic;
+	//BackwardOnlyParam<unsigned short> colMac;
+
+	unsigned short colMic;
+	unsigned short colMac;
 	
 	_UINT16		miyRw;
 

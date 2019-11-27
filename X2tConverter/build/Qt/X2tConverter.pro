@@ -20,11 +20,15 @@ ios {
     CONFIG += plugin
 
     CONFIG += core_static_link_libstd
-
-    QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
 }
 
 include(X2tConverter.pri)
+
+ios {
+shared {
+    QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
+}
+}
 
 !build_x2t_as_library {
     SOURCES += ../../src/main.cpp

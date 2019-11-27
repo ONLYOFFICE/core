@@ -34,6 +34,14 @@ CONFIG(debug, debug|release) {
     CONFIG += core_release
 }
 
+not_use_dynamic_libs {
+shared {
+    CONFIG -= shared
+    CONFIG -= plugin
+    CONFIG += staticlib
+}
+}
+
 #PLATFORM
 win32 {
     CONFIG += core_windows
@@ -162,8 +170,9 @@ core_ios {
         QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
         CONFIG += core_ios_main_arch
 
-        QMAKE_CXXFLAGS += -fembed-bitcode
         QMAKE_CFLAGS += -fembed-bitcode
+        QMAKE_CXXFLAGS += -fembed-bitcode
+        QMAKE_LFLAGS += -fembed-bitcode
 
         core_ios_main_arch {
             QMAKE_APPLE_DEVICE_ARCHS = arm64

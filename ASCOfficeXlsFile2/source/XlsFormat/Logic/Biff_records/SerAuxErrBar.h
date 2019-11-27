@@ -46,11 +46,10 @@ public:
 	~SerAuxErrBar();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSerAuxErrBar;
+	static const ElementType type = typeSerAuxErrBar;
 
 //-----------------------------
 	unsigned char	sertm;

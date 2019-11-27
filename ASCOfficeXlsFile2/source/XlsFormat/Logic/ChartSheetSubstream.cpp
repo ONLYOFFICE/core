@@ -71,6 +71,7 @@
 #include "Biff_records/ExternSheet.h"
 #include "Biff_records/FrtFontList.h"
 #include "Biff_records/ChartFrtInfo.h"
+#include "Biff_records/SerParent.h"
 
 #include "Biff_unions/FONTLIST.h"
 #include "Biff_unions/PAGESETUP.h"
@@ -421,28 +422,29 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 			parent0->m_mapCRTIndex.insert(std::make_pair(crt->m_indexCrt, i));
 		}
 	}
+	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
+	{
+		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
+		if (series == NULL) continue;
 
+		SerParent *parent = dynamic_cast<SerParent*>(series->m_SerParent.get());
+		if ( parent )
+		{
+			SERIESFORMAT *series_owner = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[parent->series - 1].get());
+			if (series_owner)
+			{
+				series_owner->m_arSERIESFORMAT_ext.push_back(charts->m_arSERIESFORMAT[i]);	
+				charts->m_arSERIESFORMAT[i] = BaseObjectPtr();
+			}
+		}
+	}
 	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
 		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
 		if (series == NULL) continue;
 
 		SerToCrt * serCrt = dynamic_cast<SerToCrt *>(series->m_SerToCrt.get());
-
-		if ( serCrt == NULL)
-		{
-			//для доп линий может и не существовать - брать предыдущий  - и объеденить!!!
-			std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
-			if (it != m_mapTypeChart.end())
-			{
-				SERIESFORMAT * series_prev = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[it->second.back()].get());
-				if (series_prev)
-				{
-					series_prev->m_SERIESFORMAT_ext = charts->m_arSERIESFORMAT[i];	
-				}
-			}
-			continue;
-		}
+		if ( serCrt == NULL) continue;
 
 		iCrt = serCrt->id;
 

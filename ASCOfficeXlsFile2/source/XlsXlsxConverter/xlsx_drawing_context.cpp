@@ -570,7 +570,8 @@ void xlsx_drawing_context::reset_alternative_drawing()
 	{
 		sName = XmlUtils::GetNameNoNS(oReader.GetName());
 		
-		if (L"AlternateContent" == sName || L"Choice" == sName || L"twoCellAnchor" == sName)
+		if (L"AlternateContent" == sName || L"Choice" == sName || 
+			L"twoCellAnchor" == sName || L"oneCellAnchor" == sName || L"absoluteAnchor" == sName)
 		{
 			nCurDepth++;
 			continue;
@@ -598,10 +599,21 @@ void xlsx_drawing_context::reset_alternative_drawing()
 			current_drawing_states->back()->xmlGeomAlternative = writer.GetXmlString();
 
 			writer.ClearNoAttack();
-			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()) && (shape->txBody->bodyPr->prstTxWarp.IsInit()))
-			{//только WordArt
-				shape->txBody->toXmlWriter(&writer);
-				current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
+			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()))
+			{
+				bool bWordArt = shape->txBody->bodyPr->prstTxWarp.IsInit();
+				bool bMath = false;
+
+				if ((false == shape->txBody->Paragrs.empty()) && (false == shape->txBody->Paragrs[0].RunElems.empty()))
+				{
+					bMath = (OOX::et_p_MathPara == shape->txBody->Paragrs[0].RunElems[0].getType());
+				}					
+
+				if (bWordArt || bMath)
+				{
+					shape->txBody->toXmlWriter(&writer);
+					current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
+				}
 			}
 			if (shape->spPr.Fill.is_init())
 			{

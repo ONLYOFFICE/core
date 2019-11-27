@@ -186,7 +186,12 @@ int AUTOFILTER::serialize(std::wostream & stream)
 		{	
 			CP_XML_ATTR(L"ref", ref);
 
-			if (m_arFilters.empty())
+			if (false == m_arSORTDATA12.empty())
+			{
+				m_arSORTDATA12[0]->serialize(CP_XML_STREAM());
+			}
+
+			if (m_arFilters.empty() && m_arSORTDATA12.empty())
 			{
 				CP_XML_NODE(L"filterColumn")
 				{

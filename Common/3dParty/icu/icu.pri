@@ -1,7 +1,12 @@
 ICU_MAJOR_VER = 58
 
 core_windows {
-    INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu/include
+    exists($$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu) {
+        INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu/include
+    } else {
+        INCLUDEPATH += $$PWD/icu/include
+    }
+
     LIBS        += -L$$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build -licuuc
 }
 

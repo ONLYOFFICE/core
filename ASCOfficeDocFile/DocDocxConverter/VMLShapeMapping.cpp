@@ -1212,13 +1212,13 @@ namespace DocFileFormat
 
 		if (NULL != pAnchor)
 		{
-			long left	= pAnchor->rcgBounds.topLeftAngle.x;
-			long top	= pAnchor->rcgBounds.topLeftAngle.y;
+			int left	= pAnchor->rcgBounds.topLeftAngle.x;
+			int top	= pAnchor->rcgBounds.topLeftAngle.y;
 			
 			if (twistDimensions)
 			{
-				long right	= pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx;
-				long bottom	= pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy;
+				int right	= pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx;
+				int bottom	= pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy;
 			
 				left	=	(right	+	pAnchor->rcgBounds.topLeftAngle.x) * 0.5 - (bottom	-	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5;
 				top		=	(bottom	+	pAnchor->rcgBounds.topLeftAngle.y) * 0.5 - (right	-	pAnchor->rcgBounds.topLeftAngle.x) * 0.5;
@@ -1256,13 +1256,13 @@ namespace DocFileFormat
 
 		if (NULL != pAnchor)
 		{
-			long right	= pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx;
-			long bottom	= pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy;
+			int right	= pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx;
+			int bottom	= pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy;
 			
 			if (twistDimensions)
 			{
-				long left	=	(right	+	pAnchor->rcgBounds.topLeftAngle.x) * 0.5 - (bottom	-	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5;
-				long top	=	(bottom	+	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5 - (right	-	pAnchor->rcgBounds.topLeftAngle.x) * 0.5;
+				int left	=	(right	+	pAnchor->rcgBounds.topLeftAngle.x) * 0.5 - (bottom	-	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5;
+				int top		=	(bottom	+	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5 - (right	-	pAnchor->rcgBounds.topLeftAngle.x) * 0.5;
 
 				right	= left + pAnchor->rcgBounds.size.cy;
 				bottom	= top + pAnchor->rcgBounds.size.cx;

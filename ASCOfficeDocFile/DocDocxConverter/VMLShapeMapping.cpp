@@ -141,7 +141,9 @@ namespace DocFileFormat
 
 			m_pXmlWriter->WriteNodeBegin( L"v:group", true );
 			m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
-			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index)));
+			
+			bool twistDimensions = false;
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index, twistDimensions)));
 			m_pXmlWriter->WriteAttribute( L"coordorigin", ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + L"," + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)));
 			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + L"," + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)));
 
@@ -237,18 +239,19 @@ namespace DocFileFormat
 
 		if ( !pShape->fBackground )
 		{
+			bool twistDimensions = false;
 			if (pShape->GetShapeType())
 			{
 				freeform =	false;
 				m_pXmlWriter->WriteAttribute( L"type", (std::wstring(L"#") + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())));
 			}
-			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->m_nIndex)));
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->m_nIndex, twistDimensions)));
 
 			if (pShape->is<LineType>())
 			{
 				//append "from" and  "to" attributes
-				m_pXmlWriter->WriteAttribute(L"from", GetLineFrom(pAnchor));
-				m_pXmlWriter->WriteAttribute(L"to",	GetLineTo(pAnchor));
+				m_pXmlWriter->WriteAttribute(L"from", GetLineFrom(pAnchor, twistDimensions));
+				m_pXmlWriter->WriteAttribute(L"to",	GetLineTo(pAnchor, twistDimensions));
 			}
 
 			if (m_isBullete)
@@ -755,6 +758,7 @@ namespace DocFileFormat
 					case 4://обычный 							
 						break;
 					case 1:
+					case 3:
 					case 5://верт (склони голову направо)						
 						appendStyleProperty(sTextboxStyle, L"layout-flow", L"vertical");
 						break;
@@ -1199,7 +1203,7 @@ namespace DocFileFormat
 		return strXmlAttr;
 	}
 
-	std::wstring VMLShapeMapping::GetLineFrom(const ChildAnchor* pAnchor) const
+	std::wstring VMLShapeMapping::GetLineFrom(const ChildAnchor* pAnchor, bool twistDimensions) const
 	{
 		//Если линия находится в группе, то координаты должны быть в Twips
 		//Если линия находится в группе, то координаты должны быть в других единицах измерения (например в twips)
@@ -1208,14 +1212,32 @@ namespace DocFileFormat
 
 		if (NULL != pAnchor)
 		{
-			strXmlFrom += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.x);
+			long left	= pAnchor->rcgBounds.topLeftAngle.x;
+			long top	= pAnchor->rcgBounds.topLeftAngle.y;
+			
+			if (twistDimensions)
+			{
+				long right	= pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx;
+				long bottom	= pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy;
+			
+				left	=	(right	+	pAnchor->rcgBounds.topLeftAngle.x) * 0.5 - (bottom	-	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5;
+				top		=	(bottom	+	pAnchor->rcgBounds.topLeftAngle.y) * 0.5 - (right	-	pAnchor->rcgBounds.topLeftAngle.x) * 0.5;
+			}
+
+			strXmlFrom += FormatUtils::IntToWideString(left);
 			strXmlFrom += L",";
-			strXmlFrom += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.y);
+			strXmlFrom += FormatUtils::IntToWideString(top);
 		}
 		else if (m_pSpa)
 		{
 			TwipsValue oLeft(m_pSpa->xaLeft);
 			TwipsValue oTop(m_pSpa->yaTop);
+
+			if (twistDimensions)
+			{
+				oLeft	=	TwipsValue((m_pSpa->xaRight		+	m_pSpa->xaLeft) * 0.5 - (m_pSpa->yaBottom	-	m_pSpa->yaTop)  * 0.5);
+				oTop	=	TwipsValue((m_pSpa->yaBottom	+	m_pSpa->yaTop)  * 0.5 - (m_pSpa->xaRight	-	m_pSpa->xaLeft) * 0.5);
+			}
 
 			strXmlFrom += FormatUtils::DoubleToWideString(oLeft.ToPoints());
 			strXmlFrom += L"pt,";
@@ -1226,7 +1248,7 @@ namespace DocFileFormat
 		return strXmlFrom;
 	}
 
-	std::wstring VMLShapeMapping::GetLineTo(const ChildAnchor* pAnchor) const
+	std::wstring VMLShapeMapping::GetLineTo(const ChildAnchor* pAnchor, bool twistDimensions) const
 	{
 		//Если линия находится в группе, то координаты должны быть в других единицах измерения (например в twips)
 
@@ -1234,14 +1256,31 @@ namespace DocFileFormat
 
 		if (NULL != pAnchor)
 		{
-			strXmlTo += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx);
+			long right	= pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx;
+			long bottom	= pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy;
+			
+			if (twistDimensions)
+			{
+				long left	=	(right	+	pAnchor->rcgBounds.topLeftAngle.x) * 0.5 - (bottom	-	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5;
+				long top	=	(bottom	+	pAnchor->rcgBounds.topLeftAngle.y)  * 0.5 - (right	-	pAnchor->rcgBounds.topLeftAngle.x) * 0.5;
+
+				right	= left + pAnchor->rcgBounds.size.cy;
+				bottom	= top + pAnchor->rcgBounds.size.cx;
+			}
+			strXmlTo += FormatUtils::IntToWideString(right);
 			strXmlTo += L",";
-			strXmlTo += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy);
+			strXmlTo += FormatUtils::IntToWideString(bottom);
 		}
 		else if (m_pSpa)
 		{
 			TwipsValue oRight (m_pSpa->xaRight);
 			TwipsValue oBottom (m_pSpa->yaBottom);
+
+			if (twistDimensions)
+			{
+				oRight		=	TwipsValue((m_pSpa->yaBottom -	m_pSpa->yaTop) + (m_pSpa->xaRight	+	m_pSpa->xaLeft) * 0.5 - (m_pSpa->yaBottom	-	m_pSpa->yaTop)  * 0.5);
+				oBottom		=	TwipsValue((m_pSpa->xaRight	-	m_pSpa->xaLeft) + (m_pSpa->yaBottom	+	m_pSpa->yaTop)  * 0.5 - (m_pSpa->xaRight	-	m_pSpa->xaLeft) * 0.5);
+			}
 
 			strXmlTo += FormatUtils::DoubleToWideString(oRight.ToPoints());
 			strXmlTo += L"pt,";
@@ -1726,11 +1765,11 @@ namespace DocFileFormat
 	}
 
 	//
-	std::wstring VMLShapeMapping::buildStyle (const Shape* shape, const ChildAnchor* anchor, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex) const
+	std::wstring VMLShapeMapping::buildStyle (const Shape* shape, const ChildAnchor* anchor, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex, bool &twistDimensions) const
 	{
 		std::wstring style;
 
-		bool twistDimensions = false;
+		twistDimensions = false;
 		
 		for (size_t i = 0; i < options.size(); i++)
 		{

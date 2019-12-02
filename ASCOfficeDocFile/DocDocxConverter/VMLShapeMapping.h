@@ -91,7 +91,7 @@ namespace DocFileFormat
 		
 		std::wstring getTextboxAnchor( unsigned int anchor ) const;
 				
-		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex ) const;
+		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex, bool &twistDimensions) const;
 		void AppendOptionsToStyle	( std::wstring& style, const std::vector<ODRAW::OfficeArtFOPTEPtr>& options, int zIndex ) const;
 		
 		int UpdateFromGuides(const int val) const;
@@ -112,8 +112,8 @@ namespace DocFileFormat
 		void WriteEndShapeNode		(const Shape* pShape);
 		std::wstring GetShapeID		(const Shape* pShape) const;
 
-		std::wstring GetLineFrom	(const ChildAnchor* pAnchor) const;
-		std::wstring GetLineTo		(const ChildAnchor* pAnchor) const;
+		std::wstring GetLineFrom	(const ChildAnchor* pAnchor, bool twistDimensions) const;
+		std::wstring GetLineTo		(const ChildAnchor* pAnchor, bool twistDimensions) const;
 
 		std::wstring				GetWrapCoords		( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const;
 		std::vector<std::wstring>	GetTextRectangles	( const ODRAW::OfficeArtFOPTEPtr& pOpt ) const;

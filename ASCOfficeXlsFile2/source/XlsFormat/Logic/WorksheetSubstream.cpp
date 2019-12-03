@@ -251,7 +251,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 						CELLTABLE *cell_table = dynamic_cast<CELLTABLE*>(elements_.back().get());
 						cell_table->isConcatinate_ = true;
 					}
-					m_CELLTABLE = elements_.back(); //пофиг какой тут элемент - данные вынесены во вне
+					else m_CELLTABLE = elements_.back(); 
 					elements_.pop_back();
 				}
 				if(0 != shared_formulas_locations.size())

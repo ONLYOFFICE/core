@@ -107,7 +107,7 @@ void Font::readFields(CFRecord& record)
 		record >> fontName;
 	}
 
-	if (global_info->fonts_charsets.find(bCharSet) == global_info->fonts_charsets.end())
+	if (global_info->fonts_charsets.find(bCharSet) == global_info->fonts_charsets.end() && bCharSet != 0)
 	{
 		global_info->fonts_charsets.insert(std::make_pair(bCharSet, bFamily));
 	}

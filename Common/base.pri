@@ -193,6 +193,23 @@ core_ios {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
             }
         }
+
+        !no_verify_bitcode {
+            # for application: (using xcodebuild)
+            #Q_ENABLE_BITCODE.name = ENABLE_BITCODE
+            #Q_ENABLE_BITCODE.value = NO
+            #
+            #Q_BITCODE_GENERATION_MODE.name = BITCODE_GENERATION_MODE
+            #Q_BITCODE_GENERATION_MODE.value = marker
+            #
+            #QMAKE_MAC_XCODE_SETTINGS += Q_ENABLE_BITCODE
+            #QMAKE_MAC_XCODE_SETTINGS += Q_BITCODE_GENERATION_MODE
+
+            # for libraries§
+            QMAKE_LFLAGS += -Xlinker -bitcode_verify
+            QMAKE_LFLAGS += -Xlinker -bitcode_hide_symbols
+            #QMAKE_LFLAGS += -Xlinker -bitcode_symbol_map -Xlinker $$CORE_BUILDS_LIBRARIES_PATH
+        }
     }
 
     !core_ios_no_unistd {

@@ -553,8 +553,11 @@ void odf_drawing_context::end_drawing()
 			}
 			else
 			{//slide
-				if (impl_->current_drawing_state_.presentation_class_)	
+				if (impl_->current_drawing_state_.presentation_class_)
+				{
 					draw_layer = L"layout";
+					draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = true;
+				}
 			}
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_layer_ = draw_layer;
@@ -2714,10 +2717,10 @@ void odf_drawing_context::set_text_box_min_size(bool val)
 	
 	if (draw)
 	{
-		if (!draw->draw_text_box_attlist_.fo_min_height_)
-			draw->draw_text_box_attlist_.fo_min_height_ = impl_->anchor_settings_.svg_height_;
-		if (!draw->draw_text_box_attlist_.fo_min_width_)
-			draw->draw_text_box_attlist_.fo_min_width_ = impl_->anchor_settings_.svg_width_;
+		if (!draw->attlist_.fo_min_height_)
+			draw->attlist_.fo_min_height_ = impl_->anchor_settings_.svg_height_;
+		if (!draw->attlist_.fo_min_width_)
+			draw->attlist_.fo_min_width_ = impl_->anchor_settings_.svg_width_;
 	}
 }
 
@@ -2870,8 +2873,8 @@ void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 
 	if (draw)
 	{
-		if (h_pt >0) draw->draw_text_box_attlist_.fo_min_height_= length(length(h_pt,length::pt).get_value_unit(length::cm), length::cm);
-		if (w_pt >0) draw->draw_text_box_attlist_.fo_min_width_= length(length(w_pt,length::pt).get_value_unit(length::cm), length::cm);
+		if (h_pt >0) draw->attlist_.fo_min_height_= length(length(h_pt,length::pt).get_value_unit(length::cm), length::cm);
+		if (w_pt >0) draw->attlist_.fo_min_width_= length(length(w_pt,length::pt).get_value_unit(length::cm), length::cm);
 
 
 	}
@@ -2923,9 +2926,9 @@ void odf_drawing_context::end_text_box()
 
 	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_level_.back().get());
 
-	if ((draw) && (!draw->draw_text_box_attlist_.fo_min_height_))
+	if ((draw) && (!draw->attlist_.fo_min_height_))
 	{
-		draw->draw_text_box_attlist_.fo_min_height_= impl_->current_drawing_state_.svg_height_;
+		draw->attlist_.fo_min_height_= impl_->current_drawing_state_.svg_height_;
 	}
 	//impl_->current_drawing_state_.svg_height_ = boost::none;///??? demo.docx
 	

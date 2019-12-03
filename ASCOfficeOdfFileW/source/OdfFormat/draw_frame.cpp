@@ -290,7 +290,7 @@ void draw_text_box::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			draw_text_box_attlist_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
 
 			for (size_t i = 0; i < content_.size(); i++)
 			{

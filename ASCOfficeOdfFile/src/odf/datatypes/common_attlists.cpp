@@ -759,14 +759,14 @@ void common_shape_draw_attlist::apply_from(const common_shape_draw_attlist & Oth
 
 void common_shape_draw_attlist::serialize(CP_ATTR_NODE)
 {
+    CP_XML_ATTR_OPT(L"draw:name",			draw_name_);
     CP_XML_ATTR_OPT(L"draw:style-name",		draw_style_name_);
     CP_XML_ATTR_OPT(L"draw:class-names",	draw_class_names_);
     CP_XML_ATTR_OPT(L"draw:id",				draw_id_);
     CP_XML_ATTR_OPT(L"draw:z-index",		draw_z_index_);
+    CP_XML_ATTR_OPT(L"draw:text-style-name", draw_text_style_name_);
     CP_XML_ATTR_OPT(L"draw:layer",			draw_layer_);
     CP_XML_ATTR_OPT(L"draw:transform",		draw_transform_);
-    CP_XML_ATTR_OPT(L"draw:name",			draw_name_);
-    CP_XML_ATTR_OPT(L"draw:text-style-name", draw_text_style_name_);
 	CP_XML_ATTR_OPT(L"drawooo:display",		drawooo_display_);
 }
 void common_draw_shape_with_text_and_styles_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -852,9 +852,9 @@ void common_presentation_attlist::apply_from(const common_presentation_attlist &
 }
 void common_presentation_attlist::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT(L"presentation:class",			presentation_class_);
 	CP_XML_ATTR_OPT(L"presentation:class-names",	presentation_class_names_);
     CP_XML_ATTR_OPT(L"presentation:style-name",		presentation_style_name_);
+	CP_XML_ATTR_OPT(L"presentation:class",			presentation_class_);
 	CP_XML_ATTR_OPT(L"presentation:placeholder",	presentation_placeholder_);
     CP_XML_ATTR_OPT(L"presentation:user-transformed", presentation_user_transformed_);
 }

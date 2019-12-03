@@ -180,13 +180,13 @@ namespace PPTX
 				*/
 			}
 
-			std::wstring GetText()const
+			std::wstring GetText(bool bParagraphSeparator = true)const
 			{
 				std::wstring result = _T("");
 				size_t count = Paragrs.size();
 
 				for (size_t i = 0; i < count; ++i)
-					result += Paragrs[i].GetText();
+					result += Paragrs[i].GetText(bParagraphSeparator);
 				return result;
 			}
 

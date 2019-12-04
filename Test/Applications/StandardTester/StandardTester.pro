@@ -16,4 +16,4 @@ include($$PWD/../../../Common/base.pri)
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
 
-DESTDIR = $$PWD/build
+DESTDIR = $$CORE_BUILDS_BINARY_PATH

@@ -231,7 +231,7 @@ PDFWRITER_DEP += $(CRYPTOPP)
 
 VIDEOPLAYERLIB_DEP += $(KERNEL)
 
-ARCHIVE := ./$(PACKAGE_NAME)$(ARCH_EXT)
+ARCHIVE := ../build_tools/out/$(TARGET)/onlyoffice/core/core.7z
 
 ARTIFACTS += build/*
 ARTIFACTS += Common/3dParty/*/$(TARGET)/build/*

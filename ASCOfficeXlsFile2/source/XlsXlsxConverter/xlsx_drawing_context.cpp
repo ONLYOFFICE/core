@@ -1662,6 +1662,17 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				}
 				else
 				{
+					if (drawing_state->shadow.enabled)
+					{
+						CP_XML_NODE(L"a:effectLst")
+						{
+							CP_XML_NODE(L"a:outerShdw")
+							{
+							//dist="342900" dir="10260003" sx="99001" sy="99001" rotWithShape="0">
+								serialize_color(CP_XML_STREAM(), drawing_state->shadow.color, drawing_state->shadow.opacity);	
+							}
+						}
+					}
 					//serialize_effect(CP_XML_STREAM(), drawing_state);
 				}
 			}
@@ -1672,7 +1683,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 	drawing_state->shape = strm.str();
 }
 
-bool xlsx_drawing_context::is_lined_shape	(_drawing_state_ptr & drawing_state)
+bool xlsx_drawing_context::is_lined_shape(_drawing_state_ptr & drawing_state)
 {
 	if (drawing_state->shape_id == msosptStraightConnector1 ||
 		drawing_state->shape_id == msosptLine				||
@@ -2840,6 +2851,52 @@ void xlsx_drawing_context::set_picture_biLevel(int val)
 void xlsx_drawing_context::set_picture_transparent(int nColor, const std::wstring & sColor)
 {
 	//....
+}
+void xlsx_drawing_context::set_shadow_enabled(bool val)
+{
+	current_drawing_states->back()->shadow.enabled = val;
+}
+void xlsx_drawing_context::set_shadow_type(int val)
+{
+    current_drawing_states->back()->shadow.type = val;
+}
+void xlsx_drawing_context::set_shadow_opacity(double val)
+{
+    current_drawing_states->back()->shadow.opacity = val;
+}
+void xlsx_drawing_context::set_shadow_color(int nColor, const std::wstring & sColor)
+{
+	current_drawing_states->back()->shadow.color.sRGB = sColor;
+	current_drawing_states->back()->shadow.color.nRGB = nColor;
+}
+void xlsx_drawing_context::set_shadow_highlight(int nColor, const std::wstring & sColor)
+{
+	current_drawing_states->back()->shadow.highlight.sRGB = sColor;
+	current_drawing_states->back()->shadow.highlight.nRGB = nColor;
+}
+void xlsx_drawing_context::set_shadow_originX(double val)
+{
+    current_drawing_states->back()->shadow.originX = val;
+}
+void xlsx_drawing_context::set_shadow_originY(double val)
+{
+    current_drawing_states->back()->shadow.originY = val;
+}
+void xlsx_drawing_context::set_shadow_offsetX(int val)
+{
+    current_drawing_states->back()->shadow.offsetX = val;
+}
+void xlsx_drawing_context::set_shadow_offsetY(int val)
+{
+    current_drawing_states->back()->shadow.offsetY = val;
+}
+void xlsx_drawing_context::set_shadow_scaleX2X(double val)
+{
+    current_drawing_states->back()->shadow.scaleX2X = val;
+}
+void xlsx_drawing_context::set_shadow_scaleY2Y(double val)
+{
+    current_drawing_states->back()->shadow.scaleY2Y = val;
 }
 void xlsx_drawing_context::set_rotation (double val)
 {

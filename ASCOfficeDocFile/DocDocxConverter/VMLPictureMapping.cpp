@@ -436,7 +436,7 @@ namespace DocFileFormat
 				{
 					appendStyleProperty(strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
-			case ODRAW::groupShapeBooleans:
+			case ODRAW::groupShapeBooleanProperties:
 				{
 					ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 

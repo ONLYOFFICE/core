@@ -861,7 +861,7 @@ namespace ODRAW
 		ePropertyId_fFlipH=63,
 
         //Protection
-        protectionBooleans=127,
+        protectionBooleanProperties=127,
 
         //Text
         lTxid=128,
@@ -954,7 +954,8 @@ namespace ODRAW
         pInscribe=343,
         cxk=344,
         pFragments=345,
-        geometryBooleans=383,
+        
+		geometryBooleanProperties=383,
 
         //Fill Style
         fillType=384,
@@ -990,7 +991,8 @@ namespace ODRAW
 		fillColorExtMod=416,
 		fillBackColorExt=418,
 		fillBackColorExtMod=420,
-        fillStyleBooleanProperties=447,
+        
+		fillStyleBooleanProperties=447,
 
         //Line Style
         lineColor=448,
@@ -1017,7 +1019,8 @@ namespace ODRAW
         lineEndArrowLength=469,
         lineJoinStyle=470,
         lineEndCapStyle=471,
-		lineStyleBooleans=511,
+		
+		lineStyleBooleanProperties=511,
 
         //Shadow Style
         shadowType=512,
@@ -1038,6 +1041,12 @@ namespace ODRAW
         shadowWeight=527,
         shadowOriginX=528,
         shadowOriginY=529,
+		shadowColorExt=530,
+		shadowColorExtMod=532,
+		shadowHighlightExt=534,
+		shadowHighlightExtMod=536,
+		shadowSoftness=540,
+		
 		shadowStyleBooleanProperties=575,
 
         //Perspective Style
@@ -1053,7 +1062,8 @@ namespace ODRAW
         perspectiveWeight=585,
         perspectiveOriginX=586,
         perspectiveOriginY=587,
-        perspectiveBoolean=639,
+        
+		perspectiveBooleanProperties=639,
 
         //3D Object
         c3DSpecularAmt = 640,
@@ -1127,7 +1137,8 @@ namespace ODRAW
         spcod = 835,
         dxyCalloutDropSpecified = 836,
         dxyCalloutLengthSpecified = 837,
-		calloutBoolean = 895,
+		
+		calloutBooleanProperties = 895,
 
         //Groupe Shape
         wzName = 896,
@@ -1172,7 +1183,7 @@ namespace ODRAW
         metroBlob = 937,
         dhgt = 938,
 
-		groupShapeBooleans = 959,
+		groupShapeBooleanProperties = 959,
 
         //Unknown HTML
         wzLineId=1026,
@@ -1201,7 +1212,7 @@ namespace ODRAW
         dgmConstrainBounds=1288,
         dgmBaseTextScale=1289,
 
-        diagramBooleans=1343,
+        diagramBooleanProperties=1343,
 
 		// dashing
 		lineLeftDashStyle=1359,

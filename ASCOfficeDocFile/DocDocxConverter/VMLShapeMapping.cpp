@@ -307,7 +307,7 @@ namespace DocFileFormat
 			switch (iter->opid)
 			{
 	//BOOLEANS
-			case ODRAW::geometryBooleans:
+			case ODRAW::geometryBooleanProperties:
 				{
 					ODRAW::GeometryBooleanProperties *booleans = dynamic_cast<ODRAW::GeometryBooleanProperties*>(iter.get());
 					if (booleans->fUsefLineOK && !booleans->fLineOK)
@@ -341,7 +341,7 @@ namespace DocFileFormat
 						appendValueAttribute(&m_fill, L"rotate", L"t");
 					}
 				}break;
-			case ODRAW::lineStyleBooleans:
+			case ODRAW::lineStyleBooleanProperties:
 				{
 					ODRAW::LineStyleBooleanProperties *booleans = dynamic_cast<ODRAW::LineStyleBooleanProperties *>(iter.get());
 					if (booleans->fUsefLine && !booleans->fLine)
@@ -350,16 +350,16 @@ namespace DocFileFormat
 					}
 				}
 				break;
-			case ODRAW::protectionBooleans:
+			case ODRAW::protectionBooleanProperties:
 				{
 					//ProtectionBooleanProperties booleans(iter->op);
 				}
 				break;
-			case ODRAW::diagramBooleans:
+			case ODRAW::diagramBooleanProperties:
 				{
 				}
 				break;
-			case ODRAW::groupShapeBooleans:
+			case ODRAW::groupShapeBooleanProperties:
 				{
 					ODRAW::GroupShapeBooleanProperties *booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties *>(iter.get());
 					if (booleans->fUsefLayoutInCell)
@@ -1651,7 +1651,7 @@ namespace DocFileFormat
 					appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
 //	BOOLEANS
-			case ODRAW::groupShapeBooleans:
+			case ODRAW::groupShapeBooleanProperties:
 				{
 					ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 

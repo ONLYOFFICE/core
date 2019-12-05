@@ -1679,7 +1679,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				xlsx_context->get_drawing_context().set_arrow_end_length(props[i]->op);
 			}break;
-			case ODRAW::lineStyleBooleans:
+			case ODRAW::lineStyleBooleanProperties:
 			{
 				ODRAW::LineStyleBooleanProperties * bools = (ODRAW::LineStyleBooleanProperties *)(props[i].get());
 				if (bools)
@@ -1714,28 +1714,27 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
-		ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 		switch(props[i]->opid)
 		{
 			case ODRAW::cropFromTop:
 				{
-					if (fixed_point)
-						xlsx_context->get_drawing_context().set_picture_crop_top(fixed_point->dVal * 10);
+					ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+					xlsx_context->get_drawing_context().set_picture_crop_top(fixed_point->dVal * 10);
 				}break;
 			case ODRAW::cropFromBottom:
 				{
-					if (fixed_point)
-						xlsx_context->get_drawing_context().set_picture_crop_bottom(fixed_point->dVal * 10);
+					ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+					xlsx_context->get_drawing_context().set_picture_crop_bottom(fixed_point->dVal * 10);
 				}break;
 			case ODRAW::cropFromLeft:
 				{
-					if (fixed_point)
-						xlsx_context->get_drawing_context().set_picture_crop_left(fixed_point->dVal * 10);
+					ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+					xlsx_context->get_drawing_context().set_picture_crop_left(fixed_point->dVal * 10);
 				}break;
 			case ODRAW::cropFromRight:
 				{
-					if (fixed_point)
-						xlsx_context->get_drawing_context().set_picture_crop_right(fixed_point->dVal * 10);
+					ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+					xlsx_context->get_drawing_context().set_picture_crop_right(fixed_point->dVal * 10);
 				}break;
 			case ODRAW::pib:
 				{
@@ -1843,7 +1842,7 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 		switch(props[i]->opid)
 		{
 			case ODRAW::geoLeft:	rect.x	= props[i]->op; break;
-			case ODRAW::geoTop:	rect.y	= props[i]->op; break;
+			case ODRAW::geoTop:		rect.y	= props[i]->op; break;
 			case ODRAW::geoRight:	rect.cx	= props[i]->op; break;
 			case ODRAW::geoBottom:	rect.cy = props[i]->op; break;
 			case ODRAW::shapePath:
@@ -1990,9 +1989,9 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 		case ODRAW::lTxid: break;
 		case ODRAW::txdir: break;
 		case ODRAW::dxTextLeft:		text_margin.left	= props[i]->op;	break;
-		case ODRAW::dxTextRight:		text_margin.right	= props[i]->op;	break;			
+		case ODRAW::dxTextRight:	text_margin.right	= props[i]->op;	break;			
 		case ODRAW::dyTextTop:		text_margin.top		= props[i]->op;	break;
-		case ODRAW::dyTextBottom:		text_margin.bottom	= props[i]->op;	break;
+		case ODRAW::dyTextBottom:	text_margin.bottom	= props[i]->op;	break;
 		case ODRAW::WrapText:
 			{
 				xlsx_context->get_drawing_context().set_text_wrap(props[i]->op);				
@@ -2066,39 +2065,56 @@ void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
 	if (props.empty()) return;
 
+	xlsx_context->get_drawing_context().set_shadow_enabled(true);
+
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
 			case ODRAW::shadowType:
 			{
+				xlsx_context->get_drawing_context().set_shadow_type(props[i]->op);
 			}break;
 			case ODRAW::shadowColor:
 			{
+				ODRAW::OfficeArtCOLORREF color((_UINT32)props[i]->op);
+				
+				if (!color.sColorRGB.empty())
+					xlsx_context->get_drawing_context().set_shadow_color(color.nColorRGB, color.sColorRGB);
 			}break;
 			case ODRAW::shadowHighlight:
 			{
+				ODRAW::OfficeArtCOLORREF color((_UINT32)props[i]->op);
+				
+				if (!color.sColorRGB.empty())
+					xlsx_context->get_drawing_context().set_shadow_highlight(color.nColorRGB, color.sColorRGB);
 			}break;
 			case ODRAW::shadowCrMod:
 			{
 			}break;
 			case ODRAW::shadowOpacity:
 			{
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_shadow_opacity(fixed_point->dVal);
 			}break;
 			case ODRAW::shadowOffsetX:
 			{
+				xlsx_context->get_drawing_context().set_shadow_offsetX((_INT32)props[i]->op);
 			}break;
 			case ODRAW::shadowOffsetY:
 			{
+				xlsx_context->get_drawing_context().set_shadow_offsetY((_INT32)props[i]->op);
 			}break;
-			case ODRAW::shadowSecondOffsetX:
-			{
-			}break;
-			case ODRAW::shadowSecondOffsetY:
-			{
-			}break;
+			//case ODRAW::shadowSecondOffsetX:
+			//{
+			//}break;
+			//case ODRAW::shadowSecondOffsetY:
+			//{
+			//}break;
 			case ODRAW::shadowScaleXToX:
 			{
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_shadow_scaleX2X(fixed_point->dVal);
 			}break;
 			case ODRAW::shadowScaleYToX:
 			{
@@ -2108,21 +2124,27 @@ void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 			}break;
 			case ODRAW::shadowScaleYToY:
 			{
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_shadow_scaleY2Y(fixed_point->dVal);
 			}break;
-			case ODRAW::shadowPerspectiveX:
-			{
-			}break;
-			case ODRAW::shadowPerspectiveY:
-			{
-			}break;
-			case ODRAW::shadowWeight:
-			{
-			}break;
+			//case ODRAW::shadowPerspectiveX:
+			//{
+			//}break;
+			//case ODRAW::shadowPerspectiveY:
+			//{
+			//}break;
+			//case ODRAW::shadowWeight:
+			//{
+			//}break;
 			case ODRAW::shadowOriginX:
 			{
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_shadow_originX(fixed_point->dVal);
 			}break;
 			case ODRAW::shadowOriginY:
 			{
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_shadow_originY(fixed_point->dVal);
 			}break;
 		}
 	}

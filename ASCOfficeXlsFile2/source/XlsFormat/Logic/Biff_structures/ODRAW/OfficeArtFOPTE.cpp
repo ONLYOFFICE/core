@@ -162,6 +162,14 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case ODRAW::gtextCSSFont:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
+		case ODRAW::shadowOriginX:
+		case ODRAW::shadowOriginY:
+		case ODRAW::shadowScaleXToX:
+		case ODRAW::shadowScaleXToY:
+		case ODRAW::shadowScaleYToX:
+		case ODRAW::shadowScaleYToY:
+		case ODRAW::pictureContrast:
+		case ODRAW::pictureBrightness:
 		case ODRAW::gtextSpacing:
 			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
@@ -409,10 +417,10 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x01FF:
 			fopte = OfficeArtFOPTEPtr(new LineStyleBooleanProperties);
 			break;
-		case 0x0204:
+		case ODRAW::shadowOpacity:
 			fopte = OfficeArtFOPTEPtr(new ShadowOpacity);
 			break;
-		case 0x023F:
+		case ODRAW::shadowStyleBooleanProperties:
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
 			break;
 		case 0x02bf:

@@ -85,11 +85,15 @@ private:
 
 struct _color
 {
-	_color() : index(-1), bScheme(false), nRGB(0){}
-	int				nRGB;
+	_color(unsigned char nR, unsigned char  nG, unsigned char  nB) 
+	{
+		SetRGB(nR, nG, nB);
+	}
+	_color(){}
+	int				nRGB = 0;
 	std::wstring	sRGB;
-	int				index;
-	bool			bScheme;
+	int				index = -1;
+	bool			bScheme = false;
 
 	void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB);
 
@@ -138,25 +142,12 @@ typedef _CP_PTR(_drawing_state) _drawing_state_ptr;
 class _drawing_state
 {
 public:
-	_drawing_state() :	shape_id(msosptRectangle),  
-						flipH(false), flipV(false), 					
-						bTextBox(false),
-						type_anchor(0),
-						vml_HF_mode_(false), 
-						hidden(false)
+	_drawing_state() : parent_drawing_states(NULL)
 	{
-		id						= -1;		
-		rotation				= 0;
-		parent_drawing_states	= NULL;
-		custom_path				= -1;
-		custom_x_limo			= 0x80000000;		
-		custom_y_limo			= 0x80000000;
-
-		type_control			= -1;
 	}
 
 	external_items::Type	type;
-	bool					hidden;
+	bool					hidden = false;
 	std::wstring			name;
 	std::wstring			description;
 
@@ -169,7 +160,7 @@ public:
 	std::wstring			objectId;
 	std::wstring			objectProgId;
 
-	int						type_control;
+	int						type_control = -1;
 
 	struct _anchor
 	{
@@ -189,19 +180,19 @@ public:
 	_rect					group_anchor;
 	_rect					absolute_anchor;
 
-	int						type_anchor;
+	int						type_anchor = 0;
 	
-	bool					vml_HF_mode_;
+	bool					vml_HF_mode_ = false;
 	
 	std::wstring			shape;
 	std::wstring			vml_shape;
 
-	int						id;
-	MSOSPT					shape_id;
+	int						id = -1;
+	MSOSPT					shape_id = msosptRectangle;
 //----------------------------------------------	
-	bool					flipV;
-	bool					flipH;
-	int						rotation;
+	bool					flipV = false;
+	bool					flipH = false;
+	int						rotation = 0;
 //-----------------------------------------------
 	std::vector<ODRAW::MSOPATHINFO>	custom_segments;
 	std::vector<ODRAW::MSOSG>		custom_guides;
@@ -213,51 +204,61 @@ public:
 
 	_rect							custom_rect;
 	std::vector<_CP_OPT(int)>		custom_adjustValues;
-	int								custom_path;
-	int								custom_x_limo;
-	int								custom_y_limo;
+	int								custom_path= -1;
+	int								custom_x_limo = 0x80000000;
+	int								custom_y_limo = 0x80000000;
 //-----------------------------------------------
 	std::wstring					hyperlink;
 	struct _text
 	{
-		_text() :	align(0)/*noset*/, wrap(0)/*square*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ ,fit_shape(false)
+		_text()
 		{
 			margins.left = margins.right = 0x00016530;
 			margins.top = margins.bottom = 0x0000b298;
 		}
 		std::wstring	content;		//c форматированием oox
 		std::wstring	vml_content;	//c форматированием vml
-		int				wrap;
-		int				align;
-		int				vert_align;
-		int				vertical;
+		int				wrap = 0; //square
+		int				align = 0; //noset
+		int				vert_align = 0; //noset
+		int				vertical = 0; //horiz
 		RECT			margins;
-		bool			fit_shape;
+		bool			fit_shape = false;
 	}text;
 	
 	struct _wordart
 	{
-		_wordart() : is(false), size(0), bold(false), italic(false), underline(false), vertical(false), strike(false), spacing(1.) {}
-		bool			is;
+		bool			is = false;
 		std::wstring	text;	
 		std::wstring	font;	
-		int				size;
-		bool			bold;
-		bool			italic;
-		bool			underline;
-		bool			strike;
-		bool			vertical;
-		double			spacing;
+		int				size = 0;;
+		bool			bold = false;
+		bool			italic = false;
+		bool			underline = false;
+		bool			strike = false;
+		bool			vertical = false;
+		double			spacing = 1.;
 	}wordart;
 	
-	bool				bTextBox;
+	bool				bTextBox = false;
 
 	struct _shadow
 	{
-		_shadow() {is = false; color.SetRGB(0x7f, 0x7f, 0x7f);}
-		bool			is;
+		_shadow () : color(0x7f, 0x7f, 0x7f), highlight(0x7f, 0x7f, 0x7f) {}
+		
+		bool			enabled = false;
+		int				type = 0x00000000; //msoshadowOffset
+		bool			is = false;
 		_color			color;
-		int				opacity;
+		_color			highlight;
+		double			opacity;
+		int				offsetX = 0x00006338;
+		int				offsetY = 0x00006338;
+		double			scaleX2X = 1.;
+		double			scaleY2Y = 1.;
+		double			originX = 0;
+		double			originY = 0;
+
 	}shadow;
 	
 	struct _fill
@@ -446,6 +447,18 @@ public:
 		void set_line_miter			(int val);
 		void set_line_join			(int val);
 		void set_line_endcap		(int val);
+
+		void set_shadow_enabled		(bool val);
+		void set_shadow_type		(int val);
+		void set_shadow_opacity		(double val);
+		void set_shadow_color		(int nColor, const std::wstring & color);
+		void set_shadow_highlight	(int nColor, const std::wstring & color);
+		void set_shadow_originX		(double val);
+		void set_shadow_originY		(double val);
+		void set_shadow_offsetX		(int val);
+		void set_shadow_offsetY		(int val);
+		void set_shadow_scaleX2X	(double val);
+		void set_shadow_scaleY2Y	(double val);
 
 		void set_fill_old_version	(_UINT32 val);
 		void set_line_old_version	(_UINT32 val);

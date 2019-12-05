@@ -390,6 +390,12 @@ namespace NExtractTools
             oBuilder.AddInt(*params.m_nDoctParams);
             oBuilder.WriteString(_T("</DoctParams>"));
         }
+		if(NULL != params.m_nLcid)
+		{
+			oBuilder.WriteString(_T("<Lcid>"));
+			oBuilder.AddInt(*params.m_nLcid);
+			oBuilder.WriteString(_T("</Lcid>"));
+		}
 		if(NULL != params.m_sJsonParams)
 		{
 			oBuilder.WriteString(_T("<JsonParams>"));

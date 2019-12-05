@@ -399,6 +399,7 @@ namespace NExtractTools
 		int* m_nCsvTxtEncoding;
 		int* m_nCsvDelimiter;
 		std::wstring* m_sCsvDelimiterChar;
+		int* m_nLcid;
 		bool* m_bPaid;
 		bool* m_bFromChanges;
 		bool* m_bDontSaveAdditional;
@@ -430,6 +431,7 @@ namespace NExtractTools
 			m_nCsvTxtEncoding = NULL;
 			m_nCsvDelimiter = NULL;
 			m_sCsvDelimiterChar = NULL;
+			m_nLcid = NULL;
 			m_bPaid = NULL;
 			m_bFromChanges = NULL;
 			m_bDontSaveAdditional = NULL;
@@ -460,6 +462,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_nCsvTxtEncoding);
 			RELEASEOBJECT(m_nCsvDelimiter);
 			RELEASEOBJECT(m_sCsvDelimiterChar);
+			RELEASEOBJECT(m_nLcid);
 			RELEASEOBJECT(m_bPaid);
 			RELEASEOBJECT(m_bFromChanges);
 			RELEASEOBJECT(m_bDontSaveAdditional);
@@ -574,6 +577,11 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(sValue);
+								}
+								else if(_T("m_nLcid") == sName)
+								{
+									RELEASEOBJECT(m_nLcid);
+									m_nLcid = new int(XmlUtils::GetInteger(sValue));
 								}
 								else if(_T("m_bPaid") == sName)
 								{

@@ -336,7 +336,7 @@ namespace DocFileFormat
 						}
 					}
 				}break;
-			case metroBlob:
+			case ODRAW::metroBlob:
 				{//встроенная неведомая хуйня
 					ODRAW::MetroBlob* blob = dynamic_cast<ODRAW::MetroBlob*>(iter.get());
 					if (blob)
@@ -350,28 +350,28 @@ namespace DocFileFormat
 					}
 				}break;
 //BORDERS
-			case borderBottomColor:
+			case ODRAW::borderBottomColor:
 				if (!pict->brcBottom)
 				{
 					RGBColor bottomColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", L"#" + bottomColor.SixDigitHexCode);
 				}
 				break;
-			case borderLeftColor:
+			case ODRAW::borderLeftColor:
 				if (!pict->brcLeft)
 				{  
 					RGBColor leftColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", L"#" + leftColor.SixDigitHexCode);
 				}  
 				break;
-			case borderRightColor:
+			case ODRAW::borderRightColor:
 				if (!pict->brcRight)
 				{  
 					RGBColor rightColor( (int)iter->op, RedFirst );
 					m_pXmlWriter->WriteAttribute( L"o:borderrightcolor",  L"#" + rightColor.SixDigitHexCode);
 				}
 				break;
-			case borderTopColor:
+			case ODRAW::borderTopColor:
 				if (!pict->brcTop)
 				{
 					RGBColor topColor( (int)iter->op, RedFirst );
@@ -379,28 +379,28 @@ namespace DocFileFormat
 				}
 				break;
 //CROPPING
-			case cropFromBottom:
+			case ODRAW::cropFromBottom:
 				{  
 					//cast to signed integer
 					int cropBottom = (int)iter->op;
 					appendValueAttribute(m_imageData, L"cropbottom", FormatUtils::IntToWideString( cropBottom ) + L"f" );
 				}
 				break;
-			case cropFromLeft:
+			case ODRAW::cropFromLeft:
 				{  
 					//cast to signed integer
 					int cropLeft = (int)iter->op;
 					appendValueAttribute(m_imageData, L"cropleft", FormatUtils::IntToWideString( cropLeft ) + L"f" );
 				}
 				break;
-			case cropFromRight:
+			case ODRAW::cropFromRight:
 				{
 					//cast to signed integer
 					int cropRight = (int)iter->op;
 					appendValueAttribute(m_imageData, L"cropright", FormatUtils::IntToWideString( cropRight ) + L"f" );
 				}
 				break;
-			case cropFromTop:
+			case ODRAW::cropFromTop:
 				{
 					//cast to signed integer
 					int cropTop = (int)iter->op;
@@ -408,7 +408,7 @@ namespace DocFileFormat
 				}
 				break;
 //------------------------------------------------------------
-			case PropertyId_rotation:
+			case ODRAW::ePropertyId_rotation:
 				{
 					double dAngle = (double)((int)iter->op) / 65535.0;
 
@@ -420,23 +420,23 @@ namespace DocFileFormat
 
 					appendStyleProperty(strStyle, L"rotation", FormatUtils::DoubleToWideString(dAngle));
 				}break;
-			case posh:
+			case ODRAW::posh:
 				{
 					appendStyleProperty(strStyle, L"mso-position-horizontal", VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
 				}break;
-			case posrelh:
+			case ODRAW::posrelh:
 				{
 					appendStyleProperty(strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}break;
-			case posv:
+			case ODRAW::posv:
 				{
 					appendStyleProperty(strStyle, L"mso-position-vertical", VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
 				}break;
-			case posrelv:
+			case ODRAW::posrelv:
 				{
 					appendStyleProperty(strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
-			case groupShapeBooleans:
+			case ODRAW::groupShapeBooleans:
 				{
 					ODRAW::GroupShapeBooleanProperties* booleans = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(iter.get());
 

@@ -622,6 +622,13 @@ void xlsx_drawing_context::reset_alternative_drawing()
 
 				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
 			}
+			if (shape->spPr.EffectList.is_init())
+			{
+				NSBinPptxRW::CXmlWriter writerEffect(XMLWRITER_DOC_TYPE_XLSX);
+				shape->spPr.EffectList.toXmlWriter(&writerEffect);
+
+				current_drawing_states->back()->xmlEffectAlternative = writerEffect.GetXmlString();
+			}
 		}
 		smart_ptr<PPTX::Logic::SpTree> groupShape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 		if (groupShape.IsInit())
@@ -1372,6 +1379,15 @@ void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state)
 				}
 
 				CP_XML_NODE(L"a:noFill");
+				
+				if (false == drawing_state->xmlEffectAlternative.empty())
+				{
+					CP_XML_STREAM() << drawing_state->xmlEffectAlternative;
+				}
+				else
+				{
+					//serialize_effect(CP_XML_STREAM(), drawing_state);
+				}
 			}
 		}
 	}
@@ -1638,7 +1654,16 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 						serialize_fill(CP_XML_STREAM(), drawing_state);
 					}
 				}
-				serialize_line(CP_XML_STREAM(), drawing_state);		
+				serialize_line(CP_XML_STREAM(), drawing_state);	
+				
+				if (false == drawing_state->xmlEffectAlternative.empty())
+				{
+					CP_XML_STREAM() << drawing_state->xmlEffectAlternative;
+				}
+				else
+				{
+					//serialize_effect(CP_XML_STREAM(), drawing_state);
+				}
 			}
 			serialize_text(CP_XML_STREAM(), drawing_state);
 		}
@@ -2339,6 +2364,26 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 			CP_XML_NODE(L"a:blip")
 			{
 				CP_XML_ATTR(L"r:embed", rId);
+
+				if (fill.grayscale)
+				{
+					CP_XML_NODE(L"a:grayscl");
+				}
+				if (fill.brightness || fill.contrast)
+				{
+					CP_XML_NODE(L"a:lum")
+					{
+						if (fill.brightness)CP_XML_ATTR(L"bright", *fill.brightness * 1000);
+						if (fill.contrast)	CP_XML_ATTR(L"contrast", *fill.contrast * 1000);
+					}
+				}
+				if (fill.biLevel)
+				{
+					CP_XML_NODE(L"a:biLevel")
+					{
+						CP_XML_ATTR(L"thresh", *fill.biLevel * 1000);
+					}
+				}
 			}
 
 			CP_XML_NODE(L"a:srcRect")
@@ -2740,8 +2785,7 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 
 	current_drawing_states->back()->fill.texture_target = str;
 }
-
-void xlsx_drawing_context::set_crop_top	(double val)
+void xlsx_drawing_context::set_picture_crop_top	(double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
@@ -2749,7 +2793,7 @@ void xlsx_drawing_context::set_crop_top	(double val)
 	current_drawing_states->back()->fill.texture_crop[1] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
 }
-void xlsx_drawing_context::set_crop_bottom(double val)
+void xlsx_drawing_context::set_picture_crop_bottom(double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
@@ -2757,7 +2801,7 @@ void xlsx_drawing_context::set_crop_bottom(double val)
 	current_drawing_states->back()->fill.texture_crop[3] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
 }
-void xlsx_drawing_context::set_crop_left (double val)
+void xlsx_drawing_context::set_picture_crop_left (double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
@@ -2765,13 +2809,37 @@ void xlsx_drawing_context::set_crop_left (double val)
 	current_drawing_states->back()->fill.texture_crop[0] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
 }
-void xlsx_drawing_context::set_crop_right (double val)
+void xlsx_drawing_context::set_picture_crop_right (double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->fill.texture_crop[2] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
+}
+void xlsx_drawing_context::set_picture_name(const std::wstring & str)
+{
+	//....
+}
+void xlsx_drawing_context::set_picture_grayscale(bool val)
+{
+    current_drawing_states->back()->fill.grayscale = val;
+}
+void xlsx_drawing_context::set_picture_brightness(int val)
+{
+    current_drawing_states->back()->fill.brightness = val;
+}
+void xlsx_drawing_context::set_picture_contrast(int val)
+{
+    current_drawing_states->back()->fill.contrast = val;
+}
+void xlsx_drawing_context::set_picture_biLevel(int val)
+{
+    current_drawing_states->back()->fill.biLevel = val;
+}
+void xlsx_drawing_context::set_picture_transparent(int nColor, const std::wstring & sColor)
+{
+	//....
 }
 void xlsx_drawing_context::set_rotation (double val)
 {

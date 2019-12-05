@@ -42,6 +42,7 @@
 #include "Scene3d.h"
 #include "Sp3d.h"
 #include "Geometry.h"
+#include "ExtP.h"
 
 #include "../../../DesktopEditor/graphics/aggplustypes.h" //for RECT
 
@@ -146,6 +147,8 @@ namespace PPTX
 			nullable<Sp3d>				sp3d;
 
 			nullable_limit<Limit::BWMode> bwMode;
+
+			std::vector<Ext>			extLst;
 
 			std::wstring				m_namespace;
 		protected:

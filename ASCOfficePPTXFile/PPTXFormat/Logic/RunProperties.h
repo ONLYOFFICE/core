@@ -43,6 +43,7 @@
 #include "TextFont.h"
 #include "EffectProperties.h"
 #include "Hyperlink.h"
+#include "ExtP.h"
 
 namespace PPTX
 {
@@ -347,10 +348,22 @@ namespace PPTX
 					else if ( L"rtl" == sName )
 						rtl = oReader;
 					else if (	L"effectDag"	== sName	||
-								L"effectLst"	== sName	||
-								L"extLst"		== sName )
+								L"effectLst"	== sName)
 					{
 						EffectList.fromXML(oReader);		
+					}
+					else if ( L"a:extLst"		== sName )
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							Ext element;
+							element.fromXML(oReader);
+							extLst.push_back (element);
+						}
 					}
 				}			
 				FillParentPointersForChilds();
@@ -777,6 +790,9 @@ namespace PPTX
 			nullable<Ln>						ln;
 			UniFill								Fill;
 			EffectProperties					EffectList;
+			
+			std::vector<Ext>					extLst;
+
 			nullable<Highlight>					highlight;
 			nullable<UFillTx>					uFill;
 			nullable<UFillTx>					uFillTx;

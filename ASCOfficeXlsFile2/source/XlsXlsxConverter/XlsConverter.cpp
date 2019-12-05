@@ -1595,7 +1595,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}
 				}
 			}break;
-			case ODRAW::fillBoolean:
+			case ODRAW::fillStyleBooleanProperties:
 			{
 				ODRAW::FillStyleBooleanProperties * bools = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
 				if (bools)
@@ -1679,7 +1679,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				xlsx_context->get_drawing_context().set_arrow_end_length(props[i]->op);
 			}break;
-			case ODRAW::lineBoolean:
+			case ODRAW::lineStyleBooleans:
 			{
 				ODRAW::LineStyleBooleanProperties * bools = (ODRAW::LineStyleBooleanProperties *)(props[i].get());
 				if (bools)
@@ -1717,37 +1717,116 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 		ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 		switch(props[i]->opid)
 		{
-		case 0x100:
-			{
-				if (fixed_point)
-					xlsx_context->get_drawing_context().set_crop_top(fixed_point->dVal * 10);
-			}break;
-		case 0x101:
-			{
-				if (fixed_point)
-					xlsx_context->get_drawing_context().set_crop_bottom(fixed_point->dVal * 10);
-			}break;
-		case 0x102:
-			{
-				if (fixed_point)
-					xlsx_context->get_drawing_context().set_crop_left(fixed_point->dVal * 10);
-			}break;
-		case 0x103:
-			{
-				if (fixed_point)
-					xlsx_context->get_drawing_context().set_crop_right(fixed_point->dVal * 10);
-			}break;
-		case 0x104:
-			{
-				bool isIternal = false;
-				std::wstring target;
+			case ODRAW::cropFromTop:
+				{
+					if (fixed_point)
+						xlsx_context->get_drawing_context().set_picture_crop_top(fixed_point->dVal * 10);
+				}break;
+			case ODRAW::cropFromBottom:
+				{
+					if (fixed_point)
+						xlsx_context->get_drawing_context().set_picture_crop_bottom(fixed_point->dVal * 10);
+				}break;
+			case ODRAW::cropFromLeft:
+				{
+					if (fixed_point)
+						xlsx_context->get_drawing_context().set_picture_crop_left(fixed_point->dVal * 10);
+				}break;
+			case ODRAW::cropFromRight:
+				{
+					if (fixed_point)
+						xlsx_context->get_drawing_context().set_picture_crop_right(fixed_point->dVal * 10);
+				}break;
+			case ODRAW::pib:
+				{
+					bool isIternal = false;
+					std::wstring target;
 
-				int id = props[i]->op;
-				if (xlsx_context->get_drawing_context().get_mode_HF()) 
-					id += 3000;
+					int id = props[i]->op;
+					if (xlsx_context->get_drawing_context().get_mode_HF()) 
+						id += 3000;
+					
+					std::wstring rId = xlsx_context->get_mediaitems().find_image(id , target, isIternal);
+					xlsx_context->get_drawing_context().set_fill_texture(target);
+				}break;
+			case ODRAW::pibName:
+			{
+				ODRAW::AnyString *str = dynamic_cast<ODRAW::AnyString*>(props[i].get());
+				xlsx_context->get_drawing_context().set_picture_name(str->string_);
+			}break;
+			case ODRAW::pibFlags:
+			{
+			}break;
+			case ODRAW::pictureTransparent:
+			{
+				ODRAW::OfficeArtCOLORREF color((_UINT32)props[i]->op);
 				
-				std::wstring rId = xlsx_context->get_mediaitems().find_image(id , target, isIternal);
-				xlsx_context->get_drawing_context().set_fill_texture(target);
+				if (!color.sColorRGB.empty())
+					xlsx_context->get_drawing_context().set_picture_transparent(color.nColorRGB, color.sColorRGB);
+				//...
+			}break;
+			case ODRAW::pictureContrast:
+			{
+				int val = 0;
+				if (props[i]->op == 0x7FFFFFFF)
+				{
+					val = 100;
+				}
+				else if (props[i]->op == 0x00010000)
+				{
+					val = 0;
+				}
+				else if (props[i]->op > 0x00010000)
+				{
+					val = 51. / (props[i]->op / 65536.);
+					val = (50 - val) * 2;
+				}
+				else
+				{
+					val = (100. * props[i]->op / 65536. + 0.5) - 100;
+				}
+				xlsx_context->get_drawing_context().set_picture_contrast(val);
+			}break;
+			case ODRAW::pictureBrightness:
+			{
+				int val = ((_INT32)props[i]->op * 100. + 0.5) / 0x00008000;
+				xlsx_context->get_drawing_context().set_picture_brightness(val);
+			}break;
+			case ODRAW::pictureGamma:
+			{
+			}break;
+			case ODRAW::pictureId:
+			{
+			}break;
+			case ODRAW::pictureDblCrMod:
+			{
+			}break;
+			case ODRAW::pictureFillCrMod:
+			{
+			}break;
+			case ODRAW::pictureLineCrMod:
+			{
+			}break;
+			case ODRAW::pibPrint:
+			{
+			}break;
+			case ODRAW::pibPrintName:
+			{
+			}break;
+			case ODRAW::pibPrintFlags:
+			{
+			}break;
+			case ODRAW::blipBooleanProperties:
+			{				
+				ODRAW::BlipBooleanProperties * bools = (ODRAW::BlipBooleanProperties *)(props[i].get());
+				if (bools)
+				{
+					if (bools->fUsefPictureGray && bools->fPictureGray) 
+						xlsx_context->get_drawing_context().set_picture_grayscale(true);
+					if (bools->fUsefPictureBiLevel && bools->fPictureBiLevel) 
+						xlsx_context->get_drawing_context().set_picture_biLevel(50);
+				}
+
 			}break;
 		}
 	}
@@ -1763,71 +1842,71 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 	{
 		switch(props[i]->opid)
 		{
-		case 0x0140:	rect.x	= props[i]->op; break;
-		case 0x0141:	rect.y	= props[i]->op; break;
-		case 0x0142:	rect.cx	= props[i]->op; break;
-		case 0x0143:	rect.cy = props[i]->op; break;
-		case 0x0144:
-			xlsx_context->get_drawing_context().set_custom_path(props[i]->op); break;
-		case 0x0145:
-			{
-				ODRAW::PVertices * v = (ODRAW::PVertices *)(props[i].get());
-				xlsx_context->get_drawing_context().set_custom_verticles(v->complex.data);
-			}break;
-		case 0x0146:
-			{
-				ODRAW::PSegmentInfo * s = (ODRAW::PSegmentInfo *)(props[i].get());
-				xlsx_context->get_drawing_context().set_custom_segments(s->complex.data);
-			}break;
-		case 0x0147: //adjustValue .... //adjust8Value
-		case 0x0148:
-		case 0x0149:
-		case 0x014A:
-		case 0x014B:
-		case 0x014C:
-		case 0x014D:
-		case 0x014E:
+			case ODRAW::geoLeft:	rect.x	= props[i]->op; break;
+			case ODRAW::geoTop:	rect.y	= props[i]->op; break;
+			case ODRAW::geoRight:	rect.cx	= props[i]->op; break;
+			case ODRAW::geoBottom:	rect.cy = props[i]->op; break;
+			case ODRAW::shapePath:
+				xlsx_context->get_drawing_context().set_custom_path(props[i]->op); break;
+			case ODRAW::pVertices:
+				{
+					ODRAW::PVertices * v = (ODRAW::PVertices *)(props[i].get());
+					xlsx_context->get_drawing_context().set_custom_verticles(v->complex.data);
+				}break;
+			case ODRAW::pSegmentInfo:
+				{
+					ODRAW::PSegmentInfo * s = (ODRAW::PSegmentInfo *)(props[i].get());
+					xlsx_context->get_drawing_context().set_custom_segments(s->complex.data);
+				}break;
+			case 0x0147: //adjustValue .... //adjust8Value
+			case 0x0148:
+			case 0x0149:
+			case 0x014A:
+			case 0x014B:
+			case 0x014C:
+			case 0x014D:
+			case ODRAW::adjust10Value:
 			{
 				adjustValues[props[i]->opid - 0x0147] = props[i]->op ;
 			}break;
-		case 0x0151:
+			case ODRAW::pConnectionSites:
 			{
 				ODRAW::PConnectionSites * a = (ODRAW::PConnectionSites *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_connection(a->complex.data);
 			}break;
-		case 0x0152:
+			case ODRAW::pConnectionSitesDir:
 			{
 				ODRAW::PConnectionSitesDir * a = (ODRAW::PConnectionSitesDir *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_connectionDir(a->complex.data);
 			}break;
-		case 0x0153:
+			case ODRAW::xLimo:
 			{
 				xlsx_context->get_drawing_context().set_custom_x_limo(props[i]->op);
 			}break;
-		case 0x0154:
+			case ODRAW::yLimo:
 			{
 				xlsx_context->get_drawing_context().set_custom_y_limo(props[i]->op);
 			}break;
-		case 0x0155:
+			case ODRAW::pAdjustHandles:
 			{
 				ODRAW::PAdjustHandles * a = (ODRAW::PAdjustHandles *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_adjustHandles(a->complex.data);
 			}break;
-		case 0x0156:
+			case ODRAW::pGuides:
 			{
 				ODRAW::PGuides* s = (ODRAW::PGuides *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_guides(s->complex.data);
 			}break;
-		case 0x0157:
+			case ODRAW::pInscribe:
 			{
 				ODRAW::PInscribe * a = (ODRAW::PInscribe *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_inscribe(a->complex.data);
 			}break;
-		//case 0x0158:
-		//	{
-		//		ODRAW::cxk * a = (ODRAW::cxk *)(props[i].get());
-		//		xlsx_context->get_drawing_context().set_custom_cxk(a->complex.data);
-		//	}break;
+			//case ODRAW::cxk:
+			//	{
+			//		ODRAW::cxk * a = (ODRAW::cxk *)(props[i].get());
+			//		xlsx_context->get_drawing_context().set_custom_cxk(a->complex.data);
+			//	}break;
 		}
 	}
 	rect.cy -= rect.y;
@@ -1922,7 +2001,7 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 			{
 				xlsx_context->get_drawing_context().set_text_vertical(props[i]->op);
 			}break;
-		case ODRAW::textBoolean:
+		case ODRAW::textBooleanProperties:
 			{
 				ODRAW::TextBooleanProperties *bools = dynamic_cast<ODRAW::TextBooleanProperties*>(props[i].get());
 				if (bools)
@@ -1989,6 +2068,63 @@ void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
+		switch(props[i]->opid)
+		{
+			case ODRAW::shadowType:
+			{
+			}break;
+			case ODRAW::shadowColor:
+			{
+			}break;
+			case ODRAW::shadowHighlight:
+			{
+			}break;
+			case ODRAW::shadowCrMod:
+			{
+			}break;
+			case ODRAW::shadowOpacity:
+			{
+			}break;
+			case ODRAW::shadowOffsetX:
+			{
+			}break;
+			case ODRAW::shadowOffsetY:
+			{
+			}break;
+			case ODRAW::shadowSecondOffsetX:
+			{
+			}break;
+			case ODRAW::shadowSecondOffsetY:
+			{
+			}break;
+			case ODRAW::shadowScaleXToX:
+			{
+			}break;
+			case ODRAW::shadowScaleYToX:
+			{
+			}break;
+			case ODRAW::shadowScaleXToY:
+			{
+			}break;
+			case ODRAW::shadowScaleYToY:
+			{
+			}break;
+			case ODRAW::shadowPerspectiveX:
+			{
+			}break;
+			case ODRAW::shadowPerspectiveY:
+			{
+			}break;
+			case ODRAW::shadowWeight:
+			{
+			}break;
+			case ODRAW::shadowOriginX:
+			{
+			}break;
+			case ODRAW::shadowOriginY:
+			{
+			}break;
+		}
 	}
 }
 void XlsConverter::convert_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)

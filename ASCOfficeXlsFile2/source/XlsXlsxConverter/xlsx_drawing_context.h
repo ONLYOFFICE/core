@@ -164,6 +164,7 @@ public:
 	std::wstring			xmlGeomAlternative;
 	std::wstring			xmlTxBodyAlternative;
 	std::wstring			xmlFillAlternative;
+	std::wstring			xmlEffectAlternative;
 
 	std::wstring			objectId;
 	std::wstring			objectProgId;
@@ -264,23 +265,26 @@ public:
 		_fill() 
 		{
 			color.SetRGB(0xff, 0xff, 0xff);
-			angle = opacity = opacity2 = focus = 0; type = fillSolid; 
 			memset(texture_crop, 0, 4 * sizeof(double));
-			texture_crop_enabled = false;
 		}
 		_color			color;
 		_color			color2;
-		double			opacity;
-		double			opacity2;
-		_fill_type		type;
+		double			opacity = 0;
+		double			opacity2 = 0;
+		_fill_type		type = fillSolid; 
 
-		int				focus;
-		double			angle;
+		int				focus = 0;
+		double			angle = 0;
 		
 		std::wstring	texture_target;
 		double			texture_crop[4];
-		bool			texture_crop_enabled;
+		bool			texture_crop_enabled = false;
 		_texture_mode	texture_mode;
+
+		_CP_OPT(int)	contrast;
+		_CP_OPT(int)	brightness;
+		_CP_OPT(bool)	grayscale;
+		_CP_OPT(int)	biLevel;
 
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
@@ -293,6 +297,8 @@ public:
 		memset(fill.texture_crop, 0, 4 * sizeof(double));
 		fill.texture_crop_enabled = false;
 		fill.colorsPosition.clear();
+
+		fill.contrast = fill.brightness = fill.grayscale = boost::none;
 	}
 	struct _arrow
 	{
@@ -398,10 +404,16 @@ public:
 		void set_ole_object			(const std::wstring & id, const std::wstring & info);
 		void set_control_activeX	(const std::wstring & id);
 		
-        void set_crop_top			(double val);
-        void set_crop_bottom		(double val);
-        void set_crop_left			(double val);
-        void set_crop_right			(double val);
+        void set_picture_crop_top	(double val);
+        void set_picture_crop_bottom(double val);
+        void set_picture_crop_left	(double val);
+        void set_picture_crop_right	(double val);
+		void set_picture_name		(const std::wstring & str);
+		void set_picture_grayscale	(bool val);
+		void set_picture_brightness	(int val);
+		void set_picture_contrast	(int val);
+		void set_picture_biLevel	(int val);
+		void set_picture_transparent(int nColor, const std::wstring & sColor);
 
         void set_rotation			(double val);
 

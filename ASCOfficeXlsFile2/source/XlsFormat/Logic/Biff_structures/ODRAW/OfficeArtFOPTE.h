@@ -346,6 +346,27 @@ class FillBlip : public OfficeArtFOPTE
 class BlipBooleanProperties : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(BlipBooleanProperties)
+
+	virtual void load(XLS::CFRecord& record);
+	virtual void load(IBinaryReader* reader);
+
+	bool fUsefPicturePreserveGrays;
+	bool fUsefRewind;
+	bool fUsefLooping;
+	bool fUsefNoHitTestPicture;
+	bool fUsefPictureGray;
+	bool fUsefPictureBiLevel;
+	bool fUsefPictureActive;
+
+	bool fPicturePreserveGrays;
+	bool fRewind;
+	bool fLooping;
+	bool fNoHitTestPicture;
+	bool fPictureGray;
+	bool fPictureBiLevel;
+	bool fPictureActive;
+private:
+	void set();
 };
 class ShapeBooleanProperties : public OfficeArtFOPTE
 {

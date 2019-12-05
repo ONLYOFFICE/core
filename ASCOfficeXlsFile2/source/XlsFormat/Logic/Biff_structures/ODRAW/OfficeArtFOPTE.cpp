@@ -165,7 +165,7 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case ODRAW::gtextSpacing:
 			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
-		case ODRAW::textBoolean:
+		case ODRAW::textBooleanProperties:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
 			break;
 		case ODRAW::gtextUNICODE:
@@ -671,6 +671,34 @@ void FillStyleBooleanProperties::set()
 	fUsefFilled					= GETBIT(op, 20);
 	fUsefUseShapeAnchor			= GETBIT(op, 21);
 	fUsefRecolorFillAsPicture	= GETBIT(op, 22);
+}
+void BlipBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+	set();
+}
+void BlipBooleanProperties::load(IBinaryReader* reader)
+{
+	OfficeArtFOPTE::load(reader);
+	set();
+}
+void BlipBooleanProperties::set()
+{
+	fUsefPicturePreserveGrays	= GETBIT(op,22);
+	fUsefRewind					= GETBIT(op,21);
+	fUsefLooping				= GETBIT(op,20);
+	fUsefNoHitTestPicture		= GETBIT(op,19);
+	fUsefPictureGray			= GETBIT(op,18);
+	fUsefPictureBiLevel			= GETBIT(op,17);
+	fUsefPictureActive			= GETBIT(op,16);
+
+	fPicturePreserveGrays	= GETBIT(op, 6);
+	fRewind					= GETBIT(op, 5);
+	fLooping				= GETBIT(op, 4);
+	fNoHitTestPicture		= GETBIT(op, 3);
+	fPictureGray			= GETBIT(op, 2);
+	fPictureBiLevel			= GETBIT(op, 1);
+	fPictureActive			= GETBIT(op, 0);
 }
 void FillBlip::ReadComplexData(XLS::CFRecord& record)
 {

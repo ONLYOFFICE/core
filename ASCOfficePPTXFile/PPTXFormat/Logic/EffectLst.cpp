@@ -62,19 +62,19 @@ namespace PPTX
 			
 				if (strName == L"a:blur")
 					blur = oReader;
-				if (strName == L"a:fillOverlay")
+				else if (strName == L"a:fillOverlay")
 					fillOverlay = oReader;
-				if (strName == L"a:glow")
+				else if (strName == L"a:glow")
 					glow = oReader;
-				if (strName == L"a:innerShdw")
+				else if (strName == L"a:innerShdw")
 					innerShdw = oReader;
-				if (strName == L"a:outerShdw")
+				else if (strName == L"a:outerShdw")
 					outerShdw	= oReader;
-				if (strName == L"a:prstShdw")
+				else if (strName == L"a:prstShdw")
 					prstShdw = oReader;
-				if (strName == L"a:reflection")
+				else if (strName == L"a:reflection")
 					reflection	= oReader;
-				if (strName == L"a:softEdge")
+				else if (strName == L"a:softEdge")
 					softEdge = oReader;
 
 			}

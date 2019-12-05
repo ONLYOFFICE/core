@@ -300,3 +300,12 @@ core_windows {
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 }
+
+core_ios {
+    bundle_dylibs {
+        plugin {
+            CONFIG -= plugin
+            CONFIG += lib_bundle
+        }
+    }
+}

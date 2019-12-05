@@ -14,9 +14,7 @@ PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
-
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, PdfWriter)
 
 core_windows {
 LIBS += -lgdi32 \

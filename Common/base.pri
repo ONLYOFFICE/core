@@ -309,3 +309,17 @@ core_ios {
         }
     }
 }
+
+defineTest(ADD_DEPENDENCY) {
+    libs = $$ARGS
+    for(lib, libs) {
+        CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH
+        build_xp {
+            isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
+        }
+        !bundle_dylibs:LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH_DST -l$$lib
+        bundle_dylibs:LIBS += -F$$CORE_BUILDS_LIBRARIES_PATH_DST -framework $$lib
+    }
+    export(LIBS)
+}
+

@@ -15,9 +15,8 @@ include(../Common/base.pri)
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, HtmlRenderer)
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib

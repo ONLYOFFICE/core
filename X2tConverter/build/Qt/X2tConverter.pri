@@ -51,7 +51,6 @@ DEFINES += FILE_FORMAT_CHECKER_WITH_MACRO
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
 
 INCLUDEPATH += $$PWD/../../../Common/DocxFormat
 DEPENDPATH += $$PWD/../../../Common/DocxFormat
@@ -92,31 +91,18 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPptFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lRtfFormatLib
 #txt(xml) file
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lTxtXmlFormatLib
-# pdf writer
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
 #docxfile2
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
 #pptxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
-#doctrenderer
-build_xp {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH/xp -ldoctrenderer
-} else {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
-}
-#HtmlRenderer
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfReader
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDjVuFile
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXpsFile
-#HtmlFile
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlFile
-#UnicodeConverter
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+
 #Crypto++
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+
+#All dynamic libs
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, PdfWriter, PdfReader, HtmlFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer)
 
 #####################################################
 # внешнее подключение сторонних библиотек

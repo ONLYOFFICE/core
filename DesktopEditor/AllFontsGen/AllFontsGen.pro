@@ -15,7 +15,7 @@ TARGET = allfontsgen
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lkernel -lUnicodeConverter
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 core_windows {
     DEFINES += \

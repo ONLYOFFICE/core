@@ -16,7 +16,7 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 #CONFIG += build_xp
 

@@ -45,13 +45,7 @@ core_windows {
 DESTDIR = $$CORE_BUILDS_BINARY_PATH
 ################################################
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics -lUnicodeConverter
-
-build_xp {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH/xp -ldoctrenderer
-} else {
-    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
-}
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, doctrenderer)
 
 core_linux {
     LIBS += -ldl

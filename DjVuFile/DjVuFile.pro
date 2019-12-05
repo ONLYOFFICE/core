@@ -15,9 +15,7 @@ CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter -lUnicodeConverter
-
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, PdfWriter)
 
 DEFINES -= \
     UNICODE \

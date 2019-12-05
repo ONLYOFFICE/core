@@ -1022,7 +1022,11 @@ namespace NSDoctRenderer
                                     v8::Handle<v8::Function> func_mm_start = v8::Handle<v8::Function>::Cast(js_func_mm_start);
                                     v8::Handle<v8::Value> args_changes[1];
 
+                                #ifndef V8_OS_XP
                                     args_changes[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart))).FromMaybe(v8::Local<v8::Value>());
+                                #else
+                                    args_changes[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart)));
+                                #endif
 
                                     if (try_catch.HasCaught())
                                     {

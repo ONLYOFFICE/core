@@ -1664,11 +1664,29 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				{
 					if (drawing_state->shadow.enabled)
 					{
+						double dist = sqrt(drawing_state->shadow.offsetX * drawing_state->shadow.offsetX +
+							drawing_state->shadow.offsetY * drawing_state->shadow.offsetY);
+						double dir = atan(abs(drawing_state->shadow.offsetY / drawing_state->shadow.offsetX)) * 180. / 3.1415926;
+
+						if (drawing_state->shadow.offsetX < 0 && drawing_state->shadow.offsetY < 0)
+							dir += 180;
+						else if (drawing_state->shadow.offsetX < 0)
+							dir = 180 - dir;
+						else if (drawing_state->shadow.offsetY < 0)
+							dir = 360 - dir;
+
 						CP_XML_NODE(L"a:effectLst")
 						{
 							CP_XML_NODE(L"a:outerShdw")
 							{
-							//dist="342900" dir="10260003" sx="99001" sy="99001" rotWithShape="0">
+								CP_XML_ATTR(L"dist", (int)(dist)); 
+								CP_XML_ATTR(L"dir", (int)(dir * 60000)); 		
+								
+								CP_XML_ATTR(L"sx", (int)(drawing_state->shadow.scaleX2X * 100000 + 0.5)); 
+								CP_XML_ATTR(L"sy", (int)(drawing_state->shadow.scaleY2Y * 100000 + 0.5)); 		
+								
+								CP_XML_ATTR(L"rotWithShape", 0);
+
 								serialize_color(CP_XML_STREAM(), drawing_state->shadow.color, drawing_state->shadow.opacity);	
 							}
 						}

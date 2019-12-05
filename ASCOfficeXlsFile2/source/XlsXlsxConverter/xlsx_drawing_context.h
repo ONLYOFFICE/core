@@ -252,8 +252,8 @@ public:
 		_color			color;
 		_color			highlight;
 		double			opacity;
-		int				offsetX = 0x00006338;
-		int				offsetY = 0x00006338;
+		double			offsetX = 0x00006338;
+		double			offsetY = 0x00006338;
 		double			scaleX2X = 1.;
 		double			scaleY2Y = 1.;
 		double			originX = 0;

@@ -145,31 +145,12 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x007F:
 			fopte = OfficeArtFOPTEPtr(new ProtectionBooleanProperties);
 			break;
-		case ODRAW::lTxid:
-		case ODRAW::dxTextLeft:
-		case ODRAW::dyTextTop:
-		case ODRAW::dxTextRight:
-		case ODRAW::dyTextBottom:
-		case ODRAW::WrapText:
-		case ODRAW::anchorText:
-		case ODRAW::txflTextFlow:
-		case ODRAW::cdirFont:
-		case ODRAW::hspNext:
-		case ODRAW::txdir:
-		case ODRAW::gtextRTF:
-		case ODRAW::gtextAlign:
-		case ODRAW::gtextSize:
-		case ODRAW::gtextCSSFont:
-			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
-			break;
 		case ODRAW::shadowOriginX:
 		case ODRAW::shadowOriginY:
 		case ODRAW::shadowScaleXToX:
 		case ODRAW::shadowScaleXToY:
 		case ODRAW::shadowScaleYToX:
 		case ODRAW::shadowScaleYToY:
-		case ODRAW::pictureContrast:
-		case ODRAW::pictureBrightness:
 		case ODRAW::gtextSpacing:
 			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
@@ -451,6 +432,23 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::create(unsigned short opid)
 		case 0x03BF:
 			fopte = OfficeArtFOPTEPtr(new GroupShapeBooleanProperties);
 			break;
+		case ODRAW::lTxid:
+		case ODRAW::dxTextLeft:
+		case ODRAW::dyTextTop:
+		case ODRAW::dxTextRight:
+		case ODRAW::dyTextBottom:
+		case ODRAW::WrapText:
+		case ODRAW::anchorText:
+		case ODRAW::txflTextFlow:
+		case ODRAW::cdirFont:
+		case ODRAW::hspNext:
+		case ODRAW::txdir:
+		case ODRAW::gtextRTF:
+		case ODRAW::gtextAlign:
+		case ODRAW::gtextSize:
+		case ODRAW::gtextCSSFont:
+		case ODRAW::pictureContrast:
+		case ODRAW::pictureBrightness:
 		default:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;

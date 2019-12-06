@@ -333,8 +333,10 @@ core_ios {
 
             VERSION = $$VERSION_CORRECT
 
-            exists($$PWD_ROOT_DIR/Info.plist) {
-                QMAKE_INFO_PLIST = $$PWD_ROOT_DIR/Info.plist
+            PLIST_CUSTOM=Info.plist
+            PLIST_CUSTOM = $$join(PLIST_CUSTOM, "", "", $$OO_BUILD_BRANDING)
+            exists($$PWD_ROOT_DIR/$$PLIST_CUSTOM) {
+                QMAKE_INFO_PLIST = $$PWD_ROOT_DIR/$$PLIST_CUSTOM
             }
         }
     }

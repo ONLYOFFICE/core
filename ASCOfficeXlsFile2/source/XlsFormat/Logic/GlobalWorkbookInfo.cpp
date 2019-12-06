@@ -100,6 +100,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	
 	last_Axes_id			= 0x2000000;
 	last_Extern_id			= 1;
+	lcid_user				= -1;
 
 	Version					= 0x0600; 
 

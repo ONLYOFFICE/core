@@ -126,14 +126,12 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const ProgressCallback* CallBack, bool & bMacros) 
+XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const int lcid_user, bool & bMacros) 
 {
 	xlsx_path			= xlsxFilePath;
 	output_document		= NULL;
 	xlsx_context		= NULL;
 	
-	pCallBack			= CallBack;
-	bUserStopConvert	= false;
 	is_older_version	= false;
 	is_encrypted		= false;
 	output_document		= new oox::package::xlsx_document();
@@ -171,6 +169,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 		xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
 		
+		xls_global_info->lcid_user		= lcid_user;
 		xls_global_info->fontsDirectory = fontsPath;
 		xls_global_info->password		= password;
 		xls_global_info->tempDirectory	= tempPath;
@@ -328,7 +327,6 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 	{
 		return;
 	}
-	if (UpdateProgress(400000))return;
 
 	if (xls_global_info->Version < 0x0600) 
 	{
@@ -353,22 +351,6 @@ bool XlsConverter::isError()
 	return false;
 }
 
-#define PROGRESSEVENT_ID	0
-
-bool XlsConverter::UpdateProgress(long nComplete)
-{
-	if (pCallBack)
-	{
-		pCallBack->OnProgress (pCallBack->caller, PROGRESSEVENT_ID, nComplete);
-
-		bUserStopConvert = 0;
-		pCallBack->OnProgressEx (pCallBack->caller, PROGRESSEVENT_ID, nComplete, &bUserStopConvert);
-
-		if (bUserStopConvert !=0 ) return TRUE;
-	}
-
-	return FALSE;
-}
 void XlsConverter::write()
 {
 	if (!output_document)return;
@@ -376,8 +358,6 @@ void XlsConverter::write()
 	output_document->write(xlsx_path);
 
 	delete output_document; output_document = NULL;
-
-	if (UpdateProgress(1000000))return;
 }
 
 void XlsConverter::convertDocument()
@@ -390,11 +370,7 @@ void XlsConverter::convertDocument()
 
 	convert((XLS::WorkbookStreamObject*)xls_document.get());
 
-	if (UpdateProgress(800000))return;
-
 	xlsx_context->end_document();
-
-	if (UpdateProgress(850000))return;
 }
 
 void XlsConverter::convert(XLS::BaseObject	*xls_unknown)

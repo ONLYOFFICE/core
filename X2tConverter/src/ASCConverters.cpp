@@ -3920,7 +3920,9 @@ namespace NExtractTools
    {
 	   bool bMacros = false;
 
-       _UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
+	   int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+       
+	   _UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, lcid, bMacros);
 		
 	   nRes = processEncryptionError(nRes, sFrom, params);
        return nRes;

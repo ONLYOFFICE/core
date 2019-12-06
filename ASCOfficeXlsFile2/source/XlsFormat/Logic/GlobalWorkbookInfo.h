@@ -99,6 +99,7 @@ public:
 
 	std::string								sTheme;
 
+	int										lcid_user;
 	unsigned short							CodePage;
 	CRYPT::DecryptorPtr						decryptor;
 	std::wstring							password;

@@ -306,6 +306,32 @@ core_ios {
         plugin {
             CONFIG -= plugin
             CONFIG += lib_bundle
+
+            QMAKE_LFLAGS_SONAME = -Wl,-install_name,@rpath/
+            #QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @executable_path/Frameworks
+            #QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @loader_path/Frameworks
+
+            # correct version to < 256
+            VERSIONS = $$split(VERSION, ".")
+            VERSION_1 = $$member(VERSIONS, 0)
+            VERSION_2 = $$member(VERSIONS, 1)
+            VERSION_3 = $$member(VERSIONS, 2)
+            VERSION_4 = $$member(VERSIONS, 3)
+
+            greaterThan(VERSION_1, 255): VERSION_1 = 255
+            greaterThan(VERSION_2, 255): VERSION_2 = 255
+            greaterThan(VERSION_3, 255): VERSION_3 = 255
+            greaterThan(VERSION_4, 255): VERSION_4 = 255
+
+            VERSION_CORRECT = $$VERSION_1
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_2)
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_3)
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+            VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
+
+            VERSION = $$VERSION_CORRECT
         }
     }
 }

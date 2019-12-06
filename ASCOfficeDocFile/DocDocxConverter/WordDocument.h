@@ -92,7 +92,7 @@ namespace DocFileFormat
 
 	public:
 
-		WordDocument (const ProgressCallback* pCallFunc, const std::wstring & tempFolder );
+		WordDocument (const ProgressCallback* pCallFunc, const std::wstring & tempFolder, const int userLCID);
 		virtual ~WordDocument();
 
 		_UINT32 LoadDocument(const std::wstring & fileName, const std::wstring & password);
@@ -153,6 +153,7 @@ namespace DocFileFormat
 		std::wstring			m_sPassword;	
 		std::wstring			m_sTempFolder;
 		std::wstring			m_sTempDecryptFileName;
+		int						m_nUserLCID;
 
 		const ProgressCallback* m_pCallFunc;
 	

@@ -2107,8 +2107,10 @@ namespace NExtractTools
 	_UINT32 doc2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
         COfficeDocFile docFile;
-		docFile.m_sTempFolder = sTemp;
 		
+		docFile.m_sTempFolder = sTemp;		
+		docFile.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+	
 		bool bMacros = false;
 
 		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), bMacros, NULL);

@@ -48,6 +48,7 @@ namespace DocFileFormat
 		~Converter();
 
 		std::wstring m_sTempFolder;
+		int m_nUserLCID;
 
 		_UINT32 LoadAndConvert(const std::wstring & strSrcFile, const std::wstring &  strDstDirectory, const std::wstring & password, const ProgressCallback* progress, bool &bMacros);
 	

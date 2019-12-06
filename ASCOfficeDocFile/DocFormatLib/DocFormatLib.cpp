@@ -39,7 +39,9 @@ _UINT32 COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::w
 	_UINT32 hr = 0;
 
 	DocFileFormat::Converter docToDocx;
+	
 	docToDocx.m_sTempFolder = m_sTempFolder;
+	docToDocx.m_nUserLCID = m_nUserLCID;
 
     hr= docToDocx.LoadAndConvert(docFile, docxDirectory, password, ffCallBack, bMacros);
 

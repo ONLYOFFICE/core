@@ -33,6 +33,7 @@
 #include "WordDocument.h"
 
 #include "../../Common/OfficeFileErrorDescription.h"
+#include "../../Common/MS-LCID.h"
 
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
@@ -79,7 +80,7 @@ namespace DocFileFormat
 		254,	437,//PC 437
 		255,	850//OEM
 	};
-	WordDocument::WordDocument (const ProgressCallback* pCallFunc, const std::wstring & sTempFolder ) :	
+	WordDocument::WordDocument (const ProgressCallback* pCallFunc, const std::wstring & sTempFolder, const int userLCID) :	
 		m_PieceTable(NULL), WordDocumentStream(NULL), TableStream(NULL), DataStream(NULL),  FIB(NULL), 
 		Text(NULL), RevisionAuthorTable(NULL), FontTable(NULL), BookmarkNames(NULL), AutoTextNames(NULL), 
 		IndividualFootnotesPlex(NULL), FootnoteReferenceCharactersPlex(NULL), IndividualEndnotesPlex(NULL),
@@ -94,6 +95,7 @@ namespace DocFileFormat
 	{
 		m_pCallFunc			= pCallFunc;	
 		m_sTempFolder		= sTempFolder;
+		m_nUserLCID			= userLCID;
 		
 		m_pStorage			= NULL;
 		officeArtContent	= NULL;
@@ -276,6 +278,17 @@ namespace DocFileFormat
 		}
 
 		FIB->m_CodePage =  nDocumentCodePage;
+
+		if (!bDocumentCodePage && m_nUserLCID > 0)
+		{
+			int user_codepage = msLCID2DefCodePage(m_nUserLCID);
+			
+			if (user_codepage > 0)
+			{
+				bDocumentCodePage = true;
+				nDocumentCodePage = user_codepage;
+			}
+		}
 //-------------------------------------------------------------------------------------------------
 		try
 		{

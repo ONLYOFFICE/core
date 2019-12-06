@@ -332,6 +332,10 @@ core_ios {
             VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
 
             VERSION = $$VERSION_CORRECT
+
+            exists($$PWD_ROOT_DIR/Info.plist) {
+                QMAKE_INFO_PLIST = $$PWD_ROOT_DIR/Info.plist
+            }
         }
     }
 }

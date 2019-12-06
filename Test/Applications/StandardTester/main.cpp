@@ -13,6 +13,12 @@
 
 #include "../../../DesktopEditor/fontengine/application_generate_fonts.h"
 
+#ifdef LINUX
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#endif
+
 class CConverter;
 class CInternalWorker
 {
@@ -711,19 +717,6 @@ void CheckFonts(const bool& bIsUseSystemFonts, std::vector<std::wstring>& arDirs
     {
         NSDirectory::GetFiles2(*i, strFontsW_Cur, true);
     }
-
-#if defined(_LINUX)
-    std::wstring sHome = GetHomeDirectory();
-    if (!sHome.empty())
-    {
-#ifdef _MAC
-        NSDirectory::GetFiles2(sHome + L"/Library/Fonts", strFontsW_Cur, true);
-#else
-        NSDirectory::GetFiles2(sHome + L"/.fonts", strFontsW_Cur, true);
-        NSDirectory::GetFiles2(sHome + L"/.local/share/fonts", strFontsW_Cur, true);
-#endif
-    }
-#endif
 
     bool bIsEqual = true;
     if (strFonts.size() != strFontsW_Cur.size())

@@ -10,4 +10,4 @@ rem
 
 set RUN_DIR=%~dp0..
 cd "%RUN_DIR%"
-StandardTester.exe --input="%RUN_DIR%\result\standard"  --output="%RUN_DIR%\result\out" --standard --cores=1
+standardtester.exe --input="%RUN_DIR%\result\standard"  --output="%RUN_DIR%\result\out" --standard --cores=1

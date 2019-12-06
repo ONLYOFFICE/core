@@ -11,4 +11,4 @@ rem
 set RUN_DIR=%~dp0..
 cd "%RUN_DIR%"
 RMDIR "%RUN_DIR%\result\check" /S /Q
-StandardTester.exe --input="%RUN_DIR%\result\out"  --output="%RUN_DIR%\result\check" --cores=1
+standardtester.exe --input="%RUN_DIR%\result\out"  --output="%RUN_DIR%\result\check" --cores=1

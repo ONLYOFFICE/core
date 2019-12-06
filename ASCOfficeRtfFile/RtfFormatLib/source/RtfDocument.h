@@ -81,6 +81,7 @@ public:
 	std::vector<RtfOldListPtr> m_aOldLists;
 	
 	NSFonts::IApplicationFonts* m_pAppFonts;
+	int							m_nUserLCID;
 
 private: 
 	std::vector<int>	m_aShapeId;

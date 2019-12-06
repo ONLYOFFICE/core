@@ -45,9 +45,12 @@ class RtfConvertationManager
 {
 public:
     std::wstring m_sTempFolder;
+	int m_nUserLCID;
 
     RtfConvertationManager( )
     {
+		m_nUserLCID = -1;
+
         m_poOOXWriter = NULL;
         m_poOOXReader = NULL;
 

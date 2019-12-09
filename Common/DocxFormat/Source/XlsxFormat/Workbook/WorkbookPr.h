@@ -99,29 +99,26 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("allowRefreshQuery"),      m_oAllowRefreshQuery )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("autoCompressPictures"),      m_oAutoCompressPictures )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("backupFile"),      m_oBackupFile )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("checkCompatibility"),      m_oCheckCompatibility )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("codeName"),      m_oCodeName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("date1904"),      m_oDate1904 )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dateCompatibility"),      m_oDateCompatibility )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultThemeVersion"),      m_oDefaultThemeVersion )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("filterPrivacy"),      m_oFilterPrivacy )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidePivotFieldList"),      m_oHidePivotFieldList )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("promptedSolutions"),      m_oPromptedSolutions )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("publishItems"),      m_oPublishItems )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("refreshAllConnections"),      m_oRefreshAllConnections )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showBorderUnselectedTables"),      m_oShowBorderUnselectedTables )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showInkAnnotation"),      m_oShowInkAnnotation )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showObjects"),      m_oShowObjects )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showPivotChartFilter"),      m_oShowPivotChartFilter )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("updateLinks"),      m_oUpdateLinks )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("allowRefreshQuery"),		m_oAllowRefreshQuery )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("autoCompressPictures"),	m_oAutoCompressPictures )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("backupFile"),				m_oBackupFile )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("checkCompatibility"),      m_oCheckCompatibility )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("codeName"),				m_oCodeName )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("date1904"),				m_oDate1904 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dateCompatibility"),		m_oDateCompatibility )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("defaultThemeVersion"),		m_oDefaultThemeVersion )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("filterPrivacy"),			m_oFilterPrivacy )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("hidePivotFieldList"),		m_oHidePivotFieldList )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("promptedSolutions"),		m_oPromptedSolutions )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("publishItems"),			m_oPublishItems )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("refreshAllConnections"),	m_oRefreshAllConnections )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("showBorderUnselectedTables"),m_oShowBorderUnselectedTables )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("showInkAnnotation"),		m_oShowInkAnnotation )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("showObjects"),				m_oShowObjects )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("showPivotChartFilter"),	m_oShowPivotChartFilter )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("updateLinks"),				m_oUpdateLinks )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:

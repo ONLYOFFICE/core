@@ -2048,6 +2048,13 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteConnections(pConnectionFile->m_oConnections.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);		
 	}
+
+	if (workbook.m_oAppName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::AppName);
+		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oAppName);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
 }
 void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 {

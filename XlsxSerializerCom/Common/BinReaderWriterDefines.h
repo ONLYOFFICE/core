@@ -212,7 +212,8 @@ namespace BinXlsxRW
 		JsaProject = 13,
 		Comments = 14,
 		CalcPr = 15,
-		Connections = 16
+		Connections = 16,
+		AppName = 17
 	};}	
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{

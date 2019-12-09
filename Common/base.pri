@@ -332,12 +332,6 @@ core_ios {
             VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
 
             VERSION = $$VERSION_CORRECT
-
-            PLIST_CUSTOM=Info.plist
-            PLIST_CUSTOM = $$join(PLIST_CUSTOM, "", "", $$OO_BUILD_BRANDING)
-            exists($$PWD_ROOT_DIR/$$PLIST_CUSTOM) {
-                QMAKE_INFO_PLIST = $$PWD_ROOT_DIR/$$PLIST_CUSTOM
-            }
         }
     }
 }

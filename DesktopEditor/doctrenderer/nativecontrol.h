@@ -1274,6 +1274,7 @@ public:
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
                                CNativeControl* pNative,
                                v8::Isolate* isolate,
+                               v8::Local<v8::Context> context,
                                v8::Local<v8::Object>& global_js,
                                v8::Handle<v8::Value>* args,
                                v8::TryCatch& try_catch,

@@ -499,6 +499,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
                                                       _path,
                                                       pNative,
                                                       m_isolate,
+                                                      m_context,
                                                       global_js,
                                                       args,
                                                       try_catch,

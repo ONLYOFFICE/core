@@ -95,14 +95,14 @@ namespace NSDoctRenderer
         int m_nMailMergeIndexStart;
         int m_nMailMergeIndexEnd;
 
-        bool m_bIsRetina;
-        int m_nSaveToPDFParams;
+        std::wstring m_sJsonParams;
 
-        bool m_bIsOnlyOnePage;
-
+        int m_nLcid;
         bool m_bIsCachedScripts;
 
         std::vector<int> m_arThemesThumbnailsParams;
+
+
 
     public:
         CExecuteParams() : m_arChanges()
@@ -124,10 +124,7 @@ namespace NSDoctRenderer
             m_nMailMergeIndexStart = -1;
             m_nMailMergeIndexEnd = -1;
 
-            m_bIsRetina = false;
-            m_nSaveToPDFParams = 0;
-
-            m_bIsOnlyOnePage = false;
+            m_nLcid = -1;
             m_bIsCachedScripts = true;
         }
         ~CExecuteParams()
@@ -179,17 +176,11 @@ namespace NSDoctRenderer
                 m_strMailMergeField = oNodeMailMerge.ReadAttribute(L"Field");
             }
 
-            int nParams = oNode.ReadValueInt(L"DoctParams", 0);
-            if (nParams & 0x01)
-                m_bIsRetina = true;
+            m_nLcid = oNode.ReadValueInt(L"m_nLcid", -1);
+            m_sJsonParams = oNode.ReadValueString(L"m_sJsonParams");
 
-            if (nParams & 0x02)
-                m_nSaveToPDFParams = 1;
-
-            if (nParams & 0x04)
+            if (1 == oNode.ReadValueInt(L"m_nRendererDisableCache", -1))
                 m_bIsCachedScripts = false;
-
-            m_bIsOnlyOnePage = (oNode.ReadValueInt(L"OnlyOnePage", 0) == 1) ? true : false;
 
             m_arThemesThumbnailsParams.clear();
             std::wstring sThemesThumbnailsParams = oNode.ReadValueString(L"ThemesThumbnailsParams");
@@ -439,6 +430,7 @@ namespace NSDoctRenderer
         static bool Doct_renderer_SaveFile(CExecuteParams* pParams,
                                        CNativeControl* pNative,
                                        v8::Isolate* isolate,
+                                       v8::Local<v8::Context> context,
                                        v8::Local<v8::Object>& global_js,
                                        v8::Handle<v8::Value>* args,
                                        v8::TryCatch& try_catch,
@@ -608,10 +600,17 @@ namespace NSDoctRenderer
                     if (js_func_get_file_s->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
-                        int nArgument = pParams->m_nSaveToPDFParams;
-                        if (pParams->m_bIsOnlyOnePage)
-                            nArgument |= 0x0100;
-                        args[0] = v8::Int32::New(isolate, nArgument);
+
+                        if (pParams->m_sJsonParams.empty())
+                            args[0] = v8::Undefined(isolate);
+                        else
+                        {
+                        #ifndef V8_OS_XP
+                            args[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)pParams->m_sJsonParams.c_str())).FromMaybe(v8::Local<v8::Value>());
+                        #else
+                            args[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)pParams->m_sJsonParams.c_str()));
+                        #endif
+                        }
 
                         v8::Local<v8::Value> js_result2 = func_get_file_s->Call(js_objectApi, 1, args);
 
@@ -789,14 +788,6 @@ namespace NSDoctRenderer
 
                 LOGGER_SPEED_LAP("run")
 
-                if (!bIsBreak && m_oParams.m_bIsRetina)
-                {
-                    v8::Local<v8::String> sourceParams = v8::String::NewFromUtf8(isolate,
-                        "(function(){ if (window && window.SetDoctRendererParams) {window.SetDoctRendererParams({retina:true});} })();");
-                    v8::Local<v8::Script> scriptParams = v8::Script::Compile(context, sourceParams).FromMaybe(v8::Local<v8::Script>());
-                    scriptParams->Run(context);
-                }
-
                 //---------------------------------------------------------------
                 v8::Local<v8::Object> global_js = context->Global();
                 v8::Handle<v8::Value> args[1];
@@ -864,7 +855,7 @@ namespace NSDoctRenderer
                         CChangesWorker oWorkerLoader;
                         int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
 
-                        v8::Handle<v8::Value> args_open[3];
+                        v8::Handle<v8::Value> args_open[4];
                         args_open[0] = oWorkerLoader.GetDataFull();
                         args_open[1] = v8::Integer::New(isolate, nVersion);
 
@@ -879,7 +870,14 @@ namespace NSDoctRenderer
                             args_open[2] = v8::Undefined(isolate);
                         }
 
-                        func_open->Call(global_js, 3, args_open);
+                        v8::Local<v8::Object> globalParams = v8::Object::New(isolate);
+                        if (0 < m_oParams.m_nLcid)
+                        {
+                            globalParams->Set(v8::String::NewFromUtf8(isolate, "locale", v8::String::kNormalString, -1), v8::Int32::New(isolate, m_oParams.m_nLcid));
+                        }
+                        args_open[3] = globalParams;
+
+                        func_open->Call(global_js, 4, args_open);
 
                         if (try_catch.HasCaught())
                         {
@@ -1103,7 +1101,7 @@ namespace NSDoctRenderer
                                     m_oParams.m_strDstFilePath += (L"/file" + std::to_wstring(nIndexMM));
                                     sSaveFile = m_oParams.m_strDstFilePath;
 
-                                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, global_js,
+                                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, context, global_js,
                                                                            args, try_catch, strError, js_objectApi);
 
                                     m_oParams.m_strDstFilePath = sSaveOld;
@@ -1150,7 +1148,7 @@ namespace NSDoctRenderer
                 // SAVE
                 if (!bIsBreak && !bIsMailMerge)
                 {
-                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, global_js, args, try_catch, strError, js_objectApi);
+                    bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, context, global_js, args, try_catch, strError, js_objectApi);
                 }
 
                 LOGGER_SPEED_LAP("save")
@@ -1348,6 +1346,7 @@ namespace NSDoctRenderer
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
                                CNativeControl* pNative,
                                v8::Isolate* isolate,
+                               v8::Local<v8::Context> context,
                                v8::Local<v8::Object>& global_js,
                                v8::Handle<v8::Value>* args,
                                v8::TryCatch& try_catch,
@@ -1359,5 +1358,5 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
 
     v8::Local<v8::Object> js_objectApi; // empty
     return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams,
-            pNative, isolate, global_js, args, try_catch, strError, js_objectApi, false);
+            pNative, isolate, context, global_js, args, try_catch, strError, js_objectApi, false);
 }

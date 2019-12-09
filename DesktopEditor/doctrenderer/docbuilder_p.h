@@ -867,14 +867,6 @@ namespace NSDoctRenderer
                 oBuilder.WriteString(L"</m_sAllFontsPath>");
             }
 
-            int nDoctRendererParam = 0;
-            //if (true) // печать пдф (лист = страница)
-            //    nDoctRendererParam |= 0x02;
-
-            oBuilder.WriteString(L"<m_nDoctParams>");
-            oBuilder.WriteString(std::to_wstring(nDoctRendererParam));
-            oBuilder.WriteString(L"</m_nDoctParams>");
-
             if (NULL != params)
             {
                 std::wstring sConvertionParams(params);

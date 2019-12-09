@@ -96,14 +96,12 @@ namespace NSDoctRenderer
         int m_nMailMergeIndexEnd;
 
         std::wstring m_sJsonParams;
-
         int m_nLcid;
+
+        int m_nRendererParams;
         bool m_bIsCachedScripts;
 
         std::vector<int> m_arThemesThumbnailsParams;
-
-
-
     public:
         CExecuteParams() : m_arChanges()
         {
@@ -126,6 +124,8 @@ namespace NSDoctRenderer
 
             m_nLcid = -1;
             m_bIsCachedScripts = true;
+
+            m_nRendererParams = 0;
         }
         ~CExecuteParams()
         {
@@ -176,10 +176,11 @@ namespace NSDoctRenderer
                 m_strMailMergeField = oNodeMailMerge.ReadAttribute(L"Field");
             }
 
-            m_nLcid = oNode.ReadValueInt(L"m_nLcid", -1);
-            m_sJsonParams = oNode.ReadValueString(L"m_sJsonParams");
+            m_nLcid = oNode.ReadValueInt(L"Lcid", -1);
+            m_sJsonParams = oNode.ReadValueString(L"JsonParams");
 
-            if (1 == oNode.ReadValueInt(L"m_nRendererDisableCache", -1))
+            m_nRendererParams = oNode.ReadValueInt(L"DoctParams", 0);
+            if (0x01 == (0x01 & m_nRendererParams))
                 m_bIsCachedScripts = false;
 
             m_arThemesThumbnailsParams.clear();
@@ -605,10 +606,12 @@ namespace NSDoctRenderer
                             args[0] = v8::Undefined(isolate);
                         else
                         {
+                            std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
+
                         #ifndef V8_OS_XP
-                            args[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)pParams->m_sJsonParams.c_str())).FromMaybe(v8::Local<v8::Value>());
+                            args[0] = v8::JSON::Parse(context, v8::String::NewFromUtf8(isolate, (char*)sTmp.c_str())).FromMaybe(v8::Local<v8::Value>());
                         #else
-                            args[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)pParams->m_sJsonParams.c_str()));
+                            args[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)sTmp.c_str()));
                         #endif
                         }
 

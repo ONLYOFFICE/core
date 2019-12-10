@@ -384,22 +384,29 @@ namespace NExtractTools
         oBuilder.WriteString(_T("</ImagesDirectory><ThemesDirectory>"));
         oBuilder.WriteEncodeXmlString(sThemeDir.c_str());
         oBuilder.WriteString(_T("</ThemesDirectory>"));
-        if(NULL != params.m_nDoctParams)
-        {
-            oBuilder.WriteString(_T("<DoctParams>"));
-            oBuilder.AddInt(*params.m_nDoctParams);
-            oBuilder.WriteString(_T("</DoctParams>"));
-        }
 		if(NULL != params.m_nLcid)
 		{
 			oBuilder.WriteString(_T("<Lcid>"));
 			oBuilder.AddInt(*params.m_nLcid);
 			oBuilder.WriteString(_T("</Lcid>"));
 		}
-		if(NULL != params.m_sJsonParams)
+		std::wstring sJsonParams;
+		bool bOnlyOnePage = NULL != params.m_oThumbnail && (NULL == params.m_oThumbnail->first || true == *params.m_oThumbnail->first);
+		if (NULL != params.m_sJsonParams)
+		{
+			sJsonParams = *params.m_sJsonParams;
+			if (bOnlyOnePage){
+				sJsonParams.insert(1, L"\"printOptions\":{\"onlyFirstPage\":true},");
+			}
+		}
+		else if (bOnlyOnePage)
+		{
+			sJsonParams = L"{\"printOptions\":{\"onlyFirstPage\":true}}";
+		}
+		if (!sJsonParams.empty())
 		{
 			oBuilder.WriteString(_T("<JsonParams>"));
-			oBuilder.WriteEncodeXmlString(params.m_sJsonParams->c_str());
+			oBuilder.WriteEncodeXmlString(sJsonParams);
 			oBuilder.WriteString(_T("</JsonParams>"));
 		}
         oBuilder.WriteString(_T("<Changes TopItem=\""));
@@ -429,10 +436,6 @@ namespace NExtractTools
         }
         oBuilder.WriteString(_T("</Changes>"));
         oBuilder.WriteString(sMailMerge);
-		if (NULL != params.m_oThumbnail && (NULL == params.m_oThumbnail->first || true == *params.m_oThumbnail->first))
-		{
-			oBuilder.WriteString(_T("<OnlyOnePage>1</OnlyOnePage>"));
-		}
         oBuilder.WriteString(_T("</Settings>"));
         return oBuilder.GetData();
     }

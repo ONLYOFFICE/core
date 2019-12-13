@@ -856,11 +856,28 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	if (drawing_state->id < 0)	
 		drawing_state->id = count_object + 0x20000;
 
-	if ( current_level > 0 && drawing_state->rotation > 0 && ((int)drawing_state->rotation % 90 == 0))
+	if (((drawing_state->rotation >= 45.0 && drawing_state->rotation <= 135.0) || 
+		(drawing_state->rotation >= 225.0 && drawing_state->rotation <= 315.0) || 
+		(drawing_state->rotation <= -45.0 && drawing_state->rotation >= -135.0) ||
+		(drawing_state->rotation <= -225.0 && drawing_state->rotation >= -315.0))	&& current_level > 0)
 	{
-		int v = drawing_state->child_anchor.cx;
-		drawing_state->child_anchor.cx = drawing_state->child_anchor.cy;
-		drawing_state->child_anchor.cy = v;
+		int left = current_drawing_states->back()->child_anchor.x;
+		int top	= current_drawing_states->back()->child_anchor.y;
+		
+		int right	= current_drawing_states->back()->child_anchor.x + current_drawing_states->back()->child_anchor.cx;
+		int bottom	= current_drawing_states->back()->child_anchor.y + current_drawing_states->back()->child_anchor.cy;
+		
+		left =	(right	+	current_drawing_states->back()->child_anchor.x) * 0.5 - (bottom	-	current_drawing_states->back()->child_anchor.y)  * 0.5;
+		top	=	(bottom	+	current_drawing_states->back()->child_anchor.y) * 0.5 - (right	-	current_drawing_states->back()->child_anchor.x) * 0.5;
+
+		right	= left + current_drawing_states->back()->child_anchor.cy;
+		bottom	= top + current_drawing_states->back()->child_anchor.cx;
+
+		current_drawing_states->back()->child_anchor.x = left;
+		current_drawing_states->back()->child_anchor.y = top;
+		
+		current_drawing_states->back()->child_anchor.cx = right - left;
+		current_drawing_states->back()->child_anchor.cy = bottom - top;
 	}
 
 	if (  drawing_state->type == external_items::typeImage ||
@@ -2090,7 +2107,14 @@ void xlsx_drawing_context::serialize_xfrm(std::wostream & stream, _drawing_state
 			if (drawing_state->flipV)			CP_XML_ATTR(L"flipV", true);
 			if (drawing_state->flipH)			CP_XML_ATTR(L"flipH", true);
 			
-			if (drawing_state->rotation != 0)	CP_XML_ATTR(L"rot", (int)(drawing_state->rotation * 60000));
+			if (drawing_state->rotation != 0)
+			{
+				if (drawing_state->rotation > 180)
+				{
+					drawing_state->rotation -= 360.;
+				}
+				CP_XML_ATTR(L"rot", (int)(drawing_state->rotation * 60000));
+			}
 			
 			CP_XML_NODE(L"a:off")
 			{
@@ -2922,14 +2946,13 @@ void xlsx_drawing_context::set_rotation (double val)
 	if (current_drawing_states->empty()) return;
 	if (val < 0.001) return;
 
-	current_drawing_states->back()->rotation = val;
-
-	if (((int)current_drawing_states->back()->rotation % 90) == 0 && current_level > 0)
+	if (current_drawing_states->back()->flipH && current_level > 0)
 	{
-		int v = current_drawing_states->back()->child_anchor.cx;
-		current_drawing_states->back()->child_anchor.cx = current_drawing_states->back()->child_anchor.cy;
-		current_drawing_states->back()->child_anchor.cy = v;
+		val += 180.;
 	}
+	if (val > 360) val -= 360;
+
+	current_drawing_states->back()->rotation = val;
 }
 void xlsx_drawing_context::set_line_color (int nColor, const std::wstring & sColor)
 {

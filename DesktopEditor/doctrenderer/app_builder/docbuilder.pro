@@ -37,8 +37,13 @@ core_win_32 {
     QMAKE_LFLAGS_CONSOLE  = /SUBSYSTEM:CONSOLE,5.01
 }
 
+CUSTOM_VERSION_PATH = $$(DOCBUILDER_VERSION_PATH)
+isEmpty(CUSTOM_VERSION_PATH){
+    CUSTOM_VERSION_PATH=.
+}
+
 core_windows {
-    RC_FILE = version.rc
+    RC_FILE = $$CUSTOM_VERSION_PATH/version.rc
 }
 
 ############### destination path ###############

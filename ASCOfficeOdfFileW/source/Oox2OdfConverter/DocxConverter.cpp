@@ -421,7 +421,7 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		}
 		else if (oox_sdt->m_oSdtPr->m_oDate.IsInit())
 		{
-			odt_context->start_field(false);
+			odt_context->start_field(true);
 			bField = true;
 
 			if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())

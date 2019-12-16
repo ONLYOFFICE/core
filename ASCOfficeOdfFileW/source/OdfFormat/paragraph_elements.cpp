@@ -673,6 +673,9 @@ void text_date::serialize(std::wostream & _Wostream)
         { 	
 			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
 
+			CP_XML_ATTR_OPT(L"style:data-style-name", style_data_style_name_);
+			CP_XML_ATTR_OPT(L"text:date-value", text_date_value_);
+
 			for (size_t i = 0; i < text_.size(); i++)
 			{
 				text_[i]->serialize(CP_XML_STREAM());

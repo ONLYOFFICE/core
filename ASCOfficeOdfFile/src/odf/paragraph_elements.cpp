@@ -1127,9 +1127,34 @@ void text_date::add_text(const std::wstring & Text)
 
 void text_date::docx_convert(oox::docx_conversion_context & Context)
 {
-	bool bLock = text_fixed_ ? text_fixed_->get() : false;
+	//bool bLock = text_fixed_ ? text_fixed_->get() : false;
+	//docx_serialize_field(L"DATE", text_, Context, bLock);
 
-	docx_serialize_field(L"DATE", text_, Context, bLock);
+	Context.finish_run();
+
+	Context.output_stream() << L"<w:sdt>";
+		Context.output_stream() << L"<w:sdtPr>";
+		{
+			Context.output_stream() << L"<w:date" << (text_date_value_ ?  (L" w:fullDate=\"" + *text_date_value_ + L"\"") : L"") << L">";
+				
+				std::wstring format;
+				if (style_data_style_name_)
+				{
+				}
+				Context.output_stream() << L"<w:dateFormat w:val=\"" << format << L"\"/>";
+
+				Context.output_stream() << L"<w:lid w:val=\"en-US\"/>";
+				Context.output_stream() << L"<w:storeMappedDataAs w:val=\"dateTime\"/>";
+				Context.output_stream() << L"<w:calendar w:val=\"gregorian\"/>";				
+			Context.output_stream() << L"</w:date>";
+		}
+		Context.output_stream() << L"</w:sdtPr>";
+		Context.output_stream() << L"<w:sdtContent>";
+	
+		docx_serialize_run(text_, Context);
+
+		Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
 }
 void text_date::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
 {

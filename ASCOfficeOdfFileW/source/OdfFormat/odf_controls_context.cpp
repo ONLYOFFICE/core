@@ -143,6 +143,11 @@ std::wstring odf_controls_context::Impl::start_control(int type, bool items_set)
 		case 10: // objectDialog
 		{
 		}break;
+		case 11: // date
+		{
+			create_element(L"form", L"date", element, odf_context_);
+			control_implementation = L"ooo:com.sun.star.form.component.DateField";
+		}break;
 	}
 	odf_writer::form_element* form_element = dynamic_cast<odf_writer::form_element*>(element.get());
 

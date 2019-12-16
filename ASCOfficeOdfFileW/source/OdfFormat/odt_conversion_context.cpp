@@ -310,7 +310,7 @@ void odt_conversion_context::end_drawings()
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
-	if (!current_fields.empty() && current_fields.back().status == 1 && !current_fields.back().in_span)
+	if (false == current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span)
 	{
 		current_fields.back().status = 2;
 		//if (!current_fields.empty() && !current_fields.back().result) return;	//Стандартное_составное_письмо.docx
@@ -323,7 +323,7 @@ void odt_conversion_context::start_paragraph(bool styled)
 		case fieldToc:			start_table_of_content();	break;
 		}	
 	}
-	if (is_paragraph_in_current_section_ && !styled) 
+	if (is_paragraph_in_current_section_ && false == styled) 
 	{
 		styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
 		styled = true;
@@ -864,6 +864,7 @@ void odt_conversion_context::start_field(bool in_span)
 
 	_field_state field;
 	current_fields.push_back(field);
+	current_fields.back().in_span = in_span;
 }
 void odt_conversion_context::separate_field()
 {
@@ -1155,7 +1156,7 @@ void odt_conversion_context::start_run(bool styled)
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 	
-	if (!current_fields.empty() && current_fields.back().status == 1 && !current_fields.back().in_span && current_fields.back().type < 0xff)
+	if (!current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span && current_fields.back().type < 0xff)
 	{
 		current_fields.back().status = 2;
 

@@ -229,7 +229,7 @@ private:
 		std::wstring	format;
 		std::wstring	instrText;
 
-		_CP_OPT(color)	color;
+		_CP_OPT(color)	color_;
 
 		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
 		bool			in_span = false;

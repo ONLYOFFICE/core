@@ -845,9 +845,9 @@ void odt_conversion_context::set_field_date_time(const std::wstring &date_time)
 	current_fields.back().type = fieldDateTime;
 	current_fields.back().value = date_time;
 }
-void odt_conversion_context::set_field_color(_CP_OPT(color) &color)
+void odt_conversion_context::set_field_color(_CP_OPT(color) &clr)
 {
-	current_fields.back().color = color;
+	current_fields.back().color_ = clr;
 }
 void odt_conversion_context::set_field_format(const std::wstring &format)
 {

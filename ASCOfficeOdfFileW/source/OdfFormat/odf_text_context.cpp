@@ -550,7 +550,7 @@ bool odf_text_context::start_field(int type, const std::wstring& value)
 		{
 			create_element(L"text", L"page-count", elm, odf_context_);
 		}break;
-		case fieldTime:
+		case fieldDateTime:
 		{
 			create_element(L"text", L"date", elm, odf_context_);
 		}break;

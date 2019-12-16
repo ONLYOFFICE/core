@@ -419,10 +419,36 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 				}
 			}
 		}
+		else if (oox_sdt->m_oSdtPr->m_oDate.IsInit())
+		{
+			odt_context->start_field(false);
+			bField = true;
+
+			if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())
+			{
+				odt_context->set_field_date_time(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
+			}
+			if ((oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat.IsInit()) && 
+				(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.IsInit()))
+			{
+				odt_context->set_field_format(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.get2());
+			}
+		}
 		if (oox_sdt->m_oSdtPr->m_eType == OOX::Logic::sdttypeBibliography)
 		{
 			odt_context->start_field(false);
 			bField = true;
+		}
+
+		if (oox_sdt->m_oSdtPr->m_oColor.IsInit())
+		{
+			_CP_OPT(odf_types::color) color;
+			convert (	oox_sdt->m_oSdtPr->m_oColor->m_oVal.GetPointer(), 
+						oox_sdt->m_oSdtPr->m_oColor->m_oThemeColor.GetPointer(), 
+						oox_sdt->m_oSdtPr->m_oColor->m_oThemeTint.GetPointer(), 
+						oox_sdt->m_oSdtPr->m_oColor->m_oThemeShade.GetPointer(), color);
+			
+			odt_context->set_field_color(color);
 		}
 	}
 

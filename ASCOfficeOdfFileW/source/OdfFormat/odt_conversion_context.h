@@ -121,6 +121,11 @@ public:
 	void set_field_instr	();
 	std::map<std::wstring, std::wstring> parse_instr_options(const std::wstring& value);
 	
+	void set_field_date_time(const std::wstring &date_time);
+	void set_field_color	(_CP_OPT(color) &color);
+	void set_field_name		(const std::wstring &name);
+	void set_field_format	(const std::wstring &format);
+
 	void start_run			(bool styled = false);
 	void end_run			();
 
@@ -181,7 +186,7 @@ public:
 	void add_empty_header	(int type);
 	void add_empty_footer	(int type);
 
-	void set_background		(_CP_OPT(color) & color, int type);
+	void set_background		(_CP_OPT(color) &color, int type);
 
 	bool is_paragraph_in_current_section_;
 
@@ -223,6 +228,8 @@ private:
 
 		std::wstring	format;
 		std::wstring	instrText;
+
+		_CP_OPT(color)	color;
 
 		short			status = 0;//0, 1, 2, 3 - init, prapare, start, finish
 		bool			in_span = false;

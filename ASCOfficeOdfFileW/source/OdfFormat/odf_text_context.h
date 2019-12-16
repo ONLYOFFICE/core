@@ -49,7 +49,7 @@ namespace odf_writer
 		fieldHyperlink,
 		fieldPage,
 		fieldNumPages,
-		fieldTime,
+		fieldDateTime,
 		fieldPageRef,
 		fieldSeq,
 		fieldXE,

@@ -714,7 +714,7 @@ void odt_conversion_context::set_field_instr()
 	res1 = instr.find(L"TIME");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = fieldTime;
+		current_fields.back().type = fieldDateTime;
 	}
 	res1 = instr.find(L"FORMTEXT");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
@@ -837,6 +837,25 @@ void odt_conversion_context::set_field_instr()
 			current_fields.back().name = instr.substr(0, res1);
 		}		
 	}
+}
+void odt_conversion_context::set_field_date_time(const std::wstring &date_time)
+{
+	current_fields.back().status = 1;
+
+	current_fields.back().type = fieldDateTime;
+	current_fields.back().value = date_time;
+}
+void odt_conversion_context::set_field_color(_CP_OPT(color) &color)
+{
+	current_fields.back().color = color;
+}
+void odt_conversion_context::set_field_format(const std::wstring &format)
+{
+	current_fields.back().format = format;
+}
+void odt_conversion_context::set_field_name(const std::wstring &name)
+{
+	current_fields.back().name = name;
 }
 void odt_conversion_context::start_field(bool in_span)
 {

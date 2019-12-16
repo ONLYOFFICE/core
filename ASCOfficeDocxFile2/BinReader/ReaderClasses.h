@@ -688,8 +688,8 @@ public:
 		{
 			if(DStrikeout)
                 pCStringWriter->WriteString(L"<w:dstrike/>");
-			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:dstrike w:val=\"false\"/>");
+			//else if(false == bDoNotWriteNullProp)
+   //             pCStringWriter->WriteString(L"<w:dstrike w:val=\"false\"/>");
 		}
 		if(bVanish)
 		{

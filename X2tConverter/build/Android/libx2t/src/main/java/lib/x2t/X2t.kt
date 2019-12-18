@@ -15,6 +15,7 @@ class X2t private constructor() {
 
         const val CONVERTER_CODE_FAIL = -1
         const val CONVERTER_CODE_SUCCESS = 0
+        const val CONVERTER_CODE_EXIST = 1
         const val CONVERTED_CODE_PASSWORD = -2147216550
         const val CONVERTER_CODE_INVALID_PASSWORD = -2147216549
 
@@ -220,14 +221,24 @@ class X2t private constructor() {
     private var mInputParams = InputParams()
 
     /*
-    * Cleat temp data after converting
+    * Clear temp data after converting
     * */
     private var mIsClearTemp = false
 
     /*
+    * Cleat temp data after converting
+    * */
+    private var mIsOverwrite = false
+
+    /*
     * File name to converting
     * */
-    private var mConvertName: String? = "Editor.bin"
+    private var mConvertFileName: String = "Editor.bin"
+
+    /*
+    * Folder name to converting
+    * */
+    private var mConvertFolderName: String? = null
 
 
     /*
@@ -278,13 +289,8 @@ class X2t private constructor() {
         var to: String? = null
         var root: String? = null
         var code = CONVERTER_CODE_FAIL
-            set(code) {
-                isSuccess = code == CONVERTER_CODE_SUCCESS
-                field = code
-            }
-
-        var isSuccess: Boolean = false
-            private set
+        val isSuccess: Boolean
+            get() = code == CONVERTER_CODE_SUCCESS
     }
 
 
@@ -354,23 +360,33 @@ class X2t private constructor() {
             return this
         }
 
-        fun setConvert(value: ConvertType): Builder {
+        fun setIsOverwrite(value: Boolean): Builder {
+            mIsOverwrite = value
+            return this
+        }
+
+        fun setConvertType(value: ConvertType): Builder {
             mConvertType = value
             return this
         }
 
-        fun setFrom(value: String): Builder {
+        fun setFromPath(value: String): Builder {
             mInputParams.from = value
             return this
         }
 
-        fun setTo(value: String): Builder {
+        fun setToPath(value: String): Builder {
             mInputParams.to = value
             return this
         }
 
-        fun setToName(value: String? = null): Builder {
-            mConvertName = value
+        fun setToName(value: String = "Editor.bin"): Builder {
+            mConvertFileName = value
+            return this
+        }
+
+        fun setToFolder(value: String? = null): Builder {
+            mConvertFolderName = value
             return this
         }
 
@@ -406,14 +422,25 @@ class X2t private constructor() {
     fun convert(context: Context): ConvertResult {
         val result = ConvertResult()
 
-        FileUtils.getCache(context, mConvertName)?.let { cache ->
+        FileUtils.getCache(context, mConvertFileName, mConvertFolderName)?.let { cache ->
             result.to = mInputParams.to ?: cache.to
             result.root = File(result.to).parent
+
             mInputParams.to = mInputParams.to ?: cache.to
             mInputParams.temp = mInputParams.temp ?: cache.temp
             mInputParams.theme = mInputParams.theme ?: "${cache.root}/theme"
 
+            if (File(mInputParams.to).exists()) {
+                if (mIsOverwrite) {
+                    FileUtils.deletePath(result.root!!)
+                } else {
+                    result.code = CONVERTER_CODE_EXIST
+                    return@let
+                }
+            }
+
             FileUtils.createPath(result.root!!)
+            FileUtils.createPath(mInputParams.temp!!)
 
             mInputParams.theme?.let { theme ->
                 FileUtils.createPath(theme)

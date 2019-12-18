@@ -20,7 +20,7 @@ object FileUtils {
 
     @JvmStatic
     fun getUuid(value: String = ""): String {
-        return UUID.nameUUIDFromBytes(("$value${System.currentTimeMillis()}").toByteArray()).toString()
+        return UUID.nameUUIDFromBytes(value.toByteArray()).toString()
     }
 
     @JvmStatic
@@ -49,14 +49,25 @@ object FileUtils {
         return deletePath(File(path))
     }
 
-    @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
-    fun getCache(context: Context, name: String? = null): Cache? {
-        val fileName = name ?: System.currentTimeMillis().toString()
-        val uuidName = getUuid(fileName)
-        val newName = if (name != null) fileName else uuidName
+    @JvmOverloads
+    fun getCacheDir(context: Context, isExternal: Boolean = true): File {
+        return if (isExternal) context.externalCacheDir!! else context.cacheDir
+    }
 
-        val rootDir = "${context.externalCacheDir!!.absolutePath}/data/$uuidName"
+    @JvmStatic
+    @JvmOverloads
+    fun getCachePath(context: Context, isExternal: Boolean = true): String {
+        return getCacheDir(context, isExternal).absolutePath
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun getCache(context: Context, name: String? = null, folder: String? = null, isExternal: Boolean = true): Cache? {
+        val newFolder = folder ?: getUuid(System.currentTimeMillis().toString())
+        val newName = name ?: getUuid(System.currentTimeMillis().toString())
+
+        val rootDir = "${getCachePath(context, isExternal)}/data/$newFolder"
         val toFile = "$rootDir/$newName"
         val tempDir = "$rootDir/temp"
 

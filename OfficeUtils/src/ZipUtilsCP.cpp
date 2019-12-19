@@ -892,7 +892,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 		return false;
 	}
 
-	bool GetFilesSize(const WCHAR*  zip_file_path, const std::wstring& searchPattern, ULONG& nCommpressed, ULONG& nUncommpressed)
+	bool GetFilesSize(const WCHAR*  zip_file_path, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed)
 	{
 		nCommpressed = 0;
 		nUncommpressed = 0;
@@ -900,8 +900,16 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 		if (unzip_file_handle != NULL)
 		{
 			//todo implement true pattern
-			std::wstring searchExt = searchPattern.substr(2);
-			bool isEmptyPattern = 0 == searchExt.length();
+			bool isAny = false;
+			std::wstring searchExt;
+			if (0 == searchPattern.length() || searchPattern == L"*")
+			{
+				isAny = true;
+			}
+			else if (searchPattern.length() > 1)
+			{
+				searchExt = searchPattern.substr(2);
+			}
 			do
 			{
 				char filename_inzip[256];
@@ -909,7 +917,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 				unzGetCurrentFileInfo(unzip_file_handle, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
 				std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzip);
 				std::transform(filenameW.begin(), filenameW.end(), filenameW.begin(), ::tolower);
-				if (isEmptyPattern || NSFile::GetFileExtention(filenameW) == searchExt)
+				if (isAny || NSFile::GetFileExtention(filenameW) == searchExt)
 				{
 					nCommpressed += file_info.compressed_size;
 					nUncommpressed += file_info.uncompressed_size;

@@ -512,19 +512,22 @@ namespace NExtractTools
 	{
 		std::wstring& sFrom = *this->m_sFileFrom;
 		int nFormatFrom = *this->m_nFormatFrom;
-		boost::unordered_map<int, InputLimit>::const_iterator itLimit = this->m_mapInputLimits.find(nFormatFrom);
+		boost::unordered_map<int, std::vector<InputLimit>>::const_iterator itLimit = this->m_mapInputLimits.find(nFormatFrom);
 		if(itLimit != this->m_mapInputLimits.end())
 		{
-			const InputLimit& oLimit = itLimit->second;
-			if(oLimit.compressed > 0 || oLimit.uncompressed > 0)
+			for (size_t i = 0; i < itLimit->second.size(); ++i)
 			{
-				ULONG nCompressed = 0;
-				ULONG nUncompressed = 0;
-				COfficeUtils oCOfficeUtils(NULL);
-				oCOfficeUtils.GetFilesSize(sFrom, oLimit.pattern, nCompressed, nUncompressed);
-				if((oLimit.compressed > 0 && nCompressed > oLimit.compressed) || (oLimit.uncompressed > 0 && nUncompressed > oLimit.uncompressed))
+				const InputLimit& oLimit = itLimit->second[i];
+				if(oLimit.compressed > 0 || oLimit.uncompressed > 0)
 				{
-					return false;
+					ULONG64 nCompressed = 0;
+					ULONG64 nUncompressed = 0;
+					COfficeUtils oCOfficeUtils(NULL);
+					oCOfficeUtils.GetFilesSize(sFrom, oLimit.pattern, nCompressed, nUncompressed);
+					if((oLimit.compressed > 0 && nCompressed > oLimit.compressed) || (oLimit.uncompressed > 0 && nUncompressed > oLimit.uncompressed))
+					{
+						return false;
+					}
 				}
 			}
 		}

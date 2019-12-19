@@ -378,8 +378,8 @@ namespace NExtractTools
 	class InputLimit
 	{
 	public:
-		UINT compressed;
-		UINT uncompressed;
+		ULONG64 compressed;
+		ULONG64 uncompressed;
 		std::wstring pattern;
 		InputLimit()
 		{
@@ -415,7 +415,7 @@ namespace NExtractTools
 		std::wstring* m_sDocumentID;
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
-		boost::unordered_map<int, InputLimit> m_mapInputLimits;
+		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
@@ -687,13 +687,14 @@ namespace NExtractTools
 							XmlUtils::CXmlNode oZipNode;
 							if (oLimitNode.GetNode(L"m_oZip", oZipNode))
 							{
-								oLimit.compressed = std::stoul(oZipNode.GetAttribute(L"compressed", L"0"));
-								oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
+								oLimit.compressed = std::stoull(oZipNode.GetAttribute(L"compressed", L"0"));
+								oLimit.uncompressed = std::stoull(oZipNode.GetAttribute(L"uncompressed", L"0"));
 								oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
 							}
 							for (size_t j = 0; j < aTypes.size(); ++j)
 							{
-								m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
+								int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j]);
+								m_mapInputLimits[nFormat].push_back(oLimit);
 							}
 						}
 					}

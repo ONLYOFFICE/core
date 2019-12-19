@@ -57,7 +57,7 @@ public:
 	HRESULT LoadFileFromArchive		(const std::wstring& zipFile, const std::wstring& filePath, BYTE** fileInBytes, ULONG& nFileSize);
 	HRESULT ExtractFilesToMemory	(const std::wstring& zipFile, const ExtractedFileCallback& data_receiver, void* pParam, bool* result);
 	HRESULT CompressFilesFromMemory	(const std::wstring& zipFile, const RequestFileCallback& data_source, void* pParam, short compression_level, bool* result);
-	HRESULT GetFilesSize			(const std::wstring& zipFile, const std::wstring& searchPattern, ULONG& nCommpressed, ULONG& nUncommpressed);
+	HRESULT GetFilesSize			(const std::wstring& zipFile, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed);
 
 };
 

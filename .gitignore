@@ -5,6 +5,7 @@ Common/boost_1_58_0
 Common/3dParty/boost/boost_1_58_0
 Common/3dParty/boost/ios
 Common/3dParty/boost/osx
+Common/3dParty/icu/icu
 Common/3dParty/icu/win_64
 Common/3dParty/icu/win_32
 Common/3dParty/icu/linux_64
@@ -44,6 +45,7 @@ Common/3dParty/openssl/openssl
 Thumbs.db
 *.xcuserstate
 *.xcuserdatad
+**/Makefile.*
 ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2.idl
 ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2.tlb
 ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2.h
@@ -51,7 +53,6 @@ ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_i.c
 ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_p.c
 ASCOfficeXlsFile2/win32/dlldata.c
 OfficeUtils/win32/OfficeUtilsLib/OfficeUtilsLib/ReadMe.txt
-X2tConverter/**/Makefile.*
 X2tConverter/ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/Makefile
 X2tConverter/Common/DocxFormat/DocxFormatLib/Makefile
 *.7z

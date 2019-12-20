@@ -3199,7 +3199,7 @@ namespace NExtractTools
                nRes = docx_dir2txt(sFrom, sTo, sTemp, params);
            }
            else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
        {
@@ -3249,7 +3249,7 @@ namespace NExtractTools
            }
        }
        else
-            nRes = AVS_FILEUTILS_ERROR_CONVERT;
+            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        return nRes;
    }
 	_UINT32 fromDocument(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
@@ -3285,7 +3285,7 @@ namespace NExtractTools
                else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
                    nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
                else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT;
+                   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            }
            else
            {
@@ -3300,7 +3300,7 @@ namespace NExtractTools
                else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
                    nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
                else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT;
+                   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
                
 			   if(SUCCEEDED_X2T(nRes))
                {
@@ -3364,7 +3364,7 @@ namespace NExtractTools
                nRes = txt2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
            else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {
                nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
@@ -3420,7 +3420,7 @@ namespace NExtractTools
                nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params, true);
            }
 		   else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
        {
@@ -3480,7 +3480,7 @@ namespace NExtractTools
            }
        }
        else
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        return nRes;
    }
 	_UINT32 fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
@@ -3608,7 +3608,7 @@ namespace NExtractTools
                nRes = odf_flat2oox_dir(sFrom, sXlsxDir, sTemp, params);
            }
 		   else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {
 			   nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, sXlsxFile);
@@ -3667,7 +3667,7 @@ namespace NExtractTools
                nRes = pptx_dir2odp(sFrom, sTo, sTemp, params, true);
 			}
 			else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}
 		else if(AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatTo)
 		{
@@ -3716,7 +3716,7 @@ namespace NExtractTools
            }
        }
        else
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        return nRes;
    }
 	_UINT32 fromPresentation(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
@@ -3800,7 +3800,7 @@ namespace NExtractTools
 		   }
        }
 	   else
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        if(SUCCEEDED_X2T(nRes))
        {
            nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
@@ -3831,7 +3831,7 @@ namespace NExtractTools
                else if(AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == nFormatFrom)
                    nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
                else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT;
+                   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            }
        }
        return nRes;
@@ -3882,7 +3882,7 @@ namespace NExtractTools
 	   }
        else
        {
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        RELEASEOBJECT(pApplicationFonts);
        return nRes;
@@ -3900,7 +3900,7 @@ namespace NExtractTools
        }
        else
        {
-            nRes = AVS_FILEUTILS_ERROR_CONVERT;
+            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        return nRes;
    }
@@ -4577,6 +4577,10 @@ namespace NExtractTools
 			//TCD_EPUB2DOCX,
 			//TCD_EPUB2DOCT,
 			//TCD_EPUB2DOCT_BIN,
+			default:
+			{
+				result = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}break;
 		}
 
 		// delete temp dir

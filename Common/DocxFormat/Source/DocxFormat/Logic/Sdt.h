@@ -73,14 +73,14 @@ namespace ComplexTypes
 				if ( m_sDisplayText.IsInit() )
 				{
 					sResult += _T("w:displayText=\"");
-                    sResult += m_sDisplayText.get2();
+                    sResult += *m_sDisplayText;
 					sResult += _T("\" ");
 				}
 
 				if ( m_sValue.IsInit() )
 				{
 					sResult += _T("w:value=\"");
-                    sResult += m_sValue.get2();
+                    sResult += *m_sValue;
 					sResult += _T("\" ");
 				}
 
@@ -99,8 +99,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<std::wstring > m_sDisplayText;
-			nullable<std::wstring > m_sValue;
+			nullable_string	m_sDisplayText;
+			nullable_string	m_sValue;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -706,7 +706,7 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CSdtDropDownList)
 			CSdtDropDownList()
-			{
+			{ 
 			}
 			virtual ~CSdtDropDownList()
 			{
@@ -765,7 +765,7 @@ namespace OOX
 				if ( m_sLastValue.IsInit() )
 				{
 					sResult = _T("<w:dropDownList w:lastValue=\"");
-                    sResult += m_sLastValue.get2();
+                    sResult += *m_sLastValue;
 					sResult += _T("\">");
 				}
 				else
@@ -799,10 +799,8 @@ namespace OOX
 
 		public:
 
-			// Attributes
-			nullable<std::wstring >                             m_sLastValue;
-			// Nodes
-			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
+			nullable_string									m_sLastValue;
+			std::vector<ComplexTypes::Word::CSdtListItem*>	m_arrListItem;
 		};
 
 		//--------------------------------------------------------------------------------

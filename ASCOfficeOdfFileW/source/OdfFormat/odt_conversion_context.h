@@ -96,6 +96,9 @@ public:
 	void start_sequence ();
 	void end_sequence ();
 
+	void start_drop_down();
+	void end_drop_down();
+
 	void start_table_of_content ();
 	void end_table_of_content ();
 
@@ -125,6 +128,8 @@ public:
 	void set_field_color	(_CP_OPT(color) &color);
 	void set_field_name		(const std::wstring &name);
 	void set_field_format	(const std::wstring &format);
+	void set_field_drop_down();
+	void set_field_item		(const std::wstring &value, const std::wstring &display);
 
 	void start_run			(bool styled = false);
 	void end_run			();
@@ -242,6 +247,8 @@ private:
 		int				outline_levels = 0;
 		std::vector<int> arTemplateTypes;//text, link, tab ....
 		int				tabLeader = 0;//dot
+
+		std::vector<std::pair<std::wstring, std::wstring>> items;
 	};
 
 	std::vector<_field_state> current_fields;

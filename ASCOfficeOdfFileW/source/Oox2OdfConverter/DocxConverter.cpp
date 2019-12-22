@@ -403,9 +403,6 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 	bool bField = false;
 	if (oox_sdt->m_oSdtPr.IsInit())
 	{
-		if (oox_sdt->m_oSdtPr->m_oAlias.IsInit())//friendly name
-		{
-		}
 		if (oox_sdt->m_oSdtPr->m_oDocPartObj.IsInit())
 		{
 			if (oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery.IsInit() && 
@@ -434,12 +431,54 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 				odt_context->set_field_format(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.get2());
 			}
 		}
+		else if (oox_sdt->m_oSdtPr->m_oDropDownList.IsInit())
+		{
+			odt_context->start_field(false);
+			bField = true;
+
+			odt_context->set_field_drop_down();
+			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem.size(); i++ )
+			{
+				if ( oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i] )
+				{
+					odt_context->set_field_item(oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sValue.get_value_or(L""), 
+						oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sDisplayText.get_value_or(L""));
+				}
+			}
+		}
+		else if (oox_sdt->m_oSdtPr->m_oComboBox.IsInit())
+		{
+			odt_context->start_field(false);
+			bField = true;
+
+			odt_context->set_field_drop_down();
+			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem.size(); i++ )
+			{
+				if ( oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i] )
+				{
+					odt_context->set_field_item(oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sValue.get_value_or(L""), 
+						oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sDisplayText.get_value_or(L""));
+				}
+			}
+		}
+		else if (oox_sdt->m_oSdtPr->m_oCheckbox.IsInit())
+		{
+		}
 		if (oox_sdt->m_oSdtPr->m_eType == OOX::Logic::sdttypeBibliography)
 		{
 			odt_context->start_field(false);
 			bField = true;
 		}
-
+		std::wstring name;
+		if (oox_sdt->m_oSdtPr->m_oAlias.IsInit())
+		{
+			name = oox_sdt->m_oSdtPr->m_oAlias->ToString2();
+		}
+		if (name.empty() && (oox_sdt->m_oSdtPr->m_oId.IsInit()) && (oox_sdt->m_oSdtPr->m_oId->m_oVal.IsInit()))
+		{
+			name = std::to_wstring(oox_sdt->m_oSdtPr->m_oId->m_oVal->GetValue());
+		}
+		odt_context->set_field_name(name);
 		if (oox_sdt->m_oSdtPr->m_oColor.IsInit())
 		{
 			_CP_OPT(odf_types::color) color;

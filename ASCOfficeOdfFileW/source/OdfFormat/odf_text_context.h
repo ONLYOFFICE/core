@@ -55,6 +55,7 @@ namespace odf_writer
 		fieldXE,
 		fieldTextInput,
 		fieldExpression,
+		fieldDropDown,
 
 		fieldBibliography = 0xff + 1,
 		fieldIndex,

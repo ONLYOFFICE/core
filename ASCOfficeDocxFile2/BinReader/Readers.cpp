@@ -8791,13 +8791,11 @@ int Binary_DocumentTableReader::ReadSdtListItem(BYTE type, long length, void* po
 	ComplexTypes::Word::CSdtListItem* pSdtListItem = static_cast<ComplexTypes::Word::CSdtListItem*>(poResult);
 	if (c_oSerSdt::DisplayText == type)
 	{
-		pSdtListItem->m_sDisplayText.Init();
-		pSdtListItem->m_sDisplayText->append(m_oBufferedStream.GetString3(length));
+		pSdtListItem->m_sDisplayText = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Value == type)
 	{
-		pSdtListItem->m_sValue.Init();
-		pSdtListItem->m_sValue->append(m_oBufferedStream.GetString3(length));
+		pSdtListItem->m_sValue = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8895,8 +8893,7 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 	OOX::Logic::CSdtDropDownList* pDropDownList = static_cast<OOX::Logic::CSdtDropDownList*>(poResult);
 	if (c_oSerSdt::LastValue == type)
 	{
-		pDropDownList->m_sLastValue.Init();
-		pDropDownList->m_sLastValue->append(m_oBufferedStream.GetString3(length));
+		pDropDownList->m_sLastValue = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::SdtListItem == type)
 	{

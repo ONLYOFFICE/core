@@ -992,12 +992,13 @@ public:
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element		( const office_element_ptr & child_element);
 
+    virtual void add_text(const std::wstring & Text);
     virtual void serialize(std::wostream & _Wostream);
 
 	_CP_OPT(std::wstring)		text_name_;
-    office_element_ptr			label_;
+    office_element_ptr_array	content_;
     
-    _CP_OPT(std::wstring)		text_;
+    office_element_ptr			text_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_drop_down);
 //-------------------------------------------------------------------------------------------------------------------
@@ -1015,9 +1016,12 @@ public:
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
 
+    virtual void add_text(const std::wstring & Text);
     virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(std::wstring) text_value_;
+	_CP_OPT(odf_types::Bool)text_current_selected_;
+	_CP_OPT(std::wstring)	text_value_;
+    _CP_OPT(std::wstring)	text_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_label);
 } // namespace odf_writer

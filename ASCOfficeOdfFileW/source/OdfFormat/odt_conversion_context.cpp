@@ -75,7 +75,7 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
 	:	odf_conversion_context (TextDocument, outputDocument),
-		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this)	
+		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this), controls_context_(this)
 {
 
 	is_hyperlink_				= false;
@@ -133,7 +133,15 @@ void odt_conversion_context::end_document()
 		}
 		root_document_->add_child_element(seq_decls);
 	}
+	if (controls_context()->is_exist_content())
+	{
+		office_element_ptr forms_root_elm;
+		create_element(L"office", L"forms", forms_root_elm, this);
 
+		controls_context()->finalize(forms_root_elm);
+		
+		root_document_->add_child_element(forms_root_elm);
+	}
 	//add sections to root
 	for (size_t i = 0; i < sections_.size(); i++)
 	{
@@ -150,6 +158,10 @@ void odt_conversion_context::end_document()
 	
 	odf_conversion_context::end_document();
 } 
+odf_controls_context* odt_conversion_context::controls_context()
+{
+	return  &controls_context_;
+}
 
 odf_drawing_context* odt_conversion_context::drawing_context()	
 {

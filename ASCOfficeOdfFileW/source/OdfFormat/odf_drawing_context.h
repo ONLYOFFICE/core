@@ -195,7 +195,7 @@ public:
 	void set_position_line	(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt, _CP_OPT(double) & x1_pt, _CP_OPT(double) & y1_pt); 
 	
 	void get_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
-	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
+	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt, bool reset_always = false);
 	
 	void set_name			(const std::wstring & name);
 	void set_description	(const std::wstring & descr);

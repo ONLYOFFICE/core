@@ -2143,7 +2143,7 @@ void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 		height_pt	= impl_->anchor_settings_.svg_height_->get_value_unit(length::pt);
 	}
 }
-void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
+void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt, bool reset_always)
 {
 	impl_->current_drawing_state_.cx_ = width_pt;
 	impl_->current_drawing_state_.cy_ = height_pt;
@@ -2167,12 +2167,13 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 			}
 			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);	
 		}
-	}else
+	}
+	else
 	{
-        if (!impl_->current_drawing_state_.svg_width_   && width_pt) 
+        if ((!impl_->current_drawing_state_.svg_width_ || reset_always) && width_pt) 
 			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 
-        if (!impl_->current_drawing_state_.svg_height_  && height_pt) 
+        if ((!impl_->current_drawing_state_.svg_height_ || reset_always) && height_pt) 
 			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 	}
 }
@@ -2618,6 +2619,8 @@ void odf_drawing_context::start_control(const std::wstring& id)
 	draw_control* control = dynamic_cast<draw_control*>(control_elm.get());
 	if (control == NULL)return;
 
+	if (impl_->root_element_ == NULL) impl_->root_element_ = control_elm;
+	
 	control->control_id_ = id;
 //--------------------	
 	impl_->styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		

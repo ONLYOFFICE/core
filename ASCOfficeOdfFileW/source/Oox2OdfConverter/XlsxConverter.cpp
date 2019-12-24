@@ -2952,7 +2952,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			continue;
 		}
 //---------------------------------------------
-		std::wstring id = ods_context->current_table()->controls_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue(), oFormControlPr->m_oItemLst.IsInit());
+		std::wstring id = ods_context->controls_context()->start_control((int)oFormControlPr->m_oObjectType->GetValue(), oFormControlPr->m_oItemLst.IsInit());
 
 		if (false == id.empty())
 		{
@@ -2975,13 +2975,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 		
 			if (pControl->m_oName.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_name(*pControl->m_oName);
+				ods_context->controls_context()->set_name(*pControl->m_oName);
 				ods_context->drawing_context()->set_name(*pControl->m_oName);
 			}
 //----------------------
 			if (oFormControlPr->m_oText.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_label(*oFormControlPr->m_oText);
+				ods_context->controls_context()->set_label(*oFormControlPr->m_oText);
 			}
 			if (oFormControlPr->m_oFillColor.IsInit())
 			{
@@ -2997,59 +2997,59 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			}
 			if (oFormControlPr->m_oTextHAlign.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_textHAlign(oFormControlPr->m_oTextHAlign->GetValue());
+				ods_context->controls_context()->set_textHAlign(oFormControlPr->m_oTextHAlign->GetValue());
 			}
 			if (oFormControlPr->m_oTextVAlign.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_textVAlign(oFormControlPr->m_oTextVAlign->GetValue());
+				ods_context->controls_context()->set_textVAlign(oFormControlPr->m_oTextVAlign->GetValue());
 			}
 			if (oFormControlPr->m_oMin.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_min_value(oFormControlPr->m_oMin->GetValue());
+				ods_context->controls_context()->set_min_value(oFormControlPr->m_oMin->GetValue());
 			}
 			if (oFormControlPr->m_oMax.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_max_value(oFormControlPr->m_oMax->GetValue());
+				ods_context->controls_context()->set_max_value(oFormControlPr->m_oMax->GetValue());
 			}
 			if (oFormControlPr->m_oPage.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_page_step(oFormControlPr->m_oPage->GetValue());
+				ods_context->controls_context()->set_page_step(oFormControlPr->m_oPage->GetValue());
 			}
 			if (oFormControlPr->m_oInc.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_step(oFormControlPr->m_oInc->GetValue());
+				ods_context->controls_context()->set_step(oFormControlPr->m_oInc->GetValue());
 			}
 			if (oFormControlPr->m_oVal.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_value(std::to_wstring(*oFormControlPr->m_oVal));
+				ods_context->controls_context()->set_value(std::to_wstring(*oFormControlPr->m_oVal));
 			}
 			if (oFormControlPr->m_oHoriz.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_horiz(*oFormControlPr->m_oHoriz);
+				ods_context->controls_context()->set_horiz(*oFormControlPr->m_oHoriz);
 			}
 			if (oFormControlPr->m_oVerticalBar.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_horiz(*oFormControlPr->m_oVerticalBar == false);
+				ods_context->controls_context()->set_horiz(*oFormControlPr->m_oVerticalBar == false);
 			}
 			if (oFormControlPr->m_oFmlaLink.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_linkedCell(*oFormControlPr->m_oFmlaLink);
+				ods_context->controls_context()->set_linkedCell(*oFormControlPr->m_oFmlaLink);
 			}
 			if (oFormControlPr->m_oFmlaRange.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_listFillRange(*oFormControlPr->m_oFmlaRange);
+				ods_context->controls_context()->set_listFillRange(*oFormControlPr->m_oFmlaRange);
 			}
 			if (oFormControlPr->m_oChecked.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_check_state(oFormControlPr->m_oChecked->GetValue());
+				ods_context->controls_context()->set_check_state(oFormControlPr->m_oChecked->GetValue());
 			}
 			if (oFormControlPr->m_oDropStyle.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_drop_down(true);
+				ods_context->controls_context()->set_drop_down(true);
 			}
 			if (oFormControlPr->m_oDropLines.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_drop_size(oFormControlPr->m_oDropLines->GetValue());
+				ods_context->controls_context()->set_drop_size(oFormControlPr->m_oDropLines->GetValue());
 			}
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDx;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSel;
@@ -3072,23 +3072,23 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 //---------------------
 			if (pControl->m_oControlPr->m_oLinkedCell.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_linkedCell(*pControl->m_oControlPr->m_oLinkedCell);
+				ods_context->controls_context()->set_linkedCell(*pControl->m_oControlPr->m_oLinkedCell);
 			}
 			if (pControl->m_oControlPr->m_oListFillRange.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_listFillRange(*pControl->m_oControlPr->m_oListFillRange);
+				ods_context->controls_context()->set_listFillRange(*pControl->m_oControlPr->m_oListFillRange);
 			}
 			if (pControl->m_oControlPr->m_oMacro.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_macro(*pControl->m_oControlPr->m_oMacro);
+				ods_context->controls_context()->set_macro(*pControl->m_oControlPr->m_oMacro);
 			}
 			if (pControl->m_oControlPr->m_oDisabled.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_disabled(*pControl->m_oControlPr->m_oDisabled);
+				ods_context->controls_context()->set_disabled(*pControl->m_oControlPr->m_oDisabled);
 			}
 			if (pControl->m_oControlPr->m_oPrint.IsInit())
 			{
-				ods_context->current_table()->controls_context()->set_printable(*pControl->m_oControlPr->m_oPrint);
+				ods_context->controls_context()->set_printable(*pControl->m_oControlPr->m_oPrint);
 			}
 			if (pControl->m_oControlPr->m_oLocked.IsInit())
 			{
@@ -3106,7 +3106,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			ods_context->drawing_context()->end_drawing();
 
 			ods_context->end_drawings();
-			ods_context->current_table()->controls_context()->end_control();
+			ods_context->controls_context()->end_control();
 		}
 	}
 }

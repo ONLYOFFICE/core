@@ -1227,6 +1227,12 @@ namespace OOX
 					{
 						m_oDocPartObj = oReader;
 						m_eType = sdttypeDocPartObj;
+
+						if (m_oDocPartObj.IsInit() && m_oDocPartObj->m_oDocPartGallery.IsInit())
+						{
+							if (m_oDocPartObj->m_oDocPartGallery->m_sVal == L"Bibliographies")
+								m_eType = sdttypeBibliography;
+						}
 					}
 					else if ( sdttypeUnknown == m_eType && _T("w:dropDownList") == sName )
 					{

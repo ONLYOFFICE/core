@@ -352,7 +352,7 @@ namespace OOX
 						if('\0' != pValue[0])
 						{
 							pTextLast = new CText();
-							NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, strlen(pValue), pTextLast->m_sText);
+							NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), pTextLast->m_sText);
 							m_arrItems.push_back( pTextLast );
 						}
 					}

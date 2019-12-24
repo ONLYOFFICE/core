@@ -67,6 +67,7 @@ public:
 	virtual void end_text_context();
 
 	virtual odf_drawing_context		* drawing_context();
+	virtual odf_controls_context	* controls_context();
 	virtual odf_text_context		* text_context();
 			odp_slide_context		* slide_context();
 			odf_comment_context		* comment_context();

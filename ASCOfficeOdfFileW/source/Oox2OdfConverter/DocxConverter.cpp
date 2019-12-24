@@ -261,6 +261,46 @@ void DocxConverter::convert_document()
 //-----------------------------------------------------------------------------------------------------------------
 	OoxConverter::convert (docx_document->m_pJsaProject);
 }
+std::wstring DocxConverter::dump_text(OOX::WritingElement *oox_unknown)
+{
+	std::wstring result;
+
+	if (oox_unknown == NULL)return result;
+
+	switch(oox_unknown->getType())
+	{
+		case OOX::et_w_t:
+		{
+			OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(oox_unknown);
+
+			if (text)
+				result += text->m_sText;
+		}break;
+		case OOX::et_w_r:
+		{
+			OOX::Logic::CRun* run = dynamic_cast<OOX::Logic::CRun*>(oox_unknown);
+
+			for (size_t i = 0; (run) && (i < run->m_arrItems.size()); i++)
+			{
+				result += dump_text(run->m_arrItems[i]);
+			}
+		}break;
+		case OOX::et_w_p:
+		{
+			OOX::Logic::CParagraph* para = dynamic_cast<OOX::Logic::CParagraph*>(oox_unknown);
+			for (size_t i = 0; (para) && (i < para->m_arrItems.size()); i++)
+			{
+				result += dump_text(para->m_arrItems[i]);
+			}
+			result += L"\\n";
+		}break;
+		default:
+		{
+		}break;
+	}
+	return result;
+}
+
 void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	if (oox_unknown == NULL)return;
@@ -400,75 +440,107 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 {
 	if (oox_sdt == NULL) return;
 
-	bool bField = false;
+	bool bField = false, bForm = false;
+	
+	_CP_OPT(double) x, y, width = 20, height = 20; 
+
 	if (oox_sdt->m_oSdtPr.IsInit())
 	{
-		if (oox_sdt->m_oSdtPr->m_oDocPartObj.IsInit())
+		switch(oox_sdt->m_oSdtPr->m_eType)
 		{
-			if (oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery.IsInit() && 
-				oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery->m_sVal.IsInit())
+			case OOX::Logic::sdttypeBibliography:
+			case OOX::Logic::sdttypeDocPartList:
+			case OOX::Logic::sdttypeDocPartObj:
+			case OOX::Logic::sdttypeCitation:
 			{
-				if (*oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery->m_sVal == L"List od Illustrations" ||
-					*oox_sdt->m_oSdtPr->m_oDocPartObj->m_oDocPartGallery->m_sVal == L"Table of Contents")
-				{
-					odt_context->start_field(false);
-					bField = true;
-				}
-			}
-		}
-		else if (oox_sdt->m_oSdtPr->m_oDate.IsInit())
-		{
-			odt_context->start_field(true);
-			bField = true;
+				bField = true;
+				odt_context->start_field(false);
+			}break;
+			case OOX::Logic::sdttypeComboBox:
+			case OOX::Logic::sdttypeDropDownList:
+			case OOX::Logic::sdttypeDate:
+			case OOX::Logic::sdttypeCheckBox:
+			//case OOX::Logic::sdttypePicture:
+			//case OOX::Logic::sdttypeEquation:
+			//case OOX::Logic::sdttypeGroup:
+			case OOX::Logic::sdttypeRichText:
+			case OOX::Logic::sdttypeText:
+			{
+				std::wstring id = odt_context->controls_context()->start_control_sdt(oox_sdt->m_oSdtPr->m_eType);
 
+				if (false == id.empty())
+				{				
+					bForm = true;
+					odt_context->start_drawings();
+					odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
+					odt_context->drawing_context()->set_drawings_rect(x, y, width, height); //default
+					
+					odt_context->drawing_context()->start_drawing();
+					odt_context->drawing_context()->start_control(id);
+				}
+			}break;
+		}
+		if (bForm)
+		{
+			odt_context->drawing_context()->set_vertical_rel(0); //baseline
+			odt_context->drawing_context()->set_textarea_vertical_align(1);//middle
+		}
+		if (bForm && oox_sdt->m_oSdtPr->m_oDate.IsInit())
+		{
 			if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())
 			{
-				odt_context->set_field_date_time(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
+				odt_context->controls_context()->set_value(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
 			}
 			if ((oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat.IsInit()) && 
 				(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.IsInit()))
 			{
-				odt_context->set_field_format(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.get2());
+				//odt_context->controls_context()->set_format(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.get2());
 			}
 		}
-		else if (oox_sdt->m_oSdtPr->m_oDropDownList.IsInit())
+		if (bForm && oox_sdt->m_oSdtPr->m_oDropDownList.IsInit())
 		{
-			odt_context->start_field(false);
-			bField = true;
+			odt_context->controls_context()->set_drop_down(true);
 
-			odt_context->set_field_drop_down();
+			size_t size = 0;
 			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem.size(); i++ )
 			{
 				if ( oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i] )
 				{
-					odt_context->set_field_item(oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sValue.get_value_or(L""), 
-						oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sDisplayText.get_value_or(L""));
-				}
-			}
-		}
-		else if (oox_sdt->m_oSdtPr->m_oComboBox.IsInit())
-		{
-			odt_context->start_field(false);
-			bField = true;
+					std::wstring val = oox_sdt->m_oSdtPr->m_oDropDownList->m_arrListItem[i]->m_sValue.get_value_or(L"");
 
-			odt_context->set_field_drop_down();
+					if (val.length() > size) size = val.length();
+					odt_context->controls_context()->add_item(val);
+				}
+			}		
+			width = 10. * size; //todooo sizefont
+			odt_context->drawing_context()->set_size(width, height, true);			
+		}
+		if (bForm && oox_sdt->m_oSdtPr->m_oComboBox.IsInit())
+		{
+			size_t size = 0;
 			for ( size_t i = 0; i < oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem.size(); i++ )
 			{
 				if ( oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i] )
 				{
-					odt_context->set_field_item(oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sValue.get_value_or(L""), 
-						oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sDisplayText.get_value_or(L""));
+					std::wstring val = oox_sdt->m_oSdtPr->m_oComboBox->m_arrListItem[i]->m_sValue.get_value_or(L"");
+
+					if (val.length() > size) size = val.length();
+					odt_context->controls_context()->add_item(val);
 				}
 			}
+			width = 10. * size; //todooo sizefont
+
+			odt_context->drawing_context()->set_size(width, height, true);
 		}
-		else if (oox_sdt->m_oSdtPr->m_oCheckbox.IsInit())
+		if (bForm && oox_sdt->m_oSdtPr->m_oCheckbox.IsInit())
 		{
+			if (oox_sdt->m_oSdtPr->m_oCheckbox->m_oChecked.IsInit())
+			{
+				odt_context->controls_context()->set_check_state(oox_sdt->m_oSdtPr->m_oCheckbox->m_oChecked->m_oVal.ToBool() ? 1 : 0);
+			}
 		}
-		if (oox_sdt->m_oSdtPr->m_eType == OOX::Logic::sdttypeBibliography)
-		{
-			odt_context->start_field(false);
-			bField = true;
-		}
+
+//-----------------------------------------------
 		std::wstring name;
 		if (oox_sdt->m_oSdtPr->m_oAlias.IsInit())
 		{
@@ -478,7 +550,11 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		{
 			name = std::to_wstring(oox_sdt->m_oSdtPr->m_oId->m_oVal->GetValue());
 		}
-		odt_context->set_field_name(name);
+		if (bField)
+			odt_context->set_field_name(name);
+		if (bForm)
+			odt_context->controls_context()->set_name(name);
+//-----------------------------------------------
 		if (oox_sdt->m_oSdtPr->m_oColor.IsInit())
 		{
 			_CP_OPT(odf_types::color) color;
@@ -487,15 +563,45 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 						oox_sdt->m_oSdtPr->m_oColor->m_oThemeTint.GetPointer(), 
 						oox_sdt->m_oSdtPr->m_oColor->m_oThemeShade.GetPointer(), color);
 			
-			odt_context->set_field_color(color);
+			if (color)
+			{
+				if (bField)
+					odt_context->set_field_color(color);
+				if (bForm)
+				{
+					odf_context()->drawing_context()->start_area_properties();
+						odf_context()->drawing_context()->set_solid_fill(color->get_hex_value());
+					odf_context()->drawing_context()->end_area_properties();
+				}
+			}
 		}
 	}
-
-	convert(oox_sdt->m_oSdtContent.GetPointer());
+//-----------------------------------------------
+	if (bForm && oox_sdt->m_oSdtContent.IsInit())
+	{
+		std::wstring value;
+		for (size_t i = 0; i < oox_sdt->m_oSdtContent->m_arrItems.size(); i++)
+		{
+			value += dump_text(oox_sdt->m_oSdtContent->m_arrItems[i]);
+		}
+		odt_context->controls_context()->set_value(value);
+	}
+	else
+	{
+		convert(oox_sdt->m_oSdtContent.GetPointer());
+	}
 
 	if (bField)
 	{
 		odt_context->end_field();
+	}
+	if (bForm)
+	{
+		odt_context->drawing_context()->end_control();
+		odt_context->drawing_context()->end_drawing();
+
+		odt_context->end_drawings();
+		odt_context->controls_context()->end_control();
 	}
 }
 void DocxConverter::convert(OOX::Logic::CSdtContent *oox_sdt)

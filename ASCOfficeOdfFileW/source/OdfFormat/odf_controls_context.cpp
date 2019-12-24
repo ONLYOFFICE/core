@@ -148,6 +148,11 @@ std::wstring odf_controls_context::Impl::start_control(int type, bool items_set)
 			create_element(L"form", L"date", element, odf_context_);
 			control_implementation = L"ooo:com.sun.star.form.component.DateField";
 		}break;
+		case 12: // image
+		{
+			create_element(L"form", L"image-frame", element, odf_context_);
+			control_implementation = L"ooo:com.sun.star.form.component.DatabaseImageControl";
+		}break;
 	}
 	odf_writer::form_element* form_element = dynamic_cast<odf_writer::form_element*>(element.get());
 
@@ -171,6 +176,21 @@ odf_controls_context::~odf_controls_context()
 std::wstring odf_controls_context::start_control(int type, bool items_set)
 {
 	return impl_->start_control(type, items_set);
+}
+std::wstring odf_controls_context::start_control_sdt(int type)
+{
+	switch(type)
+	{
+	case 2:		return impl_->start_control(2, true);	//sdttypeComboBox
+	case 3:		return impl_->start_control(11, false);	//sdttypeDate	
+	case 6:		return impl_->start_control(2, true);	//sdttypeDropDownList
+	case 9:		return impl_->start_control(12, false);	//sdttypePicture
+	case 10:	return impl_->start_control(9, false);	//sdttypeRichText 
+	case 11:	return impl_->start_control(4, false);	//sdttypeText 
+	case 12:	return impl_->start_control(1, false);	//sdttypeCheckBox
+	}
+
+	return L"";
 }
 void odf_controls_context::end_control()
 {
@@ -218,6 +238,22 @@ void odf_controls_context::set_drop_size(int val)
 	
 	odf_writer::form_combobox *combobox  = dynamic_cast<odf_writer::form_combobox*>(impl_->controls_.back().form_elm);
 	if (combobox ) combobox ->size_ = val;
+}
+void odf_controls_context::add_item(const std::wstring & val)
+{
+	if (impl_->controls_.empty()) return;
+	
+	odf_writer::form_combobox *combobox  = dynamic_cast<odf_writer::form_combobox*>(impl_->controls_.back().form_elm);
+	if (combobox)
+	{
+		office_element_ptr elm;
+		create_element(L"form", L"item", elm, impl_->odf_context_);
+		
+		combobox->add_child_element(elm);
+	
+		odf_writer::form_item *item  = dynamic_cast<odf_writer::form_item*>(elm.get());
+		item->label_ = val;
+	}
 }
 void odf_controls_context::set_macro(const std::wstring & val)
 {
@@ -311,6 +347,7 @@ void odf_controls_context::set_value(const std::wstring & val)
 	if (impl_->controls_.empty()) return;
 
 	impl_->controls_.back().form_elm->value_ = val;
+	impl_->controls_.back().form_elm->current_value_ = val;
 }
 void odf_controls_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {

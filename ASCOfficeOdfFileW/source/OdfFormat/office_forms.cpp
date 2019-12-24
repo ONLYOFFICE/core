@@ -88,7 +88,7 @@ void form_form::serialize(std::wostream & _Wostream)
 			CP_XML_ATTR_OPT(L"form:allow-updates",		allow_updates_);
 			CP_XML_ATTR_OPT(L"form:apply-filter",		apply_filter_);
 			CP_XML_ATTR_OPT(L"form:command",			command_); 
-			CP_XML_ATTR_OPT(L"form:command_type",		command_type_);
+			CP_XML_ATTR_OPT(L"form:command-type",		command_type_);
 			CP_XML_ATTR_OPT(L"form:control-implementation", control_implementation_); 
 			CP_XML_ATTR_OPT(L"form:datasource",			datasource_);
 			CP_XML_ATTR_OPT(L"form:detail-fields",		detail_fields_);
@@ -301,6 +301,25 @@ void form_button::serialize(std::wostream & _Wostream)
 		}
 	}
 }
+// form:image-frame 
+//----------------------------------------------------------------------------------
+const wchar_t * form_image_frame::ns = L"form";
+const wchar_t * form_image_frame::name = L"image-frame";
+
+void form_image_frame::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+		{
+			form_element::serialize_attlist(CP_GET_XML_NODE());
+			CP_XML_ATTR_OPT(L"form:image-data", image_data_);
+		
+			if (properties_) properties_->serialize(CP_XML_STREAM());
+			if (office_event_listeners_) office_event_listeners_->serialize(CP_XML_STREAM());
+		}
+	}
+}
 // form:text
 //----------------------------------------------------------------------------------
 const wchar_t * form_text::ns = L"form";
@@ -402,6 +421,7 @@ void form_checkbox::serialize(std::wostream & _Wostream)
 			{
 				CP_XML_ATTR(L"form:current-state", L"checked" );			
 			}
+			CP_XML_ATTR(L"form:image-position", image_position_);
 			
 			if (properties_) properties_->serialize(CP_XML_STREAM());
 			if (office_event_listeners_) office_event_listeners_->serialize(CP_XML_STREAM());
@@ -424,6 +444,9 @@ void form_combobox::serialize(std::wostream & _Wostream)
 			
 			CP_XML_ATTR_OPT(L"form:source-cell-range",	source_cell_range_);
 			CP_XML_ATTR_OPT(L"form:list-source",		list_source_);
+
+			for (size_t i = 0; i < items_.size(); i++)
+				items_[i]->serialize(CP_XML_STREAM());
 			
 			if (properties_) properties_->serialize(CP_XML_STREAM());
 			if (office_event_listeners_) office_event_listeners_->serialize(CP_XML_STREAM());

@@ -66,6 +66,12 @@ odp_slide_context* odp_conversion_context::slide_context()
 {
 	return &slide_context_;
 }
+odf_controls_context* odp_conversion_context::controls_context()
+{
+	if (slide_context_.page_state_list_.empty()) return NULL;
+	
+	return slide_context_.state().controls_context();
+}
 odf_drawing_context* odp_conversion_context::drawing_context()
 {
 	if (slide_context_.page_state_list_.empty()) return NULL;

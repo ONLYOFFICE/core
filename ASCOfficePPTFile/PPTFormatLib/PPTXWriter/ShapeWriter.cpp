@@ -704,7 +704,8 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
 	if (-1 != pImageElement->m_lPlaceholderType)
 	{
 		m_oWriter.WriteString(std::wstring(L"<p:ph"));
-		if (pImageElement->m_lPlaceholderType > 0)
+		
+		if (pImageElement->m_lPlaceholderType > 0 && pImageElement->m_lPlaceholderType != PT_Body_Empty)
 			m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pImageElement->m_lPlaceholderType) + L"\"");
 		
 		if (-1 != pImageElement->m_lPlaceholderID)
@@ -861,7 +862,7 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
 	{
 		m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
 		
-		if (pShapeElement->m_lPlaceholderType > 0 /*&& !isBodyPlaceholder(pShapeElement->m_lPlaceholderType)*/)
+		if (pShapeElement->m_lPlaceholderType > 0 && pShapeElement->m_lPlaceholderType != PT_Body_Empty)
 			m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pShapeElement->m_lPlaceholderType) + _T("\""));
 		
 		if ( pShapeElement->m_lPlaceholderID != -1)

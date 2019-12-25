@@ -71,7 +71,8 @@ namespace PPT_FORMAT
 		PT_Table					= 21,
 		PT_ClipArt					= 22,
 		PT_OrgChart					= 23,
-		PT_Media					= 24
+		PT_Media					= 24,
+		PT_Body_Empty				= 25
 	};
 
 	enum Instances

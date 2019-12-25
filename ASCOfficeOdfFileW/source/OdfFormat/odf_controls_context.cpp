@@ -47,7 +47,7 @@ namespace odf_writer {
 struct 	odf_control_state
 {
 	office_element_ptr	elm;
-	odf_writer::form_element* form_elm;
+	odf_writer::form_element* form_elm = NULL;
 	
 	_CP_OPT(double) cx;
 	_CP_OPT(double) cy;
@@ -195,7 +195,33 @@ std::wstring odf_controls_context::start_control_sdt(int type)
 void odf_controls_context::end_control()
 {
 }
+void odf_controls_context::add_property(const std::wstring & name, odf_types::office_value_type::type  type, const std::wstring & value)
+{
+	if (impl_->controls_.empty()) return;
 
+	office_element_ptr element;
+	create_element(L"form", L"property", element, impl_->odf_context_);
+
+	odf_writer::form_property* prop = dynamic_cast<odf_writer::form_property*>(element.get());
+	
+	if (prop)
+	{
+		prop->property_name_ = name;
+		prop->value_and_type_.office_value_type_ = type;
+
+		switch(type)
+		{
+		case odf_types::office_value_type::String:
+			prop->value_and_type_.office_string_value_ = value; break;
+		case odf_types::office_value_type::Boolean:
+			prop->value_and_type_.office_boolean_value_ = value; break;
+		default:
+			prop->value_and_type_.office_value_ = value;
+		}			
+		
+		impl_->controls_.back().properties.push_back(element);
+	}
+}
 void odf_controls_context::set_name(const std::wstring & val)
 {
 	if (val.empty()) return;
@@ -346,8 +372,12 @@ void odf_controls_context::set_value(const std::wstring & val)
 {
 	if (impl_->controls_.empty()) return;
 
+	if (impl_->controls_.back().form_elm->value_) return;// может спец значение уже выставлено
+
 	impl_->controls_.back().form_elm->value_ = val;
 	impl_->controls_.back().form_elm->current_value_ = val;
+
+	add_property(L"Text", odf_types::office_value_type::String, val);
 }
 void odf_controls_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
@@ -388,6 +418,7 @@ void odf_controls_context::finalize(office_element_ptr & root_elm)//для пр�
 				elm->add_child_element(impl_->controls_[i].properties[j]);
 			}
 			impl_->controls_[i].elm->add_child_element(elm);
+			impl_->controls_[i].properties.clear();
 		}
 		if (false == impl_->controls_[i].events.empty())
 		{
@@ -401,6 +432,7 @@ void odf_controls_context::finalize(office_element_ptr & root_elm)//для пр�
 			impl_->controls_[i].elm->add_child_element(elm);
 		}
 		elm_form->add_child_element(impl_->controls_[i].elm);
+		impl_->controls_[i].events.clear();
 	}	
 	root_elm->add_child_element(elm_form);
 }

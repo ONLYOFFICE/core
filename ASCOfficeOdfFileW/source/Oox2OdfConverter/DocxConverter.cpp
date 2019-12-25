@@ -475,6 +475,8 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 					odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
 					odt_context->drawing_context()->set_drawings_rect(x, y, width, height); //default
 					
+					width = boost::none;
+					
 					odt_context->drawing_context()->start_drawing();
 					odt_context->drawing_context()->start_control(id);
 				}
@@ -487,6 +489,8 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		}
 		if (bForm && oox_sdt->m_oSdtPr->m_oDate.IsInit())
 		{
+			odt_context->controls_context()->add_property(L"Dropdown", odf_types::office_value_type::Boolean, L"true");
+			
 			if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())
 			{
 				odt_context->controls_context()->set_value(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
@@ -585,6 +589,12 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 			value += dump_text(oox_sdt->m_oSdtContent->m_arrItems[i]);
 		}
 		odt_context->controls_context()->set_value(value);
+
+		if (!width)
+		{
+			width = 10. * value.length(); //todooo sizefont
+			odt_context->drawing_context()->set_size(width, height, true);
+		}
 	}
 	else
 	{

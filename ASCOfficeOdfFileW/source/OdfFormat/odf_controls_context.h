@@ -82,6 +82,7 @@ public:
 	void set_drop_down		(bool val);
 	void set_drop_size		(int val);
 	void add_item			(const std::wstring & val);
+	void add_property		(const std::wstring & name, odf_types::office_value_type::type type, const std::wstring & value);
 
 	void set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
 

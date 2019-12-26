@@ -33,6 +33,7 @@
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
+#include "./FileDownloader.h"
 
 class CFileDownloaderBase
 {
@@ -43,6 +44,9 @@ public :
         m_sFileUrl  = sFileUrl;
         m_bComplete = false;
         m_bDelete   = bDelete;
+
+        m_func_onComplete = NULL;
+        m_func_onProgress = NULL;
     }
     virtual ~CFileDownloaderBase ()
     {
@@ -62,6 +66,8 @@ public:
     bool            m_bComplete;       // Закачался файл или нет
     bool            m_bDelete;         // Удалять ли файл в деструкторе
 
+    CFileDownloader_OnComplete m_func_onComplete;
+    CFileDownloader_OnProgress m_func_onProgress;
 };
 
 class CFileDownloader_private : public NSThreads::CBaseThread
@@ -69,6 +75,12 @@ class CFileDownloader_private : public NSThreads::CBaseThread
 protected:
     // создаем в зависимости от платформы
     CFileDownloaderBase* m_pInternal;
+
+public:
+    CFileDownloaderBase* GetInternal()
+    {
+        return m_pInternal;
+    }
 
 public:
     CFileDownloader_private(std::wstring sFileUrl, bool bDelete = true);
@@ -108,18 +120,13 @@ protected :
     {
         m_pInternal->m_bComplete = false;
 
-        if ( true )
-        {
-            int hrResultAll = m_pInternal->DownloadFile();
+        int hrResultAll = m_pInternal->DownloadFile();
+        if (0 == hrResultAll)
+            m_pInternal->m_bComplete = true;
 
-            if (0 != hrResultAll)
-            {
-                m_bRunThread = FALSE;
-                return 0;
-            }
-        }
+        if (m_pInternal->m_func_onComplete)
+            m_pInternal->m_func_onComplete(hrResultAll);
 
-        m_pInternal->m_bComplete = true;
         m_bRunThread = FALSE;
         return 0;
     }

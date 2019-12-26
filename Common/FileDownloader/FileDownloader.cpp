@@ -103,6 +103,15 @@ void CFileDownloader::CheckSuspend()
     return m_pInternal->CheckSuspend();
 }
 
+void CFileDownloader::SetEvent_OnProgress(CFileDownloader_OnProgress func)
+{
+    m_pInternal->GetInternal()->m_func_onProgress = func;
+}
+void CFileDownloader::SetEvent_OnComplete(CFileDownloader_OnComplete func)
+{
+    m_pInternal->GetInternal()->m_func_onComplete = func;
+}
+
 #ifdef _MAC
 bool CFileDownloader::m_bIsARCEnabled = false;
 

@@ -280,26 +280,8 @@ namespace OOX
 					{
 						std::unordered_map<std::wstring, CThreadedComment*>::iterator pFind = pThreadedComments->m_mapTopLevelThreadedComments.end();
 
-						if(pComment->m_oUid.IsInit())
-						{
-							//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
-							if(pComment->m_oUid->IsZero() && pComment->m_oRef.IsInit())
-							{
-								for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
-								{
-									if (it->second->ref.IsInit() && pComment->m_oRef->GetValue() == it->second->ref.get())
-									{
-										pFind = it;
-										break;
-									}
-								}
-							}
-							else
-							{
-								pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(pComment->m_oUid->ToString());
-							}
-						}
-						else if(pComment->m_oAuthorId.IsInit())
+						bool isPlaceholder = false;
+						if(pComment->m_oAuthorId.IsInit())
 						{
 							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
 
@@ -308,7 +290,25 @@ namespace OOX
 								const std::wstring& sAuthor = arAuthors[nAuthorId];
 								if(0 == sAuthor.compare(0, 3, L"tc="))
 								{
-									pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(sAuthor.substr(3));
+									isPlaceholder = true;
+									std::wstring sGUID = sAuthor.substr(3);
+									//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
+									if (L"{00000000-0000-0000-0000-000000000000}" == sGUID && pComment->m_oRef.IsInit())
+									{
+										for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
+										{
+											if (it->second->ref.IsInit() && pComment->m_oRef->GetValue() == it->second->ref.get())
+											{
+												pFind = it;
+												break;
+											}
+										}
+									}
+									else
+									{
+										pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(sGUID);
+									}
+
 								}
 							}
 						}
@@ -324,7 +324,7 @@ namespace OOX
 								mapCheckCopyThreadedComments[pThreadedComment->id->ToString()] = 1;
 							}
 						}
-						else
+						else if(isPlaceholder)
 						{
 							continue;
 						}

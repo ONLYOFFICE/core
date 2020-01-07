@@ -25,6 +25,12 @@ core_ios {
     OBJECTIVE_SOURCES += UnicodeConverter_internal_ios.mm
 }
 
+core_android {
+    CONFIG += core_disable_icu
+
+    SOURCES += UnicodeConverter_internal_android.cpp
+}
+
 !core_disable_icu {
     include(../Common/3dParty/icu/icu.pri)
 

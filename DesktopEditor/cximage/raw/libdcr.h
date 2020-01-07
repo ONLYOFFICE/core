@@ -45,9 +45,30 @@
 #if defined(_LINUX) || defined(__APPLE__)
  #include <setjmp.h>
  #include <sys/types.h>
- #define _swab   swab
  #define _getcwd getcwd
  #include <time.h>
+
+#ifdef __ANDROID__
+#include <unistd.h>
+#if __ANDROID_API__ < 28
+static void swab(const char* __src, char* __dst, ssize_t __byte_count)
+{
+    ssize_t len = __byte_count;
+    if (1 == (len & 1))
+    {
+        __dst[len - 1] = __src[len - 1];
+        len -= 1;
+    }
+    for (ssize_t i = 0; i < len; i++)
+    {
+        __dst[i] = __src[i + 1];
+        __dst[i + 1] = __src[i];
+    }
+}
+#endif
+#define _swab   swab
+#endif
+
 #endif
 
 #define DCR_VERSION "8.93"

@@ -189,6 +189,10 @@ core_ios {
 }
 core_android {
     CORE_BUILDS_PLATFORM_PREFIX = $$join(ANDROID_TARGET_ARCH, ANDROID_TARGET_ARCH, "android_", "")
+
+    !core_android_no_unistd {
+        DEFINES += HAVE_UNISTD_H
+    }
 }
 
 core_debug {
@@ -263,3 +267,6 @@ core_windows {
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 }
+
+ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
+!isEmpty(ADD_INC_PATH):INCLUDEPATH += $$ADD_INC_PATH

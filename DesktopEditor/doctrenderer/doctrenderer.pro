@@ -35,6 +35,9 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 core_ios {
     CONFIG += doct_renderer_empty
 }
+core_android {
+    CONFIG += doct_renderer_empty
+}
 
 doct_renderer_empty {
 SOURCES += doctrenderer_empty.cpp

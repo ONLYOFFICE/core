@@ -59,7 +59,7 @@ static void swab(const char* __src, char* __dst, ssize_t __byte_count)
         __dst[len - 1] = __src[len - 1];
         len -= 1;
     }
-    for (ssize_t i = 0; i < len; i++)
+    for (ssize_t i = 0; i < len; i += 2)
     {
         __dst[i] = __src[i + 1];
         __dst[i + 1] = __src[i];

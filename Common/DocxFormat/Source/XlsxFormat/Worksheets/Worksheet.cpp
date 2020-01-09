@@ -399,14 +399,14 @@ namespace OOX
 								pClientData->getAnchorArray(m_aAnchor);
 								if(8 <= m_aAnchor.size())
 								{
-									pCommentItem->m_nLeft = m_aAnchor[0];
-									pCommentItem->m_nLeftOffset = m_aAnchor[1];
-									pCommentItem->m_nTop = m_aAnchor[2];
-									pCommentItem->m_nTopOffset = m_aAnchor[3];
-									pCommentItem->m_nRight = m_aAnchor[4];
-									pCommentItem->m_nRightOffset = m_aAnchor[5];
-									pCommentItem->m_nBottom = m_aAnchor[6];
-									pCommentItem->m_nBottomOffset = m_aAnchor[7];
+									pCommentItem->m_nLeft = abs(m_aAnchor[0]);
+									pCommentItem->m_nLeftOffset = abs(m_aAnchor[1]);
+									pCommentItem->m_nTop = abs(m_aAnchor[2]);
+									pCommentItem->m_nTopOffset = abs(m_aAnchor[3]);
+									pCommentItem->m_nRight = abs(m_aAnchor[4]);
+									pCommentItem->m_nRightOffset = abs(m_aAnchor[5]);
+									pCommentItem->m_nBottom = abs(m_aAnchor[6]);
+									pCommentItem->m_nBottomOffset =abs( m_aAnchor[7]);
 								}
 								pCommentItem->m_bMove = pClientData->m_oMoveWithCells;
 								pCommentItem->m_bSize = pClientData->m_oSizeWithCells;

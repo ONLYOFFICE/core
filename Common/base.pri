@@ -205,10 +205,12 @@ core_ios {
             #QMAKE_MAC_XCODE_SETTINGS += Q_ENABLE_BITCODE
             #QMAKE_MAC_XCODE_SETTINGS += Q_BITCODE_GENERATION_MODE
 
-            # for libraries§
-            QMAKE_LFLAGS += -Xlinker -bitcode_verify
-            QMAKE_LFLAGS += -Xlinker -bitcode_hide_symbols
-            #QMAKE_LFLAGS += -Xlinker -bitcode_symbol_map -Xlinker $$CORE_BUILDS_LIBRARIES_PATH
+            # for libraries
+            !core_debug {
+                QMAKE_LFLAGS += -Xlinker -bitcode_verify
+                QMAKE_LFLAGS += -Xlinker -bitcode_hide_symbols
+                #QMAKE_LFLAGS += -Xlinker -bitcode_symbol_map -Xlinker $$CORE_BUILDS_LIBRARIES_PATH
+            }
         }
     }
 

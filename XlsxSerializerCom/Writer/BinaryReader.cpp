@@ -3299,8 +3299,15 @@ void BinaryCommentReader::parseCommentData(SerializeCommon::CommentData* pCommen
 {
 	if(NULL != pCommentData && false == pCommentData->sText.empty())
 	{
-		addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
-		addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
+		if (pCommentData->sUserName.empty())
+		{
+			addCommentRun(oSi, pCommentData->sText, false);
+		}
+		else
+		{
+			addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
+			addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
+		}
 	}
 }
 void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold)

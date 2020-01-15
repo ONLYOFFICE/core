@@ -44,6 +44,13 @@
 #include "../../DesktopEditor/common/Directory.h"
 
 #include "../include/ASCSVGWriter.h"
+#include "../../Common/FileDownloader/FileDownloader.h"
+
+void Download_OnComplete(int error)
+{
+    int y = error;
+    return;
+}
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
@@ -52,9 +59,17 @@
 //#define TO_PDF
 //#define TO_HTML_RENDERER
 //#define ONLY_TEXT
+//#define DOWNLOADER_TEST
 
 int main(int argc, char *argv[])
 {
+#ifdef DOWNLOADER_TEST
+    CFileDownloader oDownloader(L"https://download.onlyoffice.com/assets/fb/fb_icon_325x325.jpg", false);
+    oDownloader.SetFilePath(L"D:\\111.jpg");
+    oDownloader.SetEvent_OnComplete(Download_OnComplete);
+    oDownloader.DownloadSync();
+#endif
+
 #ifdef RASTER_TEST
     CBgraFrame oFrame;
     oFrame.OpenFile(L"D:\\22.png");

@@ -34,6 +34,10 @@
 #include <string>
 #include "../kernel_config.h"
 
+typedef void (*CFileDownloader_OnComplete)(int error);
+// <return> cancel: 1, else 0
+typedef int (*CFileDownloader_OnProgress)(int percent);
+
 class CFileDownloader_private;
 class KERNEL_DECL CFileDownloader
 {
@@ -67,6 +71,10 @@ public:
     int GetPriority();
 
     void CheckSuspend();
+
+    //events
+    void SetEvent_OnProgress(CFileDownloader_OnProgress);
+    void SetEvent_OnComplete(CFileDownloader_OnComplete);
 
 #ifdef _MAC
     static void SetARCEnabled(const bool& enabled);

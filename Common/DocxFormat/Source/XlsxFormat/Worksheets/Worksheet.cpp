@@ -280,26 +280,8 @@ namespace OOX
 					{
 						std::unordered_map<std::wstring, CThreadedComment*>::iterator pFind = pThreadedComments->m_mapTopLevelThreadedComments.end();
 
-						if(pComment->m_oUid.IsInit())
-						{
-							//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
-							if(pComment->m_oUid->IsZero() && pComment->m_oRef.IsInit())
-							{
-								for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
-								{
-									if (it->second->ref.IsInit() && pComment->m_oRef->GetValue() == it->second->ref.get())
-									{
-										pFind = it;
-										break;
-									}
-								}
-							}
-							else
-							{
-								pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(pComment->m_oUid->ToString());
-							}
-						}
-						else if(pComment->m_oAuthorId.IsInit())
+						bool isPlaceholder = false;
+						if(pComment->m_oAuthorId.IsInit())
 						{
 							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
 
@@ -308,7 +290,25 @@ namespace OOX
 								const std::wstring& sAuthor = arAuthors[nAuthorId];
 								if(0 == sAuthor.compare(0, 3, L"tc="))
 								{
-									pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(sAuthor.substr(3));
+									isPlaceholder = true;
+									std::wstring sGUID = sAuthor.substr(3);
+									//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
+									if (L"{00000000-0000-0000-0000-000000000000}" == sGUID && pComment->m_oRef.IsInit())
+									{
+										for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
+										{
+											if (it->second->ref.IsInit() && pComment->m_oRef->GetValue() == it->second->ref.get())
+											{
+												pFind = it;
+												break;
+											}
+										}
+									}
+									else
+									{
+										pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(sGUID);
+									}
+
 								}
 							}
 						}
@@ -324,7 +324,7 @@ namespace OOX
 								mapCheckCopyThreadedComments[pThreadedComment->id->ToString()] = 1;
 							}
 						}
-						else
+						else if(isPlaceholder)
 						{
 							continue;
 						}
@@ -399,14 +399,14 @@ namespace OOX
 								pClientData->getAnchorArray(m_aAnchor);
 								if(8 <= m_aAnchor.size())
 								{
-									pCommentItem->m_nLeft = m_aAnchor[0];
-									pCommentItem->m_nLeftOffset = m_aAnchor[1];
-									pCommentItem->m_nTop = m_aAnchor[2];
-									pCommentItem->m_nTopOffset = m_aAnchor[3];
-									pCommentItem->m_nRight = m_aAnchor[4];
-									pCommentItem->m_nRightOffset = m_aAnchor[5];
-									pCommentItem->m_nBottom = m_aAnchor[6];
-									pCommentItem->m_nBottomOffset = m_aAnchor[7];
+									pCommentItem->m_nLeft = abs(m_aAnchor[0]);
+									pCommentItem->m_nLeftOffset = abs(m_aAnchor[1]);
+									pCommentItem->m_nTop = abs(m_aAnchor[2]);
+									pCommentItem->m_nTopOffset = abs(m_aAnchor[3]);
+									pCommentItem->m_nRight = abs(m_aAnchor[4]);
+									pCommentItem->m_nRightOffset = abs(m_aAnchor[5]);
+									pCommentItem->m_nBottom = abs(m_aAnchor[6]);
+									pCommentItem->m_nBottomOffset =abs( m_aAnchor[7]);
 								}
 								pCommentItem->m_bMove = pClientData->m_oMoveWithCells;
 								pCommentItem->m_bSize = pClientData->m_oSizeWithCells;

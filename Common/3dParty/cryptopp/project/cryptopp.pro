@@ -11,16 +11,10 @@ PWD_ROOT_DIR = $$PWD
 
 include(../../../../Common/base.pri)
 
-core_linux {
-    DEFINES -= NDEBUG
-}
-core_mac {
-    DEFINES -= MAC
-}
-
-core_windows {
-    DEFINES -= UNICODE _UNICODE
-}
+core_linux:DEFINES -= NDEBUG
+core_mac:DEFINES -= MAC
+core_ios:DEFINES -= MAC
+core_windows:DEFINES -= UNICODE _UNICODE
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 

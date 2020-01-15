@@ -33,6 +33,9 @@
 #if defined(CreateDirectory)
 #undef CreateDirectory
 #endif
+#if defined(CopyDirectory)
+#undef CopyDirectory
+#endif
 
 #ifndef _BUILD_DIRECTORY_CROSSPLATFORM_H_
 #define _BUILD_DIRECTORY_CROSSPLATFORM_H_
@@ -67,6 +70,7 @@ namespace NSDirectory
     KERNEL_DECL bool Exists(const std::wstring& strDirectory);
     KERNEL_DECL bool CreateDirectory(const std::wstring& strDirectory);
     KERNEL_DECL bool CreateDirectories(const std::wstring& strDirectory);
+    KERNEL_DECL bool CopyDirectory(const std::wstring& strSrc, const std::wstring& strDst, bool bIsRecursion = true);
     KERNEL_DECL void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true);
     KERNEL_DECL std::wstring GetFolderPath(const std::wstring& wsFolderPath);
     KERNEL_DECL std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix);

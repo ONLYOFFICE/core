@@ -26,17 +26,6 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-core_linux {
-    QMAKE_LFLAGS += -Wl,--rpath=./:./system
-}
-
-core_win_64 {
-    QMAKE_LFLAGS_CONSOLE  = /SUBSYSTEM:CONSOLE,5.02
-}
-core_win_32 {
-    QMAKE_LFLAGS_CONSOLE  = /SUBSYSTEM:CONSOLE,5.01
-}
-
 CUSTOM_VERSION_PATH = $$(DOCBUILDER_VERSION_PATH)
 isEmpty(CUSTOM_VERSION_PATH){
     CUSTOM_VERSION_PATH=.

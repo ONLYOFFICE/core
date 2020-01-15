@@ -65,7 +65,7 @@ isEqual(QT_MAJOR_VERSION, 5) {
 
 ios {
     CONFIG += core_ios
-    DEFINES += _IOS IOS LINUX _LINUX _MAC _XCODE
+    DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE
 }
 android {
     CONFIG += core_android
@@ -139,6 +139,17 @@ core_windows {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
+
+    equals(TEMPLATE, app) {
+        core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.02
+        core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
+    }
+}
+
+core_linux {
+    equals(TEMPLATE, app) {
+        QMAKE_LFLAGS += -Wl,--rpath=./:./system
+    }
 }
 
 core_win_32 {

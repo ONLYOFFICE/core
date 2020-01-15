@@ -365,6 +365,118 @@ namespace NSDirectory
 #endif
 		return false;
 	}
+    bool CopyDirectory(const std::wstring& strSrc, const std::wstring& strDst, bool bIsRecursion)
+    {
+        if (!NSDirectory::Exists(strDst))
+            NSDirectory::CreateDirectory(strDst);
+
+#ifdef WIN32
+        WIN32_FIND_DATAW oFD;
+
+        std::wstring sSpec = strSrc + L"\\*.*";
+        HANDLE hRes = FindFirstFileW( sSpec.c_str(), &oFD );
+        if( INVALID_HANDLE_VALUE == hRes )
+            return false;
+        do
+        {
+            sSpec = oFD.cFileName;
+            if (sSpec != L"." && sSpec != L"..")
+            {
+                if( !( oFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
+                {
+                    NSFile::CFileBinary::Copy(strSrc + L"/" + sSpec, strDst + L"/" + sSpec);
+                }
+                else if (bIsRecursion)
+                {
+                    CopyDirectory(strSrc + L"/" + sSpec, strDst + L"/" + sSpec, bIsRecursion);
+                }
+            }
+        } while( FindNextFileW( hRes, &oFD ) );
+        FindClose( hRes );
+        return true;
+#endif
+
+#ifdef __linux__
+        BYTE* pUtf8 = NULL;
+        LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8, lLen, false);
+        DIR *dp;
+        struct dirent *dirp;
+        if((dp  = opendir((char*)pUtf8)) != NULL)
+        {
+            while ((dirp = readdir(dp)) != NULL)
+            {
+                int nType = 0;
+                if(DT_REG == dirp->d_type)
+                    nType = 2;
+                else if (DT_DIR == dirp->d_type)
+                    nType = 1;
+                else if (DT_UNKNOWN == dirp->d_type)
+                {
+                     // XFS problem
+                     struct stat buff;
+                     std::string sTmp = std::string((char*)pUtf8) + "/" + std::string(dirp->d_name);
+                     stat(sTmp.c_str(), &buff);
+                     if (S_ISREG(buff.st_mode))
+                        nType = 2;
+                     else if (S_ISDIR(buff.st_mode))
+                        nType = 1;
+                }
+
+                if (2 == nType)
+                {
+                    std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
+                    NSFile::CFileBinary::Copy(strSrc + L"/" + sName, strDst + L"/" + sName);
+                }
+
+                if (bIsRecursion && (1 == nType))
+                {
+                    if(dirp->d_name[0] != '.')
+                    {
+                        std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
+                        CopyDirectory(strSrc + L"/" + sName, strDst + L"/" + sName, bIsRecursion);
+                    }
+                }
+            }
+            closedir(dp);
+        }
+        delete [] pUtf8;
+        return true;
+#endif
+
+#if defined(MAC) || defined (_IOS)
+        BYTE* pUtf8 = NULL;
+        LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8, lLen, false);
+        DIR *dp;
+        struct dirent *dirp;
+        if((dp  = opendir((char*)pUtf8)) != NULL)
+        {
+            while ((dirp = readdir(dp)) != NULL)
+            {
+                if(DT_REG == dirp->d_type)
+                {
+                    std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
+                    NSFile::CFileBinary::Copy(strSrc + L"/" + sName, strDst + L"/" + sName);
+                }
+
+                if (bIsRecursion && DT_DIR == dirp->d_type)
+                {
+                    if(dirp->d_name[0] != '.')
+                    {
+                        std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
+                        CopyDirectory(strSrc + L"/" + sName, strDst + L"/" + sName, bIsRecursion);
+                    }
+                }
+            }
+            closedir(dp);
+        }
+        delete [] pUtf8;
+        return true;
+#endif
+
+        return false;
+    }
     void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot)
 	{
 		std::vector<std::wstring> aFiles = GetFiles(strDirectory);

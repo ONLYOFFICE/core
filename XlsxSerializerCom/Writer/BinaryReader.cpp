@@ -3118,21 +3118,21 @@ int BinaryCommentReader::ReadComment(BYTE type, long length, void* poResult)
 		READ1_DEF(length, res, this->ReadCommentDatas, pNewComment);
 	}
 	else if ( c_oSer_Comments::Left == type )
-		pNewComment->m_nLeft = m_oBufferedStream.GetLong();
+		pNewComment->m_nLeft = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::Top == type )
-		pNewComment->m_nTop = m_oBufferedStream.GetLong();
+		pNewComment->m_nTop = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::Right == type )
-		pNewComment->m_nRight = m_oBufferedStream.GetLong();
+		pNewComment->m_nRight = abs( m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::Bottom == type )
-		pNewComment->m_nBottom = m_oBufferedStream.GetLong();
+		pNewComment->m_nBottom = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::LeftOffset == type )
-		pNewComment->m_nLeftOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nLeftOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::TopOffset == type )
-		pNewComment->m_nTopOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nTopOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::RightOffset == type )
-		pNewComment->m_nRightOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nRightOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::BottomOffset == type )
-		pNewComment->m_nBottomOffset = m_oBufferedStream.GetLong();
+		pNewComment->m_nBottomOffset = abs(m_oBufferedStream.GetLong());
 	else if ( c_oSer_Comments::LeftMM == type )
 		pNewComment->m_dLeftMM = m_oBufferedStream.GetDoubleReal();
 	else if ( c_oSer_Comments::TopMM == type )
@@ -3299,8 +3299,15 @@ void BinaryCommentReader::parseCommentData(SerializeCommon::CommentData* pCommen
 {
 	if(NULL != pCommentData && false == pCommentData->sText.empty())
 	{
-		addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
-		addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
+		if (pCommentData->sUserName.empty())
+		{
+			addCommentRun(oSi, pCommentData->sText, false);
+		}
+		else
+		{
+			addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
+			addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
+		}
 	}
 }
 void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold)

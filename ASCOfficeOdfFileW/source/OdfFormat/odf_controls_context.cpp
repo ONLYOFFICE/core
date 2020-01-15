@@ -372,8 +372,6 @@ void odf_controls_context::set_value(const std::wstring & val)
 {
 	if (impl_->controls_.empty()) return;
 
-	if (impl_->controls_.back().form_elm->value_) return;// может спец значение уже выставлено
-
 	impl_->controls_.back().form_elm->value_ = val;
 	impl_->controls_.back().form_elm->current_value_ = val;
 

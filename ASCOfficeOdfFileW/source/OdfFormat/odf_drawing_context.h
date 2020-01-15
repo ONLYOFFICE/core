@@ -53,6 +53,7 @@ class odf_conversion_context;
 class odf_style_context;
 class odf_text_context;
 class style_paragraph_properties;
+class style_text_properties;
 
 class odf_drawing_context
 {
@@ -137,6 +138,7 @@ public:
 	bool change_text_box_2_wordart	();
 	bool is_wordart					();
 	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);
+	void set_text_properties		(style_text_properties *text_properties);
 	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);

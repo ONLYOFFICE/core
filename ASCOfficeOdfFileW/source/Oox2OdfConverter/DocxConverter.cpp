@@ -285,6 +285,12 @@ std::wstring DocxConverter::dump_text(OOX::WritingElement *oox_unknown)
 				result += dump_text(run->m_arrItems[i]);
 			}
 		}break;
+		case OOX::et_w_rPr:
+		{
+			odf_writer::style_text_properties text_properties;
+			convert(dynamic_cast<OOX::Logic::CRunProperty*>(oox_unknown), &text_properties);
+			odt_context->drawing_context()->set_text_properties(&text_properties);
+		}break;
 		case OOX::et_w_p:
 		{
 			OOX::Logic::CParagraph* para = dynamic_cast<OOX::Logic::CParagraph*>(oox_unknown);
@@ -493,7 +499,8 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 			
 			if (oox_sdt->m_oSdtPr->m_oDate->m_oFullDate.IsInit())
 			{
-				odt_context->controls_context()->set_value(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
+				odt_context->controls_context()->add_property(L"Dropdown", odf_types::office_value_type::Boolean, L"true");
+				//odt_context->controls_context()->set_value(oox_sdt->m_oSdtPr->m_oDate->m_oFullDate->ToString());
 			}
 			if ((oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat.IsInit()) && 
 				(oox_sdt->m_oSdtPr->m_oDate->m_oDateFormat->m_sVal.IsInit()))
@@ -587,6 +594,10 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		for (size_t i = 0; i < oox_sdt->m_oSdtContent->m_arrItems.size(); i++)
 		{
 			value += dump_text(oox_sdt->m_oSdtContent->m_arrItems[i]);
+		}
+		if ((false == value.empty()) && (value.back() == L'\n'))
+		{
+			value.erase(value.back());
 		}
 		odt_context->controls_context()->set_value(value);
 
@@ -1617,11 +1628,12 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 {	
 	if (!shading) return;	
 	
-	if ((shading->m_oVal.IsInit()) && ( shading->m_oVal->GetValue() == SimpleTypes::shdClear || 
-										shading->m_oVal->GetValue() == SimpleTypes::shdNil))
-	{
+	if ((true == shading->m_oVal.IsInit()) && 
+			((shading->m_oVal->GetValue() == SimpleTypes::shdClear && false == shading->m_oFill.IsInit())
+			||
+			(shading->m_oVal->GetValue() == SimpleTypes::shdNil)))
 		return;
-	}
+
 	convert(shading->m_oFill.GetPointer(), shading->m_oThemeFill.GetPointer(),
 		shading->m_oThemeFillTint.GetPointer(), shading->m_oThemeShade.GetPointer(), odf_color);
 		
@@ -1789,12 +1801,12 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		{
 			double length_cm = bottom->get_value_unit(length::cm) -( footer ? footer->get_value_unit(length::cm) : 0);
 		
-			if (length_cm > 0.01)
+			if (length_cm > 2.4)
 			{
 				bottom = footer;
 				footer = length(fabs(length_cm), length::cm);
 			}
-			else if (-length_cm > 0.01)
+			else if (-length_cm > 2.4)
 			{
 				footer = length(-length_cm, length::cm);//fo_min_height_
 			}
@@ -1807,12 +1819,12 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		{
 			double length_cm = top->get_value_unit(length::cm) - (header ? header->get_value_unit(length::cm) : 0);
 		
-			if (length_cm > 0.01)
+			if (length_cm > 2.4)
 			{
 				top = header;
 				header = length(fabs(length_cm), length::cm);
 			}
-			else if (-length_cm > 0.01)
+			else if (-length_cm > 2.4)
 			{
 				header = length(-length_cm, length::cm);//fo_min_height_
 			}

@@ -70,7 +70,6 @@ length_or_percent length_or_percent::parse(const std::wstring & Str)
     } 
     catch(errors::invalid_attribute & ) {}
 
-    BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
     return length_or_percent(length::parse(L"0cm"));
 }
 

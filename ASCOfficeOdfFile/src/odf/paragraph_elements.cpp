@@ -347,6 +347,11 @@ std::wostream & bookmark::text_to_stream(std::wostream & _Wostream, bool bXmlEnc
 {
     return _Wostream;
 }
+void bookmark::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.start_bookmark(text_name_);
+	Context.end_bookmark(text_name_);
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * bookmark_start::ns = L"text";
 const wchar_t * bookmark_start::name = L"bookmark-start";

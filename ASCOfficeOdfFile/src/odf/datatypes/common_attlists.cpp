@@ -202,6 +202,10 @@ void common_vertical_margin_attlist::add_attributes( const xml::attributes_wc_pt
 }
 void common_vertical_margin_attlist::serialize(CP_ATTR_NODE)
 {
+	double v = 0;
+	if (fo_margin_top_)
+		v = fo_margin_top_->get_length().get_value_unit(length::pt);
+
     CP_XML_ATTR_OPT(L"fo:margin-top", fo_margin_top_);
     CP_XML_ATTR_OPT(L"fo:margin-bottom", fo_margin_bottom_);
 }
@@ -277,7 +281,7 @@ void common_page_number_attlist::add_attributes( const xml::attributes_wc_ptr & 
     CP_APPLY_ATTR(L"style:first-page-number", str2);
 	if ((str2) && (*str2 != L"continue"))
 	{
-		style_first_page_number_ = XmlUtils::GetInteger(*str1);
+		style_first_page_number_ = XmlUtils::GetInteger(*str2);
 	}
 }
 void common_page_number_attlist::apply_from(const common_page_number_attlist & Other)

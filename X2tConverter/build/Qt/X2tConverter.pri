@@ -18,19 +18,8 @@ include(../../../Common/3dParty/icu/icu.pri)
 
 core_windows {
     QMAKE_LFLAGS += /INCREMENTAL:NO
-
-    contains(QMAKE_TARGET.arch, x86_64):{
-        QMAKE_LFLAGS_CONSOLE  = /SUBSYSTEM:CONSOLE,5.02
-    } else {
-        QMAKE_LFLAGS_CONSOLE  = /SUBSYSTEM:CONSOLE,5.01
-    }
-
 } else {
     QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
-}
-
-core_linux {
-    QMAKE_LFLAGS += -Wl,--rpath=./:./system
 }
 
 DEFINES += UNICODE \

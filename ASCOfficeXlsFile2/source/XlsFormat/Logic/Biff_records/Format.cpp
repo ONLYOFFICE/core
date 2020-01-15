@@ -31,7 +31,7 @@
  */
 #include "Format.h"
 
-#include <utils.h>
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
@@ -55,17 +55,18 @@ void Format::readFields(CFRecord& record)
 {
 	record >> ifmt;
 	
+	XLUnicodeString format;
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
 		ShortXLAnsiString name;
 		record >> name;
 		
-		stFormat = name;
+		format = name;
 	}
 	else
-		record >> stFormat;
+		record >> format;
 
-	stFormat = xml::utils::replace_xml_to_text(stFormat.value());
+	stFormat = XmlUtils::EncodeXmlString(format.value(), true);
 }
 
 int Format::serialize(std::wostream & stream)
@@ -75,7 +76,7 @@ int Format::serialize(std::wostream & stream)
         CP_XML_NODE(L"numFmt")
         {
 			CP_XML_ATTR(L"numFmtId", ifmt);
-			CP_XML_ATTR(L"formatCode", /*xml::utils::replace_text_to_xml*/(stFormat.value()));
+			CP_XML_ATTR(L"formatCode", stFormat);
 		}
 	}
 	return 1;

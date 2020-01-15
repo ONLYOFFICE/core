@@ -138,7 +138,7 @@ void TxO::readFields(CFRecord& record)
 			TxOruns.load(record);
 		}
 
-		while( !recs.empty() )
+		while( !recs.empty() )		//conv_mBlVSC4SdPjzpsbeHh5Xrvy_FGVK2If3MIikj_3FS5k__xlsx.xls
 		{
 			sp_enabled	= true;
 			mso_drawing_->storeRecordAndDecideProceeding(recs.front());

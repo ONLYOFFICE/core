@@ -130,7 +130,7 @@ int STYLES::serialize(std::wostream & stream)
 							{
 								name = L"Style " + std::to_wstring( i + 1);
 							}
-							CP_XML_ATTR(L"name", name);
+							CP_XML_ATTR(L"name", XmlUtils::EncodeXmlString(name, true));
 						
 							if (styleExt->fBuiltIn && styleExt->builtInData.istyBuiltIn < 255)
 							{
@@ -157,7 +157,7 @@ int STYLES::serialize(std::wostream & stream)
 								XmlUtils::replace_all(name, L"\x0a", L"_x000a_");
 							}
 
-							CP_XML_ATTR(L"name", name);
+							CP_XML_ATTR(L"name", XmlUtils::EncodeXmlString(name, true));
 								
 							if (style->fBuiltIn)
 							{

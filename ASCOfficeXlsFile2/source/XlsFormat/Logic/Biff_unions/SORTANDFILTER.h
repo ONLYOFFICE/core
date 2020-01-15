@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SORTANDFILTER union of records 
 class SORTANDFILTER: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SORTANDFILTER)
@@ -51,7 +49,7 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	static const ElementType	type = typeSORTANDFILTER;
+	static const ElementType type = typeSORTANDFILTER;
 
 	BaseObjectPtr				m_Sort;
 	BaseObjectPtr				m_SORTDATA12;

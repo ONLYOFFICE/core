@@ -113,6 +113,59 @@ public:
 		return recalculateStructSize();
     }
 
+	void load_(CFRecord& record)
+	{
+		size_t cch;
+		size_t struct_size = 0;
+
+		if (record.getRdPtr() >= record.getDataSize())
+			return;
+
+		bool is_wide = false;
+		
+		switch(cch_where)
+		{
+			case cch_READ_FROM_RECORD:
+				cchType cch_l; // Just to conform size read.
+				record >> cch_l;
+				cch = cch_l;
+				struct_size += sizeof(cchType);
+				break;
+			case cch_PASSED_AS_AN_ARGUMENT:
+				cch = getSize();
+				break;
+		}
+		switch(det_id)
+		{
+			case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
+				if(0 == cch) break;
+			case aw_READ_FROM_RECORD:
+				unsigned char fHighByte;
+				record >> fHighByte;
+				fHighByte &= 1;
+				is_wide = fHighByte != 0;
+				struct_size += sizeof(fHighByte);
+				break;
+			case aw_WIDE:
+				is_wide = true;
+				break;
+			case aw_ANSI:
+				is_wide = false;
+				break;
+			case aw_READ_FROM_CCH:
+				cchType cch_real = static_cast<cchType>(cch);
+				is_wide = 0 != (cch_real & (1 << ((sizeof(cchType) * 8) - 1)));
+				cch &= (static_cast<cchType>(-1) >> 1);
+				break;
+		}
+
+		
+		struct_size += (cch << (is_wide ? 1 : 0));
+
+		load(record, cch, is_wide);
+		setStructSize(struct_size); 
+	}
+
 private:
 	const size_t recalculateStructSize() const
 	{
@@ -161,56 +214,7 @@ typedef XLUnicodeString_T<unsigned short,	aw_ANSI,								cch_PASSED_AS_AN_ARGUM
 template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
 CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_where>& val)
 {
-	size_t cch;
-	size_t struct_size = 0;
-
-	if (record.getRdPtr() >= record.getDataSize())
-		return record;
-
-	bool is_wide = false;
-	
-	switch(cch_where)
-	{
-		case cch_READ_FROM_RECORD:
-			cchType cch_l; // Just to conform size read.
-			record >> cch_l;
-			cch = cch_l;
-			struct_size += sizeof(cchType);
-			break;
-		case cch_PASSED_AS_AN_ARGUMENT:
-			cch = val.getSize();
-			break;
-	}
-	switch(det_id)
-	{
-		case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
-			if(0 == cch) break;
-		case aw_READ_FROM_RECORD:
-			unsigned char fHighByte;
-			record >> fHighByte;
-			fHighByte &= 1;
-			is_wide = fHighByte != 0;
-			struct_size += sizeof(fHighByte);
-			break;
-		case aw_WIDE:
-			is_wide = true;
-			break;
-		case aw_ANSI:
-			is_wide = false;
-			break;
-		case aw_READ_FROM_CCH:
-			cchType cch_real = static_cast<cchType>(cch);
-			is_wide = 0 != (cch_real & (1 << ((sizeof(cchType) * 8) - 1)));
-			cch &= (static_cast<cchType>(-1) >> 1);
-			break;
-	}
-
-	
-	struct_size += (cch << (is_wide ? 1 : 0));
-
-	val.load(record, cch, is_wide);
-	val.setStructSize(struct_size); 
-	
+	val.load_(record);
 	return record;
 }
 

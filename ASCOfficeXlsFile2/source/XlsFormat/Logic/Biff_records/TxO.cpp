@@ -124,13 +124,40 @@ void TxO::readFields(CFRecord& record)
 		int sz = cchText;
 		if ( cbRuns )
 		{	
-			while (record.getRdPtr() + cchText > record.getDataSize() && !recs.empty())
+			std::wstring result;
+			
+			if(record.getDataSize() - record.getRdPtr() > 0)
 			{
-				record.appendRawData(recs.front());
+				XLUnicodeStringNoCch val;
+				unsigned char fHighByte;
+				record >> fHighByte;
+				bool is_wide = ((fHighByte & 1) != 0);
+
+				size_t cch = record.getDataSize() - record.getRdPtr();
+				if (is_wide) cch = cch >> 1;
+
+				val.load(record, cch, is_wide);
+				result += val.value();
+			}
+
+			while (result.length() < cchText && !recs.empty())
+			{
+				XLUnicodeStringNoCch val;
+				
+				unsigned char fHighByte;
+				(*recs.front()) >> fHighByte;
+				bool is_wide = ((fHighByte & 1) != 0);
+
+				size_t cch = recs.front()->getDataSize() - 1;
+				if (is_wide) cch = cch >> 1;
+
+				val.load(*recs.front(), cch, is_wide);
+				result += val.value();
+
 				recs.pop_front();
 			}
-			rawText.setSize(cchText);
-			record >> rawText;
+
+			rawText = result;
 
 			TxOruns.set_records(&recs);
 
@@ -138,7 +165,7 @@ void TxO::readFields(CFRecord& record)
 			TxOruns.load(record);
 		}
 
-		while( !recs.empty() )		//conv_mBlVSC4SdPjzpsbeHh5Xrvy_FGVK2If3MIikj_3FS5k__xlsx.xls
+		while( !recs.empty() )		
 		{
 			sp_enabled	= true;
 			mso_drawing_->storeRecordAndDecideProceeding(recs.front());

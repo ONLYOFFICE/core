@@ -145,6 +145,12 @@ void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args)
     CNativeControl* pNative = unwrap_nativeobject(args.This());
     pNative->SetFilePath(CV8Convert::ToString(args[0]));
 }
+void _GetImagesPath(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+    std::string sReturn = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pNative->m_strImagesDirectory);
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sReturn.c_str()));
+}
 
 void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
@@ -554,6 +560,7 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
     result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
 
     result->Set(current, "getImageUrl", v8::FunctionTemplate::New(current, _GetImageUrl));
+    result->Set(current, "getImagesDirectory", v8::FunctionTemplate::New(current, _GetImagesPath));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope
@@ -604,6 +611,7 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* i
     result->Set(current, "ZipClose",           v8::FunctionTemplate::New(current, _zipCloseFile));
 
     result->Set(current, "getImageUrl", v8::FunctionTemplate::New(current, _GetImageUrl));
+    result->Set(current, "getImagesDirectory", v8::FunctionTemplate::New(current, _GetImagesPath));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope

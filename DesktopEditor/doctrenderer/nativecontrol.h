@@ -461,6 +461,7 @@ CNativeControl* unwrap_nativeobject(v8::Handle<v8::Object> obj);
 
 void _GetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _GetImagesPath(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _GetEditorType(const v8::FunctionCallbackInfo<v8::Value>& args);

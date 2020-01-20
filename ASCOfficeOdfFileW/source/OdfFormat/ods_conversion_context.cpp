@@ -221,8 +221,11 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 			if (comment_idx < 0) break;
 			int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
 
-			start_row(current_table()->current_row() + 1, rows, 0, true);
-			end_row();
+			if (rows > 0)
+			{
+				start_row(current_table()->current_row() + 1, rows, 0, true);
+				end_row();
+			}
 			
 			start_row(current_table()->current_row() + 1, 1, 0, true);
 			end_row();
@@ -552,8 +555,11 @@ void ods_conversion_context::end_rows()
 		if (comment_idx < 0) break;
 		int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
 
-		start_row(current_table()->current_row() + 1, rows, 0, true);
-		end_row();
+		if (rows > 0)
+		{
+			start_row(current_table()->current_row() + 1, rows, 0, true);
+			end_row();
+		}
 		
 		start_row(current_table()->current_row() + 1, 1, 0, true);
 		end_row();

@@ -449,11 +449,11 @@ void text_note::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextNoteCitation)
+    if (type_ == typeTextNoteCitation)
 		text_note_citation_ = child_element;
-	else if (type == typeTextNoteBody)
+	else if (type_ == typeTextNoteBody)
 		text_note_body_ = child_element;
 	else
 	{
@@ -504,11 +504,11 @@ void text_ruby::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextRubyBase)
+    if (type_ == typeTextRubyBase)
 		text_ruby_base_ = child_element;
-	else if (type == typeTextRubyText)
+	else if (type_ == typeTextRubyText)
 		text_ruby_text_ = child_element;
 }
 
@@ -1108,9 +1108,9 @@ void text_drop_down::add_child_element( const office_element_ptr & child_element
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextLabel)
+    if (type_ == typeTextLabel)
 		content_.push_back(child_element);
 	else
 	{

@@ -485,13 +485,13 @@ void draw_enhanced_geometry::add_child_element( const office_element_ptr & child
 {
  	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeDrawHandle)
+    if (type_ == typeDrawHandle)
 	{
 		draw_handle_.push_back(child_element);
 	}
-	else if (type == typeDrawEquation)
+	else if (type_ == typeDrawEquation)
 	{
 		draw_equation_.push_back(child_element);
 	}
@@ -632,9 +632,9 @@ void draw_control::add_child_element( const office_element_ptr & child_element)
 {
  	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeDrawGluePoint)
+    if (type_ == typeDrawGluePoint)
 	{
 		draw_glue_point_ = child_element;
 	}

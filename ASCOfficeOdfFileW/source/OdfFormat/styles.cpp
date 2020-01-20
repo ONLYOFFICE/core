@@ -157,9 +157,9 @@ void style_content::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)//перезатирать???
+	switch(type_)//перезатирать???
 	{
 	case typeStyleTextProperties:		style_text_properties_ = child; break;
 	case typeStyleParagraphProperties:	style_paragraph_properties_ = child; break; 
@@ -456,9 +456,9 @@ void style::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 	
-	if  (type == typeStyleMap)
+	if  (type_ == typeStyleMap)
     {
         style_map_.push_back(child);
     } 
@@ -520,9 +520,9 @@ void styles::add_child_element( const office_element_ptr & child, odf_conversion
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStyleStyle:	
 		style_style_.push_back(child);
@@ -566,9 +566,9 @@ void templates::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 	
-	if (type == typeTableTemplate)
+	if (type_ == typeTableTemplate)
     {
         table_templates_.push_back(child);
     }
@@ -616,9 +616,9 @@ void draw_styles::add_child_element( const office_element_ptr & child, odf_conve
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStyleDrawGradient:		draw_gradient_.push_back(child); break;
 	case typeStyleDrawHatch:		draw_hatch_.push_back(child); break;
@@ -677,9 +677,9 @@ void office_automatic_styles::add_child_element( const office_element_ptr & chil
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStylePageLayout:		
 		style_page_layout_.push_back(child); 
@@ -736,9 +736,9 @@ void office_master_styles::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStyleMasterPage:		
 		style_master_page_.push_back(child); 
@@ -829,9 +829,9 @@ void office_styles::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStyleStyle:	
 	case typeTextListStyle:	
@@ -1043,9 +1043,9 @@ void style_header_style::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	if (type == typeStyleHeaderFooterProperties)
+	if (type_ == typeStyleHeaderFooterProperties)
         style_header_footer_properties_  = child;
 
 }
@@ -1079,9 +1079,9 @@ void style_footer_style::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	if (type == typeStyleHeaderFooterProperties)
+	if (type_ == typeStyleHeaderFooterProperties)
         style_header_footer_properties_  = child;
 
 }
@@ -1128,9 +1128,9 @@ void style_page_layout::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStyleHeaderStyle:	
 		style_header_style_ = child;
@@ -1227,8 +1227,8 @@ void style_master_page::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
-	switch(type)
+	ElementType type_ = child->get_type();
+	switch(type_)
 	{
 	case typeStyleHeader:
         style_header_ = child; 

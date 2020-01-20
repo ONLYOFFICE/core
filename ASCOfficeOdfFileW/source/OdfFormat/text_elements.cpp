@@ -205,9 +205,9 @@ void text_list::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextListHeader)
+    if (type_ == typeTextListHeader)
 		text_list_header_ = child_element;
 	else
 		text_list_items_.push_back(child_element);
@@ -253,9 +253,9 @@ void text_section::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextSectionSource)
+    if (type_ == typeTextSectionSource)
 		text_section_source_ = child_element;
 	else
 		content_.push_back(child_element);
@@ -397,11 +397,11 @@ void text_table_of_content::add_child_element( const office_element_ptr & child_
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeTextTableOfContentSource)
+	if (type_ == typeTextTableOfContentSource)
 		table_of_content_source_= child_element;
-	else if (type == typeTextIndexBody)
+	else if (type_ == typeTextIndexBody)
 		index_body_ = child_element;
 }
 //--------------------------------------------------------------------------------------------------------
@@ -515,9 +515,9 @@ void text_unknown_change::add_child_element( const office_element_ptr & child_el
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeOfficeChangeInfo)
+    if (type_ == typeOfficeChangeInfo)
 		office_change_info_= child_element;
 	else
 		content_.push_back(child_element);
@@ -629,11 +629,11 @@ void text_table_index::add_child_element( const office_element_ptr & child_eleme
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextIndexBody)
+    if (type_ == typeTextIndexBody)
 		index_body_= child_element;
-    else if (type == typeTextTableIndexSource)
+    else if (type_ == typeTextTableIndexSource)
 		table_index_source_= child_element;
 }
 
@@ -667,11 +667,11 @@ void text_illustration_index::add_child_element( const office_element_ptr & chil
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeTextIllustrationIndexSource)
+	if (type_ == typeTextIllustrationIndexSource)
 		illustration_index_source_= child_element;
-	else if (type == typeTextIndexBody)
+	else if (type_ == typeTextIndexBody)
 		index_body_= child_element;
 }
 
@@ -705,11 +705,11 @@ void text_user_index::add_child_element( const office_element_ptr & child_elemen
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeTextUserIndexSource)
+	if (type_ == typeTextUserIndexSource)
 		user_index_source_= child_element;
-	else if (type == typeTextIndexBody)
+	else if (type_ == typeTextIndexBody)
 		index_body_= child_element;
 }
 
@@ -743,11 +743,11 @@ void text_alphabetical_index::add_child_element( const office_element_ptr & chil
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeTextAlphabeticalIndexSource)
+	if (type_ == typeTextAlphabeticalIndexSource)
 		alphabetical_index_source_= child_element;
-	else if (type == typeTextIndexBody)
+	else if (type_ == typeTextIndexBody)
 		index_body_= child_element;
 }
 
@@ -781,11 +781,11 @@ void text_bibliography::add_child_element( const office_element_ptr & child_elem
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeTextBibliographySource)
+	if (type_ == typeTextBibliographySource)
 		bibliography_source_= child_element;
-	else if (type == typeTextIndexBody)
+	else if (type_ == typeTextIndexBody)
 		index_body_= child_element;
 }
 
@@ -819,9 +819,9 @@ void text_bibliography_source::add_child_element( const office_element_ptr & chi
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextIndexTitleTemplate)
+    if (type_ == typeTextIndexTitleTemplate)
 		index_title_template_ = child_element;
 	else
 		entry_templates_.push_back(child_element);
@@ -858,11 +858,11 @@ void text_table_of_content_source::add_child_element( const office_element_ptr &
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextIndexTitleTemplate)
+    if (type_ == typeTextIndexTitleTemplate)
 		index_title_template_ = child_element;
-    else if (type == typeTextIndexSourceStyles)
+    else if (type_ == typeTextIndexSourceStyles)
 		index_source_styles_.push_back(child_element);
 	else
 		entry_templates_.push_back(child_element);
@@ -909,9 +909,9 @@ void text_illustration_index_source::add_child_element( const office_element_ptr
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextIndexTitleTemplate)
+    if (type_ == typeTextIndexTitleTemplate)
 		index_title_template_ = child_element;
 	else
 		entry_templates_.push_back(child_element);
@@ -954,9 +954,9 @@ void text_user_index_source::add_child_element( const office_element_ptr & child
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextIndexTitleTemplate)
+    if (type_ == typeTextIndexTitleTemplate)
 		index_title_template_ = child_element;
 	else
 		entry_templates_.push_back(child_element);
@@ -1010,9 +1010,9 @@ void alphabetical_index_source::add_child_element( const office_element_ptr & ch
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextIndexTitleTemplate)
+    if (type_ == typeTextIndexTitleTemplate)
 		index_title_template_ = child_element;
 	else
 		entry_templates_.push_back(child_element);
@@ -1050,9 +1050,9 @@ void text_table_index_source::add_child_element( const office_element_ptr & chil
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextIndexTitleTemplate)
+    if (type_ == typeTextIndexTitleTemplate)
 		index_title_template_ = child_element;
 	else
 		entry_templates_.push_back(child_element);

@@ -61,11 +61,11 @@ void anim_par::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeAnimPar)
+	if (type_ == typeAnimPar)
 		anim_par_ = child_element;
-	else if (type == typeAnimSeq)
+	else if (type_ == typeAnimSeq)
 		anim_seq_array_.push_back(child_element);
 	else
 		content_.push_back(child_element);

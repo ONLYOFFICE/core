@@ -124,11 +124,11 @@ void office_annotation::add_child_element( const office_element_ptr & child_elem
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeDcCreator)
+    if (type_ == typeDcCreator)
 		dc_creator_ = child_element;
-	else if (type == typeDcDate)
+	else if (type_ == typeDcDate)
 		dc_date_ = child_element;
 	else
 		content_.push_back(child_element);
@@ -188,11 +188,11 @@ void officeooo_annotation::add_child_element( const office_element_ptr & child_e
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeDcCreator)
+    if (type_ == typeDcCreator)
 		dc_creator_ = child_element;
-	else if (type == typeDcDate)
+	else if (type_ == typeDcDate)
 		dc_date_ = child_element;
 	else
 		content_.push_back(child_element);

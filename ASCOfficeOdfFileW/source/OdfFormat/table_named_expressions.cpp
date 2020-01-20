@@ -68,13 +68,13 @@ void table_named_expressions::add_child_element( const office_element_ptr & chil
 {
  	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableNamedRange)
+    if (type_ == typeTableNamedRange)
 	{
        named_range_.push_back(child_element);
     }
-    else if (type == typeTableNamedExpression)
+    else if (type_ == typeTableNamedExpression)
     {
         named_expression_.push_back(child_element);   
     }

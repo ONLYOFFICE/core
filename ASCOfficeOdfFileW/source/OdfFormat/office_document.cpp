@@ -65,17 +65,17 @@ void manifest_encryption_data::add_child_element( const office_element_ptr & chi
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeManifestAlgorithm)
+	if (type_ == typeManifestAlgorithm)
 	{
         algorithm_ = child_element;
 	}
-	else if (type == typeManifestKeyDerivation)
+	else if (type_ == typeManifestKeyDerivation)
 	{
         key_derivation_ = child_element;
 	}
-	else if (type == typeManifestStartKeyGeneration)
+	else if (type_ == typeManifestStartKeyGeneration)
 	{
         start_key_generation_ = child_element;
 	}

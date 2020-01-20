@@ -194,11 +194,11 @@ void office_change_info::add_child_element( const office_element_ptr & child_ele
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeDcCreator)
+    if (type_ == typeDcCreator)
 		dc_creator_ = child_element;
-	else if (type == typeDcDate)
+	else if (type_ == typeDcDate)
 		dc_date_ = child_element;
 }
 void office_change_info::serialize(std::wostream & _Wostream)

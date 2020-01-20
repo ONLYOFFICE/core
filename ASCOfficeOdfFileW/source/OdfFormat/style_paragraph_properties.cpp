@@ -161,13 +161,13 @@ void paragraph_format_properties::add_child_element( const office_element_ptr & 
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeStyleTabStops)
+    if (type_ == typeStyleTabStops)
 		style_tab_stops_ = child_element;
-	else if (type == typeStyleDropCap)
+	else if (type_ == typeStyleDropCap)
 		style_drop_cap_ = child_element;
-	else if (type == typeStyleBackgroundImage)
+	else if (type_ == typeStyleBackgroundImage)
 		style_background_image_ = child_element;
 }
 

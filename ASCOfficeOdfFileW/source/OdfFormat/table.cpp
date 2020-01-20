@@ -214,39 +214,39 @@ void table_table::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableSource)
+    if (type_ == typeTableTableSource)
     {
 		table_table_source_ = child_element;
     } 
-    else if ( 	type == typeTableTableColumn ||
-				type == typeTableTableColumns ||
-				type == typeTableTableHeaderColumns || 
-				type == typeTableTableColumnGroup)
+    else if ( 	type_ == typeTableTableColumn ||
+				type_ == typeTableTableColumns ||
+				type_ == typeTableTableHeaderColumns || 
+				type_ == typeTableTableColumnGroup)
     {
         table_columns_and_groups_.add_child_element(child_element, getContext());
     }
-    else if (	type == typeTableTableRow ||
-				type == typeTableTableRows ||
-				type == typeTableTableHeaderRows ||
-				type == typeTableTableRowGroup)
+    else if (	type_ == typeTableTableRow ||
+				type_ == typeTableTableRows ||
+				type_ == typeTableTableHeaderRows ||
+				type_ == typeTableTableRowGroup)
 	{
         table_rows_and_groups_.add_child_element(child_element, getContext());
     }
-    else if (type == typeTableShapes)
+    else if (type_ == typeTableShapes)
     {
   	    table_shapes_ = child_element;
     }
-	else if (type == typeOfficeForms)
+	else if (type_ == typeOfficeForms)
 	{
 		office_forms_ = child_element;
 	}
-    else if (type == typeTableNamedExpressions)
+    else if (type_ == typeTableNamedExpressions)
     {
   	    table_named_expressions_ = child_element;
     }
-	else if (type == typeCalcextConditionalFormats)
+	else if (type_ == typeCalcextConditionalFormats)
 	{
 		table_conditional_formats_ = child_element;
 	}
@@ -317,9 +317,9 @@ void table_table_columns::add_child_element( const office_element_ptr & child_el
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableColumn) 
+    if (type_ == typeTableTableColumn) 
 		content_.push_back(child_element);
 }
 void table_table_columns::serialize(std::wostream & _Wostream)
@@ -354,9 +354,9 @@ void table_table_header_columns::add_child_element( const office_element_ptr & c
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableColumn) 
+    if (type_ == typeTableTableColumn) 
 		content_.push_back(child_element);
 }
 void table_table_header_columns::serialize(std::wostream & _Wostream)
@@ -392,9 +392,9 @@ void table_columns::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableColumns) 
+    if (type_ == typeTableTableColumns) 
 	{
 		if (table_table_columns_) 
 		{
@@ -402,7 +402,7 @@ void table_columns::add_child_element( const office_element_ptr & child_element)
 		}
 		table_table_columns_ = child_element;
 	}
-	else if (type == typeTableTableColumn) 
+	else if (type_ == typeTableTableColumn) 
 		content_.push_back(child_element);
 }
 void table_columns::serialize(std::wostream & strm)
@@ -446,16 +446,16 @@ void table_columns_no_group::add_child_element( const office_element_ptr & child
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableColumns || type == typeTableTableColumn) 
+    if (type_ == typeTableTableColumns || type_ == typeTableTableColumn) 
 	{
         if (!was_header_)
             table_columns_1_.add_child_element(child_element);
         else
             table_columns_2_.add_child_element(child_element);
 	}
-	else if (type == typeTableTableHeaderColumns) 
+	else if (type_ == typeTableTableHeaderColumns) 
 	{
         was_header_ = true;
 		table_table_header_columns_ = child_element;
@@ -537,15 +537,15 @@ void table_columns_and_groups::add_child_element( const office_element_ptr & chi
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableColumnGroup) 
+    if (type_ == typeTableTableColumnGroup) 
 	{
 		content_.push_back(child_element);
 	}
-    else if (type == typeTableTableColumns ||
-			type == typeTableTableColumn ||
-			type == typeTableTableHeaderColumns)
+    else if (type_ == typeTableTableColumns ||
+			type_ == typeTableTableColumn ||
+			type_ == typeTableTableHeaderColumns)
     {
        _CP_PTR(table_columns_no_group) elm = table_columns_no_group::create(Context);
 
@@ -658,9 +658,9 @@ void table_table_row::add_child_element( const office_element_ptr & child_elemen
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableCell || type == typeTableCoveredTableCell )
+    if (type_ == typeTableTableCell || type_ == typeTableCoveredTableCell )
 		content_.push_back(child_element);
 }
 void table_table_row::serialize(std::wostream & _Wostream)
@@ -724,9 +724,9 @@ void table_table_header_rows::add_child_element( const office_element_ptr & chil
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableRow)
+    if (type_ == typeTableTableRow)
 		content_.push_back(child_element);    
 }
 void table_table_header_rows::serialize(std::wostream & _Wostream)
@@ -763,12 +763,12 @@ void table_rows::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableRows)
+    if (type_ == typeTableTableRows)
 		table_table_rows_ = child_element;    
    
-	else if (type == typeTableTableRow)
+	else if (type_ == typeTableTableRow)
 		content_.push_back(child_element);    
 }
 void table_rows::serialize(std::wostream & strm)
@@ -817,16 +817,16 @@ void table_rows_no_group::add_child_element( const office_element_ptr & child_el
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableTableRows || type == typeTableTableRow)
+    if (type_ == typeTableTableRows || type_ == typeTableTableRow)
 	{
        if (!was_header_)
             table_rows_1_.add_child_element(child_element);
         else
             table_rows_2_.add_child_element(child_element);
 	}   
-	else if (type == typeTableTableHeaderRows)
+	else if (type_ == typeTableTableHeaderRows)
 	{
         was_header_ = true;
 		if (table_table_header_rows_ == NULL)	
@@ -874,13 +874,13 @@ void table_rows_and_groups::add_child_element( const office_element_ptr & child_
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeTableTableRowGroup)
+	if (type_ == typeTableTableRowGroup)
 	{
 		content_.push_back(child_element); 
 	}
-    else if (type == typeTableTableRows || type == typeTableTableRow  || type == typeTableTableHeaderRows)
+    else if (type_ == typeTableTableRows || type_ == typeTableTableRow  || type_ == typeTableTableHeaderRows)
 	{
         _CP_PTR(table_rows_no_group) elm = table_rows_no_group::create(Context);
         elm->add_child_element(child_element);

@@ -211,8 +211,8 @@ void style_page_layout_properties_elements::add_child_element( const office_elem
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
-	switch(type)
+	ElementType type_ = child->get_type();
+	switch(type_)
 	{
 	case typeStyleBackgroundImage:
         style_background_image_ = child; 

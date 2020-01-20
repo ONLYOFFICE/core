@@ -69,17 +69,17 @@ void office_presentation::add_child_element( const office_element_ptr & child_el
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typePresentationDateTimeDecl)
+    if (type_ == typePresentationDateTimeDecl)
     {
 		date_time_decls_.push_back(child_element);
     } 
-    else if ( type == typePresentationFooterDecl)
+    else if ( type_ == typePresentationFooterDecl)
     {
         footer_decls_.push_back(child_element);
     }   
-	else if ( type == typeDrawPage)
+	else if ( type_ == typeDrawPage)
     {
         pages_.push_back(child_element);
     }

@@ -51,7 +51,7 @@ SRCDIR=$TARBALLDIR
 
 BOOST_TARBALL=$TARBALLDIR/boost_$BOOST_VERSION2.tar.bz2
 BOOST_SRC=$SRCDIR/boost_${BOOST_VERSION2}
-PREFIXDIR=$BOOST_SRC/prefix
+PREFIXDIR=$SRCDIR/build/ios
 
 #===============================================================================
 # Functions
@@ -244,6 +244,7 @@ bootstrapBoost()
     BOOST_LIBS_COMMA=$(echo $BOOST_LIBS | sed -e "s/ /,/g")
     echo "Bootstrapping (with libs $BOOST_LIBS_COMMA)"
     ./bootstrap.sh --with-libraries=$BOOST_LIBS_COMMA
+    ./b2 headers
 
     doneSection
 }
@@ -285,12 +286,13 @@ generateOut()
     echo Generate Boost for iPhone
     mkdir -p $BOOST_SRC/build/ios/static
     for NAME in $BOOST_LIBS; do
+        rm -f $SRCDIR/build/ios/lib/libboost_${NAME}.a
         lipo -create $BOOST_SRC/iphone-build/stage/lib/libboost_${NAME}.a \
                      $BOOST_SRC/iphonesim-build/stage/lib/libboost_${NAME}.a \
-                     -o $BOOST_SRC/build/ios/static/libboost_${NAME}.a
+                     -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
                      
-        lipo $BOOST_SRC/build/ios/static/libboost_${NAME}.a -remove i386 -o $BOOST_SRC/build/ios/static/libboost_${NAME}.a
-        lipo $BOOST_SRC/build/ios/static/libboost_${NAME}.a -remove armv4t -o $BOOST_SRC/build/ios/static/libboost_${NAME}.a
+        lipo $SRCDIR/build/ios/lib/libboost_${NAME}.a -remove i386 -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
+        lipo $SRCDIR/build/ios/lib/libboost_${NAME}.a -remove armv4t -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
     done
 
     doneSection

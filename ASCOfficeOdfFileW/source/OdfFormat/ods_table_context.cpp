@@ -87,7 +87,7 @@ ods_table_state_ptr & ods_table_context::state()
     return table_state_list_.back();
 }
 
-void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
+void ods_table_context::start_table_part(const std::wstring &name, std::wstring ref)
 {
 	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
 
@@ -158,7 +158,9 @@ void ods_table_context::end_table_part()
 }
 void ods_table_context::add_autofilter(std::wstring ref)
 {
-	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
+	if (ref.empty()) return;
+
+	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges", table_database_ranges_.root, &context_);
 
 	office_element_ptr elm;
 	create_element(L"table", L"database-range",elm,&context_);
@@ -166,6 +168,10 @@ void ods_table_context::add_autofilter(std::wstring ref)
 
 	if (!d_range)return;
 
+	if (std::wstring::npos == ref.find(L"!") )
+	{
+		ref = table_state_list_.back()->office_table_name_ + L"!" + ref;
+	}
 	formulasconvert::oox2odf_converter formulas_converter;
 
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);

@@ -68,7 +68,7 @@ public:
 
 	void add_autofilter(std::wstring ref);
 	
-	void start_table_part(std::wstring name, std::wstring ref);
+	void start_table_part(const std::wstring &name, std::wstring ref);
 		void set_table_part_autofilter(bool val);
 		void add_table_part_column(std::wstring name);
 	void end_table_part();

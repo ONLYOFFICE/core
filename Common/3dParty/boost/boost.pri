@@ -1,8 +1,8 @@
-INCLUDEPATH += $$PWD/boost_1_58_0
+INCLUDEPATH += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/include
 
 MSVC = vc140
 
-CORE_BOOST_LIBS = $$PWD/boost_1_58_0/build/$$CORE_BUILDS_PLATFORM_PREFIX/static
+CORE_BOOST_LIBS = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
 
 core_boost_libs {
 

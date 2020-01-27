@@ -229,7 +229,7 @@ public:
     
 };
 
-///         style:table-cell-properties
+// style:table-cell-properties
 class style_table_cell_properties : public office_element_impl<style_table_cell_properties>
 {
 public:
@@ -245,7 +245,7 @@ public:
     void apply_from(const style_table_cell_properties * Other);
 	virtual void serialize(std::wostream & strm);
 
-    style_table_cell_properties_attlist style_table_cell_properties_attlist_;
+    style_table_cell_properties_attlist content_;
     office_element_ptr					style_background_image_;
         
 };

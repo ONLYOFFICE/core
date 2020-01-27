@@ -64,6 +64,7 @@ namespace cpdoccore
 		class style_table_column_properties;
 		class style_chart_properties;
 		class style_drawing_page_properties;
+		class graphic_format_properties;
 
 		namespace package
 		{

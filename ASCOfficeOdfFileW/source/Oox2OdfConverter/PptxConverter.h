@@ -60,12 +60,15 @@ namespace PPTX
 		class Timing;
 		class TablePartStyle;
 		class Table;
+		class TableStyle;
 		class TableProperties;
 		class TableRow;
 		class TableCell;
 		class TableCellProperties;
 		class TcBdr;
 		class TxStyles;
+		class TcStyle;
+		class TcTxStyle;
 		class TimeNodeBase;
 		class CTn;
 		class EmptyTransition;
@@ -141,13 +144,21 @@ namespace Oox2Odf
 		void convert(PPTX::Logic::TableRow				*oox_table_row);
 		void convert(PPTX::Logic::TableCell				*oox_table_cell, int numCol);
 		
- 		void convert(PPTX::Logic::TablePartStyle		*oox_table_part_style);
 		bool convert(PPTX::Logic::TableCellProperties	*oox_table_cell_pr, int col);
 		bool convert(PPTX::Logic::TableCellProperties	*oox_table_cell_pr); 
 		
 		void convert(PPTX::Logic::TableProperties		*oox_table_pr);
 		void convert(PPTX::Logic::TcBdr					*oox_table_borders);
 
+		void convert(PPTX::TableStyles					*oox_table_styles);
+
+		void convert(const std::wstring &id, PPTX::Logic::TableStyle *oox_table_style);
+ 		std::wstring convert(PPTX::Logic::TablePartStyle *oox_table_part_style, const std::wstring &base = L"");
+
+		void convert(PPTX::Logic::TcBdr *borders,	odf_writer::style_paragraph_properties	*para_properties);
+		void convert(PPTX::Logic::TcStyle* style,	odf_writer::graphic_format_properties	*graphic_properties);
+		void convert(PPTX::Logic::TcTxStyle* style,	odf_writer::style_text_properties		*text_properties);
+		
 		void convert(PPTX::Logic::Ln *oox_ln_border, std::wstring & odf_border);
 private:
 		void convert(PPTX::Logic::EmptyTransition			*oox_transition);
@@ -164,7 +175,6 @@ private:
 		PPTX::Presentation								*presentation;
 		
 		PPTX::Theme										*current_theme;		
-		PPTX::TableStyles								*current_tableStyles;
 
 		OOX::IFileContainer								*current_slide;
 		PPTX::Logic::ClrMap								*current_clrMap;

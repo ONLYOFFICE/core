@@ -54,6 +54,8 @@ class odf_style_context;
 class odf_text_context;
 class style_paragraph_properties;
 class style_text_properties;
+class style_graphic_properties;
+class graphic_format_properties;
 
 class odf_drawing_context
 {
@@ -137,6 +139,10 @@ public:
 	
 	bool change_text_box_2_wordart	();
 	bool is_wordart					();
+	
+	graphic_format_properties*	get_graphic_properties();
+
+	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
 	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);
 	void set_text_properties		(style_text_properties *text_properties);
 	

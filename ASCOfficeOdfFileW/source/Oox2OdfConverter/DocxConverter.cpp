@@ -2174,21 +2174,21 @@ void DocxConverter::convert(OOX::Logic::CTblBorders	*oox_border, odf_writer::sty
 	
 	if (bottom == top && top == left && left== right && bottom.length() > 0)
 	{
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = left;
+		table_cell_properties->content_.common_border_attlist_.fo_border_ = left;
 	}
 	else
 	{
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= 
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= 
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= 
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_	= table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_;
+		table_cell_properties->content_.common_border_attlist_.fo_border_bottom_	= 
+		table_cell_properties->content_.common_border_attlist_.fo_border_top_		= 
+		table_cell_properties->content_.common_border_attlist_.fo_border_left_		= 
+		table_cell_properties->content_.common_border_attlist_.fo_border_right_	= table_cell_properties->content_.common_border_attlist_.fo_border_;
 
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+		table_cell_properties->content_.common_border_attlist_.fo_border_ = boost::none;
 
-		if (bottom.length() >0 )table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if (top.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
-		if (left.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
-		if (right.length() >0 ) table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
+		if (bottom.length() >0 )table_cell_properties->content_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (top.length() >0 )	table_cell_properties->content_.common_border_attlist_.fo_border_top_		= top;
+		if (left.length() >0 )	table_cell_properties->content_.common_border_attlist_.fo_border_left_		= left;
+		if (right.length() >0 ) table_cell_properties->content_.common_border_attlist_.fo_border_right_		= right;
 	}
 	//nullable<ComplexTypes::Word::CBorder > m_oInsideH;
 	//nullable<ComplexTypes::Word::CBorder > m_oInsideV;
@@ -2207,36 +2207,36 @@ void DocxConverter::convert(OOX::Logic::CTcBorders 	*oox_border, odf_writer::sty
 	
 	if (bottom == top && top == left && left== right && bottom.length() > 0)
 	{
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = left;
+		table_cell_properties->content_.common_border_attlist_.fo_border_ = left;
 
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ =
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = 
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = 
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = boost::none;
+		table_cell_properties->content_.common_border_attlist_.fo_border_bottom_ =
+		table_cell_properties->content_.common_border_attlist_.fo_border_top_ = 
+		table_cell_properties->content_.common_border_attlist_.fo_border_left_ = 
+		table_cell_properties->content_.common_border_attlist_.fo_border_right_ = boost::none;
 	}
 	else
 	{
-		if (table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_)
+		if (table_cell_properties->content_.common_border_attlist_.fo_border_)
 		{
-			table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= 
-			table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= 
-			table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= 
-			table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_;
+			table_cell_properties->content_.common_border_attlist_.fo_border_bottom_	= 
+			table_cell_properties->content_.common_border_attlist_.fo_border_top_		= 
+			table_cell_properties->content_.common_border_attlist_.fo_border_left_		= 
+			table_cell_properties->content_.common_border_attlist_.fo_border_right_		= table_cell_properties->content_.common_border_attlist_.fo_border_;
 		}
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+		table_cell_properties->content_.common_border_attlist_.fo_border_ = boost::none;
 
-		if (bottom.length() >0 )table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if (top.length() >0  )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
-		if (left.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
-		if (right.length() >0 ) table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
+		if (bottom.length() >0 )table_cell_properties->content_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (top.length() >0  )	table_cell_properties->content_.common_border_attlist_.fo_border_top_		= top;
+		if (left.length() >0 )	table_cell_properties->content_.common_border_attlist_.fo_border_left_		= left;
+		if (right.length() >0 ) table_cell_properties->content_.common_border_attlist_.fo_border_right_		= right;
 	}
 	convert(oox_border->m_oTL2BR.GetPointer()	, other);
-	if (other.length() >0 ) table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_ = other;
+	if (other.length() >0 ) table_cell_properties->content_.style_diagonal_tl_br_ = other;
 	
 	convert(oox_border->m_oTR2BL.GetPointer()	, other);
 	if (other.length() >0 )
 	{
-		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_ = other;
+		table_cell_properties->content_.style_diagonal_bl_tr_ = other;
 	}
 	
 	//nullable<ComplexTypes::Word::CBorder > m_oInsideH;
@@ -4357,7 +4357,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	int count_columns	= oox_table->m_oTblGrid.IsInit() ? (int)oox_table->m_oTblGrid->m_arrGridCol.size() : 0;
 	
 	odt_context->styles_context()->table_styles().set_current_dimension(count_columns, count_rows);
-	odt_context->table_context()->count_rows(count_rows);
+	odt_context->table_context()->set_table_size(count_columns, count_rows);
 //------ колонки
 	convert(oox_table->m_oTblGrid.GetPointer());
 
@@ -4685,16 +4685,16 @@ void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 	{
 		_CP_OPT(odf_types::length) length;
 		convert(oox_table_pr->m_oTblCellMar->m_oStart.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 		convert(oox_table_pr->m_oTblCellMar->m_oEnd.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_right_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_right_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 		convert(oox_table_pr->m_oTblCellMar->m_oTop.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_top_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_top_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 		
 		convert(oox_table_pr->m_oTblCellMar->m_oBottom.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_bottom_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 	}
 }
@@ -4806,7 +4806,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 		convert(oox_table_cell_pr->m_oShd->m_oFill.GetPointer(), oox_table_cell_pr->m_oShd->m_oThemeFill.GetPointer(),
 			oox_table_cell_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_table_cell_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
 		if (odf_color)
-			table_cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_ = *odf_color;
+			table_cell_properties->content_.common_background_color_attlist_.fo_background_color_ = *odf_color;
 
 		if (oox_table_cell_pr->m_oShd->m_oVal.IsInit())
 		{
@@ -4820,14 +4820,14 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 		{
 		case SimpleTypes::textdirectionTb  :
 		{
-			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);
+			table_cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);
 		}break;
 		case SimpleTypes::textdirectionLr  ://повернутость буковок
 		case SimpleTypes::textdirectionLrV :
 		case SimpleTypes::textdirectionTbV :
 		case SimpleTypes::textdirectionRlV :
 		{
-			table_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
+			table_cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
 			odf_writer::style_text_properties *text_cell_properties	= odt_context->styles_context()->last_state()->get_text_properties();
 			if (text_cell_properties)
 			{
@@ -4845,16 +4845,16 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	{
 		_CP_OPT(odf_types::length) length;
 		convert(oox_table_cell_pr->m_oTcMar->m_oStart.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 		convert(oox_table_cell_pr->m_oTcMar->m_oEnd.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_right_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_right_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 		convert(oox_table_cell_pr->m_oTcMar->m_oTop.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_top_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_top_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 		
 		convert(oox_table_cell_pr->m_oTcMar->m_oBottom.GetPointer(), length);
-		if (length)table_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+		if (length)table_cell_properties->content_.common_padding_attlist_.fo_padding_bottom_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 	}
 	if (oox_table_cell_pr->m_oVAlign.IsInit() && oox_table_cell_pr->m_oVAlign->m_oVal.IsInit())
@@ -4862,27 +4862,27 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 		switch(oox_table_cell_pr->m_oVAlign->m_oVal->GetValue())
 		{
 		case SimpleTypes::verticaljcBoth   : //??????
-			table_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify); break;
+			table_cell_properties->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify); break;
 		case SimpleTypes::verticaljcBottom :
-			table_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom); break;
+			table_cell_properties->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom); break;
 		case SimpleTypes::verticaljcCenter :
-			table_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle); break;
+			table_cell_properties->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle); break;
 		case SimpleTypes::verticaljcTop    :
-			table_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top); break;
+			table_cell_properties->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top); break;
 		}
 	}
 
 	if (oox_table_cell_pr->m_oTcFitText.IsInit() )
 	{
-		table_cell_properties->style_table_cell_properties_attlist_.style_shrink_to_fit_ = oox_table_cell_pr->m_oTcFitText->m_oVal.ToBool();
+		table_cell_properties->content_.style_shrink_to_fit_ = oox_table_cell_pr->m_oTcFitText->m_oVal.ToBool();
 	}
 
 	if (oox_table_cell_pr->m_oNoWrap.IsInit())
 	{
 		if (oox_table_cell_pr->m_oNoWrap->m_oVal.ToBool() == true)
-			table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf_types::wrap_option(odf_types::wrap_option::NoWrap);
+			table_cell_properties->content_.fo_wrap_option_ = odf_types::wrap_option(odf_types::wrap_option::NoWrap);
 		else
-			table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf_types::wrap_option(odf_types::wrap_option::Wrap);
+			table_cell_properties->content_.fo_wrap_option_ = odf_types::wrap_option(odf_types::wrap_option::Wrap);
 	}
 	if (oox_table_cell_pr->m_oTcW.IsInit() && oox_table_cell_pr->m_oTcW->m_oW.IsInit() &&
 		oox_table_cell_pr->m_oTcW->m_oType.IsInit() && oox_table_cell_pr->m_oTcW->m_oType->GetValue() == SimpleTypes::tblwidthDxa)
@@ -4906,7 +4906,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	odf_writer::style_table_cell_properties * parent_cell_properties = NULL;
 
 	std::wstring parent_name = odt_context->table_context()->get_default_cell_properties();
-	if (parent_name.length() > 0) 
+	if (false == parent_name.empty()) 
 	{
 		odf_writer::style * style_ = NULL;		
 		if (odt_context->styles_context()->find_odf_style(parent_name, odf_types::style_family::TableCell, style_))
@@ -4944,17 +4944,17 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	
 	if ((border_inside_v || border_inside_h))
 	{
-		if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_)//раскидаем по сторонам
+		if (cell_properties->content_.common_border_attlist_.fo_border_)//раскидаем по сторонам
 		{
-			if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_->is_none() == false)
+			if (cell_properties->content_.common_border_attlist_.fo_border_->is_none() == false)
 			{
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = 
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ =
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = 
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ =
-												cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_;
+				cell_properties->content_.common_border_attlist_.fo_border_left_ = 
+				cell_properties->content_.common_border_attlist_.fo_border_right_ =
+				cell_properties->content_.common_border_attlist_.fo_border_bottom_ = 
+				cell_properties->content_.common_border_attlist_.fo_border_top_ =
+												cell_properties->content_.common_border_attlist_.fo_border_;
 			}		
-			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+			cell_properties->content_.common_border_attlist_.fo_border_ = boost::none;
 		}	
 		//если нет убрать, если да - добавить
 		if (border_inside_h)
@@ -4962,19 +4962,19 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 			int del_border = (int)border_inside_h->find(L"none");
 			if (row != 1)
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ && del_border>=0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_top_ && del_border>=0)
+					cell_properties->content_.common_border_attlist_.fo_border_top_ = boost::none;
 
 				else if (border_inside_h && del_border<0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_top_ = *border_inside_h;
 			}
 			if (row != odt_context->table_context()->count_rows())
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ && del_border>=0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_bottom_ && del_border>=0)
+					cell_properties->content_.common_border_attlist_.fo_border_bottom_ = boost::none;
 
 				else if (border_inside_h && del_border<0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_bottom_ = *border_inside_h;
 			}
 		}
 		if (border_inside_v)
@@ -4982,19 +4982,19 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 			int del_border = (int)border_inside_v->find(L"none");
 			if (col != 1)
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ && del_border>=0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_left_ && del_border>=0)
+					cell_properties->content_.common_border_attlist_.fo_border_left_ = boost::none;
 
 				else if (border_inside_h && del_border<0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_left_ = *border_inside_h;
 			}
 			if (col != odt_context->table_context()->count_columns())
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ && del_border>=0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_right_ && del_border>=0)
+					cell_properties->content_.common_border_attlist_.fo_border_right_ = boost::none;
 
 				else if (border_inside_h && del_border<0)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_right_ = *border_inside_h;
 			}
 		}
 	}

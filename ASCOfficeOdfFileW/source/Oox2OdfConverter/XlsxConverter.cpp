@@ -2117,19 +2117,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf_writer::style_ta
 		if (fill->m_oPatternFill->m_oFgColor.IsInit())
 		{
 			convert(fill->m_oPatternFill->m_oFgColor.GetPointer(), 
-				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
+				cell_properties->content_.common_background_color_attlist_.fo_background_color_);
 		}
-		if (fill->m_oPatternFill->m_oBgColor.IsInit() && !cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_)
+		if (fill->m_oPatternFill->m_oBgColor.IsInit() && !cell_properties->content_.common_background_color_attlist_.fo_background_color_)
 		{
 			convert(fill->m_oPatternFill->m_oBgColor.GetPointer(), 
-				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
+				cell_properties->content_.common_background_color_attlist_.fo_background_color_);
 		}
-		if (fill->m_oPatternFill->m_oPatternType.IsInit() && !cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_)
+		if (fill->m_oPatternFill->m_oPatternType.IsInit() && !cell_properties->content_.common_background_color_attlist_.fo_background_color_)
 		{
 			switch(fill->m_oPatternFill->m_oPatternType->GetValue())
 			{
 				case SimpleTypes::Spreadsheet::patterntypeNone:
-					cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_ = 
+					cell_properties->content_.common_background_color_attlist_.fo_background_color_ = 
 						odf_types::background_color::Transparent;
 						break;
 
@@ -2203,18 +2203,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 
 		}
 		if (paragraph_properties->content_.style_vertical_align_)
-			cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = paragraph_properties->content_.style_vertical_align_;
+			cell_properties->content_.style_vertical_align_ = paragraph_properties->content_.style_vertical_align_;
 	}
 	if (aligment->m_oTextRotation.IsInit())
 	{
 		int rot = aligment->m_oTextRotation->GetValue();
 		if (rot <=180 && rot >= 0 ) 
 		{
-			cell_properties->style_table_cell_properties_attlist_.common_rotation_angle_attlist_.style_rotation_angle_ = rot;
-			cell_properties->style_table_cell_properties_attlist_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
+			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = rot;
+			cell_properties->content_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
 		}
 		else if (rot == 0xff)//вертикальный текст
-			cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
+			cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
 
 	}
 	if(aligment->m_oHorizontal.IsInit())
@@ -2235,17 +2235,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;		
 		}
 		
-		cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf_types::text_align_source(odf_types::text_align_source::Fix);
+		cell_properties->content_.style_text_align_source_ = odf_types::text_align_source(odf_types::text_align_source::Fix);
 	}
 
 	if (aligment->m_oWrapText.IsInit())
 	{
 		if (aligment->m_oWrapText->GetValue()) 
-			cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf_types::wrap_option(odf_types::wrap_option::Wrap);
+			cell_properties->content_.fo_wrap_option_ = odf_types::wrap_option(odf_types::wrap_option::Wrap);
 	}
 	if (aligment->m_oShrinkToFit.IsInit())
 	{
-		cell_properties->style_table_cell_properties_attlist_.style_shrink_to_fit_ = aligment->m_oShrinkToFit->ToBool();
+		cell_properties->content_.style_shrink_to_fit_ = aligment->m_oShrinkToFit->ToBool();
 	}
 	if (aligment->m_oIndent.IsInit())
 	{
@@ -2267,22 +2267,22 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorder *oox_border, odf_writer::s
 	
 	if (bottom == top && top == left && left == right && !bottom.empty())
 	{
-		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = left;
+		table_cell_properties->content_.common_border_attlist_.fo_border_ = left;
 	}
 	else
 	{
-		if (!bottom.empty())table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if (!top.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
-		if (!left.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
-		if (!right.empty())	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
+		if (!bottom.empty())table_cell_properties->content_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (!top.empty())	table_cell_properties->content_.common_border_attlist_.fo_border_top_		= top;
+		if (!left.empty())	table_cell_properties->content_.common_border_attlist_.fo_border_left_		= left;
+		if (!right.empty())	table_cell_properties->content_.common_border_attlist_.fo_border_right_		= right;
 	}
 
 	convert(oox_border->m_oDiagonal.GetPointer(), other);
 	
 	if (oox_border->m_oDiagonalDown.IsInit() && !other.empty()) //and true???
-		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_= other;
+		table_cell_properties->content_.style_diagonal_tl_br_= other;
 	if (oox_border->m_oDiagonalUp.IsInit() && !other.empty()) //and true???
-		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_= other;
+		table_cell_properties->content_.style_diagonal_bl_tr_= other;
 	//nullable<CBorderProp>						m_oHorizontal;
 	//nullable<CBorderProp>						m_oVertical;
 	//nullable<SimpleTypes::COnOff<>>			m_oOutline;

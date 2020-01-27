@@ -2386,6 +2386,15 @@ void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *p
 	if (impl_->current_paragraph_properties)
 		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
 }
+void odf_drawing_context::set_graphic_properties(style_graphic_properties *graphic_properties)
+{
+	if (impl_->current_graphic_properties && graphic_properties)
+		impl_->current_graphic_properties->apply_from(graphic_properties->content_);
+}
+graphic_format_properties* odf_drawing_context::get_graphic_properties()
+{
+	return impl_->current_graphic_properties;
+}
 
 void odf_drawing_context::set_textarea_vertical_align(int align)
 {

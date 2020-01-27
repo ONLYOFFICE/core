@@ -55,7 +55,7 @@ namespace odf_writer {
 
 
 odp_conversion_context::odp_conversion_context(package::odf_document * outputDocument) 
-	:	odf_conversion_context (PresentationDocument, outputDocument), slide_context_(*this), text_context_(NULL)
+	:	odf_conversion_context (PresentationDocument, outputDocument), slide_context_(*this), text_context_(NULL), drawing_context_(this)
 {
 }
 odf_text_context* odp_conversion_context::text_context()
@@ -74,9 +74,14 @@ odf_controls_context* odp_conversion_context::controls_context()
 }
 odf_drawing_context* odp_conversion_context::drawing_context()
 {
-	if (slide_context_.page_state_list_.empty()) return NULL;
-	
-	return slide_context_.state().drawing_context();
+	if (slide_context_.page_state_list_.empty())
+	{
+		return &drawing_context_;
+	}
+	else
+	{
+		return slide_context_.state().drawing_context();
+	}
 }
 odf_comment_context* odp_conversion_context::comment_context()
 {
@@ -90,6 +95,8 @@ void odp_conversion_context::start_document()
 	start_presentation();
 	
 	root_presentation_ = dynamic_cast<office_presentation*>(get_current_object_element().get());
+	
+	drawing_context_.set_styles_context(styles_context());
 }
 
 void odp_conversion_context::end_document()

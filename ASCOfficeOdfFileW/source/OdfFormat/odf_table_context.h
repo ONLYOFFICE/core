@@ -53,16 +53,17 @@ public:
 
 	void set_styles_context(odf_style_context*  styles_context);
 	
-	void		set_table_styled(bool val);
-	bool		is_styled();
+	void set_table_styled(bool val);
+	bool is_styled();
 
-	bool		empty();
+	void set_table_size(size_t cols, size_t rows);
+
+	bool empty();
 
 	int current_column ();
 	int current_row ();
 	int count_columns ();
 	int count_rows ();
-	void count_rows (int count);
 
 	void start_table(office_element_ptr &elm, bool styled = false);
 		void set_default_column_width(double val);
@@ -71,8 +72,16 @@ public:
 		void set_default_row_height(double val);
 	void end_table();
 	
-	void		 set_default_cell_properties(std::wstring style_name);
+	void set_first_row_cell_properties(const std::wstring &style_name);
+	void set_first_col_cell_properties(const std::wstring &style_name);
+	void set_band_row_cell_properties(const std::wstring &style_name);
+	void set_band_col_cell_properties(const std::wstring &style_name);
+	void set_last_row_cell_properties(const std::wstring &style_name);
+	void set_last_col_cell_properties(const std::wstring &style_name);
+	
+	void set_default_cell_properties(const std::wstring &style_name);
 	std::wstring get_default_cell_properties();
+	std::wstring get_column_cell_properties();
 	
 	_CP_OPT(double) get_table_width();
 	_CP_OPT(double) get_table_height();

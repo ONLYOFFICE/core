@@ -34,6 +34,8 @@
 #include "odp_conversion_context.h"
 #include "odp_slide_context.h"
 #include "odf_text_context.h"
+#include "style_graphic_properties.h"
+#include "style_paragraph_properties.h"
 
 #include <iostream>
 
@@ -198,7 +200,7 @@ void odp_slide_context::start_table_cell(int col, bool covered, bool styled)
 {
 	for (int i = table_context()->current_column() ; i < col;  i++)
 	{
-		add_default_cell();
+		add_default_cell(col);
 	}
 //-------------------------------------------------------
 	office_element_ptr elm, style_elm;
@@ -214,6 +216,24 @@ void odp_slide_context::start_table_cell(int col, bool covered, bool styled)
 		odf_style_state_ptr style_state = styles_context_->last_state(style_family::TableCell);
 		if (style_state)
 			style_elm = style_state->get_office_element();
+
+		std::wstring def_style = table_context()->get_default_cell_properties();
+		if (false == def_style.empty())
+		{
+			odf_writer::odf_style_state_ptr style_state_def;
+			if (styles_context_->find_odf_style_state(def_style, style_family::TableCell, style_state_def))
+			{
+				graphic_format_properties *gr = style_state->get_graphic_properties();
+				graphic_format_properties *gr_def = style_state_def->get_graphic_properties();
+
+				if (gr && gr_def) gr->apply_from(*gr_def);
+
+				style_paragraph_properties *para = style_state->get_paragraph_properties();
+				style_paragraph_properties *para_def = style_state_def->get_paragraph_properties();
+				
+				if (para && para_def) para->apply_from(para_def);
+			}
+		}
 	}
 	
 	table_context()->start_cell(elm, style_elm ? true : false);
@@ -229,14 +249,14 @@ void odp_slide_context::end_table_row()
 {
 	for (int i = table_context()->current_column() ; i < table_context()->count_columns(); i++)
 	{
-		add_default_cell();
+		add_default_cell(i);
 	}
 //---------------------------------------------
 	table_context()->end_row();
 	state().drawing_context()->end_element();
 }
 
-void odp_slide_context::add_default_cell()
+void odp_slide_context::add_default_cell(int col)
 {
 	office_element_ptr elm;
 	create_element(L"table", L"covered-table-cell", elm, &context_);

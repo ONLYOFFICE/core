@@ -149,18 +149,19 @@ void common_draw_fill_attlist::serialize(CP_ATTR_NODE)
 void common_draw_fill_attlist::apply_from(const common_draw_fill_attlist & Other)
 {
 	_CP_APPLY_PROP2(draw_fill_); 
-	
- 	_CP_APPLY_PROP2(draw_fill_image_name_);
+ 	
+	_CP_APPLY_PROP2(draw_fill_image_name_);
 	_CP_APPLY_PROP2(draw_fill_gradient_name_);
 	_CP_APPLY_PROP2(draw_fill_hatch_name_);
 	_CP_APPLY_PROP2(draw_opacity_name_);
 
+	_CP_APPLY_PROP2(draw_fill_color_); 
 	_CP_APPLY_PROP2(draw_opacity_); 
+
 	_CP_APPLY_PROP2(draw_image_opacity_); 
 	_CP_APPLY_PROP2(draw_fill_hatch_solid_);
 
 	_CP_APPLY_PROP2(style_repeat_);
-	_CP_APPLY_PROP2(draw_fill_color_); 
 
 	_CP_APPLY_PROP2(draw_fill_image_width_);
 	_CP_APPLY_PROP2(draw_fill_image_height_);

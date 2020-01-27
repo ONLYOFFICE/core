@@ -1241,7 +1241,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 
 	//if (table_cell_properties && cash_value == false)
 	//{
-	//	table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf_writer::text_align_source(odf_writer::text_align_source::Fix);
+	//	table_cell_properties->content_.style_text_align_source_ = odf_writer::text_align_source(odf_writer::text_align_source::Fix);
 	//}	
 }
 void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)

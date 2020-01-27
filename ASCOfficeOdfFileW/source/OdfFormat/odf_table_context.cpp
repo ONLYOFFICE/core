@@ -65,36 +65,34 @@ namespace odf_writer
 	};
 	struct odf_table_state
 	{
-		odf_table_state()
-		{
-			current_row = 0;
-			current_column = 0;
-			count_header_row = 0;
-			styled = false;
-			count_rows = 0;
-
-			table_width = 0;
-			table_height = 0;
-		}
 		std::vector<odf_row_state>		rows;
 		std::vector<odf_column_state>	columns;
 		std::vector<odf_element_state>	cells;
 
 		odf_element_state table;
 
-        int current_row;
-        int current_column;
+        int current_row = 0;
+        int current_column = 0;
 
-        int count_rows;
+        int current_count_rows = 0;
+        int count_header_row = 0;
 
-        int count_header_row;
+		_CP_OPT(size_t)count_cols;
+		_CP_OPT(size_t)count_rows;
+		
+		bool styled = false;
 
-		bool styled;
-
-		double table_width;
-		double table_height;
+		double table_width = 0;
+		double table_height = 0;
 
 		std::wstring default_cell_properties;
+		
+		std::wstring first_row_cell_properties;
+		std::wstring first_col_cell_properties;
+		std::wstring band_row_cell_properties;
+		std::wstring band_col_cell_properties;
+		std::wstring last_row_cell_properties;
+		std::wstring last_col_cell_properties;
 
 		_CP_OPT(std::wstring) border_inside_v_;
 		_CP_OPT(std::wstring) border_inside_h_;
@@ -122,8 +120,9 @@ public:
 		
 		default_column_width	= boost::none;  // todo .. in level ???
 		default_row_height		= boost::none;
-		default_cell_properties = L""; 
 		optimal_column_width	= false;
+		
+		default_cell_properties.clear();
 	}
 
 	odf_style_context *styles_context() {return odf_context_->styles_context();}
@@ -162,7 +161,11 @@ bool odf_table_context::is_styled()
 	if (impl_->empty()) return false;
 	return impl_->current_table().styled;
 }
-
+void odf_table_context::set_table_size(size_t cols, size_t rows)
+{
+	impl_->current_table().count_cols = cols;
+	impl_->current_table().count_rows = rows;
+}
 void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 {
 	table_table * table = dynamic_cast<table_table *>(elm.get());
@@ -236,14 +239,29 @@ void odf_table_context::start_row(office_element_ptr &elm, bool styled)
 			row->attlist_.table_style_name_ = state.style_name;		
 		}
 	}
-	if (!impl_->current_table().default_cell_properties.empty())
-		row->attlist_.table_default_cell_style_name_ = impl_->current_table().default_cell_properties;
+	std::wstring default_cell_props = impl_->current_table().default_cell_properties;
+
+	if (impl_->current_table().current_row == 0 && false == impl_->current_table().first_row_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().first_row_cell_properties;
+	}
+	else if (impl_->current_table().count_rows && impl_->current_table().current_row == *impl_->current_table().count_rows - 1 && false == impl_->current_table().last_row_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().last_row_cell_properties;
+	}	
+	else if (impl_->current_table().current_row % 2 != 0 && false == impl_->current_table().band_row_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().band_row_cell_properties;
+	}
+
+	if (false == default_cell_props.empty())
+		row->attlist_.table_default_cell_style_name_ = default_cell_props;
 
 
 	impl_->current_table().rows.push_back(state);
 
 	impl_->current_table().current_column = 0;
-	impl_->current_table().current_row ++;
+	impl_->current_table().current_row++;
 }
 
 void odf_table_context::end_row()
@@ -252,7 +270,7 @@ void odf_table_context::end_row()
 	
 	set_cell_column_span_restart();
 
-	//for (int i = impl_->current_table().current_column ; i< impl_->current_table().columns.size() ; i++)
+	//for (int i = impl_->current_table().current_column ; i < impl_->current_table().columns.size() ; i++)
 	//{
 	//	office_element_ptr cell; //потом на default ???
 	//	create_element(L"table", L"table-cell",cell , impl_->odf_context_);
@@ -315,9 +333,40 @@ _CP_OPT(std::wstring) odf_table_context::get_table_inside_h()
 	if (impl_->empty()) return none; 
 	return impl_->current_table().border_inside_h_;
 }
-void odf_table_context::set_default_cell_properties(std::wstring style_name)
+void odf_table_context::set_default_cell_properties(const std::wstring &style_name)
 {
-	impl_->default_cell_properties = style_name;
+	if (impl_->empty()) impl_->default_cell_properties					= style_name;
+	else				impl_->current_table().default_cell_properties	= style_name;
+}
+void odf_table_context::set_first_row_cell_properties(const std::wstring &style_name)
+{
+	if (false == impl_->empty())
+		impl_->current_table().first_row_cell_properties	= style_name;
+}
+void odf_table_context::set_first_col_cell_properties(const std::wstring &style_name)
+{
+	if (false == impl_->empty())
+		impl_->current_table().first_col_cell_properties	= style_name;
+}
+void odf_table_context::set_band_row_cell_properties(const std::wstring &style_name)
+{
+	if (false == impl_->empty())
+		impl_->current_table().band_row_cell_properties	= style_name;
+}
+void odf_table_context::set_band_col_cell_properties(const std::wstring &style_name)
+{
+	if (false == impl_->empty())
+		impl_->current_table().band_col_cell_properties	= style_name;
+}
+void odf_table_context::set_last_row_cell_properties(const std::wstring &style_name)
+{
+	if (false == impl_->empty())
+		impl_->current_table().last_row_cell_properties	= style_name;
+}
+void odf_table_context::set_last_col_cell_properties(const std::wstring &style_name)
+{
+	if (false == impl_->empty())
+		impl_->current_table().last_col_cell_properties	= style_name;
 }
 _CP_OPT(double) odf_table_context::get_table_width()
 {
@@ -332,7 +381,44 @@ _CP_OPT(double) odf_table_context::get_table_height()
 std::wstring odf_table_context::get_default_cell_properties()
 {
 	if (impl_->empty()) return impl_->default_cell_properties;
-	else return impl_->current_table().default_cell_properties;
+	
+	std::wstring default_cell_props = impl_->current_table().default_cell_properties;
+
+	if (impl_->current_table().current_row == 1 && false == impl_->current_table().first_row_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().first_row_cell_properties;
+	}
+	else if (impl_->current_table().count_rows && impl_->current_table().current_row == *impl_->current_table().count_rows && false == impl_->current_table().last_row_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().last_row_cell_properties;
+	}	
+	else if (impl_->current_table().current_row % 2 == 0 && false == impl_->current_table().band_row_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().band_row_cell_properties;
+	}
+
+	return default_cell_props;
+}
+std::wstring odf_table_context::get_column_cell_properties()
+{
+	if (impl_->empty()) return L"";
+	
+	std::wstring default_cell_props;
+
+	if (impl_->current_table().current_column == 0 && false == impl_->current_table().first_col_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().first_col_cell_properties;
+	}
+	else if (impl_->current_table().count_cols && impl_->current_table().current_column == *impl_->current_table().count_cols - 1 && false == impl_->current_table().last_col_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().last_col_cell_properties;
+	}	
+	else if (impl_->current_table().current_column % 2 == 0 && false == impl_->current_table().band_col_cell_properties.empty())
+	{
+		default_cell_props = impl_->current_table().band_col_cell_properties;
+	}
+
+	return default_cell_props;
 }
 void odf_table_context::set_default_row_height(double height)
 {
@@ -483,14 +569,9 @@ int odf_table_context::count_rows ()
 {
 	if (impl_->empty()) return 0;
 
-	return impl_->current_table().count_rows;
+	return impl_->current_table().current_count_rows;
 }
-void odf_table_context::count_rows (int count)
-{
-	if (impl_->empty()) return;
 
-	impl_->current_table().count_rows = count;
-}
 void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 {
 	if (impl_->empty()) return;
@@ -499,6 +580,8 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 	table_covered_table_cell*	covered_cell	= dynamic_cast<table_covered_table_cell *>(elm.get());
 	
 	if (!cell && !covered_cell)return;
+	
+	std::wstring def_props = get_default_cell_properties();
 	
 	odf_element_state state;
 
@@ -513,28 +596,12 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 			
 			cell->attlist_.table_style_name_ = state.style_name;		
 		}
-
-		if (!impl_->current_table().default_cell_properties.empty())
-		{
-			odf_style_state_ptr default_style_state; 
-			impl_->styles_context()->find_odf_style_state(impl_->current_table().default_cell_properties, style_family::TableCell, default_style_state);
-
-			if (default_style_state && style_state)
-			{
-				graphic_format_properties *		g = style_state->get_graphic_properties() ;  
-				style_text_properties *			t = style_state->get_text_properties();
-				style_table_cell_properties *	c = style_state->get_table_cell_properties();
-
-				graphic_format_properties *		d_g = default_style_state->get_graphic_properties() ;  
-				style_text_properties *			d_t = default_style_state->get_text_properties();
-				style_table_cell_properties *	d_c = default_style_state->get_table_cell_properties();
-
-				if (g && d_g) g->apply_from(*d_g);
-				if (t && d_t) t->apply_from(d_t);
-				if (c && d_c) c->apply_from(d_c);
-			}
-		}
 	}
+	else if (false == def_props.empty() && cell)
+	{
+		cell->attlist_.table_style_name_ = def_props;		
+	}
+//------------------------------------------------------------------------------
 	int row = impl_->current_table().current_row - 1;
 	odf_row_state & state_row = impl_->current_table().rows[row];
 	

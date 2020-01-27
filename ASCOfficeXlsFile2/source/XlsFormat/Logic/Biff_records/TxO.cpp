@@ -129,7 +129,8 @@ void TxO::readFields(CFRecord& record)
 			if(record.getDataSize() - record.getRdPtr() > 0)
 			{
 				XLUnicodeStringNoCch val;
-				unsigned char fHighByte;
+				
+				unsigned char fHighByte;	//todooo втащить в BufferString
 				record >> fHighByte;
 				bool is_wide = ((fHighByte & 1) != 0);
 

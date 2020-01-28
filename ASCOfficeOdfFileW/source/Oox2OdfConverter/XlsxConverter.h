@@ -146,7 +146,7 @@ namespace Oox2Odf
 		XlsxConverter(const std::wstring & path, bool bTemplate);
 		~XlsxConverter();
 
-		virtual void convertDocument();
+		virtual bool convertDocument();
 		
 		virtual OOX::IFileContainer					*current_document();
 		virtual odf_writer::odf_conversion_context	*odf_context();		

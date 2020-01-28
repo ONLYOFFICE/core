@@ -774,7 +774,10 @@ namespace OOX
 		et_w_smartTag, // <w:smartTagType>
 		et_w_smartTagType, // <w:smartTagType>
 		et_w_softHyphen, // <w:softHyphen>
+		et_w_wordDocument, // <w:wordDocument>
+		et_w_document, // <w:document>
 		et_w_style, // <w:style>
+		et_w_styles, // <w:styles>
 		et_w_stylePaneFormatFilter, // <w:stylePaneFormatFilter>
 		et_w_stylePaneSortMethod, // <w:stylePaneSortMethod>
 		et_w_sym, // <w:sym>

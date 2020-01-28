@@ -768,10 +768,9 @@ namespace OOX
 	//--------------------------------------------------------------------------------
 	// Styles 17.7.4.18 (Part 1)
 	//--------------------------------------------------------------------------------
-	class CStyles : public OOX::File
+	class CStyles : public OOX::File, public WritingElement
 	{
 	public:
-		
 		CStyles(OOX::Document *pMain) : OOX::File(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
@@ -784,6 +783,14 @@ namespace OOX
 
 			read( oPath );
 		}
+		CStyles(XmlUtils::CXmlNode& oNode) : File(NULL)
+		{
+			fromXML( oNode );
+		}
+		CStyles(XmlUtils::CXmlLiteReader& oReader) : File(NULL)
+		{
+			fromXML( oReader );
+		}
 		virtual ~CStyles()
 		{
 			for (unsigned int nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
@@ -795,8 +802,17 @@ namespace OOX
 
 			m_arrStyleNamesMap.clear();
 		}
+		const CStyles& operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
 
-	public:
+		const CStyles& operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
 		virtual void read(const CPath& oFilePath)
 		{
 			XmlUtils::CXmlLiteReader oReader;
@@ -808,36 +824,63 @@ namespace OOX
 				return;
 
 			std::wstring sName = oReader.GetName();
-			if ( _T("w:styles") == sName && !oReader.IsEmptyNode() )
+			if ( _T("w:styles") == sName)
 			{
-				int nStylesDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
-				{
-					sName = oReader.GetName();
-
-					if ( _T("w:style") == sName )
-					{
-						OOX::CStyle *oStyle = new OOX::CStyle (oReader);
-						if (oStyle)
-						{
-							if (oStyle->m_oName.IsInit())
-							{
-								m_arrStyleNamesMap[oStyle->m_oName->ToString()] = (int)m_arrStyle.size();
-							}
-							m_arrStyle.push_back( oStyle );
-						}
-					}
-					else if ( _T("w:docDefaults") == sName )
-						m_oDocDefaults = oReader;
-					else if ( _T("w:latentStyles") == sName )
-						m_oLatentStyles = oReader;
-				}
+				fromXML(oReader);
 			}
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">");
+			std::wstring sXml = toXML();
+
+			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::Style;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nStylesDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				if ( L"w:style" == sName )
+				{
+					OOX::CStyle *oStyle = new OOX::CStyle (oReader);
+					if (oStyle)
+					{
+						if (oStyle->m_oName.IsInit())
+						{
+							m_arrStyleNamesMap[oStyle->m_oName->ToString()] = (int)m_arrStyle.size();
+						}
+						m_arrStyle.push_back( oStyle );
+					}
+				}
+				else if ( L"w:docDefaults" == sName )
+					m_oDocDefaults = oReader;
+				else if ( L"w:latentStyles" == sName )
+					m_oLatentStyles = oReader;
+			}
+		}
+        virtual std::wstring toXML() const
+		{
+			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">";
 
 			if ( m_oDocDefaults.IsInit() )
 				sXml += m_oDocDefaults->toXML();
@@ -851,30 +894,18 @@ namespace OOX
 					sXml += m_arrStyle[nIndex]->toXML();
 			}
 			sXml += _T("</w:styles>");
-
-			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+			return sXml;
 		}
-
-	public:
-		virtual const OOX::FileType type() const
+		virtual EElementType getType() const
 		{
-			return FileTypes::Style;
+			return et_w_styles;
 		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+//------------------------------------------------------------------------
 
-	public:
-
-		nullable<OOX::CDocDefaults  >	m_oDocDefaults;
-		nullable<OOX::CLatentStyles >	m_oLatentStyles;
-		std::vector<OOX::CStyle    *>	m_arrStyle;
-		std::map<std::wstring, int>			m_arrStyleNamesMap;
+		nullable<OOX::CDocDefaults>		m_oDocDefaults;
+		nullable<OOX::CLatentStyles>	m_oLatentStyles;
+		std::vector<OOX::CStyle*>		m_arrStyle;
+		std::map<std::wstring, int>		m_arrStyleNamesMap;
 
 	};
 } // namespace OOX

@@ -116,7 +116,7 @@ namespace Oox2Odf
 		PptxConverter(const std::wstring & path, bool bTemplate);
 		~PptxConverter();
 
-		virtual void convertDocument();
+		virtual bool convertDocument();
 		
 		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();		

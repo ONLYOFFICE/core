@@ -192,7 +192,7 @@ namespace OOX
 	//--------------------------------------------------------------------------------
 	// CDocument 17.2.3 (Part 1)
 	//--------------------------------------------------------------------------------
-	class CDocument : public OOX::File, public IFileContainer
+	class CDocument : public OOX::File, public IFileContainer, public WritingElement
 	{
 	public:
 		CDocument(OOX::Document *pMain) : File(pMain), IFileContainer(pMain)
@@ -211,11 +211,32 @@ namespace OOX
 			
 			read( oRootPath, oPath );
 		}
+		CDocument(XmlUtils::CXmlNode& oNode) : File(NULL), IFileContainer(NULL)
+		{
+			m_bMacroEnabled = false;
+			
+			fromXML( oNode );
+		}
+		CDocument(XmlUtils::CXmlLiteReader& oReader) : File(NULL), IFileContainer(NULL)
+		{
+			m_bMacroEnabled = false;
+			
+			fromXML( oReader );
+		}
 		virtual ~CDocument()
 		{
 			ClearItems();
 		}
-
+		const CDocument& operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CDocument& operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
 		virtual void read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -333,73 +354,12 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 			if ( _T("w:document") == sName || _T("w:wordDocument") == sName)
 			{
-				ReadAttributes( oReader );
-
-				if ( !oReader.IsEmptyNode() )
-				{
-					int nDocumentDepth = oReader.GetDepth();
-					while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
-					{
-						sName = oReader.GetName();
-
-						if ( _T("w:body") == sName && !oReader.IsEmptyNode() )
-						{
-							int nBodyDepth = oReader.GetDepth();
-							
-							CreateElements(oReader, nBodyDepth);
-						}
-						else if ( _T("w:background") == sName )
-							m_oBackground = oReader;
-					}
-				}
+				fromXML(oReader);
 			}			
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document";
-
-			if ( SimpleTypes::conformanceclassTransitional != m_oConformance.GetValue() )
-			{		
-				sXml += L" w:conformance=\"";
-				sXml += m_oConformance.ToString();
-				sXml += L"\"";
-			}
-sXml += L" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 w15 wp14\">";
-
-			if ( m_oBackground.IsInit() )
-				sXml += m_oBackground->toXML();
-
-			sXml += _T("<w:body>");
-
-            for ( size_t i = 0; i < m_arrItems.size(); ++i)
-			{
-                if ( m_arrItems[i] )
-				{
-                    sXml += m_arrItems[i]->toXML();
-				}
-			}
-
-			if ( m_oSectPr.IsInit() )
-				sXml += m_oSectPr->toXML();
-
-			sXml += _T("</w:body></w:document>");
+			std::wstring sXml = toXML();
 
 			CDirectory::SaveToFile( oPath.GetPath(), sXml );
 
@@ -540,27 +500,198 @@ mc:Ignorable=\"w14 w15 wp14\">";
 				//pPara->AddHyperlink( rId, sText );
 			}		
 		}
-
-	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:conformance"), m_oConformance )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-	public:
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nDocumentDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				if ( L"w:body" == sName && !oReader.IsEmptyNode() )
+				{
+					int nBodyDepth = oReader.GetDepth();
+					
+					CreateElements(oReader, nBodyDepth);
+				}
+				else if ( L"w:background" == sName )
+				{
+					m_oBackground = oReader;
+				}
+				else if ( L"wx:sect" == sName && !oReader.IsEmptyNode() )
+				{
+					int nWxSect = oReader.GetDepth();
+					CreateElements(oReader, nWxSect);
+				}
+			}
+		}
+        virtual std::wstring toXML() const
+		{
+			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document";
+
+			if ( SimpleTypes::conformanceclassTransitional != m_oConformance.GetValue() )
+			{		
+				sXml += L" w:conformance=\"";
+				sXml += m_oConformance.ToString();
+				sXml += L"\"";
+			}
+sXml += L" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+mc:Ignorable=\"w14 w15 wp14\">";
+
+			if ( m_oBackground.IsInit() )
+				sXml += m_oBackground->toXML();
+
+			sXml += _T("<w:body>");
+
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+                if ( m_arrItems[i] )
+				{
+                    sXml += m_arrItems[i]->toXML();
+				}
+			}
+
+			if ( m_oSectPr.IsInit() )
+				sXml += m_oSectPr->toXML();
+
+			sXml += _T("</w:body></w:document>");
+
+			return sXml;
+		}
+		virtual EElementType getType() const
+		{
+			return et_w_document;
+		}
+//---------------------------------------------------------------------------------------------
 		bool									m_bMacroEnabled;
 		CPath									m_oReadPath;
-		// Attributes
+
 		SimpleTypes::CConformanceClass<SimpleTypes::conformanceclassTransitional> m_oConformance;
 
-		// Childs
-		nullable<OOX::Logic::CSectionProperty> m_oSectPr;
-		nullable<OOX::Logic::CBackground     > m_oBackground;
+		nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
+		nullable<OOX::Logic::CBackground>		m_oBackground;
 
-        std::vector<WritingElement *>			m_arrItems;
+        std::vector<WritingElement*>			m_arrItems;
 	};
+//----------------------------------------------------------------------------------------------------------------
+	class CDocxFlat : public OOX::Document, public OOX::File, public WritingElement
+	{
+	public:
+
+		CDocxFlat() : OOX::File(dynamic_cast<OOX::Document*>(this))
+		{
+		}
+		CDocxFlat(const CPath& oFilePath) : OOX::File(this)
+		{
+			read( oFilePath );
+		}
+
+		virtual void read(const CPath& oFilePath)
+		{
+			XmlUtils::CXmlLiteReader oReader;
+			
+			if ( !oReader.FromFile( oFilePath.GetPath() ) )
+				return;
+
+			if ( !oReader.ReadNextNode() )
+				return;
+
+			fromXML(oReader);
+		}
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+			std::wstring sXml = toXML();
+			
+			NSFile::CFileBinary file;
+			file.CreateFileW(oFilePath.GetPath());
+			file.WriteStringUTF8(sXml);
+			file.CloseFile();
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::DocumentFlat;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nStylesDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				if ( L"w:body" == sName )
+					m_pDocument = oReader;
+				else if ( L"w:styles" == sName )
+					m_pStyles = oReader;
+				else if ( L"w:bgPict" == sName )
+				{
+					//m_oBgPict = oReader;
+				}
+			}
+		}
+        virtual std::wstring toXML() const
+		{
+			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+
+			return sXml;
+		}
+		virtual EElementType getType() const
+		{
+			return et_w_wordDocument;
+		}
+//-----------------------------------------------------------------------
+
+		nullable<OOX::CDocument>			m_pDocument;
+		nullable<OOX::CStyles>				m_pStyles;
+		//nullable<OOX::Logic::CBgPict>		m_oBgPict;
+		//nullable<OOX::CEndFoot>		m_pEndnotePr;
+		//nullable<OOX::CEndFoot>		m_pFootnotePr;
+		//nullable<OOX::CApp>			m_pApp;	
+	
+	};
+
 
 } // namespace OOX
 

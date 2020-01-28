@@ -3254,6 +3254,25 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile)
 			//	m_oParamsWriter.m_pFontProcessor->setFontTable(oDocx.m_pFontTable);
 			oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocx.m_pDocument->m_arrItems);
 		}
+		else
+		{
+			OOX::CDocxFlat oDocxFlat = OOX::CDocxFlat(OOX::CPath(sResultDocxDir));
+			if (oDocxFlat.m_pDocument.IsInit())
+			{
+				ParamsDocumentWriter oParamsDocumentWriterEmb(oDocxFlat.m_pDocument.GetPointer());
+				
+				ParamsWriter oParamsWriterEmb(	m_oParamsWriter.m_pCBufferedStream, 
+												m_oParamsWriter.m_pFontProcessor, 
+												m_oParamsWriter.m_pOfficeDrawingConverter, 
+												m_oParamsWriter.m_pEmbeddedFontsManager);
+				
+				//oParamsWriterEmb.m_poTheme	= oDocxFlat.m_pTheme;
+				//oParamsWriterEmb.m_oSettings = oDocxFlat.m_pSettings;
+
+				BinaryDocumentTableWriter oBinaryDocumentEmbTableWriter(oParamsWriterEmb, oParamsDocumentWriterEmb, &oParamsWriterEmb.m_mapIgnoreComments, NULL);
+				oBinaryDocumentEmbTableWriter.WriteDocumentContent(oDocxFlat.m_pDocument->m_arrItems);
+			}
+		}
 	}
 	NSDirectory::DeleteDirectory(sResultDocxDir);
 }

@@ -373,9 +373,9 @@ namespace Oox2Odf
 	class OoxConverter
 	{
 public:
-		virtual void convertDocument() = 0;
+		virtual bool convertDocument() = 0;
 		
-		void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID);
+		bool write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID);
 		
 		OoxConverter()
 		{

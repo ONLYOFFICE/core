@@ -173,10 +173,10 @@ std::wstring PptxConverter::find_link_by_id (const std::wstring & sId, int type)
 	return ref;
 }
 
-void PptxConverter::convertDocument()
+bool PptxConverter::convertDocument()
 {
-    if (!pptx_document) return;
-    if (!odp_context)   return;
+    if (!pptx_document) return false;
+    if (!odp_context)   return false;
 		
 	odp_context->start_document();
 
@@ -189,6 +189,8 @@ void PptxConverter::convertDocument()
 	delete pptx_document; pptx_document = NULL;
 
 	odp_context->end_document();
+
+	return true;
 }
 void PptxConverter::convert_styles()
 {

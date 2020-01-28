@@ -71,6 +71,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	switch(fileChecker.nFileType)
 	{
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT:
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		dstPath += L"-my.odt"; type = L"text";		break;
 		
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
@@ -102,25 +103,34 @@ HRESULT convert_single(std::wstring srcFileName)
     // распаковываем исходник во временную директорию
 	COfficeUtils oCOfficeUtils(NULL);
     if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
-		return S_FALSE;
+	{
+		//may be flat
+		srcTempPath = srcFileName;
+	}
 
 	Oox2Odf::Converter converter(srcTempPath, type, L"C:\\Windows\\Fonts", bTemplate);
 
 	std::wstring sPassword;// = L"password";
 	
-	converter.convert();
-	converter.write(dstTempPath, srcTempPath, sPassword, L"hiuh56f56tfy7g");
-
-	NSDirectory::DeleteDirectory(srcTempPath);
-
-	if (hr != S_OK)  return hr;
+	if (false == converter.convert())
+	{
+		return S_FALSE;
+	}
+	if (false == converter.write(dstTempPath, srcTempPath, sPassword, L"hiuh56f56tfy7g"))
+	{
+		return S_FALSE;
+	}
+	if (srcFileName != srcTempPath)
+	{
+		NSDirectory::DeleteDirectory(srcTempPath);
+	}
    
 	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), false, sPassword.empty() ? Z_DEFLATED : 0))
         return hr;
 	
 	NSDirectory::DeleteDirectory(dstTempPath);
 
-	return 0;
+	return S_OK;
 }
 HRESULT convert_directory(std::wstring pathName)
 {

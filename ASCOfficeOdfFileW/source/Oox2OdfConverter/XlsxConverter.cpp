@@ -135,11 +135,11 @@ std::wstring XlsxConverter::find_link_by_id (const std::wstring & sId, int type)
 }
 
 
-void XlsxConverter::convertDocument()
+bool XlsxConverter::convertDocument()
 {
-    if (!xlsx_document)     return;
-    if (!output_document)   return;
-    if (!ods_context)       return;
+    if (!xlsx_document)     return false;
+    if (!output_document)   return false;
+    if (!ods_context)       return false;
 
 	ods_context->start_document();
 
@@ -150,6 +150,8 @@ void XlsxConverter::convertDocument()
 	delete xlsx_document; xlsx_document = NULL;
 
 	ods_context->end_document();
+
+	return true;
 }
 
 void XlsxConverter::convert_sheets()

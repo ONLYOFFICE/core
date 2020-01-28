@@ -76,6 +76,8 @@ public:
 
     std::wstring getDocumentID		(const std::wstring & fileName);
 	
+	bool isOOXFlatFormatFile(unsigned char* pBuffer,int dwBytes);
+	
 	bool isDocFlatFormatFile(unsigned char* pBuffer,int dwBytes);
 
 	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);

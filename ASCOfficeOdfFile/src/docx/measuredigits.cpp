@@ -41,13 +41,6 @@
 namespace cpdoccore {
 namespace utils {
 
-namespace 
-{
-    class Error : public std::exception {};    
-    class LoadFontError : public Error {};
-    class MeasureError : public Error {};
-}
-
 std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IFontManager *pFontManager)
 {
     if (pFontManager == NULL) return std::pair<float, float>(7,8);
@@ -73,7 +66,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 		//if (FALSE == (hr = pFontManager->LoadString2( std::to_wstring(i), 0, 0)))
 		//	return std::pair<float, float>(7,8);
 
-		if (FALSE == (hr = pFontManager->LoadString2( L"0123456789abcdefghijklmnopqrstuvwxyz" , 0, 0)))
+		if (FALSE == (hr = pFontManager->LoadString2( L"012345" , 0, 0)))//6789abcdefghijklmnopqrstuvwxyz
 			return std::pair<float, float>(7,8);
 
 		TBBox box;
@@ -96,7 +89,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
         if (box.fMaxY - box.fMinY < minHeight)  minHeight = box.fMaxY - box.fMinY;
     }
 
-	double width = (minWidth + 2 * maxWidth) /36. /3.;
+	double width = (minWidth + 2 * maxWidth) / 5./*/36.*/ /3.;
 	return std::pair<float, float>(width, maxHeight);
 }
 

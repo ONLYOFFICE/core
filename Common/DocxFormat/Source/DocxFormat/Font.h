@@ -45,14 +45,16 @@ namespace OOX
 	class CFont : public WritingElement
 	{
 	public:
+		WritingElement_AdditionConstructors(CFont)
+		
 		CFont() 
 		{
 			m_sName = _T("Arial");
 		}
 
 		virtual ~CFont() {}
-	public:
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			Reset();
 			if ( _T("w:font") == oNode.GetName() )
@@ -92,11 +94,53 @@ namespace OOX
 
 			}
 		}
-		virtual std::wstring      toXML  () const
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 		{
-			std::wstring sResult = _T("<w:font w:name=\"");
-			sResult += m_sName;
-			sResult += _T("\">");
+			Reset();
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() ) return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				if ( sName == L"w:altName")
+				{
+					WritingElement_ReadAttributes_ReadSingle2  ( oReader, L"w:val", m_oAltName )
+				}
+				if ( sName == L"w:charset")
+				{
+					WritingElement_ReadAttributes_ReadSingle2  ( oReader, L"w:val", m_oCharset )
+				}
+				if ( sName == L"w:family")
+				{
+					WritingElement_ReadAttributes_ReadSingle2  ( oReader, L"w:val", m_oFamily )
+				}
+
+				if ( sName == L"w:notTrueType")
+				{
+					WritingElement_ReadAttributes_ReadSingle2  ( oReader, L"w:val", m_oNotTrueType )
+				}
+				if ( sName == L"w:panose1")
+				{
+					WritingElement_ReadAttributes_ReadSingle2  ( oReader, L"w:val", m_oPanose )
+				}
+				if ( sName == L"w:pitch")
+				{
+					WritingElement_ReadAttributes_ReadSingle2  ( oReader, L"w:val", m_oPitch )
+				}
+				if ( sName == L"w:sig")
+				{
+					ReadAttributes2( oReader );
+				}
+
+			}			
+		}
+		virtual std::wstring toXML () const
+		{
+			std::wstring sResult = L"<w:font w:name=\"" + m_sName + L"\">";
 
 			if ( m_oAltName.IsInit() )
 			{
@@ -117,15 +161,12 @@ namespace OOX
 				sResult += m_oFamily->ToString();
 				sResult += _T("\"/>");
 			}
-
-
 			if ( m_oNotTrueType.IsInit() )
 			{
 				sResult += _T("<w:notTrueType w:val=\"");
 				sResult += m_oNotTrueType->ToString();
 				sResult += _T("\"/>");
 			}
-
 			if ( m_oPanose.IsInit() )
 			{
 				sResult += _T("<w:panose1 w:val=\"");
@@ -155,23 +196,35 @@ namespace OOX
 				sResult += m_oCsb1->ToString();
 				sResult += _T("\"/>");
 			}
-
-			sResult += _T("</w:font>");
-
+			sResult += L"</w:font>";
 			return sResult;
 		}
-
-
 
 		virtual EElementType getType() const
 		{
 			return et_w_font;
 		}
 	private:
-
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle  ( oReader, L"w:name", m_sName )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:csb0"),	m_oCsb0 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:csb1"),	m_oCsb1 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:usb0"),	m_oUsb0 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:usb1"),	m_oUsb1 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:usb2"),	m_oUsb2 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:usb3"),	m_oUsb3 )
+			WritingElement_ReadAttributes_End( oReader )
+		}
 		void Reset()
 		{
-			m_sName = _T("Arial");
+			m_sName = L"Arial";
 			m_oCharset.reset();
 			m_oFamily.reset();
 			m_oPitch.reset();

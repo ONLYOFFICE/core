@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_STYLES_INCLUDE_H_
-#define OOX_STYLES_INCLUDE_H_
 
 #include "File.h"
 #include "WritingElement.h"
@@ -732,14 +730,11 @@ namespace OOX
 
 	public:
 
-		// Attributes
-
 		nullable<SimpleTypes::COnOff<>		> m_oCustomStyle;
 		nullable<SimpleTypes::COnOff<>		> m_oDefault;
 		nullable<std::wstring				> m_sStyleId;
 		nullable<SimpleTypes::CStyleType<>	> m_oType;
 
-		// Childs
 		nullable<ComplexTypes::Word::String                       > m_oAliases;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAutoRedefine;
 		nullable<ComplexTypes::Word::String                       > m_oBasedOn;
@@ -793,7 +788,7 @@ namespace OOX
 		}
 		virtual ~CStyles()
 		{
-			for (unsigned int nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
+			for (size_t nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
 			{
 				if ( m_arrStyle[nIndex] )delete m_arrStyle[nIndex];
 				m_arrStyle[nIndex] = NULL;
@@ -888,7 +883,7 @@ namespace OOX
 			if ( m_oLatentStyles.IsInit() )
 				sXml += m_oLatentStyles->toXML();
 
-			for (unsigned int nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
+			for (size_t nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
 			{
 				if (m_arrStyle[nIndex])
 					sXml += m_arrStyle[nIndex]->toXML();
@@ -909,5 +904,3 @@ namespace OOX
 
 	};
 } // namespace OOX
-
-#endif // OOX_STYLES_INCLUDE_H_

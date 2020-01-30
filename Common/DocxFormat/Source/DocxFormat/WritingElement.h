@@ -80,7 +80,23 @@ namespace OOX
 #define WritingElement_WriteNode_2( oValue ) \
 	if ( oValue.IsInit() )\
 		sResult += oValue->toXML();
-
+//-----------------------------------------------------------------------------------------------
+#define WritingElement_ReadAttributes_ReadSingle2(Reader, AttrName, Value) \
+	if ( Reader.GetAttributesCount() > 0 ){\
+	if ( Reader.MoveToFirstAttribute() ){\
+	std::wstring wsName = Reader.GetName();\
+    while( !wsName.empty() )\
+	{\
+		if ( AttrName == wsName )\
+		{\
+            Value = Reader.GetText();\
+			break;\
+		}\
+		if ( !Reader.MoveToNextAttribute() ) \
+			break;\
+		wsName = Reader.GetName();\
+	}\
+	Reader.MoveToElement();}}
 // Следующие 3 define используются для чтения аттрибутов через CXmlLiteReader
 #define WritingElement_ReadAttributes_Start(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
@@ -706,6 +722,7 @@ namespace OOX
 		et_w_ffData, // <w:ffData>
 		et_w_fldChar, // <w:fldChar>
 		et_w_fldSimple, // <w:fldSimple>
+		et_w_fonts, // <w:fonts>
 		et_w_font, // <w:font>
 		et_w_footnote, // <w:footnote>
 		et_w_footnotePr, // <w:footnotePr>
@@ -732,6 +749,7 @@ namespace OOX
 		et_w_moveFromRangeStart, // <w:moveFromRangeStart>
 		et_w_moveToRangeEnd, // <w:moveToRangeEnd>
 		et_w_moveToRangeStart, // <w:moveToRangeStart>
+		et_w_numbering, // <w:numbering>
 		et_w_num, // <w:num>
 		et_w_numPicBullet, // <w:numPicBullet>
 		et_w_numPr, // <w:numPr>

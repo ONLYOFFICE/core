@@ -57,13 +57,13 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:legacy"),       m_oLegacy );
 				XmlMacroReadAttributeBase( oNode, _T("w:legacyIndent"), m_oLegacyIndent );
 				XmlMacroReadAttributeBase( oNode, _T("w:legacySpace"),  m_oLegacySpace );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -84,7 +84,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:legacy"),       m_oLegacy )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:legacyIndent"), m_oLegacyIndent )
@@ -113,12 +112,12 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:null"), m_oNull );
 				XmlMacroReadAttributeBase( oNode, _T("w:val"),  m_sVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -137,14 +136,12 @@ namespace ComplexTypes
                     sResult += m_sVal.get2();
 					sResult += _T("\" ");
 				}
-
 				return sResult;
 			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:null"), m_oNull )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),  m_sVal )
@@ -194,7 +191,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -219,11 +215,11 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -242,7 +238,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -275,7 +270,7 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:lvl") != oNode.GetName() )
 					return;
@@ -299,7 +294,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:start"),          m_oStart );
 				WritingElement_ReadNode( oNode, oChild, _T("w:suff"),           m_oSuffix );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -325,7 +320,7 @@ namespace OOX
 
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:lvl ");
 
@@ -362,7 +357,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:ilvl"),      m_oIlvl )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tentative"), m_oTentative )
@@ -372,13 +366,10 @@ namespace OOX
 
 		public:
 
-			// Attributes
-
 			nullable<SimpleTypes::CDecimalNumber<> > m_oIlvl;
 			nullable<SimpleTypes::COnOff<>         > m_oTentative;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oTplc;
 
-			// Childs
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oIsLgl;
 			nullable<ComplexTypes::Word::CLvlLegacy                      > m_oLegacy;
 			nullable<ComplexTypes::Word::CJc                             > m_oLvlJc;
@@ -394,7 +385,7 @@ namespace OOX
 
 		};
 		//--------------------------------------------------------------------------------
-		// AbstractNum 17.9.1 (Part 1)
+		// AbstractNum 17.9.1 (Part 1); listDef element [Word 2003 XML]
 		//--------------------------------------------------------------------------------
 		class CAbstractNum : public WritingElement
 		{
@@ -405,21 +396,20 @@ namespace OOX
 			}
 			virtual ~CAbstractNum()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrLvl.size(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < m_arrLvl.size(); nIndex++ )
 				{
 					if ( m_arrLvl[nIndex] ) delete m_arrLvl[nIndex];
 					m_arrLvl[nIndex] = NULL;
 				}
 				m_arrLvl.clear();
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:abstractNum") != oNode.GetName() )
+				if ( L"w:abstractNum" != oNode.GetName() && L"listDef" != oNode.GetName())
 					return;
 
-				XmlMacroReadAttributeBase( oNode, _T("w:abstractNumId"), m_oAbstractNumId );
+				XmlMacroReadAttributeBase( oNode, _T("w:abstractNumId"),	m_oAbstractNumId );
+				XmlMacroReadAttributeBase( oNode, _T("w:listDefId"),		m_oAbstractNumId );
 
 				XmlUtils::CXmlNode oChild;
 				
@@ -444,7 +434,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -460,15 +450,16 @@ namespace OOX
 						OOX::Numbering::CLvl *oLvl = new OOX::Numbering::CLvl(oReader);
 						if (oLvl)m_arrLvl.push_back( oLvl );
 					}
-					else if ( _T("w:multiLevelType") == sName ) m_oMultiLevelType = oReader;
-					else if ( _T("w:name")           == sName ) m_oName = oReader;
-					else if ( _T("w:nsid")           == sName ) m_oNsid = oReader;
-					else if ( _T("w:numStyleLink")   == sName ) m_oNumStyleLink = oReader;
-					else if ( _T("w:styleLink")      == sName ) m_oStyleLink = oReader;
-					else if ( _T("w:tmpl")           == sName ) m_oTmpl = oReader;
+					else if (L"w:multiLevelType"	== sName || 
+								L"w:plt"			== sName ) m_oMultiLevelType = oReader;
+					else if ( L"w:name"				== sName ) m_oName = oReader;
+					else if ( L"w:nsid"				== sName ) m_oNsid = oReader;
+					else if ( L"w:numStyleLink"		== sName ) m_oNumStyleLink = oReader;
+					else if ( L"w:styleLink"		== sName ) m_oStyleLink = oReader;
+					else if ( L"w:tmpl"				== sName ) m_oTmpl = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:abstractNum ");
 
@@ -487,9 +478,7 @@ namespace OOX
 				{
 					if (m_arrLvl[nIndex])
 						sResult += m_arrLvl[nIndex]->toXML();
-				}
-
-	
+				}	
 				sResult += _T("</w:abstractNum>");
 
 				return sResult;
@@ -503,26 +492,23 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:abstractNumId"), m_oAbstractNumId )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("w:abstractNumId"), m_oAbstractNumId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:listDefId"), m_oAbstractNumId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			// Attributes
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oAbstractNumId;
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oAbstractNumId;
-
-			// Childs
-			std::vector<OOX::Numbering::CLvl*                            > m_arrLvl;
-			nullable<ComplexTypes::Word::CMultiLevelType                 > m_oMultiLevelType;
-			nullable<ComplexTypes::Word::String                        > m_oName;
-			nullable<ComplexTypes::Word::CLongHexNumber                  > m_oNsid;
-			nullable<ComplexTypes::Word::String                        > m_oNumStyleLink;
-			nullable<ComplexTypes::Word::String                        > m_oStyleLink;
-			nullable<ComplexTypes::Word::CLongHexNumber                  > m_oTmpl;
+			std::vector<OOX::Numbering::CLvl*>				m_arrLvl;
+			nullable<ComplexTypes::Word::CMultiLevelType>	m_oMultiLevelType;
+			nullable<ComplexTypes::Word::String>			m_oName;
+			nullable<ComplexTypes::Word::CLongHexNumber>	m_oNsid;
+			nullable<ComplexTypes::Word::String>			m_oNumStyleLink;
+			nullable<ComplexTypes::Word::String>			m_oStyleLink;
+			nullable<ComplexTypes::Word::CLongHexNumber>	m_oTmpl;
 		};
 		//--------------------------------------------------------------------------------
 		// NumLvl 17.9.9 (Part 1)
@@ -537,9 +523,7 @@ namespace OOX
 			virtual ~CNumLvl()
 			{
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:lvlOverride") != oNode.GetName() )
 					return;
@@ -551,7 +535,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:lvl"),           m_oLvl );
 				WritingElement_ReadNode( oNode, oChild, _T("w:startOverride"), m_oStartOverride );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -568,7 +552,7 @@ namespace OOX
 						m_oStartOverride = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:lvlOverride ");
 
@@ -592,7 +576,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:ilvl"), m_oIlvl )
 				WritingElement_ReadAttributes_End( oReader )
@@ -600,13 +583,10 @@ namespace OOX
 
 		public:
 
-			// Attributes
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oIlvl;
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oIlvl;
-
-			// Childs
-			nullable<OOX::Numbering::CLvl               > m_oLvl;
-			nullable<ComplexTypes::Word::CDecimalNumber > m_oStartOverride;
+			nullable<OOX::Numbering::CLvl>					m_oLvl;
+			nullable<ComplexTypes::Word::CDecimalNumber>	m_oStartOverride;
 		};
 		//--------------------------------------------------------------------------------
 		// Num 17.9.16 (Part 1)
@@ -627,21 +607,21 @@ namespace OOX
 				}
 				m_arrLvlOverride.clear();
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:num") != oNode.GetName() )
+				if ( L"w:num" != oNode.GetName() && L"w:list" != oNode.GetName())
 					return;
 
 				XmlMacroReadAttributeBase( oNode, _T("w:numId"), m_oNumId );
+				XmlMacroReadAttributeBase( oNode, _T("w:ilfo"), m_oNumId );
 
 				XmlUtils::CXmlNode oChild;
 				
-				WritingElement_ReadNode( oNode, oChild, _T("w:abstractNumId"), m_oAbstractNumId );
+				WritingElement_ReadNode( oNode, oChild, L"w:abstractNumId", m_oAbstractNumId );
+				WritingElement_ReadNode( oNode, oChild, L"w:ilst", m_oAbstractNumId );
 
 				XmlUtils::CXmlNodes oLvlList;
-				if ( oNode.GetNodes( _T("w:lvlOverride"), oLvlList ) )
+				if ( oNode.GetNodes( L"w:lvlOverride", oLvlList ) )
 				{
 					XmlUtils::CXmlNode oLvlNode;
 					for ( int nIndex = 0; nIndex < oLvlList.GetCount(); nIndex++ )
@@ -655,7 +635,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -671,11 +651,11 @@ namespace OOX
 						OOX::Numbering::CNumLvl *oNumLvl = new OOX::Numbering::CNumLvl (oReader);
 						if (oNumLvl) m_arrLvlOverride.push_back( oNumLvl );
 					}
-					else if ( _T("w:abstractNumId") == sName )
+					else if ( L"w:abstractNumId" == sName || L"w:ilst" == sName)
 						m_oAbstractNumId = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:num ");
 
@@ -705,18 +685,15 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:numId"), m_oNumId )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("w:numId"), m_oNumId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:ilfo"), m_oNumId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-			// Attributes
-
 			nullable<SimpleTypes::CDecimalNumber<> >		m_oNumId;
 
-			// Childs
 			nullable<ComplexTypes::Word::CDecimalNumber >	m_oAbstractNumId;
 			std::vector<OOX::Numbering::CNumLvl*        >	m_arrLvlOverride;
 		};
@@ -733,9 +710,7 @@ namespace OOX
 			virtual ~CNumPicBullet()
 			{
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:numPicBulletId"), m_oNumPicBulletId );
 
@@ -743,7 +718,7 @@ namespace OOX
 				
 				WritingElement_ReadNode( oNode, oChild, _T("w:drawing"), m_oDrawing );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -764,7 +739,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:numPicBullet ");
 
@@ -786,17 +761,14 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:numPicBulletId"), m_oNumPicBulletId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-			// Attributes
 			SimpleTypes::CDecimalNumber<> m_oNumPicBulletId;
 
-			// Childs
 			nullable<OOX::Logic::CDrawing>			m_oDrawing;
 			nullable<OOX::Logic::CPicture>			m_oVmlDrawing;
 		};
@@ -805,7 +777,7 @@ namespace OOX
 
 namespace OOX
 {
-	class CNumbering : public OOX::File, public IFileContainer
+	class CNumbering : public OOX::File, public IFileContainer, public WritingElement
 	{
 	public:
 		CNumbering(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
@@ -819,6 +791,14 @@ namespace OOX
 			if (docx) docx->m_pNumbering = this;			
 
 			read( oRootPath, oPath );
+		}
+		CNumbering(XmlUtils::CXmlNode& oNode) : File(NULL), OOX::IFileContainer(NULL)
+		{
+			fromXML( oNode );
+		}
+		CNumbering(XmlUtils::CXmlLiteReader& oReader) : File(NULL), OOX::IFileContainer(NULL)
+		{
+			fromXML( oReader );
 		}
 		virtual ~CNumbering()
 		{
@@ -843,8 +823,17 @@ namespace OOX
 
 			m_arrAbstractNum.clear();
 		}
-	public:
+		const CNumbering& operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
 
+		const CNumbering& operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
 		virtual void read(const CPath& oFilePath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -866,35 +855,56 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 			if ( _T("w:numbering") == sName && !oReader.IsEmptyNode() )
 			{
-				int nNumberingDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
+				fromXML(oReader);
+			}
+		}
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+			std::wstring sXml = toXML();
+			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			//w:numbering or w:lists (lists element [Word 2003 XML])
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nNumberingDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:abstractNum" == sName || L"w:listDef" == sName)
 				{
-					sName = oReader.GetName();
-					if ( _T("w:abstractNum") == sName )
-					{
-						OOX::Numbering::CAbstractNum *oAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
-						if (oAbstractNum) m_arrAbstractNum.push_back( oAbstractNum );
-					}
-					else if ( _T("w:num") == sName )
-					{
-						OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum(oReader);
-						if (oNum) m_arrNum.push_back( oNum );
-					}
-					else if ( _T("w:numIdMacAtCleanup") == sName )
-						m_oNumIdMacAtCleanup = oReader;
-					else if ( _T("w:numPicBullet") == sName )
-					{
-						OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet(oReader);
-						if (oNumPic) m_arrNumPicBullet.push_back( oNumPic );
-					}
+					OOX::Numbering::CAbstractNum *oAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
+					if (oAbstractNum) m_arrAbstractNum.push_back( oAbstractNum );
+				}
+				else if ( L"w:num" == sName || L"w:list" == sName)
+				{
+					OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum(oReader);
+					if (oNum) m_arrNum.push_back( oNum );
+				}
+				else if ( L"w:numIdMacAtCleanup" == sName || L"w:ilfoMacAtCleanup" == sName)
+					m_oNumIdMacAtCleanup = oReader;
+				else if ( L"w:numPicBullet" == sName || L"w:listPicBullet" == sName)
+				{
+					OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet(oReader);
+					if (oNumPic) m_arrNumPicBullet.push_back( oNumPic );
 				}
 			}
 		}
-
-		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+        virtual std::wstring toXML() const
 		{
-            std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">");
+            std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<w:numbering \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+mc:Ignorable=\"w14 w15\">");
 
 			for (unsigned int nIndex = 0; nIndex < m_arrAbstractNum.size(); nIndex++ )
 			{
@@ -922,12 +932,8 @@ namespace OOX
 			}
 
 			sXml += _T("</w:numbering>");
-
-			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+			return sXml;
 		}
-
-	public:
-
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::Numbering;
@@ -940,7 +946,10 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
+		virtual EElementType getType() const
+		{
+			return et_w_numbering;
+		}
 	public:
 
 		std::vector<OOX::Numbering::CAbstractNum  *> m_arrAbstractNum;

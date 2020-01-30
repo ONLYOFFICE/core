@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_DOCX_INCLUDE_H_
-#define OOX_DOCX_INCLUDE_H_
 
 #include "../Base/SmartPtr.h"
 
@@ -158,5 +156,3 @@ private:
 		}
 	};
 } // OOX
-
-#endif // OOX_DOCX_INCLUDE_H_

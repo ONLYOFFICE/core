@@ -3850,10 +3850,13 @@ namespace SimpleTypes
 
         virtual EMultiLevelType FromString(std::wstring &sValue)
 		{
-            if      ( (L"hybridMultilevel") == sValue ) this->m_eValue = emultileveltypeHybridMultilevel;
-            else if ( (L"multilevel")       == sValue ) this->m_eValue = emultileveltypeMultilevel;
-            else if ( (L"singleLevel")      == sValue ) this->m_eValue = emultileveltypeSingleLevel;
-            else                                         this->m_eValue = eDefValue;
+            if      (	L"hybridMultilevel" == sValue ||
+						L"HybridMultilevel" == sValue)	this->m_eValue = emultileveltypeHybridMultilevel;
+            else if (	L"multilevel"       == sValue ||
+						L"Multilevel"       == sValue )	this->m_eValue = emultileveltypeMultilevel;
+            else if (	L"singleLevel"      == sValue ||
+						L"SingleLevel"      == sValue)	this->m_eValue = emultileveltypeSingleLevel;
+            else										this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

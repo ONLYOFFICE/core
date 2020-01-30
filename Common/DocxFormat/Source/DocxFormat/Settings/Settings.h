@@ -57,14 +57,11 @@ namespace OOX
 			virtual ~CWritingStyle()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CWritingStyle::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -149,7 +146,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
             nullable<std::wstring>			m_sAppName;
 			nullable<SimpleTypes::COnOff<>> m_oCheckSyle;
             nullable<std::wstring>			m_sDllVersion;
@@ -1986,21 +1982,18 @@ namespace OOX
 			virtual ~CStylePaneFilter()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CStylePaneFilter::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:stylePaneFormatFilter ");
 
@@ -2106,7 +2099,6 @@ namespace OOX
 
 			// TO DO: Добавить атрибуты из 9.7.2.4 Part4
 
-			// Attributes
 			nullable<SimpleTypes::COnOff<>> m_oAllStyles;
 			nullable<SimpleTypes::COnOff<>> m_oAlternateStyleNames;
 			nullable<SimpleTypes::COnOff<>> m_oClearFormatting;
@@ -2136,21 +2128,18 @@ namespace OOX
 			virtual ~CStyleSort()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CStyleSort::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:stylePaneSortMethod w:val=\"") + m_oVal.ToString() + _T("\"/>");
 				return sResult;
@@ -2164,7 +2153,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2187,7 +2175,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			SimpleTypes::CStyleSort<> m_oVal;
 		};
 		//--------------------------------------------------------------------------------
@@ -2203,21 +2190,18 @@ namespace OOX
 			virtual ~CView()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CView::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:view w:val=\"") + m_oVal.ToString() + _T("\"/>");
 				return sResult;
@@ -2231,7 +2215,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2254,7 +2237,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			SimpleTypes::CView<> m_oVal;
 		};
 		//--------------------------------------------------------------------------------
@@ -2270,21 +2252,18 @@ namespace OOX
 			virtual ~CWriteProtection()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CWriteProtection::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:writeProtection ");
 
@@ -2307,7 +2286,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2383,21 +2361,18 @@ namespace OOX
 			virtual ~CZoom()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CZoom::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:zoom ");
 
@@ -2416,7 +2391,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2454,7 +2428,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			SimpleTypes::CDecimalNumberOrPercent m_oPercent;
 			nullable<SimpleTypes::CZoom<>>       m_oVal;
 		};
@@ -2477,13 +2450,12 @@ namespace OOX
 				}
 				m_arrEndnote.clear();
 			}
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CEdnDocProps::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -2507,7 +2479,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:endnotePr>");
 
@@ -2555,7 +2527,6 @@ namespace OOX
 				return et_w_endnotePr;
 			}
 		public:
-
 			std::vector<OOX::CFtnEdnSepRef*             > m_arrEndnote;
 			nullable<ComplexTypes::Word::CNumFmt        > m_oNumFmt;
 			nullable<ComplexTypes::Word::CNumRestart    > m_oNumRestart;
@@ -2581,14 +2552,12 @@ namespace OOX
 				}
 				m_arrFootnote.clear();
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFtnDocProps::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -2612,7 +2581,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:footnotePr>");
 
@@ -2659,8 +2628,6 @@ namespace OOX
 			{
 				return et_w_footnotePr;
 			}
-		public:
-
 			std::vector<OOX::CFtnEdnSepRef*				> m_arrFootnote;
 			nullable<ComplexTypes::Word::CNumFmt        > m_oNumFmt;
 			nullable<ComplexTypes::Word::CNumRestart    > m_oNumRestart;
@@ -2687,14 +2654,11 @@ namespace OOX
 			virtual ~CSchema()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CSchema::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2718,7 +2682,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2747,7 +2710,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
             std::wstring m_sManifestLocation;
             std::wstring m_sShemaLanguage;
             std::wstring m_sShemaLocation;
@@ -2773,14 +2735,11 @@ namespace OOX
 				}
 				m_arrSchema.clear();
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CSchemaLibrary::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -2797,7 +2756,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<sl:schemaLibrary>");
 
@@ -2816,10 +2775,6 @@ namespace OOX
 				return OOX::et_sl_schemaLibrary;
 			}
 
-
-		public:
-
-			// Childs
 			std::vector<OOX::Settings::CSchema*> m_arrSchema;
 		};
 	} // Settings
@@ -2843,9 +2798,6 @@ namespace OOX
 			virtual ~CShapeDefaults()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
@@ -3004,9 +2956,6 @@ namespace OOX
 		public:
 
 			EElementType m_eType;
-
-			// Childs
-
 		};
 	} // Settings
 } // OOX
@@ -3042,8 +2991,6 @@ namespace OOX
 
 			m_arrSmartTagType.clear();
 		}
-
-	public:
 		virtual void read(const CPath& oFilePath)
 		{
 			XmlUtils::CXmlLiteReader oReader;

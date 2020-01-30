@@ -64,23 +64,18 @@ namespace OOX
 			virtual ~CFldSimple()
 			{
 			}
-
-		public:
-
 			const CFldSimple &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
-
 			const CFldSimple &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
 				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
 			virtual void ClearItems()
 			{
 				m_oDirty.SetValue( SimpleTypes::onoffFalse );
@@ -89,39 +84,31 @@ namespace OOX
 
 				WritingElementWithChilds::ClearItems();
 			}
-
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_fldSimple;
 			}
-
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:dirty"),   m_oDirty )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:fldLock"), m_oFldLock )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:instr"),   m_sInstr )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:dirty"),   m_oDirty )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:fldLock"), m_oFldLock )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:instr"),   m_sInstr )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			// Attributes
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oDirty;
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oFldLock;
-			nullable<std::wstring >                           m_sInstr;
+			SimpleTypes::COnOff<SimpleTypes::onoffFalse>	m_oDirty;
+			SimpleTypes::COnOff<SimpleTypes::onoffFalse>	m_oFldLock;
+			nullable<std::wstring>							m_sInstr;
 
-			// Childs
-			nullable<OOX::Logic::CFFData         > m_oFFData;
+			nullable<OOX::Logic::CFFData> m_oFFData;
 		};
 
 	} // namespace Logic

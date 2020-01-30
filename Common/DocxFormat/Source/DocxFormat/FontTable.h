@@ -31,9 +31,6 @@
  */
 #pragma once
 
-#ifndef OOX_FONTTABLE_INCLUDE_H_
-#define OOX_FONTTABLE_INCLUDE_H_
-
 #include "File.h"
 #include "Font.h"
 #include "FileTypes.h"
@@ -44,7 +41,7 @@
 	
 namespace OOX
 {
-	class CFontTable : public OOX::File
+	class CFontTable : public OOX::File, public WritingElement
 	{
 	public:
 
@@ -60,10 +57,17 @@ namespace OOX
 
 			read( oFilePath );
 		}
-
+		CFontTable(XmlUtils::CXmlNode& oNode) : File(NULL)
+		{
+			fromXML( oNode );
+		}
+		CFontTable(XmlUtils::CXmlLiteReader& oReader) : File(NULL)
+		{
+			fromXML( oReader );
+		}
 		virtual ~CFontTable()
 		{
-            for ( unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
+            for ( size_t nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
 			{
 				if (m_arrFonts[nIndex] )
 					delete m_arrFonts[nIndex];
@@ -73,7 +77,16 @@ namespace OOX
 
 			m_arrFonts.clear();
 		}
-
+		const CFontTable& operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CFontTable& operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
 		bool Find(std::wstring &sFontName, CFont *oFont)
 		{
 			for (unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
@@ -87,51 +100,28 @@ namespace OOX
 
 			return false;
 		}
-
-
-	public:
-
 		virtual void read(const CPath &oFilePath)
 		{
-			XmlUtils::CXmlNode oFonts;
-			oFonts.FromXmlFile( oFilePath.GetPath(), true );
+			XmlUtils::CXmlLiteReader oReader;
+			
+			if ( !oReader.FromFile( oFilePath.GetPath() ) )
+				return;
 
-			if ( _T("w:fonts") == oFonts.GetName() )
+			if ( !oReader.ReadNextNode() )
+				return;
+
+			std::wstring sName = oReader.GetName();
+			if ( _T("w:fonts") == sName)
 			{
-				XmlUtils::CXmlNodes oFontList;
-				oFonts.GetNodes( _T("w:font"), oFontList );
-
-				for ( int nFontIndex = 0; nFontIndex < oFontList.GetCount(); nFontIndex++ )
-				{
-					XmlUtils::CXmlNode oFontNode;
-					if ( oFontList.GetAt( nFontIndex, oFontNode ) )
-					{
-						CFont *oFont = new CFont();
-						if (oFont)
-						{
-							oFont->fromXML(oFontNode);
-							m_arrFonts.push_back( oFont );
-						}
-					}
-				}
+				fromXML(oReader);
 			}
 		}
 		virtual void write(const CPath &oFilePath, const CPath &oDirectoryPath, CContentTypes& content) const
 		{
-			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">");
-			for (unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
-			{
-				if (m_arrFonts[nIndex])
-					sXml += m_arrFonts[nIndex]->toXML();
-			}
-			sXml += _T("</w:fonts>");
+			std::wstring sXml = toXML();
 
 			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
 		}
-
-	public:
-
 		virtual const FileType type() const
 		{
 			return FileTypes::FontTable;
@@ -145,13 +135,52 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
-	public:
+			int nFontsDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nFontsDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				if ( L"w:font" == sName )
+				{
+					CFont *pFont = new CFont(oReader);
+					if (pFont)
+					{
+						m_arrFonts.push_back( pFont );
+					}
+				}
+			}
+		}
+        virtual std::wstring toXML() const
+		{
+			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<w:fonts xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
+
+			for (size_t nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
+			{
+				if (m_arrFonts[nIndex])
+					sXml += m_arrFonts[nIndex]->toXML();
+			}
+			sXml += _T("</w:fonts>");
+
+			return sXml;
+		}
+		virtual EElementType getType() const
+		{
+			return et_w_fonts;
+		}
+//------------------------------------------------------------------------
 
 		std::vector<CFont*> m_arrFonts;
 
 	};
 
 } // namespace OOX
-
-#endif // OOX_FONTTABLE_INCLUDE_H_

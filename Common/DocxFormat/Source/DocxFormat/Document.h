@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_DOCUMENT_FILE_INCLUDE_H_
-#define OOX_DOCUMENT_FILE_INCLUDE_H_
-
 #include "../Base/Nullable.h"
 
 #include "../Common/SimpleTypes_Word.h"
@@ -179,10 +176,6 @@ namespace OOX
 			nullable<OOX::Vml::CBackground>				m_oBackground; 
 		};
 	}
-}
-
-namespace OOX
-{
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>
@@ -602,97 +595,5 @@ mc:Ignorable=\"w14 w15 wp14\">";
 
         std::vector<WritingElement*>			m_arrItems;
 	};
-//----------------------------------------------------------------------------------------------------------------
-	class CDocxFlat : public OOX::Document, public OOX::File, public WritingElement
-	{
-	public:
-
-		CDocxFlat() : OOX::File(dynamic_cast<OOX::Document*>(this))
-		{
-		}
-		CDocxFlat(const CPath& oFilePath) : OOX::File(this)
-		{
-			read( oFilePath );
-		}
-
-		virtual void read(const CPath& oFilePath)
-		{
-			XmlUtils::CXmlLiteReader oReader;
-			
-			if ( !oReader.FromFile( oFilePath.GetPath() ) )
-				return;
-
-			if ( !oReader.ReadNextNode() )
-				return;
-
-			fromXML(oReader);
-		}
-		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
-			std::wstring sXml = toXML();
-			
-			NSFile::CFileBinary file;
-			file.CreateFileW(oFilePath.GetPath());
-			file.WriteStringUTF8(sXml);
-			file.CloseFile();
-		}
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::DocumentFlat;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
-		virtual void fromXML(XmlUtils::CXmlNode& oNode)
-		{
-		}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			if ( oReader.IsEmptyNode() )
-				return;
-
-			int nStylesDepth = oReader.GetDepth();
-			while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
-			{
-				std::wstring sName = oReader.GetName();
-
-				if ( L"w:body" == sName )
-					m_pDocument = oReader;
-				else if ( L"w:styles" == sName )
-					m_pStyles = oReader;
-				else if ( L"w:bgPict" == sName )
-				{
-					//m_oBgPict = oReader;
-				}
-			}
-		}
-        virtual std::wstring toXML() const
-		{
-			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-
-			return sXml;
-		}
-		virtual EElementType getType() const
-		{
-			return et_w_wordDocument;
-		}
-//-----------------------------------------------------------------------
-
-		nullable<OOX::CDocument>			m_pDocument;
-		nullable<OOX::CStyles>				m_pStyles;
-		//nullable<OOX::Logic::CBgPict>		m_oBgPict;
-		//nullable<OOX::CEndFoot>		m_pEndnotePr;
-		//nullable<OOX::CEndFoot>		m_pFootnotePr;
-		//nullable<OOX::CApp>			m_pApp;	
-	
-	};
-
-
 } // namespace OOX
 
-#endif // OOX_DOCUMENT_FILE_INCLUDE_H_

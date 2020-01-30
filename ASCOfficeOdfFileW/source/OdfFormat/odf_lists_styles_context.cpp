@@ -247,7 +247,7 @@ int odf_lists_styles_context::start_style_level(int level, int type)
 {
 	if (lists_format_array_.empty()) return -1;
 	
-	int odf_type =1;
+	int odf_type = 1;
 	int format_type = -1;
 
 	style_numformat num_format;

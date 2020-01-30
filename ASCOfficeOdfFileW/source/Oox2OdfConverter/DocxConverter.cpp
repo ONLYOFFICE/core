@@ -33,11 +33,8 @@
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Settings/WebSettings.h"
@@ -3460,7 +3457,7 @@ void DocxConverter::convert_lists_styles()
 {
 	if (!odt_context) return;
 
-	OOX::CNumbering * lists_styles = docx_document ? docx_document->m_pNumbering : NULL;
+	OOX::CNumbering * lists_styles = docx_document ? docx_document->m_pNumbering : docx_flat_document ? docx_flat_document->m_pNumbering.GetPointer() : NULL;
 	
 	if (!lists_styles)return;
 
@@ -3477,7 +3474,7 @@ void DocxConverter::convert_lists_styles()
 		if (lists_styles->m_arrNum[i] == NULL) continue;
 
 		if (lists_styles->m_arrNum[i]->m_oNumId.IsInit() == false) continue;
-		if (lists_styles->m_arrNum[i]->m_arrLvlOverride.size() >0)
+		if (false == lists_styles->m_arrNum[i]->m_arrLvlOverride.empty())
 		{
 			//parent ??? 
 			//create_new_style (in automatic main document??? )
@@ -3691,12 +3688,13 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	if (oox_num_lvl == NULL) return;
 	if (oox_num_lvl->m_oIlvl.IsInit() == false) return; //???
 
-	if (oox_num_lvl->m_oNumFmt.IsInit() == false) return; //???
-
-	if (oox_num_lvl->m_oNumFmt->m_oVal.IsInit()== false) return; //???
-
-	int oox_type_list = oox_num_lvl->m_oNumFmt->m_oVal->GetValue();
-	if (oox_num_lvl->m_oLvlPicBulletId.IsInit()) oox_type_list = 1000;
+	int oox_type_list = 48; //none
+	if ((oox_num_lvl->m_oNumFmt.IsInit()) && (oox_num_lvl->m_oNumFmt->m_oVal.IsInit()))
+	{
+		oox_type_list = oox_num_lvl->m_oNumFmt->m_oVal->GetValue();
+	}
+	if (oox_num_lvl->m_oLvlPicBulletId.IsInit())
+		oox_type_list = 1000;
 
 	int type_list = odt_context->styles_context()->lists_styles().start_style_level(oox_num_lvl->m_oIlvl->GetValue(), oox_type_list );
 	if (type_list < 0) return;

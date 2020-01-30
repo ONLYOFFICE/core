@@ -50,6 +50,7 @@
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Presentation.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"

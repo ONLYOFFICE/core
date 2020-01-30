@@ -129,6 +129,20 @@ namespace NExtractTools
 		}
 		return hRes;
 	}
+	// docxflat -> bin
+    _UINT32 docxflat2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+        // Save to file (from temp dir)
+        BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+
+		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
+        m_oCDocxSerializer.setFontDir(params.getFontPath());
+
+        //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
+        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+		return nRes;
+    }
 	// docx -> bin
     _UINT32 docx2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -167,11 +181,27 @@ namespace NExtractTools
         //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
         _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
-//        sleep(3*60);
+        return nRes;
+    }
+    // docxflat -> doct
+    _UINT32 docxflat2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+        // Extract docx to temp directory
+        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+        NSDirectory::CreateDirectory(sResultDoctDir);
+
+        _UINT32 nRes = docxflat2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
+
+        if (SUCCEEDED_X2T(nRes))
+        {
+            COfficeUtils oCOfficeUtils(NULL);
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+        }
 
         return nRes;
     }
-
     // docx -> doct
     _UINT32 docx2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -4194,6 +4224,14 @@ namespace NExtractTools
 			case TCD_DOCX2DOCT:
 			{
 				result = docx2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_DOCXFLAT2DOCT:
+			{
+				result = docxflat2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_DOCXFLAT2DOCT_BIN:
+			{
+				result = docxflat2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_DOCT2DOCX:
 			{

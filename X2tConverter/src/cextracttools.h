@@ -72,6 +72,9 @@ namespace NExtractTools
         TCD_DOTM2DOCX,
         TCD_DOTM2DOCM,
 
+		TCD_DOCXFLAT2DOCT,
+		TCD_DOCXFLAT2DOCT_BIN,
+
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
 		TCD_XLST2XLSM,
@@ -1052,6 +1055,9 @@ namespace NExtractTools
         }
         else if (0 == sArg3.compare(_T("docx2doct"))) {
             res = TCD_DOCX2DOCT;
+        }
+        else if (0 == sArg3.compare(_T("docxflat2doct"))) {
+            res = TCD_DOCXFLAT2DOCT;
         }
         else if (0 == sArg3.compare(_T("doct2docx"))) {
             res = TCD_DOCT2DOCX;

@@ -130,6 +130,11 @@ namespace NExtractTools
 						}
                         else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOTM2DOCM;
                     }break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT:
+					{
+							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOCXFLAT2DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOCXFLAT2DOCT_BIN;
+					}break;					
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:

@@ -597,181 +597,188 @@ namespace OOX
 
 		unsigned short cb = mem_stream.ReadUInt16();
 
-		_UINT32 PropMask = mem_stream.ReadUInt32();
-		_UINT32 PropMask2 = mem_stream.ReadUInt32();
+		if (cb > 0 && cb < size)
+		{
+			_UINT32 PropMask = mem_stream.ReadUInt32();
+			_UINT32 PropMask2 = mem_stream.ReadUInt32();
 
-		bool fVariousPropertyBits	= GETBIT(PropMask, 0);
-		bool fForeColor				= GETBIT(PropMask, 1);
-		bool fBackColor				= GETBIT(PropMask, 2);
-		bool fMaxLength				= GETBIT(PropMask, 3);
-		bool fBorderStyle			= GETBIT(PropMask, 4);
-		bool fScrollBars			= GETBIT(PropMask, 5);
-		bool fDisplayStyle			= GETBIT(PropMask, 6);
-		bool fMousePointer			= GETBIT(PropMask, 7);
-		bool fSize					= GETBIT(PropMask, 8);
-		bool fPasswordChar			= GETBIT(PropMask, 9);
-		bool fListWidth				= GETBIT(PropMask, 10);
-		bool fBoundColumn			= GETBIT(PropMask, 11);
-		bool fTextColumn			= GETBIT(PropMask, 12);
-		bool fColumnCount			= GETBIT(PropMask, 13);
-		bool fListRows				= GETBIT(PropMask, 14);
-		bool fcColumnInfo			= GETBIT(PropMask, 15);
-		bool fMatchEntry			= GETBIT(PropMask, 16);
-		bool fListStyle				= GETBIT(PropMask, 17);
-		bool fShowDropButtonWhen	= GETBIT(PropMask, 18);
-		bool fDropButtonStyle		= GETBIT(PropMask, 20);
-		bool fMultiSelect			= GETBIT(PropMask, 21);
-		bool fValue					= GETBIT(PropMask, 22);
-		bool fCaption				= GETBIT(PropMask, 23);
-		bool fPicturePosition		= GETBIT(PropMask, 24);
-		bool fBorderColor			= GETBIT(PropMask, 25);
-		bool fSpecialEffect			= GETBIT(PropMask, 26);
-		bool fMouseIcon				= GETBIT(PropMask, 27);
-		bool fPicture				= GETBIT(PropMask, 28);
-		bool fAccelerator			= GETBIT(PropMask, 29);
-		bool fGroupName				= GETBIT(PropMask2, 0);
+			bool fVariousPropertyBits	= GETBIT(PropMask, 0);
+			bool fForeColor				= GETBIT(PropMask, 1);
+			bool fBackColor				= GETBIT(PropMask, 2);
+			bool fMaxLength				= GETBIT(PropMask, 3);
+			bool fBorderStyle			= GETBIT(PropMask, 4);
+			bool fScrollBars			= GETBIT(PropMask, 5);
+			bool fDisplayStyle			= GETBIT(PropMask, 6);
+			bool fMousePointer			= GETBIT(PropMask, 7);
+			bool fSize					= GETBIT(PropMask, 8);
+			bool fPasswordChar			= GETBIT(PropMask, 9);
+			bool fListWidth				= GETBIT(PropMask, 10);
+			bool fBoundColumn			= GETBIT(PropMask, 11);
+			bool fTextColumn			= GETBIT(PropMask, 12);
+			bool fColumnCount			= GETBIT(PropMask, 13);
+			bool fListRows				= GETBIT(PropMask, 14);
+			bool fcColumnInfo			= GETBIT(PropMask, 15);
+			bool fMatchEntry			= GETBIT(PropMask, 16);
+			bool fListStyle				= GETBIT(PropMask, 17);
+			bool fShowDropButtonWhen	= GETBIT(PropMask, 18);
+			bool fDropButtonStyle		= GETBIT(PropMask, 20);
+			bool fMultiSelect			= GETBIT(PropMask, 21);
+			bool fValue					= GETBIT(PropMask, 22);
+			bool fCaption				= GETBIT(PropMask, 23);
+			bool fPicturePosition		= GETBIT(PropMask, 24);
+			bool fBorderColor			= GETBIT(PropMask, 25);
+			bool fSpecialEffect			= GETBIT(PropMask, 26);
+			bool fMouseIcon				= GETBIT(PropMask, 27);
+			bool fPicture				= GETBIT(PropMask, 28);
+			bool fAccelerator			= GETBIT(PropMask, 29);
+			bool fGroupName				= GETBIT(PropMask2, 0);
 
-		int MaxLength = 0;
-		if (fVariousPropertyBits)	/*VariousPropertyBits =*/ mem_stream.ReadUInt32(); 
-		if (fForeColor)				m_oForeColor = mem_stream.ReadUInt32();
-		if (fBackColor)				m_oBackColor = mem_stream.ReadUInt32();
-		if (fMaxLength)				MaxLength = mem_stream.ReadUInt32();
-		
-		int count_padding = 4;
-		if (fBorderStyle)
-		{
- 			m_oBorderStyle = mem_stream.ReadByte(); count_padding--;
-		}
-		if (fScrollBars)
-		{
- 			/*m_oScrollBars =*/ mem_stream.ReadByte(); count_padding--;
-		}
-		if (fDisplayStyle)
-		{
- 			/*m_oDisplayStyle =*/ mem_stream.ReadByte(); count_padding--;
-		}
-		if (fMousePointer)
-		{
- 			/*m_oMousePointer =*/ mem_stream.ReadByte(); count_padding--;
-		}
-		if (count_padding > 0 && count_padding < 4)
-			mem_stream.Seek(mem_stream.GetPosition() + count_padding);
-		if (fPasswordChar)	
-		{
-			m_oPasswordEdit = true;
-			/*PasswordChar =*/ mem_stream.ReadUInt16();
-			/*Padding3 =*/ mem_stream.ReadUInt16();
-		}
-		if (fListWidth)	/*m_oListWidth =*/ mem_stream.ReadUInt32();
-		if (fBoundColumn)	
-		{
-			/*BoundColumn =*/ mem_stream.ReadUInt16();
-			/*Padding3 =*/ mem_stream.ReadUInt16();
-		}		
-		if (fTextColumn)	
-		{
-			/*TextColumn =*/ mem_stream.ReadUInt16();
-			/*Padding3 =*/ mem_stream.ReadUInt16();
-		}	
-		if (fColumnCount)	
-		{
-			/*ColumnCount =*/ mem_stream.ReadUInt16();
-			/*Padding3 =*/ mem_stream.ReadUInt16();
-		}
-		if (fListRows)	
-		{
-			/*ListRows =*/ mem_stream.ReadUInt16();
-			/*Padding3 =*/ mem_stream.ReadUInt16();
-		}
-		count_padding = 8;
-		if (fcColumnInfo)	
-		{
-			/*cColumnInfo =*/ mem_stream.ReadUInt16(); count_padding-=2;
-		}
-		if (fMatchEntry)	
-		{
-			/*MatchEntry =*/ mem_stream.ReadByte(); count_padding--;
-		}
-		if (fListStyle)	
-		{
-			/*ListStyle =*/ mem_stream.ReadByte(); count_padding--;
-		}
-		if (fShowDropButtonWhen)	
-		{
-			/*ShowDropButtonWhen =*/ mem_stream.ReadByte(); count_padding--;
-		}
-		if (fDropButtonStyle)	
-		{
-			/*DropButtonStyle =*/ mem_stream.ReadByte(); count_padding--;
-		}
-		if (fMultiSelect)	
-		{
-			m_oSelType = (SimpleTypes::Spreadsheet::ESelType) mem_stream.ReadByte(); count_padding--;
-		}
-		if (count_padding > 0 && count_padding < 8)
-			mem_stream.Seek(mem_stream.GetPosition() + count_padding);
-		
-		int sizeCaption = 0, sizeGroupName = 0, sizeValue = 0;
-		bool bCaptionCompressed, bGroupNameCompressed, bValueCompressed;
+			int MaxLength = 0;
+			if (fVariousPropertyBits)	/*VariousPropertyBits =*/ mem_stream.ReadUInt32(); 
+			if (fForeColor)				m_oForeColor = mem_stream.ReadUInt32();
+			if (fBackColor)				m_oBackColor = mem_stream.ReadUInt32();
+			if (fMaxLength)				MaxLength = mem_stream.ReadUInt32();
+			
+			int count_padding = 4;
+			if (fBorderStyle)
+			{
+ 				m_oBorderStyle = mem_stream.ReadByte(); count_padding--;
+			}
+			if (fScrollBars)
+			{
+ 				/*m_oScrollBars =*/ mem_stream.ReadByte(); count_padding--;
+			}
+			if (fDisplayStyle)
+			{
+ 				/*m_oDisplayStyle =*/ mem_stream.ReadByte(); count_padding--;
+			}
+			if (fMousePointer)
+			{
+ 				/*m_oMousePointer =*/ mem_stream.ReadByte(); count_padding--;
+			}
+			if (count_padding > 0 && count_padding < 4)
+				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
+			if (fPasswordChar)	
+			{
+				m_oPasswordEdit = true;
+				/*PasswordChar =*/ mem_stream.ReadUInt16();
+				/*Padding3 =*/ mem_stream.ReadUInt16();
+			}
+			if (fListWidth)	/*m_oListWidth =*/ mem_stream.ReadUInt32();
+			if (fBoundColumn)	
+			{
+				/*BoundColumn =*/ mem_stream.ReadUInt16();
+				/*Padding3 =*/ mem_stream.ReadUInt16();
+			}		
+			if (fTextColumn)	
+			{
+				/*TextColumn =*/ mem_stream.ReadUInt16();
+				/*Padding3 =*/ mem_stream.ReadUInt16();
+			}	
+			if (fColumnCount)	
+			{
+				/*ColumnCount =*/ mem_stream.ReadUInt16();
+				/*Padding3 =*/ mem_stream.ReadUInt16();
+			}
+			if (fListRows)	
+			{
+				/*ListRows =*/ mem_stream.ReadUInt16();
+				/*Padding3 =*/ mem_stream.ReadUInt16();
+			}
+			count_padding = 8;
+			if (fcColumnInfo)	
+			{
+				/*cColumnInfo =*/ mem_stream.ReadUInt16(); count_padding-=2;
+			}
+			if (fMatchEntry)	
+			{
+				/*MatchEntry =*/ mem_stream.ReadByte(); count_padding--;
+			}
+			if (fListStyle)	
+			{
+				/*ListStyle =*/ mem_stream.ReadByte(); count_padding--;
+			}
+			if (fShowDropButtonWhen)	
+			{
+				/*ShowDropButtonWhen =*/ mem_stream.ReadByte(); count_padding--;
+			}
+			if (fDropButtonStyle)	
+			{
+				/*DropButtonStyle =*/ mem_stream.ReadByte(); count_padding--;
+			}
+			if (fMultiSelect)	
+			{
+				m_oSelType = (SimpleTypes::Spreadsheet::ESelType) mem_stream.ReadByte(); count_padding--;
+			}
+			if (count_padding > 0 && count_padding < 8)
+				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
+			
+			int sizeCaption = 0, sizeGroupName = 0, sizeValue = 0;
+			bool bCaptionCompressed, bGroupNameCompressed, bValueCompressed;
 
-		if (fValue)
-		{
-			sizeValue = mem_stream.ReadUInt32();
-			
-			bValueCompressed = GETBIT(sizeValue, 31);
-			sizeValue = GETBITS(sizeValue, 0, 30);
+			if (fValue)
+			{
+				sizeValue = mem_stream.ReadUInt32();
+				
+				bValueCompressed = GETBIT(sizeValue, 31);
+				sizeValue = GETBITS(sizeValue, 0, 30);
+			}
+			if (fCaption)
+			{
+				sizeCaption = mem_stream.ReadUInt32();
+				
+				bCaptionCompressed = GETBIT(sizeCaption, 31);
+				sizeCaption = GETBITS(sizeCaption, 0, 30);
+			}
+			if (fPicturePosition)	/*pos_picture =*/ mem_stream.ReadUInt32();
+ 			if (fBorderColor)		m_oBorderColor = mem_stream.ReadUInt32();
+			if (fSpecialEffect)		/*m_oEffect =*/ mem_stream.ReadUInt32();
+			if (fMouseIcon)	
+			{
+				/*m_oMouseIcon =*/ mem_stream.ReadUInt16();
+				/*Padding3 =*/ mem_stream.ReadUInt16();
+			}
+ 			if (fPicture)
+			{
+				/*m_oPicture = */ mem_stream.ReadUInt16();
+				/*Padding4 =*/ mem_stream.ReadUInt16();
+			}
+ 			if (fAccelerator)
+			{
+				/*m_oAccelerator = */mem_stream.ReadUInt16();
+				/*Padding4 =*/ mem_stream.ReadUInt16();
+			}
+			if (fGroupName)
+			{
+				sizeGroupName = mem_stream.ReadUInt32();
+				
+				bGroupNameCompressed = GETBIT(sizeGroupName, 31);
+				sizeGroupName = GETBITS(sizeGroupName, 0, 30);
+			}
+			if (fSize)
+			{
+				m_oWidth = mem_stream.ReadUInt32();
+				m_oHeight = mem_stream.ReadUInt32();
+			}
+			if (sizeValue > 0)
+			{
+				m_oValue = ReadString(&mem_stream, sizeValue, bValueCompressed);
+			}
+			if (sizeCaption > 0)
+			{
+				m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
+			}
+			std::wstring oGroupName;
+			if (sizeGroupName > 0 && sizeGroupName < 0xfff0)
+			{
+				oGroupName = ReadString(&mem_stream, sizeGroupName, bGroupNameCompressed);
+			}
+			int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
+			//MouseIcon
 		}
-		if (fCaption)
+		else
 		{
-			sizeCaption = mem_stream.ReadUInt32();
-			
-			bCaptionCompressed = GETBIT(sizeCaption, 31);
-			sizeCaption = GETBITS(sizeCaption, 0, 30);
+			//compaund stream test 
 		}
-		if (fPicturePosition)	/*pos_picture =*/ mem_stream.ReadUInt32();
- 		if (fBorderColor)		m_oBorderColor = mem_stream.ReadUInt32();
-		if (fSpecialEffect)		/*m_oEffect =*/ mem_stream.ReadUInt32();
-		if (fMouseIcon)	
-		{
-			/*m_oMouseIcon =*/ mem_stream.ReadUInt16();
-			/*Padding3 =*/ mem_stream.ReadUInt16();
-		}
- 		if (fPicture)
-		{
-			/*m_oPicture = */ mem_stream.ReadUInt16();
-			/*Padding4 =*/ mem_stream.ReadUInt16();
-		}
- 		if (fAccelerator)
-		{
-			/*m_oAccelerator = */mem_stream.ReadUInt16();
-			/*Padding4 =*/ mem_stream.ReadUInt16();
-		}
-		if (fGroupName)
-		{
-			sizeGroupName = mem_stream.ReadUInt32();
-			
-			bGroupNameCompressed = GETBIT(sizeGroupName, 31);
-			sizeGroupName = GETBITS(sizeGroupName, 0, 30);
-		}
-		if (fSize)
-		{
-			m_oWidth = mem_stream.ReadUInt32();
-			m_oHeight = mem_stream.ReadUInt32();
-		}
-		if (sizeValue > 0)
-		{
-			m_oValue = ReadString(&mem_stream, sizeValue, bValueCompressed);
-		}
-		if (sizeCaption > 0)
-		{
-			m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
-		}
-		std::wstring oGroupName;
-		if (sizeGroupName > 0)
-		{
-			oGroupName = ReadString(&mem_stream, sizeGroupName, bGroupNameCompressed);
-		}
-		int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
-		//MouseIcon
 	}
 } // namespace OOX

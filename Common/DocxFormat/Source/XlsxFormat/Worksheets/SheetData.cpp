@@ -1073,10 +1073,9 @@ namespace OOX
 
 				if ( strcmp("c", sName) == 0 )
 				{
-					CCell *pCell = new CCell();
+					CCell *pCell = new CCell(m_pMainDocument);
 					if (pCell)
 					{
-						pCell->m_pMainDocument = m_pMainDocument;
 						pCell->fromXML(oReader);
 						m_arrItems.push_back(pCell);
 					}
@@ -1278,10 +1277,9 @@ namespace OOX
 
 					if ( strcmp("row", sName) == 0 )
 					{
-						CRow *pRow = new CRow();
+						CRow *pRow = new CRow(m_pMainDocument);
 						if (pRow)
 						{
-							pRow->m_pMainDocument = m_pMainDocument;
 							pRow->fromXML(oReader);
 							m_arrItems.push_back(pRow);
 						}
@@ -1301,8 +1299,7 @@ namespace OOX
 				nType = oStream.XlsbReadRecordType();
 				if (XLSB::rt_CELL_BLANK <= nType && nType <= XLSB::rt_FMLA_ERROR)
 				{
-					CCell oCell;
-					oCell.m_pMainDocument = m_pMainDocument;
+					CCell oCell(m_pMainDocument);
 					oCell.fromXLSB(oStream, nType, pRow->m_oR->GetValue() - 1);
 					fromXLSBToXmlCell(oCell, pCSVWriter, oStreamWriter);
 				}
@@ -1311,8 +1308,7 @@ namespace OOX
 					fromXLSBToXmlRowEnd(pRow, pCSVWriter, oStreamWriter);
 					RELEASEOBJECT(pRow);
 
-					pRow = new CRow();
-					pRow->m_pMainDocument = m_pMainDocument;
+					pRow = new CRow(m_pMainDocument);
 					pRow->fromXLSB(oStream, nType);
 
 					fromXLSBToXmlRowStart(pRow, pCSVWriter, oStreamWriter);

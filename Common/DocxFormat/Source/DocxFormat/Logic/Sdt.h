@@ -181,7 +181,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CCalendarType)
-			CCalendarType()
+			CCalendarType() 
 			{
 			}
 			virtual ~CCalendarType()
@@ -208,7 +208,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -270,7 +269,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CLock)
-			CLock()
+			CLock() 
 			{
 			}
 			virtual ~CLock()
@@ -419,7 +418,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtComboBox)
-			CSdtComboBox()
+			CSdtComboBox(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtComboBox()
@@ -530,15 +529,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDate)
-			CDate()
+			CDate(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CDate()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:fullDate"), m_oFullDate );
@@ -627,15 +623,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtDocPart)
-			CSdtDocPart()
+			CSdtDocPart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtDocPart()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -705,7 +698,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtDropDownList)
-			CSdtDropDownList()
+			CSdtDropDownList(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{ 
 			}
 			virtual ~CSdtDropDownList()
@@ -810,7 +803,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPlaceHolder)
-			CPlaceHolder()
+			CPlaceHolder(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CPlaceHolder()
@@ -865,15 +858,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtEndPr)
-			CSdtEndPr()
+			CSdtEndPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtEndPr()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -920,15 +910,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtCheckBoxSymbol)
-			CSdtCheckBoxSymbol()
+			CSdtCheckBoxSymbol(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtCheckBoxSymbol()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w14:val"), m_oVal );
@@ -977,15 +964,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtCheckBox)
-			CSdtCheckBox()
+			CSdtCheckBox(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtCheckBox()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -1069,16 +1053,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtPr)
-			CSdtPr()
+			CSdtPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_eType = sdttypeUnknown;
 			}
 			virtual ~CSdtPr()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = sdttypeUnknown;
@@ -1398,7 +1379,6 @@ namespace OOX
 
 			ESdtType                                                      m_eType;
 
-			// Nodes
 			nullable<ComplexTypes::Word::String                       > m_oAlias;
 			nullable<ComplexTypes::Word::CSdtAppearance					> m_oAppearance;
 			nullable<OOX::Logic::CSdtComboBox                           > m_oComboBox;
@@ -1427,7 +1407,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtContent)
-			CSdtContent()
+			CSdtContent(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
 
@@ -1438,8 +1418,6 @@ namespace OOX
 			{
 				return et_w_sdtContent;
 			}
-		public:
-
 			// Childs
 		};
 
@@ -1450,15 +1428,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdt)
-			CSdt()
+			CSdt(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdt()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;

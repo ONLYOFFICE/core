@@ -129,6 +129,7 @@ namespace Spreadsheet
 	class WritingElement : public OOX::WritingElement
 	{
 	public:
+		WritingElement(OOX::Document *pMain = NULL) : OOX::WritingElement(pMain) {}
         virtual EElementType    getType()   const
 		{
 			return OOX::et_x_Unknown;
@@ -140,9 +141,8 @@ namespace Spreadsheet
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-        std::vector<ElemType *>  m_arrItems;
+		WritingElementWithChilds(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 		
-		WritingElementWithChilds() {}
 		virtual ~WritingElementWithChilds() 
 		{
 			ClearItems();
@@ -155,6 +155,7 @@ namespace Spreadsheet
             }
 			m_arrItems.clear();
 		}
+        std::vector<ElemType *>  m_arrItems;
 	};
 }
 }

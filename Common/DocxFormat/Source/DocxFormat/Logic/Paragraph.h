@@ -56,15 +56,15 @@ namespace OOX
 		class CParagraph : public WritingElementWithChilds<>
 		{
 		public:
-			CParagraph()
+			CParagraph(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
 			{
 				m_oParagraphProperty = NULL;
 			}
-			CParagraph(XmlUtils::CXmlNode &oNode)
+			CParagraph(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CParagraph(XmlUtils::CXmlLiteReader& oReader)
+			CParagraph(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}

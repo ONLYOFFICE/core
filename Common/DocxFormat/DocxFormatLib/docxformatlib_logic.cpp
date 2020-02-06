@@ -41,6 +41,7 @@
 #include "../Source/DocxFormat/Logic/Paragraph.cpp"
 #include "../Source/DocxFormat/Logic/ParagraphProperty.cpp"
 #include "../Source/DocxFormat/Logic/RunProperty.cpp"
+#include "../Source/DocxFormat/Logic/Run.cpp"
 #include "../Source/DocxFormat/Logic/Sdt.cpp"
 #include "../Source/DocxFormat/Logic/SectionProperty.cpp"
 #include "../Source/DocxFormat/Logic/SmartTag.cpp"

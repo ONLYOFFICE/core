@@ -373,9 +373,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColor)
-			CColor()
-			{
-			}
+			CColor(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CColor()
 			{
 			}
@@ -494,13 +492,11 @@ namespace OOX
 			{
 			}
 		};
-		class CCharset
+		class CCharset : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CCharset)
-			CCharset()
-			{
-			}
+			CCharset(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CCharset()
 			{
 			}
@@ -513,6 +509,13 @@ namespace OOX
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -527,13 +530,11 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontCharset<>>	m_oCharset;
 		};
-		class CVerticalAlign
+		class CVerticalAlign : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CVerticalAlign)
-			CVerticalAlign()
-			{
-			}
+			CVerticalAlign(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CVerticalAlign()
 			{
 			}
@@ -547,26 +548,28 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oVerticalAlign )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CVerticalAlignRun<>>	m_oVerticalAlign;
 		};
-		class CFontFamily
+		class CFontFamily : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CFontFamily)
-			CFontFamily()
-			{
-			}
+			CFontFamily(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CFontFamily()
 			{
 			}
@@ -579,6 +582,13 @@ namespace OOX
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -593,7 +603,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontFamily<>>	m_oFontFamily;
 		};
-		class CFontScheme
+		class CFontScheme : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CFontScheme)
@@ -613,6 +623,13 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -626,13 +643,11 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontScheme<>>	m_oFontScheme;
 		};
-		class CUnderline
+		class CUnderline : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CUnderline)
-			CUnderline()
-			{
-			}
+			CUnderline(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CUnderline()
 			{
 			}
@@ -645,6 +660,13 @@ namespace OOX
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
+			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -664,9 +686,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRPr)
-			CRPr()
-			{
-			}
+			CRPr(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CRPr()
 			{
 			}

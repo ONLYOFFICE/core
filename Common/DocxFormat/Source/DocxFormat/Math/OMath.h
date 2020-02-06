@@ -43,9 +43,9 @@ namespace OOX
 		class CMathArgNodes : public WritingElementWithChilds<>
 		{
 		public:
-			CMathArgNodes()
+			CMathArgNodes(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
-				eType		= et_Unknown;
+				eType = et_Unknown;
 			}
 			CMathArgNodes(XmlUtils::CXmlNode &oNode)
 			{

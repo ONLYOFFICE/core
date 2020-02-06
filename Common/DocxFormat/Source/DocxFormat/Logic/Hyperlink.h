@@ -50,7 +50,7 @@ namespace OOX
 		class CHyperlink : public WritingElementWithChilds<>
 		{
 		public:
-			CHyperlink()
+			CHyperlink(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
 			CHyperlink(XmlUtils::CXmlNode &oNode)
@@ -127,7 +127,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAltChunkPr)
-			CAltChunkPr()
+			CAltChunkPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CAltChunkPr()
@@ -149,7 +149,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAltChunk)
-			CAltChunk()
+			CAltChunk(OOX::Document *pMain) : WritingElement(pMain)
 			{
 			}
 			virtual ~CAltChunk()

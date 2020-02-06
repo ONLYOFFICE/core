@@ -38,6 +38,7 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Paragraph.cpp \
     ../Source/DocxFormat/Logic/ParagraphProperty.cpp \
     ../Source/DocxFormat/Logic/RunProperty.cpp \
+    ../Source/DocxFormat/Logic/Run.cpp \
     ../Source/DocxFormat/Logic/Sdt.cpp \
     ../Source/DocxFormat/Logic/SectionProperty.cpp \
     ../Source/DocxFormat/Logic/SmartTag.cpp \

@@ -39,28 +39,34 @@ namespace OOX
 #define WritingElement_AdditionConstructors(Class) \
 	explicit Class(XmlUtils::CXmlNode& oNode)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( oNode );\
 	}\
-    explicit Class(const XmlUtils::CXmlNode& node)\
+	explicit Class(const XmlUtils::CXmlNode& node)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML(const_cast<XmlUtils::CXmlNode&> (node));\
 	}\
 	Class(XmlUtils::CXmlLiteReader& oReader)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( oReader );\
 	}\
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( (XmlUtils::CXmlNode &)oNode );\
 		return *this;\
 	}\
 	const Class& operator =(const XmlUtils::CXmlLiteReader& oReader)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 		return *this;\
 	}\
     const Class& operator =(XmlUtils::CXmlNode& node)				\
 	{																\
+		m_pMainDocument = NULL;\
 		fromXML(node);												\
 		return *this;												\
 	}																\
@@ -1333,7 +1339,7 @@ namespace OOX
 	public:
         std::vector<ElemType *>  m_arrItems;
 
-		WritingElementWithChilds() {}
+		WritingElementWithChilds(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 		virtual ~WritingElementWithChilds() 
 		{
 			ClearItems();

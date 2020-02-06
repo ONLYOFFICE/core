@@ -1697,7 +1697,7 @@ namespace OOX
 		class CSectionProperty : public WritingElement
 		{
 		public:
-			CSectionProperty() 
+			CSectionProperty(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_bSectPrChange = false;
 			}

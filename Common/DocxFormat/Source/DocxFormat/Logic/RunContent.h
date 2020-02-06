@@ -52,15 +52,13 @@ namespace OOX
 			CBr() {}
 			virtual ~CBr() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
+			virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:type"),  m_oType  );
 				XmlMacroReadAttributeBase( oNode, _T("w:clear"), m_oClear );
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -68,7 +66,7 @@ namespace OOX
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
 
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:br ");
 

@@ -1008,6 +1008,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\Source\DocxFormat\Logic\Run.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\Source\DocxFormat\Logic\Run.h"
 						>
 					</File>

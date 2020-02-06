@@ -54,6 +54,7 @@ namespace OOX
 			class name : public CMathArgNodes\
 			{\
 			public:\
+				name(OOX::Document *pMain = NULL) : CMathArgNodes(pMain) {}\
 				name(XmlUtils::CXmlNode& oNode)\
 				{\
 					fromXML( oNode );\

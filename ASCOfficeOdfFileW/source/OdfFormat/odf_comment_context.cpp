@@ -54,10 +54,11 @@ namespace odf_writer
 	{
 		std::vector<office_element_ptr> elements_;
 
-		int oox_id;
+		int oox_id = -1;
 		std::wstring odf_name;
 
-		bool is_started;
+		bool is_started = false;
+		bool bContent = false;
 
 		int state;
 
@@ -100,6 +101,7 @@ void odf_comment_context::start_comment(office_element_ptr &elm, int oox_id)
 
 	impl_->comments_.back().is_started = false;
 	impl_->comments_.back().state = 1;
+	impl_->comments_.back().bContent = false;
 
 	office_annotation* comm = dynamic_cast<office_annotation*>(elm.get());
 	if (!comm)return;
@@ -110,6 +112,11 @@ void odf_comment_context::start_comment(office_element_ptr &elm, int oox_id)
 }
 void odf_comment_context::end_comment(office_element_ptr &elm, int oox_id)
 {
+	if (impl_->comments_.back().bContent == false)
+	{
+		start_comment_content();
+		end_comment_content();
+	}
 	for (size_t i = 0; i < impl_->comments_.size(); i++)
 	{
 		if (impl_->comments_[i].oox_id == oox_id)
@@ -129,11 +136,11 @@ void odf_comment_context::end_comment(office_element_ptr &elm, int oox_id)
 void odf_comment_context::start_comment_content()
 {
 	impl_->comments_.back().is_started = true;
-
 }
 void odf_comment_context::end_comment_content()
 {
 	impl_->comments_.back().is_started = false;
+	impl_->comments_.back().bContent = true;
 }
 int odf_comment_context::find_by_id(int oox_id)
 {

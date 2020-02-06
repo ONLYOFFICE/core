@@ -43,25 +43,25 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CTblGridChange 
 		//--------------------------------------------------------------------------------	
-		CTblGridChange::CTblGridChange()
+		CTblGridChange::CTblGridChange(OOX::Document *pMain) : WritingElement(pMain)
 		{
-			m_pTblGrid = new CTblGrid();
+			m_pTblGrid = new CTblGrid(pMain);
 
 			if ( m_pTblGrid )
 				m_pTblGrid->m_bTblGridChange = true;
 		}
-		CTblGridChange::CTblGridChange(XmlUtils::CXmlNode& oNode)
+		CTblGridChange::CTblGridChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
 		{
-			m_pTblGrid = new CTblGrid();
+			m_pTblGrid = new CTblGrid(NULL);
 
 			if ( m_pTblGrid )
 				m_pTblGrid->m_bTblGridChange = true;
 
 			fromXML( oNode );
 		}
-		CTblGridChange::CTblGridChange(XmlUtils::CXmlLiteReader& oReader)
+		CTblGridChange::CTblGridChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 		{
-			m_pTblGrid = new CTblGrid();
+			m_pTblGrid = new CTblGrid(NULL);
 
 			if ( m_pTblGrid )
 				m_pTblGrid->m_bTblGridChange = true;
@@ -132,7 +132,6 @@ namespace OOX
 
 		void CTblGridChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
 			WritingElement_ReadAttributes_End( oReader )
@@ -140,19 +139,19 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CTblPrExChange 
 		//--------------------------------------------------------------------------------	
-		CTblPrExChange::CTblPrExChange()
+		CTblPrExChange::CTblPrExChange(OOX::Document *pMain) : WritingElement(pMain)
 		{
 			m_pTblPrEx.Init();
 			m_pTblPrEx->m_bTblPrExChange = true;
 		}
-		CTblPrExChange::CTblPrExChange(XmlUtils::CXmlNode& oNode)
+		CTblPrExChange::CTblPrExChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
 		{
 			m_pTblPrEx.Init();
 			m_pTblPrEx->m_bTblPrExChange = true;
 
 			fromXML( oNode );
 		}
-		CTblPrExChange::CTblPrExChange(XmlUtils::CXmlLiteReader& oReader)
+		CTblPrExChange::CTblPrExChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 		{
 			m_pTblPrEx.Init();
 			m_pTblPrEx->m_bTblPrExChange = true;
@@ -244,7 +243,6 @@ namespace OOX
 
 		void CTblPrExChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
@@ -261,7 +259,7 @@ namespace OOX
 //        <w:moveFrom>
 //        <w:moveTo>
 
-		void    CTbl::fromXML(XmlUtils::CXmlNode& oNode)
+		void CTbl::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
@@ -338,18 +336,22 @@ namespace OOX
 							pItem = new CTr( oItem );
 
 						if ( pItem )
+						{
 							m_arrItems.push_back( pItem );
+						}
 					}
 				}
 			}
 		}
 
 
-		void    CTbl::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CTbl::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+			
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
@@ -357,73 +359,76 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:bookmarkEnd") == sName )
-					pItem = new CBookmarkEnd( oReader );
+					pItem = new CBookmarkEnd( document );
 				else if ( _T("w:bookmarkStart") == sName )
-					pItem = new CBookmarkStart( oReader );
+					pItem = new CBookmarkStart( document );
 				else if ( _T("w:commentRangeEnd") == sName )
-					pItem = new CCommentRangeEnd( oReader );
+					pItem = new CCommentRangeEnd( document );
 				else if ( _T("w:commentRangeStart") == sName )
-					pItem = new CCommentRangeStart( oReader );
+					pItem = new CCommentRangeStart( document );
 				//else if ( _T("w:customXml") == sName )
-				//	pItem = new CCustomXml( oReader );
+				//	pItem = new CCustomXml( document );
 				else if ( _T("w:customXmlDelRangeEnd") == sName )
-					pItem = new CCustomXmlDelRangeEnd( oReader );
+					pItem = new CCustomXmlDelRangeEnd( document );
 				else if ( _T("w:customXmlDelRangeStart") == sName )
-					pItem = new CCustomXmlDelRangeStart( oReader );
+					pItem = new CCustomXmlDelRangeStart( document );
 				else if ( _T("w:customXmlInsRangeEnd") == sName )
-					pItem = new CCustomXmlInsRangeEnd( oReader );
+					pItem = new CCustomXmlInsRangeEnd( document );
 				else if ( _T("w:customXmlInsRangeStart") == sName )
-					pItem = new CCustomXmlInsRangeStart( oReader );
+					pItem = new CCustomXmlInsRangeStart( document );
 				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveFromRangeEnd( oReader );
+					pItem = new CCustomXmlMoveFromRangeEnd( document );
 				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-					pItem = new CCustomXmlMoveFromRangeStart( oReader );
+					pItem = new CCustomXmlMoveFromRangeStart( document );
 				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveToRangeEnd( oReader );
+					pItem = new CCustomXmlMoveToRangeEnd( document );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
-					pItem = new CCustomXmlMoveToRangeStart( oReader );
+					pItem = new CCustomXmlMoveToRangeStart( document );
 				else if ( _T("w:del") == sName )
-					pItem = new CDel( oReader );
+					pItem = new CDel( document );
 				else if ( _T("w:ins") == sName )
-					pItem = new CIns( oReader );
+					pItem = new CIns( document );
 				else if ( _T("w:moveFrom") == sName )
-					pItem = new CMoveFrom( oReader );
+					pItem = new CMoveFrom( document );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new CMoveFromRangeEnd( oReader );
+					pItem = new CMoveFromRangeEnd( document );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new CMoveFromRangeStart( oReader );
+					pItem = new CMoveFromRangeStart( document );
 				else if ( _T("w:moveTo") == sName )
-					pItem = new CMoveTo( oReader );
+					pItem = new CMoveTo( document );
 				else if ( _T("w:moveToRangeEnd") == sName )
-					pItem = new CMoveToRangeEnd( oReader );
+					pItem = new CMoveToRangeEnd( document );
 				else if ( _T("w:moveToRangeStart") == sName )
-					pItem = new CMoveToRangeStart( oReader );
+					pItem = new CMoveToRangeStart( document );
 				else if ( _T("m:oMath") == sName )
-					pItem = new COMath( oReader );
+					pItem = new COMath( document );
 				else if ( _T("m:oMathPara") == sName )
-					pItem = new COMathPara( oReader );
+					pItem = new COMathPara( document );
 				else if ( _T("w:permEnd") == sName )
-					pItem = new CPermEnd( oReader );
+					pItem = new CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
-					pItem = new CPermStart( oReader );
+					pItem = new CPermStart( document );
 				else if ( _T("w:proofErr") == sName )
-					pItem = new CProofErr( oReader );
+					pItem = new CProofErr( document );
 				else if ( _T("w:sdt") == sName )
-					pItem = new CSdt( oReader );
+					pItem = new CSdt( document );
 				else if ( _T("w:tblGrid") == sName )
-					m_oTblGrid = oReader;
+					m_oTblGrid = new CTblGrid( document );
 				else if ( _T("w:tblPr") == sName )
 				{
-					pItem = m_oTableProperties = new CTableProperty( oReader );
+					pItem = m_oTableProperties = new CTableProperty( document );
 				}
 				else if ( _T("w:tr") == sName )
 				{
-					pItem = new CTr( oReader );
+					pItem = new CTr( document );
 					m_nCountRow ++;
 				}
 
 				if ( pItem )
+				{
+					pItem->fromXML(oReader);
 					m_arrItems.push_back( pItem );
+				}
 			}
 		}
 
@@ -559,7 +564,9 @@ namespace OOX
 						}
 
 						if ( pItem )
+						{
 							m_arrItems.push_back( pItem );
+						}
 					}
 				}
 			}
@@ -573,6 +580,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+			
 			int nParentDepth = oReader.GetDepth();
 			int nNumCol = 0;
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
@@ -581,64 +590,64 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:bookmarkEnd") == sName )
-					pItem = new CBookmarkEnd( oReader );
+					pItem = new CBookmarkEnd( document );
 				else if ( _T("w:bookmarkStart") == sName )
-					pItem = new CBookmarkStart( oReader );
+					pItem = new CBookmarkStart( document );
 				else if ( _T("w:commentRangeEnd") == sName )
-					pItem = new CCommentRangeEnd( oReader );
+					pItem = new CCommentRangeEnd( document );
 				else if ( _T("w:commentRangeStart") == sName )
-					pItem = new CCommentRangeStart( oReader );
+					pItem = new CCommentRangeStart( document );
 				//else if ( _T("w:customXml") == sName )
-				//	pItem = new CCustomXml( oReader );
+				//	pItem = new CCustomXml( document );
 				else if ( _T("w:customXmlDelRangeEnd") == sName )
-					pItem = new CCustomXmlDelRangeEnd( oReader );
+					pItem = new CCustomXmlDelRangeEnd( document );
 				else if ( _T("w:customXmlDelRangeStart") == sName )
-					pItem = new CCustomXmlDelRangeStart( oReader );
+					pItem = new CCustomXmlDelRangeStart( document );
 				else if ( _T("w:customXmlInsRangeEnd") == sName )
-					pItem = new CCustomXmlInsRangeEnd( oReader );
+					pItem = new CCustomXmlInsRangeEnd( document );
 				else if ( _T("w:customXmlInsRangeStart") == sName )
-					pItem = new CCustomXmlInsRangeStart( oReader );
+					pItem = new CCustomXmlInsRangeStart( document );
 				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveFromRangeEnd( oReader );
+					pItem = new CCustomXmlMoveFromRangeEnd( document );
 				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-					pItem = new CCustomXmlMoveFromRangeStart( oReader );
+					pItem = new CCustomXmlMoveFromRangeStart( document );
 				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveToRangeEnd( oReader );
+					pItem = new CCustomXmlMoveToRangeEnd( document );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
-					pItem = new CCustomXmlMoveToRangeStart( oReader );
+					pItem = new CCustomXmlMoveToRangeStart( document );
 				else if ( _T("w:del") == sName )
-					pItem = new CDel( oReader );
+					pItem = new CDel( document );
 				else if ( _T("w:ins") == sName )
-					pItem = new CIns( oReader );
+					pItem = new CIns( document );
 				else if ( _T("w:moveFrom") == sName )
-					pItem = new CMoveFrom( oReader );
+					pItem = new CMoveFrom( document );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new CMoveFromRangeEnd( oReader );
+					pItem = new CMoveFromRangeEnd( document );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new CMoveFromRangeStart( oReader );
+					pItem = new CMoveFromRangeStart( document );
 				else if ( _T("w:moveTo") == sName )
-					pItem = new CMoveTo( oReader );
+					pItem = new CMoveTo( document );
 				else if ( _T("w:moveToRangeEnd") == sName )
-					pItem = new CMoveToRangeEnd( oReader );
+					pItem = new CMoveToRangeEnd( document );
 				else if ( _T("w:moveToRangeStart") == sName )
-					pItem = new CMoveToRangeStart( oReader );
+					pItem = new CMoveToRangeStart( document );
 				else if ( _T("m:oMath") == sName )
-					pItem = new COMath( oReader );
+					pItem = new COMath( document );
 				else if ( _T("m:oMathPara") == sName )
-					pItem = new COMathPara( oReader );
+					pItem = new COMathPara( document );
 				else if ( _T("w:permEnd") == sName )
-					pItem = new CPermEnd( oReader );
+					pItem = new CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
-					pItem = new CPermStart( oReader );
+					pItem = new CPermStart( document );
 				else if ( _T("w:proofErr") == sName )
-					pItem = new CProofErr( oReader );
+					pItem = new CProofErr( document );
 				else if ( _T("w:sdt") == sName )
-					pItem = new CSdt( oReader );
+					pItem = new CSdt( document );
 				else if ( _T("w:tblPrEx") == sName )
-					pItem = new CTblPrEx( oReader );
+					pItem = new CTblPrEx( document );
 				else if ( _T("w:tc") == sName )
 				{
-					pItem = new CTc( oReader );
+					pItem = new CTc( document );
 					if ( pItem )
 					{
 						CTc *pCell = (CTc *)pItem;
@@ -657,11 +666,14 @@ namespace OOX
 				}
 				else if ( _T("w:trPr") == sName )
 				{
-					pItem = m_pTableRowProperties = new CTableRowProperties( oReader );
+					pItem = m_pTableRowProperties = new CTableRowProperties( document );
 				}
 
 				if ( pItem )
+				{
+					pItem->fromXML(oReader);
 					m_arrItems.push_back( pItem );
+				}
 			}
 			m_nCountCell = nNumCol;
 		}
@@ -669,30 +681,29 @@ namespace OOX
 
 		std::wstring CTr::toXML() const
 		{
-				std::wstring sResult = _T("<w:tr ");
+			std::wstring sResult = _T("<w:tr ");
 
-				ComplexTypes_WriteAttribute( _T("w:rsidDel=\""), m_oRsidDel );
-				ComplexTypes_WriteAttribute( _T("w:rsidR=\""),   m_oRsidR );
-				ComplexTypes_WriteAttribute( _T("w:rsidRPr=\""), m_oRsidRPr );
-				ComplexTypes_WriteAttribute( _T("w:rsidTr=\""),  m_oRsidTr );
+			ComplexTypes_WriteAttribute( _T("w:rsidDel=\""), m_oRsidDel );
+			ComplexTypes_WriteAttribute( _T("w:rsidR=\""),   m_oRsidR );
+			ComplexTypes_WriteAttribute( _T("w:rsidRPr=\""), m_oRsidRPr );
+			ComplexTypes_WriteAttribute( _T("w:rsidTr=\""),  m_oRsidTr );
 
-				sResult += _T(">");
+			sResult += _T(">");
 
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] )
                 {
-                    if ( m_arrItems[i] )
-                    {
-                        sResult += m_arrItems[i]->toXML();
-                    }
+                    sResult += m_arrItems[i]->toXML();
                 }
+            }
 
-				sResult += _T("</w:tr>");
+			sResult += _T("</w:tr>");
 
-				return sResult;
+			return sResult;
 		}
-		void    CTr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		void CTr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:rsidDel"), m_oRsidDel )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidR"),   m_oRsidR )
@@ -804,6 +815,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+			
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
@@ -811,103 +824,105 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:altChunk") == sName )
-					pItem = new CAltChunk( oReader );
+					pItem = new CAltChunk( document );
 				else if ( _T("w:bookmarkEnd") == sName )
-					pItem = new CBookmarkEnd( oReader );
+					pItem = new CBookmarkEnd( document );
 				else if ( _T("w:bookmarkStart") == sName )
-					pItem = new CBookmarkStart( oReader );
+					pItem = new CBookmarkStart( document );
 				else if ( _T("w:commentRangeEnd") == sName )
-					pItem = new CCommentRangeEnd( oReader );
+					pItem = new CCommentRangeEnd( document );
 				else if ( _T("w:commentRangeStart") == sName )
-					pItem = new CCommentRangeStart( oReader );
+					pItem = new CCommentRangeStart( document );
 				//else if ( _T("w:customXml") == sName )
-				//	pItem = new CCustomXml( oReader );
+				//	pItem = new CCustomXml( document );
 				else if ( _T("w:customXmlDelRangeEnd") == sName )
-					pItem = new CCustomXmlDelRangeEnd( oReader );
+					pItem = new CCustomXmlDelRangeEnd( document );
 				else if ( _T("w:customXmlDelRangeStart") == sName )
-					pItem = new CCustomXmlDelRangeStart( oReader );
+					pItem = new CCustomXmlDelRangeStart( document );
 				else if ( _T("w:customXmlInsRangeEnd") == sName )
-					pItem = new CCustomXmlInsRangeEnd( oReader );
+					pItem = new CCustomXmlInsRangeEnd( document );
 				else if ( _T("w:customXmlInsRangeStart") == sName )
-					pItem = new CCustomXmlInsRangeStart( oReader );
+					pItem = new CCustomXmlInsRangeStart( document );
 				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveFromRangeEnd( oReader );
+					pItem = new CCustomXmlMoveFromRangeEnd( document );
 				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-					pItem = new CCustomXmlMoveFromRangeStart( oReader );
+					pItem = new CCustomXmlMoveFromRangeStart( document );
 				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveToRangeEnd( oReader );
+					pItem = new CCustomXmlMoveToRangeEnd( document );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
-					pItem = new CCustomXmlMoveToRangeStart( oReader );
+					pItem = new CCustomXmlMoveToRangeStart( document );
 				else if ( _T("w:del") == sName )
-					pItem = new CDel( oReader );
+					pItem = new CDel( document );
 				else if ( _T("w:ins") == sName )
-					pItem = new CIns( oReader );
+					pItem = new CIns( document );
 				else if ( _T("w:moveFrom") == sName )
-					pItem = new CMoveFrom( oReader );
+					pItem = new CMoveFrom( document );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new CMoveFromRangeEnd( oReader );
+					pItem = new CMoveFromRangeEnd( document );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new CMoveFromRangeStart( oReader );
+					pItem = new CMoveFromRangeStart( document );
 				else if ( _T("w:moveTo") == sName )
-					pItem = new CMoveTo( oReader );
+					pItem = new CMoveTo( document );
 				else if ( _T("w:moveToRangeEnd") == sName )
-					pItem = new CMoveToRangeEnd( oReader );
+					pItem = new CMoveToRangeEnd( document );
 				else if ( _T("w:moveToRangeStart") == sName )
-					pItem = new CMoveToRangeStart( oReader );
+					pItem = new CMoveToRangeStart( document );
 				else if ( _T("m:oMath") == sName )
-					pItem = new COMath( oReader );
+					pItem = new COMath( document );
 				else if ( _T("m:oMathPara") == sName )
-					pItem = new COMathPara( oReader );
+					pItem = new COMathPara( document );
 				else if ( _T("w:p") == sName )
-					pItem = new CParagraph( oReader );
+					pItem = new CParagraph( document );
 				else if ( _T("w:permEnd") == sName )
-					pItem = new CPermEnd( oReader );
+					pItem = new CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
-					pItem = new CPermStart( oReader );
+					pItem = new CPermStart( document );
 				else if ( _T("w:proofErr") == sName )
-					pItem = new CProofErr( oReader );
+					pItem = new CProofErr( document );
 				else if ( _T("w:sdt") == sName )
-					pItem = new CSdt( oReader );
+					pItem = new CSdt( document );
 				else if ( _T("w:tbl") == sName )
-					pItem = new CTbl( oReader );
+					pItem = new CTbl( document );
 				else if ( _T("w:tcPr") == sName )
 				{
-					pItem = m_pTableCellProperties = new CTableCellProperties( oReader );
+					pItem = m_pTableCellProperties = new CTableCellProperties( document );
 				}
 
 				if ( pItem )
+				{
+					pItem->fromXML(oReader);
 					m_arrItems.push_back( pItem );
+				}
 			}
 		}
 
 		std::wstring CTc::toXML() const
 		{
-				std::wstring sResult;
+			std::wstring sResult;
 
-				if ( m_sId.IsInit() )
-				{
-					sResult += _T("<w:tc w:id=\"");
-                    sResult += m_sId.get2();
-					sResult += _T("\">");
-				}
-				else
-					sResult = _T("<w:tc>");
+			if ( m_sId.IsInit() )
+			{
+				sResult += _T("<w:tc w:id=\"");
+                sResult += m_sId.get2();
+				sResult += _T("\">");
+			}
+			else
+				sResult = _T("<w:tc>");
 
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] )
                 {
-                    if ( m_arrItems[i] )
-                    {
-                        sResult += m_arrItems[i]->toXML();
-                    }
+                    sResult += m_arrItems[i]->toXML();
                 }
+            }
 
-				sResult += _T("</w:tc>");
+			sResult += _T("</w:tc>");
 
-				return sResult;
+			return sResult;
 		}
-		void    CTc::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		void CTc::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_sId )
 			WritingElement_ReadAttributes_End( oReader )

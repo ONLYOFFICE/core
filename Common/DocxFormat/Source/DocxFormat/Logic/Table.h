@@ -109,13 +109,12 @@ namespace OOX
 		class CTblGridChange : public WritingElement
 		{
 		public:
-			CTblGridChange();
+			CTblGridChange(OOX::Document *pMain = NULL);
 			CTblGridChange(XmlUtils::CXmlNode &oNode);
 			CTblGridChange(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CTblGridChange();
 			const CTblGridChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblGridChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
-		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -131,10 +130,8 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 
-			// Childs
 			CTblGrid                                *m_pTblGrid;
 		};
 		//--------------------------------------------------------------------------------
@@ -143,17 +140,17 @@ namespace OOX
 		class CTblGrid : public WritingElement
 		{
 		public:
-			CTblGrid()
+			CTblGrid(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_bTblGridChange = false;
 			}
-			CTblGrid(XmlUtils::CXmlNode &oNode)
+			CTblGrid(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
 			{
 				m_bTblGridChange = false;
 
 				fromXML( oNode );
 			}
-			CTblGrid(XmlUtils::CXmlLiteReader& oReader)
+			CTblGrid(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 			{
 				m_bTblGridChange = false;
 
@@ -178,7 +175,7 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
 
@@ -199,7 +196,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -217,7 +214,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:tblGrid>");
 
@@ -241,10 +238,8 @@ namespace OOX
 				return et_w_tblGrid;
 			}
 
-
 			bool                                           m_bTblGridChange;
 
-			// Childs
 			nullable<OOX::Logic::CTblGridChange          >	m_oTblGridChange;
 			std::vector<ComplexTypes::Word::CTblGridCol *>	m_arrGridCol;
 		};
@@ -256,7 +251,7 @@ namespace OOX
 		class CTblPrExChange : public WritingElement
 		{
 		public:
-			CTblPrExChange();
+			CTblPrExChange(OOX::Document *pMain = NULL);
 			CTblPrExChange(XmlUtils::CXmlNode &oNode);
 			CTblPrExChange(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CTblPrExChange();
@@ -292,17 +287,17 @@ namespace OOX
 		class CTblPrEx : public WritingElement
 		{
 		public:
-			CTblPrEx()
+			CTblPrEx(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_bTblPrExChange = false;
 			}
-			CTblPrEx(XmlUtils::CXmlNode &oNode)
+			CTblPrEx(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
 			{
 				m_bTblPrExChange = false;
 
 				fromXML( oNode );
 			}
-			CTblPrEx(XmlUtils::CXmlLiteReader& oReader)
+			CTblPrEx(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 			{
 				m_bTblPrExChange = false;
 
@@ -409,21 +404,21 @@ namespace OOX
 		class CTbl : public WritingElementWithChilds<>
 		{
 		public:
-			CTbl()
+			CTbl(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
-				m_oTableProperties	= NULL;
-				m_nCountRow			=0;
+				m_oTableProperties = NULL;
+				m_nCountRow = 0;
 			}
-			CTbl(XmlUtils::CXmlNode &oNode)
+			CTbl(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				m_oTableProperties	= NULL;
-				m_nCountRow			=0;
+				m_nCountRow = 0;
 				fromXML( oNode );
 			}
-			CTbl(XmlUtils::CXmlLiteReader& oReader)
+			CTbl(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
-				m_oTableProperties	= NULL;
-				m_nCountRow			=0;
+				m_oTableProperties = NULL;
+				m_nCountRow = 0;
 				fromXML( oReader );
 			}
 			virtual ~CTbl()
@@ -447,8 +442,8 @@ namespace OOX
 			virtual void ClearItems()
 			{	
 				m_oTblGrid.reset();
-				m_oTableProperties	= NULL;
-				m_nCountRow			=0;
+				m_oTableProperties = NULL;
+				m_nCountRow = 0;
 				
 				WritingElementWithChilds::ClearItems();
 			}
@@ -463,9 +458,7 @@ namespace OOX
 
 			int										m_nCountRow; 
 
-			// Childs
-			nullable<OOX::Logic::CTblGrid>			m_oTblGrid;
-			
+			nullable<OOX::Logic::CTblGrid>			m_oTblGrid;			
 			OOX::Logic::CTableProperty*				m_oTableProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
@@ -475,18 +468,18 @@ namespace OOX
 		class CTr : public WritingElementWithChilds<>
 		{
 		public:
-			CTr()
+			CTr(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 				m_nCountCell = 0;
 				m_pTableRowProperties = NULL;
 			}
-			CTr(XmlUtils::CXmlNode &oNode)
+			CTr(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				m_nCountCell = 0;
 				m_pTableRowProperties = NULL;
 				fromXML( oNode );
 			}
-			CTr(XmlUtils::CXmlLiteReader& oReader)
+			CTr(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				m_nCountCell = 0;
 				m_pTableRowProperties = NULL;
@@ -549,18 +542,18 @@ namespace OOX
 		class CTc : public WritingElementWithChilds<>
 		{
 		public:
-			CTc()
+			CTc(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 				m_nNumCol = 0;
 				m_pTableCellProperties = NULL;
 			}
-			CTc(XmlUtils::CXmlNode &oNode)
+			CTc(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				m_nNumCol = 0;
 				m_pTableCellProperties = NULL;
 				fromXML( oNode );
 			}
-			CTc(XmlUtils::CXmlLiteReader& oReader)
+			CTc(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				m_nNumCol = 0;
 				m_pTableCellProperties = NULL;

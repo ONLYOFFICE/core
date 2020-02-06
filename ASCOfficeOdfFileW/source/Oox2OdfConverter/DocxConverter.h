@@ -45,6 +45,7 @@ namespace OOX
 	class CTheme;
 	class CDocDefaults;
 	class CStyle;
+	class CComment;
 
 	namespace Logic
 	{
@@ -252,6 +253,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CCommentRangeStart		*oox_comm_start);
 		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);
 		void convert(OOX::Logic::CCommentReference		*oox_comm_ref);
+		void convert(OOX::CComment						*oox_comm);
 
 		void convert(OOX::Logic::CFootnoteReference		*oox_note_ref);
 		void convert(OOX::Logic::CEndnoteReference		*oox_note_ref);

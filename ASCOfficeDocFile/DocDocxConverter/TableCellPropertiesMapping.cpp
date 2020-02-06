@@ -96,9 +96,12 @@ namespace DocFileFormat
 					break;
 			}
 		}
-		std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
+		//std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
 
-		for (std::list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != rend; ++iter)
+		//for (std::list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != rend; ++iter)
+		std::list<SinglePropertyModifier>::const_iterator end = tapx->grpprl->end();
+
+		for (std::list<SinglePropertyModifier>::const_iterator iter = tapx->grpprl->begin(); iter != end; ++iter)
 		{
 			switch (iter->OpCode)
 			{				

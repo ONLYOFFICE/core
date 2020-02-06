@@ -203,7 +203,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCell)
-			CCell()
+			CCell(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCell()
@@ -361,7 +361,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRow)
-			CRow()
+			CRow(OOX::Document *pMain = NULL) : WritingElementWithChilds<CCell>(pMain)
 			{
 			}
 			virtual ~CRow()
@@ -424,7 +424,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetData)
-			CSheetData()
+			CSheetData(OOX::Document *pMain = NULL) : WritingElementWithChilds<CRow>(pMain)
 			{
 			}
 			virtual ~CSheetData()

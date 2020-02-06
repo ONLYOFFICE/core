@@ -228,7 +228,7 @@ namespace ComplexTypes
 				return sResult;
 			}
 
-			const bool IsFirstRow   () const
+			const bool IsFirstRow() const
 			{
 				if ( m_oFirstRow.IsInit() )
 					return ( SimpleTypes::onoffTrue == m_oFirstRow->GetValue() );
@@ -238,7 +238,7 @@ namespace ComplexTypes
 
 				return false;
 			}
-			const bool IsLastRow    () const
+			const bool IsLastRow() const
 			{
 				if ( m_oLastRow.IsInit() )
 					return ( SimpleTypes::onoffTrue == m_oLastRow->GetValue() );
@@ -541,10 +541,7 @@ namespace OOX
 			virtual ~CTblBorders()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:tblBorders") != oNode.GetName() )
 					return;
@@ -575,7 +572,7 @@ namespace OOX
 				if ( !m_oStart.IsInit() && oNode.GetNode( _T("w:left"), oChild ) )
 					m_oStart = oChild;
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -602,7 +599,7 @@ namespace OOX
 						m_oStart = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const                     
+			virtual std::wstring toXML() const                     
 			{
 				std::wstring sResult = _T("<w:tblBorders>");
 
@@ -704,10 +701,7 @@ namespace OOX
 			virtual ~CTblCellMar()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:tblCellMar") != oNode.GetName() )
 					return;
@@ -732,7 +726,7 @@ namespace OOX
 				if ( !m_oStart.IsInit() && oNode.GetNode( _T("w:left"), oChild ) )
 					m_oStart = oChild;
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -833,17 +827,16 @@ namespace OOX
 		class CTblPrChange : public WritingElement
 		{
 		public:
-			CTblPrChange();
+			CTblPrChange(OOX::Document *pMain = NULL);
 			CTblPrChange(XmlUtils::CXmlNode &oNode);
 			CTblPrChange(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CTblPrChange();
 			const CTblPrChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblPrChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
 		private:
@@ -852,13 +845,11 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			nullable<std::wstring                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 			nullable<std::wstring                       > m_sUserId;
 
-			// Childs
 			nullable<CTableProperty>				 m_pTblPr;
 		};
 		//--------------------------------------------------------------------------------
@@ -867,17 +858,17 @@ namespace OOX
 		class CTableProperty : public WritingElement
 		{
 		public:
-			CTableProperty()
+			CTableProperty(OOX::Document *pMain = NULL)
 			{
 				m_bTblPrChange = false;
 			}
-			CTableProperty(XmlUtils::CXmlNode &oNode)
+			CTableProperty(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
 			{
 				m_bTblPrChange = false;
 
 				fromXML( oNode );
 			}
-			CTableProperty(XmlUtils::CXmlLiteReader& oReader)
+			CTableProperty(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 			{
 				m_bTblPrChange = false;
 
@@ -897,9 +888,7 @@ namespace OOX
 				return *this;
 			}
 
-		public:
-
-			virtual void    fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:tblPr") != oNode.GetName() )
 					return;
@@ -928,7 +917,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:tblStyleRowBandSize"), m_oTblStyleRowBandSize );
 				WritingElement_ReadNode( oNode, oChild, _T("w:tblW"),                m_oTblW );
 			}
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -996,28 +985,28 @@ namespace OOX
 			static const CTableProperty Merge(const CTableProperty& oPrev, const CTableProperty& oCurrent)
 			{
 				CTableProperty oProperties;
-				oProperties.m_bTblPrChange            = oPrev.m_bTblPrChange || oCurrent.m_bTblPrChange;
-				oProperties.m_oBidiVisual            = Merge( oPrev.m_oBidiVisual,            oCurrent.m_oBidiVisual );
-				oProperties.m_oJc            = Merge( oPrev.m_oJc,            oCurrent.m_oJc );
-				oProperties.m_oShade            = Merge( oPrev.m_oShade,            oCurrent.m_oShade );
+				oProperties.m_bTblPrChange = oPrev.m_bTblPrChange || oCurrent.m_bTblPrChange;
+				oProperties.m_oBidiVisual = Merge( oPrev.m_oBidiVisual, oCurrent.m_oBidiVisual );
+				oProperties.m_oJc = Merge( oPrev.m_oJc, oCurrent.m_oJc );
+				oProperties.m_oShade = Merge( oPrev.m_oShade, oCurrent.m_oShade );
 
 				if ( oCurrent.m_oTblBorders.IsInit() && oPrev.m_oTblBorders.IsInit() )
 					oProperties.m_oTblBorders = OOX::Logic::CTblBorders::Merge(oPrev.m_oTblBorders.get(), oCurrent.m_oTblBorders.get());
 				else
-					oProperties.m_oTblBorders            = Merge( oPrev.m_oTblBorders,            oCurrent.m_oTblBorders );
+					oProperties.m_oTblBorders = Merge( oPrev.m_oTblBorders, oCurrent.m_oTblBorders );
 
-				oProperties.m_oTblCaption            = Merge( oPrev.m_oTblCaption,            oCurrent.m_oTblCaption );
+				oProperties.m_oTblCaption = Merge( oPrev.m_oTblCaption, oCurrent.m_oTblCaption );
 
 				if ( oCurrent.m_oTblCellMar.IsInit() && oPrev.m_oTblCellMar.IsInit() )
 					oProperties.m_oTblCellMar = OOX::Logic::CTblCellMar::Merge(oPrev.m_oTblCellMar.get(), oCurrent.m_oTblCellMar.get());
 				else
-					oProperties.m_oTblCellMar            = Merge( oPrev.m_oTblCellMar,            oCurrent.m_oTblCellMar );
+					oProperties.m_oTblCellMar = Merge( oPrev.m_oTblCellMar,            oCurrent.m_oTblCellMar );
 
-				oProperties.m_oTblCellSpacing            = Merge( oPrev.m_oTblCellSpacing,            oCurrent.m_oTblCellSpacing );
-				oProperties.m_oTblDescription            = Merge( oPrev.m_oTblDescription,            oCurrent.m_oTblDescription );
-				oProperties.m_oTblInd            = Merge( oPrev.m_oTblInd,            oCurrent.m_oTblInd );
-				oProperties.m_oTblLayout            = Merge( oPrev.m_oTblLayout,            oCurrent.m_oTblLayout );
-				oProperties.m_oTblLook            = Merge( oPrev.m_oTblLook,            oCurrent.m_oTblLook );
+				oProperties.m_oTblCellSpacing = Merge( oPrev.m_oTblCellSpacing,            oCurrent.m_oTblCellSpacing );
+				oProperties.m_oTblDescription = Merge( oPrev.m_oTblDescription,            oCurrent.m_oTblDescription );
+				oProperties.m_oTblInd = Merge( oPrev.m_oTblInd,            oCurrent.m_oTblInd );
+				oProperties.m_oTblLayout = Merge( oPrev.m_oTblLayout,            oCurrent.m_oTblLayout );
+				oProperties.m_oTblLook = Merge( oPrev.m_oTblLook,            oCurrent.m_oTblLook );
 				oProperties.m_oTblOverlap            = Merge( oPrev.m_oTblOverlap,            oCurrent.m_oTblOverlap );
 				oProperties.m_oTblpPr            = Merge( oPrev.m_oTblpPr,            oCurrent.m_oTblpPr );
 				oProperties.m_oTblPrChange            = Merge( oPrev.m_oTblPrChange,            oCurrent.m_oTblPrChange );
@@ -1028,7 +1017,7 @@ namespace OOX
 				return oProperties;
 			}
 			template<typename Type>
-			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 			{
 				nullable<Type> oResult;
 
@@ -1136,7 +1125,7 @@ namespace OOX
 		class CTrPrChange : public WritingElement
 		{
 		public:
-			CTrPrChange();
+			CTrPrChange(OOX::Document *pMain = NULL);
 			CTrPrChange(XmlUtils::CXmlNode &oNode);
 			CTrPrChange(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CTrPrChange();
@@ -1170,17 +1159,17 @@ namespace OOX
 		class CTableRowProperties : public WritingElement
 		{
 		public:
-			CTableRowProperties()
+			CTableRowProperties(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_bTrPrChange = false;
 			}
-			CTableRowProperties(XmlUtils::CXmlNode &oNode)
+			CTableRowProperties(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
 			{
 				m_bTrPrChange = false;
 
 				fromXML( (XmlUtils::CXmlNode &)oNode );
 			}
-			CTableRowProperties(XmlUtils::CXmlLiteReader& oReader)
+			CTableRowProperties(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 			{
 				m_bTrPrChange = false;
 
@@ -1203,7 +1192,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:trPr") != oNode.GetName() )
 					return;
@@ -1229,7 +1218,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:wAfter"),         m_oWAfter );
 				WritingElement_ReadNode( oNode, oChild, _T("w:wBefore"),        m_oWBefore );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1312,7 +1301,7 @@ namespace OOX
 				return oProperties;
 			}
 			template<typename Type>
-			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 			{
 				nullable<Type> oResult;
 
@@ -1543,7 +1532,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CHeaders)
-			CHeaders()
+
+			CHeaders(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CHeaders()
@@ -1555,9 +1545,7 @@ namespace OOX
 				}
 				m_arrHeaders.clear();
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:headers") != oNode.GetName() )
 					return;
@@ -1577,7 +1565,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1594,7 +1582,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:headers>");
 
@@ -1615,8 +1603,6 @@ namespace OOX
 			{
 				return et_w_headers;
 			}
-		public:
-
 			std::vector<ComplexTypes::Word::String *> m_arrHeaders;
 		};
 
@@ -1842,17 +1828,16 @@ namespace OOX
 		class CTcPrChange : public WritingElement
 		{
 		public:
-			CTcPrChange();
+			CTcPrChange(OOX::Document *pMain = NULL);
 			CTcPrChange(XmlUtils::CXmlNode &oNode);
 			CTcPrChange(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CTcPrChange();
 			const CTcPrChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTcPrChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
 		private:
@@ -1861,14 +1846,12 @@ namespace OOX
 
 		public:
 
-			// Attributes
-			nullable<std::wstring                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
+			nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring                       > m_sUserId;
+			nullable<std::wstring> m_sUserId;
 
-			// Childs
-			nullable<CTableCellProperties>			 m_pTcPr;
+			nullable<CTableCellProperties>			m_pTcPr;
 		};
 		//--------------------------------------------------------------------------------
 		// CTableCellProperties
@@ -1876,17 +1859,17 @@ namespace OOX
 		class CTableCellProperties : public WritingElement
 		{
 		public: 
-			CTableCellProperties()
+			CTableCellProperties(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_bTcPrChange = false;
 			}
-			CTableCellProperties(XmlUtils::CXmlNode &oNode)
+			CTableCellProperties(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
 			{
 				m_bTcPrChange = false;
 
 				fromXML( oNode );
 			}
-			CTableCellProperties(XmlUtils::CXmlLiteReader& oReader)
+			CTableCellProperties(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 			{
 				m_bTcPrChange = false;
 
@@ -1906,9 +1889,7 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:tcPr") != oNode.GetName() )
 					return;
@@ -1946,7 +1927,7 @@ namespace OOX
 				if ( !m_oVMerge.IsInit() )
 					WritingElement_ReadNode( oNode, oChild, _T("w:vMerge"),     m_oVMerge );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1980,7 +1961,7 @@ namespace OOX
 					else if ( _T("w:vMerge")         == sName ) m_oVMerge = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const             
+			virtual std::wstring toXML() const             
 			{
 				std::wstring sResult = _T("<w:tcPr>");
 

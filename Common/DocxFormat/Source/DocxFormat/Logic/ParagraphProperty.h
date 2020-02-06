@@ -1017,7 +1017,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTabs)
-			CTabs()
+			CTabs(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CTabs()
@@ -1041,9 +1041,7 @@ namespace OOX
 				}
 				return *this;
 			}
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:tabs") != oNode.GetName() )
 					return;
@@ -1062,7 +1060,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1109,16 +1107,16 @@ namespace OOX
 		class CParagraphProperty : public WritingElement
 		{
 		public:
-			CParagraphProperty() 
+			CParagraphProperty(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_bPPrChange = false;
 			}
-			CParagraphProperty(XmlUtils::CXmlNode& oNode)
+			CParagraphProperty(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
 			{
 				m_bPPrChange = false;
 				fromXML( oNode );
 			}
-			CParagraphProperty(XmlUtils::CXmlLiteReader& oReader)
+			CParagraphProperty(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 			{
 				m_bPPrChange = false;
 				fromXML( oReader );

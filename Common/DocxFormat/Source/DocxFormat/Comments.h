@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_COMMENTS_FILE_INCLUDE_H_
-#define OOX_COMMENTS_FILE_INCLUDE_H_
 
 #include "File.h"
 #include "../Base/Nullable.h"
@@ -48,7 +46,7 @@ namespace OOX
 	public:
 		WritingElement_AdditionConstructors(CComment)
 			
-		CComment()
+		CComment(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 		{
 		}
 		virtual ~CComment()
@@ -58,6 +56,7 @@ namespace OOX
 		{
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+				void fromXML2(XmlUtils::CXmlLiteReader& oReader);
 		virtual std::wstring toXML() const
 		{
 			return L"";
@@ -268,7 +267,8 @@ namespace OOX
 	{
 	public:
 		WritingElement_AdditionConstructors(CPresenceInfo)
-			CPresenceInfo()
+			
+		CPresenceInfo()
 		{
 		}
 		virtual ~CPresenceInfo()
@@ -363,5 +363,3 @@ namespace OOX
 	};
 
 } // namespace OOX
-
-#endif // OOX_COMMENTS_FILE_INCLUDE_H_

@@ -50,14 +50,14 @@ namespace OOX
 		class CFldSimple : public WritingElementWithChilds<>
 		{
 		public:
-			CFldSimple()
+			CFldSimple(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
-			CFldSimple(XmlUtils::CXmlNode &oNode)
+			CFldSimple(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CFldSimple(XmlUtils::CXmlLiteReader& oReader)
+			CFldSimple(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}

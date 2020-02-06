@@ -35,17 +35,18 @@
 #include "FontTable.h"
 #include "Numbering.h"
 #include "Styles.h"
+#include "Comments.h"
 
 namespace OOX
 {
-	class CDocxFlat : public OOX::Document, public OOX::File, public WritingElement
+	class CDocxFlat : public Document, public File, public WritingElement
 	{
 	public:
 
-		CDocxFlat() : OOX::File(dynamic_cast<OOX::Document*>(this))
+		CDocxFlat() : File(dynamic_cast<Document*>(this)), m_oComments(dynamic_cast<Document*>(this))
 		{
 		}
-		CDocxFlat(const CPath& oFilePath) : OOX::File(this)
+		CDocxFlat(const CPath& oFilePath) : File(this), m_oComments(dynamic_cast<Document*>(this))
 		{
 			read( oFilePath );
 		}
@@ -97,7 +98,10 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 
 				if ( L"w:body" == sName )
-					m_pDocument = oReader;
+				{
+					m_pDocument = new CDocument(dynamic_cast<Document*>(this));
+					m_pDocument->fromXML(oReader);
+				}
 				else if ( L"w:fonts" == sName )
 					m_pFontTable = oReader;
 				else if ( L"w:lists" == sName )
@@ -122,13 +126,12 @@ namespace OOX
 		}
 //-----------------------------------------------------------------------
 
-		nullable<OOX::CDocument>			m_pDocument;
-		nullable<OOX::CStyles>				m_pStyles;
-		nullable<OOX::CFontTable>			m_pFontTable;
-		nullable<OOX::CNumbering>			m_pNumbering;
-		//nullable<OOX::Logic::CBgPict>		m_oBgPict;
-
-		//lists
+		nullable<CDocument>				m_pDocument;
+		CComments						m_oComments;
+		nullable<CStyles>				m_pStyles;
+		nullable<CFontTable>			m_pFontTable;
+		nullable<CNumbering>			m_pNumbering;
+		//nullable<Logic::CBgPict>		m_oBgPict;
 	
 	};
 

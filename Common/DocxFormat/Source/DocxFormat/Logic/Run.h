@@ -39,6 +39,7 @@
 #include "FldSimple.h"
 
 #include "../Drawing/Drawing.h"
+#include "../Comments.h"
 #include "Pict.h"
 #include "Annotations.h"
 #include "AlternateContent.h"
@@ -54,15 +55,15 @@ namespace OOX
 		class CRun : public WritingElementWithChilds<>
 		{
 		public:
-			CRun()
+			CRun(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
 			{
 				m_oRunProperty = NULL;
 			}
-			CRun(XmlUtils::CXmlNode &oNode)
+			CRun(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CRun(XmlUtils::CXmlLiteReader& oReader)
+			CRun(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}
@@ -85,317 +86,16 @@ namespace OOX
 				return *this;
 			}
 
-			virtual void ClearItems()
-			{
-				m_oRsidDel.reset();
-				m_oRsidR.reset();
-				m_oRsidRPr.reset();
-				
-				m_oRunProperty = NULL;
+			virtual void ClearItems();
 
-				WritingElementWithChilds<>::ClearItems();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				m_oRunProperty = NULL;
-				
-				XmlMacroReadAttributeBase( oNode, _T("w:rsidDel"), m_oRsidDel );
-				XmlMacroReadAttributeBase( oNode, _T("w:rsidR"),   m_oRsidR );
-				XmlMacroReadAttributeBase( oNode, _T("w:rsidRPr"), m_oRsidRPr );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("w:annotationRef") == sName )
-								pItem = new CAnnotationRef( oItem );
-							else if ( _T("w:br") == sName )
-								pItem = new CBr( oItem );
-							else if ( _T("w:commentReference") == sName )
-								pItem = new CCommentReference( oItem );
-							else if ( _T("w:contentPart") == sName )
-								pItem = new CContentPart( oItem );
-							else if ( _T("w:continuationSeparator") == sName )
-								pItem = new CContinuationSeparator( oItem );
-							else if ( _T("w:cr") == sName )
-								pItem = new CCr( oItem );
-							else if ( _T("w:dayLong") == sName )
-								pItem = new CDayLong( oItem );
-							else if ( _T("w:dayShort") == sName )
-								pItem = new CDayShort( oItem );
-							else if ( _T("w:delInstrText") == sName )
-								pItem = new CDelInstrText( oItem );
-							else if ( _T("w:delText") == sName )
-								pItem = new CDelText( oItem );
-							else if ( _T("w:drawing") == sName ) 
-								pItem = new CDrawing( oItem );
-							else if ( _T("w:endnoteRef") == sName )
-								pItem = new CEndnoteRef( oItem );
-							else if ( _T("w:endnoteReference") == sName )
-								pItem = new CEndnoteReference( oItem );
-							else if ( _T("w:fldChar") == sName )
-								pItem = new CFldChar( oItem );
-							else if ( _T("w:footnoteRef") == sName )
-								pItem = new CFootnoteRef( oItem );
-							else if ( _T("w:footnoteReference") == sName )
-								pItem = new CFootnoteReference( oItem );
-							else if ( _T("w:instrText") == sName )
-								pItem = new CInstrText( oItem );
-							else if ( _T("w:lastRenderedPageBreak") == sName )
-								pItem = new CLastRenderedPageBreak( oItem );
-							else if ( _T("w:monthLong") == sName )
-								pItem = new CMonthLong( oItem );
-							else if ( _T("w:monthShort") == sName )
-								pItem = new CMonthShort( oItem );
-							else if ( _T("w:noBreakHyphen") == sName )
-								pItem = new CNoBreakHyphen( oItem );
-							else if ( _T("w:object") == sName )
-								pItem = new CObject( oItem );
-							else if ( _T("w:pgNum") == sName )
-								pItem = new CPgNum( oItem );
-							else if ( _T("w:pict") == sName )
-								pItem = new CPicture( oItem );
-							else if ( _T("w:ptab") == sName )
-								pItem = new CPTab( oItem );
-							else if ( _T("w:rPr") == sName )
-							{								
-								if (m_oRunProperty)
-								{
-									CRunProperty prop2(oItem);
-									CRunProperty newProp = CRunProperty::Merge(*m_oRunProperty, prop2);
-
-									pItem = m_oRunProperty = new CRunProperty(newProp);
-								}
-								else
-								{
-									pItem = m_oRunProperty = new CRunProperty( oItem );
-								}
-							}
-							else if ( _T("w:ruby") == sName )
-								pItem = new CRuby( oItem );
-							else if ( _T("w:separator") == sName )
-								pItem = new CSeparator( oItem );
-							else if ( _T("w:softHyphen") == sName )
-								pItem = new CSoftHyphen( oItem );
-							else if ( _T("w:sym") == sName )
-								pItem = new CSym( oItem );
-							else if ( _T("w:t") == sName )
-								pItem = new CText( oItem );
-							else if ( _T("w:tab") == sName )
-								pItem = new CTab( oItem );
-							else if ( _T("w:yearLong") == sName )
-								pItem = new CYearLong( oItem );
-							else if ( _T("w:yearShort") == sName )
-								pItem = new CYearShort( oItem );
-
-							if ( pItem )
-								m_arrItems.push_back( pItem );
-						}
-					}
-				}
-
-				if ((m_oRunProperty) && (m_oRunProperty->m_pText))
-				{
-					m_arrItems.push_back( m_oRunProperty->m_pText);
-					m_oRunProperty->m_pText = NULL;
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_oRunProperty = NULL;
-
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				fromXMLElems(oReader);
-			}
-			void fromXMLElems(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				WritingElement *pItem = NULL;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					pItem = fromXMLElem(oReader);
-					if ( pItem )
-						m_arrItems.push_back( pItem );
-				}
-			}
-
-			WritingElement* fromXMLElem(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring sName = oReader.GetName();
-				WritingElement *pItem = NULL;
-
-				if ( _T("mc:AlternateContent") == sName )
-					pItem = new CAlternateContent( oReader );
-				else if ( _T("w:annotationRef") == sName )
-					pItem = new CAnnotationRef( oReader );
-				else if ( _T("w:br") == sName )
-					pItem = new CBr( oReader );
-				else if ( _T("w:commentReference") == sName )
-					pItem = new CCommentReference( oReader );
-				else if ( _T("w:contentPart") == sName )
-					pItem = new CContentPart( oReader );
-				else if ( _T("w:continuationSeparator") == sName )
-					pItem = new CContinuationSeparator( oReader );
-				else if ( _T("w:cr") == sName )
-					pItem = new CCr( oReader );
-				else if ( _T("w:dayLong") == sName )
-					pItem = new CDayLong( oReader );
-				else if ( _T("w:dayShort") == sName )
-					pItem = new CDayShort( oReader );
-				else if ( _T("w:delInstrText") == sName )
-					pItem = new CDelInstrText( oReader );
-				else if ( _T("w:delText") == sName )
-					pItem = new CDelText( oReader );
-				else if ( _T("w:drawing") == sName ) 
-					pItem = new CDrawing( oReader );
-				else if ( _T("w:endnoteRef") == sName )
-					pItem = new CEndnoteRef( oReader );
-				else if ( _T("w:endnoteReference") == sName )
-					pItem = new CEndnoteReference( oReader );
-				else if ( _T("w:fldChar") == sName )
-					pItem = new CFldChar( oReader );
-				else if ( _T("w:footnoteRef") == sName )
-					pItem = new CFootnoteRef( oReader );
-				else if ( _T("w:footnoteReference") == sName )
-					pItem = new CFootnoteReference( oReader );
-				else if ( _T("w:instrText") == sName )
-					pItem = new CInstrText( oReader );
-				else if ( _T("w:lastRenderedPageBreak") == sName )
-					pItem = new CLastRenderedPageBreak( oReader );
-				else if ( _T("w:monthLong") == sName )
-					pItem = new CMonthLong( oReader );
-				else if ( _T("w:monthShort") == sName )
-					pItem = new CMonthShort( oReader );
-				else if ( _T("w:noBreakHyphen") == sName )
-					pItem = new CNoBreakHyphen( oReader );
-				else if ( _T("w:object") == sName )
-					pItem = new CObject( oReader );
-				else if ( _T("w:pgNum") == sName )
-					pItem = new CPgNum( oReader );
-				else if ( _T("w:pict") == sName )
-					pItem = new CPicture( oReader );
-				else if ( _T("w:ptab") == sName )
-					pItem = new CPTab( oReader );
-				else if ( _T("w:rPr") == sName )
-				{
-					if (m_oRunProperty)
-					{
-						CRunProperty prop2;
-						prop2.fromXML(oReader, this);
-						CRunProperty newProp = CRunProperty::Merge(*m_oRunProperty, prop2);
-
-						pItem = m_oRunProperty = new CRunProperty(newProp);
-					}
-					else
-					{
-						pItem = m_oRunProperty = new CRunProperty();
-						m_oRunProperty->fromXML(oReader, this);
-					}
-				}
-				else if ( _T("w:ruby") == sName )
-					pItem = new CRuby( oReader );
-				else if ( _T("w:separator") == sName )
-					pItem = new CSeparator( oReader );
-				else if ( _T("w:softHyphen") == sName )
-					pItem = new CSoftHyphen( oReader );
-				else if ( _T("w:sym") == sName )
-					pItem = new CSym( oReader );
-				else if ( _T("w:t") == sName )
-				{
-					fromXMLText(oReader);
-				}
-				else if ( _T("w:tab") == sName )
-					pItem = new CTab( oReader );
-				else if ( _T("w:yearLong") == sName )
-					pItem = new CYearLong( oReader );
-
-				return pItem;
-			}
-			void fromXMLText(XmlUtils::CXmlLiteReader& oReader)
-			{
-				//for <w:t>6<w:cr/>6</w:t>
-				nullable<SimpleTypes::CXmlSpace<> > oSpace;
-				CText::ReadAttributes(oReader, oSpace);
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				bool bTrimLeft, bTrimRight;
-				bTrimLeft = bTrimRight = !(oSpace.IsInit() && SimpleTypes::xmlspacePreserve == oSpace->GetValue());
-				CText* pTextLast = NULL;
-				int nDepth = oReader.GetDepth();
-				XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
-				while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
-				{
-					if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
-					{
-						const char* pValue = oReader.GetTextChar();
-						if(bTrimLeft)
-						{
-							bTrimLeft = false;
-							pValue += NSStringExt::FindFirstNotOfA(pValue, " \n\r\t");
-						}
-						if('\0' != pValue[0])
-						{
-							pTextLast = new CText();
-							NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), pTextLast->m_sText);
-							m_arrItems.push_back( pTextLast );
-						}
-					}
-					else if (eNodeType == XmlUtils::XmlNodeType_Element)
-					{
-						WritingElement *pItem = fromXMLElem(oReader);
-						if ( pItem )
-							m_arrItems.push_back( pItem );
-						bTrimLeft = false;
-						pTextLast = NULL;
-					}
-				}
-				if(bTrimRight && pTextLast)
-				{
-					NSStringExt::RTrim(pTextLast->m_sText, L" \n\r\t");
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = _T("<w:r ");
-
-				ComplexTypes_WriteAttribute( _T("w:rsidDel=\""), m_oRsidDel );
-				ComplexTypes_WriteAttribute( _T("w:rsidR=\""),   m_oRsidR );
-				ComplexTypes_WriteAttribute( _T("w:rsidRPr=\""), m_oRsidRPr );
-
-				sResult += _T(">");
-
-				if (m_oRunProperty)
-					sResult += m_oRunProperty->toXML();
-
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        if (m_arrItems[i]->getType() == OOX::et_w_rPr) continue;
-                        sResult += m_arrItems[i]->toXML();
-                    }
-                }
-
-				sResult += _T("</w:r>");
-
-				return sResult;
-			}
+			void fromXMLElems(XmlUtils::CXmlLiteReader& oReader);
+			WritingElement* fromXMLElem(XmlUtils::CXmlLiteReader& oReader);
+			void fromXMLText(XmlUtils::CXmlLiteReader& oReader);
+			
 			virtual EElementType getType() const
 			{
 				return et_w_r;
@@ -403,32 +103,7 @@ namespace OOX
 
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					if ( _T("w:rsidDel") == wsName )
-						m_oRsidDel = oReader.GetText();
-					else if ( _T("w:rsidR") == wsName )
-						m_oRsidR = oReader.GetText();
-					else if ( _T("w:rsidRPr") == wsName )
-						m_oRsidRPr = oReader.GetText();
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-
-				oReader.MoveToElement();
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;

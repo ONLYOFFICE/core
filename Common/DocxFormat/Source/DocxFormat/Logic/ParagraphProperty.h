@@ -391,9 +391,9 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oEnd;
 			nullable<SimpleTypes::CDecimalNumber<>    > m_oEndChars;
-			nullable<SimpleTypes::CTwipsMeasure       > m_oFirstLine;
+			nullable<SimpleTypes::CSignedTwipsMeasure > m_oFirstLine;
 			nullable<SimpleTypes::CDecimalNumber<>    > m_oFirstLineChars;
-			nullable<SimpleTypes::CTwipsMeasure       > m_oHanging;
+			nullable<SimpleTypes::CSignedTwipsMeasure > m_oHanging;
 			nullable<SimpleTypes::CDecimalNumber<>    > m_oHangingChars;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oStart;
 			nullable<SimpleTypes::CDecimalNumber<>    > m_oStartChars;

@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "..\DocxFlat.h"
+
 #include "Paragraph.h"
 #include "Annotations.h"
 #include "Run.h"
@@ -206,13 +208,28 @@ namespace OOX
 					if (sType.IsInit() && std::wstring::npos != sType->find(L"Bookmark.Start"))
 						pItem = new CBookmarkStart( document );
 					else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Bookmark.End"))
-						pItem = new CBookmarkStart( document );
+						pItem = new CBookmarkEnd( document );
 					else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment.Start"))
 						pItem = new CCommentRangeStart( document );
 					else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment.End"))
 						pItem = new CCommentRangeEnd( document );
 					else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment"))
-						pItem = new CComment( document );
+					{
+						pItem = new CComment( oReader );
+						
+						CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
+						if (docx_flat)
+						{
+							CComment* pComment = dynamic_cast<CComment*>(pItem);
+							if ((pComment) && (pComment->m_oId.IsInit()))
+							{
+								docx_flat->m_oComments.m_mapComments.insert( std::make_pair( pComment->m_oId->GetValue(), docx_flat->m_oComments.m_arrComments.size()));
+							}
+							docx_flat->m_oComments.m_arrComments.push_back( pComment );	
+
+							pItem = NULL;
+						}
+					}
 				}
 				//else if ( _T("w:customXml") == sName )
 				//	pItem = new CCustomXml( document );

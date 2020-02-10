@@ -8342,6 +8342,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	OOX::CStyles	*pStyles = NULL;
 	OOX::CFontTable	*pFontTable = NULL;
 	OOX::CNumbering	*pNumbering = NULL;
+	OOX::CComments	*pComments = NULL;
 	
 	if ((pDocx) && (pDocx->m_pDocument))
 	{
@@ -8355,6 +8356,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		pStyles		= pDocx->m_pStyles;
 		pFontTable	= pDocx->m_pFontTable;
 		pNumbering	= pDocx->m_pNumbering;
+		pComments	= pDocx->m_pComments;
 	}
 	else
 	{
@@ -8365,6 +8367,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 			pStyles		= pDocxFlat->m_pStyles.GetPointer();
 			pFontTable	= pDocxFlat->m_pFontTable.GetPointer();
 			pNumbering	= pDocxFlat->m_pNumbering.GetPointer();
+			pComments	= &pDocxFlat->m_oComments;
 		}
 	}
 	if (pFontTable)
@@ -8401,11 +8404,14 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	}
 
 //Write Comments
-	if ((pDocx) && (pDocx->m_pComments))
+	if (pComments)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
-		oBinaryCommentsTableWriter.Write(*pDocx->m_pComments, pDocx->m_pCommentsExt, pDocx->m_pPeople, pDocx->m_pCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
+		oBinaryCommentsTableWriter.Write(*pComments,	(pDocx ? pDocx->m_pCommentsExt : NULL), 
+														(pDocx ? pDocx->m_pPeople : NULL), 
+														(pDocx ? pDocx->m_pCommentsIds : NULL), 
+															m_oParamsWriter.m_mapIgnoreComments);
 		this->WriteTableEnd(nCurPos);
 	}
 	if ((pDocx) && (pDocx->m_pDocumentComments))

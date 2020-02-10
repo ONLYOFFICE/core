@@ -112,9 +112,9 @@ namespace OOX
 			void AddBookmarkStart(int nId, std::wstring& sName);
 			void AddBookmarkEnd  (int nId);
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_p;
@@ -134,7 +134,7 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRDefault;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
 
-			CParagraphProperty *					 m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
+			CParagraphProperty *m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Paragraph - то есть единственные подобъекты вынести отдельно
 		};
 	} // namespace Logic

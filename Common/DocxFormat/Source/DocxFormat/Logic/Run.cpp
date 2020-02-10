@@ -29,8 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "Run.h"
 #include "..\DocxFlat.h"
+
+#include "Run.h"
 
 namespace OOX
 {
@@ -286,7 +287,7 @@ namespace OOX
 				if (sType.IsInit() && std::wstring::npos != sType->find(L"Bookmark.Start"))
 					pItem = new CBookmarkStart( oReader );
 				else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Bookmark.End"))
-					pItem = new CBookmarkStart( oReader );
+					pItem = new CBookmarkEnd( oReader );
 				else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment.Start"))
 					pItem = new CCommentRangeStart( oReader );
 				else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment.End"))

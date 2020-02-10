@@ -1022,7 +1022,7 @@ void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
 {
 	if (oox_ptab == NULL) return;
 
-	_CP_OPT(int)				ref;
+	_CP_OPT(int) ref;
 
 	odf_writer::style_paragraph_properties * paragraph_properties = odt_context->styles_context()->last_state(style_family::Paragraph)->get_paragraph_properties();;
 

@@ -141,8 +141,13 @@ core_windows {
     QMAKE_CXXFLAGS += /MP
 
     equals(TEMPLATE, app) {
-        core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.02
-        core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
+        console {
+            core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.02
+            core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:CONSOLE,5.01
+        } else {
+            core_win_64:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:WINDOWS,5.02
+            core_win_32:QMAKE_LFLAGS_CONSOLE = /SUBSYSTEM:WINDOWS,5.01
+        }
     }
 }
 

@@ -1397,9 +1397,8 @@ namespace OOX
 		class CDrawing : public WritingElement
 		{
 		public:
-			CDrawing()
-			{
-			}
+			CDrawing(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
+
 			CDrawing(XmlUtils::CXmlNode& oNode)
 			{
 				fromXML( oNode );

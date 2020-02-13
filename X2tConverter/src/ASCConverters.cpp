@@ -139,7 +139,7 @@ namespace NExtractTools
         m_oCDocxSerializer.setFontDir(params.getFontPath());
 
         //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
-        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;
     }
@@ -168,9 +168,9 @@ namespace NExtractTools
 			else return AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-        return docx_dir2doct_bin(sTempUnpackedDOCX, sTo, params);
+        return docx_dir2doct_bin(sTempUnpackedDOCX, sTo, sTemp, params);
     }
-    _UINT32 docx_dir2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
+    _UINT32 docx_dir2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // Save to file (from temp dir)
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
@@ -179,7 +179,7 @@ namespace NExtractTools
         m_oCDocxSerializer.setFontDir(params.getFontPath());
 
         //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
-        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
         return nRes;
     }
@@ -2073,7 +2073,7 @@ namespace NExtractTools
             m_oCDocxSerializer.setFontDir(params.getFontPath());
 
             std::wstring sXmlOptions;
-            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, sXmlOptions) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, sXmlOptions, sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
             return res;
 
@@ -2253,7 +2253,7 @@ namespace NExtractTools
 
 			std::wstring xml_options = params.getXmlOptions();
 
-            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, xml_options) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, xml_options, sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
             return res;
         }
@@ -2385,7 +2385,7 @@ namespace NExtractTools
 
             m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
             return res;
 
@@ -2438,7 +2438,7 @@ namespace NExtractTools
 
            m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}
@@ -2519,7 +2519,7 @@ namespace NExtractTools
 
            m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
        return nRes;
@@ -3233,7 +3233,7 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
        {
-           nRes = docx_dir2doct_bin(sFrom, sTo, params);
+           nRes = docx_dir2doct_bin(sFrom, sTo, sTemp, params);
        }
        else
        {
@@ -3241,7 +3241,7 @@ namespace NExtractTools
            NSDirectory::CreateDirectory(sDoctDir);
            std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
-		   nRes = docx_dir2doct_bin(sFrom, sTFile, params);
+		   nRes = docx_dir2doct_bin(sFrom, sTFile, sTemp, params);
           
 		   if(SUCCEEDED_X2T(nRes))
            {

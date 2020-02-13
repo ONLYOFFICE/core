@@ -678,6 +678,7 @@ namespace OOX
 		et_w_autoCaptions, // <w:autoCaptions>
 		et_w_background, // <w:background>
 		et_w_bdo, // <w:bdo>
+		et_w_binData, // <w:binData>
 		et_w_bookmarkEnd, // <w:bookmarkEnd>
 		et_w_bookmarkStart, // <w:bookmarkStart>
 		et_w_br, // <w:br>

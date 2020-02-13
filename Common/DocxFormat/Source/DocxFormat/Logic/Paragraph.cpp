@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "..\DocxFlat.h"
+#include "../DocxFlat.h"
 
 #include "Paragraph.h"
 #include "Annotations.h"

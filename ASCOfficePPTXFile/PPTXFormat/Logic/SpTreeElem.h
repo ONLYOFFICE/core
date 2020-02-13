@@ -30,14 +30,14 @@
  *
  */
 #pragma once
-#ifndef PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_
-#define PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_
 
 #include "../WrapperWritingElement.h"
 #include "../Theme.h"
 
 #include "SpPr.h"
 #include "ShapeStyle.h"
+
+#include <boost/smart_ptr/shared_array.hpp>
 
 namespace PPTX
 {
@@ -107,6 +107,8 @@ namespace PPTX
 				return m_elem;
 			}
 			virtual void SetParentPointer(const WrapperWritingElement* pParent) {if(is_init()) m_elem->SetParentPointer(pParent);};
+
+			nullable_string m_binaryData;
 		private:
 			smart_ptr<WrapperWritingElement> m_elem;
 		protected:
@@ -114,5 +116,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_

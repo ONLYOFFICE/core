@@ -338,6 +338,10 @@ namespace PPTX
 				}
 				
 			}
+			else if (name == L"binData")
+			{
+				m_binaryData = node.GetText();
+			}
 			else m_elem.reset();
 		}
 

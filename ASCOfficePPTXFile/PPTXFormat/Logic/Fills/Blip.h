@@ -112,6 +112,8 @@ namespace PPTX
 			std::wstring		oleRid;
 			std::wstring		oleFilepathBin;
 			std::wstring		oleFilepathImage;
+			
+			std::wstring		dataFilepathImage;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

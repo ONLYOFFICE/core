@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_PICT_INCLUDE_H_
-#define OOX_LOGIC_PICT_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
 
@@ -47,6 +45,80 @@ namespace OOX
 {
 	namespace Logic
 	{
+		class CBinData : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CBinData)
+			CBinData(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
+			virtual ~CBinData() {}
+
+            virtual void fromXML(XmlUtils::CXmlNode &oNode)
+			{
+			}
+
+            virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				m_sData = oReader.GetText2A();
+			}
+
+            virtual std::wstring toXML() const
+			{
+                std::wstring sResult = _T("<w:binData ");
+
+				ComplexTypes_WriteAttribute2( _T("w:name=\""), m_sName );
+
+				sResult += _T(">");
+
+				if (m_sData.IsInit())
+				{
+				}
+
+				sResult += _T("</w:binData>");
+
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_w_binData;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					if ( _T("w:name") == wsName )
+						m_sName = oReader.GetText();
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+
+				oReader.MoveToElement();
+			}
+
+		public:
+
+            nullable<std::wstring>		m_sName;
+			nullable<std::string>		m_sData;
+		};
+
 		//--------------------------------------------------------------------------------
 		// CControl 9.2.2.1 (Part 4)
 		//--------------------------------------------------------------------------------	
@@ -54,12 +126,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CControl)
-			CControl() {}
+			CControl(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CControl() {}
 
-		public:
-
-            virtual void fromXML(XmlUtils::CXmlNode &oNode)
+			virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("r:id"),      m_rId  );
 				XmlMacroReadAttributeBase( oNode, _T("w:name"),    m_sName );
@@ -135,7 +205,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPicture)
-			CPicture() {}
+			CPicture(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) {}
 			virtual ~CPicture() 
 			{
 			}
@@ -376,8 +446,12 @@ namespace OOX
 							break;
 						}
 					case 'w':
-						if ( _T("w:control") == sName )
+						if ( L"w:control" == sName )
 							m_oControl = oSubReader;
+						else if ( L"w:binData" == sName )
+						{
+							m_oBinData = oSubReader;
+						}
 
 						break;
 					}
@@ -414,12 +488,10 @@ namespace OOX
 				return et_w_pict;
 			}
 
-		public:
-
             nullable<std::wstring>          m_sXml;
 
-			// Childs
 			nullable<OOX::Logic::CControl>	m_oControl;
+			nullable<OOX::Logic::CBinData>	m_oBinData;
 //top childs
 			nullable<OOX::Vml::CShapeType>	m_oShapeType;//custom
 			nullable<OOX::Vml::COval>		m_oShapeOval;
@@ -446,7 +518,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CObject)
-			CObject() {}
+			CObject(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) {}
 			virtual ~CObject() 
 			{
 			}
@@ -674,5 +746,3 @@ namespace OOX
 
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_PICT_INCLUDE_H_

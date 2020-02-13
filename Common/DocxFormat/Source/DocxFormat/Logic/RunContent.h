@@ -49,7 +49,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBr)
-			CBr() {}
+			CBr(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CBr() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode &oNode)
@@ -131,16 +131,14 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CContentPart)
-			CContentPart() {}
+			CContentPart(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CContentPart() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("r:id"), m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -210,20 +208,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCr)
-			CCr() {}
+			CCr(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CCr() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:cr />");
 			}
@@ -242,20 +238,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDayLong)
-			CDayLong() {}
+			CDayLong(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CDayLong() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:dayLong />");
 			}
@@ -274,20 +268,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDayShort)
-			CDayShort() {}
+			CDayShort(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CDayShort() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:dayShort />");
 			}
@@ -306,18 +298,16 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDelText)
-			CDelText() {}
+			CDelText(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CDelText() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -392,20 +382,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CLastRenderedPageBreak)
-			CLastRenderedPageBreak() {}
+			CLastRenderedPageBreak(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CLastRenderedPageBreak() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:lastRenderedPageBreak />");
 			}
@@ -424,20 +412,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMonthLong)
-			CMonthLong() {}
+			CMonthLong(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CMonthLong() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:monthLong />");
 			}
@@ -456,20 +442,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMonthShort)
-			CMonthShort() {}
+			CMonthShort(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CMonthShort() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:monthShort />");
 			}
@@ -488,20 +472,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CNoBreakHyphen)
-			CNoBreakHyphen() {}
+			CNoBreakHyphen(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CNoBreakHyphen() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:noBreakHyphen />");
 			}
@@ -520,20 +502,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPgNum)
-			CPgNum() {}
+			CPgNum(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CPgNum() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<w:pgNum />");
 			}
@@ -550,7 +530,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPTab)
-			CPTab() {}
+			CPTab(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CPTab() {}
 			
 		public:
@@ -627,7 +607,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRuby)
-			CRuby() {}
+			CRuby(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CRuby() {}
 
 		public:
@@ -659,7 +639,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSoftHyphen)
-			CSoftHyphen() {}
+			CSoftHyphen(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CSoftHyphen() {}
 			
 		public:
@@ -691,7 +671,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSym)
-			CSym() {}
+			CSym(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CSym() {}
 			
 		public:
@@ -771,7 +751,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CText)
-			CText() {}
+			CText(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CText() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
@@ -857,7 +837,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTab)
-			CTab() {}
+			CTab(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CTab() {}
 
 		public:
@@ -889,7 +869,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CYearLong)
-			CYearLong() {}
+			CYearLong(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CYearLong() {}
 			
 		public:
@@ -921,7 +901,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CYearShort)
-			CYearShort() {}
+			CYearShort(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CYearShort() {}
 			
 		public:
@@ -945,14 +925,6 @@ namespace OOX
 			}
 		};
 
-
-	} // Logic
-} // OOX
-
-namespace OOX
-{
-	namespace Logic
-	{
 		//--------------------------------------------------------------------------------
 		// CAnnotationRef 17.13.4.1 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -960,15 +932,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAnnotationRef)
-			CAnnotationRef() {}
+			CAnnotationRef(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CAnnotationRef() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
@@ -992,16 +962,14 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCommentReference)
-			CCommentReference() {}
+			CCommentReference(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CCommentReference() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:id"), m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1064,15 +1032,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CContinuationSeparator)
-			CContinuationSeparator() {}
+			CContinuationSeparator(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CContinuationSeparator() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
@@ -1096,18 +1062,16 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDelInstrText)
-			CDelInstrText() {}
+			CDelInstrText(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CDelInstrText() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1181,15 +1145,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CEndnoteRef)
-			CEndnoteRef() {}
+			CEndnoteRef(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CEndnoteRef() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
@@ -1213,17 +1175,15 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CEndnoteReference)
-			CEndnoteReference() {}
+			CEndnoteReference(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CEndnoteReference() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:customMarkFollows"), m_oCustomMarkFollows );
 				XmlMacroReadAttributeBase( oNode, _T("w:id"),                m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1295,15 +1255,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFootnoteRef)
-			CFootnoteRef() {}
+			CFootnoteRef(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CFootnoteRef() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
@@ -1327,17 +1285,15 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFootnoteReference)
-			CFootnoteReference() {}
+			CFootnoteReference(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CFootnoteReference() {}
-		
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:customMarkFollows"), m_oCustomMarkFollows );
 				XmlMacroReadAttributeBase( oNode, _T("w:id"),                m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1408,18 +1364,16 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CInstrText)
-			CInstrText() {}
+			CInstrText(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CInstrText() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1492,15 +1446,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSeparator)
-			CSeparator() {}
+			CSeparator(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 			virtual ~CSeparator() {}
-			
-		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );

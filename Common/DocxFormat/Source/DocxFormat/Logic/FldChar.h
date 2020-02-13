@@ -756,9 +756,8 @@ namespace OOX
 		class CFldChar : public WritingElement
 		{
 		public:
-			CFldChar()
-			{
-			}
+			CFldChar(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
+
 			CFldChar(XmlUtils::CXmlNode &oNode)
 			{
 				fromXML( oNode );

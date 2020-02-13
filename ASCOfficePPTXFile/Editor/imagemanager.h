@@ -170,6 +170,7 @@ namespace NSShapeImageGen
 		std::map<DWORD, CMediaInfo>			m_mapMediaData; //map for files by data
 
 		std::wstring						m_strDstMedia;
+		std::wstring						m_strTempMedia;
 
 		LONG								m_lMaxSizeImage;
 		LONG								m_lNextIDImage;
@@ -261,8 +262,10 @@ namespace NSShapeImageGen
 			{
 				CMediaInfo info;
 				CFile oFile;
-				if (S_OK != oFile.OpenFile(strFile))
+				if (S_OK != oFile.OpenFile(strFile) && std::wstring::npos == strFile.find(L"data:base64,"))
+				{
 					return info;
+				}
 				oFile.CloseFile();
 			}
 			
@@ -471,8 +474,31 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		CMediaInfo GenerateImageID(const std::wstring& strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile)
+		CMediaInfo GenerateImageID(std::wstring strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 		{
+			if (0 == strFileName.find(_T("data:base64,")))
+			{
+				std::string __s = std::string(strFileName.begin() + 12, strFileName.end());
+
+				BYTE* pDstBuffer = NULL;
+				int dstLen = Base64::Base64DecodeGetRequiredLength((int)__s.length());
+
+				pDstBuffer = new BYTE[dstLen];
+				Base64::Base64Decode(__s.c_str(), (int)__s.length(), pDstBuffer, &dstLen);
+				
+				CImageFileFormatChecker checker;
+				std::wstring sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
+                std::wstring tempFilePath = m_strTempMedia + FILE_SEPARATOR_STR;
+				
+				strFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, L"img") + _T(".") + sImageExtension;
+
+                CFile oTempFile;
+                oTempFile.CreateFile(strFileName);
+				oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
+				oTempFile.CloseFile();
+				
+				RELEASEARRAYOBJECTS(pDstBuffer);
+			}
 			std::wstring sMapKey = strFileName;
 			
 			if(!strUrl.empty())				sMapKey  = strUrl;

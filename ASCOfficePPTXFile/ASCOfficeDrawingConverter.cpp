@@ -1001,12 +1001,9 @@ void CDrawingConverter::SetDstPath(const std::wstring& sPath)
 {
     m_pImageManager->SetDstFolder(sPath);
 }
-void CDrawingConverter::SetMediaDstPath(const std::wstring& sPath)
+void CDrawingConverter::SetTempPath(const std::wstring& sPath)
 {
-    m_pBinaryWriter->m_pCommon->m_pMediaManager->m_strDstMedia = sPath;
-    m_pImageManager->SetDstMedia(sPath);
-
-    NSDirectory::CreateDirectory(sPath);
+    m_pBinaryWriter->m_pCommon->m_pMediaManager->m_strTempMedia = sPath;
 }
 void CDrawingConverter::SetEmbedDstPath(const std::wstring& sPath)
 {
@@ -1014,7 +1011,10 @@ void CDrawingConverter::SetEmbedDstPath(const std::wstring& sPath)
 
     NSDirectory::CreateDirectory(sPath);
 }
-
+void CDrawingConverter::SetMediaDstPath(const std::wstring& sPath)
+{   
+	m_pBinaryWriter->m_pCommon->m_pMediaManager->m_strDstMedia = sPath;
+}
 void CDrawingConverter::ClearShapeTypes()
 {
 	m_mapShapeTypes.clear();
@@ -1201,6 +1201,10 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 				{
 					AddShapeType(oNodeST);
 				}
+				//binary data
+				XmlUtils::CXmlNode oNodeBinData;
+				oParseNode.GetNode(L"w:binData", oNodeBinData);
+
 				XmlUtils::CXmlNodes oChilds;
                 if (oParseNode.GetNodes(L"*", oChilds))
 				{
@@ -1222,9 +1226,15 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
                             L"roundrect" == strNameP ||
                             L"polyline"  == strNameP)
 						{
+
 							if(NULL == pElem)
 							{
 								pElem = new PPTX::Logic::SpTreeElem;
+
+								if (oNodeBinData.IsValid())
+								{
+									pElem->fromXML(oNodeBinData);
+								}		
 								doc_LoadShape(pElem, oNodeP, ppMainProps, true);
 
 #ifdef AVS_OFFICE_DRAWING_DUMP_XML_TEST
@@ -1552,6 +1562,9 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 				{
 					AddShapeType(oNodeST);
 				}
+				//binary data
+				XmlUtils::CXmlNode oNodeBinData;
+				oParseNode.GetNode(L"w:binData", oNodeBinData);
 
 				XmlUtils::CXmlNodes oChilds;
                 if (oParseNode.GetNodes(L"*", oChilds))
@@ -1578,6 +1591,10 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 							if(NULL == pElem)
 							{
 								pElem = new PPTX::Logic::SpTreeElem;
+								if (oNodeBinData.IsValid())
+								{
+									pElem->fromXML(oNodeBinData);
+								}
 								doc_LoadShape(pElem, oNodeP, pMainProps, true);
 							}
 						}
@@ -3044,23 +3061,17 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
     if (bIsTop) pTree->m_lGroupIndex = 0;
     else        pTree->m_lGroupIndex = 1;
 
-	XmlUtils::CXmlNodes oNodes;
-    if (oNode.GetNodes(L"*", oNodes))
+	//сначала shape type
+	XmlUtils::CXmlNode oNodeST;
+	if (oNode.GetNode(L"v:shapetype", oNodeST))
 	{
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
-		{
-			XmlUtils::CXmlNode oNodeT;
-			oNodes.GetAt(i, oNodeT);
-
-			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
-
-			if (L"shapetype"	== strNameP)
-			{
-				AddShapeType(oNodeT);
-			}
-		}
+		AddShapeType(oNodeST);
 	}
+	//binary data
+	XmlUtils::CXmlNode oNodeBinData;
+	oNode.GetNode(L"w:binData", oNodeBinData);
+
+	XmlUtils::CXmlNodes oNodes;
     if (oNode.GetNodes(L"*", oNodes))
 	{
 		int nCount = oNodes.GetCount();
@@ -3080,6 +3091,10 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
                 L"roundrect"    == strNameP)
 			{
 				PPTX::Logic::SpTreeElem _el; 
+				if (oNodeBinData.IsValid())
+				{
+					_el.fromXML(oNodeBinData);
+				}
 				doc_LoadShape(&_el, oNodeT, pMainProps, false);
 				
 				if (_el.is_init())
@@ -4228,6 +4243,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 
 	nullable_string sFillColor;
     XmlMacroReadAttributeBase(oNode, L"fillcolor", sFillColor);
+	
 	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
 	{
 		ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
@@ -4470,7 +4486,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			nullable_string sPictId;
             XmlMacroReadAttributeBase(oNodeFillID, L"r:pict", sPictId);
 
-			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init())
+			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init() || oElem->m_binaryData.IsInit())
 			{			
 				nullable_string sType;
                 XmlMacroReadAttributeBase(oNodeFillID, L"type", sType);
@@ -4489,10 +4505,18 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 					pSpPr->Fill.Fill = pBlipFill;
 				}
                 pBlipFill->m_namespace = L"a";
-				pBlipFill->blip = new PPTX::Logic::Blip();
 
-				std::wstring sId = sRid.IsInit() ? *sRid : (sRelid.IsInit() ? *sRelid : (sPictId.IsInit() ? *sPictId : L""));
-				pBlipFill->blip->embed = new OOX::RId(sId);
+				pBlipFill->blip = new PPTX::Logic::Blip();
+				
+				if (oElem->m_binaryData.IsInit())
+				{
+					pBlipFill->blip->dataFilepathImage = L"data:base64," + *oElem->m_binaryData;
+				}
+				else
+				{					
+					std::wstring sId = sRid.IsInit() ? *sRid : (sRelid.IsInit() ? *sRelid : (sPictId.IsInit() ? *sPictId : L""));
+					pBlipFill->blip->embed = new OOX::RId(sId);
+				}
 
                 if (sType.is_init() && *sType == L"tile")
 				{

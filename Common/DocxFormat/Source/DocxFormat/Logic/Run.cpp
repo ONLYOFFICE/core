@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "..\DocxFlat.h"
+#include "../DocxFlat.h"
 
 #include "Run.h"
 
@@ -196,57 +196,57 @@ namespace OOX
 			OOX::Document* document = WritingElement::m_pMainDocument;
 			
 			if ( _T("mc:AlternateContent") == sName )
-				pItem = new CAlternateContent( oReader );
+				pItem = new CAlternateContent( document );
 			else if ( _T("w:annotationRef") == sName )
-				pItem = new CAnnotationRef( oReader );
+				pItem = new CAnnotationRef( document );
 			else if ( _T("w:br") == sName )
-				pItem = new CBr( oReader );
+				pItem = new CBr( document );
 			else if ( _T("w:commentReference") == sName )
-				pItem = new CCommentReference( oReader );
+				pItem = new CCommentReference( document );
 			else if ( _T("w:contentPart") == sName )
-				pItem = new CContentPart( oReader );
+				pItem = new CContentPart( document );
 			else if ( _T("w:continuationSeparator") == sName )
-				pItem = new CContinuationSeparator( oReader );
+				pItem = new CContinuationSeparator( document );
 			else if ( _T("w:cr") == sName )
-				pItem = new CCr( oReader );
+				pItem = new CCr( document );
 			else if ( _T("w:dayLong") == sName )
-				pItem = new CDayLong( oReader );
+				pItem = new CDayLong( document );
 			else if ( _T("w:dayShort") == sName )
-				pItem = new CDayShort( oReader );
+				pItem = new CDayShort( document );
 			else if ( _T("w:delInstrText") == sName )
-				pItem = new CDelInstrText( oReader );
+				pItem = new CDelInstrText( document );
 			else if ( _T("w:delText") == sName )
-				pItem = new CDelText( oReader );
+				pItem = new CDelText( document );
 			else if ( _T("w:drawing") == sName ) 
-				pItem = new CDrawing( oReader );
+				pItem = new CDrawing( document );
 			else if ( _T("w:endnoteRef") == sName )
-				pItem = new CEndnoteRef( oReader );
+				pItem = new CEndnoteRef( document );
 			else if ( _T("w:endnoteReference") == sName )
-				pItem = new CEndnoteReference( oReader );
+				pItem = new CEndnoteReference( document );
 			else if ( _T("w:fldChar") == sName )
-				pItem = new CFldChar( oReader );
+				pItem = new CFldChar( document );
 			else if ( _T("w:footnoteRef") == sName )
-				pItem = new CFootnoteRef( oReader );
+				pItem = new CFootnoteRef( document );
 			else if ( _T("w:footnoteReference") == sName )
-				pItem = new CFootnoteReference( oReader );
+				pItem = new CFootnoteReference( document );
 			else if ( _T("w:instrText") == sName )
-				pItem = new CInstrText( oReader );
+				pItem = new CInstrText( document );
 			else if ( _T("w:lastRenderedPageBreak") == sName )
-				pItem = new CLastRenderedPageBreak( oReader );
+				pItem = new CLastRenderedPageBreak( document );
 			else if ( _T("w:monthLong") == sName )
-				pItem = new CMonthLong( oReader );
+				pItem = new CMonthLong( document );
 			else if ( _T("w:monthShort") == sName )
-				pItem = new CMonthShort( oReader );
+				pItem = new CMonthShort( document );
 			else if ( _T("w:noBreakHyphen") == sName )
-				pItem = new CNoBreakHyphen( oReader );
+				pItem = new CNoBreakHyphen( document );
 			else if ( _T("w:object") == sName )
-				pItem = new CObject( oReader );
+				pItem = new CObject( document );
 			else if ( _T("w:pgNum") == sName )
-				pItem = new CPgNum( oReader );
+				pItem = new CPgNum( document );
 			else if ( _T("w:pict") == sName )
-				pItem = new CPicture( oReader );
+				pItem = new CPicture( document );
 			else if ( _T("w:ptab") == sName )
-				pItem = new CPTab( oReader );
+				pItem = new CPTab( document );
 			else if ( _T("w:rPr") == sName )
 			{
 				if (m_oRunProperty)
@@ -262,23 +262,32 @@ namespace OOX
 					pItem = m_oRunProperty = new CRunProperty();
 					m_oRunProperty->fromXML(oReader, this);
 				}
+				return pItem;
 			}
 			else if ( _T("w:ruby") == sName )
-				pItem = new CRuby( oReader );
+				pItem = new CRuby( document );
 			else if ( _T("w:separator") == sName )
-				pItem = new CSeparator( oReader );
+				pItem = new CSeparator( document );
 			else if ( _T("w:softHyphen") == sName )
-				pItem = new CSoftHyphen( oReader );
+				pItem = new CSoftHyphen( document );
 			else if ( _T("w:sym") == sName )
-				pItem = new CSym( oReader );
+				pItem = new CSym( document );
 			else if ( _T("w:t") == sName )
 			{
-				fromXMLText(oReader);
+				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
+				if (docx_flat)
+				{
+					pItem = new CText( document );
+				}
+				else
+				{
+					fromXMLText(oReader);
+				}
 			}
 			else if ( _T("w:tab") == sName )
-				pItem = new CTab( oReader );
+				pItem = new CTab( document );
 			else if ( _T("w:yearLong") == sName )
-				pItem = new CYearLong( oReader );
+				pItem = new CYearLong( document );
 			else if ( L"aml:annotation" == sName) //Bookmark 
 			{
 				nullable_string sType;
@@ -309,6 +318,10 @@ namespace OOX
 						pItem = NULL;
 					}
 				}
+			}
+			if (pItem)
+			{
+				pItem->fromXML(oReader);
 			}
 			return pItem;
 		}
